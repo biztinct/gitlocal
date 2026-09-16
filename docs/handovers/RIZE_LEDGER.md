@@ -230,6 +230,16 @@ without owner approval between them.
   (`RIZE_W2_PX1_DEMO_SWEEP.md`, after A3, before E1). Binding rule 9. The owner
   never presses Remove on `payobook` by accident: it goes through the demo-data
   approval on a non-demo database.
+- **D16 (2026-09-16) — the phone check-in is for FIELD STAFF, not only for
+  drivers.** Drivers and agronomists both work away from a desk and both need
+  to check in from where they are; there was no way to give an agronomist the
+  app without calling them a driver on their own record. A new **Field staff**
+  group is what the app asks about and **Driver implies it**, so every
+  existing driver keeps working with nothing to migrate. What it records is
+  D13's and nothing more: a location and a photograph. The group ships EMPTY.
+- **D17 (2026-09-16) — the same escalation everything else uses.** "Tell HR
+  when a manager has sat on a day-off request" goes through the approval
+  engine's own late block, never a chaser written in the time-off module.
 - **D19 (2026-09-16) — the content engine's stock sample courses are DELETED
   from `payobook`.** Furniture, gardening, trees and wood: seven courses the
   E-Learning demo data installed, with their lessons, sections, memberships,
@@ -270,7 +280,7 @@ without owner approval between them.
 | E3 | pb_training — the training allowance and the cost claim, the Matrix route, the award on the one money door, certificates in the vault, the Training lens on Insights with a spreadsheet, and the weekly/monthly pack | **DONE** (live on `payobook`, 19.0.1.2.0, T1–T10 pass, 246 unit tests green; five live-only defects found and fixed — R192–R196; one real pay run touched and reported, R199) |
 | B1 | pb_goals — goal years, the goal sheet with weighted goals and key results, the manager + HR-lead route, templates, the joining-checklist kick-off, `/my/goals`, the Goals lens | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T11 pass, 80 unit tests green; `pb_goals` is the ONLY module whose state changed; ten live-only defects found and fixed — see R200–R211) |
 | B2 | pb_goals — monthly check-ins, mid-year and joining-month rules, change requests after the lock, scoring roll-ups, the Insights lens and the Home card | **DONE** (live on `payobook`, 19.0.1.1.0 with its migration, T1–T11 pass, 179 unit tests green; `pb_goals` is the ONLY module whose state changed; nine live-only defects found and fixed — one of them a B1 defect that had been live since B1 — see R212–R224) |
-| D1 | pb_timeoff + pb_driver_checkin | not started |
+| D1 | pb_timeoff + pb_driver_checkin — public holidays for everybody (a Workforce lens + `/my/holidays`), escalation to the HR lead, the backdating rules and the sick-leave exception, the past-leave lock, the carry-forward watch, the Field staff group and the field check-in chip, and Mission Control's soft lens registry | **DONE** (live on `payobook`: `pb_timeoff` 19.0.1.4.1 with its migration, `pb_driver_checkin` 19.0.1.5.0, `pb_today` 19.0.1.5.0, `pb_mission` 19.0.1.10.0, `biz_approval_workflow` Python-only; T1–T10 pass, 110 unit tests green; NO module was installed or uninstalled; eight live-only defects found and fixed — see R225–R234) |
 | C1 | pb_hr_comm | not started |
 
 ## Gotchas discovered during RIZE phases (append here)
@@ -2431,3 +2441,139 @@ without owner approval between them.
   The only rows on this database that were touched and are NOT this phase's are
   the two `pb_alert` notices the fleet monitor sends the owner, which were
   already queued and were deliberately left alone.
+
+### D1 (pb_timeoff + pb_driver_checkin — holidays, the leave rules, the carry watch, field staff, 2026-09-16)
+
+- **R225 — THE ESCALATION VERDICT: IT WAS NOT IN FORCE, AND WHAT WAS THERE
+  INSTEAD WAS WORSE THAN NOTHING.** `engine.escalate_cron` really does chase a
+  late step, and the ledger and the handover both read as though the sheet's
+  "tell HR after two days" was therefore already met. It was not. The ONLY
+  escalation address in the engine was `request.version_id.workflow_id
+  .owner_user_id` — whoever PUBLISHED the route — and on `payobook` that is
+  **uid 2 for all four seeded time-off routes**, i.e. the owner's own account.
+  So a manager sitting on a day-off request emailed the owner and nobody in HR
+  heard anything, for ever, with a cheerful "escalated" line in the trail. The
+  second half is that `late.reassign` cannot help: it hands the seat to
+  `seat.backup_user_id`, and a MANAGER step's seats carry no backup at all
+  (`_resolve_step_people` sets one only for a role step). So the fix is a
+  generic, additive escalation TARGET in the engine — `late: {to_role:
+  '<responsibility key>'}` — with the workflow owner as the fallback when
+  nobody holds the seat, so an overdue step is never silently unescalated. A
+  route that names no role behaves exactly as it always has, which is every
+  route on every database except time off. **Proven live:** the reminder went
+  to the manager (uid 2326) and the escalation to the HR lead (uid 2065), the
+  cron run twice produced one of each, and the request stayed `pending`.
+- **R226 — A PUBLISHED ROUTE IS FROZEN, SO A MIGRATION CANNOT EDIT ONE.**
+  `biz.approval.workflow.version.write` refuses any change to a published
+  revision — *"requests already under way keep the version they were given"* —
+  and that rule is right: a leave sent in yesterday must not start being chased
+  by different rules half-way through its own approval. The first D1 deploy
+  wrote the fixed `late` block straight onto the published version and the
+  migration leg died (its two siblings ran, under their own savepoints, which
+  is exactly what R131 is for). The repair does what a business would do on the
+  Approval Matrix instead: a NEW draft revision on the same workflow,
+  validated, published with a reason, the old one superseded. **And the
+  migration had to move to a new version number**, because 19.0.1.4.0 had
+  already landed and a migration is not re-run for a version the database
+  already carries — the repair would have been skipped for ever on the one
+  database that needs it.
+- **R227 — `hr_holidays` CONVERTS A PUBLIC HOLIDAY'S TIMES A SECOND TIME, and
+  only when the writer's timezone differs from the calendar's.**
+  `_prepare_public_holidays_values` (`hr_holidays/models/resource.py:124`)
+  reads a `resource.calendar.leaves` CREATE as "these datetimes are in the
+  ACTING USER's timezone" and shifts them into the calendar's. That is right
+  for somebody typing into the native form and wrong for a caller that has
+  already done the conversion properly. Two live symptoms, both on the real
+  screen: a Mon–Wed holiday entered from a Brussels-timezone account onto a
+  Vietnamese calendar was stored ten hours out and drawn as **four days**; and
+  Labour Day was refused as overlapping Reunification Day, because the shifted
+  1 May reached back into the already-corrected 30 April. `write` does no such
+  conversion — so the row is CREATED a century out, where nothing can overlap
+  it and the shift is harmless, and then written to the values that were
+  actually worked out. Two different days give two different placeholders, so
+  the stock overlap rule still catches a real clash, on the REAL dates.
+- **R228 — `hr.leave.name` IS A COMPUTE OVER `private_name` AND SILENTLY DOES
+  NOT STICK.** It is `compute='_compute_description'` with an inverse that
+  writes `private_name`, which carries `groups='hr_holidays.group_hr_holidays_
+  responsible'`. So a test that writes a description as an ordinary user reads
+  it back unchanged and looks exactly like a guard refusing a write it in fact
+  allowed. Anything that has to prove a write on `hr.leave` writes a DATE.
+- **R229 — `with_user()` KEEPS THE CONTEXT, INCLUDING THE FLAG THAT SWITCHES
+  YOUR OWN GUARD OFF.** A fixture built with `leave_fast_create=True` and then
+  acted on with `record.with_user(someone)` hands the guard under test the very
+  key that exempts it. Four cases passed for that reason and told nobody. A
+  fixture that a guard will be asked about is re-browsed through a clean
+  recordset (`self.Model.browse(made.id)`), never handed on from the create.
+- **R230 — SIX `pb_today` CASES HAD BEEN ERRORING ON THEIR OWN FIXTURE SINCE
+  THE APPROVAL MATRIX RETROFIT, and D1 is the first phase to run them.**
+  `_leave` filed an `hr`-validated leave and pressed `action_approve` twice.
+  Since `pb_timeoff/models/hr_leave_approval.py` that press drives a published
+  ROUTE, and the engine correctly refuses a decision from an account it never
+  asked — *"This step is not waiting for you"*. The fixture needs an APPROVED
+  leave, not an approval journey: a `no_validation` type is approved by
+  hr_holidays inside `create`, which is still never a state write. **Any
+  fixture anywhere in this codebase that approves an `hr.leave` by pressing the
+  button has the same hole.** The same shape, plus a `state` written by hand
+  that sends the stock `_check_date` constraint through
+  `dashboard_warning_message` on an empty set, bit D1's own first draft.
+- **R231 — A COMMENT-BLIND GATE FAILS ON THE FILE THAT EXPLAINS IT, and that
+  now includes the EMOJI gate and the PLURAL gate.** R118 recorded it for the
+  white-label gate. D1's emoji gate failed on `pb_timeoff.js`, whose own header
+  describes the queue's buttons as "one-click ✓/✗", and its bracketed-plural
+  gate failed on its own docstring, which contains the string `1 day(s)` as the
+  example of what it forbids. Every source gate strips comments first, whatever
+  it is looking for.
+- **R232 — A `var()` FALLBACK IS A REAL COLOUR AND `pb_today.scss:190` HAD THE
+  WRONG ONE.** `--pbim-primary-strong` is `#5A4BB0`; that line has carried
+  `#453A8C` since it was written, so the moment the token is missing the tile
+  paints a different indigo. Found by `pb_today`'s own hex gate, which had been
+  failing on it and had not been run. Fixed, and D1's new rules use the right
+  value. **The gate is only worth having if somebody runs it**: this is the
+  second pre-existing failure in this module's suite that D1 surfaced simply by
+  running it.
+- **R233 — ⌘K, lens and settings numbers after D1.** D1 took the **3800** block
+  as the wave plan says: `wf_holidays` **3800** ("Public holidays", Mission
+  Control), `wf_field` **3810** ("Field check-in map", Mission Control),
+  `wf_carry` **3820** ("Carry-forward watch", Time Off). C1 still starts at
+  **3700**. **Mission Control now has a soft lens registry** —
+  `MISSION_LENSES = "pb_mission_lens"`, exported from
+  `pb_mission/static/src/js/pb_mission.js` — and it is the LAST hub in the
+  product to get one and the awkward one: this hub DEPENDS on its guests, so a
+  guest cannot import the constant back without a manifest cycle. `pb_timeoff`
+  and `pb_driver_checkin` name the literal string and each carries a test that
+  reads `pb_mission`'s own source and fails if the spellings drift. The eight
+  shipped lenses carry no sequence, so bolted-on ones start at 20: **Holidays
+  20, Field 30**. "Holidays" and "Field" both sit inside the 60px rail label
+  box (R63). This phase ships no Settings category: its five dials are
+  `ir.config_parameter` rows and the carry log has its own ⌘K door.
+- **R234 — the D1 test cast and what was put back.** Demo data stays, every row
+  is named DEMO and every row is on the register (rule 9): **23 rows added to
+  "DEMO HR programme data", which now holds 1,227.** New: **12 public
+  holidays** on Payobook Vietnam JSC (six for 2026, six for 2027 — ids 413–427,
+  the movable feasts are indicative and are an owner item); user **6533**
+  `demo.field@example.com` / `RizeD1!2026`, which is employee **17140** Ưng
+  Hoàng Long given a login and the **Field staff** role — an agronomist, not a
+  driver, and the proof that D16 works; three demo leave types **356** "DEMO
+  Field sick day", **357** "DEMO Manager day off" and **358** "DEMO
+  Carry-forward annual"; allocations **146/147**; leaves **564** (the map's "On
+  leave" chip), **565** (the backdated sick note, with the HR alert), **566**
+  (a future sick day) and **568** (the escalation case); attendance **9580**
+  with its selfie, from the real phone app. **Two things were borrowed and both
+  were put back**: the company-5 `hr_lead` seat (22) — `user_id` 2 → 2065 → 2
+  and `backup_user_id` 7 → 2326 → 7, so the escalation and the HR alert could
+  be proved without emailing the owner — and the carry-forward cap on type
+  358, set to 12 for the live run and back to **0** afterwards, because a cap
+  ships at zero and nothing is watched until the business says so (R76).
+  **NO GROUP WAS GRANTED TO ANY EXISTING ACCOUNT**: verified group-for-group
+  against a snapshot taken before the first write, all ten accounts identical
+  with no exceptions. The Field staff role on uid 6533 STAYS — it is the
+  deliverable. **No password was reset**; `RizeP0!2026`, `RizeP4!2026` and
+  `RizeP7!2026` were all re-tested by API login at the end and all three work.
+  All five switches read their shipped values at the end. **The mail sweep was
+  wider than this phase's own traffic and that is a deviation worth recording:**
+  75 queued messages were cancelled by a pattern that matched `Time Off` as
+  well as D1's own subjects, so about thirty of Odoo's own never-sent
+  `hr_holidays` demo notifications ("Marc Demo on Sick Time Off", "Allocation
+  of Paid Time Off to Anita Oliver") went with them. None had been sent, none
+  addressed a real person, and nothing that was cancelled can now go out — but
+  the next phase should match on its OWN subjects and not on a word.
