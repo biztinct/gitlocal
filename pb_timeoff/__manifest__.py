@@ -25,7 +25,11 @@ om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
     # 19.0.1.4.0 — RIZE W2 D1: public holidays for everybody (a Mission
     # Control lens + `/my/holidays`), escalation to the HR lead, the
     # backdating rules, the past-leave lock and the carry-forward watch.
-    'version': '19.0.1.4.0',
+    # 19.0.1.4.1 — the late-block repair, done the way a business would do
+    # it: a published revision is FROZEN (requests under way keep the rules
+    # they were given), so the migration publishes a new revision instead of
+    # writing over the old one. Found live; see the ledger.
+    'version': '19.0.1.4.1',
     'category': 'Human Resources/Time Off',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -53,12 +53,14 @@ def _fix_routes(env):
     except (TypeError, ValueError):
         escalate_days = 2
 
-    versions = env['biz.approval.workflow.version'].sudo().search([
-        ('workflow_id.process_id', '=', process.id),
-        ('status', 'in', ('published', 'draft')),
-    ])
+    Version = env['biz.approval.workflow.version'].sudo()
+    Seed = env['biz.approval.seed']
     changed = 0
-    for version in versions:
+    for workflow in env['biz.approval.workflow'].sudo().search(
+            [('process_id', '=', process.id)]):
+        version = workflow.published_version_id
+        if not version:
+            continue
         definition = dict(version.definition or {})
         safeguards = dict(definition.get('safeguards') or {})
         late = dict(safeguards.get('late') or {})
@@ -69,12 +71,42 @@ def _fix_routes(env):
             _logger.info(
                 'pb_timeoff D1: "%s" has its own chasing rules (%s), so they '
                 'were left alone — say who to escalate to on the Approval '
-                'Matrix if that is wanted', version.workflow_id.name, theirs)
+                'Matrix if that is wanted', workflow.name, theirs)
             continue
         late.update({'escalate_days': escalate_days, 'to_role': 'hr_lead'})
         safeguards['late'] = late
         definition['safeguards'] = safeguards
-        version.write({'definition': definition})
+
+        # A PUBLISHED REVISION IS FROZEN, AND THAT RULE IS RIGHT.
+        #
+        # The first attempt wrote the definition in place and was refused by
+        # the engine's own immutability guard — "requests already under way
+        # keep the version they were given". Quite so: a leave somebody sent
+        # in yesterday must not silently start being chased by different
+        # rules. So the repair does what a business would do on the Approval
+        # Matrix — a NEW revision, validated and published, with a reason on
+        # it — and every request in flight finishes under the rules it was
+        # given.
+        publisher = Seed.publisher_for(workflow.company_id)
+        draft = Version.create({
+            'workflow_id': workflow.id,
+            'revision': max(workflow.version_ids.mapped('revision') or [0]) + 1,
+            'status': 'draft',
+            'definition': definition,
+        })
+        engine = env['biz.approval.engine'].with_user(publisher).sudo() \
+            .with_context(approval_skip_coverage=True)
+        checks = engine.validate_for_publish(draft.id)
+        if checks['errors']:
+            _logger.warning(
+                'pb_timeoff D1: "%s" could not be re-published: %s',
+                workflow.name, [e['code'] for e in checks['errors']])
+            draft.unlink()
+            continue
+        engine.publish(
+            draft.id, draft.draft_revision, None,
+            'Time off now goes to the HR lead when a step is late',
+            [w['code'] for w in checks['warnings']])
         changed += 1
     _logger.info('pb_timeoff D1: %s time-off route(s) now escalate to the HR '
                  'lead after %s day(s)', changed, escalate_days)
