@@ -181,10 +181,19 @@ class PbGoalSetApproval(models.Model):
                           'value': record.department_id.name or ''})
         if record.deadline:
             chips.append({'label': _('Was due'), 'value': str(record.deadline)})
-        rows = [[goal.title or '',
-                 '%s%%' % int(round(goal.weight or 0)),
-                 str(goal.date_end or ''),
-                 goal._rating_word()]
+        # A DRAWER ROW IS A DICT AND A LIST IS SILENTLY DISCARDED.
+        # `pb_approval_config`'s shaper (`inbox_facade.py:598`) skips anything
+        # that is not a dict with `head` / `sub` / `cells`, and it drops the
+        # detail entirely only when there are no chips either — so a consumer
+        # that hands it lists gets a drawer with its chips, its title and its
+        # note all present and NO TABLE, which reads as "there was nothing to
+        # show" rather than as a mistake. B1 shipped this as lists and the
+        # goal-sheet drawer has been drawing no table ever since, with nothing
+        # on any screen and nothing in any log to say so. Found live in B2.
+        rows = [{'head': goal.title or '',
+                 'sub': goal._rating_word(),
+                 'cells': ['%s%%' % int(round(goal.weight or 0)),
+                           str(goal.date_end or '')]}
                 for goal in record.goal_ids.sorted(
                     lambda g: (g.sequence, g.id))]
         note = ''
@@ -192,8 +201,7 @@ class PbGoalSetApproval(models.Model):
             note = _("The weights do not add up to 100 yet. Open the sheet, "
                      "set them, and then agree it.")
         return {'title': _('The goals being agreed'),
-                'columns': [_('Goal'), _('Weight'), _('Done by'),
-                            _('Their own view')],
+                'columns': [_('Goal'), _('Weight'), _('Done by')],
                 'rows': rows, 'chips': chips, 'note': note}
 
     # ==================================================================
