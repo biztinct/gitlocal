@@ -53,6 +53,15 @@ _PROBLEMS = {
                  "show."),
     'delay': _("That request could not be sent. Try again, and tell the "
                "training team if it keeps happening."),
+    # E3. A claim can be refused for reasons the person can DO something
+    # about — a missing file, an amount over what is left — and those come
+    # back from the model as a whole sentence rather than a code, because
+    # the arithmetic is in them. These two are the ones that are not about
+    # the claim itself.
+    'no_employee': _("You do not have an employee record yet, so there is "
+                     "nowhere to pay a claim into. Tell your HR team."),
+    'claim': _("That claim could not be sent. Try again, and tell the "
+               "training team if it keeps happening."),
 }
 
 
@@ -90,6 +99,8 @@ class PbTrainingPortal(CustomerPortal):
         if 'training_team_count' in counters:
             values['training_team_count'] = \
                 self._tr_facade().team_overdue_count()
+        if 'training_claims_count' in counters:
+            values['training_claims_count'] = self._tr_facade().claims_count()
         return values
 
     # =================================================================
@@ -112,6 +123,9 @@ class PbTrainingPortal(CustomerPortal):
             # E2
             'asked': _("Asked. Your manager will see it and you will get an "
                        "email either way."),
+            # E3
+            'claimed': _("Sent in. The HR lead sees it now, and you will get "
+                         "an email either way."),
         }.get(key or '', '')
 
     # =================================================================
@@ -306,6 +320,97 @@ class PbTrainingPortal(CustomerPortal):
             'notice': self._tr_notice(kw.get('ok')),
             'problem': self._tr_problem(kw),
         })
+
+    # =================================================================
+    #  E3 — the training allowance and claiming a course back
+    # =================================================================
+    @http.route(['/my/training/claims'], type='http', auth='user',
+                website=True)
+    def portal_training_claims(self, **kw):
+        return self._tr_claims_page(notice=self._tr_notice(kw.get('ok')),
+                                    problem=self._tr_problem(kw))
+
+    def _tr_claims_page(self, notice='', problem=''):
+        """The page, rendered from one read. Used by the GET and by a refusal.
+
+        A REFUSAL RE-RENDERS RATHER THAN REDIRECTING, and that is not a style
+        choice: the sentences this page refuses with have ARITHMETIC in them
+        ("your allowance is 5,000,000 ₫, 4,000,000 ₫ is agreed, so 1,000,000 ₫
+        is left"), and a sentence carried in a query string is a sentence
+        somebody else can write onto the page (R51, and the `_tr_problem`
+        rule three screens up). So the codes stay codes and the real answer
+        comes back in the render values.
+        """
+        return request.render('pb_training.portal_training_claims', {
+            'page_name': 'training',
+            'claims': self._tr_facade().claims(),
+            'notice': notice,
+            'problem': problem,
+        })
+
+    @http.route(['/my/training/claims/new'], type='http', auth='user',
+                website=True, methods=['POST'])
+    def portal_training_claim_new(self, **post):
+        """Claim a course back. ONE press, and it is already in.
+
+        The two files arrive as real uploads and never as a path or an
+        attachment id: an id in a form buys nothing (the vault learnt that the
+        hard way — probing a stranger's attachment id would get their file
+        deleted later), and the model binds what is uploaded to the claim it
+        is about.
+        """
+        try:
+            self._tr_facade().raise_claim(
+                {
+                    'course_name': (post.get('course_name') or '').strip()[:200],
+                    'provider': (post.get('provider') or '').strip()[:200],
+                    'amount': self._tr_money(post.get('amount')),
+                    'paid_on': post.get('paid_on') or False,
+                    'note': (post.get('note') or '')[:2000],
+                    'assignment_id': self._tr_int(post.get('assignment_id')),
+                },
+                invoice=self._tr_upload(post.get('invoice')),
+                certificate=self._tr_upload(post.get('certificate')))
+        except AccessError:
+            return request.redirect('/my/training/claims?problem=no_employee')
+        except UserError as err:
+            # The model's own sentence, straight onto the page. It is written
+            # for the person reading it and it has the numbers in it.
+            return self._tr_claims_page(problem=str(err))
+        except Exception:               # noqa: BLE001 — never a 500 on /my
+            _logger.warning('pb_training: a training claim could not be sent',
+                            exc_info=True)
+            return request.redirect('/my/training/claims?problem=claim')
+        return request.redirect('/my/training/claims?ok=claimed')
+
+    @staticmethod
+    def _tr_money(value):
+        """An amount typed on a phone. Commas, spaces and a stray symbol."""
+        raw = (value or '').strip()
+        for junk in (',', ' ', ' ', '₫', '$'):
+            raw = raw.replace(junk, '')
+        try:
+            return float(raw or 0)
+        except (TypeError, ValueError):
+            return 0.0
+
+    @staticmethod
+    def _tr_upload(upload):
+        """One uploaded file as `(name, bytes)`, or nothing.
+
+        An empty file input arrives as a `FileStorage` with an empty filename
+        rather than as `None`, so "did they attach anything" is a question
+        about the BYTES and not about the object.
+        """
+        if not upload:
+            return None
+        try:
+            content = upload.read()
+        except Exception:               # noqa: BLE001 — a bad upload is not 500
+            return None
+        if not content:
+            return None
+        return (getattr(upload, 'filename', '') or '', content)
 
     @http.route(['/my/training/<int:channel_id>/certificate'], type='http',
                 auth='user', website=True)

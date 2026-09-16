@@ -45,6 +45,9 @@
       <t t-elif="icon == 'arrowLeft'"><path d="M19 12H5M12 19l-7-7 7-7"/></t>
       <t t-elif="icon == 'x'"><path d="M18 6 6 18M6 6l12 12"/></t>
       <t t-elif="icon == 'target'"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></t>
+      <t t-elif="icon == 'wallet'"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></t>
+      <t t-elif="icon == 'receipt'"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></t>
+      <t t-elif="icon == 'upload'"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></t>
       <t t-elif="icon == 'sparkles'"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></t>
       <t t-else=""><circle cx="12" cy="12" r="10"/></t>
     </svg>
@@ -92,6 +95,27 @@
         <t t-set="url" t-value="'/my/training/team'"/>
         <t t-set="config_card" t-value="True"/>
         <t t-set="placeholder_count" t-value="'training_team_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============ E3: the allowance card ============
+       A THIRD CARD, for the same reason as the second: "what am I on", "what
+       does my team owe" and "what may I spend" are three questions asked by
+       three people on three different days. Eagerly counted like the other
+       two, because a card whose PRESENCE depends on a counter is never drawn
+       at all — portal.portal_my_home fetches its counters after the page has
+       rendered (R62). -->
+  <template id="portal_my_home_training_claims" name="Training allowance home card"
+            inherit_id="portal.portal_my_home" customize_show="True"
+            priority="46">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">My training allowance</t>
+        <t t-set="text">What you may spend on a course of your own this year, and what you have asked to be paid back</t>
+        <t t-set="url" t-value="'/my/training/claims'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'training_claims_count'"/>
       </t>
     </xpath>
   </template>
@@ -223,13 +247,23 @@
           </span>
         </div>
 
-        <p t-if="me.get('manages')" class="pbtr-teamline">
-          <a href="/my/training/team" class="pbme-btn">
+        <p class="pbtr-teamline">
+          <a t-if="me.get('manages')" href="/my/training/team" class="pbme-btn">
             <t t-call="pb_training.tr_icon">
               <t t-set="icon" t-value="'checkCheck'"/>
               <t t-set="isz" t-value="15"/>
             </t>
             See my team's training
+          </a>
+          <!-- E3. EVERYBODY GETS THIS ONE. An allowance nobody can find is an
+               allowance nobody spends, and the page it opens says plainly
+               when no figure has been set. -->
+          <a href="/my/training/claims" class="pbme-btn">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="'wallet'"/>
+              <t t-set="isz" t-value="15"/>
+            </t>
+            My training allowance
           </a>
         </p>
 
@@ -816,6 +850,260 @@
           <p class="pbtr-teamnote">
             If somebody needs longer, they ask from their own training page and
             the request comes to you to agree or turn down.
+          </p>
+        </t>
+
+      </div>
+    </t>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/training/claims — E3                                         -->
+  <!--                                                                   -->
+  <!--  THE ALLOWANCE COMES FIRST AND THE LIST SECOND. "How much can I    -->
+  <!--  spend" is the question people arrive with; "what did I ask for"   -->
+  <!--  is what they come back for. A page that opened on an empty list   -->
+  <!--  would answer the second and leave the first to an email.          -->
+  <!--                                                                   -->
+  <!--  `t-attf-class`, NEVER a dict `t-att-class` (R42). No `t-key` on a -->
+  <!--  server-side template (R5) except inside a `t-foreach`, where it   -->
+  <!--  is the loop's own key and QWeb wants it.                          -->
+  <!-- ================================================================= -->
+  <template id="portal_training_claims" name="My training allowance (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbtr">
+
+        <t t-call="pb_training.tr_notices"/>
+
+        <a href="/my/training" class="pbtr-back">
+          <t t-call="pb_training.tr_icon">
+            <t t-set="icon" t-value="'arrowLeft'"/>
+            <t t-set="isz" t-value="15"/>
+          </t>
+          My own training
+        </a>
+
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Your training allowance</t>
+          <t t-set="hero_sub">What the company will put towards a course of your own this year, and what you have asked to be paid back.</t>
+        </t>
+
+        <!-- ============ no employee record ============ -->
+        <div t-if="not claims['has_employee']" class="pbme-card pbme-empty">
+          <div class="pbme-empty-ic">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="'wallet'"/>
+              <t t-set="isz" t-value="30"/>
+            </t>
+          </div>
+          <h3>There is no employee record against your login yet</h3>
+          <p class="pbme-muted">
+            A claim is paid with your pay, so it needs an employee record to be
+            paid into. Tell your HR team and this page fills in by itself.
+          </p>
+        </div>
+
+        <t t-else="">
+
+          <!-- ============ the hero: what is left ============
+               ZERO IS AN ANSWER AND IT IS SAID IN WORDS. A page that drew an
+               empty bar with a currency symbol beside it would be reported as
+               broken over a company that has simply not set a figure yet. -->
+          <div t-if="not claims['set']" class="pbme-card pbme-empty">
+            <div class="pbme-empty-ic">
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'wallet'"/>
+                <t t-set="isz" t-value="30"/>
+              </t>
+            </div>
+            <h3>No training allowance has been set for <t t-esc="claims['year']"/></h3>
+            <p class="pbme-muted">
+              When your company sets one, the figure appears here and you can
+              claim a course back against it. Ask your training team — it is
+              one number and it takes them a minute.
+            </p>
+          </div>
+
+          <div t-else="" class="pbme-card pbtr-wallet">
+            <div class="pbtr-wallet-top">
+              <div>
+                <div class="pbtr-wallet-l">Left to spend in <t t-esc="claims['year']"/></div>
+                <div class="pbtr-wallet-v" t-esc="claims['left_words']"/>
+              </div>
+              <div class="pbtr-wallet-of">
+                of <b t-esc="claims['allowance_words']"/>
+                <span class="pbtr-muted">
+                  · <t t-esc="claims['agreed_words']"/> already agreed
+                </span>
+              </div>
+            </div>
+            <div class="pbtr-bar">
+              <div class="pbtr-bar-fill"
+                   t-attf-style="width: #{claims['percent']}%;"/>
+            </div>
+            <p t-if="claims['waiting']" class="pbtr-wallet-note">
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'clock'"/>
+                <t t-set="isz" t-value="14"/>
+              </t>
+              <t t-if="claims['waiting'] == 1">One claim is waiting on the HR lead.</t>
+              <t t-else=""><t t-esc="claims['waiting']"/> claims are waiting on the HR lead.</t>
+              What is waiting is not counted above until it is agreed.
+            </p>
+          </div>
+
+          <!-- ============ the form ============
+               A `<details>` rather than a dialog, because the whole employee
+               area is server-rendered and a form that needs JavaScript to open
+               is a form that does not open on a phone with a bad connection.
+               `enctype` is multipart because two real files go up with it. -->
+          <details class="pbtr-ask pbtr-claim-form">
+            <summary class="pbme-btn pbtr-btn--primary pbtr-ask-open">
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'receipt'"/>
+                <t t-set="isz" t-value="15"/>
+              </t>
+              Claim a course back
+            </summary>
+            <form action="/my/training/claims/new" method="post"
+                  enctype="multipart/form-data" class="pbtr-ask-form">
+              <input type="hidden" name="csrf_token"
+                     t-att-value="request.csrf_token()"/>
+              <label class="pbtr-f pbtr-f--wide">
+                <span>What the course was</span>
+                <input type="text" name="course_name" required="required"
+                       maxlength="200"
+                       placeholder="Advanced Excel for finance teams"/>
+              </label>
+              <label class="pbtr-f">
+                <span>Who ran it</span>
+                <input type="text" name="provider" maxlength="200"
+                       placeholder="The school, college or trainer"/>
+              </label>
+              <label class="pbtr-f">
+                <span>What it cost</span>
+                <input type="text" name="amount" required="required"
+                       inputmode="decimal" placeholder="2,500,000"/>
+              </label>
+              <label class="pbtr-f">
+                <span>When you paid for it</span>
+                <input type="date" name="paid_on" required="required"/>
+              </label>
+              <label t-if="claims['courses']" class="pbtr-f">
+                <span>Is it one of ours?</span>
+                <select name="assignment_id">
+                  <option value="0">No — I found this one myself</option>
+                  <option t-foreach="claims['courses']" t-as="crs"
+                          t-key="crs['id']" t-att-value="crs['id']"
+                          t-esc="crs['name']"/>
+                </select>
+              </label>
+              <label class="pbtr-f">
+                <span>The receipt</span>
+                <input type="file" name="invoice" required="required"
+                       accept="image/*,application/pdf"/>
+              </label>
+              <label class="pbtr-f">
+                <span>The certificate</span>
+                <input type="file" name="certificate" required="required"
+                       accept="image/*,application/pdf"/>
+              </label>
+              <label class="pbtr-f pbtr-f--wide">
+                <span>Anything you want to add</span>
+                <textarea name="note" rows="2"
+                          placeholder="A line about the course and why it was worth doing."/>
+              </label>
+              <button type="submit" class="pbme-btn pbtr-btn--primary">
+                Send it to the HR lead
+              </button>
+              <p class="pbtr-ask-note">
+                Both files are needed: the receipt is what you paid, the
+                certificate is that you finished. The HR lead decides, and you
+                get an email either way. Anything agreed is paid with a pay
+                run.
+              </p>
+            </form>
+          </details>
+
+          <!-- ============ nothing yet ============ -->
+          <div t-if="not claims['rows']" class="pbme-card pbme-empty">
+            <div class="pbme-empty-ic">
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'receipt'"/>
+                <t t-set="isz" t-value="30"/>
+              </t>
+            </div>
+            <h3>You have not claimed anything back yet</h3>
+            <p class="pbme-muted">
+              If you pay for a course yourself — an evening class, a
+              certification, a conference — put the receipt and the certificate
+              in here and ask for it back. Anything agreed is paid with your
+              pay, not as a separate transfer.
+            </p>
+          </div>
+
+          <!-- ============ what I have asked for ============ -->
+          <div t-else="" class="pbtr-grid">
+            <div t-foreach="claims['rows']" t-as="clm" t-key="clm['id']"
+                 class="pbme-card pbtr-claim">
+              <div class="pbtr-course-top">
+                <div class="pbtr-course-id">
+                  <h3 class="pbtr-course-name" t-esc="clm['course']"/>
+                  <p t-if="clm['provider']" class="pbtr-course-blurb"
+                     t-esc="clm['provider']"/>
+                </div>
+                <div class="pbtr-claim-amount" t-esc="clm['amount_words']"/>
+              </div>
+
+              <div class="pbtr-due">
+                <span t-attf-class="pbtr-chip #{clm['state'] == 'refused' and 'pbtr-chip--bad' or (clm['state'] == 'approved' and 'pbtr-chip--ok' or 'pbtr-chip--wait')}">
+                  <t t-esc="clm['state_word']"/>
+                </span>
+                <span t-if="clm['money_word']" class="pbtr-chip"
+                      t-esc="clm['money_word']"/>
+                <span class="pbtr-chip">Paid for on <t t-esc="clm['paid_on']"/></span>
+                <span t-if="clm['over_allowance']" class="pbtr-chip pbtr-chip--wait">
+                  Agreed over your allowance
+                </span>
+              </div>
+
+              <!-- THE REASON IS ON THE CARD. A "turned down" with the reason
+                   swallowed is the same as nothing happening, which is how
+                   somebody ends up claiming for the same course three
+                   times. -->
+              <div t-if="clm['state'] == 'refused' and clm['refuse_note']"
+                   class="pbtr-notice pbtr-notice--bad">
+                <t t-call="pb_training.tr_icon">
+                  <t t-set="icon" t-value="'alert'"/>
+                </t>
+                <span t-esc="clm['refuse_note']"/>
+              </div>
+
+              <div class="pbtr-claim-files">
+                <a t-if="clm['has_invoice']" t-att-href="clm['invoice_url']"
+                   class="pbme-btn">
+                  <t t-call="pb_training.tr_icon">
+                    <t t-set="icon" t-value="'receipt'"/>
+                    <t t-set="isz" t-value="14"/>
+                  </t>
+                  The receipt
+                </a>
+                <a t-if="clm['has_certificate']"
+                   t-att-href="clm['certificate_url']" class="pbme-btn">
+                  <t t-call="pb_training.tr_icon">
+                    <t t-set="icon" t-value="'award'"/>
+                    <t t-set="isz" t-value="14"/>
+                  </t>
+                  The certificate
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <p class="pbtr-teamnote">
+            Anything agreed is paid with a pay run, so it turns up on a payslip
+            rather than as a separate transfer. Your certificate is filed on
+            your employee record at the same time.
           </p>
         </t>
 

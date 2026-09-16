@@ -483,3 +483,86 @@ body:has(.o_survey_form) .modal-body {
         .pbtr-team-bar { max-width: 260px; }
     }
 }
+
+
+// =====================================================================
+//  E3 — the allowance, and claiming a course back.
+//
+//  EVERY COLOUR CARRIES A LITERAL FALLBACK beside its token, exactly as
+//  every other rule in this file does, because the employee area is
+//  light-only by design (R39) and there is no portal dark palette to fall
+//  back onto.
+//
+//  THE WALLET IS THE HERO AND IT IS ONE NUMBER. Everything else on the
+//  card is smaller than it: what is left to spend is the thing somebody
+//  came for, and a card that gave the allowance, the agreed total and the
+//  remainder the same weight would be three numbers and no answer.
+//
+//  No `min()`/`max()` with mixed units anywhere (ledger): Sass evaluates
+//  those and a px/% pair kills the ENTIRE asset bundle, not just this file.
+// =====================================================================
+.pbtr {
+
+    // ------------------------------------------------------- the wallet
+    .pbtr-wallet {
+        padding: 20px 22px; margin-bottom: 18px;
+
+        @media (prefers-reduced-motion: no-preference) {
+            animation: pbtr-rise .32s ease both;
+        }
+    }
+    .pbtr-wallet-top {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .pbtr-wallet-l {
+        font-size: 11.5px; font-weight: 700; letter-spacing: .03em;
+        text-transform: uppercase; color: #64748B; margin-bottom: 4px;
+    }
+    .pbtr-wallet-v {
+        font-size: 30px; font-weight: 750; line-height: 1.1;
+        color: #4F46E5; letter-spacing: -.02em;
+    }
+    .pbtr-wallet-of {
+        font-size: 13px; color: #64748B; text-align: right;
+
+        b { color: #0F172A; font-weight: 700; }
+    }
+    .pbtr-wallet-note {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        margin: 12px 0 0; font-size: 12.5px; line-height: 1.6;
+        color: #64748B;
+    }
+
+    // ------------------------------------------------------- the form
+    // It is the .pbtr-ask form with one more row in it, so it inherits every
+    // field rule above and only the spacing below it is new.
+    .pbtr-claim-form { margin: 0 0 20px; }
+
+    // ------------------------------------------------------- the claims
+    .pbtr-claim { padding: 18px 20px; }
+    .pbtr-claim-amount {
+        flex: 0 0 auto; font-size: 17px; font-weight: 750;
+        color: #0F172A; white-space: nowrap;
+    }
+    .pbtr-claim-files {
+        display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+        margin-top: 12px;
+
+        .pbme-btn { font-size: 12.5px; }
+    }
+
+    // ON A PHONE THE AMOUNT GOES UNDER THE NAME, IT DOES NOT SHRINK IT. A
+    // course name and a seven-figure amount do not share a 390px row, and
+    // the half that gets squeezed is always the name — which is the half
+    // that says what the claim is about (R187, reached from the card side).
+    @media (max-width: 560px) {
+        .pbtr-wallet-top { flex-direction: column; align-items: flex-start; }
+        .pbtr-wallet-of { text-align: left; }
+        .pbtr-wallet-v { font-size: 26px; }
+        .pbtr-claim .pbtr-course-top {
+            flex-direction: column; align-items: flex-start; gap: 6px;
+        }
+        .pbtr-claim-amount { font-size: 20px; }
+    }
+}
