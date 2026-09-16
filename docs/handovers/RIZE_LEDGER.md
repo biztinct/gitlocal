@@ -268,7 +268,8 @@ without owner approval between them.
 | E1 | pb_training — the learner flow (`/my/training`), the Training lens on a new Learn hub, the door on the public course site, the white-label sweep | **DONE** (live on `payobook`, 19.0.1.0.1, T1–T14 pass, 62 unit tests green; `survey` + `website_slides_survey` installed per D15 and TWO auto-install modules came with them — see R173; six live-only defects found and fixed — R171–R180). **Owner checkpoint: the learner flow is waiting to be looked at.** |
 | E2 | pb_training — assignments (day-one / trial period / compliance / one-off / leadership), the chasing and its escalation, "ask for more time" through the Matrix, the trial-period link, compliance schedules, the day-one checklist step, the four new board tabs, due dates + a team page on `/my/training` | **DONE** (live on `payobook`, 19.0.1.1.0, T1–T13 pass, 168 unit tests green; the stock sample courses deleted first under D19; seven live-only defects found and fixed — R182–R190; one additive edit to `pb_demo_seed`, its own commit) |
 | E3 | pb_training — the training allowance and the cost claim, the Matrix route, the award on the one money door, certificates in the vault, the Training lens on Insights with a spreadsheet, and the weekly/monthly pack | **DONE** (live on `payobook`, 19.0.1.2.0, T1–T10 pass, 246 unit tests green; five live-only defects found and fixed — R192–R196; one real pay run touched and reported, R199) |
-| B1–B2 | pb_goals | not started |
+| B1 | pb_goals — goal years, the goal sheet with weighted goals and key results, the manager + HR-lead route, templates, the joining-checklist kick-off, `/my/goals`, the Goals lens | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T11 pass, 80 unit tests green; `pb_goals` is the ONLY module whose state changed; ten live-only defects found and fixed — see R200–R211) |
+| B2 | pb_goals — monthly check-ins, mid-year and joining-month rules, change requests after the lock, scoring roll-ups, the Insights lens and the Home card | not started |
 | D1 | pb_timeoff + pb_driver_checkin | not started |
 | C1 | pb_hr_comm | not started |
 
@@ -2112,3 +2113,156 @@ without owner approval between them.
   phase queued went to an `@example.com` address or to the engine's own
   approver notifications; all twelve were cancelled in the same session and the
   outgoing queue is empty.
+
+### B1 (pb_goals, 2026-09-16)
+
+- **R200 — `group_operator` IS `aggregator` ON ODOO 19, and the old spelling is
+  quietly nothing.** `odoo/orm/fields_numeric.py:23` names the attribute
+  `aggregator`; a field declared `group_operator='avg'` keeps the default,
+  which for a Float is SUM. A list of goal sheets grouped by department would
+  then add four people's percentages together and print 312% — a number that
+  is obviously wrong to a person and perfectly ordinary to a machine. Nothing
+  warns.
+- **R201 — A CONSUMER'S RUNG CANNOT BE REFUSED ANYWHERE THE ENGINE ALREADY
+  CALLS IT, and that is a hole in the engine rather than in the consumer.**
+  There are exactly two consumer hooks around a decision.
+  `_approval_validate` (`chain_shim.py:401`) is the SUBMIT check — "may this
+  be sent in at all" — and runs long before an approver has seen anything; the
+  B1 handover named it for the weights rule and it cannot do that job.
+  `_approval_advance` runs AFTER the decision is recorded and its exceptions
+  are deliberately swallowed (`engine.py:1339`: a decision a person really
+  made must never be undone by a consumer that cannot follow its own route),
+  so raising there records the approval and leaves the record behind — R132's
+  exact failure. `pb_goals` therefore adds ONE generic seam in
+  `models/approval_engine_ext.py`: an inherit of `biz.approval.engine` whose
+  `decide()` asks the record `_approval_before_approve(request, step_key)`
+  BEFORE `super()`, only for `approve`, letting `UserError`/`ValidationError`
+  through and logging anything else rather than breaking a route over one
+  module's bug. A consumer that does not answer the hook is untouched, which
+  is every one of the forty-odd routes on this database today.
+- **R202 — A REVISION STAMP MAY NOT CONTAIN ANYTHING AN APPROVER IS MEANT TO
+  CHANGE ON THE WAY THROUGH.** AM32 says never `write_date`; this is the other
+  half and it is sharper. `source_revision` is frozen at SUBMIT and compared
+  again in `_run_apply` when the last rung is agreed — so a goal sheet whose
+  stamp included the goals' WEIGHTS could never be carried out, because
+  setting those weights is the manager's whole job on their own rung. Live:
+  the HR lead pressed Agree, the engine recorded the decision and closed the
+  request, and the sheet stayed on "Waiting on the HR lead" with the reason
+  only inside the request's own `block_reason` — *"This changed after it was
+  sent in, so the approval no longer covers it."* An approval that
+  half-happens is worse than one that is refused (R193 from a new direction).
+  The stamp is now the goals themselves: how many, what each says, and when it
+  is due.
+- **R203 — AND WHEN THAT HAPPENS THE RECORD IS STRANDED, so the advice the
+  engine gives has to work.** The refusal above closes the request and tells
+  the reader to "send it back and ask for it again" — and the send-back button
+  then answered *"This has not been sent in for approval, so there is nothing
+  to decide yet"*, because the shim routes a reversal to `_chain_decide` and
+  there is no live request to decide. Reachable by an ordinary HR action
+  (rewording a goal while the sheet waits on the HR lead). `pb.goal.set
+  .action_goals_send_back` now falls back to the record's own ladder when
+  `_chain_open_request()` is empty, and the drawer shows the request's
+  `block_reason` under "This is not moving" — until then nothing was on any
+  screen at all.
+- **R204 — A CONSEQUENCE HANGS OFF THE STATUS, NEVER OFF THE DOOR.** A chain
+  consumer has two ways to move: a published route, where the engine drives
+  it, and the record's own small ladder, used where the route was never
+  switched on. The adapter's hooks (`_approval_apply`, `_approval_return`) are
+  the ROUTE'S half and are never called on the other path — so a lock written
+  in `_approval_apply` means a sheet that reaches "locked" without a route is
+  never actually frozen, silently. `_after_approval_transition(to_state)` is
+  called on BOTH paths (`biz_approval_mixin.py:77`; `chain_shim.py:426/451/
+  467/495`) and is where every consequence belongs. The one exception is the
+  shim's own `_approval_return`, which does NOT call it — a consumer that
+  overrides that hook has to call it by hand.
+- **R205 — AN OWL TEMPLATE CANNOT SEE A JAVASCRIPT GLOBAL.**
+  `[a, b, c].filter(Boolean)` is ordinary JavaScript and dies inside a
+  compiled OWL expression with *"undefined is not a function"*: the scope the
+  template runs in does not carry `Boolean` (nor `Object`, `JSON`, `Number`,
+  `parseInt`, `Array`). The whole component then fails to render and the real
+  cause sits two levels down an `OwlError`'s `cause` property. Live symptom:
+  the drawer simply never opened, with nothing on the screen and one collapsed
+  console line. Anything a template needs that is not a property or a method
+  of the component belongs IN the component; `pb_goals` has a gate that greps
+  its own template for the global names.
+- **R206 — A `flex-basis` IN PIXELS BECOMES A HEIGHT THE MOMENT THE CONTAINER
+  TURNS INTO A COLUMN.** `flex: 1 1 320px` is a sensible minimum WIDTH in a
+  row and a 320px minimum HEIGHT in a column, so the `/my/goals` header card
+  and its send panel opened on a phone with a third of a screen of empty white
+  inside each of them (411px and 409px tall for ~180px of content). Nothing
+  errors and the page merely looks badly designed. Every `flex` basis in a
+  container a media query turns into a column has to be reset to `auto` in the
+  same query. Measure it (`getBoundingClientRect().height`) rather than
+  looking at it.
+- **R207 — A PYTHON FLOAT RENDERS THROUGH QWEB EXACTLY AS PYTHON WRITES IT,
+  and `t-att-value` DROPS THE ATTRIBUTE ENTIRELY for a falsy value.** Two
+  small things with the same cause. A page that has not started read "0.0% of
+  the way", which is a machine talking; and a key result sitting at nought
+  rendered as two EMPTY boxes, so a person could not tell "nobody has said"
+  from "it is at zero". Both facades now send tidy values —
+  `pb_my_goals._pct` for percentages, `_figure` for a ten-digit Vietnamese
+  revenue target with its thousands in it — and anything going into a
+  `t-att-value` goes as a STRING, which is always truthy.
+- **R208 — THE CATALOGUE ROW IS PART OF THE ROUTE, and without it nothing
+  visibly breaks.** `Seed.lay` needs a `biz.approval.process` row for the
+  process key before it can lay anything (`seed_helper.py:181`); without one it
+  refuses with a single INFO line — *"approval seed: no goal_set row in the
+  catalogue yet"* — the install reports success, the module version lands, and
+  a goal sheet sent in simply never reaches anybody's inbox. Every module that
+  owns a business object ships its own `data/approval_process.xml`; B1 forgot
+  it and the first live install was silently routeless. Two further lessons
+  out of it: a `post_init_hook` seed is NOT re-run by `-u` on the same version,
+  so a database that missed the seed stays missed, and `pb.goals.automation
+  ._ensure_route()` therefore runs `seed_all` every morning as a third,
+  self-healing leg (idempotent — `Seed.lay` asks the database first).
+- **R209 — THE OBVIOUS GATE ON A LENS ABOUT A TEAM IS THE WRONG ONE.** The
+  Goals lens shipped gated on the three goals groups, and a line manager holds
+  none of them by definition — they are somebody's manager, not somebody in
+  HR. Live, the People hub drew NO lens rail at all for `lam.ngo`, so the team
+  view the lens exists for was invisible to every manager in the company. R157
+  again: where a permission is granted by a RECORD rule rather than by a
+  group, the gate that decides whether somebody may LOOK cannot be a group
+  test. The lens and its ⌘K row are now open to `base.group_user` and the
+  SERVER decides what is behind the door — the company for HR, their team for
+  a manager, their own sheet for everybody else, with one honest sentence at
+  the top saying which, and a "My own goals" button so the plainest case is
+  not a dead end. The two CONFIGURATION doors (goal years, templates) keep the
+  HR gate.
+- **R210 — ⌘K, lens and settings numbers after B1.** B1 took the **3600**
+  block as the wave plan says: `goals_board` **3600** ("Goals", sublabel
+  *People*), `goals_my` **3610** ("My goals"), `goals_cycles` **3620** ("Goal
+  years") and `goals_templates` **3630** ("Goal templates"). C1 starts at
+  **3700**. On the People hub the shipped lenses are Employees, Contracts,
+  Records 40, Pay, Where they work, Assets 50, Praise 60 and the Plan
+  launcher, so **Goals is 70** — after what a person IS, what they were
+  HANDED and what colleagues SAID, before what we plan to spend. "Goals"
+  measures **35px** in the 60px rail label box (R63), comfortably inside.
+  This module ships no Settings category: its seven dials are
+  `ir.config_parameter` rows and its two tables have their own ⌘K doors.
+- **R211 — the B1 test cast and what was put back.** Demo data stays, every
+  row is named DEMO and every row is on the register (rule 9): **135 rows
+  added to "DEMO HR programme data", which now holds 1,186.** New: goal years
+  **41** "DEMO Goal year 2026" (company 5, Apr–Mar, half-way 1 Oct, open),
+  **42** "DEMO Goal year 2027" (being set up — the second one, which proved a
+  company may have only one open year) and **44** "DEMO Goal year 2026 (small
+  team)" (company 2, the seven-person company the "Open it for everyone"
+  button was proved on twice); goal sheets **204–211** on company 5,
+  **212–218** on company 2 and **320** for the kick-off joiner; goal templates
+  **13–15**; employees **20637** "DEMO Joiner Quyen" and **20638** "DEMO
+  Joiner Trang" with their joining checklists **108/109**, which proved the
+  new step both with a goal year open and with none. **Three things were
+  borrowed and all three were put back**: `pb_goals.group_goals_manager` on
+  uid 2065, company 2 on uid 2065's allowed companies (for the bulk test on
+  the seven-person company), and the company-5 `hr_lead` seat (22) —
+  `user_id` 2 → 2065 → 2 and `backup_user_id` 7 → 2326 → 7. Verified
+  group-for-group against a snapshot taken before the first write: every
+  account identical, with ONE expected difference — uid 2 now holds
+  `pb_goals.group_goals_admin`, which the module's own security data grants to
+  `base.user_admin` exactly as `pb_training` does. **No password was reset**:
+  `RizeP0!2026`, `RizeP4!2026`, `RizeP7!2026`, `RizeP8!2026` and
+  `RizeP9!2026` all still work. **No employee's manager was changed.** The
+  HR-lead rung of two demo routes was moved to `tuan.quach` and `diep.thai` by
+  reassignment, because the seat holder was the account that had PREPARED the
+  demo sheets and the engine's independence safeguard correctly refused them.
+  Every mail this phase queued went to an `@example.com` or `@payobook.com`
+  address and was cancelled in the same session; the outgoing queue is empty.
