@@ -43,6 +43,20 @@ P_REMINDER_CAP = 'pb_training.reminder_cap'
 P_ASSIGN_LIMIT = 'pb_training.assignment_limit'
 P_BULK_CAP = 'pb_training.bulk_assign_cap'
 
+# ------------------------------------------------------------------ E3 dials
+P_CLAIM_OVER = 'pb_training.claim_over_allowance'
+P_CLAIM_LIMIT = 'pb_training.claim_limit'
+P_PACK = 'pb_training.report_pack'
+P_PACK_PERIOD = 'pb_training.report_pack_period'
+#: DELIBERATELY NOT IN `DEFAULTS`. `set_param(key, '')` DELETES the row on this
+#: build, so an empty-string default cannot be materialised and a hook that
+#: tried would write it, find it missing on the next read and write it again
+#: for ever. Both are read through `text()`, which falls back in code; the
+#: address is typed by whoever wants the pack and the stamp is written by the
+#: job itself.
+P_PACK_EMAIL = 'pb_training.report_pack_email'
+P_PACK_STAMP = 'pb_training.report_pack_last'
+
 DEFAULTS = {
     # ON. The pages that came with the content engine are a PUBLIC WEB SITE
     # with a course catalogue, a member leaderboard and a public profile per
@@ -94,6 +108,22 @@ DEFAULTS = {
     # Screen caps.
     P_ASSIGN_LIMIT: '400',
     P_BULK_CAP: '200',
+    # OFF. A training allowance is a budget, and a claim over it is a
+    # conversation rather than a form. On, the HR lead may agree one anyway and
+    # the claim carries a line saying they did — which is the honest version of
+    # a rule people go round: the money still needs a name against it.
+    P_CLAIM_OVER: '0',
+    # A screen cap.
+    P_CLAIM_LIMIT: '200',
+    # OFF, and it ships off ON PURPOSE (R54). The pack is an email to an
+    # address nobody has typed yet, so the first night after an install would
+    # otherwise send a spreadsheet of the company's training figures to
+    # whatever the fallback happened to be. Off, the job still runs, still
+    # builds the numbers and LOGS what it would have sent.
+    P_PACK: '0',
+    # `weekly` or `monthly`. Monthly, because training is a slow number: a
+    # week of it is mostly noise and a month of it is a picture.
+    P_PACK_PERIOD: 'monthly',
 }
 
 # =========================================================================
@@ -143,6 +173,46 @@ DELAY_STATES = [
     ('refused', 'Turned down'),
 ]
 DELAY_STATE_LABEL = dict(DELAY_STATES)
+
+# =========================================================================
+#  E3 — a training cost somebody paid, and the money coming back
+# =========================================================================
+#: HOW FAR THE ASKING HAS GOT. This is the APPROVAL ladder and nothing else —
+#: the chain drives it and `biz.approval.chain.mixin` refuses a bare write to
+#: it, which is what stops a "mark it agreed" button ever appearing by
+#: accident. Whether the money has actually moved is a SECOND column
+#: (`fulfilment`), exactly as `pb.incentive` keeps them apart: one field trying
+#: to say both is how a screen ends up unable to show an agreed claim that
+#: nobody has paid, which is the single most useful row on it.
+CLAIM_STATES = [
+    ('draft', 'Not sent yet'),
+    ('submitted', 'Waiting on the HR lead'),
+    ('approved', 'Agreed'),
+    ('refused', 'Turned down'),
+]
+CLAIM_STATE_LABEL = dict(CLAIM_STATES)
+
+#: WHERE THE MONEY HAS GOT TO. Mirrors the award's own column, because it IS
+#: the award's own column — a claim that has been agreed becomes an award, and
+#: this follows it rather than guessing.
+CLAIM_FULFILMENT = [
+    ('pending', 'Agreed, waiting for a pay run'),
+    ('queued', 'In a pay run'),
+    ('paid', 'Paid'),
+]
+CLAIM_FULFILMENT_LABEL = dict(CLAIM_FULFILMENT)
+
+#: The kind of award a training claim becomes. Added to `pb.incentive.kind` by
+#: `incentive_ext.py` so the ONE money door (`pb.oneoff.feed`) carries it with
+#: no new code of its own — a reimbursement is a one-off amount somebody
+#: agreed to pay, which is precisely what that table is.
+INCENTIVE_KIND_TRAINING = 'training'
+
+#: How the pack comes round.
+PACK_PERIODS = [
+    ('weekly', 'Every week'),
+    ('monthly', 'Every month'),
+]
 
 #: Who a compliance schedule is for.
 SCHEDULE_AUDIENCES = [
@@ -222,6 +292,34 @@ def number(env, key, default=0):
         return int(str(raw).strip())
     except (TypeError, ValueError):
         return int(default)
+
+
+def money_words(env, amount, currency=None):
+    """An amount as PLAIN TEXT — "5,000,000 ₫" — never as markup.
+
+    `ir.qweb.field.monetary.value_to_html` answers a `<span>` (R137), which is
+    right inside a rendered report and is the report's own source code the
+    moment it lands in a sentence a board prints with `t-esc`. `formatLang`
+    answers the same number as text.
+    """
+    try:
+        from odoo.tools.misc import formatLang
+        return formatLang(env, float(amount or 0.0),
+                          currency_obj=currency or env.company.currency_id)
+    except Exception:                       # noqa: BLE001 — a sentence is safe
+        return '%s' % (amount or 0)
+
+
+def text(env, key, default=''):
+    """A switch whose value is WORDS, not a number and not a yes/no.
+
+    `set_param(key, '')` deletes the row on this build, so a key whose honest
+    default is "nothing has been typed here yet" cannot live in `DEFAULTS` and
+    has to fall back in code. Read through here so every caller falls back the
+    same way.
+    """
+    raw = env['ir.config_parameter'].sudo().get_param(key, default)
+    return (str(raw) if raw else str(default or '')).strip()
 
 
 def counted(count, one, many):

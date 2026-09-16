@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- ==================================================================
+         noupdate="1", as every mail template in this codebase is: a tenant
+         that has reworded one of these must not have it reverted by the next
+         upgrade. Outgoing debranding rides automatically (biz_mail_debrand)
+         and the word for the vendor never appears in any of them anyway.
+
+         BOTH ARE SENT WITH AN EXPLICIT `email_to` IN `email_values` (R6): a
+         template's own rendered address can reach mail.mail EMPTY, and the
+         message is then created, queued and addressed to nobody with no error
+         anywhere. The `email_to` field below is kept as documentation of who
+         each one is FOR.
+
+         THE MONEY IS SPELLED OUT IN BOTH. "Your claim has been approved" is
+         an email people have to open the system to act on; "5,000,000 ₫ for
+         Advanced Excel will be paid with your next pay run" is one they can
+         read on a phone and put down.
+         ================================================================== -->
+
+    <!-- ============ agreed ============ -->
+    <record id="mail_template_claim_approved" model="mail.template">
+        <field name="name">Training: your course cost has been agreed</field>
+        <field name="model_id" ref="model_pb_training_claim"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Your training claim for {{ object.course_name }} has been agreed</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>
+                    Your claim for
+                    <strong><t t-out="object.course_name or ''"/></strong>
+                    has been agreed.
+                </p>
+                <ul>
+                    <li>Amount:
+                        <strong><t t-out="format_amount(object.amount, object.currency_id) or ''"/></strong></li>
+                    <li t-if="object.provider">Course run by:
+                        <t t-out="object.provider or ''"/></li>
+                    <li>Paid for on: <t t-out="object.paid_on or ''"/></li>
+                </ul>
+                <p>
+                    It goes to the pay team as a one-off amount and is paid with
+                    a pay run — you will see it on the payslip for whichever run
+                    it is put into. Nothing else is needed from you.
+                </p>
+                <p>
+                    <a t-attf-href="/my/training/claims"
+                       style="display:inline-block; padding:10px 18px; background:#4F46E5; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        See my claims
+                    </a>
+                </p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ turned down ============
+         THE REASON IS THE WHOLE EMAIL. A refusal with the reason left out is
+         the same as nothing happening, which is how somebody ends up claiming
+         for the same course three times. -->
+    <record id="mail_template_claim_refused" model="mail.template">
+        <field name="name">Training: your course cost was not agreed</field>
+        <field name="model_id" ref="model_pb_training_claim"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Your training claim for {{ object.course_name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>
+                    Your claim for
+                    <strong><t t-out="object.course_name or ''"/></strong>
+                    (<t t-out="format_amount(object.amount, object.currency_id) or ''"/>)
+                    has not been agreed.
+                </p>
+                <div t-if="object.refuse_note"
+                     style="margin:12px 0; padding:12px 16px; background:#F6F5FB; border-radius:8px;">
+                    <t t-out="object.refuse_note or ''"/>
+                </div>
+                <p>
+                    If you think that is wrong, reply to this message or talk to
+                    your HR team — nothing is closed off.
+                </p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+</data>
+
+    <!-- ==================================================================
+         THE PACK'S BODY. A TEMPLATE AND NOT A STRING BUILT IN PYTHON, so a
+         business can reword it without a deploy — and so the one place the
+         numbers are laid out is a place somebody can read.
+
+         DELIBERATELY OUTSIDE THE `noupdate` BLOCK ABOVE. The two records above
+         are mail templates, which a business edits; this is a VIEW, which a
+         business does not, and a view frozen at `noupdate="1"` is a view no
+         upgrade can ever correct.
+
+         Server-side QWeb has NO `t-key` (R5) and no render key here is called
+         `request` (R4). It is an `ir.ui.view` rather than a `mail.template`
+         because it is rendered with a payload rather than against a record.
+         ================================================================== -->
+    <template id="mail_pack" name="Training pack email">
+        <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+            <p style="font-size:15px;">
+                Training for <strong t-out="label"/>.
+            </p>
+            <p t-if="board.get('empty')" style="color:#6B6785;">
+                Nobody was put on a course in this period, so there is nothing
+                to report. The spreadsheet is attached anyway, so the row for
+                this period is there when you look back.
+            </p>
+            <t t-else="">
+                <p style="font-size:15px;" t-out="board.get('headline') or ''"/>
+                <table cellpadding="0" cellspacing="0"
+                       style="border-collapse:collapse; margin:16px 0;">
+                    <tr t-foreach="board.get('tiles') or []" t-as="tile">
+                        <td style="padding:6px 18px 6px 0; color:#6B6785;"
+                            t-out="tile['label']"/>
+                        <td style="padding:6px 0; font-weight:600;"
+                            t-out="tile['value']"/>
+                        <td style="padding:6px 0 6px 18px; color:#6B6785;"
+                            t-out="tile['sub']"/>
+                    </tr>
+                </table>
+                <p t-if="board.get('claims') and board['claims'].get('agreed')"
+                   style="color:#6B6785;">
+                    <t t-out="board['claims']['agreed']"/> course cost<t
+                        t-if="board['claims']['agreed'] != 1">s</t> agreed,
+                    <t t-out="board['claims'].get('total_words') or ''"/> in all.
+                </p>
+            </t>
+            <p style="color:#6B6785; font-size:13px;">
+                The spreadsheet attached has the same figures broken down by
+                department, by course and week by week.
+            </p>
+            <br/>
+            The training team
+        </div>
+    </template>
+
+</odoo>

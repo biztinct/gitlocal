@@ -18,3 +18,17 @@ from . import journey_ext
 from . import automation
 from . import pb_training_assignments
 from . import pb_my_training_due
+
+# ---------------------------------------------------------------- E3
+# Same rule: `pb_training_claims` widens the tuple `pb_training_assignments`
+# widened, so it is imported after it; `certificate` extends the assignment
+# declared above it; `claim_approval` extends the claim.
+from . import allowance
+from . import claim
+from . import claim_approval
+from . import incentive_ext
+from . import certificate
+from . import analytics
+from . import pack
+from . import pb_training_claims
+from . import pb_my_training_claims

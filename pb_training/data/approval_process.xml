@@ -23,4 +23,16 @@
         <field name="sequence">240</field>
     </record>
 
+    <!-- E3. The second row this module owns. It is a MONEY process and it
+         sits beside the other money ones in the catalogue, because that is
+         where somebody setting up who signs off what will look for it. -->
+    <record id="process_training_claim" model="biz.approval.process">
+        <field name="key">training_claim</field>
+        <field name="name">Training cost claim</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.training.claim</field>
+        <field name="description">Paying somebody back for a course they paid for themselves: what it cost, what is left of their training allowance, and the receipt and certificate behind it.</field>
+        <field name="sequence">245</field>
+    </record>
+
 </odoo>
