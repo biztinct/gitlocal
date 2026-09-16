@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       `/my/goals` reuses `pb_me_portal`'s .pbme kit — the same hero, the
+       same cards, the same empty state — so it looks like it was always part
+       of the employee's own area rather than bolted on. Everything specific
+       to goals is under .pbgl.
+
+       ICONS: the backend's `ic()` registry is a JS module and cannot be
+       called from QWeb, so the glyphs these pages use are inlined here,
+       exactly as `pb_lifecycle`'s token pages, `pb_me_portal`'s `ess_icon`,
+       `pb_hiring`'s `hr_icon` and `pb_training`'s `tr_icon` do. Lucide paths,
+       never emoji.
+
+       W87: the icon name is passed with `t-value="'name'"`, NEVER as a
+       `t-set` BODY — a body is rendered QWeb and on a `website=True` page the
+       editor's branding wraps it in markup, so every comparison silently goes
+       false and every icon falls through to the else branch.
+
+       `t-attf-class`, NEVER a dict `t-att-class` (R42): in a server-side
+       template the dict form writes the Python repr into the attribute AND
+       drops the static class. No `t-key` anywhere (R5) — that is an OWL
+       directive. No render key called `request` (R4).
+
+       Section comments are ruled with `=` and never with hyphens (R35): a
+       doubled hyphen inside an XML comment is a parse error that takes the
+       whole file with it.
+       ================================================================== -->
+
+  <template id="gl_icon" name="Goals page icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbgl-ic">
+      <t t-if="icon == 'target'"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></t>
+      <t t-elif="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'checkCircle'"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></t>
+      <t t-elif="icon == 'alert'"><path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4M12 17h.01"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'lock'"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></t>
+      <t t-elif="icon == 'undo'"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></t>
+      <t t-elif="icon == 'plus'"><path d="M5 12h14M12 5v14"/></t>
+      <t t-elif="icon == 'trash'"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></t>
+      <t t-elif="icon == 'pencil'"><path d="M21.2 6.8a2.7 2.7 0 0 0-3.8-3.8L4 16.4V20h3.6z"/><path d="m15 5 4 4"/></t>
+      <t t-elif="icon == 'send'"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></t>
+      <t t-elif="icon == 'sparkles'"><path d="M9.9 15.5A2 2 0 0 0 8.5 14l-6.1-1.6a.5.5 0 0 1 0-1L8.5 9.9A2 2 0 0 0 9.9 8.5l1.6-6.1a.5.5 0 0 1 1 0l1.6 6.1A2 2 0 0 0 15.5 9.9l6.1 1.6a.5.5 0 0 1 0 1L15.5 14a2 2 0 0 0-1.4 1.4l-1.6 6.1a.5.5 0 0 1-1 0z"/></t>
+      <t t-elif="icon == 'user'"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></t>
+      <t t-elif="icon == 'calendar'"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></t>
+      <t t-elif="icon == 'trendingUp'"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></t>
+      <t t-elif="icon == 'x'"><path d="M18 6 6 18M6 6l12 12"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="10"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================ breadcrumbs ============================ -->
+  <template id="portal_breadcrumbs_goals" name="Goals portal menu"
+            inherit_id="portal.portal_breadcrumbs" priority="46">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'goals'" class="breadcrumb-item active">My goals</li>
+    </xpath>
+  </template>
+
+  <!-- ============================ home card ============================
+       ALWAYS DRAWN, with a lazily-fetched counter beside it. A card whose
+       PRESENCE is conditional on a counter is never drawn at all, because
+       `portal.portal_my_home` fetches its counters AFTER the page has
+       rendered (R62). Everybody gets a goal sheet sooner or later and the
+       page says plainly when there is not one yet, so there is nothing to
+       gate on anyway. -->
+  <template id="portal_my_home_goals" name="Goals home card"
+            inherit_id="portal.portal_my_home" customize_show="True"
+            priority="46">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">My goals</t>
+        <t t-set="text">What you are working towards this year, how far along each one is, and when they are due</t>
+        <t t-set="url" t-value="'/my/goals'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'goals_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  the notice bar, said once                                        -->
+  <!-- ================================================================= -->
+  <template id="gl_notices" name="Goals notices">
+    <div t-if="notice" class="pbgl-notice">
+      <t t-call="pb_goals.gl_icon"><t t-set="icon" t-value="'check'"/></t>
+      <span t-esc="notice"/>
+    </div>
+    <div t-if="problem" class="pbgl-notice pbgl-notice--bad">
+      <t t-call="pb_goals.gl_icon"><t t-set="icon" t-value="'alert'"/></t>
+      <span t-esc="problem"/>
+    </div>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  the form fields for one goal, said once                          -->
+  <!--                                                                   -->
+  <!--  Called with `gl` (an existing goal, or False for a new one) and   -->
+  <!--  `ratings`. Written once so the "add" form and the "edit" form can  -->
+  <!--  never drift apart — which is how a field ends up saveable on one   -->
+  <!--  and not on the other.                                             -->
+  <!-- ================================================================= -->
+  <template id="gl_goal_fields" name="Goal form fields">
+    <label class="pbgl-f pbgl-f--wide">
+      <span>What you are going to do</span>
+      <input type="text" name="title" required="required" maxlength="200"
+             t-att-value="gl and gl['title'] or ''"
+             placeholder="Grow the north region"/>
+    </label>
+    <label class="pbgl-f pbgl-f--wide">
+      <span>Why it matters and what good looks like</span>
+      <textarea name="description" rows="3" required="required"
+                placeholder="What changes if this goes well, and how anybody would know."><t t-esc="gl and gl['description'] or ''"/></textarea>
+    </label>
+    <label class="pbgl-f">
+      <span>From</span>
+      <input type="date" name="date_start"
+             t-att-value="gl and gl['from'] or ''"/>
+    </label>
+    <label class="pbgl-f">
+      <span>Done by</span>
+      <input type="date" name="date_end" required="required"
+             t-att-value="gl and gl['to'] or ''"/>
+    </label>
+    <label class="pbgl-f">
+      <span>How you think it will go</span>
+      <select name="self_rating">
+        <option value="">Not said yet</option>
+        <option t-foreach="me['ratings']" t-as="rt"
+                t-att-value="rt['key']"
+                t-att-selected="gl and gl['rating'] == rt['key'] and 'selected' or None"
+                t-esc="rt['label']"/>
+      </select>
+    </label>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/goals                                                        -->
+  <!-- ================================================================= -->
+  <template id="portal_my_goals" name="My goals (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbgl">
+
+        <t t-call="pb_goals.gl_notices"/>
+
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Your goals</t>
+          <t t-set="hero_sub">What you are working towards this year, and how far along each one is.</t>
+        </t>
+
+        <!-- ================= no employee record ================= -->
+        <div t-if="not me.get('ok')" class="pbme-empty">
+          <div class="pbme-empty-ic pbme-empty-ic--err">
+            <t t-call="pb_goals.gl_icon">
+              <t t-set="icon" t-value="'user'"/>
+              <t t-set="isz" t-value="26"/>
+            </t>
+          </div>
+          <h3>There is nowhere to write your goals yet</h3>
+          <p t-esc="me.get('why') or ''"/>
+        </div>
+
+        <!-- ================= nothing opened yet ================= -->
+        <div t-elif="me.get('empty')" class="pbme-empty">
+          <div class="pbme-empty-ic">
+            <t t-call="pb_goals.gl_icon">
+              <t t-set="icon" t-value="'target'"/>
+              <t t-set="isz" t-value="26"/>
+            </t>
+          </div>
+          <h3>No goals yet</h3>
+          <p t-esc="me.get('why') or ''"/>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== the headline =====================
+               ONE SENTENCE THAT DOES THE ARITHMETIC so the reader does not.
+               Built on the server, so the page and the email can never
+               disagree about where somebody is. -->
+          <div t-attf-class="pbgl-head pbgl-head--#{me['state']}">
+            <div class="pbgl-head-main">
+              <div class="pbgl-head-top">
+                <span class="pbgl-cycle"><t t-esc="me['cycle']"/></span>
+                <span t-attf-class="pbgl-chip pbgl-chip--#{me['state']}">
+                  <t t-call="pb_goals.gl_icon">
+                    <t t-set="icon" t-value="me['locked'] and 'lock' or (me['state'] == 'returned' and 'undo' or 'clock')"/>
+                    <t t-set="isz" t-value="13"/>
+                  </t>
+                  <t t-esc="me['state_word']"/>
+                </span>
+                <span t-if="me['due_words']"
+                      t-attf-class="pbgl-chip #{me['overdue'] and 'pbgl-chip--bad' or ''}">
+                  <t t-call="pb_goals.gl_icon">
+                    <t t-set="icon" t-value="me['overdue'] and 'alert' or 'calendar'"/>
+                    <t t-set="isz" t-value="13"/>
+                  </t>
+                  <t t-esc="me['due_words']"/>
+                </span>
+              </div>
+              <p class="pbgl-headline" t-esc="me['headline']"/>
+            </div>
+            <div class="pbgl-head-dial">
+              <div class="pbgl-dial">
+                <div class="pbgl-dial-fill"
+                     t-attf-style="width: #{me['progress']}%"/>
+              </div>
+              <div class="pbgl-dial-word">
+                <strong><t t-esc="me['progress']"/>%</strong> of the way
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ what came back with it ============
+               THE NOTE IS THE WHOLE POINT of a sheet that was sent back. A
+               page that says "sent back" and not why is a page that makes
+               somebody send the same thing in again. -->
+          <div t-if="me['return_note']" class="pbgl-note">
+            <t t-call="pb_goals.gl_icon">
+              <t t-set="icon" t-value="'undo'"/>
+              <t t-set="isz" t-value="17"/>
+            </t>
+            <div>
+              <strong>What you were asked to change</strong>
+              <p t-esc="me['return_note']"/>
+            </div>
+          </div>
+
+          <!-- ===================== the goals ===================== -->
+          <div t-if="not me['goals']" class="pbme-empty pbgl-empty">
+            <div class="pbme-empty-ic">
+              <t t-call="pb_goals.gl_icon">
+                <t t-set="icon" t-value="'target'"/>
+                <t t-set="isz" t-value="26"/>
+              </t>
+            </div>
+            <h3>Nothing written yet</h3>
+            <p>Two to four goals is plenty. Write one below — or start from a
+               template if you would rather not face a blank box.</p>
+          </div>
+
+          <div class="pbgl-goals">
+            <t t-foreach="me['goals']" t-as="gl">
+              <div t-attf-class="pbgl-goal #{gl['locked'] and 'pbgl-goal--locked' or ''}">
+
+                <div class="pbgl-goal-top">
+                  <div class="pbgl-goal-id">
+                    <h3 t-esc="gl['title']"/>
+                    <p t-esc="gl['description']"/>
+                  </div>
+                  <div class="pbgl-goal-meta">
+                    <span t-if="gl['weight']" class="pbgl-weight">
+                      <strong><t t-esc="gl['weight']"/>%</strong>
+                      <span>of the year</span>
+                    </span>
+                    <span t-if="gl['rating_word']" class="pbgl-chip">
+                      <t t-call="pb_goals.gl_icon">
+                        <t t-set="icon" t-value="'trendingUp'"/>
+                        <t t-set="isz" t-value="13"/>
+                      </t>
+                      <t t-esc="gl['rating_word']"/>
+                    </span>
+                    <span t-if="gl['to']" class="pbgl-chip">
+                      <t t-call="pb_goals.gl_icon">
+                        <t t-set="icon" t-value="'calendar'"/>
+                        <t t-set="isz" t-value="13"/>
+                      </t>
+                      by <t t-esc="gl['to']"/>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="pbgl-dial pbgl-dial--goal">
+                  <div class="pbgl-dial-fill"
+                       t-attf-style="width: #{gl['progress']}%"/>
+                </div>
+
+                <!-- ============ the key results ============ -->
+                <div class="pbgl-krs">
+                  <t t-foreach="gl['krs']" t-as="kr">
+                    <form method="post" class="pbgl-kr"
+                          t-attf-action="/my/goals/kr/#{kr['id']}/move">
+                      <input type="hidden" name="csrf_token"
+                             t-att-value="request.csrf_token()"/>
+                      <div class="pbgl-kr-id">
+                        <strong t-esc="kr['title']"/>
+                        <span t-if="kr['measure'] or kr['target']"
+                              class="pbgl-kr-target">
+                          <t t-if="kr['target']">target <t t-esc="kr['target_words']"/></t>
+                          <t t-if="kr['measure']"><t t-esc="kr['measure']"/></t>
+                        </span>
+                      </div>
+                      <div class="pbgl-kr-move">
+                        <label class="pbgl-kr-f">
+                          <span>Where it is now</span>
+                          <input type="number" name="current" step="any"
+                                 t-att-value="kr['current_num']"/>
+                        </label>
+                        <label class="pbgl-kr-f">
+                          <span>How far along</span>
+                          <input type="number" name="progress" min="0"
+                                 max="100" step="1"
+                                 t-att-value="kr['progress_num']"/>
+                        </label>
+                        <label class="pbgl-kr-f pbgl-kr-f--note">
+                          <span>A line about it</span>
+                          <input type="text" name="note" maxlength="200"
+                                 placeholder="Optional"/>
+                        </label>
+                        <button type="submit" class="pbme-btn pbgl-btn--small">
+                          Save
+                        </button>
+                      </div>
+                      <div class="pbgl-dial pbgl-dial--kr">
+                        <div class="pbgl-dial-fill"
+                             t-attf-style="width: #{kr['progress']}%"/>
+                      </div>
+                    </form>
+                  </t>
+
+                  <!-- ONLY WHILE IT IS STILL BEING WRITTEN. After the lock a
+                       key result is a number that moves and nothing else. -->
+                  <details t-if="me['editable']" class="pbgl-add-kr">
+                    <summary>
+                      <t t-call="pb_goals.gl_icon">
+                        <t t-set="icon" t-value="'plus'"/>
+                        <t t-set="isz" t-value="14"/>
+                      </t>
+                      Add a key result
+                    </summary>
+                    <form method="post" class="pbgl-form"
+                          t-attf-action="/my/goals/goal/#{gl['id']}/kr/new">
+                      <input type="hidden" name="csrf_token"
+                             t-att-value="request.csrf_token()"/>
+                      <label class="pbgl-f pbgl-f--wide">
+                        <span>What is being measured</span>
+                        <input type="text" name="title" required="required"
+                               placeholder="New customers in the north"/>
+                      </label>
+                      <label class="pbgl-f">
+                        <span>In what</span>
+                        <input type="text" name="measure"
+                               placeholder="customers a month"/>
+                      </label>
+                      <label class="pbgl-f">
+                        <span>Target</span>
+                        <input type="number" name="target" step="any"
+                               value="0"/>
+                      </label>
+                      <label class="pbgl-f">
+                        <span>By when</span>
+                        <input type="date" name="due_date"/>
+                      </label>
+                      <button type="submit"
+                              class="pbme-btn pbgl-btn--primary">
+                        Add it
+                      </button>
+                    </form>
+                  </details>
+                </div>
+
+                <!-- ============ editing the goal itself ============ -->
+                <div t-if="me['editable']" class="pbgl-goal-actions">
+                  <details class="pbgl-edit">
+                    <summary>
+                      <t t-call="pb_goals.gl_icon">
+                        <t t-set="icon" t-value="'pencil'"/>
+                        <t t-set="isz" t-value="14"/>
+                      </t>
+                      Change this goal
+                    </summary>
+                    <form method="post" class="pbgl-form"
+                          t-attf-action="/my/goals/goal/#{gl['id']}/edit">
+                      <input type="hidden" name="csrf_token"
+                             t-att-value="request.csrf_token()"/>
+                      <t t-call="pb_goals.gl_goal_fields"/>
+                      <button type="submit"
+                              class="pbme-btn pbgl-btn--primary">
+                        Save it
+                      </button>
+                    </form>
+                  </details>
+                  <form method="post" class="pbgl-del"
+                        t-attf-action="/my/goals/goal/#{gl['id']}/delete">
+                    <input type="hidden" name="csrf_token"
+                           t-att-value="request.csrf_token()"/>
+                    <button type="submit" class="pbgl-btn--ghost">
+                      <t t-call="pb_goals.gl_icon">
+                        <t t-set="icon" t-value="'trash'"/>
+                        <t t-set="isz" t-value="14"/>
+                      </t>
+                      Delete
+                    </button>
+                  </form>
+                </div>
+
+              </div>
+            </t>
+          </div>
+
+          <!-- ================= adding one, and the templates ================= -->
+          <t t-if="me['editable']">
+
+            <div t-if="me['templates']" class="pbgl-templates">
+              <h4>
+                <t t-call="pb_goals.gl_icon">
+                  <t t-set="icon" t-value="'sparkles'"/>
+                  <t t-set="isz" t-value="16"/>
+                </t>
+                Start from one of these
+              </h4>
+              <p class="pbgl-templates-sub">Written by the HR team for
+                 somebody doing your job. It is copied onto your page and
+                 every word of it is then yours to change.</p>
+              <div class="pbgl-template-grid">
+                <t t-foreach="me['templates']" t-as="tp">
+                  <form method="post" class="pbgl-template"
+                        t-attf-action="/my/goals/template/#{tp['id']}">
+                    <input type="hidden" name="csrf_token"
+                           t-att-value="request.csrf_token()"/>
+                    <strong t-esc="tp['title']"/>
+                    <p t-esc="tp['description']"/>
+                    <ul t-if="tp['krs']">
+                      <li t-foreach="tp['krs']" t-as="kt" t-esc="kt"/>
+                    </ul>
+                    <button type="submit" class="pbme-btn">
+                      Use this one
+                    </button>
+                  </form>
+                </t>
+              </div>
+            </div>
+
+            <details class="pbgl-add-goal"
+                     t-att-open="not me['goals'] and 'open' or None">
+              <summary>
+                <t t-call="pb_goals.gl_icon">
+                  <t t-set="icon" t-value="'plus'"/>
+                  <t t-set="isz" t-value="16"/>
+                </t>
+                Write a goal
+              </summary>
+              <form method="post" class="pbgl-form"
+                    action="/my/goals/goal/new">
+                <input type="hidden" name="csrf_token"
+                       t-att-value="request.csrf_token()"/>
+                <t t-set="gl" t-value="False"/>
+                <t t-call="pb_goals.gl_goal_fields"/>
+                <button type="submit" class="pbme-btn pbgl-btn--primary">
+                  Add it
+                </button>
+              </form>
+            </details>
+
+            <!-- ================= sending it in =================
+                 THE BUTTON SAYS WHY IT CANNOT BE PRESSED. A button that is
+                 enabled and then refuses teaches nothing; a button that is
+                 disabled with the reason beside it teaches on the first
+                 read. -->
+            <div class="pbgl-send">
+              <div class="pbgl-send-sum">
+                <strong><t t-esc="me['weight_total']"/> / <t t-esc="me['weight_target']"/></strong>
+                <span>is what the weights add up to. Your manager sets
+                      those — you do not need to.</span>
+              </div>
+              <form method="post" action="/my/goals/submit">
+                <input type="hidden" name="csrf_token"
+                       t-att-value="request.csrf_token()"/>
+                <button type="submit" class="pbme-btn pbgl-btn--primary"
+                        t-att-disabled="not me['ready']['can'] and 'disabled' or None">
+                  <t t-call="pb_goals.gl_icon">
+                    <t t-set="icon" t-value="'send'"/>
+                    <t t-set="isz" t-value="15"/>
+                  </t>
+                  Send them to <t t-esc="me['manager'] or 'my manager'"/>
+                </button>
+              </form>
+              <p t-if="not me['ready']['can'] and me['ready']['why']"
+                 class="pbgl-send-why" t-esc="me['ready']['why']"/>
+            </div>
+          </t>
+
+          <!-- ================= last year's ================= -->
+          <div t-if="me['others']" class="pbgl-others">
+            <h4>Other years</h4>
+            <ul>
+              <li t-foreach="me['others']" t-as="ot">
+                <strong t-esc="ot['cycle']"/>
+                <span t-esc="ot['state_word']"/>
+                <span><t t-esc="ot['progress']"/>% of the way</span>
+              </li>
+            </ul>
+          </div>
+
+        </t>
+      </div>
+    </t>
+  </template>
+
+</odoo>
