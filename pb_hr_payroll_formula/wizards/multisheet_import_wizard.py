@@ -1332,6 +1332,13 @@ class MultiSheetImportWizard(models.TransientModel):
 
             for component in all_components:
                 if component['excel_formula']:
+                    # Announce WHICH component is being resolved. The import-preview
+                    # mixin cannot work this out afterwards — excel_formula is
+                    # overwritten with the resolved text three lines below — and
+                    # pairing by recordset order is wrong past column Z ('AA' sorts
+                    # before 'B'), which put the wrong original next to a red row.
+                    self._note_resolving_component(component)
+
                     # First resolve same-sheet column references (e.g., I3 -> FS3)
                     formula_with_same_sheet = self._resolve_same_sheet_formula(
                         component['excel_formula'],
@@ -1352,8 +1359,10 @@ class MultiSheetImportWizard(models.TransientModel):
 
             # Create component preview records
             for comp in all_components:
-                # Remove internal tracking field
-                comp.pop('_original_col', None)
+                # Keep the letter the column has in the USER'S file: column_letter
+                # above is the new, re-assigned one, which nobody can find in their
+                # own spreadsheet.
+                comp['source_column_letter'] = comp.pop('_original_col', None) or False
                 self.env['hr.formula.multisheet.component.preview'].create(comp)
 
             self.state = 'review_components'
@@ -1372,6 +1381,24 @@ class MultiSheetImportWizard(models.TransientModel):
     # to the column-ref regexes because nothing after the '!' looks like a
     # <col><row> cell reference.
     _UNRESOLVED_MARK = '#REF!'
+
+    def _note_resolving_component(self, component):
+        """Hook — the resolution loop is about to resolve this component's
+        formula. Overridden by the import-preview mixin so each captured
+        original→resolved pair can be tied to the exact component it came from.
+        Side-effect free here."""
+        return False
+
+    def _note_unresolved_ref(self, sheet_name, column_letter, kind='ref'):
+        """Hook — a reference could NOT be mapped to a column of this import.
+
+        The base wizard only logs the fact, so the Review step could never say
+        more than "a reference in <whole formula> could not be mapped". The
+        import-preview mixin overrides this to remember (sheet, column) per
+        formula, which is what lets the preview name the offending column.
+        Keep this side-effect free here: it is called from inside re.sub().
+        """
+        return False
 
     def _resolve_cross_sheet_formula(self, formula, column_mapping):
         """
@@ -1419,6 +1446,7 @@ class MultiSheetImportWizard(models.TransientModel):
                     "Marking #REF! (was silently 0 before WP-E).",
                     sheet_name, target_col, col_index
                 )
+                self._note_unresolved_ref(sheet_name, target_col, 'vlookup')
                 return self._UNRESOLVED_MARK  # D-E1: visible, never silent 0
 
         result = vlookup_pattern.sub(resolve_vlookup, result)
@@ -1453,6 +1481,10 @@ class MultiSheetImportWizard(models.TransientModel):
                     "SUMIF unresolved: criteria='%s', sum='%s'. Marking #REF!.",
                     criteria_sheet, sum_sheet
                 )
+                if not new_criteria_col:
+                    self._note_unresolved_ref(criteria_sheet, criteria_col, 'sumif')
+                if not new_sum_col:
+                    self._note_unresolved_ref(sum_sheet, sum_col, 'sumif')
                 return self._UNRESOLVED_MARK  # D-E1
 
         result = sumif_pattern.sub(resolve_sumif, result)
@@ -1491,6 +1523,7 @@ class MultiSheetImportWizard(models.TransientModel):
                     "(preserved visibly; was silently 0 before WP-E).",
                     sheet_name, col
                 )
+                self._note_unresolved_ref(sheet_name, col, 'ref')
                 return self._UNRESOLVED_MARK  # D-E1
 
         result = direct_pattern.sub(resolve_direct, result)
@@ -1553,6 +1586,7 @@ class MultiSheetImportWizard(models.TransientModel):
                 start_idx = self._column_letter_to_index(start_col)
                 end_idx = self._column_letter_to_index(end_col)
             except Exception:
+                self._note_unresolved_ref(sheet_name, start_col, 'range')
                 return self._UNRESOLVED_MARK  # D-E1
 
             base_idx = min(start_idx, end_idx)
@@ -1563,6 +1597,8 @@ class MultiSheetImportWizard(models.TransientModel):
             if not new_col:
                 new_col = column_mapping.get((sheet_key, target_idx))
 
+            if not new_col:
+                self._note_unresolved_ref(sheet_name, target_col, 'vlookup')
             return new_col or self._UNRESOLVED_MARK  # D-E1
 
         result = vlookup_pattern.sub(resolve_same_sheet_vlookup, result)
@@ -3555,6 +3591,13 @@ class MultiSheetComponentPreview(models.TransientModel):
     column_letter = fields.Char(
         string='Column',
         readonly=True
+    )
+
+    source_column_letter = fields.Char(
+        string='Column in your file',
+        readonly=True,
+        help="The column letter this came from in the uploaded spreadsheet. "
+             "Column above is the new position it is given on import."
     )
 
     original_header = fields.Char(

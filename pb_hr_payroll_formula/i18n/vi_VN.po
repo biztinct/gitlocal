@@ -2538,6 +2538,7 @@ msgstr "Mã của hr.integration.endpoint trường này được đọc từ đ
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_tree
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_preview_line__column_letter
 msgid "Col"
 msgstr "Cột"
 
@@ -2566,6 +2567,8 @@ msgstr "Cột"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_component_preview__column_letter
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__column_letter
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_column_selection_tree
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_preview_line__column_label
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Column"
 msgstr "Cột"
 
@@ -6336,13 +6339,19 @@ msgstr "Lịch sử"
 msgid ""
 "How cleanly your formulas converted. Rows in\n"
 "                                            <span class=\"text-danger\">red</span> reference something\n"
-"                                            that could not be mapped and became 0 — pick a\n"
-"                                            <strong>Fix</strong> below, then Apply."
+"                                            that could not be mapped and became 0.\n"
+"                                            <strong>Column</strong> is where the formula sits in your\n"
+"                                            file; <strong>Problem in</strong> is the column it asks\n"
+"                                            for and could not find. Pick a <strong>Fix</strong>,\n"
+"                                            then Apply."
 msgstr ""
-"Công thức của bạn được chuyển đổi rõ ràng như thế nào. Hàng trong\n"
-"                                            <span class=\"text-danger\">red</span> tham khảo gì đó\n"
-"                                            không thể ánh xạ được và trở thành 0 - chọn một\n"
-"                                            <strong>Fix</strong> bên dưới, sau đó Áp dụng."
+"Công thức của bạn được chuyển đổi sạch đến mức nào. Hàng màu\n"
+"                                            <span class=\"text-danger\">đỏ</span> tham chiếu đến thứ gì đó\n"
+"                                            không ánh xạ được nên thành 0.\n"
+"                                            <strong>Cột</strong> là nơi công thức nằm trong tệp của bạn;\n"
+"                                            <strong>Vấn đề ở</strong> là cột mà công thức cần\n"
+"                                            nhưng không tìm thấy. Hãy chọn một cách <strong>Sửa</strong>,\n"
+"                                            rồi bấm Áp dụng."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__net_role_confidence
@@ -15222,3 +15231,75 @@ msgstr "Liên kết cần gỡ"
 #. module: pb_hr_payroll_formula
 msgid "any"
 msgstr "bất kỳ"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_preview_line__column_header
+msgid "Column Header"
+msgstr "Tiêu đề cột"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_component_preview__source_column_letter
+msgid "Column in your file"
+msgstr "Cột trong tệp của bạn"
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
+msgid "Col in file"
+msgstr "Cột trong tệp"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_preview_line__issue_ref
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
+msgid "Problem in"
+msgstr "Vấn đề ở"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_import_preview_line__column_label
+msgid "The column in your file this formula came from — letter and header."
+msgstr "Cột trong tệp của bạn mà công thức này lấy ra — chữ cái cột và tiêu đề."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_import_preview_line__issue_ref
+msgid "The column this formula asks for that the import could not find."
+msgstr "Cột mà công thức này cần nhưng lần nhập không tìm thấy."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_component_preview__source_column_letter
+msgid "The column letter this came from in the uploaded spreadsheet. Column above is the new position it is given on import."
+msgstr "Chữ cái cột trong bảng tính bạn đã tải lên. \"Cột\" ở trên là vị trí mới được gán khi nhập."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/multisheet_import_preview.py:0
+msgid "#REF! in your file"
+msgstr "#REF! trong tệp của bạn"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/multisheet_import_preview.py:0
+msgid "column %s"
+msgstr "cột %s"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/multisheet_import_preview.py:0
+msgid "column %(letter)s (%(header)s)"
+msgstr "cột %(letter)s (%(header)s)"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/multisheet_import_preview.py:0
+msgid "%(sheet)s · %(column)s"
+msgstr "%(sheet)s · %(column)s"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/multisheet_import_preview.py:0
+msgid "This formula reads %(refs)s, which is not part of this import — it became 0. Pick a Fix, or go back and tick that column."
+msgstr "Công thức này đọc %(refs)s, vốn không nằm trong lần nhập này — nên giá trị thành 0. Hãy chọn một cách Sửa, hoặc quay lại và tích chọn cột đó."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/multisheet_import_preview.py:0
+msgid "The range this lookup points at was deleted in your file (#REF!), so it would compute 0. Fix it in your file, or pick a Fix below."
+msgstr "Vùng dữ liệu mà công thức này tra cứu đã bị xóa trong tệp của bạn (#REF!), nên giá trị sẽ thành 0. Hãy sửa trong tệp, hoặc chọn một cách Sửa bên dưới."

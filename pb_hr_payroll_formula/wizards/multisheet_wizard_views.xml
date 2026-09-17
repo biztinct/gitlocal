@@ -223,6 +223,8 @@
                                 <field name="excel_formula" string="Formula"
                                        invisible="column_type != 'formula'"/>
                                 <field name="source_sheet" string="Sheet"/>
+                                <field name="source_column_letter" string="Col in file"
+                                       readonly="1" optional="show"/>
                                 <field name="column_letter" string="Col"/>
                                 <field name="generated_code" string="Code"/>
                                 <field name="generated_name" string="Name"/>
@@ -247,8 +249,11 @@
                                         <div class="text-muted" data-coach="imp-confidence">
                                             How cleanly your formulas converted. Rows in
                                             <span class="text-danger">red</span> reference something
-                                            that could not be mapped and became 0 — pick a
-                                            <strong>Fix</strong> below, then Apply.
+                                            that could not be mapped and became 0.
+                                            <strong>Column</strong> is where the formula sits in your
+                                            file; <strong>Problem in</strong> is the column it asks
+                                            for and could not find. Pick a <strong>Fix</strong>,
+                                            then Apply.
                                         </div>
                                         <div class="d-flex gap-2 mt-2" data-coach="imp-actions">
                                             <button name="action_apply_preview_fixes" type="object"
@@ -285,16 +290,38 @@
                                                decoration-danger="status == 'broken'"
                                                decoration-warning="status == 'warning'"
                                                decoration-success="status == 'ok'"/>
-                                        <field name="sheet_name" string="Sheet"/>
-                                        <field name="component_code" string="Code"/>
-                                        <field name="component_name" string="Name" optional="hide"/>
-                                        <field name="original_excel_formula" string="Original"/>
-                                        <field name="resolved_formula" string="Resolved"/>
-                                        <field name="issue_type" string="Issue" readonly="1"/>
-                                        <field name="issue_detail" string="Detail" optional="show" readonly="1"/>
-                                        <field name="fix_action" string="Fix"/>
+                                        <!-- Order matters more than width here: ten columns
+                                             cannot fit, so the three that answer "which column
+                                             is this, which column is wrong, and what do I do"
+                                             come FIRST and are readable without scrolling.
+                                             The original → resolved pair follows. -->
+                                        <field name="column_label" string="Column" readonly="1"
+                                               width="180px"/>
+                                        <field name="issue_ref" string="Problem in" readonly="1"
+                                               width="170px"
+                                               decoration-danger="status == 'broken'"/>
+                                        <field name="issue_detail" string="Detail" optional="show"
+                                               readonly="1" width="260px"/>
+                                        <field name="original_excel_formula" string="Original"
+                                               width="160px"/>
+                                        <field name="resolved_formula" string="Resolved"
+                                               width="160px"/>
+                                        <field name="fix_action" string="Fix" width="140px"/>
                                         <field name="fix_target_rule_code" string="Map to"
                                                invisible="fix_action != 'map_component'"/>
+                                        <!-- Available from the column picker, off by default:
+                                             Sheet and Code repeat what Column already says on a
+                                             single-sheet import, and "Issue" is the internal
+                                             category ("Reference became 0") that Detail spells
+                                             out in words. -->
+                                        <field name="sheet_name" string="Sheet" optional="hide"
+                                               width="90px"/>
+                                        <field name="component_code" string="Code" optional="hide"
+                                               width="110px"/>
+                                        <field name="component_name" string="Name" optional="hide"/>
+                                        <field name="column_header" string="Header" optional="hide" readonly="1"/>
+                                        <field name="issue_type" string="Issue" readonly="1"
+                                               optional="hide"/>
                                     </list>
                                 </field>
                                 <!-- W42 — rate-table promotions (progressive IF-chains) -->

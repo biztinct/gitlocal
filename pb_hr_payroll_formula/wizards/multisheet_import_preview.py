@@ -56,8 +56,9 @@ class MultisheetImportPreview(models.TransientModel):
     # (all running on the same context-bound `self`) mutate the same list.
 
     def action_process_with_resolution(self):
-        capture = []                # [{'original','after_same','resolved','sheet'}]
-        wiz = self.with_context(_import_capture=capture)
+        capture = []                # [{'original','after_same','resolved','sheet','key'}]
+        # one-slot mutable holder: which component the loop is resolving right now
+        wiz = self.with_context(_import_capture=capture, _import_current=[None])
         res = super(MultisheetImportPreview, wiz).action_process_with_resolution()
         # super() succeeded → component_preview_ids exist, state == 'review_components'
         wiz._build_preview_lines(capture)
@@ -66,11 +67,19 @@ class MultisheetImportPreview(models.TransientModel):
     def _resolve_same_sheet_formula(self, formula, sheet_name, column_mapping):
         # Called FIRST for each formula component, with the ORIGINAL formula — the
         # only point where the pre-resolution text is still visible (before 1240).
-        resolved = super()._resolve_same_sheet_formula(formula, sheet_name, column_mapping)
+        # The event is opened BEFORE super() so that any _note_unresolved_ref fired
+        # by the same-sheet resolver lands on THIS formula, not the previous one.
         cap = self.env.context.get('_import_capture')
+        event = None
         if cap is not None and formula:
-            cap.append({'original': formula, 'after_same': resolved,
-                        'resolved': None, 'sheet': sheet_name})
+            holder = self.env.context.get('_import_current') or [None]
+            event = {'original': formula, 'after_same': None,
+                     'resolved': None, 'sheet': sheet_name, 'unresolved': [],
+                     'key': holder[0]}
+            cap.append(event)
+        resolved = super()._resolve_same_sheet_formula(formula, sheet_name, column_mapping)
+        if event is not None:
+            event['after_same'] = resolved
         return resolved
 
     def _resolve_cross_sheet_formula(self, formula, column_mapping):
@@ -81,6 +90,80 @@ class MultisheetImportPreview(models.TransientModel):
         if cap and cap[-1]['resolved'] is None and cap[-1]['after_same'] == formula:
             cap[-1]['resolved'] = resolved
         return resolved
+
+    def _note_resolving_component(self, component):
+        """Remember which component the resolution loop is on, so the capture
+        event opened by the same-sheet resolver can be tied to it exactly.
+        (sheet, new column letter) is unique across the import."""
+        holder = self.env.context.get('_import_current')
+        if holder is not None:
+            holder[0] = (component.get('source_sheet'), component.get('column_letter'))
+        return super()._note_resolving_component(component)
+
+    def _note_unresolved_ref(self, sheet_name, column_letter, kind='ref'):
+        """Remember WHICH reference the resolver could not map, against the
+        formula currently being resolved (the open capture event). This is the
+        only place the offending sheet+column is still known — the resolvers
+        replace it with a bare #REF! and the information is gone."""
+        cap = self.env.context.get('_import_capture')
+        if cap and cap[-1].get('resolved') is None:
+            ref = (sheet_name or '', (column_letter or '').upper(), kind)
+            if ref not in cap[-1].setdefault('unresolved', []):
+                cap[-1]['unresolved'].append(ref)
+        return super()._note_unresolved_ref(sheet_name, column_letter, kind)
+
+    # ---- naming the offending column ------------------------------------------
+    def _column_header_index(self):
+        """(normalised sheet, COLUMN LETTER) -> the header as it reads in the file.
+
+        Built from the column-selection rows, which cover EVERY column of every
+        selected worksheet — including the ones left out of the import, which is
+        exactly where unresolvable references tend to point."""
+        index = {}
+        for col in self.column_selection_ids:
+            letter = (col.column_letter or '').upper()
+            if not letter:
+                continue
+            index[(self._normalize_sheet_key(col.sheet_name or ''), letter)] = \
+                (col.original_header or '').strip()
+        return index
+
+    def _sheet_display_index(self):
+        """normalised sheet key -> the worksheet name as the file spells it."""
+        return {self._normalize_sheet_key(s.sheet_name): s.sheet_name
+                for s in self.available_sheet_ids if s.sheet_name}
+
+    def _ref_labels(self, unresolved, own_sheet=None):
+        """Plain-words names for the references that could not be mapped, e.g.
+        "Salary · column BZ (Bảo hiểm thất nghiệp)". Never a formula."""
+        headers = self._column_header_index()
+        sheets = self._sheet_display_index()
+        own_key = self._normalize_sheet_key(own_sheet or '')
+        labels = []
+        for sheet_key, letter, _kind in unresolved or []:
+            key = self._normalize_sheet_key(sheet_key)
+            header = headers.get((key, letter), '')
+            sheet_label = sheets.get(key, sheet_key or '')
+            if header:
+                col = _("column %(letter)s (%(header)s)", letter=letter, header=header)
+            else:
+                col = _("column %s", letter)
+            label = col if (key == own_key or not sheet_label) else \
+                _("%(sheet)s · %(column)s", sheet=sheet_label, column=col)
+            if label not in labels:
+                labels.append(label)
+        return labels
+
+    @staticmethod
+    def _column_label(preview):
+        """How the officer recognises this row in their OWN spreadsheet: the
+        letter it has in the uploaded file (not the re-assigned import letter)
+        plus the header they typed."""
+        letter = (preview.source_column_letter or '').strip()
+        header = (preview.original_header or preview.generated_name or '').strip()
+        if letter and header:
+            return '%s · %s' % (letter, header)
+        return letter or header or (preview.generated_code or '')
 
     # ---- pairing + diagnosis --------------------------------------------------
     @staticmethod
@@ -93,13 +176,24 @@ class MultisheetImportPreview(models.TransientModel):
         if capture is None:
             capture = self.env.context.get('_import_capture') or []
         events = list(capture)
-        # Only formula components have a resolved_formula; both lists are built in
-        # the same deterministic order by the base loop → sequence-zip is primary.
         previews = self.component_preview_ids.filtered(lambda p: p.resolved_formula)
+        # PRIMARY pairing is by the component key each event was stamped with.
+        # Sequence-zip used to be primary and was WRONG for any workbook wider
+        # than 26 columns: the base loop resolves in import order (…Z, AA, AB)
+        # while component_preview_ids reads back ordered by column_letter as
+        # TEXT (AA before B), so every red row showed a neighbour's formula.
+        by_key = {}
+        for ev in events:
+            if ev.get('key'):
+                by_key.setdefault(ev['key'], []).append(ev)
         aligned = (len(events) == len(previews))
         vals_list = []
         for i, preview in enumerate(previews):
-            if aligned:
+            bucket = by_key.get((preview.source_sheet, preview.column_letter))
+            if bucket:
+                event = bucket.pop(0)
+            elif aligned and not by_key:
+                # no keys at all (an older call path) → fall back to the sequence zip
                 event = events[i]
             else:
                 # counts disagree → content-match on resolved text before giving up
@@ -107,8 +201,11 @@ class MultisheetImportPreview(models.TransientModel):
                               if self._event_resolved(e) == (preview.resolved_formula or '')), None)
             original = (event['original'] if event else preview.excel_formula) or ''
             resolved = preview.resolved_formula or ''
-            status, issue_type, detail = self._diagnose(original, resolved)
-            if not aligned and event is None and status == 'ok':
+            ref_labels = self._ref_labels(
+                (event or {}).get('unresolved'), own_sheet=preview.source_sheet)
+            status, issue_type, detail, issue_ref = self._diagnose(
+                original, resolved, ref_labels=ref_labels)
+            if event is None and status == 'ok':
                 # visible degradation over silent misattribution (see S2 rationale)
                 status, issue_type, detail = 'warning', False, _("Pairing uncertain")
             vals_list.append({
@@ -116,9 +213,13 @@ class MultisheetImportPreview(models.TransientModel):
                 'sheet_name': preview.source_sheet,
                 'component_code': preview.generated_code,
                 'component_name': preview.generated_name,
+                'column_letter': preview.column_letter,
+                'column_header': preview.original_header,
+                'column_label': self._column_label(preview),
                 'original_excel_formula': original,
                 'resolved_formula': resolved,
-                'status': status, 'issue_type': issue_type or False, 'issue_detail': detail or False,
+                'status': status, 'issue_type': issue_type or False,
+                'issue_detail': detail or False, 'issue_ref': issue_ref or False,
             })
         if vals_list:
             Line.create(vals_list)
@@ -303,6 +404,7 @@ class MultisheetImportPreview(models.TransientModel):
             flags.append({
                 'code': line.component_code or '',
                 'sheet': line.sheet_name or '',
+                'column': line.column_label or '',
                 'reason': line.issue_detail or self._ISSUE_REASON.get(line.issue_type, "Needs review."),
                 'severity': 'high' if line.status == 'broken' else 'medium',
             })
@@ -376,11 +478,16 @@ class MultisheetImportPreview(models.TransientModel):
         rows = []
         for f in sorted(items, key=lambda x: order.get(x.get('severity'), 3)):
             sev = f.get('severity') or 'low'
+            # the column label is what the officer can find in their own file —
+            # an LLM-ranked item has none, so it falls back to the code alone.
+            col = f.get('column') or ''
             rows.append(
                 "<li class='mb-1'><span class='badge text-bg-%s me-2'>%s</span>"
-                "<strong>%s</strong> — %s</li>" % (
+                "<strong>%s</strong>%s — %s</li>" % (
                     badge.get(sev, 'secondary'), html_escape(sev),
-                    html_escape(f.get('code') or '—'), html_escape(f.get('reason') or '')))
+                    html_escape(f.get('code') or '—'),
+                    (" <span class='text-muted'>(%s)</span>" % html_escape(col)) if col else '',
+                    html_escape(f.get('reason') or '')))
         return "<ul class='list-unstyled mb-0'>" + ''.join(rows) + "</ul>"
 
     def action_ai_review(self):
@@ -438,58 +545,91 @@ class MultisheetImportPreview(models.TransientModel):
                 if comp:
                     comp.write({'excel_formula': new_formula, 'resolved_formula': new_formula})
                 line.write({'resolved_formula': new_formula, 'status': 'ok',
-                            'issue_type': False, 'issue_detail': _("Mapped to %s") % line.fix_target_rule_code})
+                            'issue_type': False, 'issue_ref': False,
+                            'issue_detail': _("Mapped to %s") % line.fix_target_rule_code})
             elif action == 'convert_to_input':
                 if comp:
                     comp.write({'excel_formula': '', 'resolved_formula': '', 'column_type': 'input'})
-                line.write({'status': 'ok', 'issue_type': False,
+                line.write({'status': 'ok', 'issue_type': False, 'issue_ref': False,
                             'issue_detail': _("Converted to input — value comes from the data source")})
             elif action == 'acknowledge_zero':
                 line.write({'status': 'ok', 'issue_detail': _("Zero acknowledged as intentional")})
             elif action == 'skip':
                 if comp:
                     comp.write({'include_in_import': False})
-                line.write({'status': 'warning', 'issue_type': False,
+                line.write({'status': 'warning', 'issue_type': False, 'issue_ref': False,
                             'issue_detail': _("Skipped — this component will not be imported")})
         self._compute_confidence()
         return self._return_wizard_action()
 
-    def _diagnose(self, original, resolved):
-        """Classify one original→resolved pair. Deterministic, no LLM."""
+    def _diagnose(self, original, resolved, ref_labels=None):
+        """Classify one original→resolved pair. Deterministic, no LLM.
+
+        Returns (status, issue_type, detail, issue_ref). ``ref_labels`` are the
+        plain-words names of the columns the resolver could not map (see
+        _ref_labels); when they are known the detail NAMES the column instead of
+        echoing the whole formula back, and issue_ref fills the "Problem in"
+        column of the review list. Called with two arguments by the offline
+        battery, so the extra stays optional."""
         o = (original or '').strip()
         r = (resolved or '').strip()
         o_up = o.upper()
         r_up = r.upper()
+        refs = ', '.join(ref_labels or [])
         # 0) WP-E D-E1 marker: an unresolvable reference the base resolver
         #    replaced with #REF! (never a silent 0 anymore).
         if '#REF!' in r_up:
+            if refs:
+                return 'broken', 'becomes_zero', _(
+                    "This formula reads %(refs)s, which is not part of this import — "
+                    "it became 0. Pick a Fix, or go back and tick that column.",
+                    refs=refs), refs
+            if '#REF!' in o_up:
+                # The workbook itself carries the broken reference (Excel wrote
+                # #REF! when the range was deleted) — nothing to map it to. The
+                # Column column already names the column, so the detail doesn't.
+                return 'broken', 'becomes_zero', _(
+                    "The range this lookup points at was deleted in your file "
+                    "(#REF!), so it would compute 0. Fix it in your file, or pick "
+                    "a Fix below."), _("#REF! in your file")
             return 'broken', 'becomes_zero', _(
-                "A reference in %s could not be mapped (#REF!) — fix before importing") % o
+                "A reference in %s could not be mapped (#REF!) — fix before importing") % o, False
         # 1) A sheet-qualified ref survived resolution → converter will choke or zero it.
         if SHEET_REF_RE.search(r):
-            return 'broken', 'unresolved_xref', _("Sheet reference not resolved: %s") % r
+            return ('broken', 'unresolved_xref',
+                    _("Sheet reference not resolved: %s") % r, refs or False)
         had_lookup = (bool(SHEET_REF_RE.search(o))
                       or any(fn in o_up for fn in ('VLOOKUP', 'HLOOKUP', 'SUMIF', 'INDEX', 'MATCH', 'LOOKUP')))
         r_body = r.lstrip('=').strip()
         # 2) The whole formula collapsed to 0 — the base handlers replace an
         #    unresolved lookup with "0" (this is the common cross-sheet loss).
         if had_lookup and r_body in ('0', '0.0'):
+            if refs:
+                return 'broken', 'becomes_zero', _(
+                    "This formula reads %(refs)s, which is not part of this import — "
+                    "it became 0. Pick a Fix, or go back and tick that column.",
+                    refs=refs), refs
             return 'broken', 'becomes_zero', _(
-                "A reference in %s could not be mapped and became 0") % o
+                "A reference in %s could not be mapped and became 0") % o, False
         # 3) A lookup was partially replaced by a bare 0 that wasn't there before.
         if had_lookup and 'VLOOKUP' not in r_up:
             zeros_before = len(re.findall(r'(?<![\w.])0(?![\w.])', o))
             zeros_after = len(re.findall(r'(?<![\w.])0(?![\w.])', r))
             if zeros_after > zeros_before:
+                if refs:
+                    return 'broken', 'becomes_zero', _(
+                        "This formula reads %(refs)s, which is not part of this import — "
+                        "it became 0. Pick a Fix, or go back and tick that column.",
+                        refs=refs), refs
                 return 'broken', 'becomes_zero', _(
-                    "A reference in %s could not be mapped and became 0") % o
+                    "A reference in %s could not be mapped and became 0") % o, False
         # 4) D-E6: a VLOOKUP/SUMIF that DID resolve was matched POSITIONALLY —
         #    the lookup key was discarded. Correct only if the key is the
         #    per-row primary key; otherwise every employee reads the same cell.
         if any(fn in o_up for fn in ('VLOOKUP', 'SUMIF', 'HLOOKUP')):
             return 'warning', False, _(
                 "%s was resolved positionally — the lookup key was dropped; verify "
-                "each employee reads their own row") % o
+                "each employee reads their own row") % o, False
         # 5) D-E7: the same column is referenced at two different rows (e.g.
         #    B5+B4 — a running total / prior-row reference). Downstream strips
         #    the row, so it silently computes as a same-row sum. Warn.
@@ -499,9 +639,9 @@ class MultisheetImportPreview(models.TransientModel):
         if any(len(rows) > 1 for rows in col_rows.values()):
             return 'warning', False, _(
                 "%s references the same column at different rows (e.g. a running "
-                "total) — verify it isn't flattened to a single row") % o
+                "total) — verify it isn't flattened to a single row") % o, False
         # 6) otherwise ok (unknown_column / primary_key_miss handled in later tasks)
-        return 'ok', False, False
+        return 'ok', False, False, False
 
 
 class HrFormulaImportPreviewLine(models.TransientModel):
@@ -516,6 +656,18 @@ class HrFormulaImportPreviewLine(models.TransientModel):
     sheet_name = fields.Char(string='Sheet')
     component_code = fields.Char(string='Component Code')
     component_name = fields.Char(string='Component Name')
+
+    # Which column of the spreadsheet this row IS — the generated code alone is
+    # not something the officer can find in their own file.
+    column_letter = fields.Char(string='Col')
+    column_header = fields.Char(string='Column Header')
+    column_label = fields.Char(
+        string='Column',
+        help="The column in your file this formula came from — letter and header.")
+    # Which column the PROBLEM is in: the reference that could not be matched.
+    issue_ref = fields.Char(
+        string='Problem in',
+        help="The column this formula asks for that the import could not find.")
 
     original_excel_formula = fields.Text(string='Original Formula')
     resolved_formula = fields.Text(string='Resolved Formula')

@@ -62,7 +62,8 @@ def install_odoo_shim():
     tools.html_escape = lambda s: _html.escape(str(s))
     odoo.api, odoo.fields, odoo.models = api, fields, models
     odoo.exceptions, odoo.tools = exceptions, tools
-    odoo._ = lambda s, *a: s % a if a else s
+    # Odoo's _() takes either positional or named arguments; both are used.
+    odoo._ = lambda s, *a, **k: (s % k) if k else (s % a if a else s)
     for k, m in (('odoo', odoo), ('odoo.api', api), ('odoo.fields', fields),
                  ('odoo.models', models), ('odoo.exceptions', exceptions),
                  ('odoo.tools', tools)):
@@ -261,6 +262,86 @@ check('reimport-const-8to9-changed', rd._rd_constant_change(_P('9%'), _R(0.08))[
 check('reimport-const-8to9-newval', rd._rd_constant_change(_P('9%'), _R(0.08))[2], '0.09')
 check('reimport-const-same-unchanged', rd._rd_constant_change(_P('0.08'), _R(0.08))[0], False)
 check('reimport-const-cap-intfmt', rd._rd_constant_change(_P('46800000'), _R(46800000.0))[2], '46800000')
+
+# ---- review list names the column, and pairs each row with ITS OWN formula ----
+# The review step used to zip capture events against component_preview_ids by
+# position. component_preview_ids is ordered by column_letter as TEXT, so past
+# column Z ('AA' < 'B') every red row showed a neighbour's original formula.
+
+class _Rec(dict):
+    __getattr__ = dict.get
+
+
+class _Recs(list):
+    def filtered(self, fn):
+        return _Recs(x for x in self if (fn(x) if callable(fn) else x.get(fn)))
+
+    def unlink(self):
+        del self[:]
+
+
+class _Coll:
+    """Stands in for env['hr.formula.import.preview.line']."""
+    def __init__(self):
+        self.rows = []
+
+    def create(self, vals):
+        self.rows.extend(vals if isinstance(vals, list) else [vals])
+
+
+created = _Coll()
+prev2 = object.__new__(PrevCls)
+prev2.id = 1
+prev2.env = {'hr.formula.import.preview.line': created}
+prev2._normalize_sheet_key = types.MethodType(WizCls._normalize_sheet_key, prev2)
+prev2._compute_confidence = lambda: None
+prev2._build_rate_proposals = lambda: None
+prev2.preview_line_ids = _Recs()
+# read-back order: 'AA' sorts before 'B' as text — the order that broke pairing
+prev2.component_preview_ids = _Recs([
+    _Rec(source_sheet='Salary', column_letter='AA', source_column_letter='BZ',
+         original_header='Union fee', generated_code='UNIONFEE',
+         generated_name='Union fee', resolved_formula='=AA2*1%'),
+    _Rec(source_sheet='Salary', column_letter='B', source_column_letter='K',
+         original_header='Basic', generated_code='BASIC',
+         generated_name='Basic', resolved_formula='=#REF!'),
+])
+prev2.column_selection_ids = _Recs([
+    _Rec(sheet_name='Rates', column_letter='D', original_header='Amount'),
+    _Rec(sheet_name='Salary', column_letter='K', original_header='Basic'),
+])
+prev2.available_sheet_ids = _Recs([_Rec(sheet_name='Rates'), _Rec(sheet_name='Salary')])
+
+# capture order = the resolution loop's order (import order: …, B, …, AA)
+capture = [
+    {'original': '=IFERROR(VLOOKUP(A8,Rates!C:D,2,0),0)',
+     'after_same': '=IFERROR(VLOOKUP(A8,Rates!C:D,2,0),0)', 'resolved': '=#REF!',
+     'sheet': 'Salary', 'unresolved': [('rates', 'D', 'vlookup')], 'key': ('Salary', 'B')},
+    {'original': '=K8*1%', 'after_same': '=AA2*1%', 'resolved': '=AA2*1%',
+     'sheet': 'Salary', 'unresolved': [], 'key': ('Salary', 'AA')},
+]
+prev2._build_preview_lines(capture)
+rows = {r['component_code']: r for r in created.rows}
+
+check('pair-wide-basic-keeps-own-formula',
+      rows['BASIC']['original_excel_formula'], '=IFERROR(VLOOKUP(A8,Rates!C:D,2,0),0)')
+check('pair-wide-unionfee-keeps-own-formula',
+      rows['UNIONFEE']['original_excel_formula'], '=K8*1%')
+check('label-is-the-file-column', rows['BASIC']['column_label'], 'K · Basic')
+check('label-not-the-import-column', rows['UNIONFEE']['column_label'], 'BZ · Union fee')
+check('problem-column-named', rows['BASIC']['issue_ref'], 'Rates · column D (Amount)')
+check('problem-row-is-broken', rows['BASIC']['status'], 'broken')
+check('problem-detail-names-the-column',
+      'Rates · column D (Amount)' in (rows['BASIC']['issue_detail'] or ''), True)
+check('clean-row-has-no-problem-column', rows['UNIONFEE']['issue_ref'], False)
+
+# a #REF! the SOURCE workbook itself carries: nothing to map it to, so the
+# detail must point at the officer's own column instead of the formula text.
+own = prev._diagnose('=IFERROR(VLOOKUP(A8,#REF!,4,0),0)',
+                     '=IFERROR(VLOOKUP(A8,#REF!,4,0),0)', ref_labels=[])
+check('own-ref-issue-ref', own[3], '#REF! in your file')
+check('own-ref-detail-explains-cause', 'deleted in your file' in own[2], True)
+check('own-ref-detail-has-no-formula', '=IFERROR' in own[2], False)
 
 print(f"\nRESULT: {'ALL GREEN' if not fails else str(len(fails)) + ' FAILURES: ' + ', '.join(fails)}")
 sys.exit(1 if fails else 0)
