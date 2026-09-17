@@ -29,12 +29,16 @@ export class StepStart extends Component {
         cycles: { type: Array },
         company: { type: String },
         created: { type: Boolean },
+        // The workbook is the starting point and it has not been read yet —
+        // the one starter that is still owed something after the draft exists.
+        needsWorkbook: { type: Boolean, optional: true },
         busy: { type: Boolean },
         progress: { type: Array },           // [{label, done}]
         error: { type: [String, Boolean], optional: true },
         nameError: { type: [String, Boolean], optional: true },
         onSet: { type: Function },
         onPickStarter: { type: Function },
+        onImportWorkbook: { type: Function, optional: true },
         onToggleAudience: { type: Function },
         onToggleReallife: { type: Function },
         onUnlock: { type: Function },
@@ -83,6 +87,14 @@ export class StepStart extends Component {
                 { name: chosen.name, version: chosen.version || this.countryLabel });
         }
         if (chosen.kind === "excel") {
+            // After the draft exists the promise has either been kept or it has
+            // not, and the note has to say which. A screen that still reads
+            // "your workbook opens as soon as the configuration is created",
+            // over a configuration that was created and has nothing in it, is
+            // the reason the review looked lost.
+            if (this.props.needsWorkbook) {
+                return _t("Nothing has come in from your workbook yet. Open the review to bring its columns in — nothing is imported until you say so.");
+            }
             return _t("Your workbook opens for review as soon as the configuration is created. Nothing is imported until you say so.");
         }
         return _t("You will start with no components. The country's shared rules stay available in Pay rules.");

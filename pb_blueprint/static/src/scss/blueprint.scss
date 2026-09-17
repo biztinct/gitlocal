@@ -516,6 +516,14 @@ $bp-head-h: 64px;
         &.is-warn { background: #FEF3C7; color: #7c5308; }
     }
 
+    // The way back into the workbook review, under the starter grid. Present
+    // only while the workbook is still owed, so it is never a button that
+    // repeats work somebody has already done.
+    .pbbp-starter-door {
+        margin-top: 12px;
+        display: flex; justify-content: flex-start;
+    }
+
     // ---- tiles + checks ---------------------------------------------
     .pbbp-tiles {
         display: grid;

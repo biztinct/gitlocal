@@ -53,9 +53,11 @@
                      search="search"
                      openRule="props.openRule or 0"
                      openTick="props.openTick or 0"
+                     needsWorkbook="props.needsWorkbook or false"
                      onChanged="(res) => this.onSubChanged(res)"
                      onRevision="props.onRevision"
-                     onGrid="props.onGrid"/>
+                     onGrid="props.onGrid"
+                     onImportWorkbook="props.onImportWorkbook"/>
       <TaxTab t-elif="state.tab === 'tax'"
               configId="props.configId"
               revision="props.revision or 0"
@@ -141,11 +143,15 @@
       <!-- the list -->
       <div class="pbbp-cmp-list" t-ref="list" t-on-keydown="onListKeydown">
         <div class="pbim-empty pbbp-cmp-empty" t-if="!matching.length">
-          <b t-if="searching">Nothing matches that</b>
-          <b t-else="">Nothing here yet</b>
+          <b t-esc="emptyHead"/>
           <p t-esc="emptyLine"/>
           <div class="pbbp-emptydoors-b" t-if="!searching">
-            <button class="pbim-btn primary pbim-btn-sm" t-on-click="openNew">
+            <button class="pbim-btn primary pbim-btn-sm" t-if="props.needsWorkbook"
+                    t-on-click="() => this.props.onImportWorkbook()">
+              <t t-out="ic('fileSpreadsheet', 14)"/> Import the workbook
+            </button>
+            <button t-attf-class="pbim-btn {{ props.needsWorkbook ? 'outline' : 'primary' }} pbim-btn-sm"
+                    t-on-click="openNew">
               <t t-out="ic('plus', 14)"/> Add a component
             </button>
             <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => this.props.onGrid()">

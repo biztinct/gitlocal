@@ -8389,3 +8389,52 @@ msgstr "Người khác phụ trách phê duyệt trên tài khoản này. Phươ
 #: code:addons/pb_blueprint/tools/gen_vn_complete.py:0
 msgid "System"
 msgstr "Hệ thống"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/components.xml:0
+#: code:addons/pb_blueprint/static/src/xml/steps.xml:0
+msgid "Import the workbook"
+msgstr "Nhập sổ làm việc"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/components_tab.js:0
+msgid ""
+"Nothing has come in from your workbook yet. Open the review to bring its "
+"columns in."
+msgstr ""
+"Chưa có gì được đưa vào từ sổ làm việc của bạn. Mở phần xem lại để đưa các "
+"cột của nó vào."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/step_start.js:0
+msgid ""
+"Nothing has come in from your workbook yet. Open the review to bring its "
+"columns in — nothing is imported until you say so."
+msgstr ""
+"Chưa có gì được đưa vào từ sổ làm việc của bạn. Mở phần xem lại để đưa các "
+"cột của nó vào — không có gì được nhập cho đến khi bạn đồng ý."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/components_tab.js:0
+msgid "Your workbook is not in yet"
+msgstr "Sổ làm việc của bạn chưa được đưa vào"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/blueprint.js:0
+msgid "The draft is clear. Your workbook opens for review next."
+msgstr "Bản nháp đã được xoá sạch. Sổ làm việc của bạn sẽ mở ra để xem lại tiếp theo."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/blueprint.js:0
+msgid ""
+"This removes all %s components and formulas of this draft and opens the "
+"workbook review again. Anything you edited by hand is lost."
+msgstr ""
+"Thao tác này xoá toàn bộ %s thành phần và công thức của bản nháp này và mở "
+"lại phần xem lại sổ làm việc. Mọi thứ bạn đã sửa thủ công sẽ mất."

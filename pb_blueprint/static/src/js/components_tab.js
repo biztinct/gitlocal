@@ -44,9 +44,14 @@ export class ComponentsTab extends Component {
         // loop that Owl reports as silence (BP41).
         openRule: { type: Number, optional: true },
         openTick: { type: Number, optional: true },
+        // The configuration started from a workbook nothing has been read from
+        // yet. An empty list then has a first step that is not "add a
+        // component", and the empty box has to offer it.
+        needsWorkbook: { type: Boolean, optional: true },
         onChanged: { type: Function },       // something was saved -> refresh the hero
         onRevision: { type: Function },
         onGrid: { type: Function },
+        onImportWorkbook: { type: Function, optional: true },
     };
 
     setup() {
@@ -199,7 +204,20 @@ export class ComponentsTab extends Component {
         if (this.searching) {
             return _t("Nothing matches “%s”.", this.state.query.trim());
         }
+        // "Change the starting point on the Start step" was the wrong sentence
+        // to read here after a workbook review was closed without importing:
+        // the starting point is already right, it simply has not been read.
+        if (this.props.needsWorkbook) {
+            return _t("Nothing has come in from your workbook yet. Open the review to bring its columns in.");
+        }
         return _t("No components yet. Add your first one, or change the starting point on the Start step.");
+    }
+
+    /** The empty box leads with the import only while there is one to do. */
+    get emptyHead() {
+        if (this.searching) return _t("Nothing matches that");
+        if (this.props.needsWorkbook) return _t("Your workbook is not in yet");
+        return _t("Nothing here yet");
     }
 
     // ==================================================================

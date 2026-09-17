@@ -134,6 +134,16 @@
         </div>
 
         <p class="pbbp-note" t-if="starterNote" t-esc="starterNote"/>
+
+        <!-- The workbook is the starting point and it has not been read yet:
+             the way back into the review lives here, beside the card that
+             promised it, and disappears the moment components exist. -->
+        <div class="pbbp-starter-door" t-if="props.needsWorkbook">
+          <button class="pbim-btn primary pbim-btn-sm"
+                  t-on-click="() => this.props.onImportWorkbook()">
+            <t t-out="ic('fileSpreadsheet', 14)"/> Import the workbook
+          </button>
+        </div>
       </section>
 
       <!-- ================ Who are you paying ================ -->

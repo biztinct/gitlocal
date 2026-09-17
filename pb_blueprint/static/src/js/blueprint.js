@@ -57,6 +57,11 @@ export class PbBlueprint extends Component {
             this.env.config.setDisplayName(_t("New configuration"));
         }
 
+        // Read by the `onClose` of every dialog we open: a finished workbook
+        // import RETURNS an action that remounts this journey, so the callback
+        // that follows it would otherwise write state into a dead component.
+        this._alive = true;
+
         const params = this._arrival();
         this.arrival = params;
         this.token = freshToken();
@@ -190,6 +195,7 @@ export class PbBlueprint extends Component {
         // Every pending timer dies with the component, or a fired callback sets
         // state on something that is no longer mounted (W100).
         onWillUnmount(() => {
+            this._alive = false;
             if (this._stepTimer) clearTimeout(this._stepTimer);
             if (this._saveTimer) clearTimeout(this._saveTimer);
             if (this._agoTimer) clearInterval(this._agoTimer);
@@ -358,6 +364,24 @@ export class PbBlueprint extends Component {
     railDisabled(step) { return !this.created && step !== "start"; }
 
     /**
+     * The workbook was chosen as the starting point and nothing has come in yet.
+     *
+     * The workbook route seeds NOTHING on purpose — the workbook is the
+     * starter — so "chose Excel" and "imported Excel" look identical on the
+     * draft record apart from this: a configuration with no components. There
+     * is deliberately no server flag; a count that is already in every
+     * `bp_load` payload cannot drift out of step with the components it counts.
+     *
+     * Read from the SAVED starter, not the form: a card click that has not been
+     * confirmed yet must not make the screen promise a workbook.
+     */
+    get needsWorkbook() {
+        if (!this.created || !this.state.blueprint) return false;
+        if (this.state.blueprint.template_key !== "excel") return false;
+        return !((this.state.counts && this.state.counts.components) || 0);
+    }
+
+    /**
      * The rail's second line — the step's promise, or what it now KNOWS.
      *
      * Once the checks have been run the Test row stops saying "try the days
@@ -455,6 +479,21 @@ export class PbBlueprint extends Component {
     onPickStarter(key) {
         if (!this.created) {
             this.state.form.template_key = key;
+            return;
+        }
+        // The workbook card is the one starter you can press twice. Every other
+        // one is already applied the moment it is chosen, so re-pressing it can
+        // only mean "do it again", which is nothing; the workbook's own import
+        // may have been closed without importing, and then the card IS the way
+        // back to the review. Nothing has been built yet, so nothing is at risk.
+        if (key === "excel" && key === this.state.blueprint.template_key) {
+            if (this.needsWorkbook) {
+                this.openExcel();
+                return;
+            }
+            // A workbook has already been imported: importing a second one over
+            // the top is a replacement like any other, and says so first.
+            this.state.confirmStarter = key;
             return;
         }
         if (key === this.state.blueprint.template_key) return;
@@ -584,6 +623,14 @@ export class PbBlueprint extends Component {
         }
         this.state.step = target.step;
         this.rememberStep();
+        // Leaving Start with a workbook chosen and nothing imported means the
+        // same thing it meant the first time: open the review. Creation is what
+        // used to open it, so coming BACK to Start and pressing Continue again
+        // walked past the import in silence and landed on an empty Pay rules.
+        // The step moves first, so the dialog opens over the page it always did.
+        if (this.state.step === "rules" && this.needsWorkbook) {
+            this.openExcel();
+        }
     }
 
     async onBack() {
@@ -748,6 +795,14 @@ export class PbBlueprint extends Component {
 
     get confirmStarterText() {
         const n = (this.state.counts && this.state.counts.components) || 0;
+        // A workbook has no components until it has been read, so "adds the
+        // Import Excel workbook ones" would name a set nobody can picture. It
+        // opens the review instead, and the sentence says that.
+        if (this.state.confirmStarter === "excel") {
+            return _t(
+                "This removes all %s components and formulas of this draft and opens the workbook review again. Anything you edited by hand is lost.",
+                n);
+        }
         return _t(
             "This removes all %(n)s components and formulas of this draft and adds the %(starter)s ones. Anything you edited by hand is lost.",
             { n, starter: this.confirmStarterName });
@@ -768,12 +823,20 @@ export class PbBlueprint extends Component {
         if (load && load.ok) this.applyLoad(load);
         this.state.sampleId = null;   // the new components need a new choice
         await this.refreshPreview();
+        if (key === "excel") {
+            // The review is about to open on top of this, so "the draft is
+            // empty and ready for your own components" would be the wrong last
+            // word: the workbook is what fills it.
+            this.notif.add(_t("The draft is clear. Your workbook opens for review next."),
+                           { type: "success" });
+            this.openExcel();
+            return;
+        }
         this.notif.add(
             res.rule_count
                 ? _t("%s components are ready.", res.rule_count)
                 : _t("The draft is empty and ready for your own components."),
             { type: "success" });
-        if (key === "excel") this.openExcel();
     }
 
     // ==================================================================
@@ -793,9 +856,15 @@ export class PbBlueprint extends Component {
             context: { default_config_id: cid, pb_blueprint_return: true },
         }, {
             onClose: async () => {
+                // A FINISHED import returns the journey as a fresh action, so
+                // by the time this runs the component that opened the dialog may
+                // already have been replaced by its own successor. Re-reading
+                // into it would be writing into a corpse.
+                if (!this._alive) return;
                 // The review may have been cancelled — re-read rather than
                 // assume, so the component count on screen is never a guess.
                 const load = await this.rpc("bp_load", [cid]);
+                if (!this._alive) return;
                 if (load && load.ok) {
                     this.applyLoad(load);
                     this.state.sampleId = null;   // the import changed the cast

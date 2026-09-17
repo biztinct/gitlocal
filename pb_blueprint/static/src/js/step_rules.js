@@ -32,6 +32,10 @@ export class StepRules extends Component {
         currency: { type: String, optional: true },
         reloadKey: { type: Number, optional: true },
         templateName: { type: String, optional: true },
+        // The starting point was a workbook that has not been read yet, so an
+        // empty Components tab is not "you have not started" — it is "the thing
+        // you started from is still waiting". Only the shell can know this.
+        needsWorkbook: { type: Boolean, optional: true },
         tab: { type: String, optional: true },
         // A "Go" link on the Finish step asked for one component by id: the
         // Components tab opens its editor on arrival and then says it has,
@@ -42,6 +46,7 @@ export class StepRules extends Component {
         onChanged: { type: Function },
         onRevision: { type: Function },
         onGrid: { type: Function },
+        onImportWorkbook: { type: Function, optional: true },
         onGoTest: { type: Function },
     };
 
