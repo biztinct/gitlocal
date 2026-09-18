@@ -1437,19 +1437,69 @@ class HrPayslipRun(models.Model):
             if 'report_visible' in self.env['hr.payslip.line']._fields:
                 line_domain.append(('report_visible', '=', True))
             all_lines = self.env['hr.payslip.line'].search(line_domain, order='sequence,id')
-            component_columns = []
-            seen_keys = set()
+
+            # Which keys are a NUMBER somewhere in this batch. Used twice: to
+            # keep the line walk below honest, and to decide whether an empty
+            # cell should read 0.00 or stay blank.
+            keys_with_lines = set()
             for line in all_lines:
                 key = _line_key(line)
-                if not key[1] or key in seen_keys:
-                    continue
-                if rule_keys and key not in rule_keys:
-                    continue
-                if key in base_key_set or key[1] == 'MSNV':
-                    continue
-                seen_keys.add(key)
-                header = line.name or line.code or key[1]
-                component_columns.append((key, header))
+                if key[1]:
+                    keys_with_lines.add(key)
+
+            # MSNV is dropped from the components only because a leading column
+            # already carries it. Where no such column survived, dropping it too
+            # would lose the employee code from the sheet altogether.
+            msnv_in_base = any(base['header'] == 'MSNV'
+                               for base in active_base_columns)
+
+            # THE SCHEME IS THE ORDER, AND THE WHOLE LIST.
+            #
+            # These columns used to be discovered by walking the payslip lines,
+            # which cost the workbook the two things a reviewer opens it for. A
+            # component that produces no line never became a column at all — and
+            # that is every TEXT component, so the employee code, the name, the
+            # position, the contract dates, the department, all missing. And the
+            # order was whatever the lines happened to carry rather than the
+            # order the scheme is read in on screen.
+            #
+            # The workbook exists to be compared against the scheme, so it is
+            # built FROM the scheme: every component the scheme shows in
+            # reports, in the scheme's own sequence. A batch with no scheme (a
+            # classic structure payslip) has no such list to read, so it keeps
+            # the line walk.
+            component_columns = []
+            seen_keys = set()
+            scheme_rules = config.rule_ids if config and hasattr(
+                config, 'rule_ids') else None
+            if scheme_rules:
+                for rule in scheme_rules.sorted(key=lambda r: (r.sequence, r.id)):
+                    if 'report_visible' in rule._fields and not rule.report_visible:
+                        continue
+                    key = _rule_key(rule)
+                    if not key or not key[1] or key in seen_keys:
+                        continue
+                    if key in base_key_set:
+                        continue
+                    if key[1] == 'MSNV' and msnv_in_base:
+                        continue
+                    seen_keys.add(key)
+                    component_columns.append(
+                        (key, rule.name or rule.code or key[1]))
+            else:
+                for line in all_lines:
+                    key = _line_key(line)
+                    if not key[1] or key in seen_keys:
+                        continue
+                    if rule_keys and key not in rule_keys:
+                        continue
+                    if key in base_key_set:
+                        continue
+                    if key[1] == 'MSNV' and msnv_in_base:
+                        continue
+                    seen_keys.add(key)
+                    header = line.name or line.code or key[1]
+                    component_columns.append((key, header))
 
             headers = [base['header'] for base in active_base_columns] + [header for _, header in component_columns]
 
@@ -1489,6 +1539,13 @@ class HrPayslipRun(models.Model):
                 value = getattr(record, mapping.target_field_id.name, None)
                 if isinstance(value, models.BaseModel):
                     return True, value.display_name
+                # A DATE IS NEITHER TEXT NOR A NUMBER, and the writer treats
+                # everything that is not text as a number — which turned a
+                # commencing date into 0.00. Say it as a date instead.
+                if isinstance(value, datetime):
+                    return True, value.strftime('%Y-%m-%d %H:%M:%S')
+                if isinstance(value, date):
+                    return True, value.strftime('%Y-%m-%d')
                 return True, value
 
             row_idx = 1
@@ -1589,7 +1646,14 @@ class HrPayslipRun(models.Model):
                     row_values.append(value)
 
                 for key, _header in component_columns:
-                    numeric_value = values_by_key.get(key, 0.0)
+                    # A column that is a number SOMEWHERE in this batch stays a
+                    # number everywhere, so an employee who simply has none of
+                    # it reads 0.00 exactly as it always has. A column that is
+                    # never a number is a text column — the name, the position,
+                    # a date — and an empty one of those must stay empty rather
+                    # than claim a value of zero.
+                    numeric_value = values_by_key.get(
+                        key, 0.0 if key in keys_with_lines else None)
                     string_value = string_values_by_key.get(key)
                     rule = rule_by_key.get(key)
                     has_mapping, mapped_value = _get_mapped_field_value(rule, employee, contract)
@@ -1670,15 +1734,16 @@ class HrPayslipRun(models.Model):
                     row_values.append(output_value)
 
                 for col_idx, value in enumerate(row_values):
-                    if col_idx == 0:
-                        worksheet.write_string(row_idx, col_idx, value or '', text_fmt)
-                    elif col_idx < len(active_base_columns):
+                    if col_idx < len(active_base_columns):
                         worksheet.write_string(row_idx, col_idx, str(value) if value else '', text_fmt)
+                    elif value is None:
+                        # A text column with nothing in it for this person. Blank
+                        # says that; 0.00 would be a number nobody computed.
+                        worksheet.write_blank(row_idx, col_idx, None, text_fmt)
+                    elif isinstance(value, str):
+                        worksheet.write_string(row_idx, col_idx, value, text_fmt)
                     else:
-                        if isinstance(value, str):
-                            worksheet.write_string(row_idx, col_idx, value, text_fmt)
-                        else:
-                            worksheet.write_number(row_idx, col_idx, _sanitize_xlsx_number(value), num_fmt)
+                        worksheet.write_number(row_idx, col_idx, _sanitize_xlsx_number(value), num_fmt)
 
                 row_idx += 1
 
