@@ -552,7 +552,7 @@ class PbBlueprintComponents(models.AbstractModel):
                 'constant_value': rule.constant_value or 0.0,
                 'default_value': rule.default_value or 0.0,
             },
-            'recipe': recipe or default_recipe(rc.derived_group(rule, recipe)),
+            'recipe': recipe or self._opening_recipe(rule, recipe),
             'has_recipe': bool(recipe),
             'generated_formula': self._display_formula(
                 config, rule.bp_generated_formula or ''),
@@ -563,6 +563,24 @@ class PbBlueprintComponents(models.AbstractModel):
             'revision': blueprint.revision if blueprint else 0,
             'sample_id': self._chosen_sample_id(config),
         }
+
+    def _opening_recipe(self, rule, recipe):
+        """The sentence the dialog opens on when the component has none.
+
+        A component imported from a workbook has a calculation but no sentence.
+        Opening it on the blank default said "an approved amount" — a number
+        somebody types in — which is the one thing it demonstrably is not, and
+        saving without touching anything made that false description true.
+
+        For a formula the user's workbook already carries, the honest opening
+        sentence is the one the Excel lane stands for: this calculation is
+        yours, nothing will rewrite it.
+        """
+        group = rc.derived_group(rule, recipe)
+        opening = default_recipe(group)
+        if rule.column_type == 'formula' and (rule.excel_formula or '').strip():
+            opening['amount'] = {'kind': 'manual'}
+        return opening
 
     @api.model
     def bp_component_get_new(self, config_id, group='earning'):
@@ -915,7 +933,19 @@ class PbBlueprintComponents(models.AbstractModel):
                          'bp_formula_source': 'manual'})
             if payload.get('recipe'):
                 try:
-                    clean = validate_recipe(payload['recipe'], {
+                    # The Excel lane promises "nothing will rewrite it", so the
+                    # sentence it stores has to say the same thing. The dialog
+                    # arrives carrying whatever the Guided tab was showing, and
+                    # for a component that never had a sentence that is the
+                    # blank default — "an approved amount". Stored as-is it made
+                    # this component a typed-in number with an entry column that
+                    # does not exist, and every later `regenerate` reported
+                    # "needs an input that does not exist yet: <CODE>IN".
+                    # The kind is not the user's choice on this tab; it is the
+                    # tab itself.
+                    recipe = dict(payload['recipe'] or {})
+                    recipe['amount'] = {'kind': 'manual'}
+                    clean = validate_recipe(recipe, {
                         'codes': codes, 'rate_tables': tables,
                         'self_code': self_code})
                     vals['bp_recipe_json'] = json.dumps(clean, sort_keys=True)
@@ -1249,6 +1279,15 @@ class PbBlueprintComponents(models.AbstractModel):
         try:
             with self.env.cr.savepoint():
                 report = rc.regenerate(self.env, config)
+                # Re-read what each component does to net pay as well. Saving a
+                # single component has always done both; "Refresh the rules" did
+                # only the arithmetic, so a category fixed outside the wizard —
+                # naming the net-pay component in the grid, say — left every tab
+                # on this step reading the stale answer, and the only way to
+                # dislodge it was to open an unrelated component and save it.
+                # There is no other button that re-reads the categories: this is
+                # it.
+                self._classify(config)
         except AccessError:
             raise
         except RecipeError as exc:

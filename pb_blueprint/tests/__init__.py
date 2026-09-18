@@ -2,6 +2,7 @@
 from . import test_blueprint
 from . import test_recipe_compiler
 from . import test_components_rpc
+from . import test_imported_excel_components
 from . import test_connect
 from . import test_outputs
 from . import test_tax_calendar
