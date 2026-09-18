@@ -1868,11 +1868,30 @@ class HrPayrollImportBatch(models.Model):
             return value.date()
         if isinstance(value, date):
             return value
+        # A SPREADSHEET DATE IS OFTEN A NUMBER. Excel stores one as days since
+        # its own epoch, and a cell formatted as a date arrives here as a float
+        # whenever the sheet was written by a tool that did not keep the
+        # formatting. Refusing it silently cost the joining date of everybody
+        # in the file. The window is deliberately narrow — 1970..2170 — so an
+        # ordinary quantity in a date column is still refused rather than read
+        # as the year 1900.
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            serial = int(value)
+            if 25569 <= serial <= 98000:
+                return date(1899, 12, 30) + timedelta(days=serial)
+            return None
         if isinstance(value, str):
             text = value.strip()
             if not text:
                 return None
-            for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y", "%d-%m-%Y", "%m-%d-%Y"):
+            # Month NAMES were missing entirely, so "01 Nov 2023" — what the
+            # India file carries, and what any export from a reporting tool
+            # tends to produce — parsed as nothing at all and was dropped.
+            for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y", "%d-%m-%Y",
+                        "%m-%d-%Y", "%Y/%m/%d", "%d.%m.%Y", "%Y%m%d",
+                        "%d %b %Y", "%d-%b-%Y", "%d/%b/%Y",
+                        "%d %B %Y", "%d-%B-%Y",
+                        "%b %d, %Y", "%B %d, %Y", "%b %d %Y", "%B %d %Y"):
                 try:
                     return datetime.strptime(text, fmt).date()
                 except ValueError:

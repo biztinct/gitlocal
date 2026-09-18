@@ -42,9 +42,26 @@ class HrPayrollImportBatch(models.Model):
             field = record._fields.get(name)
             if field is None:
                 continue
-            if not field.store or field.readonly:
+            # A RELATED FIELD IS NOT AN UNWRITABLE ONE.
+            #
+            # "Not stored" was read as "cannot be set", and on Odoo 19 that is
+            # simply untrue of a large part of `hr.employee`: the contract-side
+            # fields were moved onto `hr.version`, and the employee now reaches
+            # them through `related='version_id.…'` — not stored, and writable,
+            # because a related field writes through to its target. This guard
+            # threw those writes away without a sound, so a pay-data file could
+            # carry a department and a work location for every person and the
+            # employee records stayed blank. (Rize India: 27 people, every
+            # Location and Department dropped here.)
+            #
+            # `inverse` is what actually answers the question — Odoo sets it on
+            # a related field precisely so it can be written — so the guard now
+            # asks that instead, and still drops what it was written for: a
+            # computed field with no way back (months on a contract, days of
+            # service this year), which would raise in the middle of a pay run.
+            if field.readonly or not (field.store or field.inverse):
                 _logger.info(
-                    "VN mapping: %s.%s is worked out rather than stored; the "
+                    "VN mapping: %s.%s is worked out rather than settable; the "
                     "pay-data file's value is ignored.", record._name, name)
                 continue
             writable[name] = value
