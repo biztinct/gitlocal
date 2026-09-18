@@ -8464,7 +8464,16 @@ class PbFormulaStudio(models.AbstractModel):
             cols = self.env['hr.payroll.import.batch'].peek_source_columns(
                 config, content, name)
         except Exception as e:
-            _logger.warning("J2 header read failed for %s: %s", name, e)
+            _logger.warning("J2 header read failed for %s: %s", name, e, exc_info=True)
+            # A refusal the reader can act on beats a guess about their file.
+            # UserError text is written for a person and says what was actually
+            # wrong; anything else is a bug and gets the generic sentence.
+            reason = str(getattr(e, 'args', None) and e.args[0] or '').strip() \
+                if isinstance(e, UserError) else ''
+            if reason:
+                return {'ok': False,
+                        'msg': _("The headings could not be read from %(file)s. "
+                                 "%(reason)s", file=name, reason=reason)}
             return {'ok': False,
                     'msg': _("The headings could not be read from %(file)s. "
                              "Check it opens in a spreadsheet and that the first "

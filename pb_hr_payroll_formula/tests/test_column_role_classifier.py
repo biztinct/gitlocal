@@ -174,6 +174,39 @@ class TestColumnRoleClassifier(unittest.TestCase):
             crc.EMPLOYEE_CODE_MARKERS,
             ('MSNV', 'EMP CODE', 'EMPLOYEE CODE', 'EMPLOYEE ID', 'EMPLOYEEID'))
 
+    # Test 14 — the primary key, as real workbooks spell it.
+    #
+    # The Rize Vietnam file writes `Mã nhân viên\n(Code)` in A1: two languages,
+    # a line break and a bracket. Exact matching found nothing, the multi-sheet
+    # merge raised "No primary key column found in any worksheet", and the
+    # mapping board told the owner the headings could not be read.
+    PK_TABLE = [
+        (['Employee Code', 'Name'], 'Employee Code'),
+        (['employee_code', 'Amount'], 'employee_code'),
+        (['MSNV', 'Họ tên'], 'MSNV'),
+        (['Mã NV', 'Họ tên'], 'Mã NV'),
+        (['Mã nhân viên\n(Code)', 'Họ và tên (Full name)'], 'Mã nhân viên\n(Code)'),
+        (['Mã số nhân viên', 'ID'], 'Mã số nhân viên'),
+        (['Số ngày công', 'Employee ID (MSNV)'], 'Employee ID (MSNV)'),
+        (['Staff Code', 'Employee Notes'], 'Staff Code'),
+        (['ID', 'Name'], 'ID'),
+        # …and the columns that must NOT be mistaken for it.
+        (['Employee Notes', 'Paid days', 'Grade ID card'], None),
+        (['Tên nhân viên', 'Ngày công'], None),
+        (['Paid working days', 'Weekday overtime'], None),
+        ([], None),
+    ]
+
+    def test_14_primary_key_header(self):
+        for headers, expected in self.PK_TABLE:
+            with self.subTest(headers=headers):
+                self.assertEqual(crc.find_primary_key_header(headers), expected)
+
+    def test_15_primary_key_prefers_the_earlier_candidate(self):
+        # Two plausible columns: the employee code wins over a bare "ID".
+        self.assertEqual(
+            crc.find_primary_key_header(['ID', 'Employee Code']), 'Employee Code')
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

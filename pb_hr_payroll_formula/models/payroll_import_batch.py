@@ -26,7 +26,7 @@ from .column_role_classifier import (
     EMPLOYEE_NAME_HEADER_CANDIDATES,
     EXTERNAL_CODE_HEADER_CANDIDATES,
     EXTERNAL_NAME_HEADER_CANDIDATES,
-    PRIMARY_KEY_HEADER_CANDIDATES,
+    find_primary_key_header,
 )
 
 _logger = logging.getLogger(__name__)
@@ -509,12 +509,23 @@ class HrPayrollImportBatch(models.Model):
     # board offers you a column, the loader will produce that key for the same
     # file** — not because two pieces of code agree, but because there is one.
     # ------------------------------------------------------------------
-    def _parse_source_file(self, file_content, filename, connector=None):
+    def _parse_source_file(self, file_content, filename, connector=None,
+                           single_sheet_fallback=False):
         """Parse a pay file exactly as an import would.
 
         Returns the loader's own `{'headers': [...], 'rows': [...]}` plus a
         `multisheet` flag saying which branch ran — additive, and ignored by
         every existing caller.
+
+        `single_sheet_fallback` is for the READERS of a file rather than the
+        loaders of it. The multi-sheet branch runs whenever the SCHEME has a
+        sheet-qualified rule, which says nothing about the workbook in front of
+        it: a plain one-sheet file then dies on the merge's primary-key
+        requirement, and a board that only wanted to show the column headings
+        shows nothing at all. With the flag set, that refusal falls back to the
+        ordinary single-sheet parse instead of reaching the user. `False`
+        everywhere an import actually loads data — there, a workbook the merge
+        cannot key must still fail loudly.
         """
         self.ensure_one()
         connector = connector if connector is not None else self._get_excel_connector()
@@ -524,8 +535,16 @@ class HrPayrollImportBatch(models.Model):
             self.formula_config_id.rule_ids.filtered(lambda r: r.source_sheet_name)
         )
         if use_multisheet:
-            headers, rows = self._load_multisheet_data(file_content, connector)
-            return {'headers': headers, 'rows': rows, 'multisheet': True}
+            try:
+                headers, rows = self._load_multisheet_data(file_content, connector)
+            except UserError:
+                if not single_sheet_fallback:
+                    raise
+                _logger.info(
+                    "Multi-sheet parse of %s failed; reading it as a single sheet",
+                    filename, exc_info=True)
+            else:
+                return {'headers': headers, 'rows': rows, 'multisheet': True}
         data = connector.load_file(
             file_content,
             filename,
@@ -585,7 +604,8 @@ class HrPayrollImportBatch(models.Model):
             if value:
                 vals[fname] = value
         probe = Batch.new(vals)
-        data = probe._parse_source_file(file_content, filename)
+        data = probe._parse_source_file(file_content, filename,
+                                        single_sheet_fallback=True)
         headers = list(data.get('headers') or [])
         rows = data.get('rows') or []
         if rows:
@@ -4800,13 +4820,9 @@ class HrPayrollImportBatch(models.Model):
         return ''.join(ch for ch in str(value).lower() if ch.isalnum())
 
     def _find_primary_key_header(self, headers):
-        candidates = list(PRIMARY_KEY_HEADER_CANDIDATES)
-        for candidate in candidates:
-            target = self._normalize_header_key(candidate)
-            for header in headers:
-                if self._normalize_header_key(header) == target:
-                    return header
-        return None
+        """Which heading says WHO the row is. One answer, shared with the
+        wizard and the studio — see `column_role_classifier`."""
+        return find_primary_key_header(headers)
 
     def _count_header_matches(self, headers):
         rules = self.formula_config_id.rule_ids

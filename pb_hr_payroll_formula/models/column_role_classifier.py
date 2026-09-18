@@ -60,13 +60,17 @@ EMPLOYEE_CODE_HEADER_CANDIDATES = (
 )
 
 # The primary-key variant (`_find_primary_key_header`) orders and spells a few entries
-# differently and adds the id-number aliases. Preserved exactly.
+# differently and adds the id-number aliases. The English entries are preserved
+# exactly; the Vietnamese block below them is what a real VN workbook writes at
+# the top of column A ("Mã nhân viên (Code)"), which the exact-match-only matcher
+# could never see.
 PRIMARY_KEY_HEADER_CANDIDATES = (
     'employee_code', 'employee code', 'emp_code', 'emp code', 'emp. code', 'empcode',
     'employee id', 'employee_id', 'emp id', 'empid', 'employee no', 'employee number',
     'staff id', 'staff code',
+    'ma nhan vien', 'ma so nhan vien', 'ma nhan su', 'ma so nv', 'so hieu nhan vien',
     'id no', 'id_no', 'id',
-    'msnv', 'ma nv', 'manv', 'ma so nhan vien',
+    'msnv', 'ma nv', 'manv',
 )
 
 # Zoho-shaped rows carry their own spellings.
@@ -216,6 +220,74 @@ def strip_accents(text):
 
 def _index_key(value):
     return strip_accents(normalize_header(value))
+
+
+# --------------------------------------------------------------------------
+# Primary key ("which column says WHO this row is")
+#
+# The matcher used to be "casefold, keep the alphanumerics, compare for
+# equality" — which means a heading only ever matched when the workbook had
+# been written in the same language, with the same words, and nothing else in
+# the cell. A real Vietnamese payroll file writes `Mã nhân viên\n(Code)`: two
+# languages, a line break and a bracket. Nothing matched, the multi-sheet
+# loader raised "No primary key column found in any worksheet", and the
+# mapping board turned that into "the headings could not be read" — a file
+# that opens perfectly well in Excel.
+#
+# So: fold the accents (`Mã` and `Ma` are the same word), then try
+#   1. the whole heading equals a candidate — the old behaviour, unchanged; then
+#   2. the candidate appears in the heading as a run of whole WORDS
+#      (`ma nhan vien` inside `ma nhan vien code`), or as one glued word
+#      (`manhanvien`).
+#
+# Whole words, not a raw substring: `employee no` must not be found inside
+# `Employee Notes`, and that is exactly what a substring test would do. Short
+# candidates (`id`, `manv`) stay in pass 1 only — "id" as a loose word would
+# claim the ID-card column of half the workbooks in the country.
+# --------------------------------------------------------------------------
+_PK_LOOSE_MIN_LENGTH = 5
+
+
+def pk_header_key(value):
+    """Accent-folded, punctuation-free comparison key for a column heading."""
+    return strip_accents(normalize_header(value))
+
+
+def find_primary_key_header(headers, candidates=PRIMARY_KEY_HEADER_CANDIDATES):
+    """The heading that identifies the person, or None.
+
+    `headers` is the sheet's headings in column order; the return value is the
+    heading STRING exactly as the sheet spells it, because that is the key the
+    rows are read by.
+    """
+    keyed = []
+    for header in headers:
+        key = pk_header_key(header)
+        if key:
+            keyed.append((header, key, key.split(' ')))
+
+    for candidate in candidates:
+        target = pk_header_key(candidate)
+        if not target:
+            continue
+        for header, key, _words in keyed:
+            if key == target:
+                return header
+
+    for candidate in candidates:
+        target = pk_header_key(candidate)
+        glued = target.replace(' ', '')
+        if len(glued) < _PK_LOOSE_MIN_LENGTH:
+            continue
+        c_words = target.split(' ')
+        span = len(c_words)
+        for header, _key, words in keyed:
+            if glued in words:
+                return header
+            for start in range(len(words) - span + 1):
+                if words[start:start + span] == c_words:
+                    return header
+    return None
 
 
 def _build_index():

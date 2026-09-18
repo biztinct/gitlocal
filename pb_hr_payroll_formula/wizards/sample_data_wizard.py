@@ -11,6 +11,7 @@ import datetime
 import re
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+from ..models.column_role_classifier import find_primary_key_header
 import base64
 import io
 
@@ -478,18 +479,9 @@ class SampleDataWizard(models.TransientModel):
         return ''.join(ch for ch in str(value).lower() if ch.isalnum())
 
     def _find_primary_key_header(self, headers):
-        candidates = [
-            'employee_code', 'emp_code', 'emp code', 'emp. code',
-            'employee id', 'employee_id', 'emp id', 'empid',
-            'id no', 'id_no', 'id',
-            'msnv', 'ma so nhan vien',
-        ]
-        for candidate in candidates:
-            target = self._normalize_header_key(candidate)
-            for header in headers:
-                if self._normalize_header_key(header) == target:
-                    return header
-        return None
+        """One answer for "which heading says WHO the row is", shared with the
+        import batch — a second copy is a second answer the day one is edited."""
+        return find_primary_key_header(headers)
 
     def _count_header_matches(self, headers, rules):
         lookup = set()
