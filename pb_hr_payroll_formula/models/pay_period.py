@@ -33,38 +33,137 @@ Nothing here raises. It runs inside a payroll computation; a period it cannot
 read must leave the component exactly as it found it and let the run finish.
 """
 
+import datetime
+
 #: The codes a pay period can answer, and what each one means.
 #:
 #: Matched on the component's CODE, upper-cased and stripped, because that is
 #: what the formulas reference — `IF(PAYMONTH=12,…)` names the code and nothing
 #: else. A scheme that calls the component something else in its own language
 #: still writes `PAYMONTH` in the formula, so the code is the only stable key.
-PERIOD_CODES = ('PAYMONTH',)
+#:
+#:   PAYMONTH  month the period ENDS in, 1-12
+#:   PAYYEAR   year the period ENDS in, e.g. 2026
+#:   PAYDAYS   calendar days in the period, both ends INCLUSIVE
+#:   STDDAYS   standard working days this run is paid against (see below)
+#:   STARTDAY  day of month the period starts on, 1-31
+#:   ENDDAY    day of month the period ends on, 1-31
+#:
+#: Every code is underscore-free, six to twelve characters, and can never equal
+#: a column letter — the settled converter floors (RUNSRC ledger §1.3).
+#:
+#: NO DATE IS EVER EXPOSED AS AN EXCEL SERIAL. `YEAR`/`MONTH`/`DAY`/`DATE` are
+#: in the parser's and validator's allowed-name lists but are NOT implemented in
+#: the evaluator or in `excel_semantics`, so a serial would be a number no
+#: formula in this product could take apart. The period therefore answers
+#: pre-decomposed numbers and nothing else.
+PERIOD_CODES = ('PAYMONTH', 'PAYYEAR', 'PAYDAYS', 'STDDAYS',
+                'STARTDAY', 'ENDDAY')
 
 #: The `via` these values are recorded under. `src` is 'period'.
 PERIOD_VIA = 'pay_period'
 
 
-def period_values(date_from=None, date_to=None):
+def _as_date(value):
+    """A ``date`` from whatever the caller had, or ``None``. Never raises.
+
+    The ORM hands us `datetime.date`; a wizard or a JSON round trip hands us an
+    ISO string; a blank field hands us ``False``. All three reach here.
+    """
+    if isinstance(value, datetime.datetime):
+        return value.date()
+    if isinstance(value, datetime.date):
+        return value
+    if isinstance(value, str) and value.strip():
+        try:
+            return datetime.date.fromisoformat(value.strip()[:10])
+        except Exception:                           # noqa: BLE001
+            return None
+    return None
+
+
+def default_standard_work_days(date_from, date_to):
+    """Mon-Fri days between the two dates, both ends inclusive. ``None`` when
+    either date is missing or the period runs backwards.
+
+    THE ONE DEFINITION. The owner ruled on this before any code was written:
+    the default standard working days of a run is the plain Monday-to-Friday
+    count of its own period. Not a holiday-calendar subtraction — that is only
+    ever as good as a list nobody maintains — and not a per-scheme constant.
+    A month with public holidays is adjusted BY HAND on the run, which is the
+    whole point of storing the number instead of computing it.
+
+    Nothing else in this codebase may count working days; everything that needs
+    the default calls this.
+    """
+    start = _as_date(date_from)
+    end = _as_date(date_to)
+    if not start or not end or end < start:
+        return None
+    total = (end - start).days + 1
+    whole_weeks, remainder = divmod(total, 7)
+    days = whole_weeks * 5
+    first_weekday = start.weekday()                 # Monday is 0
+    for offset in range(remainder):
+        if (first_weekday + offset) % 7 < 5:
+            days += 1
+    return float(days)
+
+
+def period_values(date_from=None, date_to=None, std_days=None):
     """``{code: value}`` the period answers, or ``{}`` when it cannot.
 
     THE MONTH IS THE MONTH THE PERIOD ENDS IN. An ordinary run from the 1st to
     the 31st of October ends in October and there is nothing to decide. A
     mid-cycle run from the 26th of September to the 25th of October is the
     October pay run — that is the month it is FOR, the month it is paid in and
-    the month its filings belong to — so the end date is the one that answers.
+    the month its filings belong to — so the end date is the one that answers
+    `PAYMONTH`, `PAYYEAR` and `ENDDAY`. `date_from` answers `STARTDAY`, and the
+    two together answer `PAYDAYS` and `STDDAYS`.
 
-    ``date_from`` is used only when there is no end date at all, which is a
-    payslip somebody is still building rather than one being paid.
+    ``date_from`` alone is used only when there is no end date at all, which is
+    a payslip somebody is still building rather than one being paid; the codes
+    that need both dates simply go unanswered.
+
+    ``std_days`` is what somebody SAID the standard working days are — the
+    number typed on the run or on the pay-data load. Anything missing, zero or
+    negative means nobody said, and the Mon-Fri default answers instead. Zero
+    is never taken at face value: a run paid against zero standard days divides
+    by zero in every daily-rate formula in the product.
     """
-    day = date_to or date_from
-    month = getattr(day, 'month', None)
-    if not month:
+    start = _as_date(date_from)
+    end = _as_date(date_to)
+    anchor = end or start
+    if not anchor:
         return {}
-    return {'PAYMONTH': float(month)}
+
+    answers = {
+        'PAYMONTH': float(anchor.month),
+        'PAYYEAR': float(anchor.year),
+    }
+    if start:
+        answers['STARTDAY'] = float(start.day)
+    if end:
+        answers['ENDDAY'] = float(end.day)
+    if start and end and end >= start:
+        answers['PAYDAYS'] = float((end - start).days + 1)
+
+    said = None
+    try:
+        said = float(std_days) if std_days is not None else None
+    except Exception:                               # noqa: BLE001
+        said = None
+    if said is not None and said > 0:
+        answers['STDDAYS'] = said
+    else:
+        fallback = default_standard_work_days(start, end)
+        if fallback is not None:
+            answers['STDDAYS'] = fallback
+    return answers
 
 
-def fill_period_inputs(values, unresolved, date_from=None, date_to=None):
+def fill_period_inputs(values, unresolved, date_from=None, date_to=None,
+                       std_days=None):
     """Fill the period's codes into ``values``, and say which ones were filled.
 
     ``unresolved`` is the set of codes that reached the end of the walk with no
@@ -73,11 +172,14 @@ def fill_period_inputs(values, unresolved, date_from=None, date_to=None):
     filled, so the caller can write their provenance without guessing.
 
     A code the scheme does not have is not invented: only keys already present
-    in ``values`` are written, so this can never add a component to a run.
+    in ``values`` are written, so this can never add a component to a run. And
+    only codes in ``unresolved`` are written, so this can never beat a
+    spreadsheet column, a feed, a record, a rule output or a contract
+    component. It is the last rung and it stays the last rung.
     """
     filled = []
     try:
-        answers = period_values(date_from, date_to)
+        answers = period_values(date_from, date_to, std_days)
     except Exception:                               # noqa: BLE001
         return filled
     for code, value in answers.items():

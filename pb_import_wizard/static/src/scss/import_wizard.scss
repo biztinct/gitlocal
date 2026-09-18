@@ -42,7 +42,13 @@
     .iw-sec label { display: block; font-size: 11.5px; color: var(--muted); font-weight: 600; margin: 10px 0 4px; }
     .iw-in { width: 100%; border: 1px solid var(--line); border-radius: 9px; padding: 8px 11px; font-size: 13.5px; font-family: inherit; background: #fff; color: var(--ink); }
     .iw-in:focus { outline: none; border-color: var(--p); box-shadow: 0 0 0 3px rgba(169,196,250,.35); }
-    .iw-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    /* RUNSRC B3 — the two dates stay paired and standard working days gets its
+       own full-width row beneath them. Squeezing a third box into this row put
+       three 115px controls inside a 366px panel, narrower than a date input
+       can be read at; `auto-fit` fixed the width and left the third box
+       stranded in half a row. One question per line reads better than both. */
+    .iw-row2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    .iw-hint { font-size: 11.5px; color: var(--muted); margin-top: 6px; line-height: 1.45; }
     .iw-seg { display: flex; flex-wrap: wrap; gap: 6px; }
     .iw-segbtn { border: 1px solid var(--line); background: #fff; color: #475569; border-radius: 9px; padding: 8px 12px; font-size: 12px; font-weight: 700; font-family: inherit; cursor: pointer; transition: .14s; }
     .iw-segbtn:hover { border-color: var(--p); }

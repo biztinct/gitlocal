@@ -62,6 +62,9 @@
                   <div><label>From</label><input type="date" class="iw-in" t-att-value="state.form.date_from" t-on-change="(ev) => this.onField('date_from', ev)"/></div>
                   <div><label>To</label><input type="date" class="iw-in" t-att-value="state.form.date_to" t-on-change="(ev) => this.onField('date_to', ev)"/></div>
                 </div>
+                <label>Standard working days</label>
+                <input type="number" min="0.5" step="0.5" class="iw-in" t-att-value="state.form.std_days" t-on-change="(ev) => this.onField('std_days', ev)"/>
+                <div class="iw-hint">Working days a full month is paid against. Drop it for a month with public holidays.</div>
                 <t t-if="state.form.source_type === 'excel'">
                   <label>Data file (.xlsx / .csv)</label>
                   <label class="iw-drop">

@@ -167,6 +167,18 @@ class HrPayrollImportBatch(models.Model):
     date_from = fields.Date(string='Period Start')
     date_to = fields.Date(string='Period End')
 
+    # RUNSRC B2 — what this load was told a full month is worth. Stored and
+    # defaulted from the Mon-Fri count of the period, never computed, so a
+    # holiday adjustment survives anything later touching the dates. Carried
+    # onto the pay run this load creates, so the two can never disagree.
+    pb_std_work_days = fields.Float(
+        string='Standard working days',
+        digits=(16, 2),
+        help="How many working days a full month is paid against. Starts as "
+             "the Monday-to-Friday count of this period; lower it for a month "
+             "with public holidays.",
+    )
+
     # Country and Company
     country_code = fields.Selection(
         related='formula_config_id.country_code',
@@ -420,11 +432,50 @@ class HrPayrollImportBatch(models.Model):
             last_day = calendar.monthrange(today.year, today.month)[1]
             self.date_from = today.replace(day=1)
             self.date_to = today.replace(day=last_day)
+        self._onchange_pb_std_work_days()
+
+    @api.onchange('date_from', 'date_to')
+    def _onchange_pb_std_work_days(self):
+        """Offer the Mon-Fri count, but never overwrite what somebody typed.
+
+        RUNSRC B2. Silently replacing a holiday adjustment because a date was
+        nudged is exactly the bug this feature exists to prevent, so this only
+        ever fills a blank.
+        """
+        for batch in self:
+            if batch.pb_std_work_days and batch.pb_std_work_days > 0:
+                continue
+            default = pay_period.default_standard_work_days(
+                batch.date_from, batch.date_to)
+            if default:
+                batch.pb_std_work_days = default
+
+    def _pb_standard_work_days(self):
+        """The standard working days this load should be resolved against.
+
+        The RUN wins, because the run is what is being paid and it is where a
+        payroll officer adjusts the number; then what the load itself was told;
+        then the Mon-Fri count of the period. Zero and negative mean "nobody
+        said" at every one of those three levels.
+        """
+        self.ensure_one()
+        run = self.payslip_run_id
+        if run and run.pb_std_work_days and run.pb_std_work_days > 0:
+            return run.pb_std_work_days
+        if self.pb_std_work_days and self.pb_std_work_days > 0:
+            return self.pb_std_work_days
+        return pay_period.default_standard_work_days(
+            self.date_from, self.date_to)
 
     @api.model_create_multi
     def create(self, vals_list):
         """Generate sequence name on create"""
         for vals in vals_list:
+            if not vals.get('pb_std_work_days'):
+                default = pay_period.default_standard_work_days(
+                    vals.get('date_from'), vals.get('date_to'))
+                if default:
+                    vals['pb_std_work_days'] = default
             if vals.get('name', _('New Import Batch')) == _('New Import Batch'):
                 vals['name'] = self.env['ir.sequence'].next_by_code('hr.payroll.import.batch') or _('New Import Batch')
             if not vals.get('payroll_journal_id'):
@@ -1598,10 +1649,18 @@ class HrPayrollImportBatch(models.Model):
                         'date_start': self.date_from,
                         'date_end': self.date_to,
                     }
+                    # RUNSRC B2 — the run inherits what the load was told, so
+                    # the number a payroll officer sees on the run is the one
+                    # the payslips were actually computed against.
+                    if self.pb_std_work_days and self.pb_std_work_days > 0:
+                        run_vals['pb_std_work_days'] = self.pb_std_work_days
                     run = self.env['hr.payslip.run'].create(run_vals)
                     self.payslip_run_id = run.id
                 else:
                     run = self.payslip_run_id
+                    if (self.pb_std_work_days and self.pb_std_work_days > 0
+                            and not run.pb_std_work_days):
+                        run.pb_std_work_days = self.pb_std_work_days
                 # Link slips to run
                 created_payslips.write({'payslip_run_id': run.id})
 
@@ -4625,7 +4684,8 @@ class HrPayrollImportBatch(models.Model):
         # Done here rather than after the adjustments below, so a proration or
         # a carryover that reads the month reads the real one.
         for code in pay_period.fill_period_inputs(
-                input_values, period_unresolved, self.date_from, self.date_to):
+                input_values, period_unresolved, self.date_from, self.date_to,
+                self._pb_standard_work_days()):
             if prov is not None:
                 prov[code] = input_provenance.entry(
                     'period', key=code, via=pay_period.PERIOD_VIA)

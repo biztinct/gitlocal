@@ -15303,3 +15303,44 @@ msgstr "Công thức này đọc %(refs)s, vốn không nằm trong lần nhập
 #: code:addons/pb_hr_payroll_formula/wizards/multisheet_import_preview.py:0
 msgid "The range this lookup points at was deleted in your file (#REF!), so it would compute 0. Fix it in your file, or pick a Fix below."
 msgstr "Vùng dữ liệu mà công thức này tra cứu đã bị xóa trong tệp của bạn (#REF!), nên giá trị sẽ thành 0. Hãy sửa trong tệp, hoặc chọn một cách Sửa bên dưới."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__pb_std_work_days
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip_run__pb_std_work_days
+msgid "Standard working days"
+msgstr "Số ngày công chuẩn"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__pb_std_work_days
+msgid ""
+"How many working days a full month is paid against. Starts as the Monday-to-"
+"Friday count of this period; lower it for a month with public holidays."
+msgstr ""
+"Số ngày công mà một tháng đầy đủ được tính lương. Ban đầu là số ngày thứ Hai "
+"đến thứ Sáu của kỳ này; hãy giảm xuống cho tháng có ngày lễ."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payslip_run__pb_std_work_days
+msgid ""
+"How many working days a full month is paid against. Starts as the Monday-to-"
+"Friday count of this period; lower it for a month with public holidays. Press"
+" Recompute Formulas afterwards so the payslips pick it up."
+msgstr ""
+"Số ngày công mà một tháng đầy đủ được tính lương. Ban đầu là số ngày thứ Hai "
+"đến thứ Sáu của kỳ này; hãy giảm xuống cho tháng có ngày lễ. Sau đó hãy nhấn "
+"Tính lại công thức để các phiếu lương nhận giá trị mới."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip_run__pb_std_work_days_note
+msgid "What this run is using"
+msgstr "Kỳ lương này đang dùng"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/hr_payslip_run.py:0
+msgid ""
+"Not set, so this run is paid against %s working days — the Monday-to-Friday "
+"days in its own period."
+msgstr ""
+"Chưa đặt, nên kỳ lương này được tính theo %s ngày công — số ngày thứ Hai đến "
+"thứ Sáu trong kỳ của chính nó."

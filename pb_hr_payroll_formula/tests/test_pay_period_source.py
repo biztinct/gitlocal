@@ -169,15 +169,22 @@ class TestPayPeriodSource(TransactionCase):
     # 4 — the pure function, with no database in the way
     # =====================================================================
     def test_08_the_period_function_answers_only_what_it_knows(self):
+        """RUNSRC B widened this from one code to six; the month is unmoved.
+
+        These assertions are deliberately about `PAYMONTH` alone — the six
+        codes and their arithmetic are covered in `test_runsrc_period_answers`.
+        What is protected HERE is that widening the answer never changed the
+        month, which is the value a thirteenth-month payment compares against.
+        """
         import datetime
         self.assertEqual(
             pay_period.period_values(datetime.date(2026, 9, 26),
-                                     datetime.date(2026, 10, 25)),
-            {'PAYMONTH': 10.0})
+                                     datetime.date(2026, 10, 25))['PAYMONTH'],
+            10.0)
         # No end date: a payslip somebody is still building.
         self.assertEqual(
-            pay_period.period_values(datetime.date(2026, 4, 1), None),
-            {'PAYMONTH': 4.0})
+            pay_period.period_values(datetime.date(2026, 4, 1), None)['PAYMONTH'],
+            4.0)
         self.assertEqual(pay_period.period_values(None, None), {})
 
     def test_09_it_only_writes_codes_the_scheme_already_has(self):

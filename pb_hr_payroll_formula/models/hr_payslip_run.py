@@ -1,11 +1,87 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, _
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+
+from . import pay_period
 
 
 class HrPayslipRun(models.Model):
     _inherit = ['hr.payslip.run']
+
+    # ------------------------------------------------------------------
+    # RUNSRC B2 — the run knows how long a full month is
+    # ------------------------------------------------------------------
+    # Standard working days used to have to arrive in the spreadsheet every
+    # single month, because nothing on the run could answer it. Now the run
+    # answers it, defaulting to the plain Mon-Fri count of its own period, and
+    # a month with public holidays is adjusted here instead of in the file.
+    #
+    # STORED AND DEFAULTED, NEVER COMPUTED. A stored compute would silently
+    # overwrite that holiday adjustment the next time anything touched the
+    # dates — which is precisely the thing this field exists to prevent.
+    pb_std_work_days = fields.Float(
+        string="Standard working days",
+        digits=(16, 2),
+        help="How many working days a full month is paid against. Starts as "
+             "the Monday-to-Friday count of this period; lower it for a month "
+             "with public holidays. Press Recompute Formulas afterwards so the "
+             "payslips pick it up.",
+    )
+
+    #: What a reader needs the moment the box says 0.00 — which every run made
+    #: before this feature existed does, because nothing was back-filled. A
+    #: zero there does NOT mean this run is paid against no working days; it
+    #: means nobody has said, and the Mon-Fri count of the period answers. The
+    #: box alone cannot say that, so this line does. Never stored: it is a
+    #: sentence about the value, not a second copy of it.
+    pb_std_work_days_note = fields.Char(
+        string="What this run is using", readonly=True,
+        compute='_compute_pb_std_work_days_note')
+
+    @api.depends('pb_std_work_days', 'date_start', 'date_end')
+    def _compute_pb_std_work_days_note(self):
+        for run in self:
+            if run.pb_std_work_days and run.pb_std_work_days > 0:
+                run.pb_std_work_days_note = ''
+                continue
+            default = pay_period.default_standard_work_days(
+                run.date_start, run.date_end)
+            run.pb_std_work_days_note = _(
+                "Not set, so this run is paid against %s working days — the "
+                "Monday-to-Friday days in its own period."
+            ) % (('%g' % default) if default else '—')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('pb_std_work_days'):
+                default = pay_period.default_standard_work_days(
+                    vals.get('date_start'), vals.get('date_end'))
+                if default:
+                    vals['pb_std_work_days'] = default
+        return super().create(vals_list)
+
+    @api.onchange('date_start', 'date_end')
+    def _onchange_pb_std_work_days(self):
+        """Fill it from the dates, but only while nobody has said otherwise."""
+        for run in self:
+            if run.pb_std_work_days and run.pb_std_work_days > 0:
+                continue
+            default = pay_period.default_standard_work_days(
+                run.date_start, run.date_end)
+            if default:
+                run.pb_std_work_days = default
+
+    def _pb_standard_work_days(self):
+        """What this run says its standard working days are, or ``None``.
+
+        Zero and negative are "nobody said", everywhere — a daily rate divided
+        by zero standard days is not a number anybody should be paid.
+        """
+        self.ensure_one()
+        value = self.pb_std_work_days or 0.0
+        return value if value > 0 else None
 
     def action_recompute_formula_lines_batch(self):
         """Recompute every payslip in the run that a scheme governs.

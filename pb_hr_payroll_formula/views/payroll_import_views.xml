@@ -155,6 +155,7 @@
                                    required="payroll_period == 'custom'"/>
                             <field name="date_to"
                                    required="payroll_period == 'custom'"/>
+                            <field name="pb_std_work_days"/>
                             <field name="country_code" readonly="1"/>
                         </group>
                     </group>

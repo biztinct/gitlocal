@@ -34,10 +34,14 @@ export class ImportWizard extends Component {
             step: 1, loading: false, busyMsg: "",
             defaults: null,
             form: { name: "", source_type: "excel", formula_config_id: "", connector_id: "",
-                    date_from: "", date_to: "", file_b64: "", file_name: "", period: "" },
+                    date_from: "", date_to: "", std_days: "", file_b64: "", file_name: "", period: "" },
             summary: null,
             match: { lineId: null, term: "", results: [] },
         });
+        // RUNSRC B3 — flipped the moment the user types their own standard
+        // working days, and never flipped back. Not in `state`: it changes
+        // nothing on screen, it only stops us overwriting them.
+        this.stdDaysTouched = false;
         // JOURNEY J2 — the doors that were already scoped stay scoped.
         //
         // Every legacy import door now lands here, and four of them knew
@@ -68,6 +72,15 @@ export class ImportWizard extends Component {
             if (cfg) this.state.form.formula_config_id = String(cfg);
             if (con) this.state.form.connector_id = String(con);
             if (this.arrival.source) this.state.form.source_type = this.arrival.source;
+            // RUNSRC B3 — the box arrives showing this month's Mon-Fri count
+            // rather than empty, so the default is visible and adjustable
+            // instead of being a thing you have to know about. The DATES are
+            // deliberately left exactly as they were: seeding those would
+            // change what a load resolves, and this box alone never can.
+            const cur = (d.periods || []).find((p) => p.id === "current");
+            if (cur && cur.std_days !== "" && cur.std_days !== undefined) {
+                this.state.form.std_days = String(cur.std_days);
+            }
         });
     }
 
@@ -76,8 +89,35 @@ export class ImportWizard extends Component {
     lineCls(s) { return LINE_CLS[s] || "muted"; }
     lineLabel(l) { return l.is_new ? "New employee" : (LINE_LABEL[l.state] || l.state); }
 
-    onField(f, ev) { this.state.form[f] = ev.target.value; }
+    onField(f, ev) {
+        this.state.form[f] = ev.target.value;
+        // RUNSRC B3 — once somebody has typed their own standard working days,
+        // nothing may quietly put it back. A holiday month set to 20 that
+        // snapped back to 22 because a date was nudged would be the exact bug
+        // this feature exists to remove.
+        if (f === "std_days") { this.stdDaysTouched = true; }
+        if (f === "date_from" || f === "date_to") { this._suggestStdDays(); }
+    }
     setSource(id) { this.state.form.source_type = id; }
+
+    // The Mon-Fri count of the typed period, offered only while the user has
+    // not said otherwise. The authoritative definition lives in pay_period.py;
+    // this is the same arithmetic for the box the user is looking at, and the
+    // backend recomputes it anyway when the box is left blank.
+    _suggestStdDays() {
+        if (this.stdDaysTouched) { return; }
+        const a = this.state.form.date_from, b = this.state.form.date_to;
+        if (!a || !b) { return; }
+        const start = new Date(a + "T00:00:00"), end = new Date(b + "T00:00:00");
+        if (isNaN(start) || isNaN(end) || end < start) { return; }
+        const total = Math.round((end - start) / 86400000) + 1;
+        const weeks = Math.floor(total / 7), rest = total % 7;
+        // JS Sunday is 0; shift so Monday is 0, matching Python's weekday().
+        const first = (start.getDay() + 6) % 7;
+        let days = weeks * 5;
+        for (let i = 0; i < rest; i++) { if ((first + i) % 7 < 5) { days += 1; } }
+        this.state.form.std_days = String(days);
+    }
 
     // period preset chips — fill the date inputs (mirrors the native form)
     applyPeriod(p) {
@@ -85,6 +125,9 @@ export class ImportWizard extends Component {
         if (p.id !== "custom") {
             this.state.form.date_from = p.date_from;
             this.state.form.date_to = p.date_to;
+            if (!this.stdDaysTouched) {
+                this.state.form.std_days = p.std_days === "" ? "" : String(p.std_days);
+            }
         }
     }
 

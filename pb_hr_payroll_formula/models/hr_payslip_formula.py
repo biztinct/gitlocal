@@ -808,8 +808,17 @@ class HrPayslipFormula(models.Model):
         # but the default it replaces. `PAYMONTH` was never filled by anything
         # on this path, so a "pay this in month 12" rule compared 12 against a
         # default of 1 every month of the year and paid nobody.
+        # RUNSRC B2 — and `STDDAYS` had to arrive in the spreadsheet every
+        # month for the same reason. The run it belongs to now answers it,
+        # falling back to the Mon-Fri count of the payslip's own period.
+        run = self.payslip_run_id
+        std_days = (run._pb_standard_work_days()
+                    if run and hasattr(run, '_pb_standard_work_days') else None)
+        if std_days is None:
+            std_days = pay_period.default_standard_work_days(
+                self.date_from, self.date_to)
         for code in pay_period.fill_period_inputs(
-                values, unresolved, self.date_from, self.date_to):
+                values, unresolved, self.date_from, self.date_to, std_days):
             if provenance is not None:
                 provenance[code] = input_provenance.entry(
                     'period', key=code, via=pay_period.PERIOD_VIA)

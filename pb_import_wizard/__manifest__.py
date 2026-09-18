@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Guided Import Wizard',
     'summary': 'Step-by-step import: source → review & match → validate → commit',
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

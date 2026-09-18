@@ -4,6 +4,7 @@ import logging
 from datetime import date, timedelta
 
 from odoo import api, fields, models
+from odoo.addons.pb_hr_payroll_formula.models import pay_period
 
 _logger = logging.getLogger(__name__)
 
@@ -23,16 +24,21 @@ def _period_presets():
     last_prev = first_cur - timedelta(days=1)
     def iso(d):
         return d.isoformat()
+
+    def chip(cid, label, a, b):
+        # RUNSRC B3 — every preset carries its own Mon-Fri count, computed by
+        # the ONE definition in pay_period. Nothing here re-counts working days.
+        std = pay_period.default_standard_work_days(a, b)
+        return {'id': cid, 'label': label, 'date_from': iso(a), 'date_to': iso(b),
+                'std_days': std or ''}
+
     return [
-        {'id': 'current', 'label': 'This month',
-         'date_from': iso(first_cur), 'date_to': iso(today.replace(day=last_day))},
-        {'id': 'previous', 'label': 'Last month',
-         'date_from': iso(last_prev.replace(day=1)), 'date_to': iso(last_prev)},
-        {'id': 'mid_cycle', 'label': 'Mid cycle',
-         'date_from': iso(first_cur), 'date_to': iso(today.replace(day=15))},
-        {'id': 'end_cycle', 'label': 'End cycle',
-         'date_from': iso(first_cur), 'date_to': iso(today.replace(day=last_day))},
-        {'id': 'custom', 'label': 'Custom', 'date_from': '', 'date_to': ''},
+        chip('current', 'This month', first_cur, today.replace(day=last_day)),
+        chip('previous', 'Last month', last_prev.replace(day=1), last_prev),
+        chip('mid_cycle', 'Mid cycle', first_cur, today.replace(day=15)),
+        chip('end_cycle', 'End cycle', first_cur, today.replace(day=last_day)),
+        {'id': 'custom', 'label': 'Custom', 'date_from': '', 'date_to': '',
+         'std_days': ''},
     ]
 
 
@@ -154,6 +160,21 @@ class PbImportWizard(models.AbstractModel):
             cvals['date_from'] = vals['date_from']
         if vals.get('date_to'):
             cvals['date_to'] = vals['date_to']
+        # RUNSRC B3 — standard working days, as typed on step 1.
+        #
+        # EMPTY IS NOT ZERO. Blank means "nobody said, use the Mon-Fri count of
+        # the period"; zero would mean this run pays a full month against no
+        # working days at all, which divides by zero in every daily-rate
+        # formula in the product. Anything non-positive or unreadable is
+        # therefore treated as blank, never written.
+        std_days = vals.get('std_days')
+        if std_days not in (None, '', False):
+            try:
+                std_days = float(std_days)
+            except (TypeError, ValueError):
+                std_days = 0.0
+            if std_days > 0:
+                cvals['pb_std_work_days'] = std_days
         # the OWL wizard sends file_b64 / file_name; accept import_file too
         _file = vals.get('import_file') or vals.get('file_b64')
         if _file:

@@ -358,3 +358,19 @@ msgstr "đang chờ người phê duyệt"
 msgid "Send for approval"
 msgstr "Gửi đi duyệt"
 
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid "Standard working days"
+msgstr "Số ngày công chuẩn"
+
+#. module: pb_import_wizard
+#. odoo-javascript
+#: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
+msgid ""
+"Working days a full month is paid against. Drop it for a month with public "
+"holidays."
+msgstr ""
+"Số ngày công mà một tháng đầy đủ được tính lương. Hãy giảm xuống cho tháng có "
+"ngày lễ."

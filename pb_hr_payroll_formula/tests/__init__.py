@@ -147,6 +147,10 @@ from . import test_bracket_lint
 # compared its month against a default of 1 and paid nobody.
 from . import test_pay_period_source
 
+# RUNSRC B — the pay run answers six codes, and standard working days is a
+# stored, editable number on the run instead of a column in every file.
+from . import test_runsrc_period_answers
+
 # Approval Matrix P4 — a change to how pay is worked out is signed off.
 from . import test_scheme_proposal
 from . import test_import_approval
