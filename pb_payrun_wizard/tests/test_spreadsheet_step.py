@@ -138,6 +138,94 @@ class TestSpreadsheetStep(TransactionCase):
         self.assertTrue(gate['wanted'])
         self.assertNotIn(other.id, self._choices(gate))
 
+    # ======================================= 1b. the gate follows the RUN
+    #
+    # The gate used to answer with `entries[0]` whatever it was asked, and the
+    # wizard carried that id into the batch. A company with two schemes that
+    # both read a file therefore fed EVERY run the first scheme's reading —
+    # silently, because a file read through the wrong scheme matches none of
+    # its headings, so every row failed for want of a name and the run computed
+    # zero. (Seen on `rize`: an India file read as the Vietnam scheme, 27 rows,
+    # 27 × "Cannot create employee: Name is required".)
+
+    def _second_scheme(self):
+        """Another scheme that also wants a file, bound to its own heading."""
+        other = self.env['hr.formula.config'].create({
+            'name': 'Second pay data scheme', 'code': 'PWP3SECOND',
+            'country_code': 'VN', 'company_id': self.company.id,
+            'state': 'active'})
+        rule = self.env['hr.formula.rule'].create({
+            'config_id': other.id, 'code': 'SHIFTALLOW',
+            'name': 'Shift Allowance', 'column_type': 'input'})
+        rule.set_source_binding('excel', 'Shift Allowance')
+        return other
+
+    def test_the_gate_answers_about_the_scheme_it_is_asked_about(self):
+        self._bind('MEALALLOW', 'Meal Allowance')
+        other = self._second_scheme()
+        for config in (self.config, other):
+            gate = self.Wizard.spreadsheet_gate(
+                {'formula_config_id': config.id})
+            self.assertTrue(gate['wanted'])
+            self.assertEqual(
+                gate['config_id'], config.id,
+                "the step must ask for the file of the scheme the run is on")
+
+    def test_a_scheme_that_wants_no_file_is_not_offered_another_one(self):
+        """Naming a scheme with no bindings hides the step, rather than
+        quietly handing it the first scheme that does have them."""
+        self._bind('MEALALLOW', 'Meal Allowance')
+        fileless = self.env['hr.formula.config'].create({
+            'name': 'No file scheme', 'code': 'PWP3NOFILE',
+            'country_code': 'VN', 'company_id': self.company.id})
+        gate = self.Wizard.spreadsheet_gate(
+            {'formula_config_id': fileless.id})
+        self.assertFalse(gate['wanted'])
+        self.assertFalse(gate.get('config_id'))
+
+    def test_an_unasked_gate_still_answers_as_it_always_did(self):
+        """No scheme named — the pre-existing default, unchanged."""
+        self._bind('MEALALLOW', 'Meal Allowance')
+        gate = self.Wizard.spreadsheet_gate({})
+        self.assertTrue(gate['wanted'])
+        self.assertTrue(gate.get('config_id'))
+
+    def test_a_file_read_as_another_scheme_is_refused(self):
+        """The rail behind the screen: one run, one scheme.
+
+        A stale tab is enough to send the old id, so the refusal cannot live
+        in the client alone.
+        """
+        self._bind('MEALALLOW', 'Meal Allowance')
+        self.config.sudo().write({'state': 'active'})
+        other = self._second_scheme()
+        prep = self.Wizard.prepare_run(
+            dict(self.vals, formula_config_id=self.config.id))
+        before = self._counts()
+
+        res = self.Wizard.attach_spreadsheet(
+            prep['run_id'], other.id, self._pay_file(), 'june.xlsx',
+            '2026-06-01', '2026-06-30')
+
+        self.assertFalse(res['ok'])
+        self.assertIn(other.name, res['msg'])
+        self.assertIn(self.config.name, res['msg'],
+                      "the refusal has to name BOTH schemes or it cannot be acted on")
+        self.assertEqual(self._counts(), before,
+                         "a refused file must leave no batch and no lines")
+
+    def test_the_right_scheme_still_loads(self):
+        """The rail refuses a mismatch and nothing else."""
+        self._bind('MEALALLOW', 'Meal Allowance')
+        self.config.sudo().write({'state': 'active'})
+        self._second_scheme()
+        prep = self.Wizard.prepare_run(
+            dict(self.vals, formula_config_id=self.config.id))
+        res = self.Wizard.attach_spreadsheet(
+            prep['run_id'], self.config.id, self._pay_file(), 'june.xlsx',
+            '2026-06-01', '2026-06-30')
+        self.assertTrue(res['ok'], res.get('msg'))
+
     # =================================================== 2. the pre-flight
     def test_preflight_says_what_the_file_feeds_and_what_it_misses(self):
         self._bind('MEALALLOW', 'Meal Allowance')

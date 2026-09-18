@@ -1377,7 +1377,25 @@ class PbPayrunWizard(models.AbstractModel):
             return {'wanted': False, 'lanes': lanes}
         if not entries:
             return {'wanted': False, 'lanes': lanes}
+
+        # THE RUN'S OWN SCHEME DECIDES WHICH FILE IS WANTED, not whichever
+        # scheme happens to sort first. The gate used to answer `entries[0]`
+        # unconditionally, and the wizard carried that id all the way into the
+        # batch — so a run created for one scheme was fed a file read under
+        # ANOTHER scheme's columns. Nothing looked wrong until every row failed
+        # for want of a name, because the name column of the file was not the
+        # name column of the scheme doing the reading.
+        wanted_id = int((vals or {}).get('formula_config_id')
+                        or (vals or {}).get('spreadsheet_config_id') or 0)
         chosen = entries[0]
+        if wanted_id:
+            named = next((e for e in entries
+                          if e['config'].id == wanted_id), None)
+            if not named:
+                # This scheme asks for no spreadsheet. Offering it another
+                # scheme's file is exactly the confusion above.
+                return {'wanted': False, 'lanes': lanes}
+            chosen = named
         cfg = chosen['config']
         return {
             'wanted': True,
@@ -1528,6 +1546,22 @@ class PbPayrunWizard(models.AbstractModel):
         if not config:
             return {'ok': False,
                     'msg': _("That payroll scheme no longer exists.")}
+        # ONE RUN, ONE SCHEME. The file is read THROUGH a scheme — its headings
+        # are matched to that scheme's components and to nothing else — so a
+        # file read under scheme A cannot be loaded into a run built on scheme
+        # B. The columns simply mean different things, and the failure is
+        # silent and total: not one row matches, every employee is "missing a
+        # name", and the run computes zero. Refused here rather than in the
+        # client alone, because a stale tab is enough to do it again.
+        run_config = getattr(run, 'pb_formula_config_id', False)
+        if run_config and run_config.id != config.id:
+            return {'ok': False, 'msg': _(
+                "This pay run is on “%(run)s”, but the pay data file was read "
+                "as “%(file)s”. The two schemes name their columns "
+                "differently, so nothing in the file would be understood. "
+                "Start the run again and choose the scheme you mean.",
+                run=run_config.display_name or run_config.name or '',
+                file=config.display_name or config.name or '')}
         # SC-4 — the excel lane's server-side refusal. The step is already
         # hidden; this stops a stale client, a script, or a bookmark.
         if not getattr(config, 'source_excel_enabled', True):

@@ -215,6 +215,10 @@ export class PayrunWizard extends Component {
             if (d.formula_config_id) {
                 this.state.form.formula_config_id = d.formula_config_id;
                 this.refreshScheme();
+                // The gate above was asked before a scheme was known, so it
+                // answered with the first scheme that wants a file. Ask it
+                // again now that the run has one of its own.
+                this._refreshGate(false);
             }
             // Demo batch name carries the selected configuration so runs for
             // different divisions are distinguishable (e.g. "…June 2026 — Retail").
@@ -429,6 +433,29 @@ export class PayrunWizard extends Component {
         }
         this.state.scheme.open = false;
         this.refreshScheme();
+        // The pay-data step is ABOUT the chosen scheme: its components, its
+        // filename hint, its source lanes. Asking the gate again keeps the two
+        // in step, and drops a file that was picked for the scheme before —
+        // that file was read under the other scheme's columns.
+        this._refreshGate(true);
+    }
+
+    /**
+     * Re-read the pay-data gate for the scheme this run is actually on.
+     *
+     * The gate is fetched once at start-up, before any scheme is chosen, so
+     * its answer is "the first scheme that wants a file". Left alone, that id
+     * is what the step previews with and what the file is loaded under — which
+     * is how a run on one scheme was fed a file read as another.
+     */
+    async _refreshGate(clearFile) {
+        const gate = await this.orm.silent
+            .call("pb.payrun.wizard", "spreadsheet_gate",
+                  [{ formula_config_id: this.state.form.formula_config_id || 0 }])
+            .catch(() => null);
+        if (!gate) { return; }
+        this.state.sheet.gate = gate;
+        if (clearFile) { this.clearSheetFile(); }
     }
 
     /** How many people this scheme covers, and who it leaves out. */
@@ -543,6 +570,17 @@ export class PayrunWizard extends Component {
         const g = this.state.sheet.gate;
         return (g && g.components) || [];
     }
+    /**
+     * The scheme the pay-data step is about — the run's own, always.
+     *
+     * The gate's id is only a fallback for the moment before a scheme has been
+     * chosen. Reading the gate first is what let a file be loaded under a
+     * scheme the run was never on.
+     */
+    get sheetConfigId() {
+        const g = this.state.sheet.gate;
+        return this.state.form.formula_config_id || (g && g.config_id) || 0;
+    }
     get sheetReady() {
         const p = this.state.sheet.preflight;
         return !!(p && p.ok);
@@ -563,8 +601,7 @@ export class PayrunWizard extends Component {
     }
 
     openRecordsDesk() {
-        const configId = (this.state.sheet.gate
-                          && this.state.sheet.gate.config_id) || 0;
+        const configId = this.sheetConfigId;
         this.action.doAction("pb_records.action_pb_records_desk", {
             additionalContext: { records_config_id: configId },
             clearBreadcrumbs: false,
@@ -658,7 +695,7 @@ export class PayrunWizard extends Component {
 
     async _preflight() {
         const s = this.state.sheet;
-        const configId = (s.gate && s.gate.config_id) || null;
+        const configId = this.sheetConfigId || null;
         if (!configId || !s.file_b64) { return; }
         s.checking = true;
         try {
@@ -816,7 +853,7 @@ export class PayrunWizard extends Component {
                 "pb.payrun.wizard", "attach_spreadsheet",
                 attachArgs(
                     run_id,
-                    (sheet.preflight && sheet.preflight.config_id) || sheet.gate.config_id,
+                    this.sheetConfigId,
                     sheet.file_b64, sheet.file_name, date_start, date_end, sheet.mode));
             if (!batch || !batch.ok) {
                 sheet.error = (batch && batch.msg) || "The pay data file could not be loaded.";
