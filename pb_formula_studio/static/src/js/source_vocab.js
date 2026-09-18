@@ -2,7 +2,7 @@
 /**
  * SOURCING S4 — the source vocabulary, in ONE place.
  *
- * Eight kinds, eight labels, eight glyphs, and the single sentence every surface
+ * Eleven kinds, eleven labels, eleven glyphs, and the single sentence every surface
  * says about a component. The components rail, the card subtitle, the Cell Editor,
  * the grid header and both mapping boards all read from here, because five surfaces
  * paraphrasing the same fact five ways is exactly the confusion this programme
@@ -32,6 +32,14 @@ export const SOURCES = [
     { key: "contract_field", icon: "filetext" },
     { key: "bank_account", icon: "bank" },
     { key: "contract_component", icon: "briefcase" },
+    // RUNSRC C3 — THE PAY PERIOD, which the server has written as a source
+    // since the period became one and which this file never learned. A
+    // component the run filled rendered "No source" on every board, and
+    // `srcDisagrees` then reported "Last run used a different source: No
+    // source" about a component that was working perfectly. A calendar is
+    // distinguishable from a grid, a cloud and a briefcase at 12px with no
+    // colour, which is the rule the rest of this list follows.
+    { key: "period", icon: "calendar" },
     { key: "calculated", icon: "equals" },
     { key: "constant", icon: "lock" },
     { key: "none", icon: "dashed" },
@@ -39,7 +47,7 @@ export const SOURCES = [
 
 /** Kinds that describe where a component READS, as opposed to what it IS. Only
  *  these can meaningfully disagree with what a run did. */
-const READ_KINDS = ["excel", "feed", "rule", "none"];
+const READ_KINDS = ["excel", "feed", "rule", "period", "none"];
 
 export function srcMeta(kind) {
     return SOURCES.find((s) => s.key === (kind || "none")) || SOURCES[SOURCES.length - 1];
@@ -58,6 +66,9 @@ export function srcLabel(kind) {
         employee_field: _t("Employee record"),
         contract_field: _t("Contract record"),
         bank_account: _t("Bank account"),
+        // RUNSRC C3 — word for word the server's `_SOURCE_LABELS['period']`.
+        // Two spellings of one label is how this went wrong in the first place.
+        period: _t("Pay period"),
         calculated: _t("Calculated"),
         constant: _t("Fixed value"),
         none: _t("No source"),

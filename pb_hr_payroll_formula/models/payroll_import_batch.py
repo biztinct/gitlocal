@@ -4683,9 +4683,21 @@ class HrPayrollImportBatch(models.Model):
         # 12 against a default of 1 in every month of the year and paid nobody.
         # Done here rather than after the adjustments below, so a proration or
         # a carryover that reads the month reads the real one.
+        # RUNSRC C1 — the WIRED components first, then the code match. A wire is
+        # something a person drew on the mapping board; a code match is a
+        # spelling coincidence, and where the two disagree the person wins
+        # (`fill_wired_inputs` takes the code out of `period_unresolved`, so the
+        # pass below cannot overwrite it).
+        _std_days = self._pb_standard_work_days()
+        for code, period_key in pay_period.fill_wired_inputs(
+                input_values, period_unresolved, config.rule_ids.pay_run_wires(),
+                self.date_from, self.date_to, _std_days):
+            if prov is not None:
+                prov[code] = input_provenance.entry(
+                    'period', key=period_key, via=pay_period.PERIOD_VIA)
         for code in pay_period.fill_period_inputs(
                 input_values, period_unresolved, self.date_from, self.date_to,
-                self._pb_standard_work_days()):
+                _std_days):
             if prov is not None:
                 prov[code] = input_provenance.entry(
                     'period', key=code, via=pay_period.PERIOD_VIA)

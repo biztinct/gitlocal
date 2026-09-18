@@ -170,6 +170,15 @@
                                            options="{'no_create': True}"/>
                                     <field name="source_field_mapping"
                                            invisible="data_source != 'integration'"/>
+                                    <!-- RUNSRC C1 — a second door onto the
+                                         board's "From this pay run" lane, so
+                                         the declaration is visible and
+                                         changeable from the component itself.
+                                         Input columns only: a calculated or
+                                         fixed column works its own value
+                                         out. -->
+                                    <field name="period_key"
+                                           invisible="column_type != 'input'"/>
                                 </group>
                             </group>
                             <group string="Information" class="oe_read_only">

@@ -402,12 +402,34 @@ class HrFormulaConfig(models.Model):
     # contract component EXACTLY, so an untouched scheme behaves bit-for-bit
     # as it always has.
     # ==========================================
-    SOURCE_LANES = ('api', 'excel', 'records')
+    # ==========================================
+    # RUNSRC C1 — A FOURTH LANE, AND DELIBERATELY NO FOURTH SWITCH.
+    #
+    #   payrun  → declared kind ('pay_run',)            — the run's own period
+    #
+    # `_config_kind_rank()` builds itself out of the ENABLED LANES, so a kind
+    # that belongs to no lane is dropped before anything reads it. Without this
+    # entry every "From this pay run" wire a person could draw would save, show
+    # a chip on the board, and then be silently discarded at resolve time — the
+    # worst failure shape there is, and the DEFAULT one.
+    #
+    # There is no `source_payrun_enabled` Boolean on purpose. Every pay run has
+    # a period; there is nothing to switch off, and `_source_lane_ok` already
+    # documents that an unknown lane is on. Nor is `payrun` a token a person may
+    # put in `source_priority` (`_PRIORITY_LANES` below is what the constraint
+    # and the settings screen know): the run is the LAST rung by ruling — it
+    # replaces the value that was missing, never the value somebody stated —
+    # so its position is not a preference.
+    # ==========================================
+    SOURCE_LANES = ('api', 'excel', 'records', 'payrun')
+    #: The lanes a person may order. `payrun` is not one of them; see above.
+    _PRIORITY_LANES = ('api', 'excel', 'records')
     _LANE_KINDS = {
         'api': ('feed', 'rule'),
         'excel': ('excel',),
         'records': ('employee_field', 'contract_field', 'bank_account',
                     'contract_component'),
+        'payrun': ('pay_run',),
     }
 
     source_api_enabled = fields.Boolean(
@@ -437,7 +459,7 @@ class HrFormulaConfig(models.Model):
         for config in self:
             tokens = [t.strip() for t in
                       (config.source_priority or '').split(',') if t.strip()]
-            bad = [t for t in tokens if t not in self.SOURCE_LANES]
+            bad = [t for t in tokens if t not in self._PRIORITY_LANES]
             if bad or len(tokens) != len(set(tokens)):
                 raise ValidationError(_(
                     "The source order must list each of these once: "
@@ -456,15 +478,24 @@ class HrFormulaConfig(models.Model):
         """The ENABLED lanes, highest priority first.
 
         Tolerant of a partial `source_priority` (missing tokens append in
-        default order) because this string is data, and data ages.
+        default order) because this string is data, and data ages. RUNSRC C1
+        is the first thing to DEPEND on that tolerance: every scheme on every
+        live database stored `api,excel,records` before the pay-run lane
+        existed, and each one has to keep resolving with the run appended
+        silently at the end rather than not at all.
+
+        And `payrun` is pinned last whatever the string says. A stored order
+        is data somebody can edit; the ruling that the run never beats a
+        stated value is not.
         """
         self.ensure_one()
         tokens = [t.strip() for t in
                   (self.source_priority or '').split(',')
-                  if t.strip() in self.SOURCE_LANES]
+                  if t.strip() in self._PRIORITY_LANES]
         for lane in self.SOURCE_LANES:
             if lane not in tokens:
                 tokens.append(lane)
+        tokens = [t for t in tokens if t != 'payrun'] + ['payrun']
         return [t for t in tokens if self._source_lane_ok(t)]
 
     def _source_kind_rank(self):

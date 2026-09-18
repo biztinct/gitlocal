@@ -16,9 +16,10 @@ except Exception:  # pragma: no cover
     requests = None
 
 from odoo import _, api, fields, models
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import AccessError, UserError, ValidationError
 # MAPFIX A — one code generator for every path that names a column.
 from odoo.addons.pb_hr_payroll_formula.models import component_code as component_code_mod
+from odoo.addons.pb_hr_payroll_formula.models import pay_period
 from odoo.addons.pb_hr_payroll_formula.models import value_kind_classifier
 # RUNSRC A1 — the same letter arithmetic the loader used when it wrote the
 # aliases, so the board can tell a real column from its own twin.
@@ -775,9 +776,45 @@ class PbFormulaStudio(models.AbstractModel):
         if rule.is_contract_component:
             out.append({'kind': 'contract_component', 'key': '',
                         'wirable': False})
+        # ==============================================================
+        # RUNSRC C1 — THE PAY RUN, LAST, AND SPELLED `period` ON PURPOSE.
+        #
+        # `declared_sources()` calls this kind `pay_run` — it is the name of a
+        # DECLARATION. Every display surface in this product calls it `period`,
+        # because that is the word the provenance writes when a run actually
+        # fills a value (`input_provenance` SOURCES, `_SOURCE_LABELS`,
+        # `source_vocab.js`) and a card whose declared chip and actual chip used
+        # different words for one thing would report a permanent disagreement
+        # about a component that is working perfectly.
+        #
+        # It is appended here rather than read out of the loop above because
+        # `_source_rank()` is `hr.formula.rule._SOURCE_RANK`, which holds only
+        # the kinds that can be a `source_ids` ROW — `contract_component` is
+        # absent from it for the same reason and is appended on the line above.
+        # ==============================================================
+        if getattr(rule, 'period_key', False):
+            out.append({'kind': 'period', 'key': rule.period_key,
+                        'label': self._period_key_label(rule.period_key),
+                        'wirable': True})
         if out:
             return out
         return [{'kind': 'none', 'key': '', 'wirable': True}]
+
+    @api.model
+    def _period_key_label(self, code):
+        """The plain-words name of one thing the pay run answers.
+
+        Read off the component model's own Selection so the board can never
+        invent a seventh wording; falls back to the code, which is ugly but
+        never blank.
+        """
+        if not code:
+            return ''
+        try:
+            labels = dict(self.env['hr.formula.rule']._period_key_selection())
+        except Exception:       # noqa: BLE001
+            return code
+        return labels.get(code) or code
 
     #: Board-chip wording. Kept next to the vocabulary it uses so a board can
     #: never invent a ninth term. Mirrors `srcLabel` in `source_vocab.js`.
@@ -8619,6 +8656,20 @@ class PbFormulaStudio(models.AbstractModel):
                 wires.append({'id': 'im%s' % r.id, 'kind': 'mapping', 'ref': r.id,
                               'leftId': 'c:' + key, 'rightId': r.id, 'state': 'accepted'})
                 mapped_rules.add(r.id)
+            # RUNSRC C2 — a pay-run wire is a SECOND wire on the same
+            # component, not a replacement for the first: a component may read
+            # a column AND fall back to the run, which is the ordinary
+            # two-source case J9 exists for. Its `ref` carries the `p:` prefix
+            # so `import_mapping_delete` cuts THIS wire and leaves the other
+            # one alone — cutting the column must not silently take the run
+            # with it, which is the exact bug this method's own comment warns
+            # about in the other direction.
+            if r.period_key:
+                wires.append({'id': 'pr%s' % r.id, 'kind': 'mapping',
+                              'ref': 'p:%s' % r.id,
+                              'leftId': 'p:' + r.period_key, 'rightId': r.id,
+                              'state': 'accepted'})
+                mapped_rules.add(r.id)
         # suggestions: best name/code match between an unmapped column and input
         rule_norms = [(r, self._norm(r.code), self._norm(r.name)) for r in input_rules
                       if r.id not in mapped_rules]
@@ -8642,10 +8693,16 @@ class PbFormulaStudio(models.AbstractModel):
             'left_title': ('%s · columns' % batch.name) if batch
                           else _("Spreadsheet columns"),
             'right_title': '%s · inputs' % config.name,
-            'subtitle': (_("Map imported columns from %s onto this scheme's inputs")
-                         % batch.name) if batch else _(
-                "Say which spreadsheet column feeds each component. No file needs "
-                "to be loaded — type the column heading and connect it."),
+            # RUNSRC C2 — the left column is no longer only columns, and a
+            # lane nobody knows is there is a lane nobody uses. One clause,
+            # naming the thing people actually came looking for.
+            'subtitle': (_("Map columns from %s onto this scheme's inputs — or "
+                           "take the period and the standard working days "
+                           "straight from the pay run.") % batch.name) if batch
+                        else _(
+                "Say what feeds each component. No file needs to be loaded — "
+                "type a column heading and connect it, or take the period and "
+                "the standard working days straight from the pay run."),
             'supports_suggest': False,
             # The search box may take a column as typed. It is the answer to "the
             # column I want is not in this list", which on a database with no
@@ -8727,7 +8784,86 @@ class PbFormulaStudio(models.AbstractModel):
                 add(r.source_binding_key, _("Already used by this scheme"))
         for r in input_rules:
             add(r.data_source_field, _("From this scheme's history"))
+        out.extend(self._pay_run_lane(batch, config))
         return out
+
+    @api.model
+    def _pay_run_lane(self, batch, config=None):
+        """The left column's fifth lane: the six things the run already knows.
+
+        RUNSRC C2. Every one of these had to arrive in the spreadsheet every
+        month — including the standard working days a holiday month needs
+        changing — although the run has known them all along. Drawing one of
+        these onto a component is the whole point of the phase.
+
+        THE CARDS CARRY THE REAL NUMBERS. A lane that says "Standard working
+        days" with no value beside it is a lane nobody trusts enough to wire:
+        the reader cannot tell whether it would land 21, 22 or nothing at all.
+        So the period on screen is read off the batch (its dates and its own
+        standard working days, through the run when there is one), and each
+        card shows `e.g. 21` in the same shape the file lanes use.
+
+        With no batch at all — a scheme nobody has ever loaded a file onto —
+        the lane still appears, with each code's MEANING and no number. An
+        empty lane would hide a source; a lane full of zeroes would state a
+        falsehood (ledger RS8).
+
+        The card ids are `p:<CODE>`, never `c:<CODE>`: the whole left column is
+        one id space, and a spreadsheet column really can be headed `STDDAYS` —
+        it is on the reference Vietnamese scheme.
+        """
+        Rule = self.env['hr.formula.rule']
+        try:
+            labels = dict(Rule._period_key_selection())
+        except Exception:       # noqa: BLE001
+            return []
+        date_from = date_to = False
+        std_days = None
+        if batch:
+            date_from, date_to = batch.date_from, batch.date_to
+            try:
+                std_days = batch._pb_standard_work_days()
+            except Exception:       # noqa: BLE001
+                std_days = None
+        elif config:
+            # No batch on screen: the scheme's own most recent load answers,
+            # so the lane still shows a real period rather than nothing.
+            prev = self.env['hr.payroll.import.batch'].search(
+                [('formula_config_id', '=', config.id),
+                 ('date_to', '!=', False)], order='date_to desc', limit=1)
+            if prev:
+                date_from, date_to = prev.date_from, prev.date_to
+                try:
+                    std_days = prev._pb_standard_work_days()
+                except Exception:       # noqa: BLE001
+                    std_days = None
+        try:
+            values = pay_period.period_values(date_from, date_to, std_days)
+        except Exception:       # noqa: BLE001
+            values = {}
+        when = ''
+        if date_to:
+            try:
+                when = date_to.strftime('%B %Y')
+            except Exception:       # noqa: BLE001
+                when = ''
+        lane = (_("From this pay run · %s", when) if when
+                else _("From this pay run"))
+        cards = []
+        for code, label in labels.items():
+            value = values.get(code)
+            if value is None:
+                sub = _("the run has no period yet")
+            else:
+                # Whole numbers, because every one of them IS one: a month, a
+                # year, a day of the month, a count of days. `21.0` on a card
+                # reads as a rounding a reader then has to think about.
+                shown = ('%d' % value if float(value).is_integer()
+                         else ('%.2f' % value))
+                sub = _("e.g. %s", shown)
+            cards.append({'id': 'p:' + code, 'label': label, 'sublabel': sub,
+                          'group': lane, 'meta': {'periodKey': code}})
+        return cards
 
     @api.model
     def import_mapping_create(self, config_id, batch_id, column, target_rule_id,
@@ -8757,7 +8893,11 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False, 'msg': _("No permission.")}
         # MAPFIX D1 — wrong-type in, refusal out (see `employee_mapping_create`).
         col = self._ec_spec(column)
-        col = col[2:] if col.startswith('c:') else col
+        # RUNSRC C2 — the pay-run lane, before the `c:` strip, because `p:` and
+        # `c:` are two id spaces on one board and a column really can be headed
+        # `STDDAYS`.
+        is_pay_run = col.startswith('p:')
+        col = col[2:] if (col.startswith('c:') or is_pay_run) else col
         col = (col or '').strip()
         rule = self.env['hr.formula.rule'].browse(self._as_id(target_rule_id))
         if not (col and rule.exists()):
@@ -8765,6 +8905,17 @@ class PbFormulaStudio(models.AbstractModel):
         sealed = self._mc_refuse_sealed(rule)
         if sealed:
             return sealed
+        if is_pay_run:
+            # No SC-4 twin here, deliberately: the spreadsheet lane can be
+            # switched off, so a board draw onto it has something to refuse.
+            # Every pay run has a period, so there is nothing to switch off and
+            # nothing to refuse — see `formula_config.SOURCE_LANES`.
+            try:
+                rule.set_source_binding('pay_run', col, origin='board')
+            except (UserError, ValidationError) as exc:
+                return {'ok': False, 'msg': exc.args[0] if exc.args
+                        else self._ec_bad_spec_msg()}
+            return {'ok': True, 'replaced': None}
         # SC-4 — the excel lane's refusal on the board itself.
         if rule.config_id and not getattr(
                 rule.config_id, 'source_excel_enabled', True):
@@ -8789,6 +8940,22 @@ class PbFormulaStudio(models.AbstractModel):
     def import_mapping_delete(self, rule_id):
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}
+        # ------------------------------------------------------------------
+        # RUNSRC C2 — WHICH wire is being cut, not "this component's wire".
+        #
+        # A component may now carry a spreadsheet column AND a pay-run answer,
+        # and each is drawn as its own wire. `ref` is `p:<rule id>` on the
+        # pay-run one and the bare id on the other, so a cut removes the wire
+        # the user cut and leaves the other one reading — which is exactly what
+        # the comment below says about the excel/legacy pair, one source
+        # further on.
+        # ------------------------------------------------------------------
+        spec = self._ec_spec(rule_id)
+        if spec.startswith('p:'):
+            rule = self.env['hr.formula.rule'].browse(self._as_id(spec[2:]))
+            if rule.exists():
+                rule.clear_source_binding('pay_run')
+            return {'ok': True}
         rule = self.env['hr.formula.rule'].browse(self._as_id(rule_id))
         if rule.exists():
             # Clear whichever of the two drew the wire. A component wired from the

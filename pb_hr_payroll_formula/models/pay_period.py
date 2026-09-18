@@ -187,3 +187,63 @@ def fill_period_inputs(values, unresolved, date_from=None, date_to=None,
             values[code] = value
             filled.append(code)
     return filled
+
+
+def fill_wired_inputs(values, unresolved, wires, date_from=None, date_to=None,
+                      std_days=None):
+    """Fill the components somebody WIRED to the pay run. Returns the pairs.
+
+    RUNSRC C1, and the reason it exists: `fill_period_inputs` above matches on
+    the component's CODE, which reaches a component coded `PAYMONTH` and
+    nothing else. The standard-working-days component on a real Vietnamese
+    scheme is coded in Vietnamese, and renaming a live component's code
+    rewrites every formula that references it — so the run's numbers were
+    unreachable to exactly the schemes that needed them. A person draws a wire
+    instead, and this is the rung that honours it.
+
+    ``wires`` is ``[(component_code, period_key)]`` — what
+    `hr.formula.rule.pay_run_wires()` returns. Everything that made
+    `fill_period_inputs` safe is preserved here, deliberately and for the same
+    reasons:
+
+      * only a code ALREADY IN ``values`` is written, so a wire can never add a
+        component to a run;
+      * only a code in ``unresolved`` is written, so a wire can never beat a
+        spreadsheet column, a feed, a record or a contract line — the run is
+        the last rung and stays the last rung;
+      * nothing raises.
+
+    A code this fills is REMOVED from ``unresolved`` before it is returned, so
+    that a component coded (say) `STDDAYS` but wired to `PAYMONTH` keeps the
+    month it was wired to: what a person stated beats what a code happens to
+    spell. That is the only ordering question the two rungs can disagree on.
+
+    Returns ``[(code, period_key)]`` rather than just the codes, because the
+    caller writes the provenance key from the period key and should not have to
+    look it up again.
+    """
+    filled = []
+    try:
+        answers = period_values(date_from, date_to, std_days)
+    except Exception:                               # noqa: BLE001
+        return filled
+    if not answers:
+        return filled
+    for pair in (wires or ()):
+        try:
+            code, period_key = pair
+        except Exception:                           # noqa: BLE001
+            continue
+        if not code or not period_key:
+            continue
+        if code not in values or code not in unresolved:
+            continue
+        if period_key not in answers:
+            continue
+        values[code] = answers[period_key]
+        try:
+            unresolved.discard(code)
+        except Exception:                           # noqa: BLE001
+            pass
+        filled.append((code, period_key))
+    return filled

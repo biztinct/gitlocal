@@ -47,6 +47,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { wireGeometry, clampY } from "./mapping_geometry";
+import { srcLabel } from "../source_vocab";
 
 /** Pixels of a lane's band reserved so a clamped wire is not flush to the edge. */
 const BAND = 10;
@@ -326,16 +327,14 @@ export class JourneyBoard extends Component {
     get runSources() {
         const n = this.runNode;
         const by = (n && n.agg && n.agg.by_src) || {};
-        const words = {
-            excel: _t("Spreadsheet"), feed: _t("Connected system"),
-            rule: _t("Rule output"), contract_component: _t("Contract component"),
-            employee_field: _t("Employee record"), calculated: _t("Calculated"),
-            constant: _t("Fixed value"), none: _t("No source"),
-        };
+        // RUNSRC C3 — read out of `source_vocab`, never retyped. This copy did
+        // not know the pay period, and `words[k] || k` then printed the raw
+        // code: the Journey lane read "5 period" on the live Vietnamese scheme,
+        // a word off the inside of the product on a screen an owner reads.
         return Object.keys(by)
             .filter((k) => by[k])
             .sort((a, b) => by[b] - by[a])
-            .map((k) => ({ key: k, n: by[k], label: words[k] || k }));
+            .map((k) => ({ key: k, n: by[k], label: srcLabel(k) || k }));
     }
 
     /** The by-`via`-family tally. The buckets are the SERVER's, never invented here. */

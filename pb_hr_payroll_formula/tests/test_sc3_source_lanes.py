@@ -64,7 +64,11 @@ class TestSc3SourceLanes(TransactionCase):
         cfg = self._scheme('SC3DEF')
         self.assertEqual(
             cfg._source_kind_rank(),
-            self.Rule._SOURCE_RANK + ('contract_component',),
+            # RUNSRC C1 — `pay_run` is APPENDED, last, below the contract
+            # component. Nothing moved (J-D5), and a component with no
+            # `period_key` declares nothing of the kind, so an untouched scheme
+            # still resolves exactly as it always has.
+            self.Rule._SOURCE_RANK + ('contract_component', 'pay_run'),
             "an untouched scheme must resolve exactly as every scheme has "
             "resolved until today — this is the whole neutrality argument")
         rule = self._component(cfg, 'SC3DEFPAY')

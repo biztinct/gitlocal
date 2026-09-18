@@ -154,3 +154,8 @@ from . import test_runsrc_period_answers
 # Approval Matrix P4 — a change to how pay is worked out is signed off.
 from . import test_scheme_proposal
 from . import test_import_approval
+
+# RUNSRC C — the pay run is a source you can WIRE: a component coded in the
+# customer's own language declares which of the run's six numbers answers it,
+# and the run still loses to anything somebody stated.
+from . import test_runsrc_pc_pay_run_source

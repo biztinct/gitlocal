@@ -646,6 +646,11 @@
    exactly what the owner could not see. The glyphs carry it without colour. */
 .mapping-canvas .mc-src.s-contract_field     { background: #E4EBF6; color: #2F4E80; }
 .mapping-canvas .mc-src.s-bank_account       { background: #E7EEF3; color: #35617A; }
+/* RUNSRC C — the pay run's own period. A warm neutral of its own: it is not a
+   record, not a payload and not a calculation, and the reader should be able to
+   pick it out of a ranked row at a glance. The calendar glyph carries it
+   without colour. */
+.mapping-canvas .mc-src.s-period             { background: #F3ECFB; color: #6B3FA0; }
 .mapping-canvas .mc-src.s-calculated         { background: #DDD6F2; color: #241F52; }
 .mapping-canvas .mc-src.s-constant           { background: #EEF1F5; color: #64748B; }
 

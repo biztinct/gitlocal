@@ -817,6 +817,16 @@ class HrPayslipFormula(models.Model):
         if std_days is None:
             std_days = pay_period.default_standard_work_days(
                 self.date_from, self.date_to)
+        # RUNSRC C1 — the WIRED components first, then the code match. A wire
+        # is something a person drew; a code match is a spelling coincidence,
+        # and where the two disagree the person wins (`fill_wired_inputs` takes
+        # the code out of `unresolved`, so the pass below cannot overwrite it).
+        for code, period_key in pay_period.fill_wired_inputs(
+                values, unresolved, input_rules.pay_run_wires(),
+                self.date_from, self.date_to, std_days):
+            if provenance is not None:
+                provenance[code] = input_provenance.entry(
+                    'period', key=period_key, via=pay_period.PERIOD_VIA)
         for code in pay_period.fill_period_inputs(
                 values, unresolved, self.date_from, self.date_to, std_days):
             if provenance is not None:

@@ -55,3 +55,7 @@ from . import test_scheme_gate
 # RUNSRC A — one card per real column on the loaded-batch lane, and a floor
 # under the substring match so a bare column letter cannot invent an 85%.
 from . import test_runsrc_left_columns
+
+# RUNSRC C — the mapping board's "From this pay run" lane, and the client-side
+# vocabulary finally learning `period` (every such chip read "No source").
+from . import test_runsrc_pc_board_lane

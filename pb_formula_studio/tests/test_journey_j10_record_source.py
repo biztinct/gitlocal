@@ -300,10 +300,21 @@ class TestJourneyJ10RecordSource(TransactionCase):
             self.assertIn('_t("%s")' % label, js)
         canvas = _strip_js_comments(_src(
             'pb_formula_studio', 'static/src/js/mapping/mapping_canvas.js'))
-        self.assertEqual(canvas.count('contract_field: _t("Contract record")'), 2,
-                         "srcChip and srcChips both carry the vocabulary; a "
-                         "kind missing from either renders NO chip at all")
-        self.assertEqual(canvas.count('bank_account: _t("Bank account")'), 2)
+        # RUNSRC C3 — this case used to assert that `srcChip` and `srcChips`
+        # EACH carried their own copy of the vocabulary, and counted them. The
+        # premise was right (a kind missing from either renders NO chip at all)
+        # and the remedy was the disease: neither copy learned the pay period,
+        # so a wire a person had just drawn showed nothing, and the ledger's RS6
+        # rule — "add a new kind in BOTH places" — was a rule about four places.
+        # Both now read `source_vocab`, so what is asserted is the absence of a
+        # copy rather than the number of them.
+        self.assertIn('import { srcLabel } from "../source_vocab"', canvas)
+        for label in ("Contract record", "Bank account"):
+            self.assertNotIn('_t("%s")' % label, canvas,
+                             "the canvas is keeping its own copy of the "
+                             "vocabulary again — one register, read by all")
+        self.assertEqual(canvas.count('srcLabel('), 2,
+                         "srcChip and srcChips both ask the one register")
 
     def test_07c_every_source_kind_has_a_glyph_and_a_chip_colour(self):
         js = _src('pb_formula_studio', 'static/src/js/source_vocab.js')

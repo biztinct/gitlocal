@@ -9,6 +9,7 @@ import logging
 from ..formula_engine import excel_semantics
 from . import component_code
 from . import formula_operand_context
+from . import pay_period
 from . import value_kind_classifier
 
 _logger = logging.getLogger(__name__)
@@ -274,7 +275,7 @@ class HrFormulaRule(models.Model):
                 return config._source_kind_rank()
             except Exception:   # noqa: BLE001 — a bad token must not stop a run
                 pass
-        return self._SOURCE_RANK + ('contract_component',)
+        return self._SOURCE_RANK + ('contract_component', 'pay_run')
 
     @api.depends('source_ids.kind', 'source_ids.key', 'source_ids.origin',
                  'source_ids.set_date', 'source_ids.set_uid',
@@ -386,6 +387,18 @@ class HrFormulaRule(models.Model):
             at = next((i for i, d in enumerate(out)
                        if rank.index(d['kind']) > idx), len(out))
             out.insert(at, comp)
+        # RUNSRC C1 — the pay run, spliced at ITS rank exactly as the contract
+        # component is spliced at its own. It is last in the default rank, so
+        # this normally appends; the splice is written the general way anyway,
+        # because "it happens to be last" is how the contract component ended
+        # up hardwired last and had to be unpicked in SC-3.
+        if self.period_key and 'pay_run' in rank:
+            entry = {'kind': 'pay_run', 'key': self.period_key,
+                     'origin': 'user'}
+            idx = rank.index('pay_run')
+            at = next((i for i, d in enumerate(out)
+                       if rank.index(d['kind']) > idx), len(out))
+            out.insert(at, entry)
         return out
 
     def set_source_binding(self, kind, key, origin='user'):
@@ -404,6 +417,20 @@ class HrFormulaRule(models.Model):
         for rule in self:
             if not kind:
                 rule.clear_source_binding()
+                continue
+            # RUNSRC C1 — ONE ENTRY POINT, so every existing caller, chip and
+            # board keeps working with no knowledge of the new kind. The pay
+            # run is stored on the rule itself (see `period_key`), never as a
+            # `hr.formula.rule.source` row, so it is routed here rather than
+            # given a parallel API somebody would forget to call.
+            if kind == 'pay_run':
+                clean = (key or '').strip().upper()
+                if clean not in pay_period.PERIOD_CODES:
+                    raise ValidationError(_(
+                        "The pay run does not answer “%s”. Pick one of the "
+                        "things a run knows about its own period.")
+                        % (key or ''))
+                rule.write({'period_key': clean})
                 continue
             clean = (key or '').strip()
             if not clean:
@@ -429,6 +456,14 @@ class HrFormulaRule(models.Model):
         anything" are different acts and only one of them used to be expressible.
         """
         for rule in self:
+            # RUNSRC C1 — and "stop reading anything" has to mean the pay run
+            # too, or `clear_source_binding()` with no argument would leave a
+            # component still being answered by a source it no longer declares
+            # on any screen.
+            if kind in (None, False, 'pay_run') and rule.period_key:
+                rule.write({'period_key': False})
+            if kind == 'pay_run':
+                continue
             rows = rule.source_ids
             if kind:
                 rows = rows.filtered(lambda s: s.kind == kind)
@@ -632,6 +667,84 @@ class HrFormulaRule(models.Model):
         default=False,
         help="Marks this component as a contract component sourced from contract advantages."
     )
+
+    # ==========================================
+    # RUNSRC C1 — THE PAY RUN AS A DECLARED SOURCE.
+    #
+    # `pay_period.fill_period_inputs` matches on the component's CODE, so it can
+    # only ever reach a component literally coded `STDDAYS`, `PAYMONTH` and so
+    # on. On a real scheme the standard-working-days component is coded in the
+    # customer's own language, and renaming it would rewrite every formula that
+    # references it. So the run's numbers were unreachable to exactly the
+    # schemes that needed them.
+    #
+    # THIS IS DELIBERATELY NOT A ROW ON `hr.formula.rule.source`. That model's
+    # own docstring says there must never be a fourth `kind` there — those are
+    # the kinds a RUN can be asked to READ, and a run carries at most two
+    # payloads. The run's period is not a payload the run carries; it is a fact
+    # ABOUT the run. The precedent is `is_contract_component` directly above: a
+    # plain field on the rule that joins the ranked list only inside
+    # `declared_sources()`, always last. This is that, with a Selection instead
+    # of a Boolean because there are six answers rather than one.
+    #
+    # The VALUES come from `pay_period.PERIOD_CODES` so a seventh code can never
+    # exist in one place and not the other; the LABELS are written here, because
+    # `pay_period` is stdlib-only and must never import `_`.
+    # ==========================================
+    period_key = fields.Selection(
+        selection='_period_key_selection',
+        string='Answered by the pay run',
+        help="Take this component's value from the pay run itself instead of "
+             "asking for it every month. The run always loses to anything you "
+             "have actually stated — a spreadsheet column, a connected system "
+             "or a contract line — so this fills the gap and never overrides.",
+    )
+
+    #: The plain-words name of each thing the run can answer. One entry per
+    #: `pay_period.PERIOD_CODES` member; the assertion in `_period_key_selection`
+    #: is what stops the two drifting apart.
+    _PERIOD_KEY_LABELS = {
+        'PAYMONTH': "Pay month",
+        'PAYYEAR': "Pay year",
+        'PAYDAYS': "Days in the period",
+        'STDDAYS': "Standard working days",
+        'STARTDAY': "Day the period starts",
+        'ENDDAY': "Day the period ends",
+    }
+
+    @api.model
+    def _period_key_selection(self):
+        """The six codes, in `PERIOD_CODES` order, with their labels.
+
+        Built from the stdlib module rather than retyped, so adding a seventh
+        code there puts it on every board with no second edit. A code with no
+        label here falls back to the code itself rather than disappearing — a
+        missing word is a cosmetic fault; a missing option is a lost feature.
+        """
+        return [(code, _(self._PERIOD_KEY_LABELS.get(code, code)))
+                for code in pay_period.PERIOD_CODES]
+
+    def pay_run_wires(self):
+        """`[(code, period_key)]` for the components in `self` the run answers.
+
+        The ONE place the lane gate is applied on the resolver side: a scheme
+        whose `payrun` lane is somehow off (or whose config could not be read)
+        produces no wires at all, exactly as a disabled lane's declared rows
+        drop out of `declared_sources()`. Never raises — this is called inside
+        a payroll computation.
+        """
+        out = []
+        for rule in self:
+            key = rule.period_key
+            if not key or not rule.code:
+                continue
+            try:
+                if 'pay_run' not in rule._config_kind_rank():
+                    continue
+            except Exception:       # noqa: BLE001
+                continue
+            out.append((rule.code, key))
+        return out
 
     requires_new_contract = fields.Boolean(
         string='Requires New Contract',

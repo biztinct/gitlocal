@@ -30,6 +30,12 @@ import { Component, useState, useRef, onMounted, onWillUnmount, onPatched,
          onWillUpdateProps, useExternalListener } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+// RUNSRC C3 — THE VOCABULARY IS READ, NEVER RETYPED. Two local copies of the
+// source labels lived in this file, and neither knew the pay period: a wire a
+// person had just drawn rendered no chip at all, because an unknown kind is
+// dropped in silence. Ledger RS6 said "any new source kind must be added in
+// BOTH places" and there were four. There is now one.
+import { srcLabel } from "../source_vocab";
 import { ANCHOR_GAP, aggregateDocks, clampY, combOffsets, dockAnchors,
          itemMatches, spreadHubs, wireGeometry, WIRE_GUTTER } from "./mapping_geometry";
 
@@ -897,20 +903,11 @@ export class MappingCanvas extends Component {
         // lock: a stale bundle talking to a new server, or the reverse, must not
         // be able to put the pill back.
         if (it.meta && it.meta.wirable === false) { return null; }
-        // JOURNEY J10 — ten terms. `contract_field` and `bank_account` were
-        // both being called "Employee record", because the server tier that
-        // produced them was a bare set of rule ids with no room for which
-        // record or which field.
-        const labels = {
-            excel: _t("Spreadsheet"), feed: _t("Connected system"),
-            rule: _t("Rule output"),
-            contract_component: _t("Contract component"),
-            employee_field: _t("Employee record"),
-            contract_field: _t("Contract record"),
-            bank_account: _t("Bank account"),
-            calculated: _t("Calculated"), constant: _t("Fixed value"),
-        };
-        const label = labels[it.srcKind];
+        // JOURNEY J10 — ten terms, and RUNSRC C3 makes it eleven. They are read
+        // out of `source_vocab`, which is the one register every surface renders
+        // through; a copy here is a copy that will be half-updated (this one was,
+        // for the whole life of the pay period as a source).
+        const label = srcLabel(it.srcKind);
         if (!label) { return null; }
         return { label, kind: it.srcKind, hint: it.srcNote || label };
     }
@@ -950,22 +947,13 @@ export class MappingCanvas extends Component {
             // compatibility rail stops being one.
             return one ? [{ ...one, rank: 0 }] : [];
         }
-        // JOURNEY J10 — ten terms. `contract_field` and `bank_account` were
-        // both being called "Employee record", because the server tier that
-        // produced them was a bare set of rule ids with no room for which
-        // record or which field.
-        const labels = {
-            excel: _t("Spreadsheet"), feed: _t("Connected system"),
-            rule: _t("Rule output"),
-            contract_component: _t("Contract component"),
-            employee_field: _t("Employee record"),
-            contract_field: _t("Contract record"),
-            bank_account: _t("Bank account"),
-            calculated: _t("Calculated"), constant: _t("Fixed value"),
-        };
+        // JOURNEY J10 — ten terms, and RUNSRC C3 makes it eleven; read out of
+        // `source_vocab` for the reason given on `srcChip` above. `none` is the
+        // one kind that must NOT become a chip: "No source" beside a card that
+        // has no source is the emptiest pill in the product.
         const out = [];
         for (const src of list) {
-            const label = labels[src.kind];
+            const label = src.kind === "none" ? null : srcLabel(src.kind);
             if (!label) { continue; }
             out.push({
                 label, kind: src.kind, rank: src.rank || 0,
