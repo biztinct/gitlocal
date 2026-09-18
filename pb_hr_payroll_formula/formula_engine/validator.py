@@ -10,6 +10,29 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+#: A double-quoted Excel string literal, doubled quotes ("" = one ") included.
+_STRING_LITERAL_RE = re.compile(r'"(?:[^"]|"")*"')
+
+
+def blank_string_literals(formula: str) -> str:
+    """Empty every quoted string literal, keeping its quotes and its place.
+
+    Everything below this line reads formula TEXT with regexes — operators,
+    parentheses, cell references, function names. Inside quotes none of that is
+    syntax: it is a job title somebody typed. A real Vietnam configuration has
+    ``IF(VITRIPOSITIO="Compliance Officer - Export & Sustainability", ...)``
+    where the dash is an en dash (U+2013, what a spreadsheet's autocorrect
+    makes of a typed hyphen), and the character check refused the whole rule
+    over a punctuation mark in a job title. A bracket, a doubled operator or a
+    word ending in ``(`` inside a literal would have been just as wrong.
+
+    Blanking rather than deleting keeps the literal a literal, so a formula
+    that IS just a string stays syntactically whole: ``="x"`` -> ``=""``.
+    """
+    if not formula:
+        return formula
+    return _STRING_LITERAL_RE.sub('""', formula)
+
 
 class FormulaValidator:
     """
@@ -64,6 +87,11 @@ class FormulaValidator:
 
         if not formula_body:
             return True, ""  # Empty formula is valid
+
+        # Every check below reads the formula as SYNTAX. Text the user quoted is
+        # not syntax, so it is emptied first — once, here, rather than in each
+        # check, so no future check can forget.
+        formula_body = blank_string_literals(formula_body)
 
         # Check parentheses balance
         paren_error = self._check_parentheses(formula_body)
