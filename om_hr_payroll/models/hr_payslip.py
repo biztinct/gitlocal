@@ -1433,10 +1433,23 @@ class HrPayslipRun(models.Model):
             for base in active_base_columns:
                 base_key_set.update(base['keys'])
 
+            # NOTHING TICKED IS NOT A CHOICE TO SHOW NOTHING.
+            #
+            # "Visible in Reports" defaults to OFF, so a scheme nobody has
+            # curated has every component switched off — and honouring that
+            # literally hands back a workbook with no columns at all, which is
+            # never what the press meant. (The India scheme: 40 components,
+            # none ticked, an empty file and nothing on screen saying why.)
+            # Where SOME are ticked, somebody has chosen, and the choice is
+            # followed to the letter.
+            Line = self.env['hr.payslip.line']
             line_domain = [('slip_id', 'in', slips.ids)]
-            if 'report_visible' in self.env['hr.payslip.line']._fields:
-                line_domain.append(('report_visible', '=', True))
-            all_lines = self.env['hr.payslip.line'].search(line_domain, order='sequence,id')
+            visible_domain = list(line_domain)
+            if 'report_visible' in Line._fields:
+                visible_domain.append(('report_visible', '=', True))
+            all_lines = Line.search(visible_domain, order='sequence,id')
+            if not all_lines and visible_domain != line_domain:
+                all_lines = Line.search(line_domain, order='sequence,id')
 
             # Which keys are a NUMBER somewhere in this batch. Used twice: to
             # keep the line walk below honest, and to decide whether an empty
@@ -1473,9 +1486,13 @@ class HrPayslipRun(models.Model):
             scheme_rules = config.rule_ids if config and hasattr(
                 config, 'rule_ids') else None
             if scheme_rules:
-                for rule in scheme_rules.sorted(key=lambda r: (r.sequence, r.id)):
-                    if 'report_visible' in rule._fields and not rule.report_visible:
-                        continue
+                # The same rule as the lines above: a curated scheme is
+                # followed exactly, an uncurated one shows everything rather
+                # than nothing.
+                shown = scheme_rules
+                if 'report_visible' in scheme_rules._fields:
+                    shown = scheme_rules.filtered('report_visible') or scheme_rules
+                for rule in shown.sorted(key=lambda r: (r.sequence, r.id)):
                     key = _rule_key(rule)
                     if not key or not key[1] or key in seen_keys:
                         continue
