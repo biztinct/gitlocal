@@ -437,8 +437,16 @@ class PbApprovalInbox(models.AbstractModel):
             'lock_revision': request.lock_revision,
             'conflict': conflict,
             'can_decide': bool(payload['mine']),
-            'can_repair': bool(request.state == 'blocked'
-                               and self._can_config()),
+            # TWO WAYS A REQUEST STOPS SHORT, AND BOTH NEED THE SAME BUTTON.
+            # `blocked` is "nobody could be found to decide it". The other is
+            # quieter and was a dead end: every step said yes, and then the
+            # change itself failed — the request sits at `approved` carrying
+            # the reason in `block_reason`, with no approver left to press
+            # anything and no way back to it from this screen. (`rize`: a pay
+            # data file approved twice over, and 0 payslips.)
+            'can_repair': bool(self._can_config() and (
+                request.state == 'blocked'
+                or (request.state == 'approved' and request.block_reason))),
             # WHAT THE APP WANTS TO SAY ABOUT WHO WAS ASKED. A backup took a
             # seat because the holder sent it in, or nobody can approve it
             # yet — warnings, never refusals, above the steps where a reader
@@ -848,10 +856,20 @@ class PbApprovalInbox(models.AbstractModel):
 
     @api.model
     def repair(self, request_id):
-        """Try again to find the people a stuck request could not find."""
+        """Try the stuck thing again — whichever kind of stuck it is.
+
+        A request that never found its people needs the seats resolving again;
+        one that was approved and then failed to be carried out needs the
+        CHANGE running again, and `repair` would do nothing at all for it. The
+        two are told apart by the request's own state, so the screen keeps one
+        button and the reader keeps one idea.
+        """
         request = self.env['biz.approval.request'].browse(int(request_id))
         request.check_access('read')
-        self._engine().repair(request.id)
+        if request.state == 'approved' and request.block_reason:
+            self._engine().retry_apply(request.id)
+        else:
+            self._engine().repair(request.id)
         return self.get_request(request.id)
 
     @api.model

@@ -1554,104 +1554,119 @@ class HrPayrollImportBatch(models.Model):
 
         try:
             for line in self.import_line_ids.filtered(lambda l: l.state in ['validated', 'matched', 'unmatched']):
+                # ONE BAD ROW IS ONE BAD ROW. The `except` below has always
+                # caught a row's failure and carried on — but a failure that
+                # reached POSTGRES (a missing required column, a constraint)
+                # aborts the transaction itself, so every statement after it
+                # fails too, whatever it was. The catch then dutifully recorded
+                # 26 more "current transaction is aborted" rows and hid the one
+                # real cause. A savepoint per row is what makes the catch mean
+                # what it has always said it meant.
+                undo = (created_employees, created_contracts, created_payslips)
                 try:
-                    # Step 1: Ensure employee exists.
-                    #
-                    # The lookup is UNCONDITIONAL on having no `employee_id`.
-                    # It used to be gated on `line.is_new_employee`, which is
-                    # only set by `action_match_employees` — so a line that
-                    # reached processing without that step having run was
-                    # neither matched nor created, and failed with "No employee
-                    # found and auto-create is disabled" while auto-create was
-                    # in fact on. Looking again costs one indexed search and is
-                    # the only thing standing between a re-run and a second
-                    # copy of every employee.
-                    employee = line.employee_id
-                    if not employee:
-                        employee = self._find_employee(line)
-                        if employee:
-                            line.employee_id = employee.id
-                            line.is_new_employee = False
-                        elif one_time:
-                            # RECORDS R1 — one-time means NOTHING is saved,
-                            # newcomers included (owner ruling). The row is
-                            # listed as an exception in the person's own words,
-                            # never quietly created.
+                    with self.env.cr.savepoint():
+                        # Step 1: Ensure employee exists.
+                        #
+                        # The lookup is UNCONDITIONAL on having no `employee_id`.
+                        # It used to be gated on `line.is_new_employee`, which is
+                        # only set by `action_match_employees` — so a line that
+                        # reached processing without that step having run was
+                        # neither matched nor created, and failed with "No employee
+                        # found and auto-create is disabled" while auto-create was
+                        # in fact on. Looking again costs one indexed search and is
+                        # the only thing standing between a re-run and a second
+                        # copy of every employee.
+                        employee = line.employee_id
+                        if not employee:
+                            employee = self._find_employee(line)
+                            if employee:
+                                line.employee_id = employee.id
+                                line.is_new_employee = False
+                            elif one_time:
+                                # RECORDS R1 — one-time means NOTHING is saved,
+                                # newcomers included (owner ruling). The row is
+                                # listed as an exception in the person's own words,
+                                # never quietly created.
+                                HrPayrollImportBatch._one_time_branch_entered += 1
+                                line.state = 'error'
+                                line.error_message = ONE_TIME_NO_EMPLOYEE
+                                continue
+                            elif self.auto_create_employees:
+                                employee = self._create_employee(line)
+                                created_employees |= employee
+                                line.employee_id = employee.id
+                                line.is_new_employee = False
+
+                        if not employee:
+                            line.state = 'error'
+                            line.error_message = "No employee found and auto-create is disabled"
+                            continue
+
+                        raw_data = line.get_raw_data()
+                        if one_time:
+                            # RECORDS R1 — steps 1b/2/3 are the writeback, and a
+                            # one-time file skips every one of them: no source
+                            # stamp, no employee fields, no bank account, no
+                            # contract update, no contract components, and no
+                            # record created. Step 4 still reads the FILE for every
+                            # component the file feeds (`_declared_source_walk`
+                            # returns the line blob before any record rung), so the
+                            # payslip is the same as an updating run's; components
+                            # the file does not carry fall to the record as it
+                            # stands today, which is precisely "use it once".
                             HrPayrollImportBatch._one_time_branch_entered += 1
-                            line.state = 'error'
-                            line.error_message = ONE_TIME_NO_EMPLOYEE
-                            continue
-                        elif self.auto_create_employees:
-                            employee = self._create_employee(line)
-                            created_employees |= employee
-                            line.employee_id = employee.id
-                            line.is_new_employee = False
-
-                    if not employee:
-                        line.state = 'error'
-                        line.error_message = "No employee found and auto-create is disabled"
-                        continue
-
-                    raw_data = line.get_raw_data()
-                    if one_time:
-                        # RECORDS R1 — steps 1b/2/3 are the writeback, and a
-                        # one-time file skips every one of them: no source
-                        # stamp, no employee fields, no bank account, no
-                        # contract update, no contract components, and no
-                        # record created. Step 4 still reads the FILE for every
-                        # component the file feeds (`_declared_source_walk`
-                        # returns the line blob before any record rung), so the
-                        # payslip is the same as an updating run's; components
-                        # the file does not carry fall to the record as it
-                        # stands today, which is precisely "use it once".
-                        HrPayrollImportBatch._one_time_branch_entered += 1
-                        contract = self._get_latest_contract(employee)
-                        if not contract:
-                            line.state = 'error'
-                            line.error_message = ONE_TIME_NO_CONTRACT
-                            continue
-                    else:
-                        # Backfill the source key on an employee who was matched
-                        # rather than created — including everyone who predates
-                        # this field — so the NEXT run finds them by it directly
-                        # instead of falling back down the mappable rungs.
-                        self._stamp_source_ref(employee, line)
-                        self._update_employee_from_raw_data(employee, raw_data, line=line)
-
-                        # Step 1b: Bank destinations (COLROLES P3). Deliberately its own
-                        # try/except: an unparseable bank cell is a detail of one row, and
-                        # failing the whole line over it would throw away the payslip too.
-                        try:
-                            self._sync_employee_bank_account(employee, raw_data, line=line)
-                        except Exception as bank_error:      # noqa: BLE001 — see above
-                            _logger.exception(
-                                "Bank sync failed for line %s (employee %s): %s",
-                                line.id, employee.id, bank_error)
-
-                        # Step 2: Ensure contract exists
-                        contract = self._get_latest_contract(employee)
-                        if not contract and self.auto_create_contracts:
-                            contract = self._create_contract(employee, line)
-                            created_contracts |= contract
+                            contract = self._get_latest_contract(employee)
+                            if not contract:
+                                line.state = 'error'
+                                line.error_message = ONE_TIME_NO_CONTRACT
+                                continue
                         else:
-                            self._update_contract_from_raw_data(
-                                contract, raw_data, line=line)
+                            # Backfill the source key on an employee who was matched
+                            # rather than created — including everyone who predates
+                            # this field — so the NEXT run finds them by it directly
+                            # instead of falling back down the mappable rungs.
+                            self._stamp_source_ref(employee, line)
+                            self._update_employee_from_raw_data(employee, raw_data, line=line)
 
-                        # Step 3: Sync contract components from import data
-                        contract = self._sync_contract_components(line, contract)
+                            # Step 1b: Bank destinations (COLROLES P3). Deliberately its own
+                            # try/except: an unparseable bank cell is a detail of one row, and
+                            # failing the whole line over it would throw away the payslip too.
+                            try:
+                                self._sync_employee_bank_account(employee, raw_data, line=line)
+                            except Exception as bank_error:      # noqa: BLE001 — see above
+                                _logger.exception(
+                                    "Bank sync failed for line %s (employee %s): %s",
+                                    line.id, employee.id, bank_error)
 
-                    # Step 4: Create payslip with formula-based lines
-                    if self.create_payslips:
-                        payslip = self._create_payslip(employee, contract, line)
-                        if payslip:
-                            created_payslips |= payslip
-                            line.payslip_id = payslip.id
-                            if self.formula_config_id.use_auto_retro:
-                                self._link_retro_adjustments(payslip)
+                            # Step 2: Ensure contract exists
+                            contract = self._get_latest_contract(employee)
+                            if not contract and self.auto_create_contracts:
+                                contract = self._create_contract(employee, line)
+                                created_contracts |= contract
+                            else:
+                                self._update_contract_from_raw_data(
+                                    contract, raw_data, line=line)
 
-                    line.state = 'processed'
+                            # Step 3: Sync contract components from import data
+                            contract = self._sync_contract_components(line, contract)
+
+                        # Step 4: Create payslip with formula-based lines
+                        if self.create_payslips:
+                            payslip = self._create_payslip(employee, contract, line)
+                            if payslip:
+                                created_payslips |= payslip
+                                line.payslip_id = payslip.id
+                                if self.formula_config_id.use_auto_retro:
+                                    self._link_retro_adjustments(payslip)
+
+                        line.state = 'processed'
 
                 except Exception as e:
+                    # The savepoint rolled this row back, so anything it had
+                    # added is gone from the database — but not from these
+                    # recordsets, and not from the cache.
+                    created_employees, created_contracts, created_payslips = undo
+                    self.env.invalidate_all()
                     line.state = 'error'
                     line.error_message = str(e)
                     _logger.exception("Error processing line %s: %s", line.id, str(e))
@@ -1893,6 +1908,29 @@ class HrPayrollImportBatch(models.Model):
                 return value
         return None
 
+    def _m2o_required_defaults(self, target, vals):
+        """The required links a record made from ONE column still needs.
+
+        Only what can be inferred honestly from the batch: the company, and
+        the company's own address wherever an address is demanded. A required
+        field of any other shape is left to the model's own default — guessing
+        a value for it is how a spreadsheet column ends up somewhere nobody
+        asked for it, and a create that then fails is refused politely by the
+        caller rather than taking the transaction with it.
+        """
+        company = self.company_id or self.env.company
+        defaults = {}
+        for name, field in target._fields.items():
+            if name in vals or not field.store or not field.required:
+                continue
+            if field.type != 'many2one' or field.default is not None:
+                continue
+            if field.comodel_name == 'res.company':
+                defaults[name] = company.id
+            elif field.comodel_name == 'res.partner' and company.partner_id:
+                defaults[name] = company.partner_id.id
+        return defaults
+
     def _coerce_mapped_value(self, record, field, value):
         if value in (None, ''):
             return None
@@ -1952,7 +1990,26 @@ class HrPayrollImportBatch(models.Model):
                 vals = {'name': name_value}
                 if 'company_id' in target._fields and self.company_id:
                     vals['company_id'] = self.company_id.id
-                existing = target.create(vals)
+                # A NAME IS NOT ALWAYS ENOUGH TO EXIST. `hr.work.location`
+                # requires a work address and declares no default for it, and
+                # Odoo 19 enforces that in the database — so "Bangalore" in a
+                # Location column did not fail politely, it raised a DB error.
+                # A DB error is not a per-row problem: it aborts the whole
+                # transaction, so every row after it dies too, with a message
+                # about transactions that names neither the column nor the
+                # file (`rize`, 27 rows, 27 deaths, one real cause).
+                vals.update(self._m2o_required_defaults(target, vals))
+                try:
+                    with self.env.cr.savepoint():
+                        existing = target.create(vals)
+                except Exception as exc:    # noqa: BLE001
+                    # The savepoint has rolled back; the cache has not.
+                    self.env.invalidate_all()
+                    _logger.warning(
+                        "Could not create the %s named %r for %s.%s: %s — the "
+                        "column was not stored.",
+                        relation, name_value, record._name, field.name, exc)
+                    return None
             return existing.id
 
         if field_type == 'boolean':
