@@ -1777,6 +1777,92 @@ class PbFormulaStudio(models.AbstractModel):
     _CATEGORY_REVIEW_GROUPS = ('review', 'earning', 'deduction', 'employer_cost',
                                'net', 'info')
 
+    #: Words that mean take-home pay in a column header somebody typed. The
+    #: engine's own `_NET_NAME_HINTS` only matches a header that is ONLY those
+    #: words, because it is deciding; this list is looked for ANYWHERE in the
+    #: header, because it is only suggesting and a wrong suggestion costs a
+    #: glance. Vietnamese with and without its accents — a workbook carries both.
+    _NET_PAY_NAME_HINTS = (
+        'net pay', 'net payment', 'netpay', 'net salary', 'net income',
+        'take home', 'take-home', 'takehome', 'net amount',
+        'thuc nhan', 'thực nhận', 'thuc lanh', 'thực lãnh',
+        'thuc linh', 'thực lĩnh', 'luong thuc', 'lương thực',
+    )
+
+    def _net_pay_candidates(self, config):
+        """The components that could be net pay, likeliest first.
+
+        Offering them in column order and letting the screen preselect the first
+        one is how a live Vietnam configuration came to have its INSURANCE
+        SALARY named as take-home pay: column K is simply the first calculated
+        column in that workbook, the screen had it selected on arrival, and the
+        button beside it says "Read the scheme again". Every one of the other 79
+        components was then filed as Information, and the payroll showed no
+        deductions at all.
+
+        So rank them, and let the screen say why it is proposing one. Three
+        signals, in the order they are trusted:
+
+        * the header says so — "Net Payment VND", "Thực nhận";
+        * nothing else is worked out FROM it. Net pay is the end of the
+          arithmetic; an insurance base is the start of it, which is exactly the
+          distinction that was missed;
+        * it comes late in the workbook. The last column is far likelier to be
+          the answer than the first.
+
+        A tie is broken by column order, so the list is stable. Nothing here
+        decides anything: `_net_role_find_net_rule` still refuses to guess.
+        """
+        rules = config.rule_ids.sorted(key=lambda r: (r.sequence, r.id))
+        formulas = [r for r in rules if r.column_type == 'formula']
+        if not formulas:
+            return []
+
+        # Which components are read by some other component's calculation.
+        feeds_something = set()
+        try:
+            incoming = config._net_role_edges(rules)
+            for edges in incoming.values():
+                for source_id, _sign, _derived, _conf in edges:
+                    feeds_something.add(source_id)
+        except Exception as exc:        # pragma: no cover - advisory only
+            # A scheme whose formulas cannot be parsed still deserves a picker;
+            # it just loses the sink signal.
+            _logger.info("Net-pay candidates: reference graph skipped: %s", exc)
+
+        last = len(formulas) - 1
+        scored = []
+        for position, rule in enumerate(formulas):
+            haystack = '%s %s' % (rule.name or '', rule.code or '')
+            haystack = haystack.lower()
+            named = any(hint in haystack for hint in self._NET_PAY_NAME_HINTS)
+            sink = rule.id not in feeds_something
+            score = (100 if named else 0) + (20 if sink else 0)
+            # Lateness, worth less than either real signal on its own.
+            score += int(10.0 * position / last) if last else 0
+            scored.append((score, position, rule, named, sink))
+
+        scored.sort(key=lambda s: (-s[0], s[1]))
+        best_score = scored[0][0]
+        out = []
+        for score, _position, rule, named, sink in scored:
+            reason = ''
+            # Only the ones actually being proposed explain themselves.
+            if score == best_score and best_score >= 20:
+                if named:
+                    reason = _("its name says so")
+                elif sink:
+                    reason = _("nothing else is worked out from it")
+            out.append({
+                'id': rule.id,
+                'col': rule.column_letter or '',
+                'code': rule.code or '',
+                'name': rule.name or rule.code or '',
+                'suggested': score == best_score and best_score >= 20,
+                'reason': reason,
+            })
+        return out
+
     @api.model
     def _category_review_group_meta(self):
         return {
@@ -1876,12 +1962,7 @@ class PbFormulaStudio(models.AbstractModel):
             # No net-pay component. The dialog says so in one sentence and
             # offers the one fix there is — naming it.
             payload['error'] = summary['error']
-            payload['net_candidates'] = [
-                {'id': rule.id, 'col': rule.column_letter or '',
-                 'code': rule.code or '', 'name': rule.name or rule.code or ''}
-                for rule in config.rule_ids.sorted(key=lambda r: (r.sequence, r.id))
-                if rule.column_type == 'formula'
-            ]
+            payload['net_candidates'] = self._net_pay_candidates(config)
             return payload
         payload['net_code'] = summary.get('net_code') or ''
         buckets = {key: [] for key in self._CATEGORY_REVIEW_GROUPS}

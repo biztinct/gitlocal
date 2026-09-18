@@ -54,15 +54,32 @@
                   <div class="pbcr-netpick">
                     <label for="pbcr_net">Net pay is</label>
                     <select id="pbcr_net" t-on-change="onNetPick">
+                      <!-- Nothing is chosen for you unless the scheme itself
+                           says which one it is. Preselecting the first column
+                           is what named an insurance base as take-home pay. -->
+                      <option value="" t-att-selected="!state.netPick">
+                        Choose the component…
+                      </option>
                       <option t-foreach="netCandidates" t-as="c" t-key="c.id" t-att-value="c.id"
                               t-att-selected="c.id === state.netPick">
                         <t t-esc="c.name"/> (<t t-esc="c.code"/>)
                       </option>
                     </select>
-                    <button class="pbfs-btn primary" t-att-disabled="state.busy" t-on-click="confirmNet">
+                    <button class="pbfs-btn primary"
+                            t-att-disabled="state.busy or !state.netPick"
+                            t-on-click="confirmNet">
                       Read the scheme again
                     </button>
                   </div>
+                  <p class="pbcr-fine" t-if="netSuggestion">
+                    We have suggested <b><t t-esc="netSuggestion.name"/></b>
+                    <t t-if="netSuggestion.reason"> — <t t-esc="netSuggestion.reason"/></t>.
+                    Change it if that is not the amount your people are actually paid.
+                  </p>
+                  <p class="pbcr-fine" t-else="">
+                    Pick the component that holds what each person actually
+                    takes home — usually the last calculated column.
+                  </p>
                 </t>
                 <t t-elif="!canEdit">
                   <p class="pbcr-fine">Ask a payroll manager to name the net-pay component.</p>

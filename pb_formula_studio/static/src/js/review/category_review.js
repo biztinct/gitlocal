@@ -62,8 +62,15 @@ export class PbCategoryReview extends Component {
         try {
             this.state.data = await this.orm.call(
                 "pb.formula.studio", "category_review_data", [this.configId]);
+            // Preselect only what the server actually PROPOSES. Defaulting to
+            // the first column is how an insurance base came to be named as
+            // take-home pay on a live configuration: it arrived selected, and
+            // the button beside it reads "Read the scheme again". With no
+            // proposal the picker opens on its "choose one" line and the button
+            // stays disabled until somebody chooses.
             const cands = (this.state.data && this.state.data.net_candidates) || [];
-            this.state.netPick = cands.length ? cands[0].id : null;
+            const suggested = cands.find((c) => c.suggested);
+            this.state.netPick = suggested ? suggested.id : null;
         } catch (e) {
             this.state.failed = true;
         } finally {
@@ -85,6 +92,8 @@ export class PbCategoryReview extends Component {
     get canEdit() { return !!this.data.can_edit; }
     get netless() { return !!this.data.error; }
     get netCandidates() { return this.data.net_candidates || []; }
+    /** The one the server proposes, if it is confident enough to propose one. */
+    get netSuggestion() { return this.netCandidates.find((c) => c.suggested) || null; }
 
     // A subtitle that names the component the reading is anchored on, because
     // "we read your formula" is only reassuring when it says WHICH one.
