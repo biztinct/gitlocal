@@ -51,3 +51,7 @@ from . import test_rd47_group_and_required
 
 # Approval Matrix P4 — merge, release and roll-back go through a proposal.
 from . import test_scheme_gate
+
+# RUNSRC A — one card per real column on the loaded-batch lane, and a floor
+# under the substring match so a bare column letter cannot invent an 85%.
+from . import test_runsrc_left_columns

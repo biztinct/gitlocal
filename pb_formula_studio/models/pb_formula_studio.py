@@ -20,6 +20,10 @@ from odoo.exceptions import AccessError, UserError
 # MAPFIX A — one code generator for every path that names a column.
 from odoo.addons.pb_hr_payroll_formula.models import component_code as component_code_mod
 from odoo.addons.pb_hr_payroll_formula.models import value_kind_classifier
+# RUNSRC A1 — the same letter arithmetic the loader used when it wrote the
+# aliases, so the board can tell a real column from its own twin.
+from odoo.addons.pb_hr_payroll_formula.formula_engine.column_manager import (
+    index_to_letter as _index_to_letter)
 # Approval Matrix P4 — the key the five doors into a live pay scheme check.
 from odoo.addons.pb_hr_payroll_formula.models.scheme_proposal import (
     KIND_NAME as SCHEME_KIND_NAME, apply_context as _scheme_apply)
@@ -5737,6 +5741,45 @@ class PbFormulaStudio(models.AbstractModel):
     def _norm(s):
         return re.sub(r'[^a-z0-9]', '', (s or '').lower())
 
+    # RUNSRC A2 — a substring match needs enough letters to MEAN something.
+    #
+    # `'a' in 'manhanvien'` is True, so every bare column-letter key used to
+    # nominate itself, at 85%, onto the first component whose code happened to
+    # contain that letter. The live Vietnamese board was strung with orange
+    # wires that were not matches at all. Four normalised characters is
+    # comfortably under the converter's own ≥6 fuzzy-header floor and well over
+    # the one to three characters a column letter can be.
+    _SUGGEST_SUBSTRING_MIN = 4
+
+    @classmethod
+    def _substring_match(cls, a, b):
+        """One of these contains the other, and the contained one is long
+        enough that the containment is evidence rather than arithmetic."""
+        if not a or not b:
+            return False
+        if min(len(a), len(b)) < cls._SUGGEST_SUBSTRING_MIN:
+            return False
+        return a in b or b in a
+
+    @classmethod
+    def _suggest_confidence(cls, cn, rc, rn):
+        """How sure the board is that column `cn` feeds the component whose
+        normalised code is `rc` and normalised name is `rn`.
+
+        An EXACT match keeps scoring at any length — a component genuinely
+        coded `A` may legitimately be fed by a column keyed `A`. Only the
+        substring arms carry the floor.
+        """
+        if rc and cn == rc:
+            return 1.0
+        if cls._substring_match(rc, cn):
+            return 0.85
+        if rn and cn == rn:
+            return 0.8
+        if cls._substring_match(rn, cn):
+            return 0.8
+        return 0.0
+
     @api.model
     def _dt_label(self, data_type):
         """The human label of a data type, from the store's OWN selection — the
@@ -8193,16 +8236,90 @@ class PbFormulaStudio(models.AbstractModel):
     # ------------------------------------------------------------------
     # F10 adapter 3 — import column mapping (Excel columns → inputs)
     # ------------------------------------------------------------------
+    def _import_batch_row(self, batch):
+        """The batch's first stored row, exactly as the loader wrote it.
+
+        The keys are what the resolver looks a component up by; the values are
+        what lets the board say `e.g. 12,500,000` under a heading instead of
+        making the reader guess. A malformed blob degrades to `{}` — this is a
+        read for a picture, and a picture is never worth an exception.
+        """
+        if not batch:
+            return {}
+        line = self.env['hr.payroll.import.line'].search(
+            [('batch_id', '=', batch.id)], limit=1)
+        if line and line.raw_data_json:
+            try:
+                raw = json.loads(line.raw_data_json)
+            except Exception:
+                return {}
+            if isinstance(raw, dict):
+                return raw
+        return {}
+
     def _import_batch_columns(self, batch):
         """Distinct column keys from the batch's first import line (the parsed
         header→value dict), preserving order."""
-        line = self.env['hr.payroll.import.line'].search([('batch_id', '=', batch.id)], limit=1)
-        if line and line.raw_data_json:
+        return list(self._import_batch_row(batch).keys())
+
+    # ------------------------------------------------------------------
+    # RUNSRC A1 — one card per real column, on the loaded-batch lane too.
+    #
+    # `_raw_data_from_row` stores every column under TWO keys: its heading and
+    # its bare column letter (`payroll_import_batch.py:488`). That is
+    # load-bearing — the resolver's letter fallback reads it and compiled
+    # formulas address components by letter — so it stays exactly as it is, and
+    # the FOLD happens here, on the way to the screen. A nine-column file was
+    # drawing eighteen cards, half of them called "A", "B", "C".
+    #
+    # There is no headers list on a batch, only the ordered keys of the stored
+    # dict, so this walks the same column counter the writer walked: a key that
+    # is a bare letter AND is the letter of the column just emitted is that
+    # column's own alias, and nothing else is. Everything the writer could not
+    # alias — a heading that genuinely reads "A", a blank heading whose only
+    # spelling IS its letter, a multisheet dict row with no aliases at all —
+    # falls through and keeps its card.
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _column_alias_fold(keys):
+        """`[key…]` → `[{key, letter}]`, one entry per real column.
+
+        Tolerant by construction: anything the walk cannot explain is emitted,
+        so the failure mode is today's behaviour (an extra card) and never a
+        missing column or a raised exception.
+        """
+        shown, col, prev_bare, blank_col = [], 0, None, False
+        for key in keys:
+            k = str(key or '')
+            bare = k.split('|', 1)[1] if '|' in k else k
+            bare = bare.strip()
+            is_letter = bool(re.fullmatch(r'[A-Z]{1,3}', bare))
+            if is_letter and col > 0:
+                try:
+                    own = _index_to_letter(col - 1)
+                except Exception:          # never raise from a display path
+                    own = None
+                if own == bare:
+                    if blank_col:
+                        # The column just emitted had no heading, so its letter
+                        # is the only name it will ever have. Take the letter as
+                        # that column's card instead of a second one.
+                        shown.append({'key': k, 'letter': bare})
+                        prev_bare, blank_col = bare, False
+                        continue
+                    if prev_bare != bare:
+                        continue               # the alias of the column above
             try:
-                return list(json.loads(line.raw_data_json).keys())
+                letter = _index_to_letter(col)
             except Exception:
-                pass
-        return []
+                letter = bare if is_letter else ''
+            if bare:
+                # The letter is the column's POSITION, never the spelling of its
+                # heading — a column headed "OT" is still column G.
+                shown.append({'key': k, 'letter': letter})
+            prev_bare, blank_col = bare, not bare
+            col += 1
+        return shown
 
     # ------------------------------------------------------------------
     # JOURNEY J2 — the Excel on-ramp.
@@ -8477,8 +8594,14 @@ class PbFormulaStudio(models.AbstractModel):
                      or batches.filtered(lambda b: b.import_line_ids)[:1] or batches[:1])
         input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input') \
             .sorted(key=lambda r: r.sequence)
-        cols = self._import_batch_columns(batch) if batch else []
-        left = self._import_left_columns(batch, cols, input_rules, config=config)
+        raw_row = self._import_batch_row(batch) if batch else {}
+        cols = list(raw_row.keys())
+        # RUNSRC A1 — the cards, and therefore the columns a suggestion may be
+        # drawn FROM, are the real columns. A suggestion whose `leftId` has no
+        # card on the board is the exact shape of the MAPFIX-D canvas crash.
+        shown_cols = [c['key'] for c in self._column_alias_fold(cols)]
+        left = self._import_left_columns(batch, cols, input_rules, config=config,
+                                         raw_row=raw_row)
         _acts, _run = self._source_actuals(config)
         _emp = self._source_record_dests(config)
         _wires = self._source_wire_dests(config)
@@ -8500,20 +8623,13 @@ class PbFormulaStudio(models.AbstractModel):
         rule_norms = [(r, self._norm(r.code), self._norm(r.name)) for r in input_rules
                       if r.id not in mapped_rules]
         used = set(mapped_rules)
-        for c in cols:
+        for c in shown_cols:
             cn = self._norm(c)
             best, conf = None, 0.0
             for r, rc, rn in rule_norms:
                 if r.id in used:
                     continue
-                if rc and (cn == rc):
-                    x = 1.0
-                elif rc and (rc in cn or cn in rc):
-                    x = 0.85
-                elif rn and (cn == rn or rn in cn or cn in rn):
-                    x = 0.8
-                else:
-                    x = 0.0
+                x = self._suggest_confidence(cn, rc, rn)
                 if x > conf:
                     best, conf = r, x
             if best and conf >= 0.8:
@@ -8548,7 +8664,8 @@ class PbFormulaStudio(models.AbstractModel):
         }
 
     @api.model
-    def _import_left_columns(self, batch, cols, input_rules, config=None):
+    def _import_left_columns(self, batch, cols, input_rules, config=None,
+                             raw_row=None):
         """The Excel board's left column: four lanes, none of them invented.
 
         Order is deliberate — the file YOU just dropped first (J2), because
@@ -8557,14 +8674,15 @@ class PbFormulaStudio(models.AbstractModel):
         scheme already reads, which is the only lane a never-uploaded database
         has; then the legacy Char.
 
-        The dropped-file lane shows ONE card per real column, labelled with the
-        key that will be bound and carrying a sample value from the first row —
+        BOTH file lanes show ONE card per real column, labelled with the key
+        that will be bound and carrying a sample value from the first row —
         `e.g. 12,500,000` under `SEVL|Basic Salary` is the difference between
         recognising your column and hoping. The other spellings of the same
         column (its bare twin, its letter) are real keys and stay in the stored
         list, reachable by typing them; they do not each get a card, because
         four cards for one column is a board nobody can read (see
-        `peek_source_columns`' `preferred`).
+        `peek_source_columns`' `preferred`, and `_column_alias_fold` for the
+        loaded-batch lane, which drew all eighteen until RUNSRC A1).
         """
         out, seen = [], set()
 
@@ -8588,9 +8706,22 @@ class PbFormulaStudio(models.AbstractModel):
                     meta={'sheet': col.get('sheet') or '',
                           'letter': col.get('letter') or ''})
 
+        # RUNSRC A1 — the loaded batch's lane, folded the same way. A file's
+        # columns are stored under two keys each, so this lane used to draw
+        # eighteen cards for a nine-column file and half of them read "A", "B",
+        # "C". The aliases stay in the stored data, stay resolvable and stay
+        # reachable through the search box; they simply stop being cards.
         file_lane = (batch.name or _("This file")) if batch else _("Uploaded file")
-        for c in cols:
-            add(c, file_lane)
+        sample_of = raw_row if isinstance(raw_row, dict) else {}
+        Batch = self.env['hr.payroll.import.batch']
+        for col in self._column_alias_fold(cols):
+            key = col['key']
+            sample = Batch._sample_text(sample_of.get(key)) if sample_of else ''
+            sheet = key.split('|', 1)[0].strip() if '|' in key else ''
+            add(key, file_lane,
+                sublabel=(_("e.g. %s", sample) if sample
+                          else (_("no value in the first row") if sample_of else '')),
+                meta={'sheet': sheet, 'letter': col.get('letter') or ''})
         for r in input_rules:
             if r.source_binding == 'excel':
                 add(r.source_binding_key, _("Already used by this scheme"))
