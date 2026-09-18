@@ -476,6 +476,14 @@
             </button>
             <button t-if="props.onOpenMatrix" class="pbim-btn ghost"
                     t-on-click="() => this.openMatrix()">Open the Matrix</button>
+            <!-- A STUCK REQUEST MUST HAVE A WAY OUT. Trying again is the
+                 hopeful answer; it is not the only one. A request whose reason
+                 for existing has gone (the scheme is already live, the file
+                 has been sent again) can only be left there, forever, unless
+                 the person who sent it in can put it down. -->
+            <button t-if="request.can_cancel" class="pbim-btn ghost"
+                    t-att-disabled="state.busy"
+                    t-on-click="() => this.cancel()">Withdraw it</button>
           </t>
           <t t-elif="canApprove">
             <button class="pbim-btn danger" t-on-click="() => this.openModal('reject')">
@@ -501,6 +509,14 @@
                     t-on-click="() => this.openModal('moveit')">
               <t t-out="ic('userCheck',14)"/> <span>Move it to somebody else</span>
             </button>
+            <!-- The seat is yours AND you sent it in. Without this the only
+                 ways out of your own request are to turn your own work down
+                 or send it back to yourself — and where the independence rule
+                 leaves "Approve" disabled, there is otherwise no way out at
+                 all. Withdraw only ever shows to the person who sent it. -->
+            <button t-if="request.can_cancel" class="pbim-btn ghost"
+                    t-att-disabled="state.busy"
+                    t-on-click="() => this.cancel()">Withdraw it</button>
           </t>
           <t t-else="">
             <span class="pbim-sub pbam-waitnote">
