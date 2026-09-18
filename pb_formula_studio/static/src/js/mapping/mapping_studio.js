@@ -559,6 +559,18 @@ export class MappingStudio extends Component {
 
     get mappedCount() { return this.wires.filter((w) => w.state === "accepted").length; }
     get suggestedCount() { return this.wires.filter((w) => w.state === "suggested").length; }
+    /**
+     * How many suggestions "Accept all ≥90%" would actually take.
+     *
+     * The button used to appear beside ANY suggestion, while `acceptAll` only
+     * ever took the ones at 90% or better: a board of 37 suggestions at 80%
+     * offered a button whose only possible outcome was nothing happening. The
+     * count that gates the control is now the count the control acts on.
+     */
+    get acceptableCount() {
+        return this.wires.filter(
+            (w) => w.state === "suggested" && w.confidence >= 0.9).length;
+    }
 
     /** "15 mapped" → flash every wire on the board for a second. */
     flashWires() {

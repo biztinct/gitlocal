@@ -5806,13 +5806,20 @@ class PbFormulaStudio(models.AbstractModel):
         An EXACT match keeps scoring at any length — a component genuinely
         coded `A` may legitimately be fed by a column keyed `A`. Only the
         substring arms carry the floor.
+
+        RUNSRC A1b — an exact NAME match scores 0.95, above the 90% the
+        "Accept all" button takes. It used to score 0.8, the same as "one of
+        these names contains the other", which put a column headed EXACTLY like
+        its component below the bar: a workbook generated from the scheme
+        itself produced 37 suggestions and an Accept-all button that would take
+        none of them. Whole-string equality is not a guess.
         """
         if rc and cn == rc:
             return 1.0
+        if rn and cn == rn:
+            return 0.95
         if cls._substring_match(rc, cn):
             return 0.85
-        if rn and cn == rn:
-            return 0.8
         if cls._substring_match(rn, cn):
             return 0.8
         return 0.0
@@ -8659,9 +8666,16 @@ class PbFormulaStudio(models.AbstractModel):
         # RUNSRC A1 — the cards, and therefore the columns a suggestion may be
         # drawn FROM, are the real columns. A suggestion whose `leftId` has no
         # card on the board is the exact shape of the MAPFIX-D canvas crash.
-        shown_cols = [c['key'] for c in self._column_alias_fold(cols)]
+        #
+        # RUNSRC A1b — and "the cards" means EVERY card, so the list is read
+        # back off the left column itself. It used to be built from the loaded
+        # batch's row alone, which left the one lane people actually press the
+        # button for — the file they just dropped — out of the matching
+        # entirely: 43 columns on screen, nothing to suggest, and every wire
+        # drawn by hand.
         left = self._import_left_columns(batch, cols, input_rules, config=config,
                                          raw_row=raw_row)
+        shown_cols = [c['id'][2:] for c in left if c['id'].startswith('c:')]
         _acts, _run = self._source_actuals(config)
         _emp = self._source_record_dests(config)
         _wires = self._source_wire_dests(config)
@@ -8697,13 +8711,25 @@ class PbFormulaStudio(models.AbstractModel):
         rule_norms = [(r, self._norm(r.code), self._norm(r.name)) for r in input_rules
                       if r.id not in mapped_rules]
         used = set(mapped_rules)
+        wired_cols = {w['leftId'][2:] for w in wires
+                      if str(w.get('leftId', '')).startswith('c:')}
         for c in shown_cols:
-            cn = self._norm(c)
+            if c in wired_cols:
+                continue
+            # RUNSRC A1b — a sheet-qualified key is `Salary|Mã nhân viên`, and
+            # the component it feeds is named `Mã nhân viên`. Matching the whole
+            # key means the sheet name is evidence about the component, which it
+            # never is: the same column on two sheets would score differently
+            # for no reason a reader could explain. So the HEADING is matched
+            # too, and the better of the two scores wins.
+            names = {self._norm(c)}
+            if '|' in c:
+                names.add(self._norm(c.split('|', 1)[1]))
             best, conf = None, 0.0
             for r, rc, rn in rule_norms:
                 if r.id in used:
                     continue
-                x = self._suggest_confidence(cn, rc, rn)
+                x = max(self._suggest_confidence(cn, rc, rn) for cn in names)
                 if x > conf:
                     best, conf = r, x
             if best and conf >= 0.8:
@@ -8771,7 +8797,18 @@ class PbFormulaStudio(models.AbstractModel):
             if not key or key in seen:
                 return
             seen.add(key)
-            out.append({'id': 'c:' + key, 'label': key, 'sublabel': sublabel,
+            # RUNSRC A1b — the card says what the COLUMN is called. The key it
+            # binds is still `Salary|Mã nhân viên (Code)`, because that is what
+            # the loader produces and what the resolver reads; but `Salary|` in
+            # front of every heading on a one-sheet workbook is a prefix the
+            # reader has to look past 43 times, and it made the board's own
+            # column names stop looking like the scheme's. Where two columns in
+            # one lane would then read the same — the same heading on two
+            # sheets — the sheet goes back on BOTH, because there the prefix is
+            # the only thing telling them apart (see `_dedupe_card_labels`).
+            label = key.split('|', 1)[1].strip() if '|' in key else key
+            out.append({'id': 'c:' + key, 'label': label or key,
+                        'sublabel': sublabel,
                         'group': group, 'meta': meta or {}})
 
         meta = self._import_sample_meta(config) if config else None
@@ -8807,8 +8844,29 @@ class PbFormulaStudio(models.AbstractModel):
                 add(r.source_binding_key, _("Already used by this scheme"))
         for r in input_rules:
             add(r.data_source_field, _("From this scheme's history"))
+        self._dedupe_card_labels(out)
         out.extend(self._pay_run_lane(batch, config))
         return out
+
+    @staticmethod
+    def _dedupe_card_labels(cards):
+        """Put the sheet name back on any two cards that now read the same.
+
+        Dropping `Sheet|` off a card's label is only safe while the headings
+        left behind are still distinguishable. Two sheets in one workbook may
+        each have a `Total`; showing a lane with two identical cards and no way
+        to tell which is which is worse than the prefix ever was. In place, and
+        per lane, because the lane is what the reader is comparing within.
+        """
+        by_lane = {}
+        for card in cards:
+            by_lane.setdefault(card['group'], {}).setdefault(
+                card['label'], []).append(card)
+        for lane in by_lane.values():
+            for same in lane.values():
+                if len(same) > 1:
+                    for card in same:
+                        card['label'] = card['id'][2:]
 
     @api.model
     def _pay_run_lane(self, batch, config=None):

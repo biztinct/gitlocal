@@ -181,7 +181,10 @@
             <span class="pbms-pick__chev" t-out="ic('chevron', 12)"/>
           </button>
 
-          <button t-if="canEdit and suggestedCount" class="pbim-btn primary pbim-btn-sm"
+          <!-- Gated on what it would TAKE, not on what is on the board: a
+               button offered beside 37 suggestions that are all below the bar
+               is a button whose only outcome is nothing happening. -->
+          <button t-if="canEdit and acceptableCount" class="pbim-btn primary pbim-btn-sm"
                   t-att-disabled="state.busy ? 'disabled' : false" t-on-click="acceptAll">
             Accept all ≥90%
           </button>

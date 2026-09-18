@@ -258,13 +258,18 @@ export function aggregateDocks(geom, suppressed = []) {
  * Label, code (`meta.col`), path (`sublabel`) and sample value all count — with
  * 200 source fields the thing a person remembers is as often the value they saw
  * in the sample line as the name somebody's HR system chose.
+ *
+ * The sheet (`meta.sheet`) counts too, and has to: a spreadsheet card is now
+ * labelled with its heading alone, so the workbook tab it came from is no
+ * longer anywhere in the text a search could otherwise see.
  */
 export function itemMatches(item, query) {
     const q = (query || "").trim().toLowerCase();
     if (!q) { return true; }
     if (!item) { return false; }
     const hay = [item.label, item.sublabel, item.sample,
-                 item.meta && item.meta.col, item.group];
+                 item.meta && item.meta.col, item.meta && item.meta.sheet,
+                 item.group];
     for (const h of hay) {
         if (h && String(h).toLowerCase().includes(q)) { return true; }
     }
