@@ -616,6 +616,25 @@ export class RuleComposer extends Component {
             if (!fields.length) { continue; }
             groups.push({ key: feed.data_type, label: feed.label, fields });
         }
+        // RUNSRC D1 — the pay run's own numbers, last and in their own group.
+        //
+        // LAST because they are a fallback vocabulary: the question a person is
+        // answering is "which field of this source?", and the run's answers are
+        // the thing to reach for when the source has not got one. In their OWN
+        // group because the label has to say where the number comes from — a
+        // "Standard working days" sitting inside the attendance feed's list
+        // would read as something the source sent.
+        const runValues = d.run_values || [];
+        if (runValues.length) {
+            groups.push({
+                key: "payrun",
+                label: d.run_values_label || _t("From this pay run"),
+                isRun: true,
+                fields: runValues.map((v) => ({
+                    path: v.name, label: v.label || v.name, sample: "",
+                })),
+            });
+        }
         return groups;
     }
 
@@ -639,9 +658,17 @@ export class RuleComposer extends Component {
         return !!feed && feed.fields_known === false;
     }
 
-    /** Is there nothing at all to pick, as opposed to nothing MATCHING? */
+    /**
+     * Is there nothing at all to pick, as opposed to nothing MATCHING?
+     *
+     * The run's own numbers are excluded from this count DELIBERATELY. They
+     * are there on every connector, so counting them would make this getter
+     * permanently false and silence `emptyCatalogueNote` — the one sentence
+     * that tells somebody their source has not sent anything yet. The question
+     * is "does this SOURCE have fields", not "is the picker non-empty".
+     */
     get catalogueEmpty() {
-        return !this.fieldGroups.some((g) => g.fields.length);
+        return !this.fieldGroups.some((g) => !g.isRun && g.fields.length);
     }
 
     /**
@@ -999,6 +1026,30 @@ export class RuleComposer extends Component {
     get syntheticNote() {
         return _t("These rows are illustrations of what this source will send. "
                   + "They are not records that were received.");
+    }
+
+    /**
+     * RUNSRC D §4.1 — the standard-working-days line, shown only when the rule
+     * actually reads the run.
+     *
+     * The ruling is that a transformation must never work to a different
+     * standard-working-days number from the payslip beside it, and the way that
+     * is kept safe rather than merely correct is that the tester SAYS which
+     * number it used and where the number came from. The sentence is composed
+     * on the server, beside the lookup that chose it — a second author of it
+     * here would be a second opinion about the pay run.
+     */
+    get periodNote() {
+        const p = this.state.preview || {};
+        if (p.ok !== true) { return ""; }
+        const consumed = JSON.stringify(
+            [(this.state.draft || {}).excel_formula || "",
+             ((this.state.draft || {}).value_steps || []).map((s) => s.field),
+             (((this.state.draft || {}).filter_conditions || {}).rows || [])
+                 .map((r) => r.field)]).toLowerCase();
+        const names = ((this.payload || {}).run_values || []).map((v) => v.name);
+        if (!names.some((n) => consumed.includes(n))) { return ""; }
+        return ((p.period || {}).note) || "";
     }
 
     get lastErrorNote() {

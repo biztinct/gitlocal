@@ -323,3 +323,75 @@ Time` reads a real job title). The same ten classes are green on
 `payobook_template`, which has two of its own (`TestRd49SyncCost` cron rows
 switched off on that database). **Baseline both before changing anything**, or
 half a day goes into failures that were there when you arrived.
+
+**RS20 — the source vocabulary was in a FOURTH place after RS13, and it is the
+`.po`.** RS6 fixed the server label, RS13 deleted three duplicate client maps —
+and on a Vietnamese screen the chip still read **"Pay period"** in English.
+`pb_formula_studio/i18n/vi_VN.po` had the entry, with a correct Vietnamese
+`msgstr`, carrying **only `#. odoo-python`**. `CodeTranslations._load_web_
+translations` filters on `odoo-javascript`, so `srcLabel`'s `_t("Pay period")`
+never found it. Every one of the other ten labels in `source_vocab.js` carried
+both markers; this one was added by Phase C's server edit and the JS occurrence
+was never merged in. **A shared label used from both Python and JS needs BOTH
+markers and BOTH occurrence lines in one entry** — and a green test suite can
+never see this, because a test database has no second language installed.
+
+**RS21 — an always-known name must not be folded into a catalogue that means
+"nothing could be learned".** `pb_integrations.rule_composer._rule_draft_vals`
+guards its field check with `if known and …`: an EMPTY catalogue means the
+source has never sent anything, so every hand-typed name is accepted (a check
+that could not run must not be reported as a check that failed). Adding the six
+pay-run operand names to `known` would have made it permanently non-empty and
+silently switched that leniency off for every brand-new connector. They are
+held in a separate `run_names` set and unioned only at the comparison. Same
+trap on the client: `catalogueEmpty` had to exclude the run group, or the
+"this feed has not sent anything yet" note disappears for ever.
+
+**RS22 — this codebase asserts its shipped data by COUNT, in other modules.**
+Adding one row to `transformation_rule_templates.xml` failed
+`pb_hr_payroll_formula.TestZohoCatalogue.test_03` (`rules_created` 9 != 8,
+against a hard-coded `ZOHO_RULES` dict), and adding one lane to
+`pb_blueprint.LANE_OF_KIND` failed `pb_blueprint.TestConnect` (`by_lane` is
+asserted as an exact dict). Neither is a defect — both are the catalogue
+guarding itself — but **a vendor template or a lane is never a one-file
+change**, and the test that breaks lives in a module you did not think you were
+touching.
+
+**RS23 — `hr.payslip.run.create` fills the Mon-Fri default when the value is
+FALSY, so a fixture that wants a stored zero has to write it afterwards.**
+Phase B's `create` override reads `if not vals.get('pb_std_work_days')`, and
+`0.0` is falsy, so `create({'pb_std_work_days': 0.0})` stores 21. A negative
+survives (it is truthy). A test asserting "zero means nobody said" has to write
+the zero in a second statement or it is testing the default.
+
+**RS24 — a fixture period must be one no real database can own.**
+`_period_context` SEARCHES for the pay run or pay-data load behind the period it
+is handed, so a test fixture dated August 2026 finds `rize`'s and `rztest`'s
+real August run and reads its standard working days instead of the Mon-Fri
+default. The Phase D suite uses **August 2036** — same 21 Monday-to-Friday days,
+hand-countable, and no customer has a run in it. Generalises RS19: on a
+real-data clone, a fixture DATE is as dangerous as a fixture name.
+
+**RS25 — `pb_integrations.TestLedgers.test_the_ledgers_never_sudo` has been red
+since SOURCING S5, and nothing in this programme touched it.**
+`pb_integrations/models/pb_integrations.py` now contains seven `sudo(` calls and
+the test asserts none. Found by running the whole module rather than the classes
+a phase changed. Not fixed here — the sudo calls may well be correct and the
+test the stale half — but somebody has to decide which, and until then that
+module's suite is not green.
+
+**RS26 — the guided lane can ADD, and that is the whole of what it can do.**
+A guided rule's DERIVE step is `value_steps`, a list of `{field, contains}`
+whose values are summed (`_row_value`); there is no operator vocabulary, so
+`a / b * c` cannot be written in it at any length. The composer's **Excel lane**
+is where arithmetic lives, and it is still a no-code lane edited in the same
+popup. So "guided or python" is a false pair: the real ladder is **steps →
+formula → advanced**, and a spec that says "guided, or python if guided is
+unavailable" should usually mean the middle one.
+
+**RS27 — a validator user needs the right ACTIVE COMPANY, not just the groups.**
+RS5 said the group was not enough; this is the other half. With every company in
+`company_ids` but "Your Company" active, `pb.integrations.get_ledger` answered
+*"This seems to be a multi-company issue"* and the Data tab rendered "This table
+could not be loaded." Nothing was wrong with the code. Switch the company in the
+top bar before concluding anything from an empty cockpit.

@@ -133,6 +133,22 @@ _FILLS = {
     'api':     ("From the connected system", 'cyan'),
     'excel':   ("From a pay data file", 'green'),
     'rule':    ("Worked out by a formula", 'slate'),
+    # RUNSRC D3 — A SIXTH BUCKET, AND THE HONEST ANSWER.
+    #
+    # A component can now be answered by the pay run's own period: the month
+    # being paid, the days in it, the standard working days the run is paid
+    # against. Squeezing that into one of the five above was the alternative
+    # and every one of them is a lie a reader would act on — "Held on this
+    # contract" sends somebody to edit a contract that has nothing to edit,
+    # "From a pay data file" sends them to add a column they must not add, and
+    # "Worked out by a formula" sends them looking for a formula there isn't
+    # one of. Leaving it in `none` — which is what it did until this phase —
+    # said "Not fed by anything" about a component that is fed perfectly well,
+    # and that is the same class of lie RS6 and RS13 were about.
+    #
+    # The words match the mapping board's lane header exactly. Two spellings of
+    # one idea across two screens is how this went wrong before.
+    'payrun':  ("From this pay run", 'amber'),
     'none':    ("Not fed by anything", 'muted'),
 }
 
@@ -148,6 +164,9 @@ _KIND_BUCKET = {
     'contract_field': 'records',
     'bank_account': 'records',
     'contract_component': 'records',
+    # RUNSRC D3. `declared_sources()` calls the kind `pay_run` — see RS17 on
+    # why the declaration and the display deliberately use different words.
+    'pay_run': 'payrun',
 }
 
 # The tail of the explainer sentence, per dominant bucket (§2.2).
@@ -155,7 +174,39 @@ _EXPLAIN_TAIL = {
     'api': "reads the connected system",
     'excel': "reads a pay data file",
     'rule': "works the value out with a formula",
+    'payrun': "reads its own period",
 }
+
+
+# RUNSRC D4 — THE WORDS ABOVE ARE DATA; THESE ARE THE SENTENCES.
+#
+# `_FILLS` and `_EXPLAIN_TAIL` are module-level dicts, so their strings were
+# never wrapped and therefore never translated: a Vietnamese reader has been
+# seeing "Held on this contract" in English on every row of this drawer since
+# CD-2 shipped. `_(variable)` would not have helped — it extracts nothing and
+# ships English for ever (S19). One literal per case, written out, translated
+# at call time, is the pattern `pb_blueprint.lane_label` already uses.
+#
+# The dicts stay: the BUCKET KEY and the TONE are data the rest of this file
+# indexes by, and the tests read the English wording off these functions.
+def fills_label(bucket):
+    return {
+        'records': _("Held on this contract"),
+        'api': _("From the connected system"),
+        'excel': _("From a pay data file"),
+        'rule': _("Worked out by a formula"),
+        'payrun': _("From this pay run"),
+        'none': _("Not fed by anything"),
+    }.get(bucket) or (_FILLS.get(bucket) or ('', ''))[0]
+
+
+def explain_tail(bucket):
+    return {
+        'api': _("reads the connected system"),
+        'excel': _("reads a pay data file"),
+        'rule': _("works the value out with a formula"),
+        'payrun': _("reads its own period"),
+    }.get(bucket, '')
 
 
 def _dlabel(value):
@@ -320,7 +371,8 @@ class PbContracts(models.AbstractModel):
         for code, rule in rules_by_code.items():
             try:
                 bucket = self._cd_winning_bucket(rule, dests, wired)
-                fills[code] = (bucket,) + _FILLS[bucket]
+                fills[code] = (bucket, fills_label(bucket),
+                               _FILLS[bucket][1])
             except Exception:   # noqa: BLE001 — one odd rule may not blank the
                                 # whole grid (rail 10)
                 _logger.debug("Contract drawer: source unknown for %s", code,
@@ -329,7 +381,7 @@ class PbContracts(models.AbstractModel):
 
     @api.model
     def _cd_winning_bucket(self, rule, dests, wired):
-        """The FIRST source the scheme would read, as one of the five buckets."""
+        """The FIRST source the scheme would read, as one of the six buckets."""
         rank = rule._config_kind_rank()
         # (position in the scheme's own order, kind) — sorted stably, so a
         # declared source beats a folded-in one at the same position.
@@ -429,7 +481,7 @@ class PbContracts(models.AbstractModel):
             return _("Nothing is stored on the contract itself, and nothing "
                      "is feeding these components yet.")
         dominant = max(set(fed), key=fed.count)
-        tail = _EXPLAIN_TAIL.get(dominant)
+        tail = explain_tail(dominant)
         if not tail:
             # `records` is dominant: the contract IS the intended home, so a
             # grid of zeroes is a gap, and a soothing sentence would hide it.

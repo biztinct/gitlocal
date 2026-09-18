@@ -5,7 +5,7 @@ Eight numbered cases, and the numbers are the handover's. A live contract
 already carries every component template, and on a tenant whose numbers arrive
 per pay run every one of those amounts is genuinely zero. A grid of twenty-one
 zeroes reads as a broken screen and is not one, so each row now says where it is
-really filled from: `fills_from` is on every row and is one of five values (1),
+really filled from: `fills_from` is on every row and is one of six values (1),
 a connected-system key reads as the connected system (2), a spreadsheet column
 as a pay data file (3), a record destination as held on the contract (4), a
 component no scheme knows about as fed by nothing (5), the SCHEME's own source
@@ -57,6 +57,9 @@ class TestCd2FillsFrom(TransactionCase):
             'record': 'CDBRECORD',
             'silent': 'CDBSILENT',
             'both':   'CDBBOTH',
+            # RUNSRC D3 — a component whose ONLY source is the pay run's own
+            # period. Until this phase it read "Not fed by anything".
+            'payrun': 'CDBRUN',
         }
         for code in cls.codes.values():
             cls.Template.create({'name': 'CD2 %s' % code, 'code': code,
@@ -97,6 +100,9 @@ class TestCd2FillsFrom(TransactionCase):
             cls.r_both = cls._rule(cls.codes['both'])
             cls.r_both.set_source_binding('feed', 'payload.cdbboth')
             cls._map_onto_contract(cls.r_both)
+            # RUNSRC D3 — answered by the pay run, and by nothing else.
+            cls.r_payrun = cls._rule(cls.codes['payrun'])
+            cls.r_payrun.set_source_binding('pay_run', 'STDDAYS')
 
     # --------------------------------------------------------------- fixtures
     @classmethod
@@ -142,13 +148,13 @@ class TestCd2FillsFrom(TransactionCase):
         payload = self._rows()
         rows = payload['components']['rows']
         self.assertTrue(rows, "the fixture contract carries no components")
-        allowed = {'records', 'api', 'excel', 'rule', 'none'}
+        allowed = {'records', 'api', 'excel', 'rule', 'payrun', 'none'}
         for row in rows:
             self.assertIn('fills_from', row, row.get('code'))
             self.assertIn(row['fills_from'], allowed, row.get('code'))
             self.assertTrue(row.get('fills_label'), row.get('code'))
             self.assertIn(row.get('fills_tone'),
-                          {'indigo', 'cyan', 'green', 'slate', 'muted'})
+                          {'indigo', 'cyan', 'green', 'slate', 'amber', 'muted'})
 
     # ================================================================== case 2
     def test_02_a_connected_system_key_reads_as_the_connected_system(self):
@@ -178,6 +184,35 @@ class TestCd2FillsFrom(TransactionCase):
         self.assertEqual(row['fills_from'], 'records')
         self.assertEqual(row['fills_label'], "Held on this contract")
         self.assertEqual(row['fills_tone'], 'indigo')
+
+    # ============================================================= RUNSRC D3
+    def test_10_a_component_the_pay_run_answers_is_not_sourceless(self):
+        """RUNSRC D test 10 — the sixth bucket.
+
+        `pay_run` was in `_config_kind_rank()` from Phase C onward and in
+        `_KIND_BUCKET` from nowhere, so `_KIND_BUCKET.get(kind, 'none')` said
+        "Not fed by anything" about a component that is fed perfectly well.
+        """
+        if not self.have_rules:
+            self.skipTest("no formula module on this database")
+        row = self._row(self._rows(), self.codes['payrun'])
+        self.assertIsNotNone(row)
+        self.assertEqual(row['fills_from'], 'payrun')
+        self.assertEqual(row['fills_label'], "From this pay run")
+        self.assertEqual(row['fills_tone'], 'amber')
+
+    def test_10b_the_run_still_loses_to_anything_stated(self):
+        """The ordering Phase C settled, read back off the drawer.
+
+        A component wired to BOTH a spreadsheet column and the pay run reads as
+        the spreadsheet, because the run is the last rung and replaces the
+        value that was missing rather than the value somebody stated.
+        """
+        if not self.have_rules:
+            self.skipTest("no formula module on this database")
+        self.r_payrun.set_source_binding('excel', 'CD2 Run Column')
+        self.addCleanup(self.r_payrun.clear_source_binding, 'excel')
+        self.assertEqual(self._bucket(self.codes['payrun']), 'excel')
 
     # ================================================================== case 5
     def test_05_a_component_no_scheme_knows_still_renders(self):

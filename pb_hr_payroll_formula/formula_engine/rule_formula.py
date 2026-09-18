@@ -192,21 +192,36 @@ class Cell(str):
         return self._cmp(other, lambda a, b: a >= b)
 
 
-def resolve_ref(row, name):
+def resolve_ref(row, name, extra=None):
     """`[name]` against one record dict. Exact key first, then normalised.
 
     Returns `(value, found)`. The caller decides what an absent field means —
     inside an aggregate it is "this row has nothing to contribute", which is
     not the same as zero.
+
+    RUNSRC D1 — `extra` is a SECOND namespace, consulted only after the record
+    has been asked twice and answered nothing. It is the pay run's own numbers
+    (`stddays`, `paymonth`, …), and the ordering is the whole safety property:
+    a reference that resolved against the record before this argument existed
+    resolves against the record still, to the same value, so no rule that runs
+    today can change its answer. Only a reference that used to find NOTHING can
+    now find something.
     """
-    if not isinstance(row, dict):
-        return None, False
-    if name in row:
-        return row[name], True
-    target = _norm(name)
-    for key, value in row.items():
-        if _norm(key) == target:
-            return value, True
+    if isinstance(row, dict):
+        if name in row:
+            return row[name], True
+        target = _norm(name)
+        for key, value in row.items():
+            if _norm(key) == target:
+                return value, True
+    else:
+        target = _norm(name)
+    if extra:
+        if name in extra:
+            return extra[name], True
+        for key, value in extra.items():
+            if _norm(key) == target:
+                return value, True
     return None, False
 
 
@@ -542,16 +557,19 @@ def compile_rule_formula(text, known_paths=None):
     return code, refs
 
 
-def eval_rule_formula(code, refs, row):
+def eval_rule_formula(code, refs, row, extra=None):
     """Evaluate a compiled rule formula against ONE record dict.
 
     A reference the row does not carry reads as blank (`''`), which
     `coerce_number` turns into nothing and the aggregates then skip — the same
     leniency the guided lane applies, so a payload that lost a field degrades
     identically down both lanes.
+
+    `extra` is the pay run's own numbers, read only where the record is silent
+    — see `resolve_ref`.
     """
     def _ref(index):
-        value, _found = resolve_ref(row, refs[index])
+        value, _found = resolve_ref(row, refs[index], extra)
         return Cell.of(value)
 
     namespace = dict(_EVAL_GLOBALS)

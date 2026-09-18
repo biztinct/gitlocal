@@ -6699,6 +6699,20 @@ class PbFormulaStudio(models.AbstractModel):
         if rule.is_contract_component:
             out.append({'label': self._source_label('contract_component'),
                         'key': '', 'rank': len(out) + 1})
+        # RUNSRC D — and the pay run, for exactly the reason the two lines above
+        # exist. `rank` is `_SOURCE_RANK`, which holds only the kinds that can be
+        # a `source_ids` ROW (RS16), so a component already wired to the run was
+        # dropped from this list and the conflict dialog described a SHORTER
+        # order than the card behind it was showing. `period` is the display
+        # spelling of the `pay_run` declaration — RS17, and it must stay that
+        # way so the chip and this sentence use one word for one thing.
+        # (`in_kind` is only ever 'excel', 'feed' or 'rule' here — the pay-run
+        # lane draws through `import_mapping_create` and never through a probe —
+        # so there is nothing to de-duplicate against.)
+        period_key = getattr(rule, 'period_key', False)
+        if period_key:
+            out.append({'label': self._source_label('period'),
+                        'key': period_key, 'rank': len(out) + 1})
         return out
 
     @api.model

@@ -410,6 +410,14 @@
                 <t t-else="">
                   <div class="itgrc-rail__sent" t-esc="railSentence"/>
 
+                  <!-- RUNSRC D — which standard-working-days number this rule
+                       is working to, and who said it. Only when the rule
+                       actually reads the run. -->
+                  <div t-if="periodNote" class="itgrc-period">
+                    <span t-out="ic('calendar', 14)"/>
+                    <span t-esc="periodNote"/>
+                  </div>
+
                   <div class="itgrc-rows">
                     <div t-foreach="previewRows" t-as="row" t-key="row.i"
                          class="itgrc-prow" t-att-class="{ 'is-out': !row.kept }">

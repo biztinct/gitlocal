@@ -1668,3 +1668,47 @@ msgstr "Đếm không cần trường: câu trả lời là có bao nhiêu bản
 #: code:addons/pb_integrations/static/src/js/rule_composer.js:1000
 msgid "These rows are illustrations of what this source will send."
 msgstr "Những hàng này là minh họa về những gì nguồn này sẽ gửi."
+
+#. module: pb_integrations
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "From this pay run"
+msgstr "Từ đợt trả lương này"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+msgid "This rule is maintained in the backend form by an administrator, so it opens here as a summary you can read but not change."
+msgstr "Quy tắc này do quản trị viên duy trì trong biểu mẫu hệ thống, nên ở đây nó chỉ mở ra dưới dạng tóm tắt để đọc, không sửa được."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+msgid "You can read every step of this rule. Changing a transformation rule is a payroll manager's job."
+msgstr "Bạn có thể đọc mọi bước của quy tắc này. Việc thay đổi một quy tắc chuyển đổi là phần việc của quản lý tiền lương."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+msgid "The assistant is not configured, so these steps were matched from the words you used."
+msgstr "Trợ lý chưa được thiết lập, nên các bước này được ghép từ chính những từ bạn đã dùng."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+msgid "This feed has not sent anything yet, so there is nothing to pick from — type the field name exactly as the source spells it."
+msgstr "Nguồn cấp này chưa gửi gì, nên không có gì để chọn — hãy gõ đúng tên trường như nguồn viết."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+msgid "Counting needs no field: the answer is how many records are left after the conditions above."
+msgstr "Đếm thì không cần trường nào: kết quả là còn lại bao nhiêu bản ghi sau các điều kiện ở trên."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+msgid "These rows are illustrations of what this source will send. They are not records that were received."
+msgstr "Các dòng này chỉ là minh hoạ cho những gì nguồn sẽ gửi. Chúng không phải là bản ghi đã nhận được."

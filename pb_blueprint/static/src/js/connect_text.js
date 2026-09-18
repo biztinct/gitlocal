@@ -21,7 +21,7 @@ import { _t } from "@web/core/l10n/translation";
 export const CONNECT_TASKS = ["mapping", "payslip", "approvals"];
 
 /** The order the lanes are named in a coverage line. */
-export const LANES = ["api", "excel", "records", "cycle"];
+export const LANES = ["api", "excel", "records", "cycle", "payrun"];
 
 /**
  * The pill on a card: what the server says, in one word a person can act on.
@@ -79,6 +79,7 @@ export function laneLabel(lane) {
         case "excel": return _t("from spreadsheets");
         case "records": return _t("from employee records");
         case "cycle": return _t("carried from the mid-month run");
+        case "payrun": return _t("from this pay run");
         default: return "";
     }
 }

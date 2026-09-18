@@ -15305,6 +15305,8 @@ msgid "The range this lookup points at was deleted in your file (#REF!), so it w
 msgstr "Vùng dữ liệu mà công thức này tra cứu đã bị xóa trong tệp của bạn (#REF!), nên giá trị sẽ thành 0. Hãy sửa trong tệp, hoặc chọn một cách Sửa bên dưới."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__pb_std_work_days
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip_run__pb_std_work_days
 msgid "Standard working days"
@@ -15344,3 +15346,79 @@ msgid ""
 msgstr ""
 "Chưa đặt, nên kỳ lương này được tính theo %s ngày công — số ngày thứ Hai đến "
 "thứ Sáu trong kỳ của chính nó."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
+msgid "Pay month"
+msgstr "Tháng trả lương"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
+msgid "Pay year"
+msgstr "Năm trả lương"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
+msgid "Days in the period"
+msgstr "Số ngày trong kỳ"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
+msgid "Day the period starts"
+msgstr "Ngày bắt đầu kỳ"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
+msgid "Day the period ends"
+msgstr "Ngày kết thúc kỳ"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/hr_payslip_run.py:0
+msgid "Not set, so this run is paid against %s working days — the Monday-to-Friday days in its own period."
+msgstr "Chưa đặt, nên đợt lương này tính theo %s ngày công — số ngày từ Thứ Hai đến Thứ Sáu trong kỳ của chính nó."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/api_transformation_rule.py:0
+msgid "Working to %s standard working days, set on the pay run."
+msgstr "Đang tính theo %s ngày công chuẩn, được đặt trên đợt trả lương."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/api_transformation_rule.py:0
+msgid "Working to %s standard working days, set on the pay data load."
+msgstr "Đang tính theo %s ngày công chuẩn, được đặt trên lần nạp dữ liệu lương."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/api_transformation_rule.py:0
+msgid "Working to %s standard working days — the Monday-to-Friday days in this period, because nobody has said otherwise."
+msgstr "Đang tính theo %s ngày công chuẩn — số ngày từ Thứ Hai đến Thứ Sáu trong kỳ này, vì chưa ai đặt khác."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/api_transformation_rule.py:0
+msgid "This rule has no period to read, so the pay run's own numbers are not available to it."
+msgstr "Quy tắc này không đọc được kỳ nào, nên không dùng được các số liệu của chính đợt trả lương."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__period_key
+msgid "Answered by the pay run"
+msgstr "Do đợt trả lương cung cấp"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__period_key
+msgid "Take this component's value from the pay run itself instead of asking for it every month. The run always loses to anything you have actually stated — a spreadsheet column, a connected system or a contract line — so this fills the gap and never overrides."
+msgstr "Lấy giá trị của thành phần này từ chính đợt trả lương, thay vì phải nhập mỗi tháng. Đợt trả lương luôn xếp sau mọi nguồn bạn đã khai báo — một cột trong bảng tính, một hệ thống được kết nối hay một dòng hợp đồng — nên nó chỉ lấp chỗ trống và không bao giờ ghi đè."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/api_transformation_rule.py:0
+msgid "These records carry no pay period yet, so this is working to the current month — %s standard working days, counted Monday to Friday. A real pull will use the period its records arrive with."
+msgstr "Các bản ghi này chưa mang kỳ lương nào, nên đang tính theo tháng hiện tại — %s ngày công chuẩn, đếm từ Thứ Hai đến Thứ Sáu. Một lần kéo dữ liệu thật sẽ dùng kỳ đi kèm với bản ghi của nó."

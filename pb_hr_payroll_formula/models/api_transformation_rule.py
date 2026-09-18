@@ -10,6 +10,7 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.tools.safe_eval import safe_eval
 from odoo.tools.sql import table_exists
 
+from . import pay_period
 from .api_data_store import DATA_TYPES
 from .integration_endpoint import CONNECTOR_TYPES
 from ..formula_engine import rule_formula
@@ -172,7 +173,7 @@ def _text(value):
     return str(value).strip()
 
 
-def _condition_matches(row, condition):
+def _condition_matches(row, condition, extra=None):
     """One KEEP row against one record. Never raises — a condition that cannot
     be evaluated simply does not match, which is the leniency the legacy
     `except Exception: pass` filter had and the one payroll depends on.
@@ -181,13 +182,17 @@ def _condition_matches(row, condition):
     they are compared as numbers ("8" equals 8.0), otherwise as trimmed,
     case-insensitive text. The two lanes agreeing about equality is not a
     nicety — the same rule is meant to give the same answer in either.
+
+    `extra` is the pay run's own numbers, read only where the record is silent
+    (`rule_formula.resolve_ref`), so a condition that matched yesterday matches
+    today.
     """
     try:
         field = (condition or {}).get('field') or ''
         op = (condition or {}).get('op') or 'is'
         if op not in CONDITION_OPS:
             return False
-        raw, _found = rule_formula.resolve_ref(row, field)
+        raw, _found = rule_formula.resolve_ref(row, field, extra)
         if op == 'present':
             return _text(raw) != ''
         if op == 'blank':
@@ -406,6 +411,11 @@ class HrApiTransformationRule(models.Model):
              "  `employee_data` — the employee's own extracted_data dict\n"
              "  `all_records` — dict of {data_type: [records]} for all types\n"
              "  `period_start`, `period_end` — batch period dates\n"
+             "  `paymonth`, `payyear`, `paydays`, `stddays`, `startday`, "
+             "`endday` — the pay run's own numbers for this period. "
+             "`stddays` is the standard working days the payslips beside this "
+             "rule are paid against, falling back to the Monday-to-Friday "
+             "count of the period when nobody has set one.\n"
              "  `env` — the server environment\n"
              "  `employee` — hr.employee record (if matched)\n\n"
              "Must set `result = <value>` as the output.\n\n"
@@ -546,16 +556,24 @@ class HrApiTransformationRule(models.Model):
                 if sr.id not in [r.id for r in emp_data['all_records'][sr.data_type]]:
                     emp_data['all_records'][sr.data_type].append(sr)
 
-        # Execute each rule for each employee
+        # Execute each rule for each employee.
+        #
+        # RUNSRC D1 — one dict for the whole pull. The run's standard working
+        # days is a property of the PERIOD, and a pull is almost always one
+        # period; resolving it per employee per rule would put thirty-two
+        # thousand searches inside a four-thousand-employee sync.
+        period_cache = {}
         for emp_ext_id, emp_data in employee_records.items():
             main_rec = emp_data['main_record']
             computed = dict(main_rec.computed_data or {})
+            period = self._period_context(main_rec, period_cache)
 
             for rule in self:
                 try:
                     value = rule._execute_single(
                         emp_data['all_records'],
                         main_rec,
+                        period,
                     )
                     computed[rule.output_key] = value
                     rule._clear_error()
@@ -622,24 +640,30 @@ class HrApiTransformationRule(models.Model):
             _logger.warning("Could not clear the failure flag on rule %s: %s",
                             self.output_key or self.id, flag_error)
 
-    def _execute_single(self, all_records_by_type, main_record):
+    def _execute_single(self, all_records_by_type, main_record, period=None):
         """
         Execute a single transformation rule.
 
         Args:
             all_records_by_type: dict of {data_type: [hr.api.data.store records]}
             main_record: the primary data store record for context
+            period: the run's own numbers, already resolved for this period
+                    (`_period_context`). Optional — resolved here when absent,
+                    so every existing caller and every test keeps working.
 
         Returns:
             The computed value (float, int, bool as 0/1)
         """
+        if period is None:
+            period = self._period_context(main_record)
         # THE COMPOSER LANES (Cycle 8). A guided or excel rule never reaches
         # `safe_eval` at all: its conditions are evaluated natively on plain
         # dicts and its value comes from either a unit conversion or the
         # hardened excel converter. `python` is the lane everything was in
         # before, unchanged below.
         if self.builder_mode in ('guided', 'excel'):
-            return self._execute_builder(all_records_by_type, main_record)
+            return self._execute_builder(all_records_by_type, main_record,
+                                         period=period)
 
         # Get source records for this rule's data type
         source_records_orm = all_records_by_type.get(self.source_data_type, [])
@@ -676,7 +700,8 @@ class HrApiTransformationRule(models.Model):
             return self._execute_date_check(source_records, main_record)
 
         elif self.rule_type == 'python':
-            return self._execute_python(source_records, all_records_by_type, main_record)
+            return self._execute_python(source_records, all_records_by_type,
+                                        main_record, period)
 
         return self.default_value
 
@@ -722,6 +747,164 @@ class HrApiTransformationRule(models.Model):
     #
     # PROVEN, not asserted: `test_rule_composer.py` runs both entry points over
     # identical specs and records and compares the numbers.
+
+    # ==========================================
+    # RUNSRC D1 — THE PAY RUN'S OWN NUMBERS, IN EVERY LANE
+    # ==========================================
+    #
+    # The python lane has carried `period_start` and `period_end` since it was
+    # written. Nothing else about the run was reachable, so the one number a
+    # pro-rata rule actually needs — how many working days a full month is paid
+    # against — had to be typed into the formula as a constant, once per
+    # customer, and re-typed every time a month had a public holiday in it.
+    #
+    # THE ONE RULE THIS OBEYS: the number a transformation reads is THE SAME
+    # NUMBER THE PAYSLIP BESIDE IT READS, or an honest default, and the person
+    # writing the rule is always told which. A transformation quietly working
+    # to 22 days while the payslip next to it works to 20 would be worse than
+    # not having the number at all.
+
+    @api.model
+    def period_operands(self):
+        """The six numbers a rule may read, as a picker offers them.
+
+        The words are NOT written here. `hr.formula.rule._period_key_selection()`
+        is already the one author of them — it is what the mapping board's
+        "From this pay run" lane and the component's own Selection read — and a
+        second spelling of "Standard working days" is exactly how RS6/RS13
+        happened. Lower-cased to match the namespace they join (`period_start`,
+        `period_end`), which is the transformation lane's own convention.
+        """
+        try:
+            selection = self.env['hr.formula.rule']._period_key_selection()
+        except Exception:               # noqa: BLE001 — a picker, never a crash
+            return []
+        return [{'name': code.lower(), 'label': label}
+                for code, label in selection]
+
+    @api.model
+    def _period_std_days(self, date_from, date_to, company_id=None):
+        """`(days, where_it_came_from)` for this period. Never raises.
+
+        THE RESOLUTION ORDER IS NOT INVENTED HERE. Phase B built it once, on
+        `hr.payroll.import.batch._pb_standard_work_days()`: the pay run's own
+        number, then what the pay-data load was told, then the Monday-to-Friday
+        count of the period. This finds the load (or, failing that, the run)
+        that belongs to the period in front of us and asks IT, so the answer is
+        the same object's answer rather than a second opinion about it.
+
+        `where_it_came_from` is one of 'run', 'load', 'default' or '' — the
+        tester prints it, because "22 days" and "22 days because nobody said"
+        are different facts to somebody writing a pro-rata rule.
+        """
+        start, end = date_from or None, date_to or None
+        if not start or not end:
+            return None, ''
+
+        def _scoped(model, domain):
+            source = self.env.get(model)
+            if source is None:
+                return None
+            if company_id and 'company_id' in source._fields:
+                domain = domain + ['|', ('company_id', '=', company_id),
+                                   ('company_id', '=', False)]
+            return source.sudo().search(domain, order='id desc', limit=1)
+
+        try:
+            batch = _scoped('hr.payroll.import.batch',
+                            [('date_from', '=', start), ('date_to', '=', end)])
+            if batch:
+                run = batch.payslip_run_id
+                if run and run.pb_std_work_days and run.pb_std_work_days > 0:
+                    return batch._pb_standard_work_days(), 'run'
+                if batch.pb_std_work_days and batch.pb_std_work_days > 0:
+                    return batch._pb_standard_work_days(), 'load'
+            run = _scoped('hr.payslip.run',
+                          [('date_start', '=', start), ('date_end', '=', end),
+                           ('pb_std_work_days', '>', 0)])
+            if run:
+                said = run._pb_standard_work_days()
+                if said:
+                    return said, 'run'
+        except Exception:               # noqa: BLE001 — a number, never a crash
+            _logger.debug("Transformation rules: could not read the standard "
+                          "working days for %s-%s", start, end, exc_info=True)
+        return pay_period.default_standard_work_days(start, end), 'default'
+
+    @api.model
+    def _period_context(self, main_record, cache=None):
+        """Everything the run's period answers, plus the sentence that says so.
+
+        `cache` is an ordinary dict the caller owns, keyed by the period. One
+        pull runs every rule for every employee — four thousand employees times
+        eight rules is thirty-two thousand calls for one month's dates — so the
+        lookup happens once and the dict carries it. Passing it explicitly
+        rather than memoising on the environment keeps it obvious when it is
+        cold, which is what makes the tests readable.
+        """
+        period_from = getattr(main_record, 'period_from', None) or None
+        period_to = getattr(main_record, 'period_to', None) or None
+        dated = bool(period_from or period_to)
+        if not dated:
+            # Same today-based fallback `period_start` / `period_end` have used
+            # since the python lane was written, so the six agree with the two.
+            # It is recorded as a fallback rather than passed off as the run's
+            # period: a tester that says "22 working days in this period" about
+            # a month nobody is paying is the confident-and-wrong answer §4.1
+            # exists to prevent.
+            period_from = date.today().replace(day=1)
+            period_to = date.today()
+        company = getattr(main_record, 'company_id', None)
+        company_id = getattr(company, 'id', False) or False
+
+        key = (period_from, period_to, company_id, dated)
+        if cache is not None and key in cache:
+            return cache[key]
+
+        std_days, std_source = self._period_std_days(
+            period_from, period_to, company_id)
+        values = pay_period.namespace_values(period_from, period_to, std_days)
+        context = {
+            'date_from': period_from,
+            'date_to': period_to,
+            'values': values,
+            'std_days': values.get('stddays'),
+            'std_source': std_source if values.get('stddays') else '',
+            'dated': dated,
+            'note': self._period_note(values.get('stddays'), std_source, dated),
+        }
+        if cache is not None:
+            cache[key] = context
+        return context
+
+    @api.model
+    def _period_note(self, std_days, std_source, dated=True):
+        """One sentence: the number this rule is working to, and who said it.
+
+        Every wording is written out in full — `_(variable)` extracts nothing
+        and ships English for ever (S19) — and none of them names the platform.
+        """
+        if not std_days:
+            return _("This rule has no period to read, so the pay run's own "
+                     "numbers are not available to it.")
+        shown = '%g' % std_days
+        if not dated:
+            # The records carry no period at all, so these numbers describe the
+            # CURRENT month rather than a run. Said out loud, because the number
+            # looks exactly like a real one.
+            return _("These records carry no pay period yet, so this is "
+                     "working to the current month — %s standard working days, "
+                     "counted Monday to Friday. A real pull will use the "
+                     "period its records arrive with.") % shown
+        if std_source == 'run':
+            return _("Working to %s standard working days, set on the pay "
+                     "run.") % shown
+        if std_source == 'load':
+            return _("Working to %s standard working days, set on the pay "
+                     "data load.") % shown
+        return _("Working to %s standard working days — the Monday-to-Friday "
+                 "days in this period, because nobody has said otherwise.") \
+            % shown
 
     def _builder_expand(self, record_dicts):
         """The TAKE step: which rows this rule is actually about.
@@ -769,7 +952,7 @@ class HrApiTransformationRule(models.Model):
             node = list(node.values())
         return [r for r in node if isinstance(r, dict)] if isinstance(node, list) else []
 
-    def _row_matches(self, row):
+    def _row_matches(self, row, extra=None):
         """The KEEP step. No conditions means keep everything, which is the
         honest reading of an empty filter and matches the legacy behaviour of
         an empty `filter_expression`."""
@@ -777,10 +960,10 @@ class HrApiTransformationRule(models.Model):
         conditions = spec.get('rows') or []
         if not conditions:
             return True
-        results = [_condition_matches(row, c) for c in conditions]
+        results = [_condition_matches(row, c, extra) for c in conditions]
         return any(results) if (spec.get('join') or 'all') == 'any' else all(results)
 
-    def _row_value(self, row, compiled=None):
+    def _row_value(self, row, compiled=None, extra=None):
         """The DERIVE step for ONE row — or None when the row has no value.
 
         Guided: every step is read and converted into the rule's unit, and the
@@ -798,14 +981,14 @@ class HrApiTransformationRule(models.Model):
             if compiled is None:
                 compiled = self._compiled_formula()
             code, refs = compiled
-            return rule_formula.eval_rule_formula(code, refs, row)
+            return rule_formula.eval_rule_formula(code, refs, row, extra)
         total = None
         for step in (self.value_steps or []):
             field = (step or {}).get('field') or ''
             unit = (step or {}).get('contains') or 'number'
             if unit not in VALUE_UNIT_CODES:
                 unit = 'number'
-            raw, _found = rule_formula.resolve_ref(row, field)
+            raw, _found = rule_formula.resolve_ref(row, field, extra)
             value = _unit_value(raw, unit)
             if value is None:
                 continue
@@ -819,7 +1002,7 @@ class HrApiTransformationRule(models.Model):
         to make visible."""
         return rule_formula.compile_rule_formula(self.excel_formula)
 
-    def _builder_run(self, rows, main_record=None, trace=None):
+    def _builder_run(self, rows, main_record=None, trace=None, period=None):
         """The sentence, over the rows the TAKE step produced.
 
         `trace` is an OPTIONAL dict. When it is given, the same loops that
@@ -827,28 +1010,42 @@ class HrApiTransformationRule(models.Model):
         which ones matched, what each contributed. That is the whole of the
         composer's proof rail, and it is a decoration on this function rather
         than a copy of it.
+
+        `period` is the run's own numbers (`_period_context`). It is resolved
+        by the caller so one pull resolves it once, and it lands in the trace
+        as well as in the arithmetic — RUNSRC D §4.1: the tester must say which
+        standard-working-days number it used and where that number came from.
         """
+        if period is None:
+            period = self._period_context(main_record)
+        extra = period.get('values') or {}
         if trace is not None:
             trace['records_in'] = len(rows)
             trace['rows'] = []
+            trace['period'] = {
+                'values': dict(extra),
+                'std_days': period.get('std_days'),
+                'std_source': period.get('std_source') or '',
+                'note': period.get('note') or '',
+            }
 
         compiled = self._compiled_formula() if self.builder_mode == 'excel' else None
 
         matched, values = [], []
         for index, row in enumerate(rows):
-            keep = self._row_matches(row)
+            keep = self._row_matches(row, extra)
             value = None
             if keep:
                 matched.append(row)
                 if self.rule_type in ('sum', 'avg', 'min', 'max'):
-                    value = self._row_value(row, compiled)
+                    value = self._row_value(row, compiled, extra)
                     if value is not None:
                         values.append(value)
             if trace is not None and index < 60:
                 trace['rows'].append({
                     'i': index, 'kept': keep,
                     'value': value if value is not None else None,
-                    'cells': self._trace_cells(row),
+                    'cells': self._trace_cells(row, extra),
                 })
         if trace is not None:
             trace['matched'] = len(matched)
@@ -942,7 +1139,7 @@ class HrApiTransformationRule(models.Model):
         for rule in self:
             rule.consumed_field_paths = rule._consumed_field_names()
 
-    def _trace_cells(self, row):
+    def _trace_cells(self, row, extra=None):
         """The handful of fields this rule actually mentions, for the proof
         rail. A record can be a hundred keys wide and the rail is a column —
         showing everything would bury the two the reader is checking."""
@@ -952,25 +1149,26 @@ class HrApiTransformationRule(models.Model):
             if name in seen:
                 continue
             seen.add(name)
-            raw, _found = rule_formula.resolve_ref(row, name)
+            raw, _found = rule_formula.resolve_ref(row, name, extra)
             text = _text(raw)
             cells.append({'k': name, 'v': text if len(text) <= 60 else text[:57] + '…'})
             if len(cells) >= 4:
                 break
         return cells
 
-    def _execute_builder(self, all_records_by_type, main_record, trace=None):
+    def _execute_builder(self, all_records_by_type, main_record, trace=None,
+                         period=None):
         """The guided/excel lane's entry point from the execution engine."""
         source_records_orm = all_records_by_type.get(self.source_data_type, [])
         record_dicts = [r.extracted_data or {} for r in source_records_orm]
         return self._builder_run(
-            self._builder_expand(record_dicts), main_record, trace)
+            self._builder_expand(record_dicts), main_record, trace, period)
 
     def preview_on_records(self, record_dicts, main_record=None):
         """The traced twin, for the composer. SAME two primitives as execution.
 
-        Returns `{result, records_in, matched, valued, rows: [...]}`. Nothing
-        here writes: the caller hands it plain dicts and an (optionally
+        Returns `{result, records_in, matched, valued, period, rows: [...]}`.
+        Nothing here writes: the caller hands it plain dicts and an (optionally
         in-memory) rule, and the proof rail is the trace.
         """
         self.ensure_one()
@@ -1044,7 +1242,8 @@ class HrApiTransformationRule(models.Model):
 
         return self.default_value
 
-    def _execute_python(self, source_records, all_records_by_type, main_record):
+    def _execute_python(self, source_records, all_records_by_type, main_record,
+                        period=None):
         """Execute a Python expression transformation rule."""
         if not self.python_code:
             return self.default_value
@@ -1071,6 +1270,16 @@ class HrApiTransformationRule(models.Model):
             'relativedelta': relativedelta,
             'result': self.default_value,
         }
+
+        # RUNSRC D1 — the run's own six, beside the two dates that were always
+        # here. Added with `setdefault` semantics rather than `update`: the two
+        # names above are resolved from `main_record` directly and must keep
+        # answering exactly what they answered before, and nothing the period
+        # contributes may quietly replace a name this namespace already owns.
+        if period is None:
+            period = self._period_context(main_record)
+        for name, value in (period.get('values') or {}).items():
+            local_vars.setdefault(name, value)
 
         # Odoo 19 REMOVED `nocopy`. The signature is now
         # `safe_eval(expr, /, context=None, *, mode="eval", filename=None)`, and

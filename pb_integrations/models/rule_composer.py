@@ -110,6 +110,28 @@ GENERIC_RECIPES = [
               'record_source': 'records', 'excel_formula': '',
               'filter_conditions': {'join': 'all', 'rows': []},
               'value_steps': []}},
+    # RUNSRC D2 — the worked example, as a starter anybody can open.
+    #
+    # It is in the FORMULA lane, not the steps lane, and that is a fact about
+    # the steps rather than a preference: a value step names a field and the
+    # steps are ADDED, so the guided lane can express "a plus b" and cannot
+    # express "a divided by b times c". This arithmetic needs a division, so
+    # this is the lane it belongs in — still written by the person, still in
+    # the composer, still no code.
+    #
+    # `[stddays]` is the run's own standard working days, so the number follows
+    # a holiday month the moment somebody adjusts it on the pay run. The other
+    # field is left as a name to replace, because only this source knows what
+    # it calls unpaid days.
+    {'key': 'unpaid_leave', 'icon': 'calendar',
+     'title': 'Unpaid leave, as a share of the month',
+     'blurb': "Unpaid days ÷ the run's standard working days. Multiply a "
+              "month's pay by it to get the deduction.",
+     'spec': {'builder_mode': 'excel', 'rule_type': 'sum',
+              'record_source': 'records',
+              'excel_formula': 'IFERROR([unpaid days]/[stddays], 0)',
+              'filter_conditions': {'join': 'all', 'rows': []},
+              'value_steps': []}},
     {'key': 'blank', 'icon': 'plus',
      'title': 'Start from nothing',
      'blurb': 'Four empty steps.',
@@ -276,6 +298,13 @@ class PbIntegrationsRuleComposer(models.AbstractModel):
                           {'join': 'any', 'label': _("any of these")}],
             },
             'functions': rule_formula.FUNCTION_HELP,
+            # RUNSRC D1 — the pay run's own numbers, offered wherever the
+            # composer takes a field. They are NOT merged into `fields`: the
+            # picker groups by feed and a reader has to be able to see that
+            # these six come from the run rather than from the source, which is
+            # the difference between "the file says 21" and "the run says 21".
+            'run_values': Rule.period_operands(),
+            'run_values_label': _("From this pay run"),
             'ai': self.env['hr.api.rule.assistant'].assistant_status(),
         }
 
@@ -461,7 +490,13 @@ class PbIntegrationsRuleComposer(models.AbstractModel):
 
         draft = self.env['hr.api.transformation.rule'].new(vals)
         try:
-            trace = draft.preview_on_records(rows)
+            # RUNSRC D §4.1 — the tester runs against the SAME period the
+            # engine would. Without a main record the preview would fall back
+            # to today's month and quietly show a different standard-working-
+            # days number from the one a real pull is going to use, which is
+            # precisely the outcome that ruling forbids.
+            trace = draft.preview_on_records(
+                rows, self._rule_main_record(connector, data_type))
         except (rule_formula.RuleFormulaError, UnsafeFormulaError) as error:
             # EXPECTED and written for a human — a formula with a typo in it is
             # the daily case, and it is not an incident (`preview_transform`
@@ -487,8 +522,34 @@ class PbIntegrationsRuleComposer(models.AbstractModel):
                       'value': self._jsonable(r.get('value')),
                       'cells': r.get('cells') or []}
                      for r in (trace.get('rows') or [])],
+            # RUNSRC D §4.1 — what the run answered, and WHERE the standard
+            # working days came from. A person writing a pro-rata rule has to
+            # be able to see whether it worked to 22 because somebody typed 22
+            # on the run or because nobody said anything at all.
+            'period': {
+                'std_days': self._jsonable(
+                    (trace.get('period') or {}).get('std_days')),
+                'note': (trace.get('period') or {}).get('note') or '',
+                'values': {k: self._jsonable(v) for k, v in
+                           ((trace.get('period') or {}).get('values')
+                            or {}).items()},
+            },
             'summary': plain_summary_for(draft),
         }
+
+    @api.model
+    def _rule_main_record(self, connector, data_type):
+        """The newest stored row of this feed, for its PERIOD and nothing else.
+
+        `_rule_sample_rows` deliberately returns plain dicts — the engine reads
+        dicts and a preview must not be handed records it could accidentally
+        write to. The period, though, lives on the row rather than inside the
+        payload, so the tester needs one record to ask.
+        """
+        Store = self.env['hr.api.data.store']
+        return Store.search([('connector_id', '=', connector.id),
+                             ('data_type', '=', data_type)],
+                            order='pull_date desc, id desc', limit=1)
 
     @staticmethod
     def _jsonable(value):
@@ -549,6 +610,18 @@ class PbIntegrationsRuleComposer(models.AbstractModel):
 
         catalog = self._rule_catalog(connector, data_type)
         known = {f['path'] for f in catalog}
+        # RUNSRC D1 — the pay run's own six are readable wherever a field is,
+        # so the save validator has to know them or it refuses a name that
+        # works perfectly at run time.
+        #
+        # Held SEPARATELY from `known` on purpose, and the reason is the rail
+        # three paragraphs down: an EMPTY `known` means "nothing could be
+        # learned about this source at all", and every name is then accepted
+        # because a check that could not run must not be reported as a check
+        # that failed. Folding six names in would make `known` permanently
+        # non-empty and turn that leniency off for every brand-new connector.
+        run_names = {o['name'] for o in
+                     self.env['hr.api.transformation.rule'].period_operands()}
         # A nested table's columns are not in the feed catalogue — they live
         # inside a record — so they are learned from the sample rows. Without
         # this a DEPCOUNT condition on `Dependent_PIT_Number` would be refused
@@ -571,7 +644,8 @@ class PbIntegrationsRuleComposer(models.AbstractModel):
             if not name:
                 raise ValueError(_("A %s step has no field chosen.") % where)
             if known and not any(
-                    rule_formula.norm_name(k) == rule_formula.norm_name(name) for k in known):
+                    rule_formula.norm_name(k) == rule_formula.norm_name(name)
+                    for k in (known | run_names)):
                 raise ValueError(
                     _("This source does not have a field called “%s”.") % name)
 
@@ -607,7 +681,8 @@ class PbIntegrationsRuleComposer(models.AbstractModel):
             # employee, and answer with the default.
             try:
                 rule_formula.compile_rule_formula(
-                    formula, known_paths=sorted(known) or None)
+                    formula,
+                    known_paths=sorted(known | run_names) if known else None)
             except (rule_formula.RuleFormulaError, UnsafeFormulaError) as error:
                 raise ValueError(str(error))
         elif rule_type in GUIDED_RULE_TYPES and rule_type != 'count' and not steps:

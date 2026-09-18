@@ -231,6 +231,11 @@
         &.tone-cyan   { background: var(--cyan-s);  color: var(--cyan); }
         &.tone-green  { background: var(--green-s); color: var(--green); }
         &.tone-slate  { background: var(--slate-s); color: var(--slate); }
+        // RUNSRC D3 — the pay run's own period. Amber is already declared
+        // above and is used nowhere else on this chip, so the sixth bucket
+        // reads as its own thing at a glance rather than as a shade of one of
+        // the five.
+        &.tone-amber  { background: var(--amber-s); color: var(--amber); }
         &.tone-muted  { background: var(--bg);      color: var(--mut); }
     }
     .pbc-comp-warn {

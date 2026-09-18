@@ -6026,7 +6026,9 @@ msgid "Period end"
 msgstr "Cuối kỳ"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #. odoo-python
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:10548
 msgid "Pay period"
 msgstr "Kỳ lương"
@@ -14884,3 +14886,15 @@ msgstr "người phê duyệt của nó"
 #. module: pb_formula_studio
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "From this pay run"
+msgstr "Từ đợt trả lương này"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "From this pay run · %s"
+msgstr "Từ đợt trả lương này · %s"

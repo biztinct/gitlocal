@@ -159,3 +159,6 @@ from . import test_import_approval
 # customer's own language declares which of the run's six numbers answers it,
 # and the run still loses to anything somebody stated.
 from . import test_runsrc_pc_pay_run_source
+
+# RUNSRC D — the run's six numbers reach a transformation rule, in every lane.
+from . import test_runsrc_pd_transformations

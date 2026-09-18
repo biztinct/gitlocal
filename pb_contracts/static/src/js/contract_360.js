@@ -896,6 +896,8 @@ export class Contract360Drawer extends Component {
             out.push(_t("The next pay run will replace this with the value from the connected system."));
         } else if (row.fills_from === "rule") {
             out.push(_t("The next pay run will work this value out with a formula and replace what you type."));
+        } else if (row.fills_from === "payrun") {
+            out.push(_t("The next pay run will replace this with the answer from its own period."));
         }
         // The owner's ruling of 2026-08-29, stated honestly rather than as an
         // error: a change like this is normally a new contract, and here it

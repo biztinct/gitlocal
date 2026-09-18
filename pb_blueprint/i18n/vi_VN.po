@@ -8438,3 +8438,11 @@ msgid ""
 msgstr ""
 "Thao tác này xoá toàn bộ %s thành phần và công thức của bản nháp này và mở "
 "lại phần xem lại sổ làm việc. Mọi thứ bạn đã sửa thủ công sẽ mất."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_blueprint/static/src/js/connect_text.js:0
+#: code:addons/pb_blueprint/models/blueprint_connect.py:0
+msgid "from this pay run"
+msgstr "từ đợt trả lương này"

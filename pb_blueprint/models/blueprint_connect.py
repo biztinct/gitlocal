@@ -28,9 +28,16 @@ from .blueprint import CONNECT_STATUSES, CONNECT_TASKS
 _logger = logging.getLogger(__name__)
 
 #: A declared source kind (`hr.formula.rule.declared_sources`) → the lane a
-#: person reads on the card. Four lanes, because those are the four different
+#: person reads on the card. Five lanes, because those are the five different
 #: places a number can come from, and naming a lane the reader has none of is
 #: how a coverage line stops being believed.
+#:
+#: RUNSRC D — `pay_run` was the fifth, and it was MISSING. A kind this map does
+#: not know hits the `continue` in `_mapping_state` below, so a component whose
+#: only source is the pay run was counted as having no source at all: the
+#: guided setup told the owner "11 of 19 inputs have a source" about a
+#: configuration where twelve were wired. Exactly the failure shape RS13
+#: describes — a silent drop, not an error.
 LANE_OF_KIND = {
     'feed': 'api',
     'rule': 'api',
@@ -39,6 +46,7 @@ LANE_OF_KIND = {
     'contract_field': 'records',
     'bank_account': 'records',
     'contract_component': 'records',
+    'pay_run': 'payrun',
 }
 
 #: The words for each lane, singular in the sentence "4 from the connected
@@ -50,6 +58,7 @@ def lane_label(lane):
         'excel': _("from spreadsheets"),
         'records': _("from employee records"),
         'cycle': _("carried from the mid-month run"),
+        'payrun': _("from this pay run"),
     }.get(lane, '')
 
 
@@ -206,7 +215,8 @@ class PbBlueprintConnect(models.AbstractModel):
         """
         inputs = config.rule_ids.filtered(lambda r: r.column_type == 'input')
         input_ids = set(inputs.ids)
-        lanes = {'api': set(), 'excel': set(), 'records': set(), 'cycle': set()}
+        lanes = {'api': set(), 'excel': set(), 'records': set(),
+                 'cycle': set(), 'payrun': set()}
 
         # ---- what each component DECLARES ----------------------------
         for rule in inputs:

@@ -77,8 +77,13 @@ class TestConnect(TransactionCase):
         self.assertTrue(before['ok'])
         self.assertEqual(before['mapping']['inputs'], len(inputs))
         self.assertEqual(before['mapping']['mapped'], 0)
+        # RUNSRC D — `payrun` is the fifth lane. It was missing from
+        # `LANE_OF_KIND`, so a component whose only source is the pay run was
+        # counted as having no source at all; adding the lane is what makes
+        # this census tell the truth about one.
         self.assertEqual(before['mapping']['by_lane'],
-                         {'api': 0, 'excel': 0, 'records': 0, 'cycle': 0})
+                         {'api': 0, 'excel': 0, 'records': 0, 'cycle': 0,
+                          'payrun': 0})
 
         one, two = inputs[0], inputs[1]
         # ---- the connected system

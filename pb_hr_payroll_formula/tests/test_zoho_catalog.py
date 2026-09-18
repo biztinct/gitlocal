@@ -84,11 +84,22 @@ LEGACY_EMPLOYEE_FIELDS = {
 # that missing idea, so it is an ordinary `sum` now. Neither is a weakening —
 # `test_rule_composer.py` asserts both compute the SAME numbers the python did,
 # on fixtures carrying the malformed values the python guarded against.
+#
+# RUNSRC D adds the ninth, UNPAIDSHARE, and it is the first row in this
+# catalogue written in the FORMULA lane rather than the steps lane — a value
+# step names a field and the steps are ADDED, and this one needs a divide. So
+# `builder_mode` is asserted per row below instead of `guided` for all of them.
 ZOHO_RULES = {
     'OTHRS150': 'sum', 'OTHRS200': 'sum', 'OTHRS210': 'sum',
     'OTHRS270': 'sum', 'OTHRS300': 'sum', 'OTHRS390': 'sum',
-    'DEPCOUNT': 'count', 'WORKEDHRS': 'sum',
+    'DEPCOUNT': 'count', 'WORKEDHRS': 'sum', 'UNPAIDSHARE': 'sum',
 }
+
+#: The lane each catalogue row is written in. Everything is a sentence a
+#: payroll manager can open and read; `excel` is a sentence too, it simply has
+#: arithmetic in it. What must never come back is `python`.
+ZOHO_RULE_LANES = dict.fromkeys(ZOHO_RULES, 'guided')
+ZOHO_RULE_LANES['UNPAIDSHARE'] = 'excel'
 
 
 def _load_migration():
@@ -212,7 +223,9 @@ class TestZohoCatalogue(TransactionCase):
             # that a row quietly regaining a program is a failure here rather
             # than a surprise on somebody's live board (W138's corollary: the
             # shipped data gets its OWN assertion).
-            self.assertEqual(rules[key].builder_mode, 'guided', key)
+            self.assertEqual(rules[key].builder_mode,
+                             ZOHO_RULE_LANES[key], key)
+            self.assertNotEqual(rules[key].builder_mode, 'python', key)
             self.assertTrue(rules[key].plain_summary, key)
 
         # An operator retunes one, then somebody re-applies the template.

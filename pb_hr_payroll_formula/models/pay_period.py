@@ -189,6 +189,37 @@ def fill_period_inputs(values, unresolved, date_from=None, date_to=None,
     return filled
 
 
+#: The same six answers, spelled the way a TRANSFORMATION RULE names things.
+#:
+#: RUNSRC D1. A pay component is addressed by its CODE, which is upper case
+#: because that is what an Excel formula writes. A transformation rule is a
+#: different namespace with a different convention: its python lane already
+#: carries `period_start` and `period_end` in lower snake_case, and a rule that
+#: had to write `PAYMONTH` beside `period_end` would be advertising an
+#: implementation detail — two casings for one idea, in one dict, is how a
+#: person learns to distrust both.
+#:
+#: Derived from `PERIOD_CODES`, never retyped, so a seventh code can only ever
+#: exist in both places or in neither.
+NAMESPACE_NAMES = tuple(code.lower() for code in PERIOD_CODES)
+
+
+def namespace_values(date_from=None, date_to=None, std_days=None):
+    """``{lower_case_name: value}`` for a transformation rule's namespace.
+
+    Exactly `period_values`, re-keyed. A code the period cannot answer is
+    ABSENT rather than zero, for the reason `period_values` states: a run paid
+    against zero standard days divides by zero in every daily-rate formula in
+    the product, and a rule that reads a missing name gets blank — which the
+    aggregates already skip — instead of a number nobody said.
+    """
+    try:
+        answers = period_values(date_from, date_to, std_days)
+    except Exception:                               # noqa: BLE001
+        return {}
+    return {code.lower(): value for code, value in answers.items()}
+
+
 def fill_wired_inputs(values, unresolved, wires, date_from=None, date_to=None,
                       std_days=None):
     """Fill the components somebody WIRED to the pay run. Returns the pairs.
