@@ -275,7 +275,15 @@ export class PbBlueprint extends Component {
             // back in edit mode, or somebody who was changing an Active
             // configuration's journal lands in a six-step build of it.
             const state = { config_id: configId };
-            if (this.state.mode === "edit") { state.mode = "edit"; }
+            if (this.state.mode === "edit") {
+                state.mode = "edit";
+                // And the STEP, for the same reason the mode is here: a
+                // refresh while changing the accounting accounts has to come
+                // back to the accounting accounts. Arriving from the studio
+                // carries no step, so that door still lands on the identity
+                // card — which is the answer somebody pressing Settings wants.
+                state.step = this.state.step;
+            }
             router.pushState(state);
         } catch (e) {
             // A URL that did not update is a worse refresh, not a broken page.
@@ -301,6 +309,19 @@ export class PbBlueprint extends Component {
                 return;
             }
         }
+        // A configuration whose setup was FINISHED still answers `bp_load`, and
+        // it answers `mode: 'create'` — so arriving by URL to edit one (a
+        // refresh, a bookmark, a second sitting) opened the six-step build of
+        // something that was already built. The studio's own door adopts
+        // first, which is why this only ever showed on a direct arrival.
+        if (res && res.ok && res.mode !== "edit"
+                && this.arrival && this.arrival.mode === "edit") {
+            const adopted = await this.rpc("bp_adopt", [configId]);
+            if (adopted && adopted.ok && adopted.mode === "edit") {
+                const again = await this.rpc("bp_load", [configId]);
+                if (again && again.ok) { res = again; }
+            }
+        }
         if (!res || !res.ok) {
             this.state.fatal = (res && res.reason) || _t("This setup could not be opened.");
             return;
@@ -319,6 +340,9 @@ export class PbBlueprint extends Component {
         // Somebody arriving from the Settings tab is asking "what is this and
         // what can I change", and the identity card is the answer.
         if (this.state.mode === "edit") {
+            // The URL wins (a refresh), then Start. Deliberately NOT the step
+            // the row remembers: pressing Settings is a question about what
+            // this configuration IS, and the identity card is the answer.
             this.state.step = (this.arrival && STEPS.includes(this.arrival.step))
                 ? this.arrival.step : "start";
             this._rememberInUrl(configId);
@@ -569,6 +593,14 @@ export class PbBlueprint extends Component {
         const ago = savedAgo(Date.now() - (this.state.savedAt || Date.now()));
         // `tick` is read so the label re-renders as time passes.
         void this.state.tick;
+        // In edit mode the word "Draft" is simply false: the configuration is
+        // Active, its state is on the rail two inches away, and this pill is
+        // only ever about whether your change reached the server.
+        if (this.editing) {
+            // `savedAgo` already says the word "saved" — wrapping it in
+            // another one reads "Saved saved just now", which it did.
+            return { cls: "ok", text: ago.charAt(0).toUpperCase() + ago.slice(1) };
+        }
         if (this.state.blueprint && this.state.blueprint.state === "finished") {
             return { cls: "ok", text: _t("Setup complete") };
         }
@@ -758,6 +790,7 @@ export class PbBlueprint extends Component {
     rememberStep() {
         if (!this.created) return;
         if (this._stepTimer) clearTimeout(this._stepTimer);
+        if (this.editing) { this._rememberInUrl(this.state.configId); }
         this._stepTimer = setTimeout(async () => {
             await this.rpc("bp_close", [this.state.configId, this.state.step]);
         }, 400);

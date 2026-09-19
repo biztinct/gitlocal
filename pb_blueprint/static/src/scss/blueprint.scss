@@ -3801,6 +3801,18 @@ body.pb-coach-absent:has(.payai-floating-pill) .pbim.pbbp {
         .pbbp-changes { display: block; overflow-x: auto; }
     }
 
+
+    // The status pill is advisory — the footer already says which step you are
+    // on and "Save & close" is the action. On a phone it was squeezed to a
+    // clipped "Sav" beside that button, so it stands down instead.
+    @media (max-width: 620px) {
+        // Both of these are advisory and both were colliding with the one
+        // button that matters. The rail's own EDITING / ACTIVE eyebrow sits
+        // two rows below and says the same thing without competing for the
+        // header's last 80 pixels.
+        .pbbp-status { display: none; }
+        .pbbp-editchip { display: none; }
+    }
     @media (prefers-reduced-motion: reduce) {
         .pbbp-setgrp-body { animation: none; }
         .pbbp-chip-btn, .pbbp-lane-sw span, .pbbp-lane-sw span::before { transition: none; }
