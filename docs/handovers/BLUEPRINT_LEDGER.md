@@ -89,6 +89,15 @@ Studio doors), `docs/FORMULA_ENGINE_CONVENTIONS.md`.
    `pb_formula_studio` are allowed but must be minimal and listed in the phase report.
 8. **The draft is the working copy.** Never mutate an active configuration as the wizard's
    working copy; never half-create (draft creation is one transaction; on failure nothing exists).
+8a. **Settings are not pay logic** (SCHEMECTX P3, 2026-09-19). *"Edit mode writes settings to
+   the live configuration, as the studio always has; it never writes pay logic to a configuration
+   that is not a draft or that has paid anyone."* Rule 8 protects the RULES — formulas, bands,
+   brackets, calendar, components. Identity, accounting, connections, export options, part-month
+   pay, back-pay and the source lanes are not rules and have ALWAYS been written straight to a
+   live configuration through the studio's `save_config_settings`; edit mode keeps exactly that
+   contract and adds nothing to it. The lock is one expression, in one place
+   (`blueprint_edit.py::_edit_locks`): `pay_logic = state != 'draft' or has_payslips`,
+   `country = has_payslips`.
 9. **Server decides readiness.** Client flags (`configured`, `passed`, `is_valid`) are display
    only; every gate (finish, include/exclude, tax write) is enforced in the RPC.
 10. **Tenant parity**: every module deploys to every database (rule from `tenant-module-sync-rule`).

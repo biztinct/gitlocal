@@ -17,5 +17,9 @@ from . import blueprint_tests
 # Last of the journey's own mixins: its `bp_finish` extends B1's gate, and the
 # class loaded LAST is the one whose method the registry resolves first.
 from . import blueprint_finish
+# SCHEMECTX P3 — edit mode. Loaded after `blueprint_finish` for the same
+# reason: its `bp_finish` is "Save changes" for a configuration that already
+# exists, and the class loaded LAST resolves first.
+from . import blueprint_edit
 from . import formula_studio_ext
 from . import formula_config_ext

@@ -78,8 +78,16 @@ class PbFormulaBlueprint(models.Model):
         help="Identifies one run of the setup so a repeated press never "
              "creates a second configuration.")
 
+    # `editing` is SCHEMECTX P3's state and it is deliberately not a kind of
+    # `draft`: a draft is a configuration being BUILT, and the configurations
+    # screen offers to resume it. An `editing` row is a finished configuration
+    # — often a live one — whose settings somebody has open in the journey, and
+    # offering to "resume setup" on it would invite a person to walk a build
+    # they already completed. Every search for a resumable setup therefore asks
+    # for `draft` and gets exactly that.
     state = fields.Selection([
         ('draft', 'Being set up'),
+        ('editing', 'Being edited'),
         ('finished', 'Setup complete'),
         ('abandoned', 'Abandoned'),
     ], string='Status', default='draft', required=True, index=True)

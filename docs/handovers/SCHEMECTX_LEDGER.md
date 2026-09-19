@@ -151,6 +151,24 @@ delete 117,058 zero-valued lines on `payobook` and 140 on `rize`. All of them
 are empty, so no value is at risk, but this is demo-data drift and not a
 product fault, and it is an OWNER decision, not an engineering one.
 
+**SC12 — "enable part-month pay" is refused unless something is prorated.**
+`hr.formula.config` constrains `use_proration` to require at least one
+`proration_component_ids` row, and the refusal ("Select at least one prorated
+component when proration is enabled.") arrives through
+`save_config_settings`'s `msg`, not as a field error. Any card that offers the
+toggle has to send the toggle AND the components in ONE save, and show that
+sentence beside the picker rather than as a toast. Found by Phase 3 test 4.
+
+**SC13 — `bp_components` was the one Pay rules tab with no `editable` flag.**
+`bp_tax_data` and `bp_calendar_data` have always carried `editable` +
+`readonly_reason`; the component list carried neither, because the journey only
+ever opened it on a draft. Worse, `bp_component_save`, `bp_component_exclude`,
+`bp_component_include`, `bp_component_restore_guided` and `bp_regenerate` had
+no lock of any kind — tax and calendar refused on a non-draft, the components
+did not. Phase 3 gates all five in BOTH modes and ships the flag, on the owner's
+ruling of 2026-09-19. No existing test or live draft flow relied on the gap:
+every create-mode suite writes to a draft with no payslips.
+
 **SC7 — the "group totals will leave this out" hint needs a group.** Gate any
 consolidation warning on `pb.fx.group_for(company)`: on a single-company
 tenant `presentation_currency` still answers and `rate()` still says
