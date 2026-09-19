@@ -128,6 +128,29 @@ lines that hold a value. Both are one call each; the suites that already wrote
 "reuse the seeded line if there is one, else create it" (CR18's wording) needed
 no change at all.
 
+**SC10 — an Odoo shell runs as `odoo`, so a backup file must not go in
+`/root`.** SC5 said `postgres` cannot write into `/odoo`; this is its twin at
+the other end. `odoo-bin shell` runs as the `odoo` user, so a script whose undo
+file defaults to `/root/...` dies with `PermissionError` — and if that write
+had come AFTER the delete instead of before it, the delete would have happened
+with no undo. Default to `/var/tmp`, and always write the rollback file before
+touching a row.
+
+**SC11 — most schemes on the demo databases declare NO contract components at
+all, and that changes what the Components tab shows.** Verified 2026-09-19:
+on `payobook` the six "Payobook <sector> — End-Month Payroll" schemes that pay
+4,503 of the 4,523 people have `is_contract_component = False` on every one of
+their ~53 rules, while the 26 catalogue templates come from the VPTQ schemes,
+which declare 24 apiece and pay 7 people. On `rize` all 7 mapped people point
+at `Rize India Payroll` (2 contract components) although their contracts carry
+20 Vietnamese components each; the live Vietnamese scheme `Rize Vietnam
+Payroll` declares only 1, and the one with 19 (`Rize Vietnam`) is ARCHIVED.
+Consequence: after Phase 2 those people's Components tab is empty, correctly —
+their scheme says nothing lives on a contract — and the P2 clean-up would
+delete 117,058 zero-valued lines on `payobook` and 140 on `rize`. All of them
+are empty, so no value is at risk, but this is demo-data drift and not a
+product fault, and it is an OWNER decision, not an engineering one.
+
 **SC7 — the "group totals will leave this out" hint needs a group.** Gate any
 consolidation warning on `pb.fx.group_for(company)`: on a single-company
 tenant `presentation_currency` still answers and `rate()` still says

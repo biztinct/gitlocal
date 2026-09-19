@@ -42,7 +42,7 @@ itself; ledger: shell vs a running registry hangs)::
         --logfile=/tmp/cleanup.log < tools/schemectx_cleanup_contract_lines.py
 
     # 3. put it back, if it ever has to go back
-    PB_CLEANUP_RESTORE=/root/schemectx_cleanup_rztest_20260919.csv \\
+    PB_CLEANUP_RESTORE=/var/tmp/schemectx_cleanup_rztest_20260919.csv \\
         sudo -u odoo python3 /odoo/odoo-server/odoo-bin shell ... < ...
 
 Environment switches (there are no command-line flags inside an Odoo shell):
@@ -50,7 +50,10 @@ Environment switches (there are no command-line flags inside an Odoo shell):
   ``PB_CLEANUP_APPLY=1``     delete; without it nothing is written.
   ``PB_CLEANUP_RESTORE=<f>`` recreate every line listed in that CSV.
   ``PB_CLEANUP_CSV=<path>``  where to write the undo file. Default
-                             ``/root/schemectx_cleanup_<db>_<YYYYMMDD>.csv``.
+                             ``/var/tmp/schemectx_cleanup_<db>_<YYYYMMDD>.csv``.
+                             NOT under ``/root``: the shell runs as the `odoo`
+                             user and cannot write there, and it cannot write
+                             into ``/odoo`` either (ledger SC5/SC10).
   ``PB_CLEANUP_LIMIT=<n>``   look at only the first n contracts (a rehearsal).
 
 IT IS SAFE TO RUN TWICE. The second run finds nothing to do and says so.
@@ -77,8 +80,12 @@ CSV_COLUMNS = ('line_id', 'contract_id', 'contract_name', 'employee_id',
 
 
 def csv_path(env):
+    # `/var/tmp`, not `/root` and not `/odoo`: an Odoo shell runs as the
+    # `odoo` user, `/root` is closed to it and `/odoo` is `drwxr-x--- odoo:odoo`
+    # only one level down (ledger SC5). A backup file nobody can write is a
+    # delete with no undo, so the path is chosen to be writable, not tidy.
     return os.environ.get('PB_CLEANUP_CSV') or (
-        '/root/schemectx_cleanup_%s_%s.csv'
+        '/var/tmp/schemectx_cleanup_%s_%s.csv'
         % (env.cr.dbname, date.today().strftime('%Y%m%d')))
 
 
