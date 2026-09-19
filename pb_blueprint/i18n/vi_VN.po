@@ -8446,3 +8446,20 @@ msgstr ""
 #: code:addons/pb_blueprint/models/blueprint_connect.py:0
 msgid "from this pay run"
 msgstr "từ đợt trả lương này"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/step_start.js:0
+#, python-format
+msgid "Pays in %s"
+msgstr "Trả bằng %s"
+
+#. module: pb_blueprint
+#. odoo-python
+#: code:addons/pb_blueprint/models/blueprint_studio.py:0
+msgid ""
+"No exchange rate for %(money)s yet — group totals will leave this "
+"configuration out until one is added."
+msgstr ""
+"Chưa có tỷ giá cho %(money)s — tổng hợp của tập đoàn sẽ bỏ qua cấu hình này "
+"cho đến khi tỷ giá được thêm vào."

@@ -289,12 +289,63 @@ class PbBlueprintStudio(models.AbstractModel):
             'ok': True,
             'country': country,
             'countries': countries,
+            # SCHEMECTX P1 — what each country on the list pays in, so the
+            # screen can answer "and the money?" before anything is created.
+            # The help text has always promised the country decides it; now it
+            # says what the answer is.
+            'currencies': Config.currency_by_country(),
+            'fx_hint': self._bp_fx_hint(),
             'starters': starters,
             'has_template': any(s['kind'] == 'template' for s in starters),
             # The company chip names the company the server will FILE the draft
             # under, so it comes from the server and never from a client guess.
             'company': self.env.company.name,
         }
+
+    @api.model
+    def _bp_fx_hint(self):
+        """One quiet line per country whose money nobody has priced yet.
+
+        SCHEMECTX P1. Group totals are read in one currency, and a scheme in
+        a currency with no exchange rate behind it simply drops out of them.
+        Saying so on the screen where the country is chosen costs nothing and
+        stops a total that silently misses a country. It is a HINT and never a
+        blocker: the person can carry straight on and add a rate later.
+
+        Empty on any database without the group tools, which is most of them.
+        """
+        Fx = self.env.get('pb.fx')
+        if Fx is None:
+            return {}
+        Config = self.env['hr.formula.config']
+        try:
+            # Only a company that consolidates has "group totals" to be left
+            # out of. On a single company the sentence would be true of
+            # nothing, and seven amber lines on a screen that is going well is
+            # the opposite of help.
+            if not Fx.group_for(self.env.company):
+                return {}
+            target = Fx.presentation_currency(self.env.company)
+        except Exception:                       # noqa: BLE001 — never block
+            _logger.warning("Guided setup: could not read the reading currency")
+            return {}
+        if not target:
+            return {}
+        out = {}
+        for code, _label in Config._fields['country_code'].selection:
+            currency = Config._currency_for_country(code)
+            if not currency or currency.id == target.id:
+                continue
+            try:
+                answer = Fx.rate(currency, target, company=self.env.company)
+            except Exception:                   # noqa: BLE001 — never block
+                continue
+            if answer and not answer.get('known'):
+                out[code] = _(
+                    "No exchange rate for %(money)s yet — group totals will "
+                    "leave this configuration out until one is added.",
+                    money=currency.name or code)
+        return out
 
     # ==================================================================
     # Creating the draft

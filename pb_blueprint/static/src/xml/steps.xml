@@ -68,7 +68,17 @@
               <span t-esc="countryLabel"/>
               <button class="pbbp-changelink" t-on-click="() => this.props.onUnlock('country')">Change</button>
             </div>
+            <!-- SCHEMECTX P1 — the country's answer, shown as it is chosen. -->
+            <div class="pbbp-money" t-if="moneyLine">
+              <span class="pbbp-money-chip" t-key="props.form.country_code">
+                <t t-out="ic('banknote', 14)"/>
+                <span t-esc="moneyLine"/>
+              </span>
+            </div>
             <small>Decides the currency, the statutory rules and how people are matched.</small>
+            <small class="pbbp-money-warn" t-if="moneyWarning">
+              <t t-out="ic('alert', 13)"/><t t-esc="moneyWarning"/>
+            </small>
           </div>
 
           <div class="pbbp-field">

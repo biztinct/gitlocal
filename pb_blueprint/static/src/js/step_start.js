@@ -77,6 +77,42 @@ export class StepStart extends Component {
         return this.starters.find((s) => s.key === this.props.form.template_key) || null;
     }
 
+    /**
+     * SCHEMECTX P1 — what this configuration will pay in.
+     *
+     * The help under Country has always promised "Decides the currency". It
+     * now shows the answer, live, as the country changes — because an India
+     * configuration quietly paying in dong is exactly the defect this closes.
+     * Empty when an older server sends no map, and the chip is then hidden
+     * rather than guessing.
+     */
+    get money() {
+        const map = (this.props.starters && this.props.starters.currencies) || null;
+        if (!map) { return null; }
+        return map[this.props.form.country_code] || null;
+    }
+
+    /** "₹ INR" — the sign people read, then the name they file under. */
+    get moneyLabel() {
+        const m = this.money;
+        if (!m) { return ""; }
+        if (m.symbol && m.name && m.symbol !== m.name) { return `${m.symbol} ${m.name}`; }
+        return m.name || m.symbol || "";
+    }
+
+    /** One whole sentence, so it translates as one. */
+    get moneyLine() {
+        const label = this.moneyLabel;
+        return label ? _t("Pays in %s", label) : "";
+    }
+
+    /** The one amber line, only when nobody has priced this money yet. */
+    get moneyWarning() {
+        const hints = (this.props.starters && this.props.starters.fx_hint) || null;
+        if (!hints) { return ""; }
+        return hints[this.props.form.country_code] || "";
+    }
+
     /** The note under the starter grid — it says what was chosen FOR you. */
     get starterNote() {
         const chosen = this.chosen;

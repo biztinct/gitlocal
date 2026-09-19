@@ -419,6 +419,42 @@ $bp-head-h: 64px;
         font-size: 13px; font-weight: 700;
         align-self: flex-start;
     }
+
+    // ---- SCHEMECTX P1: what this configuration will pay in ----------
+    // The country select's promise, answered. The chip is keyed on the
+    // country code, so switching country mounts a new node and the answer
+    // fades in rather than snapping — the one bit of motion on this field,
+    // and it is there to draw the eye to a number that just changed.
+    .pbbp-money {
+        margin: 2px 0 1px;
+        display: flex; flex-wrap: wrap;
+    }
+    .pbbp-money-chip {
+        display: inline-flex; align-items: center; gap: 7px;
+        max-width: 100%;
+        padding: 5px 10px; border-radius: 999px;
+        background: rgba(16, 137, 112, .09);
+        border: 1px solid rgba(16, 137, 112, .22);
+        color: #0F6B58;
+        font-size: 12px; font-weight: 700; line-height: 1.3;
+        animation: pbbp-money-in .15s ease-out both;
+
+        b { font-weight: 800; letter-spacing: .01em; }
+        svg { flex: 0 0 auto; }
+        span { min-width: 0; overflow-wrap: anywhere; }
+    }
+    small.pbbp-money-warn {
+        display: flex; align-items: flex-start; gap: 6px;
+        color: #92400E; font-weight: 600;
+        svg { flex: 0 0 auto; margin-top: 1px; }
+    }
+    @keyframes pbbp-money-in {
+        from { opacity: 0; transform: translateY(-2px); }
+        to   { opacity: 1; transform: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .pbbp-money-chip { animation: none; }
+    }
     .pbbp-locked {
         display: flex; align-items: center; gap: 10px;
         background: #F8FAFC; border: 1px dashed var(--bp-line);
