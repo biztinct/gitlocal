@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Pay-Run Ledgers',
     'summary': 'WOW cockpits for Full & Final, Proration Audit and Retro Adjustments',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

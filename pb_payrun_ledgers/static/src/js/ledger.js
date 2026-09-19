@@ -111,16 +111,25 @@ export class LedgerCockpit extends Component {
     get dateChips() { return DATE_CHIPS; }
 
     // ---- formatting ----
+    // SCHEMECTX: the sign comes from the payload, which asks the scheme that
+    // produced the rows. No literal fallback — a hardcoded "₫" is exactly how
+    // an Indian settlement came to be written in dong. The sign always goes
+    // in FRONT, whatever `res.currency` stores against it (SC3).
+    get cur() { return this.state.data.currency || ""; }
     money(n) {
         if (n === null || n === undefined) return "—";
-        const cur = this.state.data.currency || "₫";
+        const cur = this.cur;
         const a = Math.abs(n);
         if (a >= 1e9) return cur + (n / 1e9).toFixed(1) + "B";
         if (a >= 1e6) return cur + (n / 1e6).toFixed(1) + "M";
         if (a >= 1e3) return cur + (n / 1e3).toFixed(0) + "K";
         return cur + Math.round(n);
     }
-    moneyFull(n) { return (this.state.data.currency || "₫") + Math.round(n || 0).toLocaleString("en-US"); }
+    // The drawer is ONE row, so it knows its own scheme's money even when the
+    // grid above it mixes two and falls back to the company's.
+    moneyFull(n, cur) {
+        return (cur ?? this.cur) + Math.round(n || 0).toLocaleString("en-US");
+    }
     kpiVal(k) {
         if (k.money) return this.money(k.value);
         return (typeof k.value === "number") ? k.value.toLocaleString("en-US") : (k.value ?? "—");
@@ -131,7 +140,9 @@ export class LedgerCockpit extends Component {
     }
     /** Drawer values: money through the full formatter, everything else as-is. */
     detailVal(f) {
-        if (f.money) return this.moneyFull(f.value);
+        if (f.money) {
+            return this.moneyFull(f.value, (this.state.drawer || {}).currency);
+        }
         return (f.value === 0 || f.value) ? String(f.value) : "—";
     }
 
@@ -211,6 +222,9 @@ export class LedgerCockpit extends Component {
                 title: d.title || r.title || "—",
                 subtitle: d.subtitle || r.subtitle || "",
                 sections: d.sections || [],
+                // the row's OWN money, which the server has always sent and
+                // this panel used to throw away (SCHEMECTX)
+                currency: d.currency || this.cur,
             };
         } catch (e) {
             // Reported, never swallowed (W40): the drawer stays open with what

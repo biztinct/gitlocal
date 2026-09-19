@@ -65,6 +65,60 @@ class LedgerMixin(models.AbstractModel):
         except Exception:
             return 0
 
+    # ---------------------------------------------------------------- money
+    # SCHEMECTX. Every one of these three ledgers is SCHEME-owned — each row
+    # carries the scheme that produced it — so an Indian scheme's settlement
+    # must not be read out in dong because the company it is filed under keeps
+    # its books there. Phase 1 fixed the wizard, the pay run and the fact
+    # tables the same way; these cockpits were the last readers left.
+    #
+    # SC3: the SYMBOL only, never the stored position. `res.currency` records
+    # VND as written after the number, and every Payobook screen has always
+    # written the sign in front — `ledger.js` still does.
+    @api.model
+    def _config_symbol(self, config):
+        """One scheme's sign, or '' if it cannot answer."""
+        if not config:
+            return ''
+        try:
+            if not hasattr(config, 'scheme_currency'):
+                return ''
+            return config.sudo().scheme_currency().get('symbol') or ''
+        except Exception:       # noqa: BLE001 — a sign is never worth a screen
+            _logger.debug("Ledger cockpit: scheme currency unavailable",
+                          exc_info=True)
+            return ''
+
+    @api.model
+    def _company_symbol(self):
+        return self.env.company.currency_id.symbol or ''
+
+    @api.model
+    def _grid_symbol(self, Model, dom):
+        """The sign for a whole grid — one list, one sign.
+
+        The scheme's when every row in the list agrees on a scheme; the
+        company's when they do not, which is exactly what this screen has
+        always shown. Grouping (rather than reading the 400 loaded rows)
+        because the KPI strip above the list totals the WHOLE domain, and a
+        strip and a list must not disagree about what money they are in.
+        """
+        try:
+            if 'formula_config_id' not in Model._fields:
+                return self._company_symbol()
+            groups = Model.read_group(dom, ['formula_config_id'],
+                                      ['formula_config_id'])
+            if len(groups) == 1 and groups[0].get('formula_config_id'):
+                config = self.env['hr.formula.config'].sudo().browse(
+                    groups[0]['formula_config_id'][0])
+                symbol = self._config_symbol(config.exists())
+                if symbol:
+                    return symbol
+        except Exception:       # noqa: BLE001
+            _logger.debug("Ledger cockpit: grid currency unavailable",
+                          exc_info=True)
+        return self._company_symbol()
+
     # ------------------------------------------------------------------ detail
     # The hub's Adjust/Settle lenses replace the row's NAVIGATION with a drawer,
     # so the drawer has to carry the whole story the native form used to. It is
@@ -99,7 +153,13 @@ class LedgerMixin(models.AbstractModel):
             return {}
         rec.check_access('read')
         d = self._build_detail(rec)
-        d['currency'] = self.env.company.currency_id.symbol or ''
+        # One row, so there is no ambiguity at all: the scheme that produced
+        # this settlement says what its money is (SCHEMECTX).
+        d['currency'] = (
+            self._config_symbol(rec.formula_config_id
+                                if 'formula_config_id' in rec._fields
+                                else None)
+            or self._company_symbol())
         d['id'] = rec.id
         d['res_model'] = self._detail_model
         return d
@@ -192,7 +252,7 @@ class PbFullFinal(models.AbstractModel):
     def get_data(self):
         FF = self.env['hr.full.final.settlement']
         dom = self._co_dom()
-        cur = self.env.company.currency_id
+        cur = self._grid_symbol(FF, dom)
         total = FF.search_count(dom)
         recs = FF.search(dom, order='settlement_date desc, id desc', limit=LIMIT)
 
@@ -234,7 +294,7 @@ class PbFullFinal(models.AbstractModel):
         return {
             'title': 'Full & Final', 'subtitle': 'Every settlement, its components and net payable at a glance.',
             'search_ph': 'Search employee, ID, department…', 'empty': 'No settlements match these filters.',
-            'currency': cur.symbol or '', 'date': True, 'kpis': kpis, 'facets': facets,
+            'currency': cur, 'date': True, 'kpis': kpis, 'facets': facets,
             'rows': rows, 'total': total,
             'list_action': 'pb_hr_fullandfinal.action_full_and_final_employees',
         }
@@ -293,7 +353,7 @@ class PbProration(models.AbstractModel):
     def get_data(self):
         PL = self.env['hr.payroll.proration.line']
         dom = self._co_dom()
-        cur = self.env.company.currency_id
+        cur = self._grid_symbol(PL, dom)
         total = PL.search_count(dom)
         recs = PL.search(dom, order='date_from desc, id desc', limit=LIMIT)
         agg = PL.read_group(dom, ['prorated_amount:sum'], [])
@@ -336,7 +396,7 @@ class PbProration(models.AbstractModel):
         return {
             'title': 'Proration Audit', 'subtitle': 'Every prorated component, old → new → prorated, per employee.',
             'search_ph': 'Search employee or component…', 'empty': 'No proration lines match these filters.',
-            'currency': cur.symbol or '', 'date': True, 'kpis': kpis, 'facets': facets,
+            'currency': cur, 'date': True, 'kpis': kpis, 'facets': facets,
             'rows': rows, 'total': total,
             'list_action': 'pb_hr_payroll_formula.action_payroll_proration_line',
         }
@@ -390,7 +450,7 @@ class PbRetro(models.AbstractModel):
     def get_data(self):
         RA = self.env['hr.payroll.retro.adjustment']
         dom = self._co_dom()
-        cur = self.env.company.currency_id
+        cur = self._grid_symbol(RA, dom)
         total = RA.search_count(dom)
         recs = RA.search(dom, order='period_from desc, id desc', limit=LIMIT)
         agg = RA.read_group(dom, ['delta_amount:sum'], [])
@@ -435,7 +495,7 @@ class PbRetro(models.AbstractModel):
         return {
             'title': 'Retro Adjustments', 'subtitle': 'Retroactive deltas, old → new → delta, per employee.',
             'search_ph': 'Search employee or component…', 'empty': 'No retro adjustments match these filters.',
-            'currency': cur.symbol or '', 'date': True, 'kpis': kpis, 'facets': facets,
+            'currency': cur, 'date': True, 'kpis': kpis, 'facets': facets,
             'rows': rows, 'total': total,
             'list_action': 'pb_hr_payroll_formula.action_payroll_retro_adjustment',
         }
