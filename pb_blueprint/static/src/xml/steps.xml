@@ -58,16 +58,20 @@
 
           <div class="pbbp-field">
             <label for="pbbp-country">Country</label>
-            <select id="pbbp-country" t-if="!props.created"
+            <select id="pbbp-country" t-if="countryOpen"
                     t-on-change="(ev) => this.onField('country_code', ev)">
               <option t-foreach="props.countries" t-as="c" t-key="c.code"
                       t-att-value="c.code" t-att-selected="c.code === props.form.country_code"
                       t-esc="c.label"/>
             </select>
             <div class="pbbp-locked" t-else="">
+              <span class="pbbp-lockic" t-if="editing" t-out="ic('lock', 13)"/>
               <span t-esc="countryLabel"/>
-              <button class="pbbp-changelink" t-on-click="() => this.props.onUnlock('country')">Change</button>
+              <button class="pbbp-changelink" t-if="!editing"
+                      t-on-click="() => this.props.onUnlock('country')">Change</button>
             </div>
+            <small class="pbbp-lockwhy" t-if="editing and props.countryLocked"
+                   t-esc="props.countryLockReason"/>
             <!-- SCHEMECTX P1 — the country's answer, shown as it is chosen. -->
             <div class="pbbp-money" t-if="moneyLine">
               <span class="pbbp-money-chip" t-key="props.form.country_code">
@@ -110,8 +114,20 @@
         </ol>
       </section>
 
+      <!-- ================ Built from (edit mode) ================ -->
+      <section class="pbbp-card pbbp-builtfrom" t-if="editing">
+        <header class="pbbp-card-head">
+          <span class="pbbp-card-ic" t-out="ic('history', 18)"/>
+          <div>
+            <h2>Built from</h2>
+            <p t-esc="builtFrom"/>
+          </div>
+        </header>
+        <p class="pbbp-note" t-esc="builtFromNote"/>
+      </section>
+
       <!-- ================ Starting point ================ -->
-      <section t-attf-class="pbbp-card {{ props.busy ? 'is-dimmed' : '' }}">
+      <section t-attf-class="pbbp-card {{ props.busy ? 'is-dimmed' : '' }}" t-if="!editing">
         <header class="pbbp-card-head">
           <span class="pbbp-card-ic" t-out="ic('layers', 18)"/>
           <div>

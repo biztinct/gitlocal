@@ -29,6 +29,14 @@ export class StepStart extends Component {
         cycles: { type: Array },
         company: { type: String },
         created: { type: Boolean },
+        // SCHEMECTX P3 — "edit" means this configuration already exists. The
+        // starter cards give way to a calm read-only "Built from" card: the
+        // starting point of a live payroll is history, not a choice, and a
+        // grid of pressable cards over it is an invitation to destroy it.
+        mode: { type: String, optional: true },
+        builtFrom: { type: String, optional: true },
+        countryLocked: { type: Boolean, optional: true },
+        countryLockReason: { type: String, optional: true },
         // The workbook is the starting point and it has not been read yet —
         // the one starter that is still owed something after the draft exists.
         needsWorkbook: { type: Boolean, optional: true },
@@ -62,6 +70,28 @@ export class StepStart extends Component {
     ic(name, size = 16) { return ic(name, size); }
 
     onField(field, ev) { this.props.onSet(field, ev.target.value); }
+
+    get editing() { return this.props.mode === "edit"; }
+
+    /**
+     * Whether the country is still a choice.
+     *
+     * Before the draft exists, always. In edit mode, until somebody has been
+     * paid — the country decides the currency and the statutory rules, and
+     * rewriting them under money that has already been handed over is the one
+     * change this screen will not make.
+     */
+    get countryOpen() {
+        if (!this.props.created) { return true; }
+        return this.editing && !this.props.countryLocked;
+    }
+
+    /** What this configuration was built from, when nobody is choosing. */
+    get builtFrom() { return this.props.builtFrom || ""; }
+
+    get builtFromNote() {
+        return _t("The starting point is part of this configuration's history. Change what it pays in Pay rules, or in the components grid.");
+    }
 
     get starters() { return (this.props.starters && this.props.starters.starters) || []; }
 

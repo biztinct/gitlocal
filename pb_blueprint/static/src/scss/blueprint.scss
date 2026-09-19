@@ -3587,3 +3587,222 @@ body.pb-coach-absent:has(.payai-floating-pill) .pbim.pbbp {
     from { transform: translateY(-3px); opacity: .25; }
     to   { transform: translateY(0); opacity: 1; }
 }
+
+// =====================================================================
+//  SCHEMECTX P3 — edit mode.
+//
+//  The journey opened on a configuration that already exists: an EDITING
+//  eyebrow with the configuration's own state beside it, a read-only
+//  "Built from" card where the starter cards would be, the settings that
+//  used to live in a panel of their own, and the page that says what
+//  changed. No mixed-unit Sass min()/max() anywhere here either (BP5).
+// =====================================================================
+.pbim.pbbp {
+
+    // ---- "you are editing something real" ----------------------------
+    .pbbp-editchip {
+        display: inline-flex; align-items: center; gap: 5px;
+        margin-left: 8px; padding: 3px 9px; border-radius: 999px;
+        background: var(--bp-soft, #EDEAF8); color: var(--bp-i-deep, #241F52);
+        font-size: 11px; font-weight: 800; letter-spacing: .02em;
+        text-transform: uppercase;
+        svg { width: 12px; height: 12px; }
+    }
+
+    .pbbp-rail-eyebrow.is-editing {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+
+    .pbbp-statechip {
+        padding: 2px 8px; border-radius: 999px;
+        font-size: 10.5px; font-weight: 800; letter-spacing: .02em;
+        text-transform: uppercase;
+        &.is-live  { background: #DCFCE7; color: #14532D; }
+        &.is-draft { background: #F1F5F9; color: #475569; }
+    }
+
+    .pbbp-builtfrom .pbbp-card-head p {
+        font-weight: 700; color: var(--bp-ink, #1E1B2E);
+    }
+
+    .pbbp-lockic { display: inline-flex; color: var(--bp-muted, #6B7280); }
+    .pbbp-lockwhy {
+        display: block; margin-top: 6px;
+        font-size: 11.5px; line-height: 1.5; color: #7c5308;
+    }
+
+    .pbbp-alert.is-lock {
+        background: #F8FAFC; color: #334155;
+        border: 1px solid var(--bp-line, #E8E9F3);
+        margin-bottom: 14px;
+        .i { color: var(--bp-muted, #6B7280); }
+    }
+
+    // ---- a folded group of settings cards ----------------------------
+    .pbbp-setgrp { padding: 0; overflow: hidden; }
+
+    .pbbp-setgrp-head {
+        display: flex; align-items: center; gap: 13px; width: 100%;
+        padding: 17px 20px; border: none; background: none;
+        font-family: inherit; text-align: left; cursor: pointer;
+        &:hover { background: #FBFBFE; }
+    }
+
+    .pbbp-setgrp-t {
+        display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1;
+        b { font-size: 14.5px; font-weight: 800; color: var(--bp-ink, #1E1B2E); }
+        small { font-size: 12px; color: var(--bp-muted, #6B7280); line-height: 1.45; }
+    }
+
+    .pbbp-setgrp-chev {
+        display: inline-flex; color: var(--bp-muted, #6B7280);
+    }
+
+    .pbbp-setgrp-body {
+        padding: 2px 20px 20px;
+        border-top: 1px solid var(--bp-line, #E8E9F3);
+        animation: pbbp-fade .16s ease-out;
+    }
+
+    .pbbp-subcard {
+        padding: 16px 0;
+        & + .pbbp-subcard { border-top: 1px solid var(--bp-line, #E8E9F3); }
+    }
+
+    .pbbp-subcard-h {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 13.5px; font-weight: 800; color: var(--bp-ink, #1E1B2E);
+        svg { color: var(--bp-i, #5A4BB0); }
+    }
+
+    .pbbp-subcard-lead {
+        margin: 5px 0 12px; font-size: 12.5px; line-height: 1.55;
+        color: var(--bp-muted, #6B7280);
+    }
+
+    .pbbp-setswitches {
+        display: flex; flex-direction: column; gap: 10px; margin-top: 14px;
+    }
+
+    .pbbp-setlabel {
+        display: block; margin: 16px 0 8px;
+        font-size: 12px; font-weight: 800; letter-spacing: .02em;
+        text-transform: uppercase; color: var(--bp-muted, #6B7280);
+    }
+
+    .pbbp-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    // ---- component chips --------------------------------------------
+    .pbbp-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    .pbbp-chip-btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 6px 11px; border-radius: 999px;
+        border: 1px solid var(--bp-line, #E8E9F3); background: #fff;
+        font-family: inherit; font-size: 12.5px; font-weight: 700;
+        color: var(--bp-ink, #1E1B2E); cursor: pointer;
+        transition: background .12s ease, border-color .12s ease;
+        &:hover { border-color: var(--bp-i, #5A4BB0); }
+        &.is-on {
+            background: var(--bp-soft, #EDEAF8);
+            border-color: var(--bp-i, #5A4BB0);
+            color: var(--bp-i-deep, #241F52);
+        }
+    }
+
+    .pbbp-chip-col {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 10.5px; font-weight: 800; opacity: .7;
+    }
+
+    // ---- the source lanes -------------------------------------------
+    .pbbp-lane {
+        display: flex; align-items: center; gap: 12px;
+        padding: 11px 13px; margin-bottom: 8px;
+        border: 1px solid var(--bp-line, #E8E9F3); border-radius: 12px;
+        background: #fff;
+        &:focus-visible { outline: 2px solid var(--bp-i, #5A4BB0); outline-offset: 2px; }
+        &.is-off { opacity: .55; background: #FBFBFE; }
+    }
+
+    .pbbp-lane-rank {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 24px; height: 24px; flex: none; border-radius: 8px;
+        background: var(--bp-soft, #EDEAF8); color: var(--bp-i-deep, #241F52);
+        font-size: 12px; font-weight: 800;
+    }
+
+    .pbbp-lane-t {
+        display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1;
+        b { font-size: 13px; font-weight: 700; }
+        small { font-size: 11.5px; color: var(--bp-muted, #6B7280); }
+    }
+
+    .pbbp-lane-n {
+        font-size: 11.5px; font-weight: 700; color: var(--bp-muted, #6B7280);
+        white-space: nowrap;
+    }
+
+    .pbbp-lane-ctl { display: inline-flex; align-items: center; gap: 4px; }
+
+    .pbbp-lane-b {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 26px; height: 26px; border-radius: 8px;
+        border: 1px solid var(--bp-line, #E8E9F3); background: #fff;
+        color: var(--bp-ink, #1E1B2E); cursor: pointer;
+        &:hover:not(:disabled) { border-color: var(--bp-i, #5A4BB0); }
+        &:disabled { opacity: .35; cursor: default; }
+    }
+
+    .pbbp-lane-sw {
+        position: relative; display: inline-block;
+        width: 36px; height: 20px; margin-left: 4px; cursor: pointer;
+        input { position: absolute; opacity: 0; width: 0; height: 0; }
+        span {
+            position: absolute; inset: 0; border-radius: 999px;
+            background: #CBD5E1; transition: background .15s ease;
+            &::before {
+                content: ""; position: absolute; top: 2px; left: 2px;
+                width: 16px; height: 16px; border-radius: 50%;
+                background: #fff; transition: transform .15s ease;
+            }
+        }
+        input:checked + span { background: var(--bp-i, #5A4BB0); }
+        input:checked + span::before { transform: translateX(16px); }
+        input:focus-visible + span { outline: 2px solid var(--bp-i, #5A4BB0); outline-offset: 2px; }
+    }
+
+    // ---- what changed in this sitting --------------------------------
+    .pbbp-changes {
+        width: 100%; border-collapse: collapse; margin-top: 6px;
+        font-size: 13px;
+        th {
+            text-align: left; padding: 8px 10px;
+            font-size: 11px; font-weight: 800; letter-spacing: .02em;
+            text-transform: uppercase; color: var(--bp-muted, #6B7280);
+            border-bottom: 1px solid var(--bp-line, #E8E9F3);
+        }
+        td {
+            padding: 10px; vertical-align: top; line-height: 1.5;
+            border-bottom: 1px solid var(--bp-line, #E8E9F3);
+        }
+        tr:last-child td { border-bottom: none; }
+        .pbbp-was { color: var(--bp-muted, #6B7280); text-decoration: line-through; }
+        .pbbp-now { font-weight: 700; color: var(--bp-ink, #1E1B2E); }
+    }
+
+    .pbbp-saved-doors {
+        display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px;
+    }
+
+    @media (max-width: 720px) {
+        .pbbp-lane { flex-wrap: wrap; }
+        .pbbp-lane-n { width: 100%; order: 3; }
+        .pbbp-changes { display: block; overflow-x: auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .pbbp-setgrp-body { animation: none; }
+        .pbbp-chip-btn, .pbbp-lane-sw span, .pbbp-lane-sw span::before { transition: none; }
+    }
+}

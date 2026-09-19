@@ -193,6 +193,7 @@ class TestSchemeCtxP3EditMode(TransactionCase):
             'proration_component_ids': config.rule_ids.ids[:1],
             'proration_rounding': 2,
             'use_auto_retro': True,
+            'retro_component_id': config.rule_ids.ids[0],
             'source_priority': 'records,excel,api',
             'source_excel_enabled': False,
             'export_identity_columns': True,
@@ -214,6 +215,8 @@ class TestSchemeCtxP3EditMode(TransactionCase):
                          config.rule_ids.ids[:1])
         self.assertEqual(back['values']['proration_rounding'], 2)
         self.assertTrue(back['values']['use_auto_retro'])
+        self.assertEqual(back['values']['retro_component_id'],
+                         config.rule_ids.ids[0])
         self.assertEqual(back['values']['source_priority'], 'records,excel,api')
         self.assertFalse(back['values']['source_excel_enabled'])
         self.assertTrue(back['values']['export_identity_columns'])

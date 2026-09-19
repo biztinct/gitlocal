@@ -100,6 +100,20 @@
       </div>
       <t t-else="">
 
+      <!-- The rules of a configuration that has left draft, or paid somebody,
+           are changed in the components grid where every change is versioned.
+           One banner and one door, instead of buttons that refuse. -->
+      <div class="pbbp-alert is-lock" t-if="!editable">
+        <span class="i" t-out="ic('lock', 18)"/>
+        <div>
+          <b>These pay rules are read-only here</b>
+          <p t-esc="readonlyReason"/>
+        </div>
+        <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => this.props.onGrid()">
+          <t t-out="ic('table', 14)"/> Open the components grid
+        </button>
+      </div>
+
       <!-- toolbar -->
       <div class="pbbp-cmp-bar">
         <span class="pbim-chip pbbp-cmp-chip" t-esc="chipLine"/>
@@ -115,12 +129,12 @@
                   t-on-click="clearSearch" t-out="ic('x', 13)"/>
         </label>
         <div class="pbbp-cmp-barsp"/>
-        <button class="pbim-btn ghost pbim-btn-sm" t-on-click="onRegenerate"
+        <button class="pbim-btn ghost pbim-btn-sm" t-if="editable" t-on-click="onRegenerate"
                 t-att-disabled="state.busy"
                 title="Work every guided rule out again">
           <t t-out="ic('refresh', 14)"/> Refresh the rules
         </button>
-        <button class="pbim-btn primary pbim-btn-sm" t-on-click="openNew">
+        <button class="pbim-btn primary pbim-btn-sm" t-if="editable" t-on-click="openNew">
           <t t-out="ic('plus', 14)"/> Add component
         </button>
       </div>
@@ -150,7 +164,8 @@
                     t-on-click="() => this.props.onImportWorkbook()">
               <t t-out="ic('fileSpreadsheet', 14)"/> Import the workbook
             </button>
-            <button t-attf-class="pbim-btn {{ props.needsWorkbook ? 'outline' : 'primary' }} pbim-btn-sm"
+            <button t-if="editable"
+                    t-attf-class="pbim-btn {{ props.needsWorkbook ? 'outline' : 'primary' }} pbim-btn-sm"
                     t-on-click="openNew">
               <t t-out="ic('plus', 14)"/> Add a component
             </button>
@@ -169,7 +184,7 @@
                t-att-aria-selected="isSelected(row.id) ? 'true' : 'false'"
                t-on-click="(ev) => this.onRowClick(row, ev)">
 
-            <span class="pbbp-cmp-lock" t-if="row.locked"
+            <span class="pbbp-cmp-lock" t-if="row.locked or !editable"
                   title="Part of every configuration"
                   aria-label="Part of every configuration"
                   t-out="ic('lock', 14)"/>
@@ -198,9 +213,10 @@
             <span class="pbbp-cmp-val" t-esc="valueOf(row)"/>
 
             <button class="pbim-btn ghost pbim-btn-sm pbbp-cmp-cfg"
-                    t-att-aria-label="'Configure ' + row.name"
+                    t-att-aria-label="(editable ? 'Configure ' : 'Look at ') + row.name"
                     t-on-click.stop="() => this.openEditor(row.id)">
-              <t t-out="ic('sliders', 14)"/> Configure
+              <t t-if="editable"><t t-out="ic('sliders', 14)"/> Configure</t>
+              <t t-else=""><t t-out="ic('eye', 14)"/> Look</t>
             </button>
           </div>
         </t>

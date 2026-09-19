@@ -20,7 +20,7 @@ the configuration is being built.
 The draft is always resumable: leaving half-way keeps the work, and the
 configurations screen offers "Resume setup" on the card.
 """,
-    'version': '19.0.1.10.0',
+    'version': '19.0.1.11.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -77,6 +77,9 @@ configurations screen offers "Resume setup" on the card.
             'pb_blueprint/static/src/js/step_test.js',
             'pb_blueprint/static/src/js/finish_text.js',
             'pb_blueprint/static/src/js/step_finish.js',
+            # SCHEMECTX P3 — the settings cards and the "what changed" page.
+            # Before the shell, which mounts both.
+            'pb_blueprint/static/src/js/edit_cards.js',
             'pb_blueprint/static/src/js/blueprint.js',
             # Two doors into the journey that live in other people's screens:
             # the command palette and the Settings hub. Loaded last, because
@@ -92,6 +95,7 @@ configurations screen offers "Resume setup" on the card.
             'pb_blueprint/static/src/xml/evidence.xml',
             'pb_blueprint/static/src/xml/outputs.xml',
             'pb_blueprint/static/src/xml/test.xml',
+            'pb_blueprint/static/src/xml/edit_cards.xml',
             'pb_blueprint/static/src/xml/blueprint.xml',
         ],
         # Loaded only by /web/tests — never part of the backend bundle.

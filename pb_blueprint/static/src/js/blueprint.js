@@ -24,6 +24,7 @@ import { StepOutputs } from "./step_outputs";
 import { StepTest } from "./step_test";
 import { StepFinish } from "./step_finish";
 import { Scoreboard } from "./scoreboard";
+import { SettingsCards, StepSaved, settingsGroupFor, settingLabel } from "./edit_cards";
 
 /**
  * "New configuration" — the guided journey.
@@ -43,7 +44,7 @@ export class PbBlueprint extends Component {
     static template = "pb_blueprint.Root";
     static components = { PayPreview, Scoreboard, SampleInputsDialog, StepStart,
                           StepRules, StepConnect, StepOutputs, StepTest,
-                          StepFinish, HubBackChip };
+                          StepFinish, StepSaved, SettingsCards, HubBackChip };
     static props = ["*"];
 
     setup() {
@@ -53,8 +54,12 @@ export class PbBlueprint extends Component {
 
         // GR8 — a client action with no control panel has to name itself, or
         // the breadcrumb says "Odoo" (which it may never say) or nothing.
+        const arrivedEditing = String(
+            (this.props.action || {}).params?.mode
+            || (this.props.action || {}).context?.mode || "") === "edit";
         if (this.env.config && this.env.config.setDisplayName) {
-            this.env.config.setDisplayName(_t("New configuration"));
+            this.env.config.setDisplayName(
+                arrivedEditing ? _t("Edit configuration") : _t("New configuration"));
         }
 
         // Read by the `onClose` of every dialog we open: a finished workbook
@@ -71,6 +76,30 @@ export class PbBlueprint extends Component {
             step: "start",
             loading: true,
             fatal: "",                 // a full-panel refusal, with a way out
+            // A refusal that has a next step rather than only a reason: a
+            // configuration the journey has never seen can be OPENED for
+            // editing, and saying so beats a dead end (SCHEMECTX P3).
+            fatalAdopt: false,
+            // --- create or edit (SCHEMECTX P3) ---------------------------
+            // `create` builds a new configuration through six steps. `edit`
+            // opens one that already exists — often a live one — so that the
+            // studio's Settings tab has somewhere better to go than a panel.
+            mode: params.mode === "edit" ? "edit" : "create",
+            locks: {},
+            builtFrom: "",
+            schemeState: "",
+            schemeStateLabel: "",
+            lockReason: "",
+            countryLockReason: "",
+            // The settings the old panel used to own, now cards on three of
+            // the steps. Loaded once per draft and written card by card.
+            settings: null,
+            settingsDraft: {},
+            settingsMeta: {},
+            settingsBusy: false,
+            settingsError: "",
+            // Every setting that moved in this sitting, for the last page.
+            changes: [],
             // --- the draft ----------------------------------------------
             configId: params.config_id || null,
             config: null,
@@ -218,6 +247,10 @@ export class PbBlueprint extends Component {
             // draft happened to be saved.
             step: String(p.step || c.step || ""),
             task: String(p.task || c.task || ""),
+            // SCHEMECTX P3 — "edit" means the studio's Settings tab sent us
+            // here to change a configuration that already exists. It rides in
+            // the URL as well, so a refresh stays in edit mode (BP14/BP38).
+            mode: String(p.mode || c.mode || ""),
         };
     }
 
@@ -238,7 +271,12 @@ export class PbBlueprint extends Component {
      */
     _rememberInUrl(configId) {
         try {
-            router.pushState({ config_id: configId });
+            // `mode` travels with the draft: a refresh in edit mode has to come
+            // back in edit mode, or somebody who was changing an Active
+            // configuration's journal lands in a six-step build of it.
+            const state = { config_id: configId };
+            if (this.state.mode === "edit") { state.mode = "edit"; }
+            router.pushState(state);
         } catch (e) {
             // A URL that did not update is a worse refresh, not a broken page.
             console.warn("pb_blueprint: could not record the draft in the URL", e);
@@ -246,7 +284,23 @@ export class PbBlueprint extends Component {
     }
 
     async resume(configId) {
-        const res = await this.rpc("bp_load", [configId]);
+        let res = await this.rpc("bp_load", [configId]);
+        // A configuration the journey has never seen. Opening it for editing is
+        // one explicit write, never a side effect of a read (BP53): it happens
+        // here only because the person ASKED for edit mode, and otherwise the
+        // refusal offers the button that asks for it.
+        if (res && !res.ok && res.needs_adopt) {
+            if (this.arrival && this.arrival.mode === "edit") {
+                const adopted = await this.rpc("bp_adopt", [configId]);
+                if (adopted && adopted.ok) {
+                    res = await this.rpc("bp_load", [configId]);
+                }
+            } else {
+                this.state.fatalAdopt = true;
+                this.state.fatal = res.reason;
+                return;
+            }
+        }
         if (!res || !res.ok) {
             this.state.fatal = (res && res.reason) || _t("This setup could not be opened.");
             return;
@@ -259,6 +313,18 @@ export class PbBlueprint extends Component {
         if (this.arrival && STEPS.includes(this.arrival.step)) {
             this.state.step = this.arrival.step;
             this.rememberStep();
+        }
+        // Edit mode opens on Start — the page that says what this
+        // configuration IS — rather than on whichever step a build stopped at.
+        // Somebody arriving from the Settings tab is asking "what is this and
+        // what can I change", and the identity card is the answer.
+        if (this.state.mode === "edit") {
+            this.state.step = (this.arrival && STEPS.includes(this.arrival.step))
+                ? this.arrival.step : "start";
+            this._rememberInUrl(configId);
+            await this.loadSettings();
+            await this.refreshPreview();
+            return;
         }
         // A finished setup opens on its LAST page, read only (B6).
         //
@@ -273,6 +339,7 @@ export class PbBlueprint extends Component {
             this.state.step = "finish";
         }
         this._rememberInUrl(configId);
+        await this.loadSettings();
         await this.refreshPreview();
     }
 
@@ -286,6 +353,15 @@ export class PbBlueprint extends Component {
         this.state.starters = res.starters;
         this.state.countries = (res.starters && res.starters.countries) || [];
         this.state.company = (res.starters && res.starters.company) || res.config.company;
+        // SCHEMECTX P3 — the SERVER decides which mode this is, never the URL:
+        // a stale `?mode=edit` on a half-built draft must open the build.
+        this.state.mode = res.mode === "edit" ? "edit" : "create";
+        this.state.locks = res.locks || {};
+        this.state.builtFrom = res.built_from || "";
+        this.state.schemeState = res.scheme_state || "";
+        this.state.schemeStateLabel = res.scheme_state_label || "";
+        this.state.lockReason = res.lock_reason || "";
+        this.state.countryLockReason = res.country_lock_reason || "";
         this.state.step = res.blueprint.step || "rules";
         this.state.rulesTab = (res.blueprint.ui && res.blueprint.ui.rules_tab)
             || "components";
@@ -353,7 +429,61 @@ export class PbBlueprint extends Component {
         return continueTarget(this.state.step, this.state.rulesTab);
     }
 
-    get continueLabel() { return this.continueTarget.label; }
+    get continueLabel() {
+        if (this.editing && this.state.step === "finish") { return _t("Save changes"); }
+        return this.continueTarget.label;
+    }
+
+    // ==================================================================
+    // Edit mode (SCHEMECTX P3)
+    // ==================================================================
+    get editing() { return this.state.mode === "edit"; }
+
+    /** The page's name, in the tab, the breadcrumb and the rail. */
+    get journeyTitle() {
+        return this.editing ? _t("Edit configuration") : _t("New configuration");
+    }
+
+    /** Whether the pay rules of this configuration may still be changed. */
+    get payLogicLocked() { return !!(this.state.locks || {}).pay_logic; }
+
+    /** Whether the country is settled for good, because money has moved. */
+    get countryLocked() { return !!(this.state.locks || {}).country; }
+
+    /** The scheme's own state, as a chip beside the rail's EDITING eyebrow. */
+    get stateChip() {
+        if (!this.editing || !this.state.schemeStateLabel) { return null; }
+        const live = ["active", "validated"].includes(this.state.schemeState);
+        return { text: this.state.schemeStateLabel, cls: live ? "is-live" : "is-draft" };
+    }
+
+    /**
+     * "Save changes" — close the sitting and go back where we came from.
+     *
+     * Every setting was written as its card was committed, so this generates
+     * nothing, activates nothing, and leaves an Active configuration Active.
+     */
+    async saveChanges() {
+        if (this.state.busy) { return; }
+        this.state.busy = true;
+        const res = await this.rpc("bp_finish", [this.state.configId]);
+        this.state.busy = false;
+        if (!res || !res.ok) {
+            this.notif.add((res && res.reason) || _t("The changes could not be closed off."),
+                           { type: "warning", sticky: true });
+            return;
+        }
+        this.notif.add(
+            this.state.changes.length
+                ? _t("Saved. Your changes are on the configuration.")
+                : _t("Nothing had changed, so nothing was saved."),
+            { type: "success" });
+        if (res.action) {
+            this.action.doAction(res.action, { clearBreadcrumbs: true });
+            return;
+        }
+        await this.openGrid(this.state.configId, { silent: true });
+    }
 
     railState(step) {
         if (step === this.state.step) return "on";
@@ -458,6 +588,16 @@ export class PbBlueprint extends Component {
     }
 
     get backChip() {
+        // In edit mode the way back is the screen we came FROM — this
+        // configuration in the components grid, not a list of all of them. A
+        // chip that lands somewhere else is a chip that lied (BP-R8).
+        if (this.editing && this.state.configId) {
+            return { label: this.state.config && this.state.config.name
+                        ? this.state.config.name : _t("Back"),
+                     tag: "pb_formula_studio", xmlid: "", lens: "",
+                     lensKey: "pb_lens",
+                     context: { config_id: this.state.configId } };
+        }
         return { label: _t("Payroll configurations"), tag: "pb_formula_studio", xmlid: "",
                  lens: "", lensKey: "pb_lens", context: { open_switcher: true } };
     }
@@ -471,7 +611,21 @@ export class PbBlueprint extends Component {
         if (field === "country_code" && !this.created) {
             await this.loadStarters(value);
         }
+        // In edit mode the country IS changeable while nobody has been paid,
+        // and it goes through the settings contract like every other field —
+        // the server refuses it the moment a payslip exists.
+        if (field === "country_code" && this.created && this.editing) {
+            this.onSetting("country_code", value);
+            await this.commitSettings(["country_code"]);
+            return;
+        }
         if (this.created && ["name", "cycle_type", "effective_from"].includes(field)) {
+            if (this.editing && ["name", "cycle_type"].includes(field)) {
+                const before = (this.state.settings && this.state.settings.values) || {};
+                this._recordChange(field, before[field], value);
+                if (this.state.settings) { this.state.settings.values[field] = value; }
+                this.state.settingsDraft[field] = value;
+            }
             this.queueSave();
         }
     }
@@ -518,6 +672,11 @@ export class PbBlueprint extends Component {
             this.notif.add(
                 _t("Pick a different starting point below. You will be asked to confirm before anything is replaced."),
                 { type: "info" });
+        } else if (this.editing) {
+            this.notif.add(
+                this.state.countryLockReason
+                    || _t("This configuration has already paid people, so its country cannot be changed."),
+                { type: "warning" });
         } else {
             this.notif.add(
                 _t("The country cannot be changed once components exist. Discard this draft and start again to change it."),
@@ -611,6 +770,7 @@ export class PbBlueprint extends Component {
             return;
         }
         if (this.state.step === "finish") {
+            if (this.editing) { await this.saveChanges(); return; }
             await this.finish();
             return;
         }
@@ -705,6 +865,162 @@ export class PbBlueprint extends Component {
     }
 
     async retrySave() { await this.save(); }
+
+    /** The refusal's own next step: open this configuration for editing. */
+    async openForEditing() {
+        const cid = this.state.configId;
+        if (!cid) { return; }
+        this.state.loading = true;
+        const res = await this.rpc("bp_adopt", [cid]);
+        if (!res || !res.ok) {
+            this.state.loading = false;
+            this.notif.add((res && res.reason)
+                || _t("This configuration could not be opened for editing."),
+                { type: "warning", sticky: true });
+            return;
+        }
+        this.state.mode = res.mode === "create" ? "create" : "edit";
+        this.state.fatal = "";
+        this.state.fatalAdopt = false;
+        this.arrival = Object.assign({}, this.arrival, { mode: this.state.mode });
+        await this.resume(cid);
+        this.state.loading = false;
+    }
+
+    // ==================================================================
+    // The settings cards (SCHEMECTX P3)
+    // ==================================================================
+    /** Everything the old Settings panel read, once per draft. */
+    async loadSettings() {
+        if (!this.created) { return; }
+        const res = await this.rpc("bp_settings", [this.state.configId]);
+        if (!res || !res.ok) {
+            // Never fatal: the journey is still the journey without its
+            // advanced cards, and the step says so where the cards would be.
+            this.state.settings = null;
+            this.state.settingsError = (res && res.reason)
+                || _t("The advanced settings could not be read.");
+            return;
+        }
+        this.state.settings = res;
+        this.state.settingsDraft = Object.assign({}, res.values);
+        this.state.settingsMeta = res.meta || {};
+        this.state.settingsError = "";
+    }
+
+    /** Which cards belong under the step that is open. */
+    get settingsGroup() {
+        return this.created && this.state.settings
+            ? settingsGroupFor(this.state.step) : "";
+    }
+
+    onSetting(field, value) {
+        this.state.settingsDraft[field] = value;
+    }
+
+    /**
+     * Write the fields a card just changed — and nothing else.
+     *
+     * Card by card rather than one Save button at the end: the journey has
+     * always saved as you go, and a screen that mixes "this is already saved"
+     * with "press Save for this bit" is a screen nobody trusts.
+     */
+    async commitSettings(fields) {
+        if (!this.created || this.state.settingsBusy) { return; }
+        const before = (this.state.settings && this.state.settings.values) || {};
+        const patch = {};
+        for (const field of fields || []) {
+            patch[field] = this.state.settingsDraft[field];
+        }
+        this.state.settingsBusy = true;
+        this.state.saving = true;
+        this.state.settingsError = "";
+        const res = await this.rpc("bp_save_settings", [
+            this.state.configId, patch,
+            this.state.blueprint ? this.state.blueprint.revision : null]);
+        this.state.settingsBusy = false;
+        this.state.saving = false;
+        if (!res || !res.ok) {
+            // The value on screen is not what the server holds, so put the
+            // server's version back rather than leaving a lie in the box.
+            for (const field of fields || []) {
+                this.state.settingsDraft[field] = before[field];
+            }
+            this.state.settingsError = (res && res.reason)
+                || _t("That could not be saved.");
+            return;
+        }
+        for (const [field, value] of Object.entries(res.values || {})) {
+            this._recordChange(field, before[field], value);
+            this.state.settingsDraft[field] = value;
+            if (this.state.settings) { this.state.settings.values[field] = value; }
+        }
+        if (this.state.blueprint && res.revision !== undefined) {
+            this.state.blueprint.revision = res.revision;
+        }
+        if (this.state.config) {
+            this.state.config.name = res.name || this.state.config.name;
+            this.state.config.code = res.code || "";
+            if (res.currency) { this.state.config.currency = res.currency; }
+            if (res.country_code) {
+                this.state.config.country_code = res.country_code;
+                this.state.form.country_code = res.country_code;
+            }
+        }
+        this.state.savedAt = Date.now();
+    }
+
+    /** One line for the Save changes page: what moved, from what, to what. */
+    _recordChange(field, before, after) {
+        if (JSON.stringify(before ?? null) === JSON.stringify(after ?? null)) { return; }
+        const row = {
+            field,
+            label: settingLabel(field),
+            before: this.settingText(field, before),
+            after: this.settingText(field, after),
+        };
+        const at = this.state.changes.findIndex((c) => c.field === field);
+        if (at >= 0) {
+            // Changed twice in one sitting: it moved from where it STARTED.
+            row.before = this.state.changes[at].before;
+            this.state.changes.splice(at, 1, row);
+            return;
+        }
+        this.state.changes.push(row);
+    }
+
+    /** A stored value as a person reads it — never a raw id or `false`. */
+    settingText(field, value) {
+        if (value === true) { return _t("On"); }
+        if (value === false || value === null || value === undefined || value === "") {
+            return _t("Not set");
+        }
+        const meta = this.state.settingsMeta || {};
+        const lists = {
+            structure_id: meta.structures, connector_id: meta.connectors,
+            payroll_journal_id: meta.journals, debit_account_id: meta.accounts,
+            credit_account_id: meta.accounts, retro_component_id: meta.components,
+        };
+        if (lists[field]) {
+            const row = (lists[field] || []).find((o) => o.id === value);
+            return row ? (row.name || String(value)) : String(value);
+        }
+        if (field === "proration_component_ids") {
+            const names = (value || []).map((id) => {
+                const row = (meta.components || []).find((c) => c.id === id);
+                return row ? (row.name || row.code) : String(id);
+            });
+            return names.length ? names.join(", ") : _t("None");
+        }
+        const sels = { proration_basis: meta.proration_bases,
+                       cycle_type: meta.cycle_types,
+                       country_code: meta.country_codes };
+        if (sels[field]) {
+            const row = (sels[field] || []).find((o) => o.value === value);
+            if (row) { return row.label; }
+        }
+        return String(value);
+    }
 
     // ==================================================================
     // The pay panel

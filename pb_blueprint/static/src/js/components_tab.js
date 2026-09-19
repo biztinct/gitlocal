@@ -75,6 +75,12 @@ export class ComponentsTab extends Component {
             rowError: {},           // {rule_id: "why this one refused"}
             editor: null,           // {ruleId} or {ruleId: false, group}
             confirmRemove: null,    // {ids, label, custom}
+            // SCHEMECTX P3 — whether these rules may be changed HERE. The
+            // server answers it, from the same lock its write endpoints
+            // enforce; a list that offers Configure over rules the server
+            // will refuse to save is a list that lies.
+            editable: true,
+            readonlyReason: "",
         });
 
         useHotkey("control+f", () => this.focusSearch(),
@@ -139,6 +145,8 @@ export class ComponentsTab extends Component {
         this.state.groups = res.groups || {};
         this.state.removed = res.removed || [];
         this.state.counts = res.counts || { included: 0, removed: 0 };
+        this.state.editable = res.editable !== false;
+        this.state.readonlyReason = res.readonly_reason || "";
         this.state.error = "";
         this.state.trayOpen = this.state.trayOpen
             || (!this.state.counts.included && this.state.removed.length > 0);
@@ -171,6 +179,14 @@ export class ComponentsTab extends Component {
     }
 
     get searching() { return !!(this.state.query || "").trim(); }
+
+    /** Whether this tab may change anything, decided by the server alone. */
+    get editable() { return this.state.editable !== false; }
+
+    get readonlyReason() {
+        return this.state.readonlyReason
+            || _t("These pay rules are changed in the components grid, where every change is versioned.");
+    }
 
     get chipLine() {
         const included = this.state.counts.included || 0;
