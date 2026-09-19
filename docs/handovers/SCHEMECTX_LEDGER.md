@@ -169,6 +169,22 @@ did not. Phase 3 gates all five in BOTH modes and ships the flag, on the owner's
 ruling of 2026-09-19. No existing test or live draft flow relied on the gap:
 every create-mode suite writes to a draft with no payslips.
 
+**SC14 — three tests in `/pb_formula_studio` are red on `rztest` and are not
+a regression.** `TestRd46PersonPreview.test_04c`,
+`TestRunsrcLeftColumns.test_05` and `test_06`. Verified identical on a clean
+`git worktree` of `b7b60f8d8`, same command, same database — the SC6 family's
+cousin in the other module. Baseline before blaming a phase.
+
+**SC15 — a reused staging directory pushes a DELETED file back onto the
+server.** The deploy contract says "clean the staging directory first" and the
+stated reason is carrying another deploy's modules across. There is a second,
+quieter reason: the local→staging `rsync` has no `--delete`, so a file removed
+from the repo survives in staging and the per-module `--delete` into
+`/odoo/odoo-server/addons` faithfully restores it. `sources_card.scss` came
+back that way and was only caught because the tree hashes disagreed. **Hash
+both trees after every wave** — the version numbers matched perfectly while the
+trees did not.
+
 **SC7 — the "group totals will leave this out" hint needs a group.** Gate any
 consolidation warning on `pb.fx.group_for(company)`: on a single-company
 tenant `presentation_currency` still answers and `rate()` still says
