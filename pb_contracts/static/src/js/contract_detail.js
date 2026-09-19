@@ -25,9 +25,13 @@ export class PbContractDetail extends Component {
     ic(n, s = 16) { return ic(n, s); }
     get d() { return this.state.d || {}; }
     cCls(s) { return C_CLS[s] || "muted"; }
+    // SCHEMECTX: the sign comes from the payload, which asks the scheme that
+    // pays this person. No literal fallback — a hardcoded "₫" is exactly how
+    // an Indian salary came to be written in dong.
     money(n) {
-        if (!n) return (this.d.currency || "₫") + "0";
-        return (this.d.currency || "₫") + Math.round(n).toLocaleString("en-US");
+        const cur = this.d.currency || "";
+        if (!n) return cur + "0";
+        return cur + Math.round(n).toLocaleString("en-US");
     }
     initials() { return (this.d.employee || "?").trim().slice(0, 2).toUpperCase(); }
 

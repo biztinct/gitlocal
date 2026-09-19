@@ -512,11 +512,41 @@ class PbContracts(models.AbstractModel):
                                "now. Try again in a moment.")}
 
     @api.model
+    def _cd_symbol(self, contract):
+        """The sign this contract's money is written with.
+
+        SCHEMECTX: the scheme that pays the person decides it — an Indian
+        scheme inside a Vietnamese company pays in rupees. The scheme models
+        are optional here (no dependency), so they are probed; without them,
+        or for a person nobody pays yet, it is the company's money as before.
+
+        SC3: the SYMBOL only, never the stored position — every Payobook
+        screen writes the sign in front, and `_cd_money` is what does it.
+        Two schemes pay some people (regular + advance); the regular one is
+        first out of `schemes_for_employee`, and its money is the contract's.
+
+        The whole probe sits inside `_safe`, including reading the currency:
+        an optional model that half-answers must cost this contract its sign,
+        never its drawer.
+        """
+        def scheme_symbol():
+            Config = self.env.get('hr.formula.config')
+            if Config is None or not hasattr(Config, 'schemes_for_employee'):
+                return ''
+            schemes = Config.sudo().schemes_for_employee(contract.employee_id)
+            if not schemes:
+                return ''
+            return schemes[:1].scheme_currency().get('symbol') or ''
+
+        return (self._safe(scheme_symbol, default='')
+                or (contract.company_id or self.env.company)
+                .currency_id.symbol or '')
+
+    @api.model
     def _cd_payload(self, contract):
         can_write = self._cd_may_write()
         unmask = self._cd_unmask_wage()
-        symbol = ((contract.company_id or self.env.company)
-                  .currency_id.symbol or '')
+        symbol = self._cd_symbol(contract)
         return {
             'ok': True,
             'error': False,
@@ -1516,8 +1546,7 @@ class PbContracts(models.AbstractModel):
 
         can_write = self._cd_may_write()
         unmask = self._cd_unmask_wage()
-        symbol = ((contract.company_id or self.env.company)
-                  .currency_id.symbol or '')
+        symbol = self._cd_symbol(contract)
         if not can_write:
             return {'ok': False, 'saved': 0, 'refusals': [],
                     'msg': _("You can look at contracts but not change them. "
@@ -1778,8 +1807,7 @@ class PbContracts(models.AbstractModel):
                     'msg': _("That contract is no longer here.")}
         can_write = self._cd_may_write()
         unmask = self._cd_unmask_wage()
-        symbol = ((contract.company_id or self.env.company)
-                  .currency_id.symbol or '')
+        symbol = self._cd_symbol(contract)
         if not can_write:
             return {'ok': True, 'refusals': [], 'accept': 0,
                     'msg': _("You can look at contracts but not change them. "

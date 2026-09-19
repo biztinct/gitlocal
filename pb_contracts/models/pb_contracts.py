@@ -117,7 +117,10 @@ class PbContracts(models.AbstractModel):
         c = self.env['hr.contract'].browse(int(contract_id))
         if not c.exists():
             return {'error': 'Contract not found'}
-        cur = (c.company_id or self.env.company).currency_id
+        # SCHEMECTX: the same sign the drawer writes — the scheme that pays
+        # the person, not whatever the company is filed under. This screen and
+        # the drawer show one contract each, so they must agree to the letter.
+        symbol = self._cd_symbol(c)
         today = date.today()
         e = c.employee_id
         dte = (c.date_end - today).days if c.date_end else None
@@ -150,7 +153,7 @@ class PbContracts(models.AbstractModel):
             'dept': (c.department_id.name if c.department_id else ''),
             'structure': (c.struct_id.name if getattr(c, 'struct_id', False) else
                           (c.structure_type_id.name if c.structure_type_id else '')),
-            'currency': cur.symbol or '',
+            'currency': symbol,
             'state': c.state, 'state_label': STATE_LABEL.get(c.state, c.state),
             'kanban_state': c.kanban_state,
             'wage': c.wage or 0.0,
