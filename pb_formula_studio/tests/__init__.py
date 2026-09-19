@@ -59,3 +59,4 @@ from . import test_runsrc_left_columns
 # RUNSRC C — the mapping board's "From this pay run" lane, and the client-side
 # vocabulary finally learning `period` (every such chip read "No source").
 from . import test_runsrc_pc_board_lane
+from . import test_settings_door

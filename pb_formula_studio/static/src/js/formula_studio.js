@@ -439,6 +439,8 @@ export class PbFormulaStudio extends Component {
             // grid workbench: slide-in drawers over the full-width spreadsheet
             outlineDrawer: false,
             previewDrawer: false,
+            // header: the lifecycle menu on the state chip
+            stateMenuOpen: false,
             // config settings surface
             settings: null,
             setDraft: {},
@@ -564,6 +566,9 @@ export class PbFormulaStudio extends Component {
             if (this.state.testsFailOpen && !ev.target.closest(".pbfs-testchip-wrap")) {
                 this.state.testsFailOpen = false;
             }
+            if (this.state.stateMenuOpen && !ev.target.closest(".pbfs-statewrap")) {
+                this.state.stateMenuOpen = false;
+            }
         });
         useHotkey("escape", () => {
             if (this.state.shortcutsOpen) {          // W18 — front of the Escape ladder (D-F1)
@@ -586,6 +591,8 @@ export class PbFormulaStudio extends Component {
                 this.closeDrawers();
             } else if (this.state.moreOpen) {
                 this.state.moreOpen = false;
+            } else if (this.state.stateMenuOpen) {
+                this.state.stateMenuOpen = false;
             }
         }, { global: true, bypassEditableProtection: false });
         // Command Center — autofocus its search box whenever it opens
@@ -1193,7 +1200,8 @@ export class PbFormulaStudio extends Component {
         add("view.compare", _t("Views"), _t("Compare periods"), "compare periods payrun delta difference month", () => this.openCompare());
         add("view.budget", _t("Views"), _t("Compare vs budget"), "budget variance vs actual target plan compare", () => this.openCompareBudget());
         add("act.offer", _t("Actions"), _t("Offer calculator"), "offer calculator hypothetical hire net breakdown simulate salary", () => this.openOfferCalc());
-        add("view.settings", _t("Views"), _t("Settings"), "settings configuration setup", () => this.setView("settings"));
+        add("view.settings", _t("Views"), _t("Settings"), "settings configuration setup", () => this.openSettings());
+        add("view.health", _t("Views"), _t("Health"), "health order unused circular execution intelligence lifecycle", () => this.openHealth());
         add("view.shortcuts", _t("Views"), _t("Keyboard shortcuts"), "keyboard shortcuts hotkeys keys help ?", () => this.openShortcuts());
         // COLROLES P2 — flip the lens without reaching for the sidebar control.
         add("view.lens", "Views",
@@ -1273,6 +1281,7 @@ export class PbFormulaStudio extends Component {
                 T("replay", _t("Execution replay"), _t("Watch a payslip compute step by step"), "replay", "blue", () => this.openReplay()),
                 T("whatif", _t("What-if"), _t("Slide a rate and project the payroll cost"), "whatif", "teal", () => this.openWhatif()),
                 T("depmap", _t("Dependency map"), _t("The whole configuration as a graph"), "depmap", "blue", () => this.openDepMap()),
+                T("simulate", _t("Simulate"), _t("Run this configuration against last period's real payslips before putting it live"), "simulate", "amber", () => this.openSimulate()),
                 T("offer", _t("Offer calculator"), _t("Type hypothetical inputs, see the full breakdown"), "offer", "green", () => this.openOfferCalc()),
             ] },
             { id: "design", label: _t("Design"), tools: [
@@ -1280,6 +1289,7 @@ export class PbFormulaStudio extends Component {
                 T("mapping", _t("Mapping"), _t("Open the mapping board on this scheme — spreadsheet columns, system fields, employee and contract records"), "mapping", "pink", () => this.openMapping()),
                 T("rates", _t("Rate tables"), _t("PIT brackets and other rate tables"), "rates", "amber", () => this.openRates(), this.state.rateTables.length || null),
                 T("export", _t("Export workbook"), _t("Download the config as a living Excel file with real formulas"), "export", "teal", () => this.exportLivingWorkbook()),
+                T("importexcel", _t("Import from Excel"), _t("Read a payroll workbook into this configuration"), "importexcel", "green", () => this.importExcelCfg()),
             ] },
             { id: "govern", label: _t("Govern"), tools: [
                 T("problems", _t("Problems"), _t("Lint checks and rename-refactor"), "problems", "rose", () => this.openProblems(), this.problemCount || null),
@@ -1289,6 +1299,7 @@ export class PbFormulaStudio extends Component {
                 T("categories", _t("Review categories"), _t("Read the net-pay formula and file every component as an earning, a deduction, an employer cost or information"), "categories", "green", () => this.openCategoryReview()),
                 T("legislation", _t("Legislation"), _t("Roll a statutory change across every configuration"), "legislation", "amber", () => this.openLegislation()),
                 T("releases", _t("Releases"), _t("Review and sign off formula changes"), "releases", "green", () => this.openReleases()),
+                T("regenerate", _t("Refresh the formulas"), _t("Work every generated formula out again from its components"), "regenerate", "blue", () => this.regenerateFormulas()),
             ] },
             { id: "collab", label: _t("Collaborate"), tools: [
                 T("share", _t("Share for review"), _t("A read-only link for your client"), "share", "blue", () => this.openShare()),
@@ -1564,8 +1575,33 @@ export class PbFormulaStudio extends Component {
             }
         });
     }
+    toggleStateMenu() { this.state.stateMenuOpen = !this.state.stateMenuOpen; }
+
+    /** One whole sentence, so it translates as one (never a split t-esc). */
+    get stageLine() {
+        return _t("This configuration is %s", this.stageLabel());
+    }
+
+    /** The retire button's word — what pressing it does, not what it is about. */
+    get retireVerb() {
+        return this.schemeVerb(_t("Retire this configuration"),
+                               _t("Propose retiring it"));
+    }
+
+    /**
+     * The two lifecycle moves that are not "advance": go back to draft, and
+     * retire. They lived only in the Settings panel's action bar; they belong
+     * beside the state they change (SCHEMECTX P3, owner ruling 2026-09-19).
+     */
+    async pickStateAction(what) {
+        this.state.stateMenuOpen = false;
+        if (what === "draft") { await this.setDraftCfg(); return; }
+        if (what === "archive") { await this.archiveCfg(); }
+    }
+
     setView(v) {
         this.state.view = v;
+        this.state.stateMenuOpen = false;
         // grid = full-width workbench; drawers start closed on every switch
         this.state.outlineDrawer = false;
         this.state.previewDrawer = false;
@@ -3341,13 +3377,87 @@ export class PbFormulaStudio extends Component {
     }
 
     // ---- config settings surface ----
+    /**
+     * SCHEMECTX P3 — Settings opens the guided journey, in edit mode.
+     *
+     * Everything this configuration's settings panel edited now lives in the
+     * journey, on the step where the decision belongs, so there is ONE screen
+     * that describes a payroll configuration instead of two that can disagree.
+     *
+     * `pb_blueprint` depends on this module and not the other way round, so
+     * this has to PROBE rather than import: the action tag may not be
+     * registered, the service model may not exist, and `bp_adopt` may refuse
+     * (another company). Every one of those falls back to the old panel while
+     * it is still here, and to a plain sentence once it is gone.
+     */
     async openSettings() {
         if (!this.state.config || !this.state.config.id) return;
+        const cid = this.state.config.id;
+        if (registry.category("actions").contains("pb_blueprint")) {
+            let adopted = null;
+            try {
+                adopted = await this.orm.call("pb.blueprint.studio", "bp_adopt", [cid]);
+            } catch (e) {
+                adopted = null;         // not installed, or the call blew up
+            }
+            if (adopted && adopted.ok) {
+                const signal = { config_id: cid, mode: adopted.mode || "edit" };
+                this.action.doAction({
+                    type: "ir.actions.client",
+                    tag: "pb_blueprint",
+                    target: "current",
+                    params: { ...signal },
+                    context: { ...signal, pb_back: {
+                        label: this.state.config.name || _t("Back"),
+                        tag: "pb_formula_studio",
+                        context: { config_id: cid },
+                    } },
+                }, { clearBreadcrumbs: true });
+                return;
+            }
+            if (adopted && adopted.reason) {
+                // A refusal with a reason is an answer, not a reason to show a
+                // second screen that would refuse the same thing differently.
+                this.notif.add(adopted.reason, { type: "warning", sticky: true });
+                return;
+            }
+        }
+        await this.openSettingsPanel();
+    }
+
+    /** The old panel. Kept as the fallback while the journey lands. */
+    async openSettingsPanel() {
         await this.loadSettings();
         this.state.settingsTab = "setup";
         this.state.cfgAdvOpen = false;
         this.state.settingsError = "";
         this.state.view = "settings";
+    }
+
+    /**
+     * The Health tab: where this configuration is in its life, and what the
+     * engine can see wrong with it.
+     *
+     * The execution order, the unused components and the circular references
+     * were a sub-tab of the Settings panel and have no home in the journey —
+     * they are about the SHAPE of a configuration rather than a decision
+     * anybody takes during setup. They get a tab of their own, with the
+     * lifecycle rail and its actions, which is the other half of the same
+     * question.
+     */
+    /** The stage rail on the Health tab, read from the configuration itself. */
+    healthStageCls(stage) {
+        const order = ["draft", "testing", "validated", "active"];
+        const current = (this.state.config && this.state.config.state) || "draft";
+        if (current === "archived") return "muted";
+        const cur = order.indexOf(current), i = order.indexOf(stage);
+        return i < cur ? "done" : (i === cur ? "current" : "todo");
+    }
+
+    async openHealth() {
+        if (!this.state.config || !this.state.config.id) return;
+        this.setView("health");
+        if (!this.state.settings) { await this.loadSettings(); }
     }
     async loadSettings() {
         const d = await this.orm.call("pb.formula.studio", "get_config_settings", [this.state.config.id]);
@@ -4159,7 +4269,7 @@ export class PbFormulaStudio extends Component {
     }
     setDraftCfg() { return this._cfgLifecycle("cfg_set_draft", "Back to draft"); }
     async archiveCfg() {
-        if (!window.confirm(_t("Retire this pay scheme?"))) { return; }
+        if (!window.confirm(_t("Retire this configuration?"))) { return; }
         const r = await this._schemePropose("archive");
         if (r) { await this.load(this.state.config.id); }
     }

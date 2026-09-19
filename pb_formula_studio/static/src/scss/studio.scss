@@ -1455,3 +1455,54 @@
     line-height: 1.45;
     margin-top: 4px;
 }
+
+/* =====================================================================
+   SCHEMECTX P3 — the lifecycle menu on the state chip, and the Health tab.
+
+   The Settings panel used to own the two lifecycle moves that are not
+   "advance" (back to draft, retire) and the whole Intelligence sub-tab.
+   Settings now opens the guided journey, so both get a home of their own:
+   the moves beside the state they change, the intelligence in a tab.
+   ===================================================================== */
+.pbfs {
+    .pbfs-statewrap { position: relative; display: inline-flex; }
+
+    button.pbfs-state {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-family: inherit; cursor: pointer;
+    }
+
+    .pbfs-state-chev { width: 12px; height: 12px; opacity: .65; }
+
+    .pbfs-state-menu {
+        position: absolute; top: calc(100% + 7px); left: 0; z-index: 60;
+        min-width: 252px; padding: 7px;
+        background: #fff; border: 1px solid #E6E9F0; border-radius: 12px;
+        box-shadow: 0 14px 34px rgba(16, 24, 40, .14);
+
+        .pbfs-state-menu-h {
+            padding: 7px 10px 9px; font-size: 11.5px; color: #6B7280;
+            border-bottom: 1px solid #F1F3F8; margin-bottom: 5px;
+            b { color: #1E1B2E; }
+        }
+        .pbfs-state-menu-n {
+            padding: 8px 10px 4px; font-size: 11.5px; line-height: 1.5;
+            color: #6B7280;
+        }
+        button {
+            display: flex; align-items: center; gap: 9px; width: 100%;
+            padding: 9px 10px; border: none; background: none; border-radius: 9px;
+            font-family: inherit; font-size: 13px; font-weight: 600;
+            color: #1E1B2E; text-align: left; cursor: pointer;
+            svg { width: 15px; height: 15px; flex: none; opacity: .75; }
+            &:hover { background: #F5F6FC; }
+            &.danger { color: #B3184A; svg { opacity: .9; } }
+            &.danger:hover { background: #FDF2F6; }
+        }
+    }
+
+    .pbfs-health {
+        .pbcfg-rail { margin-bottom: 14px; }
+        .ed-errbox { margin-bottom: 14px; }
+    }
+}
