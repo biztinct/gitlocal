@@ -17,6 +17,7 @@ whole answer costs a bounded number of queries however many rows there are (8).
 from odoo.tests import TransactionCase, tagged
 
 from .approval_lane import no_approval_needed
+from .scheme_scope import catalogue_lines, paid_by
 
 
 @tagged('post_install', '-at_install')
@@ -66,9 +67,9 @@ class TestCd2FillsFrom(TransactionCase):
                                  'lower_bound': 0.0, 'upper_bound': 0.0,
                                  'default_value': 0.0})
 
-        # The templates go in BEFORE the contract: `hr.contract.create`
-        # auto-creates one advantage line per template that exists at the time
-        # (om_hr_payroll/models/hr_contract.py:118).
+        # SCHEMECTX P2 — the create-time fan-out is gone (it is what put one
+        # country's components on another country's contracts), so the fixture
+        # lays the lines down itself.
         cls.employee = cls.Employee.create(
             {'name': 'CD2 Drawer Person', 'company_id': cls.company.id})
         cls.contract = cls.Contract.create({
@@ -77,6 +78,7 @@ class TestCd2FillsFrom(TransactionCase):
             'wage': 10000000.0, 'state': 'open', 'date_start': '2026-06-01',
             'resource_calendar_id': cls.calendar.id, 'type_id': cls.ctype.id,
         })
+        catalogue_lines(cls.env, cls.contract)
 
         cls.have_rules = bool(cls.Rule is not None and cls.Config is not None)
         cls.cfg = None
@@ -103,6 +105,14 @@ class TestCd2FillsFrom(TransactionCase):
             # RUNSRC D3 — answered by the pay run, and by nothing else.
             cls.r_payrun = cls._rule(cls.codes['payrun'])
             cls.r_payrun.set_source_binding('pay_run', 'STDDAYS')
+            # SCHEMECTX P2 — the tab now shows the components of the scheme
+            # that pays this person, so the fixture says who that is. The rules
+            # above are deliberately NOT flagged as contract components: this
+            # suite is about where a value comes FROM, and that flag is itself
+            # one of the sources. They are in scope because the scheme has a
+            # rule for each code and the catalogue carries a row for it, which
+            # is the second half of `component_rule_codes`.
+            paid_by(cls.env, cls.employee, cls.cfg)
 
     # --------------------------------------------------------------- fixtures
     @classmethod
@@ -260,6 +270,8 @@ class TestCd2FillsFrom(TransactionCase):
             'state': 'open', 'date_start': '2026-06-01',
             'resource_calendar_id': self.calendar.id, 'type_id': self.ctype.id,
         })
+        catalogue_lines(self.env, contract)
+        paid_by(self.env, other, self.cfg)
         keep = {self.codes['feed'], self.codes['excel'], self.codes['silent'],
                 self.codes['both']}
         lines = self.Advantage.search([('contract_id', '=', contract.id)])

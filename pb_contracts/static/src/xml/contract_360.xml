@@ -115,6 +115,64 @@
   </t>
 
   <!-- ================================================================== -->
+  <!-- ==================================================================
+       SCHEMECTX P2 — ONE component row, used by the scheme's list and by
+       "Other values on this contract". Two copies of this markup would be two
+       answers the day one of them is edited.
+
+       Every key below is `compRowKey`/`compRefKey`, never `row.id`: a virtual
+       row (a component the scheme owns that this contract has never held) has
+       no id at all, and `false` repeated down a list is one key for many rows.
+       ================================================================== -->
+  <t t-name="pb_contracts.CdComponentRow">
+    <div class="pbc-comp-w" t-att-class="compClass(row)">
+      <div class="pbc-comp" t-att-data-cdkey="compKey(row)"
+           t-on-click="(ev) => this.startComp(row, ev)"
+           t-att-tabindex="compTab(row)"
+           t-on-keydown="(ev) => this.onCompKey(row, ev)">
+        <span class="pbc-comp-code" t-esc="row.code || '—'"/>
+        <div class="pbc-comp-id">
+          <span class="n" t-esc="row.name || '—'"/>
+          <span class="pbc-comp-tags">
+            <span t-attf-class="pbc-comp-from tone-{{ row.fills_tone || 'muted' }}" t-esc="row.fills_label || '—'"/>
+            <span class="pbc-comp-warn" t-if="row.requires_new_contract">usually starts a new contract</span>
+            <span class="pbc-comp-nil" t-if="row.virtual">not filled in yet</span>
+          </span>
+        </div>
+        <div class="pbc-comp-r">
+          <t t-if="isEditing('comp', compRowKey(row))">
+            <CdEditor entry="compEntry(row)" value="compEditValue(row)"
+                      currency="currency" anchorEl="anchorEl"
+                      onCommit="(v) => this.commitComp(row, v)"
+                      onCancel.bind="cancelEdit"
+                      onMove="(dir) => this.moveComp(row, dir)"/>
+          </t>
+          <t t-else="">
+            <span class="pbc-comp-v" t-esc="compDisplay(row)"/>
+          </t>
+          <span class="pbc-was" t-if="compWas(row)">was <t t-esc="compWas(row)"/></span>
+          <span class="pbc-comp-b" t-if="row.bounded and row.bounds_hint and !isCompDirty(compRowKey(row))" t-esc="row.bounds_hint"/>
+        </div>
+        <button class="pbc-comp-x" t-if="canWrite and !row.virtual and !isRemoved(row.id)"
+                title="Remove this component from the contract"
+                t-on-click.stop="() => this.stageRemove(row)">
+          <t t-out="ic('trash',14)"/>
+        </button>
+        <button class="pbc-comp-u" t-if="isRemoved(row.id)"
+                t-on-click.stop="() => this.undoRemove(row)">
+          <t t-out="ic('undo',13)"/> Undo
+        </button>
+      </div>
+
+      <div class="pbc-note" t-foreach="compWarnings(row)" t-as="w" t-key="w_index">
+        <t t-out="ic('info',13)"/> <span t-esc="w"/>
+      </div>
+      <div class="pbc-refuse full" t-if="hasRefusal('comp', compRefKey(row))">
+        <span class="pbc-dot"/><span t-esc="refusalFor('comp', compRefKey(row))"/>
+      </div>
+    </div>
+  </t>
+
   <t t-name="pb_contracts.Contract360Drawer">
     <div class="pbc pbim">
       <div class="pbc-scrim" t-att-class="{ 'shown': state.shown }" t-on-click="close"/>
@@ -262,64 +320,75 @@
 
             <!-- ==================== COMPONENTS ==================== -->
             <t t-if="state.tab === 'components'">
+
+              <!-- SCHEMECTX P2 — whose components these are. The strip is the
+                   first thing read on the tab, because "why am I looking at
+                   these nineteen rows" was the owner's question. -->
+              <div class="pbc-scope" t-if="isScoped">
+                <t t-out="ic('layers',16)"/>
+                <div class="pbc-scope-in">
+                  <span class="pbc-scope-lead">Paid by</span>
+                  <t t-foreach="scopeSchemes" t-as="scheme" t-key="scheme.id">
+                    <span class="pbc-scope-one">
+                      <button class="pbc-scope-name" t-on-click="() => this.openScheme(scheme)"
+                              title="Open this payroll scheme">
+                        <t t-esc="scheme.name"/>
+                      </button>
+                      <span class="pbc-scope-co" t-if="scheme.country_name">
+                        <t t-out="ic('globe',12)"/> <t t-esc="scheme.country_name"/>
+                      </span>
+                      <span class="pbc-scope-role" t-if="schemeRoleLabel(scheme)"
+                            t-esc="schemeRoleLabel(scheme)"/>
+                    </span>
+                  </t>
+                </div>
+              </div>
+
               <div class="pbc-explain" t-if="components.explainer">
                 <t t-out="ic('alert',16)"/> <span t-esc="components.explainer"/>
               </div>
 
               <div class="pbc-comps" t-if="compRows.length">
-                <t t-foreach="compRows" t-as="row" t-key="row.id">
-                  <div class="pbc-comp-w" t-att-class="compClass(row)">
-                    <div class="pbc-comp" t-att-data-cdkey="compKey(row)"
-                         t-on-click="(ev) => this.startComp(row, ev)"
-                         t-att-tabindex="compTab(row)"
-                         t-on-keydown="(ev) => this.onCompKey(row, ev)">
-                      <span class="pbc-comp-code" t-esc="row.code || '—'"/>
-                      <div class="pbc-comp-id">
-                        <span class="n" t-esc="row.name || '—'"/>
-                        <span class="pbc-comp-tags">
-                          <span t-attf-class="pbc-comp-from tone-{{ row.fills_tone || 'muted' }}" t-esc="row.fills_label || '—'"/>
-                          <span class="pbc-comp-warn" t-if="row.requires_new_contract">usually starts a new contract</span>
-                        </span>
-                      </div>
-                      <div class="pbc-comp-r">
-                        <t t-if="isEditing('comp', row.id)">
-                          <CdEditor entry="compEntry(row)" value="compEditValue(row)"
-                                    currency="currency" anchorEl="anchorEl"
-                                    onCommit="(v) => this.commitComp(row, v)"
-                                    onCancel.bind="cancelEdit"
-                                    onMove="(dir) => this.moveComp(row, dir)"/>
-                        </t>
-                        <t t-else="">
-                          <span class="pbc-comp-v" t-esc="compDisplay(row)"/>
-                        </t>
-                        <span class="pbc-was" t-if="compWas(row)">was <t t-esc="compWas(row)"/></span>
-                        <span class="pbc-comp-b" t-if="row.bounded and row.bounds_hint and !isCompDirty(row.id)" t-esc="row.bounds_hint"/>
-                      </div>
-                      <button class="pbc-comp-x" t-if="canWrite and !isRemoved(row.id)"
-                              title="Remove this component from the contract"
-                              t-on-click.stop="() => this.stageRemove(row)">
-                        <t t-out="ic('trash',14)"/>
-                      </button>
-                      <button class="pbc-comp-u" t-if="isRemoved(row.id)"
-                              t-on-click.stop="() => this.undoRemove(row)">
-                        <t t-out="ic('undo',13)"/> Undo
-                      </button>
-                    </div>
-
-                    <div class="pbc-note" t-foreach="compWarnings(row)" t-as="w" t-key="w_index">
-                      <t t-out="ic('info',13)"/> <span t-esc="w"/>
-                    </div>
-                    <div class="pbc-refuse full" t-if="hasRefusal('comp', row.id)">
-                      <span class="pbc-dot"/><span t-esc="refusalFor('comp', row.id)"/>
-                    </div>
-                  </div>
+                <t t-foreach="compRows" t-as="row" t-key="compKey(row)">
+                  <t t-call="pb_contracts.CdComponentRow"/>
                 </t>
+              </div>
+
+              <div t-elif="isUnassigned" class="pbc-empty">
+                <t t-out="ic('route',30)"/>
+                <p>No payroll scheme pays this person yet.</p>
+                <small>Components follow the scheme that pays somebody, so until
+                  one does there is nothing here to show.</small>
+                <button class="pbim-btn primary" t-on-click="openWhoIsPaidBy">
+                  <t t-out="ic('gitMerge',14)"/> Choose who is paid by what
+                </button>
               </div>
 
               <div t-else="" class="pbc-empty">
                 <t t-out="ic('banknote',30)"/>
                 <p>This contract carries no components.</p>
                 <small>Components are the named amounts a pay run reads off a contract.</small>
+              </div>
+
+              <!-- Held on this contract, but outside the scheme that pays this
+                   person. NEVER hidden and never deleted here: folded, counted,
+                   and still editable so a value can be cleared. -->
+              <div class="pbc-other" t-if="otherCount">
+                <button class="pbc-other-h" t-on-click="toggleOther"
+                        t-att-class="{ open: state.otherOpen }">
+                  <t t-out="ic('chevron',14)"/>
+                  <span class="t">Other values on this contract</span>
+                  <span class="pbc-other-c" t-esc="otherCount"/>
+                </button>
+                <div class="pbc-other-b" t-if="state.otherOpen">
+                  <p class="pbc-other-w">Held on this contract, but not used by
+                    the scheme that pays this person.</p>
+                  <div class="pbc-comps">
+                    <t t-foreach="otherRows" t-as="row" t-key="compKey(row)">
+                      <t t-call="pb_contracts.CdComponentRow"/>
+                    </t>
+                  </div>
+                </div>
               </div>
 
               <!-- ==================== staged new rows ==================== -->

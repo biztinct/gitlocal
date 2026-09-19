@@ -473,3 +473,21 @@ msgstr "Đợt trả lương tiếp theo sẽ thay giá trị này bằng giá t
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
 msgid "The next pay run will work this value out with a formula and replace what you type."
 msgstr "Đợt trả lương tiếp theo sẽ tính giá trị này bằng công thức và thay cho những gì bạn nhập."
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contract_360.js:0
+msgid "Regular"
+msgstr "Thường kỳ"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contract_360.js:0
+msgid "Advance"
+msgstr "Tạm ứng"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contract_360.js:0
+msgid "Who is paid by what is not switched on for this company."
+msgstr "Chức năng \"Ai được trả theo chương trình nào\" chưa được bật cho công ty này."

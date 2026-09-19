@@ -243,6 +243,17 @@ class PbEmployeeComp(models.Model):
                 'note': _('From the contract.'),
             })
             seq += 10
+        # SCHEMECTX P2 — the package follows the scheme that pays this person.
+        #
+        # A contract can hold components belonging to a scheme that does not pay
+        # this person: the catalogue fan-out this phase removed put one line per
+        # template on every contract, and those lines are still there until the
+        # clean-up runs. An EMPTY one was already skipped by `if not amount`
+        # below and stays skipped. A VALUED one is never skipped — it is money
+        # written on this contract, and dropping money silently is the one thing
+        # this phase must not do — but it is labelled, so a reader can see it
+        # came from somewhere the scheme does not read.
+        scope_codes = self._sc_scope_codes(contract.employee_id)
         for adv in contract.advantages_ids:
             template = adv.advantage_template_id
             # A text-typed component is a label, not money (COLROLES).
@@ -251,6 +262,10 @@ class PbEmployeeComp(models.Model):
             amount = adv.amount or 0.0
             if not amount:
                 continue
+            code = adv.advantage_template_code or (
+                template.code if template else '')
+            outside = bool(scope_codes is not None and code
+                           and code not in scope_codes)
             vals.append({
                 'name': (template.name if template else '') or _('Component'),
                 'kind': 'earning',
@@ -259,12 +274,38 @@ class PbEmployeeComp(models.Model):
                 'sequence': seq,
                 # Unchecked on purpose — see `_compute_annual_total`.
                 'checked': False,
-                'note': _('From the contract — check this is money paid every '
-                          'month (%s).',
-                          (template.code if template else '') or ''),
+                'note': (
+                    _('From the contract, but the payroll scheme that pays '
+                      'this person does not use it (%s). Check before you '
+                      'count it.', code or '')
+                    if outside else
+                    _('From the contract — check this is money paid every '
+                      'month (%s).', code or '')),
             })
             seq += 10
         return vals
+
+    # ------------------------------------------- SCHEMECTX P2: whose is this
+    def _sc_scope_codes(self, employee):
+        """The component codes the person's scheme(s) own, or `None`.
+
+        `None` means "there is no scheme map on this database", and every
+        caller then behaves exactly as it did before this phase — the same
+        three states the contract drawer reads (`pb_contract_360._cd_scope`).
+        """
+        Config = self.env.get('hr.formula.config')
+        if Config is None or not employee \
+                or not hasattr(Config, 'component_scope_for_employee'):
+            return None
+        try:
+            answer = Config.sudo().component_scope_for_employee(employee)
+        except Exception:       # noqa: BLE001 — a pay package must still open
+            _logger.warning('Pay package: the component scope could not be '
+                            'read for employee %s', employee.id, exc_info=True)
+            return None
+        if not answer or not answer.get('known') or not answer.get('schemes'):
+            return None
+        return {c for c in (answer.get('codes') or set()) if c}
 
     # ------------------------------------------------------------ the reads
     @api.model

@@ -21,6 +21,7 @@ sources (23) and survives having none (24), a save hands back the fresh truth
 from odoo.tests import TransactionCase, tagged
 
 from .approval_lane import no_approval_needed
+from .scheme_scope import catalogue_lines, paid_by
 
 
 @tagged('post_install', '-at_install')
@@ -57,9 +58,11 @@ class TestCd1Contract360(TransactionCase):
         cls.dept = cls.env['hr.department'].create(
             {'name': 'CD Drawer Dept', 'company_id': cls.company.id})
 
-        # Templates go in BEFORE the contract: `hr.contract.create` auto-creates
-        # one advantage line per template (om_hr_payroll/models/hr_contract.py
-        # :118), so this is how the fixture ends up with its three lines.
+        # SCHEMECTX P2 — a new contract no longer gets a line per catalogue
+        # row (that fan-out is what put another country's components on every
+        # contract), so the fixture puts them there itself. Templates still go
+        # in before the contract, because `catalogue_lines` copies whatever the
+        # catalogue holds at the moment it is called.
         cls.t_base = cls._template('CDQBASE', 'CD Base Salary')
         cls.t_bound = cls._template('CDQBOUND', 'CD Site Bonus',
                                     lower=100.0, upper=1000.0, default=500.0)
@@ -70,6 +73,7 @@ class TestCd1Contract360(TransactionCase):
         cls.employee = cls.Employee.create(
             {'name': 'CD Drawer One', 'company_id': cls.company.id})
         cls.contract = cls._contract(cls.employee)
+        catalogue_lines(cls.env, cls.contract)
 
         cls.l_base = cls._line(cls.contract, 'CDQBASE')
         cls.l_bound = cls._line(cls.contract, 'CDQBOUND')
@@ -96,6 +100,21 @@ class TestCd1Contract360(TransactionCase):
                                       requires_new_contract=True)
             cls.rule_mapped = cls._rule('CDQMAPPED', 'CD Mapped Allowance',
                                         is_contract_component=True)
+            # SCHEMECTX P2 — the components tab shows the components of the
+            # scheme that pays this person, so the fixture has to say who that
+            # is and which components are the scheme's. CDQEXTRA deliberately
+            # gets no rule: it is the catalogue row that belongs to no scheme.
+            #
+            # NEITHER is flagged a contract component, and that is deliberate:
+            # `_cd_is_filled_by_mapping` treats that flag as "the next pay data
+            # file will bring this value back", which makes the line
+            # un-REMOVABLE — and case 18 removes CDQBOUND. They are in the
+            # person's scope anyway, through the second half of
+            # `component_rule_codes` (ledger SC8): this scheme has a rule for
+            # the code and the catalogue carries a row for it.
+            cls.rule_bound = cls._rule('CDQBOUND', 'CD Site Bonus')
+            cls.rule_text = cls._rule('CDQTEXT', 'CD Grade Letter')
+            paid_by(cls.env, cls.employee, cls.cfg)
 
     # --------------------------------------------------------------- fixtures
     @classmethod
@@ -211,8 +230,12 @@ class TestCd1Contract360(TransactionCase):
         self.assertEqual(payload['header']['contract_id'], self.contract.id)
         # `explainer` joined the contract in CD-2: the calm sentence above a
         # grid of zeroes is composed server-side so there is one author of it.
+        # `explainer` joined in CD-2; SCHEMECTX P2 added `scope` (whose
+        # components these are), `other_rows` and `other_count` (what the
+        # contract holds that the scheme does not use).
         self.assertEqual(set(payload['components']),
-                         {'rows', 'count', 'total', 'explainer', 'addable'})
+                         {'rows', 'count', 'total', 'explainer', 'addable',
+                          'scope', 'other_rows', 'other_count'})
         self.assertEqual(set(payload['history']), {'rows', 'total', 'shown'})
 
     # =====================================================================
@@ -277,14 +300,26 @@ class TestCd1Contract360(TransactionCase):
             self.assertEqual(base['value_kind'], 'money')
 
     # =====================================================================
-    # 5 — `addable` is what is NOT already on the contract
+    # 5 — the scheme's list leaves nothing to add by hand
+    #
+    # SCHEMECTX P2 rewrote this case. `addable` used to be the whole catalogue
+    # minus what the contract held, which is how a Vietnamese contract came to
+    # offer Indian components. When a scheme says which components are its
+    # own, every one of them is already on screen — filled or not — so there is
+    # nothing left to pick from, and a catalogue row that belongs to no scheme
+    # is never offered at all.
     # =====================================================================
-    def test_05_addable_excludes_what_the_contract_already_has(self):
+    def test_05_the_schemes_own_list_leaves_nothing_to_add(self):
         payload = self._payload()
+        scope = payload['components']['scope']
         addable = {a['code'] for a in payload['components']['addable']}
-        self.assertIn('CDQEXTRA', addable)
-        for code in ('CDQBASE', 'CDQBOUND', 'CDQTEXT', 'CDQMAPPED'):
-            self.assertNotIn(code, addable)
+        if scope['state'] != 'scoped':
+            self.skipTest("no scheme map on this database: %s" % scope['state'])
+        self.assertEqual(addable, set(),
+                         "a scheme-scoped tab still offered a picker")
+        self.assertNotIn(
+            'CDQEXTRA', {r['code'] for r in payload['components']['rows']},
+            "a catalogue row no scheme owns was shown as this scheme's")
 
     # =====================================================================
     # 6 — the wage is scrubbed from the payload, not hidden on screen

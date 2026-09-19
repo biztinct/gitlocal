@@ -219,3 +219,12 @@ msgstr "Điều gì sẽ xảy ra"
 #: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
 msgid "Why is it being reopened?"
 msgstr "Vì sao mở lại?"
+
+#. module: pb_comp_ben
+#: code:addons/pb_comp_ben/models/employee_comp.py:0
+msgid ""
+"From the contract, but the payroll scheme that pays this person does not use"
+" it (%s). Check before you count it."
+msgstr ""
+"Lấy từ hợp đồng, nhưng chương trình lương đang trả cho người này không dùng "
+"khoản đó (%s). Hãy kiểm tra trước khi tính vào."

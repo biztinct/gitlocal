@@ -247,6 +247,82 @@
     .pbc-comp-b { font-size: 11px; color: var(--mut); white-space: nowrap; }
     .pbc-comp-add { margin-top: 14px; }
 
+    // =================================================================
+    //  SCHEMECTX P2 — whose components these are
+    //
+    //  The strip is the first line of the tab, and it answers the owner's
+    //  question before the list does: these are the components of the scheme
+    //  that pays this person, in that scheme's country. It is a STRIP and not
+    //  a card — it belongs to the list under it, so it shares the list's left
+    //  edge and carries no shadow of its own.
+    // =================================================================
+    .pbc-scope {
+        display: flex; align-items: flex-start; gap: 9px;
+        margin-bottom: 12px; padding: 10px 13px;
+        border: 1px solid var(--line); border-left: 3px solid var(--p);
+        border-radius: var(--r-sm); background: var(--surf);
+        > svg { color: var(--p); flex: none; margin-top: 2px; }
+    }
+    .pbc-scope-in { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+    .pbc-scope-lead {
+        font-size: 11px; font-weight: 800; letter-spacing: .08em;
+        text-transform: uppercase; color: var(--mut);
+    }
+    .pbc-scope-one { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
+    .pbc-scope-name {
+        border: none; background: none; padding: 0; cursor: pointer;
+        font: inherit; font-family: inherit; font-size: 13.5px; font-weight: 700;
+        color: var(--p); text-align: left; word-break: break-word;
+        text-decoration: underline; text-decoration-color: transparent;
+        text-underline-offset: 3px; transition: text-decoration-color .12s ease;
+        &:hover { text-decoration-color: currentColor; }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 2px; border-radius: 4px; }
+    }
+    .pbc-scope-co {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+        background: var(--p-s); color: var(--p);
+        svg { color: currentColor; }
+    }
+    .pbc-scope-role {
+        font-size: 10.5px; font-weight: 800; letter-spacing: .06em;
+        text-transform: uppercase; color: var(--mut);
+    }
+
+    // A component the scheme owns that this contract has never held. It reads
+    // as an invitation, not as a zero: dashed edge, quieter value.
+    .pbc-comp-nil {
+        display: inline-flex; align-items: center; font-size: 11px; font-weight: 700;
+        padding: 2px 8px; border-radius: 999px; background: var(--bg); color: var(--mut);
+    }
+    .pbc-comp-w.virtual {
+        border-style: dashed;
+        .pbc-comp-v { color: var(--mut); font-weight: 600; }
+    }
+
+    // "Other values on this contract" — folded, counted, never hidden.
+    .pbc-other { margin-top: 18px; }
+    .pbc-other-h {
+        display: flex; align-items: center; gap: 8px; width: 100%;
+        border: 1px solid var(--line); border-radius: var(--r-sm);
+        background: var(--bg); cursor: pointer; padding: 9px 12px;
+        font: inherit; font-family: inherit; color: var(--ink);
+        .t { font-size: 12.5px; font-weight: 700; }
+        svg { color: var(--mut); transition: transform .16s ease; flex: none; }
+        &.open svg { transform: rotate(90deg); }
+        &:hover { border-color: var(--p); }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 2px; }
+    }
+    .pbc-other-c {
+        margin-left: auto; font-size: 11px; font-weight: 800;
+        background: var(--amber-s); color: var(--amber);
+        border-radius: 999px; padding: 2px 9px;
+    }
+    .pbc-other-b { padding-top: 10px; }
+    .pbc-other-w {
+        margin: 0 0 9px; font-size: 12px; color: var(--mut); line-height: 1.5;
+    }
+
     // ---- history ----
     .pbc-tl { display: flex; flex-direction: column; gap: 6px; }
     .pbc-tl-sep {
@@ -551,6 +627,7 @@
         // there — and the same for every hover tint and the pencil.
         .pbc-savebar, .pbc-foot-rest { transition: none; }
         .pbc-cell, .pbc-comp-w, .pbc-comp-x, .pbc-cell .k .pen { transition: none; }
+        .pbc-other-h svg, .pbc-scope-name { transition: none; }
         .pbc-pick-spin { animation: none; }
     }
 }

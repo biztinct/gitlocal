@@ -530,6 +530,8 @@ class PbContracts(models.AbstractModel):
                 lambda: self._cd_components(contract, symbol, can_write,
                                             unmask),
                 default={'rows': [], 'count': 0, 'total': 0.0,
+                         'other_rows': [], 'other_count': 0,
+                         'scope': {'state': 'off', 'schemes': []},
                          'explainer': False, 'addable': []}),
             'history': self._safe(
                 lambda: self._cd_history(contract, symbol, unmask),
@@ -718,11 +720,158 @@ class PbContracts(models.AbstractModel):
         return chips
 
     # --------------------------------------------------------- components
+    #
+    # SCHEMECTX P2 — WHOSE COMPONENTS ARE THESE, ANYWAY.
+    #
+    # Until this phase the tab was "every line stored on this contract", and
+    # every contract stored one line per row of a catalogue shared by the whole
+    # database. Add an India scheme beside a Vietnamese one and every
+    # Vietnamese person grew Indian components. The list now follows the PERSON:
+    # the scheme(s) that pay them say which codes are theirs, and the answer is
+    # worked out in ONE place (`hr.formula.config.component_scope_for_employee`)
+    # so the pay package card and the clean-up script cannot disagree with it.
+    #
+    # NOTHING IS EVER LOST. A line that is outside the scheme but HOLDS a value
+    # moves to "Other values on this contract" — visible, editable, clearable.
+    # Only an empty out-of-scheme line is dropped from the payload, and it is
+    # still in the database.
+    @api.model
+    def _cd_scope(self, contract):
+        """`{'state', 'schemes', 'codes'}` — the person's component scope.
+
+        `state` is one of:
+
+        * ``'scoped'``    — at least one scheme pays this person;
+        * ``'unassigned'``— the scheme map is installed and covers nobody here;
+        * ``'off'``       — no scheme map on this database, so there is no
+          question to answer and the tab behaves exactly as it did before.
+
+        An optional-model probe, like `_cd_rule_by_code` above (rail 7/8).
+        """
+        blank = {'state': 'off', 'schemes': [], 'codes': set()}
+        Config = self.env.get('hr.formula.config')
+        if Config is None or not hasattr(Config, 'component_scope_for_employee'):
+            return blank
+        employee = contract.employee_id
+        if not employee:
+            return blank
+        answer = Config.sudo().component_scope_for_employee(employee)
+        if not answer or not answer.get('known'):
+            return blank
+        schemes = answer.get('schemes') or []
+        if not schemes:
+            return {'state': 'unassigned', 'schemes': [], 'codes': set()}
+        return {'state': 'scoped', 'schemes': schemes,
+                'codes': {c for c in (answer.get('codes') or set()) if c}}
+
+    @api.model
+    def _cd_comp_row(self, line, template, symbol, can_write, rules, fills,
+                     typed):
+        """One row of the components table, from a STORED line."""
+        code = line.advantage_template_code or ''
+        value_type = (line.value_type or 'amount') if typed else 'amount'
+        lower = line.advantage_lower_bound or 0.0
+        upper = line.advantage_upper_bound or 0.0
+        bounded = not (lower == 0 and upper == 0)
+        rule = rules.get(code)
+        fill = fills.get(code) or (('none',) + _FILLS['none'])
+        if value_type == 'text':
+            text_value = (line.text_value or '') if typed else ''
+            display = text_value or '—'
+        else:
+            text_value = False
+            display = self._cd_money(line.amount or 0.0, symbol)
+        return {
+            'id': line.id,
+            'virtual': False,
+            'code': code,
+            'name': template.name or code or '—',
+            'value_type': value_type,
+            'amount': line.amount or 0.0,
+            'text_value': text_value,
+            'display': display,
+            'lower': lower,
+            'upper': upper,
+            'bounded': bounded,
+            'bounds_hint': (self._cd_bounds_hint(lower, upper, symbol)
+                            if (bounded and value_type != 'text') else False),
+            'value_kind': (rule.value_kind if rule else 'money') or 'money',
+            'requires_new_contract': bool(
+                rule.requires_new_contract) if rule else False,
+            'template_id': template.id or False,
+            'writable': can_write,
+            # CD-2 §2.1 — a zero here is not a broken screen; this says why.
+            'fills_from': fill[0],
+            'fills_label': fill[1],
+            'fills_tone': fill[2],
+        }
+
+    @api.model
+    def _cd_virtual_row(self, code, template, symbol, can_write, rules, fills,
+                        typed):
+        """A component the scheme owns and this contract has never held.
+
+        Shown, not created: the read writes nothing (rail 8). Typing a value
+        into it goes down the drawer's existing ADD path, which is the only
+        thing that ever makes a line.
+        """
+        rule = rules.get(code)
+        if template:
+            name = template.name or code
+            value_type = (template.value_type or 'amount') if typed else 'amount'
+            lower = template.lower_bound or 0.0
+            upper = template.upper_bound or 0.0
+            template_id = template.id
+        else:
+            name = (rule.name if rule else '') or code
+            value_type = 'text' if (rule and getattr(
+                rule, 'is_text_component', False)) else 'amount'
+            lower = upper = 0.0
+            template_id = False
+        bounded = not (lower == 0 and upper == 0)
+        fill = fills.get(code) or (('none',) + _FILLS['none'])
+        return {
+            'id': False,
+            'virtual': True,
+            'code': code,
+            'name': name or '—',
+            'value_type': value_type,
+            'amount': 0.0,
+            'text_value': '' if value_type == 'text' else False,
+            'display': '—' if value_type == 'text'
+            else self._cd_money(0.0, symbol),
+            'lower': lower,
+            'upper': upper,
+            'bounded': bounded,
+            'bounds_hint': (self._cd_bounds_hint(lower, upper, symbol)
+                            if (bounded and value_type != 'text') else False),
+            'value_kind': (rule.value_kind if rule else 'money') or 'money',
+            'requires_new_contract': bool(
+                rule.requires_new_contract) if rule else False,
+            'template_id': template_id,
+            'writable': can_write,
+            'fills_from': fill[0],
+            'fills_label': fill[1],
+            'fills_tone': fill[2],
+        }
+
+    @api.model
+    def _cd_has_value(self, row):
+        """Does this row hold something a person typed or a run wrote?"""
+        if row.get('value_type') == 'text':
+            return bool((row.get('text_value') or '').strip())
+        return abs(row.get('amount') or 0.0) > 1e-9
+
     @api.model
     def _cd_components(self, contract, symbol, can_write, unmask):
         Advantage = self.env['hr.contract.advantage']
         Template = self.env['hr.contract.advantage.template']
         typed = 'value_type' in Advantage._fields
+        scope = self._safe(lambda: self._cd_scope(contract),
+                           default={'state': 'off', 'schemes': [],
+                                    'codes': set()})
+        state = scope.get('state') or 'off'
+        codes = scope.get('codes') or set()
 
         # Read with the caller's own rights (rail 3). `_order` is NOT declared
         # on this model, so the payload sorts explicitly by code (§1.4) — the
@@ -731,71 +880,63 @@ class PbContracts(models.AbstractModel):
         lines = lines.sorted(
             key=lambda l: ((l.advantage_template_code or '').upper(), l.id))
 
+        stored_codes = {(l.advantage_template_code or '') for l in lines}
+        missing = sorted(c for c in codes if c and c not in stored_codes)
         rules = self._cd_rule_by_code(
-            [l.advantage_template_code for l in lines],
+            [l.advantage_template_code for l in lines] + missing,
             company=contract.company_id or self.env.company)
         # CD-2 §2.1 — computed ONCE for the whole set, never per row.
         fills = self._safe(lambda: self._cd_fills(rules), default={})
 
         rows = []
+        other_rows = []
         total = 0.0
         for line in lines:
-            code = line.advantage_template_code or ''
-            template = line.advantage_template_id
-            value_type = (line.value_type or 'amount') if typed else 'amount'
-            lower = line.advantage_lower_bound or 0.0
-            upper = line.advantage_upper_bound or 0.0
-            bounded = not (lower == 0 and upper == 0)
-            rule = rules.get(code)
-            fill = fills.get(code) or (('none',) + _FILLS['none'])
-            if value_type == 'text':
-                text_value = (line.text_value or '') if typed else ''
-                display = text_value or '—'
-            else:
-                text_value = False
-                display = self._cd_money(line.amount or 0.0, symbol)
-                total += line.amount or 0.0
-            rows.append({
-                'id': line.id,
-                'code': code,
-                'name': template.name or code or '—',
-                'value_type': value_type,
-                'amount': line.amount or 0.0,
-                'text_value': text_value,
-                'display': display,
-                'lower': lower,
-                'upper': upper,
-                'bounded': bounded,
-                'bounds_hint': (self._cd_bounds_hint(lower, upper, symbol)
-                                if (bounded and value_type != 'text') else False),
-                'value_kind': (rule.value_kind if rule else 'money') or 'money',
-                'requires_new_contract': bool(
-                    rule.requires_new_contract) if rule else False,
-                'template_id': template.id or False,
-                'writable': can_write,
-                # CD-2 §2.1 — a zero here is not a broken screen; this says why.
-                'fills_from': fill[0],
-                'fills_label': fill[1],
-                'fills_tone': fill[2],
-            })
+            row = self._cd_comp_row(line, line.advantage_template_id, symbol,
+                                    can_write, rules, fills, typed)
+            if row['value_type'] != 'text':
+                total += row['amount']
+            if state == 'off':
+                rows.append(row)
+            elif state == 'scoped' and row['code'] in codes:
+                rows.append(row)
+            elif self._cd_has_value(row):
+                # NEVER hidden, never dropped (owner ruling 10b): a line that
+                # holds something appears, wherever it came from.
+                (rows if state == 'unassigned' else other_rows).append(row)
 
-        used = set(lines.mapped('advantage_template_id').ids)
+        # The scheme's own components that this contract has never held.
+        if state == 'scoped' and missing:
+            by_code = {}
+            for template in Template.sudo().search(
+                    [('code', 'in', missing)], order='id asc'):
+                by_code.setdefault(template.code, template)
+            for code in missing:
+                rows.append(self._cd_virtual_row(
+                    code, by_code.get(code), symbol, can_write, rules, fills,
+                    typed))
+            rows.sort(key=lambda r: ((r.get('code') or '').upper(),
+                                     r.get('id') or 0))
+
         addable = []
-        for template in Template.sudo().search([], order='code, id'):
-            if template.id in used:
-                continue
-            addable.append({
-                'template_id': template.id,
-                'code': template.code or '',
-                'name': template.name or template.code or '',
-                'value_type': (template.value_type or 'amount') if
-                'value_type' in Template._fields else 'amount',
-                'lower': template.lower_bound or 0.0,
-                'upper': template.upper_bound or 0.0,
-                'default': template.default_value or 0.0,
-            })
+        if state == 'off':
+            used = set(lines.mapped('advantage_template_id').ids)
+            for template in Template.sudo().search([], order='code, id'):
+                if template.id in used:
+                    continue
+                addable.append(self._cd_addable(template, Template))
+        # When the scheme decides the list there is nothing left to add by
+        # hand: every one of its components is already on screen, a virtual
+        # row if it has never been filled. A picker offering nothing is a dead
+        # control, so the payload simply says so with an empty list.
 
+        # `total` is what the CONTRACT holds, so every stored line was already
+        # added above — the ones in "Other values" included. It is not the sum
+        # of the visible list, and it never was.
         return {'rows': rows, 'count': len(rows),
+                'other_rows': other_rows,
+                'other_count': len(other_rows),
+                'scope': {'state': state, 'schemes': scope.get('schemes') or []},
                 'total': total if unmask else False,
                 # The explainer reads the RAW total, not the masked one: a
                 # reader who may not see money still deserves to be told the
@@ -803,6 +944,19 @@ class PbContracts(models.AbstractModel):
                 # the wrong reason).
                 'explainer': self._cd_explainer(rows, total),
                 'addable': addable}
+
+    @api.model
+    def _cd_addable(self, template, Template):
+        return {
+            'template_id': template.id,
+            'code': template.code or '',
+            'name': template.name or template.code or '',
+            'value_type': (template.value_type or 'amount') if
+            'value_type' in Template._fields else 'amount',
+            'lower': template.lower_bound or 0.0,
+            'upper': template.upper_bound or 0.0,
+            'default': template.default_value or 0.0,
+        }
 
     @api.model
     def _cd_bounds_hint(self, lower, upper, symbol):
@@ -1173,10 +1327,25 @@ class PbContracts(models.AbstractModel):
                     int(item.get('template_id'))).exists()
             except (TypeError, ValueError):
                 template = None
+            # SCHEMECTX P2 — a virtual row for a scheme component the catalogue
+            # has never been given a row for arrives with its CODE instead of a
+            # template id. It is looked up here and, if it really is new,
+            # created by the SAVE (`_cd_template_for_code`) — never by the
+            # preview, which judges the same plan and must write nothing.
+            pending_code = ''
             if not template:
+                pending_code = str(item.get('code') or '').strip()
+                if pending_code:
+                    template = Template.sudo().search(
+                        [('code', '=', pending_code)], limit=1)
+            if not template and not pending_code:
                 refusals.append({
                     'scope': 'component', 'key': item.get('template_id'),
                     'why': _("That component no longer exists.")})
+                continue
+            if not template:
+                plan['adds'].append(self._cd_pending_add(
+                    contract, pending_code, item))
                 continue
             label = template.name or template.code or _("This component")
             if template.id in used_templates:
@@ -1242,6 +1411,53 @@ class PbContracts(models.AbstractModel):
             plan['removes'].append(line)
 
         return plan
+
+    @api.model
+    def _cd_pending_add(self, contract, code, item):
+        """A staged add whose catalogue row does not exist yet.
+
+        Judged now, created on save. The value type comes from the scheme's own
+        rule, exactly as `_get_or_create_advantage_template` reads it, so a
+        component the scheme calls text never lands as a Float 0.0.
+        """
+        rule = (self._cd_rule_by_code(
+            [code], company=contract.company_id or self.env.company) or {}
+        ).get(code)
+        is_text = bool(rule and getattr(rule, 'is_text_component', False))
+        vals = {'contract_id': contract.id}
+        if is_text:
+            text = item.get('text_value')
+            vals['text_value'] = (str(text).strip() or False) if text else False
+            return {'template': None, 'code': code, 'vals': vals,
+                    'is_text': True, 'new_text': vals['text_value'] or '',
+                    'new_amount': 0.0}
+        try:
+            amount = float(str(item.get('amount') or 0).replace(',', '').strip())
+        except (TypeError, ValueError):
+            amount = 0.0
+        vals['amount'] = amount
+        return {'template': None, 'code': code, 'vals': vals,
+                'is_text': False, 'new_text': '', 'new_amount': amount}
+
+    @api.model
+    def _cd_template_for_code(self, code, is_text):
+        """Get-or-create the catalogue row for one code.
+
+        The same shape `_get_or_create_advantage_template` writes in the import
+        batch (`pb_hr_payroll_formula`), restated rather than imported: the
+        drawer must not take a hard dependency on the formula engine for four
+        field values (binding non-goal §2).
+        """
+        Template = self.env['hr.contract.advantage.template'].sudo()
+        code = (code or '').strip()
+        found = Template.search([('code', '=', code)], limit=1)
+        if found:
+            return found
+        vals = {'name': code, 'code': code, 'lower_bound': 0.0,
+                'upper_bound': 0.0, 'default_value': 0.0}
+        if 'value_type' in Template._fields:
+            vals['value_type'] = 'text' if is_text else 'amount'
+        return Template.create(vals)
 
     @api.model
     def _cd_bounds_refusal(self, label, amount, lower, upper, symbol):
@@ -1358,6 +1574,14 @@ class PbContracts(models.AbstractModel):
         for add in plan['adds']:
             try:
                 with self.env.cr.savepoint():
+                    if not add.get('template'):
+                        # A scheme component the catalogue has never carried.
+                        # Created HERE, in the write path, and never by the
+                        # read or the preview (rail 8).
+                        add['template'] = self._cd_template_for_code(
+                            add.get('code'), add.get('is_text'))
+                        add['vals']['advantage_template_id'] = \
+                            add['template'].id
                     line = self.env['hr.contract.advantage'].sudo().create(
                         add['vals'])
                     self._cd_log_component(
@@ -1369,7 +1593,9 @@ class PbContracts(models.AbstractModel):
             except Exception as error:   # noqa: BLE001
                 _logger.exception("Contract drawer: component add refused")
                 refusals.append({'scope': 'component',
-                                 'key': add['template'].id,
+                                 'key': (add['template'].id
+                                         if add.get('template')
+                                         else add.get('code')),
                                  'why': self._cd_reason(error)})
 
         for line in plan['removes']:

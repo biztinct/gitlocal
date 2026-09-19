@@ -448,6 +448,10 @@ export class Contract360Drawer extends Component {
             // count on the Save bar can never lie
             // (`component_treatment.js:198`).
             dirty: { terms: {}, comps: { edits: {}, adds: [], removes: [] } },
+            // SCHEMECTX P2 — "Other values on this contract" starts folded: it
+            // is normally empty, and when it is not it is an exception, not the
+            // list somebody came here to read.
+            otherOpen: false,
             // {"term:wage": "sentence"} — a refusal is a red dot with a
             // sentence under its own cell, never a modal
             // (`records_desk.js:412`).
@@ -798,26 +802,44 @@ export class Contract360Drawer extends Component {
     }
 
     // ---------------------------------------------------------- components
-    compKey(row) { return "comp:" + row.id; }
+    //
+    // SCHEMECTX P2 — a row is no longer always a stored line. A component the
+    // person's scheme owns and this contract has never held arrives as a
+    // VIRTUAL row (`id: false`), and typing into it stages an ADD rather than
+    // an edit. Everything below therefore keys off `compRowKey`, never off a
+    // raw database id: `false` is the same key for every virtual row, and two
+    // rows sharing a key is how a list starts editing the wrong cell.
+    compRowKey(row) {
+        return row.virtual ? ("new:" + (row.template_id || row.code)) : String(row.id);
+    }
+    /** What the SERVER calls this row when it refuses it. */
+    compRefKey(row) {
+        return row.virtual ? (row.template_id || row.code) : row.id;
+    }
+    compKey(row) { return "comp:" + this.compRowKey(row); }
     canEditComp(row) { return Boolean(this.canWrite && row.writable && !this.isRemoved(row.id)); }
-    isCompDirty(id) { return Object.prototype.hasOwnProperty.call(this.state.dirty.comps.edits, String(id)); }
-    isRemoved(id) { return this.state.dirty.comps.removes.includes(Number(id)); }
+    isCompDirty(key) { return Object.prototype.hasOwnProperty.call(this.state.dirty.comps.edits, String(key)); }
+    isRemoved(id) { return id !== false && this.state.dirty.comps.removes.includes(Number(id)); }
     compClass(row) {
+        const key = this.compRowKey(row);
         return {
             editable: this.canEditComp(row),
-            staged: this.isCompDirty(row.id),
+            staged: this.isCompDirty(key),
             removed: this.isRemoved(row.id),
-            refused: Boolean(this.refusalFor("comp", row.id)),
-            editing: this.isEditing("comp", row.id),
+            refused: Boolean(this.refusalFor("comp", this.compRefKey(row))),
+            editing: this.isEditing("comp", key),
+            virtual: Boolean(row.virtual) && !this.isCompDirty(key),
         };
     }
     compDisplay(row) {
-        const staged = this.state.dirty.comps.edits[String(row.id)];
+        const staged = this.state.dirty.comps.edits[this.compRowKey(row)];
         return staged ? staged.label : (row.display || "—");
     }
-    compWas(row) { return this.isCompDirty(row.id) ? (row.display || "—") : ""; }
+    compWas(row) {
+        return this.isCompDirty(this.compRowKey(row)) ? (row.display || "—") : "";
+    }
     compEditValue(row) {
-        const staged = this.state.dirty.comps.edits[String(row.id)];
+        const staged = this.state.dirty.comps.edits[this.compRowKey(row)];
         if (staged) { return staged.value; }
         return row.value_type === "text" ? (row.text_value || "") : (row.amount || 0);
     }
@@ -825,7 +847,7 @@ export class Contract360Drawer extends Component {
      *  ONE coercion path serve both halves of the drawer. */
     compEntry(row) {
         return {
-            name: "comp" + row.id,
+            name: "comp" + this.compRowKey(row),
             label: row.name,
             kind: row.value_type === "text" ? "text" : "money",
             value: row.value_type === "text" ? (row.text_value || "") : (row.amount || 0),
@@ -835,23 +857,25 @@ export class Contract360Drawer extends Component {
     }
     startComp(row, ev) {
         if (!this.canEditComp(row)) { return; }
-        if (this.isEditing("comp", row.id)) { return; }
+        const key = this.compRowKey(row);
+        if (this.isEditing("comp", key)) { return; }
         this._anchorEl = ev.currentTarget;
         this.state.addOpen = false;
-        this.state.edit = { scope: "comp", key: row.id };
+        this.state.edit = { scope: "comp", key };
     }
     onCompKey(row, ev) {
         if (ev.key === "Enter" || ev.key === " ") {
-            if (!this.canEditComp(row) || this.isEditing("comp", row.id)) { return; }
+            const key = this.compRowKey(row);
+            if (!this.canEditComp(row) || this.isEditing("comp", key)) { return; }
             ev.preventDefault();
             ev.stopPropagation();
             this._anchorEl = ev.currentTarget;
-            this.state.edit = { scope: "comp", key: row.id };
+            this.state.edit = { scope: "comp", key };
         }
     }
     commitComp(row, value) {
         const entry = this.compEntry(row);
-        const key = String(row.id);
+        const key = this.compRowKey(row);
         if (this._sameAsRecord(entry, value)) {
             delete this.state.dirty.comps.edits[key];
         } else {
@@ -859,22 +883,71 @@ export class Contract360Drawer extends Component {
                 value,
                 isText: row.value_type === "text",
                 label: this._stageLabel(entry, value),
+                // A virtual row carries what the save needs to MAKE the line.
+                virtual: Boolean(row.virtual),
+                templateId: row.template_id || false,
+                code: row.code || "",
             };
         }
         this.state.edit = null;
         this.onChanged();
     }
     editableCompIds() {
-        return this.compRows.filter((r) => this.canEditComp(r)).map((r) => r.id);
+        return this.compRows.filter((r) => this.canEditComp(r))
+            .map((r) => this.compRowKey(r));
     }
     moveComp(row, dir) {
         const ids = this.editableCompIds();
-        const i = ids.indexOf(row.id);
+        const i = ids.indexOf(this.compRowKey(row));
         const j = dir === "prev" ? i - 1 : i + 1;
         if (i < 0 || j < 0 || j >= ids.length) { this.state.edit = null; return; }
         const next = ids[j];
         this._anchorEl = document.querySelector('[data-cdkey="comp:' + next + '"]');
         this.state.edit = { scope: "comp", key: next };
+    }
+
+    // ------------------------------------------------- SCHEMECTX P2: scope
+    get scope() { return this.components.scope || { state: "off", schemes: [] }; }
+    get scopeState() { return this.scope.state || "off"; }
+    get scopeSchemes() { return this.scope.schemes || []; }
+    get isScoped() { return this.scopeState === "scoped"; }
+    get isUnassigned() { return this.scopeState === "unassigned"; }
+    get otherRows() { return this.components.other_rows || []; }
+    get otherCount() { return this.otherRows.length; }
+    schemeRoleLabel(scheme) {
+        if (this.scopeSchemes.length < 2) { return ""; }
+        return scheme.role === "advance" ? _t("Advance") : _t("Regular");
+    }
+    toggleOther() { this.state.otherOpen = !this.state.otherOpen; }
+    /** The scheme, opened where it is edited. */
+    openScheme(scheme) {
+        if (!scheme || !scheme.id) { return; }
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "hr.formula.config",
+            res_id: scheme.id,
+            views: [[false, "form"]],
+            target: "current",
+        });
+    }
+    /** Zero dead ends: the unassigned state lands on the screen that fixes it.
+     *
+     *  "Who is paid by what" is a BOARD of the Mapping screen, not a place of
+     *  its own, so the door is that screen's own action asked for by name with
+     *  `pb_focus` — exactly the door the ⌘K row uses
+     *  (`pb_scheme_map/static/src/js/scheme_map_palette.js:50`). An xmlid and
+     *  never a bare tag: a synthesised action has no name and the breadcrumb
+     *  reads "Unnamed" (ledger GR8). */
+    async openWhoIsPaidBy() {
+        try {
+            await this.action.doAction(
+                "pb_formula_studio.action_pb_mapping_studio",
+                { additionalContext: { pb_focus: "scheme" } });
+        } catch {
+            this.notif.add(
+                _t("Who is paid by what is not switched on for this company."),
+                { type: "warning" });
+        }
     }
 
     /**
@@ -885,7 +958,8 @@ export class Contract360Drawer extends Component {
      * is information, never a refusal — the edit is always allowed.
      */
     compWarnings(row) {
-        if (!this.isCompDirty(row.id) && !this.isEditing("comp", row.id)) { return []; }
+        const key = this.compRowKey(row);
+        if (!this.isCompDirty(key) && !this.isEditing("comp", key)) { return []; }
         const out = [];
         // Worded for the actual source. Written out one literal per case, not
         // looked up from a map, because a sentence that reaches `_t` as a
@@ -910,10 +984,12 @@ export class Contract360Drawer extends Component {
 
     stageRemove(row) {
         if (!this.canWrite) { return; }
+        // A virtual row has no line to remove — there is nothing there yet.
+        if (row.virtual || !row.id) { return; }
         if (this.isRemoved(row.id)) { return; }
         delete this.state.dirty.comps.edits[String(row.id)];
         this.state.dirty.comps.removes.push(Number(row.id));
-        if (this.isEditing("comp", row.id)) { this.state.edit = null; }
+        if (this.isEditing("comp", String(row.id))) { this.state.edit = null; }
         this.onChanged();
     }
     undoRemove(row) {
@@ -1023,13 +1099,23 @@ export class Contract360Drawer extends Component {
     compsPayload() {
         const c = this.state.dirty.comps;
         const edits = {};
-        for (const [id, staged] of Object.entries(c.edits)) {
-            edits[id] = staged.isText
-                ? { text_value: staged.value } : { amount: staged.value };
-        }
         const adds = c.adds.map((a) => (a.value_type === "text"
             ? { template_id: a.template_id, text_value: a.text_value }
             : { template_id: a.template_id, amount: a.amount }));
+        for (const [id, staged] of Object.entries(c.edits)) {
+            if (staged.virtual) {
+                // A component the scheme owns that this contract has never
+                // held: an ADD, keyed by its catalogue row when it has one and
+                // by its CODE when the catalogue has never carried it.
+                const base = staged.templateId
+                    ? { template_id: staged.templateId } : { code: staged.code };
+                adds.push(Object.assign(base, staged.isText
+                    ? { text_value: staged.value } : { amount: staged.value }));
+                continue;
+            }
+            edits[id] = staged.isText
+                ? { text_value: staged.value } : { amount: staged.value };
+        }
         return { edits, adds, removes: c.removes.slice() };
     }
 
@@ -1185,8 +1271,13 @@ export class Contract360Drawer extends Component {
         for (const name of Object.keys(this.state.dirty.terms)) {
             if (!badTerms.has(name)) { delete this.state.dirty.terms[name]; }
         }
-        for (const id of Object.keys(this.state.dirty.comps.edits)) {
-            if (!badComps.has(String(id))) { delete this.state.dirty.comps.edits[id]; }
+        for (const [id, staged] of Object.entries(this.state.dirty.comps.edits)) {
+            // A virtual row's edit is refused under the key the SERVER used for
+            // it — its catalogue row, or its code — not under the client's own
+            // "new:" key.
+            const serverKey = staged.virtual
+                ? String(staged.templateId || staged.code) : String(id);
+            if (!badComps.has(serverKey)) { delete this.state.dirty.comps.edits[id]; }
         }
         this.state.dirty.comps.adds = this.state.dirty.comps.adds.filter(
             (a) => badComps.has(String(a.template_id)));

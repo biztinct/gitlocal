@@ -19,6 +19,7 @@ from datetime import date
 from odoo.tests import TransactionCase, tagged
 
 from .approval_lane import no_approval_needed
+from .scheme_scope import catalogue_lines, paid_by
 
 
 @tagged('post_install', '-at_install')
@@ -55,15 +56,15 @@ class TestCd3EditPaths(TransactionCase):
         cls.dept = cls.env['hr.department'].create(
             {'name': 'CD3 Drawer Dept', 'company_id': cls.company.id})
 
-        # Templates go in BEFORE the contract: `hr.contract.create` seeds one
-        # advantage line per template (om_hr_payroll/models/hr_contract.py:118),
-        # and that is how the fixture ends up with its rows.
+        # SCHEMECTX P2 — nothing seeds a contract with the whole catalogue any
+        # more, so the fixture lays its own two lines down.
         cls.t_base = cls._template('CD3BASE', 'CD3 Base Salary')
         cls.t_mapped = cls._template('CD3MAPPED', 'CD3 Mapped Allowance')
 
         cls.employee = cls.Employee.create(
             {'name': 'CD3 Drawer One', 'company_id': cls.company.id})
         cls.contract = cls._contract(cls.employee)
+        catalogue_lines(cls.env, cls.contract)
         cls.l_base = cls._line(cls.contract, 'CD3BASE')
         cls.l_mapped = cls._line(cls.contract, 'CD3MAPPED')
         cls.l_base.write({'amount': 12500000.0})
@@ -73,6 +74,7 @@ class TestCd3EditPaths(TransactionCase):
         cls.employee_b = cls.Employee.create(
             {'name': 'CD3 Drawer Two', 'company_id': cls.company.id})
         cls.contract_b = cls._contract(cls.employee_b, date_end=False)
+        catalogue_lines(cls.env, cls.contract_b)
 
         # The scheme side: one rule marked a contract component, which is what
         # makes CD3MAPPED un-removable.
@@ -86,6 +88,14 @@ class TestCd3EditPaths(TransactionCase):
                 'config_id': cls.cfg.id, 'name': 'CD3 Mapped Allowance',
                 'code': 'CD3MAPPED', 'column_type': 'input', 'sequence': 1,
                 'default_value': 0.0, 'is_contract_component': True})
+            # SCHEMECTX P2 — the tab follows the scheme that pays somebody, so
+            # the base component needs a rule of its own and both people need
+            # saying who pays them.
+            cls.rule_base = cls.Rule.create({
+                'config_id': cls.cfg.id, 'name': 'CD3 Base Salary',
+                'code': 'CD3BASE', 'column_type': 'input', 'sequence': 2,
+                'default_value': 0.0, 'is_contract_component': True})
+            paid_by(cls.env, cls.employee + cls.employee_b, cls.cfg)
 
     # --------------------------------------------------------------- fixtures
     @classmethod
