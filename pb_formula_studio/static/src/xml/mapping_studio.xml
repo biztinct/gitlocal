@@ -86,7 +86,7 @@
                    put here (flash the wires, filter to the suggestions) do not
                    exist on a board with five lanes and no suggestions, and a
                    disabled control teaches the reader to stop trying (W64). -->
-              <span t-elif="isJourney" class="pbms-count is-static"><b t-esc="journeyWired"/> wired</span>
+              <span t-elif="isJourney" class="pbms-count is-static"><b t-esc="journeyFed"/> fed</span>
               <!-- VALUEKIND P5 — a board with no wires has nothing to count
                    and nothing to flash. It names what it holds instead. -->
               <span t-elif="isTreatment" class="pbms-count is-static"><b t-esc="treatmentCount"/> components</span>

@@ -1,23 +1,25 @@
 /**
- * JOURNEY J5 — the Journey board.
+ * JOURNEY J5, redesigned by CLEANMAP P2 — the Journey board.
  *
  * The same three structural rules `mapping.scss` states for the canvas and
  * `transform_flow.scss` restates for the rule board, because this is the same
  * KIND of object and a reader moving between the tabs must not have to relearn
  * it:
  *
- *   1. `.jny-board` CLIPS. A wire may end on a lane's edge; nothing drawn
- *      between the lanes may reach the bar above them. And the sweep that
- *      checks this knows about `overflow: clip` and about layers, or it
- *      invents defects (MJ7).
+ *   1. the WIRES may never escape the board. `.jny-board` is the scroll
+ *      container and `.jny-stage` is what the SVG is stretched over, so a
+ *      curve is clipped by the same box the geometry was measured against.
  *   2. every colour is a bound `--i*` / `--mc-*` variable with the hex
  *      fallback the canvas already carries. Nothing is invented here: the
- *      amber that means "unread output" is the amber one tab over, and the
- *      rose that means "severed" is the rose the mapping board uses. This tab
- *      composes five other screens and would be a liar if it recoloured them.
+ *      amber that means "not fed" is the amber one tab over, and the teal that
+ *      means "a record, both ways" is the Employee & contract tab's teal.
  *   3. one SVG object per wire.
  *
- * No `min(<length>, calc(…))` anywhere: libsass parses that as its own numeric
+ * P2's own rule, from the owner's ruling 10: **small, calm type.** An open
+ * board is forty rows deep and the difference between a comb and a mess is two
+ * points of leading. Nothing here is above 12.5px and the rows are 22.
+ *
+ * No `min(<length>, calc(…))` anywhere: Sass parses that as its own numeric
  * `min()` and fails the WHOLE backend bundle, which serves the previous
  * stylesheet under a red banner and makes every screen on the database look
  * broken rather than just this one (MJ5).
@@ -38,13 +40,19 @@
     --mc-slate:      var(--i-slate, #94A3B8);
     --mc-wash:       var(--i-wash, #F1F5F9);
     --mc-wash2:      var(--i-wash2, #EEF1F5);
-    /* The gutter a bezier gets to be a curve in. Five lanes leave less room
-       than three, so the runs are shorter by construction; what matters is
-       that they are EQUAL, or the picture reads as five arbitrary gaps. */
-    --jny-gut: 15px;
+    /* The gutter a bezier gets to be a curve in — HALF of it, since each
+       lane pads both sides. 24 gives a curve 48px of horizontal run, which is
+       what separates a fan of wires from a vertical wall: at 14 the gathering
+       of forty rows onto one closed card read as a single thick stripe, and
+       two arrowheads (11px each) could not both fit in the gap between an
+       open Scheme card and an open Payobook Source card. What matters after
+       that is that every lane gets the SAME one, or the picture reads as
+       arbitrary gaps. */
+    --jny-gut: 24px;
+    --jny-cols: 3;
 }
 
-/* ==== the bar over all five lanes ==================================== */
+/* ==== the bar over the lanes ======================================== */
 .jny .jny-bar {
     flex: none; display: flex; align-items: center; gap: 12px;
     padding: 9px 14px; border-bottom: 1px solid var(--line, #E8E9F3);
@@ -80,56 +88,80 @@
 /* ==== the board ====================================================== */
 .jny .jny-board {
     position: relative; flex: 1; min-height: 0;
-    overflow: hidden;      /* fallback */
-    overflow: clip;        /* no scroll container, no escape */
-    display: flex; align-items: stretch;
+    overflow-y: auto; overflow-x: hidden;
 }
 .jny.is-busy .jny-board { opacity: .55; pointer-events: none; }
 
+/* The stage is the full content and the wire origin. Lane bodies no longer
+   scroll on their own — a row and the row it is wired to have to be on screen
+   together, and two independently scrolling columns is the one arrangement
+   that cannot promise it. */
+.jny .jny-stage {
+    position: relative; min-height: 100%;
+    display: flex; flex-direction: column;
+}
 .jny .jny-wires {
     position: absolute; inset: 0; width: 100%; height: 100%;
     pointer-events: none; z-index: 1;
 }
 
-/* ---- the wires ------------------------------------------------------ */
-.jny .jny-wire__p { fill: none; stroke: var(--i-line, #B9AEE6); stroke-width: 1.8; }
-.jny .jny-wire__h { fill: var(--i-line, #B9AEE6); }
+/* ---- the wires ------------------------------------------------------
+   Thin and pale by default (ruling 8). A line is a fact, not a decoration:
+   forty of them at full strength is a texture nobody can read. */
+.jny .jny-wire__p { fill: none; stroke: var(--i-line, #B9AEE6); stroke-width: 1; opacity: .35; }
+.jny .jny-wire__h { fill: var(--i-line, #B9AEE6); opacity: .35; }
+
+.jny .jny-wire.record .jny-wire__p,
+.jny .jny-wire.component .jny-wire__p,
+.jny .jny-wire.period .jny-wire__p { stroke: var(--i-teal, #0F766E); }
+.jny .jny-wire.record .jny-wire__h,
+.jny .jny-wire.component .jny-wire__h,
+.jny .jny-wire.period .jny-wire__h { fill: var(--i-teal, #0F766E); }
 
 /* A containment edge is a statement about structure, not about data moving:
-   this feed BELONGS to that system. Quieter, and dotted, so the eye reads the
-   data wires first. */
+   this feed BELONGS to that system. Quieter, and dotted. */
 .jny .jny-wire.contain .jny-wire__p {
-    stroke: var(--mc-slate); stroke-width: 1.3; stroke-dasharray: 2 4; opacity: .8;
+    stroke: var(--mc-slate); stroke-width: 1; stroke-dasharray: 2 4; opacity: .5;
 }
-.jny .jny-wire.contain .jny-wire__h { fill: var(--mc-slate); opacity: .8; }
+.jny .jny-wire.contain .jny-wire__h { fill: var(--mc-slate); opacity: .5; }
 
-/* J-D4 — the records edge is the only double-headed wire on the board, and it
-   is teal because the Employee & contract tab is. */
-.jny .jny-wire.records .jny-wire__p { stroke: var(--i-teal, #0F766E); stroke-width: 2; }
-.jny .jny-wire.records .jny-wire__h { fill: var(--i-teal, #0F766E); }
-
-/* A wire that JUMPS a lane passes behind the cards between its ends. Dashed
-   and lighter, so that reads as a property of the wire rather than as a wire
-   that broke in the middle. */
-.jny .jny-wire.span .jny-wire__p { stroke-dasharray: 7 5; opacity: .85; }
+/* A wire that JUMPS a lane passes behind the cards between its ends. */
+.jny .jny-wire.span .jny-wire__p { stroke-dasharray: 7 5; }
 
 /* The one-connector limit, drawn. A scheme reads ONE connection on a system
-   run; every wire from any other connection is ignored, and has been for as
-   long as the limit has existed. Saying it in grey is the whole of scope 3. */
-.jny .jny-wire.dim { opacity: .32; }
-.jny .jny-wire.dim .jny-wire__p { stroke: var(--mc-slate); stroke-dasharray: 3 5; }
-.jny .jny-wire.dim .jny-wire__h { fill: var(--mc-slate); }
+   run; every wire from any other connection is ignored. */
+.jny .jny-wire.dim .jny-wire__p { stroke: var(--mc-slate); stroke-dasharray: 3 5; opacity: .22; }
+.jny .jny-wire.dim .jny-wire__h { fill: var(--mc-slate); opacity: .22; }
 
-/* ---- a lane -------------------------------------------------------- */
-.jny .jny-lane {
-    flex: 1 1 0; min-width: 0; z-index: 2;
-    display: flex; flex-direction: column; min-height: 0;
+/* ---- the trace: hovering a field lights its whole path -------------- */
+.jny .jny-wire.lit .jny-wire__p { stroke-width: 2 !important; opacity: 1; }
+.jny .jny-wire.lit .jny-wire__h { opacity: 1; }
+.jny .jny-wire.off .jny-wire__p,
+.jny .jny-wire.off .jny-wire__h { opacity: .12; }
+
+.jny .jny-wire__nb { fill: #fff; stroke: var(--i-line, #B9AEE6); stroke-width: 1; }
+.jny .jny-wire__nt {
+    font-size: 9.5px; font-weight: 800; fill: var(--i, #5A4BB0);
+    font-family: inherit;
 }
+
+/* ---- the lanes ------------------------------------------------------ */
+.jny .jny-lanes {
+    position: relative; z-index: 2; flex: 1;
+    display: grid; grid-template-columns: repeat(var(--jny-cols), minmax(0, 1fr));
+}
+/* Every lane is as tall as the tallest, deliberately. With `align-items:
+   start` a short lane ends where its last card does — and its STICKY HEADER
+   goes with it, so scrolling down a long Scheme card left the Payobook Source
+   column unlabelled and its dashed divider stopping in mid-air. */
+.jny .jny-lane { min-width: 0; display: flex; flex-direction: column; }
 .jny .jny-lane + .jny-lane { border-left: 1px dashed var(--line, #E8E9F3); }
 
 .jny .jny-lane__h {
-    flex: none; display: flex; align-items: center; gap: 6px;
+    position: sticky; top: 0; z-index: 3;
+    display: flex; align-items: center; gap: 6px;
     padding: 8px var(--jny-gut) 6px;
+    background: #fff;
     font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
     color: var(--muted, #6B7280);
 }
@@ -139,55 +171,135 @@
     flex: none; background: var(--mc-wash); border-radius: 999px;
     padding: 1px 7px; color: var(--ink, #1F2233); letter-spacing: 0;
 }
-
 .jny .jny-lane__b {
-    flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden;
-    padding: 4px var(--jny-gut) 14px;
+    padding: 2px var(--jny-gut) 18px;
     display: flex; flex-direction: column; gap: 8px;
 }
 
-/* ---- a node ---------------------------------------------------------
-   Every one of these is a `<button>`. It reads and it navigates; there is no
-   gesture on this board that writes, which is what makes the whole live
-   validation session diff empty. */
-.jny .jny-node {
-    flex: none; width: 100%; text-align: left; cursor: pointer;
-    display: flex; align-items: flex-start; gap: 8px;
+/* ---- a card --------------------------------------------------------- */
+.jny .jny-card {
     background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 11px;
-    padding: 9px 8px 9px 10px; font-family: inherit; color: var(--ink, #1F2233);
-    transition: border-color .12s ease, box-shadow .12s ease, background .12s ease;
+    overflow: hidden;
+    transition: border-color .12s ease, box-shadow .12s ease, opacity .12s ease;
 }
-.jny .jny-node:hover { border-color: var(--i-border, #CBC2EE); background: var(--i-soft, #EDEAF8); }
-.jny .jny-node:focus-visible,
-.jny .jny-node.on {
-    outline: none; border-color: var(--i, #5A4BB0);
-    box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8);
+.jny .jny-card__h { display: flex; align-items: flex-start; }
+.jny .jny-card__t {
+    flex: 1; min-width: 0; text-align: left; cursor: pointer;
+    display: flex; align-items: flex-start; gap: 7px;
+    background: transparent; border: 0; border-radius: 10px;
+    padding: 9px 4px 9px 9px; font-family: inherit; color: var(--ink, #1F2233);
 }
-.jny .jny-node__ic { flex: none; display: flex; color: var(--i, #5A4BB0); margin-top: 1px; }
-.jny .jny-node__tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.jny .jny-node__l {
-    font-size: 12.5px; font-weight: 800; line-height: 1.25;
+.jny .jny-card.flat .jny-card__t { cursor: default; }
+.jny .jny-card:hover { border-color: var(--i-border, #CBC2EE); }
+.jny .jny-card__t:focus-visible,
+.jny .jny-card__go:focus-visible {
+    outline: none; box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8);
+}
+.jny .jny-card.on { border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+.jny .jny-card.off { opacity: .45; }
+
+.jny .jny-card__v { flex: none; display: flex; color: var(--mc-slate); margin-top: 2px; }
+.jny .jny-card__ic { flex: none; display: flex; color: var(--i, #5A4BB0); margin-top: 1px; }
+.jny .jny-card__tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.jny .jny-card__l {
+    font-size: 12.5px; font-weight: 600; line-height: 1.25;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.jny .jny-card__s {
+    font-size: 11px; color: var(--muted, #6B7280); font-weight: 600; line-height: 1.35;
     overflow: hidden; text-overflow: ellipsis;
 }
-.jny .jny-node__s {
-    font-size: 11px; color: var(--muted, #6B7280); font-weight: 600; line-height: 1.35;
-}
-.jny .jny-node__note {
-    font-size: 10.5px; color: var(--muted, #6B7280); line-height: 1.4;
-}
-.jny .jny-node__go { flex: none; display: flex; color: var(--mc-slate); margin-top: 2px; }
-.jny .jny-node:hover .jny-node__go { color: var(--i, #5A4BB0); }
-.jny .jny-bidi { color: var(--i-teal, #0F766E); font-weight: 900; margin-left: 4px; }
 
-/* ---- a node's secondary action (RECORDS R3) --------------------------
-   A door OUT of Mapping. It is a SIBLING of the node, not a child: a button
-   inside a button is not valid markup, and `_measure` walks `body.children`
-   looking for `data-id` — which this row deliberately does not carry, so the
-   wire geometry reads straight past it. The negative margin is what makes it
-   read as part of the card above rather than a loose button. */
-.jny .jny-node__acts {
-    flex: none; margin-top: -4px; display: flex; gap: 6px;
-    padding-left: 28px;
+/* the corner icon — the ONLY thing on this board that navigates */
+.jny .jny-card__go {
+    flex: none; display: flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; margin: 7px 6px 0 0; cursor: pointer;
+    border: 1px solid transparent; background: transparent; border-radius: 8px;
+    color: var(--mc-slate);
+    transition: color .12s ease, background .12s ease, border-color .12s ease;
+}
+.jny .jny-card:hover .jny-card__go { color: var(--i, #5A4BB0); }
+.jny .jny-card__go:hover {
+    background: var(--i-soft, #EDEAF8); border-color: var(--i-border, #CBC2EE);
+}
+
+/* the connection a pay run actually reads, and the ones it does not */
+.jny .jny-card.prim { border-color: var(--i-border, #CBC2EE); }
+.jny .jny-card.dim .jny-card__l { color: var(--muted, #6B7280); }
+
+/* ---- the rows ------------------------------------------------------- */
+.jny .jny-rows {
+    list-style: none; margin: 0; padding: 0 0 6px;
+    border-top: 1px solid var(--line, #E8E9F3);
+    animation: jny-reveal .18s ease both;
+}
+@keyframes jny-reveal {
+    from { opacity: 0; transform: translateY(-3px); }
+    to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .jny .jny-rows { animation: none; }
+}
+
+.jny .jny-sub {
+    font-size: 9.5px; font-weight: 800; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--muted, #6B7280);
+    height: 18px; display: flex; align-items: center;
+    padding: 0 9px 0 9px; margin-top: 4px;
+}
+
+.jny .jny-row {
+    height: 22px; display: flex; align-items: center; gap: 6px;
+    padding: 0 9px; cursor: default; outline: none;
+    transition: background .1s ease, opacity .1s ease;
+}
+.jny .jny-row__g {
+    flex: none; width: 22px; font-size: 10px; font-weight: 700;
+    color: var(--mc-slate); letter-spacing: .02em;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.jny .jny-row__l {
+    flex: 1; min-width: 0; font-size: 11.5px; line-height: 1.1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    color: var(--ink, #1F2233);
+}
+.jny .jny-row__n {
+    flex: none; font-size: 10px; font-weight: 700; color: var(--mc-amber-ink);
+    display: flex; align-items: center; gap: 4px;
+}
+.jny .jny-row__n::before {
+    content: ""; width: 5px; height: 5px; border-radius: 999px;
+    background: var(--mc-amber); display: inline-block;
+}
+/* the phone's substitute for a line — hidden wherever a line can be drawn */
+.jny .jny-row__p { display: none; }
+
+.jny .jny-row:hover,
+.jny .jny-row:focus-visible { background: var(--i-soft, #EDEAF8); }
+.jny .jny-row.on { background: var(--i-soft, #EDEAF8); }
+.jny .jny-row.off { opacity: .35; }
+.jny .jny-row.pinned { box-shadow: inset 2px 0 0 var(--i, #5A4BB0); }
+.jny .jny-row.gone .jny-row__g { text-decoration: line-through; color: var(--mc-amber-ink); }
+.jny .jny-row.gone .jny-row__l { color: var(--mc-amber-ink); }
+.jny .jny-row.twice .jny-row__l { color: var(--mc-amber-ink); }
+.jny .jny-row.calc .jny-row__l { color: var(--muted, #6B7280); }
+
+/* ---- the folded line ------------------------------------------------ */
+.jny .jny-fold { height: 22px; display: flex; align-items: center; padding: 0 9px; }
+.jny .jny-fold__b {
+    display: inline-flex; align-items: center; gap: 4px; cursor: pointer;
+    border: 0; background: transparent; padding: 0; font-family: inherit;
+    font-size: 10.5px; font-weight: 700; color: var(--muted, #6B7280);
+    > span:first-child { display: flex; }
+}
+.jny .jny-fold__b:hover { color: var(--i, #5A4BB0); }
+.jny .jny-fold__b:focus-visible {
+    outline: none; box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); border-radius: 6px;
+}
+
+/* ---- a card's secondary action (RECORDS R3) ------------------------- */
+.jny .jny-card__acts {
+    display: flex; gap: 6px; padding: 0 9px 9px 9px;
 }
 .jny .jny-act {
     display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
@@ -204,36 +316,14 @@
     box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8);
 }
 
-/* the connection a pay run actually reads */
-.jny .jny-node.prim { border-color: var(--i-border, #CBC2EE); background: var(--i-soft, #EDEAF8); }
-
-/* and the ones it does not. Never hidden — the point is that they are THERE
-   and ignored, which is the state abm has been in for months. */
-.jny .jny-node.dim { opacity: .58; }
-.jny .jny-node.dim:hover { opacity: 1; }
-
-/* a ghost is an invitation, not an error: nothing is wrong, there is simply
-   nothing here yet, and the card says what to do about it. */
-.jny .jny-node.ghost {
-    background: var(--mc-wash); border-style: dashed; color: var(--muted, #6B7280);
-}
-.jny .jny-node.ghost .jny-node__ic { color: var(--mc-slate); }
-.jny .jny-node.ghost .jny-node__l { font-weight: 700; }
-
-.jny .jny-node.warn { border-color: var(--mc-amber-line); }
-.jny .jny-node.err { border-color: var(--mc-rose); }
-.jny .jny-node.ok .jny-node__ic { color: var(--mc-emerald-ink); }
-
-.jny .jny-none {
-    font-size: 11px; color: var(--muted, #6B7280); padding: 10px 2px; font-weight: 600;
-}
-
 /* ---- chips: the EXISTING vocabulary, never a new severity system ---- */
+.jny .jny-chips { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 9px 8px 9px; }
 .jny .jny-chip {
-    align-self: flex-start; display: inline-flex; align-items: center; gap: 4px;
-    border-radius: 999px; padding: 1px 8px; font-size: 10.5px; font-weight: 800;
+    display: inline-flex; align-items: center; gap: 4px; cursor: pointer;
+    border-radius: 999px; padding: 1px 8px; font-size: 10.5px; font-weight: 700;
     background: var(--mc-wash); color: var(--muted, #6B7280);
-    border: 1px solid var(--line, #E8E9F3);
+    border: 1px solid var(--line, #E8E9F3); font-family: inherit;
+    > span:first-child { display: flex; }
 }
 .jny .jny-chip.warn {
     background: var(--mc-amber-wash); color: var(--mc-amber-ink); border-color: var(--mc-amber-line);
@@ -244,49 +334,77 @@
 .jny .jny-chip.ok {
     background: var(--mc-emerald-wash); color: var(--mc-emerald-ink); border-color: var(--mc-emerald);
 }
-.jny .jny-bar .jny-chip { flex: none; align-self: center; }
+.jny .jny-chip:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
 
-/* ---- the component picture -----------------------------------------
-   Segments of ONE bar, each a count of components over the total. Not a
-   score, not a gauge: arithmetic the reader can check by adding the labels
-   underneath it. This is the only chart-shaped thing on the tab and it is
-   allowed because it is a tally of disjoint named counts that sum to the
-   whole (pb_explorer owns analytics; this is a flow picture). */
+/* ---- the fed bar ----------------------------------------------------
+   One bar, two named counts that sum to the whole. Not a score, not a gauge:
+   arithmetic the reader can check by adding the labels underneath it. */
 .jny .jny-bars {
-    display: flex; height: 7px; border-radius: 999px; overflow: hidden;
-    background: var(--mc-wash2); margin-top: 3px;
+    display: flex; height: 6px; border-radius: 999px; overflow: hidden;
+    background: var(--mc-amber-wash); margin-top: 3px;
 }
-.jny .jny-bars__seg { display: block; height: 100%; background: var(--i, #5A4BB0); }
-.jny .jny-bars__seg.ok { background: var(--mc-emerald); }
-.jny .jny-bars__seg.calc { background: var(--mc-slate); }
-.jny .jny-bars__seg.info { background: var(--i-teal, #0F766E); }
-.jny .jny-bars__seg.warn { background: var(--mc-amber); }
-
-.jny .jny-keys { display: flex; flex-wrap: wrap; gap: 3px 10px; margin-top: 2px; }
+.jny .jny-bars__seg { display: block; height: 100%; background: var(--mc-emerald); }
+.jny .jny-keys { display: flex; flex-wrap: wrap; gap: 2px 10px; margin-top: 1px; }
 .jny .jny-key {
     display: inline-flex; align-items: center; gap: 4px;
     font-size: 10.5px; color: var(--muted, #6B7280); font-weight: 600;
 }
-.jny .jny-key > b { color: var(--ink, #1F2233); font-weight: 800; }
-.jny .jny-key.warn > b { color: var(--mc-amber-ink); }
 .jny .jny-key__d {
-    width: 6px; height: 6px; border-radius: 999px; background: var(--i, #5A4BB0);
+    width: 6px; height: 6px; border-radius: 999px; background: var(--mc-emerald);
     display: inline-block;
 }
-.jny .jny-key.ok .jny-key__d { background: var(--mc-emerald); }
-.jny .jny-key.calc .jny-key__d { background: var(--mc-slate); }
-.jny .jny-key.info .jny-key__d { background: var(--i-teal, #0F766E); }
 .jny .jny-key.warn .jny-key__d { background: var(--mc-amber); }
+.jny .jny-key.warn { color: var(--mc-amber-ink); }
+
+/* ---- the zero state ------------------------------------------------- */
+.jny .jny-invite {
+    position: relative; z-index: 2; margin: 22px auto 6px; max-width: 420px;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    text-align: center; padding: 20px 18px;
+    border: 1px dashed var(--line, #E8E9F3); border-radius: 14px;
+    background: var(--mc-wash);
+}
+.jny .jny-invite__ic { display: flex; color: var(--i, #5A4BB0); }
+.jny .jny-invite > b { font-size: 13.5px; font-weight: 800; color: var(--ink, #1F2233); }
+.jny .jny-invite > span { font-size: 11.5px; color: var(--muted, #6B7280); font-weight: 600; }
+.jny .jny-invite__doors { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 6px; }
+.jny .jny-invite__b {
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    border: 1px solid var(--i-border, #CBC2EE); background: #fff;
+    border-radius: 999px; padding: 6px 14px 6px 11px;
+    font-family: inherit; font-size: 11.5px; font-weight: 700;
+    color: var(--i, #5A4BB0);
+    > span:first-child { display: flex; }
+}
+.jny .jny-invite__b:hover { background: var(--i-soft, #EDEAF8); }
+.jny .jny-invite__b:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
 
 /* ---- narrow ---------------------------------------------------------
-   Five lanes at 1024 leave about 185px each. Nothing is hidden and nothing
-   scrolls sideways: the type steps down and the gutter narrows, because a
-   board that scrolls horizontally would move its cards out from under the
-   SVG the wires are drawn on. */
+   Five lanes at 1180 leave about 200px each: the type steps down and the
+   gutter narrows. Nothing scrolls sideways, because that would move the cards
+   out from under the SVG the wires are drawn on. */
 @media (max-width: 1180px) {
-    .jny { --jny-gut: 10px; }
-    .jny .jny-node { padding: 8px 6px 8px 8px; gap: 6px; border-radius: 9px; }
-    .jny .jny-node__l { font-size: 11.5px; }
-    .jny .jny-node__s { font-size: 10.5px; }
+    .jny { --jny-gut: 14px; }
+    .jny .jny-card__l { font-size: 11.5px; }
+    .jny .jny-card__s { font-size: 10.5px; }
     .jny .jny-q { width: 180px; }
+}
+
+/* ---- the phone ------------------------------------------------------
+   The lanes stack, so a curve between them would either leave the screen or
+   force a horizontal scroll. The lines go and each row NAMES its partner
+   instead: the fact survives, the drawing does not. */
+@media (max-width: 680px) {
+    .jny .jny-lanes { grid-template-columns: 1fr; }
+    .jny .jny-lane + .jny-lane { border-left: 0; border-top: 1px dashed var(--line, #E8E9F3); }
+    .jny .jny-wires { display: none; }
+    .jny .jny-row__p {
+        display: inline-flex; align-items: center; flex: none; max-width: 42%;
+        font-size: 10px; font-weight: 700; color: var(--i, #5A4BB0);
+        background: var(--i-soft, #EDEAF8); border-radius: 999px;
+        padding: 1px 7px; overflow: hidden; text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .jny .jny-row { height: auto; min-height: 24px; }
+    .jny .jny-q { width: 140px; max-width: 40%; }
 }

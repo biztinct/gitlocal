@@ -7429,26 +7429,123 @@ class PbFormulaStudio(models.AbstractModel):
                 counts['unfed'] += 1
         return counts, wired_ids
 
+    # ==================================================================
+    # CLEANMAP P2 — THE JOURNEY, PAYLOAD v2: ONLY WHAT IS MAPPED.
+    #
+    # The inversion this phase is: **build the field-level LINKS first, and
+    # derive the cards from them.** v1 built a CENSUS — every connector on the
+    # database, every feed of every connector, every sheet of the file, every
+    # transformation rule anywhere — and then drew edges between whichever of
+    # those happened to be wired. That is why rize's Journey showed a "Zoho
+    # People — inbound" nothing uses and seven feeds that have never synced
+    # (ledger CM4): the picture described the DATABASE, and the owner reads it
+    # as a picture of their SCHEME.
+    #
+    # Now nothing is drawn that is not the end of a link, and every link comes
+    # from `_declared_sources` — the same helper the source chips on every
+    # other board read — so the Journey cannot disagree with them.
+    # ==================================================================
+
+    #: The Payobook Source card's groups, in the order the card shows them.
+    #: A group is rendered only when it has rows; the ORDER is fixed so the
+    #: card reads the same way on every scheme.
+    _JOURNEY_SOURCE_GROUPS = ('emp', 'con', 'bank', 'comp', 'run')
+
+    #: Rows whose sort key nothing set sink to the bottom, in label order.
+    _JOURNEY_LAST = 1 << 30
+
+    @api.model
+    def _journey_source_group_labels(self):
+        """Plain words for the five kinds of Payobook record a scheme reads."""
+        return {
+            'emp': _("Employee"),
+            'con': _("Contract"),
+            'bank': _("Bank"),
+            'comp': _("Contract pay components"),
+            'run': _("Pay run"),
+        }
+
+    @api.model
+    def _journey_file_index(self, config):
+        """The stored file, as `({canonical key: {label, tag, sheet}}, canon)`.
+
+        `canon` maps EVERY spelling of a column — its sheet-qualified key, its
+        bare heading, its column letter — onto the one key that column's row
+        carries, which is CLEANMAP P1's alias map (`_sample_alias_map` is that
+        map for the file dropped on the board; `_column_alias_map` is its twin
+        for a loaded pay run). A binding written last month as `Mã nhân viên`
+        on a workbook whose row reads `Salary|Mã nhân viên` is a binding to
+        THAT COLUMN, and it has to land on that column's row — the Journey's
+        version of CM3, and the whole reason the file card shows 41 rows
+        instead of 41 rows plus a scatter of ghosts.
+
+        A key this file does not contain gets no entry, and its row is marked
+        `gone` by the caller.
+        """
+        cols = self._import_sample_columns(config)
+        if not cols:
+            return {}, {}
+
+        def meta_of(col):
+            return {'label': (col.get('header') or '').strip() or col.get('key'),
+                    'tag': (col.get('letter') or '').strip(),
+                    'sheet': (col.get('sheet') or '').strip()}
+
+        by_key = {col['key']: meta_of(col) for col in cols
+                  if col.get('key') and col.get('preferred')}
+        if not by_key:
+            # A reader that marked nothing preferred: every column is its own.
+            by_key = {col['key']: meta_of(col) for col in cols if col.get('key')}
+        canon = dict(self._sample_alias_map(config))
+        by_header, by_letter = {}, {}
+        for key, meta in by_key.items():
+            canon[key] = key
+            if meta['label']:
+                by_header.setdefault(meta['label'], key)
+            if meta['tag']:
+                by_letter.setdefault(meta['tag'], key)
+        for col in cols:
+            key = col.get('key')
+            if not key or key in canon:
+                continue
+            target = (by_header.get((col.get('header') or '').strip())
+                      or by_letter.get((col.get('letter') or '').strip()))
+            if target:
+                canon[key] = target
+        # …and the two spellings a person types by hand, which are in no file:
+        # the bare heading of a sheet-qualified column, and the column letter.
+        for header, key in by_header.items():
+            canon.setdefault(header, key)
+        for letter, key in by_letter.items():
+            canon.setdefault(letter, key)
+        return by_key, canon
+
     @api.model
     def journey_data(self, config_id=None):
-        """The whole Journey, in ONE read.
+        """The whole Journey, in ONE read — payload v2.
 
         Read-only, top to bottom. Nothing in this method or anything it calls
         writes a row, and that is the phase's signature proof rather than a
         remark: the MF37 diff around an entire live validation session of this
-        tab is empty, with no restore step.
+        tab is empty, with no restore step. Opening a card is CLIENT state.
 
-        The payload is five LANES of nodes plus the EDGES between them. Nodes
-        are uniform (`id`, `kind`, `label`, `sub`, `tone`, `chip`, `door`,
-        `ghost`) so the board renders them with one template and cannot grow a
-        per-lane dialect; edges carry `from`, `to`, `kind` and `count`, and the
-        board draws a wire only where an edge exists — which is what makes the
-        picture a claim about the database rather than a diagram.
+        The payload is:
 
-        Every lane has a designed GHOST with a working door, because a scheme
-        with nothing configured is the novice's first screen and an empty
-        five-lane grid would read as a broken feature rather than as an
-        invitation.
+          * `lanes` — five keys, `systems, feeds, transforms, scheme, source`.
+            An EMPTY LIST means the lane is hidden entirely and takes no column
+            on the board (owner ruling 9), so a scheme fed only by a
+            spreadsheet shows three lanes and not five with two holes in them;
+          * `links` — one entry per field-level statement, `a` and `b` being
+            ROW ids. The client decides what to draw from these plus which
+            cards are open: two closed cards are one counted line, an open card
+            beside a closed one gathers its rows onto the closed card's edge;
+          * `contains` — a feed belongs to a system, a transformations card
+            belongs to a system. Structure, not data movement.
+
+        **Every card is derived from the links.** A connector nothing on this
+        scheme reads has no card; a feed no field of which is linked has no
+        card; a transformation rule nothing consumes has no row. That single
+        inversion is the whole of the owner's ruling 2 and the cure for CM4.
         """
         config = self._pick_config(config_id)
         if not config:
@@ -7456,459 +7553,608 @@ class PbFormulaStudio(models.AbstractModel):
 
         Conn = self.env['hr.integration.connector']
         FM = self.env.get('hr.integration.field.mapping')
-        connectors = Conn.search([], order='name')
+        TfRule = self.env.get('hr.api.transformation.rule')
 
-        # ---- the primary connector (J-D5, and MJ22's other half) -------------
-        # `config.connector_id` and NOTHING ELSE. `_api_active_connector`'s
-        # most-mappings heuristic answers a different question (which connector
-        # do this scheme's wires point at) and is documented picking the wrong
-        # one on abm; the runtime gate in `payroll_import_batch` reads the FIELD.
-        # A lane marked "primary" that the runtime disagrees with would be the
-        # worst thing this tab could say, because it would be believed.
+        # ---- the primary connector (J-D5, MJ22) -----------------------------
+        # `config.connector_id` and NOTHING ELSE: the runtime gate in
+        # `payroll_import_batch` reads that field, and a lane marked "primary"
+        # the runtime disagrees with would be the worst thing this tab could
+        # say, because it would be believed.
         primary = config.connector_id if config.connector_id else Conn.browse()
 
-        # ---- what wires exist, once, for the whole board ---------------------
-        emp_total, read_back_ids, bank_rows = self._journey_people_mappings(config)
         record_dests = self._source_record_dests(config)
         wire_dests = self._source_wire_dests(config)
         conflicts = self._source_conflicts(config)
-        scheme_counts, wired_ids = self._journey_scheme_lane(
+        emp_total, read_back_ids, bank_rows = self._journey_people_mappings(config)
+        scheme_counts, _wired_ids = self._journey_scheme_lane(
             config, record_dests, wire_dests)
 
-        input_ids = set(config.rule_ids.filtered(
-            lambda r: r.column_type == 'input').ids)
+        rules = config.rule_ids
+        inputs = rules.filtered(lambda r: r.column_type == 'input') \
+                      .sorted(key=lambda r: (r.sequence, r.id))
+        seq_of = {r.id: n for n, r in enumerate(inputs)}
 
-        # per-connector and per-endpoint counts of LIVE wires into this scheme
-        wires_by_conn = defaultdict(int)
-        wires_by_ep = defaultdict(int)
-        if FM is not None and config.rule_ids:
+        # ---- ONE field-mapping read for the whole board ---------------------
+        # Indexed by (component, source key) because that is the question every
+        # declared `feed` / `rule` source asks: which wire, on which connection,
+        # through which feed, carries this key into this component.
+        maps_by_key = {}
+        if FM is not None and rules:
             try:
                 for m in FM.sudo().with_context(active_test=False).search(
-                        [('target_rule_id', 'in', list(input_ids))]):
-                    wires_by_conn[m.connector_id.id] += 1
-                    if m.endpoint_id:
-                        wires_by_ep[m.endpoint_id.id] += 1
-            except Exception as e:      # noqa: BLE001
-                _logger.warning("J5: wire census failed: %s: %s",
+                        [('target_rule_id', 'in', rules.ids)], order='id'):
+                    pair = (m.target_rule_id.id, (m.source_field or '').strip())
+                    if pair[1] and pair not in maps_by_key:
+                        maps_by_key[pair] = m
+            except Exception as e:      # noqa: BLE001 — a board never breaks
+                _logger.warning("CLEANMAP P2: wire read failed: %s: %s",
                                 type(e).__name__, e)
 
-        # ---- severed wires, and the honest scope of that claim ---------------
-        # `is_severed` is `target_rule_code AND NOT target_rule_id` — a severed
-        # wire has NO target, so it cannot be found by searching for this
-        # config's rules and "severed wires of this scheme" is not a question
-        # the schema can answer. What it CAN answer is "severed wires on the
-        # connection this scheme reads", so that is what is counted and that is
-        # what the node says. Attributing an orphaned `target_rule_code` to a
-        # config by string-matching would be exactly the undefendable number
-        # scope 5 forbids.
-        severed_conn_ids = set(wires_by_conn)
+        # ---- pass A: what every input component declares --------------------
+        declared_by_rule, want_rule_keys = {}, defaultdict(set)
+        for rule in inputs:
+            declared = self._declared_sources(rule, record_dests, wire_dests)
+            # THE LEGACY COLUMN, and the answer to the handover's question.
+            # `hr.formula.rule.declared_sources()` does NOT include
+            # `data_source_field` (it is not a `source_ids` row and never was),
+            # while the Spreadsheet board still draws a wire for it —
+            # `((binding key) if source_binding == 'excel' else '') or
+            # data_source_field`. So the same fallback is applied here, or the
+            # two boards would disagree about a pre-binding scheme: one would
+            # show the column, the other would call the component unfed.
+            legacy = ''
+            if not any(d['kind'] == 'excel' for d in declared):
+                legacy = (rule.data_source_field or '').strip()
+            declared_by_rule[rule.id] = (declared, legacy)
+            for d in declared:
+                if d['kind'] != 'rule':
+                    continue
+                key = (d.get('key') or '').strip()
+                m = maps_by_key.get((rule.id, key))
+                cid = m.connector_id.id if m else (primary.id if primary else 0)
+                if cid and key:
+                    want_rule_keys[cid].add(key)
+
+        # ---- pass B: the transformation rules this scheme actually reads ----
+        # Restricted to the connectors that HAVE links and the keys that are
+        # asked for — where v1 searched every rule of every connector on the
+        # database to draw a lane the reader had not asked about.
+        tf_by_key, tf_recs = {}, []
+        if TfRule is not None and want_rule_keys:
+            wanted = set()
+            for keys in want_rule_keys.values():
+                wanted |= keys
+            try:
+                for r in TfRule.with_context(active_test=False).search(
+                        [('connector_id', 'in', list(want_rule_keys)),
+                         ('output_key', 'in', list(wanted))],
+                        order='sequence, id'):
+                    pair = (r.connector_id.id, (r.output_key or '').strip())
+                    if pair[1] in want_rule_keys.get(pair[0], ()) \
+                            and pair not in tf_by_key:
+                        tf_by_key[pair] = r
+                        tf_recs.append(r)
+            except Exception as e:      # noqa: BLE001
+                _logger.warning("CLEANMAP P2: rule read failed: %s: %s",
+                                type(e).__name__, e)
+
+        # ---- the feeds those rules and wires name ---------------------------
+        # NO `get_available_source_fields` ANYWHERE. v1 called the catalogue
+        # discovery once per connector on the landing tab, to print field
+        # counts on feeds that are deleted with this phase.
+        touched_ids = {m.connector_id.id for m in maps_by_key.values()
+                       if m.connector_id}
+        touched_ids |= {r.connector_id.id for r in tf_recs if r.connector_id}
+        eps = None
+        if touched_ids:
+            eps = self._api_endpoints(Conn.browse(sorted(touched_ids)))
+        ep_by_type, ep_name = {}, {}
+        for ep in (eps or []):
+            ep_by_type.setdefault((ep.connector_id.id, ep.data_type or ''), ep)
+            ep_name[ep.id] = (ep.name or ep.code or _("Unnamed feed"),
+                              ep.connector_id.id)
+
+        file_cols, canon = self._journey_file_index(config)
+        sample = self._import_sample_meta(config)
+        sheets_with_rows = set()
+
+        # ==================================================================
+        # the board itself: cards are MINTED BY THEIR FIRST ROW
+        # ==================================================================
+        cards, rows_of, links, contains = {}, {}, [], []
+
+        def card(cid, kind, lane, label, **kw):
+            found = cards.get(cid)
+            if found is None:
+                found = {'id': cid, 'kind': kind, 'lane': lane, 'label': label,
+                         'sub': '', 'tone': '', 'door': None, 'chips': [],
+                         'actions': [], 'rows': [], 'groups': []}
+                found.update(kw)
+                cards[cid] = found
+                rows_of[cid] = {}
+            return found
+
+        def row(cid, rid, label, tag='', sub='', state='plain', group=''):
+            found = rows_of[cid].get(rid)
+            if found is None:
+                found = {'id': rid, 'card': cid, 'label': label, 'tag': tag,
+                         'sub': sub, 'state': state, 'group': group}
+                rows_of[cid][rid] = found
+            return found
+
+        def join(a, b, kind, direction='fwd', dimmed=False):
+            links.append({'id': 'k%s' % len(links), 'a': a, 'b': b,
+                          'kind': kind, 'dir': direction,
+                          'dimmed': bool(dimmed)})
+
+        def system_card(conn):
+            cid = 'c:%s' % conn.id
+            if cid not in cards:
+                is_primary = bool(primary) and conn.id == primary.id
+                node = card(cid, 'connector', 'systems',
+                            conn.name or _("Unnamed connection"),
+                            door={'mode': 'api', 'connector': conn.id},
+                            primary=is_primary,
+                            dimmed=not is_primary,
+                            status=conn.connection_status or 'disconnected',
+                            last_sync=self._journey_iso(conn.last_sync))
+                if is_primary:
+                    node['chips'] = [{
+                        'label': _("Primary"), 'tone': 'ok',
+                        'hint': _("This is the connection this scheme reads on "
+                                  "system runs."),
+                    }]
+                elif primary:
+                    node['chips'] = [{
+                        'label': _("Not read"), 'tone': 'muted',
+                        'hint': _("A pay run reads only the connection this "
+                                  "scheme is set to (%(primary)s). Any wire "
+                                  "drawn from %(other)s is ignored on a system "
+                                  "run.",
+                                  primary=primary.name or _("the primary connection"),
+                                  other=conn.name or _("this connection")),
+                    }]
+                else:
+                    node['chips'] = [{
+                        'label': _("Not read"), 'tone': 'warn',
+                        'hint': _("This scheme has not been told which "
+                                  "connection to read, so none of these wires "
+                                  "is used on a pay run. Choose the connection "
+                                  "on the scheme itself."),
+                    }]
+            return cards[cid]
+
+        def feed_card(ep_id):
+            cid = 'e:%s' % ep_id
+            if cid not in cards:
+                label, conn_id = ep_name.get(ep_id, (_("Unnamed feed"), 0))
+                card(cid, 'endpoint', 'feeds', label,
+                     door={'mode': 'api', 'connector': conn_id,
+                           'endpoint': ep_id, 'focus': label},
+                     dimmed=not (primary and conn_id == primary.id))
+                if conn_id:
+                    system_card(Conn.browse(conn_id))
+                    contains.append({'from': 'c:%s' % conn_id, 'to': cid})
+            return cards[cid]
+
+        def transforms_card(conn):
+            cid = 't:%s' % conn.id
+            if cid not in cards:
+                card(cid, 'transform', 'transforms', _("Transformations"),
+                     sub=conn.name or _("Unnamed connection"),
+                     door={'mode': 'transform', 'connector': conn.id},
+                     dimmed=not (primary and conn.id == primary.id))
+                system_card(conn)
+                contains.append({'from': 'c:%s' % conn.id, 'to': cid})
+            return cards[cid]
+
+        def file_card():
+            if 'file' not in cards:
+                card('file', 'file', 'systems',
+                     (sample['filename'] if sample else _("Spreadsheet columns")),
+                     door={'mode': 'import'})
+            return cards['file']
+
+        def source_card():
+            if 'source' not in cards:
+                node = card('source', 'source', 'source', _("Payobook Source"),
+                            door={'mode': 'employee'})
+                # RECORDS R3 — a door OUT of Mapping, probed client-side so a
+                # database without `pb_records` renders no button at all.
+                node['actions'] = [{
+                    'id': 'records_desk',
+                    'label': _("Open Records Desk"),
+                    'icon': 'database',
+                    'tag': 'pb_records_desk',
+                    'xmlid': 'pb_records.action_pb_records_desk',
+                    'params': {'records_config_id': config.id},
+                }]
+            return cards['source']
+
+        def source_row(rid, label, group, sub=''):
+            source_card()
+            return row('source', rid, label, sub=sub, group=group)
+
+        def file_row(key):
+            """The row for one spelling of one column, or `None` if unusable."""
+            key = (key or '').strip()
+            if not key:
+                return None
+            ckey = canon.get(key, key)
+            file_card()
+            rid = 'f:%s' % ckey
+            meta = file_cols.get(ckey)
+            if meta:
+                if meta['sheet']:
+                    sheets_with_rows.add(meta['sheet'])
+                return row('file', rid, meta['label'] or ckey,
+                           tag=meta['tag'], group=meta['sheet'])
+            label = ckey.split('|', 1)[1].strip() if '|' in ckey else ckey
+            if file_cols:
+                # There IS a file, and it has no such column. Say so on the row
+                # rather than dropping it: a binding drawn to nothing is how
+                # MAPFIX-D crashed a canvas, and a binding quietly dropped is
+                # worse — the reader would believe the component was unfed.
+                return row('file', rid, label or ckey, state='gone',
+                           sub=_("this file has no such column"))
+            return row('file', rid, label or ckey)
+
+        # ---- the scheme card, always ----------------------------------------
+        scheme = card('scheme', 'scheme', 'scheme',
+                      config.name or _("This scheme"),
+                      door={'mode': 'api'})
+
+        # ==================================================================
+        # pass C — one link per declared source, and nothing else
+        # ==================================================================
+        fed_n = 0
+        dangling_ids = set()
+        for rule in inputs:
+            srid = 's:%s' % rule.id
+            declared, legacy = declared_by_rule[rule.id]
+            conflict = conflicts.get(rule.id)
+            srow = row('scheme', srid, rule.name or rule.code or srid,
+                       tag='', state='unfed')
+            fed = False
+            # ==========================================================
+            # "THE SOURCE NO LONGER EXISTS", ANSWERED FROM THE LINKS.
+            #
+            # `hr.formula.rule.binding_dangling` is the field that owns this
+            # question everywhere else, and it is deliberately NOT asked here:
+            # its per-source compute calls `get_available_source_fields`, the
+            # catalogue discovery this phase exists to stop running on a
+            # landing tab. Measured on abm before this line was written:
+            # `journey_data` cost 492 queries and **470 of them were that one
+            # compute** — the call the payload had just finished promising it
+            # never makes. Every fact it needs is already in hand: the stored
+            # file's column index, and whether the transformation rule a
+            # `rule` key names still exists on that connection.
+            # ==========================================================
+            lost = False
+            for d in declared:
+                kind = d['kind']
+                key = (d.get('key') or '').strip()
+                if kind == 'excel':
+                    frow = file_row(key)
+                    if frow is not None:
+                        join(frow['id'], srid, 'excel')
+                        if frow['state'] == 'gone':
+                            # There IS a file and it has no such column, so
+                            # nothing fills this component from it. With NO
+                            # file stored the row is `plain` and this does not
+                            # fire: "no file loaded yet" is not "the column is
+                            # gone" (the same false alarm `_compute_dangling`
+                            # refuses for `excel`).
+                            lost = True
+                        else:
+                            fed = True
+                elif kind in ('feed', 'rule'):
+                    m = maps_by_key.get((rule.id, key))
+                    conn = m.connector_id if (m and m.connector_id) else primary
+                    if not conn:
+                        # A key that names a connected system on a scheme that
+                        # has no connection and no wire carrying it. There is
+                        # nothing to draw it FROM, and pretending otherwise
+                        # would invent a system card.
+                        lost = True
+                        continue
+                    dim = not (primary and conn.id == primary.id)
+                    tf = tf_by_key.get((conn.id, key)) if kind == 'rule' else None
+                    if kind == 'rule' and tf is None:
+                        # `rule` means the key IS an output key of this
+                        # connection's transformations (`_computed_output_keys`
+                        # said so). No rule record behind it means the rule was
+                        # deleted or archived away — which is exactly what
+                        # "the source no longer exists" means. It is still
+                        # drawn, as the feed row it now looks like, because a
+                        # component with a source must never render sourceless.
+                        lost = True
+                    if tf is not None:
+                        transforms_card(conn)
+                        trid = 'r:%s' % tf.id
+                        row('t:%s' % conn.id, trid,
+                            tf.name or key or _("Untitled rule"), tag=key)
+                        join(trid, srid, 'rule', 'fwd', dim)
+                        for name in (self._journey_rule_reads(tf) or []):
+                            ep = ep_by_type.get((conn.id, tf.source_data_type or ''))
+                            if ep:
+                                feed_card(ep.id)
+                                nrid = 'e:%s:%s' % (ep.id, name)
+                                row('e:%s' % ep.id, nrid, name)
+                            else:
+                                system_card(conn)
+                                nrid = 'c:%s:%s' % (conn.id, name)
+                                row('c:%s' % conn.id, nrid, name)
+                            join(nrid, trid, 'reads', 'fwd', dim)
+                        if not dim:
+                            fed = True
+                        continue
+                    ep = m.endpoint_id if (m and m.endpoint_id) else None
+                    if ep:
+                        feed_card(ep.id)
+                        nrid = 'e:%s:%s' % (ep.id, key)
+                        row('e:%s' % ep.id, nrid, key)
+                    else:
+                        system_card(conn)
+                        nrid = 'c:%s:%s' % (conn.id, key)
+                        row('c:%s' % conn.id, nrid, key)
+                    join(nrid, srid, kind, 'fwd', dim)
+                    if not dim:
+                        fed = True
+                elif kind in ('employee_field', 'contract_field'):
+                    gid = 'emp' if kind == 'employee_field' else 'con'
+                    prid = 'p:%s:%s' % (gid, key)
+                    source_row(prid, d.get('label') or key, gid)
+                    # J-D4 — the ONE genuinely two-way relationship on this
+                    # board: the row writes the record on import and is read
+                    # back when the file or feed leaves the value empty.
+                    join(srid, prid, 'record', 'both')
+                    fed = True
+                elif kind == 'bank_account':
+                    prid = 'p:bank:%s' % key
+                    source_row(prid, d.get('label') or key, 'bank')
+                    # J3 S1 — bank rows are the IMPORT half only.
+                    # `get_mapped_input_value` reads employee and contract
+                    # fields back and never bank parts, so a two-way arrow
+                    # here would be a lie drawn in teal.
+                    join(srid, prid, 'record', 'fwd')
+                    fed = True
+                elif kind == 'contract_component':
+                    prid = 'p:comp:%s' % rule.id
+                    source_row(prid, rule.name or rule.code or prid, 'comp')
+                    join(prid, srid, 'component', 'back')
+                    fed = True
+                elif kind == 'period':
+                    prid = 'p:run:%s' % (key or 'PERIOD')
+                    source_row(prid, d.get('label')
+                               or self._period_key_label(key) or key, 'run')
+                    join(prid, srid, 'period', 'back')
+                    fed = True
+            if not fed and legacy:
+                frow = file_row(legacy)
+                if frow is not None:
+                    join(frow['id'], srid, 'excel')
+                    fed = True
+            # `state` is what the row LOOKS like; `fed` is the arithmetic the
+            # header counts. They are two facts: a component fed twice is fed,
+            # and a component whose key no longer exists is not, and neither
+            # can be read off the other.
+            srow['fed'] = fed
+            if fed:
+                fed_n += 1
+            if lost:
+                srow['state'] = 'gone'
+                dangling_ids.add(rule.id)
+            elif conflict:
+                srow['state'] = 'twice'
+            elif fed:
+                srow['state'] = 'fed'
+
+        unfed_n = len(inputs) - fed_n
+
+        # ---- the folded line: everything this scheme works out for itself ---
+        folded_rows = [
+            {'id': 's:%s' % r.id, 'card': 'scheme',
+             'label': r.name or r.code or '', 'tag': '', 'sub': '',
+             'state': 'plain', 'group': ''}
+            for r in rules.sorted(key=lambda r: (r.sequence, r.id))
+            if r.column_type in ('formula', 'constant')
+        ]
+        scheme['folded'] = {
+            'n': len(folded_rows),
+            'label': _("%s calculated or fixed") % len(folded_rows),
+            'rows': folded_rows,
+        }
+        scheme['sub'] = (_("%s needs a source") if len(inputs) == 1
+                         else _("%s need a source")) % len(inputs)
+        scheme['bar'] = {'fed': fed_n, 'unfed': unfed_n, 'total': len(inputs)}
+        scheme['fed_label'] = _("%s fed") % fed_n
+        scheme['unfed_label'] = _("%s not fed yet") % unfed_n
+
+        # ---- the chips, which replace v1's separate health cards ------------
+        dangling = len(dangling_ids)
+        severed_conn_ids = set(touched_ids)
         if primary:
             severed_conn_ids.add(primary.id)
         severed_n = 0
         if FM is not None and severed_conn_ids:
             try:
-                severed_n = FM.sudo().with_context(active_test=False).search_count(
+                severed_n = FM.sudo().with_context(
+                    active_test=False).search_count(
                     [('connector_id', 'in', list(severed_conn_ids)),
                      ('is_severed', '=', True)])
             except Exception as e:      # noqa: BLE001
-                _logger.warning("J5: severed census failed: %s: %s",
+                _logger.warning("CLEANMAP P2: severed census failed: %s: %s",
                                 type(e).__name__, e)
-
-        systems, feeds, transforms, edges = [], [], [], []
-
-        # ================================================== LANE 1 — systems
-        # ---- the state the live database is actually in ---------------------
-        # NO scheme on any of the four databases has `connector_id` set (the
-        # SOURCING ledger's S20). That is not a cosmetic gap: the resolver's
-        # pre-pass is gated on it —
-        #
-        #     if self.source_type == 'api_data_store' and config.connector_id:
-        #
-        # — so with the field unset, NO feed wire is read on a system run at
-        # all. abm has thirty-three wires drawn into this scheme and every one
-        # of them is inert. Making the one-connector limit visible (scope 3)
-        # therefore has to include the case where the limit has never been
-        # exercised, or the tab would show a confident picture of a pipe that
-        # is not connected at the tap. Every connector is dimmed, each says why,
-        # and the scheme lane raises it as a health node.
-        no_primary = not primary and bool(wires_by_conn)
-        for conn in connectors:
-            is_primary = bool(primary) and conn.id == primary.id
-            # The one-connector limit, made VISIBLE (scope 3). A pay run reads
-            # only the connection its scheme is set to; every other connector's
-            # wires are ignored on a system run. That has always been true and
-            # has never been said anywhere, which is how abm ended up with seven
-            # components wired on a connection nothing reads.
-            dimmed = (bool(primary) and not is_primary) or (
-                no_primary and bool(wires_by_conn.get(conn.id)))
-            node = {
-                'id': 'c:%s' % conn.id, 'kind': 'connector', 'lane': 'systems',
-                'label': conn.name or _("Unnamed connection"),
-                'sub': '',
-                'tone': {'error': 'err', 'connected': 'ok'}.get(
-                    conn.connection_status or '', 'muted'),
-                'primary': is_primary,
-                'dimmed': dimmed,
-                'last_sync': self._journey_iso(conn.last_sync),
-                'status': conn.connection_status or 'disconnected',
-                'wires': wires_by_conn.get(conn.id, 0),
-                'door': {'mode': 'api', 'connector': conn.id},
-            }
-            if is_primary:
-                node['chip'] = {
-                    'label': _("Primary"), 'tone': 'ok',
-                    'hint': _("This is the connection this scheme reads on "
-                              "system runs."),
-                }
-            elif dimmed and primary:
-                node['chip'] = {
-                    'label': _("Not read"), 'tone': 'muted',
-                    'hint': _("A pay run reads only the connection this scheme "
-                              "is set to (%(primary)s). Any wire drawn from "
-                              "%(other)s is ignored on a system run.",
-                              primary=primary.name or _("the primary connection"),
-                              other=conn.name or _("this connection")),
-                }
-            elif dimmed:
-                node['chip'] = {
-                    'label': _("Not read"), 'tone': 'warn',
-                    'hint': _("This scheme has not been told which connection to "
-                              "read, so none of these wires is used on a pay "
-                              "run. Choose the connection on the scheme itself."),
-                }
-            systems.append(node)
-
-        if not systems:
-            systems.append({
-                'id': 'c:none', 'kind': 'connector', 'lane': 'systems',
-                'ghost': True, 'label': _("No system connected"),
-                'sub': _("Connect an HR system and its fields appear here."),
-                'door': {'mode': 'api'},
-            })
-
-        # ---- the stored spreadsheet (J2's sample) ---------------------------
-        sample = self._import_sample_meta(config)
-        if sample:
-            systems.append({
-                'id': 'file', 'kind': 'file', 'lane': 'systems',
-                'label': sample['filename'],
-                'sub': (_("read %s") % sample['read_on']) if sample['read_on'] else '',
-                'columns': sample['columns'],
-                'door': {'mode': 'import'},
-            })
-        else:
-            systems.append({
-                'id': 'file', 'kind': 'file', 'lane': 'systems', 'ghost': True,
-                'label': _("No file read yet"),
-                'sub': _("Drop this month's spreadsheet to see its columns."),
-                'door': {'mode': 'import'},
-            })
-
-        # ---- Payobook records, both ways (J-D4) -----------------------------
-        systems.append({
-            'id': 'records', 'kind': 'records', 'lane': 'systems',
-            'label': _("Payobook records"),
-            'sub': _("Employee · Contract · Bank"),
-            'count': emp_total,
-            'bank': bank_rows,
-            'ghost': not emp_total,
-            'door': {'mode': 'employee'},
-            'countLabel': (_("%s mapped field") if emp_total == 1
-                           else _("%s mapped fields")) % emp_total
-                          if emp_total else _("Nothing mapped yet"),
-            # RECORDS R3 — a SECOND door on the same node. The node's own door
-            # changes which tab you are looking at (`openDoor` switches a MODE
-            # and nothing else); this one leaves Mapping altogether for the
-            # desk where those mapped fields are edited. It is a separate key
-            # rather than a second `door` because the two are not the same kind
-            # of gesture, and the board renders it only when the desk's client
-            # action is actually registered — a database without `pb_records`
-            # must show no button rather than a dead one.
-            'actions': [{
-                'id': 'records_desk',
-                'label': _("Open Records Desk"),
-                'icon': 'database',
-                'tag': 'pb_records_desk',
-                'xmlid': 'pb_records.action_pb_records_desk',
-                'params': {'records_config_id': config.id},
-            }] if emp_total else [],
-        })
-
-        # ============================================ LANE 2 — feeds & files
-        #
-        # The field counts and the drift verdict come from
-        # `get_available_source_fields`, called ONCE PER CONNECTOR and then
-        # bucketed by `feed_type` — which is exactly the axis the catalogue
-        # itself scopes drift on ("Drift is a claim about a feed that ran, and
-        # it may only be made about that feed", `integration_field_mapping.py`
-        # :710-716). Per-ENDPOINT calls would be one data-store search per feed
-        # for a landing page; per-CONNECTOR is one, and the bucketing loses
-        # nothing because a feed's fields are its data type's fields.
-        #
-        # `expected_missing` is a DERIVED flag, not a column — there is no
-        # `hr.integration.endpoint.field.expected_missing` to count, which is
-        # why this route rather than the cheaper-looking one.
-        cat_by_conn = {}
-        for conn in connectors:
-            try:
-                cat_by_conn[conn.id] = self.env['hr.integration.field.mapping'] \
-                    .get_available_source_fields(conn.id, None, None) or []
-            except Exception as e:      # noqa: BLE001
-                _logger.warning(
-                    "J5: source-field discovery failed for connector %s: %s: %s "
-                    "— its feeds render without field counts.",
-                    conn.id, type(e).__name__, e)
-                cat_by_conn[conn.id] = []
-
-        eps = self._api_endpoints(connectors) if connectors else None
-        for ep in (eps or []):
-            conn_id = ep.connector_id.id
-            mine = [f for f in cat_by_conn.get(conn_id, [])
-                    if (f.get('feed_type') or '') == (ep.data_type or '')]
-            n_fields = len(mine)
-            # A feed that has never run cannot be behind: `expected_missing` is
-            # a statement about a sync that HAPPENED. Without this guard a brand
-            # new integration opens covered in amber, which is the false alarm
-            # SOURCING S5 removed from the API board and must not reappear here.
-            drift = (len([f for f in mine if f.get('expected_missing')])
-                     if ep.last_sync else 0)
-            node = {
-                'id': 'e:%s' % ep.id, 'kind': 'endpoint', 'lane': 'feeds',
-                'parent': 'c:%s' % conn_id,
-                'label': ep.name or ep.code or _("Unnamed feed"),
-                'sub': '',
-                'fields': n_fields,
-                'drift': drift,
-                'mapped': ep.mapping_count,
-                'last_sync': self._journey_iso(ep.last_sync),
-                'tone': {'failed': 'err', 'success': 'ok'}.get(
-                    ep.last_sync_status or '', 'muted'),
-                # A feed is dimmed for whichever reason its CONNECTOR is: either
-                # the scheme reads a different connection, or it reads none.
-                # Expressed against the connector rather than re-derived, so the
-                # two can never disagree on screen (a lit feed under a greyed
-                # system is the sort of contradiction a reader stops trusting).
-                'dimmed': (bool(primary) and conn_id != primary.id)
-                          or (no_primary and bool(wires_by_conn.get(conn_id))),
-                'door': {'mode': 'api', 'connector': conn_id, 'endpoint': ep.id,
-                         'focus': ep.name or ep.code or ''},
-            }
-            if drift:
-                node['chip'] = {
-                    'label': (_("%s not sent") % drift), 'tone': 'warn',
-                    'hint': _("The catalogue expects these fields and the last "
-                              "sync did not deliver them. They may have been "
-                              "renamed at the source."),
-                }
-            feeds.append(node)
-            edges.append({'from': 'c:%s' % conn_id, 'to': 'e:%s' % ep.id,
-                          'kind': 'contain', 'count': 0,
-                          'dimmed': node['dimmed']})
-            live = wires_by_ep.get(ep.id, 0)
-            if live:
-                edges.append({'from': 'e:%s' % ep.id, 'to': 'scheme',
-                              'kind': 'feed', 'count': live,
-                              'dimmed': node['dimmed']})
-
-        # ---- one node per sheet of the stored file --------------------------
-        cols = self._import_sample_columns(config)
-        if cols:
-            by_sheet = defaultdict(int)
-            for col in cols:
-                by_sheet[(col.get('sheet') or '').strip()] += 1
-            for sheet, n in sorted(by_sheet.items()):
-                sid = 's:%s' % (sheet or '_')
-                feeds.append({
-                    'id': sid, 'kind': 'sheet', 'lane': 'feeds', 'parent': 'file',
-                    'label': sheet or _("The spreadsheet"),
-                    'sub': (_("%s column") if n == 1 else _("%s columns")) % n,
-                    'columns': n,
-                    'door': {'mode': 'import', 'focus': sheet or ''},
-                })
-                edges.append({'from': 'file', 'to': sid, 'kind': 'contain',
-                              'count': 0})
-            # An excel BINDING is the live wire between a column and a component.
-            bound = len([r for r in config.rule_ids
-                         if r.source_binding == 'excel'
-                         and (r.source_binding_key or '').strip()])
-            if bound:
-                first = 's:%s' % ((sorted(by_sheet) or [''])[0] or '_')
-                edges.append({'from': first, 'to': 'scheme', 'kind': 'excel',
-                              'count': bound})
-        elif not feeds:
-            feeds.append({
-                'id': 'e:none', 'kind': 'endpoint', 'lane': 'feeds', 'ghost': True,
-                'label': _("No feeds or files yet"),
-                'sub': _("A connected system's feeds, and the sheets of an "
-                         "uploaded file, appear here."),
-                'door': {'mode': 'import'},
-            })
-
-        # ========================================= LANE 3 — transformations
-        Rule = self.env.get('hr.api.transformation.rule')
-        # MJ16 — `env.get` is None-or-model and an empty recordset is FALSY, so
-        # the only correct test is `is None`. `if Rule:` would take the empty
-        # branch on every call and this lane would be permanently, silently blank.
-        rule_recs = [] if Rule is None else Rule.browse()
-        if Rule is not None and connectors:
-            try:
-                rule_recs = Rule.with_context(active_test=False).search(
-                    [('connector_id', 'in', connectors.ids)],
-                    order='connector_id, sequence, id')
-            except Exception as e:      # noqa: BLE001
-                _logger.warning("J5: rule census failed: %s: %s",
-                                type(e).__name__, e)
-        unread_n = 0
-        for r in rule_recs:
-            key = (r.output_key or '').strip()
-            # J4's predicate, CALLED — not re-implemented. `_tf_consumers`
-            # delegates to `pb.integrations._rule_consumers`, which is where the
-            # concept was first said out loud. A copy here would pass a grep and
-            # disagree with the Transformations tab on the first edge case.
-            consumers = self._tf_consumers(r) if key else []
-            unread = bool(key) and not consumers
-            if unread:
-                unread_n += 1
-            cid = r.connector_id.id
-            try:
-                n_reads = len(r._consumed_field_names() or [])
-            except Exception:           # noqa: BLE001 — a lane never breaks the tab
-                n_reads = 0
-            node = {
-                'id': 'r:%s' % r.id, 'kind': 'rule', 'lane': 'transforms',
-                'parent': 'c:%s' % cid if cid else '',
-                'label': r.name or key or _("Untitled rule"),
-                'sub': (_("→ %s") % key) if key else '',
-                'key': key,
-                'reads': n_reads,
-                'feeds': len(consumers),
-                'active': bool(r.active),
-                'tone': 'warn' if unread else '',
-                'dimmed': bool(primary) and cid != primary.id,
-                'door': {'mode': 'transform', 'connector': cid,
-                         'focus': key or (r.name or '')},
-            }
-            if unread:
-                node['chip'] = {
-                    'label': _("Unread output"), 'tone': 'warn',
-                    'hint': _("This rule computes “%s” and no pay component "
-                              "takes it. Wire its output to a component, or the "
-                              "work it does is thrown away.") % key,
-                }
-            transforms.append(node)
-            if cid:
-                edges.append({'from': 'c:%s' % cid, 'to': 'r:%s' % r.id,
-                              'kind': 'contain', 'count': 0,
-                              'dimmed': node['dimmed']})
-            # a rule -> scheme edge exists only where a wire or a binding does
-            fed = 0
-            if key and FM is not None:
-                try:
-                    fed = len([
-                        m for m in FM.sudo().with_context(active_test=False).search(
-                            [('connector_id', '=', cid),
-                             ('source_field', '=', key)])
-                        if m.target_rule_id and m.target_rule_id.id in input_ids])
-                except Exception:       # noqa: BLE001
-                    fed = 0
-                fed += len([r2 for r2 in config.rule_ids
-                            if r2.source_binding == 'rule'
-                            and (r2.source_binding_key or '').strip() == key
-                            and r2.id in input_ids])
-            if fed:
-                edges.append({'from': 'r:%s' % r.id, 'to': 'scheme',
-                              'kind': 'rule', 'count': fed,
-                              'dimmed': node['dimmed']})
-
-        if not transforms:
-            transforms.append({
-                'id': 'r:none', 'kind': 'rule', 'lane': 'transforms', 'ghost': True,
-                'label': _("No transformation rules yet"),
-                'sub': _("A rule turns what a system sends — a list of overtime "
-                         "rows, a table of dependants — into one number a pay "
-                         "component can read."),
-                'door': {'mode': 'transform'},
-            })
-
-        # ============================================== LANE 4 — the scheme
-        dangling = len([r for r in config.rule_ids if r.binding_dangling])
-        health = []
+        wired_conn_ids = {c['id'] for c in cards.values()
+                          if c['kind'] == 'connector'}
+        no_primary = not primary and bool(wired_conn_ids)
+        chips = []
         if no_primary:
-            n_inert = sum(wires_by_conn.values())
-            health.append({
-                'id': 'h:noprimary', 'kind': 'health', 'lane': 'scheme',
-                'tone': 'warn',
-                'label': (_("%s feed wire is not read") if n_inert == 1
-                          else _("%s feed wires are not read")) % n_inert,
-                'sub': _("This scheme names no connection, and a pay run only "
-                         "reads the one it is set to."),
+            chips.append({
+                'id': 'noprimary', 'tone': 'warn',
+                'label': _("No connection chosen"),
+                'hint': _("This scheme names no connection, and a pay run only "
+                          "reads the one it is set to — so nothing drawn from a "
+                          "connected system is used."),
                 'door': {'mode': 'api'},
             })
         if conflicts:
-            health.append({
-                'id': 'h:conflict', 'kind': 'health', 'lane': 'scheme',
-                'tone': 'warn',
-                'label': (_("%s component wired twice") if len(conflicts) == 1
-                          else _("%s components wired twice")) % len(conflicts),
-                'sub': _("A pay run reads one of the two. The other is ignored."),
+            chips.append({
+                'id': 'conflict', 'tone': 'warn',
+                'label': (_("%s fed twice") % len(conflicts)),
+                'hint': _("A pay run reads one of the two. The other is "
+                          "ignored."),
                 'door': {'mode': 'api'},
             })
         if dangling:
-            health.append({
-                'id': 'h:dangling', 'kind': 'health', 'lane': 'scheme',
-                'tone': 'warn',
+            chips.append({
+                'id': 'dangling', 'tone': 'warn',
                 'label': (_("%s source no longer exists") if dangling == 1
                           else _("%s sources no longer exist")) % dangling,
-                'sub': _("These components name a key nothing currently provides."),
+                'hint': _("These components name a key nothing currently "
+                          "provides."),
                 'door': {'mode': 'api'},
             })
         if severed_n:
-            health.append({
-                'id': 'h:severed', 'kind': 'health', 'lane': 'scheme',
-                'tone': 'err',
+            chips.append({
+                'id': 'severed', 'tone': 'err',
                 'label': (_("%s severed wire") if severed_n == 1
                           else _("%s severed wires")) % severed_n,
-                'sub': _("These wires point at a component that is no longer "
-                         "on this scheme."),
+                'hint': _("These wires point at a component that is no longer "
+                          "on this scheme."),
                 'door': {'mode': 'api'},
             })
+        scheme['chips'] = chips
 
-        fallback_n = len(read_back_ids)
-        scheme_node = {
-            'id': 'scheme', 'kind': 'scheme', 'lane': 'scheme',
-            'label': config.name or _("This scheme"),
-            'sub': (_("%s column") if scheme_counts['total'] == 1
-                    else _("%s columns")) % scheme_counts['total'],
-            'counts': dict(scheme_counts, fallback=fallback_n),
-            'door': {'mode': 'api'},
-        }
-        if not scheme_counts['total']:
-            # A scheme with no columns is the novice's very first screen, and
-            # the component bar has nothing to draw. Rendering the real card
-            # with an empty bar under it says "this is broken"; the ghost says
-            # "this is next", which is the only difference between an empty
-            # state and a dead end. Every other lane already does this.
-            scheme_node['ghost'] = True
-            scheme_node['sub'] = _("No pay components yet — add them on the "
-                                   "scheme, then wire them up here.")
+        # ---- the sub-lines the derived cards owe the reader -----------------
+        if 'file' in cards:
+            n_file = len(rows_of['file'])
+            cards['file']['sub'] = (_("%s column used") if n_file == 1
+                                    else _("%s columns used")) % n_file
+            if len(sheets_with_rows) > 1:
+                cards['file']['groups'] = [
+                    {'id': s, 'label': s} for s in sorted(sheets_with_rows)]
+            else:
+                for r in rows_of['file'].values():
+                    r['group'] = ''
+        if 'source' in cards:
+            labels = self._journey_source_group_labels()
+            present = {r['group'] for r in rows_of['source'].values()}
+            groups = [{'id': g, 'label': labels[g]}
+                      for g in self._JOURNEY_SOURCE_GROUPS if g in present]
+            cards['source']['groups'] = groups
+            n_src = len(rows_of['source'])
+            cards['source']['sub'] = (
+                _("%(fields)s fields · %(kind)s",
+                  fields=n_src, kind=groups[0]['label']) if len(groups) == 1
+                else _("%(fields)s fields · %(kinds)s kinds",
+                       fields=n_src, kinds=len(groups)))
+        for cid, node in cards.items():
+            if node['kind'] == 'connector':
+                n = len(rows_of[cid])
+                if n:
+                    node['sub'] = (_("%s field read here") if n == 1
+                                   else _("%s fields read here")) % n
+            elif node['kind'] == 'endpoint':
+                n = len(rows_of[cid])
+                node['sub'] = (_("%s field used") if n == 1
+                               else _("%s fields used")) % n
+            elif node['kind'] == 'transform':
+                n = len(rows_of[cid])
+                node['sub'] = (_("%s rule") if n == 1 else _("%s rules")) % n
 
-        # ============================================== LANE 5 — the pay run
-        run = self._journey_run_lane(config, emp_total)
+        # ==================================================================
+        # ROW ORDER — every card follows the SCHEME.
+        #
+        # The WOW detail, and the reason forty lines read as a comb instead of
+        # a web: a file row, a feed row and a Payobook row sort by the position
+        # of the scheme row they reach, so a link is nearly horizontal. The
+        # column letter stays in the row's own gutter, so the file's own order
+        # is not lost — it is simply not what decides the drawing.
+        # ==================================================================
+        order = {'s:%s' % rid: pos for rid, pos in seq_of.items()}
+        for _pass in range(3):
+            for lk in links:
+                for here, there in ((lk['a'], lk['b']), (lk['b'], lk['a'])):
+                    if here in order and order.get(there, self._JOURNEY_LAST) \
+                            > order[here]:
+                        order[there] = order[here]
+        for cid, node in cards.items():
+            items = list(rows_of[cid].values())
+            if cid == 'scheme':
+                items.sort(key=lambda r: order.get(r['id'], self._JOURNEY_LAST))
+            else:
+                group_pos = {g['id']: n
+                             for n, g in enumerate(node.get('groups') or [])}
+                items.sort(key=lambda r: (
+                    group_pos.get(r['group'], 0),
+                    order.get(r['id'], self._JOURNEY_LAST),
+                    (r['label'] or '').lower()))
+            node['rows'] = items
 
-        # ---- records <-> scheme, double-headed (J-D4's language) ------------
-        if emp_total:
-            edges.append({'from': 'records', 'to': 'scheme', 'kind': 'records',
-                          'count': emp_total, 'bidi': True})
+        # ---- the lanes, in the order that IS the story ----------------------
+        lane_of = defaultdict(list)
+        for cid in ('file',):
+            if cid in cards:
+                lane_of['systems'].append(cards[cid])
+        for node in sorted((c for c in cards.values()
+                            if c['kind'] == 'connector'),
+                           key=lambda c: (not c.get('primary'),
+                                          (c['label'] or '').lower())):
+            lane_of['systems'].append(node)
+        for node in sorted((c for c in cards.values()
+                            if c['kind'] == 'endpoint'),
+                           key=lambda c: (c['label'] or '').lower()):
+            lane_of['feeds'].append(node)
+        for node in sorted((c for c in cards.values()
+                            if c['kind'] == 'transform'),
+                           key=lambda c: (c['label'] or '').lower()):
+            lane_of['transforms'].append(node)
+        lane_of['scheme'].append(scheme)
+        if 'source' in cards:
+            lane_of['source'].append(cards['source'])
 
+        # ---- the zero state: an invitation, not five ghosts -----------------
+        invite = None
+        if not links:
+            # SC-4 — a lane this scheme switched off has no tab, so an
+            # invitation to use it is a door onto a door that is not there.
+            # Filtered HERE rather than on the board, because the lane flags
+            # are the server's fact and a second copy of the rule in the client
+            # is how two surfaces come to disagree.
+            doors = [
+                ('import', getattr(config, 'source_excel_enabled', True),
+                 _("Map a spreadsheet"), 'table'),
+                ('api', getattr(config, 'source_api_enabled', True),
+                 _("Connect a system"), 'plug'),
+                ('employee', getattr(config, 'source_records_enabled', True),
+                 _("Use Payobook records"), 'users'),
+            ]
+            invite = {
+                'title': _("Nothing feeds this scheme yet"),
+                'sub': _("Say where its values come from and the picture "
+                         "draws itself."),
+                'doors': [{'id': mode, 'label': label, 'icon': icon,
+                           'door': {'mode': mode}}
+                          for mode, on, label, icon in doors if on],
+            }
+
+        attention = len(conflicts) + dangling + severed_n + (1 if no_primary else 0)
         header = {
+            'inputs': len(inputs),
+            'fed': fed_n,
+            'unfed': unfed_n,
+            'attention': attention,
+            # One release of grace: the host's `journeyWired` reads `wired`
+            # today and `fed` from this release on. Removing the key in the
+            # same commit that renames it is how a cached bundle blanks a tab.
+            'wired': fed_n,
             'components': scheme_counts['total'],
-            'wired': scheme_counts['wired'],
-            'fallback': fallback_n,
-            'attention': (len(conflicts) + dangling + severed_n
-                          + (1 if no_primary else 0)),
         }
         return {
             'ok': True,
+            'v': 2,
             'can_edit': self._can_edit(),
             'config': {'id': config.id, 'name': config.name or '',
                        'code': config.code or '',
@@ -7918,15 +8164,27 @@ class PbFormulaStudio(models.AbstractModel):
             'primary_id': primary.id if primary else 0,
             'primary_name': (primary.name or '') if primary else '',
             'lanes': {
-                'systems': systems, 'feeds': feeds, 'transforms': transforms,
-                'scheme': [scheme_node] + health, 'run': run,
+                'systems': lane_of['systems'], 'feeds': lane_of['feeds'],
+                'transforms': lane_of['transforms'],
+                'scheme': lane_of['scheme'], 'source': lane_of['source'],
             },
-            'edges': edges,
-            'counts': dict(scheme_counts, fallback=fallback_n,
+            'links': links,
+            'contains': contains,
+            'invite': invite,
+            'counts': dict(scheme_counts, fallback=len(read_back_ids),
                            conflicts=len(conflicts), dangling=dangling,
-                           severed=severed_n, unread=unread_n,
-                           connectors=len(connectors), rules=len(rule_recs)),
+                           severed=severed_n, fed=fed_n, unfed=unfed_n,
+                           people_rows=emp_total, bank_rows=bank_rows,
+                           connectors=len(wired_conn_ids), rules=len(tf_recs)),
         }
+
+    @api.model
+    def _journey_rule_reads(self, tf):
+        """The field names one transformation rule reads. Never raises."""
+        try:
+            return tf._consumed_field_names() or []
+        except Exception:               # noqa: BLE001 — a lane never breaks a tab
+            return []
 
     @api.model
     def _journey_run_lane(self, config, emp_total):

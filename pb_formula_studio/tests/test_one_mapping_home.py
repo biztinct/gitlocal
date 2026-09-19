@@ -164,9 +164,17 @@ class TestOneMappingHome(TransactionCase):
         # VALUEKIND P5 appends `treatment` — the same addition-only rule: it
         # goes LAST because it is where the sentence ends, and every id before
         # it keeps its spelling and its position.
+        #
+        # CLEANMAP P2 MOVES `journey` from first to LAST — the owner's ruling
+        # 1, and the one reversal in this file. It is still the cold-start
+        # default (`mode: askedMode || "journey"`), which is the fact that
+        # actually mattered and which has NOT moved; the pill is simply not
+        # the first thing a returning user's eye lands on any more. Every
+        # other id keeps its spelling and its relative position, so every deep
+        # link still lands where it always did.
         self.assertEqual(re.findall(r'\{ id: "(\w+)"', modes),
-                         ['journey', 'api', 'transform', 'import', 'employee',
-                          'scheme', 'cycle', 'treatment'])
+                         ['api', 'transform', 'import', 'employee',
+                          'scheme', 'cycle', 'treatment', 'journey'])
         # …and nothing a user reads on this surface says "Studio"
         for label in re.findall(r'label: _t\("([^"]+)"\)', modes):
             self.assertNotIn('Studio', label)

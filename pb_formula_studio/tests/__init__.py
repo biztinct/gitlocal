@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from . import test_cleanmap_journey
 from . import test_cleanmap_left_list
 from . import test_column_roles
 from . import test_excel_onramp

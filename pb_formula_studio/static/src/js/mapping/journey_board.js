@@ -1,69 +1,73 @@
 /** @odoo-module **/
 /**
- * JOURNEY J5 — the Journey. Five lanes, and every node is a door.
+ * JOURNEY J5, redesigned by CLEANMAP P2 — the Journey. Only what is mapped,
+ * and every card opens.
  *
- *   Systems ──▶ Feeds & files ──▶ Transformations ──▶ Scheme ──▶ Pay run
+ *   Files & systems ──▶ Feeds ──▶ Transformations ──▶ Scheme ◀──▶ Payobook Source
  *
  * The programme's showpiece and the owner's original ask: open Mapping and see
  * the whole story of where pay values come from, in one picture, with the
  * problems glowing.
  *
- * Three things it is, and one it is not.
+ * Four things it is, and one it is not.
  *
- *   * it is REAL. Every number on it is a count `journey_data` took off this
- *     database — components, wires, feed fields, rule outputs, the provenance
- *     of the last processed run. There are no percentages, no liveness bars and
- *     no invented "health scores": scope 5 of the handover says a number that
- *     cannot be defended from the DB is not shown, and the honest consequence is
- *     that some cards say less than a dashboard would;
- *   * it is NAVIGATION. Clicking a node lands on the tab that owns it, already
- *     scoped to the connector/feed/scheme it describes and, where the tab has a
- *     search, already filtered to it. A diagram you cannot click is a poster;
+ *   * it is REAL, and now it is ONLY real. Every card on it is the end of a
+ *     LINK — a field-level statement this scheme makes about where one
+ *     component reads. A connected system nothing here reads has no card at
+ *     all, where v1 drew every connector on the database (ledger CM4);
+ *   * it OPENS. Clicking a card's body shows the fields inside it and clicking
+ *     again closes it, in any mix. The lines follow: two closed cards are one
+ *     counted line, an open card beside a closed one gathers its rows onto the
+ *     closed card's edge, two open cards draw row to row. There is no
+ *     "Details" button and no expand-all — the owner withdrew both;
+ *   * it is NAVIGATION, through the small corner icon and nothing else. The
+ *     card body toggles and never navigates, which is the whole of the owner's
+ *     ruling 5 and 6;
  *   * it is READ-ONLY. There is no gesture on this board that writes. Not one.
- *     That is asserted the only way MF37 accepts — a database diff across the
- *     whole validation session — and it is why every card is a `<button>` whose
- *     only effect is to change which tab you are looking at.
+ *     Opening a card is client state, remembered in this browser.
  *
- * What it is NOT is analytics. `pb_explorer` owns that, and a chart here would
- * be a second place the same numbers are told, differently.
+ * What it is NOT is analytics. `pb_explorer` owns that.
  *
  * ---------------------------------------------------------------------------
- * A SIBLING of `MappingCanvas` and of `TransformFlowBoard`, for J4's reason
- * verbatim: the canvas' two-lane contract carries six tabs and five lanes is not
- * a mode of two. The geometry is `mapping_geometry.js` unforked — `wireGeometry`
- * and `clampY` are arithmetic over points and do not care how many columns
- * exist, which is the third phase running to collect on that extraction.
+ * The geometry is `mapping_geometry.js` unforked — `wireGeometry` and `clampY`
+ * are arithmetic over points and do not care how many columns exist. What
+ * changed with P2 is WHAT is measured: `_measure` walks `[data-id]` rather than
+ * `body.children`, because a row is two levels down inside its card now, and a
+ * line's X always comes from the CARD's rect so every row line leaves the
+ * card's border rather than the middle of its text.
  *
- * Wires render UNDER the cards (`z-index`), the same layering the canvas and the
- * transformation board use. An edge that spans a lane (a feed straight to the
- * scheme, records to the scheme) therefore passes behind the cards between them
- * and is drawn lighter and dashed, so "this jumps a lane" is legible rather than
- * looking like a wire that broke in the middle.
+ * MJ19 — every string here is ONE literal or is joined with an explicit `+`. A
+ * two-line JS string with no operator is idiomatic Python, a SyntaxError in
+ * JavaScript, and it takes the whole backend bundle down with a blank page.
  */
 import { Component, useState, useRef, onMounted, onWillUnmount, onPatched,
          onWillUpdateProps, useExternalListener } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
+import { browser } from "@web/core/browser/browser";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { ic } from "@pb_import_kit/js/import_icons";
-import { wireGeometry, clampY } from "./mapping_geometry";
+import { wireGeometry, clampY, spreadHubs } from "./mapping_geometry";
 import { srcLabel } from "../source_vocab";
 
 /** Pixels of a lane's band reserved so a clamped wire is not flush to the edge. */
 const BAND = 10;
 
-/** The lanes, left to right. `id` is the payload key; the order IS the story. */
+/** How long the open/close reveal runs, and how long wires keep re-measuring. */
+const REVEAL_MS = 180;
+
+/**
+ * The lanes, left to right. `id` is the payload key; the order IS the story,
+ * and a lane whose payload list is empty is not drawn at all — it takes no
+ * grid column, so the board re-balances instead of leaving a hole (ruling 9).
+ */
 export const LANES = [
-    { id: "systems", icon: "server", label: _t("Systems") },
-    { id: "feeds", icon: "database", label: _t("Feeds & files") },
+    { id: "systems", icon: "server", label: _t("Files & systems") },
+    { id: "feeds", icon: "database", label: _t("Feeds") },
     { id: "transforms", icon: "sigma", label: _t("Transformations") },
     { id: "scheme", icon: "calculator", label: _t("Scheme") },
-    { id: "run", icon: "receipt", label: _t("Pay run") },
+    { id: "source", icon: "users", label: _t("Payobook Source") },
 ];
-
-/** Lane id -> index, so an edge can tell adjacent from spanning. */
-const LANE_INDEX = {};
-LANES.forEach((l, i) => { LANE_INDEX[l.id] = i; });
 
 export class JourneyBoard extends Component {
     static template = "pb_formula_studio.JourneyBoard";
@@ -77,16 +81,23 @@ export class JourneyBoard extends Component {
         this.action = useService("action");
         this.ui = useState({
             q: "",
-            focus: "",          // the id of the node the pointer/keyboard is on
+            hover: "",          // the row or card the pointer/keyboard is on
+            pin: "",            // a trace the reader clicked to keep
+            open: {},           // card id -> true. An object, for reactivity.
+            folded: false,      // the scheme card's "calculated or fixed" line
             geom: [],           // the drawn edges
         });
-        this.rootRef = useRef("root");
+        this.rootRef = useRef("stage");
         this.qRef = useRef("q");
         this.laneRefs = {};
         for (const lane of LANES) { this.laneRefs[lane.id] = useRef(lane.id); }
         this._raf = null;
+        this._until = 0;
         this._recomputes = 0;
+        this._index = null;
+        this._indexFor = null;
         onMounted(() => {
+            this.ui.open = this._loadOpen();
             this._recompute();
             this._ro = new ResizeObserver(() => this._schedule());
             const els = [this.rootRef.el].concat(
@@ -94,15 +105,22 @@ export class JourneyBoard extends Component {
             for (const el of els) { if (el) { this._ro.observe(el); } }
         });
         onWillUnmount(() => {
-            if (this._ro) { this._ro.disconnect(); }
-            if (this._raf) { cancelAnimationFrame(this._raf); }
+            if (this._ro) { this._ro.disconnect(); this._ro = null; }
+            if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
         });
         onWillUpdateProps((next) => {
-            // A different scheme is a different Journey. A search resolved
-            // against the old one points at cards that stop existing this frame
-            // (CR9's family; both sibling boards do exactly this).
+            // A different scheme is a different Journey — and a different set
+            // of open cards. A trace resolved against the old one points at
+            // rows that stop existing this frame (CR9's family).
             if (next.data !== this.props.data) {
-                this.ui.focus = "";
+                this.ui.hover = "";
+                this.ui.pin = "";
+                this.ui.folded = false;
+                const before = (this.props.data || {}).config || {};
+                const after = (next.data || {}).config || {};
+                if (before.id !== after.id) {
+                    this.ui.open = this._loadOpen(after.id || 0);
+                }
             }
         });
         onPatched(() => this._schedule());
@@ -114,73 +132,156 @@ export class JourneyBoard extends Component {
     // ==================================================================== data
     get d() { return this.props.data || {}; }
     get counts() { return this.d.counts || {}; }
-    get lanes() { return LANES; }
+    get configId() { return (this.d.config || {}).id || 0; }
+    get invite() { return this.d.invite || null; }
 
-    /** Every node of every lane, flat — the tab order, and the search domain. */
-    get allNodes() {
+    /** Only the lanes that have something to say. The Scheme is always one. */
+    get lanes() {
         const src = this.d.lanes || {};
-        const out = [];
+        return LANES.filter((l) => (src[l.id] || []).length);
+    }
+
+    cardsFor(laneId) { return (this.d.lanes || {})[laneId] || []; }
+
+    /**
+     * Rows, cards and neighbours, indexed once per payload.
+     *
+     * Rebuilt only when `props.data` is a different object, because every
+     * hover recomputes a trace out of it and a fresh Map per pointer move on a
+     * forty-row board is the sort of cost that only shows up on the owner's
+     * laptop.
+     */
+    get index() {
+        if (this._indexFor === this.d && this._index) { return this._index; }
+        const rows = new Map();
+        const cardOf = new Map();
+        const byCard = new Map();
         for (const lane of LANES) {
-            for (const n of (src[lane.id] || [])) { out.push(n); }
+            for (const c of this.cardsFor(lane.id)) {
+                byCard.set(c.id, c);
+                for (const r of (c.rows || [])) {
+                    rows.set(r.id, r);
+                    cardOf.set(r.id, c.id);
+                }
+                for (const r of (((c.folded || {}).rows) || [])) {
+                    rows.set(r.id, r);
+                    cardOf.set(r.id, c.id);
+                }
+            }
+        }
+        const nb = new Map();
+        const push = (a, b) => {
+            if (!nb.has(a)) { nb.set(a, []); }
+            nb.get(a).push(b);
+        };
+        for (const l of (this.d.links || [])) { push(l.a, l.b); push(l.b, l.a); }
+        this._index = { rows, cardOf, byCard, nb };
+        this._indexFor = this.d;
+        return this._index;
+    }
+
+    // ================================================================== memory
+    /**
+     * Which cards are open, remembered per scheme in THIS browser.
+     *
+     * Every read and every write is in a try/catch and the board renders
+     * correctly with none of it: a private window, blocked site data or a
+     * thumbnail capture all hand back nothing, and the honest answer to that is
+     * "everything closed", which is the cold-start state anyway.
+     */
+    _storeKey(cfgId) { return "pb.journey.open." + (cfgId || this.configId); }
+
+    _loadOpen(cfgId) {
+        try {
+            const raw = browser.localStorage.getItem(this._storeKey(cfgId));
+            const val = raw ? JSON.parse(raw) : null;
+            if (val && typeof val === "object" && !Array.isArray(val)) {
+                return val;
+            }
+        } catch (e) {
+            // storage unavailable — the board is simply all closed
+        }
+        return {};
+    }
+
+    _saveOpen() {
+        try {
+            browser.localStorage.setItem(
+                this._storeKey(), JSON.stringify(this.ui.open));
+        } catch (e) {
+            // nothing to do: the open set is a convenience, never state
+        }
+    }
+
+    // ================================================================== search
+    /**
+     * The rows a query shows — its matches AND everything they are linked to.
+     *
+     * J4 settled this on the transformation board and the reason carries to
+     * rows: the FLOW is the unit of meaning here, so typing a column's name
+     * must not empty the Scheme card and leave the reader looking at three
+     * unrelated filtered lists. `null` means "no query", which is a different
+     * answer from "an empty set".
+     */
+    get matches() {
+        const q = (this.ui.q || "").trim().toLowerCase();
+        if (!q) { return null; }
+        const hit = new Set();
+        const text = (r) => [r.label, r.tag, r.sub].filter(Boolean)
+            .join(" ").toLowerCase();
+        for (const [id, r] of this.index.rows) {
+            if (text(r).includes(q)) { hit.add(id); }
+        }
+        for (const lane of LANES) {
+            for (const c of this.cardsFor(lane.id)) {
+                const ct = [c.label, c.sub].filter(Boolean).join(" ").toLowerCase();
+                if (ct.includes(q)) {
+                    for (const r of (c.rows || [])) { hit.add(r.id); }
+                }
+            }
+        }
+        const out = new Set(hit);
+        for (const id of hit) {
+            for (const o of (this.index.nb.get(id) || [])) { out.add(o); }
         }
         return out;
     }
 
-    nodesFor(laneId) {
-        const src = (this.d.lanes || {})[laneId] || [];
-        return src.filter((n) => this._passes(n));
+    rowsOf(card) {
+        const rows = card.rows || [];
+        const m = this.matches;
+        if (!m) { return rows; }
+        return rows.filter((r) => m.has(r.id));
     }
 
-    /**
-     * ONE query, five lanes — and a lane matches THROUGH its neighbours.
-     *
-     * J4 settled this on the transformation board and the reason carries: the
-     * FLOW is the unit of meaning here. Typing a connector's name must not empty
-     * the feeds lane, or `/` breaks every wire on the board and the reader is
-     * looking at five unrelated filtered lists. So a node matches when its own
-     * text matches, when its PARENT matches, or when something it is wired to
-     * matches.
-     */
-    _passes(node) {
-        const q = (this.ui.q || "").trim().toLowerCase();
-        if (!q) { return true; }
-        if (this._text(node).includes(q)) { return true; }
-        const parent = this._byId(node.parent);
-        if (parent && this._text(parent).includes(q)) { return true; }
-        for (const e of (this.d.edges || [])) {
-            let other = null;
-            if (e.from === node.id) { other = this._byId(e.to); }
-            else if (e.to === node.id) { other = this._byId(e.from); }
-            if (other && this._text(other).includes(q)) { return true; }
-        }
-        return false;
+    isOpen(card) {
+        if (!card || !(card.rows || []).length) { return false; }
+        if (this.matches) { return this.rowsOf(card).length > 0; }
+        return !!this.ui.open[card.id];
     }
 
-    _text(node) {
-        return [node.label, node.sub, node.key,
-                node.chip && node.chip.label].filter(Boolean).join(" ").toLowerCase();
-    }
-
-    _byId(id) {
-        if (!id) { return null; }
-        return this.allNodes.find((n) => n.id === id) || null;
+    onSearch(ev) { this.ui.q = ev.target.value || ""; this._animate(); }
+    clearSearch() {
+        this.ui.q = "";
+        if (this.qRef.el) { this.qRef.el.value = ""; }
+        this._animate();
     }
 
     // ================================================================== chrome
     /**
      * The header sentence. ONE msgid per shape, never assembled from fragments.
      *
-     * `⟨scheme⟩ — N components · N wired · N fallback · N need attention`, with
-     * the attention clause dropped entirely when there is nothing wrong rather
-     * than printed as "0 need attention" — a zero that has to be read before it
-     * can be dismissed is a zero that costs the reader something (W64/W80).
+     * The attention clause is dropped entirely when there is nothing wrong
+     * rather than printed as "0 need attention" — a zero that has to be read
+     * before it can be dismissed costs the reader something (W64/W80).
      */
     get headline() {
         const h = this.d.header || {};
         const bits = [
-            h.components === 1 ? _t("1 component") : _t("%s components", h.components || 0),
-            h.wired === 1 ? _t("1 wired") : _t("%s wired", h.wired || 0),
-            h.fallback === 1 ? _t("1 fallback") : _t("%s fallback", h.fallback || 0),
+            h.inputs === 1 ? _t("1 needs a source")
+                           : _t("%s need a source", h.inputs || 0),
+            _t("%s fed", h.fed || 0),
+            _t("%s not fed yet", h.unfed || 0),
         ];
         if (h.attention) {
             bits.push(h.attention === 1 ? _t("1 needs attention")
@@ -193,12 +294,7 @@ export class JourneyBoard extends Component {
 
     /** Per-lane count line. Describes the VIEW when a search is on (J4's rule). */
     laneCount(laneId) {
-        const shown = this.nodesFor(laneId).length;
-        const all = ((this.d.lanes || {})[laneId] || []).length;
-        if (shown !== all) {
-            return _t("%(shown)s of %(all)s", { shown, all });
-        }
-        return String(all);
+        return String(this.cardsFor(laneId).length);
     }
 
     /** "3 hours ago", from an ISO string. Never "NaN days" (W46). */
@@ -213,41 +309,18 @@ export class JourneyBoard extends Component {
     }
 
     /**
-     * The second line of a card, per kind.
+     * The second line of a card.
      *
-     * Built here rather than on the server for exactly one reason: the AGE has
-     * to be computed against the reader's clock, and a server-rendered "3d ago"
-     * is stale the moment it is cached. Everything that is not an age arrives
-     * already worded from the adapter.
+     * Everything that is not an AGE arrives already worded from the adapter; an
+     * age has to be computed against the reader's clock, because a
+     * server-rendered "3d ago" is stale the moment it is cached.
      */
-    nodeSub(n) {
-        if (n.ghost) { return n.sub || ""; }
-        switch (n.kind) {
-            case "connector": {
-                const bits = [this.statusWord(n.status), this.since(n.last_sync)];
-                if (n.wires) {
-                    bits.push(n.wires === 1 ? _t("1 wire into this scheme")
-                                            : _t("%s wires into this scheme", n.wires));
-                }
-                return bits.filter(Boolean).join(" · ");
-            }
-            case "endpoint": {
-                const bits = [n.fields === 1 ? _t("1 field") : _t("%s fields", n.fields || 0)];
-                bits.push(this.since(n.last_sync));
-                return bits.filter(Boolean).join(" · ");
-            }
-            case "rule": {
-                const bits = [];
-                if (n.key) { bits.push(n.sub); }
-                bits.push(n.reads === 1 ? _t("reads 1 field")
-                                        : _t("reads %s fields", n.reads || 0));
-                return bits.filter(Boolean).join(" · ");
-            }
-            case "records":
-                return n.countLabel || n.sub || "";
-            default:
-                return n.sub || "";
+    cardSub(c) {
+        if (c.kind === "connector") {
+            return [this.statusWord(c.status), this.since(c.last_sync), c.sub]
+                .filter(Boolean).join(" · ");
         }
+        return c.sub || "";
     }
 
     statusWord(status) {
@@ -259,150 +332,267 @@ export class JourneyBoard extends Component {
         }[status] || "";
     }
 
-    /**
-     * The whole-sentence tooltip. The PILL says the surprising thing in as few
-     * words as will fit; the tooltip carries the explanation — J3's pattern,
-     * and the reason no new severity vocabulary was invented for this tab.
-     */
-    nodeTitle(n) {
-        if (n.chip && n.chip.hint) { return n.chip.hint; }
-        if (n.ghost) { return n.sub || ""; }
-        return this.doorHint(n);
-    }
-
-    doorHint(n) {
+    /** The corner icon's tooltip: where it lands, said as a sentence. */
+    doorHint(c) {
         const where = {
             api: _t("the System fields tab"),
             transform: _t("the Transformations tab"),
             import: _t("the Spreadsheet tab"),
             employee: _t("the Employee & contract tab"),
-        }[(n.door && n.door.mode) || ""] || "";
+        }[((c && c.door) || {}).mode || ""] || "";
         return where ? _t("Opens %s, already on this.", where) : "";
     }
 
-    // ---- the scheme lane's component picture --------------------------------
-    /**
-     * The bars are PROPORTIONS OF A COUNT, not a score.
-     *
-     * Every segment is a number of components and its width is that number over
-     * the total — arithmetic the reader can check by adding up the labels. This
-     * is the one place the board draws anything shaped like a chart, and it is
-     * allowed because it is a tally of five disjoint, named, defensible counts
-     * that sum to the whole.
-     */
-    get schemeBars() {
-        const node = ((this.d.lanes || {}).scheme || [])[0];
-        const c = (node && node.counts) || {};
-        const total = c.total || 0;
-        const rows = [
-            { key: "wired", n: c.wired || 0, label: _t("Wired to a source"), tone: "ok" },
-            { key: "calculated", n: c.calculated || 0, label: _t("Calculated here"), tone: "calc" },
-            { key: "constant", n: c.constant || 0, label: _t("Fixed value"), tone: "calc" },
-            { key: "people", n: c.people || 0, label: _t("Read off a record"), tone: "info" },
-            { key: "contract", n: c.contract || 0, label: _t("From the contract"), tone: "info" },
-            { key: "unfed", n: c.unfed || 0, label: _t("Nothing feeds it"), tone: "warn" },
-        ];
-        return rows.filter((r) => r.n).map((r) => ({
-            ...r, pct: total ? Math.round((r.n / total) * 1000) / 10 : 0,
-        }));
+    cardTitle(c) {
+        return this.isOpen(c) ? _t("Hide the fields inside this")
+                              : _t("Show the fields inside this");
     }
 
-    get schemeNode() { return ((this.d.lanes || {}).scheme || [])[0] || null; }
-
-    /** The fallback count, said in the words J-D4 fixed. */
-    get fallbackLine() {
-        const n = (this.d.header || {}).fallback || 0;
-        if (!n) { return ""; }
-        return n === 1
-            ? _t("1 component can be read back off an employee or contract record "
-                 + "when the file or feed leaves it empty.")
-            : _t("%s components can be read back off employee or contract records "
-                 + "when the file or feed leaves them empty.", n);
-    }
-
-    // ---- the pay-run lane ---------------------------------------------------
-    get runNode() { return ((this.d.lanes || {}).run || [])[0] || null; }
-
-    /** The by-source tally of the last run — only kinds that actually occurred. */
-    get runSources() {
-        const n = this.runNode;
-        const by = (n && n.agg && n.agg.by_src) || {};
-        // RUNSRC C3 — read out of `source_vocab`, never retyped. This copy did
-        // not know the pay period, and `words[k] || k` then printed the raw
-        // code: the Journey lane read "5 period" on the live Vietnamese scheme,
-        // a word off the inside of the product on a screen an owner reads.
-        return Object.keys(by)
-            .filter((k) => by[k])
-            .sort((a, b) => by[b] - by[a])
-            .map((k) => ({ key: k, n: by[k], label: srcLabel(k) || k }));
-    }
-
-    /** The by-`via`-family tally. The buckets are the SERVER's, never invented here. */
-    get runBuckets() {
-        const n = this.runNode;
-        const by = (n && n.agg && n.agg.by_bucket) || {};
-        const words = {
-            wired: _t("through the wiring"), fallback: _t("fell back"),
-            computed: _t("added by an adjustment"), default: _t("used a default"),
-        };
-        return ["wired", "fallback", "computed", "default"]
-            .filter((k) => by[k])
-            .map((k) => ({ key: k, n: by[k], label: words[k] }));
-    }
-
-    /** "12,480 values across 130 payslips" — and it SAYS when it is a subset. */
-    get runScope() {
-        const n = this.runNode;
-        if (!n || !n.agg) { return ""; }
-        const a = n.agg;
-        const base = _t("%(values)s values across %(slips)s payslips",
-                        { values: a.values, slips: a.slips });
-        if (n.capped) {
-            return _t("%(base)s — read from the first %(read)s of %(all)s",
-                      { base, read: n.read, all: n.payslips });
+    /** What one row says about itself in a tooltip — the full, unclipped text. */
+    rowTitle(r) {
+        const bits = [r.label];
+        if (r.sub) { bits.push(r.sub); }
+        if (r.state === "gone") { bits.push(_t("This source no longer exists.")); }
+        if (r.state === "twice") {
+            bits.push(_t("Two sources fill this. A pay run reads one of them."));
         }
-        return base;
+        return bits.filter(Boolean).join(" — ");
+    }
+
+    /** The word for a link's kind, read out of the ONE register (RS6). */
+    kindWord(kind) {
+        if (kind === "record" || kind === "component" || kind === "reads") {
+            return {
+                record: _t("Employee record"),
+                component: _t("Contract component"),
+                reads: _t("Read by a transformation"),
+            }[kind];
+        }
+        return srcLabel(kind) || "";
+    }
+
+    /** The scheme card's fed bar — a proportion of a COUNT, never a score. */
+    get schemeBar() {
+        const c = (this.cardsFor("scheme")[0] || {}).bar || {};
+        const total = c.total || 0;
+        return { fed: c.fed || 0, unfed: c.unfed || 0,
+                 pct: total ? Math.round((c.fed / total) * 1000) / 10 : 0 };
+    }
+
+    groupsOf(card) { return card.groups || []; }
+
+    rowsInGroup(card, groupId) {
+        return this.rowsOf(card).filter((r) => (r.group || "") === groupId);
+    }
+
+    hasUngrouped(card) {
+        return this.rowsOf(card).some((r) => !r.group);
+    }
+
+    ungrouped(card) { return this.rowsOf(card).filter((r) => !r.group); }
+
+    // =================================================================== trace
+    /**
+     * Hovering a field lights its whole path and fades the rest (ruling 8).
+     *
+     * The set is the row's connected component, walked BOTH ways transitively,
+     * so a file column lights through its component to the employee field it
+     * also writes — one path, three lanes. Recomputed on hover change only; no
+     * geometry is recomputed, because nothing moved.
+     */
+    get trace() {
+        const seed = this.ui.pin || this.ui.hover;
+        if (!seed) { return null; }
+        const start = [];
+        if (this.index.rows.has(seed)) {
+            start.push(seed);
+        } else {
+            const card = this.index.byCard.get(seed);
+            for (const r of ((card && card.rows) || [])) { start.push(r.id); }
+        }
+        if (!start.length) { return null; }
+        const seen = new Set(start);
+        const queue = start.slice();
+        while (queue.length) {
+            const id = queue.shift();
+            for (const o of (this.index.nb.get(id) || [])) {
+                if (!seen.has(o)) { seen.add(o); queue.push(o); }
+            }
+        }
+        return seen;
+    }
+
+    onRowEnter(row) { this.ui.hover = row.id; }
+    onRowLeave() { if (!this.ui.pin) { this.ui.hover = ""; } }
+    onCardEnter(card) { this.ui.hover = card.id; }
+
+    pinRow(row, ev) {
+        if (ev) { ev.stopPropagation(); }
+        this.ui.pin = this.ui.pin === row.id ? "" : row.id;
+        this.ui.hover = row.id;
+    }
+
+    rowClass(r) {
+        const bits = ["jny-row"];
+        if (r.state && r.state !== "plain") { bits.push(r.state); }
+        if (r.fed === false) { bits.push("nofeed"); }
+        const t = this.trace;
+        if (t) { bits.push(t.has(r.id) ? "on" : "off"); }
+        if (this.ui.pin === r.id) { bits.push("pinned"); }
+        return bits.join(" ");
+    }
+
+    cardClass(c) {
+        const bits = ["jny-card"];
+        if (c.dimmed) { bits.push("dim"); }
+        if (c.primary) { bits.push("prim"); }
+        if (c.tone) { bits.push(c.tone); }
+        if (this.isOpen(c)) { bits.push("open"); }
+        if (!(c.rows || []).length) { bits.push("flat"); }
+        const t = this.trace;
+        if (t) {
+            const mine = (c.rows || []).some((r) => t.has(r.id));
+            bits.push(mine || this.ui.hover === c.id ? "on" : "off");
+        }
+        return bits.join(" ");
+    }
+
+    cardIcon(c) {
+        return {
+            connector: "plug", file: "table", endpoint: "database",
+            transform: "sigma", scheme: "calculator", source: "users",
+        }[c.kind] || "gitMerge";
+    }
+
+    /**
+     * The partner a row reaches, as text — the PHONE's substitute for a line.
+     *
+     * At 390px the lanes stack, so a curve between them would either run off
+     * the screen or force a horizontal scroll. Naming the partner on the row
+     * keeps the fact and drops the drawing.
+     */
+    partnerText(row) {
+        const others = this.index.nb.get(row.id) || [];
+        if (!others.length) { return ""; }
+        const first = this.index.rows.get(others[0]);
+        const name = (first && first.label) || "";
+        if (!name) { return ""; }
+        return others.length > 1
+            ? _t("%(name)s +%(more)s", { name, more: others.length - 1 })
+            : name;
     }
 
     // ================================================================ geometry
     _schedule() {
         if (this._raf) { return; }
-        this._raf = requestAnimationFrame(() => { this._raf = null; this._recompute(); });
+        this._raf = requestAnimationFrame(() => {
+            this._raf = null;
+            this._recompute();
+            if (Date.now() < this._until) { this._schedule(); }
+        });
     }
-    onLaneScroll() { this._schedule(); }
 
     /**
-     * One pass per lane into a Map of id -> {y, left, right} plus the lane band.
+     * Keep re-measuring for as long as the reveal runs.
      *
-     * Keys are STRINGS throughout, which is W146's lesson carried over:
-     * `dataset.id` always is one, and `map.has(584)` against a key of `"584"` is
-     * a silent miss that reads on screen as a wire whose target was filtered
-     * away. Every node id this board mints is already a string (`c:3`, `e:11`,
-     * `scheme`), which is deliberate — the ambiguity cannot arise.
+     * A line that snaps to its new place when the rows finish sliding reads as
+     * a glitch; a line that travels with them reads as the same object moving.
+     * `transitionend` alone is not enough — it fires once, at the END.
+     */
+    _animate() {
+        this._until = Date.now() + REVEAL_MS + 60;
+        this._schedule();
+    }
+
+    onRevealEnd() { this._schedule(); }
+
+    /**
+     * One pass per lane into a Map of id -> {y, left, right} plus the band.
+     *
+     * P2 — `querySelectorAll('[data-id]')` rather than `body.children`, because
+     * a row is two levels down inside its card. Both the card header and the
+     * row carry a `data-id`; the Y comes from the element itself and the X from
+     * the CARD's rect, so a row's line leaves the card's border rather than the
+     * middle of its text, and forty rows leave forty parallel lines.
+     *
+     * Keys are STRINGS throughout (W146): every id this board mints already is
+     * one (`c:3`, `e:11:base`, `scheme`), so the ambiguity cannot arise.
      */
     _measure(body, rb, laneId) {
         if (!body) { return null; }
         const br = body.getBoundingClientRect();
         if (br.width < 8 || br.height < 8) { return null; }
         const map = new Map();
-        let leftEdge = null, rightEdge = null;
-        for (const el of body.children) {
+        for (const el of body.querySelectorAll("[data-id]")) {
             const id = el.dataset && el.dataset.id;
-            if (!id || el.dataset.lane !== laneId) { continue; }
+            if (!id) { continue; }
+            const host = el.closest(".jny-card") || el;
+            const cr = host.getBoundingClientRect();
             const r = el.getBoundingClientRect();
-            map.set(id, r.top + r.height / 2 - rb.top);
-            if (leftEdge === null) {
-                leftEdge = r.left - rb.left;
-                rightEdge = r.right - rb.left;
-            }
+            if (r.height < 1) { continue; }
+            map.set(id, { y: r.top + r.height / 2 - rb.top,
+                          left: cr.left - rb.left,
+                          right: cr.right - rb.left });
         }
-        if (leftEdge === null) {
-            leftEdge = br.left - rb.left + 12;
-            rightEdge = br.right - rb.left - 12;
-        }
-        return { map, leftEdge, rightEdge,
+        return { map, laneId,
                  bandTop: br.top - rb.top + BAND,
                  bandBot: br.bottom - rb.top - BAND };
+    }
+
+    /**
+     * The edges that are actually drawn, folded out of `links` + what is open.
+     *
+     *   end(row) = the row itself when its card is open and the row rendered,
+     *              its CARD otherwise
+     *
+     * Links that fold onto the same pair become ONE line carrying a count, and
+     * a count badge is drawn only when BOTH ends are cards — when one end is
+     * open, the rows themselves are the count and a badge would be repeating
+     * what is already on screen.
+     */
+    get drawn() {
+        const rendered = new Set();
+        for (const lane of LANES) {
+            for (const c of this.cardsFor(lane.id)) {
+                if (!this.isOpen(c)) { continue; }
+                for (const r of this.rowsOf(c)) { rendered.add(r.id); }
+            }
+        }
+        const endOf = (rid) => {
+            const cid = this.index.cardOf.get(rid);
+            if (cid === undefined) { return null; }
+            return rendered.has(rid) ? rid : cid;
+        };
+        const by = new Map();
+        for (const l of (this.d.links || [])) {
+            const a = endOf(l.a);
+            const b = endOf(l.b);
+            // MAPFIX F1 — an end that does not exist gets NO curve, ever. A
+            // suppressed wire is never drawn to a lane edge pretending to be
+            // real.
+            if (!a || !b || a === b) { continue; }
+            const key = [a, b, l.dir, l.dimmed ? 1 : 0].join("|");
+            let g = by.get(key);
+            if (!g) {
+                g = { id: key, a, b, dir: l.dir || "fwd", dimmed: !!l.dimmed,
+                      kind: l.kind || "", n: 0, rows: new Set(),
+                      ends: !rendered.has(l.a) && !rendered.has(l.b) };
+                by.set(key, g);
+            }
+            g.n++;
+            g.rows.add(l.a);
+            g.rows.add(l.b);
+            if (g.kind !== l.kind) { g.kind = "mixed"; }
+        }
+        for (const c of (this.d.contains || [])) {
+            const key = [c.from, c.to, "contain", 0].join("|");
+            if (!this.index.byCard.has(c.from) || !this.index.byCard.has(c.to)) {
+                continue;
+            }
+            by.set(key, { id: key, a: c.from, b: c.to, dir: "fwd", dimmed: false,
+                          kind: "contain", n: 0, rows: new Set(), ends: true });
+        }
+        return [...by.values()];
     }
 
     _recompute() {
@@ -410,11 +600,11 @@ export class JourneyBoard extends Component {
         if (!root) { return; }
         const rb = root.getBoundingClientRect();
         const M = {};
+        const order = {};
+        this.lanes.forEach((l, n) => { order[l.id] = n; });
         for (const lane of LANES) {
             M[lane.id] = this._measure(this.laneRefs[lane.id].el, rb, lane.id);
         }
-        // node id -> the lane it was measured in, so an edge can find both ends
-        // without the payload having to repeat itself.
         const where = new Map();
         for (const lane of LANES) {
             const m = M[lane.id];
@@ -422,38 +612,44 @@ export class JourneyBoard extends Component {
             for (const id of m.map.keys()) { where.set(id, lane.id); }
         }
         this._recomputes++;
+        const trace = this.trace;
         const geom = [];
-        for (const e of (this.d.edges || [])) {
-            const la = where.get(String(e.from));
-            const lb = where.get(String(e.to));
-            // An end that is filtered out, or a lane that has not rendered, gets
-            // NO curve. MAPFIX F1's rule: a suppressed wire is not drawn to the
-            // column edge pretending to be a real one.
+        for (const e of this.drawn) {
+            const la = where.get(String(e.a));
+            const lb = where.get(String(e.b));
             if (!la || !lb || la === lb) { continue; }
-            const A = M[la], B = M[lb];
-            const ay = A.map.get(String(e.from));
-            const by = B.map.get(String(e.to));
-            if (ay === undefined || by === undefined) { continue; }
-            const a = clampY(ay, A.bandTop, A.bandBot);
-            const b = clampY(by, B.bandTop, B.bandBot);
-            // left-to-right always: the story only runs one way, and an edge
-            // whose payload named its ends the other way round would draw a
-            // backwards arrowhead on a picture whose whole point is direction.
-            const forward = LANE_INDEX[la] <= LANE_INDEX[lb];
-            // J3's `bidi` flag, opt-in and defaulted off exactly as it was
-            // written — the records edge is the only one on this board that
-            // earns a head at both ends, because it is the only relationship
-            // that genuinely runs both ways (J-D4).
-            const g = forward
-                ? wireGeometry(A.rightEdge, a.y, B.leftEdge, b.y, !!e.bidi)
-                : wireGeometry(B.rightEdge, b.y, A.leftEdge, a.y, !!e.bidi);
-            const span = Math.abs(LANE_INDEX[lb] - LANE_INDEX[la]);
-            geom.push({ ...g, id: e.from + "→" + e.to, kind: e.kind || "",
-                        count: e.count || 0, bidi: !!e.bidi,
-                        dimmed: !!e.dimmed, span,
-                        from: e.from, to: e.to,
-                        docked: a.docked || b.docked });
+            const A = M[la].map.get(String(e.a));
+            const B = M[lb].map.get(String(e.b));
+            if (!A || !B) { continue; }
+            const a = clampY(A.y, M[la].bandTop, M[la].bandBot);
+            const b = clampY(B.y, M[lb].bandTop, M[lb].bandBot);
+            // The arrow runs from `a` to `b` as the PAYLOAD names them, so a
+            // `back` link (the pay run, a contract component) points INTO the
+            // scheme instead of out of it. A hidden lane is not a span: the
+            // indexes are over the VISIBLE lanes.
+            const rtl = order[la] > order[lb];
+            const g = wireGeometry(rtl ? A.left : A.right, a.y,
+                                   rtl ? B.right : B.left, b.y,
+                                   e.dir === "both");
+            const span = Math.abs((order[lb] || 0) - (order[la] || 0));
+            let lit = 0;
+            if (trace) {
+                lit = -1;
+                for (const rid of e.rows) {
+                    if (trace.has(rid)) { lit = 1; break; }
+                }
+            }
+            geom.push({ ...g, id: e.id, kind: e.kind, count: e.n,
+                        bidi: e.dir === "both", dimmed: e.dimmed, span,
+                        badge: e.ends && e.n > 1,
+                        width: 1 + Math.min(3, Math.log2(Math.max(1, e.n))),
+                        lit, docked: a.docked || b.docked });
         }
+        // Two counted lines that meet near the same midpoint stack their
+        // badges at exactly the same coordinate and the top one wins every
+        // hover. `spreadHubs` is the canvas' own fix for that, applied to the
+        // badges ALONE so nothing that has no badge is moved off its wire.
+        spreadHubs(geom.filter((g) => g.badge), 22, 40, 26);
         this.ui.geom = geom;
     }
 
@@ -462,50 +658,17 @@ export class JourneyBoard extends Component {
 
     edgeTitle(g) {
         if (g.kind === "contain") { return _t("This belongs to that system."); }
-        if (g.kind === "records") {
-            return g.count === 1
-                ? _t("1 mapped field. It writes the record on import and is read "
-                     + "back on a pay run.")
-                : _t("%s mapped fields. They write the records on import and are "
-                     + "read back on a pay run.", g.count);
-        }
         if (g.dimmed) {
             return _t("This scheme does not read this connection on a system run.");
         }
-        if (g.kind === "rule") {
-            return g.count === 1 ? _t("Feeds 1 component") : _t("Feeds %s components", g.count);
-        }
-        if (g.kind === "excel") {
-            return g.count === 1 ? _t("1 component is bound to a column of this file")
-                                 : _t("%s components are bound to columns of this file", g.count);
-        }
-        return g.count === 1 ? _t("1 wire into this scheme")
-                             : _t("%s wires into this scheme", g.count);
+        if (!g.count) { return ""; }
+        return g.count === 1 ? _t("1 field") : _t("%s fields", g.count);
     }
 
-    // ================================================================== search
-    onSearch(ev) { this.ui.q = ev.target.value || ""; this._schedule(); }
-    clearSearch() {
-        this.ui.q = "";
-        if (this.qRef.el) { this.qRef.el.value = ""; }
-        this._schedule();
-    }
-
+    // ============================================================= interaction
     /**
-     * MF33, third board running.
-     *
-     * `onKeydown` is bound to the board ROOT, and every node on this board is a
-     * `<button>` — so without this guard Enter on a focused node would fire the
-     * button's own click AND fall through to the root's handler. Here that would
-     * merely open the same door twice, which is harmless and is exactly why the
-     * guard is worth writing down: on the canvas the same shape DREW A WIRE, and
-     * a rule you only apply where it currently hurts is a rule you will forget
-     * on the board where it will. `INPUT` is deliberately absent — Enter in the
-     * search box belongs to the search box.
-     *
-     * Enter opening the focused node's door therefore needs no code at all: the
-     * node IS a button, so the platform does it, and it does it with the focus
-     * ring, the ARIA role and the Space key already correct (MJ10's family).
+     * MF33, third board running. Enter on a focused button fires the button's
+     * own click AND falls through to the root handler without this guard.
      */
     onKeydown(ev) {
         const tag = (ev.target && ev.target.tagName) || "";
@@ -520,37 +683,54 @@ export class JourneyBoard extends Component {
             // The ladder, most-nested first. Each rung consumes the key, so one
             // Escape never dismisses two things at once.
             if (this.ui.q) { this.clearSearch(); return; }
-            if (this.ui.focus) { this.ui.focus = ""; return; }
+            if (this.ui.pin) { this.ui.pin = ""; return; }
+            if (this.ui.hover) { this.ui.hover = ""; }
         }
     }
 
-    // ============================================================= interaction
     /**
-     * The only thing any node does. It cannot write; it changes which tab you
-     * are looking at and what that tab is scoped to.
+     * The card BODY opens and closes. It never navigates — ruling 5, and the
+     * reversal of what this board used to do.
      */
-    openDoor(node, ev) {
+    toggle(card) {
+        if (!(card.rows || []).length) { return; }
+        const open = { ...this.ui.open };
+        if (open[card.id]) { delete open[card.id]; } else { open[card.id] = true; }
+        this.ui.open = open;
+        this._saveOpen();
+        this._animate();
+    }
+
+    toggleFolded() { this.ui.folded = !this.ui.folded; this._animate(); }
+
+    /** The small corner icon, and the ONLY thing on this board that navigates. */
+    openDoor(card, ev) {
         if (ev) { ev.stopPropagation(); }
-        this.ui.focus = node.id;
-        if (!node.door) { return; }
-        this.props.onOpenDoor(node.door);
+        if (!card || !card.door) { return; }
+        this.props.onOpenDoor(card.door);
+    }
+
+    openChip(chip, ev) {
+        if (ev) { ev.stopPropagation(); }
+        if (!chip || !chip.door) { return; }
+        this.props.onOpenDoor(chip.door);
+    }
+
+    openInvite(door, ev) {
+        if (ev) { ev.stopPropagation(); }
+        if (!door || !door.door) { return; }
+        this.props.onOpenDoor(door.door);
     }
 
     /**
-     * A node's SECONDARY actions — a door out of Mapping altogether.
-     *
-     * `openDoor` can only change which tab you are on, so a screen that lives
-     * in another module cannot be one. These are rendered as small buttons
-     * BESIDE the node (never inside it: a button inside a button is not valid
-     * markup, and the wire geometry reads `body.children`, which is why they
-     * are siblings carrying no `data-id`).
+     * A card's SECONDARY actions — a door out of Mapping altogether.
      *
      * The probe is the `plan_launcher.js:204` pattern: the server can resolve
      * an `ir.actions.client` whose JS never shipped, and opening one of those
      * is a blank screen. A database without `pb_records` renders no button.
      */
-    nodeActions(node) {
-        const actions = (node && node.actions) || [];
+    cardActions(card) {
+        const actions = (card && card.actions) || [];
         return actions.filter(
             (a) => !a.tag || registry.category("actions").contains(a.tag));
     }
@@ -564,24 +744,9 @@ export class JourneyBoard extends Component {
         });
     }
 
-    onNodeFocus(node) { this.ui.focus = node.id; }
-    isFocused(id) { return this.ui.focus === id; }
-
-    nodeClass(n) {
-        const bits = ["jny-node"];
-        if (n.ghost) { bits.push("ghost"); }
-        if (n.dimmed) { bits.push("dim"); }
-        if (n.tone) { bits.push(n.tone); }
-        if (n.primary) { bits.push("prim"); }
-        if (this.isFocused(n.id)) { bits.push("on"); }
-        return bits.join(" ");
-    }
-
-    nodeIcon(n) {
-        return {
-            connector: "plug", file: "table", records: "users",
-            endpoint: "database", sheet: "table", rule: "sigma",
-            scheme: "calculator", health: "alert", run: "receipt",
-        }[n.kind] || "gitMerge";
+    /** The invitation's doors are filtered to the tabs this scheme HAS (SC-4). */
+    inviteDoors() {
+        const doors = (this.invite && this.invite.doors) || [];
+        return doors;
     }
 }

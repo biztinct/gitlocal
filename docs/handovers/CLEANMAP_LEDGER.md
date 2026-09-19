@@ -137,3 +137,58 @@ re-verify before editing.
   client clears `state.batchId` when the scheme changes, and the server ignores
   a `batch_id` whose `formula_config_id` is not the scheme being read. Found in
   Chrome, never by a test.
+* **CM13** — **The Journey's "source no longer exists" chip must not be asked
+  of `hr.formula.rule.binding_dangling`.** That field's per-source compute
+  calls `get_available_source_fields` — the catalogue discovery P2's payload
+  had just finished promising it never runs — and it is charged once per
+  connector, every read. Measured on abm before the fix: `journey_data` cost
+  **492 queries and 470 of them were that one compute**. P2 derives the same
+  fact from the links it already has (an `excel` key the stored file does not
+  contain; a `rule` key with no transformation rule left on that connection; a
+  system key with no connection to draw it from), and abm's read fell to **28
+  queries**. Consequence to know: a feed key the catalogue would call missing
+  but a live wire still carries is no longer counted as dangling — abm's
+  "needs attention" went 2 → 1. The Journey's claim is now "nothing on this
+  board can draw it", which is the claim the picture can actually defend.
+* **CM14** — **`counts['wired']` and `header['fed']` are different questions
+  and are SUPPOSED to differ.** `_journey_scheme_lane`'s `wired` asks "is the
+  top-ranked declared kind excel/feed/rule"; `fed` asks "does at least one
+  link exist that a run would read". On rize they are 41 and 42: the component
+  that takes its value from the pay run is fed and was never wired. Both stay
+  in the payload; never average them, and never assert one against the other.
+* **CM15** — **A card whose header is a `<button>` cannot carry a chip that is
+  also a button.** The v1 board's own comment said this about `actions[]` and
+  P2 hit it again with the scheme card's warning chips: nested buttons are
+  invalid markup and the inner one stops being reachable. Chips moved to a
+  sibling row inside `.jny-card`, which also reads better — the warning sits
+  under the sentence it is about.
+* **CM16** — **`align-items: start` on a lane grid takes the sticky lane
+  headers down with the shortest lane.** Scrolling a long Scheme card left the
+  Payobook Source column with no heading and its dashed divider stopping in
+  mid-air. Lanes stretch to the tallest; the headers then all stay put.
+* **CM17** — **The wire gutter has a hard floor, and it is arithmetic, not
+  taste.** An arrowhead is `HEAD = 11px`, so a two-way link needs two of them
+  plus air: at `--jny-gut: 14` (28px between cards) the heads of an open
+  Scheme ↔ Payobook Source pair collide, and forty lines gathering onto one
+  closed card read as a single vertical stripe. 24 (48px of run) draws both
+  heads and turns the gathering into a fan.
+* **CM18** — **`_consumed_field_names()` reads `value_steps`,
+  `filter_conditions` and `excel_formula` — NEVER `aggregate_field`.** A
+  transformation-rule fixture built as `rule_type='sum'` with only an
+  `aggregate_field` reads nothing at all, which is a valid rule and a useless
+  fixture: two P2 tests about what a rule reads failed against correct code
+  until the fixture grew a DERIVE step.
+* **CM19** — **The stored sample's `letter` is the workbook's real column
+  letter, not a position.** rize's 174 stored spellings carry 43 with
+  `preferred: true` (the `Sheet|heading` cards) whose letters are AP, AD, FG,
+  V… — the columns as the workbook lays them out. That is what the Journey's
+  row gutter shows, and it is why the file card can be sorted by the SCHEME's
+  order without losing the file's own.
+* **CM20** — **MJ13, third time: `resize_page` reported success and left
+  `innerWidth` at 500 when 390 was asked for.** `emulate` with a viewport
+  string (`390x844x2,mobile,touch`) got it. Always assert the width you asked
+  for before believing a responsive check.
+* **CM21** — **On a tenant, the "Payobook Source" lane renders as "Rize
+  Source" / "Nguồn Rize".** That is `biz_debrand` doing its job on a
+  user-visible string, not a translation gap. A literal-string test must
+  therefore assert the SOURCE strings, never what a tenant's screen shows.

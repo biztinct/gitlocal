@@ -221,48 +221,73 @@ class TestJourneyView(TransactionCase):
     # 3. the payload composes what already existed
     # ==================================================================
     def test_03a_payload_shape(self):
+        """CLEANMAP P2 — five lanes, and `run` is not one of them.
+
+        REVERSED HERE (was: `systems, feeds, transforms, scheme, run` and "the
+        run lane always has at least a ghost"). The owner removed the pay-run
+        column (ruling 3) and added "Payobook Source" on the right (ruling 4),
+        so the lane list and the header's own vocabulary both moved:
+        `components/wired/fallback` became `inputs/fed/unfed`.
+        """
         if not self.config:
             self.skipTest("no formula config on this database")
         d = self.Studio.journey_data(self.config.id)
         self.assertTrue(d['ok'])
-        for lane in ('systems', 'feeds', 'transforms', 'scheme', 'run'):
+        self.assertEqual(d['v'], 2)
+        for lane in ('systems', 'feeds', 'transforms', 'scheme', 'source'):
             self.assertIn(lane, d['lanes'], "a lane the board renders is missing")
+        self.assertNotIn('run', d['lanes'])
         self.assertTrue(d['lanes']['scheme'], "the scheme lane is never empty")
-        self.assertTrue(d['lanes']['run'], "the run lane always has at least a ghost")
-        for key in ('components', 'wired', 'fallback', 'attention'):
+        for key in ('inputs', 'fed', 'unfed', 'attention'):
             self.assertIn(key, d['header'])
 
-    def test_03b_every_node_has_the_uniform_shape(self):
-        """One template renders all five lanes, so every node owes it an id, a
-        kind, a lane and a label. A node missing one renders as an empty card,
-        which is indistinguishable from a bug in the data behind it."""
+    def test_03b_every_card_and_row_has_the_uniform_shape(self):
+        """One template renders every lane, so every card owes it an id, a
+        kind, a lane and a label — and now a `rows` list too. A card missing
+        one renders as an empty box, which is indistinguishable from a bug in
+        the data behind it. Ids are the geometry's keys (W146) and must be
+        unique across the whole board, ROWS INCLUDED."""
         if not self.config:
             self.skipTest("no formula config on this database")
         d = self.Studio.journey_data(self.config.id)
         seen = set()
         for lane, nodes in d['lanes'].items():
             for n in nodes:
-                for key in ('id', 'kind', 'lane', 'label'):
-                    self.assertIn(key, n, "node %r in lane %s" % (n.get('id'), lane))
+                for key in ('id', 'kind', 'lane', 'label', 'rows'):
+                    self.assertIn(key, n, "card %r in lane %s" % (n.get('id'), lane))
                 self.assertEqual(n['lane'], lane,
-                                 "a node's `lane` must match the lane it is in")
-                self.assertNotIn(n['id'], seen,
-                                 "node ids are the geometry's keys and must be "
-                                 "unique across the whole board")
+                                 "a card's `lane` must match the lane it is in")
+                self.assertNotIn(n['id'], seen)
                 seen.add(n['id'])
+                for r in n['rows']:
+                    for key in ('id', 'card', 'label', 'tag', 'state'):
+                        self.assertIn(key, r, "row %r" % (r.get('id'),))
+                    self.assertEqual(r['card'], n['id'])
+                    self.assertNotIn(r['id'], seen)
+                    seen.add(r['id'])
 
-    def test_03c_every_edge_names_two_real_nodes(self):
-        """An edge to an id no node carries draws nothing and is invisible —
-        the picture would silently understate the wiring, which on this tab is
-        the worst possible failure."""
+    def test_03c_every_link_names_two_real_rows(self):
+        """REVERSED: `edges` between NODES became `links` between ROWS.
+
+        A link to an id no row carries draws nothing and is invisible — the
+        picture would silently understate the wiring, which on this tab is the
+        worst possible failure (MAPFIX-D's rule, one level down).
+        """
         if not self.config:
             self.skipTest("no formula config on this database")
         d = self.Studio.journey_data(self.config.id)
-        ids = {n['id'] for nodes in d['lanes'].values() for n in nodes}
-        for e in d['edges']:
-            self.assertIn(e['from'], ids, "edge from an unknown node")
-            self.assertIn(e['to'], ids, "edge to an unknown node")
-            self.assertIn('kind', e)
+        cards = {n['id'] for nodes in d['lanes'].values() for n in nodes}
+        rows = {r['id'] for nodes in d['lanes'].values() for n in nodes
+                for r in n['rows']}
+        for e in d['links']:
+            self.assertIn(e['a'], rows, "link from an unknown row")
+            self.assertIn(e['b'], rows, "link to an unknown row")
+            self.assertIn(e['kind'], ('excel', 'feed', 'rule', 'reads',
+                                      'record', 'component', 'period'))
+            self.assertIn(e['dir'], ('fwd', 'both', 'back'))
+        for c in d['contains']:
+            self.assertIn(c['from'], cards)
+            self.assertIn(c['to'], cards)
 
     def test_03d_the_primary_connector_is_the_config_field(self):
         """J-D5 and the handover's flat instruction: the marker is
@@ -274,10 +299,14 @@ class TestJourneyView(TransactionCase):
         d = self.Studio.journey_data(self.config.id)
         self.assertEqual(d['primary_id'], self.config.connector_id.id or 0)
         marked = [n for n in d['lanes']['systems'] if n.get('primary')]
-        if self.config.connector_id:
-            self.assertEqual(len(marked), 1, "exactly one connection is primary")
+        # CLEANMAP P2 — a connection is on the board only if something on this
+        # scheme reads through it, so "exactly one is marked primary" became
+        # "at most one", and it is marked only when it has a card at all.
+        self.assertLessEqual(len(marked), 1)
+        if marked:
+            self.assertTrue(self.config.connector_id)
             self.assertEqual(marked[0]['id'], 'c:%s' % self.config.connector_id.id)
-        else:
+        if not self.config.connector_id:
             self.assertFalse(marked, "no connector_id means nothing is primary")
 
     def test_03d2_a_scheme_that_names_no_connection_says_its_wires_are_inert(self):
@@ -294,25 +323,30 @@ class TestJourneyView(TransactionCase):
         """
         if not self.config:
             self.skipTest("no formula config on this database")
-        d = self.Journey = self.Studio.journey_data(self.config.id)
-        wired_conns = [n for n in d['lanes']['systems']
-                       if n['kind'] == 'connector' and n.get('wires')]
+        d = self.Studio.journey_data(self.config.id)
+        wired_conns = [n for n in d['lanes']['systems'] if n['kind'] == 'connector']
         if self.config.connector_id or not wired_conns:
             self.skipTest("this scheme names a connection, or has no wires")
-        health = [n for n in d['lanes']['scheme'] if n['id'] == 'h:noprimary']
-        self.assertEqual(len(health), 1,
+        # REVERSED: the health NODES in the scheme lane became CHIPS on the
+        # scheme card (ruling 11). Same four conditions, same wording, same
+        # doors — one fewer card to read.
+        chips = [c for c in d['lanes']['scheme'][0]['chips']
+                 if c['id'] == 'noprimary']
+        self.assertEqual(len(chips), 1,
                          "a scheme with wires and no chosen connection must "
                          "raise it — silently drawing inert wires is worse "
                          "than drawing none")
-        self.assertEqual(
-            health[0]['label'].split()[0],
-            str(sum(n['wires'] for n in wired_conns)),
-            "the health node counts the wires that are not read")
+        self.assertTrue(chips[0]['door'])
         for n in wired_conns:
             self.assertTrue(n.get('dimmed'),
                             "%s carries wires nothing reads and must be dimmed"
                             % n['id'])
-            self.assertTrue(n.get('chip'), "…and must say why")
+            self.assertTrue(n.get('chips'), "…and must say why")
+        for link in d['links']:
+            if link['kind'] in ('feed', 'rule', 'reads'):
+                self.assertTrue(link['dimmed'],
+                                "no connection is chosen, so no system link "
+                                "is read on a pay run")
 
     def test_03e_conflicts_are_J3s_detector(self):
         """Agreement on a fixture, not a grep. A second implementation would
@@ -323,21 +357,30 @@ class TestJourneyView(TransactionCase):
         self.assertEqual(d['counts']['conflicts'],
                          len(self.Studio._source_conflicts(self.config)))
 
-    def test_03f_unread_is_J4s_predicate(self):
-        """Same shape, one module out: `_tf_consumers` delegates to
-        `pb.integrations._rule_consumers`, which is the ONE definition."""
+    def test_03f_the_transformations_lane_is_only_what_this_scheme_reads(self):
+        """REVERSED. This asserted that the Journey counted every
+        transformation rule on the DATABASE with an unread output (`counts
+        ['unread']`), which is exactly the census ruling 2 removed: rize's
+        Journey drew a Transformations lane for a scheme that consumes no rule
+        at all.
+
+        What replaces it is the honest claim: every transformation row on the
+        board is a rule some component of THIS scheme reads.
+        """
         if not self.config:
             self.skipTest("no formula config on this database")
-        d = self.Studio.journey_data(self.config.id)
         Rule = self.env.get('hr.api.transformation.rule')
         if Rule is None:
             self.skipTest("no transformation rules on this database")
-        expect = 0
-        for r in Rule.with_context(active_test=False).search([]):
-            key = (r.output_key or '').strip()
-            if key and not self.Studio._tf_consumers(r):
-                expect += 1
-        self.assertEqual(d['counts']['unread'], expect)
+        d = self.Studio.journey_data(self.config.id)
+        for card in d['lanes']['transforms']:
+            for row in card['rows']:
+                rule = Rule.browse(int(row['id'].split(':')[1]))
+                self.assertTrue(rule.exists())
+                consumers = self.Studio._tf_consumers(rule)
+                self.assertTrue(
+                    consumers,
+                    "rule %s is drawn and nothing consumes it" % rule.id)
 
     def test_03g_the_component_picture_adds_up(self):
         """Every component lands in exactly one column of the scheme lane. If
@@ -345,28 +388,46 @@ class TestJourneyView(TransactionCase):
         if not self.config:
             self.skipTest("no formula config on this database")
         d = self.Studio.journey_data(self.config.id)
-        c = d['lanes']['scheme'][0]['counts']
+        c = d['counts']
         self.assertEqual(
             c['wired'] + c['calculated'] + c['constant'] + c['contract']
             + c['people'] + c['unfed'], c['total'],
             "the component picture must partition the scheme")
         self.assertEqual(c['total'], len(self.config.rule_ids))
         self.assertEqual(d['header']['components'], c['total'])
-        self.assertEqual(d['header']['wired'], c['wired'])
+        # REVERSED: the scheme CARD no longer carries `counts` — it carries the
+        # inputs as ROWS and a two-part bar. The partition moved to the
+        # payload's own `counts`, where `_journey_scheme_lane` still computes
+        # it for the three tests that read it.
+        card = d['lanes']['scheme'][0]
+        self.assertEqual(card['bar']['fed'] + card['bar']['unfed'],
+                         card['bar']['total'])
+        self.assertEqual(card['bar']['total'], d['header']['inputs'])
 
-    def test_03h_wired_is_the_declared_source_family(self):
-        """The Journey's "wired" and the mapping boards' source chips must be
-        the same components, or two screens describe one scheme differently."""
+    def test_03h_fed_is_counted_off_the_links_and_nothing_else(self):
+        """REVERSED. `header['wired']` was "components whose TOP declared
+        source is excel/feed/rule" — a rank question. `header['fed']` is a
+        LINK question: does this component have at least one link the runtime
+        would actually read? They differ on purpose in two places, and both
+        are the point of the phase: a component fed only by the pay run is fed
+        (it was not counted before), and a component wired only on a
+        connection this scheme does not read is NOT.
+        """
         if not self.config:
             self.skipTest("no formula config on this database")
-        emp = self.Studio._source_record_dests(self.config)
-        wires = self.Studio._source_wire_dests(self.config)
-        expect = len([
-            r for r in self.config.rule_ids
-            if self.Studio._declared_source(r, emp, wires)['kind']
-            in ('excel', 'feed', 'rule')])
         d = self.Studio.journey_data(self.config.id)
-        self.assertEqual(d['header']['wired'], expect)
+        rows = {r['id']: r for c in d['lanes']['scheme'] for r in c['rows']}
+        live = {l['b'] for l in d['links'] if not l['dimmed']}
+        live |= {l['a'] for l in d['links'] if not l['dimmed']}
+        fed = [rid for rid, r in rows.items() if r['fed']]
+        self.assertEqual(len(fed), d['header']['fed'])
+        self.assertEqual(d['header']['fed'] + d['header']['unfed'],
+                         d['header']['inputs'])
+        for rid in fed:
+            self.assertIn(rid, live,
+                          "%s counts as fed and has no live link" % rid)
+        # one release of grace for a cached bundle that still reads `wired`
+        self.assertEqual(d['header']['wired'], d['header']['fed'])
 
     def test_03i_a_bank_row_is_not_counted_as_fallback_capable(self):
         """J3 S1's exception, and the reason the fallback count has its own
@@ -389,85 +450,59 @@ class TestJourneyView(TransactionCase):
                               and m.destination_type != 'bank_account'),
                 "a read-back component must have a non-bank row")
 
-    def test_03j_the_run_lane_is_a_ghost_when_nothing_was_processed(self):
-        if not self.config:
-            self.skipTest("no formula config on this database")
-        done = self.env['hr.payroll.import.batch'].sudo().search_count(
-            [('formula_config_id', '=', self.config.id), ('state', '=', 'done')])
-        node = self.Studio.journey_data(self.config.id)['lanes']['run'][0]
-        if done:
-            self.assertFalse(node.get('ghost'))
-            self.assertIn('agg', node)
-        else:
-            self.assertTrue(node.get('ghost'),
-                            "no processed batch must render the honest ghost, "
-                            "never an empty tally that reads as a run of zero")
-            self.assertTrue(node.get('door'), "a ghost still has a door")
+    def test_03j_the_run_lane_is_gone_from_the_payload_and_still_works(self):
+        """REVERSED, and deliberately split in two.
 
-    def test_03k_every_ghost_has_a_door(self):
-        """The empty world is the novice's first screen. A ghost that cannot be
-        clicked is a dead end dressed as an invitation."""
+        It asserted that `lanes['run']` held a ghost when nothing had been
+        processed. The owner removed the pay-run column (ruling 3), so the
+        assertion's subject no longer exists on the board.
+
+        What stays is the HELPER: `_journey_run_lane` is not deleted (the
+        handover's binding non-goal — the owner may want the run summary
+        elsewhere and fixture tests cover the aggregate). So this now pins the
+        two halves that matter: the payload has no run lane, and the helper
+        still answers.
+
+        It was also ALREADY RED before this phase, on `p9clone` and on the
+        baseline commit: it read whatever config is first on the database and
+        asserted against its processed batches, which that data does not
+        satisfy. The rewrite is not a workaround for the failure — the
+        question it asked is simply not a question about this board any more.
+        """
         if not self.config:
             self.skipTest("no formula config on this database")
         d = self.Studio.journey_data(self.config.id)
-        for nodes in d['lanes'].values():
-            for n in nodes:
-                if n.get('ghost'):
-                    self.assertTrue(n.get('door'),
-                                    "ghost %r has no door" % n['id'])
-                    self.assertTrue(n['door'].get('mode'))
+        self.assertNotIn('run', d['lanes'])
+        lane = self.Studio._journey_run_lane(self.config, 0)
+        self.assertEqual(len(lane), 1)
+        self.assertEqual(lane[0]['id'], 'run')
+        self.assertTrue(lane[0].get('door'))
 
-    def test_03k2_an_empty_world_ghosts_every_lane_it_can(self):
-        """Handover case 9, stated precisely enough to be true on any database.
+    def test_03k_the_empty_world_is_an_invitation(self):
+        """REVERSED: five ghosts became ONE designed invitation.
 
-        The first cut asserted all five lanes ghost on an empty scheme, and it
-        failed on abm against perfectly correct code — because two of the five
-        lanes describe the DATABASE, not the scheme. abm has two connectors,
-        fourteen feeds and eight rules; a brand new scheme there is empty, and
-        those lanes are still rightly full. Only three lanes are per-scheme
-        (the file, the records, the run) and one is the scheme itself.
-
-        So: the per-scheme lanes must ALWAYS ghost on a scheme with nothing on
-        it, and the database-wide lanes must ghost exactly when the database is
-        empty of that thing. That is the invariant; "all five" was a
-        description of one particular database. (The genuinely empty world —
-        all five ghosted — is exercised on acme, which has no connectors at
-        all; see the phase report.)
+        The old pair of tests (`every ghost has a door`, `an empty world
+        ghosts every lane it can`) asserted that each lane rendered a dashed
+        placeholder card with a working door. Ruling 2 says a lane with
+        nothing mapped is hidden entirely, so there are no ghosts left to
+        check — and the dead end they existed to prevent is now prevented by
+        the invitation instead, which is asserted here in their place.
         """
         cfg = self.env['hr.formula.config'].create({
-            'name': 'ZZ J5 empty world (test)', 'code': 'ZZJ5T',
+            'name': 'ZZ P2 empty world (test)', 'code': 'ZZP2T',
             'country_code': 'VN'})
         d = self.Studio.journey_data(cfg.id)
         self.assertTrue(d['ok'])
-        self.assertEqual(d['header']['components'], 0)
-
-        def ghosts(lane):
-            return [n for n in d['lanes'][lane] if n.get('ghost')]
-
-        # ---- per-SCHEME lanes: always a ghost, always with a door ----------
-        self.assertTrue(ghosts('scheme'),
-                        "a scheme with no columns must ghost — the real card "
-                        "with an empty component bar reads as a broken chart")
-        self.assertTrue(ghosts('run'), "no processed batch must ghost")
-        systems = {n['id']: n for n in d['lanes']['systems']}
-        self.assertTrue(systems['file'].get('ghost'), "no file read yet")
-        self.assertTrue(systems['records'].get('ghost'), "nothing mapped yet")
-
-        # ---- database-wide lanes: ghost exactly when the database is empty --
-        n_conn = self.env['hr.integration.connector'].search_count([])
-        Rule = self.env.get('hr.api.transformation.rule')
-        n_rules = 0 if Rule is None else Rule.with_context(
-            active_test=False).search_count([])
-        self.assertEqual(bool(ghosts('transforms')), not n_rules,
-                         "the rules lane ghosts exactly when there are none")
-        if not n_conn:
-            self.assertTrue(ghosts('feeds'))
-
-        # ---- and every ghost anywhere is a door, never a dead end ----------
-        for lane in d['lanes']:
-            for g in ghosts(lane):
-                self.assertTrue(g.get('door'), "ghost %r has no door" % g['id'])
-                self.assertTrue(g['door'].get('mode'))
+        self.assertEqual(d['header']['inputs'], 0)
+        for lane in ('systems', 'feeds', 'transforms', 'source'):
+            self.assertEqual(d['lanes'][lane], [],
+                             "a lane with nothing mapped is hidden entirely")
+        self.assertEqual(len(d['lanes']['scheme']), 1)
+        self.assertTrue(d['invite'], "…and the board is never a dead end")
+        self.assertTrue(d['invite']['doors'])
+        for door in d['invite']['doors']:
+            self.assertTrue(door['label'])
+            self.assertTrue(door['door']['mode'])
         cfg.unlink()
 
     def test_03l_every_door_names_a_mode_the_strip_carries(self):
@@ -480,12 +515,20 @@ class TestJourneyView(TransactionCase):
         if not self.config:
             self.skipTest("no formula config on this database")
         d = self.Studio.journey_data(self.config.id)
+        doors = []
         for nodes in d['lanes'].values():
             for n in nodes:
                 if n.get('door'):
-                    self.assertIn(n['door']['mode'], modes,
-                                  "node %r opens a mode that does not exist"
-                                  % n['id'])
+                    doors.append((n['id'], n['door']))
+                for chip in (n.get('chips') or []):
+                    if chip.get('door'):
+                        doors.append((chip['id'], chip['door']))
+        for door in ((d.get('invite') or {}).get('doors') or []):
+            doors.append((door['id'], door['door']))
+        self.assertTrue(doors)
+        for who, door in doors:
+            self.assertIn(door['mode'], modes,
+                          "%r opens a mode that does not exist" % (who,))
 
     # ==================================================================
     # 4. the tab strip, and every door that existed before J5
@@ -494,15 +537,24 @@ class TestJourneyView(TransactionCase):
         js = _src('pb_formula_studio', 'static/src/js/mapping/mapping_studio.js')
         stripped = _strip_js_comments(js)
         ids = re.findall(r'\{\s*id:\s*"([a-z]+)"\s*,\s*icon:', stripped)
+        # REVERSED by CLEANMAP P2 (owner ruling 1): the Journey pill goes to
+        # the very END. What did NOT move is the cold start — the two doors
+        # that arrive without naming a mode still land on the Journey, which
+        # is the fact this test was actually protecting. Because the two are
+        # no longer the same thing, the SC-4 fallback has to name the Journey
+        # instead of taking `modes[0]`, and that is asserted below.
         self.assertEqual(
-            ids, ['journey', 'api', 'transform', 'import', 'employee',
-                  'scheme', 'cycle', 'treatment'],
-            "the MODES order IS the story; Journey is first of eight, and "
-            "VALUEKIND P5's `treatment` is last because every tab before it "
-            "says where a value comes FROM and it says what is done with it")
+            ids, ['api', 'transform', 'import', 'employee',
+                  'scheme', 'cycle', 'treatment', 'journey'],
+            "the MODES order IS the story; the Journey is LAST and is still "
+            "the cold-start landing")
         self.assertIn('mode: askedMode || "journey"', stripped,
                       "a cold start must land on the Journey, and an explicit "
                       "pb_mode must still win")
+        self.assertIn('? "journey" : ((this.modes[0] || {}).id || "journey")',
+                      stripped,
+                      "SC-4 must name the Journey, not take modes[0] — which "
+                      "is System fields now that the pill has moved")
 
     def test_04b_an_explicit_mode_still_wins(self):
         """The guard that keeps every pre-existing door where it was: the mode

@@ -15031,3 +15031,216 @@ msgstr "Tệp trên bảng này"
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
 msgid "The file read onto this board"
 msgstr "Tệp đã được đọc vào bảng này"
+
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%(fields)s fields · %(kind)s"
+msgstr "%(fields)s trường · %(kind)s"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%(fields)s fields · %(kinds)s kinds"
+msgstr "%(fields)s trường · %(kinds)s loại"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s calculated or fixed"
+msgstr "%s tính sẵn hoặc cố định"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s column used"
+msgstr "%s cột đang dùng"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s columns used"
+msgstr "%s cột đang dùng"
+
+#. module: pb_formula_studio
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "%s fed"
+msgstr "%s đã có nguồn"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s fed twice"
+msgstr "%s được cấp nguồn hai lần"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s field read here"
+msgstr "%s trường được đọc ở đây"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s field used"
+msgstr "%s trường đang dùng"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s fields read here"
+msgstr "%s trường được đọc ở đây"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s fields used"
+msgstr "%s trường đang dùng"
+
+#. module: pb_formula_studio
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "%s need a source"
+msgstr "%s cần nguồn"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s needs a source"
+msgstr "%s cần nguồn"
+
+#. module: pb_formula_studio
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "%s not fed yet"
+msgstr "%s chưa có nguồn"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s rule"
+msgstr "%s quy tắc"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Connect a system"
+msgstr "Kết nối hệ thống"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Contract pay components"
+msgstr "Khoản lương theo hợp đồng"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Map a spreadsheet"
+msgstr "Gán bảng tính"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "No connection chosen"
+msgstr "Chưa chọn kết nối"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Nothing feeds this scheme yet"
+msgstr "Chưa có gì cấp dữ liệu cho bảng lương này"
+
+#. module: pb_formula_studio
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "Payobook Source"
+msgstr "Nguồn Payobook"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Say where its values come from and the picture draws itself."
+msgstr "Hãy cho biết các giá trị đến từ đâu, bức tranh sẽ tự hiện ra."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "This scheme names no connection, and a pay run only reads the one it is set to — so nothing drawn from a connected system is used."
+msgstr "Bảng lương này chưa chọn kết nối nào, và một kỳ lương chỉ đọc kết nối được chọn — nên không dữ liệu nào từ hệ thống kết nối được dùng."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Use Payobook records"
+msgstr "Dùng hồ sơ Payobook"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "%(name)s +%(more)s"
+msgstr "%(name)s +%(more)s"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "1 needs a source"
+msgstr "1 cần nguồn"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "Files & systems"
+msgstr "Tệp & hệ thống"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "Hide the fields inside this"
+msgstr "Ẩn các trường bên trong"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "Read by a transformation"
+msgstr "Được một phép biến đổi đọc"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "Show the fields inside this"
+msgstr "Hiện các trường bên trong"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "This source no longer exists."
+msgstr "Nguồn này không còn tồn tại."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "Two sources fill this. A pay run reads one of them."
+msgstr "Hai nguồn cùng điền giá trị này. Một kỳ lương chỉ đọc một trong hai."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/journey_board.xml:0
+msgid "not fed"
+msgstr "chưa có nguồn"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/journey_board.xml:0
+msgid "Filter the journey"
+msgstr "Lọc hành trình"

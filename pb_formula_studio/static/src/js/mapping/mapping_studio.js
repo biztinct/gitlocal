@@ -99,17 +99,6 @@ const UNDO_MS = 10000;
  * the overlay's `state.mapMode`; only the words a person reads are new.
  */
 export const MODES = [
-    // JOURNEY J5 — FIRST, and the cold-start default. It is first because it is
-    // the only tab that answers the question the other six are pieces of, and
-    // it is the default because the two doors that arrive without naming a mode
-    // (the Settings card and the global palette) are exactly the arrivals of
-    // somebody who does not yet know which piece they want. Every deep link
-    // that NAMES a `pb_mode` is unchanged — that is the regression this phase
-    // is most at risk of and case 1 checks each documented door individually.
-    { id: "journey", icon: "compass", label: _t("Journey"),
-      hint: _t("The whole picture: which systems, feeds and files reach this "
-               + "scheme, what each one changes on the way, and what the last "
-               + "pay run actually used.") },
     { id: "api", icon: "plug", label: _t("System fields → Scheme"),
       hint: _t("Wire the fields an HR system's API delivers onto a scheme's inputs.") },
     // JOURNEY J4 — between the API tab and the Spreadsheet tab, because that is
@@ -148,6 +137,16 @@ export const MODES = [
       hint: _t("What the scheme does with each component: which group it shows "
                + "in, what net pay does with it, whether it is already inside "
                + "another total, and whether its value is money, hours or text.") },
+    // JOURNEY J5, moved to the END by CLEANMAP P2 — the owner's ruling 1. It
+    // is STILL the cold-start default: the two doors that arrive without
+    // naming a mode (the Settings card and the global palette) are the
+    // arrivals of somebody who does not yet know which piece they want, and
+    // they still land here. So the pill moved and the landing did not — which
+    // is why `modes[0]` is no longer a safe fallback and SC-4 below names the
+    // Journey explicitly.
+    { id: "journey", icon: "compass", label: _t("Journey"),
+      hint: _t("The whole picture: every file, system and record that feeds "
+               + "this scheme, and what each one changes on the way.") },
 ];
 
 /** Which adapters take a transform on the wire, and which take templates. */
@@ -325,7 +324,12 @@ export class MappingStudio extends Component {
         // scheme's lane config hides lands on the Journey instead of on a
         // board whose tab does not exist.
         if (!this.modes.some((m) => m.id === this.state.mode)) {
-            this.state.mode = (this.modes[0] || {}).id || "journey";
+            // CLEANMAP P2 — the Journey by NAME, not by position. It used to
+            // be `modes[0]`, which was the Journey only because the pill was
+            // first; moving the pill to the end would have sent every
+            // hidden-tab deep link to System fields instead.
+            this.state.mode = this.modes.some((m) => m.id === "journey")
+                ? "journey" : ((this.modes[0] || {}).id || "journey");
         }
         // A deep link that lands on a DIFFERENT scheme than it named is the
         // worst bug class in this codebase, so it is said out loud rather than
@@ -669,10 +673,18 @@ export class MappingStudio extends Component {
     /** How many components the treatment board is showing. */
     get treatmentCount() { return this.state.treatmentCount || 0; }
 
-    /** "42 wired" — the Journey's own middle-of-the-sentence count. */
-    get journeyWired() {
+    /**
+     * "42 fed" — the Journey's own middle-of-the-sentence count.
+     *
+     * CLEANMAP P2 renamed the word AND the key. `header.fed` is the one to
+     * read; `header.wired` is kept beside it for one release, because a cached
+     * bundle from before the deploy would otherwise print a bare zero over a
+     * board showing forty-two lines.
+     */
+    get journeyFed() {
         const d = this.state.data;
-        return (d && d.ok && d.header && d.header.wired) || 0;
+        const h = (d && d.ok && d.header) || {};
+        return h.fed || h.wired || 0;
     }
 
     /** "8 rules · 1 output unread" — the health counts, in the FROM sub-line. */
