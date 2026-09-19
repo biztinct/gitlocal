@@ -642,7 +642,11 @@ export class JourneyBoard extends Component {
             geom.push({ ...g, id: e.id, kind: e.kind, count: e.n,
                         bidi: e.dir === "both", dimmed: e.dimmed, span,
                         badge: e.ends && e.n > 1,
-                        width: 1 + Math.min(3, Math.log2(Math.max(1, e.n))),
+                        // The RESTING width is the floor, not 1: the inline
+                        // `stroke-width` wins over the stylesheet, so a base
+                        // of 1 quietly undid the 1.25 the sheet sets and every
+                        // single-link line went back to a hairline.
+                        width: 1.25 + Math.min(3, Math.log2(Math.max(1, e.n))),
                         lit, docked: a.docked || b.docked });
         }
         // Two counted lines that meet near the same midpoint stack their

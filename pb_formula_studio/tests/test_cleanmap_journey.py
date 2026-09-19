@@ -430,6 +430,69 @@ class TestCleanmapJourney(TransactionCase):
                          "file's own order is not lost — only not obeyed")
 
     # =====================================================================
+    # 12b — the tag gutter carries the column's REAL letter
+    # =====================================================================
+    def test_12b_the_row_tag_is_the_columns_position_in_its_own_sheet(self):
+        """CLEANMAP P2 defect 1, pinned in both directions.
+
+        `peek_source_columns` stores a `letter` per column and on a MERGED
+        workbook it is not the column's position in its sheet — rize's first
+        Salary column came back `AP`, the second `AD`, the third `FG`. The
+        Journey showed those and the Spreadsheet board's pay-run lane showed
+        A, B, C for the same file, so one board described one workbook two
+        ways.
+
+        This asserts the truth (first heading = A, second = B…) AND that the
+        two lanes of the Spreadsheet board now agree with each other and with
+        the Journey.
+        """
+        cfg = self._config('P2 Letters')
+        a = self._input(cfg, 'AAA', seq=1)
+        b = self._input(cfg, 'BBB', seq=2)
+        c = self._input(cfg, 'CCC', seq=3)
+        cols = self._sheet_file(cfg, ['First col', 'Second col', 'Third col'])
+        # Bend the STORED letters the way rize's are bent, so the fixture
+        # fails against the stored value and passes only against the walk.
+        for col in cols:
+            col['letter'] = 'ZZ'
+        self._file(cfg, cols)
+        a.set_source_binding('excel', 'Salary|First col', origin='user')
+        b.set_source_binding('excel', 'Salary|Second col', origin='user')
+        c.set_source_binding('excel', 'Salary|Third col', origin='user')
+
+        d = self.Studio.journey_data(cfg.id)
+        rows = {r['label']: r['tag'] for r in self._rows(d, 'file')}
+        self.assertEqual(rows, {'First col': 'A', 'Second col': 'B',
+                                'Third col': 'C'},
+                         "the gutter is the column's position in its sheet, "
+                         "never the stored letter")
+
+        # …and the Spreadsheet board's template-file lane says the same
+        board = self.Studio.import_mapping_data(cfg.id, 'sample')
+        letters = {card['label']: (card.get('meta') or {}).get('letter')
+                   for card in board['left']
+                   if card['id'].startswith('c:')}
+        for label, tag in rows.items():
+            self.assertEqual(letters.get(label), tag,
+                             "the Journey and the Spreadsheet board must give "
+                             "%s the same column letter" % label)
+
+    def test_12c_a_second_sheet_starts_its_letters_again_at_A(self):
+        """The letter is a position IN A SHEET, so two sheets both have an A."""
+        cfg = self._config('P2 Letters2')
+        cols = []
+        for sheet, heads in (('Salary', ['Pay A', 'Pay B']),
+                             ('Hours', ['Hour A'])):
+            for n, head in enumerate(heads):
+                cols.append({'key': '%s|%s' % (sheet, head), 'sheet': sheet,
+                             'header': head, 'letter': 'ZZ', 'sample': '',
+                             'preferred': True})
+        self._file(cfg, cols)
+        letters = self.Studio._sample_column_letters(cfg)
+        self.assertEqual(letters, {'Salary|Pay A': 'A', 'Salary|Pay B': 'B',
+                                   'Hours|Hour A': 'A'})
+
+    # =====================================================================
     # 13 — the zero state is an invitation, not five ghosts
     # =====================================================================
     def test_13_a_scheme_with_no_links_offers_three_doors(self):

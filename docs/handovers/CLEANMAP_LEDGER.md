@@ -192,3 +192,29 @@ re-verify before editing.
   Source" / "Nguồn Rize".** That is `biz_debrand` doing its job on a
   user-visible string, not a translation gap. A literal-string test must
   therefore assert the SOURCE strings, never what a tenant's screen shows.
+* **CM22** — **`peek_source_columns`' stored `letter` is NOT the column's
+  position in its sheet on a merged multi-sheet workbook**, and two screens
+  had been disagreeing about it in silence. It computes
+  `index_to_letter(headers.index(header))` against the MERGED key list — 174
+  entries on rize — so the first Salary column came back `AP`, the second
+  `AD`, the third `FG`. Nothing caught it because the only lane that rendered
+  it was the Spreadsheet board's template-file FROM; its pay-run FROM letters
+  positionally (`_multisheet_fold`), so one board described one workbook two
+  ways and P2's tag gutter inherited the wrong half. `_sample_column_letters`
+  derives the letter as the column's position among the cards of ITS OWN
+  SHEET, and both lanes and the Journey now read it. The loader and the stored
+  JSON are untouched — it is a display derivation, so nothing has to be
+  re-read. Lesson: **a number stored beside a value is not evidence about that
+  value; check it against the screen that shows the same fact another way.**
+* **CM23** — **An inline `stroke-width` beats the stylesheet, so a JS-computed
+  width is the FLOOR of a wire's weight and not a bonus on top of it.** The
+  count-thickness rule wrote `1 + min(3, log2(n))`, which is exactly `1` for
+  every single-link line — so raising the sheet's resting stroke to 1.25px
+  changed nothing at all on the 41 lines that mattered, and the fix looked
+  like it had not deployed. Base the formula on the resting width.
+* **CM24** — **A wire needs run, and the amount is arithmetic.**
+  `wireGeometry` reserves `HEAD = 11px` at the tip and puts its control points
+  at 45%/55% of the remaining dx, so under ~60px between two cards a
+  row-to-row line cannot read as a curve — at 45px it is an arrowhead with a
+  smudge behind it. 80px reads. Take it out of the lane's padding, and step it
+  down by LANE COUNT rather than letting cards go under ~200px.

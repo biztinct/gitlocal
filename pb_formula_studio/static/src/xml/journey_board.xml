@@ -85,7 +85,8 @@
             </div>
           </div>
 
-          <div class="jny-lanes" t-attf-style="--jny-cols:{{ lanes.length }}">
+          <div t-attf-class="jny-lanes n{{ lanes.length }}"
+               t-attf-style="--jny-cols:{{ lanes.length }}">
             <div class="jny-lane" t-foreach="lanes" t-as="lane" t-key="lane.id">
               <div class="jny-lane__h">
                 <span class="jny-lane__ic" t-out="ic(lane.icon, 13)"/>

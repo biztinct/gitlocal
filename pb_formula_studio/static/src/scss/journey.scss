@@ -41,14 +41,18 @@
     --mc-wash:       var(--i-wash, #F1F5F9);
     --mc-wash2:      var(--i-wash2, #EEF1F5);
     /* The gutter a bezier gets to be a curve in — HALF of it, since each
-       lane pads both sides. 24 gives a curve 48px of horizontal run, which is
-       what separates a fan of wires from a vertical wall: at 14 the gathering
-       of forty rows onto one closed card read as a single thick stripe, and
-       two arrowheads (11px each) could not both fit in the gap between an
-       open Scheme card and an open Payobook Source card. What matters after
-       that is that every lane gets the SAME one, or the picture reads as
-       arbitrary gaps. */
-    --jny-gut: 24px;
+       lane pads both sides, so 40 is 80px between two cards.
+       Sized from the WIRE, not from taste, and it took two goes:
+         * an arrowhead is 11px and a two-way link needs two of them, so
+           anything under ~30px of run cannot draw one at all;
+         * `wireGeometry` puts its control points at 45% and 55% of the run,
+           so a curve needs enough run to BE a curve. At 48px a row-to-row
+           line was an arrowhead with a smudge behind it — the wires were
+           there, correct, and invisible.
+       80px reads as a wire. The lanes give it back out of their own padding,
+       so no label loses width; four and five lanes step down, because a card
+       narrower than ~200px is a worse trade than a shorter curve. */
+    --jny-gut: 40px;
     --jny-cols: 3;
 }
 
@@ -108,8 +112,8 @@
 /* ---- the wires ------------------------------------------------------
    Thin and pale by default (ruling 8). A line is a fact, not a decoration:
    forty of them at full strength is a texture nobody can read. */
-.jny .jny-wire__p { fill: none; stroke: var(--i-line, #B9AEE6); stroke-width: 1; opacity: .35; }
-.jny .jny-wire__h { fill: var(--i-line, #B9AEE6); opacity: .35; }
+.jny .jny-wire__p { fill: none; stroke: var(--i-line, #B9AEE6); stroke-width: 1.25; opacity: .45; }
+.jny .jny-wire__h { fill: var(--i-line, #B9AEE6); opacity: .45; }
 
 .jny .jny-wire.record .jny-wire__p,
 .jny .jny-wire.component .jny-wire__p,
@@ -121,20 +125,20 @@
 /* A containment edge is a statement about structure, not about data moving:
    this feed BELONGS to that system. Quieter, and dotted. */
 .jny .jny-wire.contain .jny-wire__p {
-    stroke: var(--mc-slate); stroke-width: 1; stroke-dasharray: 2 4; opacity: .5;
+    stroke: var(--mc-slate); stroke-width: 1.25; stroke-dasharray: 2 4; opacity: .55;
 }
-.jny .jny-wire.contain .jny-wire__h { fill: var(--mc-slate); opacity: .5; }
+.jny .jny-wire.contain .jny-wire__h { fill: var(--mc-slate); opacity: .55; }
 
 /* A wire that JUMPS a lane passes behind the cards between its ends. */
 .jny .jny-wire.span .jny-wire__p { stroke-dasharray: 7 5; }
 
 /* The one-connector limit, drawn. A scheme reads ONE connection on a system
    run; every wire from any other connection is ignored. */
-.jny .jny-wire.dim .jny-wire__p { stroke: var(--mc-slate); stroke-dasharray: 3 5; opacity: .22; }
-.jny .jny-wire.dim .jny-wire__h { fill: var(--mc-slate); opacity: .22; }
+.jny .jny-wire.dim .jny-wire__p { stroke: var(--mc-slate); stroke-dasharray: 3 5; opacity: .3; }
+.jny .jny-wire.dim .jny-wire__h { fill: var(--mc-slate); opacity: .3; }
 
 /* ---- the trace: hovering a field lights its whole path -------------- */
-.jny .jny-wire.lit .jny-wire__p { stroke-width: 2 !important; opacity: 1; }
+.jny .jny-wire.lit .jny-wire__p { stroke-width: 2.25 !important; opacity: 1; }
 .jny .jny-wire.lit .jny-wire__h { opacity: 1; }
 .jny .jny-wire.off .jny-wire__p,
 .jny .jny-wire.off .jny-wire__h { opacity: .12; }
@@ -154,6 +158,11 @@
    start` a short lane ends where its last card does — and its STICKY HEADER
    goes with it, so scrolling down a long Scheme card left the Payobook Source
    column unlabelled and its dashed divider stopping in mid-air. */
+/* Four and five lanes get a shorter run rather than a narrower card. The
+   count is a CLASS and not the inline `--jny-cols`, because a media query
+   cannot override an inline style and the narrow ladder below has to win. */
+.jny .jny-lanes.n4 { --jny-gut: 32px; }
+.jny .jny-lanes.n5 { --jny-gut: 26px; }
 .jny .jny-lane { min-width: 0; display: flex; flex-direction: column; }
 .jny .jny-lane + .jny-lane { border-left: 1px dashed var(--line, #E8E9F3); }
 
@@ -383,8 +392,15 @@
    Five lanes at 1180 leave about 200px each: the type steps down and the
    gutter narrows. Nothing scrolls sideways, because that would move the cards
    out from under the SVG the wires are drawn on. */
+@media (max-width: 1400px) {
+    .jny .jny-lanes { --jny-gut: 30px; }
+    .jny .jny-lanes.n4 { --jny-gut: 24px; }
+    .jny .jny-lanes.n5 { --jny-gut: 18px; }
+}
 @media (max-width: 1180px) {
-    .jny { --jny-gut: 14px; }
+    .jny .jny-lanes,
+    .jny .jny-lanes.n4,
+    .jny .jny-lanes.n5 { --jny-gut: 16px; }
     .jny .jny-card__l { font-size: 11.5px; }
     .jny .jny-card__s { font-size: 10.5px; }
     .jny .jny-q { width: 180px; }

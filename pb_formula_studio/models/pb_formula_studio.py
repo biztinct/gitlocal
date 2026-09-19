@@ -7486,9 +7486,15 @@ class PbFormulaStudio(models.AbstractModel):
         if not cols:
             return {}, {}
 
+        # The letter comes from `_sample_column_letters`, NOT from the stored
+        # `letter` — see that helper: on a merged workbook the stored one is
+        # not this column's position in its sheet (CM22).
+        letters = self._sample_column_letters(config)
+
         def meta_of(col):
             return {'label': (col.get('header') or '').strip() or col.get('key'),
-                    'tag': (col.get('letter') or '').strip(),
+                    'tag': (letters.get(col.get('key'))
+                            or (col.get('letter') or '').strip()),
                     'sheet': (col.get('sheet') or '').strip()}
 
         by_key = {col['key']: meta_of(col) for col in cols
@@ -8866,6 +8872,42 @@ class PbFormulaStudio(models.AbstractModel):
         return out
 
     @api.model
+    def _sample_column_letters(self, config):
+        """`{stored-file column key: the letter that column REALLY has}`.
+
+        CLEANMAP P2, defect 1. `peek_source_columns` stores a `letter` beside
+        every column and on a MERGED multi-sheet workbook it is wrong: it
+        resolves the heading against the merged key list rather than against
+        its own sheet, so rize's first Salary column — `Salary|Mã nhân viên
+        (Code)`, which is column **A** — came back as `AP`, the second as
+        `AD`, the third as `FG`.
+
+        Nothing noticed, because the only lane that showed those letters was
+        the template-file FROM, and the pay-run FROM beside it letters
+        POSITIONALLY (`_multisheet_fold`, `_index_to_letter(pos)`). So the two
+        halves of one board disagreed about the same workbook and the Journey
+        inherited the wrong half.
+
+        The letter is the column's POSITION IN ITS OWN SHEET among the columns
+        that get a card, which is the pay-run lane's rule exactly. The stored
+        value survives only where this walk cannot place a column, so a reader
+        never sees a blank gutter.
+        """
+        out, seen = {}, {}
+        for col in self._import_sample_columns(config):
+            key = col.get('key')
+            if not key or not col.get('preferred'):
+                continue
+            sheet = (col.get('sheet') or '').strip()
+            pos = seen.get(sheet, 0)
+            seen[sheet] = pos + 1
+            try:
+                out[key] = _index_to_letter(pos)
+            except Exception:       # noqa: BLE001 — never blank the gutter
+                out[key] = (col.get('letter') or '').strip()
+        return out
+
+    @api.model
     def _import_sample_meta(self, config):
         """What the board says about where its columns came from.
 
@@ -9396,6 +9438,10 @@ class PbFormulaStudio(models.AbstractModel):
         if source == 'sample':
             meta = self._import_sample_meta(config) if config else None
             lane = meta['line'] if meta else _("The file on this board")
+            # CLEANMAP P2 — the SAME letter the pay-run lane gives this column,
+            # which the stored `letter` is not on a merged workbook (CM22). The
+            # two FROM choices of one board described one file two ways.
+            letters = self._sample_column_letters(config) if config else {}
             for col in self._import_sample_columns(config):
                 if not col.get('preferred'):
                     continue
@@ -9403,7 +9449,8 @@ class PbFormulaStudio(models.AbstractModel):
                 add(col.get('key'), lane,
                     sublabel=(_("e.g. %s", sample) if sample else _("no value in the first row")),
                     meta={'sheet': col.get('sheet') or '',
-                          'letter': col.get('letter') or ''})
+                          'letter': (letters.get(col.get('key'))
+                                     or col.get('letter') or '')})
         elif source == 'batch':
             # RUNSRC A1 — the loaded batch's lane, folded. A file's columns are
             # stored under two names each (four on a multi-sheet workbook), so

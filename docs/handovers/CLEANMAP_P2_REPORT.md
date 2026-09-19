@@ -315,3 +315,124 @@ New entries **CM13–CM21** in `CLEANMAP_LEDGER.md`.
 * **No live example of a `gone` row or a `dimmed` link exists on any database**
   (swept, §6), so both are proved by tests 7 and 11 and by the styling rather
   than by a screenshot.
+
+---
+
+# CLEANMAP P2 — follow-up, `19.0.1.201.0`
+
+Two defects found by the coordinator in `03_all_open.png`. Both were real,
+both are fixed, and both had the same underlying character: a number that was
+never checked against the thing it describes.
+
+## A. The tag gutter was showing the wrong column letters
+
+**What it was.** `Mã nhân viên (Code)` — the first column of rize's Salary
+sheet — showed **AP**. `Họ và tên` showed **AD**, `Vị trí` **FG**, `Loại`
+**AK**. The true letters are A, B, C, D.
+
+**Where it came from.** `peek_source_columns`
+(`payroll_import_batch.py:577`) stores a `letter` beside every column and
+computes it as `index_to_letter(headers.index(header))`. On a MERGED
+multi-sheet workbook `headers` is the merged key list — 174 entries on rize,
+in the loader's own order — so the index it finds is the heading's position in
+that merged list, not the column's position in its own sheet. The Journey read
+that stored value straight off.
+
+It had gone unseen because the only screen that showed it was the Spreadsheet
+board's **template-file** FROM. Its **pay-run** FROM letters positionally
+(`_multisheet_fold`: `_index_to_letter(pos)`), so the two FROM choices of one
+board had been describing one workbook two ways, and P2 inherited the wrong
+half.
+
+**The fix.** A new `_sample_column_letters(config)` gives each stored-file
+column its position among the cards of ITS OWN SHEET — the pay-run lane's rule
+exactly. The Journey's row tag and the Spreadsheet board's template-file lane
+both read it, so the two boards and the two FROMs now agree. The loader and
+the stored JSON are untouched: this is a display derivation, so no database
+has to be re-read.
+
+**Verified on rize** (config 3938, all 41 mapped columns):
+
+```
+journey rows 41 · template-file lane 43 · pay-run lane 43
+journey vs template-file lane mismatches: 0
+journey vs pay-run lane mismatches:       0
+tags in row order: A B C D E F G H I J M N O P Q R S T U V W X Y Z
+                   AA AB AC AD AE AF AG AH AI AJ AK AL AM AN AO AP AQ
+```
+
+They run in order, with **one gap: K and L are missing**. That is correct and
+worth reading — the workbook has 43 headings, the scheme maps 41 of them, and
+the two it does not map are the sheet's 11th and 12th columns. The Journey
+draws only what is mapped (ruling 2), so the gutter shows the gap rather than
+renumbering around it.
+
+Two new tests pin it: `test_12b` builds a merged fixture whose STORED letters
+are all deliberately `ZZ` — so it fails against the stored value and passes
+only against the walk — and then asserts the Journey and the Spreadsheet board
+give each column the same letter; `test_12c` pins that a second sheet starts
+its own letters again at A.
+
+## B. The lines were nearly invisible with cards open
+
+**What it was.** 45px between two cards. `wireGeometry` puts its control
+points at 45% and 55% of the run and reserves 11px at the tip for the
+arrowhead, so a row-to-row line had ~34px to be a curve in: what reached the
+screen was an arrowhead with a smudge behind it. The resting stroke — 1px at
+35% of the line token — then finished the job.
+
+**The fix**, three parts, all measured rather than nudged:
+
+| | before | after |
+|---|---|---|
+| gap between two cards (3 lanes, 1512px) | **45px** | **81px** (`--jny-gut` 24 → 40 a side) |
+| resting stroke | 1px @ 35% | **1.25px @ 45%** |
+| trace stroke | 2px @ 100% | **2.25px @ 100%** |
+| containment (dotted) | 1px @ 50% | 1.25px @ 55% |
+| not-read (dimmed) | @ 22% | @ 30% |
+
+The run comes out of the lane's own padding, so no label lost width. Four and
+five lanes step down (`--jny-gut` 32 / 26 via an `n4`/`n5` class on the lane
+grid) because a card narrower than ~200px is a worse trade than a shorter
+curve, and the narrow ladder is 30/24/18 below 1400px and a flat 16 below
+1180px.
+
+**One thing the stylesheet could not fix on its own.** The count-thickness
+rule writes `stroke-width` as an INLINE style, and inline wins: with its base
+at `1`, every single-link line silently went back to a hairline the moment the
+sheet said 1.25. The base is now the resting width (`1.25 + min(3, log2(n))`),
+and the trace's `!important` still beats both.
+
+**Count badges re-checked in the collapsed state**: the three badges (41, 7,
+2) sit at x = 479, 963 and 974 against lines whose midpoints are 479, 968 and
+968 — on the line, with `spreadHubs` separating the two that share a pair by
+22px vertically.
+
+## Tests, deploy and verification
+
+* **1 failed of 451** on `p9clone` (449 + the two new letter tests). The one
+  failure is the same pre-existing
+  `TestJourneyTransformations.test_07a2`; every other test, including all 19
+  in `test_cleanmap_journey.py`, passes.
+* `node --check` clean on `journey_board.js` and `mapping_studio.js`; the XML
+  parses; the SCSS bundle rebuilt and was read back off the live page.
+* `19.0.1.200.0` → **`19.0.1.201.0`**, upgraded on **payobook, abm,
+  payobook_template, rize, rztest, p9clone** (all `EXIT=0`), `/web/assets/%`
+  purged and `web.assets.version` bumped per database, service restarted and
+  `active`.
+* Content hash repo vs server:
+  `0f8744f130c76a0dc2f8996ef6033bbc6f80e220867b899193bb79e008df6932` on both.
+  `latest_version` `19.0.1.201.0 / installed` on all six.
+  `addons_path` still the single entry.
+* **Console on rize: one message, and it is not ours** — a PWA manifest
+  icon-size warning from `biz_debrand`
+  (`brand_icon.png`, "Resource size is not correct"), present before this
+  phase.
+* Screenshots re-taken into `docs/handovers/cleanmap_p2_shots/`: **02, 03, 04,
+  07** as asked, plus **01, 05, 06, 08, 09**, because every one of them showed
+  either the wrong letters or the old 45px gutter and leaving them would have
+  documented a board that no longer exists.
+
+## Ledger
+
+New entries **CM22–CM24** in `CLEANMAP_LEDGER.md`.
