@@ -474,9 +474,19 @@ class PbFactBuilder(models.AbstractModel):
         now = fields.Datetime.now()
         counts, divisions, fallbacks = {}, {}, {}
         currency = ctx['currency']
+        cfg_currency = ctx.get('cfg_currency') or {}
         division_for = ctx['division_for']
         config_meta = ctx['config_meta']
         ends = ctx['ends']
+
+        def money(config_id, company_id):
+            """SCHEMECTX P1 — the row's SCHEME decides its money.
+
+            Only when the row has no scheme does the company answer, which is
+            what every row used to say.
+            """
+            return (cfg_currency.get(int(config_id or 0))
+                    or currency.get(company_id, 0))
         if grain == 'line':
             table = 'pb_fact_line'
             cols = ('fact_run_id', 'run_id', 'company_id', 'month', 'year',
@@ -507,7 +517,7 @@ class PbFactBuilder(models.AbstractModel):
                              cat_id, cat_type, bool(is_rollup), code, rule_id,
                              comp_name, amount or 0.0, heads or 0, nlines or 0,
                              int(config_id or 0), cfg_name, cfg_version,
-                             currency.get(company_id, 0), div_id,
+                             money(config_id, company_id), div_id,
                              bool(is_advance),
                              uid, now, uid, now))
         else:
@@ -545,7 +555,7 @@ class PbFactBuilder(models.AbstractModel):
                              h.year, h.quarter, cycle, division, h.basis, emp_id,
                              dept_id, job_id, cat_type, amount or 0.0,
                              int(config_id or 0), cfg_name, cfg_version,
-                             currency.get(company_id, 0), div_id,
+                             money(config_id, company_id), div_id,
                              # THE PERSON, not the employment. One person may
                              # hold two of these; the employment id stands in
                              # only where nobody has said who the human is.
@@ -641,12 +651,19 @@ class PbFactBuilder(models.AbstractModel):
 
         # --- scheme name and the version in force -------------------------
         names, edited, releases = {}, {}, {}
+        # SCHEMECTX P1 — and the money each scheme pays in. Every fact row
+        # already carries its scheme, so stamping the company's currency on a
+        # row belonging to an India scheme was simply the wrong label. One
+        # extra field on a read that was already happening.
+        cfg_currency = {}
         if 'hr.formula.config' in self.env:
             for cfg in self.env['hr.formula.config'].sudo().with_context(
                     active_test=False).search_read(
-                    [], ['name', 'write_date']):
+                    [], ['name', 'write_date', 'currency_id']):
                 names[cfg['id']] = cfg['name'] or ''
                 edited[cfg['id']] = cfg['write_date']
+                if cfg.get('currency_id'):
+                    cfg_currency[cfg['id']] = cfg['currency_id'][0]
         if 'hr.formula.release' in self.env:
             for rel in self.env['hr.formula.release'].sudo().search_read(
                     [], ['config_id', 'name', 'approved_date'],
@@ -772,6 +789,7 @@ class PbFactBuilder(models.AbstractModel):
                     skipped)
 
         return {'ends': ends, 'currency': currency,
+                'cfg_currency': cfg_currency,
                 'division_for': division_for, 'config_meta': config_meta,
                 'person_of': person_of, 'share_of': share_of,
                 'charges': charges}

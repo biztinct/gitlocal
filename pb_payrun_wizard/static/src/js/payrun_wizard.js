@@ -136,6 +136,63 @@ export function importDoor(actions) {
 }
 
 /** The names, one per line — what "Copy names" puts on the clipboard. */
+/**
+ * SCHEMECTX P1 — the money one screen is written in.
+ *
+ * Pure, and exported, because the whole defect was that three different places
+ * each decided the currency for themselves and one of them said "dong" for an
+ * India scheme. There is one answer now and it is testable without a server.
+ *
+ * @param {Object|null} scheme the chosen scheme card, or nothing
+ * @param {Object|null} defaults the payload's opening answer
+ */
+export function schemeMoney(scheme, defaults) {
+    const raw = (scheme && scheme.currency)
+        || (defaults && defaults.currency)
+        || null;
+    if (raw && typeof raw === "object") {
+        return {
+            name: raw.name || "",
+            symbol: raw.symbol || raw.name || "",
+            position: raw.position === "before" ? "before" : "after",
+            decimals: typeof raw.decimals === "number" ? raw.decimals : 2,
+        };
+    }
+    // A server that has not been upgraded yet sent a bare name such as "VND".
+    const name = typeof raw === "string" ? raw : "";
+    return { name, symbol: name === "VND" ? "₫" : name, position: "before", decimals: 0 };
+}
+
+/** "INR · ₹" — the name people file under, then the sign they read. */
+export function moneyLabel(money) {
+    const m = money || {};
+    if (m.symbol && m.name && m.symbol !== m.name) { return `${m.name} · ${m.symbol}`; }
+    return m.name || m.symbol || "";
+}
+
+/**
+ * A short amount in a given money. The SIGN follows the scheme; the PLACE of
+ * the sign does not.
+ *
+ * `res.currency` records dong as written after the number, and every Payobook
+ * screen — studio, payslip, results — has always written it in front. Reading
+ * the stored side here would have flipped every Vietnamese amount in the
+ * wizard while fixing India, which is a change nobody asked for. One house
+ * style, the right sign.
+ */
+export function formatMoney(money, n) {
+    const m = money || {};
+    const sym = m.symbol || m.name || "";
+    const v = Number(n) || 0;
+    const abs = Math.abs(v);
+    let body;
+    if (abs >= 1e9) { body = (v / 1e9).toFixed(1) + "B"; }
+    else if (abs >= 1e6) { body = (v / 1e6).toFixed(1) + "M"; }
+    else if (abs >= 1e3) { body = (v / 1e3).toFixed(0) + "K"; }
+    else { body = String(Math.round(v)); }
+    return `${sym}${body}`;
+}
+
 export function exceptionNames(missing) {
     return (missing || []).map((u) => u.emp).filter(Boolean).join("\n");
 }
@@ -238,7 +295,28 @@ export class PayrunWizard extends Component {
     }
 
     ic(n, s = 16) { return markup(`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[n] || IC.check}</svg>`); }
-    vnd(n) { n = n || 0; if (n >= 1e9) return "₫" + (n / 1e9).toFixed(1) + "B"; if (n >= 1e6) return "₫" + (n / 1e6).toFixed(1) + "M"; if (n >= 1e3) return "₫" + (n / 1e3).toFixed(0) + "K"; return "₫" + Math.round(n); }
+    /**
+     * SCHEMECTX P1 — the money this run is in, as the server described it.
+     *
+     * The chosen scheme decides it, so the Scope panel changes the moment
+     * another card is picked. Falls back to the payload's opening answer and
+     * then to the company's, so a server that has not been upgraded yet still
+     * renders a currency rather than "undefined".
+     */
+    get money() { return schemeMoney(this.chosenScheme, this.state.defaults); }
+
+    /** "INR · ₹" — the name people file under, then the sign they read. */
+    get moneyLabel() { return moneyLabel(this.money); }
+
+    /**
+     * A short amount in the run's own money. Every figure on this screen goes
+     * through here — the sign is never written into the markup, because a
+     * scheme that pays in rupees showed dong for as long as it was.
+     */
+    amt(n) { return formatMoney(this.money, n); }
+
+    /** Kept so nothing that already calls it breaks; it now follows the scheme. */
+    vnd(n) { return this.amt(n); }
     /** A count with the reader's own thousands separator — "1,002", not "1002". */
     num(n) { return Number(n || 0).toLocaleString(); }
     get wantsSheet() { const g = this.state.sheet.gate; return !!(g && g.wanted); }

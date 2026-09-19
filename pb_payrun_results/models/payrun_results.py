@@ -255,7 +255,13 @@ class PayrunResults(models.AbstractModel):
             'ok': True,
             'run': {'id': run.id, 'name': run.name or '', 'state': run.state,
                     'config_name': ', '.join(configs.mapped('name')),
-                    'currency': (primary.currency_id.symbol or '₫')},
+                    # SCHEMECTX P1 — the scheme's money, then the company's.
+                    # The dong sign is no longer a last resort: on a scheme
+                    # that pays rupees it was simply wrong.
+                    'currency': (primary.currency_id.symbol
+                                 or primary.currency_id.name
+                                 or self.env.company.currency_id.symbol
+                                 or self.env.company.currency_id.name or '')},
             'runs': runs,
             'columns': cols,
             'rows': rows,
@@ -298,7 +304,13 @@ class PayrunResults(models.AbstractModel):
     def _state_label(self, st):
         return self._STATE_META.get(st, (st and st.replace('_', ' ').title() or '', 'draft'))
 
-    def _run_card(self, r, cycle_type='', comp=None, symbol=u'₫'):
+    def _run_card(self, r, cycle_type='', comp=None, symbol=None):
+        # SCHEMECTX P1 — the caller passes the SCHEME's sign. The dong used to
+        # be the default here, which is the wrong money on any run that is not
+        # Vietnamese; the company's is the honest last resort.
+        if not symbol:
+            money = self.env.company.currency_id
+            symbol = money.symbol or money.name or ''
         label, tone = self._state_label(r.state)
         ds = str(r.date_start) if r.date_start else ''
         return {
@@ -355,26 +367,33 @@ class PayrunResults(models.AbstractModel):
                 run_cfg[rid] = g['formula_config_id'][0]
             if rid not in run_comp and g.get('company_id'):
                 run_comp[rid] = (g['company_id'][0], g['company_id'][1])
-        cfg_cycle = {}
+        cfg_cycle, cfg_sym = {}, {}
         if run_cfg:
             configs = self.env['hr.formula.config'].browse(list(set(run_cfg.values()))).exists()
             cfg_cycle = {c.id: (getattr(c, 'cycle_type', '') or '') for c in configs}
+            # SCHEMECTX P1 — the run's own SCHEME decides the sign. It used to
+            # come from the company, so a run of an India scheme was written
+            # in dong.
+            cfg_sym = {c.id: (c.currency_id.symbol or c.currency_id.name or '')
+                       for c in configs if c.currency_id}
 
-        # currency symbol per run comes from the run's COMPANY currency (the run
-        # has no company_id, and its stored pb_currency_id can be stale — some
-        # demo runs computed under a different company context), so a single VN
-        # company shows ₫ consistently and multi-company shows each currency.
+        # No scheme on the run (traditional structure payroll): the company's
+        # money, which is the answer this screen always gave. The run's own
+        # stored `pb_currency_id` is deliberately not read — some demo runs
+        # computed it under a different company context.
         comp_sym = {}
         comp_ids = list({c[0] for c in run_comp.values() if c})
         if comp_ids:
             for co in self.env['res.company'].browse(comp_ids).exists():
-                comp_sym[co.id] = (co.currency_id.symbol or u'₫')
-        default_sym = self.env.company.currency_id.symbol or u'₫'
+                comp_sym[co.id] = (co.currency_id.symbol or co.currency_id.name or '')
+        default_cur = self.env.company.currency_id
+        default_sym = default_cur.symbol or default_cur.name or ''
 
         cards = []
         for r in runs:
             comp = run_comp.get(r.id)
-            sym = comp_sym.get(comp[0], default_sym) if comp else default_sym
+            sym = cfg_sym.get(run_cfg.get(r.id)) \
+                or (comp_sym.get(comp[0], default_sym) if comp else default_sym)
             cards.append(self._run_card(r, cfg_cycle.get(run_cfg.get(r.id), ''), comp, sym))
         return {
             'ok': True,

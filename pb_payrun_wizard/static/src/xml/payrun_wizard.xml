@@ -133,7 +133,7 @@
                         <div class="pw-sec" data-coach="pw-summary">
                             <h4>Scope</h4>
                             <div class="pw-kv"><span>Company</span><b t-esc="state.defaults.company"/></div>
-                            <div class="pw-kv"><span>Currency</span><b t-esc="state.defaults.currency"/></div>
+                            <div class="pw-kv"><span>Currency</span><b t-esc="moneyLabel"/></div>
                             <div class="pw-kv" t-if="chosenScheme"><span>Payroll scheme</span><b t-esc="chosenScheme.name"/></div>
                             <div class="pw-kv" t-elif="divInfo"><span>Configuration</span><b t-esc="divInfo.config"/></div>
                             <div class="pw-kv"><span>Eligible employees</span><b t-esc="eligibleCount"/></div>

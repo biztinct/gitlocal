@@ -1936,7 +1936,10 @@ export class PbFormulaStudio extends Component {
         return mx ? Math.round(100 * n / mx) : 0;
     }
     get whatifHistLabels() {
-        return { lt10k: "< ₫10k", lt100k: "< ₫100k", lt1m: "< ₫1M", lt10m: "< ₫10M", ge10m: "≥ ₫10M" };
+        // SCHEMECTX P1 — the sign follows the scheme, not Vietnam. A rupee
+        // scheme showed its bands in dong.
+        const c = this.state.config.currency || "₫";
+        return { lt10k: `< ${c}10k`, lt100k: `< ${c}100k`, lt1m: `< ${c}1M`, lt10m: `< ${c}10M`, ge10m: `≥ ${c}10M` };
     }
 
     // ---- Release bundles + sign-off (B3) ----
@@ -4460,7 +4463,10 @@ export class PbFormulaStudio extends Component {
         return mx ? Math.round(100 * n / mx) : 0;
     }
     get simHistLabels() {
-        return { lt10k: "< ₫10k", lt100k: "< ₫100k", lt1m: "< ₫1M", lt10m: "< ₫10M", ge10m: "≥ ₫10M" };
+        // SCHEMECTX P1 — the sign follows the scheme, not Vietnam. A rupee
+        // scheme showed its bands in dong.
+        const c = this.state.config.currency || "₫";
+        return { lt10k: `< ${c}10k`, lt100k: `< ${c}100k`, lt1m: `< ${c}1M`, lt10m: `< ${c}10M`, ge10m: `≥ ${c}10M` };
     }
     fmtSigned(v) {
         const n = Math.round(v || 0);

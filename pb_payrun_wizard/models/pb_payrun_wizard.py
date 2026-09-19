@@ -99,8 +99,32 @@ class PbPayrunWizard(models.AbstractModel):
                 # the same place — see `pb_demo`'s reconciliation.
                 'division': (config.pb_division or ''
                              if 'pb_division' in config._fields else ''),
+                # SCHEMECTX P1 — the money THIS scheme pays in, carried on the
+                # card so the Scope panel changes the instant another card is
+                # picked. It travels as a dict because the web client's
+                # currency map holds active currencies only (SC2), and most
+                # countries' money ships switched off.
+                'currency': self._scheme_currency(config),
             })
         return cards
+
+    @api.model
+    def _scheme_currency(self, config=None):
+        """How to write a scheme's money. The company's when there is no scheme."""
+        if config is not None and config and hasattr(config, 'scheme_currency'):
+            try:
+                return config.scheme_currency()
+            except Exception:   # noqa: BLE001 — the picker must appear
+                _logger.exception('Could not read the scheme currency')
+        currency = self.env.company.currency_id
+        return {
+            'id': currency.id,
+            'name': currency.name or '',
+            'symbol': currency.symbol or currency.name or '',
+            'position': currency.position or 'after',
+            'decimals': currency.decimal_places
+            if currency.decimal_places is not None else 2,
+        }
 
     @api.model
     def _cycle_label(self, cycle_type):
@@ -367,13 +391,20 @@ class PbPayrunWizard(models.AbstractModel):
         structs = self.env['hr.payroll.structure'].search([], limit=50)
         emp_ids = self._eligible_employees()
         schemes = self._scheme_cards()
+        # SCHEMECTX P1 — the Scope panel opens on the money the PRE-SELECTED
+        # scheme pays in. With no scheme (no formula engine, or more than one
+        # to choose from) it is the company's, which is what it always was.
+        preselected = schemes[0]['id'] if len(schemes) == 1 else 0
+        currency = next(
+            (s['currency'] for s in schemes if s['id'] == preselected),
+            self._scheme_currency())
         return {
             'name': 'Payroll %s' % start.strftime('%B %Y'),
             'date_start': start.isoformat(),
             'date_end': end.isoformat(),
             'company': self.env.company.name,
             'company_id': self.env.company.id,
-            'currency': self.env.company.currency_id.name or 'VND',
+            'currency': currency,
             'structures': [{'id': s.id, 'name': s.name} for s in structs],
             # GROUP P2 — the schemes this company runs. Empty on a database
             # with no formula engine, in which case the wizard shows no picker

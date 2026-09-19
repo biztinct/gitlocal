@@ -47,7 +47,14 @@ class HrPayslip(models.Model):
         self.ensure_one()
         emp = self.employee_id
         company = self.company_id or self.env.company
-        cur = company.currency_id
+        # SCHEMECTX P1 — the payslip is written in the money its own scheme
+        # pays in. The company's is the answer only for a slip with no scheme
+        # behind it, which is what this always was.
+        cur = False
+        config = getattr(self, 'formula_config_id', False)
+        if config and getattr(config, 'currency_id', False):
+            cur = config.currency_id
+        cur = cur or company.currency_id
 
         # Line-level statement. Lines are bucketed by their salary-rule category
         # (type/code), NOT just by sign, so:

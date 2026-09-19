@@ -271,6 +271,22 @@ class HrPayslipRun(models.Model):
             run.pb_division = div
             run.pb_division_label = div.replace('_', ' ').title() if div else ''
 
+    def _pb_scheme_currency(self):
+        """The money this run's SCHEME pays in, or an empty recordset.
+
+        SCHEMECTX P1. The run itself may name the scheme (`pb_formula_config_id`
+        on a build that has that field); otherwise the payslips do. Empty when
+        the run has no scheme at all, and the caller then falls back to the
+        company — the answer this field always gave.
+        """
+        self.ensure_one()
+        config = False
+        if 'pb_formula_config_id' in self._fields:
+            config = self.pb_formula_config_id
+        if not config:
+            config = self.slip_ids.mapped('formula_config_id')[:1]
+        return config.currency_id if config else self.env['res.currency'].browse()
+
     #: Category codes that still mean something when a line carries no pay role.
     _PB_CATEGORY_BUCKETS = ('NET', 'GROSS', 'DED', 'DEDUCTION', 'COMP',
                             'BASIC', 'ALW')
@@ -312,7 +328,9 @@ class HrPayslipRun(models.Model):
             END""" % (str(self._PB_CATEGORY_BUCKETS),))
 
     @api.depends('slip_ids', 'slip_ids.line_ids', 'slip_ids.line_ids.total',
-                 'slip_ids.line_ids.category_id', 'slip_ids.state')
+                 'slip_ids.line_ids.category_id', 'slip_ids.state',
+                 'slip_ids.formula_config_id',
+                 'slip_ids.formula_config_id.currency_id')
     def _compute_pb_totals(self):
         # Aggregate in SQL — iterating slip_ids.line_ids through the ORM reads
         # hundreds of thousands of records at scale and hangs the kanban.
@@ -323,7 +341,12 @@ class HrPayslipRun(models.Model):
             run.pb_total_employer_cost = 0.0
             run.pb_unsourced_count = 0
             company = getattr(run, 'company_id', False) or self.env.company
-            run.pb_currency_id = company.currency_id or default_cur
+            # SCHEMECTX P1 — a run belongs to a scheme, and the scheme's
+            # country decides the money. The company's is the answer only
+            # when the run has no scheme behind it (traditional structure
+            # payroll), which is what it always was.
+            run.pb_currency_id = (run._pb_scheme_currency()
+                                  or company.currency_id or default_cur)
         run_ids = [r.id for r in self if r.id]
         if not run_ids:
             return
