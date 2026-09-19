@@ -185,6 +185,15 @@ back that way and was only caught because the tree hashes disagreed. **Hash
 both trees after every wave** — the version numbers matched perfectly while the
 trees did not.
 
+**SC16 — a payload the server sends is not a payload the screen uses.**
+`pb_payrun_ledgers`'s `get_detail` has always returned a `currency` key, and
+`ledger.js` dropped it and formatted the drawer with the GRID's sign instead.
+Fixing the server alone would have passed a test and changed nothing on
+screen. Where a per-row payload and a per-list payload carry the same key,
+check which one the component actually reads before calling a currency fix
+done. Its twin: a hardcoded `"₫"` fallback behind a server value (`… || "₫"`)
+hides the bug you just fixed, so remove the literal at the same time.
+
 **SC7 — the "group totals will leave this out" hint needs a group.** Gate any
 consolidation warning on `pb.fx.group_for(company)`: on a single-company
 tenant `presentation_currency` still answers and `rate()` still says

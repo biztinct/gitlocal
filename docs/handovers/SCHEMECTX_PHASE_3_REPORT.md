@@ -275,3 +275,93 @@ modified files were left alone. Nothing pushed.
 3. **PayAI on `rize`** has no model configured, and its screen uses emoji.
 4. **`pb_payrun_ledgers`** still carries Phase 1's currency defect. Raised by
    Phase 1, deferred by Phase 2, deferred again here.
+
+---
+
+## 15. Follow-up: drawer currency (2026-09-19)
+
+Items 1 and 4 of §14 are closed. Both were the same defect in two places: a
+scheme-owned screen reading its money off `env.company.currency_id`.
+
+**The contract drawer and the contract detail screen** (`pb_contracts`
+19.0.1.8.0). `_cd_symbol(contract)` is the one accessor: it probes
+`hr.formula.config.schemes_for_employee` and takes `scheme_currency()['symbol']`
+from the FIRST scheme (regular before advance), falling back to the contract's
+company. The whole probe sits inside `_safe`, so a registry without the scheme
+models, an employee-less contract and a person nobody pays all answer the
+company's money instead of costing the drawer. Every reader already threaded a
+`symbol` through `_cd_money`, so the header sentence, the terms, the component
+cells, the window hints, the history lines and both refusal paths moved with
+it. `get_contract_detail` now calls the same helper, and
+`contract_detail.js`'s hardcoded `"₫"` fallback is gone. The DRAWER's own JS
+never formatted money itself — it reads the sentences the server wrote — so it
+needed nothing, which is the first time that design paid for itself. The
+contracts BOARD is deliberately untouched: its KPI strip totals every contract
+in the company across schemes, and one sign over a mixed total would be a
+worse lie than the company's own.
+
+**The three pay-run ledgers** (`pb_payrun_ledgers` 19.0.1.2.0). Full & Final,
+Proration Audit and Retro Adjustments each carry `formula_config_id` on every
+row. The drawer is one row and takes that row's scheme currency outright; the
+grid is one sign over a list AND a KPI strip that totals the whole domain, so
+it groups by `formula_config_id` and takes the scheme's money only when the
+rows agree, keeping the company's when they do not. `ledger.js`'s hardcoded
+`"₫"` went the same way as the contracts one.
+
+### 15.1 Tests
+
+| # | Case | Result |
+|---|---|---|
+| 1 | IN scheme in a VND company → payload sign, wage sentence, component cell and window hint all in ₹ | **PASS** `pb_contracts` `TestSchemeCtxP3Currency.test_01` |
+| 2 | Nobody pays this person → the company's ₫ | **PASS** `test_02` |
+| 3 | Probe absent (`env.get('hr.formula.config')` patched to answer nothing) → the company's ₫, and the rupees return when it is back | **PASS** `test_03` |
+| 4 | Save and preview: the bounds refusal and the fresh payload both in ₹, and nothing written | **PASS** `test_04` |
+| 5 | An Indian proration opens in ₹, a Vietnamese one in ₫, a mixed grid stays on the company's money, a single-scheme one takes the scheme's | **PASS** `pb_payrun_ledgers` `TestSchemeCtxLedgerCurrency.test_01` |
+
+`/pb_contracts` 74 tests and `/pb_payrun_ledgers` 3 on `rztest`, scoped
+`-u pb_contracts,pb_payrun_ledgers`, ports 8199/8198: **0 failed, 0 errors**.
+No baseline needed — nothing was red.
+
+### 15.2 The wave
+
+Deployed from a clean staging directory, per-module `rsync --delete` into each
+module's own subdirectory, upgraded on all six databases in a detached
+`systemd-run` unit with a sentinel, assets purged and `web.assets.version`
+bumped per database, service restarted (registry loaded in 7.1s). Both trees
+hash identical to the repo, and `payobook`, `abm`, `payobook_template`,
+`rize`, `rztest` and `p9clone` all read `pb_contracts=19.0.1.8.0` and
+`pb_payrun_ledgers=19.0.1.2.0`.
+
+### 15.3 Browser, on the owner's `rize` session
+
+* **Contract drawer, Engineering, paid by Rize India Payroll** (Pranav Sanjay
+  Nalawade): header and Terms read `₹0`, the Components tab names "Rize India
+  Payroll · India" and both of that scheme's components read `₹0`. **PASS**
+* **Contract drawer, nobody pays them** (Demo Le Thi Hoa): `₫32,000,000`.
+  **PASS**
+* **Run payroll, step 1** — §14.4's NOT SEEN item, and the coordinator is
+  right that no run is needed: the scheme cards and the Scope panel render
+  before anything exists. Clicking **Rize India Payroll** turned Scope to
+  `INR · ₹` (7 eligible), clicking **Rize Vietnam Payroll** turned it to
+  `VND · ₫` (0 eligible). Closed with Cancel; `hr_payslip_run` on `rize` is
+  still empty, so nothing was created. **PASS**
+* **Proration Audit cockpit** loads clean after the JS change (empty on
+  `rize`, `₫0` total).
+* Console: **no errors and no warnings** on any of the four screens.
+
+Screenshots were taken to the session scratchpad, not the repo.
+
+### 15.4 One more gotcha — SC16
+
+**A payload the server sends is not a payload the screen uses.**
+`pb_payrun_ledgers` `get_detail` has always returned a `currency`, and
+`ledger.js` dropped it on the floor and formatted the drawer with the GRID's
+sign instead. Fixing the server alone would have looked correct in a test and
+changed nothing on screen. When a per-row payload and a per-list payload both
+carry the same key, check which one the component actually reads before
+calling a currency fix done.
+
+### 15.5 Still open
+
+§14 items 2 (the clean-up on `payobook` and `p9clone`) and 3 (PayAI on `rize`)
+are untouched and remain the owner's.
