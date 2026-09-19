@@ -105,6 +105,29 @@ a root-owned redirection instead:
 identical on a clean worktree of `HEAD` — they are data-dependent on that
 database, not a regression. Always take the baseline before blaming a phase.
 
+**SC8 — a scheme's component scope is its DECLARED contract components PLUS
+any other rule of that scheme whose code the catalogue already carries a row
+for.** Phase 2's handover said the scope was `pb_records._component_rules`'s
+domain alone (`is_contract_component` or `is_text_component`). That is the
+right set in live data — `hr.contract.advantage.template` rows are only ever
+made by `_get_or_create_advantage_template`, which is fed by exactly those
+rules — but the two CAN drift: a rule that was a contract component once, a
+template made by hand or by an older import. This list decides what a contract
+is ALLOWED TO DISPLAY, so the safe direction is to show a component the scheme
+has a rule for, never to hide one. The second half is bounded by the catalogue
+(`code in` the scheme's own rule codes), so a code belonging only to ANOTHER
+scheme is still out — which is the whole defect and is pinned by a test.
+
+**SC9 — removing the create-time fan-out breaks every fixture that relied on
+it.** `hr.contract.create` used to give a new contract one line per catalogue
+row, and a dozen test suites make a template, make a contract and expect to
+find a line. After Phase 2 the fixture has to lay the lines down itself
+(`pb_contracts/tests/scheme_scope.py:catalogue_lines`) AND say who pays the
+person (`paid_by`), because an `unassigned` person's drawer shows only the
+lines that hold a value. Both are one call each; the suites that already wrote
+"reuse the seeded line if there is one, else create it" (CR18's wording) needed
+no change at all.
+
 **SC7 — the "group totals will leave this out" hint needs a group.** Gate any
 consolidation warning on `pb.fx.group_for(company)`: on a single-company
 tenant `presentation_currency` still answers and `rate()` still says
