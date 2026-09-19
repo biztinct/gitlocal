@@ -1,0 +1,112 @@
+# SCHEMECTX — conventions and gotcha ledger
+
+Programme opened 2026-09-19. Three owner findings on `rize.payobook.com`:
+
+| Phase | Finding | Handover |
+|---|---|---|
+| 1 | An India scheme pays in dong — currency must follow the scheme's country | `SCHEMECTX_PHASE_1_HANDOVER.md` |
+| 2 | Every contract carries every scheme's components — they must follow the person's scheme and country, and analytics must group/filter by both | `SCHEMECTX_PHASE_2_HANDOVER.md` |
+| 3 | The studio Settings tab must open the guided journey in edit mode, pre-filled, Active schemes included | `SCHEMECTX_PHASE_3_HANDOVER.md` |
+
+The approved plan is `/Users/adity/.claude/plans/1-when-a-new-twinkling-llama.md`.
+
+## 0. Binding rules for every phase
+
+Rules 1–6 of `docs/handovers/RUNSRC_LEDGER.md` §0 bind here **verbatim** (plain
+English + never "Odoo" in a user-visible string; the design bar — extreme WOW,
+intuitive, out-of-this-world, best in class, Lucide not emoji; browser
+validation mandatory with the console read; commit per feature, explicit
+staging, no push; the ONE-addons-directory deploy contract across the SIX
+databases `payobook`, `abm`, `payobook_template`, `rize`, `rztest`, `p9clone`;
+tests reported by number with evidence). Read that section before anything else.
+
+Additional, programme-specific:
+
+7. **Never edit `pb_formula_studio/models/pb_formula_studio.py`.** Extend with
+   `_inherit = 'pb.formula.studio'` (BLUEPRINT ledger rule 7). Its JS/XML may
+   be edited.
+8. **A read RPC never writes** (BP53). Adoption, lazy line creation, clean-up —
+   all of them are explicit write calls.
+9. **Never activate a currency** to make a lookup work. Activating one flips
+   the multi-currency group for every user. Look it up with
+   `active_test=False` and carry its symbol in the payload.
+10. **Owner rulings 2026-09-19, do not re-litigate**: (a) every Settings field
+    moves into the journey and the old panel is retired; (b) out-of-scheme
+    contract lines are hidden, and the zero-value ones are deleted after a
+    backup — a non-zero line is NEVER deleted and never silently hidden;
+    (c) the journey opens for Active schemes, with safety locks.
+11. **Validate on `rize.payobook.com`** — the two schemes there are not live
+    and no parent/group is in use; the owner has cleared free testing there.
+    Run destructive or fixture-heavy tests on `rztest`. `abm` is retired
+    (still upgraded, never used for validation). The rize login is NOT in any
+    document — if no session is open in Chrome, say so in the report; do not
+    guess or reset a password.
+12. **PO rules**: read memory `po-translation-loading-rules` facts as restated
+    in `APPROVAL_MATRIX_CLOSEOUT.md`; run the PO parse gate before a deploy
+    wave. New strings ship EN + VI.
+13. **Test recipe**: `odoo-bin -c /etc/odoo-server.conf -d rztest -u <module>
+    --test-enable --test-tags /<module> --stop-after-init --max-cron-threads=0
+    --http-port=8199 --gevent-port=8198 '--db-filter=.*' --logfile=…`. Never
+    `--test-tags` without a scoping `-u`. Deploy upgrades run in a detached
+    `systemd-run` unit with a sentinel file; never `pkill -f odoo-bin`; after
+    JS/SCSS purge `/web/assets/%` AND bump `web.assets.version` per DB.
+
+## 1. Inherited facts — do NOT re-derive
+
+* Scheme model `hr.formula.config`: `pb_hr_payroll_formula/models/formula_config.py:27`;
+  `country_code` Selection `:104-113`; stored computed `country_id` `:115-120`,
+  `currency_id` `:122-127`; computes `:836-864`.
+* Person → scheme: `hr.employee.pb_paid_by_id` (`pb_scheme_map/models/hr_employee.py:47-60`);
+  `pb.scheme.map.resolve` `pb_scheme_map/models/pb_scheme_map.py:271`, `resolve_many :336`, `coverage :458`.
+* rize schemes: `Rize Vietnam` (3921), `Rize Vietnam Payroll` (3938), plus `Rize India Payroll` (RS3).
+* Journey: tag `pb_blueprint`, arrival params `config_id/step/task` `pb_blueprint/static/src/js/blueprint.js:209-222`;
+  URL state needs `router.pushState` + `onMounted` re-assert (BP14/BP38).
+
+## 2. Gotchas (append here as SC<n>)
+
+**SC1 — INR (and most non-company currencies) ship `active=False`.** A plain
+`res.currency.search([('name','=',…)])` returns nothing and any `or company
+currency` fallback then silently lies. Every currency lookup by name or by
+country uses `.with_context(active_test=False)`.
+
+**SC2 — the web client's session currency map holds active currencies only.**
+A stock Monetary widget pointed at an inactive currency renders a bare number.
+Scheme amounts are formatted from a currency dict carried in the payload
+(`{id, name, symbol, position, decimals}`), never from the session map.
+
+**SC3 — carry the SYMBOL from `res.currency`, never the POSITION.** Base data
+records VND as written *after* the number (`position: 'after'`, 0 decimals).
+Every Payobook screen — studio, payslip, results, wizard — has always written
+the sign in front. Honouring the stored side would have flipped every
+Vietnamese amount in the product while fixing India. Phase 1's `formatMoney`
+therefore takes `symbol` from the payload and always prefixes it; the dict
+still carries `position` for anything that genuinely needs it.
+
+**SC4 — a stored compute only heals when something it depends on changes.**
+`hr.formula.config.currency_id` depends on `country_code`, and a scheme's
+country never changes again, so a row written while the lookup was broken
+stays broken forever. The heal is `configs._compute_currency_id()` followed by
+`configs.flush_recordset(['currency_id'])` in a migration — assigning inside
+the compute marks the stored field dirty, which is what makes it land. Note
+that `flush_recordset` flushes *everything* pending for that model, so a
+compute that sets several fields writes all of them.
+
+**SC5 — `/odoo` is `drwxr-x--- odoo:odoo`, so `postgres` cannot write a dump
+there.** `sudo -u postgres pg_dump -f /odoo/backups/...` fails with "Permission
+denied" even after `chown`, because the traverse fails one level up. Dump with
+a root-owned redirection instead:
+`sudo bash -c "sudo -u postgres pg_dump -Fc -d <db> > /odoo/backups/<dir>/<db>.dump"`.
+
+**SC6 — `rztest` carries a June 2026 pay run, and 20 tests in
+`pb_payrun_wizard` / `pb_hr_payroll_formula` are red there because of it**
+(`prepare_run` answers `needs_confirmation` instead of `adopted`, and three
+`TestStructurelessPayslip` cases plus `TestNetRoleClassifier.test_24`,
+`TestJourneyJ10Writeback.test_13b`, `TestRd49SyncCost.test_01a`). Verified
+identical on a clean worktree of `HEAD` — they are data-dependent on that
+database, not a regression. Always take the baseline before blaming a phase.
+
+**SC7 — the "group totals will leave this out" hint needs a group.** Gate any
+consolidation warning on `pb.fx.group_for(company)`: on a single-company
+tenant `presentation_currency` still answers and `rate()` still says
+`known: False` for all seven foreign currencies, which would paint seven amber
+lines on a screen where nothing is wrong.
