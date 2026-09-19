@@ -162,3 +162,7 @@ from . import test_runsrc_pc_pay_run_source
 
 # RUNSRC D — the run's six numbers reach a transformation rule, in every lane.
 from . import test_runsrc_pd_transformations
+
+# SCHEMECTX P1 — a scheme pays in the money of its own country, even when
+# that currency ships switched off.
+from . import test_schemectx_currency

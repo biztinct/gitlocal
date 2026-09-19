@@ -147,11 +147,16 @@ class HrPayrollStructure(models.Model):
             
             if currency_code:
                 try:
-                    currency = self.env['res.currency'].search([
-                        ('name', '=', currency_code),
-                        ('active', '=', True)
-                    ], limit=1)
-                    
+                    # SCHEMECTX P1 / SC1 — base data ships every currency but
+                    # the company's own as inactive, so the old
+                    # ('active','=',True) clause found no INR and the field
+                    # kept whatever it already held. Never activate one:
+                    # that flips the multi-currency switch for every user.
+                    currency = self.env['res.currency'].sudo().with_context(
+                        active_test=False).search([
+                            ('name', '=', currency_code),
+                        ], limit=1)
+
                     if currency:
                         self.currency_id = currency.id
                 except Exception as e:

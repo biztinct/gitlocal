@@ -18,6 +18,18 @@ _logger = logging.getLogger(__name__)
 # the Run Payroll wizard never walks a year of history to draw four chips.
 _SIGNAL_STATUS_BATCH_SCAN = 8
 
+# SCHEMECTX P1 — the money a scheme pays in follows its country, full stop.
+# One dict, one lookup, so the wizard, the studio, the journey and the fact
+# builder can never disagree about what an India scheme pays in.
+COUNTRY_CURRENCY = {
+    'VN': 'VND', 'ID': 'IDR', 'IN': 'INR', 'SG': 'SGD',
+    'MY': 'MYR', 'TH': 'THB', 'KH': 'KHR', 'PH': 'PHP',
+}
+
+# The ISO code of the `res.country` row each scheme country maps to. Kept
+# beside the currency map because the two are read together.
+COUNTRY_ISO = {code: code for code in COUNTRY_CURRENCY}
+
 
 class HrFormulaConfig(models.Model):
     """
@@ -835,33 +847,100 @@ class HrFormulaConfig(models.Model):
 
     @api.depends('country_code')
     def _compute_country_id(self):
-        country_mapping = {
-            'VN': 'VN', 'ID': 'ID', 'IN': 'IN', 'SG': 'SG',
-            'MY': 'MY', 'TH': 'TH', 'KH': 'KH', 'PH': 'PH'
-        }
         for record in self:
             if record.country_code:
                 country = self.env['res.country'].search([
-                    ('code', '=', country_mapping.get(record.country_code))
+                    ('code', '=', COUNTRY_ISO.get(record.country_code))
                 ], limit=1)
                 record.country_id = country
             else:
                 record.country_id = False
 
-    @api.depends('country_code')
+    @api.model
+    def _currency_for_country(self, country_code):
+        """The money a country pays in — INACTIVE currencies included.
+
+        SC1: base data ships every currency but the company's own as
+        `active=False`. A plain search therefore finds no INR, the old code
+        then fell through to the company's currency, and an India scheme
+        silently paid in dong. Read with `active_test=False` and never
+        activate anything: activating a currency flips the multi-currency
+        switch for every user on the database.
+
+        Returns an empty recordset when the country is unknown — the caller
+        decides what "no answer" means.
+        """
+        code = (country_code or '').upper()
+        if not code:
+            return self.env['res.currency'].browse()
+        Currency = self.env['res.currency'].sudo().with_context(
+            active_test=False)
+        name = COUNTRY_CURRENCY.get(code)
+        if name:
+            found = Currency.search([('name', '=', name)], limit=1)
+            if found:
+                return found
+        # No entry in the map, or the database has no row for that name: ask
+        # the country itself, which carries its own currency in base data.
+        country = self.env['res.country'].sudo().with_context(
+            active_test=False).search([('code', '=', code)], limit=1)
+        if country and country.currency_id:
+            return country.currency_id.sudo()
+        return self.env['res.currency'].browse()
+
+    @api.depends('country_code', 'company_id')
     def _compute_currency_id(self):
-        currency_mapping = {
-            'VN': 'VND', 'ID': 'IDR', 'IN': 'INR', 'SG': 'SGD',
-            'MY': 'MYR', 'TH': 'THB', 'KH': 'KHR', 'PH': 'PHP'
-        }
         for record in self:
-            if record.country_code:
-                currency = self.env['res.currency'].search([
-                    ('name', '=', currency_mapping.get(record.country_code))
-                ], limit=1)
-                record.currency_id = currency or self.env.company.currency_id
-            else:
-                record.currency_id = self.env.company.currency_id
+            currency = self._currency_for_country(record.country_code)
+            # The record's OWN company first. The old code reached for
+            # `env.company`, so a scheme filed under another company took the
+            # currency of whoever happened to be looking at it.
+            record.currency_id = currency or record.company_id.currency_id \
+                or self.env.company.currency_id
+
+    def scheme_currency(self):
+        """How to write this scheme's money — as a plain dict.
+
+        SC2: the web client's currency map holds ACTIVE currencies only, so a
+        stock Monetary widget pointed at INR renders a bare number. Every
+        screen that shows a scheme's amounts is handed this dict instead and
+        formats from it.
+
+        Safe on an empty recordset: the answer is then the company's money.
+        """
+        currency = self[:1].currency_id if self else False
+        if not currency:
+            currency = self.env.company.currency_id
+        return {
+            'id': currency.id,
+            'name': currency.name or '',
+            'symbol': currency.symbol or currency.name or '',
+            'position': currency.position or 'after',
+            'decimals': currency.decimal_places
+            if currency.decimal_places is not None else 2,
+        }
+
+    @api.model
+    def currency_by_country(self):
+        """What each country on the picker pays in. A pure read — no writes.
+
+        Feeds the guided journey's live "Pays in …" chip, so the person sees
+        the answer before the configuration exists.
+        """
+        out = {}
+        for code, _label in self._fields['country_code'].selection:
+            currency = self._currency_for_country(code)
+            if not currency:
+                currency = self.env.company.currency_id
+            out[code] = {
+                'id': currency.id,
+                'name': currency.name or '',
+                'symbol': currency.symbol or currency.name or '',
+                'position': currency.position or 'after',
+                'decimals': currency.decimal_places
+                if currency.decimal_places is not None else 2,
+            }
+        return out
 
     @api.depends('rule_ids', 'rule_ids.column_type')
     def _compute_rule_count(self):
