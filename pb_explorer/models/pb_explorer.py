@@ -125,9 +125,16 @@ _DIMENSIONS = {
                       'col': 'config_id'},
     'job_id':        {'label': 'Job position','model': 'hr.job'},
     'company_id':    {'label': 'Company',     'model': 'res.company'},
-    # Derived from the company: a fact row carries no country of its own, and
+    # Derived, not stored: a fact row carries no country of its own, and
     # inventing a column for something that is one join away would be a second
     # place for the answer to be wrong.
+    #
+    # SCHEMECTX P2 — THE SCHEME ANSWERS FIRST. A row that belongs to a payroll
+    # scheme takes that SCHEME's country; only a row with no scheme falls back
+    # to its company's. An India scheme run inside a Vietnamese company is
+    # India, which is the whole point of the dimension, and reading the company
+    # alone filed it under Vietnam. The grouping and the FILTER are derived the
+    # same way, or a chart and its own chip disagree.
     'country':       {'label': 'Country',     'model': 'res.country',
                       'col': 'company_id', 'derive': 'country'},
     'group':         {'label': 'Group',       'model': 'pb.group',
@@ -795,9 +802,18 @@ class PbExplorer(models.AbstractModel):
                 continue                  # unreachable: _resolve_table refused
             if table == 'line' and key in ('employee_id', 'job_id'):
                 continue
-            if key in ('country', 'group'):
-                # No column of their own: a country and a group are sets of
-                # companies, so they become the one predicate the facts carry.
+            if key == 'country':
+                # SCHEMECTX P2 — the filter is derived exactly the way the
+                # GROUPING is (`_dim_remap`): the row's scheme first, its
+                # company only when it has no scheme. Anything else and the
+                # chart and its own chip disagree about which rows are India.
+                sql, bound = self._country_clause(vals)
+                clauses.append(sql)
+                params.extend(bound)
+                continue
+            if key == 'group':
+                # No column of its own: a group is a set of companies, so it
+                # becomes the one predicate the facts carry.
                 company_ids = self._companies_for(key, vals)
                 if not company_ids:
                     # Nothing matched — say so with an impossible predicate
@@ -839,6 +855,13 @@ class PbExplorer(models.AbstractModel):
         d = spec['dimension']
         if d == 'none':
             return 'NULL::int', None
+        if d == 'country':
+            # SCHEMECTX P2 — a country needs BOTH halves of the answer, so the
+            # aggregate carries them as one text key and `_dim_remap` decides
+            # which one wins. Still one statement, still no join in the hot
+            # path: the distinct pairs are counted in dozens.
+            return ("(COALESCE(config_id, 0)::text || ':' "
+                    "|| COALESCE(company_id, 0)::text)", 'company_id')
         col = _DIMENSIONS[d].get('col', d)
         return col, col
 
@@ -921,21 +944,105 @@ class PbExplorer(models.AbstractModel):
         derive = _DIMENSIONS[spec['dimension']].get('derive')
         if not derive:
             return rows
+
+        if derive == 'country':
+            # `dkey` arrives as "<config_id>:<company_id>" (`_dim_expr`).
+            pairs = []
+            config_ids, company_ids = set(), set()
+            for dkey, tkey, ckey, val in rows:
+                config_id = company_id = 0
+                if dkey:
+                    left, _sep, right = str(dkey).partition(':')
+                    config_id = int(left or 0)
+                    company_id = int(right or 0)
+                pairs.append((config_id, company_id, tkey, ckey, val))
+                if config_id:
+                    config_ids.add(config_id)
+                if company_id:
+                    company_ids.add(company_id)
+            by_config = self._scheme_countries(config_ids)
+            companies = self.env['res.company'].sudo().with_context(
+                active_test=False).browse(sorted(company_ids)).exists()
+            by_company = {c.id: (c.country_id.id or None) for c in companies}
+            merged = {}
+            for config_id, company_id, tkey, ckey, val in pairs:
+                key = by_config.get(config_id) or by_company.get(company_id)
+                merged[(key, tkey, ckey)] = merged.get((key, tkey, ckey), 0.0) \
+                    + float(val or 0.0)
+            return [(k[0], k[1], k[2], v) for k, v in merged.items()]
+
         ids = {r[0] for r in rows if r[0]}
         companies = self.env['res.company'].sudo().with_context(
             active_test=False).browse([int(i) for i in ids]).exists()
-        if derive == 'country':
-            up = {c.id: (c.country_id.id or None) for c in companies}
-        else:
-            has_group = 'pb_group_id' in self.env['res.company']._fields
-            up = {c.id: ((c.pb_group_id.id or None) if has_group else None)
-                  for c in companies}
+        has_group = 'pb_group_id' in self.env['res.company']._fields
+        up = {c.id: ((c.pb_group_id.id or None) if has_group else None)
+              for c in companies}
         merged = {}
         for dkey, tkey, ckey, val in rows:
             key = up.get(int(dkey)) if dkey else None
             merged[(key, tkey, ckey)] = merged.get((key, tkey, ckey), 0.0) \
                 + float(val or 0.0)
         return [(k[0], k[1], k[2], v) for k, v in merged.items()]
+
+    # ------------------------------------------------- SCHEMECTX P2: country
+    def _scheme_countries(self, config_ids=None):
+        """`{config_id: country_id}` for the payroll schemes on this database.
+
+        The engine is an OPTIONAL dependency of nothing here — the facts carry
+        a bare integer `config_id` — so the model is probed, never imported.
+        """
+        Config = self.env.get('hr.formula.config')
+        if Config is None:
+            return {}
+        records = Config.sudo().browse(
+            sorted(int(i) for i in (config_ids or []) if i)).exists() \
+            if config_ids else Config.sudo().search([])
+        return {c.id: (c.country_id.id or None) for c in records}
+
+    def _configs_for_country(self, vals):
+        """The payroll schemes a country id or ISO code stands for.
+
+        Matched in PYTHON over the handful of schemes on the database, for the
+        same reason `_companies_for` does it (ledger GR6/GR20) and because the
+        caller may hand over either an id or a two-letter code.
+        """
+        Config = self.env.get('hr.formula.config')
+        if Config is None:
+            return []
+        ids = {int(v) for v in vals if str(v).lstrip('-').isdigit()}
+        codes = {str(v).upper() for v in vals if v}
+        out = []
+        for config in Config.sudo().search([]):
+            country = config.country_id
+            if country and (country.id in ids
+                            or (country.code or '').upper() in codes):
+                out.append(config.id)
+        return out
+
+    def _country_clause(self, vals, fact='', slip=''):
+        """`(sql, params)` for "this row belongs to this country".
+
+        The scheme answers first, the company answers for a row that has no
+        scheme. `fact` and `slip` are the table aliases when the statement has
+        them (the drill joins three tables); the aggregate has none.
+        """
+        fact = (fact + '.') if fact else ''
+        slip = (slip + '.') if slip else fact
+        config_ids = self._configs_for_country(vals)
+        company_ids = self._companies_for('country', vals)
+        parts, params = [], []
+        if config_ids:
+            parts.append('%sconfig_id IN %%s' % fact)
+            params.append(tuple(config_ids))
+        if company_ids:
+            parts.append('(COALESCE(%sconfig_id, 0) = 0 AND %scompany_id IN %%s)'
+                         % (fact, slip))
+            params.append(tuple(company_ids))
+        if not parts:
+            # Nothing matched. Say so with an impossible predicate rather than
+            # dropping the filter and showing figures nobody asked for.
+            return '%scompany_id IN %%s' % slip, [(0,)]
+        return '(%s)' % ' OR '.join(parts), params
 
     def _query_one(self, spec, table, run_ids, measure_key, limit=None):
         """One measure, shaped — and, when the money is in more than one
@@ -1853,7 +1960,12 @@ class PbExplorer(models.AbstractModel):
             elif dim == 'company_id':
                 clauses.append('p.company_id = %s')
                 params.append(int(series_key))
-            elif dim in ('country', 'group'):
+            elif dim == 'country':
+                sql, bound = self._country_clause([series_key], fact='fe',
+                                                  slip='p')
+                clauses.append(sql)
+                params.extend(bound)
+            elif dim == 'group':
                 ids = self._companies_for(dim, [series_key])
                 clauses.append('p.company_id IN %s')
                 params.append(tuple(ids) or (0,))
@@ -1901,7 +2013,12 @@ class PbExplorer(models.AbstractModel):
                 clauses.append('p.employee_id IN %s')
             elif key == 'company_id':
                 clauses.append('p.company_id IN %s')
-            elif key in ('country', 'group'):
+            elif key == 'country':
+                sql, bound = self._country_clause(vals, fact='fe', slip='p')
+                clauses.append(sql)
+                params.extend(bound)
+                continue
+            elif key == 'group':
                 clauses.append('p.company_id IN %s')
                 params.append(tuple(self._companies_for(key, vals)) or (0,))
                 continue

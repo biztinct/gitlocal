@@ -4,3 +4,4 @@ from . import test_data_access
 from . import test_egress
 from . import test_redaction
 from . import test_prompt_branding
+from . import test_schemectx_p2_grouping

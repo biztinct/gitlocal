@@ -66,6 +66,43 @@ _OPTIONAL_MODULE_MODELS = {
 }
 
 
+# =====================================================================
+#  SCHEMECTX P2 — "by payroll scheme" and "by country"
+# =====================================================================
+#
+# The owner asked to see pay grouped and filtered by the scheme that pays
+# somebody and by the country that scheme belongs to. Both are one question
+# with two answers, so the words that route to them, the titles they print and
+# the query type they report live together here rather than three files apart.
+_SC_SCHEME_WORDS = ('payroll scheme', 'pay scheme', 'by scheme', 'per scheme',
+                    'each scheme', 'scheme', 'configuration')
+_SC_COUNTRY_WORDS = ('by country', 'per country', 'each country', 'country',
+                     'countries')
+
+_SC_QUERY_TYPE = {
+    'department': 'salary_by_department',
+    'scheme': 'salary_by_scheme',
+    'country': 'salary_by_country',
+}
+_SC_TITLE = {
+    'department': 'Salary Data by Department',
+    'scheme': 'Salary Data by Payroll Scheme',
+    'country': 'Salary Data by Country',
+}
+_SC_COST_TITLE = {
+    'month': 'Payroll Cost Trend (Last 6 Months)',
+    'scheme': 'Payroll Cost by Payroll Scheme (Last 6 Months)',
+    'country': 'Payroll Cost by Country (Last 6 Months)',
+}
+_SC_COST_TYPE = {
+    'month': 'payroll_cost_trend',
+    'scheme': 'payroll_cost_by_scheme',
+    'country': 'payroll_cost_by_country',
+}
+_SC_UNASSIGNED = 'No payroll scheme'
+_SC_NO_COUNTRY = 'No country'
+
+
 def _guarded(topic):
     """Turn an AccessError into an answer.
 
@@ -292,6 +329,16 @@ class PayrollDataQuery(models.Model):
         elif any(kw in msg_lower for kw in ['individual', 'specific employee', 'person',
                                              'name']):
             return self._query_individual_data(msg_lower, context)
+        # SCHEMECTX P2 — "by payroll scheme" and "by country" are questions in
+        # their own right, not only qualifiers on a cost or salary question.
+        # They sit AFTER the specific routes above so "payroll cost by country"
+        # still reaches the cost query, and before the generic pay catch-all so
+        # they are not answered with a department table.
+        elif any(kw in msg_lower for kw in ['payroll scheme', 'pay scheme',
+                                             'by scheme', 'per scheme',
+                                             'each scheme', 'by country',
+                                             'per country', 'each country']):
+            return self._query_salary_data(msg_lower, context)
         elif any(kw in msg_lower for kw in ['pay', 'payroll']):
             # Generic pay/payroll catch-all (after more specific routes)
             return self._query_salary_data(msg_lower, context)
@@ -493,9 +540,121 @@ class PayrollDataQuery(models.Model):
     # Core Query Methods (always available)
     # =========================================================================
 
+    # =================================================================
+    #  SCHEMECTX P2 — the scheme, its country and its money
+    # =================================================================
+    def _sc_group_by(self, message, context):
+        """'department' (as always), 'scheme' or 'country'.
+
+        The caller may say so outright (`context['pb_group_by']`); otherwise the
+        question's own words decide. Country is tested FIRST: "payroll cost by
+        country" contains neither scheme word, but "cost by scheme in Vietnam"
+        contains both and is a question about schemes.
+        """
+        asked = (context or {}).get('pb_group_by')
+        if asked in ('department', 'scheme', 'country'):
+            return asked
+        text = (message or '').lower()
+        if any(word in text for word in _SC_SCHEME_WORDS):
+            return 'scheme'
+        if any(word in text for word in _SC_COUNTRY_WORDS):
+            return 'country'
+        return 'department'
+
+    def _sc_schemes_for(self, employees):
+        """`{employee_id: hr.formula.config}` — who pays each of these people.
+
+        Probed, never imported: PayAI is installable on a database with no
+        formula engine and no scheme map, and on one it simply answers the way
+        it always did.
+
+        AND ASKED AS THE ASKER. Phase D1's whole promise is that nothing in
+        this file reads around the questioner's own record rules, and its test
+        greps the file for the escalation — prose included. The helper on the
+        other side does its own narrow internal reads; this side does not lend
+        it any rights it was not given.
+        """
+        Config = self.env.get('hr.formula.config')
+        if Config is None or not employees \
+                or not hasattr(Config, 'schemes_for_employee'):
+            return {}
+        out = {}
+        for employee in employees:
+            try:
+                found = Config.schemes_for_employee(employee)
+            except Exception:       # noqa: BLE001 — an answer is better than
+                # a traceback in a chat box.
+                _logger.debug('PayAI: scheme lookup failed for employee %s',
+                              employee.id, exc_info=True)
+                found = None
+            if found:
+                out[employee.id] = found[:1]
+        return out
+
+    def _sc_narrow(self, records, schemes, context):
+        """Apply a `scheme` / `country` filter from the caller's context."""
+        wanted_scheme = (context or {}).get('scheme')
+        wanted_country = (context or {}).get('country')
+        if not wanted_scheme and not wanted_country:
+            return records
+
+        def keep(record):
+            employee = record.employee_id
+            scheme = schemes.get(employee.id) if employee else None
+            if wanted_scheme:
+                if not scheme:
+                    return False
+                if str(wanted_scheme).isdigit():
+                    if scheme.id != int(wanted_scheme):
+                        return False
+                elif str(wanted_scheme).lower() not in (
+                        scheme.name or '').lower():
+                    return False
+            if wanted_country:
+                code = (scheme.country_code or '') if scheme else ''
+                name = (scheme.country_id.name or '') if scheme else ''
+                target = str(wanted_country).strip().lower()
+                if target not in (code.lower(), name.lower()):
+                    return False
+            return True
+
+        return records.filtered(keep)
+
+    def _sc_label(self, group_by, record, scheme):
+        if group_by == 'scheme':
+            return (scheme.name or scheme.display_name) if scheme \
+                else _SC_UNASSIGNED
+        if group_by == 'country':
+            if scheme and scheme.country_id:
+                return scheme.country_id.name or scheme.country_code or \
+                    _SC_NO_COUNTRY
+            company = record.company_id or self.env.company
+            return company.country_id.name or _SC_NO_COUNTRY
+        return record.department_id.name or 'Unassigned'
+
+    def _sc_money(self, record, scheme):
+        """`{'name', 'symbol'}` — the money this row is written in.
+
+        The scheme's currency, then the company's. Read straight off the
+        record because it may be INACTIVE (ledger SC1): browsing answers,
+        searching by name does not, and nothing here ever activates one.
+        """
+        currency = scheme.currency_id if (scheme and scheme.currency_id) \
+            else (record.company_id or self.env.company).currency_id
+        return {'name': currency.name or '',
+                'symbol': currency.symbol or currency.name or ''}
+
     @_guarded('salary')
     def _query_salary_data(self, message, context):
-        """Query salary/compensation data grouped by department."""
+        """Salary by department — or, when asked, by payroll scheme or country.
+
+        SCHEMECTX P2. Two things changed here. The grouping can now be the
+        thing that decides what somebody is paid (their payroll scheme) or
+        where they are paid (that scheme's country), and the answer never adds
+        two currencies together: a group whose people are paid in rupees and
+        dong comes back as TWO rows, each with its own money, because one
+        number labelled neither is worse than two numbers labelled both.
+        """
         Contract = self.env['hr.contract']
 
         domain = [('state', '=', 'open')]
@@ -503,37 +662,58 @@ class PayrollDataQuery(models.Model):
             domain.append(('department_id', '=', context['department_id']))
 
         contracts = Contract.search(domain)
+        group_by = self._sc_group_by(message, context)
+        schemes = self._sc_schemes_for(contracts.mapped('employee_id'))
+        contracts = self._sc_narrow(contracts, schemes, context)
 
-        # Group by department
-        dept_data = {}
+        buckets = {}
         for contract in contracts:
-            dept_name = contract.department_id.name or 'Unassigned'
-            if dept_name not in dept_data:
-                dept_data[dept_name] = {'total': 0, 'count': 0, 'min': float('inf'), 'max': 0}
-            dept_data[dept_name]['total'] += contract.wage
-            dept_data[dept_name]['count'] += 1
-            dept_data[dept_name]['min'] = min(dept_data[dept_name]['min'], contract.wage)
-            dept_data[dept_name]['max'] = max(dept_data[dept_name]['max'], contract.wage)
+            scheme = schemes.get(contract.employee_id.id)
+            label = self._sc_label(group_by, contract, scheme)
+            money = self._sc_money(contract, scheme)
+            key = (label, money['name'])
+            data = buckets.setdefault(key, {
+                'total': 0, 'count': 0, 'min': float('inf'), 'max': 0,
+                'money': money})
+            data['total'] += contract.wage
+            data['count'] += 1
+            data['min'] = min(data['min'], contract.wage)
+            data['max'] = max(data['max'], contract.wage)
 
         # Calculate averages
         result = []
-        for dept, data in sorted(dept_data.items()):
+        for (label, _cur), data in sorted(buckets.items()):
             avg = data['total'] / data['count'] if data['count'] > 0 else 0
             result.append({
-                'department': dept,
+                # `department` is kept whatever the grouping is, because every
+                # reader of this payload — the report builder, the chart — has
+                # always addressed the label by that name. `group` is the
+                # honest name for it and `group_by` says what it holds.
+                'department': label,
+                'group': label,
+                'group_by': group_by,
                 'employee_count': data['count'],
                 'total_salary': round(data['total'], 2),
                 'average_salary': round(avg, 2),
                 'min_salary': round(data['min'], 2) if data['min'] != float('inf') else 0,
                 'max_salary': round(data['max'], 2),
+                'currency': data['money']['symbol'],
+                'currency_name': data['money']['name'],
             })
 
         return {
-            'query_type': 'salary_by_department',
-            'title': 'Salary Data by Department',
+            'query_type': _SC_QUERY_TYPE[group_by],
+            'title': _SC_TITLE[group_by],
             'data': result,
+            'group_by': group_by,
+            'currencies': sorted({r['currency_name'] for r in result if
+                                  r['currency_name']}),
+            'mixed_currency': len({r['currency_name'] for r in result}) > 1,
             'total_employees': sum(d['employee_count'] for d in result),
-            'overall_average': round(
+            # One average across two currencies is a number that means
+            # nothing, so it is simply not offered when the answer is mixed.
+            'overall_average': 0 if len(
+                {r['currency_name'] for r in result}) > 1 else round(
                 sum(d['total_salary'] for d in result) /
                 max(sum(d['employee_count'] for d in result), 1), 2
             ),
@@ -664,39 +844,105 @@ class PayrollDataQuery(models.Model):
 
         payslips = Payslip.search(domain)
 
-        month_data = {}
+        # SCHEMECTX P2 — cost by month, by payroll scheme, or by country.
+        # A payslip already knows its scheme (`formula_config_id`), and the
+        # scheme knows its country and its money, so the three groupings are
+        # one walk. Currency is part of the KEY: rupees and dong are never
+        # added together, they come back as two rows.
+        group_by = self._sc_group_by(message, context)
+        if group_by != 'department':
+            payslips = self._sc_narrow_slips(payslips, context)
+        buckets = {}
+        order = {}
         for slip in payslips:
-            month_key = slip.date_from.strftime('%Y-%m')
-            month_label = slip.date_from.strftime('%b %Y')
-            if month_key not in month_data:
-                month_data[month_key] = {'label': month_label, 'gross': 0, 'net': 0, 'count': 0}
+            scheme = self._sc_slip_scheme(slip)
+            if group_by == 'scheme':
+                label = (scheme.name or scheme.display_name) if scheme \
+                    else _SC_UNASSIGNED
+                sort_key = label
+            elif group_by == 'country':
+                label = ((scheme.country_id.name or scheme.country_code)
+                         if (scheme and scheme.country_id) else '') \
+                    or (slip.company_id.country_id.name or _SC_NO_COUNTRY)
+                sort_key = label
+            else:
+                label = slip.date_from.strftime('%b %Y')
+                sort_key = slip.date_from.strftime('%Y-%m')
+            money = self._sc_money(slip, scheme)
+            key = (sort_key, money['name'])
+            order.setdefault(key, label)
+            data = buckets.setdefault(
+                key, {'label': label, 'gross': 0, 'net': 0, 'count': 0,
+                      'money': money})
 
             # Get NET from payslip lines
             for line in slip.line_ids:
                 if line.category_id.code == 'NET':
-                    month_data[month_key]['net'] += line.total
+                    data['net'] += line.total
                 elif line.category_id.code in ('GROSS', 'BASIC'):
-                    month_data[month_key]['gross'] += line.total
-            month_data[month_key]['count'] += 1
+                    data['gross'] += line.total
+            data['count'] += 1
 
         result = [
             {
                 'month': v['label'],
+                'group': v['label'],
+                'group_by': 'month' if group_by == 'department' else group_by,
                 'gross_cost': round(v['gross'], 2),
                 'net_cost': round(v['net'], 2),
                 'payslip_count': v['count'],
+                'currency': v['money']['symbol'],
+                'currency_name': v['money']['name'],
             }
-            for k, v in sorted(month_data.items())
+            for k, v in sorted(buckets.items())
         ]
 
+        shape = 'month' if group_by == 'department' else group_by
         return {
-            'query_type': 'payroll_cost_trend',
-            'title': 'Payroll Cost Trend (Last 6 Months)',
+            'query_type': _SC_COST_TYPE[shape],
+            'title': _SC_COST_TITLE[shape],
             'data': result,
+            'group_by': shape,
+            'currencies': sorted({r['currency_name'] for r in result
+                                  if r['currency_name']}),
+            'mixed_currency': len({r['currency_name'] for r in result}) > 1,
             'currency': self.env.company.currency_id.symbol or '$',
-            'suggested_chart': 'line',
+            'suggested_chart': 'line' if shape == 'month' else 'bar',
             'drilldown_model': 'hr.payslip',
         }
+
+    def _sc_slip_scheme(self, slip):
+        """The payroll scheme a payslip was worked out by, when it has one."""
+        if 'formula_config_id' not in slip._fields:
+            return None
+        return slip.formula_config_id or None
+
+    def _sc_narrow_slips(self, slips, context):
+        """The same `scheme` / `country` filter, applied to payslips."""
+        wanted_scheme = (context or {}).get('scheme')
+        wanted_country = (context or {}).get('country')
+        if not wanted_scheme and not wanted_country:
+            return slips
+
+        def keep(slip):
+            scheme = self._sc_slip_scheme(slip)
+            if wanted_scheme:
+                if not scheme:
+                    return False
+                if str(wanted_scheme).isdigit():
+                    if scheme.id != int(wanted_scheme):
+                        return False
+                elif str(wanted_scheme).lower() not in (scheme.name or '').lower():
+                    return False
+            if wanted_country:
+                code = (scheme.country_code or '') if scheme else ''
+                name = (scheme.country_id.name or '') if scheme else ''
+                if str(wanted_country).strip().lower() not in (
+                        code.lower(), name.lower()):
+                    return False
+            return True
+
+        return slips.filtered(keep)
 
     def _query_trend_data(self, message, context):
         """Query trend data — delegates to payroll cost trend.
@@ -709,7 +955,14 @@ class PayrollDataQuery(models.Model):
 
     @_guarded('department')
     def _query_department_data(self, message, context):
-        """Query department-level summary."""
+        """Query department-level summary.
+
+        SCHEMECTX P2 — the grouping is pinned to departments here whatever the
+        question's other words say. This table MERGES salary and headcount on
+        the department name, and a salary half grouped by scheme would merge
+        onto nothing.
+        """
+        context = dict(context or {}, pb_group_by='department')
         salary_data = self._query_salary_data(message, context)
         headcount_data = self._query_headcount_data(message, context)
 

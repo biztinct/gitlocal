@@ -7,3 +7,4 @@ from . import test_look_p4
 # SCHEMECTX P1 — a fact row remembers its SCHEME's money, not its
 # company's.
 from . import test_schemectx_currency
+from . import test_schemectx_p2_country

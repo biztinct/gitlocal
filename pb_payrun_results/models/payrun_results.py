@@ -255,6 +255,13 @@ class PayrunResults(models.AbstractModel):
             'ok': True,
             'run': {'id': run.id, 'name': run.name or '', 'state': run.state,
                     'config_name': ', '.join(configs.mapped('name')),
+                    # SCHEMECTX P2 — every scheme on this run, with the country
+                    # that scheme pays in. The screen could group by scheme
+                    # already; it had no way to say which country a scheme
+                    # belongs to, so an India scheme inside a Vietnamese
+                    # company was indistinguishable from a Vietnamese one.
+                    'schemes': self._scheme_rows(configs),
+                    'countries': self._country_rows(configs),
                     # SCHEMECTX P1 — the scheme's money, then the company's.
                     # The dong sign is no longer a last resort: on a scheme
                     # that pays rupees it was simply wrong.
@@ -272,6 +279,53 @@ class PayrunResults(models.AbstractModel):
             'prev_run_label': prev_run_label,
             'departments': self._departments(self._slips_for(run)),
         }
+
+    # ------------------------------------------------------------------
+    # SCHEMECTX P2 — a scheme, and the country it pays in
+    # ------------------------------------------------------------------
+    def _scheme_rows(self, configs):
+        """One row per payroll scheme on this run, country and money included.
+
+        `country_id` is a stored compute on the scheme and `currency_id` may
+        point at an INACTIVE currency (ledger SC1/SC2), so the symbol travels
+        in the payload rather than being looked up in the web client's session
+        map, which holds active currencies only.
+        """
+        rows = []
+        for config in configs:
+            country = config.country_id
+            rows.append({
+                'id': config.id,
+                'name': config.name or config.display_name or '',
+                'country_code': config.country_code or '',
+                'country_name': country.name or '',
+                'country_id': country.id or False,
+                'currency': (config.currency_id.symbol
+                             or config.currency_id.name or ''),
+                'currency_name': config.currency_id.name or '',
+            })
+        return rows
+
+    def _country_rows(self, configs):
+        """The distinct countries this run pays in — for a group-by chip.
+
+        Never a sum across two of them: each row carries its own money, and the
+        screen shows them side by side rather than adding rupees to dong.
+        """
+        seen = {}
+        for row in self._scheme_rows(configs):
+            key = row['country_code'] or row['country_name']
+            if not key or key in seen:
+                continue
+            seen[key] = {'code': row['country_code'],
+                         'name': row['country_name'] or row['country_code'],
+                         'currency': row['currency'],
+                         'schemes': []}
+        for row in self._scheme_rows(configs):
+            key = row['country_code'] or row['country_name']
+            if key in seen:
+                seen[key]['schemes'].append(row['name'])
+        return list(seen.values())
 
     def _departments(self, slips):
         seen = {}
@@ -304,7 +358,8 @@ class PayrunResults(models.AbstractModel):
     def _state_label(self, st):
         return self._STATE_META.get(st, (st and st.replace('_', ' ').title() or '', 'draft'))
 
-    def _run_card(self, r, cycle_type='', comp=None, symbol=None):
+    def _run_card(self, r, cycle_type='', comp=None, symbol=None,
+                  country=None):
         # SCHEMECTX P1 — the caller passes the SCHEME's sign. The dong used to
         # be the default here, which is the wrong money on any run that is not
         # Vietnamese; the company's is the honest last resort.
@@ -334,6 +389,11 @@ class PayrunResults(models.AbstractModel):
                 cycle_type, cycle_type.replace('_', ' ').title() if cycle_type else ''),
             'company': comp[1] if comp else '',
             'company_id': comp[0] if comp else False,
+            # SCHEMECTX P2 — the country the run's SCHEME pays in, so the
+            # picker can be faceted by it. Blank for a run with no scheme;
+            # the card then says nothing rather than guessing the company's.
+            'country_code': (country or {}).get('code', ''),
+            'country': (country or {}).get('name', ''),
         }
 
     @api.model
@@ -367,10 +427,16 @@ class PayrunResults(models.AbstractModel):
                 run_cfg[rid] = g['formula_config_id'][0]
             if rid not in run_comp and g.get('company_id'):
                 run_comp[rid] = (g['company_id'][0], g['company_id'][1])
-        cfg_cycle, cfg_sym = {}, {}
+        cfg_cycle, cfg_sym, cfg_country = {}, {}, {}
         if run_cfg:
             configs = self.env['hr.formula.config'].browse(list(set(run_cfg.values()))).exists()
             cfg_cycle = {c.id: (getattr(c, 'cycle_type', '') or '') for c in configs}
+            # SCHEMECTX P2 — the scheme's country, so the picker can group and
+            # facet by it. Read from the scheme, never from the company: an
+            # India scheme inside a Vietnamese company is an India run.
+            cfg_country = {c.id: {'code': c.country_code or '',
+                                  'name': c.country_id.name or ''}
+                           for c in configs}
             # SCHEMECTX P1 — the run's own SCHEME decides the sign. It used to
             # come from the company, so a run of an India scheme was written
             # in dong.
@@ -394,7 +460,9 @@ class PayrunResults(models.AbstractModel):
             comp = run_comp.get(r.id)
             sym = cfg_sym.get(run_cfg.get(r.id)) \
                 or (comp_sym.get(comp[0], default_sym) if comp else default_sym)
-            cards.append(self._run_card(r, cfg_cycle.get(run_cfg.get(r.id), ''), comp, sym))
+            cards.append(self._run_card(
+                r, cfg_cycle.get(run_cfg.get(r.id), ''), comp, sym,
+                cfg_country.get(run_cfg.get(r.id))))
         return {
             'ok': True,
             'runs': cards,
