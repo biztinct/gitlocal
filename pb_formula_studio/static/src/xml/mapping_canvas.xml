@@ -145,7 +145,7 @@
                      `group`, so every existing adapter renders unchanged -->
                 <div t-if="leftGroupHead(lview, it_index)" class="mc-group" t-esc="leftGroupHead(lview, it_index)"/>
                 <div data-side="left" t-att-data-id="it.id"
-                     t-attf-class="mc-item {{ isArmed(it.id) ? 'armed' : '' }} {{ leftHasAccepted(it.id) ? 'accepted' : (isLeftWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='left' and ui.focusId===it.id ? 'focus' : '' }} {{ itemTone('left', it.id) }} {{ isFlashing('left', it.id) ? 'flash' : '' }} {{ isWirable(it) ? '' : 'sealed' }}"
+                     t-attf-class="mc-item {{ isArmed(it.id) ? 'armed' : '' }} {{ leftHasAccepted(it.id) ? 'accepted' : (isLeftWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='left' and ui.focusId===it.id ? 'focus' : '' }} {{ itemTone('left', it.id) }} {{ isFlashing('left', it.id) ? 'flash' : '' }} {{ isWirable(it) ? '' : 'sealed' }} {{ it.meta and it.meta.orphan ? 'orphan' : '' }}"
                      t-on-click="() => this.clickLeft(it.id)"
                      t-on-mouseenter="() => this.enterItem('left', it.id)"
                      t-on-mouseleave="() => this.leaveItem()">

@@ -492,7 +492,10 @@ class TestExcelOnRamp(TransactionCase):
         self.assertIn('it had never written a value', head,
                       "the sentence becomes past tense, not deleted — the "
                       "history is why the on-ramp exists")
-        self.assertIn('FOUR lanes', head)
+        # CLEANMAP P1 — J2's four lanes were a union that ignored FROM. The
+        # docstring says what the board does NOW, and the test follows it:
+        # one file source on screen, the one FROM names.
+        self.assertIn('one file source is on screen at a time', head)
 
     def test_13b_one_generator_with_callers(self):
         conn = _src('pb_hr_payroll_formula', 'integrations/excel_connector.py')

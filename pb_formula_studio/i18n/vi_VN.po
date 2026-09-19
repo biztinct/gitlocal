@@ -15001,3 +15001,33 @@ msgstr "pbfs-iw"
 #: code:addons/pb_formula_studio/views/sample_wizard_view_inherit.xml:1
 msgid "action_generate_and_close"
 msgstr "hành động_generate_and_close"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "%s — template file"
+msgstr "%s — tệp mẫu"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Mapped, but not in this file"
+msgstr "Đã ghép, nhưng tệp này không có"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "this file has no such column"
+msgstr "tệp này không có cột này"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "The file on this board"
+msgstr "Tệp trên bảng này"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+msgid "The file read onto this board"
+msgstr "Tệp đã được đọc vào bảng này"

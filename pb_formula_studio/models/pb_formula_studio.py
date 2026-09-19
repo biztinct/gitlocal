@@ -25,6 +25,8 @@ from odoo.addons.pb_hr_payroll_formula.models import value_kind_classifier
 # aliases, so the board can tell a real column from its own twin.
 from odoo.addons.pb_hr_payroll_formula.formula_engine.column_manager import (
     index_to_letter as _index_to_letter)
+from odoo.addons.pb_hr_payroll_formula.formula_engine.column_manager import (
+    letter_to_index as _letter_to_index)
 # Approval Matrix P4 — the key the five doors into a live pay scheme check.
 from odoo.addons.pb_hr_payroll_formula.models.scheme_proposal import (
     KIND_NAME as SCHEME_KIND_NAME, apply_context as _scheme_apply)
@@ -8338,15 +8340,154 @@ class PbFormulaStudio(models.AbstractModel):
     # spelling IS its letter, a multisheet dict row with no aliases at all —
     # falls through and keeps its card.
     # ------------------------------------------------------------------
+    # CLEANMAP P1 / CM1 — and a SECOND storage shape the walk above never knew.
+    #
+    # `_load_multisheet_data` does not interleave. It writes, for the main
+    # sheet: every heading bare, THEN every `Sheet|heading`, THEN per column
+    # `Sheet|<letter>` and `<letter>`. A secondary sheet adds `Sheet2|heading`
+    # (+ the bare twin when free) and `Sheet2|<letter>` only. Four spellings of
+    # one column, and the positional walk above folds none of them — which is
+    # how a 43-column workbook on rize drew 174 cards reading `Salary|A`, `A`,
+    # `Salary|B`, `B`… The two shapes are told apart by where the first
+    # letter-shaped key sits: position 1 on the interleaved shape, far down the
+    # list on this one.
     @staticmethod
-    def _column_alias_fold(keys):
-        """`[key…]` → `[{key, letter}]`, one entry per real column.
+    def _split_sheet_key(key):
+        """`'Salary|Basic'` → `('Salary', 'Basic')`; `'Basic'` → `('', 'Basic')`."""
+        k = str(key or '')
+        if '|' in k:
+            sheet, rest = k.split('|', 1)
+            return sheet.strip(), rest.strip()
+        return '', k.strip()
 
-        Tolerant by construction: anything the walk cannot explain is emitted,
-        so the failure mode is today's behaviour (an extra card) and never a
-        missing column or a raised exception.
+    @staticmethod
+    def _is_column_letter(text):
+        return bool(re.fullmatch(r'[A-Z]{1,3}', text or ''))
+
+    @classmethod
+    def _keys_are_multisheet_shape(cls, keys):
+        """True when these keys came from the merge, not from the row writer."""
+        ks = [str(k or '') for k in keys]
+        if not any('|' in k for k in ks):
+            return False
+        for idx, k in enumerate(ks):
+            if cls._is_column_letter(cls._split_sheet_key(k)[1]):
+                return idx >= 2
+        return True
+
+    @classmethod
+    def _multisheet_fold(cls, keys):
+        """The merge shape → `([{key, letter}], {spelling: canonical_key})`.
+
+        One card per real column, keyed the way the resolver tries first on a
+        multi-sheet scheme (`Sheet|heading` — same rule as `peek_source_columns`'
+        `preferred`). Same contract as the walk above: anything this cannot
+        explain is EMITTED, so the failure mode is an extra card and never a
+        missing column or an exception.
         """
-        shown, col, prev_bare, blank_col = [], 0, None, False
+        ks = [str(k or '') for k in keys]
+        parts = [cls._split_sheet_key(k) for k in ks]
+
+        # How wide is each sheet? The merge writes its letters from
+        # `headers_meta`, so they run A, B, C… without a gap — and the length of
+        # that unbroken run is the sheet's real column count. That is what makes
+        # a letter-shaped key decidable: `AR` is an alias on a 44-column sheet
+        # and a genuine heading on a 10-column one.
+        letters_seen = {}
+        for (sheet, rest), _k in zip(parts, ks):
+            if sheet and cls._is_column_letter(rest):
+                letters_seen.setdefault(sheet, set()).add(rest)
+        width = {}
+        for sheet, have in letters_seen.items():
+            n = 0
+            while n < 1000:
+                try:
+                    nxt = _index_to_letter(n)
+                except Exception:           # never raise from a display path
+                    break
+                if nxt not in have:
+                    break
+                n += 1
+            width[sheet] = n
+
+        def is_alias_letter(sheet, rest):
+            if not cls._is_column_letter(rest):
+                return False
+            try:
+                return _letter_to_index(rest) < width.get(sheet, 0)
+            except Exception:
+                return False
+
+        # pass 1 — the headings of each sheet, in the order the merge wrote them
+        headings, sheet_order = {}, []
+        for sheet, rest in parts:
+            if not sheet or not rest or is_alias_letter(sheet, rest):
+                continue
+            if sheet not in headings:
+                headings[sheet] = []
+                sheet_order.append(sheet)
+            if rest not in headings[sheet]:
+                headings[sheet].append(rest)
+        main_sheet = sheet_order[0] if sheet_order else ''
+
+        # pass 2 — one card per (sheet, heading), plus any bare column that is
+        # nobody's twin (a merge that never qualified it at all)
+        shown, canon, card_of = [], {}, {}
+        for sheet in sheet_order:
+            for pos, heading in enumerate(headings[sheet]):
+                key = '%s|%s' % (sheet, heading)
+                try:
+                    letter = _index_to_letter(pos)
+                except Exception:
+                    letter = ''
+                shown.append({'key': key, 'letter': letter})
+                canon[key] = key
+                card_of[(sheet, heading)] = key
+        bare_twin = {h for hs in headings.values() for h in hs}
+        for (sheet, rest), k in zip(parts, ks):
+            if sheet or not rest or rest in bare_twin:
+                continue
+            if cls._is_column_letter(rest) and is_alias_letter(main_sheet, rest):
+                continue
+            if k in canon:
+                continue
+            shown.append({'key': k, 'letter': rest if cls._is_column_letter(rest) else ''})
+            canon[k] = k
+
+        # pass 3 — every OTHER spelling of a column points at that column's card
+        for (sheet, rest), k in zip(parts, ks):
+            if k in canon or not rest:
+                continue
+            if cls._is_column_letter(rest):
+                # a letter alias: the sheet that qualified it, or the main sheet
+                # for the bare ones (only the main sheet emits those)
+                owner = sheet or main_sheet
+                try:
+                    idx = _letter_to_index(rest)
+                except Exception:
+                    continue
+                cols = headings.get(owner) or []
+                if idx < len(cols):
+                    canon[k] = card_of[(owner, cols[idx])]
+                continue
+            target = card_of.get((sheet, rest)) or card_of.get((main_sheet, rest))
+            if not target:
+                for other in sheet_order:
+                    if (other, rest) in card_of:
+                        target = card_of[(other, rest)]
+                        break
+            if target:
+                canon[k] = target
+        return shown, canon
+
+    @classmethod
+    def _flat_fold(cls, keys):
+        """The interleaved row-writer shape → `([{key, letter}], canon)`.
+
+        Byte-for-byte the walk RUNSRC A1 shipped, plus the alias map it always
+        knew and never returned.
+        """
+        shown, canon, col, prev_bare, blank_col = [], {}, 0, None, False
         for key in keys:
             k = str(key or '')
             bare = k.split('|', 1)[1] if '|' in k else k
@@ -8363,9 +8504,12 @@ class PbFormulaStudio(models.AbstractModel):
                         # is the only name it will ever have. Take the letter as
                         # that column's card instead of a second one.
                         shown.append({'key': k, 'letter': bare})
+                        canon[k] = k
                         prev_bare, blank_col = bare, False
                         continue
                     if prev_bare != bare:
+                        if shown:
+                            canon[k] = shown[-1]['key']
                         continue               # the alias of the column above
             try:
                 letter = _index_to_letter(col)
@@ -8375,9 +8519,35 @@ class PbFormulaStudio(models.AbstractModel):
                 # The letter is the column's POSITION, never the spelling of its
                 # heading — a column headed "OT" is still column G.
                 shown.append({'key': k, 'letter': letter})
+                canon[k] = k
             prev_bare, blank_col = bare, not bare
             col += 1
-        return shown
+        return shown, canon
+
+    @classmethod
+    def _column_alias_fold(cls, keys):
+        """`[key…]` → `[{key, letter}]`, one entry per real column.
+
+        Tolerant by construction: anything the walk cannot explain is emitted,
+        so the failure mode is today's behaviour (an extra card) and never a
+        missing column or a raised exception.
+        """
+        if cls._keys_are_multisheet_shape(keys):
+            return cls._multisheet_fold(keys)[0]
+        return cls._flat_fold(keys)[0]
+
+    @classmethod
+    def _column_alias_map(cls, keys):
+        """`[key…]` → `{any spelling: the key of the card that column got}`.
+
+        CM3's other half: a component bound to `Ngày công chuẩn` on a workbook
+        whose card says `Salary|Ngày công chuẩn` is bound to THAT COLUMN, and
+        its wire has to land on that column's card. Nothing stored moves — the
+        binding keeps whatever spelling it was written with.
+        """
+        if cls._keys_are_multisheet_shape(keys):
+            return cls._multisheet_fold(keys)[1]
+        return cls._flat_fold(keys)[1]
 
     # ------------------------------------------------------------------
     # JOURNEY J2 — the Excel on-ramp.
@@ -8407,6 +8577,35 @@ class PbFormulaStudio(models.AbstractModel):
         except Exception:
             return []
         return cols if isinstance(cols, list) else []
+
+    @api.model
+    def _sample_alias_map(self, config):
+        """`{any spelling of a stored-file column: the key its card carries}`.
+
+        The template file's own version of `_column_alias_map`. `peek_source_columns`
+        already decided which spelling gets the card (`preferred`); this points
+        every other spelling of the same column — its bare twin, its column
+        letter — at it, so a wire drawn last month still lands on a card.
+        """
+        cols = self._import_sample_columns(config)
+        by_header, by_letter = {}, {}
+        for col in cols:
+            if not col.get('preferred') or not col.get('key'):
+                continue
+            if col.get('header'):
+                by_header.setdefault(col['header'], col['key'])
+            if col.get('letter'):
+                by_letter.setdefault(col['letter'], col['key'])
+        out = {}
+        for col in cols:
+            key = col.get('key')
+            if not key:
+                continue
+            target = (by_header.get(col.get('header')) if col.get('header')
+                      else by_letter.get(col.get('letter')))
+            if target:
+                out[key] = target
+        return out
 
     @api.model
     def _import_sample_meta(self, config):
@@ -8496,7 +8695,10 @@ class PbFormulaStudio(models.AbstractModel):
             'import_sample_date': fields.Datetime.now(),
             'import_sample_columns_json': json.dumps(cols),
         })
-        data = self.import_mapping_data(config.id, False)
+        # CLEANMAP P1 — land on the file that was just dropped. The left list
+        # obeys FROM now, so re-reading with the default would answer with a pay
+        # run's columns one gesture after somebody handed the board a workbook.
+        data = self.import_mapping_data(config.id, 'sample')
         data['read'] = {
             'columns': len(cols),
             'shown': len([c for c in cols if c.get('preferred')]),
@@ -8623,17 +8825,28 @@ class PbFormulaStudio(models.AbstractModel):
         the minutes after somebody happened to upload a file — which is why, per
         **S12**, it had never written a value on any of the four databases.
 
-        **JOURNEY J2 closed that.** The left column now has FOUR lanes, and the
-        first of them is the one that makes the board usable before an import
-        rather than after it:
+        **JOURNEY J2 closed that** by making the left column a union of four
+        lanes, so there was always something to map from. **CLEANMAP P1 closed
+        what that cost**: the union ignored FROM. FROM named one pay run and the
+        list underneath showed that run's columns AND the template file's AND
+        every key the scheme had ever been bound to — 180 cards for a
+        43-column workbook. A header that names one thing over a list of
+        another is this codebase's worst bug class.
 
-          * **the columns of a file dropped on this board** — read for its
-            headings, never its data, through the loader's own parser, so a
-            column shown here is a key the loader will produce;
-          * the selected batch's columns (the original behaviour, kept);
-          * **the keys this scheme is already bound to** — so last month's wires are
-            on screen with no file loaded at all;
-          * legacy `data_source_field` values, for schemes that predate bindings.
+        So: **one file source is on screen at a time, the one FROM names.**
+
+          * FROM a pay run → that run's columns, one card each;
+          * FROM the template file → the columns read off the file dropped on
+            this board (it is a FROM entry now, `id = 'sample'`);
+          * FROM nothing at all — a scheme with no file anywhere — → what this
+            scheme already reads, which is the only lane that database has.
+
+        Underneath either file source sit the six things the run already knows,
+        and, only when there is something to say, the columns this scheme is
+        bound to that THIS FILE DOES NOT HAVE. Every wire still starts from a
+        card (CM3): a binding written with another spelling of the same column
+        is re-pointed at that column's card on the way to the screen. Nothing
+        stored moves.
 
         And when the column you want is in none of them, the left column's search
         box offers to take it as typed (`can_add`) — a header or a column letter.
@@ -8645,24 +8858,69 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False, 'reason': 'no_config'}
         Batch = self.env['hr.payroll.import.batch']
         batches = Batch.search([], order='id desc')
-        contexts = [{'id': b.id, 'name': b.name} for b in batches]
-        batch = Batch.browse(int(batch_id)) if batch_id else Batch.browse()
-        if not batch:
+        # CLEANMAP P1 — FROM governs the left list, so the template file has to
+        # BE a FROM entry. It used to be lane 1 of a union that was always on
+        # screen; the moment the list obeys FROM, a scheme whose only file is
+        # the one dropped on this board would have no way back to it.
+        sample_meta = self._import_sample_meta(config)
+        contexts = []
+        if sample_meta:
+            contexts.append({'id': 'sample', 'kind': 'sample',
+                             'name': _("%s — template file") % sample_meta['filename']})
+        contexts += [{'id': b.id, 'kind': 'batch', 'name': b.name} for b in batches]
+        # `'sample'` is not a row id and `int()` would raise on it — guard first.
+        source, asked = 'batch', bool(batch_id)
+        if isinstance(batch_id, str) and not batch_id.lstrip('-').isdigit():
+            if batch_id == 'sample' and sample_meta:
+                source = 'sample'
+            batch_id = False
+        batch = Batch.browse()
+        if source == 'batch' and batch_id:
+            try:
+                batch = Batch.browse(int(batch_id)).exists()
+            except (TypeError, ValueError):
+                batch = Batch.browse()
+            # CLEANMAP P1 — a load belonging to ANOTHER scheme is not this
+            # scheme's file. The board keeps the FROM you last chose while you
+            # change the scheme at the other end of the sentence, which used to
+            # be harmless (the union showed this scheme's columns anyway) and
+            # now would fill the whole left column with the wrong workbook
+            # under a header naming the right one. Fall back to the ladder.
+            if batch and batch.formula_config_id and batch.formula_config_id.id != config.id:
+                batch = Batch.browse()
+        if source == 'batch' and not batch:
             # RD60 — prefer a batch that fed a pay run. A record refresh is a
             # batch, and the newest one is usually a refresh, so the board's
             # opening view drifted onto the connected system's columns instead
             # of the columns the last run was actually mapped from. Still only a
             # PREFERENCE: with nothing but refreshes on file, showing their
             # columns beats showing an empty board.
-            pay_data = batches.filtered(lambda b: b.create_payslips)
-            batch = (pay_data.filtered(lambda b: b.formula_config_id.id == config.id and b.import_line_ids)[:1]
-                     or batches.filtered(lambda b: b.formula_config_id.id == config.id and b.import_line_ids)[:1]
-                     or pay_data.filtered(lambda b: b.import_line_ids)[:1]
-                     or batches.filtered(lambda b: b.import_line_ids)[:1] or batches[:1])
+            #
+            # CLEANMAP P1 — and it never leaves THIS SCHEME any more. The last
+            # two rungs used to accept any load on the database, so a scheme
+            # that had only ever had a file dropped on its board opened on
+            # another scheme's pay run, and now that the list obeys FROM that
+            # is the whole left column wrong. Every load on every live database
+            # carries a scheme (checked 2026-09-19), so the cross-scheme rungs
+            # only ever mis-fired. The scheme's own file comes before an empty
+            # board; an empty board comes before somebody else's columns.
+            mine = batches.filtered(lambda b: b.formula_config_id.id == config.id)
+            batch = (mine.filtered(lambda b: b.create_payslips and b.import_line_ids)[:1]
+                     or mine.filtered(lambda b: b.import_line_ids)[:1]
+                     or (Batch.browse() if sample_meta else mine[:1]))
         input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input') \
             .sorted(key=lambda r: r.sequence)
         raw_row = self._import_batch_row(batch) if batch else {}
         cols = list(raw_row.keys())
+        # Nobody asked for a particular file and the one the ladder found has no
+        # rows: fall to the file dropped on this board rather than to an empty
+        # lane. With neither, the board has no file at all and says so by
+        # showing what the scheme already reads.
+        if source == 'batch' and not cols:
+            if not asked and sample_meta:
+                source, batch, raw_row = 'sample', Batch.browse(), {}
+            else:
+                source = 'none'
         # RUNSRC A1 — the cards, and therefore the columns a suggestion may be
         # drawn FROM, are the real columns. A suggestion whose `leftId` has no
         # card on the board is the exact shape of the MAPFIX-D canvas crash.
@@ -8674,8 +8932,7 @@ class PbFormulaStudio(models.AbstractModel):
         # entirely: 43 columns on screen, nothing to suggest, and every wire
         # drawn by hand.
         left = self._import_left_columns(batch, cols, input_rules, config=config,
-                                         raw_row=raw_row)
-        shown_cols = [c['id'][2:] for c in left if c['id'].startswith('c:')]
+                                         raw_row=raw_row, source=source)
         _acts, _run = self._source_actuals(config)
         _emp = self._source_record_dests(config)
         _wires = self._source_wire_dests(config)
@@ -8707,10 +8964,59 @@ class PbFormulaStudio(models.AbstractModel):
                               'leftId': 'p:' + r.period_key, 'rightId': r.id,
                               'state': 'accepted'})
                 mapped_rules.add(r.id)
+        # ---------------------------------------------------------------- CM3
+        # EVERY WIRE KEEPS A CARD. A binding written as `Ngày công chuẩn` on a
+        # workbook whose card reads `Salary|Ngày công chuẩn` is a binding to
+        # THAT COLUMN — so the wire is re-pointed at that column's card. A wire
+        # whose column this file genuinely does not have gets its own card, in
+        # its own small lane, saying exactly that: a wire drawn to nothing is
+        # the MAPFIX-D canvas crash, and a wire quietly dropped is worse.
+        #
+        # Display only. `ref` is untouched, so cutting the wire still cuts the
+        # right binding, and the STORED key keeps whatever spelling it had.
+        canon = {}
+        if source == 'sample':
+            canon = self._sample_alias_map(config)
+        elif source == 'batch' and self._keys_are_multisheet_shape(cols):
+            canon = self._column_alias_map(cols)
+        left_ids = {c['id'] for c in left}
+        orphans = []
+        for w in wires:
+            left_id = str(w.get('leftId') or '')
+            if w.get('kind') != 'mapping' or not left_id.startswith('c:'):
+                continue
+            if left_id in left_ids:
+                continue
+            target = canon.get(left_id[2:])
+            if target and ('c:' + target) in left_ids:
+                w['leftId'] = 'c:' + target
+            elif left_id[2:] not in orphans:
+                orphans.append(left_id[2:])
+        if orphans:
+            lane = _("Mapped, but not in this file")
+            for key in orphans:
+                label = key.split('|', 1)[1].strip() if '|' in key else key
+                left.append({'id': 'c:' + key, 'label': label or key,
+                             'sublabel': _("this file has no such column"),
+                             'group': lane, 'meta': {'orphan': True}})
+            self._dedupe_card_labels(left)
+        # RUNSRC A1 — the cards, and therefore the columns a suggestion may be
+        # drawn FROM, are the real columns. A suggestion whose `leftId` has no
+        # card on the board is the exact shape of the MAPFIX-D canvas crash.
+        #
+        # RUNSRC A1b — and "the cards" means EVERY card, so the list is read
+        # back off the left column itself. It used to be built from the loaded
+        # batch's row alone, which left the one lane people actually press the
+        # button for — the file they just dropped — out of the matching
+        # entirely: 43 columns on screen, nothing to suggest, and every wire
+        # drawn by hand.
+        shown_cols = [c['id'][2:] for c in left if c['id'].startswith('c:')]
         # suggestions: best name/code match between an unmapped column and input
         rule_norms = [(r, self._norm(r.code), self._norm(r.name)) for r in input_rules
                       if r.id not in mapped_rules]
         used = set(mapped_rules)
+        # AFTER the re-point (CM3), or a column whose binding used another
+        # spelling gets an orange suggestion drawn on top of its own wire.
         wired_cols = {w['leftId'][2:] for w in wires
                       if str(w.get('leftId', '')).startswith('c:')}
         for c in shown_cols:
@@ -8737,9 +9043,12 @@ class PbFormulaStudio(models.AbstractModel):
                               'ref': None, 'source': c, 'leftId': 'c:' + c, 'rightId': best.id,
                               'state': 'suggested', 'confidence': round(conf, 2), 'reason': _('Name match')})
                 used.add(best.id)
+        from_name = (batch.name if batch
+                     else (sample_meta['filename'] if source == 'sample' and sample_meta
+                           else ''))
         return {
             'ok': True, 'left': left, 'right': right, 'wires': wires,
-            'left_title': ('%s · columns' % batch.name) if batch
+            'left_title': ('%s · columns' % from_name) if from_name
                           else _("Spreadsheet columns"),
             'right_title': '%s · inputs' % config.name,
             # RUNSRC C2 — the left column is no longer only columns, and a
@@ -8747,7 +9056,7 @@ class PbFormulaStudio(models.AbstractModel):
             # naming the thing people actually came looking for.
             'subtitle': (_("Map columns from %s onto this scheme's inputs — or "
                            "take the period and the standard working days "
-                           "straight from the pay run.") % batch.name) if batch
+                           "straight from the pay run.") % from_name) if from_name
                         else _(
                 "Say what feeds each component. No file needs to be loaded — "
                 "type a column heading and connect it, or take the period and "
@@ -8758,12 +9067,16 @@ class PbFormulaStudio(models.AbstractModel):
             # upload is every column.
             'can_add': True,
             'add_label': _("Use “%s” as a spreadsheet column"),
-            'contexts': contexts, 'context_id': batch.id if batch else False,
+            'contexts': contexts,
+            # `'sample'` is a FROM id like any other — the client round-trips it
+            # straight back as `batch_id`, so it is returned as the string it is.
+            'context_id': ('sample' if source == 'sample'
+                           else (batch.id if batch else False)),
             'can_edit': self._can_edit(),
             # J2 — the on-ramp's own state. `sample` is null until a file has
             # been read onto this scheme; `inputs` is what the template and the
             # coverage line are counted against.
-            'sample': self._import_sample_meta(config),
+            'sample': sample_meta,
             'inputs': len(input_rules),
             'wired': len(mapped_rules),
             'config_id': config.id,
@@ -8771,16 +9084,24 @@ class PbFormulaStudio(models.AbstractModel):
 
     @api.model
     def _import_left_columns(self, batch, cols, input_rules, config=None,
-                             raw_row=None):
-        """The Excel board's left column: four lanes, none of them invented.
+                             raw_row=None, source='batch'):
+        """The Excel board's left column — ONE file source, the one FROM names.
 
-        Order is deliberate — the file YOU just dropped first (J2), because
-        somebody who has just handed the board a spreadsheet is looking for its
-        columns and nothing else; then a loaded batch's columns; then what this
-        scheme already reads, which is the only lane a never-uploaded database
-        has; then the legacy Char.
+        CLEANMAP P1. This used to emit four lanes at once and let FROM choose
+        which one of them was filled from a pay run, so the board showed the
+        template file's columns, the run's columns and every key the scheme had
+        ever been bound to, all under a header naming a single run. `source`
+        now decides:
 
-        BOTH file lanes show ONE card per real column, labelled with the key
+          * `'batch'` — the pay run's own columns, folded to one card each;
+          * `'sample'` — the columns of the file dropped on this board;
+          * `'none'` — no file anywhere, so what this scheme already reads
+            ("Already used by this scheme" + the legacy Char). J2's promise to
+            a never-uploaded database, and the only place those two lanes
+            survive: with a file on screen, a binding that file does not carry
+            goes to the honest lane in `import_mapping_data` instead.
+
+        Either file lane shows ONE card per real column, labelled with the key
         that will be bound and carrying a sample value from the first row —
         `e.g. 12,500,000` under `SEVL|Basic Salary` is the difference between
         recognising your column and hoping. The other spellings of the same
@@ -8789,6 +9110,9 @@ class PbFormulaStudio(models.AbstractModel):
         four cards for one column is a board nobody can read (see
         `peek_source_columns`' `preferred`, and `_column_alias_fold` for the
         loaded-batch lane, which drew all eighteen until RUNSRC A1).
+
+        The six things the pay run already knows close the list on every
+        source (RUNSRC C2).
         """
         out, seen = [], set()
 
@@ -8811,9 +9135,9 @@ class PbFormulaStudio(models.AbstractModel):
                         'sublabel': sublabel,
                         'group': group, 'meta': meta or {}})
 
-        meta = self._import_sample_meta(config) if config else None
-        if meta:
-            lane = meta['line']
+        if source == 'sample':
+            meta = self._import_sample_meta(config) if config else None
+            lane = meta['line'] if meta else _("The file on this board")
             for col in self._import_sample_columns(config):
                 if not col.get('preferred'):
                     continue
@@ -8822,28 +9146,46 @@ class PbFormulaStudio(models.AbstractModel):
                     sublabel=(_("e.g. %s", sample) if sample else _("no value in the first row")),
                     meta={'sheet': col.get('sheet') or '',
                           'letter': col.get('letter') or ''})
+        elif source == 'batch':
+            # RUNSRC A1 — the loaded batch's lane, folded. A file's columns are
+            # stored under two names each (four on a multi-sheet workbook), so
+            # this lane used to draw eighteen cards for a nine-column file and
+            # half of them read "A", "B", "C". The aliases stay in the stored
+            # data, stay resolvable and stay reachable through the search box;
+            # they simply stop being cards.
+            file_lane = (batch.name or _("This file")) if batch else _("Uploaded file")
+            sample_of = raw_row if isinstance(raw_row, dict) else {}
+            Batch = self.env['hr.payroll.import.batch']
 
-        # RUNSRC A1 — the loaded batch's lane, folded the same way. A file's
-        # columns are stored under two keys each, so this lane used to draw
-        # eighteen cards for a nine-column file and half of them read "A", "B",
-        # "C". The aliases stay in the stored data, stay resolvable and stay
-        # reachable through the search box; they simply stop being cards.
-        file_lane = (batch.name or _("This file")) if batch else _("Uploaded file")
-        sample_of = raw_row if isinstance(raw_row, dict) else {}
-        Batch = self.env['hr.payroll.import.batch']
-        for col in self._column_alias_fold(cols):
-            key = col['key']
-            sample = Batch._sample_text(sample_of.get(key)) if sample_of else ''
-            sheet = key.split('|', 1)[0].strip() if '|' in key else ''
-            add(key, file_lane,
-                sublabel=(_("e.g. %s", sample) if sample
-                          else (_("no value in the first row") if sample_of else '')),
-                meta={'sheet': sheet, 'letter': col.get('letter') or ''})
-        for r in input_rules:
-            if r.source_binding == 'excel':
-                add(r.source_binding_key, _("Already used by this scheme"))
-        for r in input_rules:
-            add(r.data_source_field, _("From this scheme's history"))
+            def file_card(key, letter=''):
+                text = Batch._sample_text(sample_of.get(key)) if sample_of else ''
+                sheet = key.split('|', 1)[0].strip() if '|' in key else ''
+                add(key, file_lane,
+                    sublabel=(_("e.g. %s", text) if text
+                              else (_("no value in the first row") if sample_of else '')),
+                    meta={'sheet': sheet, 'letter': letter or ''})
+
+            for col in self._column_alias_fold(cols):
+                file_card(col['key'], col.get('letter') or '')
+            # CM3 — a component bound to a spelling this file really carries
+            # keeps a card of its own. On the interleaved shape that is the
+            # bare column letter, which RUNSRC A1 folded away and the old
+            # "Already used by this scheme" lane quietly handed back; the
+            # multi-sheet shape has a canonical card to re-point at instead
+            # (`import_mapping_data`), so nothing is restored for it.
+            stored, multi = set(cols), self._keys_are_multisheet_shape(cols)
+            for r in input_rules:
+                key = ((r.source_binding_key or '').strip()
+                       if r.source_binding == 'excel' else '') or r.data_source_field
+                key = (key or '').strip()
+                if key and key in stored and key not in seen and not multi:
+                    file_card(key)
+        else:
+            for r in input_rules:
+                if r.source_binding == 'excel':
+                    add(r.source_binding_key, _("Already used by this scheme"))
+            for r in input_rules:
+                add(r.data_source_field, _("From this scheme's history"))
         self._dedupe_card_labels(out)
         out.extend(self._pay_run_lane(batch, config))
         return out

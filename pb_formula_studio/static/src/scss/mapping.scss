@@ -394,6 +394,15 @@
 .mapping-canvas .mc-item.accepted .mc-plug { background: var(--i, #5A4BB0); box-shadow: 0 0 0 1px var(--i, #5A4BB0); }
 
 .mapping-canvas .mc-item.accepted { border-color: var(--i-border, #CBC2EE); background: var(--i-soft, #EDEAF8); }
+/* CLEANMAP P1 — "Mapped, but not in this file". The board's existing warn
+   tone, never a new colour: the wire is real and the component is bound, so
+   this is not an error — it is a column the file on screen does not have.
+   Indigo would say "all is well"; rose would say "something broke". It sits
+   after `.accepted` (these cards are always accepted) and before `.focus` /
+   `.armed`, which still win while the reader is on the card. */
+.mapping-canvas .mc-item.orphan { border-color: var(--mc-amber-line, #FCD34D); background: var(--mc-amber-wash, #FEF3C7); }
+.mapping-canvas .mc-item.orphan .mc-item-sub { color: var(--mc-amber-ink, #B45309); }
+.mapping-canvas .mc-item.orphan .mc-plug { background: var(--mc-amber, #D97706); box-shadow: 0 0 0 1px var(--mc-amber, #D97706); }
 .mapping-canvas .mc-item.focus { border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
 .mapping-canvas .mc-item.armed { border-color: var(--i, #5A4BB0); background: var(--i, #5A4BB0); }
 .mapping-canvas .mc-item.armed .mc-item-label, .mapping-canvas .mc-item.armed .mc-item-sub { color: #fff; }

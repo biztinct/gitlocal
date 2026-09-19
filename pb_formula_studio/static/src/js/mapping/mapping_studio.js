@@ -369,8 +369,25 @@ export class MappingStudio extends Component {
     }
     get configName() { return (this.config && this.config.name) || _t("No scheme"); }
 
+    /**
+     * The FROM entry this board is reading — a pay run, or the file dropped
+     * on the board.
+     *
+     * CLEANMAP P1 — the template file is a FROM entry now (`id: 'sample'`),
+     * and the server answers with the list it is on (`contexts`), which is the
+     * only list that has it. Ids are compared as STRINGS (W146): one of them
+     * genuinely is one, and `'sample' === 1128` versus `1128 === 1128` is the
+     * kind of comparison that silently leaves the header naming the wrong file.
+     */
+    get fromEntries() {
+        const d = this.state.data;
+        const ctx = (d && d.ok && d.contexts) || null;
+        return (ctx && ctx.length) ? ctx : this.state.batches;
+    }
+
     get batch() {
-        return this.state.batches.find((b) => b.id === this.state.batchId) || null;
+        const want = String(this.state.batchId || "");
+        return this.fromEntries.find((b) => String(b.id) === want) || null;
     }
 
     /** The FROM column's provenance summary, or null on a non-API board. */
@@ -1028,11 +1045,14 @@ export class MappingStudio extends Component {
                         tone: c.state === "active" ? "ok" : "muted",
                     }));
             case "batch":
-                return this.state.batches
+                return this.fromEntries
                     .filter((b) => hit(b.name))
                     .map((b) => ({ id: b.id, label: b.name,
-                                   on: b.id === this.state.batchId,
-                                   sub: "", tone: "muted" }));
+                                   on: String(b.id) === String(this.state.batchId || ""),
+                                   sub: b.kind === "sample"
+                                        ? _t("The file read onto this board")
+                                        : "",
+                                   tone: "muted" }));
             default:
                 return [];
         }
@@ -1086,12 +1106,21 @@ export class MappingStudio extends Component {
             case "config":
                 if (this.state.configId === id) { return; }
                 this.state.configId = id;
+                // CLEANMAP P1 — so does the FROM file. Keeping the old one
+                // across a scheme change put another scheme's workbook in the
+                // left column under a header naming this one; 0 asks the
+                // adapter to pick this scheme's own latest load.
+                this.state.batchId = 0;
+                this.state.extraCols = [];
                 // a lane filter and a pinned field belong to the scheme they
                 // were chosen on — see `_resetEmpToolkit`
                 this._resetEmpToolkit();
                 break;
             case "batch":
-                if (this.state.batchId === id) { return; }
+                // W146 — the FROM list now holds a string id ('sample') beside
+                // the numeric ones, so the "did anything change" test compares
+                // strings or it never fires for the file entry.
+                if (String(this.state.batchId || "") === String(id)) { return; }
                 this.state.batchId = id;
                 this.state.extraCols = [];
                 break;
@@ -1770,6 +1799,9 @@ export class MappingStudio extends Component {
             }
             this.state.data = r;
             this.state.extraCols = [];
+            // CLEANMAP P1 — land on the file that was just dropped, not on
+            // whichever pay run FROM happened to be showing before it.
+            if (r.context_id) { this.state.batchId = r.context_id; }
             const read = r.read || {};
             this.notif.add(
                 _t("Read %(n)s column heading(s) from %(file)s. No data was imported.",
@@ -1801,6 +1833,9 @@ export class MappingStudio extends Component {
                 return;
             }
             this.state.data = r;
+            // the FROM entry that file WAS is gone — follow the board back to
+            // whichever pay run it fell to
+            this.state.batchId = r.context_id || 0;
             this.notif.add(_t("The file was forgotten. Every wire you drew is still here."),
                            { type: "info" });
         } finally {

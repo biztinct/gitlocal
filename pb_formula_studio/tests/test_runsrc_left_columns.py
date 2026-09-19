@@ -139,32 +139,58 @@ class TestRunsrcLeftColumns(TransactionCase):
         self.assertEqual([c['label'] for c in cards], ['Code', 'B'],
                          "the nameless column is still on the board, as B")
 
-    def test_05_multisheet_dict_rows_are_untouched(self):
-        """Test 5 — a row that arrives as a dict has no aliases; keep every key."""
+    def test_05_multisheet_dict_rows_fold_to_one_card_per_column(self):
+        """Test 5 — REWRITTEN by CLEANMAP P1 (see
+        docs/handovers/CLEANMAP_P1_LEFT_LIST_HANDOVER.md §4.3).
+
+        This used to assert the opposite — "a row that arrives as a dict has no
+        aliases; keep every key" — and pinned RUNSRC A's known gap on purpose.
+        It was wrong about the merge: `_load_multisheet_data` writes FOUR names
+        per column, and on rize that drew 174 cards for a 43-column workbook.
+        A dict row with no aliases in it still keeps every key, which is what
+        this fixture is; the assertion that moved is about the CARD, which is
+        now the sheet-qualified spelling per real column.
+        """
         raw = {'SEVL|Employee code': 'E001', 'SEVL|Basic salary': 12500000,
                'EXTRA|Meal allowance': 730000}
         self.assertEqual(self.Batch._raw_data_from_row([], raw), raw)
         cfg = self._config('RUNSRC Multi')
         batch = self._batch(cfg, raw)
         cards = self._file_cards(self._board(cfg, batch), batch)
-        self.assertEqual([c['label'] for c in cards], list(raw))
+        self.assertEqual([c['id'] for c in cards],
+                         ['c:SEVL|Employee code', 'c:SEVL|Basic salary',
+                          'c:EXTRA|Meal allowance'],
+                         "one card per real column, keyed as the resolver reads it")
+        self.assertEqual([c['label'] for c in cards],
+                         ['Employee code', 'Basic salary', 'Meal allowance'])
 
     def test_06_sheet_qualified_aliases_are_stripped(self):
-        """Test 6 — 'SEVL|Employee code' keeps a card, 'SEVL|A' does not."""
+        """Test 6 — 'SEVL|Employee code' keeps a card, 'SEVL|A' does not.
+
+        The card's KEY is the sheet-qualified one (that is what the resolver
+        reads); its LABEL is the heading, because `SEVL|` in front of every
+        heading is a prefix the reader has to look past 43 times — RUNSRC A1b,
+        `_import_left_columns.add`. This test asserted the label and was red
+        from A1b until CLEANMAP P1 spotted it; the assertion now names both.
+        """
         raw = {'SEVL|Employee code': 'E001', 'SEVL|A': 'E001',
                'SEVL|Basic salary': 12500000, 'SEVL|B': 12500000}
         cfg = self._config('RUNSRC Sheeted')
         batch = self._batch(cfg, raw)
         cards = self._file_cards(self._board(cfg, batch), batch)
+        self.assertEqual([c['id'] for c in cards],
+                         ['c:SEVL|Employee code', 'c:SEVL|Basic salary'])
         self.assertEqual([c['label'] for c in cards],
-                         ['SEVL|Employee code', 'SEVL|Basic salary'])
+                         ['Employee code', 'Basic salary'])
         # and the bare-letter shape the single-sheet writer produces
         raw2 = self._raw(['SEVL|Employee code', 'SEVL|Basic salary'],
                          ['E001', 12500000])
         batch2 = self._batch(cfg, raw2, name='RUNSRC A · sheet two')
         cards2 = self._file_cards(self._board(cfg, batch2), batch2)
+        self.assertEqual([c['id'] for c in cards2],
+                         ['c:SEVL|Employee code', 'c:SEVL|Basic salary'])
         self.assertEqual([c['label'] for c in cards2],
-                         ['SEVL|Employee code', 'SEVL|Basic salary'])
+                         ['Employee code', 'Basic salary'])
 
     # =====================================================================
     # 7 — the card says what is in the column
