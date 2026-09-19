@@ -8,7 +8,7 @@
     # 19.0.1.3.0 — ACCESS P7: declare the report_xlsx dependency the payslip
     # spreadsheet report has always had, and stop the root Payroll menu
     # pointing at pb_hr_flow (a module that depends on this one).
-    'version': '19.0.1.5.0',
+    'version': '19.0.1.6.0',
     'sequence': 1,
     'author': 'Odoo Mates, Odoo SA',
     'summary': 'Generic Payroll system',

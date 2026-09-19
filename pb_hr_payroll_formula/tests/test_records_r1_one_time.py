@@ -242,8 +242,15 @@ class TestRecordsR1OneTime(TransactionCase):
                 employee.resource_calendar_id.id
                 or self.env.company.resource_calendar_id.id),
         })
+        # SCHEMECTX P2 — a new contract no longer gets a line per catalogue
+        # row, so the fixture makes the one line it is about. What this suite
+        # cares about is that a one-time run does not MOVE that line, and for
+        # that the line only has to exist.
         advantage = contract.advantages_ids.filtered(
             lambda a: a.advantage_template_id == tmpl)
+        if not advantage:
+            advantage = self.env['hr.contract.advantage'].create({
+                'contract_id': contract.id, 'advantage_template_id': tmpl.id})
         self.assertEqual(len(advantage), 1,
                          "the contract should carry exactly one line for %s" % tmpl.code)
         advantage.amount = REC_ALLOW
