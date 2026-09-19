@@ -42,7 +42,6 @@ import {
 // the full-screen board, pre-scoped to the scheme on screen. A link that hands
 // over a board hands over a return door with it (W5) — see `openMapping`.
 import { HubBackChip, hubBack, openHub, goBack } from "@pb_hub/js/hub_nav";
-import { ApprovalSchemePanel } from "@pb_approval_config/js/scheme_panel";
 import { _t } from "@web/core/l10n/translation";
 import { ROLES, roleMeta, roleIcon, roleLabel, roleHint } from "./mapping/mapping_roles";
 
@@ -116,64 +115,10 @@ const SHORTCUT_GRID = [
 
 // Searchable many2one combobox (substring filter on name+code+col, keyboard nav).
 // Menu is position:fixed so it escapes the .pbcfg scroll-container clipping.
-export class CfgCombo extends Component {
-    static template = "pb_formula_studio.CfgCombo";
-    static props = {
-        options: { type: Array },
-        value: { optional: true },
-        placeholder: { type: String, optional: true },
-        onSelect: { type: Function },
-    };
-    setup() {
-        this.state = useState({ open: false, q: "", active: 0, menuStyle: "" });
-        this.root = useRef("root");
-        this.search = useRef("search");
-        useExternalListener(window, "mousedown", (ev) => {
-            if (this.state.open && this.root.el && !this.root.el.contains(ev.target)) this.close();
-        });
-        useExternalListener(window, "scroll", () => { if (this.state.open) this.close(); }, { capture: true });
-        useEffect(() => { if (this.state.open && this.search.el) this.search.el.focus(); }, () => [this.state.open]);
-    }
-    _txt(o) { return ((o.col ? o.col + " " : "") + (o.name || "") + " " + (o.code || "")).toLowerCase(); }
-    label(o) { return o.col ? (o.col + " · " + (o.name || "")) : (o.name || ""); }
-    get selected() { return this.props.options.find((o) => o.id === this.props.value) || null; }
-    get displayLabel() { const s = this.selected; return s ? this.label(s) : ""; }
-    get filtered() {
-        const q = (this.state.q || "").trim().toLowerCase();
-        return q ? this.props.options.filter((o) => this._txt(o).includes(q)) : this.props.options;
-    }
-    toggle() {
-        if (this.state.open) { this.close(); return; }
-        const ctrl = this.root.el && this.root.el.querySelector(".cfg-combo-control");
-        if (ctrl) {
-            const r = ctrl.getBoundingClientRect();
-            const menuH = 320, below = window.innerHeight - r.bottom;
-            const top = (below < menuH && r.top > below) ? Math.max(8, r.top - menuH - 4) : (r.bottom + 4);
-            this.state.menuStyle = `position:fixed; left:${Math.round(r.left)}px; top:${Math.round(top)}px; width:${Math.round(r.width)}px; max-height:${menuH}px;`;
-        }
-        this.state.open = true; this.state.q = ""; this.state.active = 0;
-    }
-    close() { this.state.open = false; }
-    onInput(ev) { this.state.q = ev.target.value; this.state.active = 0; }
-    pick(id) { this.props.onSelect(id); this.close(); }
-    onKey(ev) {
-        const f = this.filtered;
-        if (ev.key === "ArrowDown") { ev.preventDefault(); this.state.active = Math.min(this.state.active + 1, f.length - 1); this._scroll(); }
-        else if (ev.key === "ArrowUp") { ev.preventDefault(); this.state.active = Math.max(this.state.active - 1, 0); this._scroll(); }
-        else if (ev.key === "Enter") { ev.preventDefault(); const o = f[this.state.active]; if (o) this.pick(o.id); }
-        else if (ev.key === "Escape") { ev.preventDefault(); this.close(); }
-    }
-    _scroll() {
-        requestAnimationFrame(() => {
-            const el = document.querySelector(".cfg-combo-menu .cfg-combo-opt.active");
-            if (el) el.scrollIntoView({ block: "nearest" });
-        });
-    }
-}
 
 export class PbFormulaStudio extends Component {
     static template = "pb_formula_studio.PbFormulaStudio";
-    static components = { CfgCombo, GridStudio, FindReplace, CommandPalette, HoverCard, HubBackChip, DocDrop, ApprovalSchemePanel };
+    static components = { GridStudio, FindReplace, CommandPalette, HoverCard, HubBackChip, DocDrop };
     static props = ["*"];
 
     setup() {
@@ -441,13 +386,9 @@ export class PbFormulaStudio extends Component {
             previewDrawer: false,
             // header: the lifecycle menu on the state chip
             stateMenuOpen: false,
-            // config settings surface
+            // The status + meta payload the Health tab reads. The five-sub-tab
+            // settings panel that used to own it is gone (SCHEMECTX P3).
             settings: null,
-            setDraft: {},
-            settingsTab: "setup",
-            cfgAdvOpen: false,
-            settingsBusy: false,
-            settingsError: "",
             // W97 — period comparison view (state.view === 'compare')
             cmpRuns: [],
             cmpA: null,
@@ -3425,13 +3366,15 @@ export class PbFormulaStudio extends Component {
         await this.openSettingsPanel();
     }
 
-    /** The old panel. Kept as the fallback while the journey lands. */
-    async openSettingsPanel() {
-        await this.loadSettings();
-        this.state.settingsTab = "setup";
-        this.state.cfgAdvOpen = false;
-        this.state.settingsError = "";
-        this.state.view = "settings";
+    /**
+     * The fallback, and it is deliberately still here.
+     *
+     * `pb_blueprint` is a separate module. A studio installed without it must
+     * say where the settings went rather than show a blank tab — which is
+     * exactly the dead end the design bar forbids.
+     */
+    openSettingsPanel() {
+        this.setView("settings");
     }
 
     /**
@@ -3459,23 +3402,17 @@ export class PbFormulaStudio extends Component {
         this.setView("health");
         if (!this.state.settings) { await this.loadSettings(); }
     }
+    /**
+     * The status and the option lists, for the Health tab.
+     *
+     * `get_config_settings` stays exactly where it was: it is now the guided
+     * setup's backend as well as this tab's, and one contract read by two
+     * screens is the whole point of the change (rule 8a).
+     */
     async loadSettings() {
         const d = await this.orm.call("pb.formula.studio", "get_config_settings", [this.state.config.id]);
-        if (!d || !d.ok) { this.notif.add(_t("Could not load settings."), { type: "warning" }); return; }
+        if (!d || !d.ok) { this.notif.add(_t("Could not read this configuration's health."), { type: "warning" }); return; }
         this.state.settings = d;
-        this.state.setDraft = Object.assign({}, d.values);
-    }
-    setSettingsTab(tab) { this.state.settingsTab = tab; }
-
-    /** Where the Approvals tab points the shared panel. */
-    get approvalScope() { return (this.state.settings || {}).approvals || {}; }
-    toggleCfgAdv() { this.state.cfgAdvOpen = !this.state.cfgAdvOpen; }
-    async generateSampleData() {
-        const r = await this.orm.call("pb.formula.studio", "cfg_generate_sample_data", [this.state.config.id]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Could not generate sample"), { type: "warning" }); return; }
-        this.notif.add(r.notif || _t("Sample data generated"), { type: "success" });
-        if (r.settings && this.state.settings) { this.state.settings = r.settings; this.state.setDraft = Object.assign({}, r.settings.values); }
-        await this.load(this.state.config.id);
     }
     // ---- W97 — period comparison view ----
     async openCompare() {
@@ -4112,109 +4049,6 @@ export class PbFormulaStudio extends Component {
         reader.readAsDataURL(file);
     }
 
-    get cfgState() { return (this.state.settings && this.state.settings.status.state) || "draft"; }
-    cfgStageCls(stage) {
-        const order = ["draft", "testing", "validated", "active"];
-        if (this.cfgState === "archived") return "muted";
-        const cur = order.indexOf(this.cfgState), i = order.indexOf(stage);
-        return i < cur ? "done" : (i === cur ? "current" : "todo");
-    }
-    cfgMeta(key) { return (this.state.settings && this.state.settings.meta && this.state.settings.meta[key]) || []; }
-    setCfgField(field, ev) {
-        const t = ev.target;
-        let v = t.type === "checkbox" ? t.checked : t.value;
-        if (t.type === "number") v = v === "" ? 0 : parseFloat(v);
-        this.state.setDraft[field] = v;
-    }
-    setCfgM2O(field, ev) { const v = ev.target.value; this.state.setDraft[field] = v ? parseInt(v) : false; }
-    pickCfgM2O(field, id) { this.state.setDraft[field] = id || false; }
-    cfgM2MHas(field, id) { return (this.state.setDraft[field] || []).includes(id); }
-    toggleCfgM2M(field, id) {
-        const cur = (this.state.setDraft[field] || []).slice();
-        const i = cur.indexOf(id);
-        if (i >= 0) cur.splice(i, 1); else cur.push(id);
-        this.state.setDraft[field] = cur;
-    }
-
-    // ---- SC-3/SC-4 — the Sources card (which lanes feed this scheme) ----
-    _srcOrder() {
-        const d = this.state.setDraft || {};
-        const order = String(d.source_priority || "api,excel,records")
-            .split(",").map((s) => s.trim())
-            .filter((s) => ["api", "excel", "records"].includes(s));
-        for (const k of ["api", "excel", "records"]) {
-            if (!order.includes(k)) order.push(k);
-        }
-        return order;
-    }
-    get srcLaneList() {
-        const d = this.state.setDraft || {};
-        const meta = this.cfgMeta("source_lane_counts") || {};
-        const L = {
-            api: { label: _t("Connected system"),
-                   sub: _t("values arriving from the connected HR system"),
-                   on: d.source_api_enabled !== false },
-            excel: { label: _t("Spreadsheet"),
-                     sub: _t("the pay data file uploaded for a run"),
-                     on: d.source_excel_enabled !== false },
-            records: { label: _t("Payobook records"),
-                       sub: _t("employee, contract and amount data kept here"),
-                       on: d.source_records_enabled !== false },
-        };
-        return this._srcOrder().map((k, i) => ({
-            key: k, rank: i + 1, count: meta[k] || 0, ...L[k],
-        }));
-    }
-    srcLaneMove(key, dir) {
-        const order = this._srcOrder();
-        const i = order.indexOf(key);
-        const j = i + dir;
-        if (i < 0 || j < 0 || j >= order.length) return;
-        [order[i], order[j]] = [order[j], order[i]];
-        this.state.setDraft.source_priority = order.join(",");
-    }
-    srcLaneToggle(key) {
-        const field = "source_" + key + "_enabled";
-        this.state.setDraft[field] = this.state.setDraft[field] === false;
-    }
-    get srcLaneSentence() {
-        const on = this.srcLaneList.filter((l) => l.on);
-        if (!on.length) {
-            return _t("All sources are off — components use only their own formulas and fixed values.");
-        }
-        let s = _t("Order: ") + on.map((l) => l.label).join(" → ") + ". ";
-        if (on[0].key === "records") {
-            s += _t("Payobook records are the source of truth: a value already held is never overwritten — lower sources may only fill empty boxes.");
-        } else {
-            s += _t("A lower source is used only where every higher one is silent.");
-        }
-        return s;
-    }
-    get srcLaneWarnings() {
-        return this.srcLaneList
-            .filter((l) => !l.on && l.count)
-            .map((l) => _t("%(n)s component(s) currently take values from “%(lane)s” — they will fall through to the next source.", { n: l.count, lane: l.label }));
-    }
-    async saveSettings() {
-        if (this.state.settingsBusy) return;
-        this.state.settingsBusy = true;
-        this.state.settingsError = "";
-        try {
-            const r = await this.orm.call("pb.formula.studio", "save_config_settings", [this.state.config.id, this.state.setDraft]);
-            if (!r || !r.ok) {
-                const msg = (r && r.msg) ? r.msg : _t("Could not save settings");
-                this.state.settingsError = msg; this.notif.add(msg, { type: "warning" });
-                return;
-            }
-            if (this.state.settings) this.state.settings.status = r.status;
-            this.notif.add(_t("Settings saved"), { type: "success" });
-            await this.load(this.state.config.id);   // sync top bar / score / name
-        } finally { this.state.settingsBusy = false; }
-    }
-    revertSettings() {
-        if (this.state.settings) this.state.setDraft = Object.assign({}, this.state.settings.values);
-        this.state.settingsError = "";
-    }
     // ---- Approval Matrix P4: a change to a live scheme is proposed ----
     /** Does a change to this scheme have to be agreed before it happens? */
     get schemeNeedsApproval() {
@@ -4257,15 +4091,9 @@ export class PbFormulaStudio extends Component {
         const r = await this.orm.call("pb.formula.studio", method, [this.state.config.id]);
         if (!r || !r.ok) { this.notif.add((r && r.msg) || _t("Action blocked"), { type: "warning" }); }
         else { this.notif.add(r.notif || okMsg, { type: "success" }); }
-        if (r && r.settings) { this.state.settings = r.settings; this.state.setDraft = Object.assign({}, r.settings.values); }
+        if (r && r.settings) { this.state.settings = r.settings; }
         else if (r && r.status && this.state.settings) { this.state.settings.status = r.status; }
         await this.load(this.state.config.id);
-    }
-    startTesting() { return this._cfgLifecycle("cfg_start_testing", "Testing started"); }
-    validateCfg() { return this._cfgLifecycle("cfg_validate", "Validated"); }
-    async activateCfg() {
-        const r = await this._schemePropose("activate");
-        if (r) { await this.load(this.state.config.id); }
     }
     setDraftCfg() { return this._cfgLifecycle("cfg_set_draft", "Back to draft"); }
     async archiveCfg() {
@@ -4273,13 +4101,11 @@ export class PbFormulaStudio extends Component {
         const r = await this._schemePropose("archive");
         if (r) { await this.load(this.state.config.id); }
     }
-    regenerateFormulas() { return this._cfgLifecycle("cfg_regenerate_formulas", "Formulas regenerated"); }
-    generateSamples() { return this._cfgLifecycle("cfg_generate_sample_data", "Sample data generated"); }
-    runTestsCfg() { return this._cfgLifecycle("cfg_run_tests", "Tests run"); }
+    regenerateFormulas() { return this._cfgLifecycle("cfg_regenerate_formulas", _t("The formulas were worked out again")); }
     async importExcelCfg() {
         const r = await this.orm.call("pb.formula.studio", "cfg_import_excel", [this.state.config.id]);
         if (r && r.ok && r.action) {
-            this.action.doAction(r.action, { onClose: () => { this.loadSettings(); this.load(this.state.config.id); } });
+            this.action.doAction(r.action, { onClose: () => this.load(this.state.config.id) });
         }
     }
 

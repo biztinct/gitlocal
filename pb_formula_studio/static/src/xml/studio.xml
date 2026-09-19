@@ -1,28 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
 
-  <!-- Searchable many2one combobox -->
-  <t t-name="pb_formula_studio.CfgCombo">
-    <div class="cfg-combo" t-ref="root">
-      <button type="button" class="cfg-combo-control ce-input" t-on-click="toggle">
-        <span t-attf-class="cfg-combo-lbl {{ !displayLabel ? 'ph' : '' }}"><t t-esc="displayLabel || props.placeholder || '— none —'"/></span>
-        <svg class="cfg-combo-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
-      <div t-if="state.open" class="cfg-combo-menu" t-att-style="state.menuStyle">
-        <input class="cfg-combo-search" t-ref="search" placeholder="Type to search…" t-att-value="state.q" t-on-input="onInput" t-on-keydown="onKey"/>
-        <div class="cfg-combo-list">
-          <div class="cfg-combo-opt none" t-on-click="() => this.pick(false)">— none —</div>
-          <t t-foreach="filtered" t-as="o" t-key="o.id">
-            <div t-attf-class="cfg-combo-opt {{ o.id === props.value ? 'sel' : '' }} {{ o_index === state.active ? 'active' : '' }}"
-                 t-on-click="() => this.pick(o.id)" t-on-mouseenter="() => { state.active = o_index; }"
-                 t-esc="label(o)"/>
-          </t>
-          <div t-if="!filtered.length" class="cfg-combo-empty">No matches</div>
-        </div>
-      </div>
-    </div>
-  </t>
-
   <t t-name="pb_formula_studio.PbFormulaStudio">
     <div class="pbfs">
       <!-- loading -->
@@ -229,290 +207,29 @@
           </div>
         </header>
 
-        <!-- ============ CONFIG SETTINGS SURFACE ============ -->
-        <t t-if="state.view === 'settings' and state.settings">
-        <div class="pbcfg">
-          <!-- workflow rail -->
-          <div class="pbcfg-rail">
-            <div class="pbcfg-stages">
-              <t t-foreach="[['draft','Draft'],['testing','Testing'],['validated','Validated'],['active','Active']]" t-as="stg" t-key="stg[0]">
-                <div t-attf-class="pbcfg-stage {{ cfgStageCls(stg[0]) }}">
-                  <span class="dot"><t t-if="cfgStageCls(stg[0]) === 'done'">✓</t></span>
-                  <span class="lb" t-esc="stg[1]"/>
-                </div>
-              </t>
+        <!-- ============ SETTINGS ============
+             SCHEMECTX P3. The five-sub-tab panel that used to live here is
+             gone: every field it edited is now a card in the guided journey,
+             on the step where the decision belongs, so there is ONE screen
+             that describes a payroll configuration instead of two that can
+             disagree. `openSettings` routes there.
+             This is the fallback, and it is deliberately still here: the
+             journey is a separate module, and a studio installed without it
+             has to say where the settings went rather than show a blank tab. -->
+        <t t-if="state.view === 'settings'">
+        <div class="pbfs-settings-gone">
+          <div class="ce-sec">
+            <div class="ce-sec-h">Settings have moved</div>
+            <div class="ce-sec-sub">Everything about this configuration — its name,
+              part-month pay, back-pay, where values come from, the connected system,
+              the accounting accounts and who has to approve a change — is now edited
+              in the guided setup, on the step each one belongs to.</div>
+            <div class="pbcfg-actions">
+              <button class="pbfs-btn primary" t-on-click="openSettings">Open the guided setup</button>
+              <button class="pbfs-btn ghost" t-on-click="openHealth">Health</button>
             </div>
-            <div class="pbcfg-rail-side">
-              <div class="pbfs-ring" title="Validation health">
-                <svg width="42" height="42">
-                  <circle cx="21" cy="21" r="19" stroke="#EEF1F5" stroke-width="5" fill="none"/>
-                  <circle cx="21" cy="21" r="19" stroke="#0F8A63" stroke-width="5" fill="none" stroke-linecap="round"
-                          t-att-stroke-dasharray="ring(state.settings.status.score).dash"
-                          t-att-stroke-dashoffset="ring(state.settings.status.score).offset"
-                          transform="rotate(-90 21 21)"/>
-                </svg>
-                <span class="val" t-esc="state.settings.status.score"/>
-              </div>
-              <span t-attf-class="pbcfg-vbadge {{ state.settings.status.validation_status }}" t-esc="state.settings.status.validation_status"/>
-            </div>
-          </div>
-          <!-- stage actions -->
-          <div class="pbcfg-actions">
-            <button t-if="cfgState === 'draft'" class="pbfs-btn primary" t-on-click="startTesting">Start Testing</button>
-            <button t-if="cfgState === 'testing'" class="pbfs-btn primary" t-on-click="validateCfg">Validate</button>
-            <button t-if="cfgState === 'validated'" class="pbfs-btn primary" t-on-click="activateCfg"
-                    t-att-title="schemeRouteLine"><t t-esc="schemeVerb('Activate', 'Propose putting it live')"/></button>
-            <button t-if="state.settings.status.rule_count" class="pbfs-btn soft" data-coach="fs-simulate" t-on-click="openSimulate" title="Preview this config against last period's real payslips before activating">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>Simulate
-            </button>
-            <button t-if="cfgState !== 'draft'" class="pbfs-btn ghost" t-on-click="setDraftCfg">Set to Draft</button>
-            <button t-if="!state.settings.status.rule_count" class="pbfs-btn ghost" t-on-click="importExcelCfg">Import from Excel</button>
-            <button t-if="state.settings.status.rule_count" class="pbfs-btn ghost" t-on-click="regenerateFormulas">Regenerate Formulas</button>
-            <button t-if="cfgState !== 'archived'" class="pbfs-btn danger" t-on-click="archiveCfg"
-                    t-att-title="schemeRouteLine"><t t-esc="schemeVerb('Retire', 'Propose retiring it')"/></button>
-            <div t-if="schemeRouteLine" class="pbfs-hint" t-esc="schemeRouteLine"/>
-          </div>
-          <!-- alerts -->
-          <div t-if="state.settings.status.has_errors and state.settings.status.error_details" class="ed-errbox" t-esc="state.settings.status.error_details"/>
-          <!-- T1.6: bare has_circular_ref flag replaced by the human cycle path(s) -->
-          <div t-if="graphCycles.length" class="ed-errbox pbfs-cyc-alert">
-            <div t-foreach="graphCycles" t-as="cy" t-key="cy_index" class="cyc-alert-row">
-              <span t-esc="cy.human_explanation"/>
-              <button class="pbfs-link" t-on-click="() => this.showCyclePath(cy)">Show path</button>
-            </div>
-          </div>
-
-          <!-- tabs -->
-          <div class="pbcfg-tabs">
-            <t t-foreach="[['setup','Setup'],['sources','Sources'],['approvals','Approvals'],['automation','Automation'],['intelligence','Intelligence']]" t-as="tb" t-key="tb[0]">
-              <button t-attf-class="{{ state.settingsTab === tb[0] ? 'on' : '' }}" t-on-click="() => this.setSettingsTab(tb[0])" t-esc="tb[1]"/>
-            </t>
-          </div>
-
-          <div t-if="state.settingsError" class="ce-banner err">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
-            <span t-esc="state.settingsError"/>
-          </div>
-
-          <div class="pbcfg-body">
-            <!-- SETUP -->
-            <t t-if="state.settingsTab === 'setup'">
-              <div class="pbcfg-grid">
-                <div class="ce-sec">
-                  <div class="ce-sec-h">Essentials</div>
-                  <div class="ce-field"><label>Name</label><input class="ce-input" t-att-value="state.setDraft.name" t-on-input="(ev)=>this.setCfgField('name',ev)"/></div>
-                  <div class="ce-grid2" style="margin-top:12px">
-                    <div class="ce-field"><label>Country</label>
-                      <select class="ce-input" t-on-change="(ev)=>this.setCfgField('country_code',ev)">
-                        <option t-foreach="cfgMeta('country_codes')" t-as="o" t-key="o.value" t-att-value="o.value" t-att-selected="state.setDraft.country_code === o.value" t-esc="o.label"/>
-                      </select></div>
-                    <div class="ce-field"><label>Cycle type</label>
-                      <select class="ce-input" t-on-change="(ev)=>this.setCfgField('cycle_type',ev)">
-                        <option t-foreach="cfgMeta('cycle_types')" t-as="o" t-key="o.value" t-att-value="o.value" t-att-selected="state.setDraft.cycle_type === o.value" t-esc="o.label"/>
-                      </select></div>
-                    <div t-if="state.settings.meta.multi_company" class="ce-field"><label>Company</label>
-                      <CfgCombo options="cfgMeta('companies')" value="state.setDraft.company_id" placeholder="'Company'" onSelect="(id) => this.pickCfgM2O('company_id', id)"/></div>
-                  </div>
-                </div>
-
-                <div class="ce-sec">
-                  <div class="ce-sec-h">Accounting</div>
-                  <div class="ce-sec-sub">Where payslips post in your books.</div>
-                  <div class="ce-field"><label>Payroll journal</label>
-                    <CfgCombo options="cfgMeta('journals')" value="state.setDraft.payroll_journal_id" placeholder="'— none —'" onSelect="(id) => this.pickCfgM2O('payroll_journal_id', id)"/></div>
-                  <div class="ce-field" style="margin-top:12px"><label>Default debit account</label>
-                    <CfgCombo options="cfgMeta('accounts')" value="state.setDraft.debit_account_id" placeholder="'— none —'" onSelect="(id) => this.pickCfgM2O('debit_account_id', id)"/></div>
-                  <div class="ce-field" style="margin-top:12px"><label>Default credit account</label>
-                    <CfgCombo options="cfgMeta('accounts')" value="state.setDraft.credit_account_id" placeholder="'— none —'" onSelect="(id) => this.pickCfgM2O('credit_account_id', id)"/></div>
-                </div>
-
-                <div class="ce-sec pbcfg-readonly">
-                  <div class="ce-sec-h">Components</div>
-                  <div class="pbcfg-stat"><span class="k">Total</span><span t-esc="state.settings.status.rule_count"/></div>
-                  <div class="pbcfg-stat"><span class="k">Formulas</span><span t-esc="state.settings.status.formula_rule_count"/></div>
-                  <div class="pbcfg-stat"><span class="k">Inputs</span><span t-esc="state.settings.status.input_rule_count"/></div>
-                  <button class="pbfs-btn soft sm" style="margin-top:10px" t-on-click="() => this.setView('cards')">Edit components →</button>
-                </div>
-              </div>
-
-              <div class="ce-sec pbcfg-adv">
-                <button class="ce-sec-toggle" t-on-click="toggleCfgAdv">
-                  <svg t-attf-class="chev {{ state.cfgAdvOpen ? 'open' : '' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-                  Advanced
-                </button>
-                <t t-if="state.cfgAdvOpen">
-                  <div class="ce-grid2" style="margin-top:14px">
-                    <div class="ce-field"><label title="Interop only — nothing in the Excel import or the formula calculation reads it.">Legacy payroll structure</label>
-                      <CfgCombo options="cfgMeta('structures')" value="state.setDraft.structure_id" placeholder="'— none —'" onSelect="(id) => this.pickCfgM2O('structure_id', id)"/></div>
-                    <div class="ce-field"><label>Data source connector</label>
-                      <CfgCombo options="cfgMeta('connectors')" value="state.setDraft.connector_id" placeholder="'— none —'" onSelect="(id) => this.pickCfgM2O('connector_id', id)"/></div>
-                    <div class="ce-field"><label>Reference code</label><input class="ce-input mono" t-att-value="state.setDraft.code" t-on-input="(ev)=>this.setCfgField('code',ev)"/></div>
-                  </div>
-                  <!-- `.ce-tog` is inline-flex, so a second toggle would sit on the
-                       same line and run into the first (COLROLES P4). The toggles
-                       stack in their own column instead. -->
-                  <div class="ce-togs">
-                    <label class="ce-tog"><input type="checkbox" t-att-checked="state.setDraft.use_color_coded_excel_import" t-on-change="(ev)=>this.setCfgField('use_color_coded_excel_import',ev)"/><span>Use color-coded Excel import</span></label>
-                    <!-- opt-in, and the label says what "off" does too, because off
-                         is what every existing structure is. -->
-                    <label class="ce-tog" title="Off: the payroll workbook opens with its standard employee columns. On: it opens with the columns you marked Identity or Employee Profile here, in their own order."><input type="checkbox" t-att-checked="state.setDraft.export_identity_columns" t-on-change="(ev)=>this.setCfgField('export_identity_columns',ev)"/><span>Open the payroll export with this structure's own identity columns</span></label>
-                  </div>
-                </t>
-              </div>
-            </t>
-
-            <!-- AUTOMATION -->
-            <!-- APPROVALS: who has to say yes before a pay run computed by
-                 this scheme is finished. The SAME panel the Matrix and the
-                 guided setup mount — one implementation, so a scheme's own
-                 settings can never disagree with the Matrix about it. -->
-            <t t-elif="state.settingsTab === 'approvals'">
-              <div class="pbcfg-grid">
-                <div class="ce-sec">
-                  <h4>Approval workflows</h4>
-                  <p class="ce-hint">Choose the checks for this scheme. Activating the scheme and submitting a pay run both need a complete approval route.</p>
-                  <ApprovalSchemePanel processKey="'payrun'"
-                                       scopeKey="approvalScope.scope_key || ''"
-                                       scopeLabel="approvalScope.scope_label || ''"
-                                       companyId="approvalScope.company_id"
-                                       embedded="true"/>
-                </div>
-              </div>
-            </t>
-            <t t-elif="state.settingsTab === 'automation'">
-              <div class="pbcfg-grid">
-                <div class="ce-sec">
-                  <div class="ce-sec-h">Proration</div>
-                  <label class="ce-tog"><input type="checkbox" t-att-checked="state.setDraft.use_proration" t-on-change="(ev)=>this.setCfgField('use_proration',ev)"/><span>Enable proration</span></label>
-                  <t t-if="state.setDraft.use_proration">
-                    <div class="ce-grid2" style="margin-top:14px">
-                      <div class="ce-field"><label>Proration basis</label>
-                        <select class="ce-input" t-on-change="(ev)=>this.setCfgField('proration_basis',ev)">
-                          <option t-foreach="cfgMeta('proration_bases')" t-as="o" t-key="o.value" t-att-value="o.value" t-att-selected="state.setDraft.proration_basis === o.value" t-esc="o.label"/>
-                        </select></div>
-                      <div class="ce-field"><label>Rounding (decimals)</label><input class="ce-input" type="number" t-att-value="state.setDraft.proration_rounding" t-on-change="(ev)=>this.setCfgField('proration_rounding',ev)"/></div>
-                    </div>
-                    <label class="ce-label" style="margin-top:14px; display:block">Prorated components</label>
-                    <div class="ce-pal-grp">
-                      <button t-foreach="cfgMeta('components')" t-as="o" t-key="o.id" t-attf-class="ce-chip col {{ cfgM2MHas('proration_component_ids', o.id) ? 'on' : '' }}" t-on-click="()=>this.toggleCfgM2M('proration_component_ids', o.id)" t-att-title="o.name">
-                        <span class="ce-chip-col" t-esc="o.col"/><span class="ce-chip-nm" t-esc="o.name"/>
-                      </button>
-                    </div>
-                  </t>
-                </div>
-
-                <div class="ce-sec">
-                  <div class="ce-sec-h">Retroactive adjustments</div>
-                  <label class="ce-tog"><input type="checkbox" t-att-checked="state.setDraft.use_auto_retro" t-on-change="(ev)=>this.setCfgField('use_auto_retro',ev)"/><span>Enable auto retro</span></label>
-                  <div t-if="state.setDraft.use_auto_retro" class="ce-field" style="margin-top:14px"><label>Retro target component</label>
-                    <CfgCombo options="cfgMeta('components')" value="state.setDraft.retro_component_id" placeholder="'— none —'" onSelect="(id) => this.pickCfgM2O('retro_component_id', id)"/></div>
-                </div>
-              </div>
-            </t>
-
-            <!-- SOURCES (SC-3/SC-4) — which sources feed this scheme, and who
-                 wins. The order binds the pay run AND the record updates: a
-                 lower source may fill an empty box, never overwrite one. -->
-            <t t-elif="state.settingsTab === 'sources'">
-              <div class="pbcfg-grid">
-                <div class="ce-sec pbcfg-sources">
-                  <div class="ce-sec-h">Where pay values come from</div>
-                  <div class="ce-sec-sub">Use the arrows to set who wins; switch a source off to stop this scheme reading it. A lower source is used only where every higher one is silent — and it may only fill an empty record box, never overwrite one.</div>
-                  <div class="src-lanes">
-                    <t t-foreach="srcLaneList" t-as="ln" t-key="ln.key">
-                      <div t-attf-class="src-lane {{ ln.on ? '' : 'off' }}">
-                        <span class="src-rank" t-esc="ln.rank"/>
-                        <span t-attf-class="src-ic {{ ln.key }}">
-                          <svg t-if="ln.key === 'api'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                          <svg t-elif="ln.key === 'excel'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h8"/><path d="M8 17h8"/><path d="M10 13v4"/></svg>
-                          <svg t-else="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
-                        </span>
-                        <span class="src-nm">
-                          <b t-esc="ln.label"/>
-                          <span class="src-sub" t-esc="ln.sub"/>
-                        </span>
-                        <span class="src-count" t-if="ln.count"><t t-esc="ln.count"/> components read this</span>
-                        <span class="src-ctl">
-                          <button class="src-btn" type="button" title="Move up" t-att-disabled="ln_index === 0"
-                                  t-on-click="() => this.srcLaneMove(ln.key, -1)">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></button>
-                          <button class="src-btn" type="button" title="Move down" t-att-disabled="ln_index === srcLaneList.length - 1"
-                                  t-on-click="() => this.srcLaneMove(ln.key, 1)">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
-                          <label class="ce-tog src-tog"><input type="checkbox" t-att-checked="ln.on" t-on-change="() => this.srcLaneToggle(ln.key)"/><span/></label>
-                        </span>
-                      </div>
-                    </t>
-                  </div>
-                  <div class="src-sentence" t-esc="srcLaneSentence"/>
-                  <div class="src-warns" t-if="srcLaneWarnings.length">
-                    <div class="src-warn" t-foreach="srcLaneWarnings" t-as="w" t-key="w_index">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-                      <span t-esc="w"/>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </t>
-
-            <!-- INTELLIGENCE (T1.5 + T1.6) -->
-            <t t-elif="state.settingsTab === 'intelligence'">
-              <!-- circular references first — the loudest signal -->
-              <div t-if="graphCycles.length" class="ce-sec pbfs-intel-cyc">
-                <div class="ce-sec-h">Circular references</div>
-                <div class="ce-sec-sub">These components depend on each other in a loop — the engine cannot resolve them.</div>
-                <t t-foreach="graphCycles" t-as="cy" t-key="cy_index">
-                  <div class="intel-cyc-row">
-                    <span class="cyc-msg" t-esc="cy.human_explanation"/>
-                    <button class="pbfs-btn ghost sm" t-on-click="() => this.showCyclePath(cy)">Show path</button>
-                  </div>
-                </t>
-              </div>
-
-              <div class="pbcfg-grid pbfs-intel">
-                <div class="ce-sec">
-                  <div class="ce-sec-h">Execution order</div>
-                  <div class="ce-sec-sub">The order the engine evaluates formulas — every dependency is computed before the components that use it.</div>
-                  <div class="intel-order">
-                    <t t-foreach="execOrderItems" t-as="it" t-key="it.id">
-                      <div class="intel-ord-row" t-att-data-col="it.col">
-                        <span class="intel-step" t-esc="it_index + 1"/>
-                        <span class="intel-col" t-esc="it.col"/>
-                        <span class="intel-nm" t-esc="it.name"/>
-                        <span t-if="it.is_valid" class="intel-ok" title="Valid">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"/></svg>
-                        </span>
-                        <span t-else="" class="intel-bad" title="Check this formula">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
-                        </span>
-                      </div>
-                    </t>
-                    <div t-if="!execOrderItems.length" class="intel-empty">No formula components yet.</div>
-                  </div>
-                </div>
-
-                <div class="ce-sec">
-                  <div class="ce-sec-h">Unused components</div>
-                  <div class="ce-sec-sub">Nothing depends on these and they don't appear on payslips — safe to archive.</div>
-                  <div class="intel-unused">
-                    <t t-foreach="unusedItems" t-as="u" t-key="u.id">
-                      <div class="intel-un-row" t-att-data-col="u.col">
-                        <span class="intel-col" t-esc="u.col"/>
-                        <span class="intel-nm" t-esc="u.name"/>
-                        <span class="intel-typ" t-esc="u.type"/>
-                        <button t-if="state.canEdit" class="pbfs-btn danger sm" t-on-click="() => this.deleteComponent(u.id)" title="Archive (delete) this component">Archive</button>
-                      </div>
-                    </t>
-                    <div t-if="!unusedItems.length" class="intel-empty">No unused components — every component is referenced or shown on a payslip.</div>
-                  </div>
-                </div>
-              </div>
-            </t>
-          </div>
-
-          <div class="pbcfg-foot">
-            <button class="pbfs-btn ghost" t-on-click="revertSettings">Revert</button>
-            <button class="pbfs-btn primary" t-att-disabled="state.settingsBusy" t-on-click="saveSettings">Save settings</button>
+            <div class="pbfs-hint">If this button does nothing, the guided setup is not
+              installed on this database. Ask whoever looks after the system to add it.</div>
           </div>
         </div>
         </t>

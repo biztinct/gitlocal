@@ -42,7 +42,7 @@ class TestSchemeCtxP3SettingsDoor(TransactionCase):
         cls.js = _read('static', 'src', 'js', 'formula_studio.js')
         cls.xml = _read('static', 'src', 'xml', 'studio.xml')
         cls.door = cls.js[cls.js.index('async openSettings()'):
-                          cls.js.index('async openSettingsPanel()')]
+                          cls.js.index('openSettingsPanel() {')]
 
     # ==================================================================
     # 14 — the door itself
@@ -126,6 +126,26 @@ class TestSchemeCtxP3SettingsDoor(TransactionCase):
         for piece in ('Execution order', 'Unused components',
                       'Circular references'):
             self.assertIn(piece, health, "the Health tab lost %r" % piece)
+
+    def test_15e_the_five_sub_tab_panel_is_gone(self):
+        """Not disabled, not behind a flag: GONE.
+
+        A second screen that still exists in the source is a second screen
+        somebody re-enables, and then there are two answers to "what is this
+        configuration's payroll journal" again.
+        """
+        for ghost in ("state.settingsTab", "pbcfg-tabs", "setCfgField(",
+                      "pickCfgM2O(", "cfgMeta(", "srcLaneList", "CfgCombo",
+                      "revertSettings", "saveSettings"):
+            self.assertNotIn(ghost, self.xml, "the old panel still has %s" % ghost)
+            self.assertNotIn(ghost, self.js, "the old panel still has %s" % ghost)
+        # The backend the panel used STAYS: it is the journey's backend now.
+        model = _read('models', 'pb_formula_studio.py')
+        self.assertIn('def get_config_settings(', model)
+        self.assertIn('def save_config_settings(', model)
+        # And the tab still leads somewhere rather than nowhere.
+        self.assertIn("state.view === 'settings'", self.xml)
+        self.assertIn('Settings have moved', self.xml)
 
     def test_15d_nothing_a_person_reads_on_the_new_surfaces_is_branded(self):
         health = self.xml[self.xml.index("<t t-elif=\"state.view === 'health'\">"):
