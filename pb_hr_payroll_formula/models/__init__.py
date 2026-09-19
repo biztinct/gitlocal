@@ -85,6 +85,11 @@ from . import payroll_retro_adjustment
 # adds model classes in import order, W84's family).
 from . import formula_net_role
 
+# SCHEMECTX P2 — "which components belong to this person". Extends
+# `hr.formula.config` without declaring a field, so it loads after the base
+# model like every other extension in this file.
+from . import scheme_component_scope
+
 # RD49 — fetch last month's data on a schedule, so a pay run never waits for it.
 from . import integration_cron
 

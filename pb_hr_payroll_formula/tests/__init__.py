@@ -166,3 +166,4 @@ from . import test_runsrc_pd_transformations
 # SCHEMECTX P1 — a scheme pays in the money of its own country, even when
 # that currency ships switched off.
 from . import test_schemectx_currency
+from . import test_schemectx_p2_scope
