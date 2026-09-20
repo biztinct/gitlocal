@@ -476,7 +476,7 @@
 
         <!-- ====================================== 4 · review, 5 · publish -->
         <div t-else="" class="pbam-bgrid"
-             t-att-class="{ 'is-review': state.step === 4 }">
+             t-att-class="{ 'is-review': state.step === 4 || state.step === 5 }">
 
           <t t-if="state.published">
             <div class="pbam-success">
@@ -620,79 +620,77 @@
                 <h2 class="pbim-h2">Ready to publish</h2>
                 <p class="pbim-sub" t-esc="mirror"/>
               </div>
+              <div class="pbim-panel pbam-publish-form">
+                <div class="pbam-res">
+                  <span t-if="outstanding.length" class="pbim-badge pbam-warn pbam-badge-lg">
+                    <t t-out="ic('alert',13)"/>
+                    <span><t t-esc="outstanding.length"/> thing(s) to confirm</span>
+                  </span>
+                  <span t-elif="state.publication.errors.length" class="pbim-badge pbam-err pbam-badge-lg">
+                    <t t-out="ic('xCircle',13)"/> <span>Cannot be published yet</span>
+                  </span>
+                  <span t-else="" class="pbim-badge pbam-ok pbam-badge-lg">
+                    <t t-out="ic('checkCircle',13)"/> <span>Ready to publish</span>
+                  </span>
+                </div>
+
+                <div t-if="state.publication.errors.length" class="pbam-issues">
+                  <div t-foreach="state.publication.errors" t-as="wn" t-key="wn_index"
+                       class="pbam-issue pbam-issue-err">
+                    <div class="pbam-issue-t"><t t-out="ic('xCircle',14)"/> <span>Must be fixed</span></div>
+                    <div class="pbam-issue-s" t-esc="wn.message"/>
+                  </div>
+                </div>
+
+                <t t-if="state.publication.warnings.length">
+                  <div class="pbam-confirms">
+                    <label t-foreach="state.publication.warnings" t-as="wn" t-key="wn.code"
+                           class="pbam-checkrow" t-att-class="{ 'is-on': state.confirmed[wn.code] }"
+                           t-on-click="() => this.toggleConfirm(wn.code)">
+                      <span class="pbam-cb">
+                        <t t-if="state.confirmed[wn.code]" t-out="ic('check',12)"/>
+                      </span>
+                      <span t-esc="wn.message"/>
+                    </label>
+                  </div>
+                  <p class="pbim-sub">Tick each one to confirm. Your confirmations are recorded with the publish, under your name. Nothing here stops you — the business knows best.</p>
+                </t>
+
+                <div class="pbam-field">
+                  <label>New requests follow it from</label>
+                  <input class="pbam-input" type="datetime-local"
+                         t-att-value="state.publishAt"
+                         t-on-change="(ev) => { state.publishAt = ev.target.value; }"/>
+                  <span class="pbim-sub">Leave it empty to start at once.</span>
+                </div>
+
+                <div class="pbam-field">
+                  <label>Reason (kept in History)</label>
+                  <input class="pbam-input" t-att-value="state.reason"
+                         t-on-change="(ev) => { state.reason = ev.target.value; }"/>
+                </div>
+
+                <dl class="pbam-kv">
+                  <dt>Already under way</dt>
+                  <dd><t t-esc="state.publication.in_progress"/> keep the route they were given</dd>
+                  <dt>What this does not do</dt>
+                  <dd>Publishing does not make you an approver</dd>
+                </dl>
+
+                <p t-if="!state.publication.can_publish" class="pbim-sub">
+                  Publishing is somebody else's job on this account. Everything above is saved as a draft for them.
+                </p>
+              </div>
               <div class="pbam-bfoot">
                 <button class="pbim-btn ghost" t-on-click="() => this.goto(4)">
                   <t t-out="ic('back',14)"/> <span>Back</span>
                 </button>
-                <span/>
+                <button class="pbim-btn primary"
+                        t-att-disabled="!canPublish" t-on-click="() => this.publish()">
+                  <t t-out="ic('stamp',15)"/> <span>Publish this route</span>
+                </button>
               </div>
             </div>
-
-            <aside t-if="state.step === 5" class="pbam-ex">
-              <div class="pbam-res">
-                <span t-if="outstanding.length" class="pbim-badge pbam-warn pbam-badge-lg">
-                  <t t-out="ic('alert',13)"/>
-                  <span><t t-esc="outstanding.length"/> thing(s) to confirm</span>
-                </span>
-                <span t-elif="state.publication.errors.length" class="pbim-badge pbam-err pbam-badge-lg">
-                  <t t-out="ic('xCircle',13)"/> <span>Cannot be published yet</span>
-                </span>
-                <span t-else="" class="pbim-badge pbam-ok pbam-badge-lg">
-                  <t t-out="ic('checkCircle',13)"/> <span>Ready to publish</span>
-                </span>
-              </div>
-
-              <div t-if="state.publication.errors.length" class="pbam-issues">
-                <div t-foreach="state.publication.errors" t-as="wn" t-key="wn_index"
-                     class="pbam-issue pbam-issue-err">
-                  <div class="pbam-issue-t"><t t-out="ic('xCircle',14)"/> <span>Must be fixed</span></div>
-                  <div class="pbam-issue-s" t-esc="wn.message"/>
-                </div>
-              </div>
-
-              <t t-if="state.publication.warnings.length">
-                <div class="pbam-confirms">
-                  <label t-foreach="state.publication.warnings" t-as="wn" t-key="wn.code"
-                         class="pbam-checkrow" t-att-class="{ 'is-on': state.confirmed[wn.code] }"
-                         t-on-click="() => this.toggleConfirm(wn.code)">
-                    <span class="pbam-cb">
-                      <t t-if="state.confirmed[wn.code]" t-out="ic('check',12)"/>
-                    </span>
-                    <span t-esc="wn.message"/>
-                  </label>
-                </div>
-                <p class="pbim-sub">Tick each one to confirm. Your confirmations are recorded with the publish, under your name. Nothing here stops you — the business knows best.</p>
-              </t>
-
-              <div class="pbam-field">
-                <label>New requests follow it from</label>
-                <input class="pbam-input" type="datetime-local"
-                       t-att-value="state.publishAt"
-                       t-on-change="(ev) => { state.publishAt = ev.target.value; }"/>
-                <span class="pbim-sub">Leave it empty to start at once.</span>
-              </div>
-
-              <div class="pbam-field">
-                <label>Reason (kept in History)</label>
-                <input class="pbam-input" t-att-value="state.reason"
-                       t-on-change="(ev) => { state.reason = ev.target.value; }"/>
-              </div>
-
-              <dl class="pbam-kv">
-                <dt>Already under way</dt>
-                <dd><t t-esc="state.publication.in_progress"/> keep the route they were given</dd>
-                <dt>What this does not do</dt>
-                <dd>Publishing does not make you an approver</dd>
-              </dl>
-
-              <button class="pbim-btn primary pbam-btn-wide"
-                      t-att-disabled="!canPublish" t-on-click="() => this.publish()">
-                <t t-out="ic('stamp',15)"/> <span>Publish this route</span>
-              </button>
-              <p t-if="!state.publication.can_publish" class="pbim-sub">
-                Publishing is somebody else's job on this account. Everything above is saved as a draft for them.
-              </p>
-            </aside>
           </t>
 
           <div t-else="" class="pbim-busy">

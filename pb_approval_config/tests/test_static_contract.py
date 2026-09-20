@@ -416,7 +416,8 @@ class TestApprovalStaticContract(TransactionCase):
         self.assertIn('{ n: 4, label: _t("Review") }', js)
         self.assertIn('{ n: 5, label: _t("Publish") }', js)
         self.assertIn('this.goto(5)', xml)
-        self.assertIn('t-if="state.step === 5" class="pbam-ex"', xml)
+        self.assertIn("state.step === 4 || state.step === 5", xml)
+        self.assertIn('class="pbim-panel pbam-publish-form"', xml)
 
     def test_no_facade_reaches_for_the_top_bars_company(self):
         """`self.env.company` follows whatever is ticked in the top bar, which
