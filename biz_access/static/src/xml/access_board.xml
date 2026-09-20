@@ -1110,7 +1110,7 @@
             <div class="pbva-modal-ic"><t t-out="ic('userPlus',17)"/></div>
             <div class="pbva-modal-t">
               <h3>Add a person</h3>
-              <p>They will receive an email inviting them to set their password.</p>
+              <p>Create their login now. We will also try to email an invitation.</p>
             </div>
             <button class="pbim-btn ghost" t-on-click="closeAddPerson"
                     t-att-disabled="state.addingPersonBusy" title="Close">
@@ -1139,7 +1139,7 @@
                     t-att-disabled="state.addingPersonBusy">Cancel</button>
             <button class="pbim-btn primary" t-on-click="createPerson"
                     t-att-disabled="state.addingPersonBusy or !canAddPerson">
-              <t t-out="ic('mail',15)"/> Send invitation
+              <t t-out="ic('userPlus',15)"/> Add person
             </button>
           </div>
         </div>

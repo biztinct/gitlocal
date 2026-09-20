@@ -464,7 +464,23 @@ class TestAddingAPerson(PassportCase):
         self.assertIn(self.env.ref('base.group_user'), user.group_ids)
         self.assertNotIn(self.env.ref('base.group_system'), user.all_group_ids)
         self.assertEqual(user.company_id, self.env.company)
+        self.assertTrue(result['invitation_sent'])
         invite.assert_called_once()
+        self.assertIn(user.id, [row['id'] for row in self.mgr_access.people()])
+
+    def test_mail_failure_does_not_undo_the_new_person(self):
+        email = 'maildown.%s@example.com' % self.stamp
+        with patch(
+                'odoo.addons.auth_signup.models.res_users.ResUsers.action_reset_password',
+                autospec=True, side_effect=UserError('SMTP is down')):
+            result = self.mgr_access.create_user('Debalina De', email)
+
+        user = self.env['res.users'].sudo().browse(result['id'])
+        self.assertTrue(user.exists())
+        self.assertEqual(user.login, email)
+        self.assertFalse(result['invitation_sent'])
+        self.assertIn('was added', result['message'])
+        self.assertIn('could not be sent', result['message'])
         self.assertIn(user.id, [row['id'] for row in self.mgr_access.people()])
 
     def test_it_refuses_a_second_login_for_the_same_email(self):

@@ -494,10 +494,13 @@ export class PbAccessBoard extends Component {
             this.state.peopleSearch = "";
             await this.loadPeople();
             await this.loadPassport(result.id);
-            this.notif.add(result.message, { type: "success", sticky: true });
+            this.notif.add(result.message, {
+                type: result.invitation_sent ? "success" : "warning",
+                sticky: true,
+            });
         } catch (e) {
             this.notif.add(
-                this._msg(e, _t("That person could not be invited.")),
+                this._msg(e, _t("That person could not be added.")),
                 { type: "danger" });
         } finally {
             this.state.addingPersonBusy = false;

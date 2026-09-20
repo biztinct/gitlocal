@@ -1214,7 +1214,7 @@ class PbAccess(models.AbstractModel):
 
     @api.model
     def create_user(self, name=None, email=None):
-        """Create one internal login and email a set-password invitation.
+        """Create one internal login, then try to email its invitation.
 
         The People lens is deliberately the only friendly creation door. A
         person starts with the ordinary internal-user permission and nothing
@@ -1255,15 +1255,35 @@ class PbAccess(models.AbstractModel):
             'company_ids': [Command.set(company.ids)],
             'group_ids': [Command.set(internal.ids)],
         })
-        # Send only after the record is valid. If delivery fails, the RPC
-        # rolls the creation back instead of leaving a silent unusable login.
-        user.with_context(create_user=True).action_reset_password()
+        invitation_sent = True
+        try:
+            # Email is useful, but account creation must not depend on SMTP.
+            # Keep the attempt in a savepoint so even a database-level mail
+            # error cannot poison the transaction containing the new user.
+            with self.env.cr.savepoint():
+                user.with_context(create_user=True).action_reset_password()
+        except Exception:
+            invitation_sent = False
+            _logger.exception(
+                "User %s was created, but their invitation email failed",
+                user.id)
+
+        if invitation_sent:
+            message = _(
+                "%(name)s was added and an invitation was sent to "
+                "%(email)s. You can now give them a role.",
+                name=user.name, email=email)
+        else:
+            message = _(
+                "%(name)s was added, but the invitation email could not be "
+                "sent. They cannot set their password from that email yet. "
+                "Try sending it again after the mail server is working.",
+                name=user.name)
         return {
             'id': user.id,
             'name': user.name or '',
-            'message': _(
-                "Invitation sent to %(email)s. They can set their password, "
-                "then you can give them a role here.", email=email),
+            'invitation_sent': invitation_sent,
+            'message': message,
         }
 
     def _person_row(self, user, holders, lent, titles):
