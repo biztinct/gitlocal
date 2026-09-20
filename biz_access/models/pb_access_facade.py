@@ -385,11 +385,15 @@ class PbAccess(models.AbstractModel):
         removable = bundle.filtered(lambda g: g.id in direct)
         if not removable:
             if set(bundle.ids) <= set(target.all_group_ids.ids):
+                others = self._roles_covering(target, profile)
+                named = ', '.join('"%s"' % (other.name or '')
+                                  for other in others[:3])
                 raise UserError(_(
-                    "%(who)s has \"%(what)s\" because of another role they "
-                    "hold, not directly. Take that other role away instead — "
-                    "removing this one here would change nothing.",
-                    who=target.name or '', what=profile.name))
+                    "%(who)s has \"%(what)s\" through %(others)s, not as a "
+                    "separate role. Remove %(others)s instead — removing "
+                    "\"%(what)s\" would change nothing.",
+                    who=target.name or '', what=profile.name,
+                    others=named or _("another role")))
             raise UserError(_(
                 "%(who)s does not have \"%(what)s\".",
                 who=target.name or '', what=profile.name))
@@ -450,7 +454,7 @@ class PbAccess(models.AbstractModel):
                 order='area, sequence, name'):
             if not other.group_ids or not set(other.group_ids.ids) <= held:
                 continue
-            if set(other.group_ids.ids) & wanted:
+            if set(implied_closure(other.group_ids).ids) & wanted:
                 out |= other
         return out
 

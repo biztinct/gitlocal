@@ -332,6 +332,20 @@ class TestThePassport(PassportCase):
         # the way out, rather than saying "another role" and stopping.
         self.assertIn(twin.name, str(caught.exception))
 
+    def test_an_implied_permission_refusal_names_the_role_providing_it(self):
+        child_ability = self._ability(
+            'zz-p3-child-%s' % self.stamp, 'ZZ P3 Child ability', self.gate)
+        child_role = self._role('ZZ P3 Child %s' % self.stamp, child_ability)
+        holder = self._user('Parentholder', self.above)
+
+        with self.assertRaises(UserError) as caught:
+            self.mgr_access.remove(child_role.id, holder.id)
+
+        message = str(caught.exception)
+        self.assertIn(child_role.name, message)
+        self.assertIn(self.role.name, message)
+        self.assertNotIn('because of another role', message)
+
     def test_somebody_with_no_roles_gets_an_honest_passport(self):
         plain = self._user('Bare')
         pack = self.mgr_access.passport(plain.id)
