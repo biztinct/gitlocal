@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
-"""A pay scheme cannot go live with nobody to approve its pay runs.
+"""Describe whether pay runs on a scheme can currently be approved.
 
-The moment a scheme is activated, somebody can run payroll on it — and the
-first thing that happens after they do is that the run asks for its approval.
-If the route for that scheme has no binding, or names a responsibility nobody
-holds, the run is refused the instant it is submitted, at the worst possible
-moment: the numbers are computed, the month is late, and the person holding the
-error can do nothing about it themselves.
-
-So the question is asked EARLIER, where it is still cheap: at activation, with
-the gap named and the screen that mends it one press away. This is a read only
-— it grants nothing and changes nothing about the route.
+The Connect step asks this early so it can warn clearly and point to the exact
+flow. It deliberately does not gate scheme activation: activation is governed
+by the separate ``scheme`` process, while this ``payrun`` process is enforced
+when somebody submits a pay run. Keeping those doors separate means choosing
+"No approval needed" for Scheme change really does allow the scheme to go live.
 
 WHY IT LIVES IN `pb_payruns`. `hr.formula.config` belongs to the formula
 engine, which knows nothing about approvals and must not learn; the approval
@@ -19,12 +14,7 @@ already depends on both, which is exactly what makes it the right place for a
 sentence that involves the two of them.
 """
 
-import logging
-
 from odoo import _, models
-from odoo.exceptions import UserError
-
-_logger = logging.getLogger(__name__)
 
 
 class HrFormulaConfig(models.Model):
@@ -72,22 +62,3 @@ class HrFormulaConfig(models.Model):
                 "In Approval Matrix, the flow is “%(flow)s”. %(why)s",
                 flow=flow, why=why)
         return ''
-
-    def action_activate(self):
-        """Activate — once a pay run on this scheme could actually be signed off."""
-        for config in self:
-            gap = ''
-            try:
-                gap = config._pb_approval_gap()
-            except Exception:   # noqa: BLE001 — never block on a broken read
-                _logger.exception(
-                    'pb_payruns: the approval check failed on scheme %s',
-                    config.id)
-            if gap:
-                raise UserError(_(
-                    "“%(name)s” cannot go live yet: %(why)s\n\nPay runs on this "
-                    "scheme would be refused the moment they were sent in. Set "
-                    "the approvals for it first — Approvals → Matrix, or the "
-                    "Approvals panel on the scheme's own settings.",
-                    name=config.name or '', why=gap))
-        return super().action_activate()

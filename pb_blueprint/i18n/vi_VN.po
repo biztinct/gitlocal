@@ -3614,11 +3614,11 @@ msgstr "Chọn các bước kiểm cho phương án lương này."
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/step_connect.js:216
 msgid ""
-"Finish can save a draft. Activating the scheme and submitting a pay run both"
-" need a complete approval route."
+"Scheme activation follows the Scheme change flow. A Pay run flow is checked "
+"later, when a pay run is submitted."
 msgstr ""
-"Hoàn tất vẫn lưu được bản nháp. Nhưng kích hoạt phương án lương và gửi kỳ "
-"lương đi phê duyệt đều cần một lộ trình phê duyệt đầy đủ."
+"Việc kích hoạt phương án lương tuân theo luồng Thay đổi phương án. Luồng kỳ "
+"lương được kiểm tra sau, khi một kỳ lương được gửi đi."
 
 #. module: pb_blueprint
 #. odoo-javascript

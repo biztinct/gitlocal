@@ -62,7 +62,7 @@
           </div>
 
           <div class="pbam-ap-act">
-            <button t-if="editable" class="pbim-btn ghost" t-on-click="() => this.toggleChange()">
+            <button t-if="editable and !props.embedded" class="pbim-btn ghost" t-on-click="() => this.toggleChange()">
               <t t-if="state.changing">Close</t>
               <t t-else="">Change</t>
             </button>

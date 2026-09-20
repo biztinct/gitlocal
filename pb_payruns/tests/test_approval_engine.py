@@ -490,6 +490,34 @@ class PayrunApprovalCase(TransactionCase):
         self.assertIn('Approval Matrix', gap)
         self.assertIn('HR lead', gap)
 
+    def test_r07d_an_incomplete_payrun_flow_does_not_block_activation(self):
+        if 'formula_config_id' not in self.env['hr.payslip']._fields:
+            self.skipTest('the formula engine is not installed here')
+        self._bind(_route([_step('s1', 'hr_lead', 'HR lead review')]),
+                   name='AP incomplete payroll approval')
+        role = self.env['biz.approval.role'].search(
+            [('key', '=', 'hr_lead')], limit=1)
+        self.env['biz.approval.responsibility'].sudo().search([
+            ('company_id', '=', self.company.id), ('role_id', '=', role.id),
+            ('active', '=', True),
+        ]).write({'active': False})
+        # Scheme activation has its own approval process. Leave it open here;
+        # this regression is specifically about the unrelated pay-run route.
+        scheme = self.env['biz.approval.process']._by_key('scheme')
+        if scheme:
+            self.env['biz.approval.binding'].sudo().search([
+                ('company_id', '=', self.company.id),
+                ('process_id', '=', scheme.id), ('active', '=', True),
+            ]).write({'active': False})
+        config = self._config(self.env['hr.formula.config'],
+                              'AP activatable scheme', 'APACTIVATE',
+                              state='validated')
+        self.assertTrue(config._pb_approval_gap())
+
+        config.action_activate()
+
+        self.assertEqual(config.state, 'active')
+
     # =================================================================== R08
     def test_r08_an_exact_kind_beats_any_kind(self):
         if 'formula_config_id' not in self.env['hr.payslip']._fields:

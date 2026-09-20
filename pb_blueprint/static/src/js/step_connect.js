@@ -213,7 +213,7 @@ export class StepConnect extends Component {
     }
 
     get approvalsSub() {
-        return _t("Finish can save a draft. Activating the scheme and submitting a pay run both need a complete approval route.");
+        return _t("Scheme activation follows the Scheme change flow. A Pay run flow is checked later, when a pay run is submitted.");
     }
 
     /** What is still missing, said once, in the words the engine used. */
