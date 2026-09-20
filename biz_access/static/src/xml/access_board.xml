@@ -1161,13 +1161,9 @@
           <!-- THE SENTENCE BEFORE THE BUTTON, ALWAYS. Coming from a person's
                passport the role is not chosen yet, so the list IS the sentences
                — and the one that is picked stays on screen above the button. -->
-          <div t-if="state.granting.profile" class="pbva-what">
+          <div t-if="state.granting.profile and !state.granting.person" class="pbva-what">
             <h4 t-esc="state.granting.profile.name"/>
             <p t-esc="state.granting.profile.description"/>
-            <button t-if="state.granting.person" class="pbva-linkbtn"
-                    t-on-click="() => this.pickRoleToGive(null)">
-              Choose a different role
-            </button>
           </div>
 
           <t t-if="state.granting.mode === 'remove'">
@@ -1175,8 +1171,18 @@
               <t t-esc="state.grantTarget.name + ' will no longer be able to do this. Anything they have already done stays exactly as it is.'"/>
             </p>
           </t>
-          <t t-elif="state.granting.person and !state.granting.profile">
-            <label class="pbva-lbl">Which role</label>
+          <t t-elif="state.granting.person">
+            <div class="pbva-grant-ways">
+              <button class="pbim-btn"
+                      t-att-class="!state.granting.copyMode ? 'primary' : 'ghost'"
+                      t-on-click="showChooseRoles">Choose roles</button>
+              <button class="pbim-btn"
+                      t-att-class="state.granting.copyMode ? 'primary' : 'ghost'"
+                      t-on-click="showCopyRoles">Copy from another person</button>
+            </div>
+            <t t-if="!state.granting.copyMode">
+            <label class="pbva-lbl">Which roles</label>
+            <p class="pbva-hint">Select one or more. Nothing changes until you confirm.</p>
             <div t-if="!givableRoles.length" class="pbva-mini-empty">
               <t t-out="ic('idCard',22)"/>
               <p>
@@ -1187,9 +1193,10 @@
             <div t-else="" class="pbva-picks pbva-picks--tall">
               <button t-foreach="givableRoles" t-as="gr" t-key="gr.id"
                       class="pbva-pickable"
-                      t-on-click="() => this.pickRoleToGive(gr)">
-                <span class="pbva-pickable-go">
-                  <t t-out="ic('idCard',15)"/>
+                      t-att-class="roleIsSelected(gr.id) ? 'is-on' : ''"
+                      t-on-click="() => this.toggleRoleToGive(gr)">
+                <span class="pbva-pickable-tick">
+                  <t t-out="ic('check',13)"/>
                 </span>
                 <span class="pbva-pickable-tx">
                   <b t-esc="gr.name"/>
@@ -1197,6 +1204,41 @@
                 </span>
               </button>
             </div>
+            </t>
+            <t t-else="">
+              <label class="pbva-lbl">Copy permanent roles from</label>
+              <input class="pbva-in"
+                     t-on-input="(ev) => this.onCopyPersonSearch(ev)"
+                     placeholder="Start typing a person's name"/>
+              <div t-if="state.granting.copyPeople.length" class="pbva-picker">
+                <button t-foreach="state.granting.copyPeople" t-as="pp" t-key="pp.id"
+                        class="pbva-pick" t-on-click="() => this.pickCopyPerson(pp)">
+                  <img class="pbva-face" t-att-src="pp.avatar" t-att-alt="pp.name"/>
+                  <span t-esc="pp.name"/><small t-esc="pp.login"/>
+                </button>
+              </div>
+              <div t-if="state.granting.copySource" class="pbva-copy-preview">
+                <div class="pbva-note pbva-note--shield">
+                  <t t-out="ic('shieldCheck',14)"/>
+                  <span>
+                    <b t-esc="state.granting.copySource.name"/>
+                    <t t-if="state.granting.copyRoles.length">
+                      has <t t-esc="state.granting.copyRoles.length"/>
+                      <t t-if="state.granting.copyRoles.length === 1"> permanent role that can be added.</t>
+                      <t t-else=""> permanent roles that can be added.</t>
+                      Temporary hand-overs are not copied.
+                    </t>
+                    <t t-else=""> has no new permanent roles to add.</t>
+                  </span>
+                </div>
+                <div class="pbva-picks pbva-picks--copy">
+                  <div t-foreach="state.granting.copyRoles" t-as="role"
+                       t-key="role.profile_id" class="pbva-copy-role">
+                    <t t-out="ic('check',14)"/><span t-esc="role.name"/>
+                  </div>
+                </div>
+              </div>
+            </t>
           </t>
           <t t-elif="!state.granting.person">
             <label class="pbva-lbl">Who is it for</label>
@@ -1226,8 +1268,8 @@
         <div class="pbva-modal-f">
           <button class="pbim-btn ghost" t-on-click="closeGrant">Cancel</button>
           <button class="pbim-btn primary" t-on-click="confirmGrant"
-                  t-att-disabled="state.busy or !state.granting.profile"
-                  t-esc="state.granting.mode === 'remove' ? 'Take it away' : 'Give it to them'"/>
+                  t-att-disabled="state.busy or (state.granting.person and state.granting.copyMode and (!state.granting.copySource or !state.granting.copyRoles.length)) or (state.granting.person and !state.granting.copyMode and !state.granting.selectedIds.length) or (!state.granting.person and !state.granting.profile)"
+                  t-esc="state.granting.mode === 'remove' ? 'Take it away' : (state.granting.copyMode ? 'Copy roles' : (state.granting.person ? 'Give selected roles' : 'Give it to them'))"/>
         </div>
       </div>
       </div>

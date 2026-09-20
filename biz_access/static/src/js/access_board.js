@@ -580,14 +580,75 @@ export class PbAccessBoard extends Component {
         this.state.granting = {
             profile: null, mode: "grant",
             person: { id: head.id, name: head.name },
+            selectedIds: [], copyMode: false, copySource: null,
+            copyPeople: [], copyRoles: [], copyBusy: false,
         };
         this.state.grantTarget = { id: head.id, name: head.name };
         this.state.grantReason = "";
         this.state.people = [];
     }
 
-    pickRoleToGive(profile) {
-        if (this.state.granting) { this.state.granting.profile = profile; }
+    toggleRoleToGive(profile) {
+        const g = this.state.granting;
+        if (!g) { return; }
+        g.selectedIds = g.selectedIds.includes(profile.id)
+            ? g.selectedIds.filter((id) => id !== profile.id)
+            : [...g.selectedIds, profile.id];
+    }
+
+    roleIsSelected(id) {
+        return Boolean(this.state.granting
+            && this.state.granting.selectedIds.includes(id));
+    }
+
+    showCopyRoles() {
+        const g = this.state.granting;
+        if (!g) { return; }
+        g.copyMode = true;
+        g.copySource = null;
+        g.copyPeople = [];
+        g.copyRoles = [];
+    }
+
+    showChooseRoles() {
+        const g = this.state.granting;
+        if (g) { g.copyMode = false; }
+    }
+
+    async onCopyPersonSearch(ev) {
+        const g = this.state.granting;
+        if (!g) { return; }
+        const term = ev.target.value;
+        g.copySource = null;
+        g.copyRoles = [];
+        if (!term || term.length < 2) { g.copyPeople = []; return; }
+        try {
+            g.copyPeople = (await this.orm.call(
+                "pb.access", "user_options", [term, true]))
+                .filter((person) => person.id !== g.person.id);
+        } catch (e) {
+            g.copyPeople = [];
+        }
+    }
+
+    async pickCopyPerson(person) {
+        const g = this.state.granting;
+        if (!g) { return; }
+        g.copyBusy = true;
+        g.copyPeople = [];
+        try {
+            const passport = await this.orm.call(
+                "pb.access", "passport", [person.id]);
+            const available = new Set(this.givableRoles.map((role) => role.id));
+            g.copySource = person;
+            g.copyRoles = passport.roles.filter(
+                (role) => role.source !== "lent" && available.has(role.profile_id));
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("Those roles could not be read.")),
+                           { type: "danger" });
+        } finally {
+            g.copyBusy = false;
+        }
     }
 
     /** The roles this person does not already hold — offering one they have is
@@ -1075,7 +1136,18 @@ export class PbAccessBoard extends Component {
     async confirmGrant() {
         const g = this.state.granting;
         if (!g) { return; }
-        if (!g.profile) {
+        const passportGrant = Boolean(g.person && g.mode === "grant");
+        if (passportGrant && g.copyMode && !g.copySource) {
+            this.notif.add(_t("Choose whose roles to copy."),
+                           { type: "warning" });
+            return;
+        }
+        if (passportGrant && !g.copyMode && !g.selectedIds.length) {
+            this.notif.add(_t("Choose at least one role."),
+                           { type: "warning" });
+            return;
+        }
+        if (!passportGrant && !g.profile) {
             this.notif.add(_t("Choose which role to give them."),
                            { type: "warning" });
             return;
@@ -1086,10 +1158,22 @@ export class PbAccessBoard extends Component {
         }
         this.state.busy = true;
         try {
-            const res = await this.orm.call(
-                "pb.access", g.mode === "remove" ? "remove" : "grant",
-                [g.profile.id, this.state.grantTarget.id,
-                 this.state.grantReason]);
+            let method;
+            let args;
+            if (passportGrant && g.copyMode) {
+                method = "copy_roles";
+                args = [g.copySource.id, this.state.grantTarget.id,
+                        this.state.grantReason];
+            } else if (passportGrant) {
+                method = "grant_many";
+                args = [g.selectedIds, this.state.grantTarget.id,
+                        this.state.grantReason];
+            } else {
+                method = g.mode === "remove" ? "remove" : "grant";
+                args = [g.profile.id, this.state.grantTarget.id,
+                        this.state.grantReason];
+            }
+            const res = await this.orm.call("pb.access", method, args);
             this.state.granting = null;
             // A ROUTE MAY HAVE TAKEN IT INSTEAD OF THE BOARD. Where role
             // changes are approved, nothing has been written yet and saying

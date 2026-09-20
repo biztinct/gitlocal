@@ -110,6 +110,32 @@ class PbAccessApproval(models.AbstractModel):
              'reason': (reason or '').strip()})
 
     @api.model
+    def grant_many(self, profile_ids, user_id, reason=None):
+        if self.env.context.get(ENGINE_APPLY) or not self._roles_route_live():
+            return super().grant_many(profile_ids, user_id, reason)
+        self._require_manage()
+        user = self._internal_user(user_id)
+        ids = list(dict.fromkeys(int(pid or 0) for pid in (profile_ids or [])))
+        if not ids:
+            raise UserError(_("Choose at least one role."))
+        profiles = self.env['pb.role.profile'].browse()
+        held = set(user.sudo().all_group_ids.ids)
+        for profile_id in ids:
+            profile = self._safe_profile(profile_id)
+            if not set(profile.group_ids.ids) <= held:
+                profiles |= profile
+        if not profiles:
+            raise UserError(_("%s already has all of those roles.",
+                              user.sudo().name or ''))
+        clean_reason = (reason or '').strip()
+        return self._ask_instead(
+            'grant',
+            {'profile_ids': [(6, 0, profiles.ids)],
+             'target_user_id': user.id, 'reason': clean_reason},
+            {'profile_ids': profiles.ids, 'user_id': user.id,
+             'reason': clean_reason})
+
+    @api.model
     def remove(self, profile_id, user_id, reason=None):
         if self.env.context.get(ENGINE_APPLY) or not self._roles_route_live():
             return super().remove(profile_id, user_id, reason)

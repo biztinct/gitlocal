@@ -290,6 +290,76 @@ class PbAccess(models.AbstractModel):
             who=target.name or '', what=profile.name)}
 
     @api.model
+    def grant_many(self, profile_ids, user_id, reason=None):
+        """Give several roles in one write and one permanent audit row."""
+        self._require_manage()
+        user = self._internal_user(user_id)
+        ids = list(dict.fromkeys(int(pid or 0) for pid in (profile_ids or [])))
+        if not ids:
+            raise UserError(_("Choose at least one role."))
+        if len(ids) > 100:
+            raise UserError(_("Choose no more than 100 roles at a time."))
+
+        profiles = self.env['pb.role.profile'].browse()
+        for profile_id in ids:
+            profiles |= self._safe_profile(profile_id)
+
+        target = user.sudo()
+        held = set(target.all_group_ids.ids)
+        missing = profiles.filtered(
+            lambda profile: not set(profile.group_ids.ids) <= held)
+        if not missing:
+            raise UserError(_("%s already has all of those roles.",
+                              target.name or ''))
+
+        before = set(target.group_ids.ids)
+        wanted = missing.mapped('group_ids').filtered(
+            lambda group: group.id not in held)
+        target.write({'group_ids': [Command.link(group.id) for group in wanted]})
+        target.invalidate_recordset(['group_ids'])
+        added = sorted(set(target.group_ids.ids) - before)
+        self.env['pb.access.delegation'].sudo().create({
+            'delegator_user_id': self.env.uid,
+            'delegate_user_id': user.id,
+            'profile_ids': [Command.set(missing.ids)],
+            'kind': 'permanent',
+            'date_start': fields.Date.context_today(self),
+            'reason': (reason or '').strip() or _(
+                "Given together on the roles board."),
+            'state': 'active',
+            'origin': 'board',
+            'applied_group_ids': [Command.set(added)],
+            'applied_on': fields.Datetime.now(),
+        })
+        return {'ok': True, 'count': len(missing), 'message': _(
+            "%(who)s now has %(count)s new roles.",
+            who=target.name or '', count=len(missing))}
+
+    @api.model
+    def copy_roles(self, source_user_id, target_user_id, reason=None):
+        """Copy permanent visible roles; never copy a temporary hand-over."""
+        self._require_manage()
+        source = self._internal_user(source_user_id)
+        target = self._internal_user(target_user_id)
+        if source.id == target.id:
+            raise UserError(_("Choose a different person to copy from."))
+
+        held = set(source.sudo().all_group_ids.ids)
+        loaned = set(self._loans_to(source))
+        profile_ids = [
+            profile.id for profile in self.env['pb.role.profile'].visible()
+            if profile.id not in loaned and profile.group_ids
+            and set(profile.group_ids.ids) <= held
+        ]
+        if not profile_ids:
+            raise UserError(_("%s has no permanent roles to copy.",
+                              source.sudo().name or ''))
+        result = self.grant_many(profile_ids, target.id, reason or _(
+            "Copied from %s on the roles board.", source.sudo().name or ''))
+        result['source_name'] = source.sudo().name or ''
+        return result
+
+    @api.model
     def remove(self, profile_id, user_id, reason=None):
         """Take a role away, and write down that too.
 
@@ -1450,7 +1520,7 @@ class PbAccess(models.AbstractModel):
 
     # =============================================================== the picker
     @api.model
-    def user_options(self, term=None):
+    def user_options(self, term=None, include_me=False):
         """Folded in Python over `search_read` of two columns (R78/R56).
 
         SHAPE FROZEN. Three dialogs read it; the People lens does not — it
@@ -1465,7 +1535,7 @@ class PbAccess(models.AbstractModel):
                 'login': r['login'] or '',
                 'avatar': '/web/image/res.users/%s/avatar_128' % r['id']}
                for r in rows
-               if r['id'] != self.env.uid
+               if (include_me or r['id'] != self.env.uid)
                and (not needle or needle in fold(r['name'])
                     or needle in fold(r['login']))]
         return out[:PICKER_CAP]

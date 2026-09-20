@@ -226,8 +226,14 @@ class PbAccessRequest(models.Model):
         data = self.instruction()
         Access = self.env['pb.access'].with_context(**{ENGINE_APPLY: True})
         if self.kind == 'grant':
-            answer = Access.grant(data.get('profile_id'), data.get('user_id'),
-                                  data.get('reason'))
+            if data.get('profile_ids'):
+                answer = Access.grant_many(
+                    data.get('profile_ids'), data.get('user_id'),
+                    data.get('reason'))
+            else:
+                answer = Access.grant(
+                    data.get('profile_id'), data.get('user_id'),
+                    data.get('reason'))
         elif self.kind == 'remove':
             answer = Access.remove(data.get('profile_id'),
                                    data.get('user_id'), data.get('reason'))

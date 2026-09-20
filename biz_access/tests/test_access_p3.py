@@ -509,6 +509,12 @@ class TestTheSpectacles(PassportCase):
         self.assertNotIn(self.role.id,
                          self.mgr_access.as_user(bare.id)['profile_ids'])
 
+    def test_copy_picker_can_include_the_person_using_it(self):
+        ordinary = self.mgr_access.user_options(self.manager.name)
+        copying = self.mgr_access.user_options(self.manager.name, True)
+        self.assertNotIn(self.manager.id, [row['id'] for row in ordinary])
+        self.assertIn(self.manager.id, [row['id'] for row in copying])
+
     def test_looking_at_nobody_in_particular_is_looking_at_me(self):
         res = self.mgr_access.as_user()
         self.assertTrue(res['is_me'])
@@ -538,3 +544,50 @@ class TestTheSpectacles(PassportCase):
         looked_at.invalidate_recordset(['group_ids'])
         self.assertIn(self.above.id, target.sudo().all_group_ids.ids)
         self.assertNotIn(self.above.id, looked_at.sudo().all_group_ids.ids)
+
+    def test_many_roles_are_given_together(self):
+        target = self._user('Batchtarget')
+        second_ability = self._ability(
+            'zz-p3-batch-%s' % self.stamp, 'ZZ P3 Batch ability', self.other)
+        second_role = self._role('ZZ P3 Batch role %s' % self.stamp,
+                                 second_ability)
+
+        result = self.mgr_access.grant_many(
+            [self.role.id, second_role.id], target.id, 'Two at once.')
+
+        target.invalidate_recordset(['group_ids'])
+        self.assertTrue(result['ok'])
+        self.assertIn(self.above.id, target.sudo().all_group_ids.ids)
+        self.assertIn(self.other.id, target.sudo().all_group_ids.ids)
+        audit = self.env['pb.access.delegation'].search([
+            ('delegate_user_id', '=', target.id),
+            ('reason', '=', 'Two at once.'),
+        ])
+        self.assertEqual(set(audit.profile_ids.ids),
+                         {self.role.id, second_role.id})
+
+    def test_copying_roles_excludes_temporary_handovers(self):
+        source = self._user('Copysource', self.above | self.other)
+        target = self._user('Copytarget')
+        second_ability = self._ability(
+            'zz-p3-copy-%s' % self.stamp, 'ZZ P3 Copy ability', self.other)
+        second_role = self._role('ZZ P3 Temporary role %s' % self.stamp,
+                                 second_ability)
+        self.env['pb.access.delegation'].create({
+            'delegator_user_id': self.manager.id,
+            'delegate_user_id': source.id,
+            'profile_ids': [(6, 0, second_role.ids)],
+            'kind': 'temporary',
+            'date_start': fields.Date.today(),
+            'date_end': fields.Date.today() + timedelta(days=2),
+            'state': 'active',
+            'origin': 'delegation',
+            'applied_group_ids': [(6, 0, self.other.ids)],
+        })
+
+        result = self.mgr_access.copy_roles(source.id, target.id)
+
+        target.invalidate_recordset(['group_ids'])
+        self.assertTrue(result['ok'])
+        self.assertIn(self.above.id, target.sudo().all_group_ids.ids)
+        self.assertNotIn(self.other.id, target.sudo().all_group_ids.ids)

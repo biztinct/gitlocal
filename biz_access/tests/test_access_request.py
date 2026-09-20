@@ -153,3 +153,33 @@ class TestAccessRequest(TransactionCase):
         with self.assertRaises(UserError):
             self.Access.with_user(self.asker).grant(
                 self.profile.id, self.target.id, 'Again?')
+
+    def test_q09g_many_roles_make_one_request_and_apply_together(self):
+        second_group = self.env['res.groups'].create(
+            {'name': 'P6 second access ability group'})
+        second_ability = self.env['pb.role.ability'].create({
+            'name': 'P6 second ability', 'technical_key': 'p6_second_ability',
+            'group_ids': [(6, 0, second_group.ids)]})
+        second_profile = self.env['pb.role.profile'].create({
+            'name': 'P6 second role',
+            'ability_ids': [(6, 0, second_ability.ids)]})
+
+        answer = self.Access.with_user(self.asker).grant_many(
+            [self.profile.id, second_profile.id], self.target.id,
+            'Two roles together.')
+
+        self.assertTrue(answer.get('pending'), answer)
+        record = self.env['pb.access.request'].sudo().browse(
+            answer['access_request_id'])
+        self.assertEqual(set(record.profile_ids.ids),
+                         {self.profile.id, second_profile.id})
+        self.assertNotIn(self.ability_group, self.target.sudo().all_group_ids)
+        self.assertNotIn(second_group, self.target.sudo().all_group_ids)
+
+        request = record.approval_request_id
+        step = request.step_ids.filtered(lambda item: item.status == 'active')
+        self.env['biz.approval.engine'].with_user(self.approver).decide(
+            request.id, step.key, 'approve')
+        self.target.invalidate_recordset(['group_ids'])
+        self.assertIn(self.ability_group, self.target.sudo().all_group_ids)
+        self.assertIn(second_group, self.target.sudo().all_group_ids)
