@@ -838,7 +838,7 @@
         <t t-if="state.coverage">
           <div t-if="state.coverage.gaps" class="pbam-attn pbam-attn-rose">
             <t t-out="ic('xCircle',16)"/>
-            <span><t t-esc="state.coverage.gaps"/> place(s) have nobody named.</span>
+            <span t-esc="coverageGapSummary()"/>
           </div>
           <div t-else="" class="pbam-attn pbam-attn-green">
             <t t-out="ic('checkCircle',16)"/>

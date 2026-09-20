@@ -65,8 +65,12 @@ class HrFormulaConfig(models.Model):
         blocking = [i for i in (result.get('issues') or [])
                     if i.get('level') == 'block']
         if blocking:
-            return blocking[0].get('msg') or _(
+            why = blocking[0].get('msg') or _(
                 "The approval route for this scheme is not ready.")
+            flow = answer.get('workflow_name') or version.workflow_id.name
+            return _(
+                "In Approval Matrix, the flow is “%(flow)s”. %(why)s",
+                flow=flow, why=why)
         return ''
 
     def action_activate(self):

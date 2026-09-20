@@ -187,6 +187,14 @@ class TestApprovalStaticContract(TransactionCase):
         self.assertFalse(missing, 'icons the shared registry has not got: %s'
                          % missing)
 
+    def test_u01_coverage_gap_names_the_affected_places(self):
+        """A count alone leaves the administrator with nowhere to start."""
+        builder = _read(HERE, 'static', 'src', 'js', 'builder.js')
+        template = _read(HERE, 'static', 'src', 'xml', 'builder.xml')
+        self.assertIn('Nobody is named for: %s.', builder)
+        self.assertIn('.map((row) => row.label)', builder)
+        self.assertIn('coverageGapSummary()', template)
+
     def test_u01_the_area_icons_the_server_sends_all_exist(self):
         """The Matrix draws its area headers with a name the SERVER chose, so
         a typo there is just as invisible as one in the markup."""

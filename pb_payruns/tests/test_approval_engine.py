@@ -469,6 +469,27 @@ class PayrunApprovalCase(TransactionCase):
         self.assertEqual(run.state, 'draft',
                          'a refused submission leaves the run alone')
 
+    def test_r07c_scheme_guard_names_the_approval_matrix_flow(self):
+        if 'formula_config_id' not in self.env['hr.payslip']._fields:
+            self.skipTest('the formula engine is not installed here')
+        workflow = self._bind(
+            _route([_step('s1', 'hr_lead', 'HR lead review')]),
+            name='AP payroll approval')
+        role = self.env['biz.approval.role'].search(
+            [('key', '=', 'hr_lead')], limit=1)
+        self.env['biz.approval.responsibility'].sudo().search([
+            ('company_id', '=', self.company.id), ('role_id', '=', role.id),
+            ('active', '=', True),
+        ]).write({'active': False})
+        config = self._config(self.env['hr.formula.config'],
+                              'AP guarded scheme', 'APGUARD')
+
+        gap = config._pb_approval_gap()
+
+        self.assertIn(workflow.name, gap)
+        self.assertIn('Approval Matrix', gap)
+        self.assertIn('HR lead', gap)
+
     # =================================================================== R08
     def test_r08_an_exact_kind_beats_any_kind(self):
         if 'formula_config_id' not in self.env['hr.payslip']._fields:

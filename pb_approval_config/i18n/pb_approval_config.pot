@@ -170,6 +170,12 @@ msgstr ""
 
 #. module: pb_approval_config
 #. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Nobody is named for: %s."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
 #: code:addons/pb_approval_config/static/src/js/sentence.js:0
 msgid "%s · any one"
 msgstr ""
@@ -4204,12 +4210,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/xml/builder.xml:0
 msgid "place(s) cannot be used yet."
-msgstr ""
-
-#. module: pb_approval_config
-#. odoo-javascript
-#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
-msgid "place(s) have nobody named."
 msgstr ""
 
 #. module: pb_approval_config

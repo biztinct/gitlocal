@@ -646,6 +646,17 @@ export class ApprovalBuilder extends Component {
     }
 
     // -------------------------------------------------------- whole coverage
+    coverageGapSummary() {
+        const labels = (this.state.coverage?.rows || [])
+            .filter((row) => row.issues?.length)
+            .map((row) => row.label)
+            .filter(Boolean);
+        return labels.length
+            ? _t("Nobody is named for: %s.", labels.join(", "))
+            : _t("%s place(s) need somebody named before this can be used.",
+                this.state.coverage?.gaps || 0);
+    }
+
     async checkCoverage() {
         this.state.coverageBusy = true;
         try {
@@ -655,7 +666,7 @@ export class ApprovalBuilder extends Component {
             const gaps = this.state.coverage.gaps;
             this.notif.add(
                 gaps
-                    ? _t("%s place(s) need somebody named before this can be used.", gaps)
+                    ? this.coverageGapSummary()
                     : _t("Every part of the business has a full route."),
                 { type: gaps ? "warning" : "success" });
         } catch (error) {

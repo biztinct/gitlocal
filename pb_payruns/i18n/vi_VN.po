@@ -908,3 +908,9 @@ msgstr "Chưa gửi đi. Nút Gửi đi phê duyệt sẽ chuyển kỳ lương 
 #: code:addons/pb_payruns/models/hr_payslip_run.py:0
 msgid "Nobody checks it"
 msgstr "Không ai kiểm"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/formula_config_guard.py:0
+msgid "In Approval Matrix, the flow is “%(flow)s”. %(why)s"
+msgstr "Trong Ma trận phê duyệt, luồng là “%(flow)s”. %(why)s"
