@@ -410,6 +410,14 @@ class TestApprovalStaticContract(TransactionCase):
                              'Escape must not be swallowed in %s — the '
                              'platform still gets its turn' % name)
 
+    def test_review_and_publish_are_separate_steps(self):
+        js = _read(HERE, 'static', 'src', 'js', 'builder.js')
+        xml = _read(HERE, 'static', 'src', 'xml', 'builder.xml')
+        self.assertIn('{ n: 4, label: _t("Review") }', js)
+        self.assertIn('{ n: 5, label: _t("Publish") }', js)
+        self.assertIn('this.goto(5)', xml)
+        self.assertIn('t-if="state.step === 5" class="pbam-ex"', xml)
+
     def test_no_facade_reaches_for_the_top_bars_company(self):
         """`self.env.company` follows whatever is ticked in the top bar, which
         is nobody's decision about this screen. Write paths use the user's.

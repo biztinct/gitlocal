@@ -2447,7 +2447,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/js/builder.js:0
 #: code:addons/pb_approval_config/static/src/xml/builder.xml:0
-msgid "Review & publish"
+msgid "Publish"
 msgstr ""
 
 #. module: pb_approval_config

@@ -2547,8 +2547,8 @@ msgstr "Xem lại"
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/js/builder.js:0
 #: code:addons/pb_approval_config/static/src/xml/builder.xml:0
-msgid "Review & publish"
-msgstr "Xem lại & ban hành"
+msgid "Publish"
+msgstr "Ban hành"
 
 #. module: pb_approval_config
 #: model:biz.approval.process,name:pb_approval_config.process_roles

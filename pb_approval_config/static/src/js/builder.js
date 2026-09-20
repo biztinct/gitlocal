@@ -1,6 +1,6 @@
 /** @odoo-module **/
 /**
- * The workflow builder: Purpose → People → Safeguards → Review & publish.
+ * The workflow builder: Purpose → People → Safeguards → Review → Publish.
  *
  * THE HERO IS THE SENTENCE. At the top of the People step is one line of
  * ordinary English saying exactly what this route does — "After it is sent in,
@@ -163,7 +163,8 @@ export class ApprovalBuilder extends Component {
             { n: 1, label: _t("Purpose") },
             { n: 2, label: _t("People") },
             { n: 3, label: _t("Safeguards") },
-            { n: 4, label: _t("Review & publish") },
+            { n: 4, label: _t("Review") },
+            { n: 5, label: _t("Publish") },
         ];
     }
 
@@ -683,7 +684,9 @@ export class ApprovalBuilder extends Component {
     async goto(step) {
         this.state.step = step;
         this.state.addMenu = false;
-        if (step === 4) { await this.loadPublication(); }
+        if (step === 4 || (step === 5 && !this.state.publication)) {
+            await this.loadPublication();
+        }
     }
 
     async loadPublication() {

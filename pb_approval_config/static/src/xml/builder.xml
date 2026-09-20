@@ -466,7 +466,7 @@
                 <t t-out="ic('back',14)"/> <span>Back</span>
               </button>
               <button class="pbim-btn primary" t-on-click="() => this.goto(4)">
-                <span>Review &amp; publish</span> <t t-out="ic('arrowRight',14)"/>
+                <span>Review</span> <t t-out="ic('arrowRight',14)"/>
               </button>
             </div>
           </div>
@@ -474,8 +474,9 @@
           <t t-call="pb_approval_config.ExamplePanel"/>
         </div>
 
-        <!-- ================================ 4 · review and publish -->
-        <div t-else="" class="pbam-bgrid">
+        <!-- ====================================== 4 · review, 5 · publish -->
+        <div t-else="" class="pbam-bgrid"
+             t-att-class="{ 'is-review': state.step === 4 }">
 
           <t t-if="state.published">
             <div class="pbam-success">
@@ -504,7 +505,7 @@
           </t>
 
           <t t-elif="state.publication">
-            <div class="pbam-bcol">
+            <div t-if="state.step === 4" class="pbam-bcol">
 
               <div class="pbim-panel">
                 <div class="pbim-panel-h">
@@ -608,11 +609,26 @@
                 <button class="pbim-btn ghost" t-on-click="() => this.goto(3)">
                   <t t-out="ic('back',14)"/> <span>Back</span>
                 </button>
+                <button class="pbim-btn primary" t-on-click="() => this.goto(5)">
+                  <span>Next</span> <t t-out="ic('arrowRight',14)"/>
+                </button>
+              </div>
+            </div>
+
+            <div t-else="" class="pbam-bcol">
+              <div class="pbim-panel">
+                <h2 class="pbim-h2">Ready to publish</h2>
+                <p class="pbim-sub" t-esc="mirror"/>
+              </div>
+              <div class="pbam-bfoot">
+                <button class="pbim-btn ghost" t-on-click="() => this.goto(4)">
+                  <t t-out="ic('back',14)"/> <span>Back</span>
+                </button>
                 <span/>
               </div>
             </div>
 
-            <aside class="pbam-ex">
+            <aside t-if="state.step === 5" class="pbam-ex">
               <div class="pbam-res">
                 <span t-if="outstanding.length" class="pbim-badge pbam-warn pbam-badge-lg">
                   <t t-out="ic('alert',13)"/>

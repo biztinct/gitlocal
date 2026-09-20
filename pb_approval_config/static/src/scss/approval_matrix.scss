@@ -917,6 +917,7 @@
         display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px;
         align-items: start; padding: 6px 0 4px;
     }
+    .pbam-bgrid.is-review { grid-template-columns: minmax(0, 1fr); }
     .pbam-choices { display: flex; flex-direction: column; gap: 10px; }
     .pbam-choice {
         display: grid; grid-template-columns: 22px 1fr; gap: 12px;
