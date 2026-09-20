@@ -80,7 +80,7 @@ class PassportCase(TransactionCase):
         })
         self.open_item = self.env['pb.sidebar.item'].create({
             'name': 'ZZ P3 Gated screen', 'section_id': self.section.id,
-            'icon': 'zap', 'sequence': 1,
+            'icon': 'zap', 'sequence': 1, 'action_tag': 'zz_p3_gate_action',
             'groups_id': [(6, 0, self.gate.ids)],
         })
         self.sub_item = self.env['pb.sidebar.item'].create({
@@ -528,6 +528,34 @@ class TestTheSpectacles(PassportCase):
         copying = self.mgr_access.user_options(self.manager.name, True)
         self.assertNotIn(self.manager.id, [row['id'] for row in ordinary])
         self.assertIn(self.manager.id, [row['id'] for row in copying])
+
+    def test_granular_surface_access_uses_transitive_groups(self):
+        holder = self._user('Surfaceholder', self.above)
+        gate_name = 'surface_gate_%s' % self.gate.id
+        other_name = 'surface_other_%s' % self.other.id
+        self.env['ir.model.data'].create({
+            'module': 'biz_access', 'name': gate_name,
+            'model': 'res.groups', 'res_id': self.gate.id,
+        })
+        self.env['ir.model.data'].create({
+            'module': 'biz_access', 'name': other_name,
+            'model': 'res.groups', 'res_id': self.other.id,
+        })
+        rows = [
+            {'key': 'open', 'groups': [],
+             'action': {'tag': self.open_item.action_tag}},
+            {'key': 'held', 'groups': ['biz_access.%s' % gate_name],
+             'action': {'tag': self.open_item.action_tag}},
+            {'key': 'missing', 'groups': ['biz_access.%s' % other_name],
+             'action': {'tag': self.open_item.action_tag}},
+        ]
+
+        answer = self.mgr_access.surface_access(rows, holder.id)
+
+        self.assertTrue(answer['open']['allowed'])
+        self.assertTrue(answer['held']['allowed'])
+        self.assertFalse(answer['missing']['allowed'])
+        self.assertEqual(answer['open']['parent'], self.open_item.name)
 
     def test_looking_at_nobody_in_particular_is_looking_at_me(self):
         res = self.mgr_access.as_user()

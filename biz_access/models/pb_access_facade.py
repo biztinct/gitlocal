@@ -1502,6 +1502,50 @@ class PbAccess(models.AbstractModel):
         }
 
     @api.model
+    def surface_access(self, rows=None, user_id=None):
+        """Whether one person can open each registered granular surface."""
+        self._require()
+        user = self._person(user_id)
+        held = set(user.sudo().all_group_ids.ids)
+        is_admin = bool(user.sudo()._is_admin())
+        _sections, rail_items = self._rail()
+        owners = {}
+        for item in (rail_items or self.env['pb.sidebar.item'].browse()).filtered(
+                lambda entry: not entry.parent_id):
+            tokens = [item.action_xmlid, item.action_tag]
+            tokens += (item.match_action_xmlids or '').split(',')
+            tokens += (item.match_action_tags or '').split(',')
+            for token in tokens:
+                if (token or '').strip():
+                    owners.setdefault(token.strip(), item.name or '')
+        answer = {}
+        for row in list(rows or [])[:200]:
+            if not isinstance(row, dict):
+                continue
+            key = str(row.get('key') or '')[:120]
+            if not key:
+                continue
+            names = list(dict.fromkeys(
+                str(name)[:200] for name in (row.get('groups') or [])
+                if isinstance(name, str)))[:50]
+            groups = self.env['res.groups'].sudo().browse()
+            for xmlid in names:
+                group = self.env.ref(xmlid, raise_if_not_found=False)
+                if group and group._name == 'res.groups':
+                    groups |= group
+            # Palette gates are ANY-of and deliberately fail open when an
+            # optional module/group is not installed.
+            action = row.get('action') if isinstance(
+                row.get('action'), dict) else {}
+            parent = owners.get(str(action.get('xmlid') or ''), '') \
+                or owners.get(str(action.get('tag') or ''), '')
+            answer[key] = {'allowed': bool(
+                is_admin or not names or not groups
+                or set(groups.ids) & held),
+                'parent': parent}
+        return answer
+
+    @api.model
     def as_user(self, user_id=None):
         """The overlay every lens needs to repaint itself as somebody else.
 

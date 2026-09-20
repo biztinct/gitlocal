@@ -446,8 +446,17 @@ export class PbAccessBoard extends Component {
         this.state.personId = id;
         this.state.passportBusy = true;
         try {
-            const res = await this.orm.call("pb.access", "passport", [id]);
+            const catalogue = this.surfaceCatalogue();
+            const [res, access] = await Promise.all([
+                this.orm.call("pb.access", "passport", [id]),
+                this.orm.call("pb.access", "surface_access", [
+                    catalogue.map((row) => ({
+                        key: row.key, groups: row.groups, action: row.action,
+                    })), id,
+                ]),
+            ]);
             if (seq !== this.passportSeq) { return; }
+            this.addSurfaceAccess(res, catalogue, access);
             this.state.passport = res;
             this.state.passportFailed = "";
         } catch (e) {
@@ -457,6 +466,60 @@ export class PbAccessBoard extends Component {
                 e, _t("That person's access could not be read."));
         } finally {
             if (seq === this.passportSeq) { this.state.passportBusy = false; }
+        }
+    }
+
+    surfaceCatalogue() {
+        const entries = registry.category("pb_hub_palette").getAll();
+        const seen = new Set();
+        const out = [];
+        for (const [index, entry] of entries.entries()) {
+            const label = String(entry.label || "").trim();
+            if (!label) { continue; }
+            const identity = `${entry.id || index}\u0000${label}`;
+            if (seen.has(identity)) { continue; }
+            seen.add(identity);
+            out.push({
+                key: String(entry.id || `surface-${index}`),
+                label, icon: entry.icon || "circle",
+                action: entry.action || {},
+                groups: Array.isArray(entry.groups) ? entry.groups : [],
+            });
+        }
+        return out;
+    }
+
+    addSurfaceAccess(passport, catalogue, access) {
+        const byParent = new Map();
+        for (const row of catalogue) {
+            const result = access[row.key] || {};
+            const parent = result.parent || "";
+            if (!parent || row.label === parent) { continue; }
+            if (!byParent.has(parent)) { byParent.set(parent, new Map()); }
+            const siblings = byParent.get(parent);
+            const existing = siblings.get(row.label);
+            if (existing) {
+                // A hub and the global palette may register the same door.
+                // It is accessible if either legitimate route is accessible.
+                if (result.allowed) { existing.state = "on"; }
+            } else {
+                siblings.set(row.label, {
+                    id: `surface:${row.key}`,
+                    label: row.label,
+                    icon: row.icon,
+                    state: result.allowed ? "on" : "off",
+                    newly_lit: false,
+                });
+            }
+        }
+        for (const section of passport.rail || []) {
+            for (const item of section.items || []) {
+                const surfaces = byParent.get(item.label);
+                item.children = [
+                    ...(item.children || []),
+                    ...(surfaces ? [...surfaces.values()] : []),
+                ];
+            }
         }
     }
 

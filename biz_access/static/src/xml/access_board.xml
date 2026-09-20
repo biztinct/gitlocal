@@ -564,7 +564,8 @@
                   </p>
 
                   <PbMiniRail t-if="passport.rail.length"
-                              sections="passport.rail" legend="true"/>
+                              sections="passport.rail" legend="true"
+                              expandable="true"/>
 
                   <p t-else="" class="pbva-col-empty">
                     There is no left menu written down on this system, so there

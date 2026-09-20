@@ -425,9 +425,34 @@ $pbva-states: (
         min-width: 0;
     }
 
+    button.pbmr-it {
+        width: 100%;
+        border: 0;
+        color: inherit;
+        background: transparent;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+
+        &:hover, &:focus-visible { background: rgba(255, 255, 255, .08); }
+        &:focus-visible { outline: 2px solid #9B8FF0; outline-offset: 1px; }
+    }
+
     .pbmr-it--sub {
-        padding-left: 30px;
+        position: relative;
+        margin-left: 15px;
+        padding-left: 18px;
         font-size: 11.5px;
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: 7px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: rgba(255, 255, 255, .12);
+        }
     }
 
     .pbmr-it-ic {
@@ -446,6 +471,27 @@ $pbva-states: (
         margin-left: auto;
         display: inline-flex;
         flex: 0 0 auto;
+    }
+
+    .pbmr-it-count {
+        margin-left: auto;
+        padding: 2px 6px;
+        border-radius: 999px;
+        color: #DCD8EF;
+        background: rgba(255, 255, 255, .09);
+        font-size: 9.5px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .pbmr-it--expand .pbmr-it-st { margin-left: 0; }
+
+    .pbmr-chevron {
+        display: inline-flex;
+        color: var(--pbmr-muted);
+        transition: transform .16s ease;
+
+        &.is-open { transform: rotate(180deg); }
     }
 
     .pbmr-it.is-on .pbmr-it-st { color: var(--pbmr-on); }
@@ -477,6 +523,12 @@ $pbva-states: (
         color: var(--pbim-muted, #64748B);
 
         span { display: inline-flex; align-items: center; gap: 5px; }
+
+        .pbmr-legend-hint {
+            flex-basis: 100%;
+            color: var(--pbim-primary, #6355C7);
+            font-weight: 700;
+        }
     }
 }
 

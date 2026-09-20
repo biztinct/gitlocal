@@ -31,13 +31,28 @@
             </span>
           </div>
           <t t-foreach="ms.items" t-as="mi" t-key="mi.id">
-            <div t-attf-class="pbmr-it is-{{mi.state}} {{ mi.newly_lit ? 'is-new' : '' }}"
+            <button t-if="props.expandable and (mi.children or []).length"
+                    type="button"
+                    t-attf-class="pbmr-it pbmr-it--expand is-{{mi.state}} {{ mi.newly_lit ? 'is-new' : '' }}"
+                    t-att-title="title(mi)"
+                    t-att-aria-expanded="isOpen(mi) ? 'true' : 'false'"
+                    t-on-click="() => this.toggle(mi)">
+              <span class="pbmr-it-ic"><t t-out="railIcon(mi.icon, 14)"/></span>
+              <span class="pbmr-it-n" t-esc="mi.label"/>
+              <span class="pbmr-it-count" t-esc="childSummary(mi)"/>
+              <span class="pbmr-it-st"><t t-out="stateIcon(mi)"/></span>
+              <span t-attf-class="pbmr-chevron {{ isOpen(mi) ? 'is-open' : '' }}">
+                <t t-out="ic('chevronDown', 12)"/>
+              </span>
+            </button>
+            <div t-else=""
+                 t-attf-class="pbmr-it is-{{mi.state}} {{ mi.newly_lit ? 'is-new' : '' }}"
                  t-att-title="title(mi)">
               <span class="pbmr-it-ic"><t t-out="railIcon(mi.icon, 14)"/></span>
               <span class="pbmr-it-n" t-esc="mi.label"/>
               <span class="pbmr-it-st"><t t-out="stateIcon(mi)"/></span>
             </div>
-            <div t-foreach="mi.children or []" t-as="mk" t-key="mk.id"
+            <div t-if="isOpen(mi)" t-foreach="mi.children or []" t-as="mk" t-key="mk.id"
                  t-attf-class="pbmr-it pbmr-it--sub is-{{mk.state}} {{ mk.newly_lit ? 'is-new' : '' }}"
                  t-att-title="title(mk)">
               <span class="pbmr-it-n" t-esc="mk.label"/>
@@ -51,6 +66,9 @@
         <span><t t-out="ic('check',12)"/> they see it</span>
         <span><t t-out="ic('lock',12)"/> locked, with a note</span>
         <span><t t-out="ic('eyeOff',12)"/> not on their menu</span>
+        <span t-if="props.expandable" class="pbmr-legend-hint">
+          <t t-out="ic('chevronDown',12)"/> select a menu to see its sub-menus
+        </span>
       </div>
     </div>
   </t>

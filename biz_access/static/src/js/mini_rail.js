@@ -26,7 +26,7 @@
  * know. A miniature drawing a wrong-but-confident icon would be worse than one
  * drawing a dot.
  */
-import { Component, markup } from "@odoo/owl";
+import { Component, markup, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
@@ -93,8 +93,13 @@ export class PbMiniRail extends Component {
     static props = {
         sections: { type: Array },
         legend: { type: Boolean, optional: true },
+        expandable: { type: Boolean, optional: true },
     };
-    static defaultProps = { legend: true };
+    static defaultProps = { legend: true, expandable: false };
+
+    setup() {
+        this.state = useState({ open: {} });
+    }
 
     ic(n, s = 13) { return ic(n, s); }
 
@@ -113,5 +118,20 @@ export class PbMiniRail extends Component {
         if (item.state === "on") { return ic("check", 12); }
         if (item.state === "locked") { return ic("lock", 12); }
         return ic("eyeOff", 12);
+    }
+
+    isOpen(item) {
+        return !this.props.expandable || Boolean(this.state.open[item.id]);
+    }
+
+    toggle(item) {
+        if (!this.props.expandable || !(item.children || []).length) { return; }
+        this.state.open[item.id] = !this.state.open[item.id];
+    }
+
+    childSummary(item) {
+        const children = item.children || [];
+        const open = children.filter((child) => child.state === "on").length;
+        return _t("%s of %s", open, children.length);
     }
 }
