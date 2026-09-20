@@ -988,7 +988,7 @@ msgstr ""
 #. module: pb_approval_config
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/xml/builder.xml:0
-msgid "Continue to safeguards"
+msgid "Next"
 msgstr ""
 
 #. module: pb_approval_config

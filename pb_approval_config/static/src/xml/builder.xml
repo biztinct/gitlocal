@@ -328,7 +328,7 @@
                 <t t-out="ic('back',14)"/> <span>Back</span>
               </button>
               <button class="pbim-btn primary" t-on-click="() => this.goto(3)">
-                <span>Continue to safeguards</span> <t t-out="ic('arrowRight',14)"/>
+                <span>Next</span> <t t-out="ic('arrowRight',14)"/>
               </button>
             </div>
           </div>
