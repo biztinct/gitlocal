@@ -293,6 +293,19 @@ export class StepConnect extends Component {
         });
     }
 
+    openApprovalMatrix(processKey, workflowId) {
+        this.action.doAction({
+            type: "ir.actions.client",
+            tag: "pb_approval_matrix",
+            target: "current",
+            params: {
+                process_key: processKey,
+                workflow_id: workflowId || 0,
+                scope_key: this.approvals.scope_key || "",
+            },
+        });
+    }
+
     // ==================================================================
     // The status machine
     // ==================================================================

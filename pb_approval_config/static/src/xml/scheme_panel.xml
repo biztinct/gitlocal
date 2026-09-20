@@ -15,7 +15,7 @@
        ==================================================================== -->
 
   <t t-name="pb_approval_config.ApprovalSchemePanel">
-    <div class="pbam-scheme">
+    <div class="pbam-scheme" t-att-class="{ 'is-embedded': props.embedded }">
 
       <div t-if="state.loading" class="pbim-busy pbam-busy-sm">
         <div class="pbim-spin"/><span>Reading the approvals for this…</span>
@@ -66,8 +66,8 @@
               <t t-if="state.changing">Close</t>
               <t t-else="">Change</t>
             </button>
-            <button t-elif="props.onOpenMatrix" class="pbim-btn ghost"
-                    t-on-click="() => this.openMatrix()">Open the Matrix</button>
+            <button t-if="props.onOpenMatrix" class="pbim-btn ghost"
+                    t-on-click="() => this.openMatrix()">Open this flow in Approval Matrix</button>
           </div>
         </div>
 
@@ -85,7 +85,7 @@
                       class="pbim-note pbam-note-amber pbam-choice-w">
                   <t t-out="ic('alert',13)"/> <span t-esc="ch.warn"/>
                 </span>
-                <span t-if="state.choice === ch.key and ch.key !== 'inherit'"
+                <span t-if="state.choice === ch.key and ch.key === 'route'"
                       class="pbam-choice-pick">
                   <select class="pbam-input" t-on-change="setWorkflow">
                     <option value="0">Choose a route</option>
@@ -105,13 +105,16 @@
             <div class="pbam-exh"><h2>What will happen</h2></div>
             <p class="pbim-sub">
               <t t-if="state.choice === 'inherit'">
-                This place follows whatever the rest of the company uses, and changes with it. Each part of the business still gets its own people.
+                This scheme follows the company flow and future changes to it.
               </t>
-              <t t-elif="state.choice === 'shared'">
-                This place follows the route you choose, alongside everywhere else pointed at it. A change to that route reaches all of them at once.
+              <t t-elif="state.choice === 'route'">
+                New scheme changes use the flow you choose here.
+              </t>
+              <t t-elif="state.choice === 'none'">
+                New scheme changes take effect immediately. Payobook still records who made the change and when.
               </t>
               <t t-else="">
-                This place gets a route only it uses. Later changes to the company's route will not reach it, and the Matrix shows it as an exception.
+                This scheme follows the company flow and future changes to it.
               </t>
             </p>
             <p class="pbim-sub">Changing this affects new requests only. Anything already under way keeps the route it was given.</p>

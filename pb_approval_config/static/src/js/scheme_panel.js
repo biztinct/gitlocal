@@ -9,13 +9,9 @@
  * implementation: an approval card that disagrees with the Matrix about who
  * signs a pay run off is worse than no card at all.
  *
- * THREE ANSWERS AND NOT FOUR:
- *   Inherited — nothing of its own; it follows what the rest of the company
- *               uses, and changes with it.
- *   Shared    — its own choice, pointed at a route other places use too.
- *   Custom    — its own choice, pointed at a route only it uses. Later changes
- *               to the company's route will NOT reach it, and the card says so
- *               before the choice is made rather than after.
+ * THREE PLAIN ANSWERS: use the company flow, choose another existing flow, or
+ * require no approval. The backend still records whether an explicitly chosen
+ * flow is shared or unique; that implementation detail is not a user choice.
  *
  * "WHAT WILL HAPPEN" IS NOT DECORATION. A narrower place inside this one can
  * have an exception of its own, and the most specific always wins. The panel
@@ -80,7 +76,8 @@ export class ApprovalSchemePanel extends Component {
                 [props.processKey, props.scopeKey || "",
                  props.companyId || false]);
             this.state.data = data;
-            this.state.choice = data.selection;
+            this.state.choice = ["shared", "custom"].includes(data.selection)
+                ? "route" : data.selection;
             this.state.workflowId = data.workflow_id || 0;
         } catch (error) {
             this.state.failed = (error.data && error.data.message)
@@ -101,35 +98,36 @@ export class ApprovalSchemePanel extends Component {
             inherit: { tone: "info", label: _t("Same as the rest of the company") },
             shared: { tone: "blue", label: _t("Shared with other places") },
             custom: { tone: "green", label: _t("Only for here") },
+            none: { tone: "muted", label: _t("No approval required") },
         }[this.data.selection] || { tone: "muted", label: "" };
     }
 
     get choices() {
         return [
             { key: "inherit",
-              title: _t("Use whatever the rest of the company uses"),
-              sub: _t("Recommended. Each part of the business still gets its own people; only the shape of the route is shared."),
+              title: _t("Use the company flow"),
+              sub: _t("This scheme follows future company-wide changes automatically."),
               warn: "" },
-            { key: "shared",
-              title: _t("Point it at another route"),
-              sub: _t("One route, used in several places, with the people worked out per place."),
+            { key: "route",
+              title: _t("Use a different flow for this scheme"),
+              sub: _t("Choose an existing flow below."),
               warn: "" },
-            { key: "custom",
-              title: _t("Give it a route of its own"),
-              sub: _t("Start from the route above and change it here."),
-              warn: _t("Later changes to the company's route will not reach this one.") },
+            { key: "none",
+              title: _t("No approval required"),
+              sub: _t("Scheme changes take effect without waiting for an approver. The change is still recorded."),
+              warn: "" },
         ];
     }
 
     /** Every route this place could be pointed at. */
     get options() {
         return (this.data.choices || []).filter(
-            (one) => one.workflow_id !== 0);
+            (one) => one.workflow_id !== 0 && !one.is_no_approval);
     }
 
     get canSave() {
         if (!this.data.can_config) { return false; }
-        if (this.state.choice === "inherit") { return true; }
+        if (["inherit", "none"].includes(this.state.choice)) { return true; }
         return Boolean(this.state.workflowId);
     }
 
@@ -141,7 +139,8 @@ export class ApprovalSchemePanel extends Component {
     toggleChange() {
         this.state.changing = !this.state.changing;
         if (this.state.changing) {
-            this.state.choice = this.data.selection;
+            this.state.choice = ["shared", "custom"].includes(this.data.selection)
+                ? "route" : this.data.selection;
             this.state.workflowId = this.data.workflow_id || 0;
         }
     }
@@ -158,7 +157,8 @@ export class ApprovalSchemePanel extends Component {
             this.state.data = await this.orm.call(
                 "pb.approval.matrix", "set_scheme_binding",
                 [this.props.processKey, this.props.scopeKey || "",
-                 this.state.choice, this.state.workflowId || false,
+                 this.state.choice === "route" ? "custom" : this.state.choice,
+                 this.state.workflowId || false,
                  this.props.companyId || false, this.data.revision]);
             this.state.changing = false;
             this.notif.add(
@@ -174,6 +174,9 @@ export class ApprovalSchemePanel extends Component {
     }
 
     openMatrix() {
-        if (this.props.onOpenMatrix) { this.props.onOpenMatrix(); }
+        if (this.props.onOpenMatrix) {
+            this.props.onOpenMatrix(this.data.process_key,
+                                    this.data.workflow_id || 0);
+        }
     }
 }

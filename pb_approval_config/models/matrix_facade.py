@@ -27,6 +27,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
 from odoo.addons.biz_approval_workflow.models import definition as D
+from odoo.addons.biz_approval_workflow.models.seed_helper import NO_APPROVAL_NAME
 
 _logger = logging.getLogger(__name__)
 
@@ -1095,10 +1096,15 @@ class PbApprovalMatrix(models.AbstractModel):
             # its own binding. Whether that is "shared" or "custom" is not a
             # stored flag — it is simply whether anywhere ELSE points at the
             # same route, which is the only definition a reader can check.
+            version = here.workflow_id.published_version_id
+            definition = (version.definition or {}) if version else {}
+            steps = definition.get('steps') or []
+            is_fast = len(steps) == 1 and steps[0].get('kind') == 'fast'
             shared = Binding.search_count([
                 ('workflow_id', '=', here.workflow_id.id),
                 ('active', '=', True)])
-            selection = 'shared' if shared > 1 else 'custom'
+            selection = 'none' if is_fast else (
+                'shared' if shared > 1 else 'custom')
             using = here
 
         version = using.workflow_id.published_version_id if using else None
@@ -1149,6 +1155,7 @@ class PbApprovalMatrix(models.AbstractModel):
                 'name': workflow.name,
                 'published': bool(version),
                 'route_labels': (version.route_labels or []) if version else [],
+                'is_no_approval': workflow.name == NO_APPROVAL_NAME,
             })
         return rows
 
@@ -1189,8 +1196,14 @@ class PbApprovalMatrix(models.AbstractModel):
                 company=company, payload={'scope_key': scope_key})
             return self.get_scheme_panel(process_key, scope_key, company.id)
 
-        workflow = self.env['biz.approval.workflow'].browse(
-            int(workflow_id or 0)).exists()
+        if selection == 'none':
+            workflow = self.env['biz.approval.seed'].ensure_no_approval_workflow(
+                company, process_key,
+                reason=_('No approval required for %(where)s',
+                         where=self._scope_label(company, scope_key)))
+        else:
+            workflow = self.env['biz.approval.workflow'].browse(
+                int(workflow_id or 0)).exists()
         if not workflow or workflow.company_id != company \
                 or workflow.process_id != process:
             raise UserError(_("Choose a route for this to follow."))

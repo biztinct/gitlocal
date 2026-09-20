@@ -397,6 +397,34 @@ class TestMatrixFacade(MatrixCase):
             self.as_admin('pb.approval.matrix').set_scheme_binding(
                 'generic', '', 'custom', 0, self.company.id)
 
+    def test_a_scheme_can_explicitly_require_no_approval(self):
+        matrix = self.as_admin('pb.approval.matrix')
+        process = self.env['biz.approval.process']._by_key('generic')
+        default = self.env['biz.approval.binding'].search([
+            ('company_id', '=', self.company.id),
+            ('process_id', '=', process.id), ('scope_key', '=', ''),
+            ('active', '=', True)], limit=1)
+        self.assertTrue(default)
+
+        panel = matrix.set_scheme_binding(
+            'generic', 'scheme:987', 'none', False, self.company.id, 0)
+
+        self.assertEqual(panel['selection'], 'none')
+        self.assertEqual(panel['workflow_name'], 'No approval needed')
+        self.assertEqual(panel['route_labels'], ['No approval needed'])
+        self.assertTrue(default.active, 'the company flow must stay unchanged')
+        exact = self.env['biz.approval.binding'].search([
+            ('company_id', '=', self.company.id),
+            ('process_id', '=', process.id), ('scope_key', '=', 'scheme:987'),
+            ('active', '=', True)], limit=1)
+        self.assertEqual(exact.workflow_id.id, panel['workflow_id'])
+
+        inherited = matrix.set_scheme_binding(
+            'generic', 'scheme:987', 'inherit', False, self.company.id,
+            panel['revision'])
+        self.assertEqual(inherited['selection'], 'inherit')
+        self.assertFalse(exact.active)
+
     def test_the_scope_options_carry_a_level_a_label_and_options(self):
         shape = self.as_admin('pb.approval.matrix')._approval_scope_options(
             self.env['biz.approval.process']._by_key('generic'), self.company)

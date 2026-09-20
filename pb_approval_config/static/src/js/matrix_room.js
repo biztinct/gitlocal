@@ -64,6 +64,7 @@ export class PbApprovalMatrix extends Component {
 
         // Read ONCE, from props, never written back (the shell's rule).
         this.back = hubBack(this.props);
+        this.openTarget = (this.props.action && this.props.action.params) || {};
 
         if (this.env.config && this.env.config.setDisplayName) {
             this.env.config.setDisplayName(_t("Approval Matrix"));
@@ -88,7 +89,16 @@ export class PbApprovalMatrix extends Component {
         });
 
         this.onEscape = this.onEscape.bind(this);
-        onWillStart(async () => { await this.load(); });
+        onWillStart(async () => {
+            await this.load();
+            const workflowId = Number(this.openTarget.workflow_id || 0);
+            const processKey = this.openTarget.process_key || "";
+            const row = this.allRows.find((one) => one.process_key === processKey);
+            this.state.builderFor = workflowId || (row && row.workflow_id) || 0;
+            if (!this.state.builderFor && processKey) {
+                this.state.search = row ? row.name : processKey;
+            }
+        });
         onMounted(() => {
             window.addEventListener("keydown", this.onEscape,
                                     { capture: true });

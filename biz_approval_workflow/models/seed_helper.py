@@ -279,27 +279,14 @@ class BizApprovalSeed(models.AbstractModel):
 
     # ------------------------------------------------------- the fast lane
     @api.model
-    def set_no_approval_needed(self, company, process_key, reason=None):
-        """Publish "No approval needed" for one process, company-wide.
-
-        THE BUSINESS DECIDES (the flexibility ruling). Every process may be set
-        to this, and doing so is not the same as having NO route: a company
-        with no route at all cannot send anything in, because the engine fails
-        closed rather than guessing. A fast lane is a published CHOICE — the
-        thing happens at once and a request records that it did, who asked, and
-        that nobody was required to check it.
-
-        The existing company-wide binding is ended rather than edited, so the
-        trail keeps what was in force before. Returns the new binding.
-        """
+    def ensure_no_approval_workflow(self, company, process_key, reason=None):
+        """Return the process' published, auditable fast-lane workflow."""
         process = self.env['biz.approval.process']._by_key(process_key)
         if not process:
             raise UserError(_("That kind of request is not in the list yet."))
         publisher = self.publisher_for(company)
         Workflow = self.env['biz.approval.workflow'].sudo()
         Version = self.env['biz.approval.workflow.version'].sudo()
-        Binding = self.env['biz.approval.binding'].sudo()
-
         workflow = Workflow.search([
             ('company_id', '=', company.id), ('process_id', '=', process.id),
             ('name', '=', NO_APPROVAL_NAME)], limit=1)
@@ -327,6 +314,26 @@ class BizApprovalSeed(models.AbstractModel):
                 version.id, version.draft_revision, None,
                 reason or 'Set to "No approval needed"',
                 [w['code'] for w in checks['warnings']])
+        return workflow
+
+    @api.model
+    def set_no_approval_needed(self, company, process_key, reason=None):
+        """Publish "No approval needed" for one process, company-wide.
+
+        THE BUSINESS DECIDES (the flexibility ruling). Every process may be set
+        to this, and doing so is not the same as having NO route: a company
+        with no route at all cannot send anything in, because the engine fails
+        closed rather than guessing. A fast lane is a published CHOICE — the
+        thing happens at once and a request records that it did, who asked, and
+        that nobody was required to check it.
+
+        The existing company-wide binding is ended rather than edited, so the
+        trail keeps what was in force before. Returns the new binding.
+        """
+        process = self.env['biz.approval.process']._by_key(process_key)
+        Binding = self.env['biz.approval.binding'].sudo()
+        workflow = self.ensure_no_approval_workflow(
+            company, process_key, reason=reason)
 
         Binding.search([
             ('company_id', '=', company.id),

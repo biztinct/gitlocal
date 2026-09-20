@@ -881,6 +881,16 @@
 
     // ============================================ where it applies
     .pbam-scheme { display: flex; flex-direction: column; gap: 14px; }
+    .pbam-scheme.is-embedded {
+        padding: 12px; border: 1px solid var(--pbim-line);
+        border-radius: 12px; background: var(--pbim-surface);
+
+        .pbam-ap-t { font-size: 14px; }
+        .pbam-ap-act { flex-wrap: wrap; }
+        .pbam-changegrid { grid-template-columns: 1fr; gap: 10px; }
+        .pbam-ex { padding: 0; background: transparent; box-shadow: none; }
+        .pbam-exh { display: none; }
+    }
     .pbam-aprow {
         display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px;
         align-items: start;

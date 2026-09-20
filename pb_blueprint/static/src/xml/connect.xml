@@ -157,18 +157,13 @@
                                  scopeKey="approvals.scope_key"
                                  scopeLabel="approvals.scope_label"
                                  companyId="approvalsCompanyId"
+                                 onOpenMatrix="(processKey, workflowId) => this.openApprovalMatrix(processKey, workflowId)"
                                  embedded="true"/>
-            <!-- Shared · Scheme change. The real binding now, not a promise
-                 about one: the same panel, asked about the scheme-change
-                 process, so this card and the Matrix can never disagree. -->
-            <p class="pbbp-cn-sub pbbp-cn-schemechange">
-              <b>Shared · Scheme change</b>
-              Who has to agree before the way pay is worked out is changed.
-            </p>
             <ApprovalSchemePanel processKey="'scheme'"
                                  scopeKey="approvals.scope_key"
                                  scopeLabel="approvals.scope_label"
                                  companyId="approvalsCompanyId"
+                                 onOpenMatrix="(processKey, workflowId) => this.openApprovalMatrix(processKey, workflowId)"
                                  embedded="true"/>
           </div>
           <div class="pbbp-cn-blocked" t-else="">
