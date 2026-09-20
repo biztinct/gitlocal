@@ -94,6 +94,7 @@ registry, flat fills, one accent. No emoji.
     'website': 'https://www.biztinct.com',
     'depends': [
         'base',
+        'auth_signup',            # a new person receives a set-password invite
         'biz_approval_workflow',   # role changes can be asked for, not only done
         'hr',                   # the People lens draws colleagues, not logins
         'mail',                 # the hand-over's own thread and its two mails

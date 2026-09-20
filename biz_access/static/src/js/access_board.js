@@ -167,6 +167,8 @@ export class PbAccessBoard extends Component {
             passport: null,
             passportBusy: false,
             passportFailed: "",
+            addingPerson: null,          // { name, email }
+            addingPersonBusy: false,
 
             // the screens lens
             screens: null,             // the menu with its gates, or null
@@ -461,6 +463,46 @@ export class PbAccessBoard extends Component {
     get peopleRows() { return this.state.peopleList || []; }
 
     get passport() { return this.state.passport; }
+
+    openAddPerson() {
+        this.state.addingPerson = { name: "", email: "" };
+    }
+
+    closeAddPerson() {
+        if (!this.state.addingPersonBusy) { this.state.addingPerson = null; }
+    }
+
+    onAddPersonField(field, ev) {
+        this.state.addingPerson[field] = ev.target.value;
+    }
+
+    get canAddPerson() {
+        const person = this.state.addingPerson;
+        return Boolean(person && person.name.trim() && person.email.trim()
+                       && person.email.includes("@"));
+    }
+
+    async createPerson() {
+        const person = this.state.addingPerson;
+        if (!person || !this.canAddPerson) { return; }
+        this.state.addingPersonBusy = true;
+        try {
+            const result = await this.orm.call("pb.access", "create_user", [
+                person.name, person.email,
+            ]);
+            this.state.addingPerson = null;
+            this.state.peopleSearch = "";
+            await this.loadPeople();
+            await this.loadPassport(result.id);
+            this.notif.add(result.message, { type: "success", sticky: true });
+        } catch (e) {
+            this.notif.add(
+                this._msg(e, _t("That person could not be invited.")),
+                { type: "danger" });
+        } finally {
+            this.state.addingPersonBusy = false;
+        }
+    }
 
     /**
      * "The menu, as Mai sees it" — the name somebody would actually SAY.
@@ -1452,6 +1494,7 @@ export class PbAccessBoard extends Component {
     /** Escape closes whatever is on top, innermost first. */
     onKeyDown(ev) {
         if (ev.key !== "Escape") { return; }
+        if (this.state.addingPerson) { this.closeAddPerson(); return; }
         if (this.state.composer) { this.state.composer = null; return; }
         if (this.state.granting) { this.state.granting = null; return; }
         if (this.state.delegating) { this.state.delegating = false; return; }

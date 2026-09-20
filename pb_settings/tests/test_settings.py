@@ -117,8 +117,8 @@ class TestSettingsDescriptor(TransactionCase):
                      "a typo here ungates its whole category silently" % xmlid)
             self.assertEqual(rec._name, 'res.groups')
 
-    def test_the_descriptor_is_nine_categories_with_unique_keys(self):
-        """ACCESS P9 APPENDED THE NINTH, AND APPENDED IS THE WORD THAT MATTERS.
+    def test_the_descriptor_is_eight_categories_with_unique_keys(self):
+        """The obsolete raw Roles & Access category stays retired.
 
         Cycle 3 fixed this order to the mockup's and said so here. P9 adds
         "Your company" — the first category that is the CUSTOMER's rather than
@@ -133,7 +133,7 @@ class TestSettingsDescriptor(TransactionCase):
         self.assertEqual(
             keys,
             ['formula', 'structures', 'statutory', 'integrations',
-             'payroll', 'roles', 'org', 'nav', 'company'],
+             'payroll', 'org', 'nav', 'company'],
             "the category order is the mockup's plus P9's appended one; the "
             "localStorage key pbst.cat.v1 also remembers one of these by name")
         self.assertEqual(len(set(keys)), len(keys))
@@ -551,16 +551,13 @@ class TestRailCGates(TransactionCase):
             {'key': 'org', 'groups': [], 'cards': [
                 {'id': 'tenants', 'tag': 'pb_tenants'},
                 {'id': 'companies', 'xmlid': 'base.action_res_company_form'}]},
-            {'key': 'roles', 'groups': [], 'cards': [
-                {'id': 'users', 'xmlid': 'base.action_res_users'}]},
             {'key': 'payroll', 'groups': [], 'cards': []},
         ])
         self.assertFalse(res['is_system'])
         self.assertEqual(res['categories'],
-                         {'org': False, 'roles': False, 'payroll': False})
+                         {'org': False, 'payroll': False})
         self.assertFalse(res['cards']['org:tenants'])
         self.assertFalse(res['cards']['org:companies'])
-        self.assertFalse(res['cards']['roles:users'])
 
     def test_a_platform_door_is_refused_wherever_it_is_put(self):
         """Card-level, not only category-level.
@@ -621,7 +618,7 @@ class TestRailCGates(TransactionCase):
         self.assertEqual(list(res['categories']), ['good'])
         self.assertEqual(res['cards'], {})
 
-    def test_the_browser_fallback_names_the_same_three_categories(self):
+    def test_the_browser_fallback_names_the_same_platform_categories(self):
         """The JS copy of the platform-only set is a FALLBACK, and a fallback
         that has drifted from the rule it stands in for is worse than none."""
         from odoo.addons.pb_settings.models.pb_settings import (

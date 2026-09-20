@@ -454,6 +454,16 @@
 
           <!-- ============================ the list ============================ -->
           <aside class="pbva-plist">
+            <div class="pbva-plist-head">
+              <div>
+                <b>People with access</b>
+                <small>Choose someone to see what they can use.</small>
+              </div>
+              <button t-if="canManage" class="pbim-btn primary pbim-btn-sm"
+                      t-on-click="openAddPerson">
+                <t t-out="ic('plus',14)"/> Add a person
+              </button>
+            </div>
             <label class="pbva-field pbva-field--search pbva-plist-search">
               <span class="pbva-in-ic"><t t-out="ic('search',15)"/></span>
               <input class="pbva-in" type="search"
@@ -1086,6 +1096,50 @@
             <button class="pbim-btn ghost" t-on-click="openHistory">
               <t t-out="ic('history',14)"/> The full history, including every
               role given and taken away
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================== add a person =========================== -->
+      <div t-if="state.addingPerson" class="pbim-modal-scrim"
+           t-on-click="closeAddPerson">
+        <div class="pbim-modal pbva-modal" t-on-click.stop=""
+             role="dialog" aria-modal="true" aria-label="Add a person">
+          <div class="pbva-modal-h">
+            <div class="pbva-modal-ic"><t t-out="ic('userPlus',17)"/></div>
+            <div class="pbva-modal-t">
+              <h3>Add a person</h3>
+              <p>They will receive an email inviting them to set their password.</p>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeAddPerson"
+                    t-att-disabled="state.addingPersonBusy" title="Close">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+          <div class="pbva-modal-b">
+            <div class="pbva-note pbva-note--shield">
+              <t t-out="ic('shieldCheck',14)"/>
+              <span>They start with basic access only. After they appear in the list, open their name and choose <b>Give a role</b>.</span>
+            </div>
+            <label class="pbva-lbl" for="pbva-new-person-name">Their name</label>
+            <input id="pbva-new-person-name" class="pbva-in" autofocus="autofocus"
+                   t-att-value="state.addingPerson.name"
+                   t-on-input="(ev) => this.onAddPersonField('name', ev)"
+                   placeholder="For example, Mai Nguyen"/>
+            <label class="pbva-lbl" for="pbva-new-person-email">Work email</label>
+            <input id="pbva-new-person-email" class="pbva-in" type="email"
+                   t-att-value="state.addingPerson.email"
+                   t-on-input="(ev) => this.onAddPersonField('email', ev)"
+                   placeholder="mai@company.com"/>
+            <p class="pbva-hint">This will be the email they use to sign in.</p>
+          </div>
+          <div class="pbva-modal-f">
+            <button class="pbim-btn ghost" t-on-click="closeAddPerson"
+                    t-att-disabled="state.addingPersonBusy">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="createPerson"
+                    t-att-disabled="state.addingPersonBusy or !canAddPerson">
+              <t t-out="ic('mail',15)"/> Send invitation
             </button>
           </div>
         </div>

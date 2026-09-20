@@ -38,17 +38,13 @@ SYSTEM_GROUP = 'base.group_system'
 # customer's own application is NOT the person who runs the platform. Almost
 # everything behind the cog belongs to the customer: how pay is calculated, what
 # the structures are, which connected systems feed it, who holds which role.
-# Three things do not, and they are named here rather than left to a list of
+# Two categories do not, and they are named here rather than left to a list of
 # permission groups in the browser:
 #
 #   * **Companies & Tenants** — the legal entities and the fleet of customer
 #     databases. The fleet is the platform's own; the companies screen can only
 #     be written by a system administrator, so offering it to anybody else is a
 #     door that can only make an access dialog.
-#   * **Users & permission groups** — the raw membership table. Roles are how
-#     access is given on this product, and the Access home is where that
-#     happens; the raw table is the platform's own tool for the day something
-#     has gone wrong with it.
 #   * **Payroll defaults** — a `res.config.settings` screen, which Odoo grants
 #     to system administrators alone. It also carries the links that switch
 #     developer mode on, which Rail A exists to make impossible.
@@ -56,11 +52,14 @@ SYSTEM_GROUP = 'base.group_system'
 # THE DIFFERENCE FROM EVERY OTHER GATE IN THIS FILE IS THE DIRECTION IT FAILS
 # IN. The rest of the hub fails OPEN on purpose (an unresolvable permission
 # means the module is not installed, and reading that as "denied" hides a
-# category for the wrong reason). These three fail CLOSED: anything but a proven
+# category for the wrong reason). These two fail CLOSED: anything but a proven
 # system administrator is refused, including a caller whose payload has been
 # edited in the browser, because the answer does not depend on the payload.
 # =============================================================================
-PLATFORM_ONLY_CATEGORIES = ('org', 'roles', 'payroll')
+PLATFORM_ONLY_CATEGORIES = ('org', 'payroll')
+
+# The raw Users & permission groups action is still refused below wherever a
+# caller tries to place it, but it no longer has a category or palette door.
 
 #: Native actions that belong to whoever runs the platform, wherever a category
 #: puts them. Card-level as well as category-level, because the Navigation

@@ -167,6 +167,19 @@ $pbva-states: (
     // icon and the generic rule two hundred lines away must not decide that.
     .pbva-field--search .pbva-in { padding-left: 30px; }
 
+    .pbva-plist-head {
+        display: flex; flex-direction: column; align-items: stretch;
+        justify-content: flex-start;
+        gap: 10px; margin-bottom: 10px;
+
+        > div { display: flex; flex-direction: column; min-width: 0; }
+        b { font-size: 13px; color: var(--pbim-ink, #1B1733); }
+        small { font-size: 11.5px; color: var(--pbim-muted, #64748B); }
+        .pbim-btn {
+            width: 100%; justify-content: center; white-space: nowrap;
+        }
+    }
+
     .pbva-area {
         resize: vertical;
         font-family: inherit;

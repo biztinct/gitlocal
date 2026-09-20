@@ -27,8 +27,9 @@ goes through `res.groups.all_user_ids`, which is the transitive set.
 
 import logging
 
-from odoo import _, api, fields, models
+from odoo import _, Command, api, fields, models
 from odoo.exceptions import AccessError, UserError
+from odoo.tools.mail import email_normalize
 
 from .access_common import (BOARD_GROUPS, DELEGATION_ROW_CAP, HOLDER_CAP,
                             MANAGE_GROUPS, PEOPLE_CAP, PICKER_CAP, area_label,
@@ -1210,6 +1211,60 @@ class PbAccess(models.AbstractModel):
         users = users.sorted(lambda u: (u.id != me, fold(u.name), u.id))
         return [self._person_row(u, holders, lent, titles)
                 for u in users[:PEOPLE_CAP]]
+
+    @api.model
+    def create_user(self, name=None, email=None):
+        """Create one internal login and email a set-password invitation.
+
+        The People lens is deliberately the only friendly creation door. A
+        person starts with the ordinary internal-user permission and nothing
+        else; roles are then given from the passport beside their name, where
+        the consequence is visible before it is granted.
+        """
+        self._require_manage()
+        name = (name or '').strip()
+        email = email_normalize((email or '').strip(), strict=True)
+        if not name:
+            raise UserError(_("Enter the person's name."))
+        if not email:
+            raise UserError(_("Enter a valid work email address."))
+
+        Users = self.env['res.users'].sudo().with_context(active_test=False)
+        existing = Users.search([
+            '|', ('login', '=ilike', email), ('email', '=ilike', email),
+        ], limit=1)
+        if existing:
+            if existing.active:
+                raise UserError(_(
+                    "%s already has a login. Find them in the People list.",
+                    existing.name or email))
+            raise UserError(_(
+                "%s already has an archived login. Ask an administrator to "
+                "restore it instead of creating a second account.",
+                existing.name or email))
+
+        internal = self.env.ref('base.group_user')
+        company = self.env.company
+        user = Users.with_context(no_reset_password=True).create({
+            'name': name,
+            'login': email,
+            'email': email,
+            'active': True,
+            'share': False,
+            'company_id': company.id,
+            'company_ids': [Command.set(company.ids)],
+            'group_ids': [Command.set(internal.ids)],
+        })
+        # Send only after the record is valid. If delivery fails, the RPC
+        # rolls the creation back instead of leaving a silent unusable login.
+        user.with_context(create_user=True).action_reset_password()
+        return {
+            'id': user.id,
+            'name': user.name or '',
+            'message': _(
+                "Invitation sent to %(email)s. They can set their password, "
+                "then you can give them a role here.", email=email),
+        }
 
     def _person_row(self, user, holders, lent, titles):
         user = user.sudo()

@@ -23,6 +23,7 @@ is how somebody would get past the courtesy.
 """
 
 from datetime import timedelta
+from unittest.mock import patch
 
 from odoo import fields
 from odoo.exceptions import AccessError, UserError
@@ -439,6 +440,43 @@ class TestNobodyReadsSomebodyElses(PassportCase):
             self.someone.id)
         self.assertEqual(
             self.mgr_access.as_user(self.someone.id)['id'], self.someone.id)
+
+    def test_only_the_access_team_may_add_a_person(self):
+        with self.assertRaises(AccessError):
+            self.plain_access.create_user(
+                'New Person', 'new.person.%s@example.com' % self.stamp)
+
+
+@tagged('post_install', '-at_install')
+class TestAddingAPerson(PassportCase):
+
+    def test_it_creates_basic_access_and_sends_one_invitation(self):
+        email = 'invited.%s@example.com' % self.stamp
+        with patch(
+                'odoo.addons.auth_signup.models.res_users.ResUsers.action_reset_password',
+                autospec=True, return_value=True) as invite:
+            result = self.mgr_access.create_user('Mai Nguyen', email)
+
+        user = self.env['res.users'].sudo().browse(result['id'])
+        self.assertTrue(user.exists())
+        self.assertEqual(user.login, email)
+        self.assertFalse(user.share)
+        self.assertIn(self.env.ref('base.group_user'), user.group_ids)
+        self.assertNotIn(self.env.ref('base.group_system'), user.all_group_ids)
+        self.assertEqual(user.company_id, self.env.company)
+        invite.assert_called_once()
+        self.assertIn(user.id, [row['id'] for row in self.mgr_access.people()])
+
+    def test_it_refuses_a_second_login_for_the_same_email(self):
+        existing = self._user('Alreadyhere')
+        with self.assertRaisesRegex(UserError, 'already has a login'):
+            self.mgr_access.create_user('Duplicate', existing.email.upper())
+
+    def test_it_explains_missing_or_invalid_details(self):
+        with self.assertRaisesRegex(UserError, "person's name"):
+            self.mgr_access.create_user('', 'valid@example.com')
+        with self.assertRaisesRegex(UserError, 'valid work email'):
+            self.mgr_access.create_user('Valid Name', 'not an email')
 
 
 @tagged('post_install', '-at_install')

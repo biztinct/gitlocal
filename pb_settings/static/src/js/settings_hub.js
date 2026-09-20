@@ -190,16 +190,6 @@ export const CATEGORIES = [
         ],
     },
     {
-        key: "roles", icon: "lock", label: _t("Roles & Access"),
-        blurb: _t("Who may see and do what, across the whole product."),
-        groups: ADMIN,
-        cards: [
-            { id: "users", xmlid: "base.action_res_users", icon: "users",
-              label: _t("Users & permission groups"),
-              sub: _t("Every internal user and the groups their access comes from.") },
-        ],
-    },
-    {
         key: "org", icon: "building", label: _t("Companies & Tenants"),
         blurb: _t("The organisational scope everything else is measured in."),
         groups: ADMIN,
@@ -290,7 +280,7 @@ export const SETTINGS_CATEGORIES = "pb_settings_category";
  * ever disagree the SERVER's list is the one that decides — this one can only
  * ever hide something the server would also have hidden.
  */
-export const PLATFORM_ONLY_CATEGORIES = ["org", "roles", "payroll"];
+export const PLATFORM_ONLY_CATEGORIES = ["org", "payroll"];
 export const PLATFORM_ONLY_ACTIONS = [
     "base.action_res_users",
     "base.action_res_company_form",

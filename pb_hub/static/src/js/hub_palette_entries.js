@@ -215,9 +215,6 @@ const ENTRIES = [
       group: G_ADMIN, action: { tag: "pb_audit" }, groups: [PAYROLL_MGR] },
     { id: "tenants", label: _t("Tenants"), sublabel: _t("Admin"), icon: "building",
       group: G_ADMIN, action: { tag: "pb_tenants" }, groups: [SYSTEM] },
-    { id: "roles", label: _t("Roles & Access"), sublabel: _t("Admin"), icon: "lock",
-      group: G_ADMIN, action: { xmlid: "base.action_res_users" },
-      groups: [SYSTEM] },
 ];
 
 /**
