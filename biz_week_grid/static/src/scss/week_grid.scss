@@ -1,0 +1,467 @@
+// =====================================================================
+//  WeekGrid — generic editable weekly grid. Self-contained, no product deps.
+//  Themeable ONLY through --bwg-* custom properties (defaults below); a host
+//  overrides them on the .bwg element (or an ancestor). No Payobook imports.
+//
+//  P5: cells show OUTCOMES. The per-rate pills are gone; what is left in a cell
+//  is a bold tabular number, chips for hours that actually exist, and the
+//  consumer's badges. Rates live in the legend and in the editor (.bwgx, which
+//  mounts in the OVERLAY and therefore carries real fallbacks — see its file).
+// =====================================================================
+
+.bwg {
+    // ---- default theme tokens (overridable by consumers) ----
+    --bwg-primary:      #5A4BB0;
+    --bwg-ink:          #1b1733;
+    --bwg-muted:        #64748b;
+    --bwg-bg:           #f5f6fa;
+    --bwg-surface:      #ffffff;
+    --bwg-line:         #e2e8f0;
+    --bwg-line-2:       #f1f5f9;
+    --bwg-primary-soft: #EDEAF8;
+    --bwg-amber:        #d97706;
+    --bwg-amber-soft:   #fef3c7;
+    --bwg-rose:         #dc2668;
+    --bwg-rose-soft:    #fce7ef;
+    --bwg-green:        #2E7D4F;
+    --bwg-green-soft:   #E3F2E9;
+    --bwg-radius:       12px;
+    // Sized so the whole week PLUS the total column fits the narrowest host
+    // this component has: the Time-hub lens at 1440, which is 1036px wide once
+    // the 60px rail overlay and the 300px ceilings rail are taken out
+    // (216 + 7x104 + 76 = 1020). W39's lesson, applied to the one column P5
+    // added — a summary you have to scroll to is a summary nobody reads.
+    --bwg-namecol:      216px;
+    --bwg-daymin:       104px;
+    --bwg-totcol:       76px;
+    --bwg-cellh:        62px;
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    outline: none;
+    color: var(--bwg-ink);
+    font-size: 13px;
+
+    // ---------------------------------------------------------- header bar
+    .bwg-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 9px 14px;
+        background: var(--bwg-surface);
+        border-bottom: 1px solid var(--bwg-line);
+        flex-wrap: wrap;
+    }
+    .bwg-head__spacer { flex: 1; }
+    .bwg-head__left { display: flex; align-items: center; gap: 8px; }
+    .bwg-head__right { display: flex; align-items: center; gap: 10px; }
+
+    .bwg-search {
+        display: inline-flex; align-items: center; gap: 6px;
+        border: 1px solid var(--bwg-line);
+        border-radius: 8px;
+        padding: 0 9px;
+        color: var(--bwg-muted);
+        &:focus-within { border-color: var(--bwg-primary); color: var(--bwg-primary); }
+    }
+    .bwg-filter {
+        border: 0;
+        padding: 6px 0;
+        font-size: 13px;
+        width: 168px;
+        max-width: 34vw;
+        outline: none;
+        background: transparent;
+        color: var(--bwg-ink);
+    }
+
+    // the "only rows with entries" chip
+    .bwg-chipbtn {
+        display: inline-flex; align-items: center; gap: 6px;
+        border: 1px solid var(--bwg-line); border-radius: 999px;
+        padding: 5px 12px; font-size: 12px; font-weight: 600;
+        background: var(--bwg-surface); color: var(--bwg-muted);
+        cursor: pointer; white-space: nowrap;
+        &:hover { background: var(--bwg-line-2); }
+        &.is-on {
+            color: var(--bwg-primary);
+            border-color: var(--bwg-primary);
+            background: var(--bwg-primary-soft);
+        }
+    }
+
+    // ------------------------------------------------------------- legend
+    // The one place a rate is written. Everything a cell used to shout, said
+    // once, in the order the consumer assigned its colours in.
+    .bwg-legend {
+        display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .bwg-lg {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 11.5px; color: var(--bwg-muted);
+        padding: 3px 9px 3px 7px; border-radius: 999px;
+        background: var(--bwg-line-2);
+    }
+    .bwg-lg__sw {
+        width: 9px; height: 9px; border-radius: 3px; flex: 0 0 auto;
+        background: var(--bwg-chip-c, var(--bwg-primary));
+    }
+    .bwg-lg__n { font-weight: 600; color: var(--bwg-ink); }
+    .bwg-lg__r {
+        font-weight: 800; font-variant-numeric: tabular-nums;
+        color: var(--bwg-chip-c, var(--bwg-primary));
+    }
+    .bwg-lg--keys { gap: 4px; }
+
+    // status micro-dot — the whole OT workflow, in 8px
+    .bwg-sdot {
+        width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto;
+        display: inline-block;
+        &--draft { background: transparent; box-shadow: inset 0 0 0 1.5px var(--bwg-amber); }
+        &--sent  { background: var(--bwg-amber); }
+        &--ok    { background: var(--bwg-green); }
+        &--bad   { background: var(--bwg-rose); }
+    }
+
+    // shortcut map
+    .bwg-helpwrap { position: relative; }
+    .bwg-helpbtn {
+        width: 24px; height: 24px; border-radius: 50%;
+        border: 1px solid var(--bwg-line); background: var(--bwg-surface);
+        color: var(--bwg-muted); font-weight: 800; font-size: 12px;
+        cursor: pointer; line-height: 1;
+        &:hover, &.is-on {
+            color: var(--bwg-primary); border-color: var(--bwg-primary);
+            background: var(--bwg-primary-soft);
+        }
+    }
+    .bwg-help {
+        position: absolute; top: 30px; right: 0; z-index: 20;
+        width: 236px; padding: 12px 14px;
+        background: var(--bwg-surface);
+        border: 1px solid var(--bwg-line); border-radius: 12px;
+        box-shadow: 0 14px 34px rgba(16, 12, 40, .16);
+    }
+    .bwg-help__t {
+        font-size: 10.5px; font-weight: 800; letter-spacing: .08em;
+        text-transform: uppercase; color: var(--bwg-muted); margin-bottom: 8px;
+    }
+    .bwg-help__r {
+        display: flex; align-items: center; gap: 10px;
+        font-size: 12px; padding: 3px 0;
+        span { color: var(--bwg-muted); }
+        kbd {
+            flex: 0 0 74px; text-align: center;
+            font-family: inherit; font-size: 10.5px; font-weight: 700;
+            background: var(--bwg-line-2); border: 1px solid var(--bwg-line);
+            border-radius: 5px; padding: 2px 5px; color: var(--bwg-ink);
+        }
+    }
+
+    // ------------------------------------------------------------- loading
+    .bwg-loading {
+        flex: 1; display: flex; align-items: center; justify-content: center;
+        gap: 10px; color: var(--bwg-muted);
+    }
+    .bwg-spin {
+        width: 22px; height: 22px; border-radius: 50%;
+        border: 3px solid var(--bwg-line); border-top-color: var(--bwg-primary);
+        animation: bwg-spin .8s linear infinite;
+    }
+    @keyframes bwg-spin { to { transform: rotate(360deg); } }
+
+    // -------------------------------------------------------------- scroller
+    .bwg-scroll {
+        flex: 1; min-height: 0;
+        overflow: auto;
+        background: var(--bwg-bg);
+    }
+
+    .bwg-grid {
+        display: grid;
+        // grid-template-columns is set inline from the day count
+        position: relative;
+        width: max-content;
+        min-width: 100%;
+    }
+
+    // sticky primitives. NOTE (W34): these resolve against `.bwg-scroll`, which
+    // is a real scrollport — `flex: 1; min-height: 0; overflow: auto` inside a
+    // column flexbox with a definite height. A sticky footer in a wrapper that
+    // only scrolls sideways would be inert.
+    .bwg-sticky-top { position: sticky; top: 0; z-index: 3; }
+    .bwg-sticky-left { position: sticky; left: 0; z-index: 2; }
+    .bwg-sticky-bottom { position: sticky; bottom: 0; z-index: 3; }
+    .bwg-hcell--corner { z-index: 4; }
+    .bwg-foot--corner { z-index: 4; }
+
+    // ----- header cells -----
+    .bwg-hcell {
+        background: var(--bwg-surface);
+        border-bottom: 1px solid var(--bwg-line);
+        border-right: 1px solid var(--bwg-line-2);
+        padding: 8px 12px;
+        text-align: center;
+    }
+    .bwg-hcell--corner {
+        background: var(--bwg-surface);
+        border-right: 1px solid var(--bwg-line);
+        min-width: var(--bwg-namecol);
+    }
+    .bwg-hcell__d { font-weight: 700; font-size: 12.5px; }
+    .bwg-hcell__s { font-size: 11px; color: var(--bwg-muted); margin-top: 1px; }
+    .bwg-hcell--weekend { background: var(--bwg-line-2); }
+    .bwg-hcell--today {
+        box-shadow: inset 0 -3px 0 var(--bwg-primary);
+        .bwg-hcell__d { color: var(--bwg-primary); }
+    }
+    .bwg-hcell--tot { border-right: 0; }
+
+    // ----- name (first) column -----
+    .bwg-name {
+        display: flex; align-items: center; gap: 9px;
+        background: var(--bwg-surface);
+        border-bottom: 1px solid var(--bwg-line-2);
+        border-right: 1px solid var(--bwg-line);
+        padding: 7px 12px;
+        min-width: var(--bwg-namecol);
+    }
+    .bwg-name__av {
+        width: 28px; height: 28px; border-radius: 50%;
+        object-fit: cover; flex: 0 0 auto; background: var(--bwg-line-2);
+    }
+    // rendered only when the host supplied onRowOpen — the row identity as a door
+    .bwg-name__open {
+        display: flex; align-items: center; gap: 9px;
+        border: none; background: transparent; padding: 0; margin: 0;
+        font: inherit; color: inherit; text-align: left; cursor: pointer;
+        min-width: 0; flex: 1;
+        &:hover .bwg-name__l { color: var(--bwg-primary); }
+    }
+    .bwg-name__txt { min-width: 0; flex: 1; }
+    .bwg-name__l {
+        font-weight: 600; font-size: 13px; line-height: 1.2;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .bwg-name__s {
+        font-size: 11px; color: var(--bwg-muted);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .bwg-name__revert {
+        border: none; background: transparent; color: var(--bwg-amber);
+        cursor: pointer; padding: 3px; border-radius: 6px; flex: 0 0 auto;
+        &:hover { background: var(--bwg-amber-soft); }
+    }
+
+    // ----- data cells -----
+    .bwg-cell {
+        position: relative;
+        display: flex; flex-direction: column; justify-content: center;
+        background: var(--bwg-surface);
+        border-bottom: 1px solid var(--bwg-line-2);
+        border-right: 1px solid var(--bwg-line-2);
+        padding: 6px 10px;
+        min-height: var(--bwg-cellh);
+        cursor: pointer;
+        transition: box-shadow .12s ease, background .12s ease;
+    }
+    .bwg-cell--weekend { background: #fbfbfe; }
+    .bwg-cell--today { background: var(--bwg-primary-soft); }
+    .bwg-cell:hover .bwg-plus { opacity: 1; }
+    .bwg-cell--focus {
+        box-shadow: inset 0 0 0 2px var(--bwg-primary);
+        z-index: 1;
+        .bwg-plus { opacity: 1; }
+    }
+    // the ONE focused editing state (mockup A): a ring plus a soft halo
+    .bwg-cell--open {
+        box-shadow: inset 0 0 0 2px var(--bwg-primary),
+                    0 0 0 4px var(--bwg-primary-soft);
+        background: var(--bwg-surface);
+        z-index: 2;
+    }
+    .bwg-cell--error {
+        box-shadow: inset 0 0 0 2px var(--bwg-rose);
+        background: var(--bwg-rose-soft);
+        animation: bwg-pulse-rose 1.4s ease-in-out;
+    }
+    .bwg-cell--locked { cursor: default; }
+
+    @keyframes bwg-pulse-rose {
+        0%, 100% { box-shadow: inset 0 0 0 2px var(--bwg-rose); }
+        50% { box-shadow: inset 0 0 0 2px var(--bwg-rose), 0 0 0 3px var(--bwg-rose-soft); }
+    }
+
+    // markers
+    .bwg-mark { position: absolute; top: 5px; }
+    .bwg-mark--dirty {
+        right: 6px; width: 7px; height: 7px; border-radius: 50%;
+        background: var(--bwg-amber);
+        box-shadow: 0 0 0 2px var(--bwg-surface);
+    }
+    .bwg-mark--lock { right: 6px; color: var(--bwg-muted); line-height: 0; }
+
+    // generic per-day badge (consumer-supplied label/color) — top-left so it
+    // never collides with the top-right dirty/lock markers
+    .bwg-badge {
+        position: absolute; top: 4px; left: 6px; z-index: 1;
+        padding: 1px 6px; border-radius: 999px;
+        font-size: 10px; font-weight: 700; letter-spacing: .03em;
+        color: #fff; background: var(--bwg-badge-c, var(--bwg-primary));
+        box-shadow: 0 1px 2px rgba(0, 0, 0, .18);
+    }
+
+    // primary measure — a plain bold tabular number, per mockup A
+    .bwg-prim { min-height: 22px; display: flex; align-items: center; }
+    .bwg-prim__v {
+        font-size: 19px; font-weight: 700; line-height: 1.05;
+        font-variant-numeric: tabular-nums;
+    }
+    // an EMPTY cell is empty. The affordance appears on hover/focus only.
+    .bwg-plus {
+        font-size: 17px; font-weight: 400; line-height: 1;
+        color: #c2c8d6; opacity: 0; transition: opacity .12s ease;
+    }
+
+    .bwg-input {
+        width: 100%;
+        border: 1px solid var(--bwg-primary);
+        border-radius: 6px;
+        padding: 2px 6px;
+        font-size: 17px; font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        outline: none;
+        background: #fff;
+    }
+
+    // ----- extra-measure chips: only where hours exist -----
+    .bwg-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+    .bwg-chip {
+        --bwg-chip-c: var(--bwg-primary);
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 1px 7px;
+        border-radius: 999px;
+        font-size: 11px; font-weight: 700;
+        line-height: 1.65;
+        color: var(--bwg-chip-c);
+        // fallbacks first — a browser without color-mix keeps a readable chip
+        background: #fff;
+        border: 1px solid var(--bwg-chip-c);
+        background: color-mix(in srgb, var(--bwg-chip-c) 12%, #fff);
+        border: 1px solid color-mix(in srgb, var(--bwg-chip-c) 32%, #fff);
+        max-width: 100%;
+    }
+    .bwg-chip__v { font-variant-numeric: tabular-nums; }
+    .bwg-chip--dirty {
+        box-shadow: 0 0 0 2px var(--bwg-amber-soft);
+        border-color: var(--bwg-amber);
+    }
+    // some of these hours became bonus hours rather than paid overtime —
+    // the amount is in the chip's title and spelled out in the editor
+    .bwg-chip--split { border-style: dashed; }
+    .bwg-chip--error {
+        color: var(--bwg-rose);
+        background: var(--bwg-rose-soft);
+        border-color: var(--bwg-rose);
+    }
+
+    // ----- row totals -----
+    .bwg-tot {
+        display: flex; flex-direction: column; justify-content: center;
+        align-items: flex-end; gap: 1px;
+        background: var(--bwg-surface);
+        border-bottom: 1px solid var(--bwg-line-2);
+        border-left: 1px solid var(--bwg-line);
+        padding: 6px 12px;
+    }
+    .bwg-tot__v {
+        font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums;
+    }
+    .bwg-tot__x {
+        font-size: 10.5px; font-weight: 700; color: var(--bwg-amber);
+        font-variant-numeric: tabular-nums;
+    }
+
+    // ----- footer summaries -----
+    .bwg-foot {
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: 1px;
+        background: var(--bwg-surface);
+        border-top: 1px solid var(--bwg-line);
+        border-right: 1px solid var(--bwg-line-2);
+        padding: 7px 10px;
+    }
+    .bwg-foot--corner {
+        align-items: flex-start;
+        min-width: var(--bwg-namecol);
+        border-right: 1px solid var(--bwg-line);
+        font-size: 11px; font-weight: 700; color: var(--bwg-muted);
+    }
+    .bwg-foot--weekend { background: var(--bwg-line-2); }
+    .bwg-foot--today .bwg-foot__v { color: var(--bwg-primary); }
+    .bwg-foot--tot { border-right: 0; border-left: 1px solid var(--bwg-line); }
+    .bwg-foot__v {
+        font-size: 13.5px; font-weight: 800; font-variant-numeric: tabular-nums;
+    }
+    .bwg-foot__x {
+        font-size: 10.5px; font-weight: 700; color: var(--bwg-amber);
+        font-variant-numeric: tabular-nums;
+    }
+
+    // saving pulse on dirty cells
+    &.bwg--saving .bwg-cell--dirty { animation: bwg-pulse 1s ease-in-out infinite; }
+    @keyframes bwg-pulse { 50% { background: var(--bwg-primary-soft); } }
+
+    // ------------------------------------------------------------- the tray
+    // The single commit point (§3.6). The floating top-right Save is gone: it
+    // sat under a tooltip, permanently disabled, next to a filter box.
+    .bwg-tray {
+        display: flex; align-items: center; gap: 12px;
+        padding: 10px 16px;
+        background: var(--bwg-surface);
+        border-top: 1px solid var(--bwg-line);
+        box-shadow: 0 -6px 18px rgba(16, 12, 40, .05);
+    }
+    .bwg-tray__spacer { flex: 1; }
+    .bwg-tray__info { font-size: 13px; color: var(--bwg-ink); }
+    .bwg-tray__dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--bwg-amber); flex: 0 0 auto;
+    }
+
+    .bwg-btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        border: 1px solid var(--bwg-line);
+        border-radius: 9px;
+        padding: 7px 15px;
+        font-size: 13px; font-weight: 700;
+        background: var(--bwg-surface); color: var(--bwg-ink);
+        cursor: pointer;
+        &:disabled { opacity: .5; cursor: default; }
+        &:not(:disabled):hover { background: var(--bwg-line-2); }
+    }
+    .bwg-btn--primary {
+        background: var(--bwg-primary); border-color: var(--bwg-primary); color: #fff;
+        &:not(:disabled):hover { filter: brightness(.94); background: var(--bwg-primary); }
+    }
+    .bwg-btn--ghost {
+        color: var(--bwg-primary); border-color: var(--bwg-primary);
+        background: var(--bwg-primary-soft);
+        &:not(:disabled):hover { background: var(--bwg-surface); }
+    }
+
+    // empty state
+    .bwg-empty {
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: 12px;
+        padding: 60px 20px; color: var(--bwg-muted); text-align: center;
+    }
+    .bwg-empty__ic { width: 46px; height: 46px; opacity: .6; }
+    .bwg-empty__t { font-size: 14px; font-weight: 600; }
+
+    // icons
+    .bwg-ic { width: 16px; height: 16px; }
+    .bwg-ic--sm { width: 13px; height: 13px; }
+}

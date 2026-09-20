@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- The launcher and the drawer.
+
+     Note what is NOT here: no backdrop, no o_dialog, no focus trap. The screen
+     behind the drawer stays readable and clickable, because the whole reason
+     someone opens this is that they are stuck on that screen.
+
+     The launcher is bottom-right, stacked ABOVE PayAI's pill and (until the
+     deploy-time uninstall) the retired guided-tour module's
+     FAB — see coach.scss. Those two are not modified and not hidden: a demo
+     user gets all three, deliberately. -->
+<t t-name="pb_learn.CoachHost">
+    <div class="lrn-coachhost" t-on-click="onClick">
+
+        <!-- The Coach is on EVERY screen, so it cannot borrow the Journey's
+             sprite: off the Journey the launcher rendered as a blank circle
+             with no icon at all. Same symbols, injected wherever it mounts. -->
+        <t t-call="pb_learn.IconSprite"/>
+
+        <button class="lrn-fab" t-on-click="toggle"
+                t-att-class="{ open: state.open }"
+                t-att-aria-expanded="state.open"
+                aria-haspopup="dialog"
+                t-att-title="state.open ? '' : launcherTitle">
+            <svg class="lrn-ic" aria-hidden="true">
+                <use t-attf-href="#lrn-i-#{state.open ? 'x' : 'bot'}"/>
+            </svg>
+            <!-- The label is the invitation. A bare robot glyph in a corner
+                 that already holds two other floating controls reads as one
+                 more thing to ignore; "Stuck?" reads as an offer. -->
+            <span class="lrn-fablabel" t-if="!state.open" t-esc="launcherLabel"/>
+        </button>
+
+        <aside class="lrn-drawer" t-if="state.open" role="dialog"
+               t-att-aria-label="coachName">
+            <header class="lrn-dhead">
+                <span class="lrn-dtitle">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-bot"/></svg>
+                    <b t-esc="coachName"/>
+                </span>
+                <!-- Routed through the delegated handler on the root, like every
+                     other control in this drawer. A direct t-on-click here did not
+                     fire and cost three rounds to notice, while data-act has worked
+                     from the first build — so use the path that is already proven
+                     rather than the one that should work. -->
+                <!-- LEARNOS Phase 4 — "Explain this screen". In the HEADER
+                     rather than in the body, because it has to be reachable
+                     while an answer is already showing: the commonest use is
+                     "that was not what I meant, what IS this screen". It
+                     disappears off the map, where it would have nothing to
+                     explain. Same delegated data-act path as its neighbours. -->
+                <button t-if="covered" class="lrn-btn sm ghost" data-act="c-explain"
+                        t-att-title="explainHintText" t-att-aria-label="explainLabel">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-info"/></svg>
+                </button>
+                <button class="lrn-btn sm ghost" data-act="c-lang">
+                    <span t-esc="langLabel"/>
+                </button>
+                <button class="lrn-btn sm ghost" data-act="c-close" aria-label="Close">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-x"/></svg>
+                </button>
+            </header>
+
+            <!-- The standing promise, on screen rather than in a policy doc. -->
+            <p class="lrn-dhonest">
+                <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-shield-check"/></svg>
+                <span t-esc="honestText"/>
+            </p>
+
+            <div class="lrn-dbody" t-out="bodyHTML"/>
+
+            <form class="lrn-dask" t-on-submit="onSubmit">
+                <input type="text" t-ref="input" t-att-value="state.question"
+                       t-on-input="onInput" t-att-disabled="state.busy"
+                       t-att-placeholder="askPlaceholder" t-att-aria-label="askPlaceholder"/>
+                <button class="lrn-btn sm pri" type="submit" t-att-disabled="state.busy">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-send"/></svg>
+                </button>
+            </form>
+        </aside>
+    </div>
+</t>
+
+</templates>

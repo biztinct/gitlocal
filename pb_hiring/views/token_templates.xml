@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       `/hiring/f/<token>` — one opinion, answered with no login at all.
+
+       ONE template, five outcomes. The status IS the page: a separate page
+       per status would drift, and a stranger probing the URL space must not
+       be able to tell an unknown key from a finished one.
+
+       The icons are inlined because the backend's ic() registry is a JS
+       module and cannot be called from QWeb — the same shape
+       `pb_lifecycle`'s token pages and `pb_hiring`'s own `/my/refer` use.
+       The icon name is passed with `t-value="'name'"` and NEVER as a t-set
+       BODY (W87): a body is rendered QWeb, and on a `website=True` page the
+       editor's branding wraps it in markup, so every comparison silently
+       goes false and every icon falls through to the else branch.
+
+       `t-attf-class`, NEVER a dict `t-att-class` (R42). No `t-key` (R5) —
+       that is an OWL directive. No render key called `request` (R4); the
+       keys here are `sheet` and `facts`.
+       ================================================================== -->
+  <template id="hf_icon" name="Feedback page icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbhf-ic">
+      <t t-if="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'checkCircle'"><path d="M21.8 10A10 10 0 1 1 17 3.34"/><path d="m9 11 3 3L22 4"/></t>
+      <t t-elif="icon == 'users'"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'alert'"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></t>
+      <!-- A3 adds four. Same rule as the five above: the drawing lives here
+           because a frontend page cannot call the backend's ic() registry,
+           and a page that fell through to a plain circle for half its icons
+           would look broken rather than plain. -->
+      <t t-elif="icon == 'paperclip'"><path d="M13.234 20.252 21 12.3"/><path d="m16 6-8.414 8.586a2 2 0 0 0 0 2.828 2 2 0 0 0 2.828 0l8.414-8.586a4 4 0 0 0 0-5.656 4 4 0 0 0-5.656 0l-8.415 8.585a6 6 0 1 0 8.486 8.486"/></t>
+      <t t-elif="icon == 'award'"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></t>
+      <t t-elif="icon == 'fileText'"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8M16 13H8M16 17H8"/></t>
+      <t t-elif="icon == 'circle'"><circle cx="12" cy="12" r="10"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="10"/></t>
+    </svg>
+  </template>
+
+  <template id="hiring_feedback_page" name="What did you think">
+    <t t-call="web.frontend_layout">
+      <div id="wrap" class="pbhf pbhf-page">
+        <div class="pbhf-card">
+
+          <div class="pbhf-card__brand">Payobook</div>
+
+          <!-- ==================== the questions ==================== -->
+          <t t-if="status == 'ok'">
+            <div class="pbhf-card__ic">
+              <t t-call="pb_hiring.hf_icon">
+                <t t-set="icon" t-value="'users'"/>
+                <t t-set="isz" t-value="28"/>
+              </t>
+            </div>
+            <h1>What did you think?</h1>
+            <p class="pbhf-card__sub">
+              You interviewed
+              <strong t-esc="facts['candidate']"/>
+              for <strong t-esc="facts['role']"/>, round
+              <t t-esc="facts['round']"/>. Five lines to score and one
+              question — it takes a minute, and they are waiting on the
+              slowest of us.
+            </p>
+
+            <div class="pbhf-meta" t-if="facts.get('due')">
+              <t t-call="pb_hiring.hf_icon">
+                <t t-set="icon" t-value="facts.get('late') and 'alert' or 'clock'"/>
+                <t t-set="isz" t-value="14"/>
+              </t>
+              <span t-if="facts.get('late')">
+                This was wanted by <t t-esc="facts['due']"/>. It is still
+                worth sending.
+              </span>
+              <span t-else="">Wanted by <t t-esc="facts['due']"/></span>
+            </div>
+
+            <form t-attf-action="/hiring/f/#{token}/submit" method="post">
+              <t t-foreach="questions" t-as="q">
+                <div class="pbhf-crit">
+                  <label class="pbhf-label" t-esc="q['name']"/>
+                  <p class="pbhf-help" t-if="q.get('help')" t-esc="q['help']"/>
+                  <div class="pbhf-scale">
+                    <t t-foreach="[1, 2, 3, 4, 5]" t-as="n">
+                      <label class="pbhf-scale__o">
+                        <input type="radio" t-attf-name="c_#{q['id']}"
+                               t-att-value="n"/>
+                        <span t-esc="n"/>
+                      </label>
+                    </t>
+                  </div>
+                </div>
+              </t>
+
+              <div class="pbhf-crit">
+                <label class="pbhf-label">Would you hire them?</label>
+                <div class="pbhf-verdict">
+                  <t t-foreach="facts['recommendations']" t-as="rec">
+                    <label class="pbhf-verdict__o">
+                      <input type="radio" name="recommendation"
+                             t-att-value="rec['key']"/>
+                      <span t-esc="rec['label']"/>
+                    </label>
+                  </t>
+                </div>
+              </div>
+
+              <label class="pbhf-label" for="notes">
+                Anything you want to say in your own words
+              </label>
+              <textarea class="pbhf-input" id="notes" name="notes" rows="4"
+                        placeholder="One thing they did well and one thing that worried you is more use than a paragraph of adjectives."/>
+
+              <button type="submit" class="pbhf-btn pbhf-btn--primary">
+                <t t-call="pb_hiring.hf_icon">
+                  <t t-set="icon" t-value="'check'"/>
+                  <t t-set="isz" t-value="16"/>
+                </t>
+                Send what I thought
+              </button>
+            </form>
+            <p class="pbhf-card__fine">
+              This link is yours alone and works once. Only the hiring team
+              reads it.
+            </p>
+          </t>
+
+          <!-- ==================== just answered ==================== -->
+          <t t-elif="status == 'thanks'">
+            <div class="pbhf-card__ic pbhf-card__ic--ok">
+              <t t-call="pb_hiring.hf_icon">
+                <t t-set="icon" t-value="'checkCircle'"/>
+                <t t-set="isz" t-value="28"/>
+              </t>
+            </div>
+            <h1>Thank you</h1>
+            <p class="pbhf-card__sub">
+              That is with the hiring team. There is nothing left for you to
+              do here — and the candidate will hear back sooner because you
+              were quick.
+            </p>
+          </t>
+
+          <!-- ==================== already answered ==================== -->
+          <t t-elif="status == 'used'">
+            <div class="pbhf-card__ic pbhf-card__ic--ok">
+              <t t-call="pb_hiring.hf_icon">
+                <t t-set="icon" t-value="'checkCircle'"/>
+                <t t-set="isz" t-value="28"/>
+              </t>
+            </div>
+            <h1>Already answered</h1>
+            <p class="pbhf-card__sub">
+              You have said what you thought about this one, so the link has
+              closed itself. If you have changed your mind, tell the recruiter
+              — they can still record it.
+            </p>
+          </t>
+
+          <!-- ==================== closed or unknown ==================== -->
+          <t t-else="">
+            <div class="pbhf-card__ic pbhf-card__ic--warn">
+              <t t-call="pb_hiring.hf_icon">
+                <t t-set="icon" t-value="'clock'"/>
+                <t t-set="isz" t-value="28"/>
+              </t>
+            </div>
+            <h1>This link has closed</h1>
+            <p class="pbhf-card__sub">
+              The interview it was about did not go ahead, or the link has
+              been replaced. Reply to the email that brought you here and the
+              recruiter will sort it out.
+            </p>
+          </t>
+
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

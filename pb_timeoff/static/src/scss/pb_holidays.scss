@@ -1,0 +1,355 @@
+// =====================================================================
+//  Public holidays — the year, every company side by side.
+//  ---------------------------------------------------------------------
+//  Tokens only, no invented colours (binding rule 6). Every rule carries a
+//  literal fallback beside its token, because this surface is also read
+//  through the portal kit where the backend tokens are not declared (R39's
+//  reasoning, applied before it bites).
+//
+//  Every MOVING declaration — the starting opacity, the transform AND the
+//  animation — sits inside `@media (prefers-reduced-motion: no-preference)`
+//  (R85), and the keyframe carries an explicit `to` so the 100% frame can
+//  never resolve back to the invisible starting state (R156).
+//
+//  `@keyframes` is at the TOP LEVEL: nested inside a selector Sass emits it
+//  nested too and no browser plays it (R85).
+// =====================================================================
+
+.pbhd {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    overflow: auto;
+    padding: 18px 20px 26px;
+    background: var(--pbim-bg, #F5F6FA);
+
+    &.pbhd--embedded { padding-top: 12px; }
+}
+
+.pbhd-wrap { display: flex; flex-direction: column; gap: 16px; }
+
+// ------------------------------------------------------------------ hero
+.pbhd-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.pbhd-headline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-radius: var(--pbim-r-lg, 18px);
+    background: var(--pbim-soft, #EDEAF8);
+    border: 1px solid var(--pbim-line, #E2E8F0);
+    color: var(--pbim-primary-strong, #5A4BB0);
+    font-size: 15.5px;
+    font-weight: 700;
+
+    &__ic { display: inline-flex; flex: 0 0 auto; }
+    &__tx { min-width: 0; }
+}
+
+.pbhd-years {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.pbhd-year {
+    border: 1px solid var(--pbim-line, #E2E8F0);
+    background: var(--pbim-surface, #fff);
+    color: var(--pbim-muted, #64748B);
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover { border-color: var(--pbim-primary, #5A4BB0); }
+    &:focus-visible {
+        outline: 2px solid var(--pbim-primary, #5A4BB0);
+        outline-offset: 2px;
+    }
+    &.is-on {
+        background: var(--pbim-primary, #5A4BB0);
+        border-color: var(--pbim-primary, #5A4BB0);
+        color: #fff;
+    }
+}
+
+// --------------------------------------------------------------- columns
+.pbhd-cols {
+    display: grid;
+    // The kit's `.pbim-stats` carries no columns on purpose and every
+    // consumer sets its own (R32/R196). Same rule here.
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    align-items: start;
+}
+
+.pbhd-col {
+    background: var(--pbim-surface, #fff);
+    border: 1px solid var(--pbim-line, #E2E8F0);
+    border-radius: var(--pbim-r-lg, 18px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    &__h {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 13px 16px;
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-line-2, #F1F5F9);
+    }
+    &__id { min-width: 0; flex: 1; }
+    &__name {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--pbim-ink, #1B1733);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    &__country {
+        font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+        margin-top: 1px;
+    }
+    &__f {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    &__f--note {
+        font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+    }
+}
+
+// `.pbim-badge` capitalises every word, which is right for a status and
+// wrong for a number — it is left alone here because a count has no words.
+.pbhd-count { flex: 0 0 auto; }
+
+.pbhd-empty {
+    text-align: center;
+    padding: 22px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    &__ic { color: var(--pbim-muted, #64748B); opacity: .7; }
+    &__t {
+        font-size: 13px;
+        color: var(--pbim-muted, #64748B);
+        // A SENTENCE, so the kit's title-casing must not apply here (R33).
+        text-transform: none;
+        max-width: 26ch;
+    }
+}
+
+.pbhd-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 420px;
+    overflow: auto;
+}
+
+.pbhd-row {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+
+    &:last-child { border-bottom: none; }
+    &.is-past { opacity: .5; }
+    &.is-today {
+        background: var(--pbim-soft, #EDEAF8);
+        opacity: 1;
+    }
+
+    &__body { flex: 1; min-width: 0; }
+    &__n {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--pbim-ink, #1B1733);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    &__m {
+        display: block;
+        font-size: 11.5px;
+        color: var(--pbim-muted, #64748B);
+    }
+}
+
+.pbhd-date {
+    flex: 0 0 auto;
+    width: 40px;
+    text-align: center;
+    border-radius: var(--pbim-r-sm, 10px);
+    background: var(--pbim-bg, #F5F6FA);
+    border: 1px solid var(--pbim-line, #E2E8F0);
+    padding: 4px 0 5px;
+
+    &__d {
+        display: block;
+        font-size: 15px;
+        font-weight: 800;
+        line-height: 1.05;
+        color: var(--pbim-ink, #1B1733);
+    }
+    &__m {
+        display: block;
+        font-size: 10px;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: var(--pbim-muted, #64748B);
+    }
+}
+
+.pbhd-today {
+    flex: 0 0 auto;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--pbim-primary-strong, #5A4BB0);
+}
+
+.pbhd-x {
+    flex: 0 0 auto;
+    border: none;
+    background: transparent;
+    color: var(--pbim-muted, #64748B);
+    border-radius: var(--pbim-r-sm, 10px);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+
+    .pbhd-row:hover &, &:focus-visible { opacity: 1; }
+    &:hover { background: var(--pbim-bg, #F5F6FA); color: var(--pbim-rose, #DC2668); }
+    &:focus-visible {
+        outline: 2px solid var(--pbim-primary, #5A4BB0);
+        outline-offset: 1px;
+    }
+}
+
+.pbhd-link {
+    border: none;
+    background: transparent;
+    color: var(--pbim-primary-strong, #5A4BB0);
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 4px 2px;
+
+    &:hover { text-decoration: underline; }
+    &:focus-visible {
+        outline: 2px solid var(--pbim-primary, #5A4BB0);
+        outline-offset: 2px;
+    }
+}
+
+.pbhd-i { display: inline-flex; }
+
+// ----------------------------------------------------------------- form
+.pbhd-form { padding: 18px 22px 22px; }
+
+.pbhd-lab {
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    color: var(--pbim-muted, #64748B);
+    margin: 12px 0 5px;
+
+    &:first-child { margin-top: 0; }
+}
+
+.pbhd-opt {
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 600;
+    opacity: .8;
+}
+
+// A PRIMITIVE BOTH SURFACES USE GOES AT THE TOP LEVEL, never nested under
+// one of them (R135): this input is used inside the dialog AND could be used
+// on the board, and a rule that only exists inside a scrim leaves the other
+// one looking like the operating system.
+.pbhd-in {
+    width: 100%;
+    border: 1px solid var(--pbim-line, #E2E8F0);
+    border-radius: var(--pbim-r-sm, 10px);
+    padding: 9px 11px;
+    font-size: 13.5px;
+    color: var(--pbim-ink, #1B1733);
+    background: var(--pbim-surface, #fff);
+
+    &:focus {
+        outline: none;
+        border-color: var(--pbim-primary, #5A4BB0);
+        box-shadow: 0 0 0 3px rgba(90, 75, 176, .14);
+    }
+}
+
+.pbhd-ta { font-family: inherit; line-height: 1.5; resize: vertical; }
+
+.pbhd-two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.pbhd-help { margin-bottom: 8px; }
+
+@media (max-width: 560px) {
+    .pbhd { padding: 12px 12px 20px; }
+    .pbhd-two { grid-template-columns: 1fr; }
+}
+
+// ------------------------------------------------------------- motion
+@keyframes pbhd-rise {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .pbhd-col {
+        opacity: 0;
+        transform: translateY(6px);
+        animation: pbhd-rise .26s ease-out both;
+    }
+    .pbhd-col:nth-child(2) { animation-delay: .04s; }
+    .pbhd-col:nth-child(3) { animation-delay: .08s; }
+    .pbhd-col:nth-child(4) { animation-delay: .12s; }
+    .pbhd-col:nth-child(5) { animation-delay: .16s; }
+}
+
+// The empty column's two doors, side by side under the sentence.
+.pbhd-empty__do {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 2px;
+}

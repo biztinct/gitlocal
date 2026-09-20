@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_hr_workforce.PbOtDesk">
+    <div class="pbot pbim" t-att-class="{ 'pbot--embedded': props.embedded }">
+
+      <!-- ============================ loading ============================ -->
+      <div t-if="!state.loaded" class="pbot-loading">
+        <div class="pbot-spin"/><span>Loading Overtime Desk…</span>
+      </div>
+
+      <!-- ============================= BOARD ============================= -->
+      <div t-elif="state.view === 'board' and state.data" class="pbot-wrap">
+
+        <!-- hero -->
+        <div class="pbot-hero">
+          <!-- W17: the shell's rail already says "OVERTIME", so the embedded
+               lens drops the title block only. The Bonus Hours button beside it
+               is a door, not chrome, and stays. -->
+          <div t-if="!props.embedded">
+            <!-- P2 §3.10: the eyebrow says what the RAIL says. A cockpit whose
+                 hero calls itself something the sidebar has never heard of makes
+                 the user re-derive where they are on every arrival. -->
+            <div class="eyebrow"><span class="i" t-out="ic('zap',15)"/> Overtime</div>
+            <h1>Approve overtime &amp; manage limits</h1>
+            <div class="sub">Org-wide queue · ceiling context · bonus-hours overflow</div>
+          </div>
+          <button t-if="state.data.can_view_bonus" class="pbot-btn ghost" t-on-click="openBonus">
+            <span t-out="ic('coins',16)"/><span>Bonus Hours</span>
+          </button>
+        </div>
+
+        <!-- KPIs -->
+        <div class="pbot-kpis">
+          <div class="kpi">
+            <span class="ico" t-out="ic('inbox',18)"/>
+            <span class="n" t-esc="kpis.pending"/>
+            <span class="l">pending approvals</span>
+          </div>
+          <div class="kpi wide">
+            <span class="l tt">month OT by type (h)</span>
+            <div class="stack">
+              <t t-foreach="kpis.by_type or []" t-as="b" t-key="b.type">
+                <div class="seg" t-if="b.hours > 0"
+                     t-attf-style="flex: {{ b.hours }}; background: {{ b.color }};"
+                     t-attf-title="{{ b.label }}: {{ fmt(b.hours) }}h"/>
+              </t>
+            </div>
+            <div class="legend">
+              <t t-foreach="kpis.by_type or []" t-as="b" t-key="b.type">
+                <span class="lg"><span class="sw" t-attf-style="background:{{ b.color }}"/><t t-esc="b.label"/> <b t-esc="fmt(b.hours)"/></span>
+              </t>
+            </div>
+          </div>
+          <div t-attf-class="kpi {{ kpis.over_ceiling > 0 ? 'pulse rose' : '' }}">
+            <span class="ico" t-out="ic('gauge',18)"/>
+            <span class="n" t-esc="kpis.over_ceiling"/>
+            <span class="l">near/over ceiling</span>
+          </div>
+          <div t-if="state.data.can_view_bonus" class="kpi amber">
+            <span class="ico" t-out="ic('coins',18)"/>
+            <span class="n" t-esc="fmt(kpis.bonus_month or 0)"/>
+            <span class="l">bonus hours this month</span>
+          </div>
+        </div>
+
+        <!-- queue -->
+        <section class="pbot-panel">
+          <div class="panel-h">
+            <div class="ttl"><span t-out="ic('inbox',18)"/> Approval queue</div>
+            <button t-if="queue.length" class="pbot-btn tiny ghost" t-on-click="selectAll">
+              <span>Select all</span>
+            </button>
+          </div>
+
+          <div t-if="!queue.length" class="pbot-empty">
+            <span class="i" t-out="ic('checkCircle',30)"/>
+            <div class="t">Queue clear</div>
+            <div class="s">No overtime requests are waiting for approval.</div>
+          </div>
+
+          <div t-else="" class="pbot-queue">
+            <div t-foreach="queue" t-as="q" t-key="q.id"
+                 t-attf-class="ot-card {{ isSelected(q.id) ? 'sel' : '' }}">
+              <label class="pick">
+                <input type="checkbox" t-att-checked="isSelected(q.id)"
+                       t-on-change="() => this.toggle(q.id)"/>
+              </label>
+              <img class="av" t-att-src="q.employee.avatar_url" alt=""/>
+              <div class="who">
+                <div class="nm" t-esc="q.employee.name"/>
+                <div class="dt"><t t-esc="q.date"/><t t-if="q.employee.department"> · <t t-esc="q.employee.department"/></t></div>
+              </div>
+              <div class="typ">
+                <span class="chip" t-attf-style="--c: {{ q.color }}"><t t-esc="typeLabel(q.type)"/></span>
+                <span class="rate" t-if="q.rate" t-esc="q.rate"/>
+              </div>
+              <div class="split">
+                <span class="planned"><t t-esc="fmt(q.planned)"/>h</span>
+                <span class="arw" t-out="ic('arrowRight',14)"/>
+                <span class="ap"><t t-esc="fmt(q.split.approved)"/>h</span>
+                <span t-if="q.split.bonus > 0" class="bn" t-attf-title="Overflow beyond the ceiling — paid via BONHRS if configured">
+                  + <t t-esc="fmt(q.split.bonus)"/>b
+                </span>
+              </div>
+              <div class="ceil">
+                <div class="cb" t-attf-title="Month: {{ fmt(q.ceiling.mtd or 0) }} / {{ fmt(q.ceiling.cap_month or 0) }}h">
+                  <span class="cl">M</span>
+                  <span class="track"><span t-attf-class="fill {{ barTone(q.ceiling.mtd, q.ceiling.cap_month) }}"
+                        t-attf-style="width: {{ pct(q.ceiling.mtd, q.ceiling.cap_month) }}%"/></span>
+                </div>
+                <div class="cb" t-attf-title="Year: {{ fmt(q.ceiling.ytd or 0) }} / {{ fmt(q.ceiling.cap_year or 0) }}h">
+                  <span class="cl">Y</span>
+                  <span class="track"><span t-attf-class="fill {{ barTone(q.ceiling.ytd, q.ceiling.cap_year) }}"
+                        t-attf-style="width: {{ pct(q.ceiling.ytd, q.ceiling.cap_year) }}%"/></span>
+                </div>
+              </div>
+              <div class="acts">
+                <button class="pbot-btn tiny primary" t-on-click="() => this.approveOne(q.id)">
+                  <span t-out="ic('check',13)"/><span>Approve</span>
+                </button>
+                <button class="pbot-btn tiny bad ghost" t-on-click="() => this.refuseOne(q.id)">
+                  <span t-out="ic('x',13)"/>
+                </button>
+              </div>
+              <div t-if="state.rowResults[q.id] and !state.rowResults[q.id].ok" class="rowerr"
+                   t-esc="state.rowResults[q.id].error"/>
+            </div>
+          </div>
+        </section>
+
+        <!-- config gallery -->
+        <section class="pbot-panel">
+          <div class="panel-h">
+            <div class="ttl"><span t-out="ic('sliders',18)"/> Overtime rules &amp; ceilings</div>
+          </div>
+          <div class="pbot-caps">
+            <t t-foreach="[
+                {k:'daily',l:'Daily'},{k:'weekly',l:'Weekly'},{k:'biweekly',l:'Bi-weekly'},
+                {k:'monthly',l:'Monthly'},{k:'annual',l:'Annual'},{k:'annual_special',l:'Annual (special)'}]"
+               t-as="cap" t-key="cap.k">
+              <div t-attf-class="capcard {{ (configs.caps[cap.k] or 0) > 0 ? 'on' : 'off' }}">
+                <div class="cl" t-esc="cap.l"/>
+                <div class="cv"><t t-if="(configs.caps[cap.k] or 0) > 0"><t t-esc="fmt(configs.caps[cap.k])"/>h</t><t t-else="">—</t></div>
+              </div>
+            </t>
+          </div>
+          <div class="pbot-gallery">
+            <div t-foreach="configs.cards" t-as="c" t-key="c.id" class="cfg-card"
+                 t-on-click="() => this.openConfig(c.id)">
+              <div class="cfg-h">
+                <span class="badge" t-attf-style="--c:{{ c.color }}" t-esc="c.rate"/>
+                <span class="cfg-nm" t-esc="c.name"/>
+              </div>
+              <div class="dots">
+                <t t-foreach="c.day_dots" t-as="d" t-key="d_index">
+                  <span t-attf-class="dot {{ d ? 'on' : '' }}" t-esc="dayLetters()[d_index]"/>
+                </t>
+              </div>
+              <div class="cfg-meta">
+                <span t-if="c.window" t-esc="c.window"/>
+                <span t-if="c.requires_approval" class="ap"><span t-out="ic('lock',12)"/> approval</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============================= BONUS ============================= -->
+      <div t-elif="state.view === 'bonus'" class="pbot-wrap">
+        <div class="pbot-sub-head">
+          <button class="pbot-back" t-on-click="backToBoard"><span t-out="ic('chevron',18)" style="transform:rotate(180deg)"/></button>
+          <div>
+            <h1>Bonus Hours review</h1>
+            <div class="sub">Overtime beyond the ceilings — payroll-manager view</div>
+          </div>
+          <button class="pbot-btn ghost" t-on-click="exportBonus">
+            <span t-out="ic('download',16)"/><span>Export CSV</span>
+          </button>
+        </div>
+
+        <div class="pbot-bonus">
+          <!-- filter rail -->
+          <aside class="rail">
+            <div class="rail-sec">
+              <div class="rl-h">Date</div>
+              <div class="presets">
+                <button t-foreach="(state.data.bonus_presets or [])" t-as="p" t-key="p.key"
+                        t-attf-class="pchip {{ state.bonus.preset === p.key ? 'active' : '' }}"
+                        t-on-click="() => this.setPreset(p.key)" t-esc="p.label"/>
+              </div>
+              <div t-if="state.bonus.preset === 'custom'" class="range">
+                <label><span>From</span><input type="date" t-att-value="state.bonus.date_from" t-on-change="(ev) => this.onBonusField('date_from', ev)"/></label>
+                <label><span>To</span><input type="date" t-att-value="state.bonus.date_to" t-on-change="(ev) => this.onBonusField('date_to', ev)"/></label>
+              </div>
+            </div>
+            <div class="rail-sec">
+              <div class="rl-h">Filters</div>
+              <label class="fld"><span>Employee</span><input type="text" placeholder="name…" t-att-value="state.bonus.employee" t-on-input="(ev) => this.onBonusField('employee', ev)"/></label>
+              <label class="fld"><span>Department</span><input type="text" placeholder="name…" t-att-value="state.bonus.department" t-on-input="(ev) => this.onBonusField('department', ev)"/></label>
+              <label class="fld"><span>OT type</span>
+                <select t-on-change="(ev) => this.onBonusField('overtime_type', ev)">
+                  <option value="">All</option>
+                  <option value="weekday">Weekday</option>
+                  <option value="weekend">Weekend</option>
+                  <option value="holiday">Public Holiday</option>
+                  <option value="night">Night</option>
+                </select>
+              </label>
+              <label class="fld"><span>Min bonus (h)</span><input type="number" step="0.5" t-att-value="state.bonus.min_hours" t-on-input="(ev) => this.onBonusField('min_hours', ev)"/></label>
+              <button class="pbot-btn primary block" t-on-click="applyBonusFilters">
+                <span t-out="ic('filter',15)"/><span>Apply</span>
+              </button>
+            </div>
+          </aside>
+
+          <!-- results -->
+          <div class="results">
+            <div class="grp-switch">
+              <span class="lbl">Group by</span>
+              <button t-foreach="groupByOptions()" t-as="g" t-key="g.key"
+                      t-attf-class="gchip {{ state.bonus.group_by === g.key ? 'active' : '' }}"
+                      t-on-click="() => this.setGroupBy(g.key)" t-esc="g.label"/>
+            </div>
+
+            <div t-if="state.bonus.data" class="totals">
+              <div class="tot"><b t-esc="fmt(state.bonus.data.grand_hours)"/><span>total bonus h</span></div>
+              <div class="tot"><b t-esc="state.bonus.data.grand_count"/><span>requests</span></div>
+              <div t-if="state.bonus.data.capped" class="tot warn"><span>scan capped at <t t-esc="state.bonus.data.cap"/> — narrow filters</span></div>
+            </div>
+
+            <div t-if="state.bonus.data and state.bonus.data.groups.length" class="grp-table">
+              <div t-foreach="state.bonus.data.groups" t-as="g" t-key="g_index" class="grp-row">
+                <span class="gl" t-esc="g.label"/>
+                <span class="gc" t-esc="g.count"/>
+                <span class="gbar"><span class="gfill" t-attf-style="width: {{ state.bonus.data.grand_hours ? Math.round(100 * g.hours / state.bonus.data.grand_hours) : 0 }}%"/></span>
+                <span class="gh"><t t-esc="fmt(g.hours)"/>h</span>
+              </div>
+            </div>
+            <div t-elif="state.bonus.loaded" class="pbot-empty small">
+              <span class="i" t-out="ic('coins',26)"/>
+              <div class="t">No bonus hours</div>
+              <div class="s">No overflow OT matched these filters.</div>
+            </div>
+
+            <!-- detail rows -->
+            <div t-if="state.bonus.data and state.bonus.data.rows.length" class="det">
+              <div class="det-h">
+                <span>Employee</span><span>Dept</span><span>Date</span><span>Type</span><span class="r">Approved</span><span class="r">Bonus</span>
+              </div>
+              <div t-foreach="state.bonus.data.rows" t-as="r" t-key="r.id" class="det-row">
+                <span class="e" t-esc="r.employee"/>
+                <span t-esc="r.department"/>
+                <span t-esc="r.date"/>
+                <span t-esc="typeLabel(r.type)"/>
+                <span class="r" t-esc="fmt(r.approved)"/>
+                <span class="r bn" t-esc="fmt(r.bonus)"/>
+              </div>
+              <div class="pager">
+                <button class="pbot-btn tiny ghost" t-att-disabled="state.bonus.page === 0" t-on-click="prevBonusPage">Prev</button>
+                <span class="pg">page <t t-esc="state.bonus.data.page + 1"/></span>
+                <button class="pbot-btn tiny ghost" t-att-disabled="!state.bonus.data.has_more" t-on-click="nextBonusPage">Next</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ refuse modal ======================= -->
+      <div t-if="state.refuseOpen" class="pbot-modal-scrim" t-on-click="cancelRefuse">
+        <div class="pbot-modal" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="m-h">Refuse overtime</div>
+          <div class="m-b">
+            <p>Refusing <b t-esc="state.refuseIds.length"/> request(s). Add an optional note.</p>
+            <textarea placeholder="Reason (optional)…" t-att-value="state.refuseNote" t-on-input="onRefuseNote"/>
+          </div>
+          <div class="m-f">
+            <button class="pbot-btn ghost" t-on-click="cancelRefuse">Cancel</button>
+            <button class="pbot-btn bad" t-on-click="confirmRefuse">Refuse</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================= bulk approve tray ===================== -->
+      <div t-if="selectedCount and state.view === 'board'" class="pbot-tray">
+        <span class="cnt"><t t-esc="selectedCount"/> selected</span>
+        <button class="pbot-btn primary" t-on-click="bulkApprove"><span t-out="ic('check',15)"/><span>Approve</span></button>
+        <button class="pbot-btn bad ghost" t-on-click="bulkRefuse"><span t-out="ic('x',15)"/><span>Refuse</span></button>
+        <button class="pbot-btn ghost" t-on-click="clearSel">Clear</button>
+      </div>
+
+    </div>
+  </t>
+</templates>

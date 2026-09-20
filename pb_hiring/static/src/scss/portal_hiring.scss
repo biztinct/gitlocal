@@ -1,0 +1,489 @@
+// =====================================================================
+//  /my/refer — .pbhr-*
+//
+//  EVERY COLOUR CARRIES A LITERAL FALLBACK BESIDE ITS TOKEN (R39). The
+//  portal is a FRONTEND bundle and the backend's token sheet is not in it,
+//  so a bare `var(--pbim-ink)` resolves to nothing and the text disappears.
+//  The portal surface is also light-only by design — there is no dark
+//  palette to chase here; what "check it in both themes" means on `/my/…`
+//  is checking that every colour resolves at all.
+//
+//  Structure comes from pb_me_portal's .pbme kit — the hero, the cards, the
+//  form grid, the empty state — so this page reads as part of the
+//  employee's own area rather than something bolted on.
+//
+//  No `min()`/`max()` with mixed units: Sass evaluates those and a px/%
+//  pair kills the whole frontend bundle.
+// =====================================================================
+
+@keyframes pbhr-p-rise { from { transform: translateY(8px); opacity: 0; } }
+
+.pbhr {
+    // ------------------------------------------------------- the notices
+    .pbhr-notice {
+        display: flex; align-items: center; gap: 10px;
+        padding: 12px 15px; border-radius: 12px; margin-bottom: 16px;
+        border: 1px solid var(--pbim-primary, #4F46E5);
+        background: var(--pbim-soft, #EEF2FF);
+        color: var(--pbim-primary-dark, #3730A3);
+        font-size: 13.5px; font-weight: 600;
+    }
+    .pbhr-notice--bad {
+        border-color: var(--pbim-rose, #E11D48);
+        background: var(--pbim-rose-soft, #FFF1F2);
+        color: #9F1239;
+    }
+    .pbhr-ic { flex: 0 0 auto; }
+
+    // ------------------------------------------------------ the sections
+    .pbhr-sec {
+        margin: 26px 0 12px; font-size: 12px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .05em;
+        color: #64748B;
+    }
+
+    // ------------------------------------------------------- the roles
+    .pbhr-roles {
+        display: grid; gap: 14px;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    .pbhr-role {
+        padding: 16px 18px; display: flex; flex-direction: column; gap: 10px;
+
+        &.pbhr-role--on { border-color: #4F46E5; box-shadow: 0 0 0 3px rgba(79, 70, 229, .16); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+        .pbhr-role {
+            animation: pbhr-p-rise .2s ease-out both;
+            transition: box-shadow .15s, transform .15s;
+            &:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16, 24, 40, .08); }
+        }
+    }
+    .pbhr-role-top { display: flex; align-items: flex-start; gap: 12px; }
+    .pbhr-role-ic {
+        flex: 0 0 auto; width: 38px; height: 38px; border-radius: 11px;
+        display: grid; place-items: center;
+        background: var(--pbim-soft, #EEF2FF);
+        color: var(--pbim-primary, #4F46E5);
+    }
+    .pbhr-role-id { min-width: 0; }
+    .pbhr-role-name {
+        font-size: 15px; font-weight: 700; color: #1B1733; line-height: 1.3;
+    }
+    .pbhr-role-meta {
+        margin-top: 4px; display: flex; gap: 10px; flex-wrap: wrap;
+        font-size: 12px; color: #64748B;
+
+        span { display: inline-flex; align-items: center; gap: 4px; }
+    }
+    .pbhr-role-sum { font-size: 12.5px; line-height: 1.55; margin: 0; }
+    .pbhr-role-btn { align-self: flex-start; margin-top: auto; }
+
+    // -------------------------------------------------------- the form
+    .pbhr-form { margin-top: 18px; padding: 20px 22px; }
+
+    // THE KIT STYLES INPUTS AND TEXTAREAS AND NOT SELECTS, so the "Which
+    // role" picker rendered as a raw browser control — square corners, a
+    // grey 1px border and no padding — sitting directly above two fields
+    // that did not. A form where one field looks like the operating system
+    // and the rest look like the product reads as broken even though every
+    // control works.
+    .pbhr-form select {
+        width: 100%; border: 1px solid #E2E8F0; border-radius: 9px;
+        padding: 9px 11px; font: inherit; font-size: 13.5px;
+        color: #334155; background: #FFFFFF; outline: none;
+        appearance: none;
+        // the chevron, drawn rather than fetched: the frontend bundle has no
+        // icon module and an <img> would be one more request per field
+        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 11px center;
+        padding-right: 34px;
+
+        &:focus {
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, .16);
+        }
+    }
+    .pbhr-hint {
+        display: block; margin-top: 4px; font-size: 11.5px; color: #64748B;
+    }
+    .pbhr-submit { margin-top: 16px; }
+    .pbhr-fineprint {
+        margin: 12px 0 0; font-size: 12px; line-height: 1.6;
+    }
+
+    // ----------------------------------------------- what you have sent
+    .pbhr-mine { padding: 6px 18px; }
+    .pbhr-mine-row {
+        display: flex; align-items: center; gap: 14px; padding: 13px 0;
+        border-bottom: 1px solid #E2E8F0;
+
+        &:last-child { border-bottom: none; }
+    }
+    .pbhr-mine-main { flex: 1; min-width: 0; }
+    .pbhr-mine-name { font-size: 13.5px; font-weight: 650; color: #1B1733; }
+    .pbhr-mine-meta { margin-top: 2px; font-size: 11.5px; color: #64748B; }
+
+    // A badge carrying a state WORD, so the kit's capitalisation is right
+    // here — but the colours have to be stated, because the portal bundle
+    // has no token sheet behind it.
+    .pbhr-st--hired { color: #15803D; border-color: #86EFAC; }
+    .pbhr-st--not_this_time { color: #64748B; }
+    .pbhr-st--in_progress { color: #B45309; border-color: #FCD34D; }
+    .pbhr-st--received { color: #4338CA; border-color: #C7D2FE; }
+
+    // A hiring request's own statuses, on /my/hiring
+    .pbhr-st--open, .pbhr-st--filled { color: #4338CA; border-color: #C7D2FE; }
+    .pbhr-st--draft { color: #64748B; }
+    .pbhr-st--submitted, .pbhr-st--manager_ok, .pbhr-st--hr_ok {
+        color: #B45309; border-color: #FCD34D;
+    }
+    .pbhr-st--refused, .pbhr-st--closed { color: #64748B; }
+
+    // A3 — where the offer has got to, under the role on `/my/hiring`.
+    // A hiring manager raised a role three months ago; the one thing they
+    // want from this page is whether the person said yes.
+    .pbhr-mine-offer {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        margin-top: 6px;
+    }
+    .pbhr-of--draft, .pbhr-of--submitted, .pbhr-of--manager_ok {
+        color: #B45309; border-color: #FCD34D;
+    }
+    .pbhr-of--hr_ok, .pbhr-of--sent { color: #4338CA; border-color: #C7D2FE; }
+    .pbhr-of--accepted, .pbhr-of--signed, .pbhr-of--closed {
+        color: #15803D; border-color: #86EFAC;
+    }
+    .pbhr-of--declined { color: #B91C1C; border-color: #FECACA; }
+    .pbhr-waiting {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 9px; border-radius: 999px;
+        background: #FFF7ED; color: #B45309;
+        font-size: 11.5px; font-weight: 700;
+    }
+
+    // ================================================================
+    //  /my/hiring — what you owe, and what you are sitting in
+    // ================================================================
+    .pbhr-owed, .pbhr-ivs { display: flex; flex-direction: column; gap: 12px; }
+
+    .pbhr-owe {
+        display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+        padding: 16px 18px;
+        border-left: 3px solid #4F46E5;
+
+        // LATE IS A DIFFERENT COLOUR AND NOT A DIFFERENT SHOUT. Somebody
+        // who is late has already had one email about it; the page's job is
+        // to be findable, not to tell them off again.
+        &.pbhr-owe--late { border-left-color: #E11D48; }
+    }
+    .pbhr-owe-main { flex: 1 1 260px; min-width: 0; }
+    .pbhr-owe-name {
+        font-size: 14.5px; font-weight: 700; color: #1B1733; line-height: 1.35;
+    }
+    .pbhr-owe-meta { margin-top: 4px; font-size: 12px; color: #64748B; }
+    .pbhr-owe-btn { flex: 0 0 auto; }
+
+    .pbhr-iv {
+        display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+        padding: 14px 18px;
+    }
+    // The date reads as a date and not as a sentence: a person scanning this
+    // list is looking for a day, and a day they can find in one glance is
+    // the whole difference between a list and a page.
+    .pbhr-iv-when {
+        flex: 0 0 auto; width: 72px; text-align: center;
+        padding: 8px 6px; border-radius: 11px;
+        background: #EEF2FF; color: #4338CA;
+    }
+    .pbhr-iv-day { font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+    .pbhr-iv-time { font-size: 16px; font-weight: 800; line-height: 1.2; }
+    .pbhr-iv-main { flex: 1 1 240px; min-width: 0; }
+    .pbhr-iv-name {
+        font-size: 14.5px; font-weight: 700; color: #1B1733;
+    }
+    .pbhr-iv-meta {
+        margin-top: 4px; display: flex; gap: 12px; flex-wrap: wrap;
+        font-size: 12px; color: #64748B;
+
+        span { display: inline-flex; align-items: center; gap: 4px; }
+    }
+    .pbhr-iv-btn { flex: 0 0 auto; }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .pbhr-owe, .pbhr-iv { animation: pbhr-p-rise .2s ease-out both; }
+    }
+}
+
+// =====================================================================
+//  /hiring/f/<token> — the panel member's page, with no login behind it
+//
+//  NOT NESTED UNDER `.pbhr` and not under anything else (R114/R135): this
+//  page is its own document, rendered by web.frontend_layout with no portal
+//  wrapper, so a descendant selector would silently reach nothing.
+//
+//  EVERY COLOUR CARRIES A LITERAL (R39). The frontend bundle has no token
+//  sheet behind it, and a visitor here is not even logged in.
+// =====================================================================
+@keyframes pbhf-rise { from { transform: translateY(10px); opacity: 0; } }
+
+.pbhf-page {
+    min-height: 70vh;
+    padding: 40px 16px 64px;
+    background: #F8FAFC;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.pbhf-card {
+    width: 100%;
+    max-width: 620px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 18px;
+    padding: 34px 34px 30px;
+    box-shadow: 0 10px 34px rgba(16, 24, 40, .07);
+
+    h1 {
+        font-size: 22px; font-weight: 800; color: #1B1733;
+        letter-spacing: -.015em; margin: 14px 0 8px;
+    }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .pbhf-card { animation: pbhf-rise .24s ease-out both; }
+}
+@media (max-width: 640px) {
+    .pbhf-card { padding: 24px 20px 22px; border-radius: 14px; }
+}
+
+.pbhf-card__brand {
+    font-size: 12px; font-weight: 800; letter-spacing: .08em;
+    text-transform: uppercase; color: #4F46E5;
+}
+.pbhf-card__ic {
+    margin-top: 18px; width: 54px; height: 54px; border-radius: 16px;
+    display: grid; place-items: center;
+    background: #EEF2FF; color: #4F46E5;
+
+    &.pbhf-card__ic--ok { background: #ECFDF5; color: #15803D; }
+    &.pbhf-card__ic--warn { background: #FFF7ED; color: #B45309; }
+}
+.pbhf-card__sub {
+    font-size: 14px; line-height: 1.65; color: #475569; margin: 0 0 4px;
+}
+.pbhf-card__fine {
+    margin: 18px 0 0; font-size: 12px; color: #64748B; line-height: 1.6;
+}
+.pbhf-ic { flex: 0 0 auto; }
+
+.pbhf-meta {
+    display: inline-flex; align-items: center; gap: 7px;
+    margin: 14px 0 6px; padding: 7px 12px; border-radius: 999px;
+    background: #F1F5F9; color: #475569; font-size: 12.5px;
+}
+
+.pbhf-crit {
+    padding: 16px 0;
+    border-bottom: 1px solid #F1F5F9;
+
+    &:last-of-type { border-bottom: none; }
+}
+.pbhf-label {
+    display: block; font-size: 14px; font-weight: 700; color: #1B1733;
+    margin-top: 16px;
+}
+.pbhf-help {
+    margin: 4px 0 0; font-size: 12.5px; color: #64748B; line-height: 1.55;
+}
+
+// FIVE BOXES AND NOT A DROPDOWN. A scale a person can see all of at once is
+// a scale they answer honestly; a dropdown is a scale they pick the middle
+// of. The radio itself is hidden and the label IS the control, so the whole
+// box is a target on a phone.
+.pbhf-scale, .pbhf-verdict {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;
+}
+.pbhf-scale__o, .pbhf-verdict__o {
+    position: relative; cursor: pointer; margin: 0;
+
+    input {
+        position: absolute; opacity: 0; width: 100%; height: 100%;
+        margin: 0; cursor: pointer;
+    }
+    span {
+        display: inline-flex; align-items: center; justify-content: center;
+        border: 1px solid #E2E8F0; border-radius: 10px;
+        background: #FFFFFF; color: #334155;
+        font-size: 14px; font-weight: 650;
+    }
+    input:checked + span {
+        border-color: #4F46E5; background: #EEF2FF; color: #3730A3;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, .16);
+    }
+    input:focus-visible + span { border-color: #4F46E5; }
+}
+.pbhf-scale__o span { width: 48px; height: 44px; }
+.pbhf-verdict__o span { padding: 10px 16px; }
+
+@media (prefers-reduced-motion: no-preference) {
+    .pbhf-scale__o span, .pbhf-verdict__o span {
+        transition: border-color .12s, background .12s, box-shadow .12s;
+    }
+}
+
+.pbhf-input {
+    width: 100%; margin-top: 8px;
+    border: 1px solid #E2E8F0; border-radius: 10px;
+    padding: 11px 13px; font: inherit; font-size: 14px; color: #334155;
+    background: #FFFFFF; outline: none; resize: vertical; line-height: 1.6;
+
+    &:focus {
+        border-color: #4F46E5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, .16);
+    }
+}
+
+.pbhf-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 22px; padding: 12px 22px;
+    border: 1px solid #E2E8F0; border-radius: 11px;
+    background: #FFFFFF; color: #334155;
+    font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+
+    &.pbhf-btn--primary {
+        background: #4F46E5; border-color: #4F46E5; color: #FFFFFF;
+    }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .pbhf-btn { transition: transform .12s, box-shadow .12s; }
+    .pbhf-btn--primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(79, 70, 229, .28);
+    }
+}
+
+// =====================================================================
+//  A3 — the two pages a CANDIDATE sees.
+//
+//  Built on the `.pbhf-*` card the panel's feedback page established, so a
+//  company sends three different people to three pages that look like one
+//  product. Everything new here is the part that is genuinely different: a
+//  list of things to send with a file box on each one, and an offer with
+//  two numbers a person reads before anything else.
+//
+//  EVERY COLOUR CARRIES A LITERAL, not only a token (R39): the portal has no
+//  dark palette at all and never did, so "works in both themes" is satisfied
+//  by proving every colour RESOLVES. Nothing here reads a `--pbim-*` token,
+//  because the frontend bundle does not carry them.
+//
+//  No `min()`/`max()` with mixed units anywhere: Sass evaluates those and a
+//  px/% pair kills the ENTIRE asset bundle.
+// =====================================================================
+
+// ------------------------------------------------- the papers, as progress
+.pbhf-progress {
+    display: flex; align-items: center; gap: 12px; margin: 14px 0 18px;
+}
+.pbhf-progress__bar {
+    flex: 1 1 auto; height: 8px; border-radius: 999px;
+    background: #F1F5F9; overflow: hidden;
+
+    span {
+        display: block; height: 100%; border-radius: 999px;
+        background: #4F46E5;
+    }
+}
+.pbhf-progress__tx {
+    flex: 0 0 auto; font-size: 12.5px; font-weight: 650; color: #475569;
+}
+@media (prefers-reduced-motion: no-preference) {
+    .pbhf-progress__bar span { transition: width .3s ease-out; }
+}
+
+.pbhf-problem {
+    display: flex; align-items: flex-start; gap: 9px;
+    margin: 0 0 16px; padding: 11px 14px; border-radius: 11px;
+    background: #FEF2F2; color: #B91C1C; font-size: 13px; line-height: 1.55;
+    border: 1px solid #FECACA;
+}
+
+// ONE BOX PER THING ASKED FOR, and the state is on the box. A single
+// "attach everything" field is a field nobody can tell the state of, and a
+// candidate who has sent four of six deserves to see which two are left.
+.pbhf-doc {
+    padding: 14px 0; border-bottom: 1px solid #F1F5F9;
+
+    &:last-of-type { border-bottom: none; }
+    &.pbhf-doc--in .pbhf-doc__tick { color: #15803D; }
+}
+.pbhf-doc__head { display: flex; align-items: flex-start; gap: 10px; }
+.pbhf-doc__tick { flex: 0 0 auto; color: #CBD5E1; margin-top: 1px; }
+.pbhf-doc__name {
+    font-size: 14px; font-weight: 700; color: #1B1733; line-height: 1.4;
+
+    em { font-style: normal; font-weight: 500; color: #64748B; }
+}
+.pbhf-doc__got {
+    margin: 6px 0 0 28px; font-size: 12px; color: #15803D;
+}
+.pbhf-doc__form {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin: 10px 0 0 28px;
+}
+.pbhf-file {
+    flex: 1 1 200px; min-width: 0;
+    font-size: 12.5px; color: #475569;
+
+    &::file-selector-button {
+        margin-right: 10px; padding: 8px 14px;
+        border: 1px solid #E2E8F0; border-radius: 9px;
+        background: #FFFFFF; color: #334155;
+        font: inherit; font-size: 12.5px; font-weight: 650; cursor: pointer;
+    }
+}
+.pbhf-btn--small {
+    margin-top: 0; padding: 9px 16px; font-size: 13px;
+}
+
+// ------------------------------------------------------------ the offer
+.pbhf-offer {
+    margin: 16px 0 0;
+}
+.pbhf-offer__row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 16px; padding: 9px 0; border-bottom: 1px solid #F1F5F9;
+    font-size: 14px; color: #475569;
+
+    &:last-of-type { border-bottom: none; }
+    strong { color: #1B1733; text-align: right; }
+}
+.pbhf-offer__when {
+    display: block; font-style: normal; font-size: 11.5px; font-weight: 500;
+    color: #64748B;
+}
+
+// THE TWO NUMBERS FIRST. A candidate reads a month and a year before they
+// read anything else on an offer, and pretending otherwise by burying them
+// in a table is a design that fights its own reader.
+.pbhf-money {
+    display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0 6px;
+}
+.pbhf-money__big {
+    flex: 1 1 140px; padding: 16px 18px; border-radius: 14px;
+    background: #EEF2FF; border: 1px solid #C7D2FE;
+
+    .n {
+        font-size: 22px; font-weight: 800; color: #3730A3;
+        line-height: 1.2; word-break: break-word;
+    }
+    .l { margin-top: 2px; font-size: 12px; color: #4338CA; }
+}
+
+.pbhf-answer { margin-top: 20px; }
+.pbhf-answer__btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.pbhf-btn--ghost {
+    margin-top: 0; border-color: #C7D2FE; color: #3730A3; background: #FFFFFF;
+}
+.pbhf-btn--quiet { color: #64748B; }

@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         A3 — every mail the offer phase sends.
+
+         `noupdate="1"`, as every mail template in this codebase is: a tenant
+         that has reworded one of these must not have it reverted by the next
+         upgrade. Outgoing debranding rides automatically (biz_mail_debrand).
+
+         EVERY ONE IS SENT WITH AN EXPLICIT `email_to` IN `email_values` (R6).
+         A template's own rendered address can reach `mail.mail` empty and the
+         message is then created, queued and addressed to nobody with no error
+         anywhere. The `email_to` field below is documentation of who each one
+         is FOR.
+
+         NOTHING HERE READS THE CONTEXT: every sentence is built from fields
+         on the record, so the same mail sent from a button, a job or a shell
+         says the same thing.
+
+         THE LINK IS WRITTEN OUT IN FULL, and not hidden behind the word
+         "here". A candidate reading this on a phone in an email client that
+         has stripped the styling still has to be able to get to the page.
+         ================================================================== -->
+
+    <!-- ============ the candidate: send us your papers ============ -->
+    <record id="mail_template_docreq_ask" model="mail.template">
+        <field name="name">Hiring: please send us a few documents</field>
+        <field name="model_id" ref="model_pb_hiring_docreq"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.candidate_email or '' }}</field>
+        <field name="subject">A few documents for {{ object.requisition_id.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.candidate_name or ''"/>,</p>
+                <p>
+                    Good news — things are moving on
+                    <strong><t t-out="object.requisition_id.title or ''"/></strong>.
+                    Before we can put the offer in front of you we need a few
+                    documents. There is a page below with the list on it: you
+                    can do the whole thing from your phone and you do not need
+                    an account or a password.
+                </p>
+                <p style="margin:18px 0;">
+                    <a t-att-href="object._token_url()"
+                       style="background:#4F46E5; color:#FFFFFF; text-decoration:none; padding:11px 20px; border-radius:9px; font-weight:600; display:inline-block;">Send my documents</a>
+                </p>
+                <p style="font-size:13px; color:#64748B;">
+                    Or paste this into your browser:<br/>
+                    <t t-out="object._token_url()"/>
+                </p>
+                <p>
+                    We would like these by
+                    <strong><t t-out="object.deadline or ''"/></strong>. If
+                    something is going to be difficult to find, reply to this
+                    email and say so — it is almost never a problem, and it is
+                    much better than going quiet.
+                </p>
+                <br/>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the candidate: a gentle nudge ============ -->
+    <record id="mail_template_docreq_remind" model="mail.template">
+        <field name="name">Hiring: still waiting on a document or two</field>
+        <field name="model_id" ref="model_pb_hiring_docreq"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.candidate_email or '' }}</field>
+        <field name="subject">Still waiting on a document or two</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.candidate_name or ''"/>,</p>
+                <p>
+                    We have <strong><t t-out="object.in_count or 0"/></strong>
+                    of the <t t-out="object.wanted_count or 0"/> things we
+                    asked you for. Your page is still open and it takes a
+                    minute:
+                </p>
+                <p style="margin:18px 0;">
+                    <a t-att-href="object._token_url()"
+                       style="background:#4F46E5; color:#FFFFFF; text-decoration:none; padding:11px 20px; border-radius:9px; font-weight:600; display:inline-block;">Finish sending my documents</a>
+                </p>
+                <p style="font-size:13px; color:#64748B;">
+                    Or paste this into your browser:<br/>
+                    <t t-out="object._token_url()"/>
+                </p>
+                <p style="color:#4A5568;">
+                    If something is holding you up, just reply to this email.
+                </p>
+                <br/>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the candidate: here is the offer ============ -->
+    <record id="mail_template_offer_candidate" model="mail.template">
+        <field name="name">Hiring: our offer to you</field>
+        <field name="model_id" ref="model_pb_hiring_offer"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.candidate_email or '' }}</field>
+        <field name="subject">Our offer: {{ object.job_title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.candidate_name or ''"/>,</p>
+                <p>
+                    We would like you to join us as
+                    <strong><t t-out="object.job_title or ''"/></strong>,
+                    starting on
+                    <strong><t t-out="object.start_date or ''"/></strong>.
+                    The full letter is attached to this email.
+                </p>
+                <table style="border-collapse:collapse; margin:16px 0; font-size:14px;">
+                    <tr>
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">A month</td>
+                        <td style="padding:6px 0;"><strong><t t-out="object.monthly_total or 0"/> <t t-out="object.currency_id.name or ''"/></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">A year</td>
+                        <td style="padding:6px 0;"><strong><t t-out="object.annual_total or 0"/> <t t-out="object.currency_id.name or ''"/></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">Starting</td>
+                        <td style="padding:6px 0;"><t t-out="object.start_date or ''"/></td>
+                    </tr>
+                </table>
+                <p style="margin:18px 0;">
+                    <a t-att-href="object._token_url()"
+                       style="background:#4F46E5; color:#FFFFFF; text-decoration:none; padding:11px 20px; border-radius:9px; font-weight:600; display:inline-block;">Read it and answer</a>
+                </p>
+                <p style="font-size:13px; color:#64748B;">
+                    Or paste this into your browser:<br/>
+                    <t t-out="object._token_url()"/>
+                </p>
+                <p style="color:#4A5568;">
+                    Take your time, and ask us anything. If something here is
+                    not what you were expecting we would far rather talk about
+                    it than lose you over it.
+                </p>
+                <br/>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the recruiter: they have answered ============ -->
+    <record id="mail_template_offer_answered" model="mail.template">
+        <field name="name">Hiring: the candidate has answered the offer</field>
+        <field name="model_id" ref="model_pb_hiring_offer"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.requisition_id.recruiter_id.email or '' }}</field>
+        <field name="subject">{{ object.candidate_name }} has answered the offer</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>
+                    <strong><t t-out="object.candidate_name or ''"/></strong>
+                    has answered the offer for
+                    <t t-out="object.job_title or ''"/>.
+                </p>
+                <p style="font-size:16px;">
+                    <t t-if="object.candidate_decision == 'accepted'">They have accepted.</t>
+                    <t t-else="">They have turned it down.</t>
+                </p>
+                <p t-if="object.candidate_comment" style="border-left:3px solid #E2E8F0; padding-left:12px; color:#4A5568;">
+                    <t t-out="object.candidate_comment or ''"/>
+                </p>
+                <p t-if="object.candidate_decision == 'accepted'">
+                    Get the signed copy back and record it on the offer — that
+                    is what turns them into a joiner.
+                </p>
+                <p t-else="" style="color:#4A5568;">
+                    Nothing has changed on the board: the role is still open
+                    and they are still a candidate. It is worth asking why —
+                    it is usually the money or the notice period.
+                </p>
+                <br/>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the hiring manager: somebody has joined ============ -->
+    <record id="mail_template_offer_closed" model="mail.template">
+        <field name="name">Hiring: somebody is joining</field>
+        <field name="model_id" ref="model_pb_hiring_offer"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.reporting_manager_id.work_email or '' }}</field>
+        <field name="subject">{{ object.candidate_name }} joins on {{ object.start_date }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>
+                    <strong><t t-out="object.candidate_name or ''"/></strong>
+                    has signed and joins as
+                    <t t-out="object.job_title or ''"/> on
+                    <strong><t t-out="object.start_date or ''"/></strong>.
+                </p>
+                <p>
+                    Their record, their contract and their pay package are all
+                    ready, and their joining checklist has started. You will be
+                    asked for the few things only you can do — a desk, an
+                    introduction, their first week.
+                </p>
+                <p style="color:#4A5568;">
+                    Nothing is needed from you today. This is the heads-up.
+                </p>
+                <br/>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the role is full ============ -->
+    <record id="mail_template_requisition_filled" model="mail.template">
+        <field name="name">Hiring: the role is filled</field>
+        <field name="model_id" ref="model_pb_hiring_requisition"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.recruiter_manager_id.email or '' }}</field>
+        <field name="subject">{{ object.title }} is filled</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>
+                    <strong><t t-out="object.title or ''"/></strong>
+                    (<t t-out="object.name or ''"/>) is filled.
+                </p>
+                <table style="border-collapse:collapse; margin:16px 0; font-size:14px;">
+                    <tr>
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">People asked for</td>
+                        <td style="padding:6px 0;"><t t-out="object.headcount or 1"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">People who joined</td>
+                        <td style="padding:6px 0;"><t t-out="object.filled_count or 0"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">Opened</td>
+                        <td style="padding:6px 0;"><t t-out="object.opened_on or ''"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">Filled</td>
+                        <td style="padding:6px 0;"><t t-out="object.filled_on or ''"/></td>
+                    </tr>
+                </table>
+                <p style="color:#4A5568;">
+                    The advert has come off the careers page and the role is no
+                    longer open to referrals.
+                </p>
+                <br/>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ an agency is on this role ============ -->
+    <record id="mail_template_requisition_agency" model="mail.template">
+        <field name="name">Hiring: an agency is working on this role</field>
+        <field name="model_id" ref="model_pb_hiring_requisition"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.reporting_manager_id.work_email or '' }}</field>
+        <field name="subject">An agency is now working on {{ object.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>
+                    <strong><t t-out="object.agency_vendor_id.name or ''"/></strong>
+                    is now working on
+                    <strong><t t-out="object.title or ''"/></strong>
+                    (<t t-out="object.name or ''"/>).
+                </p>
+                <p style="color:#4A5568;">
+                    Candidates they put forward arrive on the same board as
+                    everybody else's, and how long they take to fill a role is
+                    counted on their own card — so in a year you will be able
+                    to say whether it was worth it.
+                </p>
+                <br/>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

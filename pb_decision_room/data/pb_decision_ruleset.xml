@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         THE EIGHT COUNTRIES the payroll engine ships schemes for.
+
+         `noupdate="1"` on purpose: these are STARTING POINTS a planning lead
+         is expected to correct against their own adviser, and an upgrade that
+         quietly put a rate back would undo that correction without a word.
+
+         Vietnam is byte-for-byte the numbers the Decision Room has used since
+         its first phase, so a Vietnamese company's picture does not move by a
+         single dong when this phase lands.
+         ================================================================== -->
+
+    <record id="ruleset_vn" model="pb.decision.ruleset">
+        <field name="name">Rules for Vietnam</field>
+        <field name="country_code">VN</field>
+        <field name="currency_code">VND</field>
+        <field name="employer_rate_pct">23.5</field>
+        <field name="employee_rate_pct">10.5</field>
+        <field name="contribution_cap">46800000</field>
+        <field name="allowance_pct">12</field>
+        <field name="ot_multiplier">1.5</field>
+        <field name="night_uplift_pct">30</field>
+        <field name="work_days">22</field>
+        <field name="recruit_cost_months">1.0</field>
+        <field name="severance_months">1.5</field>
+        <field name="ramp_first_month_pct">50</field>
+        <field name="bonus_month_index">1</field>
+        <field name="bonus_months">1.0</field>
+        <field name="pit_ladder" eval="{'personal': 11000000.0, 'dependent': 3960000.0, 'bands': [[5000000.0, 5.0], [10000000.0, 10.0], [18000000.0, 15.0], [32000000.0, 20.0], [52000000.0, 25.0], [80000000.0, 30.0], [0.0, 35.0]]}"/>
+        <field name="note">A starting point — confirm it with your adviser. Social, health and unemployment insurance and the union fund are added together into one employer percentage, and the ceiling is the single highest of the three. The income tax ladder assumes one personal deduction and an average of 0.9 dependants.</field>
+    </record>
+
+    <record id="ruleset_sg" model="pb.decision.ruleset">
+        <field name="name">Rules for Singapore</field>
+        <field name="country_code">SG</field>
+        <field name="currency_code">SGD</field>
+        <field name="employer_rate_pct">17.0</field>
+        <field name="employee_rate_pct">20.0</field>
+        <field name="contribution_cap">6800</field>
+        <field name="allowance_pct">10</field>
+        <field name="ot_multiplier">1.5</field>
+        <field name="night_uplift_pct">0</field>
+        <field name="work_days">21</field>
+        <field name="recruit_cost_months">1.0</field>
+        <field name="severance_months">1.0</field>
+        <field name="ramp_first_month_pct">50</field>
+        <field name="bonus_month_index">12</field>
+        <field name="bonus_months">1.0</field>
+        <field name="pit_ladder" eval="{'bands': []}"/>
+        <field name="note">A starting point — confirm it with your adviser. Central Provident Fund at the rates for an employee aged 55 or under, on the ordinary wage ceiling; the rates fall in steps for older employees and the fund is not paid on foreign staff. Income tax is not withheld from pay in Singapore, so take-home is shown as gross. The bonus month is set to December for the annual wage supplement.</field>
+    </record>
+
+    <record id="ruleset_id" model="pb.decision.ruleset">
+        <field name="name">Rules for Indonesia</field>
+        <field name="country_code">ID</field>
+        <field name="currency_code">IDR</field>
+        <field name="employer_rate_pct">11.24</field>
+        <field name="employee_rate_pct">3.0</field>
+        <field name="contribution_cap">12000000</field>
+        <field name="allowance_pct">10</field>
+        <field name="ot_multiplier">1.5</field>
+        <field name="night_uplift_pct">0</field>
+        <field name="work_days">21</field>
+        <field name="recruit_cost_months">1.0</field>
+        <field name="severance_months">2.0</field>
+        <field name="ramp_first_month_pct">50</field>
+        <field name="bonus_month_index">6</field>
+        <field name="bonus_months">1.0</field>
+        <field name="pit_ladder" eval="{'bands': []}"/>
+        <field name="note">A starting point — confirm it with your adviser. Health and employment insurance are added together into one employer percentage; each programme has its own ceiling in law and only the pension ceiling is used here. Severance is set to two months because statutory severance in Indonesia rises steeply with length of service. Income tax is not modelled.</field>
+    </record>
+
+    <record id="ruleset_in" model="pb.decision.ruleset">
+        <field name="name">Rules for India</field>
+        <field name="country_code">IN</field>
+        <field name="currency_code">INR</field>
+        <field name="employer_rate_pct">12.0</field>
+        <field name="employee_rate_pct">12.0</field>
+        <field name="contribution_cap">15000</field>
+        <field name="allowance_pct">10</field>
+        <field name="ot_multiplier">2.0</field>
+        <field name="night_uplift_pct">0</field>
+        <field name="work_days">22</field>
+        <field name="recruit_cost_months">1.0</field>
+        <field name="severance_months">0.5</field>
+        <field name="ramp_first_month_pct">50</field>
+        <field name="bonus_month_index">10</field>
+        <field name="bonus_months">1.0</field>
+        <field name="pit_ladder" eval="{'bands': []}"/>
+        <field name="note">A starting point — confirm it with your adviser. Provident fund on the statutory basic wage ceiling. State insurance for employees under the lower earnings threshold is a second scheme with its own rates and is not added here. Overtime is at twice the ordinary rate under the Factories Act. Income tax is not modelled.</field>
+    </record>
+
+    <record id="ruleset_my" model="pb.decision.ruleset">
+        <field name="name">Rules for Malaysia</field>
+        <field name="country_code">MY</field>
+        <field name="currency_code">MYR</field>
+        <field name="employer_rate_pct">13.0</field>
+        <field name="employee_rate_pct">11.0</field>
+        <field name="contribution_cap">0</field>
+        <field name="allowance_pct">10</field>
+        <field name="ot_multiplier">1.5</field>
+        <field name="night_uplift_pct">0</field>
+        <field name="work_days">22</field>
+        <field name="recruit_cost_months">1.0</field>
+        <field name="severance_months">1.0</field>
+        <field name="ramp_first_month_pct">50</field>
+        <field name="bonus_month_index">1</field>
+        <field name="bonus_months">1.0</field>
+        <field name="pit_ladder" eval="{'bands': []}"/>
+        <field name="note">A starting point — confirm it with your adviser. Employees Provident Fund at the rate for staff earning above the lower wage band; social security and employment insurance add roughly two more percent and are not separated out. There is no single ceiling, so none is applied. Income tax is not modelled.</field>
+    </record>
+
+    <record id="ruleset_th" model="pb.decision.ruleset">
+        <field name="name">Rules for Thailand</field>
+        <field name="country_code">TH</field>
+        <field name="currency_code">THB</field>
+        <field name="employer_rate_pct">5.0</field>
+        <field name="employee_rate_pct">5.0</field>
+        <field name="contribution_cap">15000</field>
+        <field name="allowance_pct">10</field>
+        <field name="ot_multiplier">1.5</field>
+        <field name="night_uplift_pct">0</field>
+        <field name="work_days">22</field>
+        <field name="recruit_cost_months">1.0</field>
+        <field name="severance_months">1.0</field>
+        <field name="ramp_first_month_pct">50</field>
+        <field name="bonus_month_index">12</field>
+        <field name="bonus_months">1.0</field>
+        <field name="pit_ladder" eval="{'bands': []}"/>
+        <field name="note">A starting point — confirm it with your adviser. Social Security Fund at five percent each side on the statutory wage ceiling, which puts the monthly contribution at 750 baht each. Workmen's compensation is a separate employer charge and is not added. Income tax is not modelled.</field>
+    </record>
+
+    <record id="ruleset_kh" model="pb.decision.ruleset">
+        <field name="name">Rules for Cambodia</field>
+        <field name="country_code">KH</field>
+        <field name="currency_code">KHR</field>
+        <field name="employer_rate_pct">4.6</field>
+        <field name="employee_rate_pct">0.0</field>
+        <field name="contribution_cap">1200000</field>
+        <field name="allowance_pct">10</field>
+        <field name="ot_multiplier">1.5</field>
+        <field name="night_uplift_pct">0</field>
+        <field name="work_days">22</field>
+        <field name="recruit_cost_months">1.0</field>
+        <field name="severance_months">1.0</field>
+        <field name="ramp_first_month_pct">50</field>
+        <field name="bonus_month_index">12</field>
+        <field name="bonus_months">0.5</field>
+        <field name="pit_ladder" eval="{'bands': []}"/>
+        <field name="note">A starting point — confirm it with your adviser. National Social Security Fund: occupational risk and health care are both paid by the employer and added together here, and the employee pays nothing. Contributions are worked out on a banded wage table rather than a straight percentage, so this is an average. Income tax is not modelled.</field>
+    </record>
+
+    <record id="ruleset_ph" model="pb.decision.ruleset">
+        <field name="name">Rules for the Philippines</field>
+        <field name="country_code">PH</field>
+        <field name="currency_code">PHP</field>
+        <field name="employer_rate_pct">9.5</field>
+        <field name="employee_rate_pct">4.5</field>
+        <field name="contribution_cap">35000</field>
+        <field name="allowance_pct">10</field>
+        <field name="ot_multiplier">1.25</field>
+        <field name="night_uplift_pct">10</field>
+        <field name="work_days">22</field>
+        <field name="recruit_cost_months">1.0</field>
+        <field name="severance_months">1.0</field>
+        <field name="ramp_first_month_pct">50</field>
+        <field name="bonus_month_index">12</field>
+        <field name="bonus_months">1.0</field>
+        <field name="pit_ladder" eval="{'bands': []}"/>
+        <field name="note">A starting point — confirm it with your adviser. Social security, health insurance and the housing fund are added together into one employer percentage and one employee percentage; each has its own ceiling in law and the highest is used here. Night differential is ten percent by law. The bonus month carries the thirteenth month pay. Income tax is not modelled.</field>
+    </record>
+
+</data>
+</odoo>

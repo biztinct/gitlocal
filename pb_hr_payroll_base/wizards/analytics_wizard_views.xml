@@ -24,7 +24,7 @@
                             <field name="country_code" required="1"/>
                             <field name="include_all_employees"/>
                             <field name="employee_ids" widget="many2many_tags" 
-                                   attrs="{'invisible': [('include_all_employees', '=', True)]}"/>
+                                   invisible="include_all_employees"/>
                         </group>
                     </group>
                     
@@ -32,10 +32,10 @@
                         <group string="Analytics Options">
                             <field name="include_comparisons"/>
                             <field name="previous_period_id" 
-                                   attrs="{'invisible': [('include_comparisons', '=', False)]}"/>
+                                   invisible="not include_comparisons"/>
                             <field name="include_anomaly_detection"/>
                             <field name="anomaly_threshold" 
-                                   attrs="{'invisible': [('include_anomaly_detection', '=', False)]}"/>
+                                   invisible="not include_anomaly_detection"/>
                         </group>
                         <group string="Component Analysis">
                             <field name="analyze_salary_components"/>

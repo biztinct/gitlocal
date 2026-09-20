@@ -1,0 +1,2170 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_budget
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-09 00:06+0000\n"
+"PO-Revision-Date: 2026-09-09 00:06+0000\n"
+"Last-Translator: \n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%(burn)s%% of the %(year)s budget is spent against a year that is %(pace)s%%"
+" gone — comfortably inside it."
+msgstr ""
+"Đã chi %(burn)s%% ngân sách năm %(year)s trong khi năm đã trôi qua "
+"%(pace)s%% — vẫn thoải mái trong hạn mức."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%(burn)s%% of the %(year)s budget is spent and the year is %(pace)s%% gone —"
+" about where it should be."
+msgstr ""
+"Đã chi %(burn)s%% ngân sách năm %(year)s và năm đã trôi qua %(pace)s%% — "
+"đúng như mong đợi."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%(burn)s%% of the %(year)s budget is spent and the year is %(pace)s%% gone —"
+" spending is running ahead of the calendar."
+msgstr ""
+"Đã chi %(burn)s%% ngân sách năm %(year)s và năm đã trôi qua %(pace)s%% — chi"
+" tiêu đang chạy nhanh hơn lịch."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "%(dept)s, %(month)s: “%(what)s” is not a number."
+msgstr "%(dept)s, %(month)s: “%(what)s” không phải là một con số."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(first)s to %(last)s"
+msgstr "%(first)s đến %(last)s"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(first)s to %(last)s %(year)s"
+msgstr "%(first)s đến %(last)s %(year)s"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(first)s–%(last)s"
+msgstr "%(first)s–%(last)s"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(month)s came in %(amount)s %(cur)s over budget across %(n)s."
+msgstr "%(month)s vượt ngân sách %(amount)s %(cur)s trên %(n)s."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(month)s came in %(amount)s %(cur)s under budget across %(n)s."
+msgstr "%(month)s thấp hơn ngân sách %(amount)s %(cur)s trên %(n)s."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(month)s has no budget set; %(spent)s %(cur)s was spent."
+msgstr "%(month)s chưa đặt ngân sách; đã chi %(spent)s %(cur)s."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%(month)s so far: %(burn)s%% of the month's budget spent with %(pace)s%% of "
+"the month gone."
+msgstr ""
+"%(month)s đến nay: đã chi %(burn)s%% ngân sách của tháng khi tháng đã trôi "
+"qua %(pace)s%%."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "%(month)s — %(spent)s spent of %(budget)s (%(tone)s)."
+msgstr "%(month)s — đã chi %(spent)s trên %(budget)s (%(tone)s)."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "%(month)s — no budget set, %(spent)s spent."
+msgstr "%(month)s — chưa đặt ngân sách, đã chi %(spent)s."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%(month)s: %(n)s of %(total)s functions went over budget; %(name)s by the "
+"most (%(amount)s %(cur)s, %(pct)s%% over)."
+msgstr ""
+"%(month)s: %(n)s trên %(total)s bộ phận vượt ngân sách; %(name)s vượt nhiều "
+"nhất (%(amount)s %(cur)s, vượt %(pct)s%%)."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid ""
+"%(n)s named a department this system does not have, so they were left out: "
+"%(names)s."
+msgstr ""
+"%(n)s dòng nêu phòng ban mà hệ thống này không có, nên đã bị bỏ qua: "
+"%(names)s."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid ""
+"%(name)s came in %(amount)s under its %(month)s budget — %(pct)s%% less than"
+" was set aside."
+msgstr ""
+"%(name)s thấp hơn ngân sách %(month)s là %(amount)s — ít hơn %(pct)s%% so "
+"với khoản đã dành ra."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid ""
+"%(name)s came in close to its %(month)s budget — %(spent)s against "
+"%(budget)s."
+msgstr "%(name)s sát ngân sách %(month)s — %(spent)s so với %(budget)s."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "%(name)s has spent %(spent)s with no budget set against it."
+msgstr "%(name)s đã chi %(spent)s mà không có ngân sách nào được đặt."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid ""
+"%(name)s is %(gap)s%% ahead of budget pace — %(burn)s%% spent, %(pace)s%% of"
+" the year gone."
+msgstr ""
+"%(name)s đang nhanh hơn nhịp ngân sách %(gap)s%% — đã chi %(burn)s%%, năm đã"
+" trôi qua %(pace)s%%."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid ""
+"%(name)s is %(gap)s%% behind budget pace — %(burn)s%% spent, %(pace)s%% of "
+"the year gone."
+msgstr ""
+"%(name)s đang chậm hơn nhịp ngân sách %(gap)s%% — đã chi %(burn)s%%, năm đã "
+"trôi qua %(pace)s%%."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "%(name)s is on pace — %(burn)s%% spent against %(pace)s%% of the year."
+msgstr "%(name)s đúng nhịp — đã chi %(burn)s%% so với %(pace)s%% của năm."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid ""
+"%(name)s is running warm — %(burn)s%% spent against %(pace)s%% of the year."
+msgstr "%(name)s đang nóng lên — đã chi %(burn)s%% so với %(pace)s%% của năm."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "%(name)s spent %(spent)s in %(month)s with no budget set against it."
+msgstr ""
+"%(name)s đã chi %(spent)s trong %(month)s mà không có ngân sách nào được "
+"đặt."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid ""
+"%(name)s went %(amount)s over budget in %(month)s — %(pct)s%% more than was "
+"set aside."
+msgstr ""
+"%(name)s vượt ngân sách %(month)s là %(amount)s — nhiều hơn %(pct)s%% so với"
+" khoản đã dành ra."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "%(name)s — %(months)s"
+msgstr "%(name)s — %(months)s"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "%(new)s added and %(upd)s updated."
+msgstr "Đã thêm %(new)s và cập nhật %(upd)s."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "%(new)s would be added and %(upd)s updated."
+msgstr "Sẽ thêm %(new)s và cập nhật %(upd)s."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%(period)s so far: %(burn)s%% of the budget for those months spent, with "
+"%(pace)s%% of them gone."
+msgstr ""
+"%(period)s đến nay: đã chi %(burn)s%% ngân sách của những tháng đó, khi "
+"%(pace)s%% thời gian đã trôi qua."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(quarter)s · %(months)s"
+msgstr "%(quarter)s · %(months)s"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "%(type)s budget %(scope)s — every figure in %(cur)s"
+msgstr "Ngân sách %(type)s %(scope)s — mọi con số tính bằng %(cur)s"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "%s cells did not hold a number."
+msgstr "%s ô không chứa con số."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%s department-months updated."
+msgstr "Đã cập nhật %s phòng ban-tháng."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "%s empty month cells were left exactly as they are."
+msgstr "%s ô tháng để trống được giữ nguyên."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%s functions"
+msgstr "%s bộ phận"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%s had no budget set and were added, flagged."
+msgstr "%s dòng chưa có ngân sách nên đã được thêm và đánh dấu."
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "%s has not started."
+msgstr "%s chưa bắt đầu."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "%s is finished"
+msgstr "%s đã kết thúc"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "%s of %s has gone"
+msgstr "%s của %s đã trôi qua"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%s pay runs have not been summarised yet, so they are not in these figures."
+msgstr ""
+"%s đợt trả lương chưa được tổng hợp nên chưa nằm trong các con số này."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "%s rows"
+msgstr "%s dòng"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%s rows were left alone because there is no exchange rate for the money they"
+" are kept in."
+msgstr "%s dòng được giữ nguyên vì chưa có tỷ giá cho loại tiền của chúng."
+
+#. module: pb_budget
+#: model:ir.actions.report,print_report_name:pb_budget.action_report_budget_year
+msgid "'Budget %s' % (object.fy or '')"
+msgstr "'Ngân sách %s' % (object.fy or '')"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "1 function"
+msgstr "1 bộ phận"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "1 row"
+msgstr "1 dòng"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid ""
+"A month you leave empty stays exactly as it is; type 0 to say\n"
+"                    nothing is budgeted."
+msgstr ""
+"Tháng nào bạn để trống sẽ được giữ nguyên; gõ 0 để nói rằng không có ngân "
+"sách."
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_needaction
+msgid "Action Needed"
+msgstr "Cần xử lý"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Add an expense"
+msgstr "Thêm một khoản chi"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Add it"
+msgstr "Thêm vào"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Added — it counts against %(month)s's %(type)s budget."
+msgstr "Đã thêm — khoản này tính vào ngân sách %(type)s của %(month)s."
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_common.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_expense__budget_type__admin
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_line__pb_budget_type__admin
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_upload_wizard__budget_type__admin
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_search
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "Admin"
+msgstr "Hành chính"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Ahead of the year"
+msgstr "Nhanh hơn năm"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__amount
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"An expense belongs to HR operations or to Admin. What people are paid comes "
+"from the pay runs themselves and is never typed in here."
+msgstr ""
+"Một khoản chi thuộc về Vận hành nhân sự hoặc Hành chính. Tiền trả cho người "
+"lao động đến từ chính các đợt trả lương và không bao giờ được nhập ở đây."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_expense.py:0
+msgid ""
+"An expense is what was spent, so it cannot be a negative number. If money "
+"came back, record it as a separate refund with a note saying so."
+msgstr ""
+"Một khoản chi là số tiền đã tiêu nên không thể là số âm. Nếu tiền được hoàn "
+"lại, hãy ghi thành một khoản hoàn riêng kèm ghi chú."
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_form
+msgid "Anything worth saying about it"
+msgstr "Bất cứ điều gì đáng nói về khoản này"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_upload_form
+msgid "Apply it"
+msgstr "Áp dụng"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số tệp đính kèm"
+
+#. module: pb_budget
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_line__pb_source__auto
+msgid "Auto actuals"
+msgstr "Số thực tế tự động"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"Automatic spend figures are switched off. %s department-months would have "
+"been written."
+msgstr "Số chi tự động đang tắt. %s phòng ban-tháng lẽ ra đã được ghi."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Behind the year"
+msgstr "Chậm hơn năm"
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/models/pb_budget_line.py:0
+#: code:addons/pb_budget/static/src/js/budget_palette.js:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.actions.client,name:pb_budget.action_pb_budget_board
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__budget_type
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__forecast_cost
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_search
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_form
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_list
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "Budget"
+msgstr "Ngân sách"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "Budget %(scope)s %(type)s.pdf"
+msgstr "Ngân sách %(scope)s %(type)s.pdf"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "Budget %(scope)s %(type)s.xlsx"
+msgstr "Ngân sách %(scope)s %(type)s.xlsx"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "Budget %s"
+msgstr "Ngân sách %s"
+
+#. module: pb_budget
+#: model:ir.model,name:pb_budget.model_pb_budget_actuals
+msgid "Budget actuals writer"
+msgstr "Bộ ghi số thực tế ngân sách"
+
+#. module: pb_budget
+#: model:ir.model,name:pb_budget.model_pb_budget
+msgid "Budget board — read-only facade"
+msgstr "Bảng ngân sách — lớp chỉ đọc"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_source
+msgid "Budget came from"
+msgstr "Ngân sách đến từ"
+
+#. module: pb_budget
+#: model:ir.model,name:pb_budget.model_pb_budget_expense
+msgid "Budget expense"
+msgstr "Khoản chi ngân sách"
+
+#. module: pb_budget
+#: model:ir.model,name:pb_budget.model_pb_budget_export
+msgid "Budget export"
+msgstr "Xuất ngân sách"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__budget_type
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_budget_type
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__budget_type
+msgid "Budget for"
+msgstr "Ngân sách cho"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid ""
+"Budget for %(year)s — %(type)s. Put the amount for each month under that "
+"month. Leave a month empty to leave it as it is; type 0 to say nothing is "
+"budgeted. Do not change the department id column."
+msgstr ""
+"Ngân sách cho %(year)s — %(type)s. Điền số tiền của mỗi tháng vào cột tháng "
+"đó. Để trống một tháng để giữ nguyên; gõ 0 để nói rằng không có ngân sách. "
+"Đừng thay đổi cột mã phòng ban."
+
+#. module: pb_budget
+#: model:res.groups,name:pb_budget.group_budget_viewer
+msgid "Budget holder"
+msgstr "Người giữ ngân sách"
+
+#. module: pb_budget
+#: model:ir.model,name:pb_budget.model_pb_budget_line
+msgid "Budget row"
+msgstr "Dòng ngân sách"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_palette.js:0
+#: model:ir.actions.act_window,name:pb_budget.action_pb_budget_rows
+msgid "Budget rows"
+msgstr "Các dòng ngân sách"
+
+#. module: pb_budget
+#: model:ir.actions.report,name:pb_budget.action_report_budget_year
+msgid "Budget summary"
+msgstr "Tóm tắt ngân sách"
+
+#. module: pb_budget
+#: model:res.groups,name:pb_budget.group_budget_manager
+msgid "Budget team"
+msgstr "Nhóm ngân sách"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "Budget template %(year)s %(type)s.xlsx"
+msgstr "Mẫu ngân sách %(year)s %(type)s.xlsx"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_palette.js:0
+msgid "Budget this month"
+msgstr "Ngân sách tháng này"
+
+#. module: pb_budget
+#: model:ir.model,name:pb_budget.model_pb_budget_upload_wizard
+msgid "Budget upload"
+msgstr "Tải ngân sách lên"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_palette.js:0
+#: model:ir.module.category,name:pb_budget.module_category_budget
+#: model:res.groups.privilege,name:pb_budget.res_groups_privilege_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_list
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "Budgets"
+msgstr "Ngân sách"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"Budgets are shown to the people who hold one — a function head, the budget "
+"team or finance. Ask an administrator to add you if you should be seeing "
+"this."
+msgstr ""
+"Ngân sách chỉ hiển thị cho những người nắm giữ nó — trưởng bộ phận, nhóm "
+"ngân sách hoặc tài chính. Hãy đề nghị quản trị viên thêm bạn vào nếu bạn cần"
+" xem."
+
+#. module: pb_budget
+#: model:ir.actions.server,name:pb_budget.cron_budget_actuals_ir_actions_server
+msgid "Budgets: read what has been spent"
+msgstr "Ngân sách: đọc những gì đã chi"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__scenario_ref
+msgid "Came from scenario"
+msgstr "Đến từ kịch bản"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Cancel"
+msgstr "Huỷ"
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_upload_form
+msgid "Check the file"
+msgstr "Kiểm tra tệp"
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_upload_form
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Close to budget"
+msgstr "Sát ngân sách"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__company_id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__create_uid
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__create_uid
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__create_uid
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__create_uid
+msgid "Created by"
+msgstr "Được tạo bởi"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__create_date
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__create_date
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__create_date
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__create_date
+msgid "Created on"
+msgstr "Được tạo vào"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__spend_date
+msgid "Date"
+msgstr "Ngày"
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model,name:pb_budget.model_hr_department
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__department_id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__department_id
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_search
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Departments this system does not have"
+msgstr "Những phòng ban hệ thống này không có"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_hr_department__display_name
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget__display_name
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_actuals__display_name
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__display_name
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__display_name
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_fx__display_name
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__display_name
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Download it"
+msgstr "Tải về"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Download the whole matrix"
+msgstr "Tải toàn bộ bảng"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Drop the filled-in file back"
+msgstr "Thả tệp đã điền trở lại"
+
+#. module: pb_budget
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_line__pb_source__manual
+msgid "Entered by hand"
+msgstr "Nhập bằng tay"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Every budget row"
+msgstr "Mọi dòng ngân sách"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Every department down the side, the twelve months across."
+msgstr "Mọi phòng ban ở cột dọc, mười hai tháng ở hàng ngang."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Every expense"
+msgstr "Mọi khoản chi"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid ""
+"Every figure on this board is %s. Press Escape to go back to the whole year."
+msgstr "Mọi con số trên bảng này là %s. Nhấn Escape để quay lại cả năm."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Everything"
+msgstr "Tất cả"
+
+#. module: pb_budget
+#: model:res.groups,comment:pb_budget.group_budget_manager
+msgid ""
+"Everything above, plus uploading a year's budget, entering what HR and the "
+"office spent, and re-reading the payroll figures."
+msgstr ""
+"Mọi thứ ở trên, cộng thêm tải lên ngân sách của một năm, nhập những gì nhân "
+"sự và văn phòng đã chi, và đọc lại các con số lương."
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__upload_filename
+msgid "File name"
+msgstr "Tên tệp"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__attachment_ids
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_form
+msgid "Files"
+msgstr "Tệp"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__upload_file
+msgid "Filled-in file"
+msgstr "Tệp đã điền"
+
+#. module: pb_budget
+#: model:res.groups,name:pb_budget.group_budget_finance
+msgid "Finance"
+msgstr "Tài chính"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__period_month
+msgid "First day of the month this row covers."
+msgstr "Ngày đầu tiên của tháng mà dòng này bao phủ."
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__function_id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_function_id
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "Function"
+msgstr "Bộ phận"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__function_head_user_id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_function_head_user_id
+msgid "Function head"
+msgstr "Trưởng bộ phận"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_upload_form
+msgid "Get the template"
+msgstr "Lấy mẫu"
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_common.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_expense__budget_type__hr_ops
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_line__pb_budget_type__hr_ops
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_upload_wizard__budget_type__hr_ops
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_search
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "HR operations"
+msgstr "Vận hành nhân sự"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Heat"
+msgstr "Nhiệt"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "How %s compares"
+msgstr "%s so với các mốc khác"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_hr_department__id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget__id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_actuals__id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_fx__id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu được chọn, có tin nhắn mới cần bạn chú ý."
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__message_has_error
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu được chọn, một số tin nhắn gặp lỗi gửi."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_palette.js:0
+msgid "Insights"
+msgstr "Phân tích"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_is_follower
+msgid "Is Follower"
+msgstr "Là người theo dõi"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__write_uid
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__write_uid
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__write_uid
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__write_date
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__write_date
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__write_date
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_form
+msgid "Leadership course for four team leads"
+msgstr "Khoá học lãnh đạo cho bốn trưởng nhóm"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_manual_rate
+msgid ""
+"Leave at 0 to use the exchange rate this system holds. Set it to say what "
+"this row's money is worth in the reporting currency: the reported figure is "
+"this row's amount MULTIPLIED by the rate. One dong in US dollars would be "
+"0.000038."
+msgstr ""
+"Để 0 để dùng tỷ giá hệ thống này đang giữ. Đặt giá trị để nói số tiền của "
+"dòng này đáng bao nhiêu theo đồng tiền báo cáo: con số báo cáo là số tiền "
+"của dòng này NHÂN với tỷ giá. Một đồng quy ra đô la Mỹ sẽ là 0,000038."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Leave empty for something the whole company shares"
+msgstr "Để trống nếu đây là khoản cả công ty dùng chung"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__department_id
+msgid ""
+"Leave empty for something the whole company shares — it then counts against "
+"the company's own line rather than a team's."
+msgstr ""
+"Để trống nếu đây là khoản cả công ty dùng chung — khi đó nó tính vào dòng "
+"của công ty thay vì của một nhóm."
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__variance_amount
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_list
+msgid "Left"
+msgstr "Còn lại"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__variance_pct
+msgid "Left %"
+msgstr "Còn lại %"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__currency_id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_currency_id
+msgid "Money in"
+msgstr "Tiền tính bằng"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_unbudgeted
+msgid "Money was spent here and no budget was ever set against it."
+msgstr "Tiền đã được chi ở đây mà chưa từng có ngân sách nào được đặt."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__period_month
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_search
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "Month"
+msgstr "Tháng"
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "Month by month"
+msgstr "Từng tháng một"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Monthly average"
+msgstr "Trung bình mỗi tháng"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"No budget has been set for %(year)s, and %(spent)s %(cur)s has already been "
+"spent across %(n)s."
+msgstr ""
+"Chưa có ngân sách nào được đặt cho %(year)s, và %(spent)s %(cur)s đã được "
+"chi trên %(n)s."
+
+#. module: pb_budget
+#: model_terms:ir.actions.act_window,help:pb_budget.action_pb_budget_rows
+msgid "No budget has been set yet"
+msgstr "Chưa có ngân sách nào được đặt"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "No budget set"
+msgstr "Chưa đặt ngân sách"
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "Nobody budgeted it"
+msgstr "Không ai lập ngân sách cho khoản này"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_unbudgeted
+msgid "Nobody budgeted this"
+msgstr "Không ai lập ngân sách cho khoản này"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_fx.py:0
+msgid ""
+"Nobody has told this system what one %(src)s is worth in %(dst)s, so these "
+"figures stay in %(src)s. Set an exchange rate, or type one on the budget row"
+" itself."
+msgstr ""
+"Chưa ai cho hệ thống này biết một %(src)s đáng bao nhiêu %(dst)s, nên các "
+"con số này giữ nguyên bằng %(src)s. Hãy đặt tỷ giá, hoặc nhập một tỷ giá "
+"ngay trên dòng ngân sách."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Not yet"
+msgstr "Chưa tới"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__note
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Nothing budgeted for this year yet"
+msgstr "Chưa có ngân sách nào cho năm nay"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Nothing has been budgeted for %s yet."
+msgstr "Chưa có ngân sách nào được lập cho %s."
+
+#. module: pb_budget
+#: model_terms:ir.actions.act_window,help:pb_budget.action_pb_budget_expense
+msgid "Nothing has been recorded yet"
+msgstr "Chưa có gì được ghi nhận"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số hành động"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần xử lý"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn gặp lỗi gửi"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "On pace"
+msgstr "Đúng nhịp"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "One page for a meeting"
+msgstr "Một trang cho cuộc họp"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"Only the budget team can change a budget. You can read the figures and "
+"export them."
+msgstr ""
+"Chỉ nhóm ngân sách mới có thể thay đổi ngân sách. Bạn có thể đọc các con số "
+"và xuất chúng ra."
+
+#. module: pb_budget
+#: model_terms:ir.actions.act_window,help:pb_budget.action_pb_budget_rows
+msgid ""
+"Open the Budget lens on Insights and use \"Upload a budget\" —\n"
+"               it gives you a spreadsheet with the year across the top and\n"
+"               every department down the side."
+msgstr ""
+"Mở lăng kính Ngân sách trong Phân tích và dùng “Tải ngân sách lên” — bạn sẽ "
+"nhận được một bảng tính có các tháng của năm ở hàng ngang và mọi phòng ban ở"
+" cột dọc."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Opening…"
+msgstr "Đang mở…"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Over budget"
+msgstr "Vượt ngân sách"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__supplier
+msgid "Paid to"
+msgstr "Trả cho"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "Pay figures last read %s."
+msgstr "Số liệu lương được đọc lần cuối %s."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_common.py:0
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_line__pb_budget_type__manpower
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_upload_wizard__budget_type__manpower
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "People"
+msgstr "Con người"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__actual_headcount
+msgid "People paid"
+msgstr "Số người được trả"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__forecast_headcount
+msgid "People planned"
+msgstr "Số người dự kiến"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_budget_type
+msgid ""
+"People — what payroll pays. HR operations — hiring, training, welfare. Admin"
+" — everything the office spends."
+msgstr ""
+"Con người — những gì bảng lương chi trả. Vận hành nhân sự — tuyển dụng, đào "
+"tạo, phúc lợi. Hành chính — mọi thứ văn phòng chi."
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__month
+msgid "Period"
+msgstr "Kỳ"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__period_month
+msgid "Period (1st of Month)"
+msgstr "Kỳ (ngày 1 của tháng)"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Pick a month, a stretch of months, or the whole year"
+msgstr "Chọn một tháng, một khoảng tháng, hoặc cả năm"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Pick a quarter"
+msgstr "Chọn một quý"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "Pick the filled-in file first."
+msgstr "Hãy chọn tệp đã điền trước."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Press a month, shift-press another, or drag across them."
+msgstr "Bấm một tháng, giữ Shift và bấm tháng khác, hoặc kéo qua nhiều tháng."
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "Put in what it cost."
+msgstr "Hãy nhập số tiền đã chi."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Q%(n)s %(year)s"
+msgstr "Q%(n)s %(year)s"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_manual_rate
+msgid "Rate to reporting currency"
+msgstr "Tỷ giá sang đồng tiền báo cáo"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Read the budgets again"
+msgstr "Đọc lại các ngân sách"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Read the pay figures"
+msgstr "Đọc các con số lương"
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "Reading"
+msgstr "Nhận định"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Reading the budgets…"
+msgstr "Đang đọc các ngân sách…"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Reading the file…"
+msgstr "Đang đọc tệp…"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__currency_mode
+msgid "Reported in"
+msgstr "Báo cáo bằng"
+
+#. module: pb_budget
+#: model:ir.model,name:pb_budget.model_pb_budget_fx
+msgid "Reporting currency and conversion, for budgets"
+msgstr "Đồng tiền báo cáo và quy đổi, cho ngân sách"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Running warm"
+msgstr "Đang nóng lên"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "Say what the money was for."
+msgstr "Hãy nói khoản tiền này dùng để làm gì."
+
+#. module: pb_budget
+#: model:res.groups,comment:pb_budget.group_budget_finance
+msgid ""
+"See every budget in the companies you work in, and export them. Reads "
+"everything; changes nothing."
+msgstr ""
+"Xem mọi ngân sách trong các công ty bạn làm việc, và xuất chúng ra. Chỉ đọc;"
+" không thay đổi gì."
+
+#. module: pb_budget
+#: model:res.groups,comment:pb_budget.group_budget_viewer
+msgid ""
+"See the budget of the function you lead — what it was given, what it has "
+"spent, and how that compares with where the year is. Granted by name."
+msgstr ""
+"Xem ngân sách của bộ phận bạn phụ trách — được cấp bao nhiêu, đã chi bao "
+"nhiêu, và điều đó so với chỗ đứng của năm ra sao. Được cấp theo tên."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Show the whole year again"
+msgstr "Hiện lại cả năm"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_actual_synced_on
+msgid "Spend last read"
+msgstr "Lần đọc số chi gần nhất"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_actuals.py:0
+msgid "Spend with no budget set against it."
+msgstr "Khoản chi không có ngân sách nào được đặt."
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__actual_cost
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_list
+msgid "Spent"
+msgstr "Đã chi"
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "Spent vs budget"
+msgstr "Đã chi so với ngân sách"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Spreadsheet"
+msgstr "Bảng tính"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid ""
+"Start with a spreadsheet: press \"Upload a budget\" and you get one\n"
+"              with every department down the side and the twelve months across\n"
+"              the top. Fill in what you can, drop it back, and the pay figures\n"
+"              fill themselves in beside it every night."
+msgstr ""
+"Hãy bắt đầu bằng một bảng tính: nhấn “Tải ngân sách lên” và bạn sẽ nhận được"
+" một bảng có mọi phòng ban ở cột dọc và mười hai tháng ở hàng ngang. Điền "
+"những gì bạn có thể, thả lại vào đây, và các con số lương sẽ tự điền bên "
+"cạnh mỗi đêm."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Summary"
+msgstr "Bản tóm tắt"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Table"
+msgstr "Bảng"
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_upload_form
+msgid ""
+"Take the template, fill in a number for each month you want\n"
+"                    to set, and drop it back. Nothing is written until you press\n"
+"                    Apply, and a month you leave empty is left exactly as it is."
+msgstr ""
+"Lấy mẫu, điền một con số cho mỗi tháng bạn muốn đặt, rồi thả lại vào đây. "
+"Không có gì được ghi cho đến khi bạn nhấn Áp dụng, và tháng nào bạn để trống"
+" sẽ được giữ nguyên."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid ""
+"Take the template, fill in a number for each month you want to set,\n"
+"              and drop it back here. Nothing is written until you press Apply."
+msgstr ""
+"Lấy mẫu, điền một con số cho mỗi tháng bạn muốn đặt, rồi thả lại vào đây. "
+"Không có gì được ghi cho đến khi bạn nhấn Áp dụng."
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__template_file
+msgid "Template"
+msgstr "Mẫu"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "Template downloaded — %s departments to fill in."
+msgstr "Đã tải mẫu về — %s phòng ban cần điền."
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__template_filename
+msgid "Template name"
+msgstr "Tên mẫu"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "That could not be built."
+msgstr "Không dựng được tệp đó."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "That could not be saved."
+msgstr "Không lưu được."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "That file could not be applied."
+msgstr "Không áp dụng được tệp đó."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid ""
+"That file could not be opened. It needs to be the .xlsx template this screen"
+" gives you — a .csv or an older .xls will not do."
+msgstr ""
+"Không mở được tệp đó. Tệp phải là mẫu .xlsx mà màn hình này cung cấp — .csv "
+"hay .xls đời cũ đều không dùng được."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "That file could not be read."
+msgstr "Không đọc được tệp đó."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid ""
+"That file has no heading row this screen recognises. Download the template "
+"again and fill that in — the headings are how each column is understood."
+msgstr ""
+"Tệp đó không có hàng tiêu đề nào màn hình này nhận ra. Hãy tải lại mẫu và "
+"điền vào đó — các tiêu đề là cách mỗi cột được hiểu."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "That function could not be opened."
+msgstr "Không mở được bộ phận đó."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "That function has nothing budgeted for %s."
+msgstr "Bộ phận đó không có ngân sách nào cho %s."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "The budget board could not be read."
+msgstr "Không đọc được bảng ngân sách."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "The budget report is not installed on this system."
+msgstr "Báo cáo ngân sách chưa được cài trên hệ thống này."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "The budgets could not be read"
+msgstr "Không đọc được các ngân sách"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__currency_id
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_currency_id
+msgid "The currency the budget and the spend on this row are in."
+msgstr "Đồng tiền của ngân sách và khoản chi trên dòng này."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "The departments inside it"
+msgstr "Các phòng ban bên trong"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "The file is longer than %s rows; the rest was not read."
+msgstr "Tệp dài hơn %s dòng; phần còn lại không được đọc."
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__period_month
+msgid "The first of the month this expense counts in."
+msgstr "Ngày đầu của tháng mà khoản chi này được tính vào."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "The heat view"
+msgstr "Chế độ xem nhiệt"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__attachment_ids
+msgid "The invoice, the quote, whatever there is."
+msgstr "Hoá đơn, báo giá, hay bất cứ thứ gì có."
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_form
+msgid "The money"
+msgstr "Số tiền"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__spend_date
+msgid "The month this lands in is taken from this date."
+msgstr "Tháng mà khoản này rơi vào được lấy từ ngày này."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "The numbers"
+msgstr "Các con số"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__scenario_ref
+msgid ""
+"The old planning scenario this row was produced from, where it came from "
+"one. A budget entered for the year has none."
+msgstr ""
+"Kịch bản lập kế hoạch cũ mà dòng này được sinh ra từ đó, nếu có. Một ngân "
+"sách nhập cho cả năm thì không có."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "The pay figures could not be read."
+msgstr "Không đọc được các con số lương."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "The pay figures have not been read yet."
+msgstr "Các con số lương chưa được đọc."
+
+#. module: pb_budget
+#: model_terms:ir.actions.act_window,help:pb_budget.action_pb_budget_expense
+msgid ""
+"The pay runs already say what people were paid. This is for\n"
+"               everything else a budget covers — a training course, an agency\n"
+"               fee, a leaving gift, a new coffee machine. Each one counts\n"
+"               against its month."
+msgstr ""
+"Các đợt trả lương đã nói người lao động được trả bao nhiêu. Phần này dành "
+"cho mọi thứ khác mà ngân sách bao phủ — một khoá đào tạo, phí môi giới, quà "
+"chia tay, một máy pha cà phê mới. Mỗi khoản tính vào tháng của nó."
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_form
+msgid "The people"
+msgstr "Con người"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_function_head_user_id
+msgid ""
+"The person who leads that function, taken from the department's own manager."
+" This is what decides who may see the row."
+msgstr ""
+"Người phụ trách bộ phận đó, lấy từ chính người quản lý của phòng ban. Đây là"
+" điều quyết định ai được xem dòng này."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "The spreadsheet has been downloaded."
+msgstr "Đã tải bảng tính về."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "The summary has been downloaded."
+msgstr "Đã tải bản tóm tắt về."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "The template could not be built."
+msgstr "Không dựng được mẫu."
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_function_id
+msgid "The top-level department this row rolls up into."
+msgstr "Phòng ban cấp cao nhất mà dòng này cộng dồn vào."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "The whole year, with %s in bold — this page is about those months."
+msgstr "Cả năm, với %s in đậm — trang này nói về những tháng đó."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "The year is %s gone"
+msgstr "Năm đã trôi qua %s"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid ""
+"There is more here than one board can hold, so this is the first\n"
+"                part of it. Narrow the year or the budget to see the rest."
+msgstr ""
+"Ở đây có nhiều hơn những gì một bảng có thể chứa, nên đây là phần đầu. Hãy "
+"thu hẹp năm hoặc loại ngân sách để xem phần còn lại."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "There is nothing in that file to write — every month cell is empty."
+msgstr "Không có gì trong tệp đó để ghi — mọi ô tháng đều trống."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid ""
+"These are left out. Nothing here creates a department — if one\n"
+"                  is genuinely missing, add it first and upload again."
+msgstr ""
+"Những dòng này bị bỏ qua. Không có gì ở đây tạo ra phòng ban — nếu thật sự "
+"thiếu một phòng ban, hãy thêm nó trước rồi tải lên lại."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"These budgets are kept in %s different currencies, so they can only be added"
+" up in %s."
+msgstr ""
+"Các ngân sách này được giữ bằng %s loại tiền khác nhau, nên chỉ có thể cộng "
+"lại bằng %s."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid ""
+"This system cannot build spreadsheets at the moment. Ask an administrator to"
+" look at it."
+msgstr ""
+"Hệ thống này hiện chưa dựng được bảng tính. Hãy nhờ quản trị viên xem giúp."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid ""
+"This system cannot build spreadsheets at the moment. Use the PDF, or ask an "
+"administrator to look at it."
+msgstr ""
+"Hệ thống này hiện chưa dựng được bảng tính. Hãy dùng bản PDF, hoặc nhờ quản "
+"trị viên xem giúp."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_list
+msgid "Total"
+msgstr "Tổng cộng"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Under budget"
+msgstr "Dưới ngân sách"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_palette.js:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.actions.act_window,name:pb_budget.action_pb_budget_upload
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_upload_form
+msgid "Upload a budget"
+msgstr "Tải ngân sách lên"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Upload one and it appears here."
+msgstr "Tải lên một bản và nó sẽ hiện ở đây."
+
+#. module: pb_budget
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_line__pb_source__upload
+msgid "Uploaded"
+msgstr "Đã tải lên"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "Used"
+msgstr "Đã dùng"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "Used %"
+msgstr "Đã dùng %"
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "Used / year gone"
+msgstr "Đã dùng / năm đã trôi"
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "Variance"
+msgstr "Chênh lệch"
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "Variance %"
+msgstr "Chênh lệch %"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__website_message_ids
+msgid "Website Messages"
+msgstr "Tin nhắn trên trang web"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__website_message_ids
+msgid "Website communication history"
+msgstr "Lịch sử trao đổi trên trang web"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_palette.js:0
+#: model:ir.actions.act_window,name:pb_budget.action_pb_budget_expense
+msgid "What HR and the office spent"
+msgstr "Những gì nhân sự và văn phòng đã chi"
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_form
+msgid ""
+"What has been spent is read from the approved pay runs\n"
+"                        and from the expenses recorded against this month. It is\n"
+"                        not typed in here."
+msgstr ""
+"Những gì đã chi được đọc từ các đợt trả lương đã duyệt và từ các khoản chi "
+"ghi nhận trong tháng này. Nó không được nhập ở đây."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__name
+msgid "What it was for"
+msgstr "Khoản này dùng để làm gì"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid ""
+"What people are paid comes from the pay runs themselves. This is\n"
+"              for everything else a budget covers."
+msgstr ""
+"Tiền trả cho người lao động đến từ chính các đợt trả lương. Phần này dành "
+"cho mọi thứ khác mà ngân sách bao phủ."
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "What that means"
+msgstr "Điều đó có nghĩa là gì"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "What this file would do"
+msgstr "Tệp này sẽ làm gì"
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_form
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_list
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_search
+msgid "What was spent"
+msgstr "Đã chi những gì"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "What was spent on"
+msgstr "Đã chi vào việc gì"
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__summary
+msgid "What would happen"
+msgstr "Điều gì sẽ xảy ra"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_actual_synced_on
+msgid ""
+"When the payroll figures on this row were last read from the analytics "
+"tables."
+msgstr ""
+"Lần cuối các con số lương trên dòng này được đọc từ các bảng phân tích."
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_form
+msgid "Where it came from"
+msgstr "Đến từ đâu"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_source
+msgid ""
+"Where the BUDGET figure came from. What was spent is always either the "
+"payroll figures or the expenses entered against it."
+msgstr ""
+"Con số NGÂN SÁCH đến từ đâu. Những gì đã chi luôn là các con số lương hoặc "
+"các khoản chi ghi nhận cho nó."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_form
+msgid "Which budget"
+msgstr "Ngân sách nào"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Who was paid"
+msgstr "Ai được trả"
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__supplier
+msgid "Who was paid. Free text for now."
+msgstr "Ai được trả. Hiện là văn bản tự do."
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Whole year"
+msgstr "Cả năm"
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_form
+msgid "Why it was spent, what it covered, who asked for it."
+msgstr "Vì sao chi, chi cho việc gì, ai yêu cầu."
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__fy
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__fy
+msgid "Year"
+msgstr "Năm"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "Year gone %"
+msgstr "Năm đã trôi %"
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "budget"
+msgstr "ngân sách"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "budget for %s"
+msgstr "ngân sách cho %s"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "budget for the year"
+msgstr "ngân sách cho cả năm"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "compared with the budget"
+msgstr "so với ngân sách"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "functions over budget in %s"
+msgstr "bộ phận vượt ngân sách trong %s"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "functions running warm or worse"
+msgstr "bộ phận đang nóng lên hoặc tệ hơn"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "left"
+msgstr "còn lại"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "left in %s"
+msgstr "còn lại trong %s"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "money gone, year gone"
+msgstr "tiền đã đi, năm đã trôi"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "new"
+msgstr "mới"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "no budget"
+msgstr "chưa có ngân sách"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "no budget set"
+msgstr "chưa đặt ngân sách"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "no data"
+msgstr "chưa có dữ liệu"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "not yet"
+msgstr "chưa tới"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "now"
+msgstr "hiện tại"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "of %s budget"
+msgstr "trên ngân sách %s"
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "spent"
+msgstr "đã chi"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "spent in %s"
+msgstr "đã chi trong %s"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "spent of the budget"
+msgstr "đã chi trên ngân sách"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "spent of the budget for these months"
+msgstr "đã chi trên ngân sách của những tháng này"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "spent of the month's budget"
+msgstr "đã chi trên ngân sách của tháng"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "spent so far"
+msgstr "đã chi đến nay"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "updates"
+msgstr "cập nhật"
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "— every figure in"
+msgstr "— mọi con số tính bằng"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_budget
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "Budget upload · %(n)s line(s)"
+msgstr "Tải ngân sách · %(n)s dòng"
+
+#. module: pb_budget
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Expense · %(what)s"
+msgstr "Chi phí · %(what)s"
+
+#. module: pb_budget
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_budget
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_budget
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_budget
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_budget
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_budget
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_budget
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_budget
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_budget
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_budget
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_budget
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_budget
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_budget
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_budget
+msgid "your approver"
+msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_budget
+msgid "About"
+msgstr "Về"
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "Added."
+msgstr "Đã thêm."
+
+#. module: pb_budget
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_budget
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_budget
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_budget
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_budget
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_budget
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"

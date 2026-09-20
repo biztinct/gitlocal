@@ -1,0 +1,311 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * biz_week_grid
+#
+# W7 — the markers this file is written to, and why each one is here.
+#
+#   1. EVERY user-facing string in the module, or none of them. A component
+#      that is half translated is worse than one that is not: the Vietnamese
+#      officer reads "Chỉ các dòng có giờ" beside "Save 3" and learns that the
+#      language setting is unreliable, so they stop trusting the ones that ARE
+#      translated.
+#   2. The strings live in three places and only two of them are obvious. The
+#      component's JS (`_t(...)`) and the templates' TEXT NODES and translatable
+#      attributes are extracted automatically. A literal inside a `t-att`
+#      EXPRESSION (`t-esc="x or 'Locked'"`, `t-attf-title="Open {{ … }}"`) is
+#      NOT — it reads perfectly in English and is simply absent from every .po,
+#      forever, with nothing to report it. P7 moved all six of those into
+#      `_t`-wrapped getters; that is why entries like "Locked", "Budget" and
+#      "No rows to show" exist here at all.
+#   3. A sentence is ONE entry. "3 cells edited · 4.5 h overtime drafted" is
+#      built by `trayLabel` rather than assembled from `<t>` fragments in the
+#      template, because a translator cannot reorder fragments and Vietnamese
+#      does not put the number where English does.
+#   4. Placeholders keep their names and their count. `%(cells)s` / `%(hours)s`
+#      are named precisely so the Vietnamese word order can differ from the
+#      English one; `msgfmt --check-format` is what proves none was dropped.
+#   5. Keyboard glyphs (Tab, Esc, Ctrl/⌘ D, ⌫, 0–9) are NOT translated. They
+#      are what is printed on the key.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: biz_week_grid\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-18 00:00+0000\n"
+"PO-Revision-Date: 2026-08-18 00:00+0000\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "Filter rows…"
+msgstr "Lọc dòng…"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "Show only rows that have hours this week"
+msgstr "Chỉ hiện các dòng có giờ trong tuần này"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "Only rows with entries"
+msgstr "Chỉ dòng đã nhập"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "draft"
+msgstr "nháp"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "submitted"
+msgstr "đã gửi"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "approved"
+msgstr "đã duyệt"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "Keyboard shortcuts"
+msgstr "Phím tắt"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "Keyboard"
+msgstr "Bàn phím"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "move"
+msgstr "di chuyển"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "type hours in place"
+msgstr "gõ số giờ ngay tại ô"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "open the cell editor"
+msgstr "mở trình sửa ô"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "next day"
+msgstr "ngày kế tiếp"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "clear the cell"
+msgstr "xoá ô"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "fill down"
+msgstr "điền xuống"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "undo"
+msgstr "hoàn tác"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "cancel"
+msgstr "huỷ"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "Total"
+msgstr "Tổng"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "week"
+msgstr "tuần"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "Open %s"
+msgstr "Mở %s"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "Revert this row"
+msgstr "Hoàn tác dòng này"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_cell_editor.js:0
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "Locked"
+msgstr "Đã khoá"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "%(measure)s (locked)"
+msgstr "%(measure)s (đã khoá)"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "%s h recorded as bonus hours"
+msgstr "%s giờ được ghi nhận là giờ thưởng"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "No rows to show"
+msgstr "Không có dòng nào"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "Submitted"
+msgstr "Đã gửi"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "Refused"
+msgstr "Bị từ chối"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "1 row"
+msgstr "1 dòng"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "%s rows"
+msgstr "%s dòng"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "1 cell edited"
+msgstr "Đã sửa 1 ô"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "%s cells edited"
+msgstr "Đã sửa %s ô"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "%(cells)s · %(hours)s h overtime drafted"
+msgstr "%(cells)s · đã soạn %(hours)s giờ tăng ca"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "Undo (Ctrl/Cmd+Z)"
+msgstr "Hoàn tác (Ctrl/Cmd+Z)"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "Undo"
+msgstr "Hoàn tác"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "Discard"
+msgstr "Bỏ thay đổi"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_grid.xml:0
+msgid "Saving…"
+msgstr "Đang lưu…"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_grid.js:0
+msgid "Save %s"
+msgstr "Lưu %s"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_cell_editor.js:0
+msgid "Close (Esc)"
+msgstr "Đóng (Esc)"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_cell_editor.xml:0
+msgid "Overtime"
+msgstr "Tăng ca"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/js/week_cell_editor.js:0
+msgid "Budget"
+msgstr "Hạn mức"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_cell_editor.xml:0
+msgid "Enter applies · Esc cancels"
+msgstr "Enter để áp dụng · Esc để huỷ"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_cell_editor.xml:0
+msgid "Cancel"
+msgstr "Huỷ"
+
+#. module: biz_week_grid
+#. odoo-javascript
+#: code:addons/biz_week_grid/static/src/xml/week_cell_editor.xml:0
+msgid "Done"
+msgstr "Xong"

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         ONE JOB, ONCE A MORNING.
+
+         `numbercall` and `doall` were REMOVED from `ir.cron` in Odoo 19 —
+         including either aborts the whole module load — and `nextcall` takes
+         no eval expression in a data file, so the first run is simply the
+         next tick after installation.
+
+         IT CHASES THE EMPLOYEE AND ONLY THE EMPLOYEE. The manager's "you have
+         goals to read" chase is the approval route's own `remind_days` and the
+         HR lead's escalation is the route's `escalate_days`. A second opinion
+         written here would be a second set of dates that sooner or later
+         disagrees with the request's own trail, and the person reading the
+         trail would have no way to tell which was right.
+
+         THE ROW IS ACTIVE AND THE CHASING IS A SWITCH. `pb_goals.reminders`
+         silences the nudges without disabling this row, so a business that has
+         turned it off can still see the job is there and the log still reports
+         what it WOULD have sent — a thing that is off and does not say so is
+         reported as broken (R54). A cron row that is switched off instead
+         cannot say anything at all.
+         ================================================================== -->
+
+    <record id="cron_goals_daily" model="ir.cron">
+        <field name="name">Goals: remind people whose goals are not in yet</field>
+        <field name="model_id" ref="model_pb_goals_automation"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_daily()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

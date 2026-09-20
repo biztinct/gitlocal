@@ -1,0 +1,92 @@
+// ============================================================================
+// BIZ THEME — BREAKPOINT SCALE + RESPONSIVE MIXINS (no CSS output)
+// ============================================================================
+// Public contract for every biz/pb module. Loaded in
+// web._assets_primary_variables so the mixins are visible to SCSS files in
+// every asset bundle.
+//
+//   xl 1440px — wide desktop        (sidebar auto-rails below; icon-only 2ndary btns)
+//   lg 1280px — laptop              (overflow "More" menus engage below)
+//   md 1100px — small laptop        (studio panels hide/stack below)
+//   sm  768px — tablet portrait     (single column / scroll rows below)
+// ============================================================================
+
+$biz-bp-xl: 1440px !default;
+$biz-bp-lg: 1280px !default;
+$biz-bp-md: 1100px !default;
+$biz-bp-sm: 768px !default;
+
+// Sidebar auto-expand threshold — kept SEPARATE from $biz-bp-xl (which also drives
+// the .biz-hide-xl utilities). In "auto" mode the sidebar rails below this and only
+// expands on genuinely large screens (external monitors); every laptop rails by
+// default. Keep in sync with the matchMedia() in biz_sidebar_state.js.
+$biz-sb-auto-bp: 1920px !default;
+
+@mixin biz-down($bp) {
+    @media (max-width: $bp - 1px) { @content; }
+}
+
+@mixin biz-up($bp) {
+    @media (min-width: $bp) { @content; }
+}
+
+// ---------------------------------------------------------------------------
+// Icon-rail mode for a fixed left sidebar (health19 technique, generalized).
+// Apply on the layout wrapper that contains the sidebar as first child.
+// The sidebar becomes an absolutely-positioned rail that hover-expands OVER
+// the content (no reflow). Textual nodes must carry .biz-sidebar-label /
+// .biz-sidebar-sub so the rail can hide them.
+// ---------------------------------------------------------------------------
+@mixin biz-rail-mode($rail-w: var(--biz-sidebar-rail-w, 60px), $full-w: var(--biz-sidebar-w, 256px)) {
+    position: relative;
+    padding-left: $rail-w;
+
+    > .biz-sidebar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        height: auto;
+        width: $rail-w;
+        overflow-x: hidden;
+        transition: width 160ms ease, box-shadow 160ms ease;
+        z-index: 25;
+
+        &:hover {
+            width: $full-w;
+            box-shadow: 6px 0 24px rgba(0, 0, 0, 0.28);
+        }
+
+        // Collapsed state: icons only, everything textual hidden
+        &:not(:hover) {
+            .biz-sidebar-label,
+            .biz-sidebar-sub {
+                display: none !important;
+            }
+
+            .biz-sidebar-brand {
+                justify-content: center;
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+
+            .biz-sidebar-item {
+                font-size: 0;          // hides raw text nodes next to the icon
+                gap: 0;
+                justify-content: center;
+                padding-left: 0;
+                padding-right: 0;
+
+                svg, i, img {
+                    font-size: 15px;
+                }
+            }
+
+            .biz-sidebar-footer {
+                justify-content: center;
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+        }
+    }
+}

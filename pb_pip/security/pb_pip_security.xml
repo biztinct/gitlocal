@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         ITS OWN LADDER, AND THE REASON IS THE WHOLE PHASE.
+
+         P3, P4 and P5 all rode P0's lifecycle tiers, and they were right
+         to: a joining checklist, a leaving checklist and a trial period are
+         the same question about the same people, and a fourth ladder would
+         have been a group nobody knew to grant.
+
+         An improvement plan is not that question. A lifecycle administrator
+         looks after arrivals and departures for a whole company; knowing
+         which four people in it are on an improvement plan is a different
+         piece of information with a different blast radius, and "they could
+         already see the joining checklists" is not a reason to hand it
+         over.
+
+         So: NO implied_ids from any lifecycle group into either of these,
+         in either direction. Access is granted by name, and the facade
+         (pb.pip._can_read) deliberately does not fall back to
+         `_is_admin()` either.
+         ================================================================== -->
+
+    <record id="module_category_pip" model="ir.module.category">
+        <field name="name">Growth Plans</field>
+        <field name="sequence">55</field>
+    </record>
+
+    <!-- Odoo 19 pattern: `res.groups` has no `category_id`; a privilege
+         record carries it instead. -->
+    <record id="res_groups_privilege_pip" model="res.groups.privilege">
+        <field name="name">Growth Plans</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="module_category_pip"/>
+    </record>
+
+    <record id="group_pip_user" model="res.groups">
+        <field name="name">HR — growth plans</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_pip"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Run growth plans: take up a request, coach, agree objectives, start a plan, record the decision. This is not part of the general HR permissions — it is granted by name.</field>
+    </record>
+
+    <record id="group_pip_head" model="res.groups">
+        <field name="name">Head of HR — growth plans</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_pip"/>
+        <field name="implied_ids" eval="[(4, ref('group_pip_user'))]"/>
+        <!-- The two built-in administrator accounts and NOBODY ELSE. Every
+             other person is added by a human, on purpose. Adding whoever
+             happened to run the upgrade is precisely the failure this
+             module is written to prevent. -->
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        <field name="comment">Everything above, plus the two visibility switches: whether the person sees their own plan, and whether the manager who asked can see their own request.</field>
+    </record>
+
+<data noupdate="1">
+
+    <!-- ==================================================================
+         COMPANY. Global rules (no `groups`), so they are ANDed with
+         everything below rather than ORed. Country scoping is done through
+         the company: on this build a person's country IS their company's,
+         and a second country matrix beside the multi-company mechanism
+         would be two answers to one question.
+         ================================================================== -->
+
+    <record id="rule_pip_template_company" model="ir.rule">
+        <field name="name">Growth plan template: company</field>
+        <field name="model_id" ref="model_pb_pip_template"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pip_case_company" model="ir.rule">
+        <field name="name">Growth plan: company</field>
+        <field name="model_id" ref="model_pb_pip_case"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pip_objective_company" model="ir.rule">
+        <field name="name">Growth plan objective: company</field>
+        <field name="model_id" ref="model_pb_pip_objective"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- ==================================================================
+         WHO SEES WHOSE PLAN.
+
+         Two group rules, and Odoo ORs group rules together:
+
+           * the HR group sees every plan in its allowed companies;
+           * every OTHER internal user sees the requests THEY THEMSELVES
+             raised, and nothing else — no objectives, no check-ins, no
+             coaching note, no other person's plan.
+
+         THE SECOND RULE READS THE SWITCH DIRECTLY.
+         `user.pip_manager_sees_own` is a computed field on res.users that
+         answers `pb_pip.manager_sees_own`, so with the switch off the
+         domain becomes `requested_by_user_id = -1`, which matches no row.
+         The alternative — a rule that something toggles when the parameter
+         changes — is two facts about one decision, and they drift the first
+         time an administrator sets the parameter by hand, leaving a switch
+         that says "off" over a rule that is still granting access. A
+         visibility switch that lies is worse than no switch.
+         ================================================================== -->
+
+    <record id="rule_pip_case_mine" model="ir.rule">
+        <field name="name">Growth plan: the one I asked for</field>
+        <field name="model_id" ref="model_pb_pip_case"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+        <field name="domain_force">[('requested_by_user_id', '=', user.id if user.pip_manager_sees_own else -1)]</field>
+    </record>
+
+    <record id="rule_pip_case_hr" model="ir.rule">
+        <field name="name">Growth plan: the HR team</field>
+        <field name="model_id" ref="model_pb_pip_case"/>
+        <field name="groups" eval="[(4, ref('group_pip_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- The objectives, the coaching note and the check-ins are NOT part of
+         what a requesting manager sees. They see that they asked, and where
+         it has got to. What was agreed with the person is between the
+         person and HR. -->
+    <record id="rule_pip_objective_hr" model="ir.rule">
+        <field name="name">Growth plan objective: the HR team</field>
+        <field name="model_id" ref="model_pb_pip_objective"/>
+        <field name="groups" eval="[(4, ref('group_pip_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- ==================================================================
+         THE THREE MODELS THIS PHASE BORROWS FROM P0, and the reason the
+         rules below come in PAIRS.
+
+         A plan needs its check-ins, its evaluation form and its letter, and
+         P0 owns all three. The access list grants them; these rules say
+         WHICH rows — and the pairing is load-bearing.
+
+         Odoo ORs the group rules that apply to a user and ANDs the global
+         ones. P0 put only GLOBAL company rules on these three models and no
+         group rules at all, so today a lifecycle manager reads every
+         check-in in their companies. Adding a single narrow rule for the
+         PIP group would therefore REGRESS them: a lifecycle manager who is
+         also given the PIP group would suddenly have exactly one applicable
+         group rule — the narrow one — and would lose sight of every
+         onboarding check-in in the company.
+
+         So each pair ships an explicit "everything" rule for the lifecycle
+         tiers beside the narrow one for the PIP tier. For a lifecycle
+         manager the OR is unchanged; for somebody who holds ONLY the
+         improvement-plan group the answer is the plan's own rows and
+         nothing else, which is the point of giving this module its own
+         ladder in the first place.
+         ================================================================== -->
+
+    <record id="rule_checkin_lifecycle_all" model="ir.rule">
+        <field name="name">Check-in: the lifecycle team (unchanged)</field>
+        <field name="model_id" ref="pb_lifecycle.model_pb_employee_checkin"/>
+        <field name="groups" eval="[(4, ref('pb_lifecycle.group_lifecycle_user')), (4, ref('pb_lifecycle.group_lifecycle_manager')), (4, ref('pb_lifecycle.group_lifecycle_admin'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_checkin_pip_only" model="ir.rule">
+        <field name="name">Check-in: growth plans only</field>
+        <field name="model_id" ref="pb_lifecycle.model_pb_employee_checkin"/>
+        <field name="groups" eval="[(4, ref('group_pip_user'))]"/>
+        <field name="domain_force">[('pip_case_id', '!=', False)]</field>
+    </record>
+
+    <record id="rule_feedback_lifecycle_all" model="ir.rule">
+        <field name="name">Feedback request: the lifecycle team (unchanged)</field>
+        <field name="model_id" ref="pb_lifecycle.model_pb_feedback_request"/>
+        <field name="groups" eval="[(4, ref('pb_lifecycle.group_lifecycle_manager')), (4, ref('pb_lifecycle.group_lifecycle_admin'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_feedback_pip_only" model="ir.rule">
+        <field name="name">Feedback request: growth plans only</field>
+        <field name="model_id" ref="pb_lifecycle.model_pb_feedback_request"/>
+        <field name="groups" eval="[(4, ref('group_pip_user'))]"/>
+        <field name="domain_force">[('pip_case_id', '!=', False)]</field>
+    </record>
+
+    <record id="rule_letter_lifecycle_all" model="ir.rule">
+        <field name="name">Letter: the lifecycle team (unchanged)</field>
+        <field name="model_id" ref="pb_lifecycle.model_pb_hr_letter"/>
+        <field name="groups" eval="[(4, ref('pb_lifecycle.group_lifecycle_user')), (4, ref('pb_lifecycle.group_lifecycle_manager')), (4, ref('pb_lifecycle.group_lifecycle_admin'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_letter_pip_only" model="ir.rule">
+        <field name="name">Letter: growth plans only</field>
+        <field name="model_id" ref="pb_lifecycle.model_pb_hr_letter"/>
+        <field name="groups" eval="[(4, ref('group_pip_user'))]"/>
+        <field name="domain_force">[('letter_type', '=', 'pip')]</field>
+    </record>
+
+</data>
+</odoo>

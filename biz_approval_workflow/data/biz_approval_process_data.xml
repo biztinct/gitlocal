@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- The one process this module owns. Every other row in the catalogue is
+         created by the module that owns the business object, so the catalogue
+         can never claim something is wired up when it is not. -->
+
+    <record id="process_generic" model="biz.approval.process">
+        <field name="key">generic</field>
+        <field name="name">Other request</field>
+        <field name="area">other</field>
+        <field name="model_name">biz.approval.generic.request</field>
+        <field name="description">Ask someone for a sign-off on anything that does not have a process of its own.</field>
+        <field name="allow_fast" eval="True"/>
+        <field name="sequence">900</field>
+    </record>
+
+</odoo>

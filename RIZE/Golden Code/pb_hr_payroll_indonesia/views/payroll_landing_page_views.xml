@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Remove the original Payroll Processing menu since we're using the web-based country selector -->
+    <!-- The payroll_country_selector wizard view is no longer needed as we use the web template -->
+    
+</odoo>

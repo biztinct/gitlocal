@@ -1,0 +1,41 @@
+/* ============================================================
+   Payobook POC — alternate palettes (live-switchable)
+   Applied by toggling .pal-indigo / .pal-graphite on <html>.
+   No class = "Aurora" (the defaults in tokens.css).
+   Each scheme overrides only the brand/accent/sidebar/hero
+   tokens, so the entire UI re-themes from these few variables.
+   ============================================================ */
+
+/* ---- Indigo · Enterprise (cool, trustworthy — Stripe / Deel / Mercury) ---- */
+/* SOLID fills only (no gradients). */
+:root.pal-indigo{
+  --pb-brand:#4F46E5; --pb-brand-600:#4338CA; --pb-brand-500:#6366F1; --pb-brand-400:#818CF8;
+  --pb-brand-tint:#EEF0FF; --pb-brand-tint-2:#E0E4FF;
+  --pb-accent:#0891B2; --pb-accent-600:#0E7490; --pb-accent-tint:#E0F4F9;
+  --pb-side-bg-1:#0E1430; --pb-side-bg-2:#0E1430; --pb-side-ink:#E8EDF8; --pb-side-muted:#93A0C2;
+  --pb-side-active:rgba(99,102,241,.26); --pb-side-hover:rgba(255,255,255,.06);
+  --pb-bg:#F4F5FB;
+  --sh-brand:0 10px 26px rgba(79,70,229,.26);
+  --pb-hero:        #312E81;
+  --pb-hero-blue:   #4338CA;
+  --pb-hero-detail: #1E1B4B;
+  --pb-chart-line:  #4F46E5;
+  --pb-chart-dot:   #0891B2;
+}
+
+/* ---- Graphite · Coral (warm, bold, distinctive — Gusto / Ramp / Monzo) ---- */
+/* SOLID fills only (no gradients). */
+:root.pal-graphite{
+  --pb-brand:#F2624B; --pb-brand-600:#E04A33; --pb-brand-500:#F87B66; --pb-brand-400:#FBA593;
+  --pb-brand-tint:#FDEEEA; --pb-brand-tint-2:#FBDDD5;
+  --pb-accent:#0EA371; --pb-accent-600:#0B815B; --pb-accent-tint:#E4F6EF;
+  --pb-side-bg-1:#1A1B20; --pb-side-bg-2:#1A1B20; --pb-side-ink:#EAEBEE; --pb-side-muted:#9CA2AD;
+  --pb-side-active:rgba(242,98,75,.26); --pb-side-hover:rgba(255,255,255,.06);
+  --pb-bg:#F6F5F3;
+  --sh-brand:0 10px 26px rgba(242,98,75,.24);
+  --pb-hero:        #2A2226;
+  --pb-hero-blue:   #E04A33;
+  --pb-hero-detail: #26222A;
+  --pb-chart-line:  #F2624B;
+  --pb-chart-dot:   #0EA371;
+}

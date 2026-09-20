@@ -56,8 +56,8 @@ class WorkforceCapability(models.Model):
         string='Subactivities',
     )
     skill_ids = fields.Many2many(
-        'pb.workforce.skill',
-        'pb_workforce_skill_capability_rel',
+        'hr.skill',
+        'pb_workforce_hr_skill_capability_rel',
         'capability_id',
         'skill_id',
         string='Key Skills',
@@ -138,7 +138,7 @@ class WorkforceCapability(models.Model):
             'type': 'ir.actions.act_window',
             'res_model': 'pb.workforce.role',
             'name': _('Roles for %s') % self.name,
-            'view_mode': 'tree,kanban,form,pivot',
+            'view_mode': 'list,kanban,form,pivot',
             'domain': [('capability_id', '=', self.id)],
             'context': {
                 'default_capability_id': self.id,
@@ -172,55 +172,3 @@ class WorkforceSubactivity(models.Model):
     )
 
 
-class WorkforceSkill(models.Model):
-    _name = 'pb.workforce.skill'
-    _description = 'Workforce Skill'
-    _order = 'name'
-
-    name = fields.Char(required=True)
-    category = fields.Selection(
-        selection=[
-            ('technical', 'Technical'),
-            ('business', 'Business'),
-            ('leadership', 'Leadership'),
-            ('compliance', 'Compliance'),
-            ('digital', 'Digital'),
-            ('other', 'Other'),
-        ],
-        default='technical',
-    )
-    description = fields.Text()
-    color = fields.Integer()
-    capability_ids = fields.Many2many(
-        'pb.workforce.capability',
-        'pb_workforce_skill_capability_rel',
-        'skill_id',
-        'capability_id',
-        string='Capabilities',
-    )
-    role_ids = fields.Many2many(
-        'pb.workforce.role',
-        'pb_workforce_skill_role_rel',
-        'skill_id',
-        'role_id',
-        string='Roles',
-    )
-    proficiency_scale = fields.Selection(
-        selection=[
-            ('awareness', 'Awareness'),
-            ('working', 'Working'),
-            ('proficient', 'Proficient'),
-            ('expert', 'Expert'),
-        ],
-        default='working',
-        help='Default proficiency required when linked to a role.'
-    )
-    owner_id = fields.Many2one(
-        'res.users',
-        string='Skill Steward',
-        default=lambda self: self.env.user,
-    )
-
-    _sql_constraints = [
-        ('skill_name_unique', 'unique(name)', 'Skill names must be unique.'),
-    ]

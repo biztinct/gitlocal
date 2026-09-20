@@ -1,0 +1,44 @@
+
+# Python build artifacts
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+.s4-shots/
+.s6-shots/
+.journey-shots/
+.mapfix-d-shots/
+.r1shots/
+.r2shots/
+.r3shots/
+.r4shots/
+.cd3shots/
+.bp_shots/
+
+# Run report from tools/refresh_pb_vi.py — it lists the strings one run could not
+# translate and the tool deletes it again on the next clean run. A snapshot of a
+# half-finished translation pass is never worth keeping in history.
+tools/vi_translation_unresolved.txt
+
+# ---------------------------------------------------------------------------
+# Customer payroll working files. NEVER COMMIT THESE — this repository is
+# PUBLIC (github.com/biztinct/gitlocal, visibility=public).
+#
+# On 2026-09-12 the RIZE/ folder held a bank upload template and a payroll
+# setup pack carrying a customer's EMPLOYEE BANK ACCOUNT NUMBERS — 61 and 68
+# populated number cells, beside payee names and bank codes. They were
+# untracked and one `git add -A` away from being published. A password can be
+# rotated in a minute; a bank account cannot.
+#
+# These are working documents, not product. No code reads them.
+# ---------------------------------------------------------------------------
+RIZE/**/*.xlsx
+RIZE/**/*.xls
+RIZE/**/*.xlsm
+RIZE/**/*.csv
+RIZE/**/*.pdf
+RIZE/**/*.docx
+RIZE/**/*.doc
+
+# Excel/Word lock files, anywhere.
+~$*

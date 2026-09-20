@@ -9,7 +9,7 @@
         <field name="name">vietnam.insurance.policy.tree</field>
         <field name="model">vietnam.insurance.policy</field>
         <field name="arch" type="xml">
-            <tree string="Insurance Policies">
+            <list string="Insurance Policies">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="effective_date"/>
@@ -18,7 +18,7 @@
                 <field name="total_employee_rate" string="Employee %"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="active" invisible="1"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -116,7 +116,7 @@
                                     <field name="waive_ui_no_fund_areas"/>
                                     <field name="oa_waiver_enabled"/>
                                     <field name="oa_waiver_max_months" 
-                                           attrs="{'invisible': [('oa_waiver_enabled', '=', False)]}"/>
+                                           invisible="not oa_waiver_enabled"/>
                                 </group>
                             </group>
                         </page>
@@ -156,7 +156,7 @@
                 <separator/>
                 <filter string="Current Year" name="current_year" 
                         domain="[('effective_date', '&gt;=', (context_today().strftime('%Y-01-01')))]"/>
-                <group expand="0" string="Group By">
+                <group name="group_by">
                     <filter string="Company" name="company" context="{'group_by': 'company_id'}"/>
                     <filter string="Year" name="year" context="{'group_by': 'effective_date:year'}"/>
                 </group>
@@ -168,7 +168,7 @@
     <record id="action_vietnam_insurance_policy" model="ir.actions.act_window">
         <field name="name">Insurance Policies</field>
         <field name="res_model">vietnam.insurance.policy</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_vietnam_insurance_policy_search"/>
         <field name="context">{'search_default_active': 1}</field>
         <field name="help" type="html">

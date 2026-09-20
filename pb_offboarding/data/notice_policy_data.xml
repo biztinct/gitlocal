@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         Two policies to start from, most specific first.
+
+         COMPANY-LESS on purpose (R8): `company_id` defaults to the loading
+         user's own company, which on a multi-company database makes a seeded
+         record invisible to every OTHER company — and the record rule is
+         `company_id = False OR in company_ids` precisely so a shared policy
+         can exist.
+
+         noupdate="1" so a tenant that has changed the number keeps it
+         through every upgrade.
+         ================================================================== -->
+
+    <record id="notice_policy_default" model="pb.notice.policy">
+        <field name="name">Everywhere else</field>
+        <field name="sequence">90</field>
+        <field name="days">30</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">Used when no policy names the country somebody
+            works in. Thirty days is the common minimum; set a country policy
+            above this one wherever the law or the contract says otherwise.</field>
+    </record>
+
+    <record id="notice_policy_vn" model="pb.notice.policy">
+        <field name="name">Vietnam</field>
+        <field name="sequence">10</field>
+        <field name="days">45</field>
+        <field name="country_id" ref="base.vn"/>
+        <field name="company_id" eval="False"/>
+        <field name="note">Forty-five days is the notice an employee on an
+            open-ended contract gives in Vietnam. Somebody on a fixed-term
+            contract usually gives thirty — HR sets the agreed last working day
+            when they approve, so this is the starting point rather than the
+            decision.</field>
+    </record>
+
+</data>
+</odoo>

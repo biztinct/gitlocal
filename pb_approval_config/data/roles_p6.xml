@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         PHASE 6: three more organisational jobs.
+
+         Each one is a job somebody already does — the person who hands out
+         laptops, the person who signs off a bonus, the person who looks after
+         contracts and leavers. Naming them here is what lets a route say
+         "the Equipment team" instead of naming one person in code.
+
+         All three fall back to the company: they are one seat for the whole
+         business, not one per part of it.
+         ================================================================== -->
+
+    <record id="role_equipment" model="biz.approval.role">
+        <field name="key">equipment</field>
+        <field name="name">Equipment team</field>
+        <field name="description">Decides what equipment is handed out, and hands it over.</field>
+        <field name="fallback_to_company" eval="True"/>
+        <field name="sequence">90</field>
+    </record>
+
+    <record id="role_pay_head" model="biz.approval.role">
+        <field name="key">pay_head</field>
+        <field name="name">Head of pay</field>
+        <field name="description">Signs off bonuses, awards and anything extra somebody is paid.</field>
+        <field name="fallback_to_company" eval="True"/>
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="role_lifecycle" model="biz.approval.role">
+        <field name="key">lifecycle</field>
+        <field name="name">HR lifecycle team</field>
+        <field name="description">Looks after joining, contracts, extensions and leaving.</field>
+        <field name="fallback_to_company" eval="True"/>
+        <field name="sequence">110</field>
+    </record>
+
+</odoo>

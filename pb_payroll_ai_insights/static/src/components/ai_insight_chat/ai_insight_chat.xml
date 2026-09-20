@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="pb_payroll_ai_insights.AiInsightChat">
+        <!-- Floating Pill Button -->
+        <div class="payai-floating-pill" data-coach="payai-pill" t-on-click="togglePanel"
+             t-att-class="{ 'payai-pill-active': state.isOpen }">
+            <div class="payai-pill-avatar">
+                <t t-if="state.aiIconUrl">
+                    <img t-att-src="state.aiIconUrl" class="payai-ai-icon" alt="PayAI"/>
+                </t>
+                <t t-else="">
+                    <i class="fa fa-bolt"/>
+                </t>
+                <div class="payai-pill-glow"/>
+            </div>
+            <div class="payai-pill-text">
+                <span class="payai-pill-title">PayAI</span>
+                <span class="payai-pill-status">
+                    <span class="payai-status-dot"/>
+                    Online
+                </span>
+            </div>
+        </div>
+
+        <!-- Backdrop (when panel is open) -->
+        <div t-if="state.isOpen" class="payai-backdrop" t-on-click="closePanel"/>
+
+        <!-- Chat Panel (Centered Modal) -->
+        <div t-att-class="'payai-chat-panel ' + (state.isOpen ? 'payai-panel-open' : '')">
+            <!-- Header -->
+            <div class="payai-chat-header">
+                <div class="payai-header-left">
+                    <div class="payai-modal-avatar">
+                        <div class="payai-avatar-core">
+                            <t t-if="state.aiIconUrl">
+                                <img t-att-src="state.aiIconUrl" class="payai-ai-icon" alt="PayAI"/>
+                            </t>
+                            <t t-else="">
+                                <i class="fa fa-bolt"/>
+                            </t>
+                        </div>
+                        <div class="payai-avatar-ring ring-1"/>
+                        <div class="payai-avatar-ring ring-2"/>
+                    </div>
+                    <div class="payai-header-title-group">
+                        <h3>PayAI</h3>
+                        <div class="payai-header-status">
+                            <span class="payai-status-dot"/>
+                            Intelligent Payroll Analytics
+                        </div>
+                    </div>
+                </div>
+                <div class="payai-header-actions">
+                    <button class="payai-btn-icon" t-on-click="clearHistory" title="Clear chat">
+                        <i class="fa fa-trash-o"/>
+                    </button>
+                    <button class="payai-btn-icon" t-on-click="closePanel" title="Close">
+                        <i class="fa fa-times"/>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Body -->
+            <div class="payai-chat-body" t-ref="chatBody">
+                <!-- Welcome + Suggestions -->
+                <t t-if="state.showSuggestions and state.messages.length === 0">
+                    <div class="payai-welcome">
+                        <div class="payai-welcome-icon">
+                            <i class="fa fa-magic fa-2x"/>
+                        </div>
+                        <h3>Welcome to PayAI</h3>
+                        <p>Ask me anything about your payroll, attendance, leaves, or recruitment data:</p>
+                        <div class="payai-suggestions">
+                            <t t-foreach="suggestions" t-as="suggestion" t-key="suggestion_index">
+                                <button class="payai-suggestion-chip"
+                                        t-on-click="() => this.sendSuggestion(suggestion)">
+                                    <t t-esc="suggestion"/>
+                                </button>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Messages -->
+                <t t-foreach="state.messages" t-as="msg" t-key="msg_index">
+                    <div t-att-class="'payai-message payai-msg-' + msg.role">
+                        <!-- Avatar -->
+                        <div class="payai-avatar">
+                            <div class="payai-msg-avatar">
+                                <t t-if="msg.role === 'user'">
+                                    <i class="fa fa-user"/>
+                                </t>
+                                <t t-else="">
+                                    <t t-if="state.aiIconUrl">
+                                        <img t-att-src="state.aiIconUrl" class="payai-ai-icon" alt="AI"/>
+                                    </t>
+                                    <t t-else="">
+                                        <i class="fa fa-bolt"/>
+                                    </t>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- Message Content -->
+                        <div class="payai-msg-content">
+                            <div class="payai-msg-text" t-esc="msg.content"/>
+
+                            <!-- Chart (if present) -->
+                            <t t-if="msg.chart">
+                                <div class="payai-msg-chart">
+                                    <ChartRenderer chartConfig="msg.chart" height="'260px'"
+                                                   showToolbar="true"
+                                                   drillDownModel="msg.drillDownModel || ''"/>
+                                    <button class="payai-pin-btn"
+                                            t-on-click="() => this.pinToDashboard(msg.chart)"
+                                            title="Pin to Dashboard">
+                                        <i class="fa fa-thumb-tack"/> Pin to Dashboard
+                                    </button>
+                                </div>
+                            </t>
+
+                            <!-- Insights -->
+                            <t t-if="msg.insights and msg.insights.length">
+                                <div class="payai-insights">
+                                    <div class="payai-insights-title">
+                                        <i class="fa fa-lightbulb-o"/> Key Insights
+                                    </div>
+                                    <t t-foreach="msg.insights" t-as="insight" t-key="insight_index">
+                                        <div class="payai-insight-item">
+                                            <span class="payai-insight-bullet">•</span>
+                                            <t t-esc="insight"/>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+
+                            <!-- "Show me" (AI offers to open a pb_learn lesson).
+                                 One shape only: the server converts a legacy
+                                 `start_tour` envelope and always emits
+                                 `open_lesson`, so nothing else can arrive. -->
+                            <t t-if="msg.action and msg.action.type === 'open_lesson'">
+                                <button class="payai-coach-action"
+                                        t-on-click="() => this.runAction(msg.action)">
+                                    <i class="fa fa-magic"/> <t t-esc="msg.action.label || 'Show me'"/>
+                                </button>
+                            </t>
+
+                            <!-- Follow-up Questions -->
+                            <t t-if="msg.followUpQuestions and msg.followUpQuestions.length">
+                                <div class="payai-followups">
+                                    <t t-foreach="msg.followUpQuestions" t-as="fq" t-key="fq_index">
+                                        <button class="payai-followup-chip"
+                                                t-on-click="() => this.sendSuggestion(fq)">
+                                            <t t-esc="fq"/>
+                                        </button>
+                                    </t>
+                                </div>
+                            </t>
+
+                            <!-- Read this answer aloud. The BROWSER speaks it:
+                                 an answer with the names restored into it must
+                                 not be posted to a speech endpoint to be read
+                                 back. Drawn only where the device can speak. -->
+                            <t t-if="msg.role === 'assistant' and ttsSupported and msg.content">
+                                <button class="payai-tts-replay"
+                                        t-on-click="() => this.speak(msg.content)"
+                                        t-att-title="voiceCopy.listen_label || 'Read answers aloud'">
+                                    <i class="fa fa-volume-up"/>
+                                    <t t-esc="voiceCopy.listen_label || 'Read answers aloud'"/>
+                                </button>
+                            </t>
+
+                            <!-- Timestamp -->
+                            <div class="payai-msg-time" t-esc="formatTimestamp(msg.timestamp)"/>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Loading indicator -->
+                <t t-if="state.isLoading">
+                    <div class="payai-message payai-msg-assistant">
+                        <div class="payai-avatar">
+                            <div class="payai-msg-avatar">
+                                <t t-if="state.aiIconUrl">
+                                    <img t-att-src="state.aiIconUrl" class="payai-ai-icon" alt="AI"/>
+                                </t>
+                                <t t-else="">
+                                    <i class="fa fa-bolt"/>
+                                </t>
+                            </div>
+                        </div>
+                        <div class="payai-msg-content">
+                            <div class="payai-typing">
+                                <span class="payai-dot"/>
+                                <span class="payai-dot"/>
+                                <span class="payai-dot"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+
+            <!-- Voice consent, asked once, before anything is recorded.
+                 Copy comes from the server so it follows the reader's own
+                 language, and it names what actually leaves: the recording. -->
+            <t t-if="state.voiceAsking">
+                <div class="payai-voice-consent">
+                    <div class="payai-voice-consent-title">
+                        <i class="fa fa-microphone"/>
+                        <t t-esc="voiceCopy.consent_title"/>
+                    </div>
+                    <p class="payai-voice-consent-body" t-esc="voiceCopy.consent_body"/>
+                    <div class="payai-voice-consent-actions">
+                        <button class="payai-voice-yes"
+                                t-on-click="() => this.answerVoiceConsent(true)">
+                            <t t-esc="voiceCopy.consent_yes"/>
+                        </button>
+                        <button class="payai-voice-no"
+                                t-on-click="() => this.answerVoiceConsent(false)">
+                            <t t-esc="voiceCopy.consent_no"/>
+                        </button>
+                    </div>
+                </div>
+            </t>
+
+            <!-- Input Area -->
+            <div class="payai-chat-input-area">
+                <!-- Recording Indicator -->
+                <t t-if="state.isRecording">
+                    <div class="payai-recording-indicator">
+                        <span class="payai-rec-dot"/>
+                        <span class="payai-rec-text">Recording <t t-esc="formatRecordingTime()"/></span>
+                    </div>
+                </t>
+                <t t-else="">
+                    <textarea
+                        t-ref="chatInput"
+                        class="payai-chat-input"
+                        placeholder="Ask PayAI anything..."
+                        t-att-value="state.inputText"
+                        t-on-input="onInputChange"
+                        t-on-keydown="onInputKeydown"
+                        rows="1"
+                    />
+                </t>
+                <div class="payai-input-actions">
+                    <!-- READ ALOUD, on the device. Absent where the browser
+                         cannot speak. -->
+                    <t t-if="ttsSupported">
+                        <button t-att-class="'payai-tts-btn ' + (state.ttsOn ? 'on' : '')"
+                                t-on-click="toggleTts"
+                                t-att-aria-pressed="state.ttsOn ? 'true' : 'false'"
+                                t-att-title="voiceCopy.listen_label || 'Read answers aloud'">
+                            <i t-att-class="state.ttsOn ? 'fa fa-volume-up' : 'fa fa-volume-off'"/>
+                        </button>
+                    </t>
+                    <!-- THE MICROPHONE IS ABSENT, NOT DISABLED, when voice is
+                         switched off for this tenant, unavailable on this
+                         database, or refused by this user. Hold to talk: the
+                         press is the recording, the release transcribes, and
+                         the text lands in the box above for the learner to
+                         read before anything is sent. -->
+                    <t t-if="voiceOffered">
+                        <button t-att-class="'payai-mic-btn ' + (state.isRecording ? 'recording' : '')"
+                                t-on-pointerdown="onMicPointerDown"
+                                t-on-pointerup="onMicPointerUp"
+                                t-on-pointerleave="onMicPointerUp"
+                                t-on-pointercancel="onMicPointerUp"
+                                t-on-keydown="onMicKeyDown"
+                                t-on-keyup="onMicKeyUp"
+                                t-att-disabled="state.isLoading || state.voiceBusy"
+                                t-att-title="voiceCopy.hold_hint || 'Hold to speak'">
+                            <i t-att-class="state.voiceBusy ? 'fa fa-spinner fa-spin' : 'fa fa-microphone'"/>
+                        </button>
+                    </t>
+                    <button class="payai-send-btn"
+                            t-on-click="sendMessage"
+                            t-att-disabled="state.isLoading || state.isRecording || !state.inputText.trim()">
+                        <i class="fa fa-paper-plane"/>
+                    </button>
+                </div>
+            </div>
+            <!-- What was heard, and what went wrong. Under the box, because
+                 the thing it is about is IN the box. -->
+            <t t-if="state.voiceHint">
+                <div class="payai-voice-hint" t-esc="state.voiceHint"/>
+            </t>
+            <t t-if="state.voiceError">
+                <div class="payai-voice-error" t-esc="state.voiceError"/>
+            </t>
+        </div>
+    </t>
+</templates>

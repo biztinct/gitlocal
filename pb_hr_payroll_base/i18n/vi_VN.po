@@ -1,19 +1,17 @@
-# Translation of Odoo Server.
-# This file contains the translation of the following modules:
-# 	* pb_hr_payroll_base
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-20 02:02+0000\n"
-"PO-Revision-Date: 2026-01-20 02:02+0000\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
@@ -38,12 +36,7 @@ msgstr "4. Tạo Phiếu lương"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "<i class=\"fa fa-calculator fa-4x text-info\" title=\"Calculate\"/>"
-msgstr "<i class=\"fa fa-calculator fa-4x text-info\" title=\"Calculate\"/>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "<i class=\"fa fa-chart-line\"/> View Analytics"
-msgstr "<i class=\"fa fa-chart-line\"/> Chế độ xem Phân tích"
+msgstr "<i class=\"fa fa-calculator fa-4x text-info\" title=\"Tính toán\"/>"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
@@ -56,34 +49,14 @@ msgid "<i class=\"fa fa-download mr-2\"/>Zoho Data"
 msgstr "<i class=\"fa fa-download mr-2\"/>Zoho Dữ liệu"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "<i class=\"fa fa-download\"/> Import Employee Data"
-msgstr "<i class=\"fa fa-download\"/> Nhập Nhân viên Dữ liệu"
-
-#. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "<i class=\"fa fa-edit fa-4x text-warning\" title=\"Edit Spreadsheet\"/>"
-msgstr "<i class=\"fa fa-edit fa-4x text-warning\" title=\"Edit Spreadsheet\"/>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "<i class=\"fa fa-external-link\"/> Open Spreadsheet"
-msgstr "<i class=\"fa fa-external-link\"/> Mở Bảng tính"
+msgstr "<i class=\"fa fa-edit fa-4x text-warning\" title=\"Chỉnh sửa bảng tính\"/>"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "<i class=\"fa fa-file-text fa-4x text-danger\" title=\"Generate Payslips\"/>"
-msgstr "<i class=\"fa fa-file-text fa-4x text-danger\" title=\"Generate Payslips\"/>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "<i class=\"fa fa-info-circle mr-2\"/>Enhanced Payroll Framework"
-msgstr "<i class=\"fa fa-info-circle mr-2\"/>Nâng cao Bảng lương Framework"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "<i class=\"fa fa-play\"/> Process Payroll"
-msgstr "<i class=\"fa fa-play\"/> Xử lý Bảng lương"
+msgstr "<i class=\"fa fa-file-text fa-4x text-danger\" title=\"Tạo phiếu lương\"/>"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_salary_configuration_workflow
@@ -94,21 +67,6 @@ msgstr "<i class=\"fa fa-play\"/> Chạy Kiểm thử"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
 msgid "<i class=\"fa fa-plus mr-2\"/>Salary Structure"
 msgstr "<i class=\"fa fa-plus mr-2\"/>Cấu trúc lương"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_enhanced
-msgid "<i class=\"fa fa-refresh\"/> Refresh"
-msgstr "<i class=\"fa fa-refresh\"/> Làm mới"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_enhanced
-msgid "<i class=\"fa fa-sitemap\"/> Dashboard"
-msgstr "<i class=\"fa fa-sitemap\"/> Bảng điều khiển"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "<i class=\"fa fa-tasks\"/> Approval Dashboard"
-msgstr "<i class=\"fa fa-tasks\"/> Phê duyệt Bảng điều khiển"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_salary_configuration_workflow
@@ -123,92 +81,12 @@ msgstr "<i class=\"fa fa-th\"/> Mở Connectors"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "<i class=\"fa fa-upload fa-4x text-primary\" title=\"Import Data\"/>"
-msgstr "<i class=\"fa fa-upload fa-4x text-primary\" title=\"Import Data\"/>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "<i class=\"fa fa-upload\"/> Export Bank File"
-msgstr "<i class=\"fa fa-upload\"/> Xuất Ngân hàng Tệp"
+msgstr "<i class=\"fa fa-upload fa-4x text-primary\" title=\"Nhập dữ liệu\"/>"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
 msgid "<i class=\"fa fa-users mr-2\"/>Manage Employees"
 msgstr "<i class=\"fa fa-users mr-2\"/>Quản lý Nhân viên"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "<i class=\"fa fa-warning text-warning\"/> Anomaly Detection"
-msgstr "<i class=\"fa fa-warning text-warning\"/> Bất thường Detection"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "<small class=\"text-muted\">Detected Issues</small>"
-msgstr "<small class=\"text-muted\">Được phát hiện Vấn đề</small>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_enhanced
-msgid "<span class=\"access-tick\">✓</span>"
-msgstr "<span class=\"access-tick\">✓</span>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
-msgid "<span class=\"metric-icon\">⚠️</span>"
-msgstr "<span class=\"metric-icon\">⚠️</span>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
-msgid "<span class=\"metric-icon\">👥</span>"
-msgstr "<span class=\"metric-icon\">👥</span>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
-msgid "<span class=\"metric-icon\">💰</span>"
-msgstr "<span class=\"metric-icon\">💰</span>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
-msgid "<span class=\"metric-icon\">📊</span>"
-msgstr "<span class=\"metric-icon\">📊</span>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
-msgid "<span class=\"metric-label\">Anomalies</span>"
-msgstr "<span class=\"metric-label\">Bất thường</span>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
-msgid "<span class=\"metric-label\">Avg Salary</span>"
-msgstr "<span class=\"metric-label\">Trung bình Lương</span>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
-msgid "<span class=\"metric-label\">Employees</span>"
-msgstr "<span class=\"metric-label\">Nhân viên</span>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
-msgid "<span class=\"metric-label\">Total Payroll</span>"
-msgstr "<span class=\"metric-label\">Tổng Bảng lương</span>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-msgid "<span class=\"o_stat_text\">Contract</span>"
-msgstr "<span class=\"o_stat_text\">Hợp đồng</span>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-msgid "<span class=\"o_stat_text\">Employee</span>"
-msgstr "<span class=\"o_stat_text\">Nhân viên</span>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_enhanced
-msgid "<span class=\"stat-label\">Employees</span>"
-msgstr "<span class=\"stat-label\">Nhân viên</span>"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_enhanced
-msgid "<span class=\"stat-label\">Payroll</span>"
-msgstr "<span class=\"stat-label\">Bảng lương</span>"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_salary_configuration_workflow
@@ -265,23 +143,23 @@ msgstr "<strong>Tiền tệ:</strong>"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
 msgid ""
-"<strong>Field Mapping:</strong> Configure how external data maps to Odoo "
-"employee fields."
+"<strong>Field Mapping:</strong> Configure how external data maps to Payobook employee "
+"fields."
 msgstr ""
-"<strong>Trường Ánh xạ:</strong> Cấu hình cách bên ngoài dữ liệu ánh xạ để Odoo "
-"nhân viên trường."
+"<strong>Trường Ánh xạ:</strong> Cấu hình cách dữ liệu bên ngoài ánh xạ tới các trường "
+"nhân viên của Payobook."
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
-msgid ""
-"<strong>Field Mapping:</strong> Map your spreadsheet columns to Odoo fields."
+msgid "<strong>Field Mapping:</strong> Map your spreadsheet columns to Payobook fields."
 msgstr ""
-"<strong>Trường Ánh xạ:</strong> Ánh xạ của bạn bảng tính cột để Odoo trường."
+"<strong>Trường Ánh xạ:</strong> Ánh xạ các cột bảng tính của bạn tới các trường "
+"Payobook."
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "<strong>India:</strong> __custom__.payrollstaging_india"
-msgstr "<strong>India:</strong> __custom__.payrollstaging_india"
+msgstr "<strong>Ấn Độ:</strong> __custom__.payrollstaging_india"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
@@ -300,10 +178,10 @@ msgstr "<strong>Xem trước:</strong> Hiển thị mẫu của nhân viên đ�
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
-msgid ""
-"<strong>Preview:</strong> Shows first 10 rows of your data for validation."
+msgid "<strong>Preview:</strong> Shows first 10 rows of your data for validation."
 msgstr ""
-"<strong>Xem trước:</strong> Hiển thị đầu tiên 10 dòng của của bạn dữ liệu cho xác thực."
+"<strong>Xem trước:</strong> Hiển thị đầu tiên 10 dòng của của bạn dữ liệu cho xác "
+"thực."
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
@@ -317,7 +195,7 @@ msgstr ""
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "<strong>Singapore:</strong> __custom__.payrollstaging_singapore"
-msgstr "<strong>Singapore:</strong> __custom__.payrollstaging_singapore"
+msgstr "<strong> Singapore:</strong> __custom__.payrollstaging_singapore"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
@@ -327,7 +205,7 @@ msgstr "<strong>Trạng thái:</strong>"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "<strong>Thailand:</strong> __custom__.payrollstaging_thailand"
-msgstr "<strong>Thailand:</strong> __custom__.payrollstaging_thailand"
+msgstr "<strong>Thái Lan:</strong> __custom__.payrollstaging_thailand"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_custom_field_mapping_form
@@ -347,24 +225,18 @@ msgstr ""
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "<strong>Vietnam:</strong> __custom__.payrollstaging"
-msgstr "<strong>Vietnam:</strong> __custom__.payrollstaging"
+msgstr "<strong>Việt Nam:</strong> __custom__.payrollstaging"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "A dashboard for %s already exists."
-msgstr " bảng điều khiển cho %s đã tồn tại."
+msgstr "bảng điều khiển cho %s đã tồn tại."
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__data_source_url
 msgid "API URL"
 msgstr "API URL"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_aadhaar_number
-msgid "Aadhaar Number"
-msgstr "Aadhaar Số"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.payroll_country_selector_enhanced
@@ -374,23 +246,14 @@ msgstr "Truy cập Bảng điều khiển"
 #. module: pb_hr_payroll_base
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
-#, python-format
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:420
 msgid "Access Request Required"
 msgstr "Truy cập Yêu cầu Bắt buộc"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid ""
-"Access interactive payroll spreadsheet for detailed salary component "
-"management, calculations, and data analysis."
-msgstr ""
-"Truy cập interactive bảng lương bảng tính cho chi tiết lương thành phần "
-"quản lý, tính toán, và dữ liệu phân tích."
-
-#. module: pb_hr_payroll_base
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
-#, python-format
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:458
 msgid "Access request sent successfully"
 msgstr "Truy cập yêu cầu sent thành công"
 
@@ -432,7 +295,7 @@ msgstr "Truy cập để Vietnam bảng lương hệ thống"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_form_base
 msgid "Accounting"
-msgstr "Accounting"
+msgstr "Kế toán"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_needaction
@@ -445,7 +308,6 @@ msgstr "Hành động Cần"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__structure_state__active
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__state__active
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
 msgid "Active"
 msgstr "Đang hoạt động"
 
@@ -454,11 +316,6 @@ msgstr "Đang hoạt động"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
 msgid "Active Contracts"
 msgstr "Đang hoạt động Hợp đồng"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
-msgid "Active Status"
-msgstr "Đang hoạt động Trạng thái"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__activity_ids
@@ -481,14 +338,9 @@ msgid "Activity Type Icon"
 msgstr "Hoạt động Loại Biểu tượng"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Additional Statistics"
-msgstr "Bổ sung Statistics"
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__address
 msgid "Address"
-msgstr "Address"
+msgstr "Địa chỉ"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__address_field
@@ -501,19 +353,9 @@ msgid "Adjustments"
 msgstr "Điều chỉnh"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Advanced Analytics"
-msgstr "Nâng cao Phân tích"
-
-#. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
 msgid "Advanced Settings"
 msgstr "Nâng cao Cài đặt"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Advanced analytics and reporting capabilities"
-msgstr "Nâng cao phân tích và báo cáo capabilities"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__affects_net_salary
@@ -565,14 +407,8 @@ msgstr "Phân tích"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_analytics.py:0
-#, python-format
 msgid "Analytics Computed"
 msgstr "Phân tích Đã tính toán"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Analytics Configuration"
-msgstr "Phân tích Cấu hình"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__analytics_enabled
@@ -582,7 +418,6 @@ msgstr "Phân tích Được bật"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
-#, python-format
 msgid "Analytics Generated"
 msgstr "Phân tích Đã tạo"
 
@@ -597,21 +432,14 @@ msgid "Analytics Options"
 msgstr "Phân tích Tùy chọn"
 
 #. module: pb_hr_payroll_base
-#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_analytics_report
-msgid "Analytics Reports"
-msgstr "Phân tích Báo cáo"
-
-#. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_analytics.py:0
-#, python-format
 msgid "Analytics have been successfully computed."
 msgstr "Phân tích có được thành công đã tính toán."
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
-#, python-format
 msgid ""
 "Analytics report \"%s\" has been generated successfully.\n"
 "Period: %s to %s\n"
@@ -641,21 +469,11 @@ msgid "Analyze Salary Components"
 msgstr "Phân tích Lương Thành phần"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Animated country selector with permission management"
-msgstr "Animated quốc gia selector với permission quản lý"
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__annually
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__annually
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__annually
 msgid "Annually"
-msgstr "Annually"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Anomalies"
-msgstr "Bất thường"
+msgstr "Hàng năm"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__anomaly_threshold
@@ -665,33 +483,11 @@ msgstr "Bất thường Threshold (%)"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
-#, python-format
 msgid "Anomaly threshold must be between 0 and 100."
 msgstr "Bất thường threshold phải được between 0 và 100."
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Approval & Notes"
-msgstr "Phê duyệt & Ghi chú"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Approval Information"
-msgstr "Phê duyệt Thông tin"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Approval Workflow"
-msgstr "Phê duyệt Quy trình"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Approve"
-msgstr "Phê duyệt"
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__state__approved
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
 msgid "Approved"
 msgstr "Tán thành"
 
@@ -763,7 +559,6 @@ msgstr "Tự động Đồng bộ Được bật"
 
 #. module: pb_hr_payroll_base
 #: model:ir.actions.server,name:pb_hr_payroll_base.cron_auto_generate_analytics_ir_actions_server
-#: model:ir.cron,cron_name:pb_hr_payroll_base.cron_auto_generate_analytics
 msgid "Auto-Generate Monthly Payroll Analytics"
 msgstr "Tự động-Tạo Hàng tháng Bảng lương Phân tích"
 
@@ -775,15 +570,8 @@ msgstr "Tự động tạo kỳ tên"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__average_salary
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__average_salary
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
 msgid "Average Salary"
 msgstr "Mức lương trung bình"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Average Salary Growth"
-msgstr "Trung bình Lương Tăng trưởng"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__average_salary
@@ -791,24 +579,9 @@ msgid "Average salary across all employees"
 msgstr "Trung bình lương trên toàn tất cả nhân viên"
 
 #. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_kesehatan_employee
-msgid "BPJS Kesehatan (Employee)"
-msgstr "BPJS Kesehatan (Nhân viên)"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_kesehatan_employer
-msgid "BPJS Kesehatan (Employer)"
-msgstr "BPJS Kesehatan (Người sử dụng lao động)"
-
-#. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "BPJS Kesehatan (Health Insurance)"
 msgstr "BPJS Kesehatan (Sức khỏe Bảo hiểm)"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_kesehatan_number
-msgid "BPJS Kesehatan Number"
-msgstr "BPJS Kesehatan Số"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
@@ -816,59 +589,9 @@ msgid "BPJS Ketenagakerjaan (Employment Insurance)"
 msgstr "BPJS Ketenagakerjaan (Việc làm Bảo hiểm)"
 
 #. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_ketenagakerjaan_number
-msgid "BPJS Ketenagakerjaan Number"
-msgstr "BPJS Ketenagakerjaan Số"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_tk_jht_employee
-msgid "BPJS TK JHT (Employee)"
-msgstr "BPJS TK JHT (Nhân viên)"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_tk_jht_employer
-msgid "BPJS TK JHT (Employer)"
-msgstr "BPJS TK JHT (Người sử dụng lao động)"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_tk_jkk
-msgid "BPJS TK JKK"
-msgstr "BPJS TK JKK"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_tk_jkm
-msgid "BPJS TK JKM"
-msgstr "BPJS TK JKM"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_tk_jp_employee
-msgid "BPJS TK JP (Employee)"
-msgstr "BPJS TK JP (Nhân viên)"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_tk_jp_employer
-msgid "BPJS TK JP (Employer)"
-msgstr "BPJS TK JP (Người sử dụng lao động)"
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__bank_account_field
 msgid "Bank Account Field"
 msgstr "Ngân hàng Tài khoản Trường"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-msgid "Bank Details"
-msgstr "Ngân hàng Chi tiết"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Bank File Export"
-msgstr "Ngân hàng Tệp Xuất"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
-msgid "Base Structures"
-msgstr "Cơ sở Cấu trúc"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,help:pb_hr_payroll_base.field_hr_payroll_structure__is_base_structure
@@ -877,8 +600,6 @@ msgstr "Cơ sở cấu trúc không thể được đã xóa và serve as mẫu"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
 msgid "Basic Information"
 msgstr "Basic Thông tin"
 
@@ -910,11 +631,6 @@ msgid "Batch Size"
 msgstr "Đợt Size"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Benefit Components"
-msgstr "Phúc lợi Thành phần"
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__bi-monthly
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__bi-monthly
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__bi-monthly
@@ -926,12 +642,12 @@ msgstr "Bi-hàng tháng"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__bi-weekly
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__bi-weekly
 msgid "Bi-weekly"
-msgstr "Bi-weekly"
+msgstr "Hai tuần một lần"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__birthday
 msgid "Birthday"
-msgstr "Birthday"
+msgstr "Sinh nhật"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__birthday_field
@@ -941,14 +657,14 @@ msgstr "Birthday Trường"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__import_type__bonuses
 msgid "Bonuses"
-msgstr "Bonuses"
+msgstr "Thưởng"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__field_type__boolean
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__field_mapping__field_type__boolean
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_field_mapping__data_type__boolean
 msgid "Boolean"
-msgstr "Boolean"
+msgstr "Đúng/Sai"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__file_format__csv
@@ -983,6 +699,7 @@ msgstr "Cambodia"
 
 #. module: pb_hr_payroll_base
 #: model:res.groups,name:pb_hr_payroll_base.group_payroll_cambodia
+#: model:res.groups.privilege,name:pb_hr_payroll_base.res_groups_privilege_country_cambodia
 msgid "Cambodia Payroll Access"
 msgstr "Cambodia Bảng lương Truy cập"
 
@@ -1015,9 +732,7 @@ msgstr "Có thể chế độ xem bảng lương phân tích và báo cáo"
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_importer_form
-#, python-format
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:436
 msgid "Cancel"
 msgstr "Hủy"
 
@@ -1042,20 +757,12 @@ msgid "Check Zoho API credentials and connection settings."
 msgstr "Kiểm tra Zoho API credentials và kết nối cài đặt."
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_enhanced_country_selector
-msgid "Choose your country to access the appropriate payroll dashboard."
-msgstr "Choose của bạn quốc gia để truy cập appropriate bảng lương bảng điều khiển."
-
-#. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.payroll_country_selector_enhanced
-msgid ""
-"Choose your country to access the appropriate payroll management system"
-msgstr ""
-"Choose của bạn quốc gia để truy cập appropriate bảng lương quản lý hệ thống"
+msgid "Choose your country to access the appropriate payroll management system"
+msgstr "Choose của bạn quốc gia để truy cập appropriate bảng lương quản lý hệ thống"
 
 #. module: pb_hr_payroll_base
 #: model:ir.actions.server,name:pb_hr_payroll_base.cron_cleanup_old_analytics_ir_actions_server
-#: model:ir.cron,cron_name:pb_hr_payroll_base.cron_cleanup_old_analytics
 msgid "Cleanup Old Analytics Data"
 msgstr "Cleanup Cũ Phân tích Dữ liệu"
 
@@ -1087,11 +794,6 @@ msgid "Compare with Period"
 msgstr "Compare với Kỳ"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Comparison"
-msgstr "So sánh"
-
-#. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "Complete setup guide for all supported countries"
 msgstr "Hoàn tất thiết lập guide cho tất cả supported quốc gia"
@@ -1110,33 +812,13 @@ msgstr "Tuân thủ Ghi chú"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
 msgid "Component Analysis"
 msgstr "Thành phần Phân tích"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid ""
-"Comprehensive payroll analytics with month-over-month comparisons, trend "
-"analysis, and detailed reporting capabilities."
-msgstr ""
-"Comprehensive bảng lương phân tích với tháng-over-tháng comparisons, xu hướng "
-"phân tích, và chi tiết báo cáo capabilities."
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Compute Analytics"
-msgstr "Tính toán Phân tích"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__state__computing
 msgid "Computing Analytics"
 msgstr "Đang tính Phân tích"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
-msgid "Confidential"
-msgstr "Confidential"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_salary_configuration_workflow
@@ -1145,12 +827,8 @@ msgstr "Cấu hình của bạn bảng lương công thức bộ máy trong 3 si
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_salary_configuration_workflow
-msgid ""
-"Connect to external HR systems like Zoho People, SAP, or import from Excel "
-"files"
-msgstr ""
-"Kết nối để bên ngoài HR hệ thống like Zoho People, SAP, hoặc nhập từ Excel "
-"tệp"
+msgid "Connect to external HR systems like Zoho People, SAP, or import from Excel files"
+msgstr "Kết nối để bên ngoài HR hệ thống like Zoho People, SAP, hoặc nhập từ Excel tệp"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__zoho_connection_status__connected
@@ -1160,28 +838,25 @@ msgstr "Đã kết nối"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Connection Successful"
 msgstr "Kết nối Thành công"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Connection error: %s"
 msgstr "Kết nối lỗi: %s"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Connection failed with status code: %s"
 msgstr "Kết nối thất bại với trạng thái mã: %s"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_salary_configuration_workflow
 msgid "Connector"
-msgstr "Connector"
+msgstr "Kết nối"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
@@ -1197,11 +872,6 @@ msgstr "Hợp đồng Bắt đầu Ngày"
 #: model:ir.model,name:pb_hr_payroll_base.model_hr_contract_type
 msgid "Contract Type"
 msgstr "Kiểu Hợp đồng"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Contract Type Breakdown"
-msgstr "Hợp đồng Loại Phân tích"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_form_base
@@ -1235,17 +905,8 @@ msgstr "Hợp đồng Đã tạo"
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__country_code
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_search_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
 msgid "Country"
 msgstr "Quốc gia"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-msgid "Country & Payroll"
-msgstr "Quốc gia & Bảng lương"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
@@ -1254,14 +915,8 @@ msgstr "Quốc gia & Scope"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_category_form_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
 msgid "Country Configuration"
 msgstr "Quốc gia Cấu hình"
-
-#. module: pb_hr_payroll_base
-#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_dashboard_country
-msgid "Country Dashboard"
-msgstr "Quốc gia Bảng điều khiển"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
@@ -1272,11 +927,6 @@ msgstr "Quốc gia Thông tin"
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__country_id
 msgid "Country Reference"
 msgstr "Quốc gia Reference"
-
-#. module: pb_hr_payroll_base
-#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_enhanced_country_selector
-msgid "Country Selector"
-msgstr "Quốc gia Selector"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model,name:pb_hr_payroll_base.model_country_selector_wizard
@@ -1298,13 +948,8 @@ msgstr "Quốc gia mã cho bảng lương đang xử lý"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,help:pb_hr_payroll_base.field_hr_payroll_structure__country_id
-msgid "Country for which this payroll structure is applicable"
-msgstr "Quốc gia cho mà này bảng lương cấu trúc là applicable"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
-msgid "Country-Specific Mapping"
-msgstr "Quốc gia-Cụ thể Ánh xạ"
+msgid "Country this payroll structure applies to"
+msgstr "Quốc gia mà cơ cấu bảng lương này áp dụng cho"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
@@ -1347,36 +992,9 @@ msgid "Create comprehensive analytics for payroll data"
 msgstr "Tạo comprehensive phân tích cho bảng lương dữ liệu"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_analytics_dashboard
-msgid ""
-"Create comprehensive analytics reports to gain insights into your \n"
-"                payroll trends, employee growth, and compensation analysis."
-msgstr ""
-"Tạo comprehensive phân tích báo cáo để gain insights vào của bạn \n"
-" bảng lương trends, nhân viên tăng trưởng, và compensation phân tích."
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_country
-msgid ""
-"Create dashboards for each country to track payroll statistics and "
-"performance."
-msgstr ""
-"Tạo bảng điều khiển cho mỗi quốc gia để track bảng lương statistics và "
-"performance."
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_import_wizard__import_mode__create_update
 msgid "Create or Update"
 msgstr "Tạo hoặc Cập nhật"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
-msgid ""
-"Create professional dashboards for each country with animated flags, advanced analytics, \n"
-"                and comprehensive payroll management capabilities."
-msgstr ""
-"Tạo chuyên nghiệp bảng điều khiển cho mỗi quốc gia với animated flags, nâng cao phân tích, \n"
-" và comprehensive bảng lương quản lý capabilities."
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
@@ -1391,16 +1009,6 @@ msgid ""
 msgstr ""
 "Tạo của bạn đầu tiên bảng lương phân tích báo cáo để get insights vào \n"
 " bảng lương trends, nhân viên tăng trưởng, và compensation phân tích."
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__created_contract_id
-msgid "Created Contract"
-msgstr "Đã tạo Hợp đồng"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__created_employee_id
-msgid "Created Employee"
-msgstr "Đã tạo Nhân viên"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__create_uid
@@ -1447,8 +1055,6 @@ msgstr "Tài khoản ghi Có"
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__currency_id
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__currency_id
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__currency_id
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
 msgid "Currency"
 msgstr "Tiền tệ"
 
@@ -1461,11 +1067,6 @@ msgstr "Tiền tệ Trường"
 #: model:ir.model.fields,help:pb_hr_payroll_base.field_hr_payroll_structure__currency_id
 msgid "Currency for this payroll structure"
 msgstr "Tiền tệ cho này bảng lương cấu trúc"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
-msgid "Current Year"
-msgstr "Hiện tại Năm"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__custom_domain
@@ -1522,7 +1123,7 @@ msgstr "Tùy chỉnh Validations"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__daily
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__daily
 msgid "Daily"
-msgstr "Daily"
+msgstr "Hàng ngày"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__dashboard_theme__dark
@@ -1536,19 +1137,12 @@ msgstr "Bảng điều khiển"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__name
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
 msgid "Dashboard Name"
 msgstr "Bảng điều khiển Tên"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Dashboard Overview"
-msgstr "Bảng điều khiển Overview"
-
-#. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "Dashboard Refreshed"
 msgstr "Bảng điều khiển Refreshed"
 
@@ -1617,11 +1211,6 @@ msgid "Debit Account"
 msgstr "Tài khoản ghi Nợ"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Deduction Components"
-msgstr "Deduction Thành phần"
-
-#. module: pb_hr_payroll_base
 #: model:hr.salary.rule.category,name:pb_hr_payroll_base.salary_rule_category_deductions_demo
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__category_type__deduction
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__import_type__deductions
@@ -1677,32 +1266,26 @@ msgstr "Mặc định Làm việc Hours"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_salary_configuration_workflow
-msgid ""
-"Define Excel-like formulas for salary calculations with drag-and-drop rules"
-msgstr ""
-"Định nghĩa Giống Excel công thức cho lương tính toán với drag-và-drop quy tắc"
+msgid "Define Excel-like formulas for salary calculations with drag-and-drop rules"
+msgstr "Định nghĩa Giống Excel công thức cho lương tính toán với drag-và-drop quy tắc"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid ""
-"Demo data generation is currently only available for Vietnam and Indonesia. "
-"Current country: %s"
+"Demo data generation is currently only available for Vietnam and Indonesia. Current "
+"country: %s"
 msgstr ""
-"Demo dữ liệu tạo là hiện tại chỉ sẵn có cho Vietnam và Indonesia. "
-"Hiện tại quốc gia: %s"
+"Demo dữ liệu tạo là hiện tại chỉ sẵn có cho Vietnam và Indonesia. Hiện tại quốc gia: "
+"%s"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__department
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
 msgid "Department"
 msgstr "Phòng cấm"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__include_department_breakdown
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
 msgid "Department Breakdown"
 msgstr "Phòng cấm Phân tích"
 
@@ -1724,17 +1307,17 @@ msgstr "Phòng cấm Bộ lọc"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__structure_state__deprecated
 msgid "Deprecated"
-msgstr "Deprecated"
+msgstr "Ngừng sử dụng"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__description
 msgid "Description"
-msgstr "Description"
+msgstr "Mô tả"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__zoho_connection_status__disconnected
 msgid "Disconnected"
-msgstr "Disconnected"
+msgstr "Đã ngắt kết nối"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__display_name
@@ -1742,6 +1325,12 @@ msgstr "Disconnected"
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__display_name
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__display_name
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract_type__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__display_name
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__display_name
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_country_selector__display_name
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__display_name
@@ -1787,26 +1376,8 @@ msgstr "Tải xuống Mẫu"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__state__draft
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__state__draft
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__state__draft
-#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__processing_status__draft
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
 msgid "Draft"
 msgstr "Bản nháp"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_esi_employee
-msgid "ESI (Employee)"
-msgstr "ESI (Nhân viên)"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_esi_employer
-msgid "ESI (Employer)"
-msgstr "ESI (Người sử dụng lao động)"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_esi_number
-msgid "ESI Number"
-msgstr "ESI Số"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
@@ -1826,7 +1397,7 @@ msgstr "Email Trường"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__emergency_contact
 msgid "Emergency Contact"
-msgstr "Emergency Contact"
+msgstr "Liên hệ khẩn cấp"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__emergency_contact_field
@@ -1841,14 +1412,12 @@ msgstr "Nhân viên"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Employee %s already exists"
 msgstr "Nhân viên %s đã tồn tại"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
-#, python-format
 msgid "Employee %s not found"
 msgstr "Nhân viên %s không tìm thấy"
 
@@ -1864,11 +1433,6 @@ msgid "Employee Count"
 msgstr "Nhân viên Số lượng"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Employee Data Management"
-msgstr "Nhân viên Dữ liệu Quản lý"
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__employee_email_column
 msgid "Employee Email Column"
 msgstr "Nhân viên Email Cột"
@@ -1877,21 +1441,6 @@ msgstr "Nhân viên Email Cột"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
 msgid "Employee Fields"
 msgstr "Nhân viên Trường"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Employee Growth"
-msgstr "Nhân viên Tăng trưởng"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Employee Growth Trend"
-msgstr "Nhân viên Tăng trưởng Xu hướng"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-msgid "Employee ID"
-msgstr "Nhân viên ID"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model,name:pb_hr_payroll_base.model_employee_import_wizard
@@ -1928,11 +1477,6 @@ msgstr "Nhân viên Tỷ lệ (%)"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "Employee State Insurance (ESI)"
 msgstr "Nhân viên Trạng thái Bảo hiểm (ESI)"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
-msgid "Employee Type"
-msgstr "Nhân viên Loại"
 
 #. module: pb_hr_payroll_base
 #: model:ir.actions.act_window,name:pb_hr_payroll_base.action_hr_employee_payroll
@@ -1973,26 +1517,6 @@ msgid "Enhanced Configuration"
 msgstr "Nâng cao Cấu hình"
 
 #. module: pb_hr_payroll_base
-#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_dashboard_enhanced
-msgid "Enhanced Multi-Country Payroll Dashboard"
-msgstr "Nâng cao Multi-Quốc gia Bảng lương Bảng điều khiển"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Enhanced Payroll Dashboard"
-msgstr "Nâng cao Bảng lương Bảng điều khiển"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_tree_enhanced
-msgid "Enhanced Payroll Dashboards"
-msgstr "Nâng cao Bảng lương Bảng điều khiển"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Enhanced Statistics"
-msgstr "Nâng cao Statistics"
-
-#. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "Ensure spreadsheets have the correct External IDs listed in Step 1."
 msgstr "Ensure spreadsheets có correct Bên ngoài IDs listed trong Bước 1."
@@ -2000,11 +1524,11 @@ msgstr "Ensure spreadsheets có correct Bên ngoài IDs listed trong Bước 1."
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_form_base
 msgid ""
-"Enter compliance requirements, legal notes, or special considerations for "
-"this payroll structure..."
+"Enter compliance requirements, legal notes, or special considerations for this payroll"
+" structure..."
 msgstr ""
-"Nhập tuân thủ requirements, legal ghi chú, hoặc special considerations cho "
-"này bảng lương cấu trúc..."
+"Nhập tuân thủ requirements, legal ghi chú, hoặc special considerations cho này bảng "
+"lương cấu trúc..."
 
 #. module: pb_hr_payroll_base
 #. odoo-javascript
@@ -2012,11 +1536,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__state__error
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__zoho_connection_status__error
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__state__error
-#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__processing_status__error
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
-#, python-format
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:511
 msgid "Error"
 msgstr "Lỗi"
 
@@ -2031,11 +1551,6 @@ msgid "Error Handling"
 msgstr "Lỗi Handling"
 
 #. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__error_message
-msgid "Error Message"
-msgstr "Lỗi Thông báo"
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__error_email_recipients
 msgid "Error Report Recipients"
 msgstr "Lỗi Báo cáo Recipients"
@@ -2048,22 +1563,18 @@ msgstr "Lỗi Threshold (%)"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Error connecting to API: %s"
 msgstr "Lỗi connecting để API: %s"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Error connecting to Zoho: %s"
 msgstr "Lỗi connecting để Zoho: %s"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "Error creating demo data: %s"
 msgstr "Lỗi đang tạo demo dữ liệu: %s"
 
@@ -2071,21 +1582,18 @@ msgstr "Lỗi đang tạo demo dữ liệu: %s"
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
 #: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
-#, python-format
 msgid "Error creating error report: %s"
 msgstr "Lỗi đang tạo lỗi báo cáo: %s"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Error creating template: %s"
 msgstr "Lỗi đang tạo mẫu: %s"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
-#, python-format
 msgid "Error generating analytics: %s"
 msgstr "Lỗi generating phân tích: %s"
 
@@ -2093,28 +1601,24 @@ msgstr "Lỗi generating phân tích: %s"
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
 #: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
-#, python-format
 msgid "Error generating preview: %s"
 msgstr "Lỗi generating xem trước: %s"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/zoho_staging_wizard.py:0
-#, python-format
 msgid "Error importing data: %s"
 msgstr "Lỗi đang nhập dữ liệu: %s"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "Error in payroll process: %s"
 msgstr "Lỗi trong bảng lương xử lý: %s"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Error loading preview: %s"
 msgstr "Lỗi đang tải xem trước: %s"
 
@@ -2122,7 +1626,6 @@ msgstr "Lỗi đang tải xem trước: %s"
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
 #: code:addons/pb_hr_payroll_base/wizards/zoho_staging_wizard.py:0
-#, python-format
 msgid "Error previewing file: %s"
 msgstr "Lỗi previewing tệp: %s"
 
@@ -2130,21 +1633,18 @@ msgstr "Lỗi previewing tệp: %s"
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/zoho_base_models.py:0
 #: code:addons/pb_hr_payroll_base/models/zoho_staging_base.py:0
-#, python-format
 msgid "Error processing data: %s"
 msgstr "Lỗi đang xử lý dữ liệu: %s"
 
 #. module: pb_hr_payroll_base
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
-#, python-format
 msgid "Error sending access request: "
 msgstr "Lỗi sending truy cập yêu cầu: "
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
-#, python-format
 msgid "Error threshold exceeded. Import stopped."
 msgstr "Lỗi threshold exceeded. Nhập stopped."
 
@@ -2174,22 +1674,7 @@ msgid "Exchange Rate Date"
 msgstr "Exchange Tỷ lệ Ngày"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Export Report"
-msgstr "Xuất Báo cáo"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid ""
-"Export payroll data to bank format for automated salary disbursement and "
-"payment processing with validation."
-msgstr ""
-"Xuất bảng lương dữ liệu để ngân hàng định dạng cho tự động lương disbursement và "
-"payment đang xử lý với xác thực."
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__export_to_excel
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
 msgid "Export to Excel"
 msgstr "Xuất để Excel"
 
@@ -2211,7 +1696,7 @@ msgstr "Thất bại Bản ghi"
 #. module: pb_hr_payroll_base
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
-#, python-format
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:462
 msgid "Failed to send access request"
 msgstr "Thất bại để gửi truy cập yêu cầu"
 
@@ -2249,7 +1734,6 @@ msgstr "Tệp Tải lên"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
-#, python-format
 msgid "File format %s not supported yet"
 msgstr "Tệp định dạng %s không supported vẫn"
 
@@ -2258,7 +1742,7 @@ msgstr "Tệp định dạng %s không supported vẫn"
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__import_filename
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__import_filename
 msgid "Filename"
-msgstr "Filename"
+msgstr "Tên tệp"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__wage_calculation__fixed
@@ -2269,7 +1753,7 @@ msgstr "Cố định Lương"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.payroll_country_selector_enhanced
 msgid "Flow"
-msgstr "Flow"
+msgstr "Quy trình"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_follower_ids
@@ -2300,14 +1784,8 @@ msgstr "Công thức"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
-#, python-format
 msgid "Found %d employees and %d payslips for analysis."
 msgstr "Tìm thấy %d nhân viên và %d phiếu lương cho phân tích."
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-msgid "Full Name (English)"
-msgstr "Đầy đủ Tên (English)"
 
 #. module: pb_hr_payroll_base
 #: model:res.groups,comment:pb_hr_payroll_base.group_payroll_super_admin
@@ -2316,15 +1794,13 @@ msgstr "Đầy đủ truy cập để tất cả bảng lương hệ thống và
 
 #. module: pb_hr_payroll_base
 #: model:res.groups,comment:pb_hr_payroll_base.group_payroll_base_manager
-msgid ""
-"Full payroll management including salary rules, structures, and analytics"
-msgstr ""
-"Đầy đủ bảng lương quản lý including lương quy tắc, cấu trúc, và phân tích"
+msgid "Full payroll management including salary rules, structures, and analytics"
+msgstr "Đầy đủ bảng lương quản lý including lương quy tắc, cấu trúc, và phân tích"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__gender
 msgid "Gender"
-msgstr "Gender"
+msgstr "Giới tính"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__gender_field
@@ -2336,11 +1812,6 @@ msgstr "Gender Trường"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
 msgid "Generate Analytics"
 msgstr "Tạo Phân tích"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_analytics_dashboard
-msgid "Generate Analytics Report"
-msgstr "Tạo Phân tích Báo cáo"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__generate_charts
@@ -2360,7 +1831,6 @@ msgstr "Tạo Xem trước"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
-#, python-format
 msgid "Generated Analytics"
 msgstr "Đã tạo Phân tích"
 
@@ -2380,11 +1850,6 @@ msgid "Go to Settings → Users and assign country-specific groups:"
 msgstr "Go để Cài đặt → Users và gán quốc gia-cụ thể nhóm:"
 
 #. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_gratuity
-msgid "Gratuity"
-msgstr "Gratuity"
-
-#. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "Gratuity Payments"
 msgstr "Gratuity Thanh toán"
@@ -2395,33 +1860,11 @@ msgid "Gross Salary Column"
 msgstr "Gross Lương Cột"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_search_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
-msgid "Group By"
-msgstr "Nhóm Bởi"
-
-#. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
-msgid ""
-"HR Flow module is not installed. Please install pb_hr_flow to use Workflow."
+msgid "HR Flow module is not installed. Please install pb_hr_flow to use Workflow."
 msgstr ""
 "HR Flow mô-đun là không installed. Vui lòng cài đặt pb_hr_flow để sử dụng Quy trình."
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
-msgid "Has Anomalies"
-msgstr "Có Bất thường"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
-msgid "Has Employees"
-msgstr "Có Nhân viên"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__has_header_row
@@ -2442,7 +1885,7 @@ msgstr "Sức khỏe Bảo hiểm (HI)"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__hourly
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__hourly
 msgid "Hourly"
-msgstr "Hourly"
+msgstr "Theo giờ"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__wage_calculation__hourly
@@ -2477,6 +1920,12 @@ msgstr "Hybrid (Cố định + Variable)"
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__id
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__id
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract_type__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__id
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__id
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_country_selector__id
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__id
@@ -2518,25 +1967,16 @@ msgstr "Nếu unchecked, này bảng lương cấu trúc sẽ được hidden t�
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Import Completed"
 msgstr "Nhập Hoàn tất"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
 msgid "Import Configuration"
 msgstr "Nhập Cấu hình"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_importer_form
-msgid "Import Data"
-msgstr "Nhập Dữ liệu"
-
-#. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_importer_form
 msgid "Import Employee Data"
 msgstr "Nhập Nhân viên Dữ liệu"
 
@@ -2592,7 +2032,6 @@ msgstr "Nhập Statistics"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "Import Successful"
 msgstr "Nhập Thành công"
 
@@ -2609,43 +2048,8 @@ msgstr "Nhập Loại"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "Import Warning"
 msgstr "Nhập Cảnh báo"
-
-#. module: pb_hr_payroll_base
-#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_staging_import_wizard
-msgid "Import Zoho Data"
-msgstr "Nhập Zoho Dữ liệu"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_importer_form
-msgid "Import Zoho Employee Data"
-msgstr "Nhập Zoho Nhân viên Dữ liệu"
-
-#. module: pb_hr_payroll_base
-#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_staging_importer
-msgid "Import Zoho Employees"
-msgstr "Nhập Zoho Nhân viên"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
-msgid "Import Zoho Staging Data"
-msgstr "Nhập Zoho Trung gian Dữ liệu"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid ""
-"Import and manage employee information from Zoho People system with "
-"automated data synchronization and validation."
-msgstr ""
-"Nhập và quản lý nhân viên thông tin từ Zoho People hệ thống với "
-"tự động dữ liệu synchronization và xác thực."
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
-msgid "Import and process employee data for multiple countries"
-msgstr "Nhập và xử lý nhân viên dữ liệu cho multiple quốc gia"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
@@ -2653,25 +2057,14 @@ msgid "Import data and create payslips"
 msgstr "Nhập dữ liệu và tạo phiếu lương"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_zoho_staging_data_enhanced
-msgid "Import employee data from Zoho"
-msgstr "Nhập nhân viên dữ liệu từ Zoho"
-
-#. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
 msgid "Import employee information from external sources"
 msgstr "Nhập nhân viên thông tin từ bên ngoài sources"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_importer_form
-msgid "Import employees from Zoho People to staging area"
-msgstr "Nhập nhân viên từ Zoho People để trung gian area"
-
-#. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
 #: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
-#, python-format
 msgid "Import failed: %s"
 msgstr "Nhập thất bại: %s"
 
@@ -2683,7 +2076,6 @@ msgstr "Quan trọng tuân thủ thông tin cho này cấu trúc"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Imported %d employees, updated %d, %d failed."
 msgstr "Được nhập %d nhân viên, đã cập nhật %d, %d thất bại."
 
@@ -2695,16 +2087,14 @@ msgstr "Được nhập Số lượng"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Imported Employees"
 msgstr "Được nhập Nhân viên"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__state__inactive
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
 msgid "Inactive"
-msgstr "Inactive"
+msgstr "Không hoạt động"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__include_all_employees
@@ -2744,18 +2134,15 @@ msgstr "Thu nhập Thuế (TDS)"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_employee__payroll_country__in
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__payroll_country_code__in
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payslip_line__payroll_country_code__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payslip_line_analytics__payroll_country_code__in
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule__payroll_country_code__in
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__payroll_country_code__in
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__country_code__in
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_country_selector__country__in
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__country__in
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__country_code__in
-#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__payroll_country__in
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_import_wizard__target_country__in
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
 msgid "India"
 msgstr "India"
 
@@ -2765,17 +2152,8 @@ msgid "India Employees"
 msgstr "India Nhân viên"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
-msgid "India Employer Contributions"
-msgstr "India Người sử dụng lao động Đóng góp"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_income_tax
-msgid "India Income Tax"
-msgstr "India Thu nhập Thuế"
-
-#. module: pb_hr_payroll_base
 #: model:res.groups,name:pb_hr_payroll_base.group_payroll_india
+#: model:res.groups.privilege,name:pb_hr_payroll_base.res_groups_privilege_country_india
 msgid "India Payroll Access"
 msgstr "India Bảng lương Truy cập"
 
@@ -2790,31 +2168,6 @@ msgid "India Payroll User"
 msgstr "India Bảng lương Người dùng"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
-msgid "India Specific"
-msgstr "India Cụ thể"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
-msgid "India Specific Info"
-msgstr "India Cụ thể Thông tin"
-
-#. module: pb_hr_payroll_base
-#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_staging_india
-msgid "India Staging Data"
-msgstr "India Trung gian Dữ liệu"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
-msgid "India Tax & Deductions"
-msgstr "India Thuế & Khấu trừ"
-
-#. module: pb_hr_payroll_base
-#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_india_data
-msgid "India Zoho Data"
-msgstr "India Zoho Dữ liệu"
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__country_code__id
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__country_selector_wizard__country__id
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__country_code__id
@@ -2822,18 +2175,15 @@ msgstr "India Zoho Dữ liệu"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_employee__payroll_country__id
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__payroll_country_code__id
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payslip_line__payroll_country_code__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payslip_line_analytics__payroll_country_code__id
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule__payroll_country_code__id
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__payroll_country_code__id
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__country_code__id
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_country_selector__country__id
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__country__id
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__country_code__id
-#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__payroll_country__id
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_import_wizard__target_country__id
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
 msgid "Indonesia"
 msgstr "Indonesia"
 
@@ -2843,17 +2193,8 @@ msgid "Indonesia Employees"
 msgstr "Indonesia Nhân viên"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
-msgid "Indonesia Employer BPJS"
-msgstr "Indonesia Người sử dụng lao động BPJS"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_pph21_tax
-msgid "Indonesia PPh21 Tax"
-msgstr "Indonesia PPh21 Thuế"
-
-#. module: pb_hr_payroll_base
 #: model:res.groups,name:pb_hr_payroll_base.group_payroll_indonesia
+#: model:res.groups.privilege,name:pb_hr_payroll_base.res_groups_privilege_country_indonesia
 msgid "Indonesia Payroll Access"
 msgstr "Indonesia Bảng lương Truy cập"
 
@@ -2866,31 +2207,6 @@ msgstr "Indonesia Bảng lương Bảng điều khiển"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "Indonesia Payroll User"
 msgstr "Indonesia Bảng lương Người dùng"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
-msgid "Indonesia Specific"
-msgstr "Indonesia Cụ thể"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
-msgid "Indonesia Specific Info"
-msgstr "Indonesia Cụ thể Thông tin"
-
-#. module: pb_hr_payroll_base
-#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_staging_indonesia
-msgid "Indonesia Staging Data"
-msgstr "Indonesia Trung gian Dữ liệu"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
-msgid "Indonesia Tax & BPJS"
-msgstr "Indonesia Thuế & BPJS"
-
-#. module: pb_hr_payroll_base
-#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_indonesia_data
-msgid "Indonesia Zoho Data"
-msgstr "Indonesia Zoho Dữ liệu"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__contract_state
@@ -2908,25 +2224,8 @@ msgid "Integration Problems"
 msgstr "Tích hợp Problems"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Integration and Analytics"
-msgstr "Tích hợp và Phân tích"
-
-#. module: pb_hr_payroll_base
-#: model:ir.actions.client,name:pb_hr_payroll_base.action_payroll_interactive_charts
-msgid "Interactive Analytics Charts"
-msgstr "Interactive Phân tích Biểu đồ"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Interactive Spreadsheet"
-msgstr "Interactive Bảng tính"
-
-#. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Invalid import source."
 msgstr "Invalid nhập nguồn."
 
@@ -2969,48 +2268,6 @@ msgstr "Join Ngày"
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__join_date_field
 msgid "Join Date Field"
 msgstr "Join Ngày Trường"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_ktp_number
-msgid "KTP Number"
-msgstr "KTP Số"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Key Metrics"
-msgstr "Key Chỉ số"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
-msgid "Last 6 Months"
-msgstr "Cuối 6 Months"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_tree_enhanced
-msgid "Last Modified"
-msgstr "Cuối Modified"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_country_selector_wizard____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_country_selector____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_setup_guide____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_salary_configuration_workflow_wizard____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping____last_update
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard____last_update
-msgid "Last Modified on"
-msgstr "Sửa đổi lần cuối vào"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Last Payroll"
-msgstr "Cuối Bảng lương"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__last_payroll_date
@@ -3074,15 +2331,9 @@ msgid "Loading payroll dashboard..."
 msgstr "Đang tải bảng lương bảng điều khiển..."
 
 #. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_main_attachment_id
-msgid "Main Attachment"
-msgstr "Chính Tệp đính kèm"
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__state__maintenance
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
 msgid "Maintenance"
-msgstr "Maintenance"
+msgstr "Bảo trì"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__country_code__my
@@ -3092,30 +2343,22 @@ msgstr "Maintenance"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_employee__payroll_country__my
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__payroll_country_code__my
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payslip_line__payroll_country_code__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payslip_line_analytics__payroll_country_code__my
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule__payroll_country_code__my
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__payroll_country_code__my
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__country_code__my
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_country_selector__country__my
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__country__my
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__country_code__my
-#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__payroll_country__my
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_import_wizard__target_country__my
 msgid "Malaysia"
 msgstr "Malaysia"
 
 #. module: pb_hr_payroll_base
 #: model:res.groups,name:pb_hr_payroll_base.group_payroll_malaysia
+#: model:res.groups.privilege,name:pb_hr_payroll_base.res_groups_privilege_country_malaysia
 msgid "Malaysia Payroll Access"
 msgstr "Malaysia Bảng lương Truy cập"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid ""
-"Manage payroll approvals with multi-level review process, audit trail "
-"tracking, and automated notifications."
-msgstr ""
-"Quản lý bảng lương approvals với multi-level xem lại xử lý, kiểm toán trail "
-"tracking, và tự động notifications."
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__manager
@@ -3167,14 +2410,13 @@ msgstr "Chỉ số Cuối Đã tính toán"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "Metrics have been updated successfully."
 msgstr "Chỉ số có được đã cập nhật thành công."
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__dashboard_theme__minimal
 msgid "Minimal"
-msgstr "Minimal"
+msgstr "Tối thiểu"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payslip_line__min_amount
@@ -3186,17 +2428,12 @@ msgstr "Tối thiểu Số tiền"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__data_source__mixed
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__data_source__mixed
 msgid "Mixed Sources"
-msgstr "Mixed Sources"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Mobile-responsive design with modern animations"
-msgstr "Mobile-responsive design với modern animations"
+msgstr "Nguồn hỗn hợp"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__dashboard_theme__modern
 msgid "Modern"
-msgstr "Modern"
+msgstr "Hiện đại"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__period_type__monthly
@@ -3234,29 +2471,9 @@ msgid "Multi-Country Payroll System"
 msgstr "Multi-Quốc gia Bảng lương Hệ thống"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
-msgid "Multi-Country Processing"
-msgstr "Multi-Quốc gia Đang xử lý"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
-msgid "Multi-Country Zoho Import"
-msgstr "Multi-Quốc gia Zoho Nhập"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Multi-country support with extensible architecture"
-msgstr "Multi-quốc gia support với extensible architecture"
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__my_activity_date_deadline
 msgid "My Activity Deadline"
 msgstr "My Hoạt động Hạn chót"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_npwp_number
-msgid "NPWP Number"
-msgstr "NPWP Số"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__name
@@ -3306,14 +2523,12 @@ msgstr "Tiếp theo Hoạt động Loại"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "No Employees Found"
 msgstr "Không Nhân viên Tìm thấy"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "No Spreadsheet Configured"
 msgstr "Không Bảng tính Đã cấu hình"
 
@@ -3325,7 +2540,6 @@ msgstr "Không phân tích dữ liệu tìm thấy!"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "No employees were imported."
 msgstr "Không nhân viên đã được nhập."
 
@@ -3333,14 +2547,12 @@ msgstr "Không nhân viên đã được nhập."
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
 #: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
-#, python-format
 msgid "No errors to download."
 msgstr "Không lỗi để tải xuống."
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "No spreadsheet is configured for country %s. Import skipped."
 msgstr "Không bảng tính là đã cấu hình cho quốc gia %s. Nhập bị bỏ qua."
 
@@ -3382,26 +2594,17 @@ msgid "Number of messages with delivery error"
 msgstr "Số của thông báo với giao lỗi"
 
 #. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__odoo_field
-msgid "Odoo Field"
-msgstr "Odoo Trường"
-
-#. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/zoho_staging_wizard.py:0
-#, python-format
 msgid "Only CSV files are supported currently"
 msgstr "Chỉ CSV tệp là supported hiện tại"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Optimized asset loading and improved performance"
-msgstr "Optimized asset đang tải và improved performance"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Organizational Analysis"
-msgstr "Organizational Phân tích"
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_base/static/src/js/control_panel_home_icon.js:0
+#: code:addons/pb_hr_payroll_base/static/src/js/control_panel_home_icon.js:80
+msgid "Open Dashboard"
+msgstr "Mở trang tổng quan"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract__other_allowances
@@ -3412,26 +2615,6 @@ msgstr "Other Phụ cấp"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
 msgid "Output Options"
 msgstr "Output Tùy chọn"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_pan_number
-msgid "PAN Number"
-msgstr "PAN Số"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_provident_fund_employee
-msgid "PF (Employee)"
-msgstr "PF (Nhân viên)"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_provident_fund_employer
-msgid "PF (Employer)"
-msgstr "PF (Người sử dụng lao động)"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_pf_number
-msgid "PF Number"
-msgstr "PF Số"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
@@ -3454,6 +2637,11 @@ msgid "Payment Method Field"
 msgstr "Payment Phương thức Trường"
 
 #. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__odoo_field
+msgid "Payobook Field"
+msgstr "Trường Payobook"
+
+#. module: pb_hr_payroll_base
 #: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_analysis
 #: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_analysis
 msgid "Payroll Analysis"
@@ -3461,16 +2649,11 @@ msgstr "Bảng lương Phân tích"
 
 #. module: pb_hr_payroll_base
 #: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_analytics_main
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_graph
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_pivot
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_tree
+#: model:res.groups.privilege,name:pb_hr_payroll_base.res_groups_privilege_payroll_analytics
 msgid "Payroll Analytics"
 msgstr "Bảng lương Phân tích"
 
 #. module: pb_hr_payroll_base
-#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_analytics_dashboard
 #: model:ir.model,name:pb_hr_payroll_base.model_payroll_analytics
 msgid "Payroll Analytics Dashboard"
 msgstr "Bảng điều khiển phân tích tiền lương"
@@ -3486,6 +2669,11 @@ msgid "Payroll Analytics User"
 msgstr "Bảng lương Phân tích Người dùng"
 
 #. module: pb_hr_payroll_base
+#: model:res.groups.privilege,name:pb_hr_payroll_base.res_groups_privilege_payroll_base
+msgid "Payroll Base"
+msgstr "Cơ sở tính lương"
+
+#. module: pb_hr_payroll_base
 #: model:res.groups,name:pb_hr_payroll_base.group_payroll_base_user
 msgid "Payroll Base User"
 msgstr "Bảng lương Cơ sở Người dùng"
@@ -3497,7 +2685,6 @@ msgstr "Bảng lương Cơ sở Người dùng"
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payslip_line__payroll_country_code
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule__payroll_country_code
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__payroll_country_code
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__payroll_country
 msgid "Payroll Country"
 msgstr "Bảng lương Quốc gia"
 
@@ -3509,7 +2696,6 @@ msgstr "Bảng lương Quốc gia Selector"
 #. module: pb_hr_payroll_base
 #: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_dashboard_main
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_enhanced
 msgid "Payroll Dashboard"
 msgstr "Bảng lương Bảng điều khiển"
 
@@ -3525,11 +2711,6 @@ msgid "Payroll Data Import Wizard"
 msgstr "Bảng lương Dữ liệu Nhập Thuật sĩ"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Payroll Distribution"
-msgstr "Bảng lương Phân bổ"
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract_type__is_payroll_enabled
 msgid "Payroll Enabled"
 msgstr "Bảng lương Được bật"
@@ -3543,11 +2724,6 @@ msgstr "Bảng lương Trường"
 #: model:res.groups,name:pb_hr_payroll_base.group_payroll_final_approver
 msgid "Payroll Final Approver"
 msgstr "Bảng lương Cuối Approver"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Payroll Growth"
-msgstr "Bảng lương Tăng trưởng"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
@@ -3568,11 +2744,6 @@ msgstr "Bảng lương Quản lý"
 #: model:res.groups,name:pb_hr_payroll_base.group_payroll_base_officer
 msgid "Payroll Officer"
 msgstr "Bảng lương Officer"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Payroll Processing"
-msgstr "Bảng lương Đang xử lý"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract__payroll_schedule
@@ -3606,13 +2777,12 @@ msgstr "Bảng lương Super Administrator"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid ""
-"Payroll data import completed successfully. Use \"View Payslip Batches\" to "
-"create batches when ready."
+"Payroll data import completed successfully. Use \"View Payslip Batches\" to create "
+"batches when ready."
 msgstr ""
-"Bảng lương dữ liệu nhập hoàn tất thành công. Sử dụng \"Chế độ xem Phiếu lương Đợt\" để "
-"tạo đợt khi sẵn sàng."
+"Bảng lương dữ liệu nhập hoàn tất thành công. Sử dụng \"Chế độ xem Phiếu lương Đợt\" để"
+" tạo đợt khi sẵn sàng."
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_hr_payroll_structure_base
@@ -3665,11 +2835,10 @@ msgstr "Pension Được bật"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
 msgid "Performance"
-msgstr "Performance"
+msgstr "Hiệu suất"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__period_name
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
 msgid "Period"
 msgstr "Giai đoạn"
 
@@ -3698,17 +2867,11 @@ msgstr "Kỳ Loại"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
-#: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
-#, python-format
 msgid "Period start must be before period end."
 msgstr "Kỳ bắt đầu phải được trước kỳ kết thúc."
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Period-over-Period Comparison"
-msgstr "Kỳ-over-Kỳ So sánh"
-
-#. module: pb_hr_payroll_base
+#: model:hr.salary.rule.category,name:pb_hr_payroll_base.salary_rule_category_taxes_demo
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "Personal Income Tax"
 msgstr "Cá nhân Thu nhập Thuế"
@@ -3756,73 +2919,55 @@ msgstr "Piece Tỷ lệ"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "Please create payroll structures and contracts first."
 msgstr "Vui lòng tạo bảng lương cấu trúc và hợp đồng đầu tiên."
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Please provide API URL."
 msgstr "Vui lòng cung cấp API URL."
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Please provide Zoho API Key and Organization ID."
 msgstr "Vui lòng cung cấp Zoho API Key và Organization ID."
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Please provide Zoho API credentials."
 msgstr "Vui lòng cung cấp Zoho API credentials."
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/zoho_staging_wizard.py:0
-#: code:addons/pb_hr_payroll_base/wizards/zoho_staging_wizard.py:0
-#, python-format
 msgid "Please select a file to import"
 msgstr "Vui lòng chọn tệp để nhập"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
-#, python-format
 msgid "Please select employees or choose to include all employees."
 msgstr "Vui lòng chọn nhân viên hoặc choose để bao gồm tất cả nhân viên."
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
-#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
-#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
-#, python-format
 msgid "Please upload a file first"
 msgstr "Vui lòng tải lên tệp đầu tiên"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Please upload a file first."
 msgstr "Vui lòng tải lên tệp đầu tiên."
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Position Analysis"
-msgstr "Chức vụ Phân tích"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
 msgid "Preview"
 msgstr "Xem trước"
 
@@ -3848,14 +2993,12 @@ msgstr "Xem trước Hiện có Nhân viên"
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
 #: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
-#, python-format
 msgid "Preview Generated"
 msgstr "Xem trước Đã tạo"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Preview Loaded"
 msgstr "Xem trước Đã tải"
 
@@ -3879,46 +3022,13 @@ msgstr "Xem trước Xác thực Lỗi"
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
 #: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
-#, python-format
 msgid "Preview data loaded successfully."
 msgstr "Xem trước dữ liệu đã tải thành công."
-
-#. module: pb_hr_payroll_base
-#: model:ir.actions.server,name:pb_hr_payroll_base.action_process_staging_batch
-msgid "Process Staging Batch"
-msgstr "Xử lý Trung gian Đợt"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
 msgid "Process and import payroll calculations from spreadsheets"
 msgstr "Xử lý và nhập bảng lương tính toán từ spreadsheets"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid ""
-"Process monthly payroll with automated calculations, tax deductions, "
-"compliance validation, and audit trails."
-msgstr ""
-"Xử lý hàng tháng bảng lương với tự động tính toán, thuế khấu trừ, "
-"tuân thủ xác thực, và kiểm toán trails."
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-msgid "Process to Employee"
-msgstr "Xử lý để Nhân viên"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__processing_status__processed
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
-msgid "Processed"
-msgstr "Processed"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__processed_date
-msgid "Processed Date"
-msgstr "Processed Ngày"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__processed_records
@@ -3928,9 +3038,6 @@ msgstr "Processed Bản ghi"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__state__processing
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__state__processing
-#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__processing_status__processing
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
 msgid "Processing"
 msgstr "Đang xử lý"
 
@@ -3950,51 +3057,18 @@ msgid "Processing Info"
 msgstr "Đang xử lý Thông tin"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Processing Information"
-msgstr "Đang xử lý Thông tin"
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__processing_log
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
 msgid "Processing Log"
 msgstr "Đang xử lý Log"
 
 #. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__processing_notes
-msgid "Processing Notes"
-msgstr "Đang xử lý Ghi chú"
-
-#. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
 msgid "Processing Options"
 msgstr "Đang xử lý Tùy chọn"
 
 #. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__processing_status
-msgid "Processing Status"
-msgstr "Đang xử lý Trạng thái"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
-msgid "Processing notes and logs..."
-msgstr "Đang xử lý ghi chú và logs..."
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Professional Indonesia theme integration (#21435F color scheme)"
-msgstr "Chuyên nghiệp Indonesia chủ đề tích hợp (#21435F color scheme)"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Professional Multi-Country Payroll Management System"
-msgstr "Chuyên nghiệp Multi-Quốc gia Bảng lương Quản lý Hệ thống"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_professional_tax
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "Professional Tax"
 msgstr "Chuyên nghiệp Thuế"
@@ -4015,17 +3089,12 @@ msgid "Python code to transform the value. Use \"value\" variable."
 msgstr "Python mã để transform giá trị. Sử dụng \"giá trị\" variable."
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
-msgid "Quarter"
-msgstr "Quarter"
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__period_type__quarterly
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__quarterly
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__quarterly
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__quarterly
 msgid "Quarterly"
-msgstr "Quarterly"
+msgstr "Hàng quý"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
@@ -4033,29 +3102,17 @@ msgid "Quick Actions"
 msgstr "Nhanh Hành động"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_enhanced
-msgid "RM"
-msgstr "RM"
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__state__ready
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
 msgid "Ready for Approval"
 msgstr "Sẵn sàng phê duyệt"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Record Information"
-msgstr "Bản ghi Thông tin"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "Refresh Analytics"
-msgstr "Làm mới Phân tích"
-
-#. module: pb_hr_payroll_base
 #: model:ir.actions.server,name:pb_hr_payroll_base.cron_refresh_dashboard_metrics_ir_actions_server
-#: model:ir.cron,cron_name:pb_hr_payroll_base.cron_refresh_dashboard_metrics
 msgid "Refresh Dashboard Metrics"
 msgstr "Làm mới Bảng điều khiển Chỉ số"
 
@@ -4067,7 +3124,6 @@ msgstr "Làm mới Khoảng thời gian (phút)"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "Refresh interval must be at least 1 minute."
 msgstr "Làm mới khoảng thời gian phải được tại ít nhất 1 minute."
 
@@ -4109,11 +3165,6 @@ msgid "Rounding Precision"
 msgstr "Làm tròn Precision"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_enhanced
-msgid "Rp"
-msgstr "Rp"
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__contract_state__open
 msgid "Running"
 msgstr "Đang chạy"
@@ -4130,7 +3181,6 @@ msgstr "Lương"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__import_type__salary_components
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
 msgid "Salary Components"
 msgstr "Lương Thành phần"
 
@@ -4189,7 +3239,7 @@ msgstr ""
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
 msgid "Schedule"
-msgstr "Schedule"
+msgstr "Lịch trình"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__schedule_pay
@@ -4197,14 +3247,9 @@ msgid "Scheduled Pay"
 msgstr "Scheduled Trả lương"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
-msgid "Search Enhanced Payroll Dashboards"
-msgstr "Tìm kiếm Nâng cao Bảng lương Bảng điều khiển"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
-msgid "Search Zoho Staging Data"
-msgstr "Tìm kiếm Zoho Trung gian Dữ liệu"
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_country_selector__country
+msgid "Select Country"
+msgstr "Chọn quốc gia"
 
 #. module: pb_hr_payroll_base
 #: model:ir.actions.server,name:pb_hr_payroll_base.action_country_selector_main
@@ -4213,7 +3258,6 @@ msgid "Select Payroll Country"
 msgstr "Chọn Bảng lương Quốc gia"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_enhanced_country_selector
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.payroll_country_selector_enhanced
 msgid "Select Your Payroll Region"
 msgstr "Chọn Của bạn Bảng lương Region"
@@ -4237,7 +3281,7 @@ msgstr "Lựa chọn"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__semi-annually
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__semi-annually
 msgid "Semi-annually"
-msgstr "Semi-annually"
+msgstr "Nửa năm"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__send_error_report
@@ -4252,7 +3296,7 @@ msgstr "Gửi Notification"
 #. module: pb_hr_payroll_base
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
-#, python-format
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:428
 msgid "Send Request"
 msgstr "Gửi Yêu cầu"
 
@@ -4264,17 +3308,12 @@ msgstr "Gửi Chào mừng Email"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__sequence
 msgid "Sequence"
-msgstr "Sequence"
+msgstr "Thứ tự"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "Set up Zoho API credentials in the configuration."
 msgstr "Đặt up Zoho API credentials trong cấu hình."
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_country
-msgid "Set up country dashboards"
-msgstr "Đặt up quốc gia bảng điều khiển"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__show_analytics
@@ -4309,13 +3348,13 @@ msgstr "Simplified Thuế Tính toán"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_employee__payroll_country__sg
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__payroll_country_code__sg
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payslip_line__payroll_country_code__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payslip_line_analytics__payroll_country_code__sg
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule__payroll_country_code__sg
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__payroll_country_code__sg
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__country_code__sg
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_country_selector__country__sg
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__country__sg
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__country_code__sg
-#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__payroll_country__sg
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_import_wizard__target_country__sg
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "Singapore"
@@ -4323,6 +3362,7 @@ msgstr "Singapore"
 
 #. module: pb_hr_payroll_base
 #: model:res.groups,name:pb_hr_payroll_base.group_payroll_singapore
+#: model:res.groups.privilege,name:pb_hr_payroll_base.res_groups_privilege_country_singapore
 msgid "Singapore Payroll Access"
 msgstr "Singapore Bảng lương Truy cập"
 
@@ -4334,7 +3374,7 @@ msgstr "Singapore Bảng lương Người dùng"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "Skills Development Levy (SDL)"
-msgstr "Skills Development Levy (SDL)"
+msgstr "Thuế phát triển kỹ năng (SDL)"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__skip_errors
@@ -4386,28 +3426,24 @@ msgstr "Cụ thể Nhân viên"
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
-#, python-format
 msgid "Spreadsheet Not Found"
 msgstr "Bảng tính Không Tìm thấy"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "Spreadsheet data imported successfully for %s"
 msgstr "Bảng tính dữ liệu được nhập thành công cho %s"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "Spreadsheet import encountered issues: %s"
 msgstr "Bảng tính nhập encountered vấn đề: %s"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "Spreadsheet reference %s not found for country %s"
 msgstr "Bảng tính reference %s không tìm thấy cho quốc gia %s"
 
@@ -4436,18 +3472,12 @@ msgstr "Bắt đầu Thời gian"
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__state
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__structure_state
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__state
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
 msgid "State"
 msgstr "Trạng thái"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__state
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__state
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
 msgid "Status"
 msgstr "Trạng thái"
 
@@ -4480,27 +3510,20 @@ msgid "Step 3: Configure Zoho Integration"
 msgstr "Bước 3: Cấu hình Zoho Tích hợp"
 
 #. module: pb_hr_payroll_base
-#: model:ir.model,name:pb_hr_payroll_base.model_zoho_staging_data
-msgid "Stores staging data from Zoho People"
-msgstr "Stores trung gian dữ liệu từ Zoho People"
-
-#. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Successfully connected to Zoho People API."
 msgstr "Thành công đã kết nối để Zoho People API."
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid ""
-"Successfully generated fresh demo data for %s %s employees! (All previous "
-"data cleared)"
+"Successfully generated fresh demo data for %s %s employees! (All previous data "
+"cleared)"
 msgstr ""
-"Thành công đã tạo fresh demo dữ liệu cho %s %s nhân viên! (Tất cả trước đó "
-"dữ liệu cleared)"
+"Thành công đã tạo fresh demo dữ liệu cho %s %s nhân viên! (Tất cả trước đó dữ liệu "
+"cleared)"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__contract_type_ids
@@ -4511,11 +3534,6 @@ msgstr "Supported Hợp đồng Loại"
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__zoho_sync_active_only
 msgid "Sync Active Only"
 msgstr "Đồng bộ Đang hoạt động Chỉ"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "System Information"
-msgstr "Hệ thống Thông tin"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
@@ -4532,11 +3550,6 @@ msgstr "Mục tiêu Quốc gia"
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping__target_field
 msgid "Target Field"
 msgstr "Mục tiêu Trường"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-msgid "Tax & Social Security"
-msgstr "Thuế & Xã hội Bảo mật"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__tax_calculation_method
@@ -4564,10 +3577,9 @@ msgid "Tax and Benefits"
 msgstr "Thuế và Phúc lợi"
 
 #. module: pb_hr_payroll_base
-#: model:hr.salary.rule.category,name:pb_hr_payroll_base.salary_rule_category_taxes_demo
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__category_type__tax
 msgid "Taxes"
-msgstr "Taxes"
+msgstr "Thuế"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_salary_configuration_workflow
@@ -4584,7 +3596,7 @@ msgstr "Kiểm thử Kết nối"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__field_mapping__field_type__char
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_field_mapping__data_type__char
 msgid "Text"
-msgstr "Text"
+msgstr "Văn bản"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__country_code__th
@@ -4598,6 +3610,7 @@ msgstr "Thailand"
 
 #. module: pb_hr_payroll_base
 #: model:res.groups,name:pb_hr_payroll_base.group_payroll_thailand
+#: model:res.groups.privilege,name:pb_hr_payroll_base.res_groups_privilege_country_thailand
 msgid "Thailand Payroll Access"
 msgstr "Thailand Bảng lương Truy cập"
 
@@ -4607,36 +3620,22 @@ msgid "Thailand Payroll User"
 msgstr "Thailand Bảng lương Người dùng"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
-msgid "This Month"
-msgstr "Này Tháng"
-
-#. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "This action is only available for Zoho import."
 msgstr "Này hành động là chỉ sẵn có cho Zoho nhập."
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
-msgid "This enhanced framework provides:"
-msgstr "Này nâng cao framework cung cấp:"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/zoho_base_models.py:0
 #: code:addons/pb_hr_payroll_base/models/zoho_staging_base.py:0
-#, python-format
 msgid "This record has already been processed"
 msgstr "Này bản ghi có đã được processed"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__total_employees
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__total_employees
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
 msgid "Total Employees"
 msgstr "Tổng số nhân viên"
 
@@ -4649,8 +3648,6 @@ msgstr "Tổng Gross Lương"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__total_payroll
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__total_payroll
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
 msgid "Total Payroll"
 msgstr "Tổng tiền lương"
 
@@ -4687,7 +3684,7 @@ msgstr "Transport Phụ cấp - Vietnam"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "Troubleshooting"
-msgstr "Troubleshooting"
+msgstr "Xử lý sự cố"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__activity_exception_decoration
@@ -4697,7 +3694,6 @@ msgstr "Loại của ngoại lệ hoạt động trên bản ghi."
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/hr_payroll_structure_base.py:0
-#, python-format
 msgid "Unable to view employees. Please try again."
 msgstr "Unable để chế độ xem nhân viên. Vui lòng thử again."
 
@@ -4719,7 +3715,6 @@ msgstr "United States"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Unsupported file format. Please use CSV, Excel, or JSON."
 msgstr "Unsupported tệp định dạng. Vui lòng sử dụng CSV, Excel, hoặc JSON."
 
@@ -4749,68 +3744,9 @@ msgid "Updated Count"
 msgstr "Đã cập nhật Số lượng"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_zoho_staging_data_enhanced
-msgid ""
-"Use the import wizard to bring employee data from Zoho into the staging area,\n"
-"                then process it to create employees and contracts in Odoo."
-msgstr ""
-"Sử dụng nhập thuật sĩ để bring nhân viên dữ liệu từ Zoho vào trung gian area,\n"
-" sau đó xử lý it để tạo nhân viên và hợp đồng trong Odoo."
-
-#. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "User Access Issues"
 msgstr "Người dùng Truy cập Vấn đề"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_accident_insurance
-msgid "VN Accident Insurance"
-msgstr "VN Accident Bảo hiểm"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_health_insurance_employee
-msgid "VN Health Insurance (Employee)"
-msgstr "VN Sức khỏe Bảo hiểm (Nhân viên)"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_health_insurance_employer
-msgid "VN Health Insurance (Employer)"
-msgstr "VN Sức khỏe Bảo hiểm (Người sử dụng lao động)"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_id_card_number
-msgid "VN ID Card Number"
-msgstr "VN ID Card Số"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_social_insurance_employee
-msgid "VN Social Insurance (Employee)"
-msgstr "VN Xã hội Bảo hiểm (Nhân viên)"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_social_insurance_employer
-msgid "VN Social Insurance (Employer)"
-msgstr "VN Xã hội Bảo hiểm (Người sử dụng lao động)"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_social_insurance_number
-msgid "VN Social Insurance Number"
-msgstr "VN Xã hội Bảo hiểm Số"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_unemployment_insurance_employee
-msgid "VN Unemployment Insurance (Employee)"
-msgstr "VN Unemployment Bảo hiểm (Nhân viên)"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_unemployment_insurance_employer
-msgid "VN Unemployment Insurance (Employer)"
-msgstr "VN Unemployment Bảo hiểm (Người sử dụng lao động)"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_union_fee
-msgid "VN Union Fee"
-msgstr "VN Union Fee"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__validate_currency
@@ -4860,10 +3796,8 @@ msgstr "Xác thực Lương Positive"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_salary_configuration_workflow
-msgid ""
-"Validate formulas with sample data and compare results before going live"
-msgstr ""
-"Xác thực công thức với mẫu dữ liệu và compare kết quả trước going trực tiếp"
+msgid "Validate formulas with sample data and compare results before going live"
+msgstr "Xác thực công thức với mẫu dữ liệu và compare kết quả trước going trực tiếp"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__validation_rule
@@ -4883,19 +3817,8 @@ msgstr "Xác thực Cài đặt"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
-#, python-format
 msgid "Validation error in row %d: %s"
 msgstr "Xác thực lỗi trong dòng %d: %s"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Variance & Alerts"
-msgstr "Chênh lệch & Cảnh báo"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "Variance Details"
-msgstr "Chênh lệch Chi tiết"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
@@ -4910,16 +3833,14 @@ msgstr "Verify users là assigned để correct quốc gia nhóm."
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_employee__payroll_country__vn
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__payroll_country_code__vn
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payslip_line__payroll_country_code__vn
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payslip_line_analytics__payroll_country_code__vn
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule__payroll_country_code__vn
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__payroll_country_code__vn
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_country_selector__country__vn
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__country__vn
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__country_code__vn
-#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__payroll_country__vn
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_import_wizard__target_country__vn
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
 msgid "Vietnam"
 msgstr "Vietnam"
 
@@ -4929,17 +3850,8 @@ msgid "Vietnam Employees"
 msgstr "Vietnam Nhân viên"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
-msgid "Vietnam Employer Contributions"
-msgstr "Vietnam Người sử dụng lao động Đóng góp"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_personal_income_tax
-msgid "Vietnam PIT"
-msgstr "Vietnam PIT"
-
-#. module: pb_hr_payroll_base
 #: model:res.groups,name:pb_hr_payroll_base.group_payroll_vietnam
+#: model:res.groups.privilege,name:pb_hr_payroll_base.res_groups_privilege_country_vietnam
 msgid "Vietnam Payroll Access"
 msgstr "Vietnam Bảng lương Truy cập"
 
@@ -4952,36 +3864,6 @@ msgstr "Vietnam Bảng lương Bảng điều khiển"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "Vietnam Payroll User"
 msgstr "Vietnam Bảng lương Người dùng"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
-msgid "Vietnam Specific"
-msgstr "Vietnam Cụ thể"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
-msgid "Vietnam Specific Info"
-msgstr "Vietnam Cụ thể Thông tin"
-
-#. module: pb_hr_payroll_base
-#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_staging_vietnam
-msgid "Vietnam Staging Data"
-msgstr "Vietnam Trung gian Dữ liệu"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
-msgid "Vietnam Tax & Social Security"
-msgstr "Vietnam Thuế & Xã hội Bảo mật"
-
-#. module: pb_hr_payroll_base
-#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_tax_code
-msgid "Vietnam Tax Code"
-msgstr "Vietnam Thuế Mã"
-
-#. module: pb_hr_payroll_base
-#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_vietnam_data
-msgid "Vietnam Zoho Data"
-msgstr "Vietnam Zoho Dữ liệu"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_base
@@ -5018,12 +3900,7 @@ msgstr "Trang web giao tiếp history"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__weekly
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__weekly
 msgid "Weekly"
-msgstr "Weekly"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
-msgid "Welcome to Enhanced Multi-Country Payroll System!"
-msgstr "Chào mừng để Nâng cao Multi-Quốc gia Bảng lương Hệ thống!"
+msgstr "Hàng tuần"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_main
@@ -5031,21 +3908,11 @@ msgid "Welcome to Multi-Country Payroll Management!"
 msgstr "Chào mừng để Multi-Quốc gia Bảng lương Quản lý!"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_analytics_dashboard
-msgid "Welcome to Payroll Analytics!"
-msgstr "Chào mừng để Bảng lương Phân tích!"
-
-#. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__wizard_id
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__wizard_id
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping__wizard_id
 msgid "Wizard"
 msgstr "Thuật sĩ"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-msgid "Work Information"
-msgstr "Work Thông tin"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_salary_configuration_workflow_wizard__name
@@ -5081,19 +3948,17 @@ msgstr "Workmen's Compensation Quỹ"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__period_type__yearly
 msgid "Yearly"
-msgstr "Yearly"
+msgstr "Hàng năm"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
-#, python-format
 msgid "You do not have access to %s payroll system."
 msgstr "Bạn do không có truy cập để %s bảng lương hệ thống."
 
 #. module: pb_hr_payroll_base
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
-#, python-format
 msgid "Your request for  payroll access has been sent to the administrator."
 msgstr "Của bạn yêu cầu cho bảng lương truy cập có được sent để administrator."
 
@@ -5105,14 +3970,11 @@ msgstr "Zoho API Key"
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
 msgid "Zoho API key seems too short."
 msgstr "Zoho API key seems too ngắn."
 
 #. module: pb_hr_payroll_base
-#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_zoho
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
 msgid "Zoho Integration"
 msgstr "Zoho Tích hợp"
 
@@ -5125,19 +3987,6 @@ msgstr "Zoho Organization ID"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__import_source__zoho
 msgid "Zoho People"
 msgstr "Zoho People"
-
-#. module: pb_hr_payroll_base
-#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_staging_data
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_tree
-msgid "Zoho Staging Data"
-msgstr "Zoho Trung gian Dữ liệu"
-
-#. module: pb_hr_payroll_base
-#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_staging_data_enhanced
-msgid "Zoho Staging Data (Multi-Country)"
-msgstr "Zoho Trung gian Dữ liệu (Multi-Quốc gia)"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model,name:pb_hr_payroll_base.model_zoho_staging_field_mapping
@@ -5155,53 +4004,36 @@ msgid "Zoho Status"
 msgstr "Zoho Trạng thái"
 
 #. module: pb_hr_payroll_base
-#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
-msgid "e.g., January 2024 - Vietnam"
-msgstr "e.g., January 2024 - Vietnam"
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+msgid "country_id.code"
+msgstr "country_id.code"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
 #: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
-#, python-format
+msgid "imported"
+msgstr "nhập khẩu"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
 msgid "openpyxl library is required for Excel file processing."
 msgstr "openpyxl thư viện là bắt buộc cho Excel tệp đang xử lý."
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
-msgid "🇮🇩 Indonesia - BPJS, PPh 21, THR payments with IDR currency"
-msgstr "🇮🇩 Indonesia - BPJS, PPh 21, THR thanh toán với IDR tiền tệ"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
-msgid "🇮🇳 India - PF, ESI, Professional Tax with INR currency"
-msgstr "🇮🇳 India - PF, ESI, Chuyên nghiệp Thuế với INR tiền tệ"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
-msgid "🇰🇭 Cambodia - NSSF management with KHR currency"
-msgstr "🇰🇭 Cambodia - NSSF quản lý với KHR tiền tệ"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
-msgid "🇲🇾 Malaysia - EPF, SOCSO, EIS with MYR currency"
-msgstr "🇲🇾 Malaysia - EPF, SOCSO, EIS với MYR tiền tệ"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
-msgid "🇸🇬 Singapore - CPF and SGD support"
-msgstr "🇸🇬 Singapore - CPF và SGD support"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
-msgid "🇹🇭 Thailand - SSF, Provident Fund with THB currency"
-msgstr "🇹🇭 Thailand - SSF, Dự phòng Quỹ với THB tiền tệ"
-
-#. module: pb_hr_payroll_base
-#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
-msgid "🇻🇳 Vietnam - Full payroll management with VND currency"
-msgstr "🇻🇳 Vietnam - Đầy đủ bảng lương quản lý với VND tiền tệ"
 
 #. module: pb_hr_payroll_base
 #: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_setup_guide
 msgid "📋 Setup Guide"
 msgstr "📋 Thiết lập Guide"
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:459
+msgid "Your request for"
+msgstr "Yêu cầu của bạn cho"
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:465
+msgid "Error sending access request:"
+msgstr "Lỗi gửi yêu cầu truy cập:"

@@ -1,0 +1,1516 @@
+{
+  "_doc": [
+    "Every fact Payobook Learn asserts about the product, with where it came from.",
+    "",
+    "The practice company is a JavaScript fixture, not a tenant. That is what makes",
+    "it safe and it is also what makes it drift. Each entry below is a claim the",
+    "content makes; tools/check_contract.py re-reads the modules and fails when one",
+    "stops being true, naming the fixture entries and the content that quote it.",
+    "",
+    "`taughtIn` is not decoration. When a check fails it is the list of things a",
+    "human has to re-read — the checker cannot know whether a renamed state key",
+    "invalidates one sentence or a whole lesson."
+  ],
+  "schemaVersion": "1.7",
+  "repoRoot": "../../..",
+  "checks": [
+    {
+      "id": "payrun-state-chain",
+      "kind": "contains",
+      "why": "The five stages ARE the lesson. If level0 is removed, renamed or re-ordered, L2's pipeline visual, the replica's board columns and every answer about 'whose gate is it at' teach a chain the product no longer has.",
+      "file": "pb_payruns/models/hr_payslip_run.py",
+      "expect": [
+        "('level0', 'Payroll Officer pending')",
+        "('level1',)",
+        "['draft', 'level0', 'level1', 'level2', 'done']"
+      ],
+      "fixture": [
+        "STATUS_LABELS.payrun",
+        "CHAINS.payrun"
+      ],
+      "taughtIn": [
+        "L1 step 8 (pipeline)",
+        "L2 steps 1-7",
+        "intent approve",
+        "intent reject",
+        "mission m1 undo step",
+        "mission m2"
+      ]
+    },
+    {
+      "id": "payslip-state-chain",
+      "kind": "contains",
+      "why": "A PAYSLIP's chain is four stages and has no level0 — that gate belongs to the run. Drawing the run's five on a payslip stepper would send a learner looking for an Officer tier that does not exist there.",
+      "file": "pb_payslip_review/static/src/js/payslip_review.js",
+      "expect": [
+        "const STATUS_FLOW = [[\"draft\", \"Draft\"], [\"level1\", \"HR Manager pending\"], [\"level2\", \"GM pending\"], [\"done\", \"Done\"]]"
+      ],
+      "fixture": [
+        "STATUS_LABELS.payslip"
+      ],
+      "taughtIn": [
+        "L3 step 3 (the approval stepper)",
+        "the payslips replica in engine/screens.js"
+      ]
+    },
+    {
+      "id": "payrun-pipeline-labels",
+      "kind": "contains",
+      "why": "The tenant slots {{hrTierName}} and {{gmTierName}} DEFAULT to what this widget prints on the real board. A default that disagrees with the screen it names is worse than no slot at all: the tenant who never sets one reads a word in the lesson that is nowhere on their board. Pinning all five also pins the ORDER, which is what the pipeline visual draws.",
+      "file": "pb_payruns/static/src/js/pipeline_field.js",
+      "expect": [
+        "{ key: \"draft\", label: \"Draft\" }",
+        "{ key: \"level0\", label: \"Officer review\" }",
+        "{ key: \"level1\", label: \"HR review\" }",
+        "{ key: \"level2\", label: \"Finance approval\" }",
+        "{ key: \"done\", label: \"Done\" }"
+      ],
+      "fixture": [
+        "TENANT_DEFAULTS.hrTierName",
+        "TENANT_DEFAULTS.gmTierName",
+        "STATUS_LABELS.payrun"
+      ],
+      "taughtIn": [
+        "glossary payrun (the chain, tokenised)",
+        "L1 step 8",
+        "L2 steps 3-7",
+        "intent approve",
+        "mission m2"
+      ]
+    },
+    {
+      "id": "payrun-reject-testimony",
+      "kind": "contains",
+      "why": "L2 and m2 both teach that a rejection records who, when and WHY IN WRITING, and m2's whole reject branch rests on that written reason existing. Lose the fields and the lesson is teaching a discipline the product no longer supports.",
+      "file": "pb_payruns/models/hr_payslip_run.py",
+      "expect": [
+        "pb_reject_note",
+        "pb_reject_uid",
+        "pb_reject_date"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "L2 step 5 (a rejection is testimony)",
+        "intent reject",
+        "mission m2 reason step"
+      ]
+    },
+    {
+      "id": "payroll-capability-groups",
+      "kind": "xmlids",
+      "why": "learn.intent._capability reads these four groups directly. A rename makes every capability-gated answer fall through to its most restrictive branch — an officer would be told they cannot run a payroll, which is the confidently-wrong answer the gate exists to prevent.",
+      "files": [
+        "pb_hr_payroll_base/security/payroll_base_security_enhanced.xml",
+        "pb_demo/security/pb_demo_security.xml"
+      ],
+      "expect": [
+        "group_payroll_base_officer",
+        "group_payroll_base_manager",
+        "group_payroll_final_approver",
+        "group_payroll_super_admin",
+        "group_payobook_demo"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "intent approve (all five capability variants)",
+        "models/learn_intent.py::_capability"
+      ]
+    },
+    {
+      "id": "payrun-sidebar-leaves",
+      "kind": "xmlids",
+      "why": "Seven stations and seven screens resolve through these leaves — learn.screen reads its matchers off the leaf rather than keeping a copy. A retired leaf is a station that opens nothing and a screen the Coach can never recognise.",
+      "files": [
+        "pb_sidebar/data/pb_sidebar_data.xml"
+      ],
+      "expect": [
+        "sec_payrun",
+        "item_run_payroll",
+        "item_pay_runs",
+        "item_payslips",
+        "item_import",
+        "item_full_final",
+        "item_proration",
+        "item_retro"
+      ],
+      "fixture": [
+        "MENU"
+      ],
+      "taughtIn": [
+        "all seven stations",
+        "all eight screens",
+        "tools/gen_learn_data.py::SIDEBAR_KEYS"
+      ]
+    },
+    {
+      "id": "sidebar-model-matchers",
+      "kind": "contains",
+      "why": "Pay Runs and Payslips are recognised by model as well as by action. If one leaf ever claimed the other's model the Coach would ground on the wrong screen and offer the wrong questions — confidently, which is the worst way to be wrong.",
+      "file": "pb_sidebar/data/pb_sidebar_data.xml",
+      "expect": [
+        "<field name=\"match_models\">hr.payslip.run</field>",
+        "<field name=\"match_models\">hr.payslip</field>"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "screen payruns",
+        "screen payslips",
+        "tests/test_coach.py::test_17"
+      ]
+    },
+    {
+      "id": "client-action-tags",
+      "kind": "contains",
+      "why": "Four screens are client actions found by tag. importwizard has no sidebar leaf at all, so its tag is the ONLY way the Coach knows that screen is showing — rename it and a whole screen's content goes silently unreachable.",
+      "files": [
+        "pb_payrun_wizard/static/src/js/payrun_wizard.js",
+        "pb_import_wizard/static/src/js/import_wizard.js",
+        "pb_import/static/src/js/import.js",
+        "pb_payslip_review/static/src/js/payslip_review.js"
+      ],
+      "expect": [
+        "registry.category(\"actions\").add(\"pb_payrun_wizard\"",
+        "registry.category(\"actions\").add(\"pb_import_wizard\"",
+        "registry.category(\"actions\").add(\"pb_import\"",
+        "registry.category(\"actions\").add(\"pb_payslip_review\""
+      ],
+      "fixture": [
+        "SUB_SCREENS"
+      ],
+      "taughtIn": [
+        "screen importwizard (action_tags)",
+        "tools/gen_learn_data.py::SCREEN_ACTION_TAGS"
+      ]
+    },
+    {
+      "id": "ledger-action-tags",
+      "kind": "contains",
+      "why": "Full & Final, Proration and Retro are three screens served by ONE template, and their sidebar leaves resolve by these tags. The lg-* anchors mean a different set of numbers on each, so losing a tag collapses three screens' content onto whichever one still resolves.",
+      "file": "pb_payrun_ledgers/views/ledger_actions.xml",
+      "expect": [
+        "<field name=\"tag\">pb_fullfinal</field>",
+        "<field name=\"tag\">pb_proration</field>",
+        "<field name=\"tag\">pb_retro</field>"
+      ],
+      "fixture": [
+        "PRACTICE.ledgers"
+      ],
+      "taughtIn": [
+        "stations fullfinal / proration / retro",
+        "the lg-* anchors in anchors.json"
+      ]
+    },
+    {
+      "id": "payai-opens-lessons",
+      "kind": "contains",
+      "why": "PayAI may only offer to open something it can actually open, through this whitelist. Phase C2 re-targeted the envelope from pb_coach tours to pb_learn LESSONS, which is the change that lets this be checked at all: a tour was a registry entry in a module nobody validated against, and a lesson is a record whose key `learn.lesson` either has or has not. Both halves are pinned — the whitelist itself, and the old-tour compatibility map, whose ids are documentation of what each tour BECAME. If a lesson key here stops existing, PayAI's \"Show me\" opens a Journey that lands on the map and the offer was a lie.",
+      "expect": [
+        "_KNOWN_LESSONS = ('LW', 'L1', 'L5', 'L3', 'L4', 'LA', 'L2', 'L6')",
+        "'hero_path': 'LW'",
+        "'tour_payrun': 'L1'",
+        "'tour_formula': 'L5'",
+        "'tour_payslips': 'L3'",
+        "'tour_import': 'L4'",
+        "'tour_mapping': 'L5'",
+        "'type': 'open_lesson'"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "design_v2 §9 — what happens to pb_coach",
+        "ai_insight_chat.js::runAction",
+        "pb_learn journey.js::_applyDeepLink",
+        "every lesson key here is validated against learn_lessons.xml by pb_payroll_ai_insights/tests/test_action_envelope.py"
+      ],
+      "files": [
+        "pb_payroll_ai_insights/models/payroll_ai_engine.py"
+      ]
+    },
+    {
+      "id": "scenario-payrun-anchors",
+      "kind": "contains",
+      "why": "pw-division and pw-compute are the two controls a pay run turns on, and three surfaces name them: the wizard template that lays them, the L1 lesson and m1 mission that point at them on the replica, and — since LEARNOS Phase 1b — the sc_payrun scenario, which points at them on the REAL screen in Watch and waits on the compute in Do. This check used to read pb_coach's tour_payrun.js as the second claimant; that module was deleted in 1b and its tours became these scenarios, so the check is retargeted to the authoring source rather than dropped. A control renamed in the template with the scenario still pointing at it is a Do step that waits forever for a press that can never be observed.",
+      "files": [
+        "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+        "docs/tutorial_poc/author/data.js"
+      ],
+      "expect": [
+        "data-coach=\"pw-division\"",
+        "data-coach=\"pw-compute\"",
+        "anchor: \"pw-division\"",
+        "anchor: \"pw-compute\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "L1 step 2 and step 5",
+        "mission m1 division and consequence steps",
+        "scenario sc_payrun steps division and compute",
+        "anchors.json product block"
+      ]
+    },
+    {
+      "id": "sidebar-icon-set",
+      "kind": "contains",
+      "why": "pb_sidebar renders a FIXED icon set and an unknown name draws a plain circle with no error anywhere. The Journey's own leaf uses compass; lose it and the front door to the whole learning system renders as a blank dot.",
+      "file": "pb_sidebar/static/src/js/pb_sidebar.js",
+      "expect": [
+        "compass:"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "data/learn_sidebar_item.xml",
+        "SIDEBAR_LEAF in data.js"
+      ]
+    },
+    {
+      "id": "coach-answers-from-writing-only",
+      "kind": "absent",
+      "why": "RENAMED from 'coach-answers-from-records-only' in LEARNOS Phase 1a: the answers are no longer RECORDS, they are the static content plane — so a check id that says 'records' would be pinning a promise the module has stopped making, while the promise that mattered is unchanged. What is still absent, and was always the load-bearing part: a FOREIGN provider registry (health19's), a direct import of any provider package, and raw SQL. The Coach reaches a model through one seam it can be denied, and reaches the database through the ORM or not at all. It also may not read the content off the filesystem behind learn.content's back — an open() in the resolver would be a second reader of the asset with its own idea of what is in it. The composer's own fences are pinned by composer-is-flag-gated and composer-corpus-reads-learn-content-only. NOTE TO THE NEXT READER: a bare `open(` was the obvious token for the filesystem half and it is unusable — it is a substring of `gate_open(`, which learn.runtime legitimately calls. The pinned tokens are the two things a second reader would actually have to write.",
+      "files": [
+        "pb_learn/models/learn_intent.py",
+        "pb_learn/models/learn_runtime.py",
+        "pb_learn/models/learn_question.py"
+      ],
+      "expect": [
+        "hr.ai.provider.config",
+        "hr_development_ai",
+        "ai_providers",
+        "cr.execute",
+        "file_open(",
+        "json.load"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "the honesty banner",
+        "tests/test_coach.py::test_21 and ::test_21b"
+      ]
+    },
+    {
+      "id": "learn-content-is-static-and-read-only",
+      "kind": "absent",
+      "why": "The Phase 1a safety argument in one check. learn.content is the ONLY reader of the content asset and it only reads: content that a running server can write is content that stops being identical on every tenant, which is the entire reason it left the database. `.create(`, `.write(` and `.unlink(` would be a mutation; `json.dump` or a `'w'` open would be a rewrite of a generated file, which is a build failure by convention and would be a silent one here.",
+      "files": [
+        "pb_learn/models/learn_content.py"
+      ],
+      "expect": [
+        ".create(",
+        ".write(",
+        ".unlink(",
+        "cr.execute",
+        "json.dump",
+        "'w'"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "the generated-file banner in every emitted artifact",
+        "docs/tutorial_poc/author/tools/gen_learn_data.py header"
+      ]
+    },
+    {
+      "id": "content-plane-shape",
+      "kind": "json-content",
+      "why": "The asset the browser fetches and the server parses is one file with no schema behind it, so the shape IS the contract. Both consumers assume these sections exist; a generator change that renamed or dropped one would show up as an empty Journey rather than as an error. The banner is pinned too, because a generated file that does not say so is a generated file somebody will hand-edit.",
+      "file": "pb_learn/static/content/learn_content.json",
+      "expect": {
+        "sections": [
+          "chrome",
+          "stations",
+          "missions",
+          "glossary",
+          "intents",
+          "screens",
+          "columns",
+          "global_suggest",
+          "version",
+          "__generated__"
+        ],
+        "nonEmpty": [
+          "chrome",
+          "stations",
+          "missions",
+          "glossary",
+          "intents",
+          "screens",
+          "columns",
+          "global_suggest"
+        ],
+        "banner": "GENERATED FILE. Do not edit."
+      },
+      "fixture": [],
+      "taughtIn": [
+        "pb_learn/models/learn_content.py",
+        "pb_learn/static/src/content/content_loader.js"
+      ]
+    },
+    {
+      "id": "vietnamese-content-spot-checks",
+      "kind": "json-content",
+      "why": "The other half of vietnamese-spot-checks, retargeted to where the content now lives. Every prose leaf in the asset is a bilingual pair, so a silently REPLACED Vietnamese string is still the failure worth catching — and these three are where it would matter most: the launcher's invitation, the front door of the Pay Run desk, and the name of the flagship screen. A missing pair fails the same way, which is the shape check the payload could not otherwise get.",
+      "file": "pb_learn/static/content/learn_content.json",
+      "expect": {
+        "bilingual": {
+          "Stuck?": "Cần trợ giúp?",
+          "Run Payroll": "Chạy bảng lương",
+          "Payslips": "Phiếu lương"
+        }
+      },
+      "fixture": [],
+      "taughtIn": [
+        "every Vietnamese reader of this module"
+      ]
+    },
+    {
+      "id": "vietnamese-spot-checks",
+      "kind": "po",
+      "why": "RETARGETED in LEARNOS Phase 1a. Three of the four msgids this pinned (\"Stuck?\", \"Run Payroll\", \"Payslips\") are content and no longer travel the .po at all — they ship bilingual in learn_content.json, and vietnamese-content-spot-checks below pins them there. What is left in the .po is what is still a RECORD: the sidebar leaf's name, the front door. The generator refuses to write a translatable with no Vietnamese, so what is being caught here is a translation silently REPLACED.",
+      "expect": {
+        "pb_learn/i18n/vi_VN.po": {
+          "Learn": "Học cùng Payobook"
+        }
+      },
+      "fixture": [],
+      "taughtIn": [
+        "every Vietnamese reader of this module"
+      ]
+    },
+    {
+      "id": "insurance-policy-fields",
+      "kind": "contains",
+      "why": "L6 reads its rates, its base and its ceiling straight off this record, and m4 practises changing one. A renamed rate field does not break anything visibly — the cockpit simply stops showing a scheme, and the lesson keeps teaching a percentage the product no longer holds.",
+      "file": "pb_hr_payroll_vietnam/models/vietnam_insurance_policy.py",
+      "expect": [
+        "si_employee_rate",
+        "si_employer_rate",
+        "si_max_salary_ceiling",
+        "hi_employee_rate",
+        "hi_employer_rate",
+        "ui_employee_rate",
+        "ui_employer_rate",
+        "effective_date",
+        "end_date"
+      ],
+      "fixture": [
+        "POLICY"
+      ],
+      "taughtIn": [
+        "L6 steps 2-3 (who pays what, base & ceiling)",
+        "intent ceiling",
+        "intent whichpolicy",
+        "mission m4 rate step",
+        "the statutory replica in engine/screens.js"
+      ]
+    },
+    {
+      "id": "insurance-policy-code-uniq",
+      "kind": "contains",
+      "why": "m4's wrong option 'reuse the current policy's code' is refused BY THE DATABASE, and its recovery text says so. Lose the constraint and the mission coaches a learner away from something the product would now happily allow.",
+      "file": "pb_hr_payroll_vietnam/models/vietnam_insurance_policy.py",
+      "expect": [
+        "('code_company_uniq', 'unique(code, company_id)'"
+      ],
+      "fixture": [
+        "POLICY",
+        "POLICY_NEXT"
+      ],
+      "taughtIn": [
+        "glossary policy",
+        "L6 step 6 (a rate change is a new record)",
+        "mission m4 newrecord step, option samecode"
+      ]
+    },
+    {
+      "id": "statutory-current-policy-rule",
+      "kind": "contains",
+      "why": "THE fact the whole statutory lesson turns on: there is no version chain, so the policy in force is the ACTIVE one with the LATEST effective date. If the cockpit ever selected by create order or by id instead, the effective-date judgement in L6, m4 and the whichpolicy answer would all be teaching a rule the product had stopped following.",
+      "file": "pb_statutory/models/pb_statutory.py",
+      "expect": [
+        "('active', '=', True)",
+        "order='effective_date desc'"
+      ],
+      "fixture": [
+        "POLICY",
+        "PRACTICE.policies"
+      ],
+      "taughtIn": [
+        "L6 steps 6-7",
+        "intent whichpolicy",
+        "intent changerate",
+        "mission m4 effective step",
+        "glossary effectiveDate"
+      ]
+    },
+    {
+      "id": "tax-table-fields",
+      "kind": "contains",
+      "why": "The two relief figures and the bands are what `payslip()` computes Mai's thuế TNCN from, so a rename here silently detaches the worked example from the product it claims to mirror.",
+      "file": "pb_hr_payroll_vietnam/models/vietnam_tax_table.py",
+      "expect": [
+        "tax_year",
+        "personal_deduction",
+        "dependent_deduction",
+        "slab_ids",
+        "income_from",
+        "income_to",
+        "tax_rate"
+      ],
+      "fixture": [
+        "TAX"
+      ],
+      "taughtIn": [
+        "L6 step 4 (PIT table + relief)",
+        "intent pitcalc",
+        "the PIT bands on the statutory replica",
+        "RELIEF_SELF / RELIEF_DEPENDANT / PIT_FIRST_BRACKET in practice-data.js"
+      ]
+    },
+    {
+      "id": "setup-sidebar-leaves",
+      "kind": "xmlids",
+      "why": "Four stations and four screens resolve through these leaves. A retired leaf is a station that opens nothing and a screen the Coach can never recognise — and it fails in the most misleading way, with the Coach saying it has no lessons for a screen that has a full one.",
+      "files": [
+        "pb_sidebar/data/pb_sidebar_data.xml"
+      ],
+      "expect": [
+        "sec_setup",
+        "item_formula",
+        "item_structures",
+        "item_statutory",
+        "item_integrations"
+      ],
+      "fixture": [
+        "MENU"
+      ],
+      "taughtIn": [
+        "all four Setup stations",
+        "all four Setup screens",
+        "tools/gen_learn_data.py::SIDEBAR_KEYS"
+      ]
+    },
+    {
+      "id": "setup-client-action-tags",
+      "kind": "contains",
+      "why": "All four Setup leaves carry an action TAG and an empty action_xmlid, so the tag is the only thing that identifies the screen. Rename one and a whole section's content goes silently unreachable.",
+      "files": [
+        "pb_formula_studio/static/src/js/formula_studio.js",
+        "pb_structures/static/src/js/structures.js",
+        "pb_statutory/static/src/js/statutory.js",
+        "pb_integrations/static/src/js/integrations.js"
+      ],
+      "expect": [
+        "registry.category(\"actions\").add(\"pb_formula_studio\"",
+        "registry.category(\"actions\").add(\"pb_structures\"",
+        "registry.category(\"actions\").add(\"pb_statutory\"",
+        "registry.category(\"actions\").add(\"pb_integrations\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "screens formula / structures / statutory / integrations",
+        "tests/test_coach.py::test_16"
+      ]
+    },
+    {
+      "id": "formula-studio-anchors",
+      "kind": "contains",
+      "why": "pb_learn adds NOTHING to studio.xml — L5 points at seven attributes that were already there, and the registry has now promoted them out of the fs-* foreign wildcard into `product`. That promotion is a claim about somebody else's template, so it is checked at authoring time as well as by the module's own registry test.",
+      "file": "pb_formula_studio/static/src/xml/studio.xml",
+      "expect": [
+        "data-coach=\"fs-config\"",
+        "data-coach=\"fs-components\"",
+        "data-coach=\"fs-formula\"",
+        "data-coach=\"fs-namesletters\"",
+        "data-coach=\"fs-deps\"",
+        "data-coach=\"fs-preview\"",
+        "data-coach=\"fs-simulate\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "L5 steps 1-7",
+        "the formula replica in engine/screens.js",
+        "anchors.json product block"
+      ]
+    },
+    {
+      "id": "setup-cockpit-anchors",
+      "kind": "contains",
+      "why": "The seventeen anchors pb_learn added to the three Setup cockpits and the new-policy wizard are additive attributes in modules this one does not own. Nothing over there reads them, so a tidy-up would delete them without any test noticing — and the Coach's Show-me would then scroll to nothing.",
+      "files": [
+        "pb_statutory/static/src/xml/statutory.xml",
+        "pb_structures/static/src/xml/structures.xml",
+        "pb_integrations/static/src/xml/integrations.xml",
+        "pb_statutory/static/src/xml/statutory_wizards.xml"
+      ],
+      "expect": [
+        "data-coach=\"st-new\"",
+        "data-coach=\"st-kpis\"",
+        "data-coach=\"st-rates\"",
+        "data-coach=\"st-effective\"",
+        "data-coach=\"st-slabs\"",
+        "data-coach=\"st-filters\"",
+        "data-coach=\"st-roster\"",
+        "data-coach=\"sr-new\"",
+        "data-coach=\"sr-kpis\"",
+        "data-coach=\"sr-filters\"",
+        "data-coach=\"sr-roster\"",
+        "data-coach=\"sr-openall\"",
+        "data-coach=\"ig-connect\"",
+        "data-coach=\"ig-kpis\"",
+        "data-coach=\"ig-filters\"",
+        "data-coach=\"ig-roster\"",
+        "data-coach=\"st-newpolicy-date\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "L6 every step",
+        "mission m4 every step",
+        "intents whysetup / changerate / whichpolicy / syncbroken",
+        "anchors.json product block"
+      ]
+    },
+    {
+      "id": "demo-config-code-convention",
+      "kind": "contains",
+      "why": "The whichconfig answer teaches DEMO_<DIVISION>_END / _MID as a rule a prospect can rely on. It is a rule only for as long as the generator builds codes that way, and a demo user who is told a naming convention that no longer holds cannot find their own division's configuration.",
+      "file": "pb_demo/models/demo_generator.py",
+      "expect": [
+        "code = 'DEMO_%s_%s' % (division.upper(), 'END' if cycle == 'end' else 'MID')"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "intent whichconfig",
+        "glossary configCode"
+      ]
+    },
+    {
+      "id": "live-surfaces-are-read-only",
+      "kind": "absent",
+      "why": "The capstone's whole safety argument in one check. pb_learn may look at the product and may not touch it: the mission instructs, the learner presses Payobook's own buttons, and these predicates find out what happened by searching. A convenience that mutated — marking a run, ticking a flag, assigning a division from inside a poll loop — would turn a learning module into an actor on real payroll records, and it would arrive as exactly one of these tokens.",
+      "files": [
+        "pb_learn/models/learn_live.py"
+      ],
+      "expect": [
+        ".create(",
+        ".write(",
+        ".unlink(",
+        "cr.execute",
+        "action_",
+        "_do_"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "mission mL1 every check step",
+        "the intent whichpolicy live block",
+        "screen payruns next_step",
+        "tests/test_mission.py::test_15",
+        "LIVE_VALUES is three keys: june_run_state, active_policy_rates, division_name — a whitelist entry with no reader is a read path nobody asked for"
+      ]
+    },
+    {
+      "id": "demo-divisions-and-group",
+      "kind": "contains",
+      "why": "mL1 hands each prospect one of these six divisions and verifies against that assignment. A renamed key silently un-assigns every existing demo user — round-robin keeps handing out a name nothing resolves — and the capstone then tells a prospect to compute a run it can never find.",
+      "file": "pb_demo/models/demo_catalog.py",
+      "expect": [
+        "'retail'",
+        "'manufacturing'",
+        "'logistics'",
+        "'corporate'",
+        "'it'",
+        "'construction'",
+        "GROUP_COMPANY_NAME = 'Payobook Vietnam JSC'"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_demo/models/demo_division.py::DIVISION_KEYS",
+        "pb_learn/models/learn_live.py::DEMO_COMPANY_NAME",
+        "mission mL1"
+      ]
+    },
+    {
+      "id": "demo-june-is-the-open-month",
+      "kind": "contains",
+      "why": "Every predicate looks for a June 2026 run because June is the ONE month the demo generator leaves in draft — April and May are done and locked. Move the open month and the capstone asks a prospect to compute a period that is already closed, which the product will correctly refuse while the mission keeps waiting.",
+      "file": "pb_demo/models/demo_history.py",
+      "expect": [
+        "_HISTORY_YEAR = 2026",
+        "_OPEN_MONTH = 6"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_learn/models/learn_live.py::JUNE_START / JUNE_END",
+        "mission mL1 compute and submit steps"
+      ]
+    },
+    {
+      "id": "demo-run-division-is-derived",
+      "kind": "contains",
+      "why": "A run's pb_division is COMPUTED from its first payslip's formula config and STORED — which is why every predicate can search on it, and why june_run_computed also counts slips: before the compute there are no slips, so there is no division, so the run the prospect is about to create cannot be found by division alone.",
+      "file": "pb_payruns/models/hr_payslip_run.py",
+      "expect": [
+        "pb_division = fields.Char(",
+        "compute='_compute_pb_division', store=True"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_learn/models/learn_live.py::_my_june_run",
+        "mission mL1"
+      ]
+    },
+    {
+      "id": "demo-payrun-defaults-seam",
+      "kind": "contains",
+      "why": "pb_demo pins the demo wizard to June 2026 and now also moves the user's own division to the front and preselects it. mL1's consequence card promises exactly that ('it is preselected and moved to the front of the list'), so if this seam is refactored away the mission is making a promise about a screen that no longer keeps it.",
+      "file": "pb_demo/models/demo_payrun.py",
+      "expect": [
+        "_pb_ensure_demo_division()",
+        "d['date_start'] = '2026-06-01'",
+        "d['division'] = mine"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "mission mL1 open step and consequence card",
+        "pb_demo_portal/controllers/main.py::_create_demo_user"
+      ]
+    },
+    {
+      "id": "statutory-declares-config-prices",
+      "kind": "contains",
+      "why": "THE fact Phase B got wrong and had to be rewritten. A vietnam.insurance.policy record does NOT price a payslip: grep the rate fields and every reader is a display, an analytic or a report. What prices the BHYT line is a PARAMETER CONSTANT on the division's formula configuration — EEHI in the demo world — referenced by the component that charges it. L6, m4, changerate and whichpolicy all now teach that separation and the reconciliation it implies; if the product ever wires the policy into computation, every one of them needs re-reading, because they would then be teaching a gap that had closed.",
+      "file": "pb_demo/models/demo_catalog.py",
+      "expect": [
+        "('EEHI', 'Health Insurance Rate (EE)'",
+        "('HIEMP', 'Health Insurance (EE)', 'BHYT - NLĐ', 'INS', 'formula', '=-ROUND(MIN(BASIC,CAPLO)*EEHI)', True)"
+      ],
+      "fixture": [
+        "VN_RATES",
+        "CONFIG_PARAMS",
+        "POLICY"
+      ],
+      "taughtIn": [
+        "L5 step 2 (the parameters below the components)",
+        "L6 step 5 (the trace is a reconciliation, not a causation)",
+        "L6 step 7 (declaring a rate is half the job)",
+        "mission m4 consequence card, anomaly and reconcile step",
+        "intent changerate",
+        "intent whichpolicy",
+        "the statutory station's why"
+      ]
+    },
+    {
+      "id": "c1-sidebar-leaves",
+      "kind": "xmlids",
+      "why": "Eight more stations and eight more screens resolve through these leaves — learn.screen reads its matchers off the leaf rather than keeping a copy. A retired leaf is a station that opens nothing and a screen the Coach can never recognise, and it fails in the most misleading way: the Coach says it has no lessons for a screen that has a full one. sec_learn is NOT here on purpose — pb_learn ships that section itself.",
+      "files": [
+        "pb_sidebar/data/pb_sidebar_data.xml"
+      ],
+      "expect": [
+        "sec_overview",
+        "sec_people",
+        "sec_insights",
+        "sec_compliance",
+        "item_dashboard",
+        "item_approvals",
+        "item_employees",
+        "item_contracts",
+        "item_analytics",
+        "item_explorer",
+        "item_workforce_insights",
+        "item_govt_reports"
+      ],
+      "fixture": [
+        "MENU"
+      ],
+      "taughtIn": [
+        "all eight Phase C1 stations",
+        "all eight Phase C1 screens",
+        "tools/gen_learn_data.py::SIDEBAR_KEYS"
+      ]
+    },
+    {
+      "id": "c1-client-action-tags",
+      "kind": "contains",
+      "why": "Six of the eight new leaves carry an action TAG and an EMPTY action_xmlid, so the tag is the only thing that identifies the screen; Dashboard and Government Reports carry both. Rename one and a whole screen's content goes silently unreachable — LW and LA included, because a lesson renders over the replica but the Coach still has to know which live screen a learner is standing on.",
+      "files": [
+        "pb_dashboard/static/src/js/pb_dashboard.js",
+        "pb_approval/static/src/js/approval.js",
+        "pb_people/static/src/js/people.js",
+        "pb_contracts/static/src/js/contracts.js",
+        "pb_insights/static/src/js/insights.js",
+        "pb_explorer/static/src/js/explorer.js",
+        "pb_workforce_insights/static/src/js/workforce_insights.js",
+        "pb_govt_reports/static/src/js/govt_reports.js"
+      ],
+      "expect": [
+        "\"pb_dashboard\"",
+        "\"pb_approval\"",
+        "\"pb_people\"",
+        "\"pb_contracts\"",
+        "\"pb_insights\"",
+        "\"pb_explorer_cockpit\"",
+        "\"pb_workforce_insights\"",
+        "\"pb_govt_reports\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "screens dashboard / approvals / employees / contracts / insights / explorer / workforcean / govreports",
+        "tests/test_coach.py::test_14 and ::test_16"
+      ]
+    },
+    {
+      "id": "dashboard-anchors",
+      "kind": "contains",
+      "why": "pb_learn adds NOTHING to pb_dashboard.xml — LW points at four attributes that were already there, and the registry has now promoted them out of the `foreign` block into `product`. That promotion is a claim about somebody else's template, and three of the four are ALSO walked by the sc_welcome scenario, which replaced the hero tour that used to be the other claimant, so it is checked at authoring time as well as by the module's own registry test.",
+      "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
+      "expect": [
+        "data-coach=\"dash-hero\"",
+        "data-coach=\"dash-runpayroll\"",
+        "data-coach=\"dash-kpis\"",
+        "data-coach=\"dash-formula\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "LW steps 1-4",
+        "the dashboard replica in engine/screens.js",
+        "anchors.json product block",
+        "scenario sc_welcome steps hero, kpis, engine"
+      ]
+    },
+    {
+      "id": "c1-cockpit-anchors",
+      "kind": "contains",
+      "why": "The 33 anchors pb_learn added to the seven Phase C1 cockpits are additive attributes in modules this one does not own. Nothing over there reads them, so a tidy-up would delete them without any test in those modules noticing — and the Coach's Show-me would then scroll to nothing. pb_people, pb_contracts and pb_govt_reports share the ppl-* CLASS vocabulary, which is exactly why the anchor KEYS are namespaced per screen.",
+      "files": [
+        "pb_approval/static/src/xml/approval.xml",
+        "pb_people/static/src/xml/people.xml",
+        "pb_contracts/static/src/xml/contracts.xml",
+        "pb_insights/static/src/xml/insights.xml",
+        "pb_explorer/static/src/xml/explorer.xml",
+        "pb_workforce_insights/static/src/xml/workforce_insights.xml",
+        "pb_govt_reports/static/src/xml/govt_reports.xml"
+      ],
+      "expect": [
+        "data-coach=\"pa-hero\"",
+        "data-coach=\"pa-kpis\"",
+        "data-coach=\"pa-lanes\"",
+        "data-coach=\"pa-recent\"",
+        "data-coach=\"pa-reject\"",
+        "data-coach=\"pe-head\"",
+        "data-coach=\"pe-bulk\"",
+        "data-coach=\"pe-kpis\"",
+        "data-coach=\"pe-filters\"",
+        "data-coach=\"pe-roster\"",
+        "data-coach=\"ct-head\"",
+        "data-coach=\"ct-kpis\"",
+        "data-coach=\"ct-filters\"",
+        "data-coach=\"ct-roster\"",
+        "data-coach=\"in-hero\"",
+        "data-coach=\"in-trend\"",
+        "data-coach=\"in-duo\"",
+        "data-coach=\"in-pulse\"",
+        "data-coach=\"in-explore\"",
+        "data-coach=\"ex-head\"",
+        "data-coach=\"ex-rail\"",
+        "data-coach=\"ex-filters\"",
+        "data-coach=\"ex-headline\"",
+        "data-coach=\"ex-table\"",
+        "data-coach=\"wa-head\"",
+        "data-coach=\"wa-filters\"",
+        "data-coach=\"wa-kpis\"",
+        "data-coach=\"wa-chart\"",
+        "data-coach=\"wa-duo\"",
+        "data-coach=\"gr-head\"",
+        "data-coach=\"gr-countries\"",
+        "data-coach=\"gr-grid\"",
+        "data-coach=\"gr-empty\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "LA every step",
+        "intents wherelives / whichlane / howmanyslips / variance / rejectright / payrollready / expirysoon / whopays / whichtool / whichfilings",
+        "anchors.json product block"
+      ]
+    },
+    {
+      "id": "approvals-reject-testimony",
+      "kind": "contains",
+      "why": "LA step 6 and the rejectright answer both teach that the reject popover REQUIRES a written reason and that rejecting cancels every payslip in the run. That is a promise about this cockpit's own behaviour, not about the model's fields — the fields are pinned separately by payrun-reject-testimony — so it is checked where the learner meets it.",
+      "files": [
+        "pb_approval/static/src/xml/approval.xml",
+        "pb_approval/static/src/js/approval.js"
+      ],
+      "expect": [
+        "Reason (required)",
+        "All payslips in this run will be cancelled.",
+        "reject_note"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "LA step 6 (a rejection is testimony)",
+        "intent rejectright",
+        "the approvals replica in engine/screens.js"
+      ]
+    },
+    {
+      "id": "govt-reports-are-country-scoped",
+      "kind": "contains",
+      "why": "The whichfilings answer teaches that the tiles are chosen by the ACTIVE COMPANY'S COUNTRY rather than by what Payobook can produce, and that a country with no catalogue says so instead of faking a form. Both halves live in this one provider: the country-keyed catalogue and the `available` flag behind the empty state. The five VN report keys are pinned because the fixture mirrors them by name.",
+      "file": "pb_govt_reports/models/pb_govt_reports.py",
+      "expect": [
+        "def get_govt_reports_data",
+        "'VN': {",
+        "'bhxh630'",
+        "'bhxhdstk01'",
+        "'bangke_d01'",
+        "'tang_ld'",
+        "'giam_ld'",
+        "'available': available"
+      ],
+      "fixture": [
+        "PRACTICE.govreports"
+      ],
+      "taughtIn": [
+        "station govreports",
+        "screen govreports",
+        "intent whichfilings",
+        "the govreports replica in engine/screens.js"
+      ]
+    },
+    {
+      "id": "payai-lesson-keys-are-real",
+      "kind": "json-content",
+      "why": "RETARGETED in LEARNOS Phase 1a from data/learn_lessons.xml to the static content plane. The other half of PayAI's envelope: the whitelist names eight lesson keys, and this is where they are checked against the lessons this repo actually ships. A key that is whitelisted and not written is a 'Show me' button that opens the Journey map — the offer made and not kept, which is the exact failure the Coach's honesty rules exist to prevent.",
+      "expect": {
+        "lessonKeys": [
+          "LW",
+          "L1",
+          "L2",
+          "L3",
+          "L4",
+          "L5",
+          "L6",
+          "LA"
+        ]
+      },
+      "fixture": [],
+      "taughtIn": [
+        "payroll_ai_engine.py::_KNOWN_LESSONS",
+        "payroll_ai_engine.py::_TOUR_TO_LESSON"
+      ],
+      "file": "pb_learn/static/content/learn_content.json"
+    },
+    {
+      "id": "payai-has-no-hard-coach-dependency",
+      "kind": "absent",
+      "why": "The retirement, asserted as an ABSENCE because that is the shape of it. `useService(\"pb_coach\")` THROWS when the service is missing, so a single one of those anywhere in PayAI means the module cannot be constructed on a database where pb_coach has been uninstalled — and the symptom is a chat pill that never appears, with an error in a console nobody is watching. The optional lookup (`env.services.pb_coach`) is what replaced it.",
+      "files": [
+        "pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js",
+        "pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.js",
+        "pb_payroll_ai_insights/static/src/components/ai_dashboard/ai_dashboard.js",
+        "pb_payroll_ai_insights/static/src/components/chart_renderer/chart_renderer.js"
+      ],
+      "expect": [
+        "useService(\"pb_coach\")",
+        "useService('pb_coach')"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "ai_insight_chat.js::setup",
+        "the deploy-time uninstall of pb_coach"
+      ]
+    },
+    {
+      "id": "rejection-cancels-the-run",
+      "kind": "contains",
+      "why": "THE FACT PHASES A AND B GOT WRONG IN NINE PLACES. Rejecting does not send a run back to draft: `action_payslip_run_cancel` cascades `action_payslip_cancel` over every slip and writes the RUN to 'cancel', whose own selection label is 'Rejected' — so the board says rejected while the record says cancelled, and nothing hands the batch back to the officer. Returning it to a workable draft is `draft_payslip_run`, a DIFFERENT method gated to the Finance/GM tier. The false version taught a self-service undo that does not exist, and it taught it in the consequence cards of the two lessons about signing for money. If the product ever does wire rejection to draft, every site listed below needs re-reading, because they would then be teaching a gap that had closed.",
+      "files": [
+        "om_hr_payroll/models/hr_payslip.py",
+        "pb_payruns/models/hr_payslip_run.py",
+        "pb_approval/models/pb_approval.py"
+      ],
+      "expect": [
+        "('cancel', 'Rejected')",
+        "def action_payslip_run_cancel",
+        "line.action_payslip_cancel()",
+        "return self.write({'state': 'cancel'})",
+        "def draft_payslip_run",
+        "Only the Finance / GM tier can reset an approved pay run to",
+        "'action_payslip_run_cancel'"
+      ],
+      "fixture": [
+        "STATUS_LABELS.payrun",
+        "STATUS_LABELS.payslip",
+        "CHAINS.payrun"
+      ],
+      "taughtIn": [
+        "glossary payrun (the chain)",
+        "L1 step 8",
+        "L2 step 5 + its consequence card",
+        "L2 quiz option 3",
+        "L5 quiz option 1",
+        "LA step 6 + step 7 consequence",
+        "LA quiz option 3",
+        "mission m1 undo step",
+        "mission m2 consequence, debrief and undo step",
+        "mission mL1 consequence and submit step",
+        "intents approve / reject / affectrun / rejectright",
+        "stations payruns and approvals (mistakes)",
+        "the pipeline visual's branch caption in CHAINS.payrun"
+      ]
+    },
+    {
+      "id": "dashboard-pending-counts-payslips",
+      "kind": "contains",
+      "why": "LW's understanding check turns on this tile, and Phase C1 described it as 'every sign-off the company is waiting on, at every gate' — which is wrong three ways. It counts payroll.analytics rows in state 'ready', falling back to hr.payslip at level1/level2: PAYSLIPS not runs, HR and Finance only, never the Officer gate. A learner taught the false version reads 48 — one ordinary batch — as forty-eight runs, and a normal Tuesday as a crisis. The two lines are pinned together because the fallback is what actually renders on a database with no analytics rows, which is most of them.",
+      "file": "pb_dashboard/models/pb_dashboard.py",
+      "expect": [
+        "pending = safe(lambda: env['payroll.analytics'].search_count([('state', '=', 'ready')]))",
+        "pending = safe(lambda: env['hr.payslip'].search_count([('state', 'in', ['level1', 'level2'])]))"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "LW step 2 tip",
+        "LW's understanding check (all three options)",
+        "column dashboard/pending_approval"
+      ]
+    },
+    {
+      "id": "insights-hero-is-the-latest-run",
+      "kind": "contains",
+      "why": "The Insights hero has NO state filter — `_runs()` orders by date and returns whatever is newest, so a draft computed an hour ago is the headline and the state chip beside it is the only thing that says so. The department leaderboard is the opposite: it waits for a DONE run. Phase C1 taught 'analytics over the runs that are done' and 'built from the payslips themselves so it cannot disagree with a payslip' — both false, and the second one mattered most, because the board reads the STORED per-run roll-ups. If a state filter is ever added to _runs, the hero stops being able to show a draft and the whole read-the-chip lesson becomes noise.",
+      "file": "pb_insights/models/pb_insights.py",
+      "expect": [
+        "def _runs(self, date_from=None, limit=None):",
+        "runs = Run.search(dom, order='date_end desc, id desc', limit=_RUN_SCAN)",
+        "done = runs.filtered(lambda r: r.state == 'done')[:1]",
+        "'net': run.pb_total_net or 0.0,",
+        "def _snapshots(self):"
+      ],
+      "fixture": [
+        "PRACTICE.insights"
+      ],
+      "taughtIn": [
+        "station insights (what / why / third mistake)",
+        "screen insights blurb + next",
+        "column insights/net_payroll",
+        "intent whichtool"
+      ]
+    },
+    {
+      "id": "explorer-explains-why",
+      "kind": "contains",
+      "why": "Phase C1 taught that no analytics screen explains WHY. The Explorer does, and it is the only one: `narrate` builds an exactly-reconciling variance waterfall between two comparable periods with an anomaly rail, and `drill` goes from any cell to the employees behind it — read from hr_payslip_line JOIN hr_payslip rather than from the fact tables, so the drill doubles as the audit trail. Teaching a capability away is worse than not teaching it: it sends somebody to export a spreadsheet for an answer the product already has.",
+      "file": "pb_explorer/models/pb_explorer.py",
+      "expect": [
+        "def narrate(self, spec=None):",
+        "water = self._waterfall(spec, pair)",
+        "anomalies = self._anomalies(spec, pair)",
+        "def drill(self, spec=None, series_key=None, category_key=None, page=0):",
+        "FROM pb_fact_{tbl}"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "station explorer (why + mistake)",
+        "screen explorer blurb",
+        "intent whichtool"
+      ]
+    },
+    {
+      "id": "people-ready-pct-is-bank-only",
+      "kind": "contains",
+      "why": "Two different tests share one word on this screen. The KPI is with_bank over headcount; the per-ROW tick also requires a running contract. Phase C1 gave the tile the row's stricter definition, which makes it possible to read 100% payroll-ready off a band while somebody on a draft contract is about to be missing from the run — the exact failure the tile exists to warn about.",
+      "file": "pb_people/models/pb_people.py",
+      "expect": [
+        "'ready_pct': round(100 * with_bank / headcount) if headcount else 0,",
+        "'ready': bool(c and state == 'open' and bank),"
+      ],
+      "fixture": [
+        "PRACTICE.people"
+      ],
+      "taughtIn": [
+        "column employees/payroll_ready",
+        "intent payrollready",
+        "the employees replica in engine/screens.js"
+      ]
+    },
+    {
+      "id": "govt-reports-coming-soon-is-an-install",
+      "kind": "contains",
+      "why": "'Coming soon' means the country's own payroll module is NOT INSTALLED — `available` is the wizard model being present in the registry — not that Payobook has no filings for that country. Five countries carry catalogues. Phase C1 taught 'has not been built yet', which turns an install question for an administrator into a product limitation nobody can act on.",
+      "files": [
+        "pb_govt_reports/models/pb_govt_reports.py",
+        "pb_hr_payroll_singapore/wizards/cpf_submission_wizard.py"
+      ],
+      "expect": [
+        "available = bool(wizard_model) and wizard_model in self.env",
+        "'SG': {'wizard_model': 'cpf.submission.wizard'",
+        "'TH': {'wizard_model': 'social.security.wizard'",
+        "_name = 'cpf.submission.wizard'"
+      ],
+      "fixture": [
+        "PRACTICE.govreports"
+      ],
+      "taughtIn": [
+        "station govreports (second mistake)",
+        "intent whichfilings",
+        "the govreports replica in engine/screens.js"
+      ]
+    },
+    {
+      "id": "people-leaves-and-the-implication-ladder",
+      "kind": "contains",
+      "why": "REPLACES 'people-leaves-exclude-the-final-approver', which pinned a claim that was FALSE. The Employees and Contracts leaves do carry officer, manager and super_admin only — but pb_sidebar filters on `user.all_group_ids`, which INCLUDES implied groups, and group_payroll_final_approver implies group_payroll_analytics_manager which implies group_payroll_base_manager. A final approver therefore sees the wage roster, and the old content taught the opposite. What is pinned now is the mechanism the corrected answer rests on: the two implication lines and the all_group_ids filter. Cut any one of them and whosees becomes wrong again, in the other direction.",
+      "files": [
+        "pb_sidebar/data/pb_sidebar_data.xml",
+        "pb_sidebar/models/pb_sidebar.py",
+        "pb_hr_payroll_base/security/payroll_base_security_enhanced.xml"
+      ],
+      "expect": [
+        "<record id=\"item_employees\" model=\"pb.sidebar.item\">",
+        "<record id=\"item_contracts\" model=\"pb.sidebar.item\">",
+        "user_groups = user.all_group_ids",
+        "item.groups_id & user_groups",
+        "<record id=\"group_payroll_analytics_manager\" model=\"res.groups\">",
+        "(4, ref('group_payroll_analytics_user')), (4, ref('group_payroll_base_manager'))",
+        "<record id=\"group_payroll_final_approver\" model=\"res.groups\">",
+        "(4, ref('group_payroll_analytics_manager'))"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "intent whosees (all three paragraphs)",
+        "ledger: Run D2 addendum A"
+      ]
+    },
+    {
+      "id": "composer-is-flag-gated",
+      "kind": "contains",
+      "why": "The composer is the only path in this module where a learner reads a sentence no author wrote. Four fences make that acceptable and all four are pinned here: it is OFF unless a system parameter says otherwise; the advice deny-list is re-asked inside it, not only in resolve() — resolve returns the compliance intent only if that record exists, so on a database where it is missing an advice question would otherwise fall through retrieval, past the column glossary and into a language model; the model is instructed to emit a literal NO_ANSWER rather than guess; and the answer is badged so the reader knows what they are holding.",
+      "file": "pb_learn/models/learn_intent.py",
+      "expect": [
+        "COMPOSE_FLAG = 'pb_learn.compose_enabled'",
+        "if not self._compose_enabled():",
+        "if _is_advice(question):",
+        "NO_ANSWER",
+        "'source_kind': 'composed'",
+        "_QUESTION_CAP",
+        "_REPLY_CAP"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "chrome string composedAnswer",
+        "tests/test_composer.py"
+      ]
+    },
+    {
+      "id": "composer-corpus-reads-learn-content-only",
+      "kind": "model-scope",
+      "within": "_corpus",
+      "why": "The whole safety argument for sending anything to a provider at all: the corpus is this module's own tutorial text, and a join to anything the payroll product owns would put an employee's pay into a prompt. REWRITTEN from an `absent` list of six product model names to the GENERAL assertion, because a blocklist protects against the names somebody thought of and against nothing else — the same weakness the advice deny-list was found to have in the Phase D review. Every model the method reaches must be in the learn.* namespace — since Phase 1a that is exactly one, learn.content, the single audited door onto the static content plane, and the check fails if it finds no model at all, so a rewrite that hides the reads behind a variable breaks the build instead of passing silently. Scoped to the method because learn_intent.py legitimately NAMES a product model elsewhere — _matchers explains that the Pay Runs leaf is matched by one.",
+      "file": "pb_learn/models/learn_intent.py",
+      "expect": [
+        "learn."
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "models/learn_intent.py::_compose header comment",
+        "tests/test_composer.py::test_06b (the same assertion, DB-bound)"
+      ]
+    },
+    {
+      "id": "composer-scrubs-the-fixture-names",
+      "kind": "contains",
+      "why": "The scrub list in learn_intent.py names the six people in the practice fixture, because a learner reading a lesson about Mai's payslip and then asking the Coach about it types her name into the one free-text field in this system. A renamed character would leave the list stale and silent — this check makes it break the build instead. It is a reduction and not a guarantee: what makes the composer safe is that the corpus holds no records at all.",
+      "files": [
+        "docs/tutorial_poc/author/practice-data.js",
+        "pb_learn/models/learn_intent.py"
+      ],
+      "expect": [
+        "Nguyễn Thị Mai",
+        "Trần Văn Hùng",
+        "Lê Thu Trang",
+        "Phạm Minh Đức",
+        "Bùi Anh Tuấn",
+        "Đỗ Thị Lan",
+        "FIXTURE_NAMES = ("
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "models/learn_intent.py::FIXTURE_NAMES",
+        "tests/test_composer.py::the scrub battery"
+      ]
+    },
+    {
+      "id": "questions-are-opt-in-twice",
+      "kind": "contains",
+      "why": "Phase A2 ruled that the Coach must not log the learner's question text, and that ruling is still the DEFAULT — learn.question changes it only for a tenant who switches collection on AND a learner who agrees. Both gates are re-asked server-side in record(), because the browser's checks are a courtesy and this method is reachable by RPC from anything holding a session. The text is scrubbed on the way in even after consent, and it expires.",
+      "file": "pb_learn/models/learn_question.py",
+      "expect": [
+        "COLLECT_FLAG = 'pb_learn.collect_questions'",
+        "if not self._collect_enabled():",
+        "if not self.env['learn.consent']._questions_granted():",
+        "self.env['learn.intent']._scrub(",
+        "RETENTION_DAYS = 180",
+        "def _gc_questions"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "chrome strings consentTitle / consentBody / consentYes / consentNo",
+        "tests/test_questions.py"
+      ]
+    },
+    {
+      "id": "scenario-nav-actions-exist",
+      "kind": "contains",
+      "why": "SCENARIO_NAV is a promise about somebody else's module: every xmlid a scenario may navigate to must still be declared where we last saw it. A renamed action would otherwise fail silently at runtime as a console.warn and a walkthrough that opens nothing.",
+      "files": [
+        "pb_dashboard/views/pb_dashboard_action.xml",
+        "pb_payrun_wizard/views/pb_payrun_wizard_action.xml",
+        "pb_payruns/views/hr_payslip_run_kanban.xml",
+        "pb_payslip_review/views/pb_payslip_review_action.xml",
+        "pb_formula_studio/views/pb_formula_studio_action.xml",
+        "pb_import/views/pb_import_action.xml",
+        "pb_statutory/views/pb_statutory_action.xml"
+      ],
+      "expect": [
+        "id=\"action_pb_dashboard\"",
+        "id=\"action_pb_payrun_wizard\"",
+        "id=\"action_pb_payruns_kanban\"",
+        "id=\"action_pb_payslip_review\"",
+        "id=\"action_pb_formula_studio\"",
+        "id=\"action_pb_import\"",
+        "id=\"action_pb_statutory\""
+      ],
+      "fixture": [
+        "SCENARIO_NAV (gen_learn_data.py)"
+      ],
+      "taughtIn": [
+        "every scenario entry.nav / step nav"
+      ]
+    },
+    {
+      "id": "scenario-anchors-exist",
+      "kind": "contains",
+      "why": "The six ported walkthroughs point at controls in FOUR other modules — the Formula Studio cockpit and its spreadsheet grid, the multi-sheet importer and the mid/end mapping wizard. pb_learn owns none of those templates and adds nothing to them, so every one of these names is a claim about somebody else's file. The module's own registry test can only prove the name is DECLARED; this is the half that proves it is still THERE. A renamed control here is a Watch step that spotlights nothing and a Do step that waits for a press it can never see.",
+      "files": [
+        "pb_formula_studio/static/src/xml/studio.xml",
+        "pb_formula_studio/static/src/xml/grid_studio.xml",
+        "pb_hr_payroll_formula/wizards/multisheet_wizard_views.xml",
+        "pb_hr_payroll_formula/wizards/payroll_cycle_component_mapping_wizard_views.xml"
+      ],
+      "expect": [
+        "data-coach=\"fs-arrows\"",
+        "data-coach=\"fs-card\"",
+        "data-coach=\"fs-add\"",
+        "data-coach=\"fs-views\"",
+        "data-coach=\"fs-view-grid\"",
+        "data-coach=\"fs-flow\"",
+        "data-coach=\"fs-editai\"",
+        "data-coach=\"fs-payai\"",
+        "data-coach=\"grid-canvas\"",
+        "data-coach=\"grid-fbar\"",
+        "data-coach=\"grid-hint\"",
+        "data-coach=\"imp-confidence\"",
+        "data-coach=\"imp-actions\"",
+        "data-coach=\"map-intro\"",
+        "data-coach=\"map-actions\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "scenario sc_formula",
+        "scenario sc_import",
+        "scenario sc_mapping",
+        "anchors.json foreign wildcards fs-* grid-* imp-* map-*"
+      ]
+    },
+    {
+      "id": "guarded-steps-never-autoclick",
+      "kind": "contains",
+      "within": "_watchAutoClick",
+      "why": "THE PROMISE OF THE WHOLE SCENARIO ENGINE, pinned where it is kept. There is exactly one synthesised press in pb_learn — the `el.click()` in `_watchAutoClick` — and a guarded step must have no code path to it. Two things make that structural rather than careful, and both are pinned here: the function's FIRST statement re-asks the guard and the mode and returns having done nothing if either has changed, and the timer's callback asks again at the moment of the press, because a step can change under an async gap. A guard checked once at the branch is a guard checked once.",
+      "file": "pb_learn/static/src/scenario/scenario_overlay.js",
+      "expect": [
+        "const step = this.step;",
+        "if (!step || step.guard || !this.isWatch) {",
+        "if (!now || now !== step || now.guard || !this.isWatch) {",
+        "el.click();"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "the mode-behaviour matrix in LEARNOS_PHASE1B_HANDOVER.md",
+        "pb_learn/tests/test_scenario.py::test_02"
+      ]
+    },
+    {
+      "id": "input-anchors-exist-in-replica",
+      "kind": "contains",
+      "why": "An `act: \"input\"` step is checked against INPUT_ANCHORS, and INPUT_ANCHORS is only worth checking against if the replica really draws a field at every key in it. Three files have to agree: the fixture declares the anchor and its kind, the replica draws an <input> there through `inputRow`, and the registry declares the name so the anchor lint can see it. If they drift, the failure is silent in the worst way — the learner types, nothing happens, and the walkthrough is stuck with no error anywhere. The generator refuses this too; this is the same question asked of the SHIPPED files, which is where a hand-edit would show up.",
+      "files": [
+        "pb_learn/static/src/engine/screens.js",
+        "pb_learn/static/src/engine/fixture.js",
+        "pb_learn/static/src/anchors.json"
+      ],
+      "expect": [
+        "inputRow(\"rep-impfix\"",
+        "inputRow(\"rep-newemp-name\"",
+        "\"rep-impfix\": { kind: \"number\" }",
+        "\"rep-newemp-name\": { kind: \"text\" }",
+        "\"rep-impfix\":",
+        "\"rep-newemp-name\":"
+      ],
+      "fixture": [
+        "INPUT_ANCHORS"
+      ],
+      "taughtIn": [
+        "sc_import step fixcell",
+        "sc_people step name"
+      ]
+    },
+    {
+      "id": "watch-mode-never-clicks-guarded",
+      "kind": "absent",
+      "within": "_enterStep",
+      "why": "The other end of the same promise, asserted as an ABSENCE because that is its shape: the step-entry method may not press anything itself. It decides — watch-and-unguarded goes to the one function that presses, everything else goes to the listener that waits — and a press written inline here would bypass the re-asked guard entirely while every other check stayed green. NOTE TO THE NEXT READER: the tokens below are pinned as absent, so do not write them in a comment inside this method to explain the rule (ledger: an absent check greps the comments too, and this trap has been sprung three times).",
+      "file": "pb_learn/static/src/scenario/scenario_overlay.js",
+      "expect": [
+        "el.click(",
+        "target.click(",
+        "dispatchEvent("
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "the mode-behaviour matrix in LEARNOS_PHASE1B_HANDOVER.md"
+      ]
+    },
+    {
+      "id": "explain-screen-reads-content-only",
+      "kind": "model-scope",
+      "within": "_explain_floor",
+      "why": "LEARNOS Phase 4. `explain_screen` answers \"what is this screen\" with nobody having typed anything, and its floor is assembled here. Every model this method reaches must be in the learn.* namespace: learn.content for the written material and learn.runtime for the live substitution on next_step. A join to anything the payroll product owns would put a record into an answer that is ALSO, when a tenant switches the composer on, the material for a prompt. Same checker kind and same argument as composer-corpus-reads-learn-content-only: the promise is a NAMESPACE, not a list of banned tables, and the check fails if it finds no model at all, so a rewrite that hides the reads behind a variable breaks the build rather than passing silently.",
+      "file": "pb_learn/models/learn_intent.py",
+      "expect": [
+        "learn."
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "chrome strings explainScreen / explainHint / screenAnswer",
+        "pb_learn/tests/test_explain.py"
+      ]
+    },
+    {
+      "id": "explain-prompt-material-is-content-only",
+      "kind": "model-scope",
+      "within": "_explain_wire_text",
+      "why": "The half that actually reaches a provider. `_explain_floor` builds what the LEARNER reads; this builds what is SENT when the composer flag is on, and it is deliberately a second pass over the content plane rather than a flattening of the floor — the floor's next_step has been through learn.runtime, so on the demo world it carries a division name and a run state read out of the database, and on any tenant it can carry an override slot somebody typed. Neither belongs on a wire. Scoped the same way and for the same reason as the floor.",
+      "file": "pb_learn/models/learn_intent.py",
+      "expect": [
+        "learn."
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "models/learn_intent.py::_wire_leaf",
+        "pb_learn/tests/test_explain.py"
+      ]
+    },
+    {
+      "id": "explain-screen-has-deterministic-floor",
+      "kind": "contains",
+      "within": "explain_screen",
+      "why": "THE ORDER IS THE FEATURE. Every screen the content plane covers can explain itself offline: the blurb, the next step and the column definitions were all written already. A provider may only REWRITE that, and the structure of this method is what makes \"may only\" true rather than intended — the floor is built and returned before the flag is even read, so a tenant with the composer off runs the code that would have shipped without one, and a rewrite that comes back empty, refused or too long falls back to the same object. The tokens below pin all three: the floor call, the flag read and the fallback. Their ORDER is pinned by tests/test_explain.py, which a `contains` check cannot see.",
+      "file": "pb_learn/models/learn_intent.py",
+      "expect": [
+        "floor = self._explain_floor(screen_key)",
+        "if not self._compose_enabled():",
+        "return floor",
+        "self._explain_composed(floor, screen_key, lang) or floor"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "the screenAnswer badge in coach.js",
+        "pb_learn/tests/test_explain.py"
+      ]
+    },
+    {
+      "id": "corpus-builder-is-pure",
+      "kind": "absent",
+      "within": "build_corpus",
+      "why": "LEARNOS Phase 4 moved the composer's corpus assembly out of `_corpus` and into a module-level function, so that the exact string on the wire can be asserted without a database. That refactor would have left the model-scope check with less to see — the ledger's rule is to change the refactor rather than the checker, so the reads stayed in `_corpus`, which is still checked, and this pins the property that makes the new function safe: it takes the parsed content tree and scalars, and has no way to reach a registry, a recordset or a cursor. A reader can check that from the signature; this makes it break the build.",
+      "file": "pb_learn/models/learn_intent.py",
+      "expect": [
+        "self.env",
+        "cr.execute",
+        ".search(",
+        ".browse("
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "models/learn_intent.py::build_corpus",
+        "tools/replay_tests.py"
+      ]
+    },
+    {
+      "id": "payai-classifies-on-scrubbed-text",
+      "kind": "contains",
+      "within": "_classify_intent",
+      "why": "THE FIRST PROVIDER CALL OF EVERY QUESTION, and until the Phase 4 review it sent the whole user message raw. Every redaction in this module lived in `_process_data_query`, which runs AFTERWARDS — so the comment there claiming the message was protected described a method the message had already gone past. There is no name mapping at this point (nothing has been queried yet), so what is pinned is the generic scrub: an email, a phone number, a record id and a money amount all leave the string before it is formatted into the prompt. A name does not, and that residual is named in ai_redaction.py rather than left to be rediscovered. Pinned at AUTHORING time as well as in tests/test_egress.py because the two run in different places and neither is a substitute for the other.",
+      "file": "pb_payroll_ai_insights/models/payroll_ai_engine.py",
+      "expect": [
+        "safe_message = generic_scrub(message)",
+        "INTENT_CLASSIFICATION_PROMPT.format(message=safe_message)"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_payroll_ai_insights/tests/test_egress.py::test_01f",
+        "ai_redaction.py residual list"
+      ]
+    },
+    {
+      "id": "payai-history-never-goes-out-raw",
+      "kind": "contains",
+      "why": "CONVERSATION HISTORY IS AN EARLIER ANSWER WITH THE NAMES PUT BACK INTO IT. `restore_deep` re-inserts real employee names for the reader who is entitled to them, and the next turn used to hand those same messages straight back to the provider on all four paths. LEARNOS PHASE 6 REWROTE THIS CHECK TO THE NEW PROMISE rather than deleting it (a check that fails for a correct reason teaches the next author to delete checks): the mapping is no longer per-call, it is the CONVERSATION's — loaded from `payroll.ai.conversation.redaction_map`, extended by whatever this query read, saved back — and all four paths redact their history turns through it. With no conversation the mapping is empty and `redact_text` degrades to exactly the generic scrub the three non-data paths used to call, so nothing regresses on a caller with no session. That closes the Phase 4 residual: a person restored into turn 2's answer is removed from turn 3's history even though turn 3 asked about something else. What is still open, and stated in ai_redaction.py rather than here alone: the CURRENT message goes out raw on the knowledge, onboarding and general paths.",
+      "files": [
+        "pb_payroll_ai_insights/models/payroll_ai_engine.py"
+      ],
+      "expect": [
+        "\"content\": redact_text(msg.get('content', ''), mapping),",
+        "\"content\": redact_text(msg.get('content', ''), mapping)})",
+        "mapping = self._conversation_mapping(context)"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_payroll_ai_insights/tests/test_egress.py::test_01g",
+        "pb_payroll_ai_insights/tests/test_egress.py::test_01h",
+        "ai_redaction.py residual list"
+      ]
+    },
+    {
+      "id": "payai-report-prompt-is-redacted",
+      "kind": "contains",
+      "why": "THE PHASE-4 RULING, ENFORCED AT AUTHORING TIME. `payroll_ai_report`'s two provider calls were dead for four phases because they asked for a factory method that does not exist, and Phase 4 deliberately LEFT them dead: `_generate_section_narratives` puts the salary section's data in a prompt, and that data is a list of employees with their job titles and their wages, so repairing the lookup alone would have switched on a third unredacted egress path. Phase 6 does both halves in one change and this pins both: the lookup that exists, the redaction helper that every section's data goes through, and the restore that puts the people back for the reader — who generated the PDF and has already passed the query layer's access gate. FIX ROUND: the accumulator is created once in `action_generate_report` and threaded through the sections, the narratives and the executive summary, so the one-mapping claim is now true rather than asserted; and the Anomaly Alerts section's stored `summary` — prose this module put the names back INTO before saving it, under a key the collector does not treat as a person — is redacted against a mapping extended from that alert's own details, or dropped when that provenance cannot be checked.",
+      "file": "pb_payroll_ai_insights/models/payroll_ai_report.py",
+      "expect": [
+        "config.get_provider()",
+        "redact_sections(sections, mapping)",
+        "redact_names(section.get('data') or {},",
+        "restore_names(narrative.strip(), mapping)",
+        "restore_names(summary.strip(), mapping)",
+        "mapping.update(extended)",
+        "redact_text(summary, mapping)",
+        "summary_is_traceable(raw.get('category'), parsed, names)",
+        "person_keys=PERSON_KEYS - {'name'}"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_payroll_ai_insights/tests/test_egress.py::test_02e",
+        "pb_payroll_ai_insights/tests/test_egress.py::test_02f",
+        "pb_payroll_ai_insights/tests/test_egress.py::test_02f2",
+        "pb_payroll_ai_insights/tests/test_egress.py::test_02h",
+        "pb_payroll_ai_insights/tests/test_redaction.py::test_04l",
+        "pb_payroll_ai_insights/tests/test_redaction.py::test_04n"
+      ]
+    },
+    {
+      "id": "payai-voice-is-consent-gated",
+      "kind": "contains",
+      "why": "RAW AUDIO IS THE ONE EGRESS IN THIS MODULE THAT CANNOT BE REDACTED. A recording is a person's voice saying a colleague's name and there is no placeholder for either, so the control is a gate rather than a scrub: a tenant flag that is OFF when absent, plus that user's own recorded consent, both re-asked on the server because the endpoint is reachable by RPC from anything holding a session. The consent copy names the recording, the third party and the fact that we cannot take names out of audio first — a consent that does not name what leaves is a button.",
+      "file": "pb_payroll_ai_insights/models/payroll_ai_conversation.py",
+      "expect": [
+        "if not flag_on(self.env, VOICE_FLAG):",
+        "if not Consent.voice_granted():",
+        "def rpc_transcribe_voice",
+        "def rpc_voice_status"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_payroll_ai_insights/tests/test_egress.py::test_04",
+        "pb_payroll_ai_insights/tests/test_data_access.py::test_06d",
+        "pb_payroll_ai_insights/models/payroll_ai_consent.py"
+      ]
+    },
+    {
+      "id": "payai-voice-never-auto-submits",
+      "kind": "absent",
+      "within": "rpc_transcribe_voice",
+      "why": "THE OLD ENDPOINT TRANSCRIBED AND THEN SENT, so a mis-heard sentence reached a language model before the person who said it had seen it. The replacement returns the text to the speaker and the learner presses send themselves, over the ordinary path with the ordinary redaction. That is a property of the method, not a promise about it: nothing inside it can submit, and this check plus tests/test_egress.py::test_04b is what stops one being added. The negative control was executed — putting `rpc_send_message` back inside the method fails both.",
+      "file": "pb_payroll_ai_insights/models/payroll_ai_conversation.py",
+      "expect": [
+        "rpc_send_message",
+        "process_message",
+        "add_message",
+        "generate_chat",
+        "text_to_speech"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_payroll_ai_insights/tests/test_egress.py::test_04b"
+      ]
+    },
+    {
+      "id": "next-best-reads-learn-only",
+      "kind": "model-scope",
+      "within": "next_best",
+      "why": "\"WHAT SHOULD I LEARN NEXT\" IS A LOCAL COMPUTATION AND MUST STAY ONE. The whole personalisation feature is a decision made on this server, over one learner's own progress rows, with nothing sent to any model and nothing read about anybody else. The promise is a NAMESPACE, not a list of forbidden tables, so it is asked the general way the composer's corpus is asked: parse the method AND the helpers it calls literally as `self.x(...)` (one level), collect every `self.env['x.y']` literal, and refuse anything outside `learn.`. A scan that finds no model at all also fails, so hiding the reads behind a variable breaks the build rather than passing quietly. THIS IS A TRIPWIRE, NOT CONTAINMENT, and saying so is part of shipping it (ledger, Phase 5): a read two helpers down, through a variable, in a module-level function or on another model's method is outside what it can see. It catches what somebody writes by accident. One delegation leaves the namespace by design and is named rather than hidden: `learn.live.gate_open()` asks the real group and the real company, which is the same question the live capstone's own predicates ask and the reason the capstone is not offered to somebody who could never finish it.",
+      "file": "pb_learn/models/learn_runtime.py",
+      "expect": [
+        "learn."
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_learn/tests/test_nextbest.py",
+        "models/learn_runtime.py::next_best"
+      ]
+    },
+    {
+      "id": "journey-line-order-is-authored-once",
+      "kind": "contains",
+      "why": "THE MAP'S READING ORDER HAS TWO READERS SINCE PHASE 6 — the page draws it and `learn.runtime.next_best()` walks it — and two copies of an order is the shape this ledger keeps recording (a gate that rebuilds the table it gates drifts from it). It is authored HERE, in data.js, dumped by dump_content.js and emitted into the content plane as `line_order`; journey.js keeps the same literal only as the fallback for a stale bundle, and `test_nextbest::test_15` fails if that fallback and the shipped content ever disagree. This pins the authored source and the generator's emission, which is the half a source-level test in pb_learn cannot see.",
+      "files": [
+        "docs/tutorial_poc/author/data.js",
+        "docs/tutorial_poc/author/tools/gen_learn_data.py",
+        "docs/tutorial_poc/author/tools/dump_content.js"
+      ],
+      "expect": [
+        "const LINE_ORDER = [\"overview\", \"payrun\", \"people\", \"insights\", \"compliance\", \"setup\"];",
+        "'line_order': list(data.get('lineOrder') or [])",
+        "lineOrder: grab(\"LINE_ORDER\")"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_learn/tests/test_nextbest.py::test_15",
+        "pb_learn/models/learn_content.py::line_order"
+      ]
+    }
+  ],
+  "anchorLint": {
+    "why": "Content names controls by one name across the replica and the real screen. A control renamed in a template with the content still pointing at it produces a Show-me that scrolls to nothing — which is the exact 'confidently wrong' failure the registry exists to prevent.",
+    "contentFiles": [
+      "data.js"
+    ],
+    "registry": "pb_learn/static/src/anchors.json",
+    "templateFiles": [
+      "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "pb_payruns/static/src/xml/payruns_kanban.xml",
+      "pb_payruns/views/hr_payslip_run_kanban.xml",
+      "pb_payslip_review/static/src/xml/payslip_review.xml",
+      "pb_import/static/src/xml/import.xml",
+      "pb_import_wizard/static/src/xml/import_wizard.xml",
+      "pb_payrun_ledgers/static/src/xml/ledger.xml",
+      "pb_formula_studio/static/src/xml/studio.xml",
+      "pb_statutory/static/src/xml/statutory.xml",
+      "pb_structures/static/src/xml/structures.xml",
+      "pb_integrations/static/src/xml/integrations.xml",
+      "pb_statutory/static/src/xml/statutory_wizards.xml",
+      "pb_dashboard/static/src/xml/pb_dashboard.xml",
+      "pb_approval/static/src/xml/approval.xml",
+      "pb_people/static/src/xml/people.xml",
+      "pb_contracts/static/src/xml/contracts.xml",
+      "pb_insights/static/src/xml/insights.xml",
+      "pb_explorer/static/src/xml/explorer.xml",
+      "pb_workforce_insights/static/src/xml/workforce_insights.xml",
+      "pb_govt_reports/static/src/xml/govt_reports.xml"
+    ]
+  },
+  "tokenLint": {
+    "why": "A typo'd {{token}} renders the key itself to a learner instead of the company's pay day, and nothing anywhere says why. Unused slots are the other half: dead configuration a tenant admin can see and change to no effect.",
+    "contentFiles": [
+      "data.js"
+    ],
+    "declaredIn": "practice-data.js"
+  }
+}

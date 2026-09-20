@@ -18,7 +18,7 @@
                     </div>
                     
                     <!-- Filters Section -->
-                    <group string="Report Filters" attrs="{'invisible': [('employee_count', '>', 0)]}">
+                    <group string="Report Filters" invisible="employee_count &gt; 0">
                         <group>
                             <field name="company_id" options="{'no_create': True, 'no_open': True}"/>
                             <field name="insurance_policy_id" options="{'no_create': True}"/>
@@ -33,7 +33,7 @@
                     </group>
                     
                     <!-- Generate Button -->
-                    <div class="text-center mb-4" attrs="{'invisible': [('employee_count', '>', 0)]}">
+                    <div class="text-center mb-4" invisible="employee_count &gt; 0">
                         <button name="action_generate_report" 
                                 type="object" 
                                 string="Generate Report" 
@@ -41,7 +41,7 @@
                     </div>
                     
                     <!-- Summary Statistics -->
-                    <group attrs="{'invisible': [('employee_count', '=', 0)]}">
+                    <group invisible="employee_count == 0">
                         <group string="Enrollment Summary" class="oe_subtotal_footer">
                             <field name="employee_count" string="Total Employees"/>
                             <field name="si_enrolled_count" string="SI Enrolled"/>
@@ -56,7 +56,7 @@
                     </group>
                     
                     <!-- Contribution Breakdown -->
-                    <notebook attrs="{'invisible': [('employee_count', '=', 0)]}">
+                    <notebook invisible="employee_count == 0">
                         <page string="Contribution Summary" name="summary">
                             <group>
                                 <group string="Social Insurance (BHXH)">
@@ -87,7 +87,7 @@
                         
                         <page string="Employee Details" name="details">
                             <field name="line_ids" readonly="1">
-                                <tree string="Employee Contributions" editable="bottom">
+                                <list string="Employee Contributions" editable="bottom">
                                     <field name="employee_id"/>
                                     <field name="department_id"/>
                                     <field name="si_salary_base" sum="Total Base"/>
@@ -103,13 +103,13 @@
                                     <field name="si_enrolled" widget="boolean_toggle"/>
                                     <field name="hi_enrolled" widget="boolean_toggle"/>
                                     <field name="ui_enrolled" widget="boolean_toggle"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
                     
                     <!-- Export Actions -->
-                    <footer attrs="{'invisible': [('employee_count', '=', 0)]}">
+                    <footer invisible="employee_count == 0">
                         <button string="Export Excel" name="action_export_excel" type="object" class="btn-secondary"/>
                         <button string="Print PDF" name="action_print_pdf" type="object" class="btn-secondary"/>
                         <button string="Close" class="btn-secondary" special="cancel"/>

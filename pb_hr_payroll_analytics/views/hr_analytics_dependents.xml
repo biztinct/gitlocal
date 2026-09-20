@@ -32,7 +32,7 @@
     <record id="action_view_hr_analytics_dependents" model="ir.actions.act_window">
         <field name="name">Dependents &amp; Benefits</field>
         <field name="res_model">hr.analytics.dependents</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
 </odoo>

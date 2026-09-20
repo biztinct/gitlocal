@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Approval Matrix.
+
+       Comments are ruled with `=`, never a doubled hyphen: two hyphens
+       inside an XML comment is a PARSE ERROR that takes the whole file down
+       and every template in it with it.
+
+       `t-if` / `t-elif` / `t-else` are ADJACENT siblings with no comment
+       between them: a comment breaks the chain at runtime with nothing in
+       the server log.
+
+       No template expression says `not`: OWL rewrites `and` and `or` and
+       leaves `not` alone, which compiles to a SyntaxError that kills the
+       whole file at mount. Every negation here is `!`.
+
+       No loop variable is named lt / gt / lte / gte / and / or / not / in:
+       the area loop is `ar`, the row loop is `rw`, the chip loop is `cp`,
+       the preset loop is `ps`, the tab loop is `tb`, the label loop is `lb`.
+       ==================================================================== -->
+
+  <t t-name="pb_approval_config.PbApprovalMatrix">
+    <div class="pbim pbim-page pbam">
+
+      <div t-if="state.loading" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading your approvals…</span>
+      </div>
+
+      <div t-elif="state.failed" class="pbim-wrap">
+        <div class="pbim-empty pbam-empty">
+          <div class="pbam-empty-ic"><t t-out="ic('alert',30)"/></div>
+          <h3>The Approval Matrix could not be opened</h3>
+          <p t-esc="state.failed"/>
+          <button class="pbim-btn primary" t-on-click="() => this.load()">Try again</button>
+        </div>
+      </div>
+
+      <!-- The builder takes the whole screen: it is a job, not a panel. -->
+      <div t-elif="state.builderFor" class="pbim-wrap pbam-wrap">
+        <ApprovalBuilder workflowId="state.builderFor"
+                         onBack="() => this.closeBuilder()"
+                         onOpenPeople="(role, scope) => this.openPeople(role, scope)"/>
+      </div>
+
+      <div t-else="" class="pbim-wrap pbam-wrap">
+
+        <!-- ============================================ the hero -->
+        <div class="pbim-hero pbam-hero">
+          <div class="pbim-hero-id">
+            <div class="pbim-eyebrow">
+              <t t-out="ic('stamp',13)"/> <span>Settings</span>
+            </div>
+            <h1 class="pbim-h1">Approval Matrix</h1>
+            <p class="pbim-sub">Every check, in one place. Decide who signs off what, for each part of the business, in plain words.</p>
+          </div>
+          <div class="pbam-hero-actions">
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <button class="pbim-btn ghost" t-on-click="() => this.toggleImport()">
+              <t t-out="ic('fileSpreadsheet',15)"/> <span>Bring in from a spreadsheet</span>
+            </button>
+            <button class="pbim-btn primary" t-on-click="() => this.togglePresets('')">
+              <t t-out="ic('plus',15)"/> <span>Create a workflow</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============================================ the tabs -->
+        <div class="pbam-tabs">
+          <button t-foreach="tabs" t-as="tb" t-key="tb.key"
+                  class="pbam-tab"
+                  t-att-class="{ 'is-on': state.tab === tb.key }"
+                  t-on-click="() => this.setTab(tb.key)">
+            <t t-out="ic(tb.icon,15)"/> <span t-esc="tb.label"/>
+            <span t-if="tb.count" class="pbam-count" t-esc="tb.count"/>
+          </button>
+        </div>
+
+        <!-- ========================================== the matrix -->
+        <t t-if="state.tab === 'matrix'">
+
+          <div t-if="state.importOpen" class="pbim-panel pbam-import">
+            <div class="pbim-panel-h">
+              <div>
+                <h2 class="pbim-h2">Bring in the approval matrix you already wrote</h2>
+                <p class="pbim-sub">Pick the setup workbook. Its "Approval Matrix" sheet becomes one draft route per row, for this company. Nothing is published, and a name in the spreadsheet stays a suggestion until you choose the account it means.</p>
+              </div>
+              <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.toggleImport()">
+                <t t-out="ic('x',14)"/> <span>Close</span>
+              </button>
+            </div>
+
+            <div class="pbam-import-pick">
+              <label class="pbim-btn primary">
+                <t t-out="ic('upload',15)"/>
+                <span t-if="!state.importBusy">Choose the workbook</span>
+                <span t-if="state.importBusy">Reading it…</span>
+                <input type="file" accept=".xlsx,.xlsm" class="pbam-file"
+                       t-on-change="(ev) => this.onImportFile(ev)"/>
+              </label>
+              <span class="pbim-sub">Only the sheet named "Approval Matrix" is read.</span>
+            </div>
+
+            <t t-if="state.importResult">
+              <p class="pbam-import-said" t-esc="state.importResult.sentence"/>
+
+              <div class="pbam-import-rows">
+                <div t-foreach="importRows" t-as="rw" t-key="rw_index"
+                     class="pbam-import-row">
+                  <div class="pbam-import-what">
+                    <span class="pbam-import-obj" t-esc="rw.object"/>
+                    <span t-if="!rw.recognised" class="pbim-badge pbam-warn">Filed under Other request</span>
+                  </div>
+                  <div class="pbam-import-route">
+                    <t t-foreach="rw.steps" t-as="st" t-key="st_index">
+                      <span t-if="st_index" class="pbam-ar"><t t-out="ic('arrowRight',11)"/></span>
+                      <span t-esc="st.label"/>
+                    </t>
+                    <span t-if="!rw.steps.length" class="pbim-sub">Nobody checks it</span>
+                  </div>
+                  <div t-if="rw.threshold_note" class="pbim-sub" t-esc="rw.threshold_note"/>
+                  <div t-foreach="rw.warnings" t-as="wn" t-key="wn_index"
+                       class="pbam-import-warn">
+                    <t t-out="ic('alert',13)"/> <span t-esc="wn"/>
+                  </div>
+                </div>
+              </div>
+
+              <div t-if="importPeople.length" class="pbam-import-people">
+                <h3 class="pbim-h3">Who are these people?</h3>
+                <p class="pbim-sub">The workbook names them; the app will not guess which account each one is. Choose one and they hold that responsibility from then on.</p>
+                <div t-foreach="importPeople" t-as="pp" t-key="pp.id"
+                     class="pbam-import-person">
+                  <span class="pbam-import-name" t-esc="pp.name_text"/>
+                  <span class="pbim-sub" t-esc="pp.role_label"/>
+                  <span class="pbim-badge">Proposed from the spreadsheet · choose the account</span>
+                </div>
+                <p class="pbim-sub">Open <b>People &amp; backups</b> to pick each account.</p>
+              </div>
+            </t>
+          </div>
+
+          <div t-if="state.presetsOpen" class="pbim-panel pbam-presets">
+            <div class="pbim-panel-h">
+              <div>
+                <h2 class="pbim-h2">Start from a route you already know</h2>
+                <p class="pbim-sub">A preset stays a draft until you finish it. Choosing one publishes nothing.</p>
+              </div>
+              <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.togglePresets('')">
+                <t t-out="ic('x',14)"/> <span>Close</span>
+              </button>
+            </div>
+            <div class="pbam-preset-grid">
+              <button t-foreach="data.presets" t-as="ps" t-key="ps.key"
+                      class="pbam-preset" t-on-click="() => this.usePreset(ps.key)">
+                <span class="pbam-preset-t" t-esc="ps.title"/>
+                <span class="pbam-preset-s" t-esc="ps.sub"/>
+                <span class="pbam-preset-r">
+                  <t t-foreach="ps.route" t-as="lb" t-key="lb_index">
+                    <span t-if="lb_index" class="pbam-ar"><t t-out="ic('arrowRight',11)"/></span>
+                    <span t-esc="lb"/>
+                  </t>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div t-if="data.attention.count" class="pbam-attn">
+            <t t-out="ic('alert',18)"/>
+            <span>
+              <t t-esc="data.attention.count"/> published route(s) reach a part of the business where nobody is named. Requests from there will stop until somebody is.
+            </span>
+            <span class="pbam-sp"/>
+            <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.reviewSetup()">Show me</button>
+          </div>
+
+          <div class="pbam-filters">
+            <label class="pbam-search">
+              <t t-out="ic('search',15)"/>
+              <input type="search" placeholder="Search processes, people or routes"
+                     t-att-value="state.search" t-on-input="onSearch"/>
+            </label>
+            <div class="pbim-chips">
+              <button class="pbim-fchip" t-att-class="{ 'is-on': state.area === 'all' }"
+                      t-on-click="() => this.setArea('all')">All areas</button>
+              <button t-foreach="data.areas" t-as="ar" t-key="ar.key"
+                      class="pbim-fchip" t-att-class="{ 'is-on': state.area === ar.key }"
+                      t-on-click="() => this.setArea(ar.key)" t-esc="ar.name"/>
+            </div>
+            <div class="pbim-chips">
+              <button class="pbim-fchip" t-att-class="{ 'is-on': state.status === 'all' }"
+                      t-on-click="() => this.setStatus('all')">Any status</button>
+              <button t-foreach="statusChips" t-as="cp" t-key="cp.key"
+                      class="pbim-fchip" t-att-class="{ 'is-on': state.status === cp.key }"
+                      t-on-click="() => this.setStatus(cp.key)">
+                <span t-esc="cp.label"/> <span class="pbam-c" t-esc="cp.count"/>
+              </button>
+            </div>
+          </div>
+
+          <div t-if="nothingMatches" class="pbim-empty pbam-empty">
+            <div class="pbam-empty-ic"><t t-out="ic('search',26)"/></div>
+            <h3>Nothing matches</h3>
+            <p>Try another word, or clear what you have chosen.</p>
+            <button class="pbim-btn ghost" t-on-click="() => this.clearFilters()">Clear the filters</button>
+          </div>
+
+          <div t-else="" class="pbam-tablewrap">
+            <div class="pbam-tablex">
+              <table class="pbam-table">
+                <thead>
+                  <tr>
+                    <th class="pbam-col-name">Process and the route it follows</th>
+                    <th>Applies to</th>
+                    <th>Status</th>
+                    <th>Version</th>
+                    <th/>
+                  </tr>
+                </thead>
+                <tbody>
+                  <t t-foreach="visibleAreas" t-as="ar" t-key="ar.key">
+                    <tr class="pbam-area">
+                      <td colspan="5">
+                        <span><t t-out="ic(ar.icon,14)"/> <span t-esc="ar.name"/>
+                          <span class="pbam-area-n" t-esc="ar.rows.length"/>
+                        </span>
+                      </td>
+                    </tr>
+                    <tr t-foreach="ar.rows" t-as="rw" t-key="rw.process_key"
+                        class="pbam-row" t-on-click="() => this.openRow(rw)">
+                      <td>
+                        <div class="pbam-pn">
+                          <span t-esc="rw.name"/>
+                          <span t-if="rw.fast" class="pbam-fl">
+                            <t t-out="ic('zap',10)"/> <span>no approval needed</span>
+                          </span>
+                          <span t-if="rw.money" class="pbam-fl pbam-fl-quiet"
+                                title="Advice, not a rule">
+                            <t t-out="ic('users',10)"/> <span>2 people suggested</span>
+                          </span>
+                        </div>
+                        <div class="pbam-route">
+                          <t t-foreach="rw.route_labels" t-as="lb" t-key="lb_index">
+                            <span t-if="lb_index" class="pbam-ar"><t t-out="ic('arrowRight',12)"/></span>
+                            <span t-esc="lb"/>
+                          </t>
+                          <span t-if="!rw.route_labels.length" class="pbim-sub">Not written yet</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="pbam-applies">
+                          <span t-esc="rw.applies"/>
+                          <div t-if="rw.sub" class="pbam-applies-s" t-esc="rw.sub"/>
+                        </div>
+                      </td>
+                      <td>
+                        <span class="pbim-badge" t-att-class="'pbam-' + statusMeta(rw.status).tone">
+                          <span class="pbam-dot"/> <span t-esc="statusMeta(rw.status).label"/>
+                        </span>
+                      </td>
+                      <td class="pbam-ver" t-esc="rw.version"/>
+                      <td class="pbam-chev">
+                        <button class="pbam-iconbtn" title="Where this applies"
+                                t-on-click.stop="() => this.openScope(rw)">
+                          <t t-out="ic('building',15)"/>
+                        </button>
+                        <t t-out="ic('chevron',16)"/>
+                      </td>
+                    </tr>
+                  </t>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <p class="pbim-note pbam-foot">
+            A row is <b>In use</b> only when its route is published <i>and</i> the feature behind it is wired up, so nothing here pretends to be protecting something it is not. Any process may be set to <b>No approval needed</b>; the row says so out loud and every use is still recorded. Suggestions such as "2 people" are advice you confirm when you publish, never a lock.
+          </p>
+        </t>
+
+        <PeopleTab t-elif="state.tab === 'people'"
+                   companyId="data.company_id"
+                   focus="state.peopleFocus"/>
+
+        <HistoryTab t-else="" companyId="data.company_id"/>
+
+      </div>
+
+      <!-- ===================================== where a row applies -->
+      <t t-if="state.scopeFor">
+        <div class="pbam-scrim" t-on-click="() => this.closeScope()"/>
+        <aside class="pbam-drawer">
+          <div class="pbam-dh">
+            <div>
+              <h2>Where this applies</h2>
+              <p class="pbim-sub" t-esc="state.scopeFor.name"/>
+            </div>
+            <button class="pbam-x" aria-label="Close" t-on-click="() => this.closeScope()">
+              <t t-out="ic('x',18)"/>
+            </button>
+          </div>
+          <div class="pbam-db">
+            <ApprovalSchemePanel processKey="state.scopeFor.process_key"
+                                 scopeKey="''"
+                                 scopeLabel="data.company_name"
+                                 companyId="data.company_id"
+                                 embedded="true"/>
+          </div>
+        </aside>
+      </t>
+
+    </div>
+  </t>
+
+</templates>

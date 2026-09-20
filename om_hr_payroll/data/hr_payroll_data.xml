@@ -3,38 +3,13 @@
 
     <data noupdate="0">
 
-        <!-- Payroll Chart of Accounts -->
-        <record id="account_payroll_salaries" model="account.account" forcecreate="True">
-            <field name="code">520001</field>
-            <field name="name">Salaries Expense</field>
-            <field name="account_type">expense</field>
-            <field name="reconcile">False</field>
-            <field name="company_id" ref="base.main_company"/>
-        </record>
-
-        <record id="account_payroll_allowances" model="account.account" forcecreate="True">
-            <field name="code">520002</field>
-            <field name="name">Allowances Expense</field>
-            <field name="account_type">expense</field>
-            <field name="reconcile">False</field>
-            <field name="company_id" ref="base.main_company"/>
-        </record>
-
-        <record id="account_salary_payable" model="account.account" forcecreate="True">
-            <field name="code">210001</field>
-            <field name="name">Salary Payable</field>
-            <field name="account_type">liability_current</field>
-            <field name="reconcile">True</field>
-            <field name="company_id" ref="base.main_company"/>
-        </record>
-
-        <record id="account_payroll_clearing" model="account.account" forcecreate="True">
-            <field name="code">210002</field>
-            <field name="name">Payroll Clearing Account</field>
-            <field name="account_type">liability_current</field>
-            <field name="reconcile">True</field>
-            <field name="company_id" ref="base.main_company"/>
-        </record>
+        <!-- Payroll Chart of Accounts
+             NOTE: Duplicate accounts removed. The base chart of accounts (module: account)
+             already provides equivalent accounts:
+               - 230000 Salary Payable (account.1_salary_payable)     — replaces 210001
+               - 630000 Salary Expenses (account.1_expense_salary)    — replaces 520001
+             Use those existing accounts for payroll debit/credit configuration.
+        -->
 
         <!-- Salary Rules (accounting fields handled by om_hr_payroll_account module) -->
         <record id="hr_rule_basic" model="hr.salary.rule">
@@ -228,7 +203,6 @@
             <field name="code">BASE</field>
             <field name="name">Base for new structures</field>
             <field eval="[(6, 0, [ref('hr_rule_basic'), ref('hr_rule_taxable'),ref('hr_rule_net')])]" name="rule_ids"/>
-            <field name="company_id" ref="base.main_company"/>
         </record>
 
         <record id="structure_vietnam" model="hr.payroll.structure">
@@ -253,7 +227,6 @@
                 ref('hr_rule_unemployment_insurance_company'),
                 ref('hr_rule_total_cost_employer')
             ])]" name="rule_ids"/>
-            <field name="company_id" ref="base.main_company"/>
         </record>
 
         <!-- Decimal Precision -->

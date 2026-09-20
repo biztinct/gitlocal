@@ -197,14 +197,14 @@
                             <div class="col-lg-4">
                                 <div class="dashboard-card">
                                     <div>
-                                        <i class="fa fa-table fa-3x card-icon"/>
-                                        <h4 class="card-title">Payroll spreadsheet</h4>
-                                        <p class="card-description">Edit and configure payroll calculations, salary components, and deductions</p>
+                                        <i class="fa fa-calculator fa-3x card-icon"/>
+                                        <h4 class="card-title">Formula Configuration</h4>
+                                        <p class="card-description">Configure payroll calculations using Excel-like formulas and salary rules</p>
                                     </div>
-                                    <button name="%(action_vietnam_edit_spreadsheet)d" 
+                                    <button name="%(pb_hr_payroll_formula.action_formula_config)d" 
                                             type="action" 
                                             class="dashboard-btn">
-                                        Open spreadsheet
+                                        Open Formula Config
                                     </button>
                                 </div>
                             </div>

@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- noupdate="1", as every other mail template in this codebase is: a
+         tenant that has reworded one of these must not have it reverted by the
+         next upgrade. Outgoing debranding rides automatically
+         (biz_mail_debrand).
+
+         EVERY ONE OF THESE IS SENT WITH AN EXPLICIT `email_to` in
+         `email_values`. A template's own rendered address can reach mail.mail
+         EMPTY, and the message is then created, queued and addressed to nobody
+         with no error anywhere (R6). The `email_to` field below is kept as
+         documentation of who it is FOR.
+
+         WHAT NONE OF THESE SAY: the words "performance improvement plan",
+         "PIP", or anything that reads as a warning, in a subject line that
+         somebody's colleague might see over their shoulder. The subject lines
+         are deliberately dull. -->
+
+    <!-- ================== a manager has asked HR ================== -->
+    <record id="mail_template_pip_requested" model="mail.template">
+        <field name="name">Growth plan: a manager has asked HR to look at somebody</field>
+        <field name="model_id" ref="model_pb_pip_case"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.hr_owner_user_id.email or '' }}</field>
+        <field name="subject">A manager has asked for support with {{ object.employee_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.requested_by_user_id.name or 'A manager'"/></strong>
+                    has asked HR to look at how
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    is getting on.
+                </p>
+                <p style="background:#F5F4FF;border-left:3px solid #6355C7;padding:11px 14px;">
+                    <t t-out="object.reason_text or 'No detail was given.'"/>
+                </p>
+                <p>
+                    Nothing has been written to their record and nothing has
+                    been sent to them. Open <strong>Growth plans</strong>
+                    in Payobook and take it up when you can — the first step is
+                    a conversation.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================== HR has taken it up ================== -->
+    <record id="mail_template_pip_taken_up" model="mail.template">
+        <field name="name">Growth plan: HR has taken it up</field>
+        <field name="model_id" ref="model_pb_pip_case"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.requested_by_user_id.email or '' }}</field>
+        <field name="subject">HR has picked up what you raised about {{ object.employee_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.hr_owner_user_id.name or 'Somebody in HR'"/></strong>
+                    has picked up what you raised about
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    and will be in touch.
+                </p>
+                <p>
+                    The first step is a conversation with them — not a plan and
+                    not a letter. Most of these end there, which is the point.
+                    If a plan does turn out to be the right thing, you will be
+                    asked to agree what is on it.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================== the plan has started ==================
+         THE ONLY EMAIL THE PERSON THEMSELVES EVER GETS from this module,
+         and it is sent only when their own page is switched on. -->
+    <record id="mail_template_pip_started" model="mail.template">
+        <field name="name">Growth plan: your plan is ready to read</field>
+        <field name="model_id" ref="model_pb_pip_case"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Your growth plan</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.greeting() or ''"/>,</p>
+                <p>
+                    Following your conversations with your manager and with HR,
+                    the plan you agreed is now written down and ready for you to
+                    read.
+                </p>
+                <p>
+                    It runs to <strong><t t-out="object.end_date or ''"/></strong>,
+                    it says what we are looking for and when we will look at it,
+                    and you and your manager will sit down regularly along the
+                    way. Nothing in it should be a surprise.
+                </p>
+                <p>
+                    <a t-attf-href="/my/growth"
+                       style="background:#6355C7;color:#fff;text-decoration:none;padding:10px 18px;border-radius:9px;display:inline-block;font-weight:700;">
+                       Read my growth plan
+                    </a>
+                </p>
+                <p style="color:#4A5568;">
+                    There is a button at the bottom of that page to say you have
+                    read it. If anything on it looks wrong or unrealistic, say
+                    so — to your manager, or to
+                    <t t-out="object.hr_owner_user_id.name or 'your HR contact'"/>.
+                    That is what the check-ins are for.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================== they have read it ================== -->
+    <record id="mail_template_pip_acknowledged" model="mail.template">
+        <field name="name">Growth plan: they have read it</field>
+        <field name="model_id" ref="model_pb_pip_case"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.hr_owner_user_id.email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }} has read their plan</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    has opened their plan and acknowledged it.
+                </p>
+                <p>
+                    That is the record that they were given it and had the
+                    chance to read it, which is the thing everybody wishes they
+                    had a year later.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================== a check-in did not happen ================== -->
+    <record id="mail_template_pip_checkin_missed" model="mail.template">
+        <field name="name">Growth plan: a check-in did not happen</field>
+        <field name="model_id" ref="model_pb_pip_case"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.hr_owner_user_id.email or '' }}</field>
+        <field name="subject">A check-in on {{ object.employee_id.name }}'s plan was missed</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    A check-in on
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>'s
+                    plan was planned and did not happen.
+                </p>
+                <p>
+                    This matters more than it looks. The plan runs to
+                    <strong><t t-out="object.end_date or ''"/></strong>, and a
+                    plan whose conversations are not happening is a plan the
+                    person cannot fairly be held to at the end of it.
+                </p>
+                <p>
+                    <t t-out="object.checkins_done or 0"/> of
+                    <t t-out="object.checkins_planned or 0"/> conversations have
+                    been held so far.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================== the plan has reached its end ================== -->
+    <record id="mail_template_pip_due" model="mail.template">
+        <field name="name">Growth plan: it has reached its end date</field>
+        <field name="model_id" ref="model_pb_pip_case"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.hr_owner_user_id.email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }}'s plan has reached its end date</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    The plan for
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    ran to <strong><t t-out="object.end_date or ''"/></strong>
+                    and is still open.
+                </p>
+                <p>
+                    Nothing has been sent to their manager and nothing has been
+                    decided — that is for you to start when you are ready. Open
+                    <strong>Growth plans</strong> in Payobook and press
+                    "Ask their manager".
+                </p>
+                <p style="color:#4A5568;">
+                    A plan that runs past its end date without anybody deciding
+                    is the worst outcome for everybody in it, including the
+                    person.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================== the evaluation came back ================== -->
+    <record id="mail_template_pip_eval_in" model="mail.template">
+        <field name="name">Growth plan: the evaluation came back</field>
+        <field name="model_id" ref="model_pb_pip_case"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.hr_owner_user_id.email or '' }}</field>
+        <field name="subject">The evaluation for {{ object.employee_id.name }} is in</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    The manager's answers about
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>'s
+                    plan have come back.
+                </p>
+                <p>
+                    Open <strong>Growth plans</strong> in Payobook to read
+                    them beside the objectives they are about, and then talk to
+                    the person before anything is recorded.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================== it worked ================== -->
+    <record id="mail_template_pip_passed" model="mail.template">
+        <field name="name">Growth plan: completed successfully</field>
+        <field name="model_id" ref="model_pb_pip_case"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Your growth plan is complete</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.greeting() or ''"/>,</p>
+                <p>
+                    Your plan is complete, and it went well. Thank you — none of
+                    it was easy and all of it was noticed.
+                </p>
+                <p>
+                    There is nothing further to do and nothing has been filed in
+                    your documents about it. The check-ins that were still in
+                    the diary have been taken out.
+                </p>
+                <p style="color:#4A5568;">
+                    <t t-out="object.outcome_note or ''"/>
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================== it did not ==================
+         TO HR AND THE MANAGER, NEVER TO THE PERSON. Being told by email
+         that you did not complete an improvement plan is not something
+         this product will ever do; that is a conversation, and the module
+         exists to make sure it is one. -->
+    <record id="mail_template_pip_failed" model="mail.template">
+        <field name="name">Growth plan: not completed</field>
+        <field name="model_id" ref="model_pb_pip_case"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.hr_owner_user_id.email or '' }}</field>
+        <field name="subject">Decision recorded for {{ object.employee_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    The plan for
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    has been recorded as not completed.
+                </p>
+                <p style="background:#F5F4FF;border-left:3px solid #6355C7;padding:11px 14px;">
+                    <t t-out="object.outcome_note or 'No note was written.'"/>
+                </p>
+                <p>
+                    <strong>Nothing about their leaving has been started.</strong>
+                    Nothing will be, unless somebody opens Payobook and presses
+                    "Start their exit" having read this. There are usually other
+                    options and they are worth talking about first.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================== they resigned ================== -->
+    <record id="mail_template_pip_terminated" model="mail.template">
+        <field name="name">Growth plan: closed because they are leaving</field>
+        <field name="model_id" ref="model_pb_pip_case"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.hr_owner_user_id.email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }}'s plan has been closed</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    has resigned, so the plan that was running for them has been
+                    closed and the remaining check-ins taken out of the diary.
+                </p>
+                <p>
+                    It is recorded as <strong>closed because they left</strong>
+                    and not as a failed plan — nobody ever found out either way,
+                    and a record that says otherwise would be read wrongly in
+                    two years.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

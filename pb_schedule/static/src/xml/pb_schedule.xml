@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_schedule.PbSchedule">
+    <!-- position:relative — the WfDrawer scrim is absolute and belongs to THIS
+         surface, not the viewport (wf_kit.scss). -->
+    <div class="pbim pbsc">
+
+      <!-- ==================== head: title + shared context ==============
+           `embedded` (W17) suppresses ONLY what a host would already own. -->
+      <div class="pbsc-head" t-if="!props.embedded">
+        <div class="pbsc-head__row">
+          <h1 class="pbsc-title">Schedule</h1>
+          <WfContextBar className="'pbsc-ctx'"
+                        features="{ department: true, week: true, person: false,
+                                    day: false, search: true }"/>
+        </div>
+      </div>
+
+      <!-- ============================ toolbar ========================== -->
+      <div class="pbsc-tools">
+        <div class="pbsc-seg" role="tablist" aria-label="Roster span">
+          <button class="pbsc-seg__b" role="tab"
+                  t-att-class="{ 'is-on': state.span === 7 }"
+                  t-att-aria-selected="state.span === 7 ? 'true' : 'false'"
+                  t-on-click="() => this.setSpan(7)">Week</button>
+          <button class="pbsc-seg__b" role="tab"
+                  t-att-class="{ 'is-on': state.span === 14 }"
+                  t-att-aria-selected="state.span === 14 ? 'true' : 'false'"
+                  t-on-click="() => this.setSpan(14)">Fortnight</button>
+        </div>
+
+        <span class="pbsc-counts" t-if="d">
+          <b t-esc="counts.shifts"/><span> shifts</span>
+          <span class="pbsc-dot">·</span>
+          <b t-esc="counts.published"/><span> published</span>
+          <span class="pbsc-dot" t-if="counts.open">·</span>
+          <t t-if="counts.open"><b t-esc="counts.open"/><span> open</span></t>
+          <span class="pbsc-dot" t-if="counts.conflicts">·</span>
+          <span class="pbsc-warn" t-if="counts.conflicts">
+            <t t-out="ic('alert', 12)"/><b t-esc="counts.conflicts"/><span> conflicts</span>
+          </span>
+        </span>
+
+        <span class="pbsc-spacer"/>
+
+        <button class="pbsc-btn ghost" t-att-class="{ 'is-on': state.coverageOn }"
+                t-att-aria-pressed="state.coverageOn ? 'true' : 'false'"
+                t-on-click="() => this.toggleCoverage()"
+                title="Show required vs scheduled on every day">
+          <span t-out="ic('shieldCheck', 14)"/><span>Coverage</span>
+        </button>
+        <button class="pbsc-btn ghost" t-on-click="() => this.openCoverageDrawer()"
+                title="Edit coverage requirements" aria-label="Edit coverage requirements">
+          <span t-out="ic('settings', 14)"/>
+        </button>
+        <button class="pbsc-btn ghost" t-on-click="() => this.openTemplates()"
+                title="The shift library">
+          <span t-out="ic('layers', 14)"/><span>Templates</span>
+        </button>
+        <button class="pbsc-btn ghost" t-on-click="() => this.refresh()"
+                title="Reload the roster" aria-label="Reload the roster">
+          <span t-out="ic('refresh', 14)"/>
+        </button>
+        <button class="pbsc-btn ghost" t-on-click="() => this.openCopy()">
+          <span t-out="ic('copy', 14)"/><span>Copy week</span>
+        </button>
+        <button class="pbsc-btn primary" t-on-click="() => this.publishAll()"
+                t-att-disabled="!counts.draft or state.publishing">
+          <span t-out="ic('upload', 14)"/><span>Publish</span>
+          <span class="pbsc-badge" t-if="counts.draft" t-esc="counts.draft"/>
+        </button>
+      </div>
+
+      <!-- ============================== body =========================== -->
+      <div class="pbsc-body">
+
+        <div class="pbsc-load" t-if="state.loading and !d">
+          <span t-out="ic('loader', 22)"/><span>Loading the roster…</span>
+        </div>
+
+        <div class="pbsc-empty" t-elif="emptyState">
+          <span t-out="ic(emptyState.icon, 28)"/>
+          <div class="t" t-esc="emptyState.title"/>
+          <div class="s" t-esc="emptyState.sub"/>
+        </div>
+
+        <t t-else="">
+          <!-- ==================== week stats strip =====================
+               Replaces the legacy nine-dot summary bar. The PER-DAY numbers
+               live in the day headers below, where they line up with their
+               column by construction instead of by a second scroll listener. -->
+          <div class="pbsc-strip" t-if="stats">
+            <div class="pbsc-strip__f">
+              <span class="l">Scheduled</span>
+              <span class="v"><t t-esc="hrs(stats.total_hours)"/> h</span>
+            </div>
+            <div class="pbsc-strip__f">
+              <span class="l">Scheduled cost</span>
+              <span class="v" t-esc="money(stats.total_cost)"/>
+            </div>
+            <div class="pbsc-strip__f">
+              <span class="l">Actual so far</span>
+              <span class="v" t-esc="money(stats.actual_cost)"/>
+            </div>
+
+            <div class="pbsc-strip__budget">
+              <t t-if="budget">
+                <div class="pbsc-strip__brow">
+                  <span class="l">Budget</span>
+                  <span class="v" t-esc="money(budget.amount)"/>
+                  <span t-attf-class="pbsc-vpill is-{{ budgetTone }}">
+                    <t t-esc="Math.round(budgetRatio)"/>%
+                  </span>
+                  <button class="pbsc-link" t-if="canEditBudget"
+                          t-on-click="() => this.openBudget()">Edit</button>
+                </div>
+                <div class="pbsc-bar">
+                  <span t-attf-class="fill is-{{ budgetTone }}"
+                        t-attf-style="width: {{ budgetPct }}%"/>
+                </div>
+                <div class="pbsc-strip__note" t-if="budgetPartial">
+                  Only <t t-esc="budget.weeks_budgeted"/> of
+                  <t t-esc="budget.weeks_in_span"/> weeks in this span are
+                  budgeted — the comparison is partial.
+                </div>
+              </t>
+              <t t-else="">
+                <div class="pbsc-strip__brow">
+                  <span class="l">No budget set</span>
+                  <button class="pbsc-btn ghost" t-if="canEditBudget"
+                          t-on-click="() => this.openBudget()">
+                    <span t-out="ic('plus', 13)"/><span>Set budget</span>
+                  </button>
+                  <span class="pbsc-strip__note" t-else="">
+                    An attendance or payroll manager can set one.
+                  </span>
+                </div>
+              </t>
+            </div>
+
+            <div class="pbsc-strip__note pbsc-strip__norate" t-if="stats.no_rate">
+              <span t-out="ic('alert', 12)"/>
+              <span><t t-esc="stats.no_rate"/> scheduled people have no wage on
+                a running contract, so their hours are not in the cost.</span>
+            </div>
+          </div>
+
+          <div class="pbsc-trunc" t-if="truncated">
+            <span t-out="ic('alert', 13)"/>
+            <span>Showing <t t-esc="employees.length"/> of
+              <t t-esc="employees.length + truncated"/> people (the roster shows
+              everyone with a shift first). Narrow by department or search to
+              see the rest.</span>
+          </div>
+
+          <!-- =========================== the grid ====================== -->
+          <div class="pbsc-gridwrap">
+            <div class="pbsc-grid" t-att-style="gridStyle">
+
+              <!-- header row -->
+              <div class="pbsc-h pbsc-h--emp">
+                <span class="l">People</span>
+                <span class="n"><t t-esc="employees.length"/></span>
+              </div>
+              <t t-foreach="days" t-as="day" t-key="day.date">
+                <div t-attf-class="pbsc-h {{ day.is_today ? 'is-today' : '' }} {{ day.is_weekend ? 'is-weekend' : '' }}">
+                  <span class="dw" t-esc="day.label"/>
+                  <span class="dd"><t t-esc="day.day_num"/> <t t-esc="day.month"/></span>
+                  <t t-set="cov" t-value="coverageFor(day)"/>
+                  <span t-if="state.coverageOn and cov"
+                        t-attf-class="pbsc-cov is-{{ cov.state }}"
+                        t-attf-title="{{ cov.scheduled }} scheduled of {{ cov.required }} needed">
+                    <t t-if="cov.state === 'gap'">−<t t-esc="cov.gap"/></t>
+                    <t t-elif="cov.state === 'surplus'">+<t t-esc="cov.surplus"/></t>
+                    <t t-else=""><t t-out="ic('check', 10)"/></t>
+                    <span class="rq"><t t-esc="cov.scheduled"/>/<t t-esc="cov.required"/></span>
+                  </span>
+                  <t t-set="st" t-value="statsByDay[day.date]"/>
+                  <span class="dst" t-if="st">
+                    <span class="h"><t t-esc="hrs(st.hours)"/> h</span>
+                    <span class="c" t-esc="money(st.cost)"/>
+                    <span class="a" t-if="st.actual_cost !== null and st.actual_cost !== undefined"
+                          t-attf-title="Actual cost for this day">
+                      act <t t-esc="money(st.actual_cost)"/>
+                    </span>
+                  </span>
+                </div>
+              </t>
+
+              <!-- Open shifts row: unassigned demand. Rendered only when the
+                   payload actually carries some, and NOT a create door — see
+                   `hasOpenShifts` in pb_schedule.js for why (W29). -->
+              <t t-if="hasOpenShifts">
+                <div class="pbsc-emp pbsc-emp--open">
+                  <span class="pbsc-openav" t-out="ic('users', 15)"/>
+                  <span class="pbsc-emp__txt">
+                    <span class="n">Open shifts</span>
+                    <span class="s">Unassigned</span>
+                  </span>
+                </div>
+                <t t-foreach="days" t-as="day" t-key="'open-' + day.date">
+                  <div t-attf-class="pbsc-cell is-readonly {{ day.is_today ? 'is-today' : '' }} {{ day.is_weekend ? 'is-weekend' : '' }}">
+                    <t t-foreach="openShiftsForDay[day.date] or []" t-as="os" t-key="os.id">
+                      <div t-attf-class="pbsc-card pbsc-card--t{{ tone(os.color) }} is-open"
+                           t-on-click.stop="() => this.openShift(os)">
+                        <span class="tm"><t t-esc="os.start"/>–<t t-esc="os.end"/></span>
+                        <span class="nm" t-esc="os.template_name"/>
+                      </div>
+                    </t>
+                  </div>
+                </t>
+              </t>
+
+              <!-- employee rows -->
+              <t t-foreach="employees" t-as="emp" t-key="emp.id">
+                <div class="pbsc-emp">
+                  <button class="pbsc-who" t-on-click="() => this.openPerson(emp.id)"
+                          t-attf-title="Open {{ emp.name }}'s week">
+                    <img class="pbsc-av" t-att-src="emp.avatar_url" alt=""/>
+                    <span class="pbsc-emp__txt">
+                      <span class="n" t-esc="emp.name"/>
+                      <span class="s" t-esc="emp.job_title"/>
+                    </span>
+                  </button>
+                  <span class="pbsc-hours">
+                    <span class="bar">
+                      <span t-attf-class="fill {{ hoursTone(emp) }}"
+                            t-attf-style="width: {{ hoursPct(emp) }}%"/>
+                    </span>
+                    <span class="txt">
+                      <t t-esc="hrs(emp.total_hours)"/>/<t t-esc="hrs(emp.contracted_hours)"/> h
+                    </span>
+                    <!-- P8 ack read receipt. Rendered only when pb_ess_workforce
+                         decorated the row; an absent key means no badge, which
+                         is also the right answer for somebody with nothing
+                         published in this window (W64). -->
+                    <span t-if="emp.ack"
+                          t-attf-class="pbsc-ack {{ emp.ack.all ? 'is-all' : '' }}"
+                          t-att-title="ackLabel(emp)">
+                      <t t-if="emp.ack.all"><t t-out="ic('check', 11)"/></t>
+                      <t t-else=""><t t-esc="emp.ack.acked"/>/<t t-esc="emp.ack.total"/></t>
+                    </span>
+                  </span>
+                </div>
+
+                <t t-foreach="days" t-as="day" t-key="emp.id + '-' + day.date">
+                  <div t-attf-class="pbsc-cell {{ day.is_today ? 'is-today' : '' }} {{ day.is_weekend ? 'is-weekend' : '' }} {{ emp.leaves[day.date] ? (emp.leaves[day.date].is_approved ? 'is-leave' : 'is-leave-pending') : '' }}"
+                       t-on-click="() => this.openCreate(emp.id, day)">
+
+                    <span t-if="emp.leaves[day.date]"
+                          t-attf-class="pbsc-leave {{ emp.leaves[day.date].is_approved ? '' : 'is-pending' }}">
+                      <t t-out="ic('calendar', 11)"/>
+                      <span t-esc="emp.leaves[day.date].type"/>
+                    </span>
+
+                    <t t-foreach="emp.shifts[day.date] or []" t-as="sh" t-key="sh.id">
+                      <div t-attf-class="pbsc-card pbsc-card--t{{ tone(sh.color) }} is-{{ sh.state }} {{ sh.conflict ? 'is-conflict' : '' }}"
+                           t-on-click.stop="() => this.openShift(sh)">
+                        <span class="tm"><t t-esc="sh.start"/>–<t t-esc="sh.end"/></span>
+                        <span class="nm" t-esc="sh.template_name"/>
+                        <span class="cf" t-if="sh.conflict" title="Overlapping shift"
+                              t-out="ic('alert', 11)"/>
+                        <button class="pbsc-del" t-if="sh.state === 'draft'"
+                                t-on-click.stop="() => this.deleteShift(sh)"
+                                t-attf-title="Remove this draft shift">
+                          <span t-out="ic('x', 11)"/>
+                        </button>
+                      </div>
+                    </t>
+
+                    <span class="pbsc-add" t-if="!emp.leaves[day.date]" t-out="ic('plus', 13)"/>
+                  </div>
+                </t>
+              </t>
+
+            </div>
+          </div>
+        </t>
+      </div>
+
+      <!-- ====================== quick create modal ===================== -->
+      <div class="pbsc-scrim" t-if="state.create" t-on-click="() => this.closeCreate()">
+        <div class="pbsc-modal" role="dialog" aria-modal="true" t-on-click.stop="() => {}">
+          <header class="pbsc-modal__h">
+            <div>
+              <div class="eyebrow">Add a shift</div>
+              <h3>
+                <t t-if="state.create.employeeName" t-esc="state.create.employeeName"/>
+                <t t-else="">Open shift</t>
+              </h3>
+              <div class="sub" t-esc="state.create.label"/>
+            </div>
+            <button class="pbsc-x" t-on-click="() => this.closeCreate()"
+                    title="Close" aria-label="Close">
+              <span t-out="ic('x', 16)"/>
+            </button>
+          </header>
+
+          <div class="pbsc-modal__b">
+            <!-- warnings that do not depend on which shift you pick, stated
+                 ONCE at the top instead of on every tile -->
+            <div class="pbsc-warns" t-if="contextWarnings.length">
+              <div t-foreach="contextWarnings" t-as="w" t-key="w.code"
+                   t-attf-class="pbsc-warnrow is-{{ w.severity }}">
+                <span t-out="ic(w.severity === 'info' ? 'clock' : 'alert', 13)"/>
+                <span t-esc="w.text"/>
+              </div>
+            </div>
+
+            <div class="pbsc-tmplgrid">
+              <button t-foreach="templates" t-as="tm" t-key="tm.id"
+                      t-attf-class="pbsc-tmpl pbsc-tmpl--t{{ tone(tm.color) }} {{ templateTone(tm.id) ? 'has-' + templateTone(tm.id) : '' }}"
+                      t-att-disabled="state.creating"
+                      t-attf-title="{{ warningsFor(tm.id).length ? warningsFor(tm.id)[0].text : '' }}"
+                      t-on-click="() => this.createShift(tm.id)">
+                <span class="sw"/>
+                <span class="nm" t-esc="tm.name"/>
+                <span class="tm2">
+                  <t t-esc="fmtHour(tm.start_hour)"/> – <t t-esc="fmtHour(tm.end_hour)"/>
+                </span>
+                <span class="du"><t t-esc="hrs(tm.duration)"/> h</span>
+                <span class="fl" t-if="templateTone(tm.id)">
+                  <span t-out="ic('alert', 11)"/>
+                  <span t-esc="warningsFor(tm.id)[0].text"/>
+                </span>
+              </button>
+            </div>
+            <p class="pbsc-note" t-if="!templates.length">
+              No shift templates yet. Create one from Schedule's templates drawer
+              and it appears here.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================= copy week modal ===================== -->
+      <div class="pbsc-scrim" t-if="state.copyOpen" t-on-click="() => this.closeCopy()">
+        <div class="pbsc-modal pbsc-modal--sm" role="dialog" aria-modal="true"
+             t-on-click.stop="() => {}">
+          <header class="pbsc-modal__h">
+            <div>
+              <div class="eyebrow">Copy week</div>
+              <h3>Repeat this roster forward</h3>
+              <div class="sub">
+                <t t-esc="d and d.week_start"/> → <t t-esc="nextSpanStart"/>
+              </div>
+            </div>
+            <button class="pbsc-x" t-on-click="() => this.closeCopy()"
+                    title="Close" aria-label="Close">
+              <span t-out="ic('x', 16)"/>
+            </button>
+          </header>
+          <div class="pbsc-modal__b">
+            <t t-if="!state.copyReport">
+              <p class="pbsc-note">
+                Every shift in the current span is recreated as a DRAFT on the
+                matching day of the next one. Nothing is published — and every
+                target is checked first: anyone who would land on approved
+                leave, on a shift they already have, or on a night they are
+                barred from is SKIPPED and listed.
+              </p>
+              <div class="pbsc-modal__actions">
+                <button class="pbsc-btn ghost" t-on-click="() => this.closeCopy()">Cancel</button>
+                <button class="pbsc-btn primary" t-att-disabled="state.copying"
+                        t-on-click="() => this.doCopy()">
+                  <span t-out="ic('check', 14)"/><span>Copy shifts</span>
+                </button>
+              </div>
+            </t>
+
+            <t t-else="">
+              <div class="pbsc-report">
+                <div class="pbsc-report__h">
+                  <span class="ok"><b t-esc="state.copyReport.created"/> copied</span>
+                  <span class="sk" t-if="state.copyReport.skipped.length">
+                    <b t-esc="state.copyReport.skipped.length"/> skipped
+                  </span>
+                  <span class="of">of <t t-esc="state.copyReport.considered"/> considered</span>
+                </div>
+                <div class="pbsc-report__list" t-if="state.copyReport.skipped.length">
+                  <div t-foreach="state.copyReport.skipped" t-as="sk"
+                       t-key="sk_index"
+                       t-attf-class="pbsc-report__row is-{{ sk.severity }}">
+                    <span class="who"><t t-esc="sk.employee_name"/></span>
+                    <span class="when"><t t-esc="sk.date"/> · <t t-esc="sk.template"/></span>
+                    <span class="why">
+                      <t t-foreach="sk.reasons" t-as="r" t-key="r_index">
+                        <span class="r" t-esc="r"/>
+                      </t>
+                    </span>
+                  </div>
+                </div>
+                <p class="pbsc-note" t-else="">
+                  Nothing had to be refused — every shift landed.
+                </p>
+              </div>
+              <div class="pbsc-modal__actions">
+                <button class="pbsc-btn primary" t-on-click="() => this.closeCopy()">Done</button>
+              </div>
+            </t>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================== budget dialog ====================== -->
+      <div class="pbsc-scrim" t-if="state.budgetOpen" t-on-click="() => this.closeBudget()">
+        <div class="pbsc-modal pbsc-modal--sm" role="dialog" aria-modal="true"
+             t-on-click.stop="() => {}">
+          <header class="pbsc-modal__h">
+            <div>
+              <div class="eyebrow">Labour budget</div>
+              <h3>Week of <t t-esc="wf.weekStart"/></h3>
+              <div class="sub">
+                <t t-if="wf.departmentId">This department only</t>
+                <t t-else="">Company-wide</t>
+              </div>
+            </div>
+            <button class="pbsc-x" t-on-click="() => this.closeBudget()"
+                    title="Close" aria-label="Close">
+              <span t-out="ic('x', 16)"/>
+            </button>
+          </header>
+          <div class="pbsc-modal__b">
+            <label class="pbsc-field">
+              <span class="l">Amount</span>
+              <input class="i" type="number" min="0" step="any"
+                     t-att-value="state.budgetValue"
+                     t-on-input="onBudgetInput" aria-label="Labour budget amount"/>
+            </label>
+            <p class="pbsc-note">
+              Weekly. The strip compares it against the scheduled cost of this
+              span; leaving it unset simply hides the comparison.
+            </p>
+            <div class="pbsc-modal__actions">
+              <button class="pbsc-btn ghost" t-if="budget"
+                      t-att-disabled="state.budgetSaving"
+                      t-on-click="() => this.clearBudget()">Remove</button>
+              <button class="pbsc-btn ghost" t-on-click="() => this.closeBudget()">Cancel</button>
+              <button class="pbsc-btn primary" t-att-disabled="state.budgetSaving"
+                      t-on-click="() => this.saveBudget()">
+                <span t-out="ic('check', 14)"/><span>Save</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================= templates drawer ====================== -->
+      <WfDrawer t-if="state.templatesDrawer" title="'Shift templates'"
+                subtitle="'The library every quick-create picks from'"
+                onClose="() => this.closeTemplates()">
+        <div class="pbsc-tpl-drawer">
+          <button class="pbsc-btn primary pbsc-covadd"
+                  t-on-click="() => this.openTemplate(false)">
+            <span t-out="ic('plus', 14)"/><span>New template</span>
+          </button>
+          <p class="pbsc-note" t-if="state.templatesData">
+            Usage counted over <t t-esc="state.templatesData.span_label"/>.
+          </p>
+
+          <div class="pbsc-tpllist">
+            <button class="pbsc-tplrow" t-foreach="templateRows" t-as="row"
+                    t-key="row.id" t-on-click="() => this.openTemplate(row)">
+              <span t-attf-class="pbsc-swatch pbsc-swatch--t{{ tone(row.color) }}"/>
+              <span class="d">
+                <span class="t"><t t-esc="row.name"/>
+                  <span class="cd" t-if="row.code">[<t t-esc="row.code"/>]</span>
+                </span>
+                <span class="s">
+                  <t t-esc="row.start"/>–<t t-esc="row.end"/> ·
+                  <t t-esc="row.duration"/> h · <t t-esc="row.type_label"/>
+                  <t t-if="row.is_overnight"> · overnight</t>
+                </span>
+              </span>
+              <span class="u"><t t-esc="row.usage"/></span>
+            </button>
+            <p class="pbsc-note" t-if="!templateRows.length">
+              No shift templates yet. Create one and every square on the roster
+              can offer it.
+            </p>
+          </div>
+        </div>
+      </WfDrawer>
+
+      <!-- ======================== coverage drawer ====================== -->
+      <WfDrawer t-if="state.coverageDrawer" title="'Coverage requirements'"
+                subtitle="'How many people this scope needs, per day'"
+                onClose="() => this.closeCoverageDrawer()">
+        <div class="pbsc-cov-drawer">
+          <p class="pbsc-note">
+            A weekday row is the standing rule; a date row is the exception and
+            wins for that day. A row with no shift states a whole-day total.
+            Departments with a rule of their own are not also subject to the
+            company-wide one.
+          </p>
+
+          <div class="pbsc-covform" t-if="state.coverageForm">
+            <div class="pbsc-covform__grid">
+              <label class="pbsc-field">
+                <span class="l">Rule type</span>
+                <select class="i" t-on-change="(ev) => this.onCoverageField('mode', ev)">
+                  <option value="weekday" t-att-selected="state.coverageForm.mode === 'weekday'">Every weekday</option>
+                  <option value="date" t-att-selected="state.coverageForm.mode === 'date'">One specific date</option>
+                </select>
+              </label>
+
+              <label class="pbsc-field" t-if="state.coverageForm.mode === 'weekday'">
+                <span class="l">Weekday</span>
+                <select class="i" t-on-change="(ev) => this.onCoverageField('weekday', ev)">
+                  <t t-foreach="coverageWeekdays" t-as="w" t-key="w.value">
+                    <option t-att-value="w.value"
+                            t-att-selected="state.coverageForm.weekday === w.value"
+                            t-esc="w.label"/>
+                  </t>
+                </select>
+              </label>
+
+              <label class="pbsc-field" t-if="state.coverageForm.mode === 'date'">
+                <span class="l">Date</span>
+                <input class="i" type="date" t-att-value="state.coverageForm.date"
+                       t-on-change="(ev) => this.onCoverageField('date', ev)"/>
+              </label>
+
+              <label class="pbsc-field">
+                <span class="l">Shift</span>
+                <select class="i" t-on-change="(ev) => this.onCoverageField('template_id', ev)">
+                  <option value="">Whole day</option>
+                  <t t-foreach="templates" t-as="tm" t-key="tm.id">
+                    <option t-att-value="tm.id"
+                            t-att-selected="state.coverageForm.template_id === tm.id"
+                            t-esc="tm.name"/>
+                  </t>
+                </select>
+              </label>
+
+              <label class="pbsc-field">
+                <span class="l">People needed</span>
+                <input class="i" type="number" min="0" step="1"
+                       t-att-value="state.coverageForm.required_headcount"
+                       t-on-input="(ev) => this.onCoverageField('required_headcount', ev)"/>
+              </label>
+            </div>
+            <div class="pbsc-modal__actions">
+              <button class="pbsc-btn ghost" t-on-click="() => this.cancelCoverageForm()">Cancel</button>
+              <button class="pbsc-btn primary" t-att-disabled="state.coverageSaving"
+                      t-on-click="() => this.saveCoverageRow()">
+                <span t-out="ic('check', 14)"/><span>Save rule</span>
+              </button>
+            </div>
+          </div>
+
+          <button class="pbsc-btn primary pbsc-covadd" t-elif="canEditCoverage"
+                  t-on-click="() => this.newCoverageRow()">
+            <span t-out="ic('plus', 14)"/><span>New requirement</span>
+          </button>
+
+          <div class="pbsc-covlist">
+            <div class="pbsc-covrow" t-foreach="coverageRows" t-as="row" t-key="row.id">
+              <span class="n" t-esc="row.required_headcount"/>
+              <span class="d">
+                <span class="t" t-esc="row.label"/>
+              </span>
+              <button class="pbsc-x" t-if="canEditCoverage"
+                      t-on-click="() => this.editCoverageRow(row)"
+                      title="Edit" aria-label="Edit">
+                <span t-out="ic('settings', 13)"/>
+              </button>
+              <button class="pbsc-x" t-if="canEditCoverage"
+                      t-on-click="() => this.deleteCoverageRow(row)"
+                      title="Remove" aria-label="Remove">
+                <span t-out="ic('x', 13)"/>
+              </button>
+            </div>
+            <p class="pbsc-note" t-if="!coverageRows.length">
+              Nothing stated yet, so the roster shows no coverage marks at all —
+              an absent rule is not a requirement of zero.
+            </p>
+          </div>
+        </div>
+      </WfDrawer>
+
+      <!-- ========================== person drawer ====================== -->
+      <WfDrawer t-if="drawerOpen" title="drawerTitle" subtitle="drawerSubtitle"
+                onClose="() => this.closePerson()">
+        <WfPersonWeek data="state.person" onOpenProfile="_h.onOpenProfile"/>
+      </WfDrawer>
+
+    </div>
+  </t>
+
+</templates>

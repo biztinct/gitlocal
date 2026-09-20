@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       `<ApprovalSchemePanel/>` — the reusable "what approval does this place
+       use?" card. Phase 3 mounts this exact template inside the guided setup
+       and beside a pay scheme's settings, so nothing in it may assume it is
+       on the Matrix.
+
+       Comments are ruled with `=`, never a doubled hyphen. `t-if` / `t-elif`
+       / `t-else` are ADJACENT siblings. Every negation is `!`, never `not`.
+
+       Loop variables: the choice loop is `ch`, the label loop is `lb`, the
+       exception loop is `ex`, the option loop is `op`.
+       ==================================================================== -->
+
+  <t t-name="pb_approval_config.ApprovalSchemePanel">
+    <div class="pbam-scheme">
+
+      <div t-if="state.loading" class="pbim-busy pbam-busy-sm">
+        <div class="pbim-spin"/><span>Reading the approvals for this…</span>
+      </div>
+
+      <div t-elif="state.failed" class="pbim-note pbam-note-rose">
+        <t t-out="ic('alert',14)"/> <span t-esc="state.failed"/>
+      </div>
+
+      <t t-else="">
+        <div class="pbam-aprow">
+          <div>
+            <div class="pbam-ap-h">
+              <span class="pbam-ap-t" t-esc="data.process_name"/>
+              <span class="pbim-badge" t-att-class="'pbam-' + badge.tone" t-esc="badge.label"/>
+            </div>
+
+            <div t-if="data.workflow_name" class="pbam-ap-wf" t-esc="data.workflow_name"/>
+            <div t-else="" class="pbam-ap-wf">No route has been chosen yet</div>
+
+            <div class="pbam-ap-rt">
+              <t t-foreach="data.route_labels" t-as="lb" t-key="lb_index">
+                <span t-if="lb_index" class="pbam-ar"><t t-out="ic('arrowRight',12)"/></span>
+                <span t-esc="lb"/>
+              </t>
+              <span t-if="!data.route_labels.length" class="pbim-sub">
+                Nothing is published for this yet, so requests here cannot be sent in.
+              </span>
+            </div>
+
+            <div class="pbam-ap-src" t-esc="data.source"/>
+
+            <div t-if="data.exceptions.length" class="pbam-exc">
+              <div class="pbam-k">Places inside this one that do something else</div>
+              <div t-foreach="data.exceptions" t-as="ex" t-key="ex.scope_key" class="pbam-excrow">
+                <span class="pbam-excd" t-esc="ex.label"/>
+                <span>
+                  <t t-esc="ex.workflow_name"/>
+                  <t t-if="ex.route_labels.length"> · <t t-esc="ex.route_labels.join(' → ')"/></t>
+                </span>
+              </div>
+              <p class="pbim-sub">The most specific always wins, so these are used instead of the route above for those places.</p>
+            </div>
+          </div>
+
+          <div class="pbam-ap-act">
+            <button t-if="editable" class="pbim-btn ghost" t-on-click="() => this.toggleChange()">
+              <t t-if="state.changing">Close</t>
+              <t t-else="">Change</t>
+            </button>
+            <button t-elif="props.onOpenMatrix" class="pbim-btn ghost"
+                    t-on-click="() => this.openMatrix()">Open the Matrix</button>
+          </div>
+        </div>
+
+        <!-- ============================================ the chooser -->
+        <div t-if="state.changing" class="pbam-changegrid">
+          <div class="pbam-choices">
+            <label t-foreach="choices" t-as="ch" t-key="ch.key"
+                   class="pbam-choice" t-att-class="{ 'is-on': state.choice === ch.key }"
+                   t-on-click="() => this.setChoice(ch.key)">
+              <i/>
+              <span>
+                <span class="pbam-choice-t" t-esc="ch.title"/>
+                <span class="pbam-choice-s" t-esc="ch.sub"/>
+                <span t-if="ch.warn and state.choice === ch.key"
+                      class="pbim-note pbam-note-amber pbam-choice-w">
+                  <t t-out="ic('alert',13)"/> <span t-esc="ch.warn"/>
+                </span>
+                <span t-if="state.choice === ch.key and ch.key !== 'inherit'"
+                      class="pbam-choice-pick">
+                  <select class="pbam-input" t-on-change="setWorkflow">
+                    <option value="0">Choose a route</option>
+                    <option t-foreach="options" t-as="op" t-key="op.workflow_id"
+                            t-att-value="op.workflow_id"
+                            t-att-selected="state.workflowId === op.workflow_id">
+                      <t t-esc="op.name"/>
+                      <t t-if="!op.published"> (not published yet)</t>
+                    </option>
+                  </select>
+                </span>
+              </span>
+            </label>
+          </div>
+
+          <aside class="pbam-ex">
+            <div class="pbam-exh"><h2>What will happen</h2></div>
+            <p class="pbim-sub">
+              <t t-if="state.choice === 'inherit'">
+                This place follows whatever the rest of the company uses, and changes with it. Each part of the business still gets its own people.
+              </t>
+              <t t-elif="state.choice === 'shared'">
+                This place follows the route you choose, alongside everywhere else pointed at it. A change to that route reaches all of them at once.
+              </t>
+              <t t-else="">
+                This place gets a route only it uses. Later changes to the company's route will not reach it, and the Matrix shows it as an exception.
+              </t>
+            </p>
+            <p class="pbim-sub">Changing this affects new requests only. Anything already under way keeps the route it was given.</p>
+            <button class="pbim-btn primary pbam-btn-wide"
+                    t-att-disabled="!canSave or state.busy" t-on-click="() => this.save()">
+              Save this choice
+            </button>
+          </aside>
+        </div>
+      </t>
+
+    </div>
+  </t>
+
+</templates>

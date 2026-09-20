@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- OFF-MENU, like the plan views. The Decision Room's own assumptions
+         card is the way a person edits these; this exists so an administrator
+         has somewhere to look that is not the database. -->
+
+    <record id="view_pb_decision_ruleset_list" model="ir.ui.view">
+        <field name="name">pb.decision.ruleset.list</field>
+        <field name="model">pb.decision.ruleset</field>
+        <field name="arch" type="xml">
+            <list string="Country rules">
+                <field name="country_code"/>
+                <field name="name"/>
+                <field name="employer_rate_pct"/>
+                <field name="employee_rate_pct"/>
+                <field name="contribution_cap"/>
+                <field name="currency_code"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_decision_ruleset_form" model="ir.ui.view">
+        <field name="name">pb.decision.ruleset.form</field>
+        <field name="model">pb.decision.ruleset</field>
+        <field name="arch" type="xml">
+            <form string="Country rules">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="country_code"/>
+                        <field name="currency_code"/>
+                        <field name="active"/>
+                    </group>
+                    <group string="Pay and contributions">
+                        <field name="employer_rate_pct"/>
+                        <field name="employee_rate_pct"/>
+                        <field name="contribution_cap"/>
+                        <field name="allowance_pct"/>
+                        <field name="bonus_months"/>
+                        <field name="bonus_month_index"/>
+                    </group>
+                    <group string="Hours, joining and leaving">
+                        <field name="work_days"/>
+                        <field name="ot_multiplier"/>
+                        <field name="night_uplift_pct"/>
+                        <field name="recruit_cost_months"/>
+                        <field name="severance_months"/>
+                        <field name="ramp_first_month_pct"/>
+                    </group>
+                    <group string="Income tax">
+                        <field name="pit_ladder"/>
+                    </group>
+                    <group string="What this simplifies">
+                        <field name="note" nolabel="1"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_decision_ruleset" model="ir.actions.act_window">
+        <field name="name">Country rules</field>
+        <field name="res_model">pb.decision.ruleset</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

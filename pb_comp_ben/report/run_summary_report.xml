@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The `<report>` shortcut tag is gone from the Odoo 19 data-file RNG —
+         an explicit `ir.actions.report` record is the only form that loads. -->
+    <record id="action_report_run_summary" model="ir.actions.report">
+        <field name="name">Pay run summary</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_comp_ben.report_run_summary_document</field>
+        <field name="report_file">pb_comp_ben.report_run_summary_document</field>
+        <field name="print_report_name">'Run summary - %s' % (object.name or '')</field>
+        <field name="binding_model_id" ref="om_hr_payroll.model_hr_payslip_run"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- One page. The period, how many people, how much, and who said yes.
+         R42: this is server-side QWeb and NOT OWL — every conditional class is
+         `t-attf-class` with a `#{...}` interpolation, never a dict, because a
+         dict is written into the attribute as its Python repr AND replaces the
+         static class. R5: no `t-key` anywhere; that is an OWL directive. -->
+    <template id="report_run_summary_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="run">
+                <t t-set="pack" t-value="run.pb_pack_summary()"/>
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-family:Inter,Arial,sans-serif;">
+
+                        <h2 style="margin:0 0 4px 0;">Pay run summary</h2>
+                        <div style="color:#64748b;font-size:13px;margin-bottom:18px;">
+                            <t t-esc="run.name or ''"/>
+                        </div>
+
+                        <table style="width:100%;border-collapse:collapse;margin-bottom:22px;">
+                            <tbody>
+                                <tr>
+                                    <td style="padding:10px 14px;border:1px solid #e2e8f0;width:33%;">
+                                        <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.04em;">Period</div>
+                                        <div style="font-size:15px;font-weight:600;">
+                                            <t t-esc="run.date_start or ''"/> — <t t-esc="run.date_end or ''"/>
+                                        </div>
+                                    </td>
+                                    <td style="padding:10px 14px;border:1px solid #e2e8f0;width:33%;">
+                                        <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.04em;">People paid</div>
+                                        <div style="font-size:15px;font-weight:600;"><t t-esc="pack['headcount']"/></div>
+                                    </td>
+                                    <td style="padding:10px 14px;border:1px solid #e2e8f0;width:34%;">
+                                        <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.04em;">Total net pay</div>
+                                        <div style="font-size:15px;font-weight:600;">
+                                            <span t-esc="pack['total_net']"
+                                                  t-options="{'widget': 'monetary', 'display_currency': pack['currency']}"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4 style="margin:0 0 8px 0;">Who approved it</h4>
+                        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                            <thead>
+                                <tr style="background:#f8fafc;">
+                                    <th style="text-align:left;padding:7px 10px;border:1px solid #e2e8f0;">Step</th>
+                                    <th style="text-align:left;padding:7px 10px;border:1px solid #e2e8f0;">Person</th>
+                                    <th style="text-align:left;padding:7px 10px;border:1px solid #e2e8f0;">When</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="pack['trail']" t-as="step">
+                                    <td style="padding:7px 10px;border:1px solid #e2e8f0;"><t t-esc="step['to'] or ''"/></td>
+                                    <td style="padding:7px 10px;border:1px solid #e2e8f0;"><t t-esc="step['user'] or ''"/></td>
+                                    <td style="padding:7px 10px;border:1px solid #e2e8f0;"><t t-esc="step['stamp'] or ''"/></td>
+                                </tr>
+                                <tr t-if="not pack['trail']">
+                                    <td colspan="3" style="padding:7px 10px;border:1px solid #e2e8f0;color:#64748b;">
+                                        This run was approved before the approval trail was kept.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p style="margin-top:22px;font-size:12px;color:#64748b;">
+                            Prepared automatically when the run was approved.
+                        </p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

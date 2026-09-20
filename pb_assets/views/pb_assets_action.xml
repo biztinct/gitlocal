@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Declared as a RECORD rather than reached by a bare tag: a bare tag is
+         synthesised with no action NAME, so anything returning through a
+         breadcrumb lands on a crumb labelled "Unnamed".
+
+         Test URL: /odoo/action-pb_assets   (the cockpit on its own)
+         Its real home is the People hub's Assets lens. -->
+
+    <record id="action_pb_assets" model="ir.actions.client">
+        <field name="name">Assets</field>
+        <field name="tag">pb_assets</field>
+    </record>
+
+</odoo>

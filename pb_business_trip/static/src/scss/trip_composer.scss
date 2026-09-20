@@ -1,0 +1,87 @@
+// Trip composer widgets — live per-diem panel + drag-drop receipt zone (§4.2).
+// Rendered inside the native trip form (outside the .pbim root), so the var()
+// FALLBACKS are what actually paints here — they must be pbim values (W1).
+
+.pbtr-perdiem {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+
+    .pbtr-perdiem__eq {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 10px;
+        background: var(--pbim-soft, #EDEAF8);
+        border: 1px solid color-mix(in srgb, var(--pbim-primary, #5A4BB0) 20%, transparent);
+    }
+    .pbtr-perdiem__days { font-weight: 600; color: var(--pbim-ink, #1B1733); }
+    .pbtr-perdiem__x,
+    .pbtr-perdiem__eqsign { color: var(--pbim-muted, #64748B); font-weight: 500; }
+    .pbtr-perdiem__rate { color: var(--pbim-ink, #1B1733); }
+    .pbtr-perdiem__total {
+        font-weight: 800;
+        font-size: 1.05rem;
+        color: var(--pbim-primary, #5A4BB0);
+    }
+    .pbtr-perdiem__hint { color: var(--pbim-muted, #64748B); font-style: italic; font-size: .85rem; }
+}
+
+.pbtr-receipt {
+    width: 100%;
+
+    .pbtr-receipt__has {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        max-width: 100%;
+    }
+    .pbtr-receipt__thumb {
+        width: 34px; height: 34px; object-fit: cover;
+        border-radius: 6px; border: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbtr-receipt__pdf {
+        width: 34px; height: 34px; display: inline-flex;
+        align-items: center; justify-content: center;
+        border-radius: 6px; background: var(--pbim-rose-soft, #FCE7EF);
+        color: var(--pbim-rose, #DC2668);
+    }
+    .pbtr-receipt__name {
+        font-size: .8rem; color: var(--pbim-ink, #1B1733);
+        max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .pbtr-receipt__x {
+        border: 0; background: transparent; color: var(--pbim-muted, #64748B);
+        cursor: pointer; padding: 2px 4px; border-radius: 5px;
+        &:hover { color: var(--pbim-rose, #DC2668); background: var(--pbim-rose-soft, #FCE7EF); }
+    }
+
+    .pbtr-receipt__drop {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border: 1.5px dashed color-mix(in srgb, var(--pbim-primary, #5A4BB0) 40%, transparent);
+        border-radius: var(--pbim-r-sm, 10px);
+        color: var(--pbim-muted, #64748B);
+        background: #fff;
+        cursor: pointer;
+        transition: background .12s, border-color .12s;
+        font-size: .82rem;
+
+        svg { color: var(--pbim-primary, #5A4BB0); }
+        &:hover { background: var(--pbim-soft, #EDEAF8); }
+        &.pbtr-receipt__drop--over {
+            background: var(--pbim-soft, #EDEAF8);
+            border-color: var(--pbim-primary, #5A4BB0);
+        }
+        &.pbtr-receipt__drop--ro { cursor: default; opacity: .6; border-style: solid; }
+    }
+    .pbtr-receipt__cta { font-weight: 600; }
+}
+
+// Lucide loader spin (replaces the removed fa-spin utility).
+.pbtr-receipt__spin { display: inline-flex; animation: pbtr-spin .9s linear infinite; }
+@keyframes pbtr-spin { to { transform: rotate(360deg); } }

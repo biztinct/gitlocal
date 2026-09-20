@@ -1,0 +1,549 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Activate (set running) on create"
+msgstr "Kích hoạt (thiết lập đang chạy) khi tạo"
+
+#. module: pb_people_advanced
+#: model:ir.actions.client,name:pb_people_advanced.action_pb_onboard_wizard
+msgid "Add Employee"
+msgstr "Thêm nhân viên"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Add employee"
+msgstr "Thêm nhân viên"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: model:ir.actions.client,name:pb_people_advanced.action_pb_contract_wizard
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:9
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Contract created"
+msgstr "Đã tạo hợp đồng"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Create a first contract now"
+msgstr "Tạo hợp đồng đầu tiên ngay bây giờ"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Create contract"
+msgstr "Tạo hợp đồng"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Create employee"
+msgstr "Tạo nhân viên"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Department & role"
+msgstr "Bộ phận & vai trò"
+
+#. module: pb_people_advanced
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_people_contract_wizard__display_name
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_people_onboard_wizard__display_name
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_people_refs__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Employee added"
+msgstr "Đã thêm nhân viên"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "End"
+msgstr "Kết thúc"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "End (optional)"
+msgstr "Kết thúc (tùy chọn)"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Full name *"
+msgstr "Tên đầy đủ *"
+
+#. module: pb_people_advanced
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_people_contract_wizard__id
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_people_onboard_wizard__id
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_people_refs__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Identity"
+msgstr "Định danh"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Job position"
+msgstr "Vị trí công việc"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Job title (free text)"
+msgstr "Chức danh (văn bản miễn phí)"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Location"
+msgstr "Vị trí"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Monthly wage ("
+msgstr "Tiền lương hàng tháng ("
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Next"
+msgstr "Kế tiếp"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Open contract"
+msgstr "Hợp đồng mở"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Open employee"
+msgstr "Nhân viên mở"
+
+#. module: pb_people_advanced
+#: model:ir.model,name:pb_people_advanced.model_pb_people_refs
+msgid "Payobook People wizard reference data"
+msgstr "Dữ liệu tham khảo của Payobook People Wizard"
+
+#. module: pb_people_advanced
+#: model:ir.model,name:pb_people_advanced.model_pb_people_contract_wizard
+msgid "Payobook guided contract creation"
+msgstr "Hướng dẫn tạo hợp đồng Payobook"
+
+#. module: pb_people_advanced
+#: model:ir.model,name:pb_people_advanced.model_pb_people_onboard_wizard
+msgid "Payobook guided employee onboarding"
+msgstr "Payobook hướng dẫn nhân viên làm quen"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Payobook · People"
+msgstr "Payobook · Mọi người"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Period"
+msgstr "Giai đoạn"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Period & schedule"
+msgstr "Thời gian & lịch trình"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid ""
+"Renewing — start date should be after the previous contract ends to avoid an overlap."
+msgstr ""
+"Gia hạn - ngày bắt đầu phải sau khi hợp đồng trước đó kết thúc để tránh trùng lặp."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Salary structure"
+msgstr "Cơ cấu tiền lương"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Salary structure *"
+msgstr "Cơ cấu lương *"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Start"
+msgstr "Bắt đầu"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Start *"
+msgstr "Bắt đầu *"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid ""
+"Statutory details (bank, tax, insurance) can be completed later on the employee’s "
+"Advanced form."
+msgstr ""
+"Các chi tiết theo luật định (ngân hàng, thuế, bảo hiểm) có thể được điền sau trên biểu"
+" mẫu Nâng cao của nhân viên."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Structure & wage"
+msgstr "Cơ cấu & tiền lương"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Structure type"
+msgstr "Kiểu kết cấu"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Title"
+msgstr "Tiêu đề"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Work email"
+msgstr "Email công việc"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Work phone"
+msgstr "Điện thoại cơ quan"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Working schedule"
+msgstr "lịch làm việc"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "· first contract created"
+msgstr "· Hợp đồng đầu tiên được tạo"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "— Optional —"
+msgstr "— Tùy chọn —"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/js/contract_wizard.js:55
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:59
+msgid "Failed."
+msgstr "Không thành công."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:9
+msgid "Person"
+msgstr "người"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:9
+msgid "Role"
+msgstr "Vai trò"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:56
+msgid "Employee created; contract: %(error)s"
+msgstr "Nhân viên được tạo ra; hợp đồng: %(error)s"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_people_advanced
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Add %s to the payroll"
+msgstr "Thêm %s vào bảng lương"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+msgid "Adding somebody to the payroll, or giving them a contract, is for HR. Ask somebody in HR to do this, or to give you the HR permission."
+msgstr "Thêm người vào bảng lương, hoặc ký hợp đồng cho họ, là việc của nhân sự. Hãy nhờ nhân sự làm việc này, hoặc cấp cho bạn quyền nhân sự."
+
+#. module: pb_people_advanced
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+msgid "Bank details given"
+msgstr "Đã có thông tin ngân hàng"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Contract for %s"
+msgstr "Hợp đồng cho %s"
+
+#. module: pb_people_advanced
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_people_advanced
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_people_advanced
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/security/newhire_approval_rules.xml:0
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_people_advanced
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_people_advanced
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+msgid "Kind of contract"
+msgstr "Loại hợp đồng"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+msgid "Monthly pay"
+msgstr "Lương tháng"
+
+#. module: pb_people_advanced
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/__manifest__.py:0
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_people_advanced
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_people_advanced
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_people_advanced
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_people_advanced
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_people_advanced
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_people_advanced
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_people_advanced
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_people_advanced
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_people_advanced
+msgid "your approver"
+msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_people_advanced
+msgid "About"
+msgstr "Về"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+msgid "And a contract straight away"
+msgstr "Và có hợp đồng ngay"
+
+#. module: pb_people_advanced
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+msgid "Bank"
+msgstr "Ngân hàng"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+msgid "Bank account"
+msgstr "Tài khoản ngân hàng"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+msgid "Contract starts in force"
+msgstr "Hợp đồng có hiệu lực ngay"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+msgid "Ends"
+msgstr "Kết thúc"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+msgid "Job title"
+msgstr "Chức danh"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+msgid "Name"
+msgstr "Họ tên"
+
+#. module: pb_people_advanced
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_people_advanced
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+msgid "Starts"
+msgstr "Bắt đầu"
+
+#. module: pb_people_advanced
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_people_advanced
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"

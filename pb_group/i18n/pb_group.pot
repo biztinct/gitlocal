@@ -1,0 +1,2152 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_group
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-07 19:16+0000\n"
+"PO-Revision-Date: 2026-09-07 19:16+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "%(company)s pays joiners and leavers a full month, as before."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid ""
+"%(company)s will pay joiners and leavers for the days they work, from the "
+"next pay run."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "%(count)s attached."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid ""
+"%(count)s could not be attached — they may already be in this division."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_division.py:0
+msgid ""
+"%(department)s is already in %(division)s from %(since)s. A department can "
+"only be in one division at a time — give the first one an end date, or start"
+" this one later."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid ""
+"%(department)s joined %(division)s on %(since)s. Pick that day or a later "
+"one to take it out."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "%(month)s: a rate from this month. Click to open it."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid ""
+"%(month)s: nothing on file, so %(src)s stays in %(src)s. Click to add a "
+"rate."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "%(month)s: the newest rate is from %(date)s. Click to add one."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid ""
+"%(name)s has not been limited, so they see everything their companies "
+"already let them see."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "%(name)s is no longer limited."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "%(name)s sees %(what)s only — %(count)s of the group's companies."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "%(name)s sees %(what)s only."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "%(name)s sees every company in the group."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "%(name)s sees the %(what)s division only."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "%(what)s only"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ", and the group reads in"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ". There is nothing to convert."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"A division with this name already exists — these departments will be added "
+"to it."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group__code
+msgid "A few letters for reports and file names. Optional."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"A group is the companies you own, read as one business. Setting it up takes "
+"a minute and it decides three things:"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "A rate from that month"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__message_needaction
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_division__active
+#: model:ir.model.fields,field_description:pb_group.field_pb_division_link__active
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__active
+msgid "Active"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Add a company"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Add a company to the group and its switch appears here."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Add a division"
+msgstr ""
+
+#. module: pb_group
+#: model_terms:ir.actions.act_window,help:pb_group.action_pb_exchange_rates
+msgid ""
+"Add a rate and every group figure that needs it appears. Until then, amounts"
+" stay in the money they were paid in."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Add it"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_palette.js:0
+msgid "Admin"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Already in"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "An older rate is used — the cell says which day"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.constraint,message:pb_group.constraint_pb_division_code_uniq
+msgid ""
+"Another division already uses that short code. Give this one a code of its "
+"own, or leave it empty."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.constraint,message:pb_group.constraint_pb_group_code_uniq
+msgid ""
+"Another group already uses that short code. Give this one a code of its own,"
+" or leave it empty."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Anything worth remembering"
+msgstr ""
+
+#. module: pb_group
+#: model_terms:ir.ui.view,arch_db:pb_group.view_pb_division_form
+msgid "Anything worth remembering about this division"
+msgstr ""
+
+#. module: pb_group
+#: model_terms:ir.ui.view,arch_db:pb_group.view_pb_group_form
+msgid "Anything worth remembering about this group"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Apr"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "April"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "As %(name)s, you would see everything in %(count)s %(word)s."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "As %(name)s, you would see: %(what)s · %(count)s %(word)s."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Ask an administrator for access if you need to see it."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Ask an administrator to set the group up."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Assignments"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Attach a department"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Attach these"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__message_attachment_count
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Aug"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "August"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"By default everybody sees whatever their companies already allow. Limit "
+"somebody here and every screen in this product follows — the group, who is "
+"paid by what, the Explorer, the Decision Room, assignments and pay."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Close"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_division__color
+msgid "Colour"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model,name:pb_group.model_res_company
+#: model:ir.model.fields,field_description:pb_group.field_pb_division__company_ids
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__company_ids
+#: model_terms:ir.ui.view,arch_db:pb_group.view_pb_group_form
+msgid "Companies"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__company_count
+msgid "Companies in the group"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_res_users__pb_vis_company_ids
+msgid "Companies they see"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_division_link__company_id
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__company_id
+msgid "Company"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__country_id
+msgid "Country"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Create them"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Create your group"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_division__create_uid
+#: model:ir.model.fields,field_description:pb_group.field_pb_division_link__create_uid
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__create_uid
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_division__create_date
+#: model:ir.model.fields,field_description:pb_group.field_pb_division_link__create_date
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__create_date
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid ""
+"Day-based pay for people who join or leave part-way through a month is not "
+"switched on for this database yet."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Dec"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "December"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Decision Room"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_division_link__department_id
+msgid "Department"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Department attached."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model,name:pb_group.model_pb_division_link
+msgid "Department in a division"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Department taken out. The history is kept."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_division__link_ids
+msgid "Departments"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Departments in it"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_division__display_name
+#: model:ir.model.fields,field_description:pb_group.field_pb_division_link__display_name
+#: model:ir.model.fields,field_description:pb_group.field_pb_fx__display_name
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__display_name
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_room__display_name
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_scoped__display_name
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__display_name
+#: model:ir.model.fields,field_description:pb_group.field_res_company__display_name
+#: model:ir.model.fields,field_description:pb_group.field_res_users__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model,name:pb_group.model_pb_division
+#: model:ir.model.fields,field_description:pb_group.field_pb_division__name
+#: model:ir.model.fields,field_description:pb_group.field_pb_division_link__division_id
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__division_id
+#: model_terms:ir.ui.view,arch_db:pb_group.view_pb_division_form
+msgid "Division"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Division added."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Division put away."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Division saved."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_palette.js:0
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.actions.act_window,name:pb_group.action_pb_division_records
+#: model_terms:ir.ui.view,arch_db:pb_group.view_pb_division_list
+msgid "Divisions"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Divisions created from your departments."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_res_users__pb_vis_division_ids
+msgid "Divisions they see"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Divisions we can make from your departments"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: model:ir.model.fields.selection,name:pb_group.selection__pb_group__split_pay_policy__each_pays
+msgid "Each entity pays its own days"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Edit the group"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Edit your group"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_res_users__pb_vis_kind
+msgid "Empty when this person has not been limited to part of the group."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Every company in the group."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Every company in your group is paid in"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Every company of the group in one country."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"Everybody sees what their companies allow, exactly as they do today. Limit a"
+" division head to their division, or country HR to their country, and their "
+"screens narrow with no other change."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Everybody whose department is not attached anywhere yet."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+#: model:ir.model.fields.selection,name:pb_group.selection__pb_group_visibility__kind__all
+msgid "Everything"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Exchange rate coverage by month"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_palette.js:0
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.actions.act_window,name:pb_group.action_pb_exchange_rates
+msgid "Exchange rates"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model,name:pb_group.model_pb_fx
+msgid "Exchange rates and conversion"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Exchange rates · %(src)s to %(dst)s"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Exchange rates · %(src)s to %(dst)s · %(month)s %(year)s"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Explorer"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Feb"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "February"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__fiscal_start_month
+msgid "Fiscal year starts in"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__message_follower_ids
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__message_partner_ids
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Free"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_division_link__date_from
+msgid "From"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Full month"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Give it a name first."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Give the division a name first."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Give the group a name first."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/static/src/js/group_palette.js:0
+#: code:addons/pb_group/static/src/js/group_room.js:0
+#: model:ir.actions.client,name:pb_group.action_pb_group
+#: model:ir.model,name:pb_group.model_pb_group
+#: model:ir.model.fields,field_description:pb_group.field_res_company__pb_group_id
+#: model:ir.module.category,name:pb_group.module_category_group
+#: model:res.groups.privilege,name:pb_group.res_groups_privilege_group
+#: model_terms:ir.ui.view,arch_db:pb_group.view_pb_group_form
+msgid "Group"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__presentation_currency_id
+msgid "Group currency"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.actions.act_window,name:pb_group.action_pb_group_records
+msgid "Group history"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__name
+msgid "Group name"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model,name:pb_group.model_pb_group_room
+msgid "Group screen data"
+msgstr ""
+
+#. module: pb_group
+#: model_terms:ir.ui.view,arch_db:pb_group.view_pb_group_list
+msgid "Groups"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__has_message
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "History"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: model:ir.model.fields.selection,name:pb_group.selection__pb_group__split_pay_policy__home_pays
+msgid "Home pays, the other entity is charged"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "How exchange rates are picked"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__fx_policy
+msgid "How rates are picked"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__split_pay_policy
+msgid "How split months are paid"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_division__id
+#: model:ir.model.fields,field_description:pb_group.field_pb_division_link__id
+#: model:ir.model.fields,field_description:pb_group.field_pb_fx__id
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__id
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_room__id
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_scoped__id
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__id
+#: model:ir.model.fields,field_description:pb_group.field_res_company__id
+#: model:ir.model.fields,field_description:pb_group.field_res_users__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group__message_needaction
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group__message_has_error
+#: model:ir.model.fields,help:pb_group.field_pb_group__message_has_sms_error
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__message_has_error
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__message_is_follower
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Jan"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "January"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Joiners and leavers"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Jul"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "July"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Jun"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "June"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_division__write_uid
+#: model:ir.model.fields,field_description:pb_group.field_pb_division_link__write_uid
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__write_uid
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_division__write_date
+#: model:ir.model.fields,field_description:pb_group.field_pb_division_link__write_date
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__write_date
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Leave it empty to start today."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Lift it"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Limit somebody"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Mar"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "March"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "May"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Merge"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Merge the ticked ones"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__message_has_error
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__message_ids
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Name"
+msgstr ""
+
+#. module: pb_group
+#: model:res.groups,comment:pb_group.group_group_admin
+msgid ""
+"Name the group, choose its companies, its currency and how exchange rates "
+"are picked, and build its divisions."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"No company matches this yet. They would see an empty screen with a sentence "
+"telling them to ask an administrator."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "No departments yet — open it to attach the first one."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "No divisions yet"
+msgstr ""
+
+#. module: pb_group
+#: model_terms:ir.actions.act_window,help:pb_group.action_pb_exchange_rates
+msgid "No exchange rates yet"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid ""
+"No rate for this month yet. Add one with New and every group figure that "
+"needs it appears. Until then, the amounts stay in the money they were paid "
+"in."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "No rate, so the figures stay in their own money"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_fx.py:0
+msgid ""
+"Nobody has told this system what one %(src)s is worth in %(dst)s in "
+"%(month)s, so these figures stay in %(src)s. Add an exchange rate and the "
+"group figure appears."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Nobody is limited yet"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "None"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Not in a division"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Not in use right now — adding it to the group switches it back on."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_division__note
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__note
+#: model_terms:ir.ui.view,arch_db:pb_group.view_pb_group_form
+msgid "Notes"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"Nothing is attached yet. Attach the first department and the people count "
+"fills in."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"Nothing is stored in it — every figure keeps the currency it was paid in and"
+" is converted when you look at it."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Nothing is stored in it. Every figure keeps the money it was paid in."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"Nothing is stored in the group currency. Every figure keeps the money it was"
+" paid in and is converted when you look at it."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Nothing matches that. Try part of a department name."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Nov"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "November"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__message_needaction_counter
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__message_has_error_counter
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group__message_needaction_counter
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group__message_has_error_counter
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Oct"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "October"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Older"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "On every screen"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+#: model:ir.model.fields.selection,name:pb_group.selection__pb_group_visibility__kind__company
+msgid "One company"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+#: model:ir.model.fields.selection,name:pb_group.selection__pb_group_visibility__kind__country
+msgid "One country"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+#: model:ir.model.fields.selection,name:pb_group.selection__pb_group_visibility__kind__division
+msgid "One division"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "One division, in whatever company it sits in."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"One for each top-level department across your companies. Rename anything, "
+"tick two and merge them, then create the ones you want. Nothing is created "
+"until you press the button."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "One legal entity."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"One part of the business, across every company in the group. Attach a "
+"department at the top and everything under it comes too."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Open the rate list"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Optional"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__note
+msgid "Optional. Why this person is limited to this."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Paid by the day"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Pay"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_division__people_count
+msgid "People"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__user_id
+msgid "Person"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Pick a division and a department first."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Pick a person"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Pick a person first."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Pick how exchange rates should be chosen."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Pick one of the two patterns."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Pick one…"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Pick somebody…"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "Pick the company they see."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "Pick the country they see."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Pick the currency the group reads in."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "Pick the division they see."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group.py:0
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Pick the month your financial year starts in."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Pick the one they should see."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "Pick what this person should see."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Put away"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Rate"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__rating_ids
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Read the group again"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Reading your group…"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model,name:pb_group.model_pb_group_scoped
+msgid "Reads that honour who sees what"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Retail, Manufacturing, Logistics…"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__message_has_sms_error
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Save"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Save the group"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Save what they see"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Saved."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Saved. Every converted figure now uses that rate."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Saved. They see that from their next screen."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Search a department or a company"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "See as them"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_res_users__pb_vis_kind
+msgid "Sees"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Sep"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "September"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_division__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: pb_group
+#: model:res.groups,name:pb_group.group_group_admin
+msgid "Set up the group"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Set your group up first and this fills in on its own."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_division__code
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__code
+msgid "Short code"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Split months: %(pattern)s."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Suggest divisions"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Suggest divisions from your departments"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Suggested divisions"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Take a department out"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Take it out"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Take it out from which day?"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Take out"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "That attachment is no longer here."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "That change could not be saved."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "That company is no longer here."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "That division is no longer here."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "That group is no longer here."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.constraint,message:pb_group.constraint_pb_group_visibility_user_uniq
+msgid ""
+"That person already has a row here. Change the one they have rather than "
+"adding a second."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "That person is no longer here."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "That preview could not be read."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"The attachment is kept with an end date, so last quarter still reads the way"
+" it did."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid ""
+"The average of that month's rates. If there are none, the figure is shown "
+"unconverted."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: model:ir.model.fields.selection,name:pb_group.selection__pb_group__fx_policy__month_avg
+msgid "The average rate for the month"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_palette.js:0
+msgid ""
+"The companies in it, the group currency, how rates are picked, and your "
+"divisions."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "The companies in this group"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group__company_ids
+msgid "The companies this group is made of."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"The companies you own, the money the board reads in, and the parts of the "
+"business that cross company lines. An administrator looks after it."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "The companies, currency and divisions every report and plan will use."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_division.py:0
+msgid ""
+"The end date is before the start date. A department cannot leave a division "
+"before it joins it."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "The group could not be read."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_res_company__pb_group_id
+msgid "The group of companies this one belongs to."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid ""
+"The home entity pays the whole month and the other entity is charged its "
+"share as an internal cost line. One payslip."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid ""
+"The home entity's payslip is reduced to the days that stayed at home, and "
+"the other entity runs its own payslip for its own days, in its own money."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: model:ir.model.fields.selection,name:pb_group.selection__pb_group__fx_policy__month_end
+msgid "The last rate of the month"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "The last rate on or before the end of the month."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group__presentation_currency_id
+msgid ""
+"The money the board reads group figures in. Nothing is stored in it: every "
+"amount keeps the currency it was paid in and is converted when somebody "
+"looks at it."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "The money the board reads in."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group__fiscal_start_month
+msgid ""
+"The month your financial year begins, 1 for January. Reports and plans read "
+"this to know what a year means here."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__user_id
+msgid ""
+"The person this applies to. Somebody with no row here sees whatever their "
+"companies already let them see."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "The rate on or before the day the pay run ends."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: model:ir.model.fields.selection,name:pb_group.selection__pb_group__fx_policy__payment_date
+msgid "The rate on the day the pay run ends"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"There is nothing to pick yet. Add a division, or add a company to the group,"
+" and it appears here."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__kind
+msgid "They see"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "This is where your group is set up"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"This side shows exactly what they would see, on every screen, before you "
+"save anything."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Tick at least one department first."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Tick at least one to create."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Tick everything shown"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Tick the departments you want"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Try again"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"Turning this on pays somebody who starts or leaves part-way through a month "
+"for the days they actually worked. Payslips for those people will change "
+"from the next pay run."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Untick everything shown"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_division_link__date_to
+msgid "Until"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__company_id
+msgid "Used when they see one company."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__country_id
+msgid "Used when they see one country."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__division_id
+msgid "Used when they see one division."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model,name:pb_group.model_res_users
+msgid "User"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"We can propose one for each top-level department you already have, and you "
+"can rename or merge them before anything is created."
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,field_description:pb_group.field_pb_group__website_message_ids
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group__website_message_ids
+#: model:ir.model.fields,help:pb_group.field_pb_group_visibility__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid ""
+"What %(name)s was limited to is no longer here, so they can see everything "
+"they could see before. Give them a new one."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_palette.js:0
+msgid "What one currency is worth in another, by date."
+msgstr ""
+
+#. module: pb_group
+#: model_terms:ir.ui.view,arch_db:pb_group.view_pb_group_form
+msgid "What this group is called"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "What this group of companies is called"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group__name
+msgid "What this group of companies is called on screen."
+msgstr ""
+
+#. module: pb_group
+#: model_terms:ir.ui.view,arch_db:pb_group.view_pb_division_form
+msgid "What this part of the business is called"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,help:pb_group.field_pb_group__split_pay_policy
+msgid ""
+"When somebody works part of a month in another company in this group, this "
+"decides who pays for those days."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Where it sits"
+msgstr ""
+
+#. module: pb_group
+#: model:ir.model.fields,help:pb_group.field_pb_group__fx_policy
+msgid "Which exchange rate a month's figures are converted at."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid ""
+"Which months already have a rate for the money your companies are paid in."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Which one"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Who changed what, and when"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "Who is paid by what"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model,name:pb_group.model_pb_group_visibility
+msgid "Who sees what"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+#: model:ir.model.fields,field_description:pb_group.field_pb_group_visibility__note
+msgid "Why"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Working out what they would see…"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Year starts in"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "You are seeing %(what)s only."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "You are seeing the %(what)s division only."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid ""
+"You can look at the group, but setting it up is for an administrator. Ask "
+"one of them to make the change."
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "You can look at the group, but this is for an administrator."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "You have not set up a group yet"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_palette.js:0
+msgid ""
+"Your companies, the money the board reads in, exchange rates and the parts "
+"of the business that cross company lines."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_palette.js:0
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Your group"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "Your group could not be read"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "Your group is saved."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "and"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "chosen"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "companies"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "company"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "everything they already have"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "for a month, so every converted number can say where it came from."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "in"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "more"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "nothing yet — no company matches"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "of them move out of another division"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "one company"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "one country"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+msgid "one division"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "pay schemes"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/static/src/js/group_room.js:0
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "people"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "people in the group"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "people in this division today"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/static/src/js/group_room.js:0
+msgid "person"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "that company"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "that country"
+msgstr ""
+
+#. module: pb_group
+#. odoo-python
+#: code:addons/pb_group/models/pb_group_room.py:0
+#: code:addons/pb_group/models/pb_group_visibility.py:0
+msgid "this person"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "ticked ·"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "until"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "· from"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "— the parts of the business that do not stop at a company border."
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "— this moves it"
+msgstr ""
+
+#. module: pb_group
+#. odoo-javascript
+#: code:addons/pb_group/static/src/xml/group_room.xml:0
+msgid "— ticking it moves it here."
+msgstr ""

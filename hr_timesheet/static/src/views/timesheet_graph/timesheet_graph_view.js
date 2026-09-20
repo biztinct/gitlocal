@@ -1,13 +1,11 @@
-/** @odoo-module **/
-
-import { projectGraphView } from "@project/js/project_graph_view";
-import { hrTimesheetGraphModel } from "./timesheet_graph_model";
 import { registry } from "@web/core/registry";
+import { graphView } from "@web/views/graph/graph_view";
+import { hrTimesheetGraphModel } from "./timesheet_graph_model";
 
 const viewRegistry = registry.category("views");
 
 export const hrTimesheetGraphView = {
-  ...projectGraphView,
+  ...graphView,
   Model: hrTimesheetGraphModel,
 };
 

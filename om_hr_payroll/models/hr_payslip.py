@@ -8,14 +8,20 @@ from dateutil.relativedelta import relativedelta
 from pytz import timezone
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
-from bokeh.plotting import figure, output_file, show
-from bokeh.palettes import HighContrast3
-from bokeh.embed import components
-from bokeh.models import ColumnDataSource, HoverTool, LabelSet, Legend, FactorRange
-from bokeh.transform import factor_cmap, cumsum
-from bokeh.palettes import Category20c
+try:
+    from vendor_license_core.services.enforce import require_license
+except ImportError:
+    def require_license(func):
+        return func
+# Bokeh imports commented out - not used
+# from bokeh.plotting import figure, output_file, show
+# from bokeh.palettes import HighContrast3
+# from bokeh.embed import components
+# from bokeh.models import ColumnDataSource, HoverTool, LabelSet, Legend, FactorRange
+# from bokeh.transform import factor_cmap, cumsum
+# from bokeh.palettes import Category20c
 import json
-from pudb import set_trace
+# from pudb import set_trace  # Debug tool - not for production
 #from odoo.addons.report_xlsx.report.report_xlsx import ReportXlsx
 
 _logger = logging.getLogger(__name__)
@@ -139,6 +145,7 @@ class HrPayslip(models.Model):
     def action_payslip_draft(self):
         return self.write({'state': 'draft'})
 
+    @require_license
     def action_payslip_done(self):
         #self.compute_sheet()
         #Biztinct
@@ -215,17 +222,16 @@ class HrPayslip(models.Model):
             copied_payslip.compute_sheet()
             copied_payslip.action_payslip_done()
         form_view_ref = self.env.ref('om_om_hr_payroll.view_hr_payslip_form', False)
-        tree_view_ref = self.env.ref('om_om_hr_payroll.view_hr_payslip_tree', False)
+        list_view_ref = self.env.ref('om_om_hr_payroll.view_hr_payslip_tree', False)
         return {
             'name': (_("Refund Payslip")),
-            'view_mode': 'tree, form',
+            'view_mode': 'list, form',
             'view_id': False,
-            'view_type': 'form',
             'res_model': 'hr.payslip',
             'type': 'ir.actions.act_window',
             'target': 'current',
             'domain': "[('id', 'in', %s)]" % copied_payslip.ids,
-            'views': [(tree_view_ref and tree_view_ref.id or False, 'tree'), (form_view_ref and form_view_ref.id or False, 'form')],
+            'views': [(list_view_ref and list_view_ref.id or False, 'list'), (form_view_ref and form_view_ref.id or False, 'form')],
             'context': {}
         }
 
@@ -312,6 +318,10 @@ class HrPayslip(models.Model):
         Args:
             payslip: The payslip record to update.
         """
+        # Check if zoho.employee.data model exists
+        if 'zoho.employee.data' not in self.env:
+            return
+        
         payroll_from_spreadsheet = self.env[
             'ir.config_parameter'
         ].sudo().get_param('payroll_from_spreadsheet')
@@ -383,6 +393,7 @@ class HrPayslip(models.Model):
                         line.amount = getattr(zoho_data, zoho_field) or 0.0
 
 
+    @require_license
     def compute_sheet(self):
         for payslip in self:
             number = payslip.number or self.env['ir.sequence'].next_by_code('salary.slip')
@@ -444,12 +455,14 @@ class HrPayslip(models.Model):
                 compute_leaves=False,
             )
 
-            zoho_employee = self.env['zoho.employee.data'].search([('employee_id', '=', self.employee_id.employee_id)], limit=1)
-            #zoho_employee = self.env['zoho.employee.data'].search([('employee_id', '=', '11660')], limit=1)
+            # Check if zoho.employee.data model exists before using it
+            zoho_employee = False
+            if 'zoho.employee.data' in self.env:
+                zoho_employee = self.env['zoho.employee.data'].search([('employee_id', '=', self.employee_id.employee_id)], limit=1)
+            
             if zoho_employee:
-                #set_trace()
                 standard_whr = zoho_employee.standard_whr
-            else :
+            else:
                 standard_whr = work_data['hours']
 
             attendances = {
@@ -464,20 +477,20 @@ class HrPayslip(models.Model):
 
             res.append(attendances)
             res.extend(leaves.values())
-            #set_trace()
-            att_list = []
-            att_list = [{'name': _("Actual work incl paid leave"), 'sequence': 2, 'code': 'ACPL', 'contract_id': contract.id, 'number_of_hours': zoho_employee.actual_working_hours_incl_paid_leave },
-            {'name': _("Actual work not incl paid leave"), 'sequence': 3, 'code': 'ACNPL', 'contract_id': contract.id, 'number_of_hours': zoho_employee.actual_working_hours_excl_paid_leave},
-            {'name': _("OT 1.5 Hrs"), 'sequence': 4, 'code': 'OT15', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_normal_150_hour },
-            {'name': _("OT 2 Hrs"), 'sequence': 5, 'code': 'OT2', 'contract_id': contract.id,'number_of_hours': zoho_employee.overtime_weekend_200_hour },
-            {'name': _("OT 3 Hrs"), 'sequence': 6, 'code': 'OT3', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_holiday_300_hour },
-            {'name': _("OT Night Shift Week day"), 'sequence': 7, 'code': 'OTNW', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_nightshift_210_hour },
-            {'name': _("OT Night Shift Off day"), 'sequence': 8, 'code': 'OTNO', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_nightshift_270_hour },
-            {'name': _("OT Night Shift Holiday"), 'sequence': 9, 'code': 'OTNH', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_nightshift_390_hour },
-            {'name': _("Night Shift"), 'sequence': 10, 'code': 'NS', 'contract_id': contract.id, 'number_of_hours': zoho_employee.nightshift_hour },
-            #{'name': _("Paid leave unused"), 'sequence': 11, 'code': 'PAIDUNUSED', 'contract_id': contract.id, 'number_of_hours': zoho_employee.paidleave_unused },            
-             ]
-            res.extend(att_list)
+            
+            # Only add zoho-based attendance lines if zoho model is available and employee found
+            if zoho_employee:
+                att_list = [{'name': _("Actual work incl paid leave"), 'sequence': 2, 'code': 'ACPL', 'contract_id': contract.id, 'number_of_hours': zoho_employee.actual_working_hours_incl_paid_leave },
+                {'name': _("Actual work not incl paid leave"), 'sequence': 3, 'code': 'ACNPL', 'contract_id': contract.id, 'number_of_hours': zoho_employee.actual_working_hours_excl_paid_leave},
+                {'name': _("OT 1.5 Hrs"), 'sequence': 4, 'code': 'OT15', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_normal_150_hour },
+                {'name': _("OT 2 Hrs"), 'sequence': 5, 'code': 'OT2', 'contract_id': contract.id,'number_of_hours': zoho_employee.overtime_weekend_200_hour },
+                {'name': _("OT 3 Hrs"), 'sequence': 6, 'code': 'OT3', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_holiday_300_hour },
+                {'name': _("OT Night Shift Week day"), 'sequence': 7, 'code': 'OTNW', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_nightshift_210_hour },
+                {'name': _("OT Night Shift Off day"), 'sequence': 8, 'code': 'OTNO', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_nightshift_270_hour },
+                {'name': _("OT Night Shift Holiday"), 'sequence': 9, 'code': 'OTNH', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_nightshift_390_hour },
+                {'name': _("Night Shift"), 'sequence': 10, 'code': 'NS', 'contract_id': contract.id, 'number_of_hours': zoho_employee.nightshift_hour },
+                 ]
+                res.extend(att_list)
 
             #Biztinct TODO
             #Get hours from the raw table populated by API
@@ -734,33 +747,33 @@ class HrPayslip(models.Model):
         #computation of the salary input
         contracts = self.env['hr.contract'].browse(contract_ids)
         worked_days_line_ids = self.get_worked_day_lines(contracts, date_from, date_to)
-        #Biztinct - populate worked days data from Zoho Employee data
-        lemployee = self.env['hr.employee'].search([('id', '=', employee_id)], limit=1)
-        zoho_employee = self.env['zoho.employee.data'].search([('employee_id', '=', lemployee.employee_id)], limit=1)
-        for line in worked_days_line_ids:
-            
-            if line['code'] == 'WORK100':
-                line['number_of_hours'] = zoho_employee.standard_whr
-            elif line['code'] == 'ACPL':
-                line['number_of_hours'] = zoho_employee.actual_working_hours_incl_paid_leave
-            elif line['code'] == 'ACNPL':
-                line['number_of_hours'] = zoho_employee.actual_working_hours_excl_paid_leave
-            elif line['code'] == 'OT15':
-                line['number_of_hours'] = zoho_employee.overtime_normal_150_hour
-            elif line['code'] == 'OT2':
-                line['number_of_hours'] = zoho_employee.overtime_weekend_200_hour
-            elif line['code'] == 'OT3':
-                line['number_of_hours'] = zoho_employee.overtime_holiday_300_hour
-            elif line['code'] == 'OTNW':
-                line['number_of_hours'] = zoho_employee.overtime_nightshift_200_hour
-            elif line['code'] == 'OTNO':
-                line['number_of_hours'] = zoho_employee.overtime_nightshift_270_hour
-            elif line['code'] == 'OTNH':
-                line['number_of_hours'] = zoho_employee.overtime_nightshift_390_hour   
-            #Biztinct - Paid leave unused is amount and not hours so it should go into contract to be given at end of employment
-            #elif line['code'] == 'PAIDUNUSED':
-            #    line['number_of_hours'] = zoho_employee.paidleave_unused   
-
+        
+        #Biztinct - populate worked days data from Zoho Employee data (if available)
+        zoho_employee = False
+        if 'zoho.employee.data' in self.env:
+            lemployee = self.env['hr.employee'].search([('id', '=', employee_id)], limit=1)
+            zoho_employee = self.env['zoho.employee.data'].search([('employee_id', '=', lemployee.employee_id)], limit=1)
+        
+        if zoho_employee:
+            for line in worked_days_line_ids:
+                if line['code'] == 'WORK100':
+                    line['number_of_hours'] = zoho_employee.standard_whr
+                elif line['code'] == 'ACPL':
+                    line['number_of_hours'] = zoho_employee.actual_working_hours_incl_paid_leave
+                elif line['code'] == 'ACNPL':
+                    line['number_of_hours'] = zoho_employee.actual_working_hours_excl_paid_leave
+                elif line['code'] == 'OT15':
+                    line['number_of_hours'] = zoho_employee.overtime_normal_150_hour
+                elif line['code'] == 'OT2':
+                    line['number_of_hours'] = zoho_employee.overtime_weekend_200_hour
+                elif line['code'] == 'OT3':
+                    line['number_of_hours'] = zoho_employee.overtime_holiday_300_hour
+                elif line['code'] == 'OTNW':
+                    line['number_of_hours'] = zoho_employee.overtime_nightshift_200_hour
+                elif line['code'] == 'OTNO':
+                    line['number_of_hours'] = zoho_employee.overtime_nightshift_270_hour
+                elif line['code'] == 'OTNH':
+                    line['number_of_hours'] = zoho_employee.overtime_nightshift_390_hour
 
 
         input_line_ids = self.get_inputs(contracts, date_from, date_to)
@@ -777,8 +790,10 @@ class HrPayslip(models.Model):
         if (not self.employee_id) or (not self.date_from) or (not self.date_to):
             return
  
-        #Biztinct -  Search for the employee in zoho.employee.data using the employee's name
-        zoho_employee = self.env['zoho.employee.data'].search([('employee_id', '=', self.employee_id.employee_id)], limit=1)
+        #Biztinct -  Search for the employee in zoho.employee.data using the employee's name (if model available)
+        zoho_employee = False
+        if 'zoho.employee.data' in self.env:
+            zoho_employee = self.env['zoho.employee.data'].search([('employee_id', '=', self.employee_id.employee_id)], limit=1)
         #if zoho_employee:
             # If found, update the date_from and date_to fields
         #    self.date_from = zoho_employee.start_date
@@ -867,7 +882,7 @@ class HrPayslip(models.Model):
 
 class HrPayslipLine(models.Model):
     _name = 'hr.payslip.line'
-    _inherit = 'hr.salary.rule'
+    _inherit = ['hr.salary.rule']
     _description = 'Payslip Line'
     _order = 'date_to desc, contract_id, sequence'
 
@@ -876,16 +891,27 @@ class HrPayslipLine(models.Model):
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
     contract_id = fields.Many2one('hr.contract', string='Contract', required=True, index=True)
     rate = fields.Float(string='Rate (%)', default=100.0)
-    amount = fields.Float()
+    amount = fields.Float(digits=(16, 2))
     quantity = fields.Float(default=1.0)
-    total = fields.Float(compute='_compute_total', string='Total', store=True)
+    total = fields.Float(compute='_compute_total', string='Total', store=True, digits=(16, 2))
     date_from = fields.Date(related='slip_id.date_from', string='Date From', store=True)
     date_to = fields.Date(related='slip_id.date_to', string='Date To', store=True)
     costcenter = fields.Char(related='slip_id.contract_id.costcenter', string='Cost center', store=True)
+    @staticmethod
+    def _smart_round(value):
+        """Round large values (>=1000) to integer, keep 2 decimals for small values.
+        Large = salary amounts in VND (no sub-units).
+        Small = hours, quantities, rates.
+        """
+        if abs(value) >= 1000:
+            return round(value)
+        return round(value, 2)
+
     @api.depends('quantity', 'amount', 'rate')
     def _compute_total(self):
         for line in self:
-            line.total = float(line.quantity) * line.amount * line.rate / 100
+            raw = float(line.quantity) * line.amount * line.rate / 100
+            line.total = self._smart_round(raw)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -896,6 +922,9 @@ class HrPayslipLine(models.Model):
                 values['contract_id'] = values.get('contract_id') or payslip.contract_id and payslip.contract_id.id
                 if not values['contract_id']:
                     raise UserError(_('You must set a contract to create a payslip line.'))
+            # Smart round amount for storage: >=1000 → integer, <1000 → 2 decimals
+            if 'amount' in values and isinstance(values['amount'], (int, float)):
+                values['amount'] = self._smart_round(values['amount'])
         return super(HrPayslipLine, self).create(vals_list)
 
 
@@ -1051,7 +1080,12 @@ class HrPayslipRun(models.Model):
 
         analytics_data = analytics._generate_analytics_data(self.slip_ids, country, self.date_start, self.date_end)
         analytics.write(analytics_data)
-        analytics.invalidate_cache()
+        # `invalidate_cache()` was removed in Odoo 15; this server only defines
+        # `invalidate_recordset` (odoo/orm/models.py:6722). The call sits in the
+        # straight-line path of action_payslip_run_level1_done — no try/except
+        # around it — so on Odoo 19 advancing a batch to Level 2 raised
+        # AttributeError and the whole approval step failed.
+        analytics.invalidate_recordset()
         analytics._compute_analytics()
 
         view = self.env.ref('payroll_analytics_approval.view_payroll_analytics_dashboard', raise_if_not_found=False)
@@ -1344,37 +1378,6 @@ class HrPayslipRun(models.Model):
                     return candidate
                 idx += 1
 
-        base_columns = [
-            {
-                'header': 'MSNV',
-                'keys': [('code', 'MSNV'), ('name', 'MSNV')],
-                'lookup': ['MSNV'],
-            },
-            {
-                'header': 'Full name',
-                'keys': [('code', 'FULLNAME'), ('name', 'FULL NAME'), ('name', 'FULLNAME')],
-                'lookup': ['FULLNAME', 'FULL NAME'],
-            },
-            {
-                'header': 'Unit',
-                'keys': [('code', 'UNIT'), ('name', 'UNIT')],
-                'lookup': ['UNIT'],
-            },
-            {
-                'header': 'Type of labor contract',
-                'keys': [('code', 'TYPEOFLABORCONTRACT'), ('name', 'TYPE OF LABOR CONTRACT')],
-                'lookup': ['TYPEOFLABORCONTRACT', 'TYPE OF LABOR CONTRACT'],
-            },
-            {
-                'header': 'Subjects are counted as working overtime',
-                'keys': [
-                    ('code', 'SUBJECTSARECOUNTEDASWORKINGOVERTIME'),
-                    ('name', 'SUBJECTS ARE COUNTED AS WORKING OVERTIME'),
-                ],
-                'lookup': ['SUBJECTSARECOUNTEDASWORKINGOVERTIME', 'SUBJECTS ARE COUNTED AS WORKING OVERTIME'],
-            },
-        ]
-
         slips_by_config = {}
         for slip in self.slip_ids:
             config = slip.formula_config_id if hasattr(slip, 'formula_config_id') else False
@@ -1390,6 +1393,9 @@ class HrPayslipRun(models.Model):
         for entry in slips_by_config.values():
             config = entry['config']
             slips = entry['slips']
+            # The leading employee columns. Fixed by default; a salary structure
+            # can supply its own set through the hook below.
+            base_columns = self._export_base_columns(config)
             sheet_name = config.display_name if config else 'Payslips'
             worksheet = workbook.add_worksheet(_make_sheet_name(sheet_name, used_sheet_names))
             worksheet.set_column(0, 0, 18)
@@ -1427,23 +1433,90 @@ class HrPayslipRun(models.Model):
             for base in active_base_columns:
                 base_key_set.update(base['keys'])
 
+            # NOTHING TICKED IS NOT A CHOICE TO SHOW NOTHING.
+            #
+            # "Visible in Reports" defaults to OFF, so a scheme nobody has
+            # curated has every component switched off — and honouring that
+            # literally hands back a workbook with no columns at all, which is
+            # never what the press meant. (The India scheme: 40 components,
+            # none ticked, an empty file and nothing on screen saying why.)
+            # Where SOME are ticked, somebody has chosen, and the choice is
+            # followed to the letter.
+            Line = self.env['hr.payslip.line']
             line_domain = [('slip_id', 'in', slips.ids)]
-            if 'report_visible' in self.env['hr.payslip.line']._fields:
-                line_domain.append(('report_visible', '=', True))
-            all_lines = self.env['hr.payslip.line'].search(line_domain, order='sequence,id')
-            component_columns = []
-            seen_keys = set()
+            visible_domain = list(line_domain)
+            if 'report_visible' in Line._fields:
+                visible_domain.append(('report_visible', '=', True))
+            all_lines = Line.search(visible_domain, order='sequence,id')
+            if not all_lines and visible_domain != line_domain:
+                all_lines = Line.search(line_domain, order='sequence,id')
+
+            # Which keys are a NUMBER somewhere in this batch. Used twice: to
+            # keep the line walk below honest, and to decide whether an empty
+            # cell should read 0.00 or stay blank.
+            keys_with_lines = set()
             for line in all_lines:
                 key = _line_key(line)
-                if not key[1] or key in seen_keys:
-                    continue
-                if rule_keys and key not in rule_keys:
-                    continue
-                if key in base_key_set or key[1] == 'MSNV':
-                    continue
-                seen_keys.add(key)
-                header = line.name or line.code or key[1]
-                component_columns.append((key, header))
+                if key[1]:
+                    keys_with_lines.add(key)
+
+            # MSNV is dropped from the components only because a leading column
+            # already carries it. Where no such column survived, dropping it too
+            # would lose the employee code from the sheet altogether.
+            msnv_in_base = any(base['header'] == 'MSNV'
+                               for base in active_base_columns)
+
+            # THE SCHEME IS THE ORDER, AND THE WHOLE LIST.
+            #
+            # These columns used to be discovered by walking the payslip lines,
+            # which cost the workbook the two things a reviewer opens it for. A
+            # component that produces no line never became a column at all — and
+            # that is every TEXT component, so the employee code, the name, the
+            # position, the contract dates, the department, all missing. And the
+            # order was whatever the lines happened to carry rather than the
+            # order the scheme is read in on screen.
+            #
+            # The workbook exists to be compared against the scheme, so it is
+            # built FROM the scheme: every component the scheme shows in
+            # reports, in the scheme's own sequence. A batch with no scheme (a
+            # classic structure payslip) has no such list to read, so it keeps
+            # the line walk.
+            component_columns = []
+            seen_keys = set()
+            scheme_rules = config.rule_ids if config and hasattr(
+                config, 'rule_ids') else None
+            if scheme_rules:
+                # The same rule as the lines above: a curated scheme is
+                # followed exactly, an uncurated one shows everything rather
+                # than nothing.
+                shown = scheme_rules
+                if 'report_visible' in scheme_rules._fields:
+                    shown = scheme_rules.filtered('report_visible') or scheme_rules
+                for rule in shown.sorted(key=lambda r: (r.sequence, r.id)):
+                    key = _rule_key(rule)
+                    if not key or not key[1] or key in seen_keys:
+                        continue
+                    if key in base_key_set:
+                        continue
+                    if key[1] == 'MSNV' and msnv_in_base:
+                        continue
+                    seen_keys.add(key)
+                    component_columns.append(
+                        (key, rule.name or rule.code or key[1]))
+            else:
+                for line in all_lines:
+                    key = _line_key(line)
+                    if not key[1] or key in seen_keys:
+                        continue
+                    if rule_keys and key not in rule_keys:
+                        continue
+                    if key in base_key_set:
+                        continue
+                    if key[1] == 'MSNV' and msnv_in_base:
+                        continue
+                    seen_keys.add(key)
+                    header = line.name or line.code or key[1]
+                    component_columns.append((key, header))
 
             headers = [base['header'] for base in active_base_columns] + [header for _, header in component_columns]
 
@@ -1483,6 +1556,13 @@ class HrPayslipRun(models.Model):
                 value = getattr(record, mapping.target_field_id.name, None)
                 if isinstance(value, models.BaseModel):
                     return True, value.display_name
+                # A DATE IS NEITHER TEXT NOR A NUMBER, and the writer treats
+                # everything that is not text as a number — which turned a
+                # commencing date into 0.00. Say it as a date instead.
+                if isinstance(value, datetime):
+                    return True, value.strftime('%Y-%m-%d %H:%M:%S')
+                if isinstance(value, date):
+                    return True, value.strftime('%Y-%m-%d')
                 return True, value
 
             row_idx = 1
@@ -1565,10 +1645,32 @@ class HrPayslipRun(models.Model):
                             if hasattr(contract, 'subjects_are_counted_as_working_overtime'):
                                 value = contract.subjects_are_counted_as_working_overtime or ''
 
+                    # Only columns supplied by an override ask for this: people
+                    # columns imported as text land in the visible-string payload,
+                    # never in the input values. The fixed set never sets the flag,
+                    # so the default workbook is untouched.
+                    if base.get('use_string_payload') and value in (None, ''):
+                        for key in base['keys']:
+                            if key in string_values_by_key:
+                                value = string_values_by_key[key]
+                                break
+                        if value in (None, ''):
+                            for key in base['keys']:
+                                if key in values_by_key:
+                                    value = values_by_key[key]
+                                    break
+
                     row_values.append(value)
 
                 for key, _header in component_columns:
-                    numeric_value = values_by_key.get(key, 0.0)
+                    # A column that is a number SOMEWHERE in this batch stays a
+                    # number everywhere, so an employee who simply has none of
+                    # it reads 0.00 exactly as it always has. A column that is
+                    # never a number is a text column — the name, the position,
+                    # a date — and an empty one of those must stay empty rather
+                    # than claim a value of zero.
+                    numeric_value = values_by_key.get(
+                        key, 0.0 if key in keys_with_lines else None)
                     string_value = string_values_by_key.get(key)
                     rule = rule_by_key.get(key)
                     has_mapping, mapped_value = _get_mapped_field_value(rule, employee, contract)
@@ -1649,15 +1751,16 @@ class HrPayslipRun(models.Model):
                     row_values.append(output_value)
 
                 for col_idx, value in enumerate(row_values):
-                    if col_idx == 0:
-                        worksheet.write_string(row_idx, col_idx, value or '', text_fmt)
-                    elif col_idx < len(active_base_columns):
+                    if col_idx < len(active_base_columns):
                         worksheet.write_string(row_idx, col_idx, str(value) if value else '', text_fmt)
+                    elif value is None:
+                        # A text column with nothing in it for this person. Blank
+                        # says that; 0.00 would be a number nobody computed.
+                        worksheet.write_blank(row_idx, col_idx, None, text_fmt)
+                    elif isinstance(value, str):
+                        worksheet.write_string(row_idx, col_idx, value, text_fmt)
                     else:
-                        if isinstance(value, str):
-                            worksheet.write_string(row_idx, col_idx, value, text_fmt)
-                        else:
-                            worksheet.write_number(row_idx, col_idx, _sanitize_xlsx_number(value), num_fmt)
+                        worksheet.write_number(row_idx, col_idx, _sanitize_xlsx_number(value), num_fmt)
 
                 row_idx += 1
 
@@ -1678,6 +1781,52 @@ class HrPayslipRun(models.Model):
             'target': 'self',
         }
 
+    def _export_base_columns(self, config):
+        """The leading employee columns of the payroll workbook, for one structure.
+
+        Each entry is ``{'header', 'keys', 'lookup'}`` — `keys` are the
+        ``(code|name, UPPERCASE)`` pairs that tie the column to a formula rule and
+        keep it out of the component columns, `lookup` are the input-value keys the
+        value is read from. An entry may additionally set ``use_string_payload`` to
+        fall back to the payslip's visible-string payload / line totals when neither
+        a field mapping nor an input value produced anything.
+
+        This is a HOOK on purpose: the list below is the historical fixed set and
+        stays the default, so an override that returns it unchanged (or declines to
+        override) produces exactly the workbook this method has always produced.
+        `pb_hr_payroll_formula` overrides it to honour the structure's column roles.
+        """
+        return [
+            {
+                'header': 'MSNV',
+                'keys': [('code', 'MSNV'), ('name', 'MSNV')],
+                'lookup': ['MSNV'],
+            },
+            {
+                'header': 'Full name',
+                'keys': [('code', 'FULLNAME'), ('name', 'FULL NAME'), ('name', 'FULLNAME')],
+                'lookup': ['FULLNAME', 'FULL NAME'],
+            },
+            {
+                'header': 'Unit',
+                'keys': [('code', 'UNIT'), ('name', 'UNIT')],
+                'lookup': ['UNIT'],
+            },
+            {
+                'header': 'Type of labor contract',
+                'keys': [('code', 'TYPEOFLABORCONTRACT'), ('name', 'TYPE OF LABOR CONTRACT')],
+                'lookup': ['TYPEOFLABORCONTRACT', 'TYPE OF LABOR CONTRACT'],
+            },
+            {
+                'header': 'Subjects are counted as working overtime',
+                'keys': [
+                    ('code', 'SUBJECTSARECOUNTEDASWORKINGOVERTIME'),
+                    ('name', 'SUBJECTS ARE COUNTED AS WORKING OVERTIME'),
+                ],
+                'lookup': ['SUBJECTSARECOUNTEDASWORKINGOVERTIME', 'SUBJECTS ARE COUNTED AS WORKING OVERTIME'],
+            },
+        ]
+
     def export_payslip_lines_xlsx(self):
         self.ensure_one()
         return self.env.ref('om_hr_payroll.action_report_payslip_lines_xlsx').report_action(self)
@@ -1692,7 +1841,7 @@ class HrPayslipRun(models.Model):
 
 class PayslipLinesXlsx(models.Model):
     _name = 'report.om_hr_payroll.payslip_lines_xlsx'
-    _inherit = 'report.report_xlsx.abstract'
+    _inherit = ['report.report_xlsx.abstract']
     _description = 'Payslip Lines XLSX Report'
  
     

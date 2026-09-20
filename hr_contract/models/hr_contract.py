@@ -46,7 +46,7 @@ class Contract(models.Model):
         ('open', 'Running'),
         ('close', 'Expired'),
         ('cancel', 'Cancelled')
-    ], string='Status', group_expand='_expand_states', copy=False,
+    ], string='Status', group_expand=True, copy=False,
        tracking=True, help='Status of the contract', default='draft')
     company_id = fields.Many2one('res.company', compute='_compute_employee_contract', store=True, readonly=False,
         default=lambda self: self.env.company, required=True)
@@ -71,7 +71,7 @@ class Contract(models.Model):
     visa_expire = fields.Date('Visa Expiration Date', related="employee_id.visa_expire", readonly=False)
 
     def _get_hr_responsible_domain(self):
-        return "[('share', '=', False), ('company_ids', 'in', company_id), ('groups_id', 'in', %s)]" % self.env.ref('hr.group_hr_user').id
+        return "[('share', '=', False), ('company_ids', 'in', company_id), ('group_ids', 'in', %s)]" % self.env.ref('hr.group_hr_user').id
 
     hr_responsible_id = fields.Many2one('res.users', 'HR Responsible', tracking=True,
         help='Person responsible for validating the employee\'s contracts.', domain=_get_hr_responsible_domain)
@@ -83,8 +83,7 @@ class Contract(models.Model):
         for contract in self:
             contract.calendar_mismatch = contract.resource_calendar_id != contract.employee_id.resource_calendar_id
 
-    def _expand_states(self, states, domain, order):
-        return [key for key, val in self._fields['state'].selection]
+    # Note: _expand_states removed for Odoo 19 - using group_expand=True instead
 
     @api.depends('employee_id')
     def _compute_employee_contract(self):

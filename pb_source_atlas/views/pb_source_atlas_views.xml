@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The cockpit itself. Opened only through
+         hr.payslip.run.action_open_source_atlas, which supplies the run id in
+         `params` — the Atlas is never "all runs at once". -->
+    <record id="action_pb_source_atlas" model="ir.actions.client">
+        <field name="name">Where the numbers come from</field>
+        <field name="tag">pb_source_atlas_cockpit</field>
+    </record>
+
+    <!-- Pay-run form: priority above pb_payruns' 30 so this lands on top of the
+         enhanced form rather than racing it. -->
+    <record id="hr_payslip_run_form_source_atlas" model="ir.ui.view">
+        <field name="name">hr.payslip.run.form.source-atlas</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_payslip_run_form"/>
+        <field name="priority">40</field>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_open_source_atlas" type="object"
+                        class="btn-secondary"
+                        string="Where the numbers come from"
+                        invisible="not slip_ids"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Pay Runs board card: small and secondary, beside the other per-run
+         tools, and only once the run actually has payslips to trace. -->
+    <record id="view_hr_payslip_run_kanban_source_atlas" model="ir.ui.view">
+        <field name="name">hr.payslip.run.kanban.source-atlas</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="pb_payruns.view_hr_payslip_run_kanban_pb"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('pbk-foot')]" position="inside">
+                <button t-if="record.pb_employee_count.raw_value" type="object"
+                        name="action_open_source_atlas" class="pbk-btn ghost">
+                    Sources
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

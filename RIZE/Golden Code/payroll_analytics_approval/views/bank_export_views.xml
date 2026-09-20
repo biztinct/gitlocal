@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Enhanced Bank Export Wizard with Preview -->
+    <record id="view_payroll_bank_export_wizard_enhanced_form" model="ir.ui.view">
+        <field name="name">payroll.bank.export.wizard.enhanced.form</field>
+        <field name="model">payroll.bank.export.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Bank Export Wizard">
+                <div class="alert alert-info" role="alert">
+                    <h4><i class="fa fa-university"/> Bank Export Wizard</h4>
+                    <p>Generate CSV/Excel file for bank salary disbursement with employee bank details and net pay amounts.</p>
+                </div>
+                
+                <group>
+                    <group string="Export Parameters">
+                        <field name="country" required="1" widget="radio"/>
+                        <field name="date_from" required="1"/>
+                        <field name="date_to" required="1"/>
+                    </group>
+                    <group string="File Options">
+                        <field name="export_format" widget="radio"/>
+                        <field name="include_header"/>
+                        <field name="analytics_id" readonly="1" attrs="{'invisible': [('analytics_id', '=', False)]}"/>
+                    </group>
+                </group>
+                
+                <!-- Preview Section -->
+                <group string="Export Preview" attrs="{'invisible': [('preview_data', '=', False)]}">
+                    <div class="alert alert-success">
+                        <h5><i class="fa fa-check"/> Export Preview Ready</h5>
+                        <p>Found <strong><field name="preview_record_count" readonly="1"/></strong> employees with total amount of <strong><field name="preview_total_amount" widget="monetary" readonly="1"/></strong></p>
+                    </div>
+                    <field name="preview_data" widget="text" readonly="1"/>
+                </group>
+                
+                <!-- Export Results -->
+                <group string="Export Results" attrs="{'invisible': [('export_file', '=', False)]}">
+                    <div class="alert alert-success">
+                        <h5><i class="fa fa-download"/> Export Complete</h5>
+                        <p>Bank export file has been generated successfully. Click download to save the file.</p>
+                    </div>
+                    <field name="export_filename" readonly="1"/>
+                    <field name="export_file" filename="export_filename" readonly="1"/>
+                </group>
+                
+                <footer>
+                    <button string="Preview Export" name="action_preview_export" type="object" class="btn-info" attrs="{'invisible': [('preview_data', '!=', False)]}"/>
+                    <button string="Generate Export" name="action_generate_export" type="object" class="btn-primary" attrs="{'invisible': ['|', ('preview_data', '=', False), ('export_file', '!=', False)]}"/>
+                    <button string="Download File" name="action_download_export" type="object" class="btn-success" attrs="{'invisible': [('export_file', '=', False)]}"/>
+                    <button string="Reset" name="action_reset_wizard" type="object" class="btn-secondary" attrs="{'invisible': [('export_file', '=', False)]}"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Basic Bank Export Wizard Form (fallback) -->
+    <record id="view_payroll_bank_export_wizard_form" model="ir.ui.view">
+        <field name="name">payroll.bank.export.wizard.form</field>
+        <field name="model">payroll.bank.export.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Export Bank File">
+                <div class="alert alert-info" role="alert">
+                    <h4><i class="fa fa-info-circle"/> Bank Export Wizard</h4>
+                    <p>Generate CSV/Excel file for bank salary disbursement. This file contains employee bank details and net pay amounts.</p>
+                </div>
+                
+                <group>
+                    <group>
+                        <field name="country" required="1"/>
+                        <field name="export_format"/>
+                        <field name="include_header"/>
+                    </group>
+                    <group>
+                        <field name="date_from" required="1"/>
+                        <field name="date_to" required="1"/>
+                        <field name="analytics_id" readonly="1" attrs="{'invisible': [('analytics_id', '=', False)]}"/>
+                    </group>
+                </group>
+                
+                <group string="Export Results" attrs="{'invisible': [('export_file', '=', False)]}">
+                    <field name="export_filename" readonly="1"/>
+                    <field name="export_file" filename="export_filename" readonly="1"/>
+                </group>
+                
+                <footer>
+                    <button string="Generate Export" name="action_generate_export" type="object" class="btn-primary" attrs="{'invisible': [('export_file', '!=', False)]}"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Bank Export Wizard Action -->
+    <record id="action_payroll_bank_export_wizard" model="ir.actions.act_window">
+        <field name="name">Export Bank File</field>
+        <field name="res_model">payroll.bank.export.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_payroll_bank_export_wizard_enhanced_form"/>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+    
+    <!-- Bank Export Log Views -->
+    <record id="view_bank_export_log_tree" model="ir.ui.view">
+        <field name="name">bank.export.log.tree</field>
+        <field name="model">bank.export.log</field>
+        <field name="arch" type="xml">
+            <tree string="Bank Export History" create="false">
+                <field name="export_date"/>
+                <field name="country"/>
+                <field name="period_name"/>
+                <field name="total_records"/>
+                <field name="total_amount" widget="monetary"/>
+                <field name="export_format"/>
+                <field name="created_by"/>
+                <field name="export_file" filename="filename"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="view_bank_export_log_form" model="ir.ui.view">
+        <field name="name">bank.export.log.form</field>
+        <field name="model">bank.export.log</field>
+        <field name="arch" type="xml">
+            <form string="Bank Export Details" create="false" edit="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="period_name"/>
+                        </h1>
+                        <h2>
+                            <field name="country"/> Bank Export
+                        </h2>
+                    </div>
+                    
+                    <group>
+                        <group string="Export Information">
+                            <field name="export_date"/>
+                            <field name="country"/>
+                            <field name="export_format"/>
+                            <field name="created_by"/>
+                        </group>
+                        <group string="Summary">
+                            <field name="total_records"/>
+                            <field name="total_amount" widget="monetary"/>
+                            <field name="filename"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Export File">
+                        <field name="export_file" filename="filename"/>
+                    </group>
+                    
+                    <separator string="Export Details"/>
+                    <field name="export_details" widget="text" readonly="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Bank Export Log Action -->
+    <record id="action_bank_export_log" model="ir.actions.act_window">
+        <field name="name">Bank Export History</field>
+        <field name="res_model">bank.export.log</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No bank export records found!
+            </p>
+            <p>
+                Bank export files will appear here after being generated from approved payroll batches.
+            </p>
+        </field>
+    </record>
+    
+</odoo>

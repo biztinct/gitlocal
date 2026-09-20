@@ -1,0 +1,5 @@
+<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Payobook">
+  <!-- Concept A — Refined Ascend: two parallel ascending chevrons (growth / upward momentum) -->
+  <path class="pb-stroke pb-chev-2" d="M7 35 L24 20 L41 35" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path class="pb-stroke pb-chev-1" d="M7 24 L24 9 L41 24" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

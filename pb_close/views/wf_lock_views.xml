@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ====================== pb.wf.lock (admin / audit) ======================
+         The Close lens is the UI for locking a day; these views exist so a
+         manager can AUDIT the lock history — who closed which day, who reopened
+         it and why — through the chatter, and so an admin has a door to the
+         table at all (W5: no dead-end model). Config/admin forms are exempt
+         from the bespoke-UI rule (C18.42a). -->
+    <record id="view_pb_wf_lock_list" model="ir.ui.view">
+        <field name="name">pb.wf.lock.list</field>
+        <field name="model">pb.wf.lock</field>
+        <field name="arch" type="xml">
+            <list string="Workforce Day Locks">
+                <field name="date"/>
+                <field name="company_id"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'locked'"
+                       decoration-warning="state == 'open'"/>
+                <field name="locked_by_id"/>
+                <field name="locked_on"/>
+                <field name="reason"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_wf_lock_form" model="ir.ui.view">
+        <field name="name">pb.wf.lock.form</field>
+        <field name="model">pb.wf.lock</field>
+        <field name="arch" type="xml">
+            <form string="Workforce Day Lock">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="company_id"/>
+                            <field name="state"/>
+                        </group>
+                        <group>
+                            <field name="locked_by_id"/>
+                            <field name="locked_on"/>
+                            <field name="reason"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_wf_lock_search" model="ir.ui.view">
+        <field name="name">pb.wf.lock.search</field>
+        <field name="model">pb.wf.lock</field>
+        <field name="arch" type="xml">
+            <search string="Workforce Day Locks">
+                <field name="date"/>
+                <field name="company_id"/>
+                <filter name="filter_locked" string="Locked"
+                        domain="[('state', '=', 'locked')]"/>
+                <filter name="filter_open" string="Reopened"
+                        domain="[('state', '=', 'open')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_wf_lock" model="ir.actions.act_window">
+        <field name="name">Workforce Day Locks</field>
+        <field name="res_model">pb.wf.lock</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

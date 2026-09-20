@@ -1,0 +1,381 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+msgid "/driver"
+msgstr "/người lái xe"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+msgid "Active now"
+msgstr "Đang hoạt động"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+msgid ""
+"Assign the Driver role to an employee's user, then\n"
+"                they check in from the Payobook Driver app at"
+msgstr ""
+"Gán vai trò Người điều khiển cho người dùng của nhân viên, sau đó\n"
+"                họ đăng ký từ ứng dụng Trình điều khiển Payobook tại"
+
+#. module: pb_driver_checkin
+#: model:ir.model,name:pb_driver_checkin.model_hr_attendance
+msgid "Attendance"
+msgstr "Chấm công"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+msgid "Avg hours"
+msgstr "Số giờ trung bình"
+
+#. module: pb_driver_checkin
+#: model:ir.model.fields,field_description:pb_driver_checkin.field_hr_attendance__pb_selfie_attachment_id
+msgid "Check-in Selfie"
+msgstr "Chụp ảnh tự sướng khi nhận phòng"
+
+#. module: pb_driver_checkin
+#. odoo-python
+#: code:addons/pb_driver_checkin/models/pb_driver_map.py:0
+msgid "Demo mode is restricted to administrators."
+msgstr "Chế độ demo được giới hạn cho quản trị viên."
+
+#. module: pb_driver_checkin
+#: model:ir.model.fields,field_description:pb_driver_checkin.field_hr_attendance__display_name
+#: model:ir.model.fields,field_description:pb_driver_checkin.field_pb_driver_map__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_driver_checkin
+#: model:res.groups,name:pb_driver_checkin.group_pb_driver
+msgid "Driver"
+msgstr "Tài xế"
+
+#. module: pb_driver_checkin
+#: model:ir.actions.client,name:pb_driver_checkin.action_pb_driver_map
+#: model:pb.sidebar.item,name:pb_driver_checkin.item_driver_tracking
+msgid "Driver Tracking"
+msgstr "Theo dõi tài xế"
+
+#. module: pb_driver_checkin
+#. odoo-python
+#: code:addons/pb_driver_checkin/models/pb_driver_map.py:0
+msgid "Driver tracking is restricted to attendance officers."
+msgstr "Việc theo dõi tài xế được giới hạn ở các nhân viên có mặt."
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+msgid "Drivers"
+msgstr "Trình điều khiển"
+
+#. module: pb_driver_checkin
+#: model:res.groups,comment:pb_driver_checkin.group_pb_driver
+msgid ""
+"Field driver: can check in/out with GPS and stream location\n"
+"            pings from the Payobook Driver PWA. No other Payobook access."
+msgstr ""
+"Trình điều khiển hiện trường: có thể đăng ký vào/ra bằng GPS và vị trí luồng\n"
+"            ping từ Trình điều khiển Payobook PWA. Không có quyền truy cập Payobook khác."
+
+#. module: pb_driver_checkin
+#: model:ir.model.fields.selection,name:pb_driver_checkin.selection__hr_attendance__in_mode__gps
+#: model:ir.model.fields.selection,name:pb_driver_checkin.selection__hr_attendance__out_mode__gps
+msgid "GPS"
+msgstr "GPS"
+
+#. module: pb_driver_checkin
+#: model:ir.model.fields,field_description:pb_driver_checkin.field_hr_attendance__id
+#: model:ir.model.fields,field_description:pb_driver_checkin.field_pb_driver_map__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+msgid "Idle > 5 min"
+msgstr "Không hoạt động > 5 phút"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+msgid "Loading driver map…"
+msgstr "Đang tải bản đồ trình điều khiển…"
+
+#. module: pb_driver_checkin
+#: model:ir.model.fields,field_description:pb_driver_checkin.field_hr_attendance__in_mode
+msgid "Mode"
+msgstr "Chế độ"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+msgid "No drivers yet"
+msgstr "Chưa có trình điều khiển"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+msgid "Off duty"
+msgstr "Tắt nhiệm vụ"
+
+#. module: pb_driver_checkin
+#: model:ir.model.fields,help:pb_driver_checkin.field_hr_attendance__pb_selfie_attachment_id
+msgid ""
+"Optional photo evidence captured at driver check-in. Follows this attendance record's "
+"access rules (privacy)."
+msgstr ""
+"Bằng chứng hình ảnh tùy chọn được chụp khi tài xế đăng ký. Tuân theo các quy tắc truy "
+"cập của hồ sơ điểm danh này (quyền riêng tư)."
+
+#. module: pb_driver_checkin
+#: model:ir.model.fields,field_description:pb_driver_checkin.field_hr_attendance__out_mode
+msgid "Out Mode"
+msgstr "Chế độ ra ngoài"
+
+#. module: pb_driver_checkin
+#: model:ir.model,name:pb_driver_checkin.model_pb_driver_map
+msgid "Payobook Driver Live Map"
+msgstr "Bản đồ trực tiếp của trình điều khiển Payobook"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+msgid "SIM"
+msgstr "SIM"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+msgid "SIMULATED DEMO DATA"
+msgstr "DỮ LIỆU DEMO MÔ PHỎNG"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:239
+msgid "accuracy"
+msgstr "độ chính xác"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:385
+msgid "add_photo"
+msgstr "thêm_ảnh"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:228
+msgid "ago"
+msgstr "trước"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:271
+msgid "check_in"
+msgstr "đăng ký"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:271
+msgid "check_out"
+msgstr "kiểm tra"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:324
+msgid "checking_out"
+msgstr "kiểm tra_out"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:305
+msgid "getting_gps"
+msgstr "nhận_gps"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:316
+msgid "gps_failed"
+msgstr "gps_fail"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:364
+msgid "how_was_shift"
+msgstr "thế nào_was_shift"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+msgid "idle > 5 min"
+msgstr "nhàn rỗi > 5 phút"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:228
+msgid "just_now"
+msgstr "vừa_bây giờ"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:228
+msgid "last_sent"
+msgstr "lần gửi cuối cùng"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+msgid "moving"
+msgstr "di chuyển"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+msgid "off duty"
+msgstr "ngoài nhiệm vụ"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:262
+msgid "off_duty"
+msgstr "ngoài nhiệm vụ"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:223
+msgid "offline_queued"
+msgstr "ngoại tuyến_xếp hàng"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:262
+msgid "on_duty"
+msgstr "đang làm nhiệm vụ"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:385
+msgid "optional"
+msgstr "tùy chọn"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:400
+msgid "photo_added"
+msgstr "ảnh_thêm"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:238
+msgid "pings_sent"
+msgstr "ping_đã gửi"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:366
+msgid "pulse_anonymous"
+msgstr "xung_anonymous"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:376
+msgid "pulse_thanks"
+msgstr "xung_cảm ơn"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:318
+msgid "retry"
+msgstr "thử lại"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:228
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:394
+msgid "sending"
+msgstr "gửi"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/xml/driver_map.xml:0
+msgid "since"
+msgstr "kể từ khi"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:367
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:388
+msgid "skip"
+msgstr "bỏ qua"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:386
+msgid "take_photo"
+msgstr "chụp_ảnh"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:0
+#: code:addons/pb_driver_checkin/static/src/js/driver_app.js:237
+msgid "today_hours"
+msgstr "hôm nay_giờ"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_map.js:192
+msgid "Demo mode ON — simulated routes running."
+msgstr "Chế độ demo BẬT - các tuyến đường mô phỏng đang chạy."
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_map.js:192
+msgid "Demo mode OFF."
+msgstr "Chế độ demo TẮT."
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_map.js:196
+msgid "Demo toggle failed."
+msgstr "Chuyển đổi demo không thành công."

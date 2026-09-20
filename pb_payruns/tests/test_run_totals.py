@@ -1,0 +1,341 @@
+# -*- coding: utf-8 -*-
+"""The KPI band must report the run it is attached to.
+
+ABM's June 2026 run showed **Total gross 0.00, Deductions 0.00, Total net 0.00**
+above 146 employees. Two independent reasons, and neither raised anything:
+
+  * `_compute_pb_totals` reads the payslip tables with raw SQL, so a payslip
+    attached to the run in the same transaction is invisible to it until the
+    ORM's write buffer is flushed — and a recompute triggered by that very
+    write is the normal case, not an exotic one;
+
+  * gross was read only from a salary-rule category coded `GROSS`. A scheme
+    built by importing a payroll workbook has a basic and a list of allowances
+    and no such category, so ₫1.9bn of basic pay reported as ₫0.
+"""
+from odoo.tests import TransactionCase, tagged
+
+
+@tagged('post_install', '-at_install')
+class TestRunTotals(TransactionCase):
+
+    def setUp(self):
+        super().setUp()
+        self.company = self.env.company
+        self.employee = self.env['hr.employee'].create({
+            'name': 'Totals Person', 'company_id': self.company.id})
+        self.contract = self.env['hr.contract'].create({
+            'name': 'Totals contract', 'employee_id': self.employee.id,
+            'wage': 10000.0, 'state': 'open', 'date_start': '2020-01-01',
+            'company_id': self.company.id,
+        })
+        self.rule = self.env['hr.salary.rule'].search([], limit=1)
+        self.run = self.env['hr.payslip.run'].create({
+            'name': 'Totals June', 'date_start': '2026-06-01',
+            'date_end': '2026-06-30'})
+
+    def _cat(self, code):
+        return self.env['hr.salary.rule.category'].search(
+            [('code', '=', code)], limit=1)
+
+    def _slip_with(self, amounts, in_run=True, details=()):
+        """One payslip carrying `{category code: amount}`.
+
+        `details` names the category codes whose line is folded into another
+        line's total, so the run must count the total and not this one.
+        """
+        slip = self.env['hr.payslip'].create({
+            'employee_id': self.employee.id, 'name': 'Totals slip',
+            'contract_id': self.contract.id,
+            'date_from': '2026-06-01', 'date_to': '2026-06-30',
+            'company_id': self.company.id,
+            'payslip_run_id': self.run.id if in_run else False,
+        })
+        for code, amount in amounts.items():
+            self._line(slip, code, code, amount, detail=code in details)
+        return slip
+
+    def _line(self, slip, code, category_code, amount, detail=False, role=None):
+        category = self._cat(category_code)
+        if not category:
+            self.skipTest("no '%s' salary-rule category in this database"
+                          % category_code)
+        vals = {
+            'slip_id': slip.id, 'name': code, 'code': code,
+            'amount': amount, 'quantity': 1.0, 'rate': 100.0,
+            'employee_id': self.employee.id, 'contract_id': self.contract.id,
+            'category_id': category.id, 'salary_rule_id': self.rule.id,
+        }
+        if detail:
+            if 'component_detail' not in self.env['hr.payslip.line']._fields:
+                self.skipTest("the formula engine is not installed here")
+            vals['component_detail'] = True
+        if role:
+            if 'pay_role' not in self.env['hr.payslip.line']._fields:
+                self.skipTest("the formula engine is not installed here")
+            vals['pay_role'] = role
+        return self.env['hr.payslip.line'].create(vals)
+
+    # ---------------------------------------------- what the SQL can see
+    def test_a_payslip_attached_in_this_transaction_is_counted(self):
+        """Not after the next commit — now, when the screen reads the field."""
+        self._slip_with({'NET': 1000.0})
+        self.assertEqual(self.run.pb_employee_count, 1)
+        self.assertEqual(self.run.pb_total_net, 1000.0)
+
+    def test_a_payslip_moved_into_the_run_updates_the_totals(self):
+        slip = self._slip_with({'NET': 1000.0}, in_run=False)
+        self.assertEqual(self.run.pb_total_net, 0.0)
+        self.run.write({'slip_ids': [(4, slip.id)]})
+        self.assertEqual(self.run.pb_total_net, 1000.0)
+
+    # ------------------------------------------------------- what gross means
+    def test_gross_falls_back_to_basic_plus_allowances(self):
+        self._slip_with({'BASIC': 9000.0, 'ALW': 500.0})
+        self.assertEqual(self.run.pb_total_gross, 9500.0)
+
+    def test_an_explicit_gross_component_still_wins(self):
+        self._slip_with({'GROSS': 8000.0, 'BASIC': 9000.0})
+        self.assertEqual(self.run.pb_total_gross, 8000.0)
+
+    # ------------------------------------------- each dong counted once
+    def test_a_component_folded_into_a_total_is_not_counted_twice(self):
+        """ABM's June run: `SI-HI-IU Total 10.5%` is subtracted from net pay,
+        and so is `Total Deduction` — but only because the second one contains
+        the first. Summing both reported ₫5,058,029,390 of deductions against
+        ₫1.9bn of gross."""
+        slip = self._slip_with({'NET': 8500.0})
+        self._line(slip, 'DEDAGG', 'DED', 1000.0)
+        self._line(slip, 'SIAMT', 'DED', 945.0, detail=True)
+        self._line(slip, 'PITAMT', 'DED', 55.0, detail=True)
+        self.assertEqual(self.run.pb_total_deductions, 1000.0)
+
+    def test_gross_skips_the_parts_that_are_inside_the_roll_up(self):
+        slip = self._slip_with({'NET': 8500.0})
+        self._line(slip, 'GROSSAGG', 'GROSS', 9500.0)
+        self._line(slip, 'ACTUBASIC', 'BASIC', 9000.0, detail=True)
+        self._line(slip, 'ALWONE', 'ALW', 500.0, detail=True)
+        self.assertEqual(self.run.pb_total_gross, 9500.0)
+
+    def test_an_employer_roll_up_containing_net_pay_is_not_a_deduction(self):
+        """`TOTACOSTTOER = NETPAY + employer contributions` is a total the
+        employer carries. Counting it as a deduction charges the employee for
+        their own pay a second time."""
+        slip = self._slip_with({'NET': 8500.0})
+        self._line(slip, 'DEDAGG', 'DED', 1000.0)
+        self._line(slip, 'ERCOST', 'COMP', 10075.0, detail=True)
+        self.assertEqual(self.run.pb_total_deductions, 1000.0)
+
+    def test_an_employer_contribution_nobody_folded_still_counts(self):
+        """The reference tenant's whole deductions KPI is COMP lines, so the
+        bucket stays in the sum; it is the DETAIL flag that removes the
+        double-counted roll-ups, never the bucket."""
+        slip = self._slip_with({'NET': 8500.0})
+        self._line(slip, 'ERSI', 'COMP', 1575.0)
+        self.assertEqual(self.run.pb_total_deductions, 1575.0)
+
+    def test_a_run_nobody_classified_reads_exactly_as_before(self):
+        self._slip_with({'NET': 8500.0, 'GROSS': 9500.0, 'DED': 1000.0})
+        self.assertEqual(self.run.pb_total_gross, 9500.0)
+        self.assertEqual(self.run.pb_total_deductions, 1000.0)
+        self.assertEqual(self.run.pb_total_net, 8500.0)
+        self.assertEqual(self.run.pb_total_gross - self.run.pb_total_deductions,
+                         self.run.pb_total_net)
+
+    def test_moving_a_line_to_another_category_moves_the_band(self):
+        """The sums are grouped BY category, so re-categorising a line changes
+        every figure in the band while the amounts stay untouched."""
+        slip = self._slip_with({'NET': 8500.0})
+        line = self._line(slip, 'MYSTERY', 'OTH', 1000.0)
+        self.assertEqual(self.run.pb_total_deductions, 0.0)
+        line.category_id = self._cat('DED').id
+        self.assertEqual(self.run.pb_total_deductions, 1000.0)
+
+    # ------------------------------------- VALUEKIND P5: the pay role decides
+    def test_a_stamped_employer_cost_leaves_the_deductions_figure(self):
+        """`COMP` is one category holding two different things.
+
+        ABM files every employer contribution under it AND every employee
+        deduction, so `Total Cost to Employer` was reported as money taken off
+        somebody's pay. A line that carries `pay_role` says which it is, and
+        the two figures separate.
+        """
+        slip = self._slip_with({'NET': 8500.0})
+        self._line(slip, 'DEDAGG', 'COMP', 1000.0, role='deduction')
+        self._line(slip, 'ERSI', 'COMP', 1575.0, role='employer_cost')
+        self.assertEqual(self.run.pb_total_deductions, 1000.0)
+        self.assertEqual(self.run.pb_total_employer_cost, 1575.0)
+
+    def test_an_unstamped_comp_line_reads_exactly_as_before(self):
+        """The promise that nothing moves until a run is recomputed."""
+        slip = self._slip_with({'NET': 8500.0})
+        self._line(slip, 'ERSI', 'COMP', 1575.0)
+        self.assertEqual(self.run.pb_total_deductions, 1575.0)
+        self.assertEqual(self.run.pb_total_employer_cost, 0.0)
+
+    def test_a_quantity_line_is_in_no_money_figure_at_all(self):
+        """Hours carry `info`, and `info` is not an amount. Before P5 they
+        carried `earning` and were kept out of gross by the Subtotal flag
+        alone — untick it and hours were added to pay."""
+        slip = self._slip_with({'NET': 8500.0})
+        self._line(slip, 'GROSSAGG', 'GROSS', 9500.0, role='earning')
+        self._line(slip, 'WORKHOURS', 'ALW', 176.0, role='info')
+        self.assertEqual(self.run.pb_total_gross, 9500.0)
+        self.assertEqual(self.run.pb_total_deductions, 0.0)
+
+    def test_the_pay_role_beats_the_category_it_was_filed_under(self):
+        """A workbook-built scheme files a deduction under `ALW` as often as
+        not; the scheme's own net-pay formula is the authority."""
+        slip = self._slip_with({'NET': 8500.0})
+        self._line(slip, 'GROSSAGG', 'ALW', 9500.0, role='earning')
+        self._line(slip, 'DEDAGG', 'ALW', 1000.0, role='deduction')
+        self.assertEqual(self.run.pb_total_gross, 9500.0)
+        self.assertEqual(self.run.pb_total_deductions, 1000.0)
+        self.assertEqual(self.run.pb_total_gross - self.run.pb_total_deductions,
+                         self.run.pb_total_net)
+
+
+@tagged('post_install', '-at_install')
+class TestRunDeletion(TransactionCase):
+    """Deleting a pay run must take its drafts with it.
+
+    It did not, and the two reasonable behaviours either side of that gap
+    combined into a trap: `payslip_run_id` is a plain many2one so the payslips
+    survived, and the Run Payroll wizard adopts a period's loose drafts on
+    purpose so a second payroll is not computed on top of one that exists. On
+    the reference tenant a run created on 2026-08-28 at 03:39 adopted 152
+    payslips computed two days earlier, and said "Computed 152 of 152".
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.company = self.env.company
+        self.employee = self.env['hr.employee'].create({
+            'name': 'Deletion Person', 'company_id': self.company.id})
+        self.contract = self.env['hr.contract'].create({
+            'name': 'Deletion contract', 'employee_id': self.employee.id,
+            'wage': 10000.0, 'state': 'open', 'date_start': '2020-01-01',
+            'company_id': self.company.id})
+        self.run = self.env['hr.payslip.run'].create({
+            'name': 'Deletion June', 'date_start': '2026-06-01',
+            'date_end': '2026-06-30'})
+
+    def _slip(self, state='draft'):
+        slip = self.env['hr.payslip'].create({
+            'employee_id': self.employee.id, 'name': 'Deletion slip',
+            'contract_id': self.contract.id, 'date_from': '2026-06-01',
+            'date_to': '2026-06-30', 'company_id': self.company.id,
+            'payslip_run_id': self.run.id})
+        if state != 'draft':
+            slip.state = state
+        return slip
+
+    def test_deleting_a_run_deletes_its_draft_payslips(self):
+        slip = self._slip()
+        self.run.unlink()
+        self.assertFalse(slip.exists(),
+                         "a draft left behind is a draft the next run adopts")
+
+    def test_an_approved_payslip_stops_the_run_being_deleted(self):
+        from odoo.exceptions import UserError
+        slip = self._slip(state='done')
+        with self.assertRaises(UserError):
+            self.run.unlink()
+        self.assertTrue(slip.exists())
+        self.assertTrue(self.run.exists())
+
+    def test_the_button_clears_drafts_and_keeps_the_run(self):
+        slip = self._slip()
+        self.run.action_pb_delete_draft_payslips()
+        self.assertFalse(slip.exists())
+        self.assertTrue(self.run.exists(),
+                        "clearing a period must not require deleting the run")
+        self.assertEqual(self.run.pb_employee_count, 0)
+
+    def test_the_button_refuses_when_something_was_approved(self):
+        from odoo.exceptions import UserError
+        draft = self._slip()
+        done = self._slip(state='done')
+        with self.assertRaises(UserError):
+            self.run.action_pb_delete_draft_payslips()
+        self.assertTrue(draft.exists(), "nothing is deleted when the call fails")
+        self.assertTrue(done.exists())
+
+    def test_deleting_an_empty_run_still_works(self):
+        self.run.unlink()
+        self.assertFalse(self.run.exists())
+
+
+@tagged('post_install', '-at_install')
+class TestUnsourcedRun(TransactionCase):
+    """Payroll that ran on no data must not look like payroll that ran.
+
+    The reference tenant produced 36 payslips, a gross of ₫243,000,000 and a
+    clean KPI band. Every one of the 54 inputs had resolved to `src: none`, and
+    the ₫243m was one component's DEFAULT value repeated 36 times. The
+    provenance to detect it was already being written; nothing counted it.
+    """
+
+    def setUp(self):
+        super().setUp()
+        if 'pb_sourced_inputs' not in self.env['hr.payslip']._fields:
+            self.skipTest("the formula engine is not installed here")
+        self.company = self.env.company
+        self.employee = self.env['hr.employee'].create({
+            'name': 'Unsourced Person', 'company_id': self.company.id})
+        self.contract = self.env['hr.contract'].create({
+            'name': 'Unsourced contract', 'employee_id': self.employee.id,
+            'wage': 10000.0, 'state': 'open', 'date_start': '2020-01-01',
+            'company_id': self.company.id})
+        self.run = self.env['hr.payslip.run'].create({
+            'name': 'Unsourced June', 'date_start': '2026-06-01',
+            'date_end': '2026-06-30'})
+
+    def _slip(self, sourced, method='formula'):
+        return self.env['hr.payslip'].create({
+            'employee_id': self.employee.id, 'name': 'Unsourced slip',
+            'contract_id': self.contract.id, 'date_from': '2026-06-01',
+            'date_to': '2026-06-30', 'company_id': self.company.id,
+            'payslip_run_id': self.run.id,
+            'calculation_method': method,
+            # The count deliberately skips a slip with NO provenance blob —
+            # that predates the recording and is unmeasurable, not zero
+            # (see `_compute_pb_totals`). This fixture is a MEASURED slip.
+            'formula_input_sources':
+                '{"BASE": {"src": "none", "via": "default"}}',
+            'pb_sourced_inputs': sourced})
+
+    def test_a_run_computed_on_defaults_is_counted(self):
+        self._slip(sourced=0)
+        self.assertEqual(self.run.pb_unsourced_count, 1)
+
+    def test_a_run_with_real_data_raises_no_flag(self):
+        self._slip(sourced=54)
+        self.assertEqual(self.run.pb_unsourced_count, 0)
+
+    def test_only_formula_payslips_are_judged_this_way(self):
+        """A structure-based payslip has no formula inputs to source, so a
+        count of zero says nothing about it.
+
+        Built standard from the start rather than flipped afterwards:
+        `calculation_method` is not in this compute's `@api.depends` and cannot
+        be — it lives in the formula engine, which this module does not depend
+        on (the same reason `component_detail` is not named there). In the real
+        flow that costs nothing, because `pb_sourced_inputs` is written in the
+        same breath as the payslip's LINES, and lines do trigger the compute.
+        """
+        self._slip(sourced=0, method='standard')
+        self.assertEqual(self.run.pb_unsourced_count, 0)
+
+    def test_the_counter_reads_the_provenance_blob(self):
+        Payslip = self.env['hr.payslip']
+        self.assertEqual(Payslip.pb_count_sourced({}), 0)
+        self.assertEqual(Payslip.pb_count_sourced({
+            'A': {'src': 'none', 'via': 'default'},
+            'B': {'src': 'none', 'via': 'default'},
+        }), 0, "a run where everything defaulted has sourced nothing")
+        self.assertEqual(Payslip.pb_count_sourced({
+            'A': {'src': 'feed', 'key': 'BASESALARY', 'via': 'connector_mapping'},
+            'B': {'src': 'none', 'via': 'default'},
+            'C': {'src': 'contract', 'via': 'contract_component'},
+        }), 2)

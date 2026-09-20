@@ -1,0 +1,321 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:231
+msgid "Average of %(count)s anonymous shift ratings over the last %(days)s days"
+msgstr "Trung bình của %(count)s đánh giá ca làm ẩn danh trong %(days)s ngày qua"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/xml/pb_today.xml:0
+msgid "Board"
+msgstr "Ban"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:192
+#: code:addons/pb_today/static/src/js/pb_today.js:295
+msgid "Checked out"
+msgstr "Đăng xuất"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/xml/pb_today.xml:0
+msgid "Clear"
+msgstr "Làm sạch"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:359
+msgid "Could not load that person."
+msgstr "Không thể tải người đó."
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:175
+msgid "Could not load the board."
+msgstr "Không thể tải bảng."
+
+#. module: pb_today
+#: model:ir.model.fields,field_description:pb_today.field_pb_today__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:279
+#: code:addons/pb_today/static/src/js/pb_today.js:281
+msgid "Everyone today"
+msgstr "Mọi người hôm nay"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/xml/pb_today.xml:0
+msgid "Field"
+msgstr "Trường"
+
+#. module: pb_today
+#: model:ir.model.fields,field_description:pb_today.field_pb_today__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:189
+msgid "Late"
+msgstr "Trễ"
+
+#. module: pb_today
+#. odoo-python
+#: code:addons/pb_today/models/pb_today.py:0
+msgid "Leave"
+msgstr "Nghỉ phép"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/xml/pb_today.xml:0
+msgid "Loading the day…"
+msgstr "Đang tải ngày…"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:367
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/xml/pb_today.xml:0
+msgid "Map"
+msgstr "Bản đồ"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:447
+msgid ""
+"No shifts, punches or leave on this day. Publish a roster in Schedule and this board "
+"fills up."
+msgstr ""
+"Không có ca, đấm hoặc rời đi vào ngày này. Xuất bản danh sách trong Lịch trình và bảng"
+" này sẽ được lấp đầy."
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:449
+msgid ""
+"No shifts, punches or leave were recorded. Try another day, or clear the department "
+"filter."
+msgstr ""
+"Không có sự thay đổi, đấm hoặc nghỉ phép nào được ghi lại. Hãy thử vào một ngày khác "
+"hoặc xóa bộ lọc khoa."
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:452
+msgid "Nobody in this state"
+msgstr "Không ai ở bang này"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:190
+#: code:addons/pb_today/static/src/js/pb_today.js:296
+msgid "Not started"
+msgstr "Chưa bắt đầu"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:448
+msgid "Nothing on this day"
+msgstr "Không có gì vào ngày này"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:446
+msgid "Nothing scheduled yet"
+msgstr "Chưa có lịch trình nào"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:194
+#: code:addons/pb_today/static/src/js/pb_today.js:297
+msgid "On leave"
+msgstr "Đang nghỉ phép"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:187
+#: code:addons/pb_today/static/src/js/pb_today.js:294
+msgid "On shift"
+msgstr "Theo ca"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/xml/pb_today.xml:0
+msgid "Open map"
+msgstr "Mở bản đồ"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:453
+msgid "Pick another tile, or clear the filter to see everyone."
+msgstr "Chọn một ô khác hoặc xóa bộ lọc để xem mọi người."
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/xml/pb_today.xml:0
+msgid "Refresh now"
+msgstr "Làm mới ngay bây giờ"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:442
+msgid ""
+"Refresh to try again. If it keeps failing you may not have attendance-officer access."
+msgstr ""
+"Hãy làm mới để thử lại. Nếu nó vẫn không thành công, bạn có thể không có quyền truy "
+"cập của nhân viên chấm công."
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/xml/pb_today.xml:0
+msgid "Showing the first"
+msgstr "Hiển thị đầu tiên"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:225
+msgid "Team pulse · %(count)s ratings"
+msgstr "Chỉ số đội nhóm · %(count)s lượt đánh giá"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:352
+msgid "That employee is not available in this company."
+msgstr "Nhân viên đó không có mặt ở công ty này."
+
+#. module: pb_today
+#. odoo-python
+#: code:addons/pb_today/models/pb_today.py:0
+msgid "The Today board is restricted to attendance officers."
+msgstr "Bảng Hôm nay được giới hạn cho các nhân viên tham dự."
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:441
+msgid "The board could not load"
+msgstr "Bảng không thể tải"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/xml/pb_today.xml:0
+#: model:ir.actions.client,name:pb_today.action_pb_today
+#: model:pb.sidebar.item,name:pb_today.item_wf_today
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_today
+#: model:ir.model,name:pb_today.model_pb_today
+msgid "Today Triage Board"
+msgstr "Hôm nay Hội đồng phân loại"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/xml/pb_today.xml:0
+msgid "Updated"
+msgstr "Đã cập nhật"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/xml/pb_today.xml:0
+msgid "click a tile to re-filter"
+msgstr "nhấp vào một ô để lọc lại"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:311
+msgid "in %(a)s · out %(b)s"
+msgstr "trong %(a)s · ngoài %(b)s"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:313
+msgid "in %s"
+msgstr "trong %s"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/xml/pb_today.xml:0
+msgid "min late"
+msgstr "trễ một phút"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/xml/pb_today.xml:0
+msgid ""
+"more match this day. Narrow by\n"
+"                  department or search to see them."
+msgstr ""
+"trận đấu nhiều hơn vào ngày này. Thu hẹp theo\n"
+"                  bộ phận hoặc tìm kiếm để xem chúng."
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:317
+msgid "not in"
+msgstr "không ở"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/js/pb_today.js:0
+#: code:addons/pb_today/static/src/js/pb_today.js:315
+msgid "on leave"
+msgstr "nghỉ phép"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/xml/pb_today.xml:0
+msgid "on the board"
+msgstr "trên bảng"
+
+#. module: pb_today
+#. odoo-javascript
+#: code:addons/pb_today/static/src/xml/pb_today.xml:0
+msgid "people"
+msgstr "người"

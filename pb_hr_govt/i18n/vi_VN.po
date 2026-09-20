@@ -1,489 +1,523 @@
-# Translation of Odoo Server.
-# This file contains the translation of the following modules:
-# 	* pb_hr_govt
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-16 02:56+0000\n"
-"PO-Revision-Date: 2025-12-16 02:56+0000\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__bhxhdstk_contribution_method__yearly
 msgid "12 tháng/lần"
-msgstr ""
+msgstr "12 tháng/lần"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__bhxhdstk_contribution_method__halfyear
 msgid "6 tháng/lần"
-msgstr ""
+msgstr "6 tháng/lần"
 
 #. module: pb_hr_govt
 #: model:ir.actions.report,name:pb_hr_govt.report_bhxh630_xlsx
 msgid "BHXH630"
-msgstr ""
+msgstr "BHXH 630"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__report_type__bhxh630
 #: model_terms:ir.ui.view,arch_db:pb_hr_govt.view_pb_govt_report_wizard_form
 msgid "BHXH630 - Ốm đau/Thai sản"
-msgstr ""
+msgstr "BHXH630 - Ốm đau/Thai sản"
 
 #. module: pb_hr_govt
 #: model:ir.model,name:pb_hr_govt.model_report_pb_hr_govt_bhxh630_xlsx
 msgid "BHXH630 XLS Report"
-msgstr ""
+msgstr "Báo cáo Bệnh630 XLS"
 
 #. module: pb_hr_govt
 #: model:ir.actions.report,name:pb_hr_govt.report_bhxhdstk01_xlsx
 #: model_terms:ir.ui.view,arch_db:pb_hr_govt.view_pb_govt_report_wizard_form
 msgid "BHXHDSTK01-DV_595"
-msgstr ""
+msgstr "BHXHDSTK01-DV_595"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__report_type__bhxhdstk01
 msgid "BHXHDSTK01-DV_595 - Danh sách tham gia"
-msgstr ""
+msgstr "BHXHDSTK01-DV_595 - Danh sách tham gia"
 
 #. module: pb_hr_govt
 #: model:ir.model,name:pb_hr_govt.model_report_pb_hr_govt_bhxhdstk01_xlsx
 msgid "BHXHDSTK01-DV_595 XLS Report"
-msgstr ""
+msgstr "Báo cáo BệnhDSTK01-DV_595 XLS"
 
 #. module: pb_hr_govt
 #: model:ir.actions.report,name:pb_hr_govt.report_bangke_d01_xlsx
 msgid "BangKeHS D01"
-msgstr ""
+msgstr "BangKeHS D01"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__report_type__bangke_d01
 msgid "BangKeHS D01 - Hồ sơ D01-TS"
-msgstr ""
+msgstr "BangKeHS D01 - Hồ sơ D01-TS"
 
 #. module: pb_hr_govt
 #: model:ir.model,name:pb_hr_govt.model_report_pb_hr_govt_bangke_d01_xlsx
 msgid "BangKeHS D01 XLS Report"
-msgstr ""
+msgstr "Báo cáo BangKeHS D01 XLS"
 
 #. module: pb_hr_govt
 #: model_terms:ir.ui.view,arch_db:pb_hr_govt.view_pb_govt_report_wizard_form
 msgid "BangKeHS D01-TS"
-msgstr ""
+msgstr "BangKeHS D01-TS"
 
 #. module: pb_hr_govt
 #: model:ir.model,name:pb_hr_govt.model_pb_govt_report_base
 msgid "Base model for Vietnamese government XLS reports"
-msgstr ""
+msgstr "Mô hình cơ sở cho báo cáo XLS chính phủ Việt Nam"
 
 #. module: pb_hr_govt
 #: model_terms:ir.ui.view,arch_db:pb_hr_govt.view_pb_govt_report_wizard_form
 msgid "Báo giảm lao động"
-msgstr ""
+msgstr "Báo giảm lao động"
 
 #. module: pb_hr_govt
 #: model_terms:ir.ui.view,arch_db:pb_hr_govt.view_pb_govt_report_wizard_form
 msgid "Báo tăng lao động"
-msgstr ""
+msgstr "Báo tăng lao động"
 
 #. module: pb_hr_govt
 #: model_terms:ir.ui.view,arch_db:pb_hr_govt.view_pb_govt_report_wizard_form
 msgid "Cancel"
-msgstr ""
+msgstr "Hủy"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__bhxh630_payment_method__transfer
 msgid "Chuyển khoản"
-msgstr ""
+msgstr "Chuyển khoản"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_code_lookup__code
 msgid "Code"
-msgstr ""
+msgstr "Mã"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_code_lookup__lookup_type__commune
 msgid "Commune/Ward"
-msgstr ""
+msgstr "Xã/Phường"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__company_id
 msgid "Company"
-msgstr ""
+msgstr "Công ty"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__contract_type_id
 msgid "Contract Type"
-msgstr ""
+msgstr "Loại hợp đồng"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_code_lookup__create_uid
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Người tạo"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_code_lookup__create_date
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Ngày tạo"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__d01_agency
 msgid "Cơ quan ban hành"
-msgstr ""
+msgstr "Cơ quan ban hành"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__department_id
 msgid "Department"
-msgstr ""
+msgstr "Phòng ban"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_code_lookup__display_name
+#: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_base__display_name
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_govt.field_report_pb_hr_govt_bangke_d01_xlsx__display_name
+#: model:ir.model.fields,field_description:pb_hr_govt.field_report_pb_hr_govt_bhxh630_xlsx__display_name
+#: model:ir.model.fields,field_description:pb_hr_govt.field_report_pb_hr_govt_bhxhdstk01_xlsx__display_name
+#: model:ir.model.fields,field_description:pb_hr_govt.field_report_pb_hr_govt_giam_ld_xlsx__display_name
+#: model:ir.model.fields,field_description:pb_hr_govt.field_report_pb_hr_govt_tang_ld_xlsx__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Tên hiển thị"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_code_lookup__lookup_type__district
 msgid "District"
-msgstr ""
+msgstr "Quận/Huyện"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__bhxh630_benefit_group__duong_suc
 msgid "Dưỡng sức/Phục hồi sức khỏe"
-msgstr ""
+msgstr "Dưỡng sức/Phục hồi sức khỏe"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__employee_ids
 msgid "Employees"
-msgstr ""
+msgstr "Nhân viên"
 
 #. module: pb_hr_govt
 #: model_terms:ir.ui.view,arch_db:pb_hr_govt.view_pb_govt_report_wizard_form
 msgid "Export XLS"
-msgstr ""
+msgstr "Xuất XLS"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__date_from
 msgid "From Date"
-msgstr ""
+msgstr "Từ ngày"
 
 #. module: pb_hr_govt
 #: model:ir.actions.report,name:pb_hr_govt.report_giam_ld_xlsx
 msgid "GiamLaoDong"
-msgstr ""
+msgstr "GiamLaoDong"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__report_type__giam_ld
 msgid "GiamLaoDong - Báo giảm lao động"
-msgstr ""
+msgstr "GiamLaoDong - Báo giảm lao động"
 
 #. module: pb_hr_govt
 #: model:ir.model,name:pb_hr_govt.model_report_pb_hr_govt_giam_ld_xlsx
 msgid "GiamLaoDong XLS Report"
-msgstr ""
+msgstr "Báo cáo XLS GiamLaoDong"
 
 #. module: pb_hr_govt
 #: model:ir.model,name:pb_hr_govt.model_pb_govt_code_lookup
 msgid "Government Code Lookup (Province/District/Commune/Hospital/Other)"
-msgstr ""
+msgstr "Tra cứu mã Chính phủ (Tỉnh/Huyện/Xã/Bệnh viện/Khác)"
+
+#. module: pb_hr_govt
+#: model:res.groups.privilege,name:pb_hr_govt.res_groups_privilege_govt_reports
+msgid "Government Reports"
+msgstr "Báo cáo chính phủ"
 
 #. module: pb_hr_govt
 #: model:res.groups,name:pb_hr_govt.group_pb_hr_govt_user
 msgid "Government Reports User"
-msgstr ""
+msgstr "Người dùng Báo cáo Chính phủ"
 
 #. module: pb_hr_govt
 #: model:ir.ui.menu,name:pb_hr_govt.menu_pb_govt_reports
 msgid "Government XLS Reports"
-msgstr ""
+msgstr "Báo cáo XLS của Chính phủ"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__tang_effective_date
 msgid "Hiệu lực từ tháng"
-msgstr ""
+msgstr "Hiệu lực từ tháng"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_code_lookup__lookup_type__hospital
 msgid "Hospital"
-msgstr ""
+msgstr "Bệnh viện"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_code_lookup__lookup_type__household
 msgid "Household"
-msgstr ""
+msgstr "Hộ gia đình"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__bhxhdstk_contribution_method__quarterly
 msgid "Hàng quý"
-msgstr ""
+msgstr "Hàng quý"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__bhxhdstk_contribution_method__monthly
 msgid "Hàng tháng"
-msgstr ""
+msgstr "Hàng tháng"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__bhxh630_payment_method
 msgid "Hình thức nhận"
-msgstr ""
+msgstr "Hình thức nhận"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_code_lookup__id
+#: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_base__id
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_govt.field_report_pb_hr_govt_bangke_d01_xlsx__id
+#: model:ir.model.fields,field_description:pb_hr_govt.field_report_pb_hr_govt_bhxh630_xlsx__id
+#: model:ir.model.fields,field_description:pb_hr_govt.field_report_pb_hr_govt_bhxhdstk01_xlsx__id
+#: model:ir.model.fields,field_description:pb_hr_govt.field_report_pb_hr_govt_giam_ld_xlsx__id
+#: model:ir.model.fields,field_description:pb_hr_govt.field_report_pb_hr_govt_tang_ld_xlsx__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__bhxh630_benefit_group__khac
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__giam_reason__other
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__tang_reason__other
 msgid "Khác"
-msgstr ""
-
-#. module: pb_hr_govt
-#: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_code_lookup____last_update
-#: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard____last_update
-msgid "Last Modified on"
-msgstr ""
+msgstr "Khác"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_code_lookup__write_uid
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Người cập nhật"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_code_lookup__write_date
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Cập nhật lần cuối"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_code_lookup__lookup_type
 msgid "Lookup Type"
-msgstr ""
+msgstr "Loại tra cứu"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__bhxh630_benefit_group
 msgid "Loại nhóm hưởng"
-msgstr ""
+msgstr "Loại nhóm hưởng"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__giam_reason
 msgid "Lý do giảm"
-msgstr ""
+msgstr "Lý do giảm"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__tang_reason
 msgid "Lý do tăng"
-msgstr ""
+msgstr "Lý do tăng"
 
 #. module: pb_hr_govt
 #: model_terms:ir.ui.view,arch_db:pb_hr_govt.view_pb_govt_report_wizard_form
 msgid "MAIL REPORT"
-msgstr ""
+msgstr "GỬI BÁO CÁO"
+
+#. module: pb_hr_govt
+#: model:ir.actions.server,name:pb_hr_govt.action_govt_monthly_bhxh630
+msgid "Monthly BHXH630"
+msgstr "Bảo hiểm hàng tháng630"
+
+#. module: pb_hr_govt
+#: model:ir.actions.server,name:pb_hr_govt.action_govt_monthly_bhxhdstk01
+msgid "Monthly BHXHDSTK01-DV_595"
+msgstr "Bệnh hàng thángDSTK01-DV_595"
+
+#. module: pb_hr_govt
+#: model:ir.actions.server,name:pb_hr_govt.action_govt_monthly_bangke_d01
+msgid "Monthly BangKe D01"
+msgstr "BằngKẻ D01 hàng tháng"
+
+#. module: pb_hr_govt
+#: model:ir.actions.server,name:pb_hr_govt.action_govt_monthly_giam_ld
+msgid "Monthly Giam Lao Dong"
+msgstr "Giám Lao Động hàng tháng"
+
+#. module: pb_hr_govt
+#: model:ir.actions.server,name:pb_hr_govt.action_govt_monthly_tang_ld
+msgid "Monthly Tang Lao Dong"
+msgstr "Tháng Tăng Lão Đồng"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__bhxhdstk_hospital_code
 msgid "Mã BV đăng ký KCB"
-msgstr ""
+msgstr "Mã BV đăng ký KCB"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__bhxh630_long_illness_code
 msgid "Mã bệnh dài ngày"
-msgstr ""
+msgstr "Mã bệnh dài ngày"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__bhxh630_bank_code
 msgid "Mã ngân hàng (mặc định)"
-msgstr ""
+msgstr "Mã ngân hàng (mặc định)"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__bhxh630_route_code
 msgid "Mã tuyến bệnh viện"
-msgstr ""
+msgstr "Mã tuyến bệnh viện"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__giam_region_code
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__tang_region_code
 msgid "Mã vùng (ghi chú)"
-msgstr ""
+msgstr "Mã vùng (ghi chú)"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__bhxhdstk_contribution_method__once
 msgid "Một lần"
-msgstr ""
+msgstr "Một lần"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_code_lookup__name
 msgid "Name"
-msgstr ""
+msgstr "Tên"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__giam_reason__unpaid
 msgid "Nghỉ không lương"
-msgstr ""
+msgstr "Nghỉ không lương"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__giam_reason__maternity
 msgid "Nghỉ thai sản dài hạn"
-msgstr ""
+msgstr "Nghỉ thai sản dài hạn"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__giam_reason__resign
 msgid "Nghỉ việc/Chấm dứt HĐLĐ"
-msgstr ""
+msgstr "Nghỉ việc/Chấm dứt HĐLĐ"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__d01_issue_date
 msgid "Ngày ban hành"
-msgstr ""
+msgstr "Ngày ban hành"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__d01_effective_date
 msgid "Ngày hiệu lực"
-msgstr ""
+msgstr "Ngày hiệu lực"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__giam_effective_date
 msgid "Ngày kết thúc đóng"
-msgstr ""
+msgstr "Ngày kết thúc đóng"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__bhxhdstk_change_content
 msgid "Nội dung thay đổi"
-msgstr ""
+msgstr "Nội dung thay đổi"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__d01_appraisal
 msgid "Nội dung thẩm định"
-msgstr ""
+msgstr "Nội dung thẩm định"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_code_lookup__lookup_type__other
 msgid "Other"
-msgstr ""
+msgstr "Khác"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_code_lookup__parent_id
 msgid "Parent"
-msgstr ""
+msgstr "Cha"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__bhxhdstk_contribution_method
 msgid "Phương thức đóng"
-msgstr ""
+msgstr "Phương thức đóng"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_code_lookup__lookup_type__province
 msgid "Province/City"
-msgstr ""
+msgstr "Tỉnh/Thành phố"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__tang_reason__return
 msgid "Quay lại làm việc"
-msgstr ""
+msgstr "Quay lại làm việc"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__report_type
 msgid "Report"
-msgstr ""
+msgstr "Báo cáo"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__d01_doc_number
 msgid "Số hiệu văn bản"
-msgstr ""
+msgstr "Số hiệu văn bản"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__bhxh630_certificate_serial
 msgid "Số serial chứng từ"
-msgstr ""
+msgstr "Số serial chứng từ"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__bhxh630_bank_no
 msgid "Số tài khoản (mặc định)"
-msgstr ""
+msgstr "Số tài khoản (mặc định)"
 
 #. module: pb_hr_govt
 #: model:ir.actions.report,name:pb_hr_govt.report_tang_ld_xlsx
 msgid "TangLaoDong"
-msgstr ""
+msgstr "TangLaoDong"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__report_type__tang_ld
 msgid "TangLaoDong - Báo tăng lao động"
-msgstr ""
+msgstr "TangLaoDong - Báo tăng lao động"
 
 #. module: pb_hr_govt
 #: model:ir.model,name:pb_hr_govt.model_report_pb_hr_govt_tang_ld_xlsx
 msgid "TangLaoDong XLS Report"
-msgstr ""
+msgstr "Báo cáo TangLaoDong XLS"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__bhxh630_payment_method__cash
 msgid "Tiền mặt"
-msgstr ""
+msgstr "Tiền mặt"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__date_to
 msgid "To Date"
-msgstr ""
+msgstr "Đến ngày"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__d01_summary
 msgid "Trích yếu văn bản"
-msgstr ""
+msgstr "Trích yếu văn bản"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__tang_reason__new
 msgid "Tuyển mới"
-msgstr ""
+msgstr "Tuyển mới"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__bhxh630_bank_holder
 msgid "Tên chủ tài khoản (mặc định)"
-msgstr ""
+msgstr "Tên chủ tài khoản (mặc định)"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__d01_doc_name
 msgid "Tên/Loại văn bản"
-msgstr ""
+msgstr "Tên/Loại văn bản"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,help:pb_hr_govt.field_pb_govt_code_lookup__parent_id
 msgid "Use for hierarchy (e.g., district under province)."
-msgstr ""
+msgstr "Sử dụng cho hệ thống phân cấp (ví dụ: huyện dưới tỉnh)."
 
 #. module: pb_hr_govt
 #: model:ir.model,name:pb_hr_govt.model_pb_govt_report_wizard
 msgid "Vietnam Government XLS Report Wizard"
-msgstr ""
+msgstr "Trình tạo báo cáo XLS Chính phủ Việt Nam"
 
 #. module: pb_hr_govt
 #: model:ir.actions.act_window,name:pb_hr_govt.action_pb_govt_report_wizard
 #: model_terms:ir.ui.view,arch_db:pb_hr_govt.view_pb_govt_report_wizard_form
 msgid "Vietnam Government XLS Reports"
-msgstr ""
+msgstr "Báo cáo XLS Chính phủ Việt Nam"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__tang_reason__salary_change
 msgid "Điều chỉnh lương/thay đổi HĐ"
-msgstr ""
+msgstr "Điều chỉnh lương/thay đổi HĐ"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields,field_description:pb_hr_govt.field_pb_govt_report_wizard__bhxh630_supplement_batch
 msgid "Đợt bổ sung (yyyymm+đợt)"
-msgstr ""
+msgstr "Đợt bổ sung (yyyymm+đợt)"
 
 #. module: pb_hr_govt
 #: model:ir.model.fields.selection,name:pb_hr_govt.selection__pb_govt_report_wizard__bhxh630_benefit_group__om_dau_thai_san
 msgid "Ốm đau/Thai sản"
-msgstr ""
+msgstr "Ốm đau/Thai sản"

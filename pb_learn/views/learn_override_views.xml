@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The tenant-administrator surface. The ONLY part of the learning system
+         a tenant may change, and it changes facts, never prose. -->
+
+    <record id="view_learn_override_list" model="ir.ui.view">
+        <field name="name">learn.tenant.override.list</field>
+        <field name="model">learn.tenant.override</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="key"/>
+                <field name="value"/>
+                <field name="note" readonly="1" optional="show"/>
+                <field name="company_id" string="Company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_learn_override_search" model="ir.ui.view">
+        <field name="name">learn.tenant.override.search</field>
+        <field name="model">learn.tenant.override</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="key"/>
+                <field name="value"/>
+                <filter name="shipped" string="Shipped defaults"
+                        domain="[('company_id', '=', False)]"/>
+                <filter name="overridden" string="This company's overrides"
+                        domain="[('company_id', '!=', False)]"/>
+                <!-- Odoo 19 dropped `expand` on <group> inside a search view,
+                     and an invalid attribute there invalidates the whole arch. -->
+                <separator/>
+                <filter name="by_company" string="Company" context="{'group_by': 'company_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_learn_override" model="ir.actions.act_window">
+        <field name="name">Training wording</field>
+        <field name="res_model">learn.tenant.override</field>
+        <field name="view_mode">list</field>
+        <field name="search_view_id" ref="view_learn_override_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Make the training speak your company's language</p>
+            <p>
+                These are the only words in the training material a company can change:
+                its pay day, the names it gives to its approval tiers, its import cut-off.
+                Everything else — every lesson, check and answer — ships with the
+                product and is the same everywhere, so that no two companies end up
+                learning different things.
+            </p>
+            <p>
+                A row with no company is the shipped default. Add a row with your company
+                set to override one for your team alone.
+            </p>
+        </field>
+    </record>
+
+</odoo>

@@ -12,8 +12,20 @@ class HrPayrollImportBatch(models.Model):
     _inherit = 'hr.payroll.import.batch'
 
     def action_process(self):
+        """Settlements are built from a file that was really processed.
+
+        APPROVAL MATRIX P5 — `action_process` now ASKS before it writes, so
+        this override can be reached by a press that processed nothing at all.
+        Building full-and-final settlements out of a file still waiting for
+        somebody's approval would be the gate's exact opposite. The guard is
+        the batch's own state, which is `done` only once the processing body
+        has actually run — on the press under a fast lane, and on the approval
+        otherwise (the approval calls this same door, so this runs then too).
+        """
         result = super().action_process()
-        self._generate_full_and_final_records()
+        for batch in self:
+            if batch.state == 'done':
+                batch._generate_full_and_final_records()
         return result
 
     def _generate_full_and_final_records(self):

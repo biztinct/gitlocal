@@ -1,0 +1,213 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-15 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_probation
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "Closed because they are leaving"
+msgstr "Đóng vì họ sắp nghỉ việc"
+
+#. module: pb_probation
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/probation_review.py:0
+msgid "Extended"
+msgstr "Được gia hạn"
+
+#. module: pb_probation
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_probation
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_probation
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_probation
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "Months with the company"
+msgstr "Số tháng làm việc tại công ty"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/security/verdict_approval_rules.xml:0
+msgid "Not passed"
+msgstr "Không đạt"
+
+#. module: pb_probation
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_probation
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_probation
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_probation
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_probation
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_probation
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "That review is no longer here."
+msgstr "Đợt đánh giá đó không còn ở đây."
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/__manifest__.py:0
+msgid "The verdict"
+msgstr "Kết luận"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_probation
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_probation
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_probation
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_probation
+msgid "your approver"
+msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "%s month(s)"
+msgstr "%s tháng"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "About"
+msgstr "Về"
+
+#. module: pb_probation
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/probation_review.py:0
+msgid "Extended by"
+msgstr "Gia hạn thêm"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/feedback_ext.py:0
+msgid "Record"
+msgstr "Hồ sơ"
+
+#. module: pb_probation
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/probation_review.py:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_probation
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/security/verdict_approval_rules.xml:0
+msgid "Verdict"
+msgstr "Kết luận"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/probation_policy.py:0
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/controllers/portal.py:0
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "What has to improve"
+msgstr "Điều cần cải thiện"

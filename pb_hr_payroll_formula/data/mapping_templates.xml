@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- F114 — ready-made HR/API connector field templates (A3).
+         Rows are seeds, not gospel: verify/derive rows ship suggested and are
+         only promoted through the wizard's batch test. noupdate so bureau edits
+         survive upgrades; re-seed by uninstalling only if needed. -->
+    <data noupdate="1">
+
+        <!-- ============ Zoho People (REST v2 · P_EmployeeView) ============ -->
+        <record id="mt_zoho_empid" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field><field name="source_path">EmployeeID</field>
+            <field name="target_code">EMPID</field><field name="target_label">Employee ID</field>
+            <field name="is_required" eval="True"/><field name="sequence">10</field>
+            <field name="note">Zoho People API v2 · P_EmployeeView record key</field>
+        </record>
+        <record id="mt_zoho_name" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field><field name="source_path">FirstName</field>
+            <field name="target_code">FULLNAME</field><field name="target_label">Full name</field>
+            <field name="transformation_type">python</field><field name="verify" eval="True"/><field name="sequence">20</field>
+            <field name="note">Concat FirstName + LastName — resolve in batch test</field>
+        </record>
+        <record id="mt_zoho_email" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field><field name="source_path">EmailID</field>
+            <field name="target_code">EMAIL</field><field name="target_label">Email</field><field name="sequence">30</field>
+        </record>
+        <record id="mt_zoho_dept" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field><field name="source_path">Department</field>
+            <field name="target_code">DEPT</field><field name="target_label">Department</field><field name="sequence">40</field>
+        </record>
+        <record id="mt_zoho_job" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field><field name="source_path">Designation</field>
+            <field name="target_code">JOBTITLE</field><field name="target_label">Job title</field><field name="sequence">50</field>
+        </record>
+        <record id="mt_zoho_join" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field><field name="source_path">Dateofjoining</field>
+            <field name="target_code">JOINDATE</field><field name="target_label">Join date</field>
+            <field name="verify" eval="True"/><field name="sequence">60</field>
+            <field name="note">Zoho date format dd-MMM-yyyy — verify parse</field>
+        </record>
+        <record id="mt_zoho_basic" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohosalary</field><field name="source_path">Salary</field>
+            <field name="target_code">BASIC</field><field name="target_label">Basic salary</field><field name="sequence">70</field>
+            <field name="note">Payroll form field — verify it is monthly gross</field><field name="verify" eval="True"/>
+        </record>
+        <record id="mt_zoho_allow" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohosalary</field><field name="source_path">Other_Allowance</field>
+            <field name="target_code">ALLOWFIX</field><field name="target_label">Fixed allowance</field><field name="sequence">80</field>
+        </record>
+        <record id="mt_zoho_deps" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field><field name="source_path">No_of_Dependents</field>
+            <field name="target_code">DEPS</field><field name="target_label">Dependents</field><field name="sequence">90</field>
+        </record>
+        <record id="mt_zoho_wdays" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoattsummary</field><field name="source_path">Total_working_days</field>
+            <field name="target_code">WDAYS</field><field name="target_label">Working days</field><field name="sequence">100</field>
+        </record>
+        <record id="mt_zoho_ot" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoovertime</field><field name="source_path">Overtime_hours</field>
+            <field name="target_code">OTHOURS</field><field name="target_label">Overtime hours</field><field name="sequence">110</field>
+            <field name="note">May instead come via the Attendance API — verify</field>
+        </record>
+        <record id="mt_zoho_leave" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zoholeave</field><field name="source_path">LeaveTaken</field>
+            <field name="target_code">LEAVEDAYS</field><field name="target_label">Leave days</field><field name="sequence">120</field>
+        </record>
+        <record id="mt_zoho_bank" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field><field name="source_path">Bank_Account_No</field>
+            <field name="target_code">BANKACC</field><field name="target_label">Bank account</field><field name="sequence">130</field>
+        </record>
+        <record id="mt_zoho_tax" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field><field name="source_path">PAN_or_TaxID</field>
+            <field name="target_code">TAXID</field><field name="target_label">Tax ID</field><field name="sequence">140</field>
+        </record>
+
+        <!-- ==== Zoho People · the legacy ABM employee form (Cycle 3) ====
+             Every field the ABM application actually read off
+             `forms/employee/getRecords`, from its two write sites
+             (om_hr_payroll/models/hr_zoho_staging.py:376-402 and the
+             `bypass_create` twin at :406). They all arrive on ONE feed, so they
+             all carry endpoint_code=zohoemployees and the Mapping Studio groups
+             them under a single header.
+
+             TARGET CODES obey the formula-converter contract: UPPERCASE,
+             underscore-free, and no code may be a SUBSTRING of another. That
+             last rule is what rules out the obvious spellings here: `ENFULLNAME`
+             and `VNFULLNAME` both contain `FULLNAME`, which already exists four
+             rows above — so the English and Vietnamese names are `NAMEEN` and
+             `NAMEVN`. Same reason `VNBANKACC` is not available beside `BANKACC`,
+             and the Vietnamese-dong account is `VNDACCOUNT`.
+
+             ONE FIELD IS DELIBERATELY ABSENT. `FirstName` has no GIVENNAME row,
+             because `action_apply_mapping_template` de-dupes template rows by
+             `source_path` (integration_connector.py:503) — `mt_zoho_name` above
+             already claims `FirstName` for the FULLNAME concat, and a second row
+             naming it would be data that ships, loads, freezes under noupdate,
+             and silently never applies. `LastName` has no such claim, so SURNAME
+             is real. -->
+
+        <record id="mt_zoho_lastname" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">LastName</field>
+            <field name="target_code">SURNAME</field><field name="target_label">Last name</field><field name="sequence">150</field>
+            <field name="note">Pairs with FirstName above, which the FULLNAME row concatenates</field>
+        </record>
+        <record id="mt_zoho_nameen" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">Nick_Name</field>
+            <field name="target_code">NAMEEN</field><field name="target_label">Full name (English)</field><field name="sequence">160</field>
+            <field name="note">Legacy semantic: ABM stored Nick_Name as full_name_en, not as a nickname</field>
+        </record>
+        <record id="mt_zoho_namevn" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">Full_Name_Vietnamese</field>
+            <field name="target_code">NAMEVN</field><field name="target_label">Full name (Vietnamese)</field><field name="sequence">170</field>
+            <field name="note">The name that must appear on Vietnamese statutory filings</field>
+        </record>
+        <record id="mt_zoho_empstatus" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">Employeestatus</field>
+            <field name="target_code">EMPSTATUS</field><field name="target_label">Employment status</field><field name="sequence">180</field>
+        </record>
+        <record id="mt_zoho_empkind" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">Employee_type</field>
+            <field name="target_code">EMPKIND</field><field name="target_label">Employee type</field><field name="sequence">190</field>
+        </record>
+        <record id="mt_zoho_worksite" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">LocationName</field>
+            <field name="target_code">WORKSITE</field><field name="target_label">Work location</field><field name="sequence">200</field>
+        </record>
+        <record id="mt_zoho_gender" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">Gender</field>
+            <field name="target_code">GENDERCODE</field><field name="target_label">Gender</field>
+            <field name="transformation_type">python</field>
+            <field name="transformation_code">value.lower() if value else ''</field>
+            <field name="verify" eval="True"/><field name="sequence">210</field>
+            <field name="note">Legacy lower-cased it to hit a Payobook selection (staging :395) — verify the target's own values</field>
+        </record>
+        <record id="mt_zoho_birthdate" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">Date_of_birth</field>
+            <field name="target_code">BIRTHDATE</field><field name="target_label">Date of birth</field>
+            <field name="verify" eval="True"/><field name="sequence">220</field>
+            <field name="note">yyyy-MM-dd; legacy stored False on an unparseable value and logged a warning (staging :354-363)</field>
+        </record>
+        <record id="mt_zoho_mobile" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">Mobile</field>
+            <field name="target_code">MOBILENO</field><field name="target_label">Mobile number</field><field name="sequence">230</field>
+        </record>
+        <record id="mt_zoho_pan" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">Pan_Number</field>
+            <field name="target_code">PANCODE</field><field name="target_label">PAN number</field><field name="sequence">240</field>
+        </record>
+        <record id="mt_zoho_pit" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">PIT_Number</field>
+            <field name="target_code">PITCODE</field><field name="target_label">PIT number</field><field name="sequence">250</field>
+            <field name="note">Vietnamese personal income tax code — the employee's own, not a dependant's</field>
+        </record>
+        <record id="mt_zoho_uan" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">UAN_Number</field>
+            <field name="target_code">UANCODE</field><field name="target_label">UAN number</field><field name="sequence">260</field>
+        </record>
+        <record id="mt_zoho_aadhaar" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">Aadhaar_Number</field>
+            <field name="target_code">AADHAARNO</field><field name="target_label">Aadhaar number</field><field name="sequence">270</field>
+        </record>
+        <record id="mt_zoho_banktitle" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">Bank_Name</field>
+            <field name="target_code">BANKTITLE</field><field name="target_label">Bank name</field><field name="sequence">280</field>
+        </record>
+        <record id="mt_zoho_vndaccount" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">Bank_Account_Number_VND</field>
+            <field name="target_code">VNDACCOUNT</field><field name="target_label">Bank account (VND)</field><field name="sequence">290</field>
+            <field name="note">The account salary is actually paid into; BANKACC above is the generic guess</field>
+        </record>
+        <record id="mt_zoho_insbook" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">Insurance_Book_Number</field>
+            <field name="target_code">INSBOOKNO</field><field name="target_label">Social insurance book no.</field><field name="sequence">300</field>
+        </record>
+        <record id="mt_zoho_zohoref" model="hr.integration.mapping.template">
+            <field name="connector_type">zoho</field><field name="endpoint_code">zohoemployees</field>
+            <field name="source_path">Zoho_ID</field>
+            <field name="target_code">ZOHOREF</field><field name="target_label">Zoho record ID</field><field name="sequence">310</field>
+            <field name="note">Zoho's own key — the search field the P_Salary feed joins on</field>
+        </record>
+
+        <!-- ============ Workday (RaaS flattened report) ============ -->
+        <record id="mt_wd_empid" model="hr.integration.mapping.template">
+            <field name="connector_type">workday</field><field name="source_path">Employee_ID</field>
+            <field name="target_code">EMPID</field><field name="target_label">Employee ID</field>
+            <field name="is_required" eval="True"/><field name="sequence">10</field>
+            <field name="note">Workday RaaS custom report / Get_Workers</field>
+        </record>
+        <record id="mt_wd_name" model="hr.integration.mapping.template">
+            <field name="connector_type">workday</field><field name="source_path">Legal_Name</field>
+            <field name="target_code">FULLNAME</field><field name="target_label">Full name</field><field name="sequence">20</field>
+        </record>
+        <record id="mt_wd_email" model="hr.integration.mapping.template">
+            <field name="connector_type">workday</field><field name="source_path">primaryWorkEmail</field>
+            <field name="target_code">EMAIL</field><field name="target_label">Email</field><field name="sequence">30</field>
+        </record>
+        <record id="mt_wd_dept" model="hr.integration.mapping.template">
+            <field name="connector_type">workday</field><field name="source_path">Supervisory_Organization</field>
+            <field name="target_code">DEPT</field><field name="target_label">Department</field><field name="sequence">40</field>
+        </record>
+        <record id="mt_wd_job" model="hr.integration.mapping.template">
+            <field name="connector_type">workday</field><field name="source_path">Business_Title</field>
+            <field name="target_code">JOBTITLE</field><field name="target_label">Job title</field><field name="sequence">50</field>
+        </record>
+        <record id="mt_wd_join" model="hr.integration.mapping.template">
+            <field name="connector_type">workday</field><field name="source_path">Hire_Date</field>
+            <field name="target_code">JOINDATE</field><field name="target_label">Hire date</field><field name="sequence">60</field>
+        </record>
+        <record id="mt_wd_basic" model="hr.integration.mapping.template">
+            <field name="connector_type">workday</field><field name="source_path">Total_Base_Pay_Annualized</field>
+            <field name="target_code">BASIC</field><field name="target_label">Basic (monthly)</field>
+            <field name="transformation_type">divide</field><field name="transformation_value">12</field>
+            <field name="verify" eval="True"/><field name="sequence">70</field>
+            <field name="note">Annualized ÷ 12 — VERIFY pay frequency against tenant</field>
+        </record>
+        <record id="mt_wd_allow" model="hr.integration.mapping.template">
+            <field name="connector_type">workday</field><field name="source_path">Allowance_Plan_Amount</field>
+            <field name="target_code">ALLOWFIX</field><field name="target_label">Fixed allowance</field><field name="sequence">80</field>
+        </record>
+        <record id="mt_wd_bonus" model="hr.integration.mapping.template">
+            <field name="connector_type">workday</field><field name="source_path">Bonus_Plan_Amount</field>
+            <field name="target_code">BONUS</field><field name="target_label">Bonus</field><field name="sequence">90</field>
+        </record>
+        <record id="mt_wd_deps" model="hr.integration.mapping.template">
+            <field name="connector_type">workday</field><field name="source_path">Dependents_Count</field>
+            <field name="target_code">DEPS</field><field name="target_label">Dependents</field><field name="sequence">100</field>
+        </record>
+        <record id="mt_wd_wdays" model="hr.integration.mapping.template">
+            <field name="connector_type">workday</field><field name="source_path">Scheduled_Weekly_Hours</field>
+            <field name="target_code">WDAYS</field><field name="target_label">Working days (derived)</field>
+            <field name="transformation_type">python</field><field name="verify" eval="True"/><field name="sequence">110</field>
+            <field name="note">Derive: ×52 ÷12 ÷8 — VERIFY working-day convention</field>
+        </record>
+        <record id="mt_wd_bank" model="hr.integration.mapping.template">
+            <field name="connector_type">workday</field><field name="source_path">Bank_Account_Number</field>
+            <field name="target_code">BANKACC</field><field name="target_label">Bank account</field><field name="sequence">120</field>
+        </record>
+        <record id="mt_wd_tax" model="hr.integration.mapping.template">
+            <field name="connector_type">workday</field><field name="source_path">National_ID</field>
+            <field name="target_code">TAXID</field><field name="target_label">Tax ID</field><field name="sequence">130</field>
+        </record>
+
+        <!-- ============ SAP SuccessFactors (OData v2) ============ -->
+        <record id="mt_sap_empid" model="hr.integration.mapping.template">
+            <field name="connector_type">sap</field><field name="source_path">userId</field>
+            <field name="target_code">EMPID</field><field name="target_label">Employee ID</field>
+            <field name="is_required" eval="True"/><field name="sequence">10</field>
+            <field name="note">SF OData · PerPerson.userId</field>
+        </record>
+        <record id="mt_sap_name" model="hr.integration.mapping.template">
+            <field name="connector_type">sap</field><field name="source_path">personalInfoNav/firstName</field>
+            <field name="target_code">FULLNAME</field><field name="target_label">Full name</field>
+            <field name="transformation_type">python</field><field name="verify" eval="True"/><field name="sequence">20</field>
+            <field name="note">Concat firstName + lastName from personalInfoNav</field>
+        </record>
+        <record id="mt_sap_email" model="hr.integration.mapping.template">
+            <field name="connector_type">sap</field><field name="source_path">emailNav/emailAddress</field>
+            <field name="target_code">EMAIL</field><field name="target_label">Email</field><field name="sequence">30</field>
+        </record>
+        <record id="mt_sap_dept" model="hr.integration.mapping.template">
+            <field name="connector_type">sap</field><field name="source_path">departmentNav/name</field>
+            <field name="target_code">DEPT</field><field name="target_label">Department</field><field name="sequence">40</field>
+        </record>
+        <record id="mt_sap_job" model="hr.integration.mapping.template">
+            <field name="connector_type">sap</field><field name="source_path">jobInfoNav/jobTitle</field>
+            <field name="target_code">JOBTITLE</field><field name="target_label">Job title</field><field name="sequence">50</field>
+        </record>
+        <record id="mt_sap_join" model="hr.integration.mapping.template">
+            <field name="connector_type">sap</field><field name="source_path">startDate</field>
+            <field name="target_code">JOINDATE</field><field name="target_label">Start date</field>
+            <field name="transformation_type">python</field><field name="verify" eval="True"/><field name="sequence">60</field>
+            <field name="note">SF dates are epoch-wrapped /Date(…)/ — parse in batch test</field>
+        </record>
+        <record id="mt_sap_basic" model="hr.integration.mapping.template">
+            <field name="connector_type">sap</field><field name="source_path">empPayCompRecurringNav[payComponent=BASE]/paycompvalue</field>
+            <field name="target_code">BASIC</field><field name="target_label">Basic salary</field>
+            <field name="verify" eval="True"/><field name="sequence">70</field>
+            <field name="note">payComponent code BASE is tenant-configured — #1 thing to confirm</field>
+        </record>
+        <record id="mt_sap_allow" model="hr.integration.mapping.template">
+            <field name="connector_type">sap</field><field name="source_path">empPayCompRecurringNav[payComponent=ALLOW]/paycompvalue</field>
+            <field name="target_code">ALLOWFIX</field><field name="target_label">Fixed allowance</field>
+            <field name="verify" eval="True"/><field name="sequence">80</field>
+            <field name="note">ALLOW pay-component code is tenant-configured</field>
+        </record>
+        <record id="mt_sap_bonus" model="hr.integration.mapping.template">
+            <field name="connector_type">sap</field><field name="source_path">empPayCompRecurringNav[payComponent=BONUS]/paycompvalue</field>
+            <field name="target_code">BONUS</field><field name="target_label">Bonus</field>
+            <field name="verify" eval="True"/><field name="sequence">90</field>
+            <field name="note">BONUS pay-component code is tenant-configured</field>
+        </record>
+        <record id="mt_sap_deps" model="hr.integration.mapping.template">
+            <field name="connector_type">sap</field><field name="source_path">personRelationshipNav</field>
+            <field name="target_code">DEPS</field><field name="target_label">Dependents (count)</field>
+            <field name="transformation_type">python</field><field name="verify" eval="True"/><field name="sequence">100</field>
+            <field name="note">Count of personRelationshipNav dependents</field>
+        </record>
+        <record id="mt_sap_wdays" model="hr.integration.mapping.template">
+            <field name="connector_type">sap</field><field name="source_path">standardHours</field>
+            <field name="target_code">WDAYS</field><field name="target_label">Working days (derived)</field>
+            <field name="transformation_type">python</field><field name="verify" eval="True"/><field name="sequence">110</field>
+            <field name="note">Derive working days from standardHours — verify</field>
+        </record>
+        <record id="mt_sap_bank" model="hr.integration.mapping.template">
+            <field name="connector_type">sap</field><field name="source_path">paymentInfoNav/accountNumber</field>
+            <field name="target_code">BANKACC</field><field name="target_label">Bank account</field><field name="sequence">120</field>
+        </record>
+        <record id="mt_sap_tax" model="hr.integration.mapping.template">
+            <field name="connector_type">sap</field><field name="source_path">nationalIdNav/nationalId</field>
+            <field name="target_code">TAXID</field><field name="target_label">Tax ID</field><field name="sequence">130</field>
+        </record>
+
+        <!-- ============ Oracle HCM Cloud (REST) ============ -->
+        <record id="mt_or_empid" model="hr.integration.mapping.template">
+            <field name="connector_type">oracle</field><field name="source_path">PersonNumber</field>
+            <field name="target_code">EMPID</field><field name="target_label">Employee ID</field>
+            <field name="is_required" eval="True"/><field name="sequence">10</field>
+            <field name="note">Oracle HCM REST · workers.PersonNumber</field>
+        </record>
+        <record id="mt_or_name" model="hr.integration.mapping.template">
+            <field name="connector_type">oracle</field><field name="source_path">names[PrimaryFlag]/DisplayName</field>
+            <field name="target_code">FULLNAME</field><field name="target_label">Full name</field><field name="sequence">20</field>
+        </record>
+        <record id="mt_or_email" model="hr.integration.mapping.template">
+            <field name="connector_type">oracle</field><field name="source_path">emails[Primary]/EmailAddress</field>
+            <field name="target_code">EMAIL</field><field name="target_label">Email</field><field name="sequence">30</field>
+        </record>
+        <record id="mt_or_dept" model="hr.integration.mapping.template">
+            <field name="connector_type">oracle</field><field name="source_path">workRelationships/assignments/DepartmentName</field>
+            <field name="target_code">DEPT</field><field name="target_label">Department</field><field name="sequence">40</field>
+        </record>
+        <record id="mt_or_job" model="hr.integration.mapping.template">
+            <field name="connector_type">oracle</field><field name="source_path">workRelationships/assignments/JobName</field>
+            <field name="target_code">JOBTITLE</field><field name="target_label">Job title</field><field name="sequence">50</field>
+        </record>
+        <record id="mt_or_join" model="hr.integration.mapping.template">
+            <field name="connector_type">oracle</field><field name="source_path">workRelationships/StartDate</field>
+            <field name="target_code">JOINDATE</field><field name="target_label">Start date</field><field name="sequence">60</field>
+        </record>
+        <record id="mt_or_basic" model="hr.integration.mapping.template">
+            <field name="connector_type">oracle</field><field name="source_path">salaries/SalaryAmount</field>
+            <field name="target_code">BASIC</field><field name="target_label">Basic salary</field>
+            <field name="verify" eval="True"/><field name="sequence">70</field>
+            <field name="note">Check SalaryBasis for frequency (monthly vs annual)</field>
+        </record>
+        <record id="mt_or_basic_alt" model="hr.integration.mapping.template">
+            <field name="connector_type">oracle</field><field name="source_path">salaries/AnnualizedSalary</field>
+            <field name="target_code">BASIC</field><field name="target_label">Basic (annualized alt)</field>
+            <field name="transformation_type">divide</field><field name="transformation_value">12</field>
+            <field name="verify" eval="True"/><field name="sequence">75</field>
+            <field name="note">Alternative to SalaryAmount — suggested only, pick one</field>
+        </record>
+        <record id="mt_or_deps" model="hr.integration.mapping.template">
+            <field name="connector_type">oracle</field><field name="source_path">dependents</field>
+            <field name="target_code">DEPS</field><field name="target_label">Dependents (count)</field>
+            <field name="transformation_type">python</field><field name="verify" eval="True"/><field name="sequence">90</field>
+            <field name="note">Count of dependents resource</field>
+        </record>
+        <record id="mt_or_wdays" model="hr.integration.mapping.template">
+            <field name="connector_type">oracle</field><field name="source_path">assignments/StandardWorkingHours</field>
+            <field name="target_code">WDAYS</field><field name="target_label">Working days (derived)</field>
+            <field name="transformation_type">python</field><field name="verify" eval="True"/><field name="sequence">100</field>
+            <field name="note">Derive working days from StandardWorkingHours — verify</field>
+        </record>
+        <record id="mt_or_bank" model="hr.integration.mapping.template">
+            <field name="connector_type">oracle</field><field name="source_path">personBankAccounts/AccountNumber</field>
+            <field name="target_code">BANKACC</field><field name="target_label">Bank account</field><field name="sequence">110</field>
+        </record>
+        <record id="mt_or_tax" model="hr.integration.mapping.template">
+            <field name="connector_type">oracle</field><field name="source_path">nationalIdentifiers/NationalIdentifierNumber</field>
+            <field name="target_code">TAXID</field><field name="target_label">Tax ID</field><field name="sequence">120</field>
+        </record>
+
+        <!-- ============ DarwinHR / Darwinbox (masterapi employeedirectory + compensation) ============ -->
+        <record id="mt_dbx_empid" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="endpoint_code">darwinemployees</field><field name="source_path">employee_no</field>
+            <field name="target_code">EMPID</field><field name="target_label">Employee ID</field>
+            <field name="is_required" eval="True"/><field name="sequence">10</field>
+            <field name="note">Darwinbox employeedirectory record key</field>
+        </record>
+        <record id="mt_dbx_name" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="endpoint_code">darwinemployees</field><field name="source_path">full_name</field>
+            <field name="target_code">FULLNAME</field><field name="target_label">Full name</field><field name="sequence">20</field>
+        </record>
+        <record id="mt_dbx_email" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="endpoint_code">darwinemployees</field><field name="source_path">office_email_id</field>
+            <field name="target_code">EMAIL</field><field name="target_label">Email</field><field name="sequence">30</field>
+        </record>
+        <record id="mt_dbx_dept" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="endpoint_code">darwinemployees</field><field name="source_path">department</field>
+            <field name="target_code">DEPT</field><field name="target_label">Department</field><field name="sequence">40</field>
+        </record>
+        <record id="mt_dbx_job" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="endpoint_code">darwinemployees</field><field name="source_path">designation</field>
+            <field name="target_code">JOBTITLE</field><field name="target_label">Job title</field><field name="sequence">50</field>
+        </record>
+        <record id="mt_dbx_join" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="endpoint_code">darwinemployees</field><field name="source_path">date_of_joining</field>
+            <field name="target_code">JOINDATE</field><field name="target_label">Join date</field>
+            <field name="verify" eval="True"/><field name="sequence">60</field>
+            <field name="note">Darwinbox date format yyyy-mm-dd — verify parse</field>
+        </record>
+        <record id="mt_dbx_basic" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="endpoint_code">darwincompensation</field><field name="source_path">basic</field>
+            <field name="target_code">BASIC</field><field name="target_label">Basic salary</field><field name="sequence">70</field>
+            <field name="note">From compensation API — verify it is monthly gross</field><field name="verify" eval="True"/>
+        </record>
+        <record id="mt_dbx_allow" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="endpoint_code">darwincompensation</field><field name="source_path">special_allowance</field>
+            <field name="target_code">ALLOWFIX</field><field name="target_label">Fixed allowance</field><field name="sequence">80</field>
+        </record>
+        <record id="mt_dbx_ot" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">overtime_hours</field>
+            <field name="target_code">OTHOURS</field><field name="target_label">Overtime hours</field><field name="sequence">90</field>
+        </record>
+        <record id="mt_dbx_wdays" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">working_days</field>
+            <field name="target_code">WDAYS</field><field name="target_label">Working days</field><field name="sequence">100</field>
+        </record>
+        <record id="mt_dbx_deps" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">dependents_count</field>
+            <field name="target_code">DEPS</field><field name="target_label">Dependents</field>
+            <field name="transformation_type">python</field><field name="verify" eval="True"/><field name="sequence">110</field>
+            <field name="note">Count of dependents from the dependents API</field>
+        </record>
+        <record id="mt_dbx_bank" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="endpoint_code">darwinemployees</field><field name="source_path">bank_account_number</field>
+            <field name="target_code">BANKACC</field><field name="target_label">Bank account</field><field name="sequence">120</field>
+        </record>
+        <record id="mt_dbx_tax" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="endpoint_code">darwinemployees</field><field name="source_path">pan</field>
+            <field name="target_code">TAXID</field><field name="target_label">Tax ID</field><field name="sequence">130</field>
+        </record>
+
+    </data>
+</odoo>

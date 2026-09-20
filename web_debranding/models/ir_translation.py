@@ -12,8 +12,6 @@ import re
 
 from odoo import api, models, tools
 
-from odoo.addons.base.models.ir_model import IrModelFields as IrModelFieldsOriginal
-
 from .ir_config_parameter import get_debranding_parameters_env
 
 
@@ -82,13 +80,13 @@ class IrModelFields(models.Model):
         return debrand(self.env, source)
 
     @api.model
-    @tools.ormcache_context("model_name", keys=("lang",))
+    @tools.ormcache("self.env.context.get('lang')", "model_name")
     def get_field_string(self, model_name):
         res = super(IrModelFields, self).get_field_string(model_name)
         return self._debrand_dict(res)
 
     @api.model
-    @tools.ormcache_context("model_name", keys=("lang",))
+    @tools.ormcache("self.env.context.get('lang')", "model_name")
     def get_field_help(self, model_name):
         res = super(IrModelFields, self).get_field_help(model_name)
         return self._debrand_dict(res)
@@ -99,14 +97,21 @@ class IrModelFields(models.Model):
         we wrapped it in the api.model decorator
 
         """
-        self.clear_caches()
+        self.env.registry.clear_cache()
 
     @api.model
-    @tools.ormcache_context("model_name", "field_name", keys=("lang",))
+    @tools.ormcache("self.env.context.get('lang')", "model_name", "field_name")
     def get_field_selection(self, model_name, field_name):
-        # call undecorated super method. See odoo/tools/cache.py::ormcache and http://decorator.readthedocs.io/en/stable/tests.documentation.html#getting-the-source-code
-
-        selection = IrModelFieldsOriginal.get_field_selection.__wrapped__(
-            self, model_name, field_name
-        )
+        # Odoo 19: Get selection directly from field definition
+        try:
+            field = self.env[model_name]._fields.get(field_name)
+            if field and hasattr(field, 'selection'):
+                if callable(field.selection):
+                    selection = field.selection(self.env[model_name])
+                else:
+                    selection = field.selection or []
+            else:
+                selection = []
+        except Exception:
+            selection = []
         return [(value, debrand(self.env, name)) for value, name in selection]

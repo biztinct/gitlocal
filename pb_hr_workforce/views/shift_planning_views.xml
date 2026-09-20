@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Calendar View -->
+    <record id="view_shift_planning_calendar" model="ir.ui.view">
+        <field name="name">hr.shift.planning.calendar</field>
+        <field name="model">hr.shift.planning</field>
+        <field name="arch" type="xml">
+            <calendar string="Shift Calendar"
+                      date_start="start_datetime"
+                      date_stop="end_datetime"
+                      color="shift_template_id"
+                      mode="week"
+                      quick_create="0"
+                      event_open_popup="1">
+                <field name="employee_id"/>
+                <field name="shift_template_id"/>
+                <field name="compliance_status"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_shift_planning_list" model="ir.ui.view">
+        <field name="name">hr.shift.planning.list</field>
+        <field name="model">hr.shift.planning</field>
+        <field name="arch" type="xml">
+            <list string="Shift Assignments" default_order="date desc"
+                  decoration-danger="compliance_status == 'absent'"
+                  decoration-warning="compliance_status == 'late'"
+                  decoration-success="compliance_status == 'on_time'"
+                  decoration-info="compliance_status == 'overtime'">
+                <field name="date"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="shift_template_id"/>
+                <field name="start_datetime" widget="datetime"/>
+                <field name="end_datetime" widget="datetime"/>
+                <field name="planned_hours"/>
+                <field name="actual_check_in" widget="datetime"/>
+                <field name="actual_check_out" widget="datetime"/>
+                <field name="actual_hours"/>
+                <field name="compliance_status" widget="badge"
+                       decoration-danger="compliance_status in ('absent', 'late')"
+                       decoration-success="compliance_status == 'on_time'"
+                       decoration-warning="compliance_status == 'early_leave'"
+                       decoration-info="compliance_status == 'overtime'"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_shift_planning_form" model="ir.ui.view">
+        <field name="name">hr.shift.planning.form</field>
+        <field name="model">hr.shift.planning</field>
+        <field name="arch" type="xml">
+            <form string="Shift Assignment">
+                <header>
+                    <button name="action_publish" string="Publish" type="object"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_complete" string="Complete" type="object"
+                            class="btn-success" invisible="state != 'published'"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            class="btn-secondary" invisible="state in ('completed', 'cancelled')"/>
+                    <button name="action_reset_draft" string="Reset to Draft" type="object"
+                            class="btn-secondary" invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,published,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Assignment">
+                            <field name="employee_id"/>
+                            <field name="department_id"/>
+                            <field name="shift_template_id"/>
+                            <field name="date"/>
+                        </group>
+                        <group string="Schedule">
+                            <field name="start_datetime"/>
+                            <field name="end_datetime"/>
+                            <field name="planned_hours"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Actual Attendance">
+                            <field name="actual_check_in"/>
+                            <field name="actual_check_out"/>
+                            <field name="actual_hours"/>
+                        </group>
+                        <group string="Compliance">
+                            <field name="compliance_status" widget="badge"/>
+                        </group>
+                    </group>
+                    <field name="note" placeholder="Additional notes..."/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_shift_planning_search" model="ir.ui.view">
+        <field name="name">hr.shift.planning.search</field>
+        <field name="model">hr.shift.planning</field>
+        <field name="arch" type="xml">
+            <search string="Shift Planning">
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="shift_template_id"/>
+                <filter name="filter_today" string="Today"
+                        domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="filter_this_week" string="This Month"
+                        domain="[('date', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
+                <separator/>
+                <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_published" string="Published" domain="[('state', '=', 'published')]"/>
+                <filter name="filter_completed" string="Completed" domain="[('state', '=', 'completed')]"/>
+                <separator/>
+                <filter name="filter_on_time" string="On Time" domain="[('compliance_status', '=', 'on_time')]"/>
+                <filter name="filter_late" string="Late" domain="[('compliance_status', '=', 'late')]"/>
+                <filter name="filter_absent" string="Absent" domain="[('compliance_status', '=', 'absent')]"/>
+                <group name="group_by">
+                    <filter name="group_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_department" string="Department" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_shift" string="Shift" context="{'group_by': 'shift_template_id'}"/>
+                    <filter name="group_date" string="Date" context="{'group_by': 'date:week'}"/>
+                    <filter name="group_compliance" string="Compliance" context="{'group_by': 'compliance_status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Pivot View -->
+    <record id="view_shift_planning_pivot" model="ir.ui.view">
+        <field name="name">hr.shift.planning.pivot</field>
+        <field name="model">hr.shift.planning</field>
+        <field name="arch" type="xml">
+            <pivot string="Shift Analysis">
+                <field name="employee_id" type="row"/>
+                <field name="date" type="col" interval="week"/>
+                <field name="planned_hours" type="measure"/>
+                <field name="actual_hours" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_shift_planning" model="ir.actions.act_window">
+        <field name="name">Shift Planning</field>
+        <field name="res_model">hr.shift.planning</field>
+        <field name="view_mode">calendar,list,form,pivot</field>
+        <field name="search_view_id" ref="view_shift_planning_search"/>
+    </record>
+
+    <!-- No-filter action for quick links (avoids search filter crash) -->
+    <record id="action_shift_planning_no_filter" model="ir.actions.act_window">
+        <field name="name">Shift Planning</field>
+        <field name="res_model">hr.shift.planning</field>
+        <field name="view_mode">list,calendar,form,pivot</field>
+    </record>
+
+    <record id="action_my_shifts" model="ir.actions.act_window">
+        <field name="name">My Shifts</field>
+        <field name="res_model">hr.shift.planning</field>
+        <field name="view_mode">calendar,list,form</field>
+        <field name="domain">[('employee_id.user_id', '=', uid)]</field>
+    </record>
+
+</odoo>

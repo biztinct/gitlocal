@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         WHO MAY SEE A MONEY-OUT RECORD.
+
+         The engine re-checks `check_access('read')` on the record before it
+         lets anybody decide a step, so a route that names a bank signatory or
+         a country director is only real if that person can READ the file they
+         are signing. Most of them hold no payroll role at all — which is what
+         the narrow rule below exists for: a person who has been ASKED to
+         decide can read the record they were asked about, and nothing else.
+
+         Rules attached to different groups are OR-ed, so the wide rule does
+         not repeat the narrow one: a payroll officer sees the company's
+         records, anybody with a seat sees the one record their seat is about.
+         ================================================================== -->
+
+    <record id="rule_bank_file_company" model="ir.rule">
+        <field name="name">Bank file: company</field>
+        <field name="model_id" ref="model_pb_bank_file"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_bank_file_seat" model="ir.rule">
+        <field name="name">Bank file: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_bank_file"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('seat_user_ids', 'in', [user.id])]</field>
+    </record>
+
+    <record id="rule_bank_file_payroll" model="ir.rule">
+        <field name="name">Bank file: payroll</field>
+        <field name="model_id" ref="model_pb_bank_file"/>
+        <field name="groups" eval="[
+            (4, ref('om_hr_payroll.group_hr_payroll_user')),
+            (4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_payment_release_company" model="ir.rule">
+        <field name="name">Payment release: company</field>
+        <field name="model_id" ref="model_pb_payment_release"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_payment_release_seat" model="ir.rule">
+        <field name="name">Payment release: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_payment_release"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('seat_user_ids', 'in', [user.id])]</field>
+    </record>
+
+    <record id="rule_payment_release_payroll" model="ir.rule">
+        <field name="name">Payment release: payroll</field>
+        <field name="model_id" ref="model_pb_payment_release"/>
+        <field name="groups" eval="[
+            (4, ref('om_hr_payroll.group_hr_payroll_user')),
+            (4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_payroll_journal_company" model="ir.rule">
+        <field name="name">Payroll journal: company</field>
+        <field name="model_id" ref="model_pb_payroll_journal"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_payroll_journal_seat" model="ir.rule">
+        <field name="name">Payroll journal: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_payroll_journal"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('seat_user_ids', 'in', [user.id])]</field>
+    </record>
+
+    <record id="rule_payroll_journal_payroll" model="ir.rule">
+        <field name="name">Payroll journal: payroll</field>
+        <field name="model_id" ref="model_pb_payroll_journal"/>
+        <field name="groups" eval="[
+            (4, ref('om_hr_payroll.group_hr_payroll_user')),
+            (4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- The send-out batch had NO record rule at all before this phase, so a
+         payroll user saw every one of them. Adding only the narrow rule would
+         have taken that away: rules are OR-ed over the groups a person is IN,
+         and a payroll manager is also a plain internal user. The wide rule
+         below keeps the cockpit working and is deliberately paired with the
+         narrow one, never shipped without it. -->
+    <record id="rule_delivery_batch_seat" model="ir.rule">
+        <field name="name">Payslip send-out: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_payslip_delivery_batch"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('seat_user_ids', 'in', [user.id])]</field>
+    </record>
+
+    <record id="rule_delivery_batch_payroll" model="ir.rule">
+        <field name="name">Payslip send-out: payroll</field>
+        <field name="model_id" ref="model_pb_payslip_delivery_batch"/>
+        <field name="groups" eval="[
+            (4, ref('om_hr_payroll.group_hr_payroll_user')),
+            (4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+</odoo>

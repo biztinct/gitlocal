@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_structures.StructureWizard">
+    <div class="pbim sal pplw-root">
+      <div class="pplw-card" t-if="state.defaults">
+        <div class="pplw-head">
+          <div><div class="pplw-eyebrow">Payobook · Structures</div><h2>New salary structure</h2></div>
+          <button class="pplw-x" t-on-click="close"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pplw-body">
+          <div t-if="state.loading" class="pplw-busy"><div class="pbim-spin"/><span>Creating…</span></div>
+          <t t-elif="state.result">
+            <div class="pplw-result"><div class="pplw-result-ic"><t t-out="ic('check',30)"/></div>
+              <h3>Structure created</h3><p t-esc="state.result.name"/></div>
+          </t>
+          <t t-else="">
+            <div class="pplw-grid2">
+              <div class="pplw-sec">
+                <h4>Identity</h4>
+                <label class="pplw-label">Name *</label>
+                <input class="pplw-in" t-on-input="(ev) => this.onField('name', ev)"/>
+                <label class="pplw-label">Reference code *</label>
+                <input class="pplw-in" t-on-input="(ev) => this.onField('code', ev)"/>
+              </div>
+              <div class="pplw-sec">
+                <h4>Settings</h4>
+                <label class="pplw-label">Country</label>
+                <select class="pplw-in" t-on-change="(ev) => this.onField('payroll_country_code', ev)">
+                  <option value="">— Optional —</option>
+                  <option t-foreach="state.defaults.countries" t-as="c" t-key="c.id" t-att-value="c.id" t-esc="c.name"/>
+                </select>
+                <label class="pplw-label">Pay schedule</label>
+                <select class="pplw-in" t-on-change="(ev) => this.onField('schedule_pay', ev)">
+                  <option t-foreach="state.defaults.schedules" t-as="s" t-key="s.id" t-att-value="s.id"
+                          t-att-selected="s.id === state.form.schedule_pay" t-esc="s.name"/>
+                </select>
+                <label class="pplw-toggle"><input type="checkbox" t-att-checked="state.form.is_base" t-on-change="() => this.toggle('is_base')"/> Mark as a base structure</label>
+                <label class="pplw-toggle"><input type="checkbox" t-att-checked="state.form.activate" t-on-change="() => this.toggle('activate')"/> Set active on create</label>
+              </div>
+            </div>
+          </t>
+        </div>
+        <div class="pplw-foot">
+          <button class="pbim-btn ghost" t-on-click="close"><t t-esc="state.result ? 'Done' : 'Cancel'"/></button>
+          <div class="pplw-sp"/>
+          <button t-if="state.result" class="pbim-btn primary" t-on-click="openStructure"><t t-out="ic('arrow',15)"/> Open structure</button>
+          <button t-else="" class="pbim-btn primary" t-att-disabled="!canCreate || state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create structure</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <t t-name="pb_structures.StructureRuleWizard">
+    <div class="pbim sal pplw-root">
+      <div class="pplw-card" t-if="state.defaults">
+        <div class="pplw-head">
+          <div><div class="pplw-eyebrow">Payobook · Structures <t t-if="state.defaults.structure_name">· <t t-esc="state.defaults.structure_name"/></t></div><h2>Add salary rule</h2></div>
+          <button class="pplw-x" t-on-click="backToStructure"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pplw-body">
+          <div t-if="state.loading" class="pplw-busy"><div class="pbim-spin"/><span>Adding…</span></div>
+          <t t-elif="state.result">
+            <div class="pplw-result"><div class="pplw-result-ic"><t t-out="ic('check',30)"/></div>
+              <h3>Rule added</h3><p t-esc="state.result.name"/></div>
+          </t>
+          <t t-else="">
+            <div class="pplw-grid2">
+              <div class="pplw-sec">
+                <h4>Rule</h4>
+                <label class="pplw-label">Name *</label>
+                <input class="pplw-in" t-on-input="(ev) => this.onField('name', ev)"/>
+                <label class="pplw-label">Code *</label>
+                <input class="pplw-in" t-on-input="(ev) => this.onField('code', ev)"/>
+                <label class="pplw-label">Category *</label>
+                <select class="pplw-in" t-on-change="(ev) => this.onField('category_id', ev)">
+                  <option t-foreach="state.defaults.categories" t-as="c" t-key="c.id" t-att-value="c.id"
+                          t-att-selected="('' + c.id) === state.form.category_id" t-esc="c.name"/>
+                </select>
+              </div>
+              <div class="pplw-sec">
+                <h4>Amount</h4>
+                <label class="pplw-label">Type</label>
+                <div class="pbim-seg">
+                  <button t-foreach="state.defaults.amount_types" t-as="a" t-key="a.id"
+                          t-attf-class="pbim-segbtn {{ state.form.amount_select === a.id ? 'on' : '' }}"
+                          t-on-click="() => this.setAmount(a.id)" t-esc="a.name"/>
+                </div>
+                <label class="pplw-label"><t t-esc="state.form.amount_select === 'percentage' ? 'Percentage (%)' : 'Fixed amount'"/></label>
+                <input type="number" class="pplw-in" t-on-input="(ev) => this.onField('value', ev)"/>
+                <label class="pplw-toggle"><input type="checkbox" t-att-checked="state.form.appears" t-on-change="() => this.toggle('appears')"/> Show on payslip</label>
+                <div class="pplw-note">For Python-computed rules, use the structure’s Advanced form.</div>
+              </div>
+            </div>
+          </t>
+        </div>
+        <div class="pplw-foot">
+          <button class="pbim-btn ghost" t-on-click="backToStructure"><t t-esc="state.result ? 'Done' : 'Cancel'"/></button>
+          <div class="pplw-sp"/>
+          <button t-if="state.result" class="pbim-btn primary" t-on-click="backToStructure"><t t-out="ic('arrow',15)"/> Back to structure</button>
+          <button t-else="" class="pbim-btn primary" t-att-disabled="!canCreate || state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Add rule</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

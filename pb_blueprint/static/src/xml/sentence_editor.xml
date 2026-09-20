@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==========================================================
+     The sentence editor. One component, in English.
+     No double hyphen inside any comment in this file (BP9).
+     ========================================================== -->
+<templates xml:space="preserve">
+
+  <t t-name="pb_blueprint.SentenceEditor">
+    <div class="pbim-modal-scrim pbbp-se-scrim" t-on-click="tryClose">
+      <div class="pbim-modal pbbp-se" t-ref="root" tabindex="-1"
+           role="dialog" aria-modal="true"
+           t-on-click.stop="" t-on-keydown="onKeydown">
+
+        <div class="pbbp-se-boot" t-if="state.loading">
+          <div class="pbim-spin"/>
+          <span>Opening the rule…</span>
+        </div>
+        <div class="pbbp-se-boot is-stop" t-elif="state.error">
+          <span class="i" t-out="ic('alert', 22)"/>
+          <b>This component could not be opened</b>
+          <p t-esc="state.error"/>
+          <button class="pbim-btn primary" t-on-click="() => this.props.onClose()">Close</button>
+        </div>
+        <t t-else="">
+
+        <!-- head -->
+        <div class="pbim-modal__head pbbp-se-head">
+          <div>
+            <div class="pbim-modal__ttl">
+              <t t-if="!isNew" t-esc="title"/>
+              <t t-else="">Add a component</t>
+            </div>
+            <div class="pbim-modal__sub" t-if="state.provenance" t-esc="state.provenance.text"/>
+          </div>
+          <div class="pbim-modal__sp"/>
+          <code class="pbbp-se-code" t-if="!isNew" t-esc="state.code"/>
+          <button class="pbim-modal__x" title="Close" aria-label="Close"
+                  t-on-click="tryClose" t-out="ic('x', 16)"/>
+        </div>
+
+        <div class="pbim-modal__body pbbp-se-body">
+
+          <div class="pbbp-se-conflict" t-if="state.conflict">
+            <span class="i" t-out="ic('alert', 16)"/>
+            <div>
+              <b>Somebody else changed this configuration</b>
+              <p t-esc="state.conflict"/>
+            </div>
+            <button class="pbim-btn primary pbim-btn-sm" t-on-click="reloadForConflict">
+              <t t-out="ic('refresh', 13)"/> Show me their version
+            </button>
+          </div>
+
+          <!-- new component: name + code + group -->
+          <div class="pbbp-se-new" t-if="isNew">
+            <label class="pbbp-se-f">
+              <span>Name</span>
+              <input type="text" t-ref="name" placeholder="Site allowance"
+                     t-att-value="state.name" t-on-input="onName"/>
+            </label>
+            <label class="pbbp-se-f is-code">
+              <span>Short code</span>
+              <input type="text" t-att-value="state.code" t-on-input="onCode"
+                     aria-label="Short code"/>
+            </label>
+            <label class="pbbp-se-f">
+              <span>Where it belongs</span>
+              <select t-on-change="(ev) => this.setRecipe('group', ev.target.value)">
+                <option t-foreach="options.groups or []" t-as="g" t-key="g.value"
+                        t-att-value="g.value" t-att-selected="recipe.group === g.value"
+                        t-esc="g.label"/>
+              </select>
+            </label>
+            <p class="pbbp-se-bad" t-if="codeProblem" t-esc="codeProblem"/>
+          </div>
+
+          <!-- lanes -->
+          <div class="pbim-seg pbbp-se-lanes" role="tablist">
+            <button t-attf-class="pbim-segbtn {{ state.lane === 'guided' ? 'on' : '' }}"
+                    role="tab" t-att-aria-selected="state.lane === 'guided' ? 'true' : 'false'"
+                    t-on-click="() => this.onLane('guided')">
+              <t t-out="ic('sparkles', 14)"/> Guided
+            </button>
+            <button t-if="isFormula"
+                    t-attf-class="pbim-segbtn {{ state.lane === 'excel' ? 'on' : '' }}"
+                    role="tab" t-att-aria-selected="state.lane === 'excel' ? 'true' : 'false'"
+                    t-on-click="() => this.onLane('excel')">
+              <t t-out="ic('fileSpreadsheet', 14)"/> Excel
+            </button>
+          </div>
+
+          <!-- ============ guided lane ============ -->
+          <t t-if="state.lane === 'guided'">
+            <div class="pbbp-se-restore" t-if="showRestore">
+              <span class="i" t-out="ic('info', 15)"/>
+              <div>
+                <b>This rule was edited by hand.</b>
+                <p>The sentence below is the last guided version. Bringing it back
+                   replaces the typed calculation; your Excel is kept in the history.</p>
+              </div>
+              <button class="pbim-btn outline pbim-btn-sm" t-on-click="onRestoreGuided">
+                <t t-out="ic('undo', 13)"/> Restore the guided version
+              </button>
+            </div>
+
+            <p t-attf-class="pbbp-se-sentence {{ showRestore ? 'is-faded' : '' }}">
+              <span>For</span>
+              <select class="pbbp-word" aria-label="Who this applies to"
+                      t-on-change="(ev) => this.onPick('audience', ev)">
+                <option t-foreach="options.audiences or []" t-as="a" t-key="a.value"
+                        t-att-value="a.value" t-att-selected="recipe.audience === a.value"
+                        t-esc="a.label"/>
+              </select>
+              <span>, calculate</span>
+              <select class="pbbp-word" aria-label="How the amount is worked out"
+                      t-on-change="onKind">
+                <option t-foreach="options.kinds or []" t-as="k" t-key="k.value"
+                        t-att-value="k.value" t-att-selected="amount.kind === k.value"
+                        t-esc="k.label"/>
+              </select>
+
+              <!-- amount detail -->
+              <t t-if="needs('value')">
+                <input class="pbbp-word is-num" type="number" aria-label="The amount"
+                       t-att-value="amount.value or 0"
+                       t-on-input="(ev) => this.onNumber('amount.value', ev)"/>
+                <span class="pbbp-se-cur" t-esc="props.currency"/>
+              </t>
+              <t t-if="needs('percent') and amount.kind !== 'percent_of'">
+                <span>at</span>
+                <input class="pbbp-word is-num" type="number" aria-label="The percentage"
+                       t-att-value="amount.percent or 0"
+                       t-on-input="(ev) => this.onNumber('amount.percent', ev)"/>
+                <span>%</span>
+              </t>
+              <t t-if="needs('base')">
+                <span>of</span>
+                <select class="pbbp-word" aria-label="Which component it is worked out from"
+                        t-on-change="(ev) => this.onPick('amount.base', ev)">
+                  <option value="">choose one</option>
+                  <option t-foreach="options.bases or []" t-as="b" t-key="b.code"
+                          t-att-value="b.code" t-att-selected="amount.base === b.code"
+                          t-esc="b.name"/>
+                </select>
+              </t>
+              <t t-if="amount.kind === 'percent_of' and amount.rate_code">
+                <span>at the rate held in</span>
+                <select class="pbbp-word" aria-label="Which component holds the rate"
+                        t-on-change="onRate">
+                  <option t-foreach="options.bases or []" t-as="r" t-key="r.code"
+                          t-att-value="r.code" t-att-selected="amount.rate_code === r.code"
+                          t-esc="r.name"/>
+                  <option value="">a percentage I type in</option>
+                </select>
+              </t>
+              <t t-if="amount.kind === 'percent_of' and !amount.rate_code">
+                <span>at</span>
+                <input class="pbbp-word is-num" type="number" aria-label="The percentage"
+                       t-att-value="amount.percent or 0"
+                       t-on-input="(ev) => this.onNumber('amount.percent', ev)"/>
+                <span>%</span>
+              </t>
+              <t t-if="needs('grades')">
+                <span>of</span>
+                <input class="pbbp-word is-num" type="number" aria-label="Grade 1 amount"
+                       t-att-value="(amount.grades or [0,0,0])[0]"
+                       t-on-input="(ev) => this.onGrade(0, ev)"/>
+                <span>/</span>
+                <input class="pbbp-word is-num" type="number" aria-label="Grade 2 amount"
+                       t-att-value="(amount.grades or [0,0,0])[1]"
+                       t-on-input="(ev) => this.onGrade(1, ev)"/>
+                <span>/</span>
+                <input class="pbbp-word is-num" type="number" aria-label="Grade 3 amount"
+                       t-att-value="(amount.grades or [0,0,0])[2]"
+                       t-on-input="(ev) => this.onGrade(2, ev)"/>
+                <span>by grade</span>
+              </t>
+              <t t-if="needs('rate_pct')">
+                <span>at</span>
+                <input class="pbbp-word is-num" type="number" aria-label="Percentage of the hourly rate"
+                       t-att-value="amount.rate_pct or 100"
+                       t-on-input="(ev) => this.onNumber('amount.rate_pct', ev)"/>
+                <span>% of the hourly rate</span>
+              </t>
+              <t t-if="needs('link')">
+                <span>of</span>
+                <select class="pbbp-word" aria-label="Which benefit it follows"
+                        t-on-change="(ev) => this.onPick('amount.link', ev)">
+                  <option value="">choose one</option>
+                  <option t-foreach="options.links or []" t-as="l" t-key="l.code"
+                          t-att-value="l.code" t-att-selected="amount.link === l.code"
+                          t-esc="l.name"/>
+                </select>
+              </t>
+              <t t-if="needs('table')">
+                <span>using</span>
+                <select class="pbbp-word" aria-label="Which band table"
+                        t-on-change="(ev) => this.onPick('amount.table', ev)">
+                  <option t-foreach="options.tables or []" t-as="tb" t-key="tb.code"
+                          t-att-value="tb.code" t-att-selected="amount.table === tb.code"
+                          t-esc="tb.name"/>
+                </select>
+              </t>
+              <t t-if="needs('cap')">
+                <span>capped at</span>
+                <select class="pbbp-word" aria-label="Which cap applies"
+                        t-on-change="(ev) => this.onPick('amount.cap', ev)">
+                  <option value="">choose one</option>
+                  <option t-foreach="options.bases or []" t-as="c" t-key="c.code"
+                          t-att-value="c.code" t-att-selected="amount.cap === c.code"
+                          t-esc="c.name"/>
+                </select>
+              </t>
+
+              <span>, prorated by</span>
+              <select class="pbbp-word" aria-label="How it is prorated"
+                      t-on-change="(ev) => this.onPick('proration', ev)">
+                <option t-foreach="options.proration or []" t-as="p" t-key="p.value"
+                        t-att-value="p.value" t-att-selected="recipe.proration === p.value"
+                        t-esc="p.label"/>
+              </select>
+              <span>.</span>
+            </p>
+
+            <p class="pbbp-se-freq">
+              <span>Paid</span>
+              <select class="pbbp-word" aria-label="How often it is paid"
+                      t-on-change="(ev) => this.onPick('frequency', ev)">
+                <option t-foreach="options.frequency or []" t-as="f" t-key="f.value"
+                        t-att-value="f.value" t-att-selected="recipe.frequency === f.value"
+                        t-esc="f.label"/>
+              </select>
+              <t t-if="recipe.frequency === 'annual' or needs('payout_month')">
+                <span>in</span>
+                <select class="pbbp-word" aria-label="Which month it is paid in"
+                        t-on-change="onMonth">
+                  <option t-foreach="options.months or []" t-as="m" t-key="m.value"
+                          t-att-value="m.value"
+                          t-att-selected="(amount.payout_month or 1) === m.value"
+                          t-esc="m.label"/>
+                </select>
+              </t>
+            </p>
+
+            <p class="pbbp-se-hint" t-if="usesBands">
+              The bands themselves — where each one starts and what rate it charges —
+              live on the <b>Tax &amp; protection</b> tab, beside the relief and the
+              insurance ceilings. Change them once there and every rule that reads
+              them follows.
+            </p>
+
+            <!-- disclosure -->
+            <div class="pbbp-se-disc">
+              <button class="pbbp-se-disc-h"
+                      t-att-aria-expanded="state.open ? 'true' : 'false'"
+                      t-on-click="() => this.state.open = !this.state.open">
+                <span class="i" t-out="ic(state.open ? 'chevronDown' : 'chevron', 14)"/>
+                <b>Tax, insurance &amp; payout details</b>
+                <span class="pbbp-se-chips" t-if="!state.open">
+                  <span class="pbim-badge" t-foreach="chips" t-as="c" t-key="c_index" t-esc="c"/>
+                </span>
+              </button>
+              <div class="pbbp-se-disc-b" t-if="state.open">
+                <label class="pbbp-se-f">
+                  <span>Paid in cash or as a benefit</span>
+                  <select t-on-change="(ev) => this.onPick('treatment.cash', ev)">
+                    <option t-foreach="options.cash or []" t-as="c" t-key="c.value"
+                            t-att-value="c.value" t-att-selected="treatment.cash === c.value"
+                            t-esc="c.label"/>
+                  </select>
+                </label>
+                <label class="pbbp-se-f">
+                  <span>Income tax</span>
+                  <select t-on-change="(ev) => this.onPick('treatment.tax', ev)">
+                    <option t-foreach="options.tax or []" t-as="c" t-key="c.value"
+                            t-att-value="c.value" t-att-selected="treatment.tax === c.value"
+                            t-esc="c.label"/>
+                  </select>
+                </label>
+                <label class="pbbp-se-f" t-if="treatment.tax === 'annual_cap'">
+                  <span>Yearly limit</span>
+                  <input type="number" t-att-value="treatment.cap or 0"
+                         t-on-input="(ev) => this.onNumber('treatment.cap', ev)"/>
+                </label>
+                <label class="pbbp-se-f">
+                  <span>Counts towards the insurance base</span>
+                  <select t-on-change="(ev) => this.onPick('treatment.insurance', ev)">
+                    <option t-foreach="options.insurance or []" t-as="c" t-key="c.value"
+                            t-att-value="c.value" t-att-selected="treatment.insurance === c.value"
+                            t-esc="c.label"/>
+                  </select>
+                </label>
+                <label class="pbbp-se-f"
+                       t-if="treatment.tax === 'inherit' or treatment.insurance === 'inherit' or treatment.pit_deductible === 'source'">
+                  <span>The original component</span>
+                  <select t-on-change="(ev) => this.onPick('treatment.source_code', ev)">
+                    <option value="">choose one</option>
+                    <option t-foreach="options.sources or []" t-as="c" t-key="c.code"
+                            t-att-value="c.code" t-att-selected="treatment.source_code === c.code"
+                            t-esc="c.name"/>
+                  </select>
+                </label>
+                <label class="pbbp-se-f">
+                  <span>Who bears the income tax</span>
+                  <select t-on-change="(ev) => this.onPick('treatment.tax_bearer', ev)">
+                    <option t-foreach="options.bearer or []" t-as="c" t-key="c.value"
+                            t-att-value="c.value" t-att-selected="treatment.tax_bearer === c.value"
+                            t-esc="c.label"/>
+                  </select>
+                </label>
+                <label class="pbbp-se-f" t-if="isDeduction">
+                  <span>Counts against income tax</span>
+                  <select t-on-change="(ev) => this.onPick('treatment.pit_deductible', ev)">
+                    <option t-foreach="options.pit_deductible or []" t-as="c" t-key="c.value"
+                            t-att-value="c.value"
+                            t-att-selected="treatment.pit_deductible === c.value"
+                            t-esc="c.label"/>
+                  </select>
+                </label>
+                <label class="pbbp-se-f" t-if="isBenefit">
+                  <span>Employer share</span>
+                  <input type="number" t-att-value="treatment.employer_share_pct or 100"
+                         t-on-input="(ev) => this.onNumber('treatment.employer_share_pct', ev)"/>
+                </label>
+              </div>
+            </div>
+          </t>
+
+          <!-- ============ excel lane ============ -->
+          <t t-else="">
+            <p class="pbbp-se-hint">
+              Write the calculation the way you would in a spreadsheet, using the
+              component codes below. Saving from here means this calculation is
+              yours: nothing will rewrite it.
+            </p>
+            <textarea class="pbbp-se-excel" t-ref="excel" spellcheck="false"
+                      aria-label="The calculation, written as Excel"
+                      t-on-input="onExcel"/>
+            <div class="pbbp-se-codes">
+              <button class="pbim-chip pbbp-se-codechip"
+                      t-foreach="options.codes or []" t-as="c" t-key="c"
+                      t-on-click="() => this.insertCode(c)" t-esc="c"/>
+            </div>
+          </t>
+
+          <!-- ============ generated formula + proof ============ -->
+          <div class="pbbp-se-out">
+            <div class="pbbp-se-out-l">
+              <span class="pbbp-se-out-lbl" t-esc="outLabel"/>
+              <code t-attf-class="pbbp-se-formula {{ isFormula ? '' : 'is-plain' }}"
+                    t-esc="outBody"/>
+              <span class="pbbp-se-needs" t-if="needsLine" t-esc="needsLine"/>
+            </div>
+            <div class="pbbp-se-proof">
+              <span class="pbbp-se-proof-who" t-esc="proofWho"/>
+              <span class="pbbp-se-skel" t-if="state.proof.state === 'busy'"/>
+              <span class="pbbp-se-proof-bad" t-elif="state.proof.state === 'bad'"
+                    t-esc="state.proof.message"/>
+              <t t-else="">
+                <span class="pbbp-se-proof-was" t-if="proofBefore" t-esc="proofBefore"/>
+                <span class="pbbp-se-proof-num" t-esc="proofText"/>
+              </t>
+            </div>
+          </div>
+        </div>
+
+        <!-- foot -->
+        <div class="pbim-modal__foot pbbp-se-foot">
+          <button class="pbim-btn ghost pbbp-se-rm" t-if="!isNew"
+                  t-on-click="onRemove">
+            <t t-out="ic('trash', 14)"/> Remove from this configuration
+          </button>
+          <div class="pbim-modal__sp"/>
+          <button class="pbim-btn ghost" t-on-click="tryClose">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="!canSave" t-on-click="onSave">
+            <t t-if="state.saving">Saving…</t>
+            <t t-else="">Save</t>
+          </button>
+        </div>
+        </t>
+
+        <div class="pbim-modal-scrim pbbp-se-confirm" t-if="state.confirmClose"
+             t-on-click.stop="() => this.state.confirmClose = false">
+          <div class="pbim-modal is-narrow" t-on-click.stop="">
+            <div class="pbim-modal__head">
+              <div class="pbim-modal__ttl">Leave without saving?</div>
+              <div class="pbim-modal__sp"/>
+            </div>
+            <div class="pbim-modal__body">
+              <p>Your changes to this rule have not been saved. Leaving now loses them.</p>
+            </div>
+            <div class="pbim-modal__foot">
+              <div class="pbim-modal__sp"/>
+              <button class="pbim-btn ghost" t-on-click="() => this.state.confirmClose = false">
+                Keep editing
+              </button>
+              <button class="pbim-btn danger" t-on-click="discardAndClose">Leave</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="cron_nightly_backups" model="ir.cron">
+        <field name="name">Payobook Tenants: nightly backups</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_nightly_backups()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now().replace(hour=19, minute=30, second=0) + timedelta(days=1))"/>
+        <field name="active" eval="True"/>
+    </record>
+    <!-- Safety net for the non-fatal cert provisioning step: any live tenant
+         still riding the (non-renewing) wildcard gets its own certificate. -->
+    <record id="cron_certs" model="ir.cron">
+        <field name="name">Payobook Tenants: tenant TLS certificates</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_certs()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now().replace(hour=3, minute=15, second=0) + timedelta(days=1))"/>
+        <field name="active" eval="True"/>
+    </record>
+    <record id="cron_health" model="ir.cron">
+        <field name="name">Payobook Tenants: fleet health refresh</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_health()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="active" eval="True"/>
+    </record>
+    <!-- FLEET P1. How far has each customer drifted from the release? READS
+         every customer's database and writes only our own record of what it
+         found (rail R1): nothing is installed or upgraded on a customer while
+         everybody is asleep. 02:30, ahead of the working day and clear of the
+         nightly backups at 19:30. -->
+    <record id="cron_drift" model="ir.cron">
+        <field name="name">Payobook Tenants: drift from the release</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_drift()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now().replace(hour=2, minute=30, second=0) + timedelta(days=1))"/>
+        <field name="active" eval="True"/>
+    </record>
+    <!-- FLEET P2B. The rollout worker. It does ONE step of whatever a person
+         started — never starts anything itself, never touches a customer who
+         is not on a list somebody made (rail R1) — and does nothing at all
+         when no rollout is running, which is most of the time. Five minutes is
+         short enough that a maintenance window is not spent idle and long
+         enough that a task (minutes) is never raced. -->
+    <record id="cron_rollout_worker" model="ir.cron">
+        <field name="name">Payobook Tenants: rollout worker</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_rollout_worker()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+    <!-- FLEET P2B. The evening-before warning. Only ever speaks to a customer
+         with a queued task in a rollout a person started, and only once. -->
+    <!-- FLEET P3. The sweep. Fifteen minutes is the promise the phase makes —
+         "an email reaches you within fifteen minutes" — and it is the longest
+         a payroll customer's site should be down before somebody is told.
+         READS ONLY (rail R1): cached health, one HTTP probe per customer
+         through localhost, a count of scheduled jobs on the template, the
+         server's own log, /proc and the disk. -->
+    <record id="cron_alerts" model="ir.cron">
+        <field name="name">Payobook Tenants: platform alerts</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_alerts()</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+    <!-- FLEET P3. One short summary every morning, INCLUDING the mornings when
+         nothing is wrong. A channel that only speaks when something breaks
+         cannot be told apart from a channel that is broken. 08:00 on the
+         server's clock, which is UTC — the digest itself says the hour it was
+         sent, and the hour is a setting. -->
+    <record id="cron_alert_digest" model="ir.cron">
+        <field name="name">Payobook Tenants: morning summary</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_alert_digest()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now().replace(hour=8, minute=0, second=0) + timedelta(days=1))"/>
+        <field name="active" eval="True"/>
+    </record>
+    <!-- FLEET P3. The public page is a FILE, and a file goes stale silently.
+         Five minutes keeps it inside its own staleness warning (fifteen) with
+         room for two missed runs, so a busy box never accuses itself. -->
+    <record id="cron_status_page" model="ir.cron">
+        <field name="name">Payobook Tenants: public status page</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_status_page()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+    <!-- FLEET P5. THE METER. Two counts per customer — how many people are on
+         Payobook, and how many payslips came out of it this month — read
+         through a plain cursor on their database and written down on OURS.
+         READS ONLY (rail R1): no registry is opened, no ORM is loaded, and
+         nothing is written to a customer.
+
+         23:50 so that the last reading of a month is taken while the month is
+         still that month. The row is re-read every night, so a box that was
+         off on the 31st keeps the 30th's number and says when it was taken. -->
+    <record id="cron_meter" model="ir.cron">
+        <field name="name">Payobook Tenants: monthly usage meter</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_meter()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now().replace(hour=23, minute=50, second=0) + timedelta(days=1))"/>
+        <field name="active" eval="True"/>
+    </record>
+    <!-- FLEET P5. THE MORNING BILLING JOB. It moves OUR invoices along, sends
+         OUR reminders and counts the trials down. The ONE thing it can do to a
+         customer is pause them, and only when `pb_tenants.auto_suspend` has
+         been deliberately switched on — it is OFF by default and the screen
+         that offers it says in red what it does. Nobody is ever INVOICED by a
+         cron: raising invoices is a button with a preview in front of it. -->
+    <record id="cron_billing" model="ir.cron">
+        <field name="name">Payobook Tenants: invoices and trials</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_billing()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now().replace(hour=8, minute=30, second=0) + timedelta(days=1))"/>
+        <field name="active" eval="True"/>
+    </record>
+    <record id="cron_rollout_notices" model="ir.cron">
+        <field name="name">Payobook Tenants: rollout warnings</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_rollout_notices()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

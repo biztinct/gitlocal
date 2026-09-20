@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_filing_proposal_officer,pb.filing.proposal payroll officer,model_pb_filing_proposal,pb_hr_payroll_base.group_payroll_base_officer,1,1,1,0
+access_pb_filing_proposal_manager,pb.filing.proposal payroll manager,model_pb_filing_proposal,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,0
+access_pb_filing_proposal_system,pb.filing.proposal system,model_pb_filing_proposal,base.group_system,1,1,1,1
+access_pb_filing_proposal_seat,pb.filing.proposal anyone asked to decide,model_pb_filing_proposal,base.group_user,1,0,0,0

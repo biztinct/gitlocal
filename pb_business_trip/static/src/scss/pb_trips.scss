@@ -1,0 +1,171 @@
+// Business Trips cockpit — pbim indigo primary over the pbim surface (W1).
+.pbim.pbtr {
+    --pbtr-accent: var(--pbim-primary, #5A4BB0);
+    --pbtr-accent-soft: var(--pbim-soft, #EDEAF8);
+    --pbtr-bg: var(--pbim-bg, #F5F6FA);
+    --pbtr-card: #ffffff;
+    --pbtr-line: var(--pbim-line, #E2E8F0);
+    --pbtr-text: var(--pbim-ink, #1B1733);
+    --pbtr-muted: var(--pbim-muted, #64748B);
+    --pbtr-warn: var(--pbim-amber, #D97706);
+    --pbtr-refuse: var(--pbim-rose, #DC2668);
+
+    padding: 16px 18px 28px;
+    background: var(--pbtr-bg);
+    min-height: 100%;
+    color: var(--pbtr-text);
+    box-sizing: border-box;
+
+    .pbim-busy { padding: 40px; color: var(--pbtr-muted); }
+
+    // ------------------------------------------------- embedded (P3a, W17/W20)
+    // Unlike the other cockpits this one is PAGE-FLOW (`min-height: 100%`), so
+    // standalone it rides the action manager's scroll. Mission Control's canvas
+    // is a definite-height flex box that does NOT scroll, so an unbounded child
+    // would simply overflow it: embedded, the root takes the box and owns its
+    // own scrolling.
+    &.pbtr--embedded {
+        height: 100%;
+        min-height: 0;
+        min-width: 0;
+        overflow: auto;
+        padding-top: 16px;
+    }
+
+    // toolbar
+    .pbtr-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .pbtr-title { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 700; }
+    .pbtr-ic { width: 22px; height: 22px; color: var(--pbtr-accent); }
+    .pbtr-spacer { flex: 1 1 auto; }
+
+    .pbtr-btn {
+        border: 1px solid var(--pbtr-line);
+        background: #fff;
+        color: var(--pbtr-text);
+        border-radius: var(--pbim-r-sm, 10px);
+        padding: 7px 13px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        &:hover { border-color: var(--pbtr-accent); }
+        &--primary { background: var(--pbtr-accent); border-color: var(--pbtr-accent); color: #fff; }
+        &--primary:hover { filter: brightness(1.06); }
+        &--approve { background: var(--pbtr-accent); border-color: var(--pbtr-accent); color: #fff; flex: 1 1 auto; }
+        &--refuse { color: var(--pbtr-refuse); }
+        &--refuse:hover { border-color: var(--pbtr-refuse); }
+    }
+
+    // KPI band
+    .pbtr-kpis { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+    .pbtr-stat {
+        background: var(--pbtr-card);
+        border: 1px solid var(--pbtr-line);
+        border-radius: var(--pbim-r, 14px);
+        padding: 12px 16px;
+        min-width: 150px;
+        display: flex;
+        flex-direction: column;
+        .n { font-size: 22px; font-weight: 800; line-height: 1.1; }
+        .l { font-size: 12px; color: var(--pbtr-muted); margin-top: 2px; }
+        &.is-hot { border-color: var(--pbtr-accent); background: var(--pbtr-accent-soft); }
+        &.is-hot .n { color: var(--pbtr-accent); }
+    }
+
+    // board
+    .pbtr-board { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; align-items: flex-start; }
+    .pbtr-lane {
+        background: rgba(148, 163, 184, 0.08);
+        border: 1px solid var(--pbtr-line);
+        border-radius: var(--pbim-r, 14px);
+        width: 250px;
+        flex: 0 0 250px;
+        display: flex;
+        flex-direction: column;
+        max-height: 100%;
+    }
+    .pbtr-lane__head {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 11px 13px 4px;
+        &__name { font-weight: 700; }
+    }
+    .pbtr-lane__name { font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--pbtr-muted); }
+    .pbtr-lane__count {
+        background: #fff; border: 1px solid var(--pbtr-line); border-radius: 20px;
+        padding: 1px 9px; font-size: 12px; font-weight: 700;
+    }
+    .pbtr-lane__exposure { padding: 0 13px 6px; font-size: 11.5px; color: var(--pbtr-muted); }
+    .pbtr-lane__body { padding: 8px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+    .pbtr-lane__empty { text-align: center; color: var(--pbtr-muted); padding: 12px 0; }
+
+    // card
+    .pbtr-card {
+        background: var(--pbtr-card);
+        border: 1px solid var(--pbtr-line);
+        border-radius: 10px;
+        padding: 10px 11px;
+        cursor: pointer;
+        transition: box-shadow 0.15s ease, transform 0.1s ease;
+        &:hover { box-shadow: 0 4px 14px rgba(124, 58, 237, 0.12); transform: translateY(-1px); }
+
+        &__top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+        &__dest { font-weight: 700; font-size: 14px; }
+        &__flag {
+            font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em;
+            background: var(--pbtr-accent-soft); color: var(--pbtr-accent);
+            border-radius: 5px; padding: 1px 6px;
+        }
+        &__dates { font-size: 12px; color: var(--pbtr-muted); margin-top: 3px; }
+        &__days { margin-left: 6px; font-weight: 600; color: var(--pbtr-text); }
+        &__chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+        &__foot { display: flex; align-items: center; justify-content: space-between; margin-top: 9px; }
+        &__actions { display: flex; gap: 6px; margin-top: 10px; }
+    }
+    .pbtr-chip {
+        font-size: 11px; border-radius: 6px; padding: 2px 7px; font-weight: 600;
+        background: rgba(148, 163, 184, 0.14); color: var(--pbtr-text);
+        &--adv { background: #fef3c7; color: #92400e; }
+    }
+    .pbtr-emp { display: flex; align-items: center; gap: 6px; min-width: 0; }
+    .pbtr-emp__avatar { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; }
+    .pbtr-emp__name { font-size: 12px; color: var(--pbtr-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pbtr-aging {
+        font-size: 11px; color: var(--pbtr-muted); white-space: nowrap;
+        &--warn { color: var(--pbtr-warn); font-weight: 700; }
+    }
+
+    // closed footer
+    .pbtr-closed { margin-top: 18px; }
+    .pbtr-closed__toggle {
+        border: none; background: none; color: var(--pbtr-muted);
+        font-weight: 600; cursor: pointer; padding: 4px 0;
+    }
+    .pbtr-closed__list { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+    .pbtr-closed__row {
+        font-size: 12.5px; color: var(--pbtr-muted); cursor: pointer;
+        padding: 5px 8px; border-radius: 6px;
+        &:hover { background: rgba(148, 163, 184, 0.12); }
+    }
+    .pbtr-state { font-weight: 700; text-transform: capitalize; }
+    .pbtr-state--refused { color: var(--pbtr-refuse); }
+    .pbtr-state--cancelled { color: var(--pbtr-muted); }
+
+    // refuse modal
+    .pbtr-modal {
+        position: fixed; inset: 0; z-index: 1050;
+        background: rgba(15, 23, 42, 0.4);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .pbtr-modal__box {
+        background: #fff; border-radius: 14px; padding: 20px;
+        width: 92vw; max-width: 420px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+    .pbtr-modal__title { font-weight: 700; font-size: 15px; margin-bottom: 12px; }
+    .pbtr-modal__note {
+        width: 100%; min-height: 90px; box-sizing: border-box;
+        border: 1px solid var(--pbtr-line); border-radius: var(--pbim-r-sm, 10px); padding: 9px;
+        font-family: inherit; font-size: 13px; resize: vertical;
+    }
+    .pbtr-modal__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+}

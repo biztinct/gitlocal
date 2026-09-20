@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         A2 — every mail the interview loop sends.
+
+         `noupdate="1"`, as every mail template in this codebase is: a tenant
+         that has reworded one of these must not have it reverted by the next
+         upgrade. Outgoing debranding rides automatically (biz_mail_debrand).
+
+         EVERY ONE IS SENT WITH AN EXPLICIT `email_to` IN `email_values`
+         (R6). A template's own rendered address can reach `mail.mail` empty,
+         and the message is then created, queued and addressed to nobody with
+         no error anywhere. The `email_to` field below is kept as
+         documentation of who each one is FOR.
+
+         NOTHING HERE READS THE CONTEXT. Every sentence is built from fields
+         on the record the template is declared against, so the same mail sent
+         from a button, a job or a shell says the same thing. A template that
+         took its reason from the caller's context renders an empty sentence
+         the first time somebody sends it from anywhere else.
+
+         The stock calendar's own invitation never goes out at all — the
+         event is created with `dont_notify` and `no_mail_to_attendees` — so
+         these are the only mails a candidate or a panel member ever sees,
+         and they are all ours.
+         ================================================================== -->
+
+    <!-- ============ the candidate: you are booked in ============ -->
+    <record id="mail_template_interview_candidate" model="mail.template">
+        <field name="name">Hiring: your interview is arranged</field>
+        <field name="model_id" ref="model_pb_hiring_interview"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.candidate_email or '' }}</field>
+        <field name="subject">Your interview for {{ object.requisition_id.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.candidate_name or ''"/>,</p>
+                <p>
+                    Thank you for your interest in
+                    <strong><t t-out="object.requisition_id.title or ''"/></strong>.
+                    We would like to meet you.
+                </p>
+                <table style="border-collapse:collapse; margin:16px 0; font-size:14px;">
+                    <tr>
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">When</td>
+                        <td style="padding:6px 0;"><strong><t t-out="object.start or ''"/></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">How long</td>
+                        <td style="padding:6px 0;"><t t-out="object.duration_minutes or 45"/> minutes</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">Where</td>
+                        <td style="padding:6px 0;"><t t-out="object.location or 'We will confirm this separately'"/></td>
+                    </tr>
+                </table>
+                <p>
+                    There is a calendar file attached — open it and the time
+                    will be in your own diary.
+                </p>
+                <p style="color:#4A5568;">
+                    If that time does not work, reply to this email and say so.
+                    Moving it is easy and it is far better than not coming.
+                </p>
+                <br/>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the panel: you are interviewing ============ -->
+    <record id="mail_template_interview_panel" model="mail.template">
+        <field name="name">Hiring: you are on an interview panel</field>
+        <field name="model_id" ref="model_pb_hiring_interview"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="subject">You are interviewing {{ object.candidate_name }} — {{ object.requisition_id.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    You are on the panel for
+                    <strong><t t-out="object.candidate_name or ''"/></strong>,
+                    round <t t-out="object.round_no or 1"/> for
+                    <strong><t t-out="object.requisition_id.title or ''"/></strong>.
+                </p>
+                <table style="border-collapse:collapse; margin:16px 0; font-size:14px;">
+                    <tr>
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">When</td>
+                        <td style="padding:6px 0;"><strong><t t-out="object.start or ''"/></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">Where</td>
+                        <td style="padding:6px 0;"><t t-out="object.location or '—'"/></td>
+                    </tr>
+                    <tr t-if="object.feedback_due_at">
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">Your view, by</td>
+                        <td style="padding:6px 0;"><t t-out="object.feedback_due_at or ''"/></td>
+                    </tr>
+                </table>
+                <div t-if="object._agenda_text()" style="border-left:3px solid #E2E8F0; padding-left:12px; color:#4A5568; white-space:pre-wrap;">
+                    <t t-out="object._agenda_text()"/>
+                </div>
+                <p>
+                    The calendar file is attached. Afterwards you will get your
+                    own link to say what you thought — it takes a minute, and
+                    the candidate is waiting on the slowest of us.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the recruiter: your copy ============ -->
+    <record id="mail_template_interview_recruiter" model="mail.template">
+        <field name="name">Hiring: an interview is in the diary (recruiter's copy)</field>
+        <field name="model_id" ref="model_pb_hiring_interview"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.recruiter_id.email or '' }}</field>
+        <field name="subject">In the diary: {{ object.candidate_name }} — {{ object.requisition_id.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    Round <t t-out="object.round_no or 1"/> with
+                    <strong><t t-out="object.candidate_name or ''"/></strong>
+                    is arranged for
+                    <strong><t t-out="object.start or ''"/></strong>.
+                    Everybody on the panel has been invited.
+                </p>
+                <p style="color:#4A5568;">
+                    Their views are wanted by
+                    <t t-out="object.feedback_due_at or ''"/>. Payobook chases
+                    anybody who is late, once.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ tomorrow ============ -->
+    <record id="mail_template_interview_tomorrow" model="mail.template">
+        <field name="name">Hiring: an interview tomorrow</field>
+        <field name="model_id" ref="model_pb_hiring_interview"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="subject">Tomorrow: {{ object.candidate_name }} — {{ object.requisition_id.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    A reminder that the interview for
+                    <strong><t t-out="object.requisition_id.title or ''"/></strong>
+                    is tomorrow, at
+                    <strong><t t-out="object.start or ''"/></strong>.
+                </p>
+                <p t-if="object.location">
+                    Where: <strong><t t-out="object.location or ''"/></strong>
+                </p>
+                <p style="color:#4A5568;">
+                    If something has changed, say so today rather than
+                    tomorrow — somebody on the other side is rearranging their
+                    day for this.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ in half an hour ============ -->
+    <record id="mail_template_interview_soon" model="mail.template">
+        <field name="name">Hiring: an interview in half an hour</field>
+        <field name="model_id" ref="model_pb_hiring_interview"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="subject">In half an hour: {{ object.candidate_name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    The interview with
+                    <strong><t t-out="object.candidate_name or ''"/></strong>
+                    starts at
+                    <strong><t t-out="object.start or ''"/></strong>.
+                </p>
+                <p t-if="object.location">
+                    <t t-out="object.location or ''"/>
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ it is off ============ -->
+    <record id="mail_template_interview_off" model="mail.template">
+        <field name="name">Hiring: an interview has been called off</field>
+        <field name="model_id" ref="model_pb_hiring_interview"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="subject">Called off: {{ object.candidate_name }} — {{ object.requisition_id.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    The interview at
+                    <strong><t t-out="object.start or ''"/></strong>
+                    for
+                    <strong><t t-out="object.requisition_id.title or ''"/></strong>
+                    is not going ahead. Please take it out of your diary.
+                </p>
+                <p t-if="object.cancel_note" style="border-left:3px solid #E2E8F0; padding-left:12px; color:#4A5568;">
+                    <t t-out="object.cancel_note or ''"/>
+                </p>
+                <p t-if="object.rescheduled_to_id">
+                    It has moved to
+                    <strong><t t-out="object.rescheduled_to_id.start or ''"/></strong>.
+                    A fresh invitation is on its way, with a calendar file.
+                </p>
+                <p t-else="" style="color:#4A5568;">
+                    We will be in touch about a new time.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the panel member: your link ============ -->
+    <record id="mail_template_feedback_ask" model="mail.template">
+        <field name="name">Hiring: what did you think</field>
+        <field name="model_id" ref="model_pb_hiring_feedback"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="subject">What did you think of {{ object.interview_id.candidate_name }}?</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    You have just interviewed
+                    <strong><t t-out="object.interview_id.candidate_name or ''"/></strong>
+                    for
+                    <strong><t t-out="object.interview_id.requisition_id.title or ''"/></strong>.
+                    Five lines to score and one question: would you hire them?
+                </p>
+                <p style="margin:22px 0;">
+                    <a t-att-href="object._token_url()"
+                       style="background:#4F46E5; color:#FFFFFF; text-decoration:none; padding:11px 20px; border-radius:9px; font-weight:600; display:inline-block;">
+                        Say what you thought
+                    </a>
+                </p>
+                <p style="color:#4A5568;">
+                    It is wanted by
+                    <strong><t t-out="object.due_at or ''"/></strong>
+                    — a day of working hours. No sign-in is needed; the link is
+                    yours alone and works once.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the panel member: you are late ============ -->
+    <record id="mail_template_feedback_urgent" model="mail.template">
+        <field name="name">Hiring: an opinion is late</field>
+        <field name="model_id" ref="model_pb_hiring_feedback"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="subject">Still waiting on you: {{ object.interview_id.candidate_name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.interview_id.candidate_name or ''"/></strong>
+                    is waiting to hear from us, and we are waiting on you.
+                </p>
+                <p style="margin:22px 0;">
+                    <a t-att-href="object._token_url()"
+                       style="background:#4F46E5; color:#FFFFFF; text-decoration:none; padding:11px 20px; border-radius:9px; font-weight:600; display:inline-block;">
+                        It takes a minute
+                    </a>
+                </p>
+                <p style="color:#4A5568;">
+                    This is the only reminder you will get about it. If you did
+                    not end up interviewing them, tell the recruiter and they
+                    will take you off.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the candidate: through to the next round ============ -->
+    <record id="mail_template_candidate_next_round" model="mail.template">
+        <field name="name">Hiring: a candidate goes through</field>
+        <field name="model_id" ref="hr_recruitment.model_hr_applicant"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.email_from or '' }}</field>
+        <field name="subject">Good news about {{ object.job_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.partner_name or ''"/>,</p>
+                <p>
+                    Thank you for the time you have given us so far. We would
+                    like to take your application for
+                    <strong><t t-out="object.job_id.name or ''"/></strong>
+                    to the next stage.
+                </p>
+                <p>
+                    Somebody will be in touch shortly to arrange it. If there
+                    are days or times that are difficult for you, reply and say
+                    so — it is much easier to work around than to undo.
+                </p>
+                <br/>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the candidate: not this time ============ -->
+    <record id="mail_template_candidate_rejected" model="mail.template">
+        <field name="name">Hiring: not this time</field>
+        <field name="model_id" ref="hr_recruitment.model_hr_applicant"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.email_from or '' }}</field>
+        <field name="subject">About your application for {{ object.job_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.partner_name or ''"/>,</p>
+                <p>
+                    Thank you for applying for
+                    <strong><t t-out="object.job_id.name or ''"/></strong>,
+                    and for the time you gave us.
+                </p>
+                <p>
+                    We are not taking your application further this time. That
+                    is a decision about one role on one day and nothing more —
+                    we would be glad to hear from you again.
+                </p>
+                <p style="color:#4A5568;">
+                    We wish you well with what comes next.
+                </p>
+                <br/>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="biz_theme.ThemeStudio">
+    <div class="vu-studio">
+
+        <!-- ═══ Top bar ═══ -->
+        <div class="vu-studio__topbar">
+            <div class="vu-studio__title">
+                <i class="fa fa-paint-brush me-2"/>Theme Studio
+                <input class="vu-studio__name" t-model="state.themeName" placeholder="Theme name"/>
+            </div>
+            <div class="vu-studio__actions">
+                <button class="btn btn-sm btn-link" t-on-click="undo" t-att-disabled="!state.undoStack.length" title="Undo">
+                    <i class="fa fa-undo"/>
+                </button>
+                <button class="btn btn-sm btn-link" t-on-click="redo" t-att-disabled="!state.redoStack.length" title="Redo">
+                    <i class="fa fa-repeat"/>
+                </button>
+                <button class="btn btn-sm btn-link" t-on-click="resetAll" title="Reset all overrides">
+                    <i class="fa fa-eraser"/> Reset
+                </button>
+                <button class="btn btn-sm btn-link" t-on-click="exportJson" title="Export theme JSON">
+                    <i class="fa fa-download"/> Export
+                </button>
+                <label class="btn btn-sm btn-link mb-0" title="Import theme JSON">
+                    <i class="fa fa-upload"/> Import
+                    <input type="file" accept=".json" class="d-none" t-on-change="importJson"/>
+                </label>
+                <span class="vu-studio__sep"/>
+                <button class="btn btn-sm btn-secondary" t-if="state.previewing" t-on-click="stopPreview">
+                    Stop preview
+                </button>
+                <button class="btn btn-sm btn-secondary" t-on-click="discard"
+                        t-att-disabled="!state.dirty and !state.previewing">
+                    Discard
+                </button>
+                <button class="btn btn-sm btn-primary" t-on-click="publish">
+                    <i class="fa fa-rocket me-1"/>Publish
+                </button>
+            </div>
+        </div>
+
+        <!-- ═══ Preset gallery ═══ -->
+        <div class="vu-studio__presets">
+            <t t-foreach="state.presets" t-as="preset" t-key="preset.key">
+                <button class="vu-studio__preset"
+                        t-att-class="{ active: state.presetKey === preset.key }"
+                        t-att-title="preset.description"
+                        t-on-click="() => this.applyPreset(preset)">
+                    <span class="vu-studio__swatches">
+                        <t t-foreach="preset.preview_colors or []" t-as="c" t-key="c_index">
+                            <span class="vu-studio__swatch" t-attf-style="background:{{c}}"/>
+                        </t>
+                    </span>
+                    <span t-esc="preset.name"/>
+                </button>
+            </t>
+        </div>
+
+        <!-- ═══ Contrast warnings ═══ -->
+        <div class="vu-studio__contrast" t-if="contrastIssues.length">
+            <i class="fa fa-exclamation-triangle me-1"/>
+            <t t-foreach="contrastIssues" t-as="issue" t-key="issue.label">
+                <span class="me-3">
+                    <b t-esc="issue.label"/>: <t t-esc="issue.ratio"/>:1 (needs <t t-esc="issue.min"/>:1)
+                </span>
+            </t>
+        </div>
+
+        <div class="vu-studio__body">
+
+            <!-- ═══ Left rail: token editor ═══ -->
+            <div class="vu-studio__editor">
+                <t t-foreach="groups" t-as="group" t-key="group.label">
+                    <div class="vu-studio__group">
+                        <button class="vu-studio__group-head"
+                                t-on-click="() => state.activeGroup = state.activeGroup === group.label ? null : group.label">
+                            <span t-esc="group.label"/>
+                            <i t-att-class="'fa ' + (state.activeGroup === group.label ? 'fa-chevron-down' : 'fa-chevron-right')"/>
+                        </button>
+                        <div class="vu-studio__group-body" t-if="state.activeGroup === group.label">
+                            <t t-foreach="group.tokens" t-as="tok" t-key="tok[0]">
+                                <div class="vu-studio__row" t-att-class="{ overridden: isOverridden(tok[0]) }">
+                                    <label t-esc="tok[1]"/>
+                                    <div class="vu-studio__color">
+                                        <input type="color" t-att-value="value(tok[0])"
+                                               t-on-input="(ev) => this.onColorInput(tok[0], ev)"/>
+                                        <input type="text" class="vu-studio__hex" t-att-value="value(tok[0])"
+                                               t-on-change="(ev) => this.onTextInput(tok[0], ev)"/>
+                                        <button class="vu-studio__reset" t-if="isOverridden(tok[0])"
+                                                title="Reset to default"
+                                                t-on-click="() => this.resetToken(tok[0])">
+                                            <i class="fa fa-times"/>
+                                        </button>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+
+                <div class="vu-studio__group">
+                    <button class="vu-studio__group-head"
+                            t-on-click="() => state.activeGroup = state.activeGroup === 'Shape' ? null : 'Shape'">
+                        <span>Shape &amp; Density</span>
+                        <i t-att-class="'fa ' + (state.activeGroup === 'Shape' ? 'fa-chevron-down' : 'fa-chevron-right')"/>
+                    </button>
+                    <div class="vu-studio__group-body" t-if="state.activeGroup === 'Shape'">
+                        <t t-foreach="shapeFields" t-as="sf" t-key="sf[0]">
+                            <div class="vu-studio__row" t-att-class="{ overridden: isOverridden(sf[0]) }">
+                                <label t-esc="sf[1]"/>
+                                <div class="vu-studio__color">
+                                    <select class="vu-studio__select" t-on-change="(ev) => this.onShapeChange(sf[0], ev)">
+                                        <t t-foreach="sf[2]" t-as="opt" t-key="opt">
+                                            <option t-att-value="opt" t-att-selected="value(sf[0]) === opt" t-esc="opt"/>
+                                        </t>
+                                    </select>
+                                    <button class="vu-studio__reset" t-if="isOverridden(sf[0])"
+                                            title="Reset to default"
+                                            t-on-click="() => this.resetToken(sf[0])">
+                                        <i class="fa fa-times"/>
+                                    </button>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <div class="vu-studio__hint">
+                    Changes preview instantly in this tab (and across the app while
+                    previewing). Nobody else sees them until you Publish.
+                </div>
+            </div>
+
+            <!-- ═══ Playground ═══ -->
+            <div class="vu-studio__playground">
+
+                <div class="vu-pg__section">
+                    <h6>Buttons</h6>
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <button class="btn btn-primary">Primary</button>
+                        <button class="btn btn-secondary">Secondary</button>
+                        <button class="btn btn-link">Link button</button>
+                        <a href="#" onclick="return false">Plain link</a>
+                    </div>
+                    <div class="o_form_statusbar mt-3"><div class="o_statusbar_buttons">
+                        <button class="btn btn-primary oe_highlight"><i class="fa fa-check"/> Confirm</button>
+                        <button class="btn"><i class="fa fa-clone"/> Duplicate</button>
+                        <button class="btn btn-success"><i class="fa fa-money"/> Collect Payment</button>
+                        <button class="btn btn-warning"><i class="fa fa-clock-o"/> Reschedule</button>
+                        <button class="btn btn-danger"><i class="fa fa-times"/> Cancel</button>
+                    </div></div>
+                </div>
+
+                <div class="vu-pg__section">
+                    <h6>Workflow states &amp; badges</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="vu-pg__state" style="--pg-state: var(--vu-state-draft)">Draft</span>
+                        <span class="vu-pg__state" style="--pg-state: var(--vu-state-confirmed)">Confirmed</span>
+                        <span class="vu-pg__state" style="--pg-state: var(--vu-state-assigned)">Assigned</span>
+                        <span class="vu-pg__state" style="--pg-state: var(--vu-state-active)">In Progress</span>
+                        <span class="vu-pg__state" style="--pg-state: var(--vu-state-completed)">Completed</span>
+                        <span class="vu-pg__state" style="--pg-state: var(--vu-state-cancelled)">Cancelled</span>
+                        <span class="badge bg-info ms-3">ID: 02 0024</span>
+                        <span class="badge bg-secondary">81 years old</span>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        <div class="alert alert-success py-1 px-3 mb-0">Success alert</div>
+                        <div class="alert alert-info py-1 px-3 mb-0">Info alert</div>
+                        <div class="alert alert-warning py-1 px-3 mb-0">Warning alert</div>
+                        <div class="alert alert-danger py-1 px-3 mb-0">Danger alert</div>
+                    </div>
+                </div>
+
+                <div class="vu-pg__section">
+                    <h6>Native form (dialogs, opted-out views)</h6>
+                    <div class="vu-pg__native-form">
+                        <div class="vu-pg__field">
+                            <label class="o_form_label">Client name</label>
+                            <input type="text" class="o_input" value="Nguyễn Văn A"/>
+                        </div>
+                        <div class="vu-pg__field">
+                            <label class="o_form_label">Facility</label>
+                            <select class="o_input"><option>HCM Facility</option><option>Hanoi Facility</option></select>
+                        </div>
+                        <div class="vu-pg__field">
+                            <label class="o_form_label">Notes</label>
+                            <input type="text" class="o_input" placeholder="Internal notes…"/>
+                        </div>
+                        <div class="vu-pg__field">
+                            <label class="o_form_label">Priority</label>
+                            <div class="form-check form-check-inline"><input class="form-check-input" type="radio" checked="checked"/><label class="form-check-label">Normal</label></div>
+                            <div class="form-check form-check-inline"><input class="form-check-input" type="radio"/><label class="form-check-label">Urgent</label></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vu-pg__section">
+                    <h6>VU form hero &amp; stat cards</h6>
+                    <div class="vu-pg__hero">
+                        <div>
+                            <span class="vu-pg__hero-code">BK1238</span>
+                            <span class="vu-pg__state ms-2" style="--pg-state: var(--vu-state-active)">In Progress</span>
+                        </div>
+                        <span class="vu-pg__hero-meta">Created Jun 8 · by Tran OM</span>
+                    </div>
+                    <div class="vu-pg__stats">
+                        <div class="vu-pg__stat" style="--pg-accent: var(--vu-brand-primary)">
+                            <span class="vu-pg__stat-label">Scheduled</span><b>Jul 9, 12:00 PM</b>
+                        </div>
+                        <div class="vu-pg__stat" style="--pg-accent: var(--vu-brand-accent)">
+                            <span class="vu-pg__stat-label">Duration</span><b>120 mins</b>
+                        </div>
+                        <div class="vu-pg__stat" style="--pg-accent: var(--vu-status-success)">
+                            <span class="vu-pg__stat-label">Facility</span><b>HCM Facility</b>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vu-pg__section">
+                    <h6>List view</h6>
+                    <table class="vu-pg__table">
+                        <thead><tr><th>Booking</th><th>Client</th><th>Scheduled</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td>BK1238</td><td>An Xu</td><td>Jul 9, 12:00</td>
+                                <td><span class="vu-pg__state" style="--pg-state: var(--vu-state-active)">In Progress</span></td></tr>
+                            <tr><td>BK1235</td><td>Bành</td><td>Jul 6, 12:00</td>
+                                <td><span class="vu-pg__state" style="--pg-state: var(--vu-state-confirmed)">Confirmed</span></td></tr>
+                            <tr><td>BK1230</td><td>Bùi T</td><td>Jun 21, 12:00</td>
+                                <td><span class="vu-pg__state" style="--pg-state: var(--vu-state-completed)">Completed</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="vu-pg__section">
+                    <h6>Tabs, kanban card &amp; chatter</h6>
+                    <div class="vu-pg__tabs">
+                        <span class="active">Overview</span><span>Details</span><span>Activity</span><span>Reports</span>
+                    </div>
+                    <div class="d-flex gap-3 mt-3 flex-wrap">
+                        <div class="vu-pg__kanban">
+                            <b>An Xu</b>
+                            <span class="text-muted d-block">Home Visit · 2 hours</span>
+                            <span class="vu-pg__state mt-2" style="--pg-state: var(--vu-state-confirmed)">Confirmed</span>
+                        </div>
+                        <div class="vu-pg__chatter flex-grow-1">
+                            <div class="d-flex gap-2 mb-2">
+                                <button class="btn btn-sm btn-primary">Send message</button>
+                                <button class="btn btn-sm btn-secondary">Log note</button>
+                                <button class="btn btn-sm btn-secondary">Activity</button>
+                            </div>
+                            <div class="vu-pg__msg"><b>Mitchell Admin</b> · Jun 8 — Address updated to 72 Lê Thánh Tôn.</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

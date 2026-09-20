@@ -19,7 +19,7 @@ class HrPayrollCycleCarryover(models.Model):
         'hr.formula.config',
         string='Formula Configuration',
         required=True,
-        ondelete='cascade'
+        ondelete='restrict'
     )
     source_component_id = fields.Many2one(
         'hr.formula.rule',

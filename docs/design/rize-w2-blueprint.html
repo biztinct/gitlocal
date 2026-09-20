@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RIZE Wave 2 Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#F6F7FB; --surface:#FFFFFF; --surface2:#FAFAFE;
+    --ink:#1E1B2E; --muted:#5B6478; --faint:#8A91A5;
+    --brand:#5A4BB0; --brand-deep:#241F52; --brand-hov:#4A3D96;
+    --brand-soft:#EDEAF8; --brand-mid:#CBC2EE;
+    --good:#2E7D4F; --good-soft:#E7F3EC;
+    --info:#2563EB; --info-soft:#E8EFFD;
+    --warn:#B45309; --warn-soft:#FBF0E1;
+    --bad:#DC2668;  --bad-soft:#FCE9F0;
+    --border:#E2E8F0; --border2:#D6DBE8;
+    --shadow:0 1px 2px rgba(30,27,46,.05),0 8px 24px -12px rgba(30,27,46,.12);
+    --r:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141221; --surface:#1E1B31; --surface2:#232039;
+      --ink:#ECEAF6; --muted:#A7ADC2; --faint:#7C829A;
+      --brand:#A99CE6; --brand-deep:#D8D1F5; --brand-hov:#BCB1EE;
+      --brand-soft:#2B2648; --brand-mid:#3D3766;
+      --good:#5CBF8A; --good-soft:#1D3229;
+      --info:#7CA5F5; --info-soft:#1E2A44;
+      --warn:#E5A455; --warn-soft:#3A2C18;
+      --bad:#F07AA4;  --bad-soft:#3D2030;
+      --border:#33304D; --border2:#403C5E;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#141221; --surface:#1E1B31; --surface2:#232039;
+    --ink:#ECEAF6; --muted:#A7ADC2; --faint:#7C829A;
+    --brand:#A99CE6; --brand-deep:#D8D1F5; --brand-hov:#BCB1EE;
+    --brand-soft:#2B2648; --brand-mid:#3D3766;
+    --good:#5CBF8A; --good-soft:#1D3229;
+    --info:#7CA5F5; --info-soft:#1E2A44;
+    --warn:#E5A455; --warn-soft:#3A2C18;
+    --bad:#F07AA4;  --bad-soft:#3D2030;
+    --border:#33304D; --border2:#403C5E;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Public Sans",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Sora",sans-serif;margin:0;text-wrap:balance}
+  .wrap{max-width:1080px;margin:0 auto;padding:48px 24px 40px}
+  svg.ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+  /* hero */
+  .hero{margin-bottom:8px}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);background:var(--brand-soft);border-radius:999px;padding:7px 14px;margin-bottom:18px}
+  .hero h1{font-size:clamp(30px,5vw,44px);font-weight:800;letter-spacing:-.02em;margin-bottom:14px}
+  .lede{font-size:18px;color:var(--muted);max-width:66ch;margin:0}
+  .lede strong{color:var(--ink)}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+  .legend span{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:8px 15px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow)}
+  .dot{width:10px;height:10px;border-radius:3px;flex:none}
+  .dot.was{background:#9aa3b5}.dot.ext{background:#e0a53a}.dot.new{background:#4caf72}
+
+  /* jump chips */
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+  .toc a{text-decoration:none;color:var(--muted);border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:600}
+  .toc a:hover,.toc a:focus-visible{color:var(--brand);border-color:var(--brand-mid);outline:none}
+
+  /* sections */
+  section{margin-top:60px}
+  .sechead{display:flex;align-items:flex-start;gap:14px;margin-bottom:8px}
+  .secnum{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;color:var(--brand);background:var(--brand-soft);border-radius:8px;padding:5px 9px;margin-top:4px;flex:none}
+  .sechead h2{font-size:25px;font-weight:700;letter-spacing:-.01em}
+  .secsub{color:var(--muted);max-width:72ch;margin:6px 0 22px;font-size:15.5px}
+  .secsub b{color:var(--ink)}
+
+  /* ownership columns */
+  .own3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+  .owncol{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+  .owncol .cap{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:12px 18px;border-bottom:1px solid var(--border)}
+  .owncol.was .cap{color:var(--muted);background:var(--surface2)}
+  .owncol.ext .cap{color:var(--warn);background:var(--warn-soft)}
+  .owncol.new .cap{color:var(--good);background:var(--good-soft)}
+  .owncol ul{margin:0;padding:14px 18px 16px;list-style:none;display:flex;flex-direction:column;gap:7px}
+  .owncol li{font-size:14px;display:flex;gap:8px;align-items:baseline}
+  .owncol li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--faint);flex:none;position:relative;top:-2px}
+  .owncol li small{color:var(--faint)}
+  .flownote{margin-top:16px;font-size:14.5px;background:var(--brand-soft);border:1px solid var(--brand-mid);border-radius:10px;padding:13px 17px}
+  .flownote b{color:var(--brand-deep)}
+
+  /* tags */
+  .tag{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .tag.green{color:var(--good);background:var(--good-soft)}
+  .tag.amber{color:var(--warn);background:var(--warn-soft)}
+  .tag.brand{color:var(--brand);background:var(--brand-soft)}
+  .tag.grey{color:var(--muted);background:var(--surface2);border:1px solid var(--border)}
+  .tag.blue{color:var(--info);background:var(--info-soft)}
+  .tag.red{color:var(--bad);background:var(--bad-soft)}
+
+  /* tables */
+  .mtxwrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);background:var(--surface)}
+  table.mtx{border-collapse:collapse;width:100%;min-width:720px;font-size:13.8px}
+  table.mtx th{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;text-align:left;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface2)}
+  table.mtx td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:top}
+  table.mtx tr:last-child td{border-bottom:none}
+  table.mtx td.what{font-weight:600;min-width:150px}
+  table.mtx td.td-today{min-width:140px}
+  td .why{display:block;color:var(--muted);font-size:12.8px;font-weight:400;margin-top:2px}
+  .where{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:var(--info);background:var(--info-soft);border-radius:6px;padding:2px 8px;margin-top:5px;margin-right:4px}
+  .where svg.ic{width:12px;height:12px}
+  .key{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--brand);white-space:nowrap}
+
+  /* module card wrapper */
+  .modmeta{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+  .modmeta span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:5px 12px}
+  .modmeta svg.ic{width:13px;height:13px;color:var(--brand)}
+
+  /* route strip */
+  .routes{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+  .route{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:13.5px}
+  .route .rlab{font-weight:700;min-width:190px}
+  .step{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border2);border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:600;color:var(--muted)}
+  .step.you{background:var(--brand-soft);border-color:var(--brand-mid);color:var(--brand)}
+  .step.esc{background:var(--warn-soft);border-color:transparent;color:var(--warn)}
+  .route .arr{color:var(--faint)}
+  .route .arr svg.ic{width:13px;height:13px}
+  .routenote{font-size:12.5px;color:var(--faint);margin-left:auto}
+
+  /* switches */
+  .sw{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:14px}
+  .swc{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 14px}
+  .pill{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;border-radius:999px;padding:3px 9px;margin-top:2px}
+  .pill.on{color:var(--good);background:var(--good-soft)}
+  .pill.off{color:var(--muted);background:var(--surface2);border:1px solid var(--border)}
+  .swc b{display:block;font-size:13.5px}
+  .swc p{margin:2px 0 0;font-size:12.8px;color:var(--muted)}
+
+  /* approval strip */
+  .approve{display:flex;flex-wrap:wrap;gap:18px;align-items:center;background:var(--surface);border:1px dashed var(--border2);border-radius:10px;padding:11px 16px;margin-top:12px;font-size:13.5px;color:var(--muted)}
+  .approve b{color:var(--ink);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+  label.chk{display:flex;gap:7px;align-items:center;cursor:pointer;user-select:none}
+  label.chk input{accent-color:var(--brand);width:15px;height:15px;margin:0}
+  .subh{font-size:15px;font-weight:700;margin:22px 0 4px;display:flex;align-items:center;gap:8px}
+  .subh svg.ic{color:var(--brand)}
+
+  /* guarantees / idea cards */
+  .guar{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .g{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:var(--shadow)}
+  .g .gi{width:36px;height:36px;border-radius:10px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+  .g h3{font-size:15.5px;font-weight:700;margin-bottom:6px}
+  .g p{margin:0;font-size:14px;color:var(--muted)}
+
+  /* rail mock */
+  .navwrap{display:grid;grid-template-columns:230px 1fr;gap:18px;align-items:start}
+  @media (max-width:760px){.navwrap{grid-template-columns:1fr}}
+  .railmock{background:var(--brand-deep);border-radius:var(--r);box-shadow:var(--shadow);padding:16px 12px;display:flex;flex-direction:column;gap:3px}
+  :root[data-theme="dark"] .railmock{background:#2B2648}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .railmock{background:#2B2648}}
+  .railitem{display:flex;align-items:center;gap:10px;color:#CDC7EC;font-size:13.5px;font-weight:600;border-radius:9px;padding:8px 11px}
+  .railitem svg.ic{width:15px;height:15px}
+  .railitem.touch{background:rgba(255,255,255,.13);color:#fff;position:relative}
+  .railitem.touch::after{content:"+ LENS";font-size:9px;font-weight:800;letter-spacing:.08em;background:#4caf72;color:#fff;border-radius:5px;padding:2px 6px;margin-left:auto}
+  .raillab{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8F87BD;padding:10px 11px 3px}
+  .lensbox{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;gap:13px}
+  .lensrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .lensrow .hublab{font-weight:700;font-size:13.5px;min-width:104px}
+  .lens{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border2);background:var(--surface2);border-radius:999px;padding:5px 13px;font-size:12.5px;font-weight:600;color:var(--muted)}
+  .lens.new{border-color:var(--good);color:var(--good);background:var(--good-soft)}
+  .lens svg.ic{width:12px;height:12px}
+
+  /* portal pages */
+  .portalgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin-top:16px}
+  .pp{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+  .pp .ppurl{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--brand);margin-bottom:5px}
+  .pp p{margin:0;font-size:13px;color:var(--muted)}
+
+  /* phases */
+  .phasewrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);background:var(--surface)}
+  table.ph{border-collapse:collapse;width:100%;min-width:760px;font-size:13.8px}
+  table.ph th{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;text-align:left;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface2)}
+  table.ph td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:top}
+  table.ph tr:last-child td{border-bottom:none}
+  .phno{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--brand);white-space:nowrap}
+  tr.stop td{background:var(--warn-soft)}
+
+  /* decisions */
+  .dec{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:18px 20px;margin-top:14px}
+  .dec h3{font-size:15.5px;font-weight:700;display:flex;gap:10px;align-items:baseline}
+  .dec h3 .dno{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--brand);background:var(--brand-soft);border-radius:7px;padding:2px 8px;flex:none}
+  .dec p{margin:8px 0 0;font-size:14px;color:var(--muted)}
+  .dec p b{color:var(--ink)}
+  .rec{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;font-weight:600;color:var(--good);background:var(--good-soft);border-radius:8px;padding:5px 11px}
+  .rec.done{color:var(--muted);background:var(--surface2);border:1px solid var(--border)}
+  .rec svg.ic{width:13px;height:13px}
+
+  footer{margin-top:72px;padding-top:24px;border-top:1px solid var(--border);color:var(--faint);font-size:13px;display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.94a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1 1 0 0 1 1.52 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+    <symbol id="i-brief" viewBox="0 0 24 24"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect x="2" y="6" width="20" height="14" rx="2"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="i-ucheck" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.5 13 17 22l-5-3-5 3 1.5-9"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></symbol>
+    <symbol id="i-trend" viewBox="0 0 24 24"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></symbol>
+    <symbol id="i-cog" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-mega" viewBox="0 0 24 24"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></symbol>
+    <symbol id="i-grad" viewBox="0 0 24 24"><path d="M21.42 10.92 12.5 6 3.58 10.92 12.5 15.84z"/><path d="M6 12.5V17c0 1.5 3 3 6.5 3s6.5-1.5 6.5-3v-4.5"/><path d="M21.42 10.92V16"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-cam" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+
+<header class="hero">
+  <span class="eyebrow"><svg class="ic"><use href="#i-shield"/></svg>Design proposal · Payobook × RIZE · Wave 2</span>
+  <h1>RIZE Wave 2 Blueprint</h1>
+  <p class="lede">The five tabs that were going to stay in Zoho — <strong>Hiring, Goals, HR announcements, Leave &amp; attendance, and Training</strong> — now come into Payobook, built the same way and to the same finish as the first ten. Every requirement row from your sheet is below, with what already exists, what gets built, where it shows up, who signs off, and which switches you control.</p>
+  <div class="legend">
+    <span><span class="dot was"></span>Wave 1 — already live (10 tabs)</span>
+    <span><span class="dot ext"></span>Wave 2 — extend what is there (1 tab)</span>
+    <span><span class="dot new"></span>Wave 2 — build new (4 tabs)</span>
+  </div>
+  <nav class="toc">
+    <a href="#s1">Big picture</a><a href="#s2">Scorecard</a><a href="#s3">Hiring</a><a href="#s4">Goals</a><a href="#s5">Announcements</a><a href="#s6">Leave &amp; attendance</a><a href="#s7">Training</a><a href="#s8">Where it lives</a><a href="#s9">Sign-offs</a><a href="#s10">Switches</a><a href="#s11">Build order</a><a href="#s12">Decisions</a>
+  </nav>
+</header>
+
+<!-- ============ 01 BIG PICTURE ============ -->
+<section id="s1">
+  <div class="sechead"><span class="secnum">01</span><h2>The big picture</h2></div>
+  <p class="secsub">Wave 1 made Payobook the <b>operations and money platform</b> for RIZE and put every sign-off under one Approval Matrix with one inbox. Wave 2 closes the remaining gap: the whole employee story — from the hiring request to the training certificate — now runs here. Zoho stays the employee master for names, IDs and reporting lines, exactly as before.</p>
+  <div class="own3">
+    <div class="owncol was">
+      <div class="cap"><span class="dot was"></span>Live since wave 1</div>
+      <ul>
+        <li>Onboarding &amp; orientation</li>
+        <li>Offboarding &amp; exit</li>
+        <li>Assets</li>
+        <li>Probation</li>
+        <li>Performance improvement</li>
+        <li>Pay packages, awards, payroll calendar</li>
+        <li>Rewards &amp; recognition</li>
+        <li>Budgets</li>
+        <li>Contracts &amp; interns</li>
+        <li>Vendors &amp; access</li>
+      </ul>
+    </div>
+    <div class="owncol ext">
+      <div class="cap"><span class="dot ext"></span>Extended in wave 2</div>
+      <ul>
+        <li>Leave &amp; attendance <small>— the Leave Command Center, missing-punch rules and the field check-in app already exist; the holiday calendar, escalations, carry-forward watch and field-staff eligibility are added</small></li>
+      </ul>
+    </div>
+    <div class="owncol new">
+      <div class="cap"><span class="dot new"></span>Built new in wave 2</div>
+      <ul>
+        <li>Hiring &amp; recruitment <small>— request to offer to day one</small></li>
+        <li>Goals &amp; OKRs <small>— set, approve, lock, check in, score</small></li>
+        <li>HR announcements <small>— calendar, scheduled sends, birthdays</small></li>
+        <li>Training <small>— courses, tests, assignments, budget claims</small></li>
+      </ul>
+    </div>
+  </div>
+  <p class="flownote"><b>Outside services stay switched off, as you ruled.</b> No LinkedIn posting, no e-signature, no Google Calendar, no Slack. Everything goes by email with calendar attachments; a signed offer is recorded by hand. Every screen is built so the connection can be switched on later without redesign.</p>
+</section>
+
+<!-- ============ 02 SCORECARD ============ -->
+<section id="s2">
+  <div class="sechead"><span class="secnum">02</span><h2>Scorecard — what exists, what's new</h2></div>
+  <p class="secsub">Checked against the live system on 15 September. <span class="tag green">Already there</span> works today. <span class="tag amber">Partly there</span> has a real foundation that gets extended. <span class="tag brand">New build</span> does not exist yet.</p>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>Area</th><th>Today</th><th>What that means</th></tr>
+    <tr><td class="what">Hiring &amp; recruitment</td><td><span class="tag amber">Partly there</span></td><td>A standard applicant store is installed: jobs, candidates, pipeline stages, sources, a talent pool, job-board targets, a public careers page. It is kept as the store. Everything the sheet actually asks for — requisitions, budget check, JD sign-off, referrals, interview loop, panel feedback, BGV, offer, closure — is new, built in the Payobook style on top.</td></tr>
+    <tr><td class="what">Goals &amp; OKRs</td><td><span class="tag brand">New build</span></td><td>Nothing exists for goals. The journey engine (Day-1 trigger), the check-in pattern from probation, the Approval Matrix and the Home queue are reused so it lands quickly.</td></tr>
+    <tr><td class="what">HR announcements</td><td><span class="tag amber">Partly there</span></td><td>The anniversary engine from Recognition already knows every work anniversary (its mail is switched off). Birthdays, the communication calendar, scheduled sends and the 2-day edit rule are new.</td></tr>
+    <tr><td class="what">Leave &amp; attendance</td><td><span class="tag green">Already there</span> <span class="tag amber">+ gaps</span></td><td>Leave requests, balances, the approval queue, missing-punch and late rules, corrections, the field check-in app with a selfie, and the "who is in today" board all work. Six named gaps get filled.</td></tr>
+    <tr><td class="what">Training</td><td><span class="tag amber">Partly there</span></td><td>The E-Learning content engine is installed (courses, videos, documents, quizzes, per-person completion) and probation already has a small training tracker with a gate. The test engine (question bank, scored tests, certificates) is not installed yet and goes in first. All learner screens are built ours; the stock E-Learning site is never shown to an employee.</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ 03 HIRING ============ -->
+<section id="s3">
+  <div class="sechead"><span class="secnum">03</span><h2>Hiring &amp; recruitment</h2></div>
+  <p class="secsub"><span class="dot new"></span>&nbsp;New build, three steps. One board shows every open hiring request and where its candidates are. A function head raises the request; from there the recruiter runs the loop — posting, screening, interviews, feedback, BGV, offer — and the day the offer is signed the person drops straight into the <b>same new-joiner journey</b> a Zoho arrival gets.</p>
+  <div class="modmeta">
+    <span><svg class="ic"><use href="#i-refresh"/></svg>Lifecycle → Hiring (first lens, before New joiners)</span>
+    <span><svg class="ic"><use href="#i-user"/></svg>Portal: My hiring · Refer someone</span>
+    <span><svg class="ic"><use href="#i-mail"/></svg>Candidate &amp; panel pages by personal link</span>
+    <span><svg class="ic"><use href="#i-trend"/></svg>Insights → Hiring</span>
+  </div>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>From your sheet</th><th>Today</th><th>The design</th></tr>
+    <tr><td class="what">1. Manpower requisition</td><td class="td-today"><span class="tag brand">New build</span></td><td>Only function heads see "Raise a hiring request". The form carries exactly your fields: role type, location, budget status, JD requirements, interview steps, reporting manager, timeline, remarks — all mandatory. Approval through the Matrix.<span class="where"><svg class="ic"><use href="#i-refresh"/></svg>Lifecycle → Hiring</span></td></tr>
+    <tr><td class="what">Budget verification</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">budget engine exists</span></td><td>The request reads the function's budget-vs-actual line and shows "within budget" or "over by X". Over budget adds a Finance step to the sign-off and alerts the manager automatically.</td></tr>
+    <tr><td class="what">MR notification</td><td class="td-today"><span class="tag brand">New build</span></td><td>A per-country rule names the recruiter and the recruiter's manager; both get an email and a Home-queue card the moment the request is approved.<span class="where"><svg class="ic"><use href="#i-cog"/></svg>Settings → Hiring rules</span></td></tr>
+    <tr><td class="what">2. JD finalisation</td><td class="td-today"><span class="tag brand">New build</span></td><td>The JD is a versioned text on the request, drafted from a template, signed off by the hiring manager, and filed in the document vault so every JD lives in one place.</td></tr>
+    <tr><td class="what">3. Referral activation</td><td class="td-today"><span class="tag brand">New build</span></td><td>On approval, "Refer someone" opens for staff automatically — unless the request is flagged "sensitive replacement". Referrals arrive as candidates tagged Referral; the board shows a referral tracker.<span class="where"><svg class="ic"><use href="#i-user"/></svg>Portal: Refer someone</span></td></tr>
+    <tr><td class="what">4. Job posting</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">careers page + platform list exist</span></td><td>"Publish" builds the ready-to-send pack from a posting template — the public careers page updates, and each platform contact gets the email. LinkedIn's own connection stays off, as ruled.</td></tr>
+    <tr><td class="what">5. Screening &amp; resume bank</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">talent pool exists</span></td><td>Recruiter tags each candidate Shortlisted / Rejected / Future fit / Fit for another role; the last opens a dropdown of open roles and moves them. The resume bank is the talent pool, visible to HR only.</td></tr>
+    <tr><td class="what">6. Interview scheduling</td><td class="td-today"><span class="tag brand">New build</span></td><td>Recruiter picks round, panel and slot; candidate, panel and recruiter each get an email with a calendar attachment and the agenda. Google Calendar sync stays off, as ruled.</td></tr>
+    <tr><td class="what">Interview reminders</td><td class="td-today"><span class="tag brand">New build</span></td><td>24-hour and 30-minute reminders to everybody on the interview, sent once — never twice.</td></tr>
+    <tr><td class="what">Rescheduling flow</td><td class="td-today"><span class="tag brand">New build</span></td><td>Rescheduling asks for a reason and tags the delay Internal or External; the old slot is cancelled and fresh invites go out. The tag feeds the analytics.</td></tr>
+    <tr><td class="what">No-show tracking</td><td class="td-today"><span class="tag brand">New build</span></td><td>"Mark no-show" must say who — candidate or interviewer — and cannot be skipped when an interview passes without feedback.</td></tr>
+    <tr><td class="what">7. Feedback submission</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">peer-feedback link pattern exists</span></td><td>Each panel member gets a personal link to the feedback form — no login. A 24-working-hour timer runs; an urgent reminder goes when it lapses and the recruiter sees who is late.</td></tr>
+    <tr><td class="what">8. Next step processing</td><td class="td-today"><span class="tag brand">New build</span></td><td>One press: "Next round" or "Reject", each sending an email from an editable template.</td></tr>
+    <tr><td class="what">9. Debrief &amp; selection</td><td class="td-today"><span class="tag brand">New build</span></td><td>The final round carries debrief notes and a decision field; the selected candidate is named on the request.</td></tr>
+    <tr><td class="what">10. Background verification</td><td class="td-today"><span class="tag brand">New build</span></td><td>A BGV checklist with document upload per item. "Draft offer" stays locked until it is complete.</td></tr>
+    <tr><td class="what">11. Offer documentation request</td><td class="td-today"><span class="tag brand">New build</span></td><td>Automatic email to the candidate with a 2-day deadline and a personal upload link; reminders until everything is in.</td></tr>
+    <tr><td class="what">12. Offer preparation</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">pay packages + letter engine exist</span></td><td>The salary proposal is a pay package with proposed lines (the same screen your Comp team uses), reviewed by the hiring manager, then the country's offer letter template produces the draft. The candidate reviews it on their personal page.</td></tr>
+    <tr><td class="what">13. Signature process</td><td class="td-today"><span class="tag grey">Off by ruling</span></td><td>No DocuSign / Zoho Sign. The recruiter records "Signed" with the date and uploads the signed copy. The button is built for a signature service later.</td></tr>
+    <tr><td class="what">14. Closure notification</td><td class="td-today"><span class="tag brand">New build</span></td><td>"Signed" closes the position, notifies the hiring manager and the recruiter's manager, moves the candidate to Hired and opens the new-joiner journey — the same path a Zoho arrival takes.</td></tr>
+    <tr><td class="what">15. Recruiter delegation</td><td class="td-today"><span class="tag brand">New build</span></td><td>"Cover for me" on the request: a stand-in and a date window, approved by the recruiter's manager, every hand-over logged on the request.</td></tr>
+    <tr><td class="what">16. Source &amp; pipeline analytics</td><td class="td-today"><span class="tag brand">New build</span></td><td>Time to fill, time to offer, time in each stage, offer acceptance, source effectiveness, delays split internal/external. Date range, Excel export.<span class="where"><svg class="ic"><use href="#i-trend"/></svg>Insights → Hiring</span></td></tr>
+    <tr><td class="what">17. External agency involvement</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">vendor register exists</span></td><td>Tag the request with an agency from the vendor register; the hiring manager is told; the agency's hires and time-to-fill count on its vendor card.</td></tr>
+  </table></div>
+  <div class="approve"><b>Your call</b>
+    <label class="chk"><input type="checkbox">Approve as designed</label>
+    <label class="chk"><input type="checkbox">Approve with changes (tell me)</label>
+    <label class="chk"><input type="checkbox">Hold this module</label>
+  </div>
+</section>
+
+<!-- ============ 04 GOALS ============ -->
+<section id="s4">
+  <div class="sechead"><span class="secnum">04</span><h2>Goal setting &amp; OKRs</h2></div>
+  <p class="secsub"><span class="dot new"></span>&nbsp;New build, two steps. A goal cycle per financial year; each person writes goals with key results, the manager weights and approves, HR locks. Monthly check-ins keep it alive; scores roll up at year end. Employees do everything from their own page.</p>
+  <div class="modmeta">
+    <span><svg class="ic"><use href="#i-users"/></svg>People → Goals</span>
+    <span><svg class="ic"><use href="#i-user"/></svg>Portal: My goals</span>
+    <span><svg class="ic"><use href="#i-home"/></svg>Home: Goals waiting on you</span>
+    <span><svg class="ic"><use href="#i-trend"/></svg>Insights → Goals</span>
+  </div>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>From your sheet</th><th>Today</th><th>The design</th></tr>
+    <tr><td class="what">Goal setup trigger</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">journey engine exists</span></td><td>When the Day-1 step of the joiner journey is done, goal setting opens for that person with a 2-week deadline and reminder emails. HR can also open a whole cycle for everybody.<span class="where"><svg class="ic"><use href="#i-users"/></svg>People → Goals</span></td></tr>
+    <tr><td class="what">Employee goal creation</td><td class="td-today"><span class="tag brand">New build</span></td><td>Goal templates; mandatory title, description, timeline and at least one key result; an initial self-rating; a progress field per key result.<span class="where"><svg class="ic"><use href="#i-user"/></svg>Portal: My goals</span></td></tr>
+    <tr><td class="what">Manager review &amp; approval</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">Approval Matrix exists</span></td><td>Submitted goals reach the manager in the one inbox: assign weightage, send back with comments, or approve. Review deadline reminders to the manager.</td></tr>
+    <tr><td class="what">HR lock-in</td><td class="td-today"><span class="tag brand">New build</span></td><td>After the manager, HR locks. Locked goals are read-only; the lock records when and who, visible on the goal.</td></tr>
+    <tr><td class="what">Weightage &amp; scoring</td><td class="td-today"><span class="tag brand">New build</span></td><td>Weightage per goal (must total 100), numeric score per key result, aggregate score computed live and shown to manager and HR.</td></tr>
+    <tr><td class="what">Monthly check-ins</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">check-in pattern from probation</span></td><td>A check-in is scheduled every month for each manager-employee pair; both get a reminder; the form updates progress and must be marked complete or it shows as missed.</td></tr>
+    <tr><td class="what">Mid-year / periodic review logic</td><td class="td-today"><span class="tag brand">New build</span></td><td>The cycle carries the mid-year date; each person's applicability is computed from their joining date and shown on their goal card.</td></tr>
+    <tr><td class="what">Progress tracking</td><td class="td-today"><span class="tag brand">New build</span></td><td>Every key result keeps a history of progress updates with dates; a % complete bar on each goal and on the person.</td></tr>
+    <tr><td class="what">Completion &amp; closure</td><td class="td-today"><span class="tag brand">New build</span></td><td>"Mark complete" stamps who and when; year-end closes and archives the cycle, and the scores are frozen.</td></tr>
+    <tr><td class="what">Automated reminders</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">reminder-job pattern exists</span></td><td>Reminders for submission, approvals, check-ins and missed tasks — one daily job, never a duplicate mail.</td></tr>
+    <tr><td class="what">Email template customisation</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">editable templates exist</span></td><td>Every automatic email is an editable template with a default HR sender address.<span class="where"><svg class="ic"><use href="#i-cog"/></svg>Settings → Goals</span></td></tr>
+    <tr><td class="what">Visibility &amp; dashboards</td><td class="td-today"><span class="tag brand">New build</span></td><td>Employee sees own; manager sees the team; HR sees everything. Enforced on the data, not just hidden on screen.</td></tr>
+    <tr><td class="what">Escalation &amp; SLA</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">Matrix escalation exists</span></td><td>The number of days is a setting; past it, the request escalates to the HR lead through the Matrix and the escalation is logged on the request.</td></tr>
+    <tr><td class="what">HR daily task list</td><td class="td-today"><span class="tag green">Already there</span><span class="why">Home queue + inbox</span></td><td>Pending approvals appear in the one inbox; overdue check-ins and late submissions appear as a "Goals waiting on you" card on Home. No separate task list to maintain.<span class="where"><svg class="ic"><use href="#i-home"/></svg>Home</span></td></tr>
+    <tr><td class="what">Change requests after lock</td><td class="td-today"><span class="tag brand">New build</span></td><td>"Ask to change" opens a formal request with the reason; manager then HR approve through the Matrix; the change and the approvals are kept on the goal's history.</td></tr>
+    <tr><td class="what">Reporting &amp; exports</td><td class="td-today"><span class="tag brand">New build</span></td><td>Progress, completion %, missed check-ins, manager compliance, year-end scores; Excel export.<span class="where"><svg class="ic"><use href="#i-trend"/></svg>Insights → Goals</span></td></tr>
+    <tr><td class="what">Joining-month edge cases</td><td class="td-today"><span class="tag brand">New build</span></td><td>Someone joining in November with a March year end gets a pro-rated cycle; the system emails them a plain explanation of which reviews apply to them.</td></tr>
+  </table></div>
+  <div class="approve"><b>Your call</b>
+    <label class="chk"><input type="checkbox">Approve as designed</label>
+    <label class="chk"><input type="checkbox">Approve with changes (tell me)</label>
+    <label class="chk"><input type="checkbox">Hold this module</label>
+  </div>
+</section>
+
+<!-- ============ 05 HR COMM ============ -->
+<section id="s5">
+  <div class="sechead"><span class="secnum">05</span><h2>HR announcements</h2></div>
+  <p class="secsub"><span class="dot new"></span>&nbsp;New build, one step. A communication calendar per country: HR schedules a post, the responsible person is nudged two days before, the email goes out on the day. Birthdays join the work anniversaries that Recognition already tracks.</p>
+  <div class="modmeta">
+    <span><svg class="ic"><use href="#i-users"/></svg>People → Announcements</span>
+    <span><svg class="ic"><use href="#i-home"/></svg>Home: Coming up (next 7 days)</span>
+    <span><svg class="ic"><use href="#i-cog"/></svg>Settings → Announcements (templates)</span>
+  </div>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>From your sheet</th><th>Today</th><th>The design</th></tr>
+    <tr><td class="what">Communication calendar</td><td class="td-today"><span class="tag brand">New build</span></td><td>A month view of every scheduled announcement; one-off or recurring (weekly, monthly, yearly); each post belongs to a company/country and an audience (everyone, a department, a location).<span class="where"><svg class="ic"><use href="#i-users"/></svg>People → Announcements</span></td></tr>
+    <tr><td class="what">Templates &amp; posters</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">template pattern exists</span></td><td>HR uploads templates and poster images; each post names a responsible person, who is told two days before it goes out.</td></tr>
+    <tr><td class="what">Automation &amp; reminders</td><td class="td-today"><span class="tag brand">New build</span></td><td>A scheduled job sends each post by email at its time. Slack stays off, as ruled; the post is built so a channel can be added.</td></tr>
+    <tr><td class="what">Visibility &amp; access</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">Matrix responsibilities exist</span></td><td>Country HR schedules for their own company; the head of HR sees and can edit every country. An optional sign-off before a post goes out (switch).</td></tr>
+    <tr><td class="what">Content update</td><td class="td-today"><span class="tag brand">New build</span></td><td>The responsible person can edit until two days before; inside that window only the HR lead can, and every edit is kept on the post's history.</td></tr>
+    <tr><td class="what">Multi-country support</td><td class="td-today"><span class="tag brand">New build</span></td><td>Separate calendars per country side by side; the responsible HR person is set per country.</td></tr>
+    <tr><td class="what">Birthday &amp; work anniversary</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">anniversary engine exists (mail off)</span></td><td>Birthdays are added to the same engine; on the day the person gets a personalised card by email — the card is the poster, as ruled for the welcome poster. Manager heads-up on Monday stays as it is.</td></tr>
+  </table></div>
+  <div class="approve"><b>Your call</b>
+    <label class="chk"><input type="checkbox">Approve as designed</label>
+    <label class="chk"><input type="checkbox">Approve with changes (tell me)</label>
+    <label class="chk"><input type="checkbox">Hold this module</label>
+  </div>
+</section>
+
+<!-- ============ 06 LEAVE & ATTENDANCE ============ -->
+<section id="s6">
+  <div class="sechead"><span class="secnum">06</span><h2>Leave &amp; attendance</h2></div>
+  <p class="secsub"><span class="dot ext"></span>&nbsp;Extend, one step. The Leave Command Center, balances, corrections and the field check-in app are live today. Wave 2 fills six named gaps and opens the check-in app to field staff generally — agronomists included — with <b>location plus selfie</b> only, no face matching, no biometric storage, as you ruled.</p>
+  <div class="modmeta">
+    <span><svg class="ic"><use href="#i-compass"/></svg>Workforce → Leave · Attendance · Today</span>
+    <span><svg class="ic"><use href="#i-user"/></svg>Portal: Holidays · Field check-in</span>
+  </div>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>From your sheet</th><th>Today</th><th>The design</th></tr>
+    <tr><td class="what">Holiday calendar</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">holidays are set per company</span></td><td>A Holidays lens showing every country's public holidays for the year side by side, and the same view on every employee's portal. Updates HR makes show everywhere at once.<span class="where"><svg class="ic"><use href="#i-compass"/></svg>Workforce → Holidays</span><span class="where"><svg class="ic"><use href="#i-user"/></svg>Portal: Holidays</span></td></tr>
+    <tr><td class="what">Leave application</td><td class="td-today"><span class="tag green">Already there</span><span class="why">+ 3 gaps</span></td><td>Requests already go to the manager through the Matrix. Added: <b>escalation to the HR lead if the manager sits on it more than 2 days</b> (a step on the route, no separate job); a <b>sick-leave type that allows backdating</b> with an optional certificate upload; <b>past leaves cannot be edited</b> — a friendly message says so.</td></tr>
+    <tr><td class="what">Leave tracking &amp; balances</td><td class="td-today"><span class="tag green">Already there</span><span class="why">+ 1 gap</span></td><td>Balances and carry-forward already compute. Added: six months before the cut-off, a job flags everyone whose balance would double and emails them and their manager — once.</td></tr>
+    <tr><td class="what">Attendance for field employees</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">driver check-in app exists</span></td><td>The check-in app (location + selfie) is opened to a configurable "field staff" group instead of drivers only, renamed "Field check-in". Status is visible to HR and the team on the Today board; leave overlaps are drawn on the check-in board.</td></tr>
+    <tr><td class="what">Manager &amp; HR visibility</td><td class="td-today"><span class="tag green">Already there</span></td><td>HR sees leave and attendance per person; managers get their approvals and pending actions in the one inbox and on Home. Nothing to build.</td></tr>
+    <tr><td class="what">Auto notifications &amp; triggers</td><td class="td-today"><span class="tag amber">Partly there</span></td><td>Approval alerts exist. Added: a backdated request alerts HR at submission; the balance warning above.</td></tr>
+  </table></div>
+  <div class="approve"><b>Your call</b>
+    <label class="chk"><input type="checkbox">Approve as designed</label>
+    <label class="chk"><input type="checkbox">Approve with changes (tell me)</label>
+    <label class="chk"><input type="checkbox">Hold this module</label>
+  </div>
+</section>
+
+<!-- ============ 07 TRAINING ============ -->
+<section id="s7">
+  <div class="sechead"><span class="secnum">07</span><h2>Learning &amp; training</h2></div>
+  <p class="secsub"><span class="dot new"></span>&nbsp;New build, three steps, on top of two engines. The installed E-Learning engine holds the courses (videos, documents, in-lesson quizzes, completion per person); the Surveys engine — installed as the first step — runs the scored tests, the question bank and the certificates. <b>The employee only ever sees Payobook's own "My training" pages.</b></p>
+  <div class="modmeta">
+    <span><svg class="ic"><use href="#i-book"/></svg>Learn → My training · Training (HR)</span>
+    <span><svg class="ic"><use href="#i-user"/></svg>Portal: My training</span>
+    <span><svg class="ic"><use href="#i-trend"/></svg>Insights → Training</span>
+    <span><svg class="ic"><use href="#i-pause"/></svg>Checkpoint: you look at the learner flow after step 1</span>
+  </div>
+  <div class="mtxwrap"><table class="mtx">
+    <tr><th>From your sheet</th><th>Today</th><th>The design</th></tr>
+    <tr><td class="what">Agronomist mandatory training</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">course engine installed; test engine not</span></td><td>A day-one assignment for every new agronomist: videos, materials, then a test that unlocks only once every item is complete. Employee and manager are told at the start; score shown the moment the test is submitted; reminders and escalation to the manager and HR while it is late; the employee must give a reason for delay (sick / emergency / other) which the manager approves. The question bank is the Surveys library.<span class="where"><svg class="ic"><use href="#i-user"/></svg>Portal: My training</span></td></tr>
+    <tr><td class="what">Probation-linked training</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">probation gate exists</span></td><td>An assignment can be marked "counts for probation". The existing probation verdict gate keeps working unchanged and now reads these assignments; manager and HR are told when it is late.</td></tr>
+    <tr><td class="what">Manager &amp; leadership training</td><td class="td-today"><span class="tag brand">New build</span></td><td>HR assigns a course to a person or a group, ad hoc or on a date; completion tracked; certificates collected in the vault.</td></tr>
+    <tr><td class="what">Employee-driven training budget</td><td class="td-today"><span class="tag amber">Partly there</span><span class="why">awards → pay run door exists</span></td><td>An annual allowance per person; the employee submits invoice and certificate; HR validates through the Matrix; the reimbursement rides the existing one-off pay-run door — the same route awards take.</td></tr>
+    <tr><td class="what">Compliance training</td><td class="td-today"><span class="tag brand">New build</span></td><td>Recurring schedules (code of conduct, safety) re-assign themselves yearly or as set; completion tracked; reminders sent.</td></tr>
+    <tr><td class="what">Training analytics &amp; reporting</td><td class="td-today"><span class="tag brand">New build</span></td><td>Completion ratio, performance ratio, overdue, by date range; a weekly or monthly pack by email to the training manager.<span class="where"><svg class="ic"><use href="#i-trend"/></svg>Insights → Training</span></td></tr>
+    <tr><td class="what">Ad-hoc agronomist training</td><td class="td-today"><span class="tag brand">New build</span></td><td>Same machinery as the mandatory one, started by HR at any time with its own deadline.</td></tr>
+  </table></div>
+  <p class="flownote"><b>White-label sweep included.</b> Installing the test engine brings stock screens with it. Step 1 of this module puts every learner surface under our portal theme and checks every word an employee could see; the stock course and survey pages are locked to internal users.</p>
+  <div class="approve"><b>Your call</b>
+    <label class="chk"><input type="checkbox">Approve as designed</label>
+    <label class="chk"><input type="checkbox">Approve with changes (tell me)</label>
+    <label class="chk"><input type="checkbox">Hold this module</label>
+  </div>
+</section>
+
+<!-- ============ 08 WHERE IT LIVES ============ -->
+<section id="s8">
+  <div class="sechead"><span class="secnum">08</span><h2>Where it all lives</h2></div>
+  <p class="secsub">Same rule as wave 1: <b>few doors, rich rooms</b>. No new item joins the left rail. Every new surface is a lens inside a mission that already exists, and every employee page sits in the same personal portal as payslips and My journey.</p>
+  <div class="navwrap">
+    <div class="railmock" aria-label="Left rail preview">
+      <div class="railitem touch"><svg class="ic"><use href="#i-home"/></svg>Home</div>
+      <div class="raillab">Operate</div>
+      <div class="railitem"><svg class="ic"><use href="#i-zap"/></svg>Pay Run</div>
+      <div class="railitem touch"><svg class="ic"><use href="#i-users"/></svg>People</div>
+      <div class="railitem touch"><svg class="ic"><use href="#i-refresh"/></svg>Lifecycle</div>
+      <div class="railitem touch"><svg class="ic"><use href="#i-compass"/></svg>Workforce</div>
+      <div class="raillab">Understand</div>
+      <div class="railitem touch"><svg class="ic"><use href="#i-trend"/></svg>Insights</div>
+      <div class="railitem"><svg class="ic"><use href="#i-shield"/></svg>Compliance</div>
+      <div class="raillab">Learn</div>
+      <div class="railitem touch"><svg class="ic"><use href="#i-book"/></svg>Learn</div>
+      <div class="railitem touch"><svg class="ic"><use href="#i-cog"/></svg>Settings</div>
+    </div>
+    <div class="lensbox">
+      <div class="lensrow"><span class="hublab">Lifecycle</span>
+        <span class="lens new"><svg class="ic"><use href="#i-search"/></svg>Hiring</span>
+        <span class="lens">Journeys</span><span class="lens">New joiners</span><span class="lens">Exits</span><span class="lens">Probation</span><span class="lens">Growth plans</span><span class="lens">Contracts</span>
+      </div>
+      <div class="lensrow"><span class="hublab">People</span>
+        <span class="lens">Employees</span><span class="lens">Contracts</span><span class="lens">Records</span><span class="lens">Assets</span><span class="lens">Praise</span>
+        <span class="lens new"><svg class="ic"><use href="#i-target"/></svg>Goals</span>
+        <span class="lens new"><svg class="ic"><use href="#i-mega"/></svg>Announcements</span>
+      </div>
+      <div class="lensrow"><span class="hublab">Workforce</span>
+        <span class="lens">Leave</span><span class="lens">Attendance</span><span class="lens">Today</span>
+        <span class="lens new"><svg class="ic"><use href="#i-sun"/></svg>Holidays</span>
+        <span class="lens new"><svg class="ic"><use href="#i-pin"/></svg>Field check-in</span>
+      </div>
+      <div class="lensrow"><span class="hublab">Learn</span>
+        <span class="lens new"><svg class="ic"><use href="#i-grad"/></svg>My training</span>
+        <span class="lens new"><svg class="ic"><use href="#i-book"/></svg>Training (HR)</span>
+        <span class="lens">Product lessons</span>
+      </div>
+      <div class="lensrow"><span class="hublab">Insights</span>
+        <span class="lens">Explorer</span><span class="lens">Budget</span>
+        <span class="lens new"><svg class="ic"><use href="#i-chart"/></svg>Hiring</span>
+        <span class="lens new"><svg class="ic"><use href="#i-chart"/></svg>Goals</span>
+        <span class="lens new"><svg class="ic"><use href="#i-chart"/></svg>Training</span>
+      </div>
+      <div class="lensrow"><span class="hublab">Home</span>
+        <span class="lens">Queue</span><span class="lens">Inbox</span><span class="lens">Wall</span>
+        <span class="lens new"><svg class="ic"><use href="#i-target"/></svg>Goals waiting on you</span>
+        <span class="lens new"><svg class="ic"><use href="#i-cal"/></svg>Coming up</span>
+      </div>
+      <div class="lensrow"><span class="hublab">Settings</span>
+        <span class="lens">Existing panels</span>
+        <span class="lens new"><svg class="ic"><use href="#i-cog"/></svg>Hiring rules</span>
+        <span class="lens new"><svg class="ic"><use href="#i-cog"/></svg>Goals</span>
+        <span class="lens new"><svg class="ic"><use href="#i-cog"/></svg>Announcements</span>
+        <span class="lens new"><svg class="ic"><use href="#i-cog"/></svg>Training</span>
+      </div>
+    </div>
+  </div>
+  <h3 style="font-size:17px;margin-top:26px">The employee's own pages</h3>
+  <div class="portalgrid">
+    <div class="pp"><div class="ppurl">My hiring</div><p>For hiring managers: my open requests, candidates in each round, feedback still owed.</p></div>
+    <div class="pp"><div class="ppurl">Refer someone</div><p>Name, role, CV upload; see where each referral got to.</p></div>
+    <div class="pp"><div class="ppurl">My goals</div><p>Write goals and key results, update progress, do the monthly check-in, ask to change.</p></div>
+    <div class="pp"><div class="ppurl">Holidays</div><p>This year's public holidays, every country side by side.</p></div>
+    <div class="pp"><div class="ppurl">Field check-in</div><p>Location + selfie check-in on the phone; today's status.</p></div>
+    <div class="pp"><div class="ppurl">My training</div><p>Courses due, progress, take the test, see the score, download the certificate, claim a course cost.</p></div>
+    <div class="pp"><div class="ppurl">Personal links</div><p>Candidates upload documents and review offers; interview panels give feedback — no login needed.</p></div>
+    <div class="pp"><div class="ppurl">Already there</div><p>My journey, my compensation, my recognition, my leave, payslips, documents.</p></div>
+  </div>
+</section>
+
+<!-- ============ 09 SIGN-OFFS ============ -->
+<section id="s9">
+  <div class="sechead"><span class="secnum">09</span><h2>Sign-offs at a glance</h2></div>
+  <p class="secsub">Every approval below is a <b>route in the Approval Matrix</b> you already run — same inbox, same delegation, same escalation, same audit. Nothing gets its own approval screen. Each route is seeded with the default shown and can be changed in the Matrix like any other.</p>
+  <div class="routes">
+    <div class="route"><span class="rlab">Hiring request</span><span class="step you">Function head raises</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step">Their manager</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step">HR lead</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step esc">Finance approver, only if over budget</span></div>
+    <div class="route"><span class="rlab">Job description</span><span class="step you">Recruiter drafts</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step">Hiring manager</span></div>
+    <div class="route"><span class="rlab">Offer proposal</span><span class="step you">Recruiter proposes pay</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step">Hiring manager</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step">HR lead</span><span class="routenote">the offer letter then uses the existing letter sign-off</span></div>
+    <div class="route"><span class="rlab">Recruiter cover</span><span class="step you">Recruiter names a stand-in</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step">Recruiter's manager</span></div>
+    <div class="route"><span class="rlab">Goals</span><span class="step you">Employee submits</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step">Manager weights &amp; approves</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step">HR lead locks</span><span class="step esc">escalates to HR lead after N days (setting)</span></div>
+    <div class="route"><span class="rlab">Goal change after lock</span><span class="step you">Employee or manager asks</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step">Manager</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step">HR lead</span></div>
+    <div class="route"><span class="rlab">Announcement</span><span class="step you">Country HR schedules</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step">HR lead</span><span class="routenote">only when the "needs sign-off" switch is on; off by default</span></div>
+    <div class="route"><span class="rlab">Leave request</span><span class="step you">Employee applies</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step">Manager</span><span class="step esc">escalates to HR lead after 2 days</span><span class="routenote">existing route, one step added</span></div>
+    <div class="route"><span class="rlab">Training delay reason</span><span class="step you">Employee explains</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step">Manager</span></div>
+    <div class="route"><span class="rlab">Training cost claim</span><span class="step you">Employee submits invoice + certificate</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step">HR lead validates</span><span class="arr"><svg class="ic"><use href="#i-arrow"/></svg></span><span class="step">Pay run (one-off door)</span></div>
+  </div>
+</section>
+
+<!-- ============ 10 SWITCHES ============ -->
+<section id="s10">
+  <div class="sechead"><span class="secnum">10</span><h2>The switches you control</h2></div>
+  <p class="secsub">Anything that emails real people, anything with an outside service, and anything that opens a whole population at once ships in the state shown. <span class="pill on">ON</span> means it works from day one; <span class="pill off">OFF</span> means it is built, tested and waiting for you to turn it on.</p>
+
+  <div class="subh"><svg class="ic"><use href="#i-search"/></svg>Hiring</div>
+  <div class="sw">
+    <div class="swc"><span class="pill on">ON</span><div><b>Interview invites &amp; reminders</b><p>Email with calendar attachment; 24-hour and 30-minute reminders.</p></div></div>
+    <div class="swc"><span class="pill on">ON</span><div><b>Panel feedback timer</b><p>24 working hours, then an urgent reminder. The hours count is a setting.</p></div></div>
+    <div class="swc"><span class="pill on">ON</span><div><b>Referral opens on approval</b><p>Unless the request is flagged "sensitive replacement".</p></div></div>
+    <div class="swc"><span class="pill on">ON</span><div><b>Document request deadline</b><p>2 days, with reminders. Days are a setting.</p></div></div>
+    <div class="swc"><span class="pill off">OFF</span><div><b>Platform posting emails</b><p>The pack is built; sending to platform contacts is off until you list real contacts.</p></div></div>
+    <div class="swc"><span class="pill off">OFF</span><div><b>LinkedIn · e-signature · Google Calendar</b><p>By your ruling. Buttons present, connections absent.</p></div></div>
+  </div>
+
+  <div class="subh"><svg class="ic"><use href="#i-target"/></svg>Goals</div>
+  <div class="sw">
+    <div class="swc"><span class="pill on">ON</span><div><b>Day-1 kick-off for new joiners</b><p>Goal setting opens with a 2-week deadline when the Day-1 step is done.</p></div></div>
+    <div class="swc"><span class="pill off">OFF</span><div><b>Open a cycle for everyone</b><p>A button HR presses, never automatic — 4,500 people would otherwise get a mail the first night.</p></div></div>
+    <div class="swc"><span class="pill on">ON</span><div><b>Monthly check-in reminders</b><p>To both sides, once each.</p></div></div>
+    <div class="swc"><span class="pill on">ON</span><div><b>Escalation days</b><p>Default 5 days past deadline before the HR lead is pulled in.</p></div></div>
+  </div>
+
+  <div class="subh"><svg class="ic"><use href="#i-mega"/></svg>Announcements</div>
+  <div class="sw">
+    <div class="swc"><span class="pill on">ON</span><div><b>Scheduled sends</b><p>Posts go out by email at their time; the responsible person is nudged two days before.</p></div></div>
+    <div class="swc"><span class="pill off">OFF</span><div><b>Sign-off before sending</b><p>When on, the HR lead approves each post.</p></div></div>
+    <div class="swc"><span class="pill off">OFF</span><div><b>Birthday &amp; anniversary cards</b><p>Ships off like the anniversary mail today; turn on when you want the cards flowing.</p></div></div>
+    <div class="swc"><span class="pill off">OFF</span><div><b>Slack</b><p>By your ruling.</p></div></div>
+  </div>
+
+  <div class="subh"><svg class="ic"><use href="#i-compass"/></svg>Leave &amp; attendance</div>
+  <div class="sw">
+    <div class="swc"><span class="pill on">ON</span><div><b>2-day escalation to HR</b><p>On the leave route itself.</p></div></div>
+    <div class="swc"><span class="pill on">ON</span><div><b>Backdated request alert to HR</b><p>At the moment the request is submitted.</p></div></div>
+    <div class="swc"><span class="pill on">ON</span><div><b>Carry-forward warning</b><p>6 months before cut-off; months are a setting.</p></div></div>
+    <div class="swc"><span class="pill off">OFF</span><div><b>Field-staff group</b><p>Empty until you name who counts as field staff; drivers keep working as today.</p></div></div>
+  </div>
+
+  <div class="subh"><svg class="ic"><use href="#i-grad"/></svg>Training</div>
+  <div class="sw">
+    <div class="swc"><span class="pill on">ON</span><div><b>Reminders &amp; escalation</b><p>To the employee, then manager and HR, while an assignment is late.</p></div></div>
+    <div class="swc"><span class="pill off">OFF</span><div><b>Day-one agronomist assignment</b><p>Turns on once you point it at the real course; until then nothing is assigned automatically.</p></div></div>
+    <div class="swc"><span class="pill off">OFF</span><div><b>Compliance schedules</b><p>Created empty; you add the courses and their cadence.</p></div></div>
+    <div class="swc"><span class="pill off">OFF</span><div><b>Weekly / monthly report pack</b><p>Needs a real training-manager address first.</p></div></div>
+  </div>
+</section>
+
+<!-- ============ 11 BUILD ORDER ============ -->
+<section id="s11">
+  <div class="sechead"><span class="secnum">11</span><h2>Build order</h2></div>
+  <p class="secsub">Ten steps, one after another on the live demo system, each ending with tested screens in light and dark. Two stops only: <b>the training learner flow</b>, which you look at before the rest of Training is built, and <b>anything that installs or removes a module</b> on the live system — the test engine install is the one such step, and it is pre-authorised by this page once you approve it.</p>
+  <div class="phasewrap"><table class="ph">
+    <tr><th>Step</th><th>What ships</th><th>Area</th><th>Needs first</th></tr>
+    <tr><td class="phno">A1</td><td><b>Hiring foundations</b> — request form, budget check, sign-off, JD, referrals, posting pack, the Hiring lens, Refer someone</td><td><span class="tag brand">Hiring</span></td><td>—</td></tr>
+    <tr><td class="phno">A2</td><td><b>Interview loop</b> — scheduling with invites, reminders, reschedule, no-shows, panel feedback links with the 24-hour timer, next-round / reject mails, debrief</td><td><span class="tag brand">Hiring</span></td><td>A1</td></tr>
+    <tr><td class="phno">A3</td><td><b>Offer to day one</b> — BGV, document request, offer via pay package + letter, candidate review page, closure into the joiner journey, recruiter cover, agency tag, Hiring analytics</td><td><span class="tag brand">Hiring</span></td><td>A2</td></tr>
+    <tr><td class="phno">E1</td><td><b>Learner flow</b> — install the test engine, My training pages, take-the-test-after-completion, instant score, certificate, white-label sweep</td><td><span class="tag green">Training</span></td><td>—</td></tr>
+    <tr class="stop"><td class="phno">▮▮</td><td><b>Checkpoint</b> — you look at the learner flow and say go</td><td><span class="tag amber">You</span></td><td>E1</td></tr>
+    <tr><td class="phno">E2</td><td><b>Assignments</b> — mandatory / probation / compliance / ad hoc, reminders and escalation, delay reasons, probation gate kept working</td><td><span class="tag green">Training</span></td><td>E1</td></tr>
+    <tr><td class="phno">E3</td><td><b>Budget &amp; analytics</b> — cost claims to the pay run, Training analytics, report pack, certificates in the vault</td><td><span class="tag green">Training</span></td><td>E2</td></tr>
+    <tr><td class="phno">B1</td><td><b>Goals foundations</b> — cycles, goals, key results, Day-1 trigger, submit → manager → HR lock, My goals, the Goals lens</td><td><span class="tag blue">Goals</span></td><td>—</td></tr>
+    <tr><td class="phno">B2</td><td><b>Goals in the year</b> — monthly check-ins, mid-year and joining-month logic, change requests, scoring, Goals analytics, Home card</td><td><span class="tag blue">Goals</span></td><td>B1</td></tr>
+    <tr><td class="phno">D1</td><td><b>Leave &amp; attendance gaps</b> — holiday calendar, 2-day escalation, carry-forward watch, backdated and sick rules, field check-in for everyone you name</td><td><span class="tag amber">Leave</span></td><td>—</td></tr>
+    <tr><td class="phno">C1</td><td><b>Announcements</b> — calendar, posts, the 2-day rule, scheduled sends, birthdays on the anniversary engine, Home card</td><td><span class="tag grey">Announcements</span></td><td>—</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ 12 DECISIONS ============ -->
+<section id="s12">
+  <div class="sechead"><span class="secnum">12</span><h2>Decisions</h2></div>
+  <p class="secsub">Five you have already taken — recorded, not re-asked. Three small ones are left; each has my recommendation, and "go with all recommendations" works.</p>
+
+  <div class="dec"><h3><span class="dno">D10</span>Extend leave, build the other four new</h3>
+    <p>Leave &amp; attendance gets its gaps filled inside the screens that exist. Hiring, Goals, Announcements and Training are built fresh in the RIZE style.</p>
+    <span class="rec done"><svg class="ic"><use href="#i-check"/></svg>Decided 15 Sep</span></div>
+  <div class="dec"><h3><span class="dno">D11</span>Build and test on the demo system</h3>
+    <p>Everything lands on payobook.com first. Moving it to the RIZE tenant is a separate step afterwards, under the usual roll-out rule.</p>
+    <span class="rec done"><svg class="ic"><use href="#i-check"/></svg>Decided 15 Sep</span></div>
+  <div class="dec"><h3><span class="dno">D12</span>Outside services stay off</h3>
+    <p>LinkedIn posting, e-signature, Google Calendar and Slack: email only, calendar attachments, screens ready to connect later.</p>
+    <span class="rec done"><svg class="ic"><use href="#i-check"/></svg>Decided 15 Sep</span></div>
+  <div class="dec"><h3><span class="dno">D13</span>Field attendance is location plus selfie</h3>
+    <p>No face matching, no biometric data stored. The selfie is a photo on the attendance record, nothing more.</p>
+    <span class="rec done"><svg class="ic"><use href="#i-check"/></svg>Decided 15 Sep</span></div>
+  <div class="dec"><h3><span class="dno">D14</span>Reuse the two engines; keep the applicant store</h3>
+    <p>Training runs on the installed E-Learning engine plus the Surveys test engine, with every learner screen ours. Hiring keeps the standard applicant, job and talent-pool tables underneath a bespoke request-to-offer layer. Rebuilding a video player, a quiz engine and a candidate pipeline would take months for a worse result.</p>
+    <span class="rec done"><svg class="ic"><use href="#i-check"/></svg>Decided 15 Sep (delegated to the designer)</span></div>
+
+  <div class="dec"><h3><span class="dno">D15</span>Install the test engine on the live demo system</h3>
+    <p>Step E1 installs the Surveys engine (question bank, scored tests, certificates). It is a standard component, already used by thousands of installations, and its stock pages will be locked to internal users and swept for wording. This is the only module install in the wave.</p>
+    <span class="rec"><svg class="ic"><use href="#i-check"/></svg>Recommended: yes — approving this page authorises it</span></div>
+  <div class="dec"><h3><span class="dno">D16</span>Who counts as "field staff" for check-in?</h3>
+    <p>Today only drivers can use the check-in app. The sheet names agronomists. I recommend a group you fill yourself — start with agronomists and drivers — rather than a hard-coded job title, so it grows without a change request.</p>
+    <span class="rec"><svg class="ic"><use href="#i-check"/></svg>Recommended: a "Field staff" group, drivers + agronomists to start</span></div>
+  <div class="dec"><h3><span class="dno">D17</span>Do birthday cards go out from day one?</h3>
+    <p>The anniversary mail is off today because it reaches real inboxes. Birthdays would join it. I recommend both ship off and you turn them on together once the wording of the card has been seen.</p>
+    <span class="rec"><svg class="ic"><use href="#i-check"/></svg>Recommended: off at launch, one switch for both</span></div>
+</section>
+
+<footer>
+  <span>RIZE Wave 2 Blueprint · Payobook design proposal</span>
+  <span>Prepared 15 Sep 2026 · awaiting your approvals</span>
+</footer>
+
+</div>
+</body>
+</html>

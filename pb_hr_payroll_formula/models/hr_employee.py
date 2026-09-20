@@ -4,9 +4,28 @@ from odoo import fields, models
 
 
 class HrEmployee(models.Model):
-    _inherit = 'hr.employee'
+    _inherit = ['hr.employee']
 
     division = fields.Char(string='Division')
+    # ============================================ the source system's own key
+    #
+    # An employee that arrived from a connected system needs ONE identifier
+    # that is stable, unique, and that nobody can point a field mapping at.
+    # `employee_id`, `barcode` and `identification_id` are all mappable, and on
+    # ABM the scheme's declared mappings point every one of them at the ID CARD
+    # number — so two people who share a blank or duplicated card number became
+    # one employee, and the feed's own key (Zoho's `11382`) was overwritten the
+    # moment `_update_employee_from_raw_data` ran.
+    #
+    # Scoped by connector, because "0442" from one system and "0442" from
+    # another are different people.
+    pb_source_ref = fields.Char(
+        string='Source System Reference', index=True, copy=False,
+        help="Identifies this employee in the system they were imported from, "
+             "as <connection id>:<their code>. Set by the import and used to "
+             "recognise the same person on every later run, so records are "
+             "updated instead of duplicated.")
+
     position_name = fields.Char(string='Position')
     job_title_text = fields.Char(string='Job Title')
     date_of_joining = fields.Date(string='Date of Joining')

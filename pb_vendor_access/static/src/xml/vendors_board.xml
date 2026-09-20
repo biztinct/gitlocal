@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Vendors panel.
+
+       Comments ruled with `=`, never a doubled hyphen (R35/W22). No `t-as`
+       variable is named lt / gt / lte / gte / and / or / not / in (R1): the
+       vendor loop is `vd`, the agreement loop is `ag`, the type chip loop is
+       `tp`, the state chip loop is `st`, the department chip loop is `dp`,
+       the file loop is `fl`, the person-picker loop is `pp`.
+
+       THE STAGGER IS A CSS CUSTOM PROPERTY set per card from the loop index
+       and read by an animation that lives entirely inside a
+       `prefers-reduced-motion: no-preference` block. Nothing in JavaScript
+       decides whether the board moves (R85).
+
+       `t-att-class` with a DICT is an OWL thing and this IS an OWL template,
+       so the dict form is correct here and merges with the static class
+       (R42 — in a server-side `<template>` it would render the dict's repr).
+       ==================================================================== -->
+  <t t-name="pb_vendor_access.PbVendorsBoard">
+    <div class="pbim pbim-page pbva pbva-vendors"
+         t-att-class="{ 'pbva--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the vendor register…</span>
+      </div>
+
+      <div t-elif="state.failed" class="pbim-wrap">
+        <div class="pbim-empty pbva-empty">
+          <div class="pbva-empty-ic"><t t-out="ic('alert',30)"/></div>
+          <h3>The vendor register could not be read</h3>
+          <p t-esc="state.failed"/>
+          <button class="pbim-btn primary" t-on-click="reload">Try again</button>
+        </div>
+      </div>
+
+      <div t-else="" class="pbim-wrap pbva-wrap">
+
+        <!-- ========================== the header ========================== -->
+        <div class="pbva-head">
+          <div class="pbva-head-id">
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <h2 t-if="!props.embedded" class="pbva-h">Vendors</h2>
+            <p class="pbva-s" t-esc="board.headline"/>
+          </div>
+          <div class="pbva-head-actions">
+            <button class="pbim-btn ghost" t-on-click="reload"
+                    title="Read the register again">
+              <t t-out="ic('refresh',15)"/>
+            </button>
+            <button class="pbim-btn ghost" t-on-click="exportFile"
+                    t-att-disabled="state.busy"
+                    title="Every vendor and every agreement, as a spreadsheet">
+              <t t-out="ic('download',15)"/> Spreadsheet
+            </button>
+            <button t-if="canEdit" class="pbim-btn ghost" t-on-click="runAlerts"
+                    t-att-disabled="state.busy"
+                    title="Do now exactly what the nightly check does">
+              <t t-out="ic('clock',15)"/> Check the agreements
+            </button>
+            <button t-if="canEdit" class="pbim-btn primary" t-on-click="openAdd">
+              <t t-out="ic('plus',15)"/> Add a vendor
+            </button>
+          </div>
+        </div>
+
+        <!-- =========================== the numbers =========================== -->
+        <div class="pbim-stats pbva-kpis">
+          <div class="pbim-stat">
+            <div class="pbim-stat-ic"><t t-out="ic('briefcase',18)"/></div>
+            <div class="pbim-stat-tx">
+              <div class="n" t-esc="kpis.vendors"/>
+              <div class="l">on the register</div>
+            </div>
+          </div>
+          <div t-attf-class="pbim-stat {{ kpis.expiring ? 'warn' : '' }}">
+            <div t-attf-class="pbim-stat-ic {{ kpis.expiring ? '' : 'green' }}">
+              <t t-out="ic('clock',18)"/>
+            </div>
+            <div class="pbim-stat-tx">
+              <div class="n" t-esc="kpis.expiring"/>
+              <div class="l">coming up for renewal</div>
+            </div>
+          </div>
+          <div t-attf-class="pbim-stat {{ kpis.expired ? 'err' : '' }}">
+            <div t-attf-class="pbim-stat-ic {{ kpis.expired ? 'rose' : 'green' }}">
+              <t t-out="ic('alert',18)"/>
+            </div>
+            <div class="pbim-stat-tx">
+              <div class="n" t-esc="kpis.expired"/>
+              <div class="l">already run out</div>
+            </div>
+          </div>
+          <div class="pbim-stat">
+            <div class="pbim-stat-ic blue"><t t-out="ic('fileText',18)"/></div>
+            <div class="pbim-stat-tx">
+              <div class="n" t-esc="kpis.none"/>
+              <div class="l">with nothing recorded</div>
+            </div>
+          </div>
+          <div class="pbim-stat">
+            <div class="pbim-stat-ic"><t t-out="ic('user',18)"/></div>
+            <div class="pbim-stat-tx">
+              <div class="n" t-esc="kpis.mine"/>
+              <div class="l">you look after</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================== the filters =========================== -->
+        <div class="pbva-bar">
+          <label class="pbva-field pbva-field--search">
+            <span class="pbva-in-ic"><t t-out="ic('search',15)"/></span>
+            <input class="pbva-in" type="search" t-att-value="state.search"
+                   t-on-input="onSearch"
+                   placeholder="Search a vendor, a contact or an owner"/>
+          </label>
+
+          <div class="pbva-chips">
+            <button t-foreach="facets.types or []" t-as="tp" t-key="tp.key"
+                    t-attf-class="pbva-chip {{ state.type === tp.key ? 'is-on' : '' }}"
+                    t-on-click="() => this.setType(tp.key)">
+              <span t-esc="tp.label"/><b t-esc="tp.n"/>
+            </button>
+          </div>
+
+          <div class="pbva-chips">
+            <button t-foreach="facets.states or []" t-as="st" t-key="st.key"
+                    t-attf-class="pbva-chip pbva-chip--{{st.key}} {{ state.agreementState === st.key ? 'is-on' : '' }}"
+                    t-on-click="() => this.setState(st.key)">
+              <span t-esc="st.label"/><b t-esc="st.n"/>
+            </button>
+          </div>
+
+          <button t-if="filtered" class="pbim-btn ghost pbva-clear"
+                  t-on-click="clearFilters">
+            <t t-out="ic('x',14)"/> Clear
+          </button>
+        </div>
+
+        <div t-if="board.truncated" class="pbva-note pbva-note--warn">
+          <t t-out="ic('alert',15)"/>
+          <span>There are more vendors here than one board can hold, so this is
+                the first part of the register. Narrow it with a filter or the
+                search box to see the rest.</span>
+        </div>
+
+        <!-- ============================ the cards ============================ -->
+        <div t-if="!rows.length" class="pbim-empty pbva-empty">
+          <div class="pbva-empty-ic"><t t-out="ic('briefcase',30)"/></div>
+          <h3 t-if="filtered">Nothing matches that</h3>
+          <h3 t-else="">No suppliers on the register yet</h3>
+          <p t-if="filtered">
+            Clear the filters and the whole register comes back. A chip that
+            matches nothing is a promise this screen could not keep.
+          </p>
+          <p t-else="">
+            This is where the agencies, trainers, insurers and software
+            suppliers HR deals with live — who they are, who here owns the
+            relationship, and what has been agreed. Put one in and Payobook
+            starts telling its owner before the agreement runs out, instead of
+            afterwards.
+          </p>
+          <button t-if="filtered" class="pbim-btn ghost" t-on-click="clearFilters">
+            Clear the filters
+          </button>
+          <button t-elif="canEdit" class="pbim-btn primary" t-on-click="openAdd">
+            Add the first vendor
+          </button>
+        </div>
+
+        <div t-else="" class="pbva-grid">
+          <div t-foreach="rows" t-as="vd" t-key="vd.id"
+               t-attf-class="pbva-card pbva-card--{{vd.state or 'none'}} {{ state.open === vd.id ? 'is-open' : '' }}"
+               t-attf-style="--pbva-i: {{vd_index}}"
+               t-on-click="() => this.openVendor(vd)">
+
+            <div class="pbva-card-h">
+              <div class="pbva-card-ic"><t t-out="ic('briefcase',18)"/></div>
+              <div class="pbva-card-id">
+                <span class="pbva-card-n" t-esc="vd.name"/>
+                <span class="pbva-card-t" t-esc="vd.type_label"/>
+              </div>
+              <span class="pbva-badge" t-esc="vd.state_label"/>
+            </div>
+
+            <div class="pbva-card-body">
+              <div class="pbva-kv">
+                <span><t t-out="ic('user',13)"/></span>
+                <b t-esc="vd.responsible or '—'"/>
+              </div>
+              <div class="pbva-kv" t-if="vd.department">
+                <span><t t-out="ic('building',13)"/></span>
+                <b t-esc="vd.department"/>
+              </div>
+              <div class="pbva-kv" t-if="vd.contact_email">
+                <span><t t-out="ic('mail',13)"/></span>
+                <b t-esc="vd.contact_email"/>
+              </div>
+            </div>
+
+            <div class="pbva-card-f">
+              <span t-if="vd.next_end" class="pbva-when">
+                <t t-out="ic('calendar',13)"/>
+                <t t-esc="'Next agreement ends ' + day(vd.next_end)"/>
+              </span>
+              <span t-else="" class="pbva-when pbva-when--none">
+                <t t-out="ic('fileText',13)"/> Nothing recorded yet
+              </span>
+              <span class="pbva-count"
+                    t-esc="vd.agreements === 1 ? '1 agreement' : vd.agreements + ' agreements'"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ the drawer ============================ -->
+      <div t-if="state.open" class="pbva-scrim" t-on-click="closeDrawer"/>
+      <aside t-if="state.open" class="pbva-drawer">
+        <div t-if="state.drawerBusy" class="pbim-busy">
+          <div class="pbim-spin"/><span>Opening…</span>
+        </div>
+        <div t-elif="state.drawer" class="pbva-drawer-in">
+
+          <div class="pbva-drawer-h">
+            <div>
+              <h3 t-esc="state.drawer.vendor.name"/>
+              <p t-esc="state.drawer.vendor.type_label"/>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeDrawer"
+                    title="Close">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+
+          <div class="pbva-drawer-facts">
+            <div class="pbva-fact">
+              <span>Who looks after them</span>
+              <b t-esc="state.drawer.vendor.responsible or '—'"/>
+            </div>
+            <div class="pbva-fact">
+              <span>Who to ask for</span>
+              <b t-esc="state.drawer.vendor.contact_name or '—'"/>
+            </div>
+            <div class="pbva-fact">
+              <span>Their email</span>
+              <b t-esc="state.drawer.vendor.contact_email or '—'"/>
+            </div>
+            <div class="pbva-fact">
+              <span>Their phone</span>
+              <b t-esc="state.drawer.vendor.contact_phone or '—'"/>
+            </div>
+            <div class="pbva-fact">
+              <span>Team</span>
+              <b t-esc="state.drawer.vendor.department or '—'"/>
+            </div>
+            <div class="pbva-fact">
+              <span>Country</span>
+              <b t-esc="state.drawer.vendor.country or '—'"/>
+            </div>
+          </div>
+
+          <p t-if="state.drawer.notes" class="pbva-drawer-notes"
+             t-esc="state.drawer.notes"/>
+
+          <div class="pbva-drawer-actions" t-if="state.drawer.can_edit">
+            <button class="pbim-btn ghost" t-on-click="openEdit">
+              <t t-out="ic('pencil',14)"/> Edit
+            </button>
+            <button class="pbim-btn primary" t-on-click="openAgreement">
+              <t t-out="ic('plus',14)"/> Record an agreement
+            </button>
+          </div>
+
+          <!-- ===================== the agreement timeline ===================== -->
+          <h4 class="pbva-drawer-t">Agreements</h4>
+
+          <div t-if="!state.drawer.agreements.length" class="pbva-mini-empty">
+            <t t-out="ic('fileText',22)"/>
+            <p>
+              Nothing recorded yet. Put in what was agreed and when it ends, and
+              Payobook tells you before it runs out rather than after.
+            </p>
+          </div>
+
+          <div t-else="" class="pbva-timeline">
+            <div t-foreach="state.drawer.agreements" t-as="ag" t-key="ag.id"
+                 t-attf-class="pbva-agreement pbva-agreement--{{ag.state}}">
+
+              <div class="pbva-agreement-h">
+                <span class="pbva-agreement-n" t-esc="ag.name"/>
+                <span class="pbva-badge" t-esc="ag.state_label"/>
+              </div>
+
+              <div class="pbva-agreement-when">
+                <t t-esc="day(ag.date_start) + ' to ' + day(ag.date_end)"/>
+              </div>
+
+              <!-- THE ONE COMPARISON: the fill is how much of the term has
+                   gone, and the notch is where the renewal conversation was
+                   meant to start. A fill past the notch is a conversation
+                   somebody is late for — readable with no colour at all. -->
+              <div class="pbva-track">
+                <div class="pbva-fill"
+                     t-attf-style="width: {{runway(ag)}}%"/>
+                <div class="pbva-notch"
+                     t-attf-style="left: {{notch(ag)}}%"
+                     title="When the renewal conversation was meant to start"/>
+              </div>
+
+              <div class="pbva-agreement-f">
+                <span t-esc="daysLine(ag)"/>
+                <span t-if="ag.value" class="pbva-value"
+                      t-esc="money(ag.value, ag.currency)"/>
+              </div>
+
+              <p t-if="ag.renewal_date" class="pbva-agreement-note"
+                 t-esc="'Renewal conversation due ' + day(ag.renewal_date)"/>
+              <p t-if="ag.is_renewed and ag.renewed_by" class="pbva-agreement-note"
+                 t-esc="'Replaced by ' + ag.renewed_by"/>
+              <p t-if="ag.last_alert_on" class="pbva-agreement-note"
+                 t-esc="'Owner last reminded ' + day(ag.last_alert_on)"/>
+              <p t-if="ag.note" class="pbva-agreement-note" t-esc="ag.note"/>
+
+              <div class="pbva-files" t-if="ag.files.length">
+                <a t-foreach="ag.files" t-as="fl" t-key="fl.id"
+                   class="pbva-file" t-att-href="fl.url">
+                  <t t-out="ic('file',13)"/> <span t-esc="fl.name"/>
+                </a>
+              </div>
+
+              <div class="pbva-agreement-actions" t-if="state.drawer.can_edit">
+                <label class="pbim-btn ghost pbva-upload">
+                  <t t-out="ic('upload',14)"/> Add a file
+                  <input type="file" t-on-change="(ev) => this.onFile(ag.id, ev)"/>
+                </label>
+                <button t-if="!ag.is_renewed" class="pbim-btn ghost"
+                        t-on-click="() => this.openRenew(ag)">
+                  <t t-out="ic('rotate',14)"/> Renew
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ========================= the vendor dialog ========================= -->
+      <div t-if="state.editing" class="pbim-modal-scrim" t-on-click="closeEdit">
+        <div class="pbim-modal pbva-modal" t-on-click.stop="">
+        <div class="pbva-modal-h">
+          <h3 t-esc="state.vendor.id ? 'Edit this vendor' : 'Add a vendor'"/>
+          <button class="pbim-btn ghost" t-on-click="closeEdit">
+            <t t-out="ic('x',16)"/>
+          </button>
+        </div>
+        <div class="pbva-modal-b">
+          <label class="pbva-lbl">Who they are</label>
+          <input class="pbva-in" t-att-value="state.vendor.name"
+                 t-on-input="(ev) => this.onVendorField('name', ev)"
+                 placeholder="Talentnet"/>
+
+          <label class="pbva-lbl">What they do</label>
+          <div class="pbva-chips pbva-chips--wrap">
+            <button t-foreach="board.type_options or []" t-as="tp" t-key="tp.key"
+                    t-attf-class="pbva-chip {{ state.vendor.vendor_type === tp.key ? 'is-on' : '' }}"
+                    t-on-click="() => this.setVendorType(tp.key)"
+                    t-esc="tp.label"/>
+          </div>
+
+          <label class="pbva-lbl">Who here looks after them</label>
+          <input class="pbva-in" t-att-value="state.vendor.responsible"
+                 t-on-input="onOwnerSearch"
+                 placeholder="Start typing a name"/>
+          <div t-if="state.people.length" class="pbva-picker">
+            <button t-foreach="state.people" t-as="pp" t-key="pp.id"
+                    class="pbva-pick" t-on-click="() => this.pickOwner(pp)">
+              <span t-esc="pp.name"/><small t-esc="pp.login"/>
+            </button>
+          </div>
+          <p class="pbva-hint">
+            They are the one Payobook emails when an agreement is about to run
+            out, and the only person outside the vendor team who can see this
+            supplier at all.
+          </p>
+
+          <label class="pbva-lbl">Team they work with</label>
+          <input class="pbva-in" t-att-value="state.vendor.department"
+                 t-on-input="onDeptSearch" placeholder="Optional"/>
+          <div t-if="state.departments.length" class="pbva-picker">
+            <button t-foreach="state.departments" t-as="dp" t-key="dp.id"
+                    class="pbva-pick" t-on-click="() => this.pickDept(dp)"
+                    t-esc="dp.name"/>
+          </div>
+
+          <div class="pbva-two">
+            <div>
+              <label class="pbva-lbl">Who to ask for</label>
+              <input class="pbva-in" t-att-value="state.vendor.contact_name"
+                     t-on-input="(ev) => this.onVendorField('contact_name', ev)"/>
+            </div>
+            <div>
+              <label class="pbva-lbl">Their email</label>
+              <input class="pbva-in" t-att-value="state.vendor.contact_email"
+                     t-on-input="(ev) => this.onVendorField('contact_email', ev)"/>
+            </div>
+          </div>
+
+          <label class="pbva-lbl">Their phone</label>
+          <input class="pbva-in" t-att-value="state.vendor.contact_phone"
+                 t-on-input="(ev) => this.onVendorField('contact_phone', ev)"/>
+
+          <label class="pbva-lbl">Notes</label>
+          <textarea class="pbva-in pbva-area" rows="3"
+                    t-on-input="(ev) => this.onVendorField('notes', ev)"
+                    t-esc="state.vendor.notes"/>
+        </div>
+        <div class="pbva-modal-f">
+          <button class="pbim-btn ghost" t-on-click="closeEdit">Cancel</button>
+          <button class="pbim-btn primary" t-on-click="saveVendor"
+                  t-att-disabled="state.busy">Save</button>
+        </div>
+      </div>
+      </div>
+
+      <!-- ======================= the agreement dialog ======================= -->
+      <div t-if="state.agreeing" class="pbim-modal-scrim" t-on-click="closeAgreement">
+        <div class="pbim-modal pbva-modal" t-on-click.stop="">
+        <div class="pbva-modal-h">
+          <h3>Record an agreement</h3>
+          <button class="pbim-btn ghost" t-on-click="closeAgreement">
+            <t t-out="ic('x',16)"/>
+          </button>
+        </div>
+        <div class="pbva-modal-b">
+          <label class="pbva-lbl">What it covers</label>
+          <input class="pbva-in" t-att-value="state.agreement.name"
+                 t-on-input="(ev) => this.onAgreementField('name', ev)"
+                 placeholder="Agency terms 2026"/>
+
+          <div class="pbva-two">
+            <div>
+              <label class="pbva-lbl">Starts</label>
+              <input class="pbva-in" type="date"
+                     t-att-value="state.agreement.date_start"
+                     t-on-input="(ev) => this.onAgreementField('date_start', ev)"/>
+            </div>
+            <div>
+              <label class="pbva-lbl">Ends</label>
+              <input class="pbva-in" type="date"
+                     t-att-value="state.agreement.date_end"
+                     t-on-input="(ev) => this.onAgreementField('date_end', ev)"/>
+            </div>
+          </div>
+          <p class="pbva-hint">
+            The end date is the one thing this screen is really about. Leave the
+            renewal date empty and Payobook puts it thirty days before the end,
+            which is when the conversation should start.
+          </p>
+
+          <div class="pbva-two">
+            <div>
+              <label class="pbva-lbl">Talk about renewing on</label>
+              <input class="pbva-in" type="date"
+                     t-att-value="state.agreement.renewal_date"
+                     t-on-input="(ev) => this.onAgreementField('renewal_date', ev)"/>
+            </div>
+            <div>
+              <label class="pbva-lbl">What it is worth</label>
+              <input class="pbva-in" type="number"
+                     t-att-value="state.agreement.value"
+                     t-on-input="(ev) => this.onAgreementField('value', ev)"
+                     placeholder="Optional"/>
+            </div>
+          </div>
+
+          <label class="pbva-lbl">Notes</label>
+          <textarea class="pbva-in pbva-area" rows="3"
+                    t-on-input="(ev) => this.onAgreementField('note', ev)"
+                    t-esc="state.agreement.note"/>
+        </div>
+        <div class="pbva-modal-f">
+          <button class="pbim-btn ghost" t-on-click="closeAgreement">Cancel</button>
+          <button class="pbim-btn primary" t-on-click="saveAgreement"
+                  t-att-disabled="state.busy">Save</button>
+        </div>
+      </div>
+      </div>
+
+      <!-- ========================= the renew dialog ========================= -->
+      <div t-if="state.renewing" class="pbim-modal-scrim" t-on-click="closeRenew">
+        <div class="pbim-modal pbva-modal" t-on-click.stop="">
+        <div class="pbva-modal-h">
+          <h3>Renew this agreement</h3>
+          <button class="pbim-btn ghost" t-on-click="closeRenew">
+            <t t-out="ic('x',16)"/>
+          </button>
+        </div>
+        <div class="pbva-modal-b">
+          <p class="pbva-hint pbva-hint--lead">
+            A renewal is a NEW agreement, prefilled from the one that is ending
+            and taking over the day after. The old one is kept and marked as
+            replaced, because what was agreed last year is a fact about last
+            year.
+          </p>
+
+          <label class="pbva-lbl">What it covers</label>
+          <input class="pbva-in" t-att-value="state.renewal.name"
+                 t-on-input="(ev) => this.onRenewalField('name', ev)"/>
+
+          <div class="pbva-two">
+            <div>
+              <label class="pbva-lbl">Starts</label>
+              <input class="pbva-in" type="date"
+                     t-att-value="state.renewal.date_start"
+                     t-on-input="(ev) => this.onRenewalField('date_start', ev)"/>
+            </div>
+            <div>
+              <label class="pbva-lbl">Ends</label>
+              <input class="pbva-in" type="date"
+                     t-att-value="state.renewal.date_end"
+                     t-on-input="(ev) => this.onRenewalField('date_end', ev)"/>
+            </div>
+          </div>
+
+          <label class="pbva-lbl">What it is worth</label>
+          <input class="pbva-in" type="number" t-att-value="state.renewal.value"
+                 t-on-input="(ev) => this.onRenewalField('value', ev)"/>
+
+          <label class="pbva-lbl">Notes</label>
+          <textarea class="pbva-in pbva-area" rows="3"
+                    t-on-input="(ev) => this.onRenewalField('note', ev)"
+                    t-esc="state.renewal.note"/>
+        </div>
+        <div class="pbva-modal-f">
+          <button class="pbim-btn ghost" t-on-click="closeRenew">Cancel</button>
+          <button class="pbim-btn primary" t-on-click="saveRenewal"
+                  t-att-disabled="state.busy">Renew it</button>
+        </div>
+      </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>

@@ -8,10 +8,20 @@
               action="action_internal_user_portal"
               web_icon="om_hr_payroll,static/description/icon.png"/>
     -->
+    <!-- NOTE: this used to carry action="pb_hr_flow.action_hr_flow_wizard".
+         pb_hr_flow DEPENDS on om_hr_payroll, so on a fresh database that
+         reference can never resolve ("External ID not found in the system:
+         pb_hr_flow.action_hr_flow_wizard") — a base module may not point at a
+         downstream module's action. It was also dead weight: pb_dashboard
+         (depth 6) loads after om_hr_payroll (depth 4) and re-points this same
+         menu to its own cockpit in views/pb_dashboard_action.xml, which is what
+         every database in the estate actually holds. Re-pointing from
+         pb_hr_flow instead would have CHANGED that, because pb_hr_flow (depth 8)
+         loads after pb_dashboard and would win. So the root menu simply carries
+         no action of its own; whoever owns the landing screen sets it. -->
     <menuitem id="menu_hr_payroll_root"
               name="Payroll"
               sequence="50"
-              action="hr.open_view_employee_list_my"
               web_icon="om_hr_payroll,static/description/icon.png"/>
 
 <!--
@@ -34,7 +44,14 @@
         <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='job_id']" position="after">
-                <field name="struct_id" required="1"/>
+                <!-- NOT required: payroll here is defined by a scheme, and a
+                     contract on such a tenant has no salary structure to pick.
+                     Demanding one made the contract form unsaveable on any
+                     database whose payroll does not use structures — which is
+                     every one of them except where a structure is deliberately
+                     in use. Where structures ARE used, the field is still here
+                     and still the thing the standard engine reads. -->
+                <field name="struct_id"/>
                 <field name="type_id" required="1"/>
             </xpath>
             <xpath expr="//field[@name='job_id']" position="before">
@@ -70,7 +87,7 @@
 
                 <separator string="Contract Components" />
                 <field name="advantages_ids">
-                    <tree editable="bottom">
+                    <list editable="bottom">
                         <field
                             name="advantage_template_id"
                             options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"
@@ -79,7 +96,7 @@
                         <field name="advantage_lower_bound" />
                         <field name="advantage_upper_bound" />
                         <field name="amount" />
-                    </tree>
+                    </list>
                 </field>
             </xpath>
             
@@ -159,13 +176,13 @@
         <field name="name">hr.contract.advantage.template.tree</field>
         <field name="model">hr.contract.advantage.template</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name"/>
                 <field name="code"/>
                 <field name="lower_bound"/>
                 <field name="upper_bound"/>
                 <field name="default_value"/>
-            </tree>
+            </list>
         </field>
     </record>
 

@@ -1,0 +1,792 @@
+// =====================================================================
+//  The Close lens (P4 WP-4) — mockup C inside Mission Control.
+//
+//  TOKENS ONLY (W1). Mockup C painted three greys of its own — a table-header
+//  tint, a scheduled-bar grey and a divider — and none of them exists in the
+//  design system; each is replaced here by the pbim token that already means
+//  that thing. Every `var()` carries its correct hex as the fallback, because a
+//  fallback is a real colour, not a comment (W14). `--pbim-pill` does NOT exist
+//  in the token mixin, so pills are literal 999px (W19).
+//
+//  (The mockup's own hex values are deliberately not quoted anywhere in this
+//  file: the no-invented-hex gate is a substring walk, and it cannot tell a
+//  colour being USED from one being explained. W48's corollary, third bite.)
+//
+//  Z-DISCIPLINE (W37): the lens itself carries NO z-index. Its two dialogs are
+//  `position: absolute` inside the lens box at z-index 12 — under the 60px biz
+//  rail overlay's 25 and far under a cockpit modal's 1050, and absolute rather
+//  than fixed so the scrim covers the LENS and leaves the command bar and rail
+//  reachable, exactly as every other drawer in this workspace behaves.
+//
+//  SCROLLING (W20): the lens owns its own scrollport. `.pbmc` is a definite
+//  height flex column, the body is the scroller, and every flex child carries
+//  `min-height: 0` + `min-width: 0` so a future auto-height regression cannot
+//  make the table overlap the rail.
+// =====================================================================
+
+.pbim.pbms {
+
+    .pbmc {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 0;
+        min-width: 0;
+        overflow: hidden;
+        background: var(--pbim-bg, #F5F6FA);
+    }
+
+    // ---------------------------------------------------------- messages
+    .pbmc-msg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 40px 18px;
+        color: var(--pbim-muted, #64748B);
+        font-size: 13px;
+        font-weight: 600;
+
+        svg { display: block; }
+
+        &--bad { color: var(--pbim-rose, #DC2668); }
+    }
+
+    // ------------------------------------------------------------- header
+    .pbmc-head {
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 16px 18px 0;
+    }
+    .pbmc-title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -.01em;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbmc-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 800;
+
+        svg { display: block; }
+
+        &--amber {
+            background: var(--pbim-amber-soft, #FEF3C7);
+            color: var(--pbim-amber, #D97706);
+        }
+        &--green {
+            background: var(--pbim-green-soft, #E3F2E9);
+            color: var(--pbim-green, #2E7D4F);
+        }
+    }
+
+    // ---------------------------------------------------------- day chips
+    .pbmc-chips {
+        display: flex;
+        gap: 5px;
+        margin-left: auto;
+        flex-wrap: wrap;
+    }
+    .pbmc-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 10px;
+        border: 1px solid transparent;
+        border-radius: var(--pbim-r-sm, 10px);
+        font: inherit;
+        font-size: 10.5px;
+        font-weight: 800;
+        cursor: pointer;
+
+        svg { display: block; }
+
+        &.is-locked {
+            background: var(--pbim-green-soft, #E3F2E9);
+            color: var(--pbim-green, #2E7D4F);
+        }
+        &.is-open {
+            background: var(--pbim-slate-soft, #EEF1F5);
+            color: var(--pbim-muted, #64748B);
+        }
+        &.is-future { opacity: .45; }
+
+        &:hover:not(:disabled) {
+            border-color: var(--pbim-primary-light, #CBC2EE);
+        }
+        &:disabled { cursor: default; }
+    }
+    .pbmc-chip__ic { display: inline-flex; }
+
+    // ---------------------------------------------------------- stat strip
+    .pbmc-stats {
+        flex: none;
+        display: flex;
+        gap: 10px;
+        padding: 14px 18px 0;
+        flex-wrap: wrap;
+    }
+    .pbmc-stat {
+        flex: 1 1 150px;
+        min-width: 0;
+        background: var(--pbim-surface, #fff);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+        padding: 11px 14px;
+
+        &--green .pbmc-stat__v { color: var(--pbim-green, #2E7D4F); }
+        &--amber .pbmc-stat__v { color: var(--pbim-amber, #D97706); }
+        &--rose  .pbmc-stat__v { color: var(--pbim-rose, #DC2668); }
+    }
+    .pbmc-stat__v {
+        font-size: 21px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbmc-stat__sub {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbmc-stat__l {
+        margin-top: 5px;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--pbim-muted, #64748B);
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    // ---------------------------------------------------------------- body
+    .pbmc-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        min-width: 0;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 12px 18px 18px;
+        overflow: auto;
+    }
+
+    .pbmc-table {
+        flex: 1 1 auto;
+        min-width: 0;
+        background: var(--pbim-surface, #fff);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+        overflow: hidden;
+    }
+
+    .pbmc-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 44px 24px;
+        text-align: center;
+        color: var(--pbim-muted, #64748B);
+        font-size: 12.5px;
+        line-height: 1.6;
+
+        svg { display: block; color: var(--pbim-green, #2E7D4F); }
+        b { color: var(--pbim-ink, #1B1733); font-size: 14px; }
+        span:last-child { max-width: 420px; }
+    }
+
+    // ------------------------------------------------------------- table
+    .pbmc-t {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11.5px;
+
+        th {
+            padding: 9px 12px;
+            border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+            background: var(--pbim-line-2, #F1F5F9);
+            color: var(--pbim-muted, #64748B);
+            font-size: 9.5px;
+            font-weight: 800;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+            text-align: left;
+        }
+        td {
+            padding: 9px 12px;
+            border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+            vertical-align: middle;
+        }
+        tr:last-child td { border-bottom: none; }
+    }
+    .pbmc-t__num { text-align: right; font-variant-numeric: tabular-nums; }
+
+    .pbmc-row {
+        &.is-reviewed { opacity: .58; }
+        &:hover { background: var(--pbim-soft, #EDEAF8); }
+    }
+
+    .pbmc-emp {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+        max-width: 220px;
+
+        &:hover .pbmc-emp__n { color: var(--pbim-primary, #5A4BB0); }
+    }
+    .pbmc-emp__a {
+        width: 26px;
+        height: 26px;
+        flex: none;
+        border-radius: 50%;
+        object-fit: cover;
+        background: var(--pbim-soft, #EDEAF8);
+    }
+    .pbmc-emp__t { min-width: 0; display: block; }
+    .pbmc-emp__n {
+        display: block;
+        font-weight: 700;
+        color: var(--pbim-ink, #1B1733);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .pbmc-emp__d {
+        display: block;
+        font-size: 10px;
+        font-weight: 500;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // ------------------------------------------------- scheduled vs actual
+    .pbmc-bars {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        min-width: 140px;
+    }
+    .pbmc-bar {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 9.5px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        color: var(--pbim-muted, #64748B);
+
+        i { display: block; height: 5px; border-radius: 3px; }
+
+        // scheduled = the neutral plan; actual = the brand accent, because the
+        // actual is the thing the officer is being asked to look at.
+        &--s i { background: var(--pbim-primary-light, #CBC2EE); }
+        &--a i { background: var(--pbim-primary, #5A4BB0); }
+    }
+
+    .pbmc-delta {
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+
+        &--rose  { color: var(--pbim-rose, #DC2668); }
+        &--amber { color: var(--pbim-amber, #D97706); }
+        &--slate { color: var(--pbim-muted, #64748B); }
+    }
+
+    .pbmc-reason {
+        display: inline-block;
+        padding: 3px 9px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 800;
+
+        &--rose {
+            background: var(--pbim-rose-soft, #FCE7EF);
+            color: var(--pbim-rose, #DC2668);
+        }
+        &--amber {
+            background: var(--pbim-amber-soft, #FEF3C7);
+            color: var(--pbim-amber, #D97706);
+        }
+        &--cyan {
+            background: var(--pbim-cyan-soft, #E5EDFD);
+            color: var(--pbim-cyan, #2563EB);
+        }
+    }
+    .pbmc-note {
+        display: block;
+        margin-top: 3px;
+        font-size: 10px;
+        font-style: italic;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbmc-acts {
+        white-space: nowrap;
+        text-align: right;
+    }
+    .pbmc-done {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--pbim-green, #2E7D4F);
+
+        svg { display: block; }
+    }
+
+    .pbmc-more {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 12px;
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-line-2, #F1F5F9);
+        color: var(--pbim-muted, #64748B);
+        font-size: 11px;
+        font-weight: 600;
+
+        svg { display: block; }
+    }
+
+    // ------------------------------------------------------------ buttons
+    .pbmc-b {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 11px;
+        border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #fff);
+        color: var(--pbim-muted, #64748B);
+        font: inherit;
+        font-size: 11px;
+        font-weight: 800;
+        cursor: pointer;
+
+        & + & { margin-left: 6px; }
+        &:hover:not(:disabled) {
+            border-color: var(--pbim-primary-light, #CBC2EE);
+            color: var(--pbim-primary, #5A4BB0);
+        }
+        &:disabled { opacity: .5; cursor: default; }
+
+        &--out {
+            border-color: var(--pbim-primary-light, #CBC2EE);
+            color: var(--pbim-primary, #5A4BB0);
+        }
+        &--pri {
+            background: var(--pbim-primary, #5A4BB0);
+            border-color: var(--pbim-primary, #5A4BB0);
+            color: #fff;
+            &:hover:not(:disabled) {
+                background: var(--pbim-primary-hover, #4A3D96);
+                border-color: var(--pbim-primary-hover, #4A3D96);
+                color: #fff;
+            }
+        }
+        &--warn {
+            background: var(--pbim-amber, #D97706);
+            border-color: var(--pbim-amber, #D97706);
+            color: #fff;
+            &:hover:not(:disabled) { color: #fff; }
+        }
+    }
+
+    // ------------------------------------------------------- handoff rail
+    .pbmc-rail {
+        flex: 0 0 268px;
+        min-width: 0;
+        background: var(--pbim-surface, #fff);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+        padding: 15px;
+
+        h6 {
+            margin: 0 0 10px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+    .pbmc-tot {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 6px 0;
+        border-bottom: 1px dashed var(--pbim-line-2, #F1F5F9);
+        font-size: 12px;
+        color: var(--pbim-text, #1B1733);
+
+        b {
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            color: var(--pbim-ink, #1B1733);
+        }
+        &--last { border-bottom: none; }
+    }
+    .pbmc-foot {
+        margin: 6px 0 0;
+        font-size: 10px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbmc-sep {
+        height: 1px;
+        margin: 9px 0;
+        background: var(--pbim-line, #E2E8F0);
+    }
+    .pbmc-chk {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 0;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--pbim-text, #1B1733);
+
+        svg { display: block; }
+        .pbmc-chk__ic { color: var(--pbim-rose, #DC2668); }
+        &.is-done .pbmc-chk__ic { color: var(--pbim-green, #2E7D4F); }
+    }
+
+    .pbmc-cta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        width: 100%;
+        margin-top: 12px;
+        padding: 10px;
+        border: 0;
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-slate-soft, #EEF1F5);
+        color: var(--pbim-muted, #64748B);
+        font: inherit;
+        font-size: 11.5px;
+        font-weight: 800;
+        cursor: default;
+
+        svg { display: block; }
+
+        &.is-on {
+            background: var(--pbim-primary, #5A4BB0);
+            color: #fff;
+            cursor: pointer;
+            &:hover { background: var(--pbim-primary-hover, #4A3D96); }
+        }
+    }
+    .pbmc-note2 {
+        margin: 7px 0 0;
+        font-size: 10px;
+        line-height: 1.5;
+        text-align: center;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbmc-locked {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        margin-top: 12px;
+        padding: 14px 12px;
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-green-soft, #E3F2E9);
+        color: var(--pbim-green, #2E7D4F);
+        text-align: center;
+        font-size: 10.5px;
+        line-height: 1.55;
+
+        svg { display: block; }
+        b { font-size: 12.5px; }
+    }
+    .pbmc-reopen {
+        display: block;
+        width: 100%;
+        margin-top: 8px;
+        padding: 7px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: transparent;
+        color: var(--pbim-muted, #64748B);
+        font: inherit;
+        font-size: 11px;
+        font-weight: 800;
+        cursor: pointer;
+
+        &:hover:not(:disabled) {
+            border-color: var(--pbim-amber, #D97706);
+            color: var(--pbim-amber, #D97706);
+        }
+    }
+
+    // ----------------------------------------------------------- dialogs
+    // Absolute inside the LENS box, at 12: the scrim covers the board and
+    // leaves the command bar and the lens rail reachable, exactly as every
+    // other drawer in this workspace behaves. Nothing here approaches the
+    // 60px biz rail overlay's 25 (W37).
+    .pbmc-scrim {
+        position: absolute;
+        inset: 0;
+        z-index: 12;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: color-mix(in srgb, var(--pbim-primary-dark, #241F52) 34%,
+                              transparent);
+    }
+    .pbmc-modal {
+        width: 100%;
+        max-width: 440px;
+        background: var(--pbim-surface, #fff);
+        border-radius: var(--pbim-r, 14px);
+        box-shadow: var(--pbim-sh-lg, 0 18px 44px rgba(40, 50, 90, .12));
+        padding: 18px;
+
+        h5 {
+            margin: 0 0 8px;
+            font-size: 14.5px;
+            font-weight: 800;
+            color: var(--pbim-ink, #1B1733);
+        }
+    }
+    .pbmc-modal__p {
+        margin: 0 0 12px;
+        font-size: 12px;
+        line-height: 1.6;
+        color: var(--pbim-muted, #64748B);
+
+        b { color: var(--pbim-ink, #1B1733); }
+    }
+    .pbmc-ta {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px);
+        font: inherit;
+        font-size: 12px;
+        resize: vertical;
+        color: var(--pbim-text, #1B1733);
+
+        &:focus {
+            outline: none;
+            border-color: var(--pbim-primary-light, #CBC2EE);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(90, 75, 176, .18));
+        }
+    }
+    .pbmc-modal__a {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    // ==================================================== P7: kinds + paging
+    // A flag is waived per KIND, so the board groups by kind before it lists
+    // anything. Every colour is a --pbim-* token with a real literal fallback
+    // (W14) — this lens can mount inside the shell or standalone.
+    .pbmc-kinds {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbmc-kinds__spacer { flex: 1 1 auto; }
+
+    .pbmc-kind {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 6px;
+        padding: 5px 10px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 999px;
+        background: var(--pbim-surface, #fff);
+        color: var(--pbim-muted, #64748B);
+        font-size: 11.5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: border-color .12s ease, background .12s ease;
+
+        &:hover:not(:disabled) { border-color: var(--pbim-primary-light, #CBC2EE); }
+        &:disabled { opacity: .55; cursor: default; }
+
+        &.is-on {
+            border-color: var(--pbim-primary, #5A4BB0);
+            background: var(--pbim-soft, #EDEAF8);
+            color: var(--pbim-ink, #1B1733);
+        }
+    }
+    .pbmc-kind__n {
+        font-size: 13px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: var(--pbim-ink, #1B1733);
+    }
+    // the reviewed tail: present but subordinate, so the OPEN count stays the
+    // number the eye lands on
+    .pbmc-kind__r {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--pbim-green, #2E7D4F);
+    }
+    .pbmc-kind--rose  .pbmc-kind__n { color: var(--pbim-rose, #DC2668); }
+    .pbmc-kind--amber .pbmc-kind__n { color: var(--pbim-amber, #D97706); }
+    .pbmc-kind--cyan  .pbmc-kind__n { color: var(--pbim-cyan, #2563EB); }
+
+    .pbmc-chipf {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 10px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 999px;
+        background: var(--pbim-surface, #fff);
+        color: var(--pbim-muted, #64748B);
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+
+        svg { display: block; }
+        &:hover:not(:disabled) { border-color: var(--pbim-primary-light, #CBC2EE); }
+        &:disabled { opacity: .55; cursor: default; }
+        &.is-on {
+            border-color: var(--pbim-primary, #5A4BB0);
+            background: var(--pbim-soft, #EDEAF8);
+            color: var(--pbim-ink, #1B1733);
+        }
+        &--clear { color: var(--pbim-rose, #DC2668); }
+    }
+
+    .pbmc-bulk {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 12px;
+        background: var(--pbim-soft, #EDEAF8);
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+        font-size: 12px;
+        color: var(--pbim-ink, #1B1733);
+
+        svg { display: block; color: var(--pbim-primary, #5A4BB0); }
+    }
+    .pbmc-bulk__t { flex: 1 1 auto; }
+
+    // The batch RESULT stays on screen until dismissed. The skipped list is the
+    // half of the answer a toast would take away.
+    .pbmc-bres {
+        margin: 10px 12px 0;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-bg, #F5F6FA);
+        font-size: 12px;
+    }
+    .pbmc-bres__h {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 11px;
+        color: var(--pbim-ink, #1B1733);
+
+        svg { display: block; color: var(--pbim-green, #2E7D4F); }
+        b { font-variant-numeric: tabular-nums; }
+    }
+    .pbmc-bres__sp { flex: 1 1 auto; }
+    .pbmc-bres__x {
+        border: 0;
+        background: none;
+        padding: 0;
+        color: var(--pbim-muted, #64748B);
+        font: inherit;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+
+        &:hover { color: var(--pbim-ink, #1B1733); }
+    }
+    .pbmc-bres__s {
+        padding: 0 11px 10px;
+        border-top: 1px dashed var(--pbim-line, #E2E8F0);
+    }
+    .pbmc-bres__st {
+        margin: 8px 0 5px;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--pbim-amber, #D97706);
+    }
+    .pbmc-bres__r {
+        display: flex;
+        gap: 8px;
+        padding: 3px 0;
+        font-size: 11px;
+        color: var(--pbim-muted, #64748B);
+
+        b { color: var(--pbim-ink, #1B1733); font-weight: 700; }
+    }
+
+    .pbmc-pager {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 12px;
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+        font-size: 11.5px;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbmc-pager__sp { flex: 1 1 auto; }
+    .pbmc-pager__t { font-variant-numeric: tabular-nums; }
+    .pbmc-pager__cap {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--pbim-amber, #D97706);
+
+        svg { display: block; }
+    }
+    .pbmc-pg {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-surface, #fff);
+        color: var(--pbim-ink, #1B1733);
+        cursor: pointer;
+
+        svg { display: block; }
+        &:hover:not(:disabled) { border-color: var(--pbim-primary-light, #CBC2EE); }
+        &:disabled { opacity: .4; cursor: default; }
+    }
+    .pbmc-pg__n {
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        color: var(--pbim-ink, #1B1733);
+    }
+
+    .pbmc-modal__p--warn {
+        color: var(--pbim-amber, #D97706);
+    }
+}

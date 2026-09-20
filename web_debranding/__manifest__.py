@@ -9,7 +9,9 @@
 # License OPL-1 (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#odoo-apps) for derivative work.
 {
     "name": "Backend debranding",
-    "version": "16.0.3.0.0",
+    # 19.0.1.0.1 -- local Odoo 19 compatibility patch, see models/ir_http.py.
+    # Keep this bump when merging an upstream update, or re-apply the patch.
+    "version": "19.0.1.0.1",
     "author": "IT-Projects LLC, Ivan Yelizariev",
     "license": "OPL-1",
     "category": "Debranding",
@@ -33,17 +35,14 @@
         "views/res_config.xml",
     ],
     "assets": {
-        "web.assets_qweb": [
-            "web_debranding/static/src/xml/web.xml",
-        ],
         "web.assets_backend": [
             "web_debranding/static/src/css/web.css",
             "web_debranding/static/src/js/base.js",
             "web_debranding/static/src/js/dialog.js",
             "web_debranding/static/src/js/field_upgrade.js",
-            "web_debranding/static/src/js/native_notifications.js",
             "web_debranding/static/src/js/user_menu_items.js",
             "web_debranding/static/src/js/translation.js",
+            "web_debranding/static/src/xml/web.xml",
         ],
     },
     "auto_install": False,

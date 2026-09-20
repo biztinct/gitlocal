@@ -1,0 +1,887 @@
+<title>Levers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap">
+<style>
+  :root{
+    --ink:#1E1B2E; --ink-2:#4B4866; --muted:#64748B; --line:#E2E8F0; --canvas:#F4F5FB; --card:#FFFFFF;
+    --primary:#5A4BB0; --primary-deep:#4A3D96; --primary-soft:#EDEAF8; --primary-soft2:#CBC2EE;
+    --money:#2E7D4F; --money-soft:#E6F4EC; --info:#2563EB; --info-soft:#E8EFFD; --warn:#D97706; --warn-soft:#FDF1E1; --rose:#DC2668; --rose-soft:#FCE7EF; --teal:#0F766E; --teal-soft:#E0F2F1;
+    --today:#94A3B8;
+    --font:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --r:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.45}
+  button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+  h1,h2,h3{margin:0;text-wrap:balance}
+  .top{height:56px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 20px;position:sticky;top:0;z-index:20}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em}
+  .brand .mark{width:28px;height:28px;border-radius:8px;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:13px}
+  .crumb{color:var(--muted);font-weight:600}.crumb b{color:var(--ink)}
+  .chips{display:flex;gap:6px;margin-left:12px}
+  .chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-weight:700;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px}
+  .chip.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .chip .ic{width:14px;height:14px}
+  .spacer{flex:1}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;transition:background .15s,transform .1s}
+  .btn:hover{background:var(--primary-soft)} .btn:active{transform:translateY(1px)}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn.primary:hover{background:var(--primary-deep)}
+  .btn.ghost{border-color:transparent;background:transparent;color:var(--primary)}
+  .btn:focus-visible,.chip:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+
+  .wrap{max-width:1480px;margin:0 auto;padding:20px}
+  .hero{background:var(--primary-soft);border:1px solid var(--primary-soft2);border-radius:18px;padding:22px 26px;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;margin-bottom:18px}
+  .hero .eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:var(--primary);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+  .hero .say{font-size:22px;font-weight:700;line-height:1.3;letter-spacing:-.01em;color:var(--ink);transition:opacity .2s}
+  .hero .say b{color:var(--primary-deep)}
+  .hero .say.fade{opacity:.35}
+  .hero .aside{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+  .hero .pill{background:#fff;border-radius:999px;padding:6px 12px;font-weight:700;color:var(--primary-deep);font-size:13px;display:flex;gap:6px;align-items:center}
+
+  .grid{display:grid;grid-template-columns:392px 1fr;gap:18px;align-items:start}
+  @media (max-width:1100px){.grid{grid-template-columns:1fr}}
+
+  /* ---- Levers ---- */
+  .levers{display:flex;flex-direction:column;gap:12px;position:sticky;top:76px;max-height:calc(100vh - 96px);overflow:auto;padding-right:2px}
+  .lever{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+  .lever header{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .badge{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex:none}
+  .badge .ic{width:17px;height:17px}
+  .b-indigo{background:var(--primary-soft);color:var(--primary)} .b-green{background:var(--money-soft);color:var(--money)} .b-blue{background:var(--info-soft);color:var(--info)} .b-amber{background:var(--warn-soft);color:var(--warn)} .b-rose{background:var(--rose-soft);color:var(--rose)} .b-teal{background:var(--teal-soft);color:var(--teal)}
+  .lever h3{font-size:15px;font-weight:800}
+  .lever .why{color:var(--muted);font-size:12px;margin:0 0 10px 42px}
+  .row{display:grid;grid-template-columns:1fr 110px;gap:8px;align-items:center;padding:8px 0;border-top:1px solid #F1F3F9}
+  .row:first-of-type{border-top:0}
+  .row .lbl{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;font-size:13px}
+  .row .lbl small{color:var(--muted);font-weight:600;font-size:12px}
+  .row .val{text-align:right;font-weight:800;font-variant-numeric:tabular-nums;font-size:14px;color:var(--primary-deep)}
+  .row .val.neg{color:var(--rose)} .row .val.zero{color:var(--muted)}
+  .row input[type=range]{width:100%;grid-column:1}
+  .row .ctl{grid-column:2;display:flex;gap:4px;justify-content:flex-end;align-items:center}
+  .row select,.row input[type=number]{border:1px solid var(--line);border-radius:8px;padding:4px 6px;background:#fff;font-weight:700;font-size:12px;height:28px}
+  .row input[type=number]{width:64px;text-align:right}
+  .row .full{grid-column:1 / -1}
+  .divrow{cursor:pointer}
+  .divrow .dot{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:6px}
+  .roles{grid-column:1 / -1;display:none;background:#FAFBFF;border-radius:10px;padding:6px 10px;margin-top:4px}
+  .roles.open{display:block}
+  .roles .rr{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px}
+  .roles .rr span{flex:1}.roles .rr small{color:var(--muted);width:70px;text-align:right}
+  .step{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .step button{border:0;background:#fff;width:26px;height:26px;cursor:pointer;display:grid;place-items:center;color:var(--primary)}
+  .step button:hover{background:var(--primary-soft)}
+  .step b{width:40px;text-align:center;line-height:26px;font-variant-numeric:tabular-nums;font-size:12px;background:#fff}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:26px;background:transparent;margin:0}
+  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(to right,var(--primary-soft2) 0,var(--primary-soft2) 100%)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--primary);margin-top:-7px;box-shadow:0 2px 6px rgba(90,75,176,.35);cursor:grab;transition:transform .1s}
+  input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.12)}
+  input[type=range]:active::-webkit-slider-thumb{cursor:grabbing}
+  input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--primary-soft2)}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--primary)}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .seg button{border:0;background:#fff;padding:5px 10px;font-weight:700;font-size:12px;cursor:pointer}
+  .seg button.on{background:var(--primary);color:#fff}
+  .switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:13px}
+  .switch i{width:36px;height:20px;border-radius:999px;background:#CBD5E1;position:relative;transition:background .2s}
+  .switch i::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s}
+  .switch.on i{background:var(--money)} .switch.on i::after{left:18px}
+  .money-in{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;background:#fff;height:30px;padding:0 8px;gap:4px;font-weight:700}
+  .money-in input{border:0;width:70px;text-align:right;font-weight:800;outline:0;font-size:13px}
+  .money-in small{color:var(--muted)}
+
+  /* ---- Dashboard ---- */
+  .dash{display:flex;flex-direction:column;gap:16px}
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+  @media (max-width:1300px){.kpis{grid-template-columns:repeat(3,1fr)}}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+  .kpi .t{display:flex;align-items:center;gap:8px;color:var(--muted);font-weight:700;font-size:12px;margin-bottom:8px}
+  .kpi .badge{width:26px;height:26px;border-radius:7px}.kpi .badge .ic{width:14px;height:14px}
+  .kpi .v{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums}
+  .kpi .d{margin-top:6px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 8px}
+  .kpi .d .ic{width:12px;height:12px}
+  .d.up{background:var(--rose-soft);color:var(--rose)} .d.down{background:var(--money-soft);color:var(--money)} .d.flat{background:#F1F5F9;color:var(--muted)}
+  .d.good{background:var(--money-soft);color:var(--money)} .d.bad{background:var(--rose-soft);color:var(--rose)}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:1300px){.cards{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+  .card.wide{grid-column:1 / -1}
+  .card h3{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .card .sub{color:var(--muted);font-size:12px;margin:2px 0 12px}
+  .card .hd{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--ink-2);font-weight:600}
+  .legend i{width:14px;height:3px;border-radius:2px;display:inline-block;vertical-align:middle;margin-right:5px}
+  .legend i.dash{background:repeating-linear-gradient(90deg,var(--today) 0 4px,transparent 4px 7px)}
+  .watch{display:flex;flex-direction:column;gap:8px}
+  .watch div{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;font-weight:600;font-size:13px}
+  .watch .crit{background:var(--rose-soft);color:#9F1239}.watch .warn{background:var(--warn-soft);color:#92400E}.watch .ok{background:var(--money-soft);color:#166534}
+  .watch .ic{margin-top:1px}
+
+  /* compare drawer */
+  .drawer{position:fixed;inset:0;background:rgba(30,27,46,.35);display:none;align-items:center;justify-content:center;z-index:50}
+  .drawer.open{display:flex}
+  .sheet{background:#fff;border-radius:18px;width:min(900px,92vw);padding:22px 26px;box-shadow:0 30px 80px rgba(30,27,46,.35)}
+  .sheet table{width:100%;border-collapse:collapse;margin-top:14px;font-variant-numeric:tabular-nums}
+  .sheet th,.sheet td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line)}
+  .sheet th:first-child,.sheet td:first-child{text-align:left}
+  .sheet th{color:var(--muted);font-size:12px;font-weight:700}
+  .sheet td.best{color:var(--money);font-weight:800}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-weight:700;opacity:0;transition:.25s;z-index:60}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="top">
+  <div class="brand"><span class="mark">P</span>Payobook</div>
+  <div class="crumb">People · Plan · <b>Workforce Planning</b></div>
+  <div class="chips" id="chips"></div>
+  <div class="spacer"></div>
+  <button class="btn ghost" id="reset">RESET_ICON Start again</button>
+  <button class="btn" id="compare">COMPARE_ICON Compare</button>
+  <button class="btn primary" id="save">SAVE_ICON Save this plan</button>
+</div>
+
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">SPARK_ICON In plain words</div>
+      <div class="say" id="say"></div>
+    </div>
+    <div class="aside">
+      <span class="pill">USERS_ICON <span id="pill-people"></span></span>
+      <span class="pill">TARGET_ICON <span id="pill-margin"></span></span>
+    </div>
+  </section>
+
+  <div class="grid">
+    <aside class="levers" id="levers"></aside>
+    <main class="dash">
+      <div class="kpis" id="kpis"></div>
+      <div class="cards">
+        <div class="card wide">
+          <div class="hd"><div><h3>Month by month</h3><div class="sub">People cost each month — the dotted grey line is today’s company, the solid line is your plan.</div></div>
+            <div class="seg" id="mode"><button class="on" data-m="cost">People cost</button><button data-m="profit">Profit</button><button data-m="heads">People</button></div></div>
+          <div id="c-months"></div>
+        </div>
+        <div class="card">
+          <div class="hd"><div><h3>From today to your plan</h3><div class="sub">What each change adds or saves over a year.</div></div></div>
+          <div id="c-water"></div>
+        </div>
+        <div class="card">
+          <div class="hd"><div><h3>Cost by division</h3><div class="sub">Yearly. Faded bars are today.</div></div></div>
+          <div id="c-divs"></div>
+        </div>
+        <div class="card">
+          <div class="hd"><div><h3>Where every đồng goes</h3><div class="sub">Your yearly people cost, split up.</div></div></div>
+          <div id="c-stack"></div>
+        </div>
+        <div class="card">
+          <div class="hd"><div><h3>Watch-outs</h3><div class="sub">Things this plan could break, and what to do about them.</div></div></div>
+          <div class="watch" id="watch"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="drawer" id="drawer"><div class="sheet">
+  <div class="hd" style="display:flex;justify-content:space-between;align-items:center"><h3 style="font-size:18px">Your plans side by side</h3><button class="btn ghost" id="close">X_ICON Close</button></div>
+  <div id="cmp"></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================================================================
+   WFPLAN proof-of-concept core — shared by option A/B/C.
+   Money is held internally in ₫ millions (M). 1,000 M = ₫1 B.
+   Everything here is deliberately plain: a CEO can read the outputs,
+   an engineer can read the model. VN statutory numbers are the real
+   2026 ones, simplified to averages per role.
+   =================================================================== */
+window.WF = (() => {
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const MONTHS_LONG = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  // ---- The company (mirrors the Payobook Vietnam demo: 4,502 people) ----
+  const DIVS = [
+    {key:'mfg', name:'Manufacturing', color:'#2a78d6', revenue:true, roles:[
+      {key:'op',  name:'Operators',          n:760, pay:10.8, ot:24, night:0.35},
+      {key:'tl',  name:'Team leads',         n:140, pay:15.5, ot:16, night:0.35},
+      {key:'qc',  name:'Quality inspectors', n:60,  pay:14.2, ot:12, night:0.20},
+      {key:'sup', name:'Supervisors',        n:40,  pay:22.0, ot:0,  night:0.20}]},
+    {key:'ret', name:'Retail', color:'#eb6834', revenue:true, roles:[
+      {key:'ss',  name:'Store staff',        n:640, pay:12.6, ot:14, night:0},
+      {key:'ca',  name:'Cashiers',           n:120, pay:9.4,  ot:10, night:0},
+      {key:'sm',  name:'Store managers',     n:82,  pay:24.0, ot:0,  night:0},
+      {key:'me',  name:'Merchandisers',      n:60,  pay:16.0, ot:6,  night:0}]},
+    {key:'con', name:'Construction', color:'#1baf7a', revenue:true, roles:[
+      {key:'sw',  name:'Site workers',       n:560, pay:12.4, ot:30, night:0.15},
+      {key:'fm',  name:'Foremen',            n:120, pay:18.0, ot:20, night:0.15},
+      {key:'en',  name:'Site engineers',     n:80,  pay:22.0, ot:10, night:0},
+      {key:'sa',  name:'Safety officers',    n:40,  pay:16.0, ot:8,  night:0}]},
+    {key:'log', name:'Logistics', color:'#eda100', revenue:true, roles:[
+      {key:'dr',  name:'Drivers',            n:400, pay:13.5, ot:28, night:0.40},
+      {key:'wh',  name:'Warehouse staff',    n:220, pay:10.5, ot:20, night:0.30},
+      {key:'di',  name:'Dispatchers',        n:50,  pay:15.0, ot:12, night:0.30},
+      {key:'fs',  name:'Fleet supervisors',  n:30,  pay:21.0, ot:0,  night:0}]},
+    {key:'it',  name:'IT', color:'#e87ba4', revenue:false, roles:[
+      {key:'eng', name:'Engineers',          n:380, pay:28.0, ot:4,  night:0},
+      {key:'sen', name:'Senior engineers',   n:120, pay:42.0, ot:2,  night:0},
+      {key:'pm',  name:'Project managers',   n:60,  pay:38.0, ot:0,  night:0},
+      {key:'sp',  name:'Support staff',      n:40,  pay:16.0, ot:8,  night:0}]},
+    {key:'cor', name:'Corporate', color:'#008300', revenue:false, roles:[
+      {key:'ad',  name:'Admin',              n:180, pay:14.0, ot:2,  night:0},
+      {key:'fh',  name:'Finance & HR',       n:160, pay:26.0, ot:2,  night:0},
+      {key:'sa',  name:'Sales',              n:100, pay:30.0, ot:0,  night:0},
+      {key:'mg',  name:'Managers',           n:60,  pay:48.0, ot:0,  night:0}]},
+  ];
+  const DIV = Object.fromEntries(DIVS.map(d => [d.key, d]));
+
+  // ---- Vietnam statutory (2026), simplified ----
+  const K = {
+    allowance: 0.12,      // meal / transport / phone, share of base
+    insCap: 46.8,         // ₫46.8M cap for SI/HI (20 × base salary)
+    erRate: 0.235,        // employer: SI 17.5 + HI 3 + UI 1 + union 2
+    eeRate: 0.105,        // employee: SI 8 + HI 1.5 + UI 1
+    otMult: 1.5,          // weekday overtime multiplier
+    nightPrem: 0.30,      // night-shift premium on the base hour
+    personalDed: 11,      // ₫11M personal deduction / month
+    depDed: 4.4 * 0.9,    // ₫4.4M per dependent × 0.9 avg dependents
+  };
+  const PIT = [[5,0.05],[10,0.10],[18,0.15],[32,0.20],[52,0.25],[80,0.30],[Infinity,0.35]];
+  function pitOn(taxable) {
+    if (taxable <= 0) return 0;
+    let tax = 0, prev = 0;
+    for (const [cap, rate] of PIT) {
+      const slice = Math.min(taxable, cap) - prev;
+      if (slice <= 0) break;
+      tax += slice * rate; prev = cap;
+    }
+    return tax;
+  }
+
+  // ---- The knobs (state) ----
+  function defaultState() {
+    return {
+      divs: Object.fromEntries(DIVS.map(d => [d.key, {
+        delta: 0,                 // people added (+) or removed (−)
+        month: 3,                 // month (1-12) the change lands
+        raise: null,              // % override, null = follow company raise
+        roles: Object.fromEntries(d.roles.map(r => [r.key, 0])),  // per-role delta
+      }])),
+      raise: 0,          // company-wide raise, %
+      raiseMonth: 4,     // month raise starts
+      otFactor: 1,       // overtime vs today (1 = same)
+      nightFactor: 1,    // night work vs today
+      workDays: 24,      // paid working days / month
+      bonusMonths: 1,    // Tet 13th-month
+      attrition: 12,     // % of people who leave per year
+      backfill: true,    // replace leavers?
+      recruitCost: 1,    // months of pay per hire (agency, onboarding)
+      severance: 1.5,    // months of pay per person let go
+      revenue: 2200000,  // ₫M / year  (₫2,200 B)
+      otherCosts: 260000,// ₫M / year non-people costs
+      revenueFollows: false, // does revenue grow with revenue-earning staff?
+      demandMode: false,     // option E: revenue = what the team can serve of a growing demand
+      demandGrowth: 0,       // % more demand by December than today
+      demandStress: 0,       // % immediate change to all demand (stress test)
+    };
+  }
+
+  // ---- The engine ----
+  function compute(s) {
+    const months = [];
+    const byDiv = {};
+    let revHeadsBase = 0, revHeads = new Array(12).fill(0);
+    const totals = { hires:0, cuts:0, leavers:0 };
+    for (const d of DIVS) {
+      byDiv[d.key] = { name:d.name, color:d.color, heads:new Array(12).fill(0), cost:new Array(12).fill(0), baseCost:0, headsToday:0 };
+    }
+    for (let m = 0; m < 12; m++) {
+      const row = { m, heads:0, base:0, allow:0, ot:0, night:0, erc:0, bonus:0, oneOff:0, eeIns:0, pit:0, takeHome:0, total:0 };
+      for (const d of DIVS) {
+        const ds = s.divs[d.key];
+        const raisePct = (ds.raise == null ? s.raise : ds.raise);
+        for (const r of d.roles) {
+          // two kinds of change: a division-wide delta (spread across roles) landing at ds.month,
+          // and a per-role delta (number, or {n, month}) landing at its own month
+          // a role delta may be a number (lands at ds.month), {n, month}, or an array of {n, month} (option D)
+          const rd = ds.roles[r.key];
+          const rdl = Array.isArray(rd) ? rd : [typeof rd === 'object' && rd ? rd : { n: rd || 0, month: ds.month }];
+          const divShare = ds.delta * (r.n / d.roles.reduce((a, x) => a + x.n, 0));
+          let n = r.n + ((m + 1) >= ds.month ? divShare : 0) + rdl.reduce((a, x) => a + ((m + 1) >= x.month ? x.n : 0), 0);
+          const aRate = s.attrition / 100 / 12;
+          const leaversThisMonth = r.n * aRate;
+          if (!s.backfill) n -= r.n * (1 - Math.pow(1 - aRate, m + 1));
+          n = Math.max(0, n);
+          const pay = r.pay * (1 + ((m + 1) >= s.raiseMonth ? raisePct / 100 : 0));
+          const base = n * pay;
+          const allow = base * K.allowance;
+          const hourly = pay / (s.workDays * 8);
+          const ot = n * hourly * K.otMult * r.ot * s.otFactor;
+          const night = base * K.nightPrem * r.night * s.nightFactor;
+          const erc = n * Math.min(pay, K.insCap) * K.erRate;
+          const bonus = m === 0 ? base * s.bonusMonths : 0;
+          let oneOff = 0;
+          const land = (delta, month) => {
+            if ((m + 1) !== month || !delta) return;
+            if (delta > 0) { oneOff += delta * pay * s.recruitCost; totals.hires += delta; }
+            else { oneOff += -delta * pay * s.severance; totals.cuts += -delta; }
+          };
+          land(divShare, ds.month); rdl.forEach(x => land(x.n, x.month));
+          if (s.backfill) { oneOff += leaversThisMonth * pay * s.recruitCost; }
+          totals.leavers += leaversThisMonth;
+          const eeInsPP = Math.min(pay, K.insCap) * K.eeRate;
+          const grossPP = pay + allow / Math.max(n,1e-9) + (n ? ot / n : 0) + (n ? night / n : 0);
+          const pitPP = pitOn(grossPP - eeInsPP - K.personalDed - K.depDed);
+          const eeIns = n * eeInsPP, pit = n * pitPP;
+          const gross = base + allow + ot + night;
+          const total = gross + erc + bonus + oneOff;
+          row.heads += n; row.base += base; row.allow += allow; row.ot += ot; row.night += night;
+          row.erc += erc; row.bonus += bonus; row.oneOff += oneOff; row.eeIns += eeIns; row.pit += pit;
+          row.takeHome += gross - eeIns - pit; row.total += total;
+          byDiv[d.key].heads[m] += n; byDiv[d.key].cost[m] += total;
+          if (m === 0) byDiv[d.key].headsToday += r.n;
+          if (d.revenue) { revHeads[m] += n; if (m === 0) revHeadsBase += r.n; }
+        }
+      }
+      row.gross = row.base + row.allow + row.ot + row.night;
+      months.push(row);
+    }
+    // revenue + profit
+    const seasonal = [0.86,0.78,0.95,1.0,1.02,1.04,1.02,1.03,1.05,1.08,1.1,1.07]; // mild VN seasonality, sums to 12
+    // demand mode: today's team serves exactly today's revenue; capacity moves with revenue-earning heads and overtime hours
+    const otAvg = DIVS.filter(d => d.revenue).reduce((a, d) => a + d.roles.reduce((b, r) => b + r.ot * r.n, 0), 0) / Math.max(1, revHeadsBase);
+    const hoursFactor = (s.workDays * 8 + otAvg * s.otFactor) / (s.workDays * 8 + otAvg);
+    for (let m = 0; m < 12; m++) {
+      const row = months[m];
+      const today = s.revenue / 12 * seasonal[m];
+      if (s.demandMode) {
+        row.demand = today * (1 + s.demandGrowth / 100 * (m + 1) / 12) * (1 + s.demandStress / 100);
+        row.capacity = today * (revHeads[m] / revHeadsBase) * hoursFactor;
+        row.revenue = Math.min(row.demand, row.capacity);
+      } else {
+        row.revenue = s.revenueFollows ? today * revHeads[m] / revHeadsBase : today;
+        row.demand = row.revenue; row.capacity = today * (revHeads[m] / revHeadsBase) * hoursFactor;
+      }
+      row.coverage = row.demand ? row.revenue / row.demand : 1;
+      row.other = s.otherCosts / 12;
+      row.profit = row.revenue - row.total - row.other;
+      row.margin = row.revenue ? row.profit / row.revenue : 0;
+    }
+    const sum = k => months.reduce((a, r) => a + r[k], 0);
+    const year = {
+      cost: sum('total'), gross: sum('gross'), base: sum('base'), allow: sum('allow'), ot: sum('ot'), night: sum('night'),
+      erc: sum('erc'), bonus: sum('bonus'), oneOff: sum('oneOff'), eeIns: sum('eeIns'), pit: sum('pit'), takeHome: sum('takeHome'),
+      revenue: sum('revenue'), other: sum('other'), profit: sum('profit'), demand: sum('demand'), capacity: sum('capacity'),
+      headsEnd: months[11].heads, headsAvg: sum('heads') / 12,
+      peakMonth: months.reduce((b, r) => r.total > months[b].total ? r.m : b, 0),
+    };
+    year.coverage = year.demand ? year.revenue / year.demand : 1;
+    year.unserved = year.demand - year.revenue;
+    year.margin = year.revenue ? year.profit / year.revenue : 0;
+    year.costPerHead = year.cost / 12 / year.headsAvg;
+    year.peopleShare = year.revenue ? year.cost / year.revenue : 0;
+    for (const d of DIVS) byDiv[d.key].year = byDiv[d.key].cost.reduce((a, b) => a + b, 0);
+    return { months, year, byDiv, totals };
+  }
+
+  let _base = null;
+  const baseline = () => _base || (_base = compute(defaultState()));
+
+  // ---- Goal seek: how far can one knob go before margin drops below target? ----
+  function maxHeadsForMargin(s, divKey, targetMargin) {
+    let lo = 0, hi = 4000;
+    const test = n => { const t = clone(s); t.divs[divKey].delta = n; return compute(t).year.margin >= targetMargin; };
+    if (!test(0)) return 0;
+    while (lo < hi) { const mid = Math.ceil((lo + hi) / 2); if (test(mid)) lo = mid; else hi = mid - 1; }
+    return lo;
+  }
+  function maxRaiseForMargin(s, targetMargin) {
+    let lo = 0, hi = 60;
+    const test = p => { const t = clone(s); t.raise = p; return compute(t).year.margin >= targetMargin; };
+    if (!test(0)) return 0;
+    while (hi - lo > 0.1) { const mid = (lo + hi) / 2; if (test(mid)) lo = mid; else hi = mid; }
+    return Math.floor(lo * 2) / 2;
+  }
+  const clone = o => JSON.parse(JSON.stringify(o));
+  const roleSum = ds => Object.values(ds.roles).reduce((a, v) => a + (Array.isArray(v) ? v.reduce((b, x) => b + x.n, 0) : (typeof v === 'object' && v ? v.n : v)), 0);
+
+  // ---- Formatting (₫, plain) ----
+  const fmt = {
+    money(v, opts = {}) {
+      const sign = v < 0 ? '−' : (opts.plus && v > 0 ? '+' : '');
+      const a = Math.abs(v);
+      if (a >= 1000) return `${sign}₫${(a / 1000).toLocaleString('en', { maximumFractionDigits: a >= 100000 ? 0 : 1 })} B`;
+      if (a >= 1) return `${sign}₫${a.toLocaleString('en', { maximumFractionDigits: a >= 100 ? 0 : 1 })} M`;
+      return `${sign}₫${(a * 1000).toLocaleString('en', { maximumFractionDigits: 0 })} K`;
+    },
+    int(v, opts = {}) { const sign = v < 0 ? '−' : (opts.plus && v > 0 ? '+' : ''); return sign + Math.round(Math.abs(v)).toLocaleString('en'); },
+    pct(v, opts = {}) { const p = v * 100; const sign = p < 0 ? '−' : (opts.plus && p > 0 ? '+' : ''); return `${sign}${Math.abs(p).toFixed(opts.d ?? 1)}%`; },
+    pts(v) { const p = v * 100; return `${p < 0 ? '−' : '+'}${Math.abs(p).toFixed(1)} pt`; },
+    month: i => MONTHS_LONG[i - 1],
+  };
+
+  // ---- Number animation ----
+  function animateNumber(el, to, format, ms = 420) {
+    const from = el._v ?? to;
+    el._v = to;
+    if (from === to) { el.textContent = format(to); return; }
+    const t0 = performance.now();
+    const tick = t => {
+      const k = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = format(from + (to - from) * e);
+      if (k < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  // ---- Lucide icons (stroke only, no emoji) ----
+  const ICONS = {
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    'user-plus': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>',
+    'user-minus': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="22" x2="16" y1="11" y2="11"/>',
+    wallet: '<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
+    'trending-up': '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+    'trending-down': '<polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/>',
+    clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+    minus: '<path d="M5 12h14"/>',
+    sparkles: '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>',
+    undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>',
+    redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13"/>',
+    save: '<path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/>',
+    columns: '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 3v18"/>',
+    alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+    chevron: '<path d="m6 9 6 6 6-6"/>',
+    x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+    eye: '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
+    'eye-off': '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>',
+    zap: '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+    target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+    layers: '<path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/>',
+    'arrow-right': '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+    check: '<path d="M20 6 9 17l-5-5"/>',
+    percent: '<line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+    moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+    calendar: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+    gift: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>',
+    reset: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+    bulb: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+    building: '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>',
+    shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+    landmark: '<line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/>',
+    chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+    scale: '<path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>',
+    info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+    grip: '<circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/>',
+    trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+    play: '<polygon points="6 3 20 12 6 21 6 3"/>',
+    home: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+    settings: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+    'chevron-right': '<path d="m9 18 6-6-6-6"/>',
+    flag: '<path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"/>',
+    hand: '<path d="M11 14h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16"/><path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 15 6 6"/><path d="M19.5 8.5c.7-.7 1.5-1.6 1.5-2.7A2.73 2.73 0 0 0 16 4a2.78 2.78 0 0 0-5 1.8c0 1.2.8 2 1.5 2.8L16 12Z"/>',
+  };
+  const icon = (name, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+
+  // ---- The plain-language summary sentence ----
+  function describe(s, r, b) {
+    const parts = [];
+    let hires = 0, cuts = 0;
+    const hireBits = [], cutBits = [];
+    for (const d of DIVS) {
+      const ds = s.divs[d.key];
+      const tot = ds.delta + roleSum(ds);
+      if (tot > 0) { hires += tot; hireBits.push(`${fmt.int(tot)} in ${d.name}`); }
+      if (tot < 0) { cuts += -tot; cutBits.push(`${fmt.int(-tot)} in ${d.name}`); }
+    }
+    if (hires) parts.push(`hiring ${hireBits.join(', ')}`);
+    if (cuts) parts.push(`letting go ${cutBits.join(', ')}`);
+    if (s.raise) parts.push(`a ${s.raise}% raise from ${fmt.month(s.raiseMonth)}`);
+    if (s.otFactor !== 1) parts.push(`${s.otFactor > 1 ? 'more' : 'less'} overtime (${fmt.pct(s.otFactor - 1, { plus: true, d: 0 })})`);
+    if (s.nightFactor !== 1) parts.push(`${s.nightFactor > 1 ? 'more' : 'fewer'} night shifts (${fmt.pct(s.nightFactor - 1, { plus: true, d: 0 })})`);
+    if (s.bonusMonths !== 1) parts.push(`${s.bonusMonths === 0 ? 'no Tet bonus' : s.bonusMonths + ' months of Tet bonus'}`);
+    if (!s.backfill) parts.push('not replacing leavers');
+    if (s.attrition !== 12) parts.push(`${s.attrition}% of people leaving a year`);
+    if (s.demandMode && s.demandGrowth) parts.push(`demand ${s.demandGrowth > 0 ? 'growing' : 'shrinking'} ${Math.abs(s.demandGrowth)}% by December`);
+    if (s.demandMode && s.demandStress) parts.push(`demand ${s.demandStress > 0 ? 'up' : 'down'} ${Math.abs(s.demandStress)}% across the year`);
+    const dCost = r.year.cost - b.year.cost, dProfit = r.year.profit - b.year.profit;
+    const served = s.demandMode && r.year.coverage < 0.995 ? ` You serve ${fmt.pct(r.year.coverage)} of demand; ${fmt.money(r.year.unserved)} goes unserved.` : '';
+    if (!parts.length) return { lead: 'This is your company today.', tail: `${fmt.int(b.year.headsEnd)} people cost ${fmt.money(b.year.cost)} a year and you keep ${fmt.money(b.year.profit)} profit — a ${fmt.pct(b.year.margin)} margin.` };
+    const lead = 'With ' + (parts.length > 1 ? parts.slice(0, -1).join(', ') + ' and ' + parts.slice(-1) : parts[0]) + ',';
+    const tail = `your yearly people cost ${dCost >= 0 ? 'rises' : 'falls'} by ${fmt.money(Math.abs(dCost))} to ${fmt.money(r.year.cost)}, and profit ${dProfit >= 0 ? 'goes up' : 'goes down'} ${fmt.money(Math.abs(dProfit))} — margin ${fmt.pct(b.year.margin)} → ${fmt.pct(r.year.margin)}.${served}`;
+    return { lead, tail };
+  }
+
+  // ---- Watch-outs (what could bite) ----
+  function warnings(s, r, b) {
+    const w = [];
+    if (r.year.margin < 0.10) w.push({ level: 'crit', text: `Margin falls to ${fmt.pct(r.year.margin)} — below the 10% floor. Cut ${fmt.money(0.10 * r.year.revenue - r.year.profit)} of cost or add revenue.` });
+    else if (r.year.margin < 0.15) w.push({ level: 'warn', text: `Margin at ${fmt.pct(r.year.margin)} is thin. Anything under 15% leaves little room for a slow quarter.` });
+    const worst = r.months.reduce((a, m) => m.profit < a.profit ? m : a, r.months[0]);
+    if (worst.profit < 0) {
+      const hiresThen = r.months[worst.m].oneOff > r.months[worst.m].base * 0.02;
+      const why = worst.m === 0 ? (hiresThen ? 'the Tet bonus and new hires land in the same month. Move the hires later and it recovers.' : 'the Tet bonus is paid this month. It is normal; make sure the cash is there.') : (hiresThen ? 'hiring and severance costs land together this month. Spread them out.' : 'costs outrun revenue this month.');
+      w.push({ level: 'crit', text: `${fmt.month(worst.m + 1)} loses money (${fmt.money(worst.profit)}) — ${why}` });
+    }
+    const hireMonths = DIVS.filter(d => (s.divs[d.key].delta + roleSum(s.divs[d.key])) > 0).map(d => s.divs[d.key].month);
+    if (hireMonths.length && r.totals.hires > 150) w.push({ level: 'warn', text: `${fmt.int(r.totals.hires)} new hires is a lot to recruit at once — roughly ${Math.ceil(r.totals.hires / 25)} recruiter-months of work. Spread them over two or three months.` });
+    if (s.raise >= 12) w.push({ level: 'warn', text: `A ${s.raise}% raise is well above the market average of 7–9%. Great for keeping people; check the ${fmt.money(r.year.cost - b.year.cost)} yearly bill.` });
+    if (s.attrition >= 20) w.push({ level: 'warn', text: `${s.attrition}% leaving a year means re-hiring ${fmt.int(r.totals.leavers)} people — ${fmt.money(r.totals.leavers * 15 * s.recruitCost)} in recruiting cost alone.` });
+    if (s.otFactor >= 1.5) w.push({ level: 'warn', text: `Overtime at ${fmt.pct(s.otFactor - 1, { plus: true, d: 0 })} vs today brushes the 40 h/month legal cap for factory roles. Hiring may be cheaper.` });
+    if (s.demandMode && r.year.coverage < 0.95) w.push({ level: 'warn', text: `${fmt.pct(1 - r.year.coverage)} of demand goes unserved — ${fmt.money(r.year.unserved)} of revenue left on the table. Add revenue-earning people earlier, or more overtime.` });
+    if (s.demandMode && r.year.capacity > r.year.demand * 1.15) w.push({ level: 'warn', text: `Capacity runs ${fmt.pct(r.year.capacity / r.year.demand - 1)} above demand this year. Fewer hires, or later ones, would keep the margin.` });
+    if (!w.length) w.push({ level: 'ok', text: 'Nothing to worry about. Margin, cash and hiring pace all look healthy.' });
+    return w;
+  }
+
+  // ---- Tiny SVG chart kit ----
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+  const nice = max => { const p = Math.pow(10, Math.floor(Math.log10(max))); const n = max / p; const s = n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10; return s * p; };
+
+  function tooltip(container) {
+    let t = container.querySelector('.wf-tip');
+    if (!t) { t = document.createElement('div'); t.className = 'wf-tip'; container.appendChild(t); }
+    return t;
+  }
+
+  // Line/area chart: series = [{name, values[12], color, dash, area}]
+  function lines(container, { series, fmtY = fmt.money, x = MONTHS, band, baseline0 = true, h = 220, endLabels = false }) {
+    container.innerHTML = ''; container.classList.add('wf-chart');
+    const W = container.clientWidth || 600, H = h, P = { l: 56, r: endLabels ? 78 : 24, t: 18, b: 28 };
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H }, container);
+    const all = series.flatMap(s => s.values).concat(band ? [band.lo, band.hi] : []);
+    let max = Math.max(...all), min = Math.min(0, ...all);
+    if (!baseline0) min = Math.min(...all);
+    const span = nice((max - min) * 1.15 || 1); max = min + span;
+    const X = i => P.l + (W - P.l - P.r) * i / (x.length - 1);
+    const Y = v => P.t + (H - P.t - P.b) * (1 - (v - min) / (max - min));
+    for (let i = 0; i <= 4; i++) {
+      const v = min + (max - min) * i / 4, y = Y(v);
+      el('line', { x1: P.l, x2: W - P.r, y1: y, y2: y, class: 'wf-grid' }, svg);
+      el('text', { x: P.l - 8, y: y + 4, class: 'wf-ax', 'text-anchor': 'end' }, svg).textContent = fmtY(v);
+    }
+    if (min < 0) el('line', { x1: P.l, x2: W - P.r, y1: Y(0), y2: Y(0), class: 'wf-zero' }, svg);
+    x.forEach((m, i) => { el('text', { x: X(i), y: H - 8, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = m; });
+    if (band) el('rect', { x: P.l, y: Y(band.hi), width: W - P.l - P.r, height: Y(band.lo) - Y(band.hi), class: 'wf-band' }, svg);
+    series.forEach(s => {
+      const pts = s.values.map((v, i) => `${X(i)},${Y(v)}`);
+      if (s.area) el('path', { d: `M${X(0)},${Y(Math.max(min,0))} L${pts.join(' L')} L${X(x.length - 1)},${Y(Math.max(min,0))} Z`, fill: s.color, opacity: 0.10 }, svg);
+      el('path', { d: 'M' + pts.join(' L'), fill: 'none', stroke: s.color, 'stroke-width': s.dash ? 2 : 2.5, 'stroke-dasharray': s.dash ? '5 5' : '', 'stroke-linejoin': 'round', class: 'wf-line' }, svg);
+      const last = s.values.length - 1;
+      el('circle', { cx: X(last), cy: Y(s.values[last]), r: 4, fill: s.color, stroke: '#fff', 'stroke-width': 2 }, svg);
+    });
+    if (endLabels) { // value at the end of each line, nudged apart so they never sit on top of each other
+      const used = [];
+      series.filter(s => s.endLabel !== false).map(s => ({ s, y: Y(s.values[s.values.length - 1]) })).sort((a, b) => a.y - b.y).forEach(o => {
+        let y = o.y; for (const u of used) if (Math.abs(y - u) < 13) y = u + 13; used.push(y);
+        const t = el('text', { x: X(x.length - 1) + 9, y: y + 4, class: 'wf-end', fill: o.s.color }, svg); t.textContent = fmtY(o.s.values[o.s.values.length - 1]);
+      });
+    }
+    // hover
+    const cross = el('line', { y1: P.t, y2: H - P.b, class: 'wf-cross', opacity: 0 }, svg);
+    const dots = series.map(s => el('circle', { r: 5, fill: s.color, stroke: '#fff', 'stroke-width': 2, opacity: 0 }, svg));
+    const tip = tooltip(container);
+    const hit = el('rect', { x: P.l, y: P.t, width: W - P.l - P.r, height: H - P.t - P.b, fill: 'transparent' }, svg);
+    hit.addEventListener('mousemove', ev => {
+      const r = svg.getBoundingClientRect(); const px = (ev.clientX - r.left) * W / r.width;
+      const i = Math.max(0, Math.min(x.length - 1, Math.round((px - P.l) / (W - P.l - P.r) * (x.length - 1))));
+      cross.setAttribute('x1', X(i)); cross.setAttribute('x2', X(i)); cross.setAttribute('opacity', 1);
+      series.forEach((s, k) => { dots[k].setAttribute('cx', X(i)); dots[k].setAttribute('cy', Y(s.values[i])); dots[k].setAttribute('opacity', 1); });
+      tip.innerHTML = `<b>${x[i]}</b>` + series.map(s => `<div><i style="background:${s.color}"></i>${s.name} <span>${fmtY(s.values[i])}</span></div>`).join('');
+      tip.style.opacity = 1; tip.style.left = Math.min(r.width - 170, X(i) * r.width / W + 12) + 'px'; tip.style.top = (ev.clientY - r.top - 10) + 'px';
+    });
+    hit.addEventListener('mouseleave', () => { cross.setAttribute('opacity', 0); dots.forEach(d => d.setAttribute('opacity', 0)); tip.style.opacity = 0; });
+  }
+
+  // Grouped bars: cats[], series=[{name, values, color}]
+  function bars(container, { cats, series, fmtY = fmt.money, h = 220, colors }) {
+    container.innerHTML = ''; container.classList.add('wf-chart');
+    const W = container.clientWidth || 600, H = h, P = { l: 56, r: 12, t: 18, b: 36 };
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H }, container);
+    const max = nice(Math.max(...series.flatMap(s => s.values)) * 1.15 || 1);
+    const Y = v => P.t + (H - P.t - P.b) * (1 - v / max);
+    for (let i = 0; i <= 4; i++) { const v = max * i / 4, y = Y(v); el('line', { x1: P.l, x2: W - P.r, y1: y, y2: y, class: 'wf-grid' }, svg); el('text', { x: P.l - 8, y: y + 4, class: 'wf-ax', 'text-anchor': 'end' }, svg).textContent = fmtY(v); }
+    const gw = (W - P.l - P.r) / cats.length, bw = Math.min(28, (gw * 0.7) / series.length);
+    const tip = tooltip(container);
+    cats.forEach((c, i) => {
+      const cx = P.l + gw * i + gw / 2;
+      // category label, wrapped onto two lines when it will not fit the slot
+      const words = String(c).split(' '); const fits = String(c).length * 6.2 < gw - 6;
+      if (fits || words.length === 1) { const t = el('text', { x: cx, y: H - 10, class: 'wf-ax', 'text-anchor': 'middle' }, svg); t.textContent = fits ? c : (String(c).length > Math.floor(gw / 6.2) ? String(c).slice(0, Math.max(3, Math.floor(gw / 6.2) - 1)) + '…' : c); }
+      else { const mid = Math.ceil(words.length / 2); el('text', { x: cx, y: H - 18, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = words.slice(0, mid).join(' '); el('text', { x: cx, y: H - 6, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = words.slice(mid).join(' '); }
+      series.forEach((s, k) => {
+        const x = cx - (series.length * bw + (series.length - 1) * 2) / 2 + k * (bw + 2);
+        const v = s.values[i], y = Y(v);
+        const rect = el('rect', { x, y, width: bw, height: Math.max(0, Y(0) - y), rx: 4, fill: colors ? colors[i] : s.color, opacity: s.ghost ? 0.35 : 1, class: 'wf-bar' }, svg);
+        rect.addEventListener('mousemove', ev => { const r = svg.getBoundingClientRect(); tip.innerHTML = `<b>${c}</b><div><i style="background:${colors ? colors[i] : s.color}"></i>${s.name} <span>${fmtY(v)}</span></div>`; tip.style.opacity = 1; tip.style.left = Math.min(r.width - 170, ev.clientX - r.left + 12) + 'px'; tip.style.top = (ev.clientY - r.top - 10) + 'px'; });
+        rect.addEventListener('mouseleave', () => tip.style.opacity = 0);
+      });
+    });
+  }
+
+  // Waterfall: start {label,value}, steps [{label,value}], end label
+  function waterfall(container, { start, steps, endLabel, fmtY = fmt.money, h = 240, upColor = '#DC2668', downColor = '#2E7D4F', totalColor = '#5A4BB0' }) {
+    container.innerHTML = ''; container.classList.add('wf-chart');
+    const W = container.clientWidth || 600, H = h, P = { l: 56, r: 12, t: 18, b: 40 };
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H }, container);
+    const items = [{ label: start.label, value: start.value, total: true }];
+    let run = start.value;
+    steps.forEach(s => { items.push({ label: s.label, value: s.value, from: run }); run += s.value; });
+    items.push({ label: endLabel, value: run, total: true });
+    const vals = items.flatMap(i => i.total ? [i.value] : [i.from, i.from + i.value]);
+    const lo = Math.min(0, ...vals), hiV = Math.max(...vals);
+    const min = lo, max = min + nice((hiV - lo) * 1.1 || 1);
+    const Y = v => P.t + (H - P.t - P.b) * (1 - (v - min) / (max - min));
+    for (let i = 0; i <= 4; i++) { const v = min + (max - min) * i / 4, y = Y(v); el('line', { x1: P.l, x2: W - P.r, y1: y, y2: y, class: 'wf-grid' }, svg); el('text', { x: P.l - 8, y: y + 4, class: 'wf-ax', 'text-anchor': 'end' }, svg).textContent = fmtY(v); }
+    const gw = (W - P.l - P.r) / items.length, bw = Math.min(56, gw * 0.62);
+    const tip = tooltip(container);
+    items.forEach((it, i) => {
+      const cx = P.l + gw * i + gw / 2;
+      const a = it.total ? 0 : it.from, b = it.total ? it.value : it.from + it.value;
+      const y1 = Y(Math.max(a, b)), y2 = Y(Math.min(a, b));
+      const color = it.total ? totalColor : (it.value >= 0 ? upColor : downColor);
+      const r = el('rect', { x: cx - bw / 2, y: y1, width: bw, height: Math.max(2, y2 - y1), rx: 4, fill: color, class: 'wf-bar' }, svg);
+      if (!it.total && i < items.length - 1) el('line', { x1: cx + bw / 2, x2: cx + gw - bw / 2, y1: Y(b), y2: Y(b), class: 'wf-connector' }, svg);
+      if (it.total && i === 0) el('line', { x1: cx + bw / 2, x2: cx + gw - bw / 2, y1: Y(b), y2: Y(b), class: 'wf-connector' }, svg);
+      const words = String(it.label).split(' '), fits = String(it.label).length * 6.2 < gw - 4;
+      if (fits || words.length === 1) { const lbl = el('text', { x: cx, y: H - 22, class: 'wf-ax', 'text-anchor': 'middle' }, svg); lbl.textContent = fits ? it.label : String(it.label).slice(0, Math.max(3, Math.floor(gw / 6.2) - 1)) + '…'; }
+      else { const mid = Math.ceil(words.length / 2); el('text', { x: cx, y: H - 26, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = words.slice(0, mid).join(' '); el('text', { x: cx, y: H - 14, class: 'wf-ax', 'text-anchor': 'middle' }, svg).textContent = words.slice(mid).join(' '); }
+      const val = el('text', { x: cx, y: y1 - 6, class: 'wf-val', 'text-anchor': 'middle' }, svg); val.textContent = it.total ? fmtY(it.value) : fmtY(it.value, { plus: true });
+      r.addEventListener('mousemove', ev => { const rr = svg.getBoundingClientRect(); tip.innerHTML = `<b>${it.label}</b><div><i style="background:${color}"></i>${it.total ? '' : 'Change '}<span>${fmtY(it.value, { plus: !it.total })}</span></div>`; tip.style.opacity = 1; tip.style.left = Math.min(rr.width - 170, ev.clientX - rr.left + 12) + 'px'; tip.style.top = (ev.clientY - rr.top - 10) + 'px'; });
+      r.addEventListener('mouseleave', () => tip.style.opacity = 0);
+    });
+  }
+
+  // 100% horizontal stack (plain HTML)
+  function stack(container, layers, total) {
+    container.innerHTML = '';
+    container.classList.add('wf-stack');
+    const bar = document.createElement('div'); bar.className = 'wf-stack-bar';
+    const leg = document.createElement('div'); leg.className = 'wf-stack-legend';
+    layers.forEach(l => {
+      const seg = document.createElement('div'); seg.style.width = (l.value / total * 100) + '%'; seg.style.background = l.color; seg.title = `${l.name}: ${fmt.money(l.value)}`; bar.appendChild(seg);
+      const li = document.createElement('div'); li.innerHTML = `<i style="background:${l.color}"></i><span>${l.name}</span><b>${fmt.money(l.value)}</b><small>${fmt.pct(l.value / total, { d: 0 })}</small>`; leg.appendChild(li);
+    });
+    container.appendChild(bar); container.appendChild(leg);
+  }
+
+  const CHART_CSS = `
+    .wf-chart{position:relative;width:100%}
+    .wf-chart svg{display:block;overflow:visible;font-family:inherit}
+    .wf-grid{stroke:#E8EAF2;stroke-width:1}
+    .wf-zero{stroke:#94A3B8;stroke-width:1.5}
+    .wf-cross{stroke:#94A3B8;stroke-width:1;stroke-dasharray:3 3}
+    .wf-connector{stroke:#CBD5E1;stroke-width:1;stroke-dasharray:3 3}
+    .wf-ax{font-size:11px;fill:#64748B}
+    .wf-val{font-size:11px;fill:#1E1B2E;font-weight:600}
+    .wf-end{font-size:11px;font-weight:800;font-variant-numeric:tabular-nums;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+    .wf-band{fill:#2E7D4F;opacity:.07}
+    .wf-line{transition:d .35s ease}
+    .wf-bar{transition:y .35s ease,height .35s ease}
+    .wf-tip{position:absolute;pointer-events:none;opacity:0;transition:opacity .15s;background:#1E1B2E;color:#fff;font-size:12px;border-radius:8px;padding:8px 10px;min-width:150px;z-index:5;box-shadow:0 8px 24px rgba(30,27,46,.25)}
+    .wf-tip b{display:block;margin-bottom:4px;font-weight:600}
+    .wf-tip div{display:flex;align-items:center;gap:6px;white-space:nowrap}
+    .wf-tip div span{margin-left:auto;font-variant-numeric:tabular-nums}
+    .wf-tip i{width:8px;height:8px;border-radius:2px;display:inline-block}
+    .wf-stack-bar{display:flex;height:22px;border-radius:6px;overflow:hidden;gap:2px;background:#fff}
+    .wf-stack-bar div{transition:width .35s ease;min-width:2px}
+    .wf-stack-legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 18px;margin-top:12px;font-size:12px}
+    .wf-stack-legend div{display:flex;align-items:center;gap:6px}
+    .wf-stack-legend i{width:10px;height:10px;border-radius:3px;flex:none}
+    .wf-stack-legend b{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums}
+    .wf-stack-legend small{color:#64748B;width:32px;text-align:right}
+    .ic{width:18px;height:18px;flex:none}
+  `;
+  const injectCss = () => { const s = document.createElement('style'); s.textContent = CHART_CSS; document.head.appendChild(s); };
+
+  return { MONTHS, MONTHS_LONG, DIVS, DIV, K, defaultState, compute, baseline, clone, roleSum, fmt, animateNumber, icon, describe, warnings,
+    maxHeadsForMargin, maxRaiseForMargin, chart: { lines, bars, waterfall, stack }, injectCss };
+})();
+</script>
+<script>
+(() => {
+  WF.injectCss();
+  const $ = s => document.querySelector(s), I = WF.icon, F = WF.fmt;
+  document.body.innerHTML = document.body.innerHTML
+    .replace(/RESET_ICON/g, I('reset')).replace(/COMPARE_ICON/g, I('columns')).replace(/SAVE_ICON/g, I('save'))
+    .replace(/SPARK_ICON/g, I('sparkles')).replace(/USERS_ICON/g, I('users')).replace(/TARGET_ICON/g, I('target')).replace(/X_ICON/g, I('x'));
+
+  let state = WF.defaultState();
+  const base = WF.baseline();
+  const scenarios = [{ name: 'Today', state: WF.defaultState(), locked: true }];
+  let current = -1; // -1 = unsaved working plan
+  let mode = 'cost';
+
+  // ---------- Levers ----------
+  function buildLevers() {
+    const L = $('#levers'); L.innerHTML = '';
+    const lever = (badge, ic, title, why, body) => { const d = document.createElement('div'); d.className = 'lever'; d.innerHTML = `<header><span class="badge ${badge}">${I(ic)}</span><h3>${title}</h3></header><p class="why">${why}</p>${body}`; L.appendChild(d); return d; };
+
+    // People
+    lever('b-indigo', 'users', 'How many people', 'Drag to add or remove people in a division. Click a name to fine-tune by role.',
+      WF.DIVS.map(d => `
+        <div class="row divrow" data-div="${d.key}">
+          <div class="lbl" data-toggle="${d.key}"><span><i class="dot" style="background:${d.color}"></i>${d.name} <small>· ${F.int(base.byDiv[d.key].headsToday)} today</small></span></div>
+          <div class="val" id="v-${d.key}">0</div>
+          <input type="range" min="-300" max="500" step="5" value="0" data-k="delta" data-div="${d.key}">
+          <div class="ctl"><small style="color:var(--muted);font-weight:600">from</small><select data-k="month" data-div="${d.key}">${WF.MONTHS.map((m, i) => `<option value="${i + 1}" ${i + 1 === 3 ? 'selected' : ''}>${m}</option>`).join('')}</select></div>
+          <div class="roles" id="roles-${d.key}">${d.roles.map(r => `<div class="rr"><span>${r.name}</span><small>${F.int(r.n)} · ₫${r.pay}M</small><span class="step"><button data-role="${d.key}.${r.key}" data-dir="-1">${I('minus')}</button><b id="rv-${d.key}-${r.key}">0</b><button data-role="${d.key}.${r.key}" data-dir="1">${I('plus')}</button></span></div>`).join('')}</div>
+        </div>`).join(''));
+
+    // Pay
+    lever('b-green', 'percent', 'Pay', 'A raise for everyone, and how generous Tet is this year.', `
+      <div class="row"><div class="lbl"><span>Raise for everyone</span></div><div class="val" id="v-raise">0%</div>
+        <input type="range" min="0" max="25" step="0.5" value="0" data-k="raise">
+        <div class="ctl"><small style="color:var(--muted);font-weight:600">from</small><select data-k="raiseMonth">${WF.MONTHS.map((m, i) => `<option value="${i + 1}" ${i + 1 === 4 ? 'selected' : ''}>${m}</option>`).join('')}</select></div></div>
+      <div class="row"><div class="lbl"><span>Tet bonus <small>· paid in January</small></span></div><div class="ctl"><span class="seg" data-k="bonusMonths"><button data-v="0">None</button><button class="on" data-v="1">1 month</button><button data-v="2">2 months</button></span></div></div>`);
+
+    // Hours
+    lever('b-blue', 'clock', 'Hours and shifts', 'Overtime is paid at 150%. Night shifts add 30%.', `
+      <div class="row"><div class="lbl"><span>Overtime</span><small>vs today</small></div><div class="val" id="v-ot">same</div><input type="range" min="0" max="2" step="0.1" value="1" data-k="otFactor" class="full"></div>
+      <div class="row"><div class="lbl"><span>Night shifts</span><small>vs today</small></div><div class="val" id="v-night">same</div><input type="range" min="0" max="2" step="0.1" value="1" data-k="nightFactor" class="full"></div>
+      <div class="row"><div class="lbl"><span>Paid days a month</span></div><div class="val" id="v-days">24</div><input type="range" min="20" max="26" step="1" value="24" data-k="workDays" class="full"></div>`);
+
+    // Leaving
+    lever('b-amber', 'user-minus', 'People leaving', 'Vietnam averages 12–18% a year. Every leaver costs about a month’s pay to replace.', `
+      <div class="row"><div class="lbl"><span>Leave each year</span></div><div class="val" id="v-attr">12%</div><input type="range" min="0" max="40" step="1" value="12" data-k="attrition" class="full"></div>
+      <div class="row"><label class="switch on" data-k="backfill"><i></i>Replace the people who leave</label></div>`);
+
+    // Money
+    lever('b-teal', 'wallet', 'Your money', 'Type your expected revenue and other costs. Profit and margin follow.', `
+      <div class="row"><div class="lbl"><span>Revenue this year</span></div><div class="ctl"><span class="money-in">₫<input type="number" data-k="revenue" value="2200" step="50" min="0"><small>B</small></span></div></div>
+      <div class="row"><div class="lbl"><span>Other costs <small>· rent, materials…</small></span></div><div class="ctl"><span class="money-in">₫<input type="number" data-k="otherCosts" value="260" step="10" min="0"><small>B</small></span></div></div>
+      <div class="row"><label class="switch" data-k="revenueFollows"><i></i>Revenue grows with front-line staff</label></div>`);
+
+    // wire
+    L.querySelectorAll('input[type=range]').forEach(r => r.addEventListener('input', onInput));
+    L.querySelectorAll('select').forEach(r => r.addEventListener('change', onInput));
+    L.querySelectorAll('input[type=number]').forEach(r => r.addEventListener('input', onInput));
+    L.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => { const seg = b.parentElement; seg.querySelectorAll('button').forEach(x => x.classList.remove('on')); b.classList.add('on'); state[seg.dataset.k] = +b.dataset.v; render(); }));
+    L.querySelectorAll('.switch').forEach(s => s.addEventListener('click', () => { s.classList.toggle('on'); state[s.dataset.k] = s.classList.contains('on'); render(); }));
+    L.querySelectorAll('[data-toggle]').forEach(t => t.addEventListener('click', () => $('#roles-' + t.dataset.toggle).classList.toggle('open')));
+    L.querySelectorAll('.step button').forEach(b => b.addEventListener('click', () => { const [dk, rk] = b.dataset.role.split('.'); state.divs[dk].roles[rk] += 5 * +b.dataset.dir; $(`#rv-${dk}-${rk}`).textContent = F.int(state.divs[dk].roles[rk], { plus: true }); render(); }));
+  }
+  function onInput(e) {
+    const t = e.target, k = t.dataset.k, v = t.type === 'number' ? +t.value : (t.tagName === 'SELECT' ? +t.value : +t.value);
+    if (t.dataset.div) state.divs[t.dataset.div][k] = v;
+    else if (k === 'revenue' || k === 'otherCosts') state[k] = v * 1000;
+    else state[k] = v;
+    render();
+  }
+  function syncLeverLabels() {
+    for (const d of WF.DIVS) { const v = state.divs[d.key].delta; const e = $('#v-' + d.key); e.textContent = v === 0 ? '0' : F.int(v, { plus: true }); e.className = 'val ' + (v < 0 ? 'neg' : v === 0 ? 'zero' : ''); }
+    $('#v-raise').textContent = state.raise + '%';
+    const rel = (v, e) => { e.textContent = v === 1 ? 'same' : F.pct(v - 1, { plus: true, d: 0 }); e.className = 'val ' + (v === 1 ? 'zero' : v > 1 ? 'neg' : ''); };
+    rel(state.otFactor, $('#v-ot')); rel(state.nightFactor, $('#v-night'));
+    $('#v-days').textContent = state.workDays; $('#v-attr').textContent = state.attrition + '%';
+  }
+  function pushStateToControls() {
+    document.querySelectorAll('#levers [data-k]').forEach(c => {
+      const k = c.dataset.k;
+      if (c.classList.contains('seg')) { c.querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.v === state[k])); return; }
+      if (c.classList.contains('switch')) { c.classList.toggle('on', !!state[k]); return; }
+      if (c.dataset.div) c.value = state.divs[c.dataset.div][k];
+      else if (k === 'revenue' || k === 'otherCosts') c.value = state[k] / 1000;
+      else c.value = state[k];
+    });
+    for (const d of WF.DIVS) for (const r of d.roles) $(`#rv-${d.key}-${r.key}`).textContent = F.int(state.divs[d.key].roles[r.key], { plus: true });
+  }
+
+  // ---------- Dashboard ----------
+  const KPIS = [
+    { key: 'cost', t: 'People cost this year', badge: 'b-indigo', ic: 'wallet', get: r => r.year.cost, fmt: F.money, dir: 'lowerGood' },
+    { key: 'profit', t: 'Profit', badge: 'b-green', ic: 'trending-up', get: r => r.year.profit, fmt: F.money, dir: 'higherGood' },
+    { key: 'margin', t: 'Margin', badge: 'b-teal', ic: 'target', get: r => r.year.margin, fmt: v => F.pct(v), dir: 'higherGood', pts: true },
+    { key: 'heads', t: 'People at year end', badge: 'b-blue', ic: 'users', get: r => r.year.headsEnd, fmt: F.int, dir: 'neutral' },
+    { key: 'cph', t: 'Cost per person / month', badge: 'b-amber', ic: 'user-plus', get: r => r.year.costPerHead, fmt: F.money, dir: 'lowerGood' },
+    { key: 'erc', t: 'Employer contributions', badge: 'b-rose', ic: 'shield', get: r => r.year.erc, fmt: F.money, dir: 'lowerGood' },
+  ];
+  function buildKpis() {
+    $('#kpis').innerHTML = KPIS.map(k => `<div class="kpi"><div class="t"><span class="badge ${k.badge}">${I(k.ic)}</span>${k.t}</div><div class="v" id="k-${k.key}">–</div><div class="d flat" id="kd-${k.key}">same as today</div></div>`).join('');
+  }
+  function renderKpis(r) {
+    KPIS.forEach(k => {
+      const v = k.get(r), b = k.get(base), d = v - b;
+      WF.animateNumber($('#k-' + k.key), v, k.fmt);
+      const de = $('#kd-' + k.key);
+      if (Math.abs(d) < (k.pts ? 0.0005 : 0.5)) { de.className = 'd flat'; de.innerHTML = 'same as today'; return; }
+      const good = k.dir === 'neutral' ? null : (k.dir === 'higherGood' ? d > 0 : d < 0);
+      de.className = 'd ' + (good === null ? (d > 0 ? 'up' : 'down') : good ? 'good' : 'bad');
+      de.innerHTML = I(d > 0 ? 'trending-up' : 'trending-down') + (k.pts ? F.pts(d) : k.fmt(d, { plus: true })) + ' vs today';
+    });
+  }
+  function renderCharts(r) {
+    const pick = m => mode === 'cost' ? m.total : mode === 'profit' ? m.profit : m.heads;
+    const f = mode === 'heads' ? F.int : F.money;
+    WF.chart.lines($('#c-months'), { series: [
+      { name: 'Today', values: base.months.map(pick), color: '#94A3B8', dash: true },
+      { name: 'Your plan', values: r.months.map(pick), color: mode === 'profit' ? '#2E7D4F' : '#5A4BB0', area: true }],
+      fmtY: f, baseline0: mode !== 'heads', band: mode === 'profit' ? { lo: 0, hi: Math.max(...r.months.map(m => m.profit), 0) } : null });
+    // waterfall: decompose plan − today
+    const steps = [];
+    const dBase = (r.year.base + r.year.allow) - (base.year.base + base.year.allow);
+    const dOt = (r.year.ot + r.year.night) - (base.year.ot + base.year.night);
+    const dErc = r.year.erc - base.year.erc, dBonus = r.year.bonus - base.year.bonus, dOne = r.year.oneOff - base.year.oneOff;
+    if (Math.abs(dBase) > 1) steps.push({ label: 'Pay', value: dBase });
+    if (Math.abs(dOt) > 1) steps.push({ label: 'Overtime & nights', value: dOt });
+    if (Math.abs(dErc) > 1) steps.push({ label: 'Contributions', value: dErc });
+    if (Math.abs(dBonus) > 1) steps.push({ label: 'Tet bonus', value: dBonus });
+    if (Math.abs(dOne) > 1) steps.push({ label: 'Hiring & leaving', value: dOne });
+    if (!steps.length) steps.push({ label: 'No changes yet', value: 0 });
+    WF.chart.waterfall($('#c-water'), { start: { label: 'Today', value: base.year.cost }, steps, endLabel: 'Your plan' });
+    WF.chart.bars($('#c-divs'), { cats: WF.DIVS.map(d => d.name), series: [
+      { name: 'Today', values: WF.DIVS.map(d => base.byDiv[d.key].year), color: '#94A3B8', ghost: true },
+      { name: 'Your plan', values: WF.DIVS.map(d => r.byDiv[d.key].year), color: '#5A4BB0' }], colors: null });
+    WF.chart.stack($('#c-stack'), [
+      { name: 'Take-home pay', value: r.year.takeHome, color: '#5A4BB0' },
+      { name: 'Employee insurance', value: r.year.eeIns, color: '#8B7FD1' },
+      { name: 'Income tax', value: r.year.pit, color: '#B9B0E6' },
+      { name: 'Employer contributions', value: r.year.erc, color: '#2E7D4F' },
+      { name: 'Tet bonus', value: r.year.bonus, color: '#D97706' },
+      { name: 'Hiring & leaving', value: r.year.oneOff, color: '#DC2668' }], r.year.cost);
+  }
+  function renderWatch(r) {
+    $('#watch').innerHTML = WF.warnings(state, r, base).map(w => `<div class="${w.level}">${I(w.level === 'ok' ? 'check' : 'alert')}<span>${w.text}</span></div>`).join('');
+  }
+  let sayTimer;
+  function renderSay(r) {
+    const s = WF.describe(state, r, base), e = $('#say');
+    e.classList.add('fade'); clearTimeout(sayTimer);
+    sayTimer = setTimeout(() => { e.innerHTML = `${s.lead} <b>${s.tail}</b>`; e.classList.remove('fade'); }, 120);
+    $('#pill-people').textContent = `${F.int(r.year.headsEnd)} people`;
+    $('#pill-margin').textContent = `${F.pct(r.year.margin)} margin`;
+  }
+  function render() {
+    const r = WF.compute(state);
+    syncLeverLabels(); renderSay(r); renderKpis(r); renderCharts(r); renderWatch(r); renderChips();
+  }
+
+  // ---------- Scenarios ----------
+  function renderChips() {
+    $('#chips').innerHTML = scenarios.map((s, i) => `<button class="chip ${i === current ? 'on' : ''}" data-i="${i}">${s.locked ? I('home') : I('flag')}${s.name}</button>`).join('') + (current === -1 ? `<button class="chip on">${I('sparkles')}Working plan</button>` : '');
+    $('#chips').querySelectorAll('.chip[data-i]').forEach(c => c.addEventListener('click', () => { current = +c.dataset.i; state = WF.clone(scenarios[current].state); pushStateToControls(); render(); }));
+  }
+  $('#save').addEventListener('click', () => {
+    const name = prompt('Name this plan', `Plan ${String.fromCharCode(64 + scenarios.length)}`); if (!name) return;
+    scenarios.push({ name, state: WF.clone(state) }); current = scenarios.length - 1; render(); toast(`Saved “${name}”. Keep moving levers to try another idea.`);
+  });
+  $('#reset').addEventListener('click', () => { state = WF.defaultState(); current = -1; pushStateToControls(); render(); toast('Back to today’s company.'); });
+  $('#compare').addEventListener('click', () => {
+    const list = scenarios.concat(current === -1 ? [{ name: 'Working plan', state }] : []);
+    const rows = list.map(s => ({ name: s.name, r: WF.compute(s.state) }));
+    const cols = [['People cost', r => r.year.cost, F.money, 'min'], ['Profit', r => r.year.profit, F.money, 'max'], ['Margin', r => r.year.margin, v => F.pct(v), 'max'], ['People', r => r.year.headsEnd, F.int, null], ['Cost / person / month', r => r.year.costPerHead, F.money, 'min'], ['Take-home pay', r => r.year.takeHome, F.money, 'max']];
+    $('#cmp').innerHTML = `<table><thead><tr><th>Plan</th>${cols.map(c => `<th>${c[0]}</th>`).join('')}</tr></thead><tbody>${rows.map(x => `<tr><td><b>${x.name}</b></td>${cols.map(c => { const vals = rows.map(y => c[1](y.r)); const best = c[3] ? (c[3] === 'max' ? Math.max(...vals) : Math.min(...vals)) : null; const v = c[1](x.r); return `<td class="${best !== null && v === best && rows.length > 1 ? 'best' : ''}">${c[2](v)}</td>`; }).join('')}</tr>`).join('')}</tbody></table><p style="color:var(--muted);font-size:12px;margin-top:10px">Green = the best number in that column.</p>`;
+    $('#drawer').classList.add('open');
+  });
+  $('#close').addEventListener('click', () => $('#drawer').classList.remove('open'));
+  $('#drawer').addEventListener('click', e => { if (e.target === $('#drawer')) $('#drawer').classList.remove('open'); });
+  $('#mode').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { $('#mode').querySelectorAll('button').forEach(x => x.classList.remove('on')); b.classList.add('on'); mode = b.dataset.m; renderCharts(WF.compute(state)); }));
+  function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); }
+
+  buildLevers(); buildKpis(); render();
+  window.addEventListener('resize', () => renderCharts(WF.compute(state)));
+})();
+</script>

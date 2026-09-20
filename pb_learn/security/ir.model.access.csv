@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_learn_override_user,learn.tenant.override user,model_learn_tenant_override,base.group_user,1,0,0,0
+access_learn_override_admin,learn.tenant.override tenant admin,model_learn_tenant_override,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
+access_learn_override_author,learn.tenant.override author,model_learn_tenant_override,group_learn_author,1,1,1,1
+access_learn_progress_user,learn.progress own,model_learn_progress,base.group_user,1,1,1,0
+access_learn_event_user,learn.event own,model_learn_event,base.group_user,1,0,1,0
+access_confidence_user,learn.confidence own,model_learn_confidence,base.group_user,1,1,1,0
+access_learn_consent_own,learn.consent own,model_learn_consent,base.group_user,1,1,1,0
+access_learn_question_own,learn.question own,model_learn_question,base.group_user,1,0,1,1
+access_learn_question_author,learn.question author,model_learn_question,group_learn_author,1,0,0,1
+access_learn_companion_author,learn.companion.settings author,model_learn_companion_settings,group_learn_author,1,1,1,1

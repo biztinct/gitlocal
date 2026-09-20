@@ -19,10 +19,16 @@ except ImportError:
 import odoo
 from odoo import http
 from odoo.http import request
-from odoo.modules import get_resource_path
+from odoo.tools import file_path
 from odoo.tools.mimetypes import guess_mimetype
 
 from odoo.addons.web.controllers.binary import Binary
+
+
+def get_resource_path(module, *args):
+    """Compatibility wrapper for Odoo 19's file_path function."""
+    path = "/".join([module] + list(args))
+    return file_path(path)
 
 
 class BinaryCustom(Binary):
@@ -39,7 +45,7 @@ class BinaryCustom(Binary):
                 request.env["ir.config_parameter"]
                 .sudo()
                 .get_param("web_debranding.default_logo_module")
-            )
+            ) or "web_debranding"
 
         placeholder = functools.partial(
             get_resource_path, default_logo_module, "static", "img"

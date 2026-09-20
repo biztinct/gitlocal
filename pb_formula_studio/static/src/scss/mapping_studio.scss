@@ -1,0 +1,934 @@
+/* Integrations Cycle 2 — the Mapping Studio.
+ *
+ * Every colour here is a `--pbim-*` token (W1): the surface is the shared
+ * indigo primary, the TO family is its soft tint, and there is not one new hex
+ * in the file. The canvas' own `--i*` variables are BOUND to the same tokens at
+ * the root, so the board inside a full-screen studio and the board inside the
+ * Formula Studio overlay cannot drift into two indigos. */
+
+.pbim.pbms {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--pbim-bg);
+    overflow: hidden;
+
+    /* the canvas' palette, expressed once, in tokens */
+    --i:        var(--pbim-primary);
+    --i600:     var(--pbim-primary-hover);
+    --i-soft:   var(--pbim-soft);
+    --i-soft2:  var(--pbim-soft2);
+    --i-border: var(--pbim-primary-light);
+    --ink:      var(--pbim-text);
+    --muted:    var(--pbim-muted);
+    --line:     var(--pbim-line);
+    /* C5 — `--i-deep` was READ by the canvas (the draw hint, now the dock chips
+       too) and never bound anywhere: it fell through to its literal fallback,
+       which is how two surfaces drift into two indigos. Bound, plus the amber /
+       rose / slate families the wire states use, so the studio and the Formula
+       Studio overlay cannot disagree about what a suggestion looks like. */
+    --i-deep:       var(--pbim-primary-dark);
+    --i-amber:      var(--pbim-amber);
+    --i-amber-line: var(--pbim-amber-soft);
+    --i-amber-ink:  var(--pbim-amber);
+    --i-amber-wash: var(--pbim-amber-soft);
+    --i-rose:       var(--pbim-rose);
+    --i-rose-ink:   var(--pbim-rose);
+    --i-rose-wash:  var(--pbim-rose-soft);
+    --i-slate:      var(--pbim-slate);
+    --i-wash:       var(--pbim-line-2);
+    --i-wash2:      var(--pbim-line-2);
+}
+
+.pbms-wrap { flex: 1; min-height: 0; display: flex; flex-direction: column; position: relative; }
+
+/* ============== the floating launchers, off the TO column ==================
+ *  Reported by the owner alongside the header: the floating buttons cover the
+ *  right-hand cards. Both are OURS, and both position themselves against the
+ *  VIEWPORT, so nothing inside this cockpit can push them off it. Measured on
+ *  the owner's 1900px viewport, with the TO column running x 1580-1920:
+ *
+ *      .lrn-fab            (pb_learn "Stuck?")   x 1794-1896
+ *      .payai-floating-pill (PayAI)              x 1838-1896
+ *
+ *  Neither is overlapping by a little; both are inside that column.
+ *
+ *  Moved rather than hidden, and moved only HERE. They are global launchers and
+ *  belong bottom-right on every other screen; this is the one board whose right
+ *  edge is a dense, scrolling, clickable list all the way down. The middle of
+ *  this board is the wire canvas, which is empty by construction — so they go
+ *  there, clear of both columns, keeping their own vertical rhythm.
+ *
+ *  `:has()` because both hosts are SIBLINGS of the cockpit, not descendants, so
+ *  no ancestor selector can reach them. An engine without `:has()` drops the
+ *  rule and the launchers stay where they were — a degrade, not a break. Note
+ *  the specificity has to clear `body.pb-coach-absent .lrn-fab` (0,2,1), which
+ *  is what actually sets the FAB's offsets; `:has()` takes the specificity of
+ *  its most specific argument, so this is (0,4,0) and wins.
+ *
+ *  pb_learn and pb_payroll_ai are not touched; their defaults are unchanged on
+ *  every other screen.
+ *
+ *  CYCLE 7 CORRECTION. Cycle 6 wrote `right: 380px`, a number measured at the
+ *  1900px viewport it was tested on. The columns are a FIXED 340px wide and the
+ *  board fills the viewport, so the TO column's left edge is always
+ *  `100vw - 340px` — which means 380px is right at every width by luck rather
+ *  than by construction, and any change to the column width silently breaks it.
+ *  Measured at the owner's 1450px before the correction: FAB x 968-1070, TO
+ *  column x 1110-1450 — clear, but by 40px of coincidence.
+ *
+ *  The offset is now stated as what it IS: one column, plus a gutter. The
+ *  column width lives in a custom property that `.mc-col` itself consumes, so
+ *  the two cannot drift apart without somebody editing one line. */
+.o_web_client:has(.pbim.pbms .pbms-wrap) {
+    --mc-col-w: 340px;
+    .lrn-fab             { right: calc(var(--mc-col-w) + 26px); }
+    .payai-floating-pill { right: calc(var(--mc-col-w) + 26px); }
+}
+
+/* ======================================================== the top bar ======
+ *  Scoped `.pbim.pbms .pbms-wrap …` (Cycle 6), and the scope is the point.
+ *
+ *  `.pbms` is not one class. pb_mission's Mission Control workspace is also
+ *  `<div class="pbim pbms">` (pb_mission/static/src/xml/pb_mission.xml:8), it
+ *  ships 65 `.pbms-*` rules, and FOUR of its class names are also ours:
+ *  `pbms-top`, `pbms-brand`, `pbms-brand__ic`, `pbms-canvas`. Every one of its
+ *  rules is written `.pbim.pbms .pbms-top` — specificity (0,3,0) — while ours
+ *  were bare `.pbms-top` at (0,1,0). pb_mission therefore won every property it
+ *  declared, and we won only the ones it happened not to: this header's dark
+ *  background, its 14px gap and its 13.5px font came from Mission Control's
+ *  command bar, and its colours came from here. Which module owned which
+ *  property was decided by accident, and nothing anywhere would have errored.
+ *
+ *  `.pbms-wrap` is the disambiguator. It exists only in this component;
+ *  pb_mission's `.pbms-top` is a direct child of its root, so
+ *  `.pbim.pbms .pbms-wrap .pbms-top` (0,4,0) can never match there while
+ *  outranking everything it ships. The bar is now explicitly the dark one it
+ *  already rendered as — same pixels, by intent rather than by luck. See W151.
+ */
+.pbim.pbms .pbms-wrap {
+
+    .pbms-top {
+        flex: 0 0 auto;
+        display: flex; align-items: center; gap: 12px;
+        padding: 10px 22px;
+        background: var(--pbim-primary-dark);
+        color: var(--pbim-surface);
+    }
+
+    /* ---- the wordmark (Cycle 6) ----
+       It was `--pbim-muted` on this bar, measured in the live browser at
+       **3.17:1** — under AA's 4.5:1, with no large-text exemption at 12px. The
+       owner could not find it and the number agrees with him.
+
+       It stays a LABEL and not a control. There is exactly one way out of this
+       screen and the back chip to its left already is it; a second thing in the
+       same bar that looked clickable would make the reader choose between two
+       doors, one of which does nothing. So: no cursor change, no hover state,
+       no focus ring, `user-select: none` — it reads as a nameplate.
+
+       What it gains is contrast and structure: `--pbim-primary-dark` inside a
+       `--pbim-surface` pill measures **15.08:1**, and the pill itself is
+       15.08:1 against the bar, so the eye lands on an object rather than on two
+       loose marks. It does not compete with the page title, which lives a row
+       below in the story bar at 14.5px — this is smaller and pushed to the far
+       edge. */
+    .pbms-brand {
+        display: flex; align-items: center; gap: 7px; margin-left: auto;
+        flex: none;
+        padding: 4px 11px 4px 9px;
+        border: 1px solid var(--pbim-line);
+        border-radius: 999px;
+        background: var(--pbim-surface);
+        color: var(--pbim-primary-dark);
+        user-select: none;
+    }
+    .pbms-brand__ic { display: inline-flex; color: var(--pbim-primary); width: auto; height: auto; border-radius: 0; background: none; }
+    .pbms-brand__t { font-size: 12px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; }
+}
+
+/* -------------------------------------------------------- THE SENTENCE ---
+   One row, read left to right: FROM <what> ══ N mapped ══▶ TO <what>. */
+.pbms-story {
+    display: flex; align-items: stretch; gap: 14px;
+    padding: 14px 22px 12px;
+    background: var(--pbim-surface);
+    border-bottom: 1px solid var(--pbim-line);
+}
+.pbms-end { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.pbms-end__kicker {
+    font-size: 10px; font-weight: 900; letter-spacing: .12em;
+    color: var(--pbim-muted);
+}
+.pbms-end.to { align-items: flex-end; }
+.pbms-end.to .pbms-end__kicker { color: var(--pbim-primary); }
+
+.pbms-pick {
+    display: flex; align-items: center; gap: 11px;
+    width: 100%; max-width: 460px;
+    background: #fff; border: 1px solid var(--pbim-line);
+    border-radius: var(--pbim-r); padding: 9px 12px;
+    font-family: inherit; text-align: left; cursor: pointer;
+    box-shadow: var(--pbim-sh);
+    transition: border-color .14s, box-shadow .14s;
+}
+.pbms-pick:hover { border-color: var(--pbim-primary-light); box-shadow: 0 3px 12px rgba(90, 75, 176, .13); }
+.pbms-pick.is-static { cursor: default; box-shadow: none; background: var(--pbim-line-2); }
+.pbms-pick.accent { background: var(--pbim-soft); border-color: var(--pbim-primary-light); }
+.pbms-pick.accent:hover { background: #fff; }
+.pbms-pick__ic { display: inline-flex; flex: none; color: var(--pbim-primary); }
+.pbms-pick__txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.pbms-pick__txt .n {
+    font-size: 14.5px; font-weight: 800; color: var(--pbim-text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pbms-pick__txt .s {
+    font-size: 11.5px; color: var(--pbim-muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pbms-pick__chev { display: inline-flex; flex: none; color: var(--pbim-muted); transform: rotate(90deg); }
+
+/* ---- Cycle 6: the never-synced connector's sentence ----
+   Indigo, not amber. Nothing is wrong here — a brand-new integration showing
+   the fields it is expected to deliver is the feature, and dressing it as a
+   warning would teach the reader to dismiss it. The `.s` second line is the
+   honest note about why the list cannot simply be fetched from the vendor
+   right now, and is absent when it can. */
+.pbms-expect {
+    display: flex; align-items: flex-start; gap: 9px;
+    margin: 0 22px 10px;
+    padding: 9px 13px;
+    background: var(--pbim-soft);
+    border: 1px solid var(--pbim-primary-light);
+    border-radius: var(--pbim-r-sm);
+    color: var(--pbim-primary-dark);
+    font-size: 12.5px; line-height: 1.45;
+}
+.pbms-expect__ic { display: inline-flex; flex: none; margin-top: 1px; color: var(--pbim-primary); }
+.pbms-expect__tx { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pbms-expect__tx .s { color: var(--pbim-primary-hover); font-size: 11.5px; }
+
+.pbms-sub {
+    display: inline-flex; align-items: center; gap: 6px;
+    align-self: flex-start;
+    background: #fff; border: 1px dashed var(--pbim-primary-light);
+    border-radius: 999px; padding: 3px 10px;
+    font-family: inherit; font-size: 11.5px; font-weight: 700;
+    color: var(--pbim-primary-hover); cursor: pointer;
+}
+.pbms-sub:hover { background: var(--pbim-soft); border-style: solid; }
+.pbms-sub .n { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pbms-sub svg { vertical-align: -.15em; }
+
+/* ---- WP-5: the rail between the two ends ----
+   Same vocabulary as the wires on the board: a solid stroke ending in a filled
+   triangle, calm at rest. The dash only flows while something is actually
+   loading — an animation that runs when nothing is happening is a screen that
+   never settles, and this one ran forever. */
+.pbms-link {
+    flex: none; width: 240px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; position: relative;
+}
+.pbms-link__svg { width: 240px; height: 20px; }
+.pbms-link__p {
+    fill: none; stroke: var(--pbim-primary); stroke-width: 2.4; stroke-linecap: round;
+}
+.pbms-link__h { fill: var(--pbim-primary); }
+.pbms-link.is-live .pbms-link__p { stroke-dasharray: 9 7; animation: pbms-flow 1.1s linear infinite; }
+@keyframes pbms-flow { to { stroke-dashoffset: -32; } }
+@media (prefers-reduced-motion: reduce) {
+    .pbms-link.is-live .pbms-link__p { animation: none; }
+}
+
+/* the counts are CONTROLS: one flashes every wire, one filters to the
+   suggestions. A number nobody can act on is a label pretending to be a stat. */
+.pbms-link__c { display: flex; align-items: center; gap: 8px; }
+.pbms-count {
+    border: 1px solid transparent; background: none; border-radius: 999px;
+    padding: 2px 9px; font-family: inherit; font-size: 12px; color: var(--pbim-muted);
+    cursor: pointer; transition: background .13s, border-color .13s, color .13s;
+}
+.pbms-count b { color: var(--pbim-text); font-weight: 900; }
+.pbms-count:hover:not(:disabled) { background: var(--pbim-soft); border-color: var(--pbim-primary-light); color: var(--pbim-primary-hover); }
+.pbms-count:disabled { cursor: default; opacity: .75; }
+.pbms-count.sug { font-size: 11px; font-weight: 800; color: var(--pbim-amber); }
+.pbms-count.sug b { color: var(--pbim-amber); }
+.pbms-count.sug:hover { background: var(--pbim-amber-soft); border-color: var(--pbim-amber); }
+
+/* ------------------------------------------------------- rich dropdowns */
+.pbms-menu-scrim { position: fixed; inset: 0; z-index: 40; }
+.pbms-menu {
+    /* BELOW the story bar, never over it. Opening a picker that covers the
+       card you clicked hides the answer to "what am I changing" at the exact
+       moment the user is deciding — and the FROM side is two rows tall
+       (connector card + feed chip), which is what sets the offset. */
+    position: absolute; top: 208px; z-index: 41;
+    width: 380px; max-height: 60vh; display: flex; flex-direction: column;
+    background: #fff; border: 1px solid var(--pbim-line);
+    border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh-lg); overflow: hidden;
+}
+.pbms-menu.left { left: 22px; }
+.pbms-menu.right { right: 22px; }
+.pbms-menu__h { padding: 11px 14px 8px; font-size: 12px; font-weight: 800; color: var(--pbim-text); }
+.pbms-menu__q {
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 14px 9px; color: var(--pbim-muted);
+    border-bottom: 1px solid var(--pbim-line);
+}
+.pbms-menu__q input {
+    flex: 1; border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+    padding: 6px 9px; font-family: inherit; font-size: 12.5px; color: var(--pbim-text);
+}
+.pbms-menu__q input:focus { outline: none; border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+.pbms-menu__l { flex: 1; overflow-y: auto; padding: 6px; }
+.pbms-menu__e { padding: 20px; text-align: center; font-size: 12.5px; color: var(--pbim-muted); }
+
+.pbms-opt {
+    display: flex; align-items: center; gap: 9px; width: 100%;
+    background: none; border: 0; border-radius: var(--pbim-r-sm);
+    padding: 8px 10px; font-family: inherit; text-align: left; cursor: pointer;
+}
+.pbms-opt:hover { background: var(--pbim-line-2); }
+.pbms-opt.on { background: var(--pbim-soft); }
+.pbms-opt__dot { width: 7px; height: 7px; border-radius: 50%; flex: none; background: var(--pbim-slate); }
+.pbms-opt__dot.ok { background: var(--pbim-green); }
+.pbms-opt__dot.err { background: var(--pbim-rose); }
+.pbms-opt__dot.muted { background: var(--pbim-slate); }
+.pbms-opt__t { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.pbms-opt__t .n { font-size: 13px; font-weight: 700; color: var(--pbim-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pbms-opt__t .s { font-size: 11px; color: var(--pbim-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pbms-opt__ok { display: inline-flex; color: var(--pbim-primary); flex: none; }
+
+/* ------------------------------------------------------------- mode strip */
+.pbms-modes {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    padding: 10px 22px;
+    background: var(--pbim-surface);
+    border-bottom: 1px solid var(--pbim-line);
+}
+.pbms-modes__sp { flex: 1; }
+.pbms-mode {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #fff; border: 1px solid var(--pbim-line); border-radius: 999px;
+    padding: 6px 13px; font-family: inherit; font-size: 12px; font-weight: 700;
+    color: var(--pbim-muted); cursor: pointer; transition: .14s;
+}
+.pbms-mode:hover { border-color: var(--pbim-primary-light); color: var(--pbim-primary-hover); }
+.pbms-mode.on { background: var(--pbim-primary); border-color: var(--pbim-primary); color: #fff; }
+.pbms-mode svg { vertical-align: -.15em; }
+
+.pbms-schemechip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--pbim-soft); border: 1px solid var(--pbim-primary-light);
+    border-radius: 999px; padding: 5px 12px;
+    font-family: inherit; font-size: 12px; font-weight: 800;
+    color: var(--pbim-primary-hover); cursor: pointer;
+}
+.pbms-schemechip:hover { background: #fff; }
+.pbms-schemechip .n { max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ----------------------------------------------------------------- board */
+.pbms-board { flex: 1; min-height: 0; display: flex; flex-direction: column; position: relative; }
+.pbms-canvas { flex: 1; min-height: 0; position: relative; }
+
+.pbms-first {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    margin: 14px 22px 0; padding: 12px 16px;
+    background: var(--pbim-soft); border: 1px solid var(--pbim-primary-light);
+    border-radius: var(--pbim-r-lg);
+}
+.pbms-first__steps { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; flex: 1; min-width: 0; }
+.pbms-step { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--pbim-primary-dark); }
+.pbms-step b {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 19px; height: 19px; border-radius: 50%;
+    background: var(--pbim-primary); color: #fff; font-size: 11px; font-weight: 900;
+}
+.pbms-first__acts { display: flex; gap: 8px; }
+
+.pbms-empty {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 9px; text-align: center; padding: 40px; color: var(--pbim-muted);
+}
+.pbms-empty__ic { color: var(--pbim-soft2); }
+.pbms-empty b { font-size: 16px; color: var(--pbim-text); }
+.pbms-empty span { font-size: 13px; max-width: 460px; line-height: 1.55; }
+
+/* -------------------------------------------------------- template panel */
+.pbms-tmpl {
+    position: absolute; z-index: 41; right: 22px; top: 170px;
+    width: 420px; max-height: 62vh; display: flex; flex-direction: column;
+    background: #fff; border: 1px solid var(--pbim-line);
+    border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh-lg); overflow: hidden;
+}
+.pbms-tmpl__h {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 15px; border-bottom: 1px solid var(--pbim-line);
+}
+.pbms-tmpl__h b { font-size: 13.5px; color: var(--pbim-text); }
+.pbms-x { border: 0; background: none; color: var(--pbim-muted); cursor: pointer; padding: 3px; border-radius: 6px; display: inline-flex; }
+.pbms-x:hover { background: var(--pbim-line-2); color: var(--pbim-text); }
+.pbms-tmpl__hint { margin: 0; padding: 10px 15px; font-size: 12px; color: var(--pbim-muted); line-height: 1.5; }
+.pbms-tmpl__l { flex: 1; overflow-y: auto; padding: 4px 8px 10px; }
+.pbms-tmpl__r { display: flex; align-items: center; gap: 10px; padding: 8px 7px; border-radius: var(--pbim-r-sm); }
+.pbms-tmpl__r:hover { background: var(--pbim-line-2); }
+.pbms-tmpl__n { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.pbms-tmpl__n b { font-size: 13px; color: var(--pbim-text); }
+.pbms-tmpl__n small { font-size: 11px; color: var(--pbim-muted); }
+.pbms-tmpl__res {
+    padding: 10px 15px; border-top: 1px solid var(--pbim-line);
+    font-size: 12px; color: var(--pbim-muted); background: var(--pbim-line-2);
+}
+.pbms-tmpl__res b { color: var(--pbim-text); }
+
+/* ==================================================================== J1 ===
+ *  The employee & contract toolkit, the unresolved footer and the
+ *  reconciliation dialog — everything that arrived when the Formula Studio
+ *  overlay was retired.
+ *
+ *  All of it is scoped `.pbim.pbms .pbms-wrap …` for the reason the top bar
+ *  documents above (W151): `.pbms` is ALSO pb_mission's Mission Control root,
+ *  and a bare `.pbms-foot` at (0,1,0) would be a class name in a namespace two
+ *  modules share. `.pbms-wrap` exists only in this component, so nothing here
+ *  can reach Mission Control and nothing there can reach this.
+ */
+.pbim.pbms .pbms-wrap {
+
+    /* ---- JOURNEY J2: the Excel on-ramp ----
+       One row, two faces. Empty it is a dropzone with room for the sentence
+       that matters (headings, not data); filled it collapses to a provenance
+       line and its verbs, because after the drop the board below is the point
+       and the ramp must stop taking vertical space from it. No new hex — the
+       hover/drag state is the shared primary wash. */
+    .pbms-ramp {
+        padding: 11px 22px;
+        background: var(--pbim-surface);
+        border-bottom: 1px solid var(--pbim-line);
+    }
+
+    /* the hidden file input inside every <label> affordance here */
+    .pbms-file { position: absolute; width: 1px; height: 1px; opacity: 0;
+                 pointer-events: none; }
+
+    .pbms-drop {
+        position: relative;
+        display: flex; align-items: center; gap: 14px;
+        margin: 0;
+        padding: 15px 18px;
+        border: 1.5px dashed var(--pbim-primary-light);
+        border-radius: var(--pbim-r-md, 10px);
+        background: #fff;
+        cursor: pointer;
+        transition: border-color .14s, background .14s, box-shadow .14s;
+    }
+    .pbms-drop:hover { border-color: var(--pbim-primary); background: var(--pbim-soft); }
+    .pbms-drop:focus-within { box-shadow: 0 0 0 3px var(--pbim-ring); }
+    .pbms-drop.over {
+        border-color: var(--pbim-primary);
+        border-style: solid;
+        background: var(--pbim-soft2);
+    }
+    .pbms-drop.busy { opacity: .65; pointer-events: none; }
+    .pbms-drop__ic {
+        flex: 0 0 auto; display: inline-flex;
+        color: var(--pbim-primary);
+    }
+    .pbms-drop__tx {
+        flex: 1 1 auto; min-width: 0;
+        display: flex; flex-direction: column; gap: 2px;
+        b { font-size: 13px; font-weight: 800; color: var(--pbim-text); }
+        span { font-size: 12px; line-height: 1.45; color: var(--pbim-muted); }
+    }
+    .pbms-drop__cta {
+        flex: 0 0 auto;
+        display: inline-flex; align-items: center;
+        padding: 6px 13px; border-radius: 999px;
+        background: var(--pbim-primary); color: #fff;
+        font-size: 12px; font-weight: 700; white-space: nowrap;
+    }
+
+    .pbms-ramp__ro {
+        display: flex; align-items: center; gap: 9px;
+        padding: 11px 14px;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        background: #fff;
+        font-size: 12px; color: var(--pbim-muted);
+        svg { color: var(--pbim-muted); flex: 0 0 auto; }
+    }
+
+    .pbms-ramp__alt {
+        display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+        margin-top: 9px;
+        font-size: 12px; color: var(--pbim-muted);
+    }
+    .pbms-ramp__altq { font-weight: 700; color: var(--pbim-text); }
+    .pbms-ramp__or { font-style: normal; }
+
+    /* ---- filled: the file, and what you do with it ---- */
+    .pbms-ramp__bar {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        padding: 9px 13px;
+        border: 1px solid var(--pbim-primary-light);
+        border-radius: var(--pbim-r-sm);
+        background: #fff;
+    }
+    .pbms-ramp__ic { flex: 0 0 auto; display: inline-flex; color: var(--pbim-primary); }
+    .pbms-ramp__tx {
+        flex: 1 1 240px; min-width: 0;
+        display: flex; flex-direction: column; gap: 1px;
+        b {
+            font-size: 13px; font-weight: 800; color: var(--pbim-text);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .s { font-size: 11.5px; color: var(--pbim-muted); }
+    }
+    .pbms-ramp__acts {
+        flex: 0 0 auto;
+        display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+    }
+    /* a <label> has to look and size exactly like the buttons beside it */
+    .pbms-ramp__swap {
+        position: relative; margin: 0; cursor: pointer;
+        display: inline-flex; align-items: center; gap: 6px;
+    }
+    /* …and it has to SHOW focus like them too. The input this label wraps is
+       1px and transparent (that is how a file picker is styled at all), so a
+       keyboard user tabbing onto it got no ring anywhere — the control was
+       reachable and invisible, which is worse than unreachable because Enter
+       then opens a file dialog nobody asked for. Found by pressing Tab; no
+       screenshot of a mouse session can show it. */
+    .pbms-ramp__swap:focus-within {
+        border-color: var(--pbim-primary);
+        box-shadow: 0 0 0 3px var(--pbim-ring);
+    }
+
+    @media (max-width: 1180px) {
+        /* The FILLED bar wraps its verbs onto their own line — four buttons and
+           a filename do not fit beside each other at 1024.
+           The dropzone deliberately does NOT wrap: an early cut sent the text
+           to `order: 3`, which put "Choose a file…" ABOVE the sentence telling
+           you what dropping a file does. The row already fits at 1024 (the text
+           has `min-width: 0` and wraps inside its own cell), so the honest
+           reading order is the one the DOM already has. */
+        .pbms-ramp__acts { width: 100%; }
+    }
+
+    /* ---- the toolbar row: two ways to reach one of 236 destinations ---- */
+    .pbms-emptools {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        padding: 9px 22px;
+        background: var(--pbim-surface);
+        border-bottom: 1px solid var(--pbim-line);
+    }
+
+    .pbms-empfind {
+        position: relative;
+        display: flex; align-items: center; gap: 7px;
+        flex: 0 1 300px; min-width: 200px;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        background: #fff; padding: 5px 10px;
+    }
+    .pbms-empfind:focus-within {
+        border-color: var(--pbim-primary);
+        box-shadow: 0 0 0 3px var(--pbim-ring);
+    }
+    .pbms-empfind__ic { display: inline-flex; flex: none; color: var(--pbim-muted); }
+    .pbms-empfind input {
+        flex: 1; min-width: 0; border: 0; outline: 0; background: none;
+        font-family: inherit; font-size: 12.5px; color: var(--pbim-text);
+    }
+    .pbms-empfind__menu {
+        position: absolute; top: calc(100% + 5px); left: 0; right: 0; z-index: 42;
+        max-height: 320px; overflow-y: auto;
+        background: #fff; border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r); box-shadow: var(--pbim-sh-lg); padding: 5px;
+    }
+    .pbms-empfind__opt {
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        width: 100%; border: 0; background: none; border-radius: var(--pbim-r-sm);
+        padding: 7px 9px; font-family: inherit; text-align: left; cursor: pointer;
+    }
+    .pbms-empfind__opt:hover { background: var(--pbim-soft); }
+    .pbms-empfind__opt .lbl {
+        min-width: 0; font-size: 12.5px; font-weight: 700; color: var(--pbim-text);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pbms-empfind__opt .sub {
+        flex: none; font-size: 10.5px; font-weight: 800; letter-spacing: .03em;
+        text-transform: uppercase; color: var(--pbim-muted);
+    }
+
+    /* ---- Employee ▾ / Contract ▾ ---- */
+    .pbms-empbrowse { position: relative; display: flex; align-items: center; gap: 6px; }
+    .pbms-empbtn {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: #fff; border: 1px solid var(--pbim-line); border-radius: 999px;
+        padding: 5px 11px; font-family: inherit; font-size: 12px; font-weight: 700;
+        color: var(--pbim-text); cursor: pointer; transition: .14s;
+    }
+    .pbms-empbtn:hover { border-color: var(--pbim-primary-light); color: var(--pbim-primary-hover); }
+    .pbms-empbtn.on {
+        border-color: var(--pbim-primary); background: var(--pbim-soft);
+        color: var(--pbim-primary-hover);
+    }
+    .pbms-empbtn .chev { display: inline-flex; color: var(--pbim-muted); transform: rotate(90deg); }
+    .pbms-empbtn.on .chev { transform: rotate(-90deg); color: var(--pbim-primary-hover); }
+
+    .pbms-empmenu {
+        position: absolute; z-index: 41; top: calc(100% + 6px); left: 0;
+        width: 340px; max-width: 92vw; max-height: 60vh;
+        display: flex; flex-direction: column;
+        background: #fff; border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh-lg); overflow: hidden;
+    }
+    .pbms-empmenu__h {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 10px 13px 8px;
+    }
+    .pbms-empmenu__h b {
+        font-size: 12px; font-weight: 800; letter-spacing: .04em;
+        text-transform: uppercase; color: var(--pbim-primary-hover);
+    }
+    .pbms-empmenu__h .cnt { font-size: 11px; font-weight: 700; color: var(--pbim-muted); }
+    .pbms-empmenu__q {
+        display: flex; align-items: center; gap: 7px;
+        padding: 0 13px 9px; color: var(--pbim-muted);
+        border-bottom: 1px solid var(--pbim-line);
+    }
+    .pbms-empmenu__q input {
+        flex: 1; min-width: 0;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        padding: 6px 9px; font-family: inherit; font-size: 12.5px; color: var(--pbim-text);
+    }
+    .pbms-empmenu__q input:focus {
+        outline: none; border-color: var(--pbim-primary);
+        box-shadow: 0 0 0 3px var(--pbim-ring);
+    }
+    .pbms-empmenu__l { flex: 1; overflow-y: auto; padding: 5px; }
+    .pbms-empmenu__opt {
+        display: flex; align-items: center; gap: 8px; width: 100%;
+        border: 0; background: none; border-radius: var(--pbim-r-sm);
+        padding: 7px 9px; font-family: inherit; text-align: left; cursor: pointer;
+    }
+    .pbms-empmenu__opt:hover { background: var(--pbim-soft); }
+    .pbms-empmenu__opt .lbl {
+        flex: 1; min-width: 0; font-size: 12.5px; font-weight: 700; color: var(--pbim-text);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    /* MF13/MF26 — the tick is a CONSTANT-width slot outside the label's flow
+       pressure: `min-width: 0` above ellipsises the name beside it, and a mark
+       that only sometimes renders must never be what decides the name's width. */
+    .pbms-empmenu__opt .tick { display: inline-flex; flex: none; width: 15px; color: var(--pbim-primary); }
+    .pbms-empmenu__opt.added { background: var(--pbim-soft); }
+    .pbms-empmenu__opt.added .lbl { color: var(--pbim-primary-hover); }
+    .pbms-empmenu__opt.locked { cursor: default; opacity: .55; }
+    .pbms-empmenu__opt.locked:hover { background: none; }
+    .pbms-empmenu__e { padding: 18px 12px; text-align: center; font-size: 12px; color: var(--pbim-muted); }
+
+    /* ---- COLROLES P3: the lane chips ---- */
+    .pbms-lanes {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+        padding: 9px 22px;
+        background: var(--pbim-surface);
+        border-bottom: 1px solid var(--pbim-line);
+    }
+    .pbms-lane {
+        display: inline-flex; align-items: center; gap: 6px;
+        border: 1px solid var(--pbim-line); background: #fff; border-radius: 999px;
+        padding: 4px 11px 4px 8px;
+        font-family: inherit; font-size: 12px; font-weight: 700;
+        color: var(--pbim-muted); cursor: pointer;
+        transition: border-color .12s, color .12s, background .12s;
+    }
+    .pbms-lane:hover { border-color: var(--pbim-primary-light); color: var(--pbim-primary-hover); }
+    .pbms-lane.on {
+        border-color: var(--pbim-primary); color: var(--pbim-primary-hover);
+        background: var(--pbim-soft);
+    }
+    .pbms-lane svg { width: 13px; height: 13px; flex: none; }
+    .pbms-lane .l { color: var(--pbim-text); }
+    .pbms-lane.on .l { color: inherit; }
+    .pbms-lane .n { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; font-weight: 800; }
+    /* the only warm colour in the strip, so "there is work left here" is legible
+       in one pass across six chips */
+    .pbms-lane .u {
+        font-size: 10.5px; font-weight: 800;
+        color: var(--pbim-amber); background: var(--pbim-amber-soft);
+        border-radius: 999px; padding: 0 6px;
+    }
+    .pbms-lane.ghost { border-style: dashed; }
+    .pbms-lane.payroll { opacity: .8; }
+    .pbms-lane.payroll.shown { opacity: 1; }
+
+    /* ---- MAPFIX B3: the footer bar ----
+       It NEVER disappears on the employee board: when there is nothing left to
+       resolve it says so, because a bar that vanishes once the work is done
+       cannot be distinguished from one that never rendered. */
+    .pbms-foot {
+        flex: 0 0 auto;
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        padding: 10px 22px;
+        border-top: 1px solid var(--pbim-line);
+        background: var(--pbim-surface);
+    }
+    .pbms-foot__say {
+        display: inline-flex; align-items: center; gap: 7px; min-width: 0;
+        font-size: 12.5px; font-weight: 600; color: var(--pbim-amber);
+    }
+    .pbms-foot__say.ok { color: var(--pbim-green); }
+    .pbms-foot__say svg { flex: none; }
+    .pbms-foot .pbim-btn { margin-left: auto; }
+
+    /* ---- the template panel's SAVE face, and APPLY's per-line result ---- */
+    .pbms-tmpl__save { padding: 0 15px 14px; }
+    .pbms-tmpl__in {
+        width: 100%; border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        padding: 8px 11px; font-family: inherit; font-size: 13px; color: var(--pbim-text);
+    }
+    .pbms-tmpl__in:focus {
+        outline: none; border-color: var(--pbim-primary);
+        box-shadow: 0 0 0 3px var(--pbim-ring);
+    }
+    .pbms-tmpl__acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 11px; }
+    .pbms-tmpl__del {
+        flex: none; display: inline-flex; align-items: center; justify-content: center;
+        border: 0; background: none; color: var(--pbim-slate);
+        padding: 5px; border-radius: var(--pbim-r-sm); cursor: pointer;
+    }
+    .pbms-tmpl__del:hover { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+    .pbms-tmpl__resh { font-size: 12.5px; font-weight: 700; color: var(--pbim-text); margin-bottom: 9px; }
+    .pbms-tmpl__ressec { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-bottom: 8px; }
+    .pbms-tmpl__tag {
+        font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em;
+        padding: 2px 7px; border-radius: 6px;
+    }
+    .pbms-tmpl__tag.skip { background: var(--pbim-line-2); color: var(--pbim-slate); }
+    .pbms-tmpl__tag.miss { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .pbms-tmpl__ressec code {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px;
+        background: #fff; border: 1px solid var(--pbim-line); border-radius: 5px;
+        padding: 1px 6px; color: var(--pbim-text);
+    }
+
+    /* ---- JOURNEY J3 S2: the source-conflict choice (J-D3) ----
+       Shares the reconciliation dialog's scrim and z-layer on purpose: two
+       modals on one surface that look like two different products is how a
+       board stops feeling like one board. Narrower, because this asks ONE
+       question, and a 780px shell around one question reads as a form.
+       MJ5: two properties, never `min(<len>, calc(...))` — libsass refuses it
+       and fails the whole bundle. */
+    .pbms-cfl {
+        position: fixed; z-index: calc(var(--pbim-z-modal, 1600) + 1);
+        top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 540px; max-width: calc(100vw - 48px); max-height: 86vh;
+        display: flex; flex-direction: column; overflow: auto;
+        background: #fff; border-radius: var(--pbim-r-lg);
+        box-shadow: var(--pbim-sh-lg);
+    }
+    .pbms-cfl__h {
+        display: flex; align-items: center; gap: 10px;
+        padding: 16px 18px 10px; border-bottom: 1px solid var(--pbim-line);
+        b { font-size: 14px; flex: 1; min-width: 0; }
+    }
+    /* J9 — amber while this is a genuine conflict (two connections), primary
+       when it is a precedence notice. `.is-order` is set by the same condition
+       that chooses the glyph, so the colour and the icon cannot disagree. */
+    .pbms-cfl__ic { flex: none; color: var(--pbim-amber); display: flex; }
+    .pbms-cfl.is-order .pbms-cfl__ic { color: var(--pbim-primary); }
+    .pbms-cfl__body {
+        margin: 0; padding: 14px 18px 4px;
+        font-size: 12.5px; line-height: 1.55; color: var(--pbim-slate);
+    }
+    /* What it reads NOW, and what you are adding. Stated as two named things
+       rather than as prose, because the sentence above already carries the
+       prose and a reader deciding between three buttons needs the nouns. */
+    // The fetch-first dialog reuses the conflict dialog's frame; it needs only
+    // a paragraph and a row of buttons of its own.
+    .pbms-cfl__p {
+        margin: 0 0 18px; font-size: 13px; line-height: 1.55;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbms-cfl__acts {
+        display: flex; justify-content: flex-end; gap: 10px;
+    }
+    .pbms-cfl__pair {
+        display: flex; align-items: stretch; gap: 10px; padding: 10px 18px 14px;
+    }
+    .pbms-cfl__side {
+        flex: 1 1 0; min-width: 0; padding: 9px 11px; border-radius: var(--pbim-r);
+        background: var(--pbim-line-2); border: 1px solid var(--pbim-line);
+        display: flex; flex-direction: column; gap: 2px;
+        b { font-size: 12px; }
+        code {
+            font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10.5px;
+            color: var(--pbim-slate); overflow: hidden; text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+    .pbms-cfl__k {
+        font-size: 9px; font-weight: 800; letter-spacing: .06em;
+        text-transform: uppercase; color: var(--pbim-slate);
+    }
+    .pbms-cfl__arrow {
+        flex: none; align-self: center; color: var(--pbim-slate); display: flex;
+    }
+    .pbms-cfl__opts {
+        display: flex; flex-direction: column; gap: 8px; padding: 4px 18px 14px;
+    }
+    /* Each option carries its CONSEQUENCE, not just its verb. "Replace" and
+       "Keep" are indistinguishable to somebody who does not already know the
+       ladder, and the whole point of this dialog is that they should not have
+       to. */
+    .pbms-cfl__opt {
+        text-align: left; padding: 11px 13px; border-radius: var(--pbim-r);
+        border: 1px solid var(--pbim-line); background: #fff; cursor: pointer;
+        display: flex; flex-direction: column; gap: 3px;
+        transition: border-color .13s ease, background .13s ease;
+        b { font-size: 12.5px; }
+        span { font-size: 11.5px; line-height: 1.45; color: var(--pbim-slate); }
+        &:hover:not(:disabled) { border-color: var(--pbim-primary); background: var(--pbim-line-2); }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+        &:disabled { opacity: .55; cursor: default; }
+    }
+    /* JOURNEY J9 — "Add source" is the primary action now, so `keep` reads as
+       the recommended one rather than as the cautious alternative. */
+    .pbms-cfl__opt.keep {
+        border-left: 3px solid var(--pbim-primary);
+        background: var(--pbim-line-2);
+    }
+    /* The resulting order, with the same superscript grammar as the card. */
+    .pbms-cfl__order {
+        list-style: none; margin: 0; padding: 4px 18px 12px;
+        display: flex; flex-direction: column; gap: 6px;
+        li { display: flex; align-items: baseline; gap: 7px; }
+        b { font-size: 12.5px; }
+        code {
+            font-size: 11px; padding: 1px 6px; border-radius: 5px;
+            background: var(--pbim-line-2); color: var(--pbim-slate);
+        }
+    }
+    .pbms-cfl__rank {
+        flex: none; display: inline-grid; place-items: center;
+        width: 17px; height: 17px; border-radius: 999px;
+        background: var(--pbim-primary); color: #fff;
+        font-size: 10px; font-weight: 800; font-variant-numeric: tabular-nums;
+    }
+    .pbms-cfl__f {
+        display: flex; justify-content: flex-end;
+        padding: 10px 18px 16px; border-top: 1px solid var(--pbim-line);
+    }
+
+    /* ---- MAPFIX B3: the reconciliation dialog ---- */
+    .pbms-rcn-scrim {
+        position: fixed; inset: 0; z-index: var(--pbim-z-modal, 1600);
+        background: var(--pbim-scrim, rgba(15, 12, 40, .5));
+    }
+    .pbms-rcn {
+        position: fixed; z-index: calc(var(--pbim-z-modal, 1600) + 1);
+        top: 50%; left: 50%; transform: translate(-50%, -50%);
+        /* NOT `min(780px, calc(…))`: the asset pipeline compiles this with
+           libsass, whose OWN `min()` takes numbers and refuses a `calc()`
+           argument — "not a number for `min'", which fails the whole bundle and
+           serves the previous stylesheet with a red banner. Two properties say
+           the same thing and cannot be mistaken for a Sass call. */
+        width: 780px; max-width: calc(100vw - 48px); max-height: 82vh;
+        display: flex; flex-direction: column;
+        background: #fff; border-radius: var(--pbim-r-lg);
+        box-shadow: var(--pbim-sh-lg); overflow: hidden;
+    }
+    .pbms-rcn__h {
+        display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+        padding: 16px 20px 12px; border-bottom: 1px solid var(--pbim-line);
+    }
+    .pbms-rcn__title { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbms-rcn__title b { font-size: 15.5px; font-weight: 800; color: var(--pbim-text); }
+    .pbms-rcn__title span {
+        font-size: 12px; color: var(--pbim-muted);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pbms-rcn__note {
+        padding: 12px 20px; font-size: 12.5px; line-height: 1.55; color: var(--pbim-muted);
+    }
+    .pbms-rcn__bulk {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        padding: 0 20px 10px;
+    }
+    .pbms-rcn__count { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--pbim-text); }
+    .pbms-rcn__rows { flex: 1; min-height: 0; overflow-y: auto; padding: 0 20px 4px; }
+    .pbms-rcn__row {
+        display: grid; align-items: center; gap: 12px;
+        grid-template-columns: 20px minmax(160px, 1.2fr) minmax(140px, 1.3fr) 150px;
+        padding: 9px 10px; border-radius: var(--pbim-r-sm);
+        border: 1px solid transparent;
+    }
+    .pbms-rcn__row:hover { background: var(--pbim-line-2); }
+    .pbms-rcn__row.skipped { opacity: .6; }
+    .pbms-rcn__col { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbms-rcn__col b {
+        font-size: 13px; font-weight: 700; color: var(--pbim-text);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pbms-rcn__code {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 10.5px; color: var(--pbim-muted);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pbms-rcn__samples { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }
+    .pbms-rcn__samples code {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 10.5px; padding: 1px 6px; border-radius: 5px;
+        background: var(--pbim-line-2); color: var(--pbim-slate);
+        max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .pbms-rcn__nosample { font-size: 11.5px; font-style: italic; color: var(--pbim-muted); }
+    .pbms-rcn__choice { display: flex; justify-content: flex-end; gap: 5px; }
+    .pbms-rcn__type {
+        border: 1px solid var(--pbim-line); background: #fff; color: var(--pbim-muted);
+        border-radius: 999px; padding: 3px 11px;
+        font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer;
+    }
+    .pbms-rcn__type.on {
+        border-color: var(--pbim-primary-light); background: var(--pbim-soft);
+        color: var(--pbim-primary-hover);
+    }
+    .pbms-rcn__ref { font-size: 11.5px; font-weight: 600; color: var(--pbim-muted); }
+    .pbms-rcn__empty {
+        display: flex; flex-direction: column; align-items: center; gap: 7px;
+        text-align: center; padding: 34px 24px; color: var(--pbim-muted);
+    }
+    .pbms-rcn__empty-ic { color: var(--pbim-green); }
+    .pbms-rcn__empty b { font-size: 15px; color: var(--pbim-text); }
+    .pbms-rcn__empty span { font-size: 12.5px; }
+    .pbms-rcn__acts {
+        flex: 0 0 auto;
+        display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+        padding: 14px 20px; border-top: 1px solid var(--pbim-line);
+        background: var(--pbim-surface);
+    }
+    .pbms-rcn__fine { margin: 0; font-size: 11.5px; line-height: 1.5; color: var(--pbim-muted); }
+    .pbms-rcn__btns { display: flex; gap: 8px; align-self: flex-end; }
+}
+
+/* ----------------------------------------------------------- narrow view */
+@media (max-width: 900px) {
+    .pbms-story { flex-direction: column; }
+    .pbms-end.to { align-items: stretch; }
+    /* the wire is horizontal by nature; stacked, the COUNT carries the meaning
+       and the arrow would be pointing the wrong way */
+    .pbms-link { width: 100%; }
+    .pbms-link__svg { display: none; }
+    .pbms-menu, .pbms-tmpl { left: 12px; right: 12px; width: auto; }
+
+    /* J1 — the same rule for the toolkit that arrived with the merge: a popover
+       anchored to a control that has wrapped onto its own line must stop being
+       anchored to it. The reconciliation row loses its fixed choice column and
+       stacks, because 150px of Amount/Text beside a sample list is what makes
+       the name column unreadable first. */
+    .pbim.pbms .pbms-wrap {
+        .pbms-empfind { flex: 1 1 100%; }
+        .pbms-empmenu { left: 0; right: 0; width: auto; }
+        .pbms-rcn__row { grid-template-columns: 20px 1fr; row-gap: 6px; }
+        .pbms-rcn__samples, .pbms-rcn__choice { grid-column: 2; justify-content: flex-start; }
+    }
+}

@@ -1,0 +1,225 @@
+// ============================================================================
+// BIZ THEME — SIDEBAR BEHAVIOR LAYER (rail collapse, generic)
+// ============================================================================
+// Contract (additive classes any sidebar module maps onto its own markup):
+//   .biz-layout-wrapper   — flex wrapper containing the sidebar + content
+//   .biz-sidebar          — the <aside>
+//   .biz-sidebar-brand    — brand/logo row
+//   .biz-sidebar-label    — ANY textual node hidden in rail mode
+//   .biz-sidebar-item     — nav row (icon + label)
+//   .biz-sidebar-sub      — sub-items (hidden entirely in rail mode)
+//   .biz-sidebar-footer   — user/footer row
+//   .biz-sidebar-toggle   — pin/collapse button (styled by the owner module)
+//
+// State machine (body classes, set via @biz_theme/js/biz_sidebar_state):
+//   (no mode class)                         — AUTO: expanded ≥ xl, rail < xl
+//   body.biz-sb-collapsed                   — rail at every width (user pinned)
+//   body.biz-sb-expanded                    — expanded at every width
+//
+// AUTO rails below xl (1440px) so laptops / medium screens reclaim the space by
+// default; only wide desktops keep the sidebar expanded. A user can still pin it
+// expanded at any width (biz-sb-expanded).
+//
+// Rail mode = absolute overlay that hover-expands OVER content (no reflow).
+// ============================================================================
+
+:root {
+    --biz-sidebar-w: 256px;
+    --biz-sidebar-rail-w: 60px;
+}
+
+// The :has(> .biz-sidebar) guard scopes rail behavior to wrappers that
+// actually contain a rendered sidebar — a wrapper whose <aside> is t-if'd
+// away (non-payroll screens, disabled menu sidebar) gets no rail padding,
+// and nested wrappers (pb_sidebar + biz menu sidebar both patch WebClient)
+// can never double-indent.
+
+// User pinned collapsed → rail at all widths
+body.biz-sb-collapsed .biz-layout-wrapper:has(> .biz-sidebar) {
+    @include biz-rail-mode;
+}
+
+// Auto rail below the sidebar auto-expand threshold (external-monitor width)
+// unless the user explicitly pinned expanded — every laptop collapses to the
+// icon rail by default; only genuinely large screens start expanded.
+@include biz-down($biz-sb-auto-bp) {
+    body:not(.biz-sb-expanded):not(.biz-sb-collapsed) .biz-layout-wrapper:has(> .biz-sidebar) {
+        @include biz-rail-mode;
+    }
+}
+
+// Toggle button chevron flips when collapsed
+body.biz-sb-collapsed .biz-sidebar-toggle svg {
+    transform: rotate(180deg);
+}
+
+.biz-sidebar-toggle svg {
+    transition: transform 160ms ease;
+}
+
+// ---------------------------------------------------------------------------
+// Base wrapper (harmless duplicate when another module styles its own wrapper)
+// ---------------------------------------------------------------------------
+.biz-menu-layout {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+
+    > .o_action_manager {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: auto;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Menu-driven BizSidebar visuals — themed by the vu-sidebar-* runtime tokens
+// (Theme Studio "Navbar & Sidebar" group); dark navy defaults.
+// ---------------------------------------------------------------------------
+.biz-menu-sidebar {
+    width: var(--biz-sidebar-w, 256px);
+    flex-shrink: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background: var(--vu-sidebar-bg, #0E1430);
+    color: var(--vu-sidebar-text, #E8EDF8);
+    scrollbar-width: none;
+
+    &__brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 14px 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    &__logo {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--vu-brand-primary, #5A4BB0);
+        color: #fff;
+        font-weight: 800;
+        font-size: 15px;
+    }
+
+    &__brand-tx {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__brand-name {
+        font-size: 14px;
+        font-weight: 800;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__toggle {
+        width: 26px;
+        height: 26px;
+        border: none;
+        border-radius: 8px;
+        background: none;
+        color: var(--vu-sidebar-text, #E8EDF8);
+        opacity: .55;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+
+        svg { width: 15px; height: 15px; }
+        &:hover { opacity: 1; background: var(--vu-sidebar-hover, rgba(255, 255, 255, .08)); }
+    }
+
+    &__nav {
+        flex: 1;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+    }
+
+    &__section {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: none;
+        background: none;
+        width: 100%;
+        padding: 14px 8px 5px;
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: .09em;
+        text-transform: uppercase;
+        color: var(--vu-sidebar-text, #93A0C2);
+        opacity: .55;
+        cursor: pointer;
+        font-family: inherit;
+
+        &:hover { opacity: .9; }
+    }
+
+    &__chev {
+        width: 10px;
+        height: 10px;
+        transition: transform 160ms ease;
+
+        &.open { transform: rotate(90deg); }
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        width: 100%;
+        border: none;
+        background: none;
+        text-align: left;
+        padding: 9px 10px;
+        border-radius: 10px;
+        color: var(--vu-sidebar-text, #E8EDF8);
+        font-size: 13.5px;
+        font-weight: 500;
+        font-family: inherit;
+        cursor: pointer;
+        transition: background 120ms ease;
+
+        svg { width: 18px; height: 18px; flex-shrink: 0; opacity: .85; }
+
+        span {
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &:hover { background: var(--vu-sidebar-hover, rgba(255, 255, 255, .06)); }
+
+        &.active {
+            background: rgba(99, 102, 241, .26);
+            color: #fff;
+            font-weight: 600;
+            box-shadow: inset 3px 0 0 var(--vu-brand-primary, #5A4BB0);
+        }
+
+        &.sub {
+            padding-left: 39px;
+            font-size: 12.5px;
+            opacity: .85;
+
+            svg { display: none; }
+        }
+    }
+}

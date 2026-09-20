@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The filing flow (IA Cycle 4, flow doctrine card 1). No menu and no
+         `pb.sidebar.item`: it is reached from the Government Reports board's
+         Generate buttons and from the Compliance hub's Filings lens, always
+         with a `pb_back` return door.
+
+         Declared as a RECORD rather than reached by bare tag so anything that
+         returns through a breadcrumb sees a named action instead of "Unnamed"
+         (W98).
+
+         The five country wizard actions it drives are UNTOUCHED and still
+         registered — this cycle replaces the door, not the model. -->
+    <record id="action_pb_filing_flow" model="ir.actions.client">
+        <field name="name">Generate a filing</field>
+        <field name="tag">pb_filing_flow</field>
+    </record>
+</odoo>

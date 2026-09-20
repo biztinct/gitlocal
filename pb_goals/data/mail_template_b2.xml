@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- ==================================================================
+         FIVE MORE TEMPLATES, for the year after the goals are agreed. Same
+         five rules as B1's file and they are worth repeating, because every
+         one of them was learned the hard way:
+
+           * `noupdate="1"` — a business that has reworded one of these must
+             not have it reverted by the next upgrade.
+           * EVERY ONE IS SENT WITH AN EXPLICIT `email_to` IN `email_values`
+             (R6). A template's own rendered address can reach `mail.mail`
+             EMPTY: created, queued, addressed to nobody, no error anywhere.
+             The field below documents who each one is FOR; the model's
+             `_send` is what addresses it.
+           * `email_from` falls through to the HR address
+             (`pb_goals.hr_sender`) rather than to whoever ran the job — the
+             last rung of `_sender()` is not decoration, and without it the
+             first live run sent "your goals have come back" FROM the
+             manager's personal address.
+           * THE SUBJECT CARRIES THE FACT, so it can be read on a phone
+             without opening it.
+           * A SEPARATE FILE from B1's, because that one is `noupdate` and a
+             database that already has it will never take an edit to it.
+
+         A NOTE ON THE CHECK-IN TEMPLATE. It is the only one here whose model
+         is not the goal sheet, and it goes to BOTH sides of the conversation
+         — the same words to each, because a conversation both people were
+         reminded about differently is a conversation with an argument in it.
+         ================================================================== -->
+
+    <!-- ================ the monthly conversation is coming up ================ -->
+    <record id="mail_goals_checkin" model="mail.template">
+        <field name="name">Goals: the monthly check-in</field>
+        <field name="model_id" ref="model_pb_goal_checkin"/>
+        <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }} — the {{ object.month and object.month.strftime('%B') or '' }} goals check-in</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    It is time for the
+                    <strong><t t-out="object.month and object.month.strftime('%B %Y') or ''"/></strong>
+                    check-in on
+                    <t t-out="object.employee_id.name or ''"/>'s goals.
+                </p>
+                <p>
+                    It is a short conversation: what moved this month, what is
+                    in the way, and whether the numbers on the key results
+                    still look right. Either of you can write it up afterwards
+                    — it takes a sentence or two.
+                </p>
+                <p t-if="object.scheduled_date">
+                    It is planned for <strong><t t-out="object.scheduled_date"/></strong>.
+                </p>
+                <p>
+                    <a t-attf-href="/my/goals"
+                       style="display:inline-block; padding:10px 18px; background:#4F46E5; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Open the goals page
+                    </a>
+                </p>
+                <br/>
+                The HR team
+            </div>
+        </field>
+    </record>
+
+    <!-- ===================== a review is due ===================== -->
+    <record id="mail_goals_review_due" model="mail.template">
+        <field name="name">Goals: a review is due</field>
+        <field name="model_id" ref="model_pb_goal_review"/>
+        <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.manager_user_id.email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }} — {{ object.kind == 'mid_year' and 'half-way' or 'end-of-year' }} goals review, due {{ object.due_date or 'soon' }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.manager_user_id.name or ''"/>,</p>
+                <p>
+                    <t t-out="object.employee_id.name or ''"/>'s
+                    <strong t-if="object.kind == 'mid_year'">half-way review</strong>
+                    <strong t-else="">end-of-year review</strong>
+                    is due
+                    <strong><t t-out="object.due_date or ''"/></strong>.
+                </p>
+                <p>
+                    Score each key result out of five, write up what was said,
+                    and the sheet's own score follows from the weights you set
+                    at the start of the year. Anything they wanted said is
+                    already on the review for you to read first.
+                </p>
+                <p>
+                    <a t-attf-href="/bizapp/pb_goals_board"
+                       style="display:inline-block; padding:10px 18px; background:#4F46E5; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Open the goals board
+                    </a>
+                </p>
+                <br/>
+                The HR team
+            </div>
+        </field>
+    </record>
+
+    <!-- ================ a change was agreed and carried out ================ -->
+    <record id="mail_goals_change_agreed" model="mail.template">
+        <field name="name">Goals: a change was agreed</field>
+        <field name="model_id" ref="model_pb_goal_change"/>
+        <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Your goals have been changed — {{ object.summary }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>
+                    The change asked for on your goals has been agreed and
+                    carried out:
+                </p>
+                <p style="padding:12px 16px; background:#F4F3FF; border-radius:8px;">
+                    <strong><t t-out="object.summary or ''"/></strong><br/>
+                    <t t-out="object.reason or ''"/>
+                </p>
+                <p>
+                    Your goals page shows the change and the date it was made,
+                    so the year still reads as one story.
+                </p>
+                <p>
+                    <a t-attf-href="/my/goals"
+                       style="display:inline-block; padding:10px 18px; background:#4F46E5; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Open my goals
+                    </a>
+                </p>
+                <br/>
+                The HR team
+            </div>
+        </field>
+    </record>
+
+    <!-- ===================== a change was turned down ===================== -->
+    <record id="mail_goals_change_refused" model="mail.template">
+        <field name="name">Goals: a change was turned down</field>
+        <field name="model_id" ref="model_pb_goal_change"/>
+        <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Your goals have not been changed — {{ object.summary }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>
+                    The change you asked for on your goals has not been
+                    agreed, so your goals stay as they are.
+                </p>
+                <p style="padding:12px 16px; background:#FFF4F2; border-radius:8px;">
+                    <strong><t t-out="object.summary or ''"/></strong>
+                    <t t-if="object.refuse_note">
+                        <br/><t t-out="object.refuse_note"/>
+                    </t>
+                </p>
+                <p>
+                    Talk to
+                    <t t-out="object.manager_user_id.name or 'your manager'"/>
+                    about what happens next. You can ask again if something
+                    else changes.
+                </p>
+                <br/>
+                The HR team
+            </div>
+        </field>
+    </record>
+
+    <!-- ====================== the year has been closed ====================== -->
+    <record id="mail_goals_year_end" model="mail.template">
+        <field name="name">Goals: what the year came out at</field>
+        <field name="model_id" ref="model_pb_goal_set"/>
+        <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">{{ object.cycle_id.name }} is finished — your goals came out at {{ object.score_band or 'a score you can read on your page' }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>
+                    <strong><t t-out="object.cycle_id.name or ''"/></strong>
+                    is finished and your goals have been scored.
+                </p>
+                <p style="padding:16px 18px; background:#F4F3FF; border-radius:10px;">
+                    <span style="font-size:28px; font-weight:700;">
+                        <t t-out="object.score"/>
+                    </span>
+                    <span style="font-size:14px;"> out of 5</span>
+                    <t t-if="object.score_band">
+                        <br/><strong><t t-out="object.score_band"/></strong>
+                    </t>
+                </p>
+                <p>
+                    Every goal, every key result and the mark each one was
+                    given is on your goals page under the year it belongs to.
+                    It does not change from here.
+                </p>
+                <p t-if="object.prorated">
+                    You joined part-way through this year, so the score is
+                    about the part of it you were here for.
+                </p>
+                <p>
+                    <a t-attf-href="/my/goals"
+                       style="display:inline-block; padding:10px 18px; background:#4F46E5; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Open my goals
+                    </a>
+                </p>
+                <br/>
+                The HR team
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

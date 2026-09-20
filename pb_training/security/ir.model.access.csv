@@ -1,0 +1,23 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_training_assignment_staff,Training assignment — mine to read,model_pb_training_assignment,base.group_user,1,0,0,0
+access_pb_training_assignment_user,Training assignment — trainer,model_pb_training_assignment,pb_training.group_training_user,1,1,1,0
+access_pb_training_assignment_manager,Training assignment — training manager,model_pb_training_assignment,pb_training.group_training_manager,1,1,1,1
+access_pb_training_assignment_admin,Training assignment — head of training,model_pb_training_assignment,pb_training.group_training_admin,1,1,1,1
+access_pb_training_delay_staff,More time — ask for it and read my own,model_pb_training_delay,base.group_user,1,1,1,0
+access_pb_training_delay_user,More time — trainer,model_pb_training_delay,pb_training.group_training_user,1,1,1,0
+access_pb_training_delay_manager,More time — training manager,model_pb_training_delay,pb_training.group_training_manager,1,1,1,1
+access_pb_training_delay_admin,More time — head of training,model_pb_training_delay,pb_training.group_training_admin,1,1,1,1
+access_pb_training_rule_user,Day-one rule — trainer reads,model_pb_training_rule,pb_training.group_training_user,1,0,0,0
+access_pb_training_rule_manager,Day-one rule — training manager,model_pb_training_rule,pb_training.group_training_manager,1,1,1,1
+access_pb_training_rule_admin,Day-one rule — head of training,model_pb_training_rule,pb_training.group_training_admin,1,1,1,1
+access_pb_training_schedule_user,Compliance schedule — trainer reads,model_pb_training_schedule,pb_training.group_training_user,1,0,0,0
+access_pb_training_schedule_manager,Compliance schedule — training manager,model_pb_training_schedule,pb_training.group_training_manager,1,1,1,1
+access_pb_training_schedule_admin,Compliance schedule — head of training,model_pb_training_schedule,pb_training.group_training_admin,1,1,1,1
+access_pb_training_claim_staff,Training claim — raise my own and read it,model_pb_training_claim,base.group_user,1,1,1,0
+access_pb_training_claim_user,Training claim — trainer,model_pb_training_claim,pb_training.group_training_user,1,1,1,0
+access_pb_training_claim_manager,Training claim — training manager,model_pb_training_claim,pb_training.group_training_manager,1,1,1,1
+access_pb_training_claim_admin,Training claim — head of training,model_pb_training_claim,pb_training.group_training_admin,1,1,1,1
+access_pb_training_allowance_staff,Training allowance — everybody reads their own,model_pb_training_allowance,base.group_user,1,0,0,0
+access_pb_training_allowance_user,Training allowance — trainer reads,model_pb_training_allowance,pb_training.group_training_user,1,0,0,0
+access_pb_training_allowance_manager,Training allowance — training manager,model_pb_training_allowance,pb_training.group_training_manager,1,1,1,1
+access_pb_training_allowance_admin,Training allowance — head of training,model_pb_training_allowance,pb_training.group_training_admin,1,1,1,1

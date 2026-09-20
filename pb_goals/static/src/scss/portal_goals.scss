@@ -1,0 +1,539 @@
+// =====================================================================
+//  `/my/goals` — .pbgl-*
+//
+//  THE PORTAL HAS NO DARK MODE AT ALL (R39). Neither biz_theme's
+//  `data-theme="dark"` attribute nor an emulated `prefers-color-scheme:
+//  dark` changes a single pixel of `/my/...`: the website frontend is
+//  light-only by design. So "check it in both themes" is satisfied by
+//  proving every colour RESOLVES — which is why every rule here carries a
+//  literal fallback beside its token. Do not go looking for a portal dark
+//  palette to fix.
+//
+//  No `min()`/`max()` with mixed units anywhere: Sass evaluates those and a
+//  px/% pair kills the ENTIRE asset bundle, not just this file.
+//
+//  A PROGRESS TRACK DECLARES ITS OWN `padding` AND `box-sizing` (R178). A
+//  rule further up the portal cascade gives a `<span>` in a panel
+//  `padding: 9px 16px`, and a fill whose containing block is 32px narrower
+//  than the track around it draws "finished" as "nearly finished" with no
+//  error anywhere and a perfectly plausible-looking screen.
+//
+//  The `.pbme` kit styles `input` and `textarea` and NOT `select` (R135), so
+//  the two pickers on this page style themselves or one field looks like the
+//  operating system while the rest look like the product.
+//
+//  Every @keyframes is at the TOP LEVEL (R85) and declares BOTH ends (R156):
+//  a `from`-only keyframe under `animation-fill-mode: both` over a rule that
+//  has already set opacity to zero animates from invisible to invisible and
+//  stays there — a blank rectangle with every number present in the DOM.
+// =====================================================================
+
+@keyframes pbgl-rise {
+    from { transform: translateY(8px); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+}
+
+.pbgl {
+    --pbgl-ink: #1B1733;
+    --pbgl-muted: #6B7280;
+    --pbgl-line: #E5E7EB;
+    --pbgl-surface: #FFFFFF;
+    --pbgl-soft: #F5F3FF;
+    --pbgl-primary: #4F46E5;
+    --pbgl-primary-ink: #3730A3;
+    --pbgl-good: #059669;
+    --pbgl-good-soft: #ECFDF5;
+    --pbgl-warn: #B45309;
+    --pbgl-warn-soft: #FFFBEB;
+    --pbgl-bad: #B91C1C;
+    --pbgl-bad-soft: #FEF2F2;
+
+    color: var(--pbgl-ink, #1B1733);
+
+    .pbgl-ic { flex: 0 0 auto; vertical-align: -0.15em; }
+
+    // ------------------------------------------------------- notices
+    .pbgl-notice {
+        display: flex; align-items: center; gap: 9px;
+        padding: 11px 15px; margin: 0 0 16px;
+        border-radius: 10px;
+        background: var(--pbgl-good-soft, #ECFDF5);
+        color: var(--pbgl-good, #059669);
+        border: 1px solid rgba(5, 150, 105, 0.22);
+        font-weight: 600; font-size: 14px;
+
+        &--bad {
+            background: var(--pbgl-bad-soft, #FEF2F2);
+            color: var(--pbgl-bad, #B91C1C);
+            border-color: rgba(185, 28, 28, 0.22);
+        }
+    }
+
+    // ------------------------------------------------------- the headline
+    .pbgl-head {
+        display: flex; flex-wrap: wrap; gap: 18px;
+        align-items: center; justify-content: space-between;
+        padding: 18px 20px; margin: 0 0 20px;
+        background: var(--pbgl-surface, #FFFFFF);
+        border: 1px solid var(--pbgl-line, #E5E7EB);
+        border-left: 4px solid var(--pbgl-primary, #4F46E5);
+        border-radius: 14px;
+
+        &--locked { border-left-color: var(--pbgl-good, #059669); }
+        &--returned { border-left-color: var(--pbgl-warn, #B45309); }
+        &--refused { border-left-color: var(--pbgl-bad, #B91C1C); }
+    }
+    .pbgl-head-main { flex: 1 1 320px; min-width: 0; }
+    .pbgl-head-top {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+        margin-bottom: 7px;
+    }
+    .pbgl-cycle {
+        font-size: 17px; font-weight: 800;
+        color: var(--pbgl-ink, #1B1733);
+    }
+    .pbgl-headline {
+        margin: 0; font-size: 14px; line-height: 1.5;
+        color: var(--pbgl-muted, #6B7280);
+    }
+    .pbgl-head-dial { flex: 0 0 190px; }
+    .pbgl-dial-word {
+        margin-top: 6px; font-size: 13px;
+        color: var(--pbgl-muted, #6B7280);
+        strong { color: var(--pbgl-ink, #1B1733); }
+    }
+
+    // ------------------------------------------------------- chips
+    .pbgl-chip {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 10px; border-radius: 999px;
+        font-size: 12px; font-weight: 700;
+        background: var(--pbgl-soft, #F5F3FF);
+        color: var(--pbgl-primary-ink, #3730A3);
+        // A chip carries a SENTENCE as often as a word, and the kit's badge
+        // capitalises every word (R33). Nothing here is title-cased.
+        text-transform: none;
+
+        &--locked {
+            background: var(--pbgl-good-soft, #ECFDF5);
+            color: var(--pbgl-good, #059669);
+        }
+        &--returned, &--bad {
+            background: var(--pbgl-bad-soft, #FEF2F2);
+            color: var(--pbgl-bad, #B91C1C);
+        }
+        &--refused {
+            background: var(--pbgl-bad-soft, #FEF2F2);
+            color: var(--pbgl-bad, #B91C1C);
+        }
+    }
+
+    // ------------------------------------------------------- the bars
+    // R178: the track owns its own box, and the fill can never be measured
+    // against a different one.
+    .pbgl-dial {
+        position: relative; width: 100%; height: 9px;
+        padding: 0; box-sizing: border-box; overflow: hidden;
+        border-radius: 999px;
+        background: var(--pbgl-line, #E5E7EB);
+    }
+    .pbgl-dial-fill {
+        height: 100%; box-sizing: border-box;
+        border-radius: 999px;
+        background: var(--pbgl-primary, #4F46E5);
+        transition: width 0.4s ease;
+    }
+    .pbgl-dial--goal { height: 7px; margin: 12px 0 4px; }
+    .pbgl-dial--kr { height: 5px; margin-top: 9px; }
+
+    // ------------------------------------------------------- the note back
+    .pbgl-note {
+        display: flex; gap: 12px; align-items: flex-start;
+        padding: 14px 16px; margin: 0 0 20px;
+        border-radius: 12px;
+        background: var(--pbgl-warn-soft, #FFFBEB);
+        border: 1px solid rgba(180, 83, 9, 0.24);
+        color: var(--pbgl-warn, #B45309);
+        strong { display: block; font-size: 13px; margin-bottom: 3px; }
+        p { margin: 0; font-size: 14px; color: var(--pbgl-ink, #1B1733); }
+    }
+
+    // ------------------------------------------------------- the goals
+    .pbgl-goals { display: grid; gap: 16px; }
+
+    .pbgl-goal {
+        padding: 18px 20px;
+        background: var(--pbgl-surface, #FFFFFF);
+        border: 1px solid var(--pbgl-line, #E5E7EB);
+        border-radius: 14px;
+
+        &--locked { border-color: rgba(5, 150, 105, 0.3); }
+    }
+    .pbgl-goal-top {
+        display: flex; flex-wrap: wrap; gap: 14px;
+        align-items: flex-start; justify-content: space-between;
+    }
+    .pbgl-goal-id {
+        flex: 1 1 300px; min-width: 0;
+        h3 { margin: 0 0 4px; font-size: 16px; font-weight: 800; }
+        p {
+            margin: 0; font-size: 14px; line-height: 1.5;
+            color: var(--pbgl-muted, #6B7280);
+        }
+    }
+    .pbgl-goal-meta {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    }
+    .pbgl-weight {
+        display: inline-flex; flex-direction: column; align-items: flex-end;
+        line-height: 1.1;
+        strong { font-size: 19px; color: var(--pbgl-primary, #4F46E5); }
+        span { font-size: 11px; color: var(--pbgl-muted, #6B7280); }
+    }
+
+    // ------------------------------------------------------- key results
+    .pbgl-krs { margin-top: 14px; display: grid; gap: 10px; }
+    .pbgl-kr {
+        padding: 12px 14px; border-radius: 11px;
+        background: #FAFAFC;
+        border: 1px solid var(--pbgl-line, #E5E7EB);
+    }
+    .pbgl-kr-id {
+        display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px;
+        strong { font-size: 14px; }
+    }
+    .pbgl-kr-target { font-size: 12px; color: var(--pbgl-muted, #6B7280); }
+    .pbgl-kr-move {
+        display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px;
+        margin-top: 9px;
+    }
+    .pbgl-kr-f {
+        display: flex; flex-direction: column; gap: 3px;
+        flex: 0 0 120px; margin: 0;
+        span { font-size: 11px; font-weight: 700;
+               color: var(--pbgl-muted, #6B7280); }
+        input {
+            width: 100%; box-sizing: border-box;
+            padding: 7px 10px; font-size: 13px;
+            border: 1px solid var(--pbgl-line, #E5E7EB);
+            border-radius: 8px; background: #FFFFFF;
+            color: var(--pbgl-ink, #1B1733);
+        }
+        &--note { flex: 1 1 180px; }
+    }
+
+    // ------------------------------------------------------- the forms
+    .pbgl-form {
+        display: flex; flex-wrap: wrap; gap: 12px;
+        padding: 14px 0 4px;
+    }
+    .pbgl-f {
+        display: flex; flex-direction: column; gap: 4px;
+        flex: 0 0 180px; margin: 0;
+        span { font-size: 12px; font-weight: 700;
+               color: var(--pbgl-muted, #6B7280); }
+        input, textarea, select {
+            width: 100%; box-sizing: border-box;
+            padding: 9px 11px; font-size: 14px;
+            border: 1px solid var(--pbgl-line, #E5E7EB);
+            border-radius: 9px; background: #FFFFFF;
+            color: var(--pbgl-ink, #1B1733);
+            font-family: inherit;
+        }
+        // R135 — the kit styles input and textarea and NOT select, so a
+        // picker left alone looks like the operating system next to fields
+        // that look like the product.
+        select { appearance: none; padding-right: 30px;
+                 background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+                 background-repeat: no-repeat;
+                 background-position: right 9px center; }
+        &--wide { flex: 1 1 100%; }
+    }
+
+    details.pbgl-add-kr, details.pbgl-edit, details.pbgl-add-goal {
+        summary {
+            display: inline-flex; align-items: center; gap: 6px;
+            cursor: pointer; list-style: none;
+            font-size: 13px; font-weight: 700;
+            color: var(--pbgl-primary, #4F46E5);
+            padding: 6px 0;
+            &::-webkit-details-marker { display: none; }
+        }
+    }
+    details.pbgl-add-goal {
+        margin: 18px 0 0;
+        padding: 16px 20px;
+        background: var(--pbgl-surface, #FFFFFF);
+        border: 1px dashed var(--pbgl-line, #E5E7EB);
+        border-radius: 14px;
+        summary { font-size: 15px; }
+    }
+
+    .pbgl-goal-actions {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 16px;
+        margin-top: 12px; padding-top: 12px;
+        border-top: 1px solid var(--pbgl-line, #E5E7EB);
+    }
+    .pbgl-del { margin: 0; }
+
+    .pbgl-btn--primary {
+        background: var(--pbgl-primary, #4F46E5) !important;
+        border-color: var(--pbgl-primary, #4F46E5) !important;
+        color: #FFFFFF !important;
+        &:disabled { opacity: 0.45; cursor: not-allowed; }
+    }
+    .pbgl-btn--small { padding: 7px 14px !important; font-size: 13px !important; }
+    .pbgl-btn--ghost {
+        display: inline-flex; align-items: center; gap: 5px;
+        background: none; border: 0; padding: 4px 0;
+        font-size: 13px; font-weight: 700; cursor: pointer;
+        color: var(--pbgl-bad, #B91C1C);
+    }
+
+    // ------------------------------------------------------- templates
+    .pbgl-templates {
+        margin: 22px 0 0; padding: 18px 20px;
+        background: var(--pbgl-soft, #F5F3FF);
+        border-radius: 14px;
+        h4 {
+            display: flex; align-items: center; gap: 7px;
+            margin: 0 0 4px; font-size: 15px; font-weight: 800;
+            color: var(--pbgl-primary-ink, #3730A3);
+        }
+    }
+    .pbgl-templates-sub {
+        margin: 0 0 14px; font-size: 13px;
+        color: var(--pbgl-muted, #6B7280);
+    }
+    .pbgl-template-grid {
+        display: grid; gap: 12px;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+    .pbgl-template {
+        padding: 14px 16px; border-radius: 12px;
+        background: var(--pbgl-surface, #FFFFFF);
+        border: 1px solid var(--pbgl-line, #E5E7EB);
+        strong { display: block; font-size: 14px; margin-bottom: 4px; }
+        p { margin: 0 0 8px; font-size: 13px;
+            color: var(--pbgl-muted, #6B7280); }
+        ul { margin: 0 0 10px; padding-left: 18px; font-size: 12px;
+             color: var(--pbgl-muted, #6B7280); }
+    }
+
+    // ------------------------------------------------------- sending it
+    .pbgl-send {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 16px;
+        margin: 22px 0 0; padding: 18px 20px;
+        background: var(--pbgl-surface, #FFFFFF);
+        border: 1px solid var(--pbgl-line, #E5E7EB);
+        border-radius: 14px;
+        form { margin: 0; }
+    }
+    .pbgl-send-sum {
+        flex: 1 1 260px;
+        strong { font-size: 19px; color: var(--pbgl-primary, #4F46E5); }
+        span { display: block; font-size: 13px;
+               color: var(--pbgl-muted, #6B7280); }
+    }
+    .pbgl-send-why {
+        flex: 1 1 100%; margin: 0; font-size: 13px;
+        color: var(--pbgl-warn, #B45309);
+    }
+
+    // ------------------------------------------------------- other years
+    .pbgl-others {
+        margin: 26px 0 0;
+        h4 { font-size: 14px; font-weight: 800; margin: 0 0 8px; }
+        ul { list-style: none; margin: 0; padding: 0; display: grid;
+             gap: 6px; }
+        li {
+            display: flex; flex-wrap: wrap; gap: 12px;
+            padding: 9px 14px; border-radius: 10px;
+            background: #FAFAFC;
+            border: 1px solid var(--pbgl-line, #E5E7EB);
+            font-size: 13px; color: var(--pbgl-muted, #6B7280);
+            strong { color: var(--pbgl-ink, #1B1733); }
+        }
+    }
+
+
+    // =================================================================
+    //  B2 — the year after the goals are agreed.
+    //
+    //  THE PHONE IS THE TEST (R187) and every block below stacks rather than
+    //  scrolls; every flex basis this file's 680px query turns into a column
+    //  is reset to `auto` in that same query (R206), which is where the new
+    //  ones are added at the bottom of this block.
+    //
+    //  Every bar here reuses `.pbgl-dial`, which already owns its own box
+    //  (R178) — a second track with its own padding is a second chance to
+    //  draw "finished" as "nearly finished".
+    // =================================================================
+
+    .pbgl-note--soft {
+        background: var(--pbgl-soft, #F5F3FF);
+        border-color: rgba(79, 70, 229, 0.18);
+        color: var(--pbgl-primary-ink, #3730A3);
+    }
+    .pbgl-chip--ok {
+        background: var(--pbgl-good-soft, #ECFDF5);
+        color: var(--pbgl-good, #059669);
+    }
+
+    // ------------------------------------------- this month's check-in
+    .pbgl-ci-card {
+        padding: 18px 20px; margin: 0 0 22px;
+        border-radius: 14px;
+        background: var(--pbgl-surface, #FFFFFF);
+        border: 1px solid var(--pbgl-line, #E5E7EB);
+        box-shadow: 0 1px 3px rgba(17, 12, 46, 0.05);
+
+        &--late { border-left: 3px solid var(--pbgl-warn, #B45309); }
+    }
+    .pbgl-ci-card-top {
+        display: flex; gap: 12px; align-items: flex-start;
+        margin-bottom: 12px;
+        strong { display: block; font-size: 15px;
+                 color: var(--pbgl-ink, #1B1733); }
+        p { margin: 3px 0 0; font-size: 13px; line-height: 1.55;
+            color: var(--pbgl-muted, #6B7280); }
+    }
+    .pbgl-ci-due {
+        display: inline-block; margin-left: 4px;
+        font-weight: 700; color: var(--pbgl-warn, #B45309);
+    }
+
+    // ------------------------------------------------------ the score
+    .pbgl-score-card {
+        display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+        padding: 16px 20px; margin: 0 0 22px;
+        border-radius: 14px;
+        background: var(--pbgl-soft, #F5F3FF);
+        border: 1px solid rgba(79, 70, 229, 0.16);
+
+        p { margin: 0; flex: 1 1 260px; font-size: 14px; line-height: 1.55;
+            color: var(--pbgl-ink, #1B1733); }
+    }
+    .pbgl-score-card-id {
+        display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+        color: var(--pbgl-primary-ink, #3730A3);
+    }
+    .pbgl-score-big {
+        font-size: 32px; font-weight: 800; line-height: 1;
+        color: var(--pbgl-ink, #1B1733);
+    }
+    .pbgl-score-of {
+        font-size: 13px; color: var(--pbgl-muted, #6B7280);
+    }
+
+    // ----------------------------------------------------- the reviews
+    .pbgl-reviews, .pbgl-changes, .pbgl-ci-done {
+        margin: 0 0 22px;
+        h4 { font-size: 14px; font-weight: 800; margin: 0 0 8px;
+             color: var(--pbgl-ink, #1B1733); }
+    }
+    .pbgl-rv-card, .pbgl-ch-card, .pbgl-ci-row {
+        padding: 13px 16px; margin-bottom: 8px;
+        border-radius: 12px;
+        background: var(--pbgl-surface, #FFFFFF);
+        border: 1px solid var(--pbgl-line, #E5E7EB);
+    }
+    .pbgl-rv-card-top, .pbgl-ch-card-top {
+        display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+        strong { font-size: 14px; color: var(--pbgl-ink, #1B1733); }
+    }
+    .pbgl-rv-card-note, .pbgl-ch-card-why {
+        margin: 8px 0 0; font-size: 13px; line-height: 1.55;
+        color: var(--pbgl-ink, #1B1733);
+    }
+    .pbgl-rv-card-said {
+        margin: 8px 0 0; font-size: 13px; line-height: 1.5;
+        color: var(--pbgl-muted, #6B7280);
+        strong { color: var(--pbgl-ink, #1B1733); }
+    }
+    .pbgl-ch-card-refused {
+        margin: 8px 0 0; padding: 8px 12px; border-radius: 9px;
+        background: var(--pbgl-bad-soft, #FEF2F2);
+        color: var(--pbgl-bad, #B91C1C);
+        font-size: 13px;
+    }
+
+    // ------------------------------------------ the months already done
+    .pbgl-ci-row {
+        display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+        strong { font-size: 13px; color: var(--pbgl-ink, #1B1733); }
+        p { margin: 0; flex: 1 1 220px; font-size: 13px; line-height: 1.5;
+            color: var(--pbgl-muted, #6B7280); }
+        &--missed { border-left: 3px solid var(--pbgl-bad, #B91C1C); }
+    }
+    .pbgl-ci-row-block { color: var(--pbgl-warn, #B45309) !important; }
+    .pbgl-ci-row-who {
+        font-size: 11px; color: var(--pbgl-muted, #6B7280);
+    }
+
+    // ---------------------------------------------------- a past year
+    .pbgl-others-open {
+        margin-left: auto; font-size: 13px; font-weight: 700;
+        color: var(--pbgl-primary, #4F46E5); text-decoration: none;
+        &:hover { text-decoration: underline; }
+    }
+    .pbgl-past-head { margin: 0 0 18px; }
+    .pbgl-past-hero {
+        display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+        padding: 20px 22px; margin: 0 0 22px;
+        border-radius: 16px;
+        background: var(--pbgl-soft, #F5F3FF);
+        border: 1px solid rgba(79, 70, 229, 0.16);
+
+        > div:first-child { flex: 1 1 320px; min-width: 0; }
+    }
+    .pbgl-past-dial { flex: 0 1 220px; }
+    .pbgl-kr--past { cursor: default; }
+
+    // ------------------------------------------------------- the phone
+    // BELOW 680px THE ROWS STACK (R187). A table that scrolls sideways on a
+    // phone hides the column that matters, and the check is arithmetic
+    // rather than appearance: read the row's text at 390px and look for the
+    // value you came for. Here that value is the due date and the progress
+    // figure, and both are in the stacked flow.
+    @media (max-width: 680px) {
+        // A `flex-basis` IN PIXELS IS A HEIGHT THE MOMENT THE CONTAINER TURNS
+        // INTO A COLUMN. `flex: 1 1 320px` is a sensible minimum WIDTH in a
+        // row and a 320px minimum HEIGHT in a column — so the header card and
+        // the send panel opened on a phone with a third of a screen of empty
+        // white between the sentence and the bar underneath it. Nothing
+        // errors and the page looks merely badly designed. Every basis in a
+        // container this query turns into a column is reset to `auto`.
+        .pbgl-head { flex-direction: column; align-items: stretch; }
+        .pbgl-head-main, .pbgl-head-dial { flex: 1 1 auto; }
+        .pbgl-send-sum, .pbgl-send-why { flex: 1 1 auto; }
+        .pbgl-goal-top { flex-direction: column; }
+        .pbgl-goal-id { flex: 1 1 auto; }
+        .pbgl-goal-meta { justify-content: flex-start; }
+        .pbgl-weight { align-items: flex-start; }
+        .pbgl-kr-f { flex: 1 1 100%; }
+        .pbgl-f { flex: 1 1 100%; }
+        .pbgl-send { flex-direction: column; align-items: stretch; }
+
+        // B2's own bases, reset in the SAME query that turns their container
+        // into a column (R206).
+        .pbgl-score-card { flex-direction: column; align-items: stretch; }
+        .pbgl-score-card p { flex: 1 1 auto; }
+        .pbgl-past-hero { flex-direction: column; align-items: stretch; }
+        .pbgl-past-hero > div:first-child { flex: 1 1 auto; }
+        .pbgl-past-dial { flex: 1 1 auto; }
+        .pbgl-ci-row { flex-direction: column; align-items: flex-start; }
+        .pbgl-ci-row p { flex: 1 1 auto; }
+        .pbgl-others-open { margin-left: 0; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .pbgl-goal {
+            opacity: 0;
+            animation: pbgl-rise 0.34s ease forwards;
+        }
+        .pbgl-goal:nth-child(2) { animation-delay: 0.05s; }
+        .pbgl-goal:nth-child(3) { animation-delay: 0.1s; }
+        .pbgl-goal:nth-child(4) { animation-delay: 0.15s; }
+    }
+}

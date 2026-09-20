@@ -1,0 +1,4866 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_approval_config
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-12 12:07+0000\n"
+"PO-Revision-Date: 2026-09-12 12:49+0000\n"
+"Last-Translator: \n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid " and "
+msgstr " và "
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid " or "
+msgstr " hoặc "
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid " when the amount is %s or more"
+msgstr " khi số tiền từ %s trở lên"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_runonly
+msgid "\"This run only\" pay data"
+msgstr "Dữ liệu lương \"chỉ cho đợt này\""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%(a)s is covering for %(b)s"
+msgstr "%(a)s đang trực thay cho %(b)s"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "%(done)s of %(total)s approvals received"
+msgstr "Đã nhận %(done)s trên %(total)s lượt phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "%(from)s to %(to)s"
+msgstr "Từ %(from)s đến %(to)s"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "%(name)s · v%(rev)s"
+msgstr "%(name)s · b%(rev)s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/people_tab.js:0
+msgid "%(role)s for %(scope)s"
+msgstr "%(role)s cho %(scope)s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "%(who)s (%(amount)s and above)"
+msgstr "%(who)s (từ %(amount)s trở lên)"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%(who)s left \"%(role)s\" for %(where)s with nobody in it"
+msgstr "%(who)s đã để trống \"%(role)s\" của %(where)s"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%(who)s made %(name)s the %(role)s for %(where)s"
+msgstr "%(who)s đã giao %(name)s làm %(role)s của %(where)s"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%(who)s put %(where)s back on the route the rest of the company uses"
+msgstr "%(who)s đã đưa %(where)s trở lại lộ trình mà cả công ty đang dùng"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%(who)s put %(where)s on \"%(name)s\""
+msgstr "%(who)s đã đưa %(where)s sang \"%(name)s\""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%(who)s started \"%(name)s\" as a draft"
+msgstr "%(who)s đã tạo \"%(name)s\" ở dạng bản nháp"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "%(who)s, covering for %(whose)s"
+msgstr "%(who)s, trực thay cho %(whose)s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "%s and above"
+msgstr "%s trở lên"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%s does not work in this company."
+msgstr "%s không làm việc trong công ty này."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%s exception"
+msgstr "%s ngoại lệ"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%s exceptions"
+msgstr "%s ngoại lệ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "%s for this part of the business"
+msgstr "%s của bộ phận này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "%s is no"
+msgstr "%s là không"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid ""
+"%s is not wired up to approvals yet. You can write its route now; publishing"
+" waits until it is."
+msgstr ""
+"%s chưa được nối với phần phê duyệt. Bạn vẫn viết được lộ trình ngay bây "
+"giờ; việc ban hành sẽ chờ đến khi nối xong."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "%s is yes"
+msgstr "%s là có"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "%s place(s) need somebody named before this can be used."
+msgstr "Có %s nơi cần chỉ định người trước khi dùng được."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "%s · any one"
+msgstr "%s · bất kỳ một người"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "%s · everyone"
+msgstr "%s · tất cả mọi người"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "%s · whole company"
+msgstr "%s · toàn công ty"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%s — everywhere"
+msgstr "%s — mọi nơi"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%s — the route everywhere here"
+msgstr "%s — lộ trình dùng cho mọi nơi tại đây"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid "(not published yet)"
+msgstr "(chưa ban hành)"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid ", only when %s"
+msgstr ", chỉ khi %s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ", which is the one in use now."
+msgstr ", đây là bản đang được dùng."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+". Every part of the business follows it unless one is given a route of its "
+"own, which is done from the Matrix row rather than here."
+msgstr ""
+". Mọi bộ phận đều đi theo lộ trình này, trừ khi một bộ phận được giao lộ "
+"trình riêng — việc đó làm ở dòng tương ứng trong Ma trận chứ không phải ở "
+"đây."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid ""
+". Requests from those places cannot be sent in until somebody is named."
+msgstr ""
+". Yêu cầu từ những nơi đó không gửi đi được cho đến khi có người được chỉ "
+"định."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid ". Their requests show as your turn, marked \"covering for\"."
+msgstr ". Yêu cầu của họ sẽ hiện là đến lượt bạn, có ghi \"trực thay cho\"."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid ". You can read everything; the decision is theirs."
+msgstr ". Bạn xem được mọi thứ; quyền quyết định thuộc về họ."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid ""
+". You still see everything; they can decide it, and both names are recorded."
+msgstr ""
+". Bạn vẫn xem được mọi thứ; họ quyết định thay, và cả hai tên đều được ghi "
+"lại."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "1 · wins"
+msgstr "1 · thắng"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "2 people suggested"
+msgstr "Nên có 2 người"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid ""
+"; the row says so out loud and every use is still recorded. Suggestions such"
+" as \"2 people\" are advice you confirm when you publish, never a lock."
+msgstr ""
+"; dòng đó sẽ ghi rõ như vậy và mọi lần dùng vẫn được lưu lại. Những gợi ý "
+"kiểu \"2 người\" là lời khuyên bạn xác nhận khi ban hành, không bao giờ là "
+"khoá chặn."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_awards
+msgid "A bonus or a prize given for good work."
+msgstr "Tiền thưởng hoặc phần thưởng cho thành tích tốt."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_scheme
+msgid "A change to how pay is worked out."
+msgstr "Thay đổi cách tính lương."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "A document"
+msgstr "Một tài liệu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "A draft was created. Nothing is published until you say so."
+msgstr "Đã tạo bản nháp. Chưa có gì được ban hành cho đến khi bạn đồng ý."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_runonly
+msgid "A figure entered for one pay run and nothing else."
+msgstr ""
+"Một con số chỉ nhập cho một đợt trả lương, không dùng cho đợt nào khác."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/picker_drawer.js:0
+msgid "A fixed list, such as who may sign at the bank."
+msgstr "Một danh sách cố định, ví dụ những người được ký ở ngân hàng."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "A group — any one of them may decide"
+msgstr "Một nhóm — bất kỳ ai trong nhóm cũng quyết định được"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"A late request is never approved by itself. Nothing in this app approves "
+"anything on its own."
+msgstr ""
+"Yêu cầu trễ hạn không bao giờ tự được duyệt. Không có gì trong ứng dụng này "
+"tự phê duyệt điều gì cả."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_contract
+msgid "A new contract, or a change to the terms of one."
+msgstr "Hợp đồng mới, hoặc thay đổi điều khoản của hợp đồng."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid ""
+"A preset stays a draft until you finish it. Choosing one publishes nothing."
+msgstr ""
+"Mẫu có sẵn vẫn là bản nháp cho đến khi bạn hoàn tất. Chọn một mẫu không ban "
+"hành gì cả."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"A report this app generates is locked to the request. Replacing one after it"
+" has been sent in starts the approvals again."
+msgstr ""
+"Báo cáo do ứng dụng này tạo ra sẽ được khoá vào yêu cầu. Thay báo cáo sau "
+"khi đã gửi đi sẽ bắt đầu lại việc phê duyệt."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid ""
+"A responsibility is a job, not a permission. Naming somebody here never "
+"gives them access; the picker says when a person still needs it."
+msgstr ""
+"Trách nhiệm là một công việc, không phải một quyền truy cập. Chỉ định ai đó "
+"ở đây không hề cấp quyền cho họ; ô chọn người sẽ báo khi một người vẫn còn "
+"thiếu quyền."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_paychange
+msgid "A rise, a cut or a move to a different pay level."
+msgstr "Tăng lương, giảm lương hoặc chuyển sang bậc lương khác."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "A row is"
+msgstr "Một dòng chỉ là"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid ""
+"A setup workbook can fill this in for you: its approvals sheet becomes "
+"drafts, one per process, for this company only. People stay suggestions "
+"until a real account is chosen for each one. That door is being built; until"
+" it opens, a preset below is the quickest start."
+msgstr ""
+"Tệp thiết lập có thể điền giúp bạn phần này: trang phê duyệt trong tệp sẽ "
+"thành các bản nháp, mỗi quy trình một bản, và chỉ cho công ty này. Tên người"
+" vẫn chỉ là đề xuất cho đến khi chọn được tài khoản thật cho từng người. Cửa"
+" đó đang được làm; trong lúc chờ, một mẫu có sẵn bên dưới là cách bắt đầu "
+"nhanh nhất."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "A step that applies in some cases and not others."
+msgstr "Một bước chỉ áp dụng trong vài trường hợp."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_payrun
+msgid "A whole pay run, before its payslips are confirmed."
+msgstr "Cả một đợt trả lương, trước khi xác nhận phiếu lương."
+
+#. module: pb_approval_config
+#: model:biz.approval.role,name:pb_approval_config.role_access
+msgid "Access team"
+msgstr "Bộ phận cấp quyền"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Add a step"
+msgstr "Thêm một bước"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Added"
+msgstr "Đã thêm"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Advice, not a rule"
+msgstr "Lời khuyên, không phải quy định"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "After it is sent in, %s."
+msgstr "Sau khi gửi đi, %s."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "All I can see"
+msgstr "Tất cả tôi xem được"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "All areas"
+msgstr "Mọi mảng"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Allow it, with a written reason each time"
+msgstr "Cho phép, kèm lý do viết ra mỗi lần"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Allow named exceptions to that rule"
+msgstr "Cho phép những ngoại lệ đã chỉ định với quy tắc này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Already under way"
+msgstr "Đang thực hiện dở"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Amount taken from"
+msgstr "Số tiền lấy từ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Amount, if any"
+msgstr "Số tiền, nếu có"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"Amounts are compared in the money the request is in. Requests in different "
+"currencies are never added together."
+msgstr ""
+"Số tiền được so sánh theo đúng loại tiền của yêu cầu. Yêu cầu ở các loại "
+"tiền khác nhau không bao giờ bị cộng chung."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Amounts are never added across currencies."
+msgstr "Số tiền không bao giờ được cộng chung giữa các loại tiền."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "An exception was used"
+msgstr "Đã dùng một ngoại lệ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "And if it is late?"
+msgstr "Còn nếu trễ hạn thì sao?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Annual leave"
+msgstr "Nghỉ phép năm"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Answer in your own words. Everything can change later."
+msgstr "Trả lời bằng lời của bạn. Mọi thứ đều sửa lại được sau."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Any amount"
+msgstr "Mọi số tiền"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Any kind"
+msgstr "Mọi loại"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Any one of"
+msgstr "Bất kỳ ai trong"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Any one of %s"
+msgstr "Bất kỳ ai trong %s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Any one of a team"
+msgstr "Bất kỳ ai trong một nhóm"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Any one of them"
+msgstr "Bất kỳ ai trong số họ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Any one of them decides"
+msgstr "Bất kỳ ai trong số họ quyết định"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Any status"
+msgstr "Mọi trạng thái"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"Anybody named may decide, even their own work. Not recommended where money "
+"is involved."
+msgstr ""
+"Bất kỳ ai được chỉ định đều quyết định được, kể cả với việc do chính mình "
+"làm. Không nên dùng khi có liên quan đến tiền."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Anything a decider returns for changes shows up here."
+msgstr "Mọi yêu cầu bị người duyệt trả lại để sửa sẽ hiện ở đây."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Anything the person deciding will need to know."
+msgstr "Những gì người quyết định cần biết."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid ""
+"Applied at once and recorded. Replaces the steps; you confirm it when you "
+"publish."
+msgstr ""
+"Áp dụng ngay và được ghi lại. Thay cho các bước; bạn xác nhận điều này khi "
+"ban hành."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Applies to"
+msgstr "Áp dụng cho"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+#: code:addons/pb_approval_config/static/src/js/palette.js:0
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+#: model:ir.actions.client,name:pb_approval_config.action_pb_approval_matrix
+msgid "Approval Matrix"
+msgstr "Ma trận phê duyệt"
+
+#. module: pb_approval_config
+#: model:ir.model,name:pb_approval_config.model_pb_approval_matrix
+msgid "Approval Matrix screen data"
+msgstr "Dữ liệu màn hình Ma trận phê duyệt"
+
+#. module: pb_approval_config
+#: model:ir.model,name:pb_approval_config.model_biz_approval_process
+msgid "Approval Process"
+msgstr "Quy trình phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+#: code:addons/pb_approval_config/static/src/js/palette.js:0
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+#: model:ir.actions.client,name:pb_approval_config.action_pb_approval_inbox
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/palette.js:0
+msgid "Approvals inbox"
+msgstr "Hộp thư phê duyệt"
+
+#. module: pb_approval_config
+#: model:ir.model,name:pb_approval_config.model_pb_approval_inbox
+msgid "Approvals inbox data"
+msgstr "Dữ liệu hộp thư phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Approve"
+msgstr "Phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Approve with an exception"
+msgstr "Phê duyệt kèm ngoại lệ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Approve with exception"
+msgstr "Phê duyệt kèm ngoại lệ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Approve, and say why you may"
+msgstr "Phê duyệt, và nêu rõ vì sao bạn được phép"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Approved, applied and turned-down requests are kept here."
+msgstr "Các yêu cầu đã duyệt, đã thực hiện và đã từ chối được lưu ở đây."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid ""
+"Approving records your name, the time, and exactly the facts above as they "
+"were when this was sent in."
+msgstr ""
+"Khi phê duyệt, hệ thống ghi lại tên bạn, thời điểm, và đúng các dữ kiện ở "
+"trên tại thời điểm yêu cầu được gửi đi."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Arrange cover"
+msgstr "Sắp xếp người trực thay"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_arrivals
+msgid "Arrivals from a connected system"
+msgstr "Dữ liệu mới từ hệ thống đã kết nối"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Ask for a sign-off"
+msgstr "Xin một chữ ký duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Ask for something"
+msgstr "Yêu cầu thêm một mục"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_assets
+msgid "Asset requests"
+msgstr "Yêu cầu cấp tài sản"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "At least"
+msgstr "Ít nhất"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Attached"
+msgstr "Đã đính kèm"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_correction
+msgid "Attendance corrections"
+msgstr "Điều chỉnh chấm công"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_awards
+msgid "Awards and recognition"
+msgstr "Khen thưởng và ghi nhận"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Back to the Matrix"
+msgstr "Quay lại Ma trận"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Backup, for when they are away"
+msgstr "Người thay thế, khi họ vắng mặt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Backup:"
+msgstr "Người thay thế:"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_bankfile
+msgid "Bank file creation"
+msgstr "Tạo tệp chuyển khoản ngân hàng"
+
+#. module: pb_approval_config
+#: model:biz.approval.role,name:pb_approval_config.role_signatory
+msgid "Bank signatory"
+msgstr "Người ký ngân hàng"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Be specific — the person reading this is the one who has to fix it."
+msgstr "Hãy nói cụ thể — người đọc dòng này chính là người phải sửa."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Before it is approved"
+msgstr "Trước khi được phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/picker_drawer.js:0
+msgid "Best for whole batches — the right person per part of the business."
+msgstr "Hợp nhất cho cả lô — đúng người cho từng bộ phận."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/picker_drawer.js:0
+msgid "Best when the request is about one person."
+msgstr "Hợp nhất khi yêu cầu chỉ liên quan đến một người."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Bring in from a spreadsheet"
+msgstr "Nạp từ bảng tính"
+
+#. module: pb_approval_config
+#: model:biz.approval.role,name:pb_approval_config.role_budget
+msgid "Budget holder"
+msgstr "Người giữ ngân sách"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Build the route step by step."
+msgstr "Dựng lộ trình từng bước một."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_trip
+msgid "Business trips"
+msgstr "Công tác"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "By a day of the month"
+msgstr "Theo một ngày trong tháng"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid ""
+"Can be named, but cannot open this kind of request yet. Give them the access"
+" first."
+msgstr ""
+"Có thể chỉ định, nhưng chưa mở được loại yêu cầu này. Hãy cấp quyền cho họ "
+"trước."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Cannot be published yet"
+msgstr "Chưa ban hành được"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid "Change"
+msgstr "Thay đổi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Change who decides this"
+msgstr "Đổi người quyết định bước này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Changed"
+msgstr "Đã thay đổi"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_master
+msgid "Changes to somebody's own details."
+msgstr "Thay đổi thông tin cá nhân của một người."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_records
+msgid "Changing many people's details in one go."
+msgstr "Thay đổi thông tin của nhiều người cùng lúc."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid ""
+"Changing this affects new requests only. Anything already under way keeps "
+"the route it was given."
+msgstr ""
+"Thay đổi này chỉ ảnh hưởng đến yêu cầu mới. Những gì đang thực hiện dở vẫn "
+"giữ lộ trình đã được giao."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Check every part of the business"
+msgstr "Kiểm tra mọi bộ phận"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Check them all"
+msgstr "Kiểm tra tất cả"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Check who it reaches"
+msgstr "Xem lộ trình đến những ai"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Checking it over…"
+msgstr "Đang kiểm tra lại…"
+
+#. module: pb_approval_config
+#: model:biz.approval.role,description:pb_approval_config.role_hr_lead
+msgid "Checks the people and the amounts for one part of the business."
+msgstr "Kiểm tra con người và số tiền của một bộ phận."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid "Choose a route"
+msgstr "Chọn một lộ trình"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Choose a route for this to follow."
+msgstr "Chọn một lộ trình để nơi này đi theo."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"Choose how the step finds the right person. The panel at the bottom says who"
+" that is, right now."
+msgstr ""
+"Chọn cách bước này tìm đúng người. Khung bên dưới cho biết người đó là ai, "
+"ngay lúc này."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Choose somebody"
+msgstr "Chọn một người"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Choose which kind of request this route is for, by opening its row."
+msgstr ""
+"Hãy chọn loại yêu cầu mà lộ trình này dành cho, bằng cách mở dòng của nó."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid ""
+"Choosing somebody here changes new requests only. It gives them no access of"
+" any kind."
+msgstr ""
+"Chọn người ở đây chỉ ảnh hưởng đến yêu cầu mới. Việc này không cấp cho họ "
+"bất kỳ quyền truy cập nào."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Chosen on each request"
+msgstr "Chọn riêng cho từng yêu cầu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Clear the filters"
+msgstr "Xoá các bộ lọc"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_month
+msgid "Close or reopen a payroll month"
+msgstr "Chốt hoặc mở lại một tháng lương"
+
+#. module: pb_approval_config
+#: model:ir.model,name:pb_approval_config.model_res_company
+msgid "Companies"
+msgstr "Các công ty"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Compared with version"
+msgstr "So với bản"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_mappings
+msgid "Connected-system mappings and sync times"
+msgstr "Ánh xạ hệ thống đã kết nối và lịch đồng bộ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Continue"
+msgstr "Tiếp tục"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Continue to safeguards"
+msgstr "Tiếp tục đến phần bảo vệ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Could not be sent in"
+msgstr "Không gửi đi được"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Could not save"
+msgstr "Không lưu được"
+
+#. module: pb_approval_config
+#: model:biz.approval.role,name:pb_approval_config.role_director
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Country director, above a bigger one"
+msgstr "Giám đốc quốc gia, trên một mức lớn hơn"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/people_tab.js:0
+msgid "Cover arranged. It ends by itself."
+msgstr "Đã sắp xếp người trực thay. Việc này tự kết thúc."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid ""
+"Cover cannot be passed on again: if somebody is already covering, they "
+"cannot hand it to a third person. That keeps it possible to say who really "
+"decided."
+msgstr ""
+"Việc trực thay không được chuyển tiếp: nếu ai đó đang trực thay, họ không "
+"thể giao lại cho người thứ ba. Nhờ vậy luôn nói được ai thực sự đã quyết "
+"định."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Cover while somebody is away"
+msgstr "Trực thay khi có người vắng mặt"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Covered by %s"
+msgstr "Do %s đảm nhiệm"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Create a workflow"
+msgstr "Tạo một luồng phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/palette.js:0
+msgid "Decide"
+msgstr "Quyết định"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Decided by %s."
+msgstr "Do %s quyết định."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/history_tab.js:0
+msgid "Decisions"
+msgstr "Các quyết định"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Director sign-off"
+msgstr "Giám đốc ký duyệt"
+
+#. module: pb_approval_config
+#: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_process__display_name
+#: model:ir.model.fields,field_description:pb_approval_config.field_pb_approval_inbox__display_name
+#: model:ir.model.fields,field_description:pb_approval_config.field_pb_approval_matrix__display_name
+#: model:ir.model.fields,field_description:pb_approval_config.field_res_company__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Division"
+msgstr "Khối"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Due"
+msgstr "Hạn"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Due today"
+msgstr "Đến hạn hôm nay"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"Each part of the business needs its own person — there is never a silent "
+"fall-back."
+msgstr ""
+"Mỗi bộ phận cần có người riêng — không bao giờ có việc âm thầm lấy người "
+"khác thay."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_master
+msgid "Employee record changes"
+msgstr "Thay đổi hồ sơ nhân viên"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Empty it"
+msgstr "Để trống"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_assets
+msgid "Equipment somebody asks the company for."
+msgstr "Thiết bị mà một người xin công ty cấp."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid ""
+"Every check, in one place. Decide who signs off what, for each part of the "
+"business, in plain words."
+msgstr ""
+"Mọi bước kiểm tra, gom về một chỗ. Quyết định ai duyệt việc gì, cho từng bộ "
+"phận, bằng lời dễ hiểu."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Every part of the business has a full route."
+msgstr "Mọi bộ phận đều có lộ trình đầy đủ."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Every place has a full route."
+msgstr "Mọi nơi đều có lộ trình đầy đủ."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Every place it would reach"
+msgstr "Mọi nơi lộ trình này chạm tới"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/palette.js:0
+msgid ""
+"Every process that can need a sign-off, the route it follows, and where each"
+" one applies."
+msgstr ""
+"Mọi quy trình có thể cần ký duyệt, lộ trình nó đi theo, và nơi từng lộ trình"
+" được áp dụng."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid ""
+"Every publish, decision and change of cover will be listed here, in plain "
+"words."
+msgstr ""
+"Mọi lần ban hành, mọi quyết định và mọi thay đổi người trực thay đều được "
+"liệt kê ở đây, bằng lời dễ hiểu."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid ""
+"Every seat has somebody in it. Changing a person here affects new requests "
+"only; anything already under way keeps the people it was given."
+msgstr ""
+"Mọi vị trí đều đã có người. Đổi người ở đây chỉ ảnh hưởng đến yêu cầu mới; "
+"những gì đang thực hiện dở vẫn giữ nguyên người đã được giao."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Everybody on the bank mandate"
+msgstr "Tất cả người có tên trong uỷ quyền ngân hàng"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid ""
+"Everybody on the bank mandate has to approve. For bank files and money "
+"leaving the company."
+msgstr ""
+"Tất cả người có tên trong uỷ quyền ngân hàng đều phải phê duyệt. Dùng cho "
+"tệp ngân hàng và tiền ra khỏi công ty."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Everyone must approve"
+msgstr "Tất cả đều phải phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/history_tab.js:0
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Everything"
+msgstr "Tất cả"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid ""
+"Everything from every part of the product, in one place — whoever you are."
+msgstr "Mọi thứ từ mọi phần của sản phẩm, gom về một chỗ — dù bạn là ai."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/palette.js:0
+msgid "Everything waiting for a decision, from every part of the product."
+msgstr "Mọi thứ đang chờ quyết định, từ mọi phần của sản phẩm."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_demo
+msgid "Example data on a real account"
+msgstr "Dữ liệu mẫu trên tài khoản thật"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/history_tab.js:0
+msgid "Exceptions"
+msgstr "Ngoại lệ"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_fx
+msgid "Exchange rates and budgets"
+msgstr "Tỷ giá và ngân sách"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Extra check"
+msgstr "Bước kiểm tra thêm"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_overtime
+msgid "Extra hours, before they are worked or paid."
+msgstr "Giờ làm thêm, trước khi làm hoặc trước khi trả."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Final approval"
+msgstr "Phê duyệt cuối"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Finance approval"
+msgstr "Tài chính phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: model:biz.approval.role,name:pb_approval_config.role_finance
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Finance approver, above an amount"
+msgstr "Người duyệt tài chính, trên một mức tiền"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Finished"
+msgstr "Kết thúc"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_correction
+msgid "Fixing a clock-in or clock-out after the fact."
+msgstr "Sửa giờ vào hoặc giờ ra sau khi sự việc đã xảy ra."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Follows this route"
+msgstr "Đi theo lộ trình này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid ""
+"For anything that has no process of its own. It follows the route your "
+"company published for exactly this, and it is recorded the same way as "
+"everything else."
+msgstr ""
+"Dành cho bất cứ việc gì chưa có quy trình riêng. Nó đi theo lộ trình mà công"
+" ty bạn đã ban hành đúng cho việc này, và được ghi lại y như mọi thứ khác."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "For requests about one person: their manager first, then HR."
+msgstr ""
+"Cho yêu cầu liên quan đến một người: quản lý của họ trước, rồi đến Nhân sự."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/picker_drawer.js:0
+msgid "For the bigger asks."
+msgstr "Cho những đề nghị lớn hơn."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Four eyes on a setup change"
+msgstr "Bốn mắt cho một thay đổi thiết lập"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "From"
+msgstr "Từ"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_fnf
+msgid "Full and final settlement"
+msgstr "Thanh toán lần cuối khi nghỉ việc"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/scheme_panel.js:0
+msgid "Give it a route of its own"
+msgstr "Giao cho nơi này một lộ trình riêng"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Give it its own"
+msgstr "Giao người riêng"
+
+#. module: pb_approval_config
+#: model:biz.approval.role,description:pb_approval_config.role_access
+msgid "Gives people their roles, and reviews them."
+msgstr "Cấp vai trò cho mọi người và rà soát lại."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_roles
+msgid "Giving somebody access, or letting somebody stand in."
+msgstr "Cấp quyền cho ai đó, hoặc cho ai đó đứng thay."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_filing
+msgid "Government filings"
+msgstr "Hồ sơ chính phủ"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "HR approval"
+msgstr "Nhân sự phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: model:biz.approval.role,name:pb_approval_config.role_hr_lead
+msgid "HR lead"
+msgstr "Trưởng bộ phận Nhân sự"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "HR lead review"
+msgstr "Trưởng bộ phận Nhân sự rà soát"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Hand to the backup"
+msgstr "Chuyển cho người thay thế"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "History"
+msgstr "Lịch sử"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "How \"where\" works"
+msgstr "Cách \"nơi áp dụng\" hoạt động"
+
+#. module: pb_approval_config
+#: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_process__id
+#: model:ir.model.fields,field_description:pb_approval_config.field_pb_approval_inbox__id
+#: model:ir.model.fields,field_description:pb_approval_config.field_pb_approval_matrix__id
+#: model:ir.model.fields,field_description:pb_approval_config.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "If the same person comes up at two steps"
+msgstr "Nếu cùng một người xuất hiện ở hai bước"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "In force now"
+msgstr "Đang có hiệu lực"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "In use"
+msgstr "Đang dùng"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "In use now: v"
+msgstr "Đang dùng: b"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Include this step"
+msgstr "Áp dụng bước này"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Independent review"
+msgstr "Rà soát độc lập"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "It can go ahead again. Nothing has to be sent in again."
+msgstr "Yêu cầu đi tiếp được rồi. Không phải gửi lại gì cả."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid ""
+"It goes back for changes. The approvals already given stay in the history; "
+"sending it in again starts a fresh attempt."
+msgstr ""
+"Yêu cầu quay lại để sửa. Những phê duyệt đã có vẫn nằm trong lịch sử; gửi "
+"lại sẽ bắt đầu một lượt mới."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid ""
+"It goes straight to whoever your company named for this. If nobody has been "
+"named yet, you will be told exactly that rather than left waiting."
+msgstr ""
+"Yêu cầu đi thẳng đến người mà công ty bạn đã chỉ định cho việc này. Nếu chưa"
+" chỉ định ai, bạn sẽ được báo đúng như vậy chứ không bị để chờ."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Joint approval"
+msgstr "Phê duyệt chung"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Joint approval · everyone must approve"
+msgstr "Phê duyệt chung · tất cả đều phải phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Joint sign-off"
+msgstr "Ký duyệt chung"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Kind of request"
+msgstr "Loại yêu cầu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Late"
+msgstr "Trễ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/scheme_panel.js:0
+msgid "Later changes to the company's route will not reach this one."
+msgstr ""
+"Những thay đổi sau này trên lộ trình của công ty sẽ không lan tới lộ trình "
+"này."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_leave
+msgid "Leave"
+msgstr "Nghỉ phép"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Leave it empty to start at once."
+msgstr "Để trống để bắt đầu ngay."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/people_tab.js:0
+msgid ""
+"Left empty. Requests from there will say so rather than go to the wrong "
+"person."
+msgstr ""
+"Đã để trống. Yêu cầu từ nơi đó sẽ báo rõ như vậy chứ không đi nhầm người."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Let a person know. Never counted as a check."
+msgstr "Báo cho một người biết. Không bao giờ được tính là một bước kiểm tra."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_support
+msgid "Letting a support engineer into your data, for a while."
+msgstr "Cho kỹ sư hỗ trợ vào dữ liệu của bạn, trong một khoảng thời gian."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_release
+msgid "Letting the bank actually move the money."
+msgstr "Cho ngân hàng thực sự chuyển tiền."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_loads
+msgid "Loading pay data for months that are already over."
+msgstr "Nạp dữ liệu lương cho những tháng đã qua."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_month
+msgid "Locking a month, or unlocking one that was closed."
+msgstr "Khoá một tháng, hoặc mở lại một tháng đã chốt."
+
+#. module: pb_approval_config
+#: model:biz.approval.role,description:pb_approval_config.role_payroll_mgr
+msgid "Looks after the payroll process itself."
+msgstr "Phụ trách chính quy trình tính lương."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_bankfile
+msgid "Making the file the bank pays from."
+msgstr "Tạo tệp để ngân hàng chi trả."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Manager review"
+msgstr "Quản lý rà soát"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Manager, then HR"
+msgstr "Quản lý, rồi đến Nhân sự"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Matrix"
+msgstr "Ma trận"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Me"
+msgstr "Tôi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Mend it and the route carries on; nothing has to be sent in again."
+msgstr "Sửa xong là lộ trình chạy tiếp; không phải gửi lại gì cả."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/seed.py:0
+msgid "Money out"
+msgstr "Hết tiền"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Move down"
+msgstr "Di chuyển xuống"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Move up"
+msgstr "Di chuyển lên"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_schememap
+msgid "Moving people between pay schemes."
+msgstr "Chuyển người giữa các phương án lương."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Must be fixed"
+msgstr "Bắt buộc phải sửa"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "My turn"
+msgstr "Đến lượt tôi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Name one"
+msgstr "Chỉ định một người"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Name somebody"
+msgstr "Chỉ định một người"
+
+#. module: pb_approval_config
+#: model:biz.approval.role,description:pb_approval_config.role_signatory
+msgid "Named on the bank mandate. Any one of them may sign."
+msgstr "Có tên trong uỷ quyền ngân hàng. Bất kỳ ai trong số họ đều ký được."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/picker_drawer.js:0
+msgid "Named people"
+msgstr "Những người được chỉ định"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Named people must all approve."
+msgstr "Tất cả những người được chỉ định đều phải phê duyệt."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"Naming somebody never gives them access and never creates an account. A "
+"person marked \"Needs permission\" can still be named — they just cannot "
+"open this kind of request until somebody gives them the access."
+msgstr ""
+"Chỉ định một người không bao giờ cấp quyền cho họ và cũng không tạo tài "
+"khoản. Người có ghi chú \"Cần cấp quyền\" vẫn chỉ định được — chỉ là họ chưa"
+" mở được loại yêu cầu này cho đến khi có người cấp quyền cho họ."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Needs a person"
+msgstr "Cần một người"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Needs people"
+msgstr "Cần bổ sung người"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Needs permission"
+msgstr "Cần cấp quyền"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_newhire
+msgid "New hire and first contract"
+msgstr "Tuyển mới và hợp đồng đầu tiên"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_arrivals
+msgid "New people and changes picked up from another system."
+msgstr "Người mới và các thay đổi lấy về từ hệ thống khác."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "New requests follow it from"
+msgstr "Yêu cầu mới đi theo lộ trình này từ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "New requests follow this route from now on."
+msgstr "Từ giờ, yêu cầu mới đi theo lộ trình này."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "No approval needed"
+msgstr "Không cần phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "No approval needed · applied at once and recorded"
+msgstr "Không cần phê duyệt · áp dụng ngay và được ghi lại"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "No backup"
+msgstr "Không có người thay thế"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"No difference from the route already in use. There is nothing to publish."
+msgstr "Không khác gì lộ trình đang dùng. Không có gì để ban hành."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "No independence rule"
+msgstr "Không áp dụng quy tắc độc lập"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid "No route has been chosen yet"
+msgstr "Chưa chọn lộ trình nào"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid ""
+"No steps are left, so this would be applied at once and recorded. Add a step"
+" to bring a check back."
+msgstr ""
+"Không còn bước nào, nên việc này sẽ được áp dụng ngay và ghi lại. Thêm một "
+"bước để có lại một lần kiểm tra."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "No target"
+msgstr "Không đặt hạn"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "No — ask a person first"
+msgstr "Không — hỏi người phụ trách trước"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Nobody"
+msgstr "Không ai"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Nobody checks this; it is applied at once and recorded."
+msgstr "Không ai kiểm tra việc này; nó được áp dụng ngay và ghi lại."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Nobody for the whole company yet"
+msgstr "Chưa có ai cho toàn công ty"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Nobody is covering for anybody at the moment."
+msgstr "Hiện không có ai trực thay cho ai cả."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"Not checked yet. It is not required, but it is the only thing that proves "
+"every part of the business has somebody."
+msgstr ""
+"Chưa kiểm tra. Việc này không bắt buộc, nhưng đây là cách duy nhất chứng "
+"minh mọi bộ phận đều đã có người."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Not connected yet"
+msgstr "Chưa được nối"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Not needed here"
+msgstr "Không cần ở đây"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Not part of the sequence"
+msgstr "Không nằm trong chuỗi các bước"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Not set up yet"
+msgstr "Chưa thiết lập"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Not started yet"
+msgstr "Chưa bắt đầu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Not wired up yet"
+msgstr "Chưa được nối"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Not written yet"
+msgstr "Chưa viết"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Nothing has been sent back"
+msgstr "Chưa có gì bị trả lại"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Nothing has happened yet"
+msgstr "Chưa có gì diễn ra"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Nothing has to be attached to this one."
+msgstr "Việc này không cần đính kèm gì cả."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Nothing is checked"
+msgstr "Không có bước kiểm tra nào"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Nothing is checked yet. Add a step below."
+msgstr "Chưa có bước kiểm tra nào. Hãy thêm một bước bên dưới."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Nothing is finished yet"
+msgstr "Chưa có gì hoàn tất"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Nothing is in flight"
+msgstr "Không có gì đang chờ xử lý"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid "Nothing is published for this yet, so requests here cannot be sent in."
+msgstr ""
+"Chưa có gì được ban hành cho việc này, nên yêu cầu ở đây chưa gửi đi được."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Nothing is sent"
+msgstr "Không gửi đi gì cả"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Nothing is waiting for you"
+msgstr "Không có gì đang chờ bạn"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Nothing matches"
+msgstr "Không có kết quả nào khớp"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid ""
+"Nothing will be checked before this happens. Every one is still recorded, "
+"and you confirm the choice when you publish."
+msgstr ""
+"Sẽ không có bước kiểm tra nào trước khi việc này diễn ra. Mọi lần vẫn được "
+"ghi lại, và bạn xác nhận lựa chọn này khi ban hành."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Now applies whatever the amount."
+msgstr "Nay áp dụng với mọi số tiền."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Now decided by %s."
+msgstr "Nay do %s quyết định."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Now only from %s and above."
+msgstr "Nay chỉ áp dụng từ %s trở lên."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Off — every step applies whatever the amount."
+msgstr "Tắt — mọi bước đều áp dụng bất kể số tiền."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Officer, then HR, then Finance"
+msgstr "Chuyên viên, rồi Nhân sự, rồi Tài chính"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid ""
+"On a real request this is a move to somebody else, recorded with a reason. "
+"The example shows who that would be."
+msgstr ""
+"Với một yêu cầu thật, đây là việc chuyển sang người khác, có ghi kèm lý do. "
+"Ví dụ cho thấy người đó sẽ là ai."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"One good example is not proof. This checks every part of the business at "
+"once."
+msgstr ""
+"Một ví dụ tốt chưa phải là bằng chứng. Phần này kiểm tra mọi bộ phận cùng "
+"một lúc."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/picker_drawer.js:0
+msgid "One of a team"
+msgstr "Một người trong nhóm"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "One part of the business"
+msgstr "Một bộ phận"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/scheme_panel.js:0
+msgid ""
+"One route, used in several places, with the people worked out per place."
+msgstr ""
+"Một lộ trình, dùng ở nhiều nơi, người duyệt được xác định riêng cho từng "
+"nơi."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/scheme_panel.js:0
+msgid "Only for here"
+msgstr "Chỉ riêng nơi này"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid ""
+"Only the person being covered, or whoever looks after approvals, can stop "
+"this."
+msgstr ""
+"Chỉ người được trực thay, hoặc người phụ trách phê duyệt, mới dừng việc này "
+"được."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Only this one — it is shown on the Matrix as an exception"
+msgstr "Chỉ riêng nơi này — trên Ma trận sẽ hiện là một ngoại lệ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Only when…"
+msgstr "Chỉ khi…"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid "Open the Matrix"
+msgstr "Mở Ma trận"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Opening it…"
+msgstr "Đang mở…"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Opening the workflow…"
+msgstr "Đang mở luồng phê duyệt…"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/seed.py:0
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Other people are told along the way."
+msgstr "Những người khác được báo tin dọc đường."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_overtime
+msgid "Overtime"
+msgstr "Tăng ca"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Owner approval"
+msgstr "Người sở hữu phê duyệt"
+
+#. module: pb_approval_config
+#: model:biz.approval.role,description:pb_approval_config.role_scheme_owner
+msgid "Owns one pay scheme and the rules inside it."
+msgstr "Sở hữu một phương án lương và các quy tắc bên trong."
+
+#. module: pb_approval_config
+#: model:biz.approval.role,description:pb_approval_config.role_budget
+msgid "Owns the budget of one part of the business."
+msgstr "Sở hữu ngân sách của một bộ phận."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Part of the business"
+msgstr "Bộ phận"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Pass it up after"
+msgstr "Chuyển lên cấp trên sau"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_loads
+msgid "Past pay data loads"
+msgstr "Nạp dữ liệu lương kỳ trước"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Paused"
+msgstr "Đang tạm dừng"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Paused — nothing new is accepted"
+msgstr "Đang tạm dừng — không nhận yêu cầu mới"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/seed.py:0
+msgid "Pay"
+msgstr "Lương"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_bands
+msgid "Pay bands and guidance"
+msgstr "Khung lương và hướng dẫn"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_paychange
+msgid "Pay change"
+msgstr "Thay đổi lương"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/seed.py:0
+msgid "Pay data"
+msgstr "Dữ liệu lương"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_retro
+msgid "Pay owed from an earlier month, added to this one."
+msgstr "Lương còn nợ từ tháng trước, cộng vào tháng này."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_payrun
+msgid "Pay run"
+msgstr "Kỳ lương"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_release
+msgid "Payment release"
+msgstr "Giải ngân thanh toán"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Payroll check"
+msgstr "Bộ phận lương kiểm tra"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_journal
+msgid "Payroll journal and funding"
+msgstr "Bút toán lương và nguồn chi"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: model:biz.approval.role,name:pb_approval_config.role_payroll_mgr
+msgid "Payroll manager"
+msgstr "Quản lý tiền lương"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_payslips
+msgid "Payslip send-out"
+msgstr "Gửi phiếu lương"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/seed.py:0
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "People"
+msgstr "Nhân sự"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+#: code:addons/pb_approval_config/static/src/js/palette.js:0
+msgid "People & backups"
+msgstr "Con người & người thay thế"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/history_tab.js:0
+msgid "People and cover"
+msgstr "Con người và trực thay"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"People are kept apart from the route. \"HR lead\" is worked out per part of "
+"the business from People & backups, so one shared route still gives each "
+"part its own approver."
+msgstr ""
+"Con người được tách riêng khỏi lộ trình. \"Trưởng bộ phận Nhân sự\" được xác"
+" định riêng cho từng bộ phận ở mục Con người & người thay thế, nên một lộ "
+"trình dùng chung vẫn cho mỗi bộ phận người duyệt riêng của mình."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid "Places inside this one that do something else"
+msgstr "Những nơi bên trong nơi này làm khác đi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"Places that follow this route change with it. Places with a route of their "
+"own do not."
+msgstr ""
+"Những nơi đi theo lộ trình này sẽ thay đổi cùng nó. Những nơi có lộ trình "
+"riêng thì không."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/seed.py:0
+msgid "Platform"
+msgstr "Nền tảng"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/scheme_panel.js:0
+msgid "Point it at another route"
+msgstr "Trỏ nơi này sang một lộ trình khác"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_verdict
+msgid "Probation and growth-plan verdicts"
+msgstr "Kết luận thử việc và kế hoạch phát triển"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Process and the route it follows"
+msgstr "Quy trình và lộ trình nó đi theo"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Publish this route"
+msgstr "Ban hành lộ trình này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Published"
+msgstr "Đã đăng"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Published by"
+msgstr "Người ban hành"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/history_tab.js:0
+msgid "Published routes"
+msgstr "Lộ trình đã ban hành"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid ""
+"Published routes, decisions, exceptions, cover and moves. The same record "
+"feeds the audit console, and none of it can be changed afterwards."
+msgstr ""
+"Lộ trình đã ban hành, các quyết định, ngoại lệ, trực thay và chuyển giao. "
+"Cùng bản ghi này cũng cấp dữ liệu cho màn hình kiểm toán, và không phần nào "
+"sửa lại được sau đó."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Published. New requests follow this route from now on."
+msgstr "Đã ban hành. Từ giờ, yêu cầu mới đi theo lộ trình này."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Publishing does not make you an approver"
+msgstr "Ban hành không biến bạn thành người phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"Publishing is somebody else's job on this account. Everything above is saved"
+" as a draft for them."
+msgstr ""
+"Trên tài khoản này, việc ban hành thuộc về người khác. Mọi thứ ở trên được "
+"lưu thành bản nháp cho họ."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Purpose"
+msgstr "Mục đích"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_demo
+msgid "Putting made-up records beside your real ones."
+msgstr "Đặt bản ghi giả lập bên cạnh dữ liệu thật của bạn."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid "Reading the approvals for this…"
+msgstr "Đang đọc phần phê duyệt của mục này…"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Reading the record…"
+msgstr "Đang đọc bản ghi…"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Reading who fills each responsibility…"
+msgstr "Đang đọc xem ai đảm nhiệm từng trách nhiệm…"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Reading your approvals…"
+msgstr "Đang đọc các mục phê duyệt của bạn…"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Ready"
+msgstr "Sẵn sàng"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Ready for this example"
+msgstr "Sẵn sàng cho ví dụ này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Ready to publish"
+msgstr "Sẵn sàng ban hành"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Reason (kept in History)"
+msgstr "Lý do (lưu trong Lịch sử)"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/scheme_panel.js:0
+msgid ""
+"Recommended. Each part of the business still gets its own people; only the "
+"shape of the route is shared."
+msgstr ""
+"Nên dùng. Mỗi bộ phận vẫn có người riêng; chỉ hình dạng lộ trình là dùng "
+"chung."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Recorded. Thank you."
+msgstr "Đã ghi nhận. Cảm ơn bạn."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_records
+msgid "Records Desk bulk changes"
+msgstr "Thay đổi hàng loạt ở Bàn hồ sơ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Refresh"
+msgstr "Làm mới"
+
+#. module: pb_approval_config
+#: model:biz.approval.role,description:pb_approval_config.role_finance
+msgid "Releases money."
+msgstr "Giải ngân tiền."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Remind after"
+msgstr "Nhắc sau"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Remove"
+msgstr "Xóa"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Removed"
+msgstr "Đã bỏ"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_reopen
+msgid "Reopen an approved run"
+msgstr "Mở lại một đợt đã duyệt"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_unlock
+msgid "Reopening a day that has already been closed off."
+msgstr "Mở lại một ngày đã được chốt."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid ""
+"Requests appear here from every part of the product as people send them in."
+msgstr "Yêu cầu từ mọi phần của sản phẩm sẽ hiện ở đây khi mọi người gửi đi."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_resign
+msgid "Resignations and contract extensions"
+msgstr "Nghỉ việc và gia hạn hợp đồng"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Responsibility"
+msgstr "Trách nhiệm"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_retro
+msgid "Retro adjustments and carry-overs"
+msgstr "Điều chỉnh hồi tố và chuyển tiếp"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Review"
+msgstr "Xem lại"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Review & publish"
+msgstr "Xem lại & ban hành"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_roles
+msgid "Role grants and access hand-overs"
+msgstr "Cấp vai trò và bàn giao quyền truy cập"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Route by amount"
+msgstr "Phân luồng theo số tiền"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Safeguards"
+msgstr "Bảo vệ"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_contract
+msgid "Salary and contract changes"
+msgstr "Thay đổi lương và hợp đồng"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/scheme_panel.js:0
+msgid "Same as the rest of the company"
+msgstr "Giống như phần còn lại của công ty"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Save it to see who this reaches for the example on the right."
+msgstr "Lưu lại để xem bước này đến những ai, theo ví dụ bên phải."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid "Save this choice"
+msgstr "Lưu lựa chọn này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Saved"
+msgstr "Đã lưu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Saved just now"
+msgstr "Vừa lưu xong"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/scheme_panel.js:0
+msgid ""
+"Saved. New requests from here use this; anything already under way keeps its"
+" route."
+msgstr ""
+"Đã lưu. Yêu cầu mới từ đây sẽ dùng lựa chọn này; những gì đang thực hiện dở "
+"vẫn giữ lộ trình cũ."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/people_tab.js:0
+msgid ""
+"Saved. New requests use this; anything already under way keeps the people it"
+" was given."
+msgstr ""
+"Đã lưu. Yêu cầu mới sẽ dùng lựa chọn này; những gì đang thực hiện dở vẫn giữ"
+" nguyên người đã được giao."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Saving…"
+msgstr "Đang lưu…"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Say it in one line"
+msgstr "Nói gọn trong một dòng"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Say what you are asking for."
+msgstr "Hãy nêu rõ bạn đang xin điều gì."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Say who else checked it, or what makes this one different."
+msgstr ""
+"Cho biết ai khác đã kiểm tra, hoặc điều gì khiến trường hợp này khác đi."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Say who is covering."
+msgstr "Cho biết ai sẽ trực thay."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Say why, so the trail makes sense later."
+msgstr "Nêu lý do, để sau này đọc lại còn hiểu được."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_scheme
+msgid "Scheme change"
+msgstr "Thay đổi phương án lương"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: model:biz.approval.role,name:pb_approval_config.role_scheme_owner
+msgid "Scheme owner"
+msgstr "Người sở hữu phương án lương"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Search people"
+msgstr "Tìm người"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Search processes, people or routes"
+msgstr "Tìm quy trình, người hoặc lộ trình"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Send it"
+msgstr "Gửi đi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Send it back"
+msgstr "Trả lại"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Send it back to %s"
+msgstr "Trả lại cho %s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Send the later step to their backup"
+msgstr "Chuyển bước sau cho người thay thế của họ"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_payslips
+msgid "Sending people their payslips."
+msgstr "Gửi phiếu lương cho mọi người."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Sent back"
+msgstr "Đã trả lại"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Sent back, with your note."
+msgstr "Đã trả lại, kèm ghi chú của bạn."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Sent back:"
+msgstr "Đã trả lại:"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Sent in by"
+msgstr "Người gửi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Sent. It is on its way to whoever decides this kind of request."
+msgstr "Đã gửi. Yêu cầu đang trên đường đến người quyết định loại việc này."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/palette.js:0
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Settings"
+msgstr "Cài đặt"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/seed.py:0
+msgid "Setup & rules"
+msgstr "Thiết lập & quy tắc"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Shared with other parts of the business"
+msgstr "Dùng chung với các bộ phận khác"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/scheme_panel.js:0
+msgid "Shared with other places"
+msgstr "Dùng chung với những nơi khác"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Show me"
+msgstr "Cho tôi xem"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Show more"
+msgstr "Xem thêm"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Small amounts stay light; big amounts bring in more people."
+msgstr "Số tiền nhỏ thì gọn nhẹ; số tiền lớn thì có thêm người tham gia."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"Small amounts stay light; big ones bring in more people. Set the amount on "
+"each step."
+msgstr ""
+"Số tiền nhỏ thì gọn nhẹ; số tiền lớn thì có thêm người tham gia. Đặt mức "
+"tiền cho từng bước."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Somebody"
+msgstr "Một người nào đó"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Somebody checks it and passes it on."
+msgstr "Một người kiểm tra rồi chuyển tiếp."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid ""
+"Somebody else has to decide this one. Whoever looks after approvals can "
+"arrange an exception if that is not possible."
+msgstr ""
+"Việc này phải do người khác quyết định. Nếu không thể, người phụ trách phê "
+"duyệt có thể sắp xếp một ngoại lệ."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid ""
+"Somebody holds another person's seats for a while. It shows on every card, "
+"and it ends by itself."
+msgstr ""
+"Một người giữ vị trí của người khác trong một khoảng thời gian. Việc này "
+"hiện trên mọi thẻ và tự kết thúc."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Somebody independent must decide"
+msgstr "Phải có người độc lập quyết định"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_resign
+msgid "Somebody leaving, or staying longer."
+msgstr "Một người nghỉ việc, hoặc ở lại lâu hơn."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid ""
+"Somebody marked \"Needs permission\" can still be named. They will not be "
+"able to open this kind of request until an administrator gives them the "
+"access, and the request will say so rather than go silently to the wrong "
+"person."
+msgstr ""
+"Người có ghi chú \"Cần cấp quyền\" vẫn chỉ định được. Họ sẽ chưa mở được "
+"loại yêu cầu này cho đến khi quản trị viên cấp quyền, và yêu cầu sẽ báo rõ "
+"điều đó chứ không âm thầm đi nhầm người."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Somebody signs it off."
+msgstr "Một người ký duyệt."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/picker_drawer.js:0
+msgid "Somebody's responsibility"
+msgstr "Trách nhiệm của một người"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Start blank"
+msgstr "Bắt đầu từ đầu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Start from a route you already know"
+msgstr "Bắt đầu từ một lộ trình bạn đã quen"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/scheme_panel.js:0
+msgid "Start from the route above and change it here."
+msgstr "Bắt đầu từ lộ trình ở trên rồi sửa lại tại đây."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_statutory
+msgid "Statutory rates and tax tables"
+msgstr "Tỷ lệ theo luật và bảng thuế"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Stays on the version it was given"
+msgstr "Giữ nguyên bản đã được giao"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Steps run in order. The arrows on each card move them."
+msgstr "Các bước chạy theo thứ tự. Dùng mũi tên trên từng thẻ để đổi chỗ."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Still missing"
+msgstr "Vẫn còn thiếu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Still stuck — somebody still has to be named."
+msgstr "Vẫn đang kẹt — vẫn cần chỉ định người."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Still under way"
+msgstr "Vẫn đang thực hiện dở"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Stop it"
+msgstr "Dừng lại"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/people_tab.js:0
+msgid "Stopped. They keep their own seats again."
+msgstr "Đã dừng. Họ nhận lại vị trí của mình."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Stuck"
+msgstr "Đang kẹt"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_support
+msgid "Support access"
+msgstr "Quyền truy cập hỗ trợ"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_tenant
+msgid "Suspend, delete or change plan"
+msgstr "Tạm ngưng, xoá hoặc đổi gói"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Taken from"
+msgstr "Lấy từ"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_reopen
+msgid "Taking an already approved pay run back to draft."
+msgstr "Đưa một đợt trả lương đã duyệt trở lại bản nháp."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_newhire
+msgid "Taking somebody on, and what they are paid."
+msgstr "Nhận một người vào làm, và mức lương của họ."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Target"
+msgstr "Mục tiêu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Team check"
+msgstr "Nhóm kiểm tra"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Tell somebody"
+msgstr "Báo cho một người"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Tell somebody · never counted as a check"
+msgstr "Báo cho một người · không bao giờ được tính là một bước kiểm tra"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Tell whoever sent it in"
+msgstr "Báo cho người đã gửi yêu cầu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "That change could not be saved."
+msgstr "Không lưu được thay đổi này."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "That company no longer exists."
+msgstr "Công ty đó không còn tồn tại."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/people_tab.js:0
+msgid "That could not be changed."
+msgstr "Điều đó không thể thay đổi được."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "That could not be mended from here."
+msgstr "Không sửa được việc đó từ đây."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "That could not be recorded."
+msgstr "Không ghi nhận được việc đó."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/scheme_panel.js:0
+msgid "That could not be saved."
+msgstr "Không lưu được."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "That could not be sent."
+msgstr "Không gửi được."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/people_tab.js:0
+msgid "That could not be stopped."
+msgstr "Không dừng được việc đó."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "That could not be withdrawn."
+msgstr "Không thu hồi được."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/people_tab.js:0
+msgid "That cover could not be arranged."
+msgstr "Không sắp xếp được người trực thay."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "That draft could not be created."
+msgstr "Không tạo được bản nháp đó."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "That draft no longer exists."
+msgstr "Bản nháp đó không còn tồn tại."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "That hand-over no longer exists."
+msgstr "Lượt bàn giao đó không còn tồn tại."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "That is not something you can do here."
+msgstr "Đây không phải việc bạn làm được ở đây."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "That kind of request is not in the list."
+msgstr "Loại yêu cầu đó không có trong danh sách."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "That person cannot hold a responsibility."
+msgstr "Người đó không đảm nhiệm được một trách nhiệm."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/people_tab.js:0
+msgid "That person could not be given this responsibility."
+msgstr "Không giao được trách nhiệm này cho người đó."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "That request no longer exists."
+msgstr "Yêu cầu đó không còn tồn tại."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "That responsibility is no longer in the list."
+msgstr "Trách nhiệm đó không còn trong danh sách."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "That starting point is no longer offered."
+msgstr "Điểm khởi đầu đó không còn được cung cấp."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid ""
+"That version is in use and cannot be changed. Start a new draft instead."
+msgstr "Bản đó đang được dùng nên không sửa được. Hãy tạo một bản nháp mới."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "That workflow could not be read."
+msgstr "Không đọc được luồng phê duyệt đó."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "That workflow no longer exists."
+msgstr "Luồng phê duyệt đó không còn tồn tại."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "The %s already under way keep the people and steps they were given."
+msgstr ""
+"%s yêu cầu đang thực hiện dở vẫn giữ nguyên người và các bước đã được giao."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "The Approval Matrix could not be opened"
+msgstr "Không mở được Ma trận phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "The Approval Matrix could not be opened."
+msgstr "Không mở được Ma trận phê duyệt."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_journal
+msgid "The accounting entry for pay, and the money put aside for it."
+msgstr "Bút toán kế toán cho tiền lương, và khoản tiền dành sẵn để chi."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/scheme_panel.js:0
+msgid "The approvals for this could not be read."
+msgstr "Không đọc được phần phê duyệt của mục này."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_tenant
+msgid "The biggest changes to the account itself."
+msgstr "Những thay đổi lớn nhất đối với chính tài khoản."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "The classic payroll chain. One person at each step."
+msgstr "Chuỗi duyệt lương cổ điển. Mỗi bước một người."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "The coverage check could not run."
+msgstr "Không chạy được phần kiểm tra phạm vi."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_verdict
+msgid "The decision at the end of a trial or improvement period."
+msgstr "Kết luận khi kết thúc thời gian thử việc hoặc thời gian cải thiện."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+#: code:addons/pb_approval_config/static/src/js/picker_drawer.js:0
+msgid "The desk"
+msgstr "Bộ phận nghiệp vụ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "The example could not be worked out."
+msgstr "Không tính được ví dụ."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"The example on the right shows the exact local date and time each step would"
+" be due, worked out on your company's own working calendar."
+msgstr ""
+"Ví dụ bên phải cho biết chính xác ngày giờ địa phương mà từng bước đến hạn, "
+"tính theo lịch làm việc của chính công ty bạn."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "The facts, as they were when it was sent in"
+msgstr "Các dữ kiện, đúng như lúc yêu cầu được gửi đi"
+
+#. module: pb_approval_config
+#: model:biz.approval.role,description:pb_approval_config.role_director
+msgid "The final word in the company."
+msgstr "Tiếng nói cuối cùng trong công ty."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "The first person free decides it."
+msgstr "Ai rảnh trước thì người đó quyết định."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_timesheet
+msgid "The hours somebody says they worked in a week."
+msgstr "Số giờ một người khai đã làm trong tuần."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid ""
+"The independence rule is off for this route. The same person may prepare and"
+" approve. You confirm this when you publish."
+msgstr ""
+"Quy tắc độc lập đã tắt cho lộ trình này. Cùng một người vừa chuẩn bị vừa phê"
+" duyệt được. Bạn xác nhận điều này khi ban hành."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_fnf
+msgid "The last payment to somebody who is leaving."
+msgstr "Khoản chi cuối cùng cho người sắp nghỉ việc."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid ""
+"The most specific always wins, so these are used instead of the route above "
+"for those places."
+msgstr ""
+"Cái cụ thể nhất luôn thắng, nên với những nơi đó các lộ trình này được dùng "
+"thay cho lộ trình ở trên."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"The most specific always wins. Two routes covering exactly the same place "
+"are refused when you publish, so a request can never see two."
+msgstr ""
+"Cái cụ thể nhất luôn thắng. Hai lộ trình phủ đúng cùng một nơi sẽ bị từ chối"
+" khi ban hành, nên một yêu cầu không bao giờ thấy hai lộ trình."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"The most specific wins. Two routes covering the same place are refused when "
+"you publish, so a request can never see two."
+msgstr ""
+"Cái cụ thể nhất thắng. Hai lộ trình phủ cùng một nơi sẽ bị từ chối khi ban "
+"hành, nên một yêu cầu không bao giờ thấy hai lộ trình."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "The part of the business the request came from"
+msgstr "Bộ phận mà yêu cầu xuất phát"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"The person is worked out from the employee record of whoever the request is "
+"about. When a request covers many people at once, that means more than one "
+"person is asked — one per manager — so this is best kept for requests about "
+"a single person."
+msgstr ""
+"Người duyệt được xác định từ hồ sơ nhân viên của người mà yêu cầu nói đến. "
+"Khi một yêu cầu bao gồm nhiều người cùng lúc, sẽ có nhiều người được hỏi — "
+"mỗi quản lý một người — nên cách này hợp nhất với yêu cầu chỉ liên quan đến "
+"một người."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "The person who made a change never approves it."
+msgstr "Người tạo ra thay đổi không bao giờ tự duyệt thay đổi đó."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_statutory
+msgid "The rates the law sets, as this app holds them."
+msgstr "Các tỷ lệ do luật quy định, theo cách ứng dụng này lưu giữ."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "The route"
+msgstr "Lộ trình"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "The whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "The whole company's route is changed on the Matrix, not here."
+msgstr "Lộ trình của toàn công ty được đổi ở Ma trận, không phải ở đây."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "The whole route resolves here."
+msgstr "Toàn bộ lộ trình đều tìm được người ở đây."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/js/picker_drawer.js:0
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/picker_drawer.js:0
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Their manager's manager"
+msgstr "Quản lý của quản lý họ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Then %s."
+msgstr "Sau đó %s."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "There is no exception that lets you approve this one."
+msgstr "Không có ngoại lệ nào cho phép bạn duyệt trường hợp này."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "This cannot move."
+msgstr "Việc này không đi tiếp được."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "This changed while you were looking at it. Reload to see the latest."
+msgstr ""
+"Mục này đã thay đổi trong lúc bạn đang xem. Hãy tải lại để thấy bản mới "
+"nhất."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "This check no longer happens."
+msgstr "Bước kiểm tra này không còn diễn ra nữa."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "This could not be checked over."
+msgstr "Không kiểm tra lại được mục này."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "This could not be published."
+msgstr "Không ban hành được mục này."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "This could not be read"
+msgstr "Không đọc được nội dung này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/history_tab.js:0
+#: code:addons/pb_approval_config/static/src/js/people_tab.js:0
+msgid "This could not be read."
+msgstr "Không đọc được mục này."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "This ends the request."
+msgstr "Việc này kết thúc yêu cầu."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "This is about you."
+msgstr "Việc này nói về chính bạn."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "This is the route"
+msgstr "Đây là lộ trình"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"This kind of request is not wired up to approvals yet, so you can write the "
+"route now but publishing waits until it is. Nothing here pretends to be "
+"protecting it in the meantime."
+msgstr ""
+"Loại yêu cầu này chưa được nối với phần phê duyệt, nên bạn viết được lộ "
+"trình ngay bây giờ nhưng việc ban hành sẽ chờ đến khi nối xong. Trong lúc "
+"đó, không có gì ở đây giả vờ là đang bảo vệ nó."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "This one is finished."
+msgstr "Mục này đã xong."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid ""
+"This place follows the route you choose, alongside everywhere else pointed "
+"at it. A change to that route reaches all of them at once."
+msgstr ""
+"Nơi này đi theo lộ trình bạn chọn, cùng với mọi nơi khác đang trỏ vào đó. "
+"Một thay đổi trên lộ trình đó sẽ tới tất cả cùng lúc."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid ""
+"This place follows whatever the rest of the company uses, and changes with "
+"it. Each part of the business still gets its own people."
+msgstr ""
+"Nơi này đi theo lộ trình mà phần còn lại của công ty đang dùng, và thay đổi "
+"cùng nó. Mỗi bộ phận vẫn có người riêng của mình."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid ""
+"This place gets a route only it uses. Later changes to the company's route "
+"will not reach it, and the Matrix shows it as an exception."
+msgstr ""
+"Nơi này có một lộ trình chỉ riêng nó dùng. Những thay đổi sau này trên lộ "
+"trình của công ty sẽ không tới nó, và Ma trận sẽ hiện nó như một ngoại lệ."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "This request could not be opened."
+msgstr "Không mở được yêu cầu này."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"This route is not pointed at anywhere yet, so publishing it changes nothing "
+"until it is."
+msgstr ""
+"Lộ trình này chưa được trỏ vào nơi nào, nên ban hành nó chưa thay đổi điều "
+"gì cho đến khi được trỏ vào."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "This step would go to"
+msgstr "Bước này sẽ đến"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid ""
+"This workflow changed while you were editing. Reload to see the latest."
+msgstr ""
+"Luồng phê duyệt này đã thay đổi trong lúc bạn đang sửa. Hãy tải lại để thấy "
+"bản mới nhất."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "This workflow could not be opened"
+msgstr "Không mở được luồng phê duyệt này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "This workflow could not be opened."
+msgstr "Không mở được luồng phê duyệt này."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "This would be the first route ever published for this."
+msgstr "Đây sẽ là lộ trình đầu tiên từng được ban hành cho việc này."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"Tick each one to confirm. Your confirmations are recorded with the publish, "
+"under your name. Nothing here stops you — the business knows best."
+msgstr ""
+"Tích vào từng mục để xác nhận. Các xác nhận của bạn được lưu cùng lần ban "
+"hành, dưới tên bạn. Không có gì ở đây chặn bạn lại — doanh nghiệp hiểu rõ "
+"nhất."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/seed.py:0
+msgid "Time"
+msgstr "Giờ"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_leave
+msgid "Time off, of any kind."
+msgstr "Nghỉ phép, thuộc mọi loại."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid ""
+"Time-boxed, and it ends by itself. Every card says \"covering for\", and the"
+" decision is recorded under both names."
+msgstr ""
+"Có thời hạn rõ ràng và tự kết thúc. Mọi thẻ đều ghi \"trực thay cho\", và "
+"quyết định được lưu dưới cả hai tên."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "To"
+msgstr "Để"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Told along the way — never counted as a check."
+msgstr ""
+"Được báo tin dọc đường — không bao giờ được tính là một bước kiểm tra."
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_trip
+msgid "Travel for work, and what it costs."
+msgstr "Đi lại vì công việc, và chi phí kèm theo."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Try again now it is set up"
+msgstr "Thử lại, giờ đã thiết lập xong"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Try an example"
+msgstr "Thử một ví dụ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Try another word, or clear what you have chosen."
+msgstr "Thử một từ khác, hoặc xoá những lựa chọn đã chọn."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Turn it down"
+msgstr "Từ chối"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Turn this down"
+msgstr "Từ chối yêu cầu này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Turned down"
+msgstr "Đã từ chối"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Turned down. Whoever sent it in is told, with your reason."
+msgstr "Đã từ chối. Người gửi được báo tin, kèm lý do của bạn."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Under %s"
+msgstr "Dưới %s"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_unlock
+msgid "Unlock a locked day"
+msgstr "Mở khoá một ngày đã khoá"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Use this"
+msgstr "Dùng lựa chọn này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/scheme_panel.js:0
+msgid "Use whatever the rest of the company uses"
+msgstr "Dùng đúng lộ trình mà phần còn lại của công ty đang dùng"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Version"
+msgstr "Phiên bản"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Waiting for"
+msgstr "Đang chờ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Waiting for a decision"
+msgstr "Đang chờ quyết định"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_timesheet
+msgid "Weekly timesheet"
+msgstr "Bảng chấm công tuần"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "What are you asking for?"
+msgstr "Bạn đang xin điều gì?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "What changed, and who did it"
+msgstr "Điều gì đã thay đổi, và ai đã làm"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "What changes"
+msgstr "Những gì thay đổi"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_bands
+msgid "What each job is meant to pay, and the limits on a rise."
+msgstr "Mức lương dự kiến cho từng vị trí, và giới hạn khi tăng lương."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "What has been decided"
+msgstr "Những gì đã được quyết định"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "What has to be attached"
+msgstr "Những gì phải đính kèm"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_filing
+msgid "What is declared to the authorities each period."
+msgstr "Những gì được khai báo với cơ quan nhà nước mỗi kỳ."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "What is this group called?"
+msgstr "Nhóm này tên là gì?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "What must be attached?"
+msgstr "Phải đính kèm những gì?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "What needs a sign-off, and where?"
+msgstr "Việc gì cần ký duyệt, và ở đâu?"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_fx
+msgid "What one currency is worth in another, and what is set aside."
+msgstr ""
+"Một đồng tiền đổi được bao nhiêu đồng tiền khác, và khoản nào được dành sẵn."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "What should change?"
+msgstr "Cần thay đổi điều gì?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "What this does not do"
+msgstr "Việc này không làm điều gì"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "What was recorded"
+msgstr "Những gì đã được ghi lại"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/scheme_panel.xml:0
+msgid "What will happen"
+msgstr "Điều gì sẽ xảy ra"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid ""
+"When a request reaches your step it lands here, with the facts and "
+"everything attached."
+msgstr ""
+"Khi một yêu cầu đến bước của bạn, nó sẽ nằm ở đây, kèm đầy đủ dữ kiện và các"
+" tệp đính kèm."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "When is it due?"
+msgstr "Khi nào đến hạn?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"When the person holding a responsibility changes, new requests follow the "
+"change by themselves. Requests already under way keep the people they were "
+"given."
+msgstr ""
+"Khi người đảm nhiệm một trách nhiệm thay đổi, yêu cầu mới tự đi theo thay "
+"đổi đó. Những yêu cầu đang thực hiện dở vẫn giữ nguyên người đã được giao."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"Where a part of the business has nobody, the company-wide person covers it."
+msgstr ""
+"Nơi nào chưa có người, người phụ trách toàn công ty sẽ đảm nhiệm thay."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"Where an exception has been arranged, the person may approve with a written "
+"reason. The decision is marked \"an exception was used\", kept in the trail,"
+" and whoever looks after this route is told. It never lets one person fill "
+"two seats of a joint approval."
+msgstr ""
+"Nơi đã sắp xếp một ngoại lệ, người đó được phê duyệt kèm lý do viết ra. "
+"Quyết định sẽ được đánh dấu \"đã dùng một ngoại lệ\", lưu vào nhật ký, và "
+"người phụ trách lộ trình này được báo tin. Ngoại lệ không bao giờ cho một "
+"người giữ hai vị trí của cùng một lần phê duyệt chung."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Where this applies"
+msgstr "Nơi áp dụng"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,description:pb_approval_config.process_mappings
+msgid "Which field comes from where, and how often it is read."
+msgstr "Trường nào lấy từ đâu, và đọc lại bao lâu một lần."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Who covers"
+msgstr "Ai trực thay"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Who decides"
+msgstr "Ai quyết định"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Who fills each responsibility, where"
+msgstr "Ai đảm nhiệm từng trách nhiệm, ở đâu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Who holds it today"
+msgstr "Hiện ai đang đảm nhiệm"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Who is affected"
+msgstr "Những nơi bị ảnh hưởng"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Who is away"
+msgstr "Ai vắng mặt"
+
+#. module: pb_approval_config
+#: model:biz.approval.process,name:pb_approval_config.process_schememap
+msgid "Who is paid by which scheme"
+msgstr "Ai được trả theo phương án nào"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Who is the"
+msgstr "Ai là"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Who is told"
+msgstr "Ai được báo tin"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Who may not decide?"
+msgstr "Ai không được quyết định?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Who should decide this step?"
+msgstr "Ai nên quyết định bước này?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/palette.js:0
+msgid ""
+"Who signs off what, for each part of the business — and who stands in when "
+"they are away."
+msgstr "Ai duyệt việc gì, cho từng bộ phận — và ai đứng thay khi họ vắng mặt."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/picker_drawer.js:0
+msgid "Whoever gets to it first decides."
+msgstr "Ai tới trước thì người đó quyết định."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Whoever prepared or sent it in never decides their own. Recommended."
+msgstr ""
+"Người đã chuẩn bị hoặc gửi yêu cầu không bao giờ tự quyết định việc của "
+"mình. Nên dùng."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Whoever prepares it"
+msgstr "Người chuẩn bị yêu cầu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Whoever sent it in"
+msgstr "Người đã gửi yêu cầu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid ""
+"Whoever sent it in has to start again. When a correction would be enough, "
+"send it back instead."
+msgstr ""
+"Người gửi sẽ phải làm lại từ đầu. Nếu chỉ cần sửa là đủ, hãy trả lại thay vì"
+" từ chối."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Why (kept in the record)"
+msgstr "Lý do (lưu vào bản ghi)"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Why is it safe for you to approve this?"
+msgstr "Vì sao bạn duyệt việc này là an toàn?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Why this route?"
+msgstr "Vì sao là lộ trình này?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Why? (required)"
+msgstr "Lý do? (bắt buộc)"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid ""
+"With a written reason you may still approve it, and the decision is marked "
+"in the trail."
+msgstr ""
+"Kèm một lý do viết ra, bạn vẫn duyệt được, và quyết định sẽ được đánh dấu "
+"trong nhật ký."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Withdraw it"
+msgstr "Thu hồi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Withdrawn"
+msgstr "Đã thu hồi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Withdrawn by the person who sent it in"
+msgstr "Do người gửi thu hồi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Withdrawn."
+msgstr "Đã thu hồi."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Within a number of working days of each step"
+msgstr "Trong một số ngày làm việc kể từ mỗi bước"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Workflows"
+msgstr "Luồng phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Working days per step"
+msgstr "Số ngày làm việc cho mỗi bước"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Working it out…"
+msgstr "Đang tính…"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "Worth a look"
+msgstr "Đáng xem"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid ""
+"Write what should change. The person reading this is the one who has to fix "
+"it."
+msgstr ""
+"Hãy viết rõ cần thay đổi điều gì. Người đọc dòng này chính là người phải "
+"sửa."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid ""
+"Write why you are approving something you were part of. It is kept with the "
+"decision."
+msgstr ""
+"Hãy viết vì sao bạn duyệt một việc mà chính bạn có tham gia. Lý do được lưu "
+"cùng quyết định."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "Yes, and it is recorded"
+msgstr "Có, và việc đó được ghi lại"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "You are covering for"
+msgstr "Bạn đang trực thay cho"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid ""
+"You can arrange cover for yourself. Arranging it for somebody else is for "
+"whoever looks after approvals."
+msgstr ""
+"Bạn sắp xếp người trực thay cho chính mình được. Sắp xếp cho người khác là "
+"việc của người phụ trách phê duyệt."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid ""
+"You can take part in approvals, but setting them up is somebody else's job. "
+"Ask whoever looks after approvals."
+msgstr ""
+"Bạn tham gia phê duyệt được, nhưng việc thiết lập thuộc về người khác. Hãy "
+"hỏi người phụ trách phê duyệt."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "You cannot approve this one"
+msgstr "Bạn không duyệt được trường hợp này"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "You cannot see that company."
+msgstr "Bạn không xem được công ty đó."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "You prepared this."
+msgstr "Bạn đã chuẩn bị việc này."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "You sent this in."
+msgstr "Bạn đã gửi yêu cầu này."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid ""
+"You were part of this, so an exception is being used. Your name, your reason"
+" and the exception are all kept with the decision, and whoever looks after "
+"this route is told."
+msgstr ""
+"Bạn có tham gia việc này, nên một ngoại lệ đang được dùng. Tên bạn, lý do "
+"của bạn và ngoại lệ đó đều được lưu cùng quyết định, và người phụ trách lộ "
+"trình này được báo tin."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Your approvals could not be read"
+msgstr "Không đọc được các mục phê duyệt của bạn"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Your approvals could not be read."
+msgstr "Không đọc được các mục phê duyệt của bạn."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid ""
+"Your choice. The Matrix row will say \"No approval needed\" so nobody has to"
+" open this to find out. Add a step to bring a check back."
+msgstr ""
+"Đây là lựa chọn của bạn. Dòng trên Ma trận sẽ ghi \"Không cần phê duyệt\" để"
+" không ai phải mở vào đây mới biết. Thêm một bước để có lại một lần kiểm "
+"tra."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Your turn"
+msgstr "Đến lượt bạn"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "a group of people"
+msgstr "một nhóm người"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "always"
+msgstr "luôn luôn"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "an exception was used"
+msgstr "đã dùng một ngoại lệ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "and"
+msgstr "và"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "and nothing else"
+msgstr "và không điều kiện nào khác"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "any member of %s"
+msgstr "bất kỳ thành viên nào của %s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "any one of %s"
+msgstr "bất kỳ ai trong %s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "approved"
+msgstr "đã duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "approves"
+msgstr "phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "characters, so it means something to whoever reads it."
+msgstr "ký tự, để người đọc còn hiểu được."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "covering"
+msgstr "đang trực thay"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "covering for"
+msgstr "trực thay cho"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "covers for"
+msgstr "trực thay cho"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "each part of the business needs its own person"
+msgstr "mỗi bộ phận cần có người riêng"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "for"
+msgstr "cho"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "for any amount"
+msgstr "với mọi số tiền"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "from %s"
+msgstr "từ %s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "gives final approval"
+msgstr "phê duyệt cuối"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "is"
+msgstr "là"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "is at least"
+msgstr "ít nhất là"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "is at most"
+msgstr "nhiều nhất là"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "is holding your seats until"
+msgstr "đang giữ các vị trí của bạn đến"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "is less than"
+msgstr "nhỏ hơn"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "is more than"
+msgstr "lớn hơn"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "is no"
+msgstr "là không"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "is not"
+msgstr "không phải là"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "is not one of"
+msgstr "không thuộc nhóm"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "is one of"
+msgstr "thuộc nhóm"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "is yes"
+msgstr "là có"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "it is applied at once and recorded"
+msgstr "việc đó được áp dụng ngay và ghi lại"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "keep the route they were given"
+msgstr "giữ nguyên lộ trình đã được giao"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "moved it to somebody else"
+msgstr "đã chuyển sang người khác"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "must all approve"
+msgstr "đều phải phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "no approval needed"
+msgstr "không cần phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "one part of the business"
+msgstr "một bộ phận"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "only when"
+msgstr "chỉ khi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "only when its route is published"
+msgstr "chỉ khi lộ trình của nó đã được ban hành"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "place(s) cannot be used yet."
+msgstr "nơi chưa dùng được."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "place(s) have nobody named."
+msgstr "nơi chưa chỉ định ai."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid ""
+"published route(s) reach a part of the business where nobody is named. "
+"Requests from there will stop until somebody is."
+msgstr ""
+"lộ trình đã ban hành chạm tới một bộ phận chưa chỉ định ai. Yêu cầu từ đó sẽ"
+" dừng lại cho đến khi có người được chỉ định."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "reviews it"
+msgstr "rà soát"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "says so"
+msgstr "ghi rõ như vậy"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "seat(s) have nobody in them:"
+msgstr "vị trí đang bỏ trống:"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "sent it back"
+msgstr "đã trả lại"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "since"
+msgstr "kể từ khi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "somebody"
+msgstr "một người"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "the %s"
+msgstr "%s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "the %s for its part of the business"
+msgstr "%s của bộ phận tương ứng"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "the company-wide person covers a part of the business that has nobody"
+msgstr "người phụ trách toàn công ty đảm nhiệm thay cho bộ phận chưa có ai"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid ""
+"the feature behind it is wired up, so nothing here pretends to be protecting"
+" something it is not. Any process may be set to"
+msgstr ""
+"tính năng đằng sau nó đã được nối, nên không có gì ở đây giả vờ là đang bảo "
+"vệ thứ mà nó không bảo vệ. Mọi quy trình đều có thể đặt thành"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "the team"
+msgstr "nhóm"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "their manager"
+msgstr "quản lý của họ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "their manager's manager"
+msgstr "quản lý của quản lý họ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "thing(s) to confirm"
+msgstr "điều cần xác nhận"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "to"
+msgstr "đến"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "turned it down"
+msgstr "đã từ chối"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "until"
+msgstr "đến"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+msgid "uses for"
+msgstr "dùng cho"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "v%s"
+msgstr "v%s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "waiting for you ·"
+msgstr "đang chờ bạn ·"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "withdrew it"
+msgstr "đã thu hồi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid ""
+"·\n"
+"                  sent in by"
+msgstr ""
+"·\n"
+"                  người gửi"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "%s payslip"
+msgstr "%s phiếu lương"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "%s payslips"
+msgstr "%s phiếu lương"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "%s person"
+msgstr "%s người"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "%s people"
+msgstr "%s người"
+
+# =====================================================================
+#  Approval Matrix phase 6 — whose queue is being looked at, and the
+#  queue the Workforce dock now reads from the same place.
+# =====================================================================
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Mine"
+msgstr "Của tôi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "My team"
+msgstr "Nhóm của tôi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Everyone"
+msgstr "Tất cả mọi người"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Everything I am part of"
+msgstr "Mọi việc tôi có liên quan"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "The whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_approval_config
+msgid ""
+"Only somebody who looks after approvals can see every request in the company."
+msgstr ""
+"Chỉ người phụ trách phê duyệt mới xem được mọi yêu cầu trong công ty."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "This is no longer waiting for a decision."
+msgstr "Việc này không còn chờ quyết định nữa."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "No step is waiting for a decision on this."
+msgstr "Không có bước nào đang chờ quyết định cho việc này."
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_approval_config
+msgid "\"%(who)s\" in the %(column)s column is not a responsibility this app knows, so that step was left out."
+msgstr "“%(who)s” ở cột %(column)s không phải là trách nhiệm mà ứng dụng biết, nên bước đó đã được bỏ qua."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid "%(drafts)s draft route(s) made from %(rows)s row(s). Nothing is in force until somebody publishes it."
+msgstr "Đã tạo %(drafts)s lộ trình nháp từ %(rows)s dòng. Chưa có gì có hiệu lực cho đến khi được công bố."
+
+#. module: pb_approval_config
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid "%s (from the spreadsheet)"
+msgstr "%s (từ bảng tính)"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid "Final approver"
+msgstr "Người duyệt cuối"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/data/roles_p7.xml:0
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid "From the approval matrix spreadsheet: %s"
+msgstr "Từ bảng tính ma trận phê duyệt: %s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/data/roles_p6.xml:0
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/data/roles_p6.xml:0
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid "Pick somebody with an account."
+msgstr "Hãy chọn một người có tài khoản."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/data/roles_p7.xml:0
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Proposed from the spreadsheet · choose the account"
+msgstr "Đề xuất từ bảng tính · hãy chọn tài khoản"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/tests/test_p7_import.py:0
+msgid "Reviewer"
+msgstr "Người rà soát"
+
+#. module: pb_approval_config
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_approval_config
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_approval_config
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid "Spreadsheets cannot be read on this server yet. Ask whoever looks after it to add the spreadsheet reader."
+msgstr "Máy chủ này chưa đọc được bảng tính. Hãy nhờ người phụ trách bổ sung trình đọc bảng tính."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid "That file could not be read."
+msgstr "Không đọc được tệp đó."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid "That file is empty."
+msgstr "Tệp đó rỗng."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid "That file is not a spreadsheet this app can read. Save it as an .xlsx and try again."
+msgstr "Tệp đó không phải bảng tính mà ứng dụng đọc được. Hãy lưu dưới dạng .xlsx rồi thử lại."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid "That proposed person is no longer here."
+msgstr "Người được đề xuất đó không còn ở đây."
+
+#. module: pb_approval_config
+msgid "That sheet has no \"Transaction / Object\" column, so there is no way to tell what each row is about."
+msgstr "Trang tính đó không có cột “Transaction / Object”, nên không thể biết mỗi dòng nói về việc gì."
+
+#. module: pb_approval_config
+msgid "The spreadsheet says: %s. Limits are set where the process itself is configured, never as a condition invented from this text."
+msgstr "Bảng tính ghi: %s. Hạn mức được đặt ở nơi cấu hình chính quy trình đó, không bao giờ là điều kiện suy ra từ dòng chữ này."
+
+#. module: pb_approval_config
+msgid "The turnaround \"%s\" could not be read as a number of days, so no chase-up date was set."
+msgstr "Không đọc được thời hạn “%s” thành số ngày, nên chưa đặt ngày nhắc."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid "There is no place in the list for this yet."
+msgstr "Danh sách chưa có mục cho việc này."
+
+#. module: pb_approval_config
+msgid "This workbook has no sheet called \"%s\". Rename the tab and try again — everything else about the file is fine."
+msgstr "Sổ tính này không có trang tên “%s”. Hãy đổi tên thẻ rồi thử lại — mọi thứ khác của tệp đều ổn."
+
+#. module: pb_approval_config
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_approval_config
+msgid "your approver"
+msgstr "người phê duyệt của bạn"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_approval_config
+msgid "About"
+msgstr "Về"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Decided with %s"
+msgstr "Được quyết định cùng %s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/sentence.js:0
+msgid "Decided with another"
+msgstr "Quyết định cùng mục khác"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "It could not be moved."
+msgstr "Không chuyển được."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Move it"
+msgstr "Chuyển đi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Move it to somebody else"
+msgstr "Chuyển cho người khác"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Moved. It is with them now."
+msgstr "Đã chuyển. Việc này đang ở chỗ họ."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Say what is wrong with the seat it is on — away, left, or the only person named is the one who sent it in."
+msgstr "Hãy nêu vấn đề với vị trí đang giữ việc này — nghỉ phép, đã nghỉ việc, hoặc người duy nhất được nêu chính là người đã gửi."
+
+#. module: pb_approval_config
+msgid "Say why you are moving this to somebody else. It is kept with the request, and the person who gets it reads it."
+msgstr "Hãy nêu lý do bạn chuyển việc này cho người khác. Lý do được lưu cùng yêu cầu và người nhận sẽ đọc được."
+
+#. module: pb_approval_config
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/picker_drawer.js:0
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "The step goes to the person you choose, and the one it was with stops waiting. Your name and your reason are kept with the request, and the person who gets it reads them."
+msgstr "Bước này chuyển sang người bạn chọn, và người đang giữ sẽ thôi chờ. Tên và lý do của bạn được lưu cùng yêu cầu, và người nhận sẽ đọc được."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/migrations/19.0.1.5.1/end-heal_half_laid.py:0
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/builder.js:0
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Who should decide it instead?"
+msgstr "Ai sẽ quyết định thay?"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
+msgid "Why is it moving? (required)"
+msgstr "Vì sao chuyển? (bắt buộc)"

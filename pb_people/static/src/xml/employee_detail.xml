@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_people.PbEmployeeDetail">
+    <div class="pbim emp pbim-page ppl-detail">
+
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading employee…</span></div>
+
+      <div t-elif="d.error" class="pbim-wrap">
+        <div class="pbim-panel"><div class="pbim-empty"><t t-esc="d.error"/></div>
+          <div style="text-align:center"><button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Back to Employees</button></div></div>
+      </div>
+
+      <div t-else="" class="pbim-wrap ppl-d-wrap">
+
+        <!-- top bar -->
+        <div class="ppl-d-top">
+          <button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Employees</button>
+          <div class="sp"/>
+          <button class="pbim-btn outline" t-on-click="newContract"><t t-out="ic('plus',15)"/> New contract</button>
+          <button class="pbim-btn outline" t-on-click="openAdvancedForm"><t t-out="ic('settings',15)"/> Advanced form</button>
+        </div>
+
+        <!-- hero -->
+        <div class="pbim-hero ppl-d-hero">
+          <div class="pbim-hero-av ppl-d-av" t-attf-style="background-image:url({{ d.avatar }})"><span t-if="!d.avatar" t-esc="d.initials"/></div>
+          <div class="pbim-hero-id">
+            <div class="nm" t-esc="d.name"/>
+            <div class="mt"><t t-esc="d.job"/> · <t t-esc="d.dept"/></div>
+            <div class="pbim-hero-chips">
+              <span t-if="d.email" class="pbim-chip"><t t-out="ic('user',13)"/> <t t-esc="d.email"/></span>
+              <span t-if="d.phone" class="pbim-chip"><t t-out="ic('receipt',13)"/> <t t-esc="d.phone"/></span>
+              <span t-if="d.manager" class="pbim-chip"><t t-out="ic('users',13)"/> <t t-esc="d.manager"/></span>
+              <span t-if="d.join_date" class="pbim-chip"><t t-out="ic('calendar',13)"/> Joined <t t-esc="d.join_date"/></span>
+              <span t-if="d.country" class="pbim-chip"><t t-out="ic('briefcase',13)"/> <t t-esc="d.country"/></span>
+            </div>
+          </div>
+          <div class="ppl-d-state">
+            <span t-attf-class="pbim-badge {{ cCls(d.contract.state) }}"><span class="d"/><t t-esc="d.contract.state_label"/></span>
+          </div>
+        </div>
+
+        <!-- stat tiles -->
+        <div class="ppl-d-stats">
+          <div class="pbim-stat"><span class="n" t-esc="d.tenure_label"/><span class="l">Tenure</span></div>
+          <div class="pbim-stat"><span class="n money" t-esc="money(d.contract.wage)"/><span class="l">Monthly wage</span></div>
+          <div t-attf-class="pbim-stat {{ d.contract.days_to_expiry !== null and d.contract.days_to_expiry &lt;= 30 ? 'err' : '' }}">
+            <span class="n" t-esc="d.contract.days_to_expiry !== null ? d.contract.days_to_expiry + 'd' : '—'"/><span class="l">To contract end</span></div>
+          <div t-attf-class="pbim-stat {{ d.statutory.bank ? 'ok' : 'err' }}"><span class="n"><t t-out="ic(d.statutory.bank ? 'checkCircle' : 'alert', 22)"/></span><span class="l">Bank on file</span></div>
+        </div>
+
+        <!-- contract lifecycle rail -->
+        <div class="pbim-panel ppl-d-railpanel">
+          <div class="pbim-panel-h"><h2 class="pbim-h2">Contract lifecycle</h2>
+            <span t-if="d.contract.structure" class="pbim-chip"><t t-out="ic('sigma',13)"/> <t t-esc="d.contract.structure"/></span></div>
+          <div class="pbim-rail">
+            <t t-foreach="d.pipeline" t-as="s" t-key="s.key">
+              <div t-attf-class="pbim-rail-step {{ s.current ? 'cur' : (s.done ? 'done' : '') }}">
+                <span class="pbim-rail-dot"><t t-if="s.done"><t t-out="ic('check',14)"/></t><t t-else="" t-esc="s_index+1"/></span>
+                <span class="pbim-rail-lab" t-esc="s.label"/>
+              </div>
+              <div t-if="!s_last" t-attf-class="pbim-rail-bar {{ s.done ? 'done' : '' }}"/>
+            </t>
+          </div>
+          <div t-if="d.contract.date_start" class="ppl-d-period">
+            <t t-esc="d.contract.date_start"/> <t t-if="d.contract.date_end">→ <t t-esc="d.contract.date_end"/></t><t t-else="">→ indefinite</t>
+          </div>
+        </div>
+
+        <!-- two columns: smart links + statutory -->
+        <div class="ppl-d-cols">
+          <div class="pbim-panel">
+            <div class="pbim-panel-h"><h2 class="pbim-h2">Records</h2></div>
+            <div class="ppl-d-links">
+              <button class="ppl-d-link" t-on-click="openPayslips">
+                <span class="ic"><t t-out="ic('receipt',18)"/></span>
+                <span class="n" t-esc="d.counts.payslips"/><span class="l">Payslips</span>
+                <span class="ar"><t t-out="ic('arrow',15)"/></span>
+              </button>
+              <button class="ppl-d-link" t-on-click="openContracts">
+                <span class="ic"><t t-out="ic('file',18)"/></span>
+                <span class="n" t-esc="d.counts.contracts"/><span class="l">Contracts</span>
+                <span class="ar"><t t-out="ic('arrow',15)"/></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="pbim-panel">
+            <div class="pbim-panel-h"><h2 class="pbim-h2">Statutory readiness</h2></div>
+            <div class="ppl-d-stat-rows">
+              <div class="ppl-d-srow"><span class="k">Bank details</span>
+                <span t-attf-class="pbim-badge {{ d.statutory.bank ? 'ok' : 'err' }}"><t t-esc="d.statutory.bank ? (d.statutory.bank_name or 'On file') : 'Missing'"/></span></div>
+              <div class="ppl-d-srow"><span class="k">Income tax (PIT)</span>
+                <span t-attf-class="pbim-badge {{ d.statutory.tax ? 'ok' : 'muted' }}"><t t-esc="d.statutory.tax ? 'Subject' : 'Not set'"/></span></div>
+              <div class="ppl-d-srow"><span class="k">Social insurance</span>
+                <span t-attf-class="pbim-badge {{ d.statutory.insurance ? 'ok' : 'muted' }}"><t t-esc="d.statutory.insurance ? 'Enrolled' : 'Not set'"/></span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </t>
+
+</templates>

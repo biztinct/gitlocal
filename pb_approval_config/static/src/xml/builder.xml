@@ -1,0 +1,1011 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The workflow builder, and the drawer that answers "who decides this?".
+
+       Comments are ruled with `=`, never a doubled hyphen: two hyphens
+       inside an XML comment is a PARSE ERROR that takes the whole file down.
+
+       `t-if` / `t-elif` / `t-else` are ADJACENT siblings with no comment
+       between them, and no expression says `not` — OWL leaves `not` alone
+       and it compiles to a SyntaxError. Every negation here is `!`.
+
+       No loop variable is named lt / gt / lte / gte / and / or / not / in:
+       the step loop is `st`, the person loop is `pn`, the issue loop is `is`,
+       the band loop is `bd`, the fact loop is `ft`, the role loop is `rl`,
+       the label loop is `lb`, the trace loop is `tr`, the coverage loop is
+       `cv`, the difference loop is `df`, the warning loop is `wn`, the
+       evidence loop is `ev`, the mode loop is `md`, the cell loop is `cl`.
+       ==================================================================== -->
+
+  <t t-name="pb_approval_config.ApprovalBuilder">
+    <div class="pbam-builder">
+
+      <div t-if="state.loading" class="pbim-busy">
+        <div class="pbim-spin"/><span>Opening the workflow…</span>
+      </div>
+
+      <div t-elif="state.failed" class="pbim-empty pbam-empty">
+        <div class="pbam-empty-ic"><t t-out="ic('alert',30)"/></div>
+        <h3>This workflow could not be opened</h3>
+        <p t-esc="state.failed"/>
+        <button class="pbim-btn ghost" t-on-click="() => this.props.onBack()">Back to the Matrix</button>
+      </div>
+
+      <t t-else="">
+
+        <!-- ======================================== the header -->
+        <div class="pbam-bhead">
+          <button class="pbam-iconbtn" title="Back to the Matrix"
+                  t-on-click="() => this.props.onBack()">
+            <t t-out="ic('back',16)"/>
+          </button>
+          <h1 class="pbam-bname" contenteditable="true" spellcheck="false"
+              t-on-blur="renameWorkflow" t-esc="workflow.name"/>
+          <span t-if="state.published" class="pbim-badge pbam-ok">In use</span>
+          <span t-else="" class="pbim-badge pbam-muted">Draft</span>
+          <span t-if="state.data.published" class="pbim-badge pbam-blue">
+            In use now: v<t t-esc="state.data.published.revision"/>
+          </span>
+          <span class="pbim-badge pbam-info">
+            <t t-out="ic('building',11)"/> <span t-esc="workflow.company_name"/>
+          </span>
+          <span t-if="!workflow.connected" class="pbim-badge pbam-blue">Not wired up yet</span>
+          <span class="pbam-saved">
+            <t t-out="ic('check',13)"/> <span t-esc="state.saved"/>
+          </span>
+        </div>
+
+        <!-- ====================================== the four steps -->
+        <div class="pbam-progress">
+          <t t-foreach="progress" t-as="st" t-key="st.n">
+            <button class="pbam-pstep"
+                    t-att-class="{ 'is-on': state.step === st.n, 'is-done': state.step > st.n }"
+                    t-on-click="() => this.goto(st.n)">
+              <i><t t-if="state.step > st.n" t-out="ic('check',12)"/><t t-else="" t-esc="st.n"/></i>
+              <span t-esc="st.label"/>
+            </button>
+            <span t-if="st.n &lt; 4" class="pbam-bar"/>
+          </t>
+        </div>
+
+        <!-- ========================================== 1 · purpose -->
+        <div t-if="state.step === 1" class="pbam-bgrid">
+          <div class="pbam-bcol">
+            <div class="pbim-panel">
+              <div class="pbim-panel-h">
+                <div>
+                  <h2 class="pbim-h2">What needs a sign-off, and where?</h2>
+                  <p class="pbim-sub">Answer in your own words. Everything can change later.</p>
+                </div>
+              </div>
+              <div class="pbam-form2">
+                <div class="pbam-field pbam-wide">
+                  <label>Name</label>
+                  <input class="pbam-input" t-att-value="workflow.name"
+                         t-on-change="renameWorkflow"/>
+                </div>
+                <div class="pbam-field">
+                  <label>Kind of request</label>
+                  <input class="pbam-input" t-att-value="workflow.process_name" disabled="1"/>
+                </div>
+                <div class="pbam-field">
+                  <label>Company</label>
+                  <input class="pbam-input" t-att-value="workflow.company_name" disabled="1"/>
+                </div>
+              </div>
+            </div>
+
+            <div class="pbim-note pbam-note">
+              <t t-out="ic('info',13)"/>
+              <span>This is the route <b t-esc="workflow.company_name"/> uses for <b t-esc="workflow.process_name"/>. Every part of the business follows it unless one is given a route of its own, which is done from the Matrix row rather than here.</span>
+            </div>
+
+            <div t-if="!workflow.connected" class="pbim-note pbam-note-amber">
+              <t t-out="ic('alert',13)"/>
+              <span>This kind of request is not wired up to approvals yet, so you can write the route now but publishing waits until it is. Nothing here pretends to be protecting it in the meantime.</span>
+            </div>
+
+            <div class="pbam-bfoot">
+              <span/>
+              <button class="pbim-btn primary" t-on-click="() => this.goto(2)">
+                <span>Continue</span> <t t-out="ic('arrowRight',14)"/>
+              </button>
+            </div>
+          </div>
+
+          <aside class="pbam-ex">
+            <div class="pbam-exh"><h2>How "where" works</h2></div>
+            <div class="pbam-ladder2">
+              <div class="pbam-l"><span class="pbam-k">1 · wins</span><span>One part of the business</span></div>
+              <div class="pbam-l"><span class="pbam-k">2</span><span>The whole company</span></div>
+            </div>
+            <p class="pbim-sub">The most specific always wins. Two routes covering exactly the same place are refused when you publish, so a request can never see two.</p>
+            <div class="pbim-note pbam-note">
+              <t t-out="ic('users',13)"/>
+              <span>People are kept apart from the route. "HR lead" is worked out per part of the business from People &amp; backups, so one shared route still gives each part its own approver.</span>
+            </div>
+          </aside>
+        </div>
+
+        <!-- =========================================== 2 · people -->
+        <div t-elif="state.step === 2" class="pbam-bgrid">
+          <div class="pbam-bcol">
+
+            <p class="pbam-sentence" t-esc="state.summary"/>
+
+            <div class="pbam-subm">
+              <span class="pbam-k">Sent in by</span>
+              <span class="pbim-chip pbam-chip-plain">
+                <t t-out="ic('user',12)"/> <span>Whoever prepares it</span>
+              </span>
+              <span class="pbim-sub">Not part of the sequence</span>
+            </div>
+
+            <div class="pbam-steps">
+              <div t-foreach="steps" t-as="st" t-key="st.key" class="pbam-stepw">
+
+                <t t-if="st.kind === 'fast'">
+                  <div class="pbam-num pbam-num-fast"><t t-out="ic('zap',14)"/></div>
+                  <div class="pbam-step pbam-step-fast">
+                    <div class="pbam-sh">
+                      <div>
+                        <div class="pbam-st">No approval needed</div>
+                        <div class="pbam-kind" t-esc="kindLabel('fast')"/>
+                      </div>
+                      <div class="pbam-acts">
+                        <button title="Remove" t-on-click="() => this.removeFast(st.key)">
+                          <t t-out="ic('trash',15)"/>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="pbim-note pbam-note">
+                      <t t-out="ic('info',13)"/>
+                      <span>Your choice. The Matrix row will say "No approval needed" so nobody has to open this to find out. Add a step to bring a check back.</span>
+                    </div>
+                  </div>
+                </t>
+
+                <t t-else="">
+                  <div class="pbam-num" t-att-class="{ 'pbam-num-n': st.kind === 'notify' }">
+                    <t t-if="st.kind === 'notify'" t-out="ic('bell',14)"/>
+                    <t t-else="" t-esc="stepNumber(st)"/>
+                  </div>
+                  <div class="pbam-step" t-att-class="{ 'pbam-step-notify': st.kind === 'notify' }">
+
+                    <div class="pbam-sh">
+                      <div>
+                        <div class="pbam-st" contenteditable="true" spellcheck="false"
+                             t-on-blur="(ev) => this.renameStep(st.key, ev)" t-esc="st.title"/>
+                        <div class="pbam-kind" t-esc="kindLabel(st.kind)"/>
+                      </div>
+                      <div class="pbam-acts">
+                        <button title="Move up" t-att-disabled="st_index === 0"
+                                t-on-click="() => this.moveStep(st_index, -1)">
+                          <t t-out="ic('chevronUp',16)"/>
+                        </button>
+                        <button title="Move down" t-att-disabled="st_index === steps.length - 1"
+                                t-on-click="() => this.moveStep(st_index, 1)">
+                          <t t-out="ic('chevronDown',16)"/>
+                        </button>
+                        <button title="Remove" t-on-click="() => this.removeStep(st.key)">
+                          <t t-out="ic('trash',15)"/>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="pbam-who">
+                      <span class="pbam-k">
+                        <t t-if="st.kind === 'notify'">Who is told</t>
+                        <t t-else="">Who decides</t>
+                      </span>
+                      <span t-if="st.kind === 'notify'" class="pbim-chip pbam-chip-plain"
+                            t-esc="whoOf(st)"/>
+                      <button t-else="" class="pbim-chip pbam-chip-act"
+                              title="Change who decides this"
+                              t-on-click="() => this.openPicker(st.key)">
+                        <span t-esc="whoOf(st)"/> <t t-out="ic('pencil',12)"/>
+                      </button>
+
+                      <span class="pbam-resolved">
+                        <t t-set="row" t-value="previewOf(st.key)"/>
+                        <t t-if="row and row.people.length">
+                          <span t-foreach="row.people" t-as="pn" t-key="pn.user_id" class="pbam-person">
+                            <t t-out="ic('arrowRight',12)"/>
+                            <span class="pbam-av pbam-av-sm" t-esc="initials(pn.name)"/>
+                            <span class="pbam-pname" t-esc="pn.name"/>
+                          </span>
+                        </t>
+                        <span t-elif="row and row.issue" class="pbim-badge pbam-err">
+                          <t t-out="ic('userX',11)"/> <span t-esc="row.issue.msg"/>
+                        </span>
+                      </span>
+                    </div>
+
+                    <div t-if="st.who.mode === 'people' and st.who.user_ids.length > 1"
+                         class="pbam-seats">
+                      <span class="pbim-seg">
+                        <button class="pbim-segbtn" t-att-class="{ 'is-on': st.who.all }"
+                                t-on-click="() => this.setSeatMode(st.key, true)">Everyone must approve</button>
+                        <button class="pbim-segbtn" t-att-class="{ 'is-on': !st.who.all }"
+                                t-on-click="() => this.setSeatMode(st.key, false)">Any one of them</button>
+                      </span>
+                    </div>
+
+                    <div t-if="st.kind !== 'notify'" class="pbam-cond">
+                      <t t-out="ic('filter',13)"/>
+                      <span>Include this step</span>
+                      <select t-if="tiers.enabled" class="pbam-input pbam-input-sm"
+                              t-on-change="(ev) => this.setMinAmount(st.key, ev)">
+                        <option t-foreach="ladderAmounts" t-as="bd" t-key="bd.value"
+                                t-att-value="bd.value"
+                                t-att-selected="st.min_amount === bd.value"
+                                t-esc="bd.label"/>
+                      </select>
+                      <select class="pbam-input pbam-input-sm"
+                              t-on-change="(ev) => this.setCondition(st.key, ev)">
+                        <option value=""
+                                t-att-selected="!st.condition">
+                          <t t-if="tiers.enabled">and nothing else</t>
+                          <t t-else="">always</t>
+                        </option>
+                        <option t-foreach="conditionFacts" t-as="ft" t-key="ft.key"
+                                t-att-value="ft.key"
+                                t-att-selected="st.condition and st.condition.fact === ft.key">
+                          only when <t t-esc="ft.label"/> says so
+                        </option>
+                      </select>
+                      <select t-if="st.condition" class="pbam-input pbam-input-sm"
+                              t-on-change="(ev) => this.setConditionValue(st.key, ev)">
+                        <option value="true" t-att-selected="st.condition.value === true">is yes</option>
+                        <option value="false" t-att-selected="st.condition.value === false">is no</option>
+                      </select>
+                    </div>
+
+                    <div t-if="st.include_reason" class="pbim-sub" t-esc="st.include_reason"/>
+                  </div>
+                </t>
+              </div>
+            </div>
+
+            <!-- ==================================== add a step -->
+            <div class="pbam-addrow">
+              <button class="pbim-btn ghost" t-on-click="() => { state.addMenu = !state.addMenu; }">
+                <t t-out="ic('plus',15)"/> <span>Add a step</span>
+              </button>
+              <span class="pbim-sub">Steps run in order. The arrows on each card move them.</span>
+              <div t-if="state.addMenu" class="pbam-addmenu">
+                <button t-foreach="addItems" t-as="md" t-key="md.key"
+                        t-on-click="() => this.addStep(md.key)">
+                  <span class="pbam-icsq"><t t-out="ic(md.icon,15)"/></span>
+                  <span>
+                    <span class="pbam-mt" t-esc="md.title"/>
+                    <span class="pbam-ms" t-esc="md.sub"/>
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <!-- ================================ route by amount -->
+            <div t-if="!steps.some(one => one.kind === 'fast')" class="pbam-tiers">
+              <div class="pbam-th">
+                <label class="pbam-switch" t-att-class="{ 'is-on': tiers.enabled }"
+                       t-on-click="() => this.toggleTiers()">
+                  <i/><span class="pbam-mt">Route by amount</span>
+                </label>
+                <span class="pbim-sub">
+                  <t t-if="tiers.enabled">Small amounts stay light; big ones bring in more people. Set the amount on each step.</t>
+                  <t t-else="">Off — every step applies whatever the amount.</t>
+                </span>
+                <t t-if="tiers.enabled">
+                  <span class="pbam-sp"/>
+                  <span class="pbim-sub">Amount taken from</span>
+                  <select class="pbam-input pbam-input-sm" t-on-change="setTierFact">
+                    <option t-foreach="numericFacts" t-as="ft" t-key="ft.key"
+                            t-att-value="ft.key" t-att-selected="tiers.fact === ft.key"
+                            t-esc="ft.label"/>
+                  </select>
+                </t>
+              </div>
+              <div t-if="tiers.enabled" class="pbam-ladder">
+                <div t-foreach="bands" t-as="bd" t-key="bd_index"
+                     class="pbam-band" t-att-class="{ 'is-hit': bd.hit }">
+                  <div class="pbam-band-a" t-esc="bd.label"/>
+                  <div class="pbam-band-r">
+                    <t t-foreach="bd.route" t-as="lb" t-key="lb_index">
+                      <span t-if="lb_index" class="pbam-ar"><t t-out="ic('arrowRight',11)"/></span>
+                      <span t-esc="lb"/>
+                    </t>
+                  </div>
+                </div>
+              </div>
+              <p t-if="tiers.enabled" class="pbim-sub">Amounts are compared in the money the request is in. Requests in different currencies are never added together.</p>
+            </div>
+
+            <div class="pbam-bfoot">
+              <button class="pbim-btn ghost" t-on-click="() => this.goto(1)">
+                <t t-out="ic('back',14)"/> <span>Back</span>
+              </button>
+              <button class="pbim-btn primary" t-on-click="() => this.goto(3)">
+                <span>Continue to safeguards</span> <t t-out="ic('arrowRight',14)"/>
+              </button>
+            </div>
+          </div>
+
+          <t t-call="pb_approval_config.ExamplePanel"/>
+        </div>
+
+        <!-- ======================================= 3 · safeguards -->
+        <div t-elif="state.step === 3" class="pbam-bgrid">
+          <div class="pbam-bcol">
+            <div class="pbam-sggrid">
+
+              <div class="pbam-sg">
+                <h3><t t-out="ic('shieldCheck',18)"/> <span>Who may not decide?</span></h3>
+                <div class="pbam-opt">
+                  <label class="pbam-radio" t-att-class="{ 'is-on': safeguards.independent }"
+                         t-on-click="() => this.setIndependent(true)">
+                    <i/>
+                    <span>
+                      <span class="pbam-mt">Somebody independent must decide</span>
+                      <span class="pbam-ms">Whoever prepared or sent it in never decides their own. Recommended.</span>
+                    </span>
+                  </label>
+                  <label class="pbam-radio" t-att-class="{ 'is-on': !safeguards.independent }"
+                         t-on-click="() => this.setIndependent(false)">
+                    <i/>
+                    <span>
+                      <span class="pbam-mt">No independence rule</span>
+                      <span class="pbam-ms">Anybody named may decide, even their own work. Not recommended where money is involved.</span>
+                    </span>
+                  </label>
+                </div>
+                <div class="pbam-row">
+                  <label class="pbam-switch"
+                         t-att-class="{ 'is-on': safeguards.self_exception.enabled }"
+                         t-on-click="() => this.toggleSelfException()">
+                    <i/><span>Allow named exceptions to that rule</span>
+                  </label>
+                </div>
+                <div t-if="safeguards.self_exception.enabled" class="pbim-note pbam-note-amber">
+                  <t t-out="ic('flag',13)"/>
+                  <span>Where an exception has been arranged, the person may approve with a written reason. The decision is marked "an exception was used", kept in the trail, and whoever looks after this route is told. It never lets one person fill two seats of a joint approval.</span>
+                </div>
+                <div class="pbam-field">
+                  <label>If the same person comes up at two steps</label>
+                  <select class="pbam-input" t-on-change="setRepeated">
+                    <option value="different" t-att-selected="safeguards.repeated === 'different'">Send the later step to their backup</option>
+                    <option value="reason" t-att-selected="safeguards.repeated === 'reason'">Allow it, with a written reason each time</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="pbam-sg">
+                <h3><t t-out="ic('paperclip',18)"/> <span>What must be attached?</span></h3>
+                <div t-foreach="safeguards.evidence" t-as="ev" t-key="ev_index" class="pbam-evrow">
+                  <span class="pbam-cb" t-att-class="{ 'is-on': ev.on }"
+                        t-on-click="() => this.toggleEvidence(ev_index)">
+                    <t t-if="ev.on" t-out="ic('check',12)"/>
+                  </span>
+                  <input class="pbam-input pbam-input-sm" t-att-value="ev.name"
+                         t-on-change="(event) => this.renameEvidence(ev_index, 'name', event)"/>
+                  <input class="pbam-input pbam-input-sm" t-att-value="ev.when"
+                         t-on-change="(event) => this.renameEvidence(ev_index, 'when', event)"/>
+                  <button class="pbam-iconbtn" title="Remove"
+                          t-on-click="() => this.removeEvidence(ev_index)">
+                    <t t-out="ic('trash',14)"/>
+                  </button>
+                </div>
+                <p t-if="!safeguards.evidence.length" class="pbim-sub">Nothing has to be attached to this one.</p>
+                <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.addEvidence()">
+                  <t t-out="ic('plus',12)"/> <span>Ask for something</span>
+                </button>
+                <p class="pbim-sub">A report this app generates is locked to the request. Replacing one after it has been sent in starts the approvals again.</p>
+              </div>
+
+              <div class="pbam-sg">
+                <h3><t t-out="ic('clock',18)"/> <span>When is it due?</span></h3>
+                <div class="pbam-field">
+                  <label>Target</label>
+                  <select class="pbam-input" t-on-change="setDueKind">
+                    <option value="none" t-att-selected="safeguards.due.kind === 'none'">No target</option>
+                    <option value="working_days" t-att-selected="safeguards.due.kind === 'working_days'">Within a number of working days of each step</option>
+                    <option value="calendar_day" t-att-selected="safeguards.due.kind === 'calendar_day'">By a day of the month</option>
+                    <option value="per_request" t-att-selected="safeguards.due.kind === 'per_request'">Chosen on each request</option>
+                  </select>
+                </div>
+                <div t-if="safeguards.due.kind === 'working_days'" class="pbam-field">
+                  <label>Working days per step</label>
+                  <input class="pbam-input" type="number" min="1"
+                         t-att-value="safeguards.due.days" t-on-change="setDueDays"/>
+                </div>
+                <div class="pbim-note pbam-note">
+                  <t t-out="ic('calendar',13)"/>
+                  <span>The example on the right shows the exact local date and time each step would be due, worked out on your company's own working calendar.</span>
+                </div>
+              </div>
+
+              <div class="pbam-sg">
+                <h3><t t-out="ic('bell',18)"/> <span>And if it is late?</span></h3>
+                <div class="pbam-ladder2">
+                  <div class="pbam-l">
+                    <span class="pbam-k">Remind after</span>
+                    <input class="pbam-input pbam-input-sm" type="number" min="1"
+                           t-att-value="safeguards.late.remind_days"
+                           t-on-change="(ev) => this.setLate('remind_days', ev)"/>
+                  </div>
+                  <div class="pbam-l">
+                    <span class="pbam-k">Pass it up after</span>
+                    <input class="pbam-input pbam-input-sm" type="number" min="1"
+                           t-att-value="safeguards.late.escalate_days"
+                           t-on-change="(ev) => this.setLate('escalate_days', ev)"/>
+                  </div>
+                  <div class="pbam-l">
+                    <span class="pbam-k">Hand to the backup</span>
+                    <label class="pbam-switch" t-att-class="{ 'is-on': safeguards.late.reassign }"
+                           t-on-click="() => this.toggleReassign()">
+                      <i/>
+                      <span>
+                        <t t-if="safeguards.late.reassign">Yes, and it is recorded</t>
+                        <t t-else="">No — ask a person first</t>
+                      </span>
+                    </label>
+                  </div>
+                </div>
+                <div class="pbim-note pbam-note-rose">
+                  <t t-out="ic('ban',13)"/>
+                  <span>A late request is never approved by itself. Nothing in this app approves anything on its own.</span>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="pbam-bfoot">
+              <button class="pbim-btn ghost" t-on-click="() => this.goto(2)">
+                <t t-out="ic('back',14)"/> <span>Back</span>
+              </button>
+              <button class="pbim-btn primary" t-on-click="() => this.goto(4)">
+                <span>Review &amp; publish</span> <t t-out="ic('arrowRight',14)"/>
+              </button>
+            </div>
+          </div>
+
+          <t t-call="pb_approval_config.ExamplePanel"/>
+        </div>
+
+        <!-- ================================ 4 · review and publish -->
+        <div t-else="" class="pbam-bgrid">
+
+          <t t-if="state.published">
+            <div class="pbam-success">
+              <h2><t t-out="ic('checkCircle',20)"/> <span>Published</span></h2>
+              <p>
+                New requests follow this route from now on.
+                <t t-if="state.published.in_progress">
+                  <t t-esc="publishedNote"/>
+                </t>
+              </p>
+              <div class="pbam-success-doors">
+                <button class="pbim-btn primary" t-on-click="() => this.props.onBack()">Back to the Matrix</button>
+                <button t-if="props.onOpenPeople" class="pbim-btn ghost"
+                        t-on-click="() => this.props.onOpenPeople('', '')">Check who it reaches</button>
+              </div>
+            </div>
+            <aside class="pbam-ex">
+              <div class="pbam-exh"><h2>What was recorded</h2></div>
+              <dl class="pbam-kv">
+                <dt>Version</dt><dd t-esc="state.published.revision"/>
+                <dt>Published by</dt><dd t-esc="state.data.workflow.owner"/>
+                <dt>Reason</dt><dd t-esc="state.reason or 'None given'"/>
+                <dt>Still under way</dt><dd t-esc="state.published.in_progress"/>
+              </dl>
+            </aside>
+          </t>
+
+          <t t-elif="state.publication">
+            <div class="pbam-bcol">
+
+              <div class="pbim-panel">
+                <div class="pbim-panel-h">
+                  <div>
+                    <h2 class="pbim-h2">What changes</h2>
+                    <p t-if="state.publication.previous_revision" class="pbim-sub">
+                      Compared with version <t t-esc="state.publication.previous_revision"/>, which is the one in use now.
+                    </p>
+                    <p t-else="" class="pbim-sub">This would be the first route ever published for this.</p>
+                  </div>
+                </div>
+                <div t-if="state.publication.diff.length" class="pbam-diff">
+                  <div t-foreach="state.publication.diff" t-as="df" t-key="df_index" class="pbam-diffrow">
+                    <span class="pbim-badge"
+                          t-att-class="df.kind === 'added' ? 'pbam-ok' : df.kind === 'removed' ? 'pbam-err' : 'pbam-warn'">
+                      <t t-if="df.kind === 'added'">Added</t>
+                      <t t-elif="df.kind === 'removed'">Removed</t>
+                      <t t-else="">Changed</t>
+                    </span>
+                    <div>
+                      <div class="pbam-mt" t-esc="df.title"/>
+                      <div class="pbam-ms" t-esc="df.text"/>
+                    </div>
+                  </div>
+                </div>
+                <div t-else="" class="pbim-note pbam-note">
+                  <t t-out="ic('info',13)"/>
+                  <span>No difference from the route already in use. There is nothing to publish.</span>
+                </div>
+              </div>
+
+              <div class="pbim-panel">
+                <div class="pbim-panel-h">
+                  <div>
+                    <h2 class="pbim-h2">Who is affected</h2>
+                    <p class="pbim-sub">Places that follow this route change with it. Places with a route of their own do not.</p>
+                  </div>
+                </div>
+                <div class="pbam-aff">
+                  <div t-foreach="state.publication.affected" t-as="cv" t-key="cv_index" class="pbam-affrow">
+                    <span t-esc="cv.label"/>
+                    <span class="pbim-badge" t-att-class="cv.follows ? 'pbam-info' : 'pbam-muted'"
+                          t-esc="cv.note"/>
+                  </div>
+                  <p t-if="!state.publication.affected.length" class="pbim-sub">
+                    This route is not pointed at anywhere yet, so publishing it changes nothing until it is.
+                  </p>
+                </div>
+              </div>
+
+              <div class="pbim-panel">
+                <div class="pbim-panel-h">
+                  <div>
+                    <h2 class="pbim-h2">Every place it would reach</h2>
+                    <p class="pbim-sub">One good example is not proof. This checks every part of the business at once.</p>
+                  </div>
+                  <button class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.coverageBusy"
+                          t-on-click="() => this.checkCoverage()">
+                    <t t-out="ic('gauge',13)"/> <span>Check them all</span>
+                  </button>
+                </div>
+                <t t-if="state.coverage">
+                  <div t-if="state.coverage.gaps" class="pbam-attn pbam-attn-rose">
+                    <t t-out="ic('xCircle',18)"/>
+                    <span><t t-esc="state.coverage.gaps"/> place(s) cannot be used yet.</span>
+                  </div>
+                  <div t-else="" class="pbam-attn pbam-attn-green">
+                    <t t-out="ic('checkCircle',18)"/>
+                    <span>Every place has a full route.</span>
+                  </div>
+                  <div class="pbam-cov">
+                    <div t-foreach="state.coverage.rows" t-as="cv" t-key="cv_index" class="pbam-covrow">
+                      <div>
+                        <div class="pbam-mt" t-esc="cv.label"/>
+                        <div class="pbam-ms">
+                          <t t-if="cv.issues.length">
+                            <t t-foreach="cv.issues" t-as="is" t-key="is_index">
+                              <span t-esc="is.msg"/>
+                            </t>
+                          </t>
+                          <t t-else="">The whole route resolves here.</t>
+                        </div>
+                      </div>
+                      <div>
+                        <button t-if="cv.issues.length and props.onOpenPeople"
+                                class="pbim-btn primary pbim-btn-sm"
+                                t-on-click="() => this.props.onOpenPeople(cv.issues[0].fix.role_key, cv.issues[0].fix.scope_key)">
+                          Name somebody
+                        </button>
+                        <span t-elif="!cv.issues.length" class="pbim-badge pbam-ok">Ready</span>
+                      </div>
+                    </div>
+                  </div>
+                </t>
+                <p t-elif="!state.coverage" class="pbim-sub">
+                  Not checked yet. It is not required, but it is the only thing that proves every part of the business has somebody.
+                </p>
+              </div>
+
+              <div class="pbam-bfoot">
+                <button class="pbim-btn ghost" t-on-click="() => this.goto(3)">
+                  <t t-out="ic('back',14)"/> <span>Back</span>
+                </button>
+                <span/>
+              </div>
+            </div>
+
+            <aside class="pbam-ex">
+              <div class="pbam-res">
+                <span t-if="outstanding.length" class="pbim-badge pbam-warn pbam-badge-lg">
+                  <t t-out="ic('alert',13)"/>
+                  <span><t t-esc="outstanding.length"/> thing(s) to confirm</span>
+                </span>
+                <span t-elif="state.publication.errors.length" class="pbim-badge pbam-err pbam-badge-lg">
+                  <t t-out="ic('xCircle',13)"/> <span>Cannot be published yet</span>
+                </span>
+                <span t-else="" class="pbim-badge pbam-ok pbam-badge-lg">
+                  <t t-out="ic('checkCircle',13)"/> <span>Ready to publish</span>
+                </span>
+              </div>
+
+              <div t-if="state.publication.errors.length" class="pbam-issues">
+                <div t-foreach="state.publication.errors" t-as="wn" t-key="wn_index"
+                     class="pbam-issue pbam-issue-err">
+                  <div class="pbam-issue-t"><t t-out="ic('xCircle',14)"/> <span>Must be fixed</span></div>
+                  <div class="pbam-issue-s" t-esc="wn.message"/>
+                </div>
+              </div>
+
+              <t t-if="state.publication.warnings.length">
+                <div class="pbam-confirms">
+                  <label t-foreach="state.publication.warnings" t-as="wn" t-key="wn.code"
+                         class="pbam-checkrow" t-att-class="{ 'is-on': state.confirmed[wn.code] }"
+                         t-on-click="() => this.toggleConfirm(wn.code)">
+                    <span class="pbam-cb">
+                      <t t-if="state.confirmed[wn.code]" t-out="ic('check',12)"/>
+                    </span>
+                    <span t-esc="wn.message"/>
+                  </label>
+                </div>
+                <p class="pbim-sub">Tick each one to confirm. Your confirmations are recorded with the publish, under your name. Nothing here stops you — the business knows best.</p>
+              </t>
+
+              <div class="pbam-field">
+                <label>New requests follow it from</label>
+                <input class="pbam-input" type="datetime-local"
+                       t-att-value="state.publishAt"
+                       t-on-change="(ev) => { state.publishAt = ev.target.value; }"/>
+                <span class="pbim-sub">Leave it empty to start at once.</span>
+              </div>
+
+              <div class="pbam-field">
+                <label>Reason (kept in History)</label>
+                <input class="pbam-input" t-att-value="state.reason"
+                       t-on-change="(ev) => { state.reason = ev.target.value; }"/>
+              </div>
+
+              <dl class="pbam-kv">
+                <dt>Already under way</dt>
+                <dd><t t-esc="state.publication.in_progress"/> keep the route they were given</dd>
+                <dt>What this does not do</dt>
+                <dd>Publishing does not make you an approver</dd>
+              </dl>
+
+              <button class="pbim-btn primary pbam-btn-wide"
+                      t-att-disabled="!canPublish" t-on-click="() => this.publish()">
+                <t t-out="ic('stamp',15)"/> <span>Publish this route</span>
+              </button>
+              <p t-if="!state.publication.can_publish" class="pbim-sub">
+                Publishing is somebody else's job on this account. Everything above is saved as a draft for them.
+              </p>
+            </aside>
+          </t>
+
+          <div t-else="" class="pbim-busy">
+            <div class="pbim-spin"/><span>Checking it over…</span>
+          </div>
+        </div>
+
+      </t>
+
+      <!-- ===================================== the who-decides drawer -->
+      <t t-if="state.picker">
+        <div class="pbam-scrim" t-on-click="() => this.closePicker()"/>
+        <PickerDrawer who="state.picker.who"
+                      stepTitle="state.picker.title"
+                      roles="roles"
+                      companyId="workflow.company_id"
+                      processKey="workflow.process_key"
+                      resolve="(who) => this.resolveFor(who)"
+                      onSave="(who) => this.savePicker(who)"
+                      onClose="() => this.closePicker()"
+                      onAssign="(role, scope) => this.openPeopleFromPicker(role, scope)"/>
+      </t>
+
+    </div>
+  </t>
+
+  <!-- ====================================================================
+       "Try an example" — the panel that turns a route into named people.
+       Called from the People step and the Safeguards step, so there is one
+       of it rather than two that can drift.
+       ==================================================================== -->
+
+  <t t-name="pb_approval_config.ExamplePanel">
+    <aside class="pbam-ex">
+      <div class="pbam-exh">
+        <h2>Try an example</h2>
+        <span class="pbim-badge pbam-muted">Nothing is sent</span>
+      </div>
+
+      <div class="pbam-form2">
+        <div t-if="scopeOptions.length" class="pbam-field">
+          <label>Part of the business</label>
+          <select class="pbam-input" t-on-change="setExampleScope">
+            <option value="">The whole company</option>
+            <option t-foreach="scopeOptions" t-as="cl" t-key="cl.key"
+                    t-att-value="cl.key" t-esc="cl.label"/>
+          </select>
+        </div>
+        <div class="pbam-field">
+          <label>Amount<t t-if="currency"> (<t t-esc="currency"/>)</t></label>
+          <input class="pbam-input" type="number" min="0"
+                 t-att-value="state.example.amount" t-on-change="setExampleAmount"/>
+        </div>
+        <div t-foreach="exampleFacts" t-as="ft" t-key="ft.key" class="pbam-field">
+          <label t-esc="ft.label"/>
+          <select t-if="ft.type === 'bool'" class="pbam-input"
+                  t-on-change="(ev) => this.setExampleFact(ft.key, ev)">
+            <option value="false" t-att-selected="exampleValue(ft.key) === false">No</option>
+            <option value="true" t-att-selected="exampleValue(ft.key) === true">Yes</option>
+          </select>
+          <input t-else="" class="pbam-input" t-att-value="exampleValue(ft.key)"
+                 t-on-change="(ev) => this.setExampleFact(ft.key, ev)"/>
+        </div>
+      </div>
+
+      <div t-if="state.previewBusy" class="pbim-busy pbam-busy-sm">
+        <div class="pbim-spin"/><span>Working it out…</span>
+      </div>
+
+      <t t-elif="state.preview">
+        <div class="pbam-res">
+          <span class="pbim-badge pbam-badge-lg" t-att-class="'pbam-' + resultBadge.tone">
+            <t t-out="ic(resultBadge.icon,13)"/> <span t-esc="resultBadge.label"/>
+          </span>
+        </div>
+
+        <div class="pbam-exsteps">
+          <t t-foreach="state.preview.steps" t-as="st" t-key="st.key">
+            <div t-if="st.kind === 'notify'" class="pbam-exstep">
+              <div class="pbam-exn"><t t-out="ic('bell',11)"/></div>
+              <div>
+                <div class="pbam-mt" t-esc="st.title"/>
+                <div class="pbam-exp">
+                  <span t-foreach="st.people" t-as="pn" t-key="pn.user_id" class="pbam-person">
+                    <span class="pbam-av pbam-av-sm" t-esc="initials(pn.name)"/>
+                    <span class="pbam-pname" t-esc="pn.name"/>
+                  </span>
+                </div>
+                <div class="pbam-why">Told along the way — never counted as a check.</div>
+              </div>
+            </div>
+            <div t-elif="!st.included" class="pbam-exstep pbam-exstep-skip">
+              <div class="pbam-exn"><t t-out="ic('minus',11)"/></div>
+              <div>
+                <div class="pbam-mt" t-esc="st.title"/>
+                <div class="pbam-why" t-esc="st.reason"/>
+              </div>
+            </div>
+            <div t-else="" class="pbam-exstep"
+                 t-att-class="{ 'pbam-exstep-bad': st.issue and st.issue.level === 'block',
+                                'pbam-exstep-warn': st.issue and st.issue.level === 'warn' }">
+              <div class="pbam-exn">
+                <t t-if="st.kind === 'fast'" t-out="ic('zap',11)"/>
+                <t t-else="" t-esc="st_index + 1"/>
+              </div>
+              <div>
+                <div class="pbam-mt" t-esc="st.title"/>
+                <div class="pbam-exp">
+                  <span t-foreach="st.people" t-as="pn" t-key="pn.user_id" class="pbam-person">
+                    <span class="pbam-av pbam-av-sm" t-esc="initials(pn.name)"/>
+                    <span>
+                      <span class="pbam-pname" t-esc="pn.name"/>
+                      <span class="pbam-pvia" t-esc="pn.via"/>
+                    </span>
+                  </span>
+                </div>
+                <div t-if="st.reason" class="pbam-why" t-esc="st.reason"/>
+                <div t-if="st.due_at" class="pbam-why">
+                  <t t-out="ic('clock',11)"/> <span>Due <t t-esc="when(st.due_at)"/></span>
+                </div>
+              </div>
+            </div>
+          </t>
+        </div>
+
+        <div t-foreach="state.preview.issues" t-as="is" t-key="is_index"
+             class="pbam-issue"
+             t-att-class="is.level === 'block' ? 'pbam-issue-err' : 'pbam-issue-warn'">
+          <div class="pbam-issue-t">
+            <t t-if="is.level === 'block'" t-out="ic('xCircle',14)"/>
+            <t t-else="" t-out="ic('alert',14)"/>
+            <span t-esc="is.step"/>
+          </div>
+          <div class="pbam-issue-s" t-esc="is.msg"/>
+          <div t-if="is.fixes.length" class="pbam-issue-a">
+            <button t-foreach="is.fixes" t-as="cl" t-key="cl_index"
+                    class="pbim-btn pbim-btn-sm"
+                    t-att-class="is.level === 'block' ? 'primary' : 'ghost'"
+                    t-on-click="() => this.applyFix(cl)" t-esc="cl.label"/>
+          </div>
+        </div>
+
+        <details class="pbam-why-details">
+          <summary><t t-out="ic('route',13)"/> <span>Why this route?</span></summary>
+          <ol>
+            <li t-foreach="state.preview.via" t-as="tr" t-key="tr_index"
+                t-att-class="{ 'is-win': tr.win }">
+              <b><t t-esc="tr.rank"/>.</b> <span t-esc="tr.label"/> — <span t-esc="tr.note"/>
+            </li>
+          </ol>
+          <p class="pbim-sub">The most specific wins. Two routes covering the same place are refused when you publish, so a request can never see two.</p>
+        </details>
+
+        <button class="pbim-btn ghost" t-att-disabled="state.coverageBusy"
+                t-on-click="() => this.checkCoverage()">
+          <t t-out="ic('gauge',14)"/> <span>Check every part of the business</span>
+        </button>
+
+        <t t-if="state.coverage">
+          <div t-if="state.coverage.gaps" class="pbam-attn pbam-attn-rose">
+            <t t-out="ic('xCircle',16)"/>
+            <span><t t-esc="state.coverage.gaps"/> place(s) have nobody named.</span>
+          </div>
+          <div t-else="" class="pbam-attn pbam-attn-green">
+            <t t-out="ic('checkCircle',16)"/>
+            <span>Every place has a full route.</span>
+          </div>
+        </t>
+      </t>
+    </aside>
+  </t>
+
+  <!-- ====================================================================
+       The "who decides this step?" drawer.
+       ==================================================================== -->
+
+  <t t-name="pb_approval_config.PickerDrawer">
+    <aside class="pbam-drawer pbam-drawer-wide">
+      <div class="pbam-dh">
+        <div>
+          <h2>Who should decide this step?</h2>
+          <p class="pbim-sub">Choose how the step finds the right person. The panel at the bottom says who that is, right now.</p>
+        </div>
+        <button class="pbam-x" aria-label="Close" t-on-click="() => this.props.onClose()">
+          <t t-out="ic('x',18)"/>
+        </button>
+      </div>
+
+      <div class="pbam-db">
+        <div class="pbam-pickcards">
+          <button t-foreach="modes" t-as="md" t-key="md.key"
+                  class="pbam-pick" t-att-class="{ 'is-on': state.who.mode === md.key }"
+                  t-on-click="() => this.setMode(md.key)">
+            <span class="pbam-pick-h">
+              <i><t t-if="state.who.mode === md.key" t-out="ic('check',11)"/></i>
+              <t t-out="ic(md.icon,15)"/> <span t-esc="md.title"/>
+            </span>
+            <span class="pbam-ms" t-esc="md.sub"/>
+          </button>
+        </div>
+
+        <!-- ===================================== a responsibility -->
+        <div t-if="state.who.mode === 'role'" class="pbam-ex">
+          <div class="pbam-form2">
+            <div class="pbam-field">
+              <label>Responsibility</label>
+              <select class="pbam-input" t-on-change="setRole">
+                <option t-foreach="props.roles" t-as="rl" t-key="rl.key"
+                        t-att-value="rl.key" t-att-selected="state.who.role === rl.key"
+                        t-esc="rl.name"/>
+              </select>
+            </div>
+            <div class="pbam-field">
+              <label>Taken from</label>
+              <select class="pbam-input" t-on-change="setScope">
+                <option value="area" t-att-selected="state.who.scope !== 'company'">The part of the business the request came from</option>
+                <option value="company" t-att-selected="state.who.scope === 'company'">The whole company</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pbam-k">Who holds it today</div>
+          <div t-foreach="state.held" t-as="cl" t-key="cl_index" class="pbam-heldrow">
+            <span class="pbam-heldwhere" t-esc="cl.label"/>
+            <t t-if="cl.state === 'held'">
+              <span class="pbam-person">
+                <span class="pbam-av pbam-av-sm" t-esc="initials(cl.name)"/>
+                <span class="pbam-pname" t-esc="cl.name"/>
+              </span>
+            </t>
+            <t t-elif="cl.state === 'pool'">
+              <span t-esc="cl.pool_names.join(', ')"/>
+            </t>
+            <t t-elif="cl.state === 'inherited'">
+              <span class="pbim-sub" t-esc="cl.text"/>
+            </t>
+            <t t-else="">
+              <span class="pbim-badge pbam-err">
+                <t t-out="ic('userX',11)"/> <span>Needs a person</span>
+              </span>
+              <button class="pbim-btn ghost pbim-btn-sm"
+                      t-on-click="() => this.assign(cl)">Name one</button>
+            </t>
+          </div>
+
+          <div class="pbim-note pbam-note">
+            <t t-out="ic('info',13)"/>
+            <span t-esc="role.description"/>
+            <span t-if="role.fallback"> Where a part of the business has nobody, the company-wide person covers it.</span>
+            <span t-else=""> Each part of the business needs its own person — there is never a silent fall-back.</span>
+          </div>
+        </div>
+
+        <!-- ========================================= named people -->
+        <div t-elif="state.who.mode === 'people' or state.who.mode === 'team'" class="pbam-ex">
+          <div t-if="state.who.mode === 'team'" class="pbam-field">
+            <label>What is this group called?</label>
+            <input class="pbam-input" t-att-value="state.who.label"
+                   t-on-change="setTeamName"/>
+          </div>
+          <label class="pbam-search">
+            <t t-out="ic('search',15)"/>
+            <input type="search" placeholder="Search people"
+                   t-att-value="state.search" t-on-input="onSearch"/>
+          </label>
+          <div class="pbam-plist">
+            <div t-foreach="filtered" t-as="pn" t-key="pn.id"
+                 class="pbam-prow" t-att-class="{ 'is-on': chosenIds.includes(pn.id) }"
+                 t-on-click="() => this.togglePerson(pn.id)">
+              <span class="pbam-av" t-esc="initials(pn.name)"/>
+              <div>
+                <div class="pbam-mt" t-esc="pn.name"/>
+                <div class="pbam-ms" t-esc="pn.title"/>
+              </div>
+              <span t-if="!pn.eligible" class="pbim-badge pbam-warn">Needs permission</span>
+              <span class="pbam-cb" t-att-class="{ 'is-on': chosenIds.includes(pn.id) }">
+                <t t-if="chosenIds.includes(pn.id)" t-out="ic('check',12)"/>
+              </span>
+            </div>
+          </div>
+          <div t-if="state.who.mode === 'people' and chosenIds.length > 1" class="pbim-seg">
+            <button class="pbim-segbtn" t-att-class="{ 'is-on': state.who.all }"
+                    t-on-click="() => this.setAll(true)">Everyone must approve</button>
+            <button class="pbim-segbtn" t-att-class="{ 'is-on': !state.who.all }"
+                    t-on-click="() => this.setAll(false)">Any one of them</button>
+          </div>
+          <div class="pbim-note pbam-note">
+            <t t-out="ic('info',13)"/>
+            <span>Naming somebody never gives them access and never creates an account. A person marked "Needs permission" can still be named — they just cannot open this kind of request until somebody gives them the access.</span>
+          </div>
+        </div>
+
+        <!-- ========================================= their manager -->
+        <div t-else="" class="pbam-ex">
+          <div class="pbim-note pbam-note">
+            <t t-out="ic('info',13)"/>
+            <span>The person is worked out from the employee record of whoever the request is about. When a request covers many people at once, that means more than one person is asked — one per manager — so this is best kept for requests about a single person.</span>
+          </div>
+        </div>
+
+        <!-- ================================== this step will go to -->
+        <div class="pbam-goesto">
+          <div class="pbam-k">This step would go to</div>
+          <t t-if="state.preview and state.preview.people.length">
+            <span t-foreach="state.preview.people" t-as="pn" t-key="pn.user_id"
+                  class="pbam-person">
+              <span class="pbam-av" t-esc="initials(pn.name)"/>
+              <span>
+                <span class="pbam-pname" t-esc="pn.name"/>
+                <span class="pbam-pvia" t-esc="pn.via"/>
+              </span>
+            </span>
+          </t>
+          <span t-elif="state.preview and state.preview.issue" class="pbim-badge pbam-err">
+            <t t-out="ic('userX',11)"/> <span t-esc="state.preview.issue.msg"/>
+          </span>
+          <span t-else="" class="pbim-sub">
+            Save it to see who this reaches for the example on the right.
+          </span>
+          <p class="pbim-sub">When the person holding a responsibility changes, new requests follow the change by themselves. Requests already under way keep the people they were given.</p>
+        </div>
+      </div>
+
+      <div class="pbam-df">
+        <button class="pbim-btn ghost" t-on-click="() => this.props.onClose()">Cancel</button>
+        <button class="pbim-btn primary" t-att-disabled="!canSave"
+                t-on-click="() => this.save()">Use this</button>
+      </div>
+    </aside>
+  </t>
+
+</templates>

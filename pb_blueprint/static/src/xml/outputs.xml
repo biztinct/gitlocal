@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==========================================================
+     Step 4 — Outputs &amp; formulas.
+
+     House rule (BP9): an XML comment may NEVER contain a double
+     hyphen. The file stops being well formed, the bundle silently
+     ships no templates from it, and every component using one dies
+     at mount with "Missing template".
+
+     House rule (BP10/W23): nothing, not even a comment, may sit
+     between t-if / t-elif / t-else siblings.
+     ========================================================== -->
+<templates xml:space="preserve">
+
+  <t t-name="pb_blueprint.StepOutputs">
+    <div class="pbbp-step pbbp-out">
+
+      <div class="pbbp-step-head">
+        <span class="pbbp-eyebrow">04 / OUTPUTS &amp; FORMULAS</span>
+        <h1 class="pbbp-h1">See what your rules create.</h1>
+        <p class="pbbp-lead">
+          Review every output before testing or finishing. The calculations below are
+          the same ones used for the sample employee's pay on the right.
+        </p>
+      </div>
+
+      <div class="pbbp-cmp-boot" t-if="state.loading">
+        <div class="pbim-spin"/>
+        <span>Working out what this configuration produces…</span>
+      </div>
+      <div class="pbbp-alert is-err" t-elif="state.error">
+        <span class="i" t-out="ic('alert', 18)"/>
+        <div>
+          <b>The outputs could not be shown</b>
+          <p t-esc="state.error"/>
+        </div>
+        <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => this.load()">
+          Try again
+        </button>
+      </div>
+      <t t-else="">
+
+      <section class="pbbp-flow" aria-label="What this configuration turns into pay">
+        <t t-foreach="nodes" t-as="node" t-key="node.key">
+          <button t-attf-class="pbbp-flow-node is-{{ node.key }} {{ state.hover === node.key ? 'is-hot' : '' }}"
+                  t-on-mouseenter="() => this.onNodeEnter(node)"
+                  t-on-mouseleave="onNodeLeave"
+                  t-on-focus="() => this.onNodeEnter(node)"
+                  t-on-blur="onNodeLeave"
+                  t-on-click="() => this.onNodeClick(node)">
+            <span class="pbbp-flow-n" t-if="node.n !== null" t-esc="node.shown"/>
+            <span class="pbbp-flow-l" t-esc="node.label"/>
+            <span class="pbbp-flow-tot" t-if="node.n === null">
+              <b t-esc="money(node.net)"/>
+              <small>take-home pay</small>
+              <b t-esc="money(node.employer)"/>
+              <small>employer cost</small>
+            </span>
+          </button>
+          <span class="pbbp-flow-arrow" t-if="!node_last" t-out="ic('arrowRight', 18)"/>
+        </t>
+      </section>
+
+      <div class="pbbp-out-bar">
+        <div class="pbbp-out-chips" role="tablist">
+          <button t-foreach="FILTERS" t-as="key" t-key="key"
+                  t-attf-class="pbbp-out-chip {{ state.filter === key ? 'is-on' : '' }} {{ lit(key) ? 'is-lit' : '' }}"
+                  role="tab"
+                  t-att-aria-selected="state.filter === key ? 'true' : 'false'"
+                  t-on-click="() => this.setFilter(key)">
+            <t t-esc="filterLabel(key)"/>
+            <span class="n" t-esc="countOf(key)"/>
+          </button>
+        </div>
+        <div class="pbbp-out-tools">
+          <label class="pbbp-cmp-search">
+            <span class="i" t-out="ic('search', 15)"/>
+            <input type="search" t-ref="search"
+                   placeholder="Find a component, a code or a calculation"
+                   aria-label="Find a component, a code or a calculation"
+                   t-att-value="state.query"
+                   t-on-input="onSearch"/>
+            <button class="pbbp-cmp-searchx" t-if="searching"
+                    title="Clear the search" aria-label="Clear the search"
+                    t-on-click="clearSearch" t-out="ic('x', 13)"/>
+          </label>
+          <div class="pbbp-out-export">
+            <button class="pbim-btn ghost pbim-btn-sm" t-on-click="onExport"
+                    t-att-disabled="state.exporting"
+                    title="Download a readable list of every rule in this configuration">
+              <t t-if="state.exporting">Building…</t>
+              <t t-else=""><t t-out="ic('download', 14)"/> Download the rule catalogue</t>
+            </button>
+            <small class="pbbp-out-hint-note">
+              A spreadsheet you can read and share — every component, its
+              calculation and the sample figure. Not a workbook you can run a
+              payroll in.
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <p class="pbbp-out-hint" t-esc="filterHint"/>
+
+      <div class="pbbp-out-table">
+        <div class="pbbp-out-head" role="row">
+          <span class="c-name">Component</span>
+          <span class="c-formula">How it is worked out</span>
+          <span class="c-value">For this sample</span>
+          <span class="c-badge">Where it came from</span>
+          <span class="c-act"/>
+        </div>
+
+        <div class="pbbp-out-body" t-ref="list" t-on-scroll="onScroll"
+             t-on-keydown="onListKeydown">
+          <div class="pbim-empty pbbp-cmp-empty" t-if="!rows.length">
+            <b t-if="searching">Nothing matches that</b>
+            <b t-else="">Nothing here</b>
+            <p t-esc="emptyLine"/>
+            <button class="pbim-btn ghost pbim-btn-sm" t-if="searching"
+                    t-on-click="clearSearch">Clear the search</button>
+            <button class="pbim-btn outline pbim-btn-sm" t-else=""
+                    t-on-click="() => this.setFilter('all')">Show everything</button>
+          </div>
+          <t t-else="">
+            <div class="pbbp-out-spacer" t-att-style="'height:' + pane.top + 'px'"/>
+            <div t-foreach="painted" t-as="row" t-key="row.id"
+                 t-attf-class="pbbp-out-row is-{{ row.badge }} {{ state.inspect === row.id ? 'is-open' : '' }} {{ isExpanded(row) ? 'is-tall' : '' }}"
+                 tabindex="0" role="row"
+                 t-on-click="() => this.openInspector(row.id)">
+              <span class="c-name">
+                <b t-att-title="row.name" t-esc="row.name"/>
+                <span class="pbbp-out-meta">
+                  <code t-esc="row.code"/>
+                  <small class="pbbp-out-letter" t-esc="row.letter"/>
+                </span>
+              </span>
+              <span class="c-formula">
+                <span t-attf-class="pbbp-out-f {{ isExpanded(row) ? 'is-full' : '' }}"
+                      t-esc="formulaText(row)"/>
+                <button class="pbbp-out-more" t-if="isLong(row)"
+                        t-att-aria-expanded="isExpanded(row) ? 'true' : 'false'"
+                        t-on-click.stop="() => this.toggleExpand(row)">
+                  <t t-if="isExpanded(row)">show less</t>
+                  <t t-else="">show all</t>
+                </button>
+              </span>
+              <span class="c-value" t-esc="valueOf(row)"/>
+              <span class="c-badge">
+                <span t-attf-class="pbbp-out-badge is-{{ row.badge }}"
+                      t-att-title="row.badge_text" t-esc="badgeLabel(row.badge)"/>
+                <small class="pbbp-out-why" t-if="row.badge === 'review' or row.badge === 'problem'"
+                       t-esc="row.badge_text"/>
+              </span>
+              <span class="c-act">
+                <button class="pbim-btn ghost pbim-btn-sm"
+                        t-att-aria-label="'Inspect ' + row.name"
+                        t-on-click.stop="() => this.openInspector(row.id)">
+                  <t t-out="ic('eye', 14)"/> Inspect
+                </button>
+              </span>
+            </div>
+            <div class="pbbp-out-spacer" t-att-style="'height:' + pane.bottom + 'px'"/>
+          </t>
+        </div>
+      </div>
+
+      <p class="pbbp-out-capped" t-if="cappedLine" t-esc="cappedLine"/>
+      <p class="pbbp-out-keys">
+        <t t-out="ic('info', 13)"/>
+        Arrow keys move down the list, Enter opens a component, ⌘/Ctrl + F finds one.
+      </p>
+
+      <OutputInspector t-if="state.inspect"
+                       configId="props.configId"
+                       ruleId="state.inspect"
+                       revision="props.revision or 0"
+                       sampleId="props.sampleId or false"
+                       sampleName="props.sampleName or ''"
+                       currency="props.currency or ''"
+                       onClose.bind="closeInspector"
+                       onJump.bind="onJump"
+                       onChanged.bind="onInspectorChanged"
+                       onGrid="props.onGrid"/>
+      </t>
+    </div>
+  </t>
+
+  <!-- ==========================================================
+       The inspector: one component, opened.
+       ========================================================== -->
+  <t t-name="pb_blueprint.OutputInspector">
+    <div class="pbbp-sheet-scrim" t-on-click="() => this.props.onClose()">
+      <aside class="pbbp-sheet" t-ref="sheet" tabindex="-1"
+             t-on-click.stop="" t-on-keydown="onKeydown"
+             role="dialog" aria-label="Component detail">
+
+        <div class="pbbp-sheet-boot" t-if="state.loading">
+          <div class="pbim-spin"/>
+          <span>Reading this component…</span>
+        </div>
+        <div class="pbbp-alert is-err" t-elif="state.error">
+          <span class="i" t-out="ic('alert', 18)"/>
+          <div>
+            <b>This component could not be opened</b>
+            <p t-esc="state.error"/>
+          </div>
+          <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => this.props.onClose()">
+            Close
+          </button>
+        </div>
+        <t t-else="">
+
+        <header class="pbbp-sheet-head">
+          <div class="pbbp-sheet-ttl">
+            <b t-esc="rule.name"/>
+            <div class="pbbp-sheet-sub">
+              <code t-esc="rule.code"/>
+              <span class="pbbp-out-letter" t-esc="rule.letter"/>
+              <span class="pbim-badge" t-esc="groupWord"/>
+            </div>
+          </div>
+          <div class="pbim-modal__sp"/>
+          <button class="pbim-modal__x" t-on-click="() => this.props.onClose()"
+                  title="Close" aria-label="Close" t-out="ic('x', 16)"/>
+        </header>
+
+        <div class="pbbp-sheet-body">
+
+          <div class="pbbp-sheet-hero">
+            <span class="l">For this sample employee</span>
+            <b class="v" t-esc="headlineValue"/>
+            <span class="c" t-esc="props.currency"/>
+          </div>
+
+          <section class="pbbp-sheet-sec">
+            <h3><t t-out="ic('sigma', 15)"/> How it is worked out</h3>
+            <p class="pbbp-sheet-formula" t-esc="formula"/>
+            <div class="pbbp-sheet-chips" t-if="chips.length">
+              <span class="pbbp-sheet-chips-l">Reads</span>
+              <button t-foreach="chips" t-as="chip" t-key="chip.id"
+                      class="pbbp-sheet-chip"
+                      t-att-title="chip.name"
+                      t-on-click="() => this.onJump(chip)">
+                <t t-esc="chip.code"/>
+              </button>
+            </div>
+            <p class="pbbp-sheet-src">
+              <t t-out="ic('info', 13)"/>
+              <span t-esc="sourceWord"/>
+            </p>
+          </section>
+
+          <section class="pbbp-sheet-sec" t-if="review.length">
+            <h3><t t-out="ic('alert', 15)"/> Still to decide</h3>
+            <ul class="pbbp-sheet-review">
+              <li t-foreach="review" t-as="item" t-key="item.code" t-esc="item.text"/>
+            </ul>
+          </section>
+
+          <section class="pbbp-sheet-sec">
+            <h3><t t-out="ic('gitBranch', 15)"/> What feeds it</h3>
+            <p class="pbbp-sheet-line" t-esc="feedsFromLine"/>
+            <div class="pbbp-sheet-rows" t-if="feedsFrom.length">
+              <button t-foreach="feedsFrom" t-as="dep" t-key="dep.id"
+                      class="pbbp-sheet-row" t-on-click="() => this.props.onJump(dep.id)">
+                <b t-esc="dep.name"/>
+                <code t-esc="dep.code"/>
+                <span class="v" t-esc="value(dep.value)"/>
+              </button>
+            </div>
+            <button class="pbbp-sheet-toggle" t-if="feedsFrom.length"
+                    t-att-aria-expanded="state.chain === 'from' ? 'true' : 'false'"
+                    t-on-click="() => this.toggleChain('from')">
+              <t t-if="state.chain === 'from'">Hide the whole chain</t>
+              <t t-else="">Show the whole chain</t>
+            </button>
+            <div class="pbbp-sheet-chain" t-if="state.chain === 'from'">
+              <span t-foreach="chainNodes" t-as="node" t-key="node.letter"
+                    class="pbbp-sheet-chainnode" t-att-title="node.name"
+                    t-esc="node.code"/>
+              <span class="pbbp-sheet-chainmore" t-if="chainMoreLine" t-esc="chainMoreLine"/>
+            </div>
+          </section>
+
+          <section class="pbbp-sheet-sec">
+            <h3><t t-out="ic('arrowRight', 15)"/> What it feeds</h3>
+            <p class="pbbp-sheet-line" t-esc="feedsIntoLine"/>
+            <div class="pbbp-sheet-rows" t-if="feedsInto.length">
+              <button t-foreach="feedsInto" t-as="dep" t-key="dep.id"
+                      class="pbbp-sheet-row" t-on-click="() => this.props.onJump(dep.id)">
+                <b t-esc="dep.name"/>
+                <code t-esc="dep.code"/>
+                <span class="v" t-esc="value(dep.value)"/>
+              </button>
+            </div>
+            <button class="pbbp-sheet-toggle" t-if="feedsInto.length"
+                    t-att-aria-expanded="state.chain === 'into' ? 'true' : 'false'"
+                    t-on-click="() => this.toggleChain('into')">
+              <t t-if="state.chain === 'into'">Hide the whole chain</t>
+              <t t-else="">Show the whole chain</t>
+            </button>
+            <div class="pbbp-sheet-chain" t-if="state.chain === 'into'">
+              <span t-foreach="chainNodes" t-as="node" t-key="node.letter"
+                    class="pbbp-sheet-chainnode" t-att-title="node.name"
+                    t-esc="node.code"/>
+              <span class="pbbp-sheet-chainmore" t-if="chainMoreLine" t-esc="chainMoreLine"/>
+            </div>
+          </section>
+
+          <section class="pbbp-sheet-sec" t-if="trace.available">
+            <h3><t t-out="ic('history', 15)"/> Step by step, for this sample</h3>
+            <p class="pbbp-sheet-trace" t-esc="traceLine"/>
+          </section>
+
+          <section class="pbbp-sheet-sec is-diff" t-if="differs">
+            <h3><t t-out="ic('arrowLeftRight', 15)"/> Yours, and the guided version</h3>
+            <div class="pbbp-sheet-diff">
+              <div>
+                <span class="l">What you wrote</span>
+                <p t-esc="data.formula_codes"/>
+              </div>
+              <div>
+                <span class="l">What the sentence produces</span>
+                <p t-esc="data.generated_formula_codes"/>
+              </div>
+            </div>
+            <button class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.busy"
+                    t-on-click="askRestore">
+              <t t-out="ic('undo', 14)"/> Restore the guided version
+            </button>
+          </section>
+        </div>
+
+        <footer class="pbbp-sheet-foot">
+          <button class="pbim-btn ghost pbim-btn-sm" t-if="data.has_recipe"
+                  t-on-click="openEditor">
+            <t t-out="ic('sliders', 14)"/> Edit the rule
+          </button>
+          <button class="pbim-btn ghost pbim-btn-sm" t-else=""
+                  t-on-click="() => this.props.onGrid()">
+            <t t-out="ic('table', 14)"/> Open the grid
+          </button>
+          <div class="pbim-modal__sp"/>
+          <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => this.props.onClose()">
+            Close
+          </button>
+        </footer>
+        </t>
+
+        <div class="pbim-modal-scrim" t-if="state.confirmRestore"
+             t-on-click.stop="() => this.state.confirmRestore = false">
+          <div class="pbim-modal is-narrow" t-on-click.stop="">
+            <div class="pbim-modal__head">
+              <div class="pbim-modal__ttl">Go back to the guided version?</div>
+              <div class="pbim-modal__sp"/>
+            </div>
+            <div class="pbim-modal__body">
+              <p>
+                The calculation you wrote for <b t-esc="rule.name"/> is replaced by the one
+                the rule produces. Nothing else changes, and no payslip is affected.
+              </p>
+            </div>
+            <div class="pbim-modal__foot">
+              <div class="pbim-modal__sp"/>
+              <button class="pbim-btn ghost"
+                      t-on-click="() => this.state.confirmRestore = false">
+                Keep mine
+              </button>
+              <button class="pbim-btn primary" t-on-click="doRestore">
+                Restore the guided version
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <SentenceEditor t-if="state.editing"
+                      configId="props.configId"
+                      ruleId="props.ruleId"
+                      sampleId="props.sampleId or false"
+                      sampleName="props.sampleName or ''"
+                      revision="props.revision or 0"
+                      takenCodes="[]"
+                      currency="props.currency or ''"
+                      onSaved.bind="onEditorSaved"
+                      onRemoved.bind="onEditorRemoved"
+                      onClose.bind="closeEditor"/>
+    </div>
+  </t>
+
+</templates>

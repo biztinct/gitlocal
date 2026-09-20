@@ -1,0 +1,685 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Probation lens.
+
+       Section comments use `=` rules and never a doubled hyphen, because a
+       doubled hyphen inside an XML comment is a parse error that takes every
+       t-name in the file down with it (W22/R35).
+
+       Loop variables are never named lt / gt / lte / gte / and / or / not /
+       in: OWL reserves those as operators and the whole template dies with a
+       compile error pointing at nothing useful (R1). The stage loop is `sg`,
+       the country loop is `ct`.
+
+       `t-att-class` with a DICT is correct HERE and only here — this is an
+       OWL template, where the dict form merges with the static class. In a
+       server-side `<template>` (portal, reports) the same thing writes the
+       Python repr into the attribute and drops the static class (R42).
+       ==================================================================== -->
+  <t t-name="pb_probation.PbProbationBoard">
+    <div class="pbim pbim-page prb"
+         t-att-class="{ 'prb--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Loading the trial periods…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <!-- ============ the reader has no lifecycle access ============ -->
+        <div t-if="!state.allowed" class="pbim-panel prb-empty">
+          <div class="prb-empty-ic"><t t-out="ic('lock',30)"/></div>
+          <h2>Trial periods are looked after by the HR team</h2>
+          <p>This is where everybody still inside their trial period is
+             tracked — when it ends, which colleagues have been asked about
+             them, what those colleagues said, and what was decided. Ask your
+             HR administrator to add you to the lifecycle team and this screen
+             fills in.</p>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="prb-head">
+            <div class="prb-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Probation</h1>
+              <p class="pbim-sub">Everybody still inside their trial period, and
+                 everything that has to happen before somebody decides.</p>
+            </div>
+            <div class="prb-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh"
+                      title="Read the board again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn ghost"
+                      t-on-click="openReviews">
+                <t t-out="ic('list',15)"/> All reviews
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn ghost"
+                      t-on-click="openCourses">
+                <t t-out="ic('bookOpen',15)"/> Courses
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn ghost"
+                      t-on-click="openPolicies">
+                <t t-out="ic('calendar',15)"/> Policies
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn primary"
+                      t-on-click="runAutomation"
+                      title="Open the reviews that are due, send today's reminders and put together any answer window that has closed">
+                <t t-out="ic('zap',15)"/> Run today's steps
+              </button>
+            </div>
+          </div>
+
+          <!-- ============ the switch, said out loud ============
+               A feature that is switched off and does not say so is a
+               feature somebody reports as broken. This is the one thing on
+               this board an administrator has to decide, so it is stated
+               where they are, with the number it would affect. -->
+          <div t-if="state.canWrite and !state.autoOn and state.rows.length"
+               class="pbim-panel prb-notice">
+            <div class="prb-notice-ic"><t t-out="ic('info',20)"/></div>
+            <div>
+              <b>Reviews are not opening by themselves yet</b>
+              <p>
+                <t t-esc="state.rows.length === 1
+                          ? 'There is 1 person in a trial period. Nothing happens automatically until an administrator switches the trigger on — until then, press Run today\'s steps or start a review from a card below.'
+                          : 'There are ' + state.rows.length + ' people in a trial period. Nothing happens automatically until an administrator switches the trigger on — until then, press Run today\'s steps or start a review from a card below.'"/>
+              </p>
+            </div>
+          </div>
+
+          <!-- ====================== the numbers ====================== -->
+          <div class="pbim-stats prb-kpis">
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('stamp',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.in_probation or 0"/>
+                <div class="l">In a trial period</div>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('activity',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.running or 0"/>
+                <div class="l">Reviews running</div>
+              </div>
+            </div>
+            <div class="pbim-stat" t-att-class="{ warn: state.kpis.verdicts }">
+              <div class="pbim-stat-ic amber"><t t-out="ic('checkCircle',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.verdicts or 0"/>
+                <div class="l">Waiting on a decision</div>
+              </div>
+            </div>
+            <div class="pbim-stat" t-att-class="{ err: state.kpis.overdue_feedback }">
+              <div class="pbim-stat-ic rose"><t t-out="ic('clock',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.overdue_feedback or 0"/>
+                <div class="l">Answers overdue</div>
+              </div>
+            </div>
+            <div class="pbim-stat" t-att-class="{ err: state.kpis.urgent }">
+              <div class="pbim-stat-ic rose"><t t-out="ic('alert',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.urgent or 0"/>
+                <div class="l">Ending within a week</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ======================== filters ======================== -->
+          <div class="pbim-panel prb-filters" t-if="state.rows.length">
+            <div class="prb-filter-row">
+              <div class="prb-search">
+                <t t-out="ic('search',15)"/>
+                <input type="text" t-att-value="state.q" t-on-input="onSearch"
+                       placeholder="Search by name, job or team…"/>
+              </div>
+              <button t-if="hasFilters" class="pbim-btn ghost pbim-btn-sm"
+                      t-on-click="clearFilters">
+                <t t-out="ic('x',14)"/> Clear
+              </button>
+            </div>
+            <div class="prb-filter-row">
+              <div class="pbim-chips">
+                <button t-foreach="state.states" t-as="sv" t-key="sv.id"
+                        t-attf-class="pbim-fchip {{ state.reviewState === sv.id ? 'on' : '' }}"
+                        t-on-click="() => this.setReviewState(sv.id)">
+                  <span t-esc="sv.label"/>
+                  <span class="c" t-esc="sv.count"/>
+                </button>
+              </div>
+              <div class="pbim-chips">
+                <button t-foreach="state.departments" t-as="dp" t-key="dp.id"
+                        t-attf-class="pbim-fchip {{ state.dept === dp.id ? 'on' : '' }}"
+                        t-on-click="() => this.setDept(dp.id)">
+                  <span t-esc="dp.label"/>
+                  <span class="c" t-esc="dp.count"/>
+                </button>
+              </div>
+            </div>
+            <div class="prb-filter-row">
+              <div class="pbim-chips">
+                <button t-foreach="state.countries" t-as="ct" t-key="ct.id"
+                        t-attf-class="pbim-fchip {{ state.country === ct.id ? 'on' : '' }}"
+                        t-on-click="() => this.setCountry(ct.id)">
+                  <span t-esc="ct.label"/>
+                  <span class="c" t-esc="ct.count"/>
+                </button>
+                <button t-attf-class="pbim-fchip {{ state.attentionOnly ? 'on' : '' }}"
+                        t-on-click="toggleAttention">
+                  <t t-out="ic('alert',13)"/> Needs somebody
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================== nothing here yet ================== -->
+          <div t-if="!state.rows.length" class="pbim-panel prb-empty">
+            <div class="prb-empty-ic"><t t-out="ic('stamp',30)"/></div>
+            <h2>Nobody is in a trial period</h2>
+            <p>When somebody's joining checklist opens, Payobook works out the
+               end of their trial period from the policy for the country they
+               work in and they appear here. Three weeks before that date the
+               review starts by itself: their manager is asked for three to five
+               colleagues, each colleague gets a private link, and the answers
+               come back with the 30, 60 and 90 day notes beside them.</p>
+            <button t-if="state.canWrite" class="pbim-btn ghost"
+                    t-on-click="openPolicies">
+              <t t-out="ic('calendar',15)"/> Look at the policies
+            </button>
+          </div>
+
+          <!-- ============ the filters match nobody ============
+               A board that answers a filter with a blank page is a dead end:
+               the reader cannot tell "nobody matches" from "it is still
+               loading" from "it broke". The whole sentence is ONE expression,
+               because OWL collapses the newline between two t-esc nodes and
+               the page then reads "There are2 people" (R34). -->
+          <div t-elif="!visibleRows.length" class="pbim-panel prb-empty">
+            <div class="prb-empty-ic"><t t-out="ic('search',30)"/></div>
+            <h2>Nobody matches that</h2>
+            <p>
+              <t t-esc="state.rows.length === 1
+                        ? 'There is 1 person on this board, but they do not fit the filters you have set.'
+                        : 'There are ' + state.rows.length + ' people on this board, but none of them fits the filters you have set.'"/>
+            </p>
+            <button class="pbim-btn primary" t-on-click="clearFilters">
+              <t t-out="ic('x',15)"/> Clear the filters
+            </button>
+          </div>
+
+          <!-- ======================= the people ======================= -->
+          <div t-else="" class="prb-grid">
+            <div t-foreach="visibleRows" t-as="row" t-key="row.id"
+                 class="pbim-panel prb-card"
+                 t-att-class="{ 'is-urgent': row.urgent, 'is-late': row.feedback_late }">
+
+              <div class="prb-card-top" t-on-click="() => this.openPerson(row.id)">
+                <img class="prb-av" t-att-src="row.avatar" t-att-alt="row.employee"/>
+                <div class="prb-who">
+                  <div class="prb-name" t-esc="row.employee"/>
+                  <div class="prb-job">
+                    <t t-esc="row.job"/><t t-if="row.job and row.dept"> · </t><t t-esc="row.dept"/>
+                  </div>
+                </div>
+                <div class="prb-when">
+                  <div class="prb-when-d" t-esc="day(row.trial_end)"/>
+                  <div class="prb-when-w" t-esc="row.when"/>
+                </div>
+              </div>
+
+              <!-- ==== the stage rail: the hero of this board ==== -->
+              <div class="prb-rail">
+                <div t-foreach="stages" t-as="sg" t-key="sg"
+                     t-attf-class="prb-stage prb-stage--{{ stageCls(row, sg) }}">
+                  <span class="prb-stage-dot">
+                    <t t-if="stageCls(row, sg) === 'done'"><t t-out="ic('check',11)"/></t>
+                  </span>
+                  <span class="prb-stage-l" t-esc="stageLabel(sg)"/>
+                  <span class="prb-stage-n" t-esc="stageNote(row, sg)"/>
+                </div>
+              </div>
+
+              <div class="prb-facts">
+                <div class="prb-fact">
+                  <span class="prb-fact-l">Where it is</span>
+                  <span class="prb-fact-v" t-esc="row.review_label"/>
+                </div>
+                <div class="prb-fact">
+                  <span class="prb-fact-l">Round</span>
+                  <span t-if="row.round &gt; 1" class="prb-fact-v warn">
+                    <t t-esc="row.round"/> — after an extension
+                  </span>
+                  <span t-elif="row.round" class="prb-fact-v">First</span>
+                  <span t-else="" class="prb-fact-v muted">Not started</span>
+                </div>
+                <div class="prb-fact">
+                  <span class="prb-fact-l">Manager</span>
+                  <span t-if="row.manager" class="prb-fact-v" t-esc="row.manager"/>
+                  <span t-else="" class="prb-fact-v muted">Nobody named</span>
+                </div>
+                <div class="prb-fact">
+                  <span class="prb-fact-l">Raised at a check-in</span>
+                  <span t-if="row.red_flags" class="prb-fact-v warn">
+                    <t t-esc="row.red_flags === 1 ? '1 thing' : row.red_flags + ' things'"/>
+                  </span>
+                  <span t-else="" class="prb-fact-v muted">Nothing</span>
+                </div>
+              </div>
+
+              <div class="prb-chips">
+                <span t-attf-class="pbim-badge {{ trainingChip(row).cls }} prb-sentence"
+                      t-esc="trainingChip(row).text"/>
+                <span t-if="row.feedback_late" class="pbim-badge err prb-sentence">
+                  The answer window has closed
+                </span>
+                <span t-elif="row.deadline" class="pbim-badge info prb-sentence">
+                  Answers by <t t-esc="day(row.deadline)"/>
+                </span>
+                <span t-if="row.state === 'extended'"
+                      class="pbim-badge warn prb-sentence">
+                  Trial period extended
+                </span>
+              </div>
+
+              <div class="prb-card-act">
+                <button class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.openPerson(row.id)">
+                  Open their trial period
+                </button>
+                <button t-if="state.canWrite and !row.review_state"
+                        class="pbim-btn primary pbim-btn-sm"
+                        t-on-click="() => this.startReview(row)">
+                  <t t-out="ic('play',13)"/> Start the review
+                </button>
+                <button t-if="state.canWrite and ['scheduled','nomination'].includes(row.review_state)"
+                        class="pbim-btn primary pbim-btn-sm"
+                        t-on-click="() => this.askNominate(row)">
+                  <t t-out="ic('users',13)"/> Choose colleagues
+                </button>
+                <button t-if="state.canWrite and row.review_state === 'feedback' and !row.deadline_extended"
+                        class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.extendDeadline(row)"
+                        title="Adds one more day, once">
+                  <t t-out="ic('clock',13)"/> Another day
+                </button>
+                <button t-if="state.canWrite and row.review_state === 'feedback'"
+                        class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.consolidate(row)">
+                  Put the answers together
+                </button>
+                <button t-if="state.canWrite and row.review_state === 'one_on_one'"
+                        class="pbim-btn primary pbim-btn-sm"
+                        t-on-click="() => this.askTalk(row)">
+                  <t t-out="ic('smile',13)"/> We have talked
+                </button>
+                <button t-if="state.canWrite and row.review_state === 'verdict'"
+                        class="pbim-btn primary pbim-btn-sm"
+                        t-on-click="() => this.askVerdict(row)">
+                  <t t-out="ic('stamp',13)"/> Decide
+                </button>
+                <button t-if="state.canWrite and row.verdict === 'fail'"
+                        class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.startExit(row)">
+                  <t t-out="ic('powerOff',13)"/> Start their exit
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <p t-if="state.capped" class="prb-capped">
+            Showing the first <t t-esc="state.rows.length"/>. Narrow it down with
+            a filter to see the rest.
+          </p>
+
+        </t>
+      </div>
+
+      <!-- ==================================================================
+           THE DRAWER: one trial period, whole.
+           ================================================================== -->
+      <div t-if="state.drawer" class="prb-scrim" t-on-click="closeDrawer">
+        <div class="prb-drawer" t-on-click.stop="">
+          <div class="prb-drawer-head">
+            <img class="prb-av prb-av--lg" t-att-src="state.drawer.row.avatar"
+                 t-att-alt="state.drawer.row.employee"/>
+            <div>
+              <h2 t-esc="state.drawer.row.employee"/>
+              <p>
+                <t t-esc="state.drawer.row.job"/>
+                <t t-if="state.drawer.row.job and state.drawer.row.dept"> · </t>
+                <t t-esc="state.drawer.row.dept"/>
+              </p>
+              <p class="prb-drawer-when">
+                <t t-out="ic('stamp',13)"/>
+                <t t-esc="state.drawer.row.state_label"/> ·
+                <t t-esc="state.drawer.row.when"/>
+              </p>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeDrawer">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+
+          <!-- ==== the story, in date order ==== -->
+          <h3 class="prb-drawer-h3">From their first day to the decision</h3>
+          <ol class="prb-tl">
+            <li t-foreach="state.drawer.timeline" t-as="ev" t-key="ev_index"
+                t-attf-class="prb-tl-item prb-tl-item--{{ ev.kind }}">
+              <span class="prb-tl-dot"/>
+              <div class="prb-tl-body">
+                <div class="prb-tl-head">
+                  <b t-esc="ev.title"/>
+                  <span class="prb-tl-date" t-esc="day(ev.date)"/>
+                </div>
+                <p t-if="ev.note" class="prb-tl-note" t-esc="ev.note"/>
+              </div>
+            </li>
+          </ol>
+
+          <!-- ==== the colleagues ==== -->
+          <h3 class="prb-drawer-h3" t-if="state.drawer.peers.length">
+            Colleagues asked
+          </h3>
+          <div t-foreach="state.drawer.peers" t-as="pr" t-key="pr_index"
+               class="prb-peer">
+            <b t-esc="pr.name"/>
+            <span class="prb-peer-d" t-esc="pr.dept"/>
+            <span t-attf-class="pbim-badge {{ pr.answered ? 'ok' : 'warn' }}"
+                  t-esc="pr.answered ? 'Answered' : 'Waiting'"/>
+          </div>
+
+          <!-- ==== what everybody said ==== -->
+          <h3 class="prb-drawer-h3" t-if="state.drawer.report">
+            What everybody said
+          </h3>
+          <div t-if="state.drawer.report" class="prb-report"
+               t-out="report(state.drawer.report)"/>
+
+          <!-- ==== the course ==== -->
+          <h3 class="prb-drawer-h3" t-if="state.drawer.training.length">
+            Their course
+          </h3>
+          <div t-foreach="state.drawer.training" t-as="tr" t-key="tr.id"
+               class="prb-train" t-att-class="{ 'is-done': tr.done }">
+            <div class="prb-train-l">
+              <b t-esc="tr.name"/>
+              <span t-if="tr.required" class="pbim-badge err">Required</span>
+              <span t-else="" class="pbim-badge muted">optional</span>
+            </div>
+            <div class="prb-train-m">
+              <span t-esc="tr.track"/>
+              <button t-if="state.canWrite and !tr.done" class="prb-inline-btn"
+                      t-on-click="() => this.settleTraining(tr, true)">
+                Mark it done
+              </button>
+              <button t-elif="state.canWrite" class="prb-inline-btn"
+                      t-on-click="() => this.settleTraining(tr, false)">
+                Reopen
+              </button>
+            </div>
+          </div>
+
+          <!-- ==== the check-ins ==== -->
+          <h3 class="prb-drawer-h3" t-if="state.drawer.checkins.length">
+            Their check-ins
+          </h3>
+          <div t-foreach="state.drawer.checkins" t-as="ck" t-key="ck.id"
+               class="prb-check" t-att-class="{ 'is-red': ck.red }">
+            <div class="prb-check-l">
+              <b t-esc="ck.name"/>
+              <span class="prb-check-d" t-esc="day(ck.date)"/>
+              <span t-if="ck.red" class="pbim-badge err">flagged</span>
+            </div>
+            <p t-if="ck.red_note" class="prb-check-n" t-esc="ck.red_note"/>
+            <p t-elif="ck.notes" class="prb-check-n" t-esc="ck.notes"/>
+          </div>
+
+          <div class="prb-drawer-act">
+            <button t-if="state.drawer.row.review_id" class="pbim-btn ghost pbim-btn-sm"
+                    t-on-click="() => this.openReview(state.drawer.row)">
+              Open the review
+            </button>
+            <button t-if="state.drawer.letter_id" class="pbim-btn ghost pbim-btn-sm"
+                    t-on-click="() => this.openLetter(state.drawer.letter_id)">
+              <t t-out="ic('fileText',13)"/> The letter
+            </button>
+            <button class="pbim-btn ghost pbim-btn-sm"
+                    t-on-click="() => this.openEmployee(state.drawer.row)">
+              Their record
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           CHOOSING THE COLLEAGUES.
+           ================================================================== -->
+      <div t-if="state.nominating" class="pbim-modal-scrim"
+           t-on-click="cancelNominate">
+        <div class="pbim-modal prb-modal" t-on-click.stop="">
+          <h2>Who should we ask about <t t-esc="state.nominating.who"/>?</h2>
+          <p class="pbim-sub">Three to five colleagues who have actually worked
+             with them. Each one gets a private link and a few days to answer —
+             they do not need to sign in, and their comments are not shown with
+             their name on.</p>
+
+          <div class="prb-search prb-search--modal">
+            <t t-out="ic('search',15)"/>
+            <input type="text" t-att-value="state.nominating.term"
+                   t-on-input="onNomineeSearch"
+                   placeholder="Search everybody in the company…"/>
+          </div>
+
+          <div t-if="state.nominating.chosen.length" class="prb-chosen">
+            <span t-foreach="state.nominating.chosen" t-as="ch" t-key="ch.id"
+                  class="prb-chosen-tag">
+              <t t-esc="ch.name"/>
+              <button t-on-click="() => this.toggleNominee(ch)">
+                <t t-out="ic('x',11)"/>
+              </button>
+            </span>
+          </div>
+
+          <div t-if="state.nominating.busy" class="pbim-busy">
+            <div class="pbim-spin"/><span>Looking…</span>
+          </div>
+          <div t-elif="!state.nominating.options.length" class="prb-drawer-none">
+            Nobody in this company matches that. Try part of a name.
+          </div>
+          <div t-else="" class="prb-cands">
+            <button t-foreach="state.nominating.options" t-as="op" t-key="op.id"
+                    class="prb-cand"
+                    t-att-class="{ 'is-on': isChosen(op.id) }"
+                    t-on-click="() => this.toggleNominee(op)">
+              <img class="prb-cand-av" t-att-src="op.avatar" t-att-alt="op.name"/>
+              <span class="prb-cand-tx">
+                <b t-esc="op.name"/>
+                <span class="prb-cand-m">
+                  <t t-esc="op.job"/><t t-if="op.job and op.dept"> · </t><t t-esc="op.dept"/>
+                </span>
+              </span>
+              <span class="prb-cand-t">
+                <t t-if="op.same_team">same team</t>
+                <t t-elif="op.tenure &gt;= 12"><t t-esc="Math.floor(op.tenure / 12)"/>y here</t>
+                <t t-elif="op.tenure &gt; 0"><t t-esc="op.tenure"/>m here</t>
+              </span>
+              <span class="prb-cand-tick">
+                <t t-if="isChosen(op.id)"><t t-out="ic('check',14)"/></t>
+              </span>
+            </button>
+          </div>
+
+          <p class="prb-hint" t-esc="nomineeHint"/>
+          <div class="prb-modal-act">
+            <button class="pbim-btn ghost" t-on-click="cancelNominate">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!canSendNominees"
+                    t-on-click="sendNominees">
+              <t t-out="ic('send',15)"/> Send the questions
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           THE CONVERSATION HAPPENED.
+           ================================================================== -->
+      <div t-if="state.talking" class="pbim-modal-scrim" t-on-click="cancelTalk">
+        <div class="pbim-modal prb-modal" t-on-click.stop="">
+          <h2>Your conversation with <t t-esc="state.talking.who"/></h2>
+          <p class="pbim-sub">Anything worth writing down. It goes on their
+             check-in, where somebody looking at this in six months would find
+             it.</p>
+          <textarea class="prb-ta" rows="5" t-att-value="state.talking.notes"
+                    t-on-input="onTalkNotes"
+                    placeholder="What you talked about, and what you agreed…"/>
+          <div class="prb-modal-act">
+            <button class="pbim-btn ghost" t-on-click="cancelTalk">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="saveTalk">
+              <t t-out="ic('check',15)"/> Save it
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           THE VERDICT WIZARD. Three steps, and the last one says exactly
+           what the button will do before it is pressed.
+           ================================================================== -->
+      <div t-if="state.verdicting" class="pbim-modal-scrim"
+           t-on-click="cancelVerdict">
+        <div class="pbim-modal prb-modal prb-modal--wide" t-on-click.stop="">
+          <h2>Deciding about <t t-esc="state.verdicting.who"/></h2>
+
+          <div class="prb-steps">
+            <button t-attf-class="prb-step {{ state.verdicting.step === 1 ? 'on' : '' }}"
+                    t-on-click="() => this.verdictStep(1)">
+              <span class="prb-step-n">1</span> Read what they said
+            </button>
+            <button t-attf-class="prb-step {{ state.verdicting.step === 2 ? 'on' : '' }}"
+                    t-on-click="() => this.verdictStep(2)">
+              <span class="prb-step-n">2</span> Write it down
+            </button>
+            <button t-attf-class="prb-step {{ state.verdicting.step === 3 ? 'on' : '' }}"
+                    t-att-disabled="!state.verdicting.verdict">
+              <span class="prb-step-n">3</span> Decide
+            </button>
+          </div>
+
+          <!-- ============ step 1 ============ -->
+          <div t-if="state.verdicting.step === 1">
+            <div t-if="state.verdicting.busy" class="pbim-busy">
+              <div class="pbim-spin"/><span>Reading the answers…</span>
+            </div>
+            <div t-elif="state.verdicting.report" class="prb-report"
+                 t-out="report(state.verdicting.report)"/>
+            <div t-else="" class="prb-drawer-none">
+              Nothing has been put together yet for this person.
+            </div>
+            <div class="prb-modal-act">
+              <button class="pbim-btn ghost" t-on-click="cancelVerdict">Cancel</button>
+              <button class="pbim-btn primary" t-on-click="() => this.verdictStep(2)">
+                Next
+              </button>
+            </div>
+          </div>
+
+          <!-- ============ step 2 ============ -->
+          <div t-if="state.verdicting.step === 2">
+            <p class="pbim-sub">Both of these go into the letter they are sent,
+               so write them as you would say them out loud to the person.</p>
+            <label class="prb-lbl">What they are good at</label>
+            <textarea class="prb-ta" rows="4"
+                      t-att-value="state.verdicting.strengths"
+                      t-on-input="onStrengths"
+                      placeholder="Picks things up fast, and asks when they are stuck…"/>
+            <label class="prb-lbl">What to work on</label>
+            <textarea class="prb-ta" rows="4"
+                      t-att-value="state.verdicting.improvements"
+                      t-on-input="onImprovements"
+                      placeholder="Specific, and something they can actually do…"/>
+            <label class="prb-lbl">If the trial period is extended, by how long?</label>
+            <input type="number" min="1" max="12" class="prb-in prb-in--sm"
+                   t-att-value="state.verdicting.months" t-on-input="onMonths"/>
+            <span class="prb-in-unit">months</span>
+
+            <div class="prb-verdicts">
+              <button class="prb-verdict prb-verdict--pass"
+                      t-on-click="() => this.pickVerdict('pass')">
+                <t t-out="ic('checkCircle',20)"/>
+                <b>Confirm them</b>
+                <span>Their trial period ends here and they are permanent.</span>
+              </button>
+              <button class="prb-verdict prb-verdict--extend"
+                      t-on-click="() => this.pickVerdict('extend')">
+                <t t-out="ic('clock',20)"/>
+                <b>Extend the trial</b>
+                <span>Another run at it, with the areas above written down.</span>
+              </button>
+              <button class="prb-verdict prb-verdict--fail"
+                      t-on-click="() => this.pickVerdict('fail')">
+                <t t-out="ic('minusCircle',20)"/>
+                <b>Do not confirm</b>
+                <span>Recorded and a letter prepared. Nothing else starts.</span>
+              </button>
+            </div>
+            <div class="prb-modal-act">
+              <button class="pbim-btn ghost" t-on-click="() => this.verdictStep(1)">
+                Back
+              </button>
+            </div>
+          </div>
+
+          <!-- ============ step 3 ============ -->
+          <div t-if="state.verdicting.step === 3">
+            <div t-if="state.verdicting.busy" class="pbim-busy">
+              <div class="pbim-spin"/><span>Working out what this will do…</span>
+            </div>
+            <t t-elif="state.verdicting.preview">
+              <div t-if="verdictBlocked" class="prb-blocked">
+                <div class="prb-blocked-h">
+                  <t t-out="ic('lock',18)"/>
+                  <b>They cannot be confirmed yet</b>
+                </div>
+                <p>Their course is not finished. These have to be ticked off
+                   first:</p>
+                <ul>
+                  <li t-foreach="state.verdicting.preview.blocked" t-as="bk"
+                      t-key="bk_index" t-esc="bk"/>
+                </ul>
+                <p>Open their trial period and mark them done, or choose one of
+                   the other two decisions.</p>
+              </div>
+              <div t-else="" class="prb-preview">
+                <div class="prb-preview-h">
+                  <t t-out="ic('info',18)"/>
+                  <b>What pressing the button does</b>
+                </div>
+                <ul>
+                  <li t-foreach="state.verdicting.preview.lines" t-as="ln"
+                      t-key="ln_index" t-esc="ln"/>
+                </ul>
+              </div>
+            </t>
+            <div class="prb-modal-act">
+              <button class="pbim-btn ghost" t-on-click="() => this.verdictStep(2)">
+                Back
+              </button>
+              <button class="pbim-btn primary" t-att-disabled="verdictBlocked"
+                      t-on-click="saveVerdict">
+                <t t-out="ic('stamp',15)"/>
+                <t t-esc="state.verdicting.preview ? state.verdicting.preview.label : 'Confirm'"/>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>

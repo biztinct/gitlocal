@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Hybrid Pay Runs board: native kanban (search / filters / group-by /
+         pagination) with custom Violet-Storm cards + a KPI hero band injected
+         by the pb_payruns_kanban controller. Drag is disabled — the state
+         changes run through Submit for approval, an approval decision, or
+         Reject, and nothing else may move it. -->
+    <record id="view_hr_payslip_run_kanban_pb" model="ir.ui.view">
+        <field name="name">hr.payslip.run.kanban.pb</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <kanban js_class="pb_payruns_kanban" class="pbk"
+                    default_group_by="state" default_order="date_end desc"
+                    records_draggable="0" create="false"
+                    group_create="false" group_delete="false" group_edit="false">
+                <field name="name"/>
+                <field name="state"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="credit_note"/>
+                <field name="pb_employee_count"/>
+                <field name="pb_total_net"/>
+                <field name="pb_currency_id"/>
+                <field name="pb_division_label"/>
+                <field name="pb_can_submit"/>
+                <field name="pb_can_reject"/>
+                <field name="pb_is_pending"/>
+                <field name="pb_is_done"/>
+                <field name="pb_return_note"/>
+                <field name="approval_state"/>
+                <templates>
+                    <t t-name="card">
+                        <div t-attf-class="pbk-card pbk-st-{{ record.state.raw_value }}" data-coach="pk-card">
+                            <div class="pbk-top">
+                                <span class="pbk-nm"><field name="name"/></span>
+                                <span t-if="record.credit_note.raw_value" class="pbk-cn">refund</span>
+                            </div>
+                            <div class="pbk-period"><field name="date_start"/> – <field name="date_end"/></div>
+                            <span t-if="record.pb_division_label.raw_value" class="pbk-divtag"><field name="pb_division_label"/></span>
+                            <div class="pbk-stats">
+                                <div class="pbk-st-tile">
+                                    <span class="k">Employees</span>
+                                    <span class="v"><field name="pb_employee_count"/></span>
+                                </div>
+                                <div class="pbk-st-tile">
+                                    <span class="k">Net</span>
+                                    <span class="v"><field name="pb_total_net" widget="monetary"/></span>
+                                </div>
+                            </div>
+                            <div class="pbk-sentback" t-if="record.pb_return_note.raw_value">
+                                <span class="hd">Sent back</span>
+                                <span class="why"><field name="pb_return_note"/></span>
+                            </div>
+                            <div class="pbk-foot" data-coach="pk-card-actions">
+                                <button t-if="record.pb_can_submit.raw_value" type="object" name="action_approval_submit" class="pbk-btn primary">Submit for approval</button>
+                                <!-- A decision is made where the request is, in
+                                     Approvals — never from a board button that
+                                     would have to guess which step it answers. -->
+                                <span t-if="record.pb_is_pending.raw_value" class="pbk-await">Waiting for approval</span>
+                                <button t-if="record.pb_can_reject.raw_value" type="object" name="action_payslip_run_cancel" class="pbk-btn ghost danger"
+                                        confirm="Reject this pay run? All payslips in it will be cancelled.">Reject</button>
+                                <button t-if="record.pb_is_done.raw_value" type="object" name="action_open_payroll_report" class="pbk-btn primary">Report</button>
+                                <button t-if="record.pb_is_done.raw_value" type="object" name="action_download_payslip_xlsx" class="pbk-btn ghost">Excel</button>
+                                <button t-if="record.pb_is_done.raw_value" type="object" name="action_send_email_all" class="pbk-btn ghost">Email</button>
+                                <button t-if="record.pb_is_done.raw_value" type="object" name="action_pb_bank_export" class="pbk-btn ghost">Bank file</button>
+                                <button t-if="record.pb_is_done.raw_value" type="object" name="action_pb_journals" class="pbk-btn ghost">Journals</button>
+                                <button t-if="record.pb_is_done.raw_value" type="object" name="action_pb_payments" class="pbk-btn ghost">Payments</button>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_hr_payslip_run_search_pb" model="ir.ui.view">
+        <field name="name">hr.payslip.run.search.pb</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="awaiting_me" string="Waiting for my decision" domain="[('pb_awaiting_me','=',True)]"/>
+                <filter name="current_period" string="Current period"
+                        domain="[('date_start','&lt;=',context_today()),('date_end','&gt;=',context_today())]"/>
+                <separator/>
+                <filter name="gb_state" string="Stage" context="{'group_by':'state'}"/>
+                <filter name="gb_month" string="Period" context="{'group_by':'date_start:month'}"/>
+                <filter name="gb_division" string="Division" context="{'group_by':'pb_division_label'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_payruns_kanban" model="ir.actions.act_window">
+        <field name="name">Pay Runs</field>
+        <field name="res_model">hr.payslip.run</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_hr_payslip_run_search_pb"/>
+        <field name="context">{'search_default_gb_state': 1}</field>
+    </record>
+</odoo>

@@ -1,0 +1,102 @@
+# Payobook SaaS — wildcard tenant routing (*.payobook.com)
+#
+# Deployed to /etc/nginx/sites-available/pb-wildcard. This is the file on disk
+# for the live box; keep the two in step.
+#
+# TLS uses the wildcard certificate. A tenant that has been given its own
+# per-host block (pb-tenant-cert) is matched by that block instead — nginx
+# prefers an exact server_name over a wildcard one — and never reaches here.
+server {
+  server_name *.payobook.com;
+
+  proxy_set_header X-Forwarded-Host $host;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header X-Forwarded-Proto $scheme;
+  proxy_set_header X-Real-IP $remote_addr;
+  add_header X-Frame-Options "SAMEORIGIN";
+
+  access_log /var/log/nginx/tenants-access.log;
+  error_log  /var/log/nginx/tenants-error.log;
+
+  proxy_buffers 16 64k;
+  proxy_buffer_size 128k;
+  proxy_read_timeout 900s;
+  proxy_connect_timeout 900s;
+  proxy_send_timeout 900s;
+  client_max_body_size 128M;
+
+  gzip on;
+  gzip_min_length 1100;
+  gzip_types text/css text/plain text/xml application/xml application/json application/javascript;
+
+  # ERRORS E2-5, part 2 — a mistyped workspace address.
+  #
+  # `riez.payobook.com` matches this wildcard, so it used to be proxied into the
+  # application, which had no database for that host and answered with the
+  # platform's own pre-database page: "No database is selected and the requested
+  # URL was not found in the server-wide controllers … Alternatively, use the
+  # X-Odoo-Database header." That page is rendered before a database is chosen,
+  # so nothing inside the product can reach it. nginx is the only place to answer.
+  #
+  # $pb_workspace comes from /etc/nginx/conf.d/pb-known-tenants.conf, which
+  # /usr/local/bin/pb-tenant-map regenerates from the live database list
+  # (dbfilter = ^%d$, so a hostname is serviceable exactly when a database of
+  # that name exists). It is a map and not a hard-coded list precisely so that a
+  # new tenant cannot be locked out by a config file nobody remembered to edit.
+  #
+  # `if` containing nothing but `return` is one of the two uses the nginx docs
+  # call safe. The guard and its `error_page` have to sit in the SAME location
+  # block: an `error_page` declared at server level is NOT consulted for a
+  # `return` fired from a server-level `if`, and the visitor gets nginx's own
+  # grey "404 Not Found" instead. Verified on nginx 1.24 — see ER14.
+  location = /_pb_no_workspace {
+    internal;
+    alias /var/www/pb-noworkspace/index.html;
+    default_type text/html;
+    add_header Cache-Control "no-store";
+  }
+
+  location ^~ /web/database/ { return 404; }
+
+  location /websocket {
+    proxy_pass http://127.0.0.1:8069;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Real-IP $remote_addr;
+  }
+
+  location / {
+    error_page 404 /_pb_no_workspace;
+    if ($pb_workspace = 0) { return 404; }
+    proxy_pass http://127.0.0.1:8069;
+    proxy_redirect off;
+  }
+
+  # proxy_intercept_errors is off (the default), so a 404 the APPLICATION
+  # returns is passed through untouched — the error_page above only ever sees
+  # the `return 404` on the line below it.
+  location ~ /[a-zA-Z0-9_-]*/static/ {
+    error_page 404 /_pb_no_workspace;
+    if ($pb_workspace = 0) { return 404; }
+    proxy_cache_valid 200 302 60m;
+    proxy_buffering on;
+    expires 864000;
+    proxy_pass http://127.0.0.1:8069;
+  }
+
+  listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/payobook-wildcard/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/payobook-wildcard/privkey.pem; # managed by Certbot
+  include /etc/letsencrypt/options-ssl-nginx.conf;
+  ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+}
+server {
+  listen 80;
+  server_name *.payobook.com;
+  return 301 https://$host$request_uri;
+}

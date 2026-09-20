@@ -1,0 +1,713 @@
+// =============================================================================
+// Who is paid by what — the Mapping screen's scheme board.
+//
+// One prefix, `.smp-`, so a grep finds every rule that paints this surface and
+// no other kit can shadow it. Every colour is a `--pbim-*` token: a hex
+// invented here is a second palette, and this board sits beside five others
+// that all read from the first one.
+//
+// NO GRADIENTS anywhere (design system), no `min()`/`max()` mixing units (Sass
+// dies on that and takes the WHOLE asset bundle with it, silently — WFPLAN).
+// Motion lives here rather than in JavaScript, inside a reduced-motion guard.
+// =============================================================================
+
+.pbim.smp {
+    --smp-gap: 14px;
+
+    position: relative;
+    color: var(--pbim-text);
+
+    // ------------------------------------------------------------- the strip
+    .smp-strip {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px 16px;
+        padding: 12px 14px;
+        border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r);
+        background: var(--pbim-surface);
+        margin-bottom: var(--smp-gap);
+    }
+
+    .smp-strip__where {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+    }
+
+    .smp-strip__icon { color: var(--pbim-muted); display: inline-flex; }
+
+    .smp-strip__line {
+        margin: 0;
+        flex: 1 1 220px;
+        min-width: 0;
+        color: var(--pbim-muted);
+    }
+
+    .smp-strip__acts {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .smp-select {
+        border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-sm);
+        background: var(--pbim-bg);
+        color: var(--pbim-text);
+        padding: 4px 8px;
+        font: inherit;
+    }
+
+    // -------------------------------------------------------------- the chips
+    .smp-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--pbim-line);
+        background: var(--pbim-bg);
+        color: var(--pbim-text);
+        font-size: 12px;
+        cursor: pointer;
+
+        &.is-bad {
+            border-color: var(--pbim-rose);
+            background: var(--pbim-rose-soft);
+            color: var(--pbim-rose);
+        }
+
+        &.is-warn {
+            border-color: var(--pbim-amber);
+            background: var(--pbim-amber-soft);
+            color: var(--pbim-amber);
+            cursor: default;
+        }
+    }
+
+    .smp-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        background: var(--pbim-soft);
+        color: var(--pbim-primary-dark);
+        white-space: nowrap;
+
+        &.is-bad { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+        &.is-warn { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+        &.is-good { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    }
+
+    .smp-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 1px 7px;
+        border-radius: 999px;
+        font-size: 10.5px;
+        letter-spacing: .01em;
+        background: var(--pbim-soft2);
+        color: var(--pbim-primary-dark);
+        white-space: nowrap;
+
+        &.is-soft { background: var(--pbim-cyan-soft); color: var(--pbim-cyan); }
+    }
+
+    // ----------------------------------------------------------- the picture
+    .smp-wire {
+        position: relative;
+        display: grid;
+        // minmax(0, …) on BOTH tracks: a `1fr` track takes its min-content from
+        // its children, and one long department name otherwise pushes the whole
+        // board off the right edge of the canvas (WFPLAN WF5).
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+        gap: 0 56px;
+        align-items: start;
+    }
+
+    .smp-lines {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: visible;
+    }
+
+    .smp-line {
+        fill: none;
+        stroke: var(--pbim-line-2);
+        stroke-width: 1.5;
+        transition: stroke .18s ease, stroke-width .18s ease;
+
+        &.is-drafted { stroke-dasharray: 4 4; }
+        &.is-on { stroke: var(--pbim-primary); stroke-width: 2.5; }
+        // GROUP P7 — following ONE line means everything else steps back.
+        &.is-dim { stroke: var(--pbim-line); opacity: .35; }
+    }
+
+    // =============================== GROUP P7 · the wires as a gesture
+    //
+    //  A row you can pick up says so before you touch it (the grip and the
+    //  grab cursor); a target you can drop on says so while you are over it
+    //  (the ring and the tint); and the one control that answers the drag —
+    //  the take-it-off bar — is `position: fixed`, because a bar at the foot
+    //  of a card that is four screens tall renders three thousand pixels
+    //  away from the mouse (GR40).
+    .smp-grip {
+        flex: none; display: inline-flex; color: var(--pbim-muted);
+        cursor: grab;
+    }
+    .smp-seg__row[draggable="true"] { cursor: grab; }
+    .smp-seg__row.is-held {
+        opacity: .45; border-style: dashed;
+        border-color: var(--pbim-primary);
+    }
+    .smp-seg__row.is-traced,
+    .smp-scheme.is-traced {
+        border-color: var(--pbim-primary);
+        box-shadow: 0 0 0 3px var(--pbim-soft);
+    }
+    .smp-scheme.is-drop {
+        border-color: var(--pbim-primary);
+        background: var(--pbim-soft);
+        box-shadow: 0 0 0 3px var(--pbim-ring);
+    }
+    .smp-wirechip[draggable="true"] { cursor: grab; }
+    .smp-wirechip.is-traced {
+        border-color: var(--pbim-primary);
+        background: var(--pbim-surface);
+        box-shadow: 0 0 0 2px var(--pbim-soft);
+    }
+    .smp-wirechip:focus-visible {
+        outline: 2px solid var(--pbim-primary);
+        outline-offset: 2px;
+    }
+    .smp-col__hint {
+        margin: 6px 0 0; font-size: 11.5px; color: var(--pbim-muted);
+        line-height: 1.5;
+    }
+    .smp-trash {
+        position: fixed;
+        left: 50%;
+        bottom: 24px;
+        transform: translateX(-50%);
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        border-radius: 999px;
+        border: 2px dashed var(--pbim-rose);
+        background: var(--pbim-surface);
+        color: var(--pbim-rose);
+        font-size: 13px;
+        font-weight: 700;
+        box-shadow: 0 10px 30px var(--pbim-ring);
+
+        &.is-over {
+            border-style: solid;
+            background: var(--pbim-rose-soft);
+        }
+    }
+
+    .smp-col { min-width: 0; }
+
+    .smp-col__head { margin-bottom: 8px; }
+
+    .smp-col__title {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: var(--pbim-muted);
+    }
+
+    .smp-col__sub { margin: 2px 0 0; font-size: 12px; color: var(--pbim-muted); }
+
+    .smp-bulk {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        margin-bottom: 8px;
+        border-radius: var(--pbim-r-sm);
+        background: var(--pbim-soft);
+        font-size: 12px;
+    }
+
+    // ------------------------------------------------------------- a segment
+    .smp-seg { margin-bottom: 8px; }
+
+    .smp-seg__row {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-sm);
+        background: var(--pbim-surface);
+        z-index: 1;
+
+        &:hover { border-color: var(--pbim-ring); }
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary);
+            outline-offset: 2px;
+        }
+    }
+
+    .smp-seg__icon { color: var(--pbim-primary); display: inline-flex; }
+
+    .smp-seg__name {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        flex: 1 1 auto;
+
+        b { font-size: 13.5px; overflow-wrap: anywhere; }
+        small { color: var(--pbim-muted); font-size: 11.5px; }
+    }
+
+    .smp-seg__wires {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 6px 12px 0 40px;
+    }
+
+    .smp-wirechip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--pbim-ring);
+        background: var(--pbim-soft);
+        font-size: 12px;
+
+        b { font-weight: 600; }
+    }
+
+    .smp-seg__kids {
+        margin: 6px 0 0 26px;
+        border-left: 2px solid var(--pbim-line);
+        padding-left: 12px;
+    }
+
+    .smp-seg__kid {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--pbim-line);
+
+        &:last-child { border-bottom: 0; }
+    }
+
+    .smp-tick { accent-color: var(--pbim-primary); }
+
+    .smp-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border: 0;
+        border-radius: var(--pbim-r-sm);
+        background: transparent;
+        color: var(--pbim-muted);
+        cursor: pointer;
+
+        &:hover { background: var(--pbim-soft); color: var(--pbim-primary); }
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary);
+            outline-offset: 1px;
+        }
+    }
+
+    // -------------------------------------------------------------- a scheme
+    .smp-group { margin-bottom: 14px; }
+
+    .smp-group__label {
+        margin: 0 0 6px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        color: var(--pbim-muted);
+    }
+
+    .smp-scheme {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-sm);
+        background: var(--pbim-surface);
+        z-index: 1;
+
+        &:hover { border-color: var(--pbim-ring); }
+    }
+
+    .smp-scheme__name {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        flex: 1 1 auto;
+
+        b { font-size: 13.5px; overflow-wrap: anywhere; }
+        small { color: var(--pbim-muted); font-size: 11.5px; }
+    }
+
+    // ---------------------------------------------------------------- a ring
+    .smp-ring {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        transform: rotate(-90deg);
+    }
+
+    .smp-ring__track {
+        fill: none;
+        stroke: var(--pbim-line);
+        stroke-width: 3;
+    }
+
+    .smp-ring__fill {
+        fill: none;
+        stroke: var(--pbim-primary);
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-dasharray: 94.25;
+        transition: stroke-dashoffset .5s ease;
+
+        &[data-smp-on="0"] { stroke: var(--pbim-amber); }
+    }
+
+    // ------------------------------------------------------- teaching states
+    .smp-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 34px 18px;
+        text-align: center;
+    }
+
+    .smp-empty__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: var(--pbim-soft);
+        color: var(--pbim-primary);
+
+        &.is-bad { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+    }
+
+    .smp-empty__title { margin: 0; font-weight: 600; }
+
+    .smp-empty__sub {
+        margin: 0;
+        max-width: 46ch;
+        color: var(--pbim-muted);
+        font-size: 12.5px;
+    }
+
+    .smp-teach {
+        display: flex;
+        gap: 12px;
+        margin-top: var(--smp-gap);
+        padding: 14px 16px;
+        border: 1px dashed var(--pbim-ring);
+        border-radius: var(--pbim-r);
+        background: var(--pbim-soft);
+    }
+
+    .smp-teach__icon { color: var(--pbim-primary); display: inline-flex; }
+    .smp-teach__title { margin: 0 0 4px; font-weight: 600; }
+    .smp-teach__sub { margin: 0; color: var(--pbim-muted); font-size: 12.5px; }
+
+    // -------------------------------------------------------------- a panel
+    .smp-scrim {
+        position: fixed;
+        inset: 0;
+        // The kit's own overlays sit at 20; the hub test refuses anything
+        // higher, and a panel that outranks a dialog is a panel nobody can
+        // close from the dialog.
+        z-index: 20;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 6vh 16px 16px;
+        background: rgba(30, 27, 46, .38);
+        animation: smp-fade .16s ease;
+    }
+
+    .smp-panel {
+        width: 100%;
+        max-width: 560px;
+        max-height: 84vh;
+        display: flex;
+        flex-direction: column;
+        border-radius: var(--pbim-r-lg);
+        background: var(--pbim-surface);
+        box-shadow: var(--pbim-sh-lg);
+        padding: 16px 18px;
+        animation: smp-rise .18s ease;
+
+        &.is-wide { max-width: 760px; }
+    }
+
+    .smp-panel__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+
+        h3 { margin: 0; font-size: 16px; font-weight: 700; }
+    }
+
+    .smp-panel__sub {
+        margin: 6px 0 12px;
+        color: var(--pbim-muted);
+        font-size: 12.5px;
+    }
+
+    // A wrapper between the panel and its scrolling list breaks the height
+    // chain: the panel is capped, the wrapper is a plain block, and the list
+    // inside it grows past the bottom of the screen taking the buttons with it.
+    // The chain has to be continuous — every link a flex column that may shrink.
+    .smp-panel__body {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+
+    .smp-panel__list {
+        overflow-y: auto;
+        // The kit's table wrapper CLIPS rather than scrolls (WFPLAN WF6), so a
+        // list that can grow says so for itself.
+        overflow-x: auto;
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+
+    .smp-panel__none {
+        margin: 10px 2px;
+        color: var(--pbim-muted);
+        font-size: 12.5px;
+    }
+
+    .smp-panel__acts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding-top: 12px;
+        border-top: 1px solid var(--pbim-line);
+        margin-top: 10px;
+    }
+
+    .smp-refuse {
+        margin: 0 0 10px;
+        padding: 8px 10px;
+        border-radius: var(--pbim-r-sm);
+        background: var(--pbim-rose-soft);
+        color: var(--pbim-rose);
+        font-size: 12.5px;
+    }
+
+    .smp-search {
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 7px 10px;
+        border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-sm);
+        background: var(--pbim-bg);
+        color: var(--pbim-text);
+        font: inherit;
+    }
+
+    .smp-kinds {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+
+    .smp-kind {
+        padding: 5px 11px;
+        border: 1px solid var(--pbim-line);
+        border-radius: 999px;
+        background: var(--pbim-bg);
+        color: var(--pbim-text);
+        font-size: 12px;
+        cursor: pointer;
+
+        &[data-smp-on="1"] {
+            border-color: var(--pbim-primary);
+            background: var(--pbim-primary);
+            color: #fff;
+        }
+    }
+
+    .smp-pick {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        width: 100%;
+        padding: 9px 11px;
+        margin-bottom: 6px;
+        border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-sm);
+        background: var(--pbim-surface);
+        color: var(--pbim-text);
+        text-align: left;
+        cursor: pointer;
+
+        &:hover { border-color: var(--pbim-primary); background: var(--pbim-soft); }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 1px; }
+    }
+
+    .smp-pick__name {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+
+        small { color: var(--pbim-muted); font-size: 11.5px; }
+    }
+
+    .smp-pick__go { color: var(--pbim-muted); display: inline-flex; }
+
+    // --------------------------------------------------------- a draft line
+    .smp-draft {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 4px;
+        border-bottom: 1px solid var(--pbim-line);
+
+        &[data-smp-on="0"] { opacity: .45; }
+        &:last-child { border-bottom: 0; }
+    }
+
+    .smp-draft__body { flex: 1 1 auto; min-width: 0; }
+
+    .smp-draft__wire {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0 0 2px;
+    }
+
+    .smp-draft__arrow { color: var(--pbim-muted); display: inline-flex; }
+
+    .smp-draft__why {
+        margin: 0;
+        color: var(--pbim-muted);
+        font-size: 12px;
+    }
+
+    // ------------------------------------------------------------- a person
+    .smp-person {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 9px 4px;
+        border-bottom: 1px solid var(--pbim-line);
+
+        &:last-child { border-bottom: 0; }
+    }
+
+    .smp-person__who {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+
+        small { color: var(--pbim-muted); font-size: 11.5px; }
+    }
+
+    // ------------------------------------------------------------ the phone
+    @media (max-width: 900px) {
+        .smp-wire {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 18px 0;
+        }
+
+        // A wire drawn between two stacked columns is a line across the middle
+        // of the page that means nothing. The chips on each team already say
+        // what it is attached to.
+        .smp-lines { display: none; }
+
+        .smp-strip { flex-direction: column; align-items: flex-start; }
+        // In a COLUMN the main axis is vertical, so the `flex: 1 1 220px` that
+        // lets the sentence take the middle of a wide strip makes it 220px
+        // TALL on a phone — a screen's worth of white space between the
+        // company name and its buttons.
+        .smp-strip__line { flex: 0 0 auto; }
+        .smp-strip__acts { width: 100%; }
+    }
+}
+
+// --------------------------------------------------- "Paid by" on a person
+.smp-paidby {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--pbim-line);
+    background: var(--pbim-surface);
+    font-size: 12px;
+
+    &[data-smp-on="0"] {
+        border-color: var(--pbim-rose);
+        background: var(--pbim-rose-soft);
+        color: var(--pbim-rose);
+    }
+}
+
+.smp-paidby__icon { color: var(--pbim-primary); display: inline-flex; }
+
+.smp-paidby__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+
+    small {
+        font-size: 10px;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: var(--pbim-muted);
+    }
+}
+
+@keyframes smp-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes smp-rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pbim.smp .smp-scrim,
+    .pbim.smp .smp-panel { animation: none; }
+    .pbim.smp .smp-line,
+    .pbim.smp .smp-ring__fill { transition: none; }
+}

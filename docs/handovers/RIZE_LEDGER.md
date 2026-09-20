@@ -1,0 +1,2700 @@
+# RIZE Programme Ledger — conventions, gotchas, rulings, phase log
+
+Every RIZE phase handover references this file. Read it FULLY before coding. Update it
+(append, never rewrite history) when you hit a new gotcha worth recording — that is part
+of the phase deliverable.
+
+Programme: implement docs/design/rize-hrms-blueprint.html end to end (all 10 modules +
+the 6 "Going further" wow features). Owner approved everything on 2026-08-31, including
+all 8 decisions AS RECOMMENDED (see Rulings). Autonomous run: phases execute back-to-back
+without owner approval between them.
+
+## Target & credentials
+
+- Implement/deploy ONLY on the live `payobook` database at https://payobook.com. No other DB.
+- Admin login for browser validation: `ash@biztinct.com` / `{withheld: rize-admin}`
+  (reset 2026-09-01 per owner pre-authorization — the owner gets this password in the
+  final report). Secondary test account: `igc1.validator` / `{withheld: rize-p0-validator}` (user id 2065,
+  email ig.c1.validator@payobook.local — DEACTIVATE at programme end).
+- Demo logins (X1 renamed the first one; the password did not change):
+
+  | Login | Was | Password | Who it is |
+  |---|---|---|---|
+  | `demo.recruiter@example.com` | `rize.w2.recruiter@example.com` (uid 4446) | `RizeW2!2026` | the recruiter A1–A3 did everything as; holds `pb_hiring.group_hiring_user` |
+  | `demo.a3.an@example.com` / `demo.a3.binh@example.com` | — (A3 named them) | portal, no password set | the two demo joiners |
+  | `lam.ngo@` `tuan.quach@` `diep.thai@` `linh.quan@` `danh.su@` `nguyen.tang@` `loc.uong@example.com` | — (TIDY renamed them) | `RizeP4!2026` / `RizeP8!2026` / `RizeP9!2026` as per R87/R99 | the wave-1 test cast |
+- Live server ssh alias: `Payobook19v2`. Odoo 19 CE, service `odoo-server`, config
+  `/etc/odoo-server.conf`, DB `payobook`, log `/var/log/odoo/odoo-server.log`, passwordless sudo.
+
+## Binding rules (violations = phase failure)
+
+1. **White-label**: the word "Odoo" (or its branding) must NEVER appear in any user-visible
+   string — labels, help, placeholders, errors, emails, reports, menu names. Use "Payobook"
+   or neutral wording. Technical identifiers (`from odoo import`, xmlids, paths) are untouched.
+2. **Plain-English UI**: screen wording uses the words a non-technical HR owner knows.
+   No internal jargon in labels/toasts/empty states.
+3. **ONE addons directory**: everything deploys to `/odoo/odoo-server/addons` on the server.
+   `/odoo/custom/addons` is DEAD (guard-filed). NEVER `rsync --delete` with
+   `/odoo/odoo-server/addons/` itself as destination (2026-08-26 incident) — `--delete` is
+   only allowed scoped per module dir.
+4. **Never deploy vendored standard addons** (web, hr, hr_*, crm, website*, spreadsheet,
+   resource, maintenance...) — the server has newer copies from its own clone.
+5. **Commit per feature**: explicit file staging (`git add <paths>`, never `git add .` /
+   `git add -A` — parallel sessions exist and the working tree has unrelated dirty files:
+   ABM/*.xlsx, docs/design/where-pay-data-comes-from.html, pb_contracts/models/pb_contract_360.py,
+   RIZE/). Commit after each validated slice, reviewer-focused message, end with
+   `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`. Do NOT push.
+6. **Design system**: Lucide icons only (via the single `ic()` registry in
+   `pb_import_kit/static/src/js/import_icons.js` — add missing icons THERE, camelCase keys;
+   the rail has its own separate kebab-case `ICONS` map in `pb_sidebar/static/src/js/pb_sidebar.js`).
+   No emoji. No gradients. Uniform indigo kit (`.pbim-*` primitives from pb_import_kit;
+   per-hub colour variants are RETIRED). Root class `pbim pbim-page <prefix>`.
+7. **Design bar**: "extreme WOW, intuitive, best in class" — hero moment, zero dead ends,
+   purposeful motion, bulk ergonomics, empty states that teach. Validate visually via
+   Chrome MCP (light AND dark) before reporting done.
+8. **Do not modify** `vendor_license_core` (product self-licensing; namespace collision —
+   RIZE vendor models are `pb.vendor.*`, never `vendor.license.*`).
+9. **Demo data is named DEMO and registered** (owner, 2026-09-16, D18 — supersedes every
+   earlier "test data stays, named RIZE W2"): no record a phase creates on `payobook` may
+   carry the customer name anywhere a viewer can see (names, subjects, notes, chatter,
+   logins, emails, job/department titles, letter bodies) — the owner shows `payobook.com`
+   to the customer's competitors. Names start with **DEMO**, logins are
+   `demo.<role>@example.com`, and every demo record is registered at creation with the
+   Demo data panel (X1 built the API and `pb_demo_seed` 19.0.1.2.0 is INSTALLED on
+   `payobook`; the guard keeps the module optional on a tenant that has not got it):
+
+   ```python
+   seed = self.env.get('pb.demo.seed')          # None if not installed
+   if seed is not None:
+       seed.register(records, "Three demo candidates")   # -> rows added
+       seed.register(contacts, "Their contacts", last=True)  # removed LAST
+   ```
+   `register(records, label=None, last=False)` is `@api.model`, takes a recordset
+   (one model per call), dedups per record, refuses every protected model except
+   `res.users` — a registered login is SWITCHED OFF on removal rather than deleted —
+   and returns how many rows it added. The rows land on the panel named
+   **"DEMO HR programme data"** (`programme_seed()`, profile `adopted`), beside the
+   world-building panel rather than instead of it. `preview_remove()` answers what
+   Remove would take out without taking anything out.
+   Phase reports carry a "Demo records" table. Module names, xmlids, docs
+   and commit messages keep "rize" — they are engineering-facing.
+
+## Deploy ritual (proven; follow exactly)
+
+1. Local: clean stage — `ssh Payobook19v2 'rm -rf /tmp/rize_stage && mkdir -p /tmp/rize_stage'`
+   (a reused staging dir carries previous deploys).
+2. `rsync -az --exclude=__pycache__ --exclude='*.pyc' --exclude=.git <module dirs> Payobook19v2:/tmp/rize_stage/`
+3. Per module on server: `sudo rsync -a --delete --chown=odoo:odoo /tmp/rize_stage/<m>/ /odoo/odoo-server/addons/<m>/`
+   (scoped `--delete` is correct; NEVER the addons root).
+4. `sudo service odoo-server stop`
+5. Detached upgrade (SSH-timeout-proof): write `/tmp/rize_run.sh` on server:
+   `sudo -u odoo python3 /odoo/odoo-server/odoo-bin -c /etc/odoo-server.conf -d payobook -i <new modules> -u <changed modules> --stop-after-init > /tmp/rize.log 2>&1; echo EXIT=$? >> /tmp/rize.log; touch /tmp/rize.done`
+   launch via `sudo systemd-run --collect --unit=rize-install /bin/bash /tmp/rize_run.sh`.
+   Poll for `/tmp/rize.done`, then grep the log for `EXIT=` and `Traceback|CRITICAL|ERROR`.
+   NOTE: the real error for some failures lands in `/var/log/odoo/odoo-server.log`, not /tmp/rize.log.
+6. `sudo service odoo-server start`; confirm `ss -ltn | grep 8069` binds (~50 s registry load)
+   and the log shows "Registry loaded".
+7. After JS/SCSS changes with no `-u`:
+   `sudo -u odoo psql -d payobook -c "DELETE FROM ir_attachment WHERE url LIKE '/web/assets/%';"`
+   then hard reload. `-u` does NOT surface SCSS compile errors — always Chrome-load a page
+   after an SCSS deploy and check for the red style-error bar.
+8. Verify version landed: compare `__manifest__.py` version to
+   `ir_module_module.latest_version` in the payobook DB (series prefix `19.0.` is added).
+9. Never `pkill -f odoo-bin` (self-matches). Kill stale PIDs by number. One odoo master only.
+10. Prefer JSON-RPC / browser `call_kw` for data ops over `odoo-bin shell`; shell requires
+    the service FULLY stopped.
+
+## Odoo 19 gotchas (all bit us before; do not rediscover)
+
+- `safe_eval` has no `nocopy` kwarg. `res.users.groups_id` → `group_ids` / `all_group_ids`.
+  `res.groups` has no `category_id`. `hr.employee.gender` → `sex`. `res_users.login_date` is gone.
+- `_sql_constraints` list is SILENTLY IGNORED — use
+  `_x_uniq = models.Constraint('unique(...)', 'msg')` class attributes.
+- `ir.cron`: `numbercall`/`doall` fields REMOVED — including them aborts the whole module load.
+  No eval expressions for `nextcall` in data files.
+- `post_init_hook` fires on INSTALL only, never on `-u` — pair with a migration when needed.
+- `<report>` and `<act_window>` shortcut tags are gone from data-file RNG — use explicit
+  `<record model="ir.actions.report">` / `ir.actions.act_window`.
+- View inheritance xpath may not select by `[@string=...]`. Search-view `<group>` has no
+  `expand`/`string` attrs.
+- Recordsets can't hold instance attrs (`self._foo = x` fails) — stateless builders; carry
+  mutable state via context values.
+- `hr.payslip.run` has NO `company_id` — always `getattr(run, 'company_id', False)`.
+- Unset Char reads as `False` — empty-check with `if not raw`.
+- Sass: `min()/max()` with mixed px/% units kills the ENTIRE asset bundle. Use
+  max-width/width pairs or `#{...}` interpolation.
+- ACL CSVs: some models lack `model_*` xmlids — grant via hook looking up `ir.model` by name.
+- Friendly record titles: override `_compute_display_name` (no `name_get`).
+- Every independent health/stat probe gets its OWN try/except (no shared except blocks).
+- Private `_methods` aren't callable over JSON-RPC — verify via psql or tests.
+
+## Platform contract for new modules (test-enforced)
+
+- Rail (`pb_sidebar`): items are data (`pb.sidebar.item`) declared by the OWNING module in
+  `<module>/data/pb_sidebar.xml` (`noupdate="0"`); globally unique label; unique sequence in
+  section; icon key must exist in `pb_sidebar/static/src/js/pb_sidebar.js::ICONS` (add the
+  SVG path there if new); claim `match_action_tags`/`match_models` nothing else claims;
+  update `TARGET_RAIL` in `pb_sidebar/tests/test_ia_c5.py` in the same change. No rail
+  sub-items — sub-navigation is the hub lens rail.
+- **Lifecycle hub soft registry (P0, for P5/P6/P10):** registry category
+  `"pb_lifecycle_lenses"`, exported as `LIFECYCLE_LENSES` from
+  `pb_lifecycle/static/src/js/lifecycle_hub.js` (alongside `LIFECYCLE_GATE`). Add with
+  `registry.category(LIFECYCLE_LENSES).add(key, {key, icon, label, Component, groups,
+  propsFromContext?}, {sequence})`; the shipped Journeys lens has no sequence, so start
+  bolted-on lenses at 20. ⌘K sequences taken by P0: mission **190**, deep links **2100**
+  (Start a journey), **2110** (Journey checklists, Admin group), **2120** (Letters).
+- Hub (`pb_hub`): `HubShell` with a STABLE config object built once in setup
+  (`{key, brand:{label,icon}, defaultLens, lenses:[...]}`); lenses mount cockpits with
+  `embedded: true` (cockpit template branches on `props.embedded` to drop its own H1);
+  per-lens `groups` gating is advisory — server facades enforce. Cross-module lenses via a
+  soft registry (clone: `pb_records/static/src/js/records_palette.js` registers into
+  `registry.category("pb_people_lenses")`, consumed by `pb_people_hub/static/src/js/people_hub.js`
+  `extraLenses()` — check exact category name in code before cloning).
+- ⌘K palette: entries via `pb_hub` palette registry (see
+  `pb_hub/static/src/js/hub_palette_entries.js` contract). Missions 110–180 (Lifecycle=190),
+  deep links 2000+.
+- Cockpit: `AbstractModel` facade (`pb.<name>`), `@api.model` reads, `_safe()` wrappers,
+  `self.env.companies.ids` scoping, row caps, NO sudo in cockpit reads; `ir.actions.client`
+  RECORD (never a bare tag); OWL component registered in `registry.category("actions")`;
+  test URL `/odoo/action-<tag>`.
+- Security: `ir.model.access.csv` for every model + global company `ir.rule`
+  (`['|',('company_id','=',False),('company_id','in',company_ids)]`); module group ladder
+  user→manager→admin with `implied_ids` (clone `pb_hr_workforce_planning/security`).
+- ESS: employee pages are PORTAL routes (`/my/...`, frontend assets only — never leak
+  backend assets), employee resolved from session user, own-record rules
+  `[('employee_id.user_id','=',user.id)]`; login-less flows use token routes
+  (clone `pb_ess_workforce/controllers/ack.py` route-boundary + sudo pattern).
+- Reminders: idempotent daily cron cloning `pb_employee_vault/models/employee_document.py`
+  `_cron_expiry_check` (config-param horizon, search-before-create on open `mail.activity`,
+  per-record try/except, honest count logging).
+- Mail: `mail.template` records clone `pb_pay_delivery/data/mail_template.xml`; bulk sends
+  clone `pb_ess_workforce/models/publish_notify.py` (config-param gate, burst cap, honest
+  counts). Outgoing debranding is automatic (biz_mail_debrand).
+- Approvals: reuse `biz.approval.chain.mixin` (`biz_approval_chain`) for new approval flows.
+  The payroll run's own level0/1/2 chain is UNTOUCHED.
+- Letters/PDF: clone the bilingual QWeb pattern from `pb_hr_fullandfinal/report/full_and_final_report.xml`.
+
+## Owner rulings (2026-08-31, all 8 decisions approved as recommended)
+
+- D1: contract EXTENSIONS & CONVERSIONS create a NEW linked contract (renewal-prefill
+  pattern, `pb_people_advanced/models/people_wizards.py get_defaults(renew_from=...)`);
+  in-place writes remain ONLY for probation trial-end dates. This deliberately supersedes
+  the 2026-08-29 "writes happen in place" contract-drawer ruling FOR EXTENSIONS/CONVERSIONS.
+- D2: canonical budget object = `wfp.budget.actual` (extended), other budget models demoted
+  for RIZE reporting; presentation-currency helpers get promoted OUT of pb_demo.
+- D3: calendar invites = email + ICS attachment (no external calendar integration).
+- D4: org chart is built as our own cockpit/portal panel (NOT the vendored widget).
+- D5: employee SEES their own PIP and must acknowledge it; config switch to hide.
+- D6: portal login auto-created when the employee record arrives; credentials email held
+  until joining day.
+- D7: welcome poster = designed card in the day-one team email.
+- D8: field-ownership matrix as in blueprint §14 — Zoho owns employee core + employment
+  status; Payobook owns money/probation/PIP/assets/vendors/budgets. Zoho→Payobook only;
+  Payobook→Zoho outbound ON HOLD (stub, don't build).
+- Scope: all 10 modules + all 6 wow features (journey timeline, recognition wall, new-hire
+  pulse, living org chart, budget heat view, anniversary engine).
+- **D9 (owner, 2026-09-01): do NOT clean up demo/test data created during phase testing —
+  payobook.com is a demo database.** Every handover's "clean up test records" test case is
+  hereby waived: leave test employees/journeys/records in place (tidy is nice, deletion is
+  not required). Test users/passwords still get LISTED in reports for the final summary,
+  and mails must still go to safe @example.com/test addresses.
+
+### Wave 2 rulings (owner, 2026-09-15 — the five uncoloured tabs are now in scope)
+
+- **D10 — mixed approach.** EXTEND Leave & Attendance inside `pb_timeoff` /
+  `pb_driver_checkin`; BUILD Hiring (`pb_hiring`), Goals (`pb_goals`), HR Comm
+  (`pb_hr_comm`) and Training (`pb_training`) fresh, in the RIZE style.
+- **D11 — build and test on `payobook` only.** Roll-out to the `rize` tenant is a
+  separate step under the tenant-module-sync rule, never part of a phase.
+- **D12 — outside services stay OFF** (LinkedIn posting, e-signature, Google
+  Calendar, Slack): email only, ICS attachments, screens built ready to connect.
+  Same spirit as D3. "Signed" on an offer is recorded by hand.
+- **D13 — field attendance = location + selfie.** No face matching, no biometric
+  storage. The existing `pb_selfie_attachment_id` on `hr.attendance` is the whole
+  of it.
+- **D14 (designer's call, owner delegated).** Training REUSES the installed
+  E-Learning content engine (`website_slides`) plus Surveys (`survey`, to be
+  installed in E1 — pre-authorised) as the test engine, with every learner surface
+  ours under `/my/training`; Hiring KEEPS the standard applicant / job / talent-pool
+  store underneath a bespoke requisition-to-offer layer. Rationale in
+  `RIZE_W2_HANDOVER.md` Part C.
+- Wave 2 ledger entries start at **R131**; ⌘K blocks A 3500 / B 3600 / C 3700 /
+  D 3800 / E 3900; validator `igc1.validator` (uid 2065) re-enabled for the wave
+  and archived as the last closeout step.
+- **D18 (2026-09-16) — demo data is kept, named DEMO, never RIZE, and on the
+  register.** The owner may show `payobook.com` to the customer's competitors, so no
+  demo record may carry the customer name; every one starts with DEMO and is
+  registered with the existing Load / Remove demo data mechanism (`pb_demo_seed`),
+  which is INSTALLED on `payobook` for this (authorised by the ruling). Existing
+  wave-1/2 demo rows are renamed and back-filled onto the register by phase X1
+  (`RIZE_W2_PX1_DEMO_SWEEP.md`, after A3, before E1). Binding rule 9. The owner
+  never presses Remove on `payobook` by accident: it goes through the demo-data
+  approval on a non-demo database.
+- **D16 (2026-09-16) — the phone check-in is for FIELD STAFF, not only for
+  drivers.** Drivers and agronomists both work away from a desk and both need
+  to check in from where they are; there was no way to give an agronomist the
+  app without calling them a driver on their own record. A new **Field staff**
+  group is what the app asks about and **Driver implies it**, so every
+  existing driver keeps working with nothing to migrate. What it records is
+  D13's and nothing more: a location and a photograph. The group ships EMPTY.
+- **D17 (2026-09-16) — the same escalation everything else uses.** "Tell HR
+  when a manager has sat on a day-off request" goes through the approval
+  engine's own late block, never a chaser written in the time-off module.
+- **D19 (2026-09-16) — the content engine's stock sample courses are DELETED
+  from `payobook`.** Furniture, gardening, trees and wood: seven courses the
+  E-Learning demo data installed, with their lessons, sections, memberships,
+  progress, in-lesson questions, extra resources, tag catalogue, star ratings
+  and the one sample certification tied to them. An authorised data deletion,
+  identified by XMLID ORIGIN and never by name, listed before it was carried
+  out, done through the ORM as the system with tracking off. Done by E2 before
+  anything else, so its tests never saw those rows. What was found and what
+  was deliberately left is in R182.
+
+## Phase plan & status
+
+| Phase | Module(s) | Status |
+|---|---|---|
+| P0 | pb_lifecycle — journey engine, letters, reminders, Lifecycle mission + hub + Journeys cockpit | **DONE** (live on `payobook`, 19.0.1.0.1, T1–T14 pass) |
+| P1 | pb_zoho_bridge — inbound webhook, event rules, CSV fallback | **DONE** (live on `payobook`, 19.0.1.0.0) |
+| P2 | pb_assets — register, handovers, requests, People-hub Assets lens, `/my/assets` | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass) |
+| P3 | pb_onboarding (+ journey timeline, new-hire pulse, living org chart wow) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass) |
+| P4 | pb_offboarding — resignation, clearances, handover, the settlement gate, Exits lens, /my/resignation | **DONE** (live on `payobook`, 19.0.1.0.0, T1-T16 pass) |
+| P5 | pb_probation — policy, `pb_probation_state`, the review machine, the training gate, Probation lens, `/my/journey` card | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass) |
+| P6 | pb_pip — coaching, the plan, the decision, `/my/growth`, its OWN group ladder | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T15 pass) |
+| P7 | pb_comp_ben (calendar, incentives+letters, My compensation, benefits) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass; one additive edit to pb_payhub — assets only, no version bump) |
+| P8 | pb_rnr (+ recognition wall, anniversary engine wow) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T12 pass; one additive JS edit to pb_home_hub — a soft lens registry, now test-enforced — and one icon added to pb_import_kit) |
+| P9 | pb_budget (+ budget heat view wow) | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T11 pass, T12 waived by D9; two additive JS edits — a soft lens registry on pb_insights_hub, now test-enforced, and one icon in pb_import_kit) |
+| P10 | pb_contract_lifecycle | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass, T14 waived by D9; one fallback-safe edit to `pb_hr_payroll_analytics`, its own commit) |
+| P11 | pb_vendor_access — vendor register + agreements, the role catalogue, hand-overs that auto-revert, two Settings panels | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T13 pass, T14 = memberships reverted / records left per D9; one additive JS edit to `pb_settings` — a soft CATEGORY registry, now test-enforced) |
+
+### Wave 2 (the five uncoloured tabs, from 2026-09-15)
+
+| Phase | Module(s) | Status |
+|---|---|---|
+| A1 | pb_hiring — the hiring request + budget check + Matrix route, the advert (versioned, agreed), referrals + `/my/refer`, the posting pack, screening, hiring rules, the Hiring lens | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T16 pass, 64 unit tests green; five live-only defects found and fixed — see R131–R136) |
+| A2 | pb_hiring — the interview loop (schedule + ICS, reminders, reschedule, no-show, the panel's token page + 24 working-hour timer, next-round/reject mails, debrief, `/my/hiring`, the Interviews tab) | **DONE** (live on `payobook`, 19.0.1.1.0, T1–T15 pass, 128 unit tests green; three live-only defects found and fixed — see R143–R145; one shared-module deploy gap repaired, R147) |
+| A3 | pb_hiring — the background check, the document request, the offer (letter, candidate page, signed copy), the closure into a joiner, recruiter cover, the agency link and the Hiring numbers lens | **DONE** (live on `payobook`, 19.0.1.2.0, T1–T14 pass, 201 unit tests green; six live-only defects found and fixed — see R153–R160) |
+| X1 | pb_demo_seed — the DEMO sweep: register API, install on `payobook`, rename every customer-named demo row, back-fill the register (D18) | **DONE** (live on `payobook`, 19.0.1.2.0 — INSTALLED, the only module whose state changed; T1–T11 pass; every customer-named demo row renamed and the whole programme's demo data on one register — see R161–R168) |
+| E1 | pb_training — the learner flow (`/my/training`), the Training lens on a new Learn hub, the door on the public course site, the white-label sweep | **DONE** (live on `payobook`, 19.0.1.0.1, T1–T14 pass, 62 unit tests green; `survey` + `website_slides_survey` installed per D15 and TWO auto-install modules came with them — see R173; six live-only defects found and fixed — R171–R180). **Owner checkpoint: the learner flow is waiting to be looked at.** |
+| E2 | pb_training — assignments (day-one / trial period / compliance / one-off / leadership), the chasing and its escalation, "ask for more time" through the Matrix, the trial-period link, compliance schedules, the day-one checklist step, the four new board tabs, due dates + a team page on `/my/training` | **DONE** (live on `payobook`, 19.0.1.1.0, T1–T13 pass, 168 unit tests green; the stock sample courses deleted first under D19; seven live-only defects found and fixed — R182–R190; one additive edit to `pb_demo_seed`, its own commit) |
+| E3 | pb_training — the training allowance and the cost claim, the Matrix route, the award on the one money door, certificates in the vault, the Training lens on Insights with a spreadsheet, and the weekly/monthly pack | **DONE** (live on `payobook`, 19.0.1.2.0, T1–T10 pass, 246 unit tests green; five live-only defects found and fixed — R192–R196; one real pay run touched and reported, R199) |
+| B1 | pb_goals — goal years, the goal sheet with weighted goals and key results, the manager + HR-lead route, templates, the joining-checklist kick-off, `/my/goals`, the Goals lens | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T11 pass, 80 unit tests green; `pb_goals` is the ONLY module whose state changed; ten live-only defects found and fixed — see R200–R211) |
+| B2 | pb_goals — monthly check-ins, mid-year and joining-month rules, change requests after the lock, scoring roll-ups, the Insights lens and the Home card | **DONE** (live on `payobook`, 19.0.1.1.0 with its migration, T1–T11 pass, 179 unit tests green; `pb_goals` is the ONLY module whose state changed; nine live-only defects found and fixed — one of them a B1 defect that had been live since B1 — see R212–R224) |
+| D1 | pb_timeoff + pb_driver_checkin — public holidays for everybody (a Workforce lens + `/my/holidays`), escalation to the HR lead, the backdating rules and the sick-leave exception, the past-leave lock, the carry-forward watch, the Field staff group and the field check-in chip, and Mission Control's soft lens registry | **DONE** (live on `payobook`: `pb_timeoff` 19.0.1.4.1 with its migration, `pb_driver_checkin` 19.0.1.5.0, `pb_today` 19.0.1.5.0, `pb_mission` 19.0.1.10.0, `biz_approval_workflow` Python-only; T1–T10 pass, 110 unit tests green; NO module was installed or uninstalled; eight live-only defects found and fixed — see R225–R234) |
+| C1 | pb_hr_comm — the communication calendar, scheduled and recurring announcements, the audience, the two-day reminder and the edit window, the optional sign-off, the Announcements lens, the Home card, and the birthday and anniversary cards | **DONE** (live on `payobook`, 19.0.1.0.0, T1–T11 pass, 78 unit tests green; `pb_hr_comm` is the ONLY module whose state changed; one additive icon in `pb_import_kit`; seven live-only defects found and fixed — see R235–R242) |
+
+## Gotchas discovered during RIZE phases (append here)
+
+### P0 (pb_lifecycle, 2026-08-31)
+
+- **R1 — OWL reserves `lt`/`gt`/`lte`/`gte` as OPERATORS.** `t-as="lt"` compiles the
+  loop variable into the generated function as a bare `<`, and the whole template dies
+  with `OwlError: Failed to compile template ... Unexpected token '<'` — pointing at the
+  template, never at the loop. Never name a `t-as` variable `lt`, `gt`, `lte`, `gte`,
+  `and`, `or`, `not`, `in`. (Hit on `t-as="lt"` for letters; renamed to `ltr`.)
+- **R2 — JavaScript has no implicit string concatenation.** A Python habit
+  (`_t("one " "two")`) is a `SyntaxError: missing ) after argument list` that kills the
+  ENTIRE backend asset bundle: every OWL surface in the product goes blank, and the only
+  clue is one console line. Syntax-check new JS before deploying:
+  `sed 's#^import .*$##; s#^export ##' f.js > /tmp/c.mjs && node --check /tmp/c.mjs`.
+- **R3 — `activity_schedule()` lives on `mail.activity.mixin`, not `mail.thread`.** A model
+  that inherits only `mail.thread` raises `AttributeError` on it. Inside a per-record
+  try/except (which the reminder-cron pattern mandates) the job then runs to completion
+  reporting zero nudges, with the real cause only in the log. Inherit
+  `['mail.thread', 'mail.activity.mixin']` on anything that schedules activities.
+- **R4 — a QWeb render context key named `request` shadows the HTTP request.** The page
+  dies with `TypeError: 'Request' object is not subscriptable` and the visitor gets a
+  500. Name the key anything else (`feedback`, `record`, `payload`).
+- **R5 — server-side QWeb has no `t-key`.** Harmless, but it logs
+  `Unknown directives or unused attributes: {'t-key'}` on every render. `t-key` belongs to
+  OWL templates (`static/src/xml`), never to backend/frontend `<template>` views.
+- **R6 — a `mail.template`'s own rendered `email_to` can reach `mail.mail` EMPTY.** The
+  message is created, queued and addressed to nobody, with no error anywhere. The same
+  address passed in `send_mail(..., email_values={'email_to': to})` lands. Proven side by
+  side. **Always pass the recipient explicitly**; keep the template field as documentation.
+- **R7 — `res.users.group_ids` is DIRECT membership only.** Searching it misses everyone
+  who holds a group through `implied_ids` — i.e. most administrators. Odoo 19's
+  `res.groups.all_user_ids` is the transitive set; use it (the vault's expiry-cron
+  precedent predates it and has the same blind spot).
+- **R8 — seed data must be COMPANY-LESS.** `company_id` defaults to the loading user's
+  company, so a seeded record installs onto whichever company ran the install and the
+  `['|',('company_id','=',False),...]` rule then hides it from everyone else. Ship
+  `<field name="company_id" eval="False"/>` on every `noupdate="1"` seed.
+- **R9 — a RELATED STORED `company_id` does not follow a raw-SQL parent update.** It is a
+  real column. A migration that re-points parents must re-point the children explicitly,
+  or the children stay invisible to the very read that uses them.
+- **R10 — a non-stored computed field cannot be used in a search-view `<filter>` domain.**
+  Filter client-side over a payload that already carries the number.
+- **R11 — the odoo log goes to `logfile` in `/etc/odoo-server.conf`, not to stdout.** A
+  detached test run's `> /tmp/x.log` captures almost nothing; test results land in
+  `/var/log/odoo/odoo-server.log`. Add `--logfile=/tmp/x.log` to a test run, or grep the
+  server log. Also: `--no-http` does NOT free port 8069 here — pass `--http-port=8199`;
+  and `--longpolling-port` no longer exists in Odoo 19.
+- **R12 — CREDENTIAL DRIFT.** `ash@biztinct.com` / `{withheld: apex-admin-legacy}` is **wrong** on the live
+  `payobook` database (answers "Wrong login/password"; the user is uid 2, Mitchell Admin,
+  and is active). P0 validated through the dormant `igc1.validator` account (uid 2065)
+  left by an earlier phase — reactivated, given a temporary password and the System /
+  HR User / Lifecycle Administrator tiers. **Owner debt: get the real admin password, and
+  deactivate uid 2065 when the programme is done.**
+- **R13 — a field-level `groups=` naming a group from the SAME module is a trap.** It is
+  resolved at registry load, which on a fresh install runs before that module's security
+  data exists, and it also refuses the very `create` that mints the value. Protect tokens
+  with the ACL, the record rule and by never putting them in a view or a payload instead.
+
+### P1 (pb_zoho_bridge, 2026-09-01)
+
+- **R14 — this Odoo 19 build keeps employment fields on a VERSION record, not on
+  `hr_employee`.** `job_title`, `department_id` and friends are `related='version_id.…'`
+  and non-stored, so `SELECT job_title FROM hr_employee` fails with *column does not
+  exist* while the ORM read of the same field works perfectly. Verify employee writes
+  through JSON-RPC / the ORM, never with raw SQL, or a passing write looks like a
+  failure and a failing one can look like a pass. (`hr.version` is where Odoo 19 put
+  what used to be `hr.contract`.)
+- **R15 — the deploy ritual's `echo EXIT=$? >> /tmp/x.log` can silently not run.** Two
+  ways, both hit in one afternoon. (a) The heredoc that writes the run script fails when
+  `/tmp/rize_run.sh` already exists **owned by root** — /tmp's sticky bit blocks the
+  overwrite, the `&&` chain does not cover the `systemd-run` on the next line, and
+  systemd cheerfully re-runs the PREVIOUS PHASE'S script. P1 spent one full cycle
+  watching "EXIT=0" for an install of pb_lifecycle. (b) Once odoo owns the logfile the
+  root shell's append is refused, so no EXIT line is ever written. **Use a fresh
+  per-phase script name written with `sudo tee`, and take the real verdict from
+  `journalctl -u <unit>` plus `ir_module_module.state/latest_version` — never from the
+  presence of an EXIT line.**
+- **R16 — `search([], limit=1)` on `res.company` is the WRONG default company.** It is
+  the lowest id, which on a mature database is "Your Company", the empty shell left by
+  the initial install. Anything scoped to it disappears behind the standard company
+  record rule, and the screen says "nothing here" over a database that is full. Pick the
+  company with the most employees (`_best_company()` in `pb_zoho_bridge/hooks.py`) —
+  that is the operating company by definition and needs no configuration.
+- **R17 — a catch-all rule with an empty match value matches the cases you meant to
+  exclude.** "Someone new arrived → start their joining checklist" also fires for a
+  person whose record reaches Payobook for the first time already marked *Terminated* —
+  a backfill, not a joiner. Any rule table that has a wildcard row needs its guard rows
+  ABOVE the wildcard, and the seed file is the place to ship them.
+- **R18 — `type='json'` on an `http.route` is deprecated on Odoo 19.** It still works
+  (it is an alias for `'jsonrpc'`) but every module load logs a DeprecationWarning WITH
+  A FULL STACK TRACE, which is a lot of noise to read past when hunting a real failure.
+  New routes use `type='jsonrpc'`. The Darwin webhook still uses the old spelling.
+- **R19 — `/api/*` on this box needs the Host header.** The server is multi-tenant with a
+  dbfilter, so `curl http://127.0.0.1:8069/api/...` gets a 404 "No database is selected"
+  rather than the controller. Pass `-H "Host: payobook.com"` when testing locally; the
+  real caller uses `https://payobook.com/...` and is fine.
+- **R20 — dark mode is broken on NATIVE LIST VIEWS, product-wide.** Setting
+  `data-theme="dark"` (biz_theme's own switch, `biz_theme/static/src/scss/biz_variables.scss:276`)
+  leaves list rows with near-white text on a near-white background. It is NOT caused by
+  any one module — P0's own "Journey checklists" list breaks identically. There is also
+  no user-facing toggle that sets the attribute today, so it is latent rather than live.
+  **Do not "fix" it inside a feature phase**; it is a biz_theme job with a blast radius
+  of every screen in the product.
+- **R21 — a duplicate audit row cannot carry the key it duplicates.** With a unique
+  constraint on `external_event_id`, the second sighting of an event must be written with
+  that field EMPTY (Postgres keeps NULLs distinct) and a `duplicate_of_id` pointer
+  instead. Writing the key again turns an idempotent skip into an integrity error.
+
+### P2 (pb_assets, 2026-09-01)
+
+- **R22 — a PARTIAL unique index needs an explicit flush, or a legitimate handover is
+  refused.** `pb_asset_assignment` carries
+  `CREATE UNIQUE INDEX ... (asset_id) WHERE state = 'open'` (a plain unique constraint
+  would forbid the SECOND completed loan of the same laptop, which is the history the
+  table exists to keep). A transfer closes one row and opens the next in one breath —
+  and Odoo 19 leaves the `write` in the towrite buffer while the immediately following
+  `create` flushes its own INSERT first, so the index sees two open rows and the user
+  gets a raw Postgres message on a perfectly legal action. `self.env.flush_all()` at the
+  end of the CLOSING method makes the order a property of that method rather than of
+  every caller's luck.
+- **R23 — `currency._convert()` with no rate returns the amount UNCHANGED.** It does not
+  raise and it does not answer zero: 32,000,000 ₫ comes back as "32,000,000 USD", which
+  is not a rounding error but a lie by a factor of twenty-six thousand. On this database
+  every currency reports `rate = 1.0` for the operating company, so EVERY conversion is
+  silently a no-op. Test for it before showing the number: two DIFFERENT currencies
+  reported at the SAME rate means nobody has told the database what a dong is worth, and
+  the honest answer is to show nothing.
+- **R24 — `read_group` is gone on Odoo 19.** `_read_group(domain, groupby, aggregates)`
+  replaces it and returns a list of TUPLES whose first element is a recordset, not dicts
+  with `('id', 'name')` pairs. Keep a `mapped()` fallback around it.
+- **R25 — ordering a Selection-backed list by `kind` sorts alphabetically, not by
+  importance.** `_order = 'kind, sequence, name'` put every DIGITAL category above every
+  physical one, so the "Add an item" dialog defaulted to *Email account* on a register
+  that is mostly laptops. Let the `sequence` column carry both the grouping and the
+  priority, and never let a dialog's default fall out of an incidental sort.
+- **R26 — equal-specificity CSS is decided by SOURCE ORDER, and a kit file's later
+  generic rule wins.** `.ast-country { width: 190px }` in the filters block was overruled
+  by `.ast-in { width: 100% }` two hundred lines below it; the country picker ate its own
+  row and pushed the filter chips down. Qualify the narrow rule (`.ast-in.ast-country`)
+  rather than moving blocks around.
+- **R27 — a country list has TWO jobs and needs two lists.** The FILTER bar must offer
+  only countries the data actually uses (a filter that matches nothing is a broken
+  promise), but the ADD dialog must offer every country or the register can never grow
+  past the office it started in. Ship `countries` and `countries_all` separately, and
+  default the dialog to `env.company.country_id` — an alphabetical world list defaults a
+  Vietnamese user to Afghanistan.
+- **R28 — fold accents before slugging a filename, never strip them.** A plain
+  `[^A-Za-z0-9]` pass turns "Bùi Hữu Dũng" into `B_i_H_u_D_ng`, which nobody can read and
+  which collides with every other name of the same shape. NFKD + drop combining marks,
+  then hand-map `đ`/`Đ` (Vietnamese `đ` carries no combining mark, so NFKD leaves it).
+  Same finding as the MAPFIX component-code fix — it is worth doing once, centrally.
+- **R29 — the ESS demo logins are PASSWORDLESS by design (`pb_demo`, C18.14).** They are
+  not broken accounts; an admin sets a password at demo time. P2's portal tests set
+  `{withheld: rize-ess-p2}` on `ess1.demo@payobook.com` (employee 10080) and
+  `ess2.demo@payobook.com` (employee 9884). **Owner debt: clear those passwords at
+  programme end**, exactly as with uid 2065.
+- **R30 — a journey-opening extension must be idempotent, because it is reached twice.**
+  `pb.journey.case.action_open()` and the connected system's `_after_offboard` BOTH lead
+  to the same case, since `pb.zoho.pipeline._open_case()` already calls `action_open()`
+  itself. The append helper de-duplicates on the FINISHED task name ("Return: VN-LT-00001
+  MacBook"), which is the only identity such a task has. Anything P3–P11 bolts onto a
+  journey hook needs the same treatment.
+
+### P3 (pb_onboarding, 2026-09-01)
+
+- **R31 — a column a later phase adds to `pb.journey.template.step` does NOT
+  reach `pb.journey.task`.** P0 builds its task values from a FIXED dict, and
+  that is the right shape for it — a task is the case's own copy of a step, so
+  the copy is deliberate and explicit. But it means P3's `automation_key` was
+  dropped on the floor for all nine steps of the first live arrival, and the
+  only symptom was steps that never ran themselves: no laptop request, and
+  three day-one emails waiting forever for a human. There is no error and
+  nothing in the log. **Extend `_generate_tasks()`, copy from `step_id` right
+  after `super()`, and only where the task's own value is empty** so a value
+  set by hand on a running case survives. Every phase from P4 on that adds a
+  step column has to do the same.
+- **R32 — the kit's `.pbim-stats` is a grid with NO COLUMNS.** That is on
+  purpose (each cockpit knows how many numbers it has), but a lens that does
+  not declare `grid-template-columns` opens on a stack of full-width tiles and
+  looks broken. Copy `.lcj-kpis` (`pb_lifecycle/static/src/scss/journeys.scss:33`):
+  five columns, three under 1180px, two under 700px.
+- **R33 — `.pbim-badge` capitalises every word.** Correct for a status word
+  ("Approved"), wrong for a sentence: the buddy dialog's eligibility reasons
+  rendered as *"Only 0 Month(S) Here — A Buddy Needs At Least 6."* Any badge
+  that carries a SENTENCE has to set `text-transform: none` itself.
+- **R34 — a sentence split across several `t-esc` nodes loses the whitespace
+  between them.** OWL collapses the newline, and the empty state read
+  "There are2 new joiners on this board". Build the whole sentence in ONE
+  expression rather than interleaving text nodes and `t-esc`.
+- **R35 — an XML comment ruled with hyphens is not well-formed XML.**
+  `<!-- ---------- before they arrive ---------- -->` in a data file is a parse
+  error at module load that takes the entire file with it. (W22 again, this
+  time in a `data/` file rather than an OWL template — the rule is the same
+  everywhere: rule section comments with `=`, never `-`.)
+- **R36 — the live server's clock is a DAY BEHIND the agent's local date.** A
+  test that writes `date.today()` from the laptop into a record the cron finds
+  with `due_date <= today` writes tomorrow, the cron finds nothing, and the
+  feature looks broken when it is fine. Take "today" from the server (or write
+  a date safely in the past) whenever a date-driven job is being tested.
+- **R37 — `mail.mail.unlink()` over JSON-RPC cascades into
+  `mail.message.unlink()` and is REFUSED, even for uid 2.** To take test
+  traffic out of the outgoing queue without an SMTP send, write
+  `state = 'cancel'` on the messages instead of deleting them. (This database
+  has a live `smtp.gmail.com` server and an hourly queue cron, so anything
+  left `outgoing` really does go out.)
+- **R38 — `pb.asset.country_id` is NOT NULL and there is no `available`
+  state.** The states are `spare / assigned / repair / to_scrap / scrapped /
+  deactivated`. Creating a test asset without a country is a raw Postgres
+  not-null violation, and writing `available` is a plain ValueError.
+- **R39 — the PORTAL surface has no dark mode at all.** Neither biz_theme's
+  `data-theme="dark"` attribute nor an emulated `prefers-color-scheme: dark`
+  changes a single pixel of `/my/...`: the website frontend is light-only by
+  design, and R20's native-list problem is a BACKEND one. So "check the portal
+  in both themes" is satisfied by checking that every colour resolves — which
+  is why every rule in `portal_onboarding.scss` carries a literal fallback
+  beside its token. Do not go looking for a portal dark palette to fix.
+- **R40 — `_read_group` cannot be called over JSON-RPC** (private method), and
+  neither can any other `_`-prefixed helper. Aggregates during validation go
+  through psql, or through a public facade method written for the purpose.
+- **R41 — the ⌘K seed file's deep links run to 2370, not 2360.**
+  `pb_hub/static/src/js/hub_palette_entries.js` auto-numbers its entries
+  `DEEP_LINK_BASE + (i + 1) * 10` over 37 rows, so the occupied range is
+  2010-2370 and grows every time somebody adds a seeded row. P2 took 2200-2220
+  and P3 was told to take 2300-2320 — both sit ON TOP of seeded entries
+  (`structures` is 2300, `statutory` 2310, `integrations` 2320). It is not an
+  error, because the keys differ and both rows render, but the order of two
+  unrelated palette rows then depends on registration order rather than on a
+  number anybody chose. **P3 moved to 2400-2420; P4 onwards start at 2500**,
+  and count the seed file rather than trusting the comment in it.
+
+### P4 (pb_offboarding, 2026-09-01)
+
+- **R42 — `t-att-class` with a DICT is an OWL thing, and server-side QWeb is
+  not OWL.** `<div class="pbme-step" t-att-class="{'pbme-step--done': x}">`
+  compiles, renders and produces
+  `class="{'pbme-step--done': True, 'pbme-step--current': False}"` — the
+  Python dict's REPR, written into the attribute. Worse, `t-att-class`
+  REPLACES the static `class=` rather than adding to it, so the element also
+  loses the class every rule was written against. No error, no warning: the
+  resignation status stepper simply rendered as four lines of unstyled text
+  with no dots. In a `<template>` (portal, website, reports) the only correct
+  form is `t-attf-class="base #{cond and 'mod' or ''}"`. Inside
+  `static/src/xml` OWL templates the dict form is right and merges with the
+  static class — the two look identical and behave completely differently.
+- **R43 — a public `@api.model` helper that takes a RECORD is called with an
+  INTEGER over JSON-RPC.** A recordset argument does not survive the wire; it
+  arrives as a plain id. An integer walks straight past `if not employee`,
+  answers `False` to every `getattr`, and — inside the try/except that every
+  one of these helpers correctly has — silently returns the FALLBACK. P4's
+  notice policy offered a Vietnamese leaver 30 days instead of 45 with no
+  error anywhere and no wrong-looking screen. Any public method whose argument
+  is a record must coerce at the door (`pb.notice.policy._as_employee`), and
+  any RPC validation of one must be read with this in mind before it is
+  believed.
+- **R44 — a gate that has nothing to check PASSES.** `pb.exit.clearance
+  .pending_for()` answers "nothing pending" for a leaving checklist that has
+  no clearance rows at all — which is true, and which meant the final
+  settlement gate waved through every exit opened before this module existed.
+  A probe over a set that is empty because it was never populated is
+  indistinguishable from a probe over a set that is empty because everything
+  is done. Any phase that adds a REQUIRED companion record to an existing
+  parent has to backfill the parents that already exist, and the backfill
+  belongs in the daily job (idempotent) rather than in a migration nobody
+  reruns. P4's `_backfill_clearances()` is the shape.
+- **R45 — the kit's `.pbim-modal` carries NO padding and IS a column flex
+  box.** Deliberately: it is built for the `__head` / `__body` / `__foot`
+  rails, which pad themselves. A free-form dialog that only sets a width
+  therefore inherits `padding: 0` and `overflow: hidden`, and its heading is
+  clipped flush against the left edge while its textarea runs off the right.
+  A dialog that writes its own contents must set `display: block`, its own
+  padding and its own `overflow: auto`. (P3's `.obb-modal` sets a width and
+  nothing else — worth a look the next time somebody opens the buddy dialog.)
+- **R46 — bracketed plurals are the tell.** "9 step(s)", "1 clearance(s)",
+  "2 thing(s)" is how a screen announces it was written by a programme rather
+  than by a person, and this product's whole voice is the other thing. Use
+  `offboarding_common.counted(n, one, many)` (or the same two lines inline in
+  JS/QWeb). Log lines keep the shorthand — nobody reads a log for its prose.
+- **R47 — a mail queued with `force_send=False` on THIS database goes out
+  within the second.** The hourly queue cron is not what sends it; something
+  flushes at commit. R37's advice to cancel test traffic still applies but the
+  window is far smaller than "an hour": cancel in the same script that sent,
+  and assume anything addressed to a real mailbox has already arrived. Test
+  with `@example.com` addresses only — and note that the lifecycle-manager
+  fallback puts `ash@biztinct.com` on every HR notification, so the owner sees
+  test traffic whatever you do.
+- **R48 — `hr.full.final.settlement` has no chatter and P4 deliberately did
+  not give it one.** Adding `mail.thread` to a model the payroll batch creates
+  in bulk is a change with a blast radius far wider than an exit. The closure
+  note goes to the leaving checklist's chatter, which is where somebody would
+  look for it anyway. Its `_sql_constraints` list is also silently ignored on
+  Odoo 19, so the "one settlement per employee per date" rule is not actually
+  enforced — a pre-existing hole, not P4's, but do not rely on it.
+
+### P5 (pb_probation, 2026-09-01)
+
+- **R49 — a duplicate test whose key can be FALSE matches every row that is
+  also empty.** `_make_feedback_requests` deduplicated on
+  `respondent_user_id = False OR respondent_email = <theirs>`, and on this
+  database most employees have no login — so the SECOND peer was recognised as
+  "already asked" because the FIRST peer also had no user, and a three-person
+  review silently sent one link. `sent: 1` was the only symptom, and it looks
+  like a mail failure rather than a domain bug. **Only the identifiers a record
+  actually HAS may go into an idempotency key**; a record with none has no
+  identity to be a duplicate of and must be created. (The same shape as R21 —
+  an audit row cannot carry the key it duplicates — reached from the other
+  direction.)
+- **R50 — ordering by a Selection column sorts by the STORED STRING.** A board
+  that wanted "the live one first" wrote `order='state, id desc'` and got
+  `closed` before `consolidation` before `feedback` … because that is
+  alphabetical order, not lifecycle order. The Probation lens showed "Closed"
+  for a person whose second round had just been scheduled, and the live review
+  was invisible. Never let a state's importance be implied by its spelling —
+  ask the question in a domain (`state in OPEN`) and fall back, which is what
+  `pb.probation.review.for_employee()` does.
+- **R51 — `t-out` ESCAPES a plain string and only renders `markup()` raw.**
+  An `Html` field crossing JSON-RPC arrives in the browser as a plain string,
+  so a cockpit that hands it to `t-out` puts `<h4>How they were rated</h4>` on
+  the screen — the report's own source code, rendered as prose. Wrap it once
+  with `markup()` from `@odoo/owl` (the codebase's existing idiom — see
+  `pb_dashboard`), and only where the HTML was built server-side with every
+  interpolated value `escape()`d.
+- **R52 — R43 bites inside a module as easily as across one.** P5's own
+  `pb.training.track.tracks_for()` / `ensure_for_employee()` are public,
+  take a record, are called with records internally — and blew up with
+  `'int' object has no attribute 'job_id'` the first time a test called them
+  over RPC. Every public method whose argument is a record needs the
+  `_as_employee` coercion at the door, including the ones a phase writes for
+  itself.
+- **R53 — a "run it now" button must do exactly what the night does.**
+  `run_probation_automation` originally ran four of the daily job's five
+  pieces (it left out the trial-state top-up), which meant the number it
+  reported could not be compared to the morning's log — and the one piece it
+  skipped was the only one reachable for testing, because everything else in
+  the cron chain is a private method (R40).
+- **R54 — a switch that is off and does not SAY so is reported as broken.**
+  `pb_probation.auto_trigger` ships off, because the first night after install
+  would otherwise open a review and email a manager for every trial period
+  already inside its lead time. Off, the daily job COUNTS them and logs the
+  number ("3 would have had a review opened tonight"), and the lens says the
+  same thing on screen with the same number. The kill-switch/log-only first run
+  is worth copying for any phase whose cron writes to people.
+- **R55 — the live database has NO employee with a trial end date.** All 4,537
+  are `pb_probation_state = 'passed'` after the backfill, and every
+  `employee_type` is `employee`, so the `na` branch never fired in anger. A
+  phase that needs somebody mid-trial has to make one. (It also means the
+  backfill's expensive path — the ORM pass over the exceptions — was never
+  exercised at scale; the cheap path, one UPDATE over 4,537 rows, ran in
+  well under a second.)
+
+### P6 (pb_pip, 2026-09-01)
+
+- **R56 — reading ONE field of an `hr.employee` reads FORTY, and about forty
+  of them are behind payroll groups.** `employee_id.name` prefetches every
+  stored field of the record, `check_field_access_rights` is applied to the
+  whole prefetch, and this build's employee carries `payroll_country`,
+  `insurance_code`, `trade_union_fee_code`, `tham_gia_bhxh` and some
+  thirty-odd more behind `groups=`. So a reader who holds a NEW module's
+  group but not the payroll ones gets `AccessError: The fields
+  "location,full_name_vn,org_employee_type,…"` — forty names nobody asked
+  for — in the middle of an action that wanted a first name. It is invisible
+  to any phase whose testers are administrators, which is every phase before
+  this one. **A module with its own group ladder must read employee
+  attributes as the system** (`pb.pip.case._person()`,
+  `pb.pip._emp()`); the security boundary stays the search that found the
+  record. The alternative — requiring the new group's holders to also hold
+  the payroll groups — hands out far more than it withholds.
+- **R57 — a `noupdate` seed is skipped only if the FILE says so AND the
+  `ir_model_data` row says so.** They are ANDed, both directions. Clearing
+  `ir_model_data.noupdate` in SQL is not enough on its own (P6 watched a
+  reworded letter template not land, twice), and neither is stripping the
+  file attribute. To genuinely reload a seeded record on this database:
+  `UPDATE ir_model_data SET noupdate=false WHERE module='<m>'`, strip
+  `noupdate="1"` from the file, `-u`, then re-sync the clean file. And
+  **restore the flags PRECISELY afterwards** — P6 set all 212 rows back to
+  `noupdate=true`, which silently froze its own `ir.ui.view` records, and the
+  next three template edits did not reach the screen. Only the genuinely
+  seeded families (`mail.template`, `pb.letter.template`, the module's own
+  seed models, `ir.config_parameter`, the `ir.rule` records inside a
+  noupdate block) want the flag set.
+- **R58 — `(0, 0, {...})` inside a one2many in a seed file mints new
+  children on EVERY load.** It is a CREATE command with nothing to match on,
+  so there is no update path: three reloads of the same data file turned
+  three focus areas into nine, and the dialog rendering them showed each one
+  three times. There is no error and the parent record looks fine. **Every
+  seeded child gets its own `<record>` and its own xmlid**, so it is matched
+  and updated like anything else.
+- **R59 — a `noupdate` config-parameter write DOES invalidate the record-rule
+  cache, so a switch expressed as a computed field on `res.users` bites
+  immediately.** `ir.rule._compute_domain` is memoised in the `default`
+  ormcache group; `ir.config_parameter.write` clears `stable`, and
+  `registry.__caches_groups__['stable'] = ('stable', 'default',
+  'templates.cached_values')`. That is what makes the shape work: a rule
+  domain of `[('requested_by_user_id', '=', user.id if
+  user.pip_manager_sees_own else -1)]` reading a non-stored computed field
+  that answers a config parameter. ONE source of truth, no sync job, no
+  toggled `ir.rule.active` to drift out of step with the setting, and no
+  re-login. Proven both ways in the same session.
+- **R60 — `ir.rule` group rules are ORed, so ADDING a narrow rule for a new
+  group SILENTLY NARROWS anyone who holds both.** P0 put only GLOBAL company
+  rules on `pb.employee.checkin` / `pb.feedback.request` / `pb.hr.letter` and
+  no group rules at all, so today a lifecycle manager sees every row. Adding
+  one rule limiting the PIP group to `pip_case_id != False` would have meant
+  a lifecycle manager who is also given the PIP group has exactly ONE
+  applicable group rule — the narrow one — and loses sight of every
+  onboarding check-in in the company. **Ship the pair**: an explicit
+  "everything" rule for the existing tiers beside the narrow one for the new
+  tier. Any phase that borrows a model from an earlier phase and wants to see
+  less of it has to do this.
+- **R61 — an Html field edited in a plain textarea shows its own tags.**
+  Obvious said out loud, invisible while the field is empty: `coaching_html`
+  looked perfect until somebody saved once and came back to
+  `<p>Spoke on the 1st.</p>` in the box they were typing in. A cockpit drawer
+  that edits prose wants a `Text` field; `Html` is for something that is
+  rendered and never re-entered, or for a surface with a real editor in it.
+- **R62 — a portal home card gated on a COUNTER is never drawn.**
+  `portal.portal_my_home` fetches its counters lazily after the page renders,
+  so at render time `growth_count` is not a number and `t-if="growth_count"`
+  is simply false. There is no error. A card whose PRESENCE is conditional
+  needs its own eagerly-computed key, set in a `home()` override on every
+  path through it (QWeb raises on a name it has never heard of, so a missing
+  key turns a hidden card into a 500 for the whole of `/my`).
+- **R63 — the lens rail label box is 60px.** "Probation" fills it exactly;
+  "Improvement plans" measured 76px and spilled outside the rail. Measure a
+  new lens label in the DOM before shipping it
+  (`getBoundingClientRect().width` against the parent's), and prefer a label
+  whose LONGEST WORD fits — the box wraps between words but never inside
+  one. P6 renamed the surface to "Growth plans", which fits at 54px and has
+  the better property of being the same phrase the employee reads on their
+  own page.
+
+### P7 (pb_comp_ben, 2026-09-01)
+
+- **R64 — A CONTRACT COMPONENT IS NOT NECESSARILY MONEY, and the scheme's own
+  metadata cannot tell you which is which.** Bootstrapping a pay package from
+  contract 1 produced 1,014,240,048 ₫ a year against a wage of 15,000,000 a
+  month, because `Ngạch lương` is a salary GRADE of 60,000,000, `NPT` is a
+  count of dependants (3) and `Tỷ lệ %` is a ratio (1) — and all three carry
+  `value_kind='money'` with no net role on this tenant, exactly like the meal
+  allowance beside them. There is no rule that separates them, so do not invent
+  one. The bootstrap PROPOSES instead: every line off the contract arrives
+  `checked = False`, is shown with its number so a human can judge it, counts
+  towards no total, and `action_activate` REFUSES while any is unchecked —
+  naming each one and saying to tick it or delete it. The wage line is checked,
+  because a wage is money by definition. A total that is always true is worth
+  more than a total that is usually complete. Any phase that derives money from
+  somebody else's typed field inherits this problem.
+- **R65 — R60 bites INSIDE a module as easily as across one.**
+  `pb.benefit.enrollment` shipped the narrow "my own enrolment" rule for the
+  portal without the wide pay-team rule beside it, and `read` on the enrolment
+  the phase had just created was refused for uid 2. Rules are ORed over the
+  rules that APPLY, so a narrow rule shipped alone is a narrowing. Ship the
+  pair, in the same file, always — including for a model your own module owns.
+- **R66 — `hr.payslip.run` HAS NO CHATTER on this build.** No `mail.thread`, so
+  every `message_post` the finance pack wanted for an honest note was an
+  AttributeError — and the first live test failed twice over: once on a bad bank
+  format, and again on the note that was explaining it. Do NOT add `mail.thread`
+  to the run (P4 declined the same for `hr.full.final.settlement`, and the run
+  is worse: the payroll batch creates these in bulk). The outcome lives in a
+  `pb_pack_note` Text field on the run, surfaced on the native form, written
+  through a `_pb_note` helper that swallows its own failures. A note is a
+  courtesy and must never be able to affect an approval.
+- **R67 — a bad config value must be answered with the list of what IS
+  accepted.** `pb_comp_ben.bank_format` set to something the export wizard does
+  not know raised a raw ORM ValueError at the user. The field is now asked what
+  it accepts (`Wizard._fields['bank_format'].selection`) and the skip says so:
+  "… is not a bank this build knows. The ones it knows are acb, bidv,
+  generic, …". Any config parameter that feeds a Selection should do this.
+- **R68 — a heading that asserts a sign is wrong half the time.** A statutory
+  line entered as a POSITIVE number inflated the package under a heading that
+  read "What is taken off by law". The heading now FOLLOWS the sign — "What is
+  taken off by law" or "Paid on your behalf by law" — and the amount's help says
+  to enter a deduction as a negative. Never let a label make a promise the data
+  is free to break.
+- **R69 — a try/except around a parse swallows the permission error of the field
+  it is parsing.** `dependants()` wrapped `json.loads(enrolment.dependants_json)`
+  with the field READ inside the try, so an AccessError came out as "unreadable
+  family list" — a permission problem reported to the user as a data problem,
+  with nothing in the log to say otherwise. Read the field OUTSIDE the try; only
+  the parse belongs inside it.
+- **R70 — `done_payslip_run()` is NOT the done transition on this build.** Its
+  own docstring (`pb_payruns/models/hr_payslip_run.py:550`) says it is the
+  **draft → level0** entry; the final Finance approval that writes 'done' is
+  `action_payslip_run_level2_done` (`:472`). The P7 handover named the wrong one
+  from the method's name alone. Hooking it would have built a finance pack on
+  submission and marked awards paid before anybody had approved them. Read the
+  docstring, not the name.
+- **R71 — `payroll_import_batch._create_payslip` ALWAYS CREATES**
+  (`payroll_import_batch.py:3512`) — there is no "find the slip this run already
+  has for this person and update it" path. So processing an import batch against
+  a run that has already been computed puts a SECOND payslip on one person for
+  one month, the exact duplicate `pb_payrun_wizard._adopt_loose_slips` exists to
+  prevent — and the run an award is aimed at is by definition already computed.
+  The award lane therefore uses the one-time batch only as the audit record and
+  the safety rail (`one_time`, `auto_create_employees=False`,
+  `auto_create_contracts=False`, `create_payslips=False`), creates its lines
+  DIRECTLY rather than through a generated XLSX, and DELIVERS by merging the
+  amount into the existing payslip's `formula_input_values` **and** the run's own
+  import-line blob, then rebuilding the lines with the batch's own
+  `_compute_and_create_payslip_lines` — the function the Recalculate button uses
+  (`hr_payslip_formula.py:913`). Writing the blob too is what makes the award
+  survive a later recompute, because `action_recompute_formula_lines` re-reads
+  the sources (RD45). The value is SET, not added, so the lane is idempotent. A
+  person with no payslip in the run is REPORTED, never created. Anything that
+  needs to put a number onto an EXISTING payslip must use this lane.
+- **R72 — the pay component code is a REQUIREMENT, not a preference.** A
+  payslip's inputs are `config.rule_ids` where `column_type == 'input'`
+  (`hr_payslip_formula.py:492`). A number written under a code the run's scheme
+  has never heard of is read by nothing and lands nowhere — no error, no line,
+  no total. The feed therefore REFUSES a run whose scheme has no input component
+  with the configured code (`pb_comp_ben.incentive_code`, default `INCENTV`) and
+  the preview names the scheme that is missing it. It never auto-edits a formula
+  scheme: adding the component is a human act on the Mapping screen.
+- **R73 — `pb_payhub` had no soft lens registry.** Its eight lenses were a
+  literal array, so P7 added ONE additive edit: the exported constant
+  `PAY_LENSES = "pb_payhub_lens"` and an `extraLenses()` spread at the end of the
+  list, an exact clone of `pb_people_hub`'s (`people_hub.js:113`). The eight
+  shipped lenses carry no sequence, so bolted-on ones start at 20 (P7 took
+  **Calendar 20, Awards 30**). The edit is JS ONLY — no manifest bump — so the
+  deploy needs the asset-cache purge and never a `-u pb_payhub`, and anyone
+  verifying it should read the registry in the browser
+  (`odoo.loader.modules.get("@web/core/registry").registry.category("pb_payhub_lens")`)
+  rather than trust a version number. Same trick verifies ⌘K rows through
+  `registry.category("pb_hub_palette")`.
+- **R74 — the ESS demo passwords drift between phases.** R29's `{withheld: rize-ess-p2}` on
+  `ess1.demo@payobook.com` (employee 10080, uid 1984) no longer worked at P7 and
+  the portal test read as a broken route rather than a stale password. Do not
+  debug the route: set the password again as admin (`res.users.write` over
+  `call_kw`) before testing any `/my/...` surface. P7 set **`{withheld: rize-ess-p7}`**.
+  Owner debt, with R29's: clear these at programme end.
+- **R75 — ⌘K blocks after P6.** P7 took the **2800** block (cb_paycal 2800,
+  cb_awards 2810, cb_packages 2820, cb_benefits 2830, cb_my_pay 2840). P8 starts
+  at 2900.
+
+### P8 (pb_rnr, 2026-09-01)
+
+- **R76 — a CAP that is right for a SCREEN is a bug in a CRON.**
+  `upcoming_celebrations` capped its answer at sixty, which is correct for the
+  wall's side strip and for the mood board — and silently wrong for the two
+  jobs that WRITE to people. A seven-day window on this tenant holds a hundred
+  and forty-two managers' worth of celebrations, so the Monday heads-up told
+  the first sixty rows' managers and nobody else, reported a cheerful number,
+  and logged no error. Any read shared between a payload and a job needs the
+  cap as a PARAMETER, and the job passes "no cap". The same trap is waiting in
+  every `_read` a later phase reuses for a cron.
+- **R77 — `hr_employee.first_contract_date` is a REAL COLUMN that is not
+  WRITABLE on this build.** It exists in Postgres (unlike the `hr.version`
+  family of R14) and it reads back fine, but a `create`/`write` carrying it is
+  dropped on the floor: it is derived. A fixture built with one has no join
+  date at all, so it has no work anniversary and no joiner row in the digest,
+  and nothing anywhere says so. The join date must come through the
+  `pb_people._join_date` ladder — the column, then `min(hr_contract.date_start)`,
+  then `create_date` — and a test fixture that needs one needs a real
+  `hr.contract`.
+- **R78 — Postgres on this box has NO `unaccent` extension**
+  (`select * from pg_extension` — it is not there). So `ilike '%bui%'` does not
+  find "Bùi", and about four and a half thousand of the five thousand people on
+  this tenant have an accent in their name. Any people-picker has to fold
+  accents in PYTHON (`rnr_common.fold`, NFKD plus the hand map for `đ` — R28's
+  helper, reached from the other direction) over a `search_read` of the two
+  columns it needs, never a domain `ilike` and never a `search` of records
+  (R56: one field of an `hr.employee` prefetches forty).
+- **R79 — an administrator's own `hr.employee` sits in company 1**, the empty
+  shell the initial install left (R16 from the other end). So ANY facade that
+  scopes to `self._me().company_id` answers an administrator with an empty
+  screen — P8's colleague picker offered nobody at all until it was scoped to
+  `self.env.companies.ids` instead. The company boundary is a property of the
+  SESSION, not of where somebody's employee record happens to live; enforce it
+  at the moment of writing, not at the moment of listing.
+- **R80 — a chip that counts one thing over a list that shows another is two
+  bugs.** The wall's value chips counted `pb.company.value.nomination_count`,
+  which includes praise its writer asked to keep PRIVATE. The result said
+  "Excellence 1" over a wall with no Excellence story on it: a filter that
+  matches nothing (R27) AND a quiet admission that a private story exists.
+  Any count beside a filtered list must be computed from THAT LIST'S OWN
+  domain — here `pb.rnr.nomination._public_domain()`, the single clause that
+  decides what the wall shows.
+- **R81 — the Awards lens's "Put into a pay run" dialog picks by the RUN'S
+  MONTH, not by what is approved.** `pb.oneoff.feed._pick` falls back to
+  `approved_for_month(run.date_end)` when no ids are passed, and the P7 lens
+  passes none. So an award raised in September cannot be put into the August
+  run FROM THE BUTTON — the dialog simply does not list it — even though
+  `preview_for_run(run_id, [ids])` says it is payable and `queue_for_run` does
+  it correctly. Not a defect in either module; it is a real limit on the
+  button, and anybody proving a cross-month award has to call the API with
+  explicit ids. Worth an owner decision if recognition awards routinely need to
+  ride an older run.
+- **R82 — `/web/image/hr.employee/<id>/image_128` draws a grey CAMERA when the
+  field is unset; `avatar_128` draws a real default avatar** (a coloured disc
+  with the person's initial). Both answer 200, so nothing looks broken to a
+  test — it just looks broken to a person. Use `avatar_128` for anything
+  person-shaped.
+- **R83 — `pb_home_hub` had no soft lens registry.** Its two lenses were a
+  literal array, so P8 added ONE: the exported constant
+  `HOME_LENSES = "pb_home_hub_lens"` and an `extraLenses()` spread at the end
+  of the list — an exact clone of `pb_people_hub`'s (`people_hub.js:82`) and of
+  what P7 did to `pb_payhub` (R73). The edit is JS ONLY — no manifest bump — so
+  the deploy needs the asset-cache purge and never a `-u pb_home_hub`, and the
+  seam is now enforced by
+  `pb_home_hub/tests/test_home_hub.py::test_a_later_module_can_bolt_a_lens_on_without_editing_this_hub`.
+  The two shipped lenses carry no sequence, so bolted-on ones start at 20 (P8
+  took **Wall 20**). On the People hub, Records is 40 and Assets is 50, so
+  **Praise took 60**.
+- **R84 — "Recognition" does not fit the 60px lens rail (R63), and the fix was
+  the same one P6 found.** Eleven characters with no break in them measure
+  wider than the box, exactly as "Improvement" did. The label is **"Praise"**,
+  which measures 37px against a 60px box — narrower than the shipped
+  "Employees" (61px) and "Contracts" (63px), which both marginally overflow
+  today — and which has the better property of being the same word the
+  employee reads on their own page and on the wall.
+- **R85 — `prefers-reduced-motion` cannot be emulated through Chrome MCP**
+  (`emulate` exposes colour scheme and viewport, not media features). The
+  stronger proof is the COMPILED CSS: put every moving declaration
+  (`opacity: 0`, the transform AND the animation) inside
+  `@media (prefers-reduced-motion: no-preference)`, then fetch the deployed
+  bundle and read the block back. Under a reduced-motion preference none of the
+  three is applied at all, so the surface paints finished on the first frame
+  with nothing to recover from — which is a different and better property than
+  declaring an animation and then cancelling it. `@keyframes` must live at the
+  TOP LEVEL of the stylesheet: nested inside a selector, Sass emits it nested
+  too and no browser plays it.
+- **R86 — ⌘K blocks after P7.** P8 took the **2900** block (rnr_wall 2900,
+  rnr_board 2910, rnr_values 2920, rnr_cycles 2930, rnr_my 2940). P9 starts at
+  **3000**.
+- **R87 — the ESS/manager fixture passwords, again (R29/R74).** P8 set
+  `rize.p8.mate@example.com` / `{withheld: rize-p8}` (uid 2333, employee 17138) and
+  re-set `rize.p4.boss@example.com` / `{withheld: rize-p4}` (uid 2326). Owner debt with
+  the rest: clear these at programme end.
+
+### P9 (pb_budget, 2026-09-01)
+
+- **R88 — a RATE ROW BELONGS TO A COMPANY, and R23's tell is not enough on
+  its own.** R23 says two different currencies reported at the SAME rate
+  means nobody has told the database what one is worth. True, and
+  insufficient: a currency with NO `res.currency.rate` row at all silently
+  reads as 1.0, so converting it into one that DOES have a rate produces a
+  plausible-looking number built on nothing — a brand-new currency came back
+  convertible into dong at 26,330 to one. And `_get_rates` reads only the
+  rows whose `company_id` is empty or is the company being converted FOR, so
+  a probe that ignores the company answers "known" about a rate the
+  conversion is then not allowed to use. Ask both questions:
+  a rate row exists, VISIBLE TO THIS COMPANY, dated on or before the day —
+  and only then apply the 1.0 guard. **On this tenant all 163 rate rows
+  belong to company 1 ("Your Company")**, so the operating company
+  (Payobook Vietnam JSC, company 5) genuinely cannot convert anything and the
+  per-row manual rate is the only honest answer there.
+- **R89 — `report.sudo()._render_qweb_pdf()` RENDERS AS SUPERUSER, and a
+  report that re-reads its own data then sees every company.** P7's precedent
+  sudoes the report record, which is fine for a report over records the
+  caller already holds; it is a leak the moment the template calls a facade.
+  P9's budget summary carried another company's departments into a
+  company-scoped reader's PDF, with totals that disagreed with the
+  spreadsheet exported beside it — and nothing looked wrong. Render as the
+  caller (`report.with_context(allowed_company_ids=self.env.companies.ids)`)
+  AND put the company clause explicitly in every facade search, which is the
+  Explorer's own rule (C18.11/18) reached from a new direction.
+- **R90 — a Monetary is rounded to its CURRENCY, so an unrounded write is
+  "changed" for ever.** Dong keeps no cents: 103,634,883.44 was written, read
+  back as 103,634,883, and found different on the next run. The figures were
+  identical every time and only the COUNT lied — "10 department-months
+  updated" every night, on a job whose whole claim is that it is idempotent.
+  Round to the target currency (`currency.round(value)`) BEFORE comparing and
+  before writing, and a nightly job's report becomes a number somebody can
+  act on.
+- **R91 — `hr.department.complete_name` is COMPUTED and NOT STORED on this
+  build.** `search(..., order='complete_name')` dies with *Cannot convert
+  hr.department.complete_name to SQL*. Sort in Python
+  (`.sorted(lambda d: ...)`), which is where a translated tree path has to be
+  sorted anyway. (`search_read` of it is fine — only ORDER BY is not.)
+- **R92 — a swallowed exception logged at DEBUG is invisible on a live
+  server.** The `safe()` wrapper every cockpit facade uses returned its
+  default and said nothing, so a job that half worked reported a cheerful
+  small number and no error — R54 and R76's shape reached from a third
+  direction. Log at WARNING with `exc_info=True`; the caller still gets its
+  default, and the failure is findable.
+- **R93 — `wfp.budget.actual` was an EMPTY SHELL, which is why D2 could name
+  it canonical without a migration.** Zero rows, zero writers, zero views;
+  its only references in the codebase were its own two ACL lines and a
+  one2many on the scenario. That is what made three overrides safe:
+  `scenario_id` optional (a budget is not a by-product of a compensation
+  scenario), `company_id` from `related='scenario_id.company_id'` to the
+  row's own stored column (without it a scenario-less row carries NO company,
+  and a company-less row is visible to everybody — R8), and `currency_id`
+  following the row's own `pb_currency_id`. **Overriding a field to drop its
+  `related` works**: Odoo 19 merges field attributes down the MRO with
+  `attrs.update(self._args__)` and gates on `if self.related:` truthiness
+  (`odoo/orm/fields.py:399,539`), so an explicit `related=False` in the
+  inheriting class clears it.
+- **R94 — the column map, for anybody reading a budget row.**
+  `forecast_cost` / `forecast_headcount` are the BUDGET and only the upload
+  or a person writes them; `actual_cost` / `actual_headcount` are the SPEND
+  and only the actuals job writes them; `variance_amount` is the first minus
+  the second and `variance_pct` that over the budget, both computed by the
+  model as it shipped. The actuals job never NAMES a forecast column, and
+  `pb_budget/tests/test_budget.py` greps the file to keep that true.
+- **R95 — the Cost Explorer mirror, written out once.** A budget row's
+  payroll figure is `measure=total_cost, dimension=department_id,
+  grain=month, filters={}` — i.e. `SUM(amount) FROM pb_fact_line WHERE
+  run_id IN <built, non-cancelled runs> AND company_id IN <companies> AND
+  category_type IN ('basic','allowance','employer_cost') AND
+  COALESCE(is_rollup, FALSE) = FALSE GROUP BY department_id, month`, with the
+  head count from `pb_fact_emp` because a distinct count at component grain
+  double-counts people. Two deliberate differences: no `_RUN_SCAN` 200-run
+  cap (R76 — right for a screen, wrong for a job) and it never builds facts,
+  it reports what is not built yet. Proven equal to the dong: Engineering,
+  June 2026 = 28,620,552,880 ₫ on both surfaces.
+- **R96 — `pb_insights_hub` had no soft lens registry.** Its four lenses were
+  a literal array, so P9 added ONE: the exported constant
+  `INSIGHTS_LENSES = "pb_insights_hub_lens"` and an `extraLenses()` spread at
+  the end of the list — an exact clone of what P7 gave `pb_payhub` (R73) and
+  P8 gave `pb_home_hub` (R83). JS ONLY, so the deploy needs the asset-cache
+  purge and never a `-u pb_insights_hub`, and the seam is now enforced by
+  `pb_insights_hub/tests/test_insights_hub.py::TestSoftLensRegistry`. The four
+  shipped lenses carry no sequence, so bolted-on ones start at 20 (P9 took
+  **Budget 20**). "Budget" is six characters and sits well inside the 60px
+  label box (R63).
+- **R97 — a lens can be the ONLY lens somebody sees, and that is correct.** A
+  budget holder holds no analytics group, so the Insights hub opens for them
+  with Budget alone on the rail — `HubShell._resolveAccess` falls back to the
+  first allowed lens, so nobody lands on a lens they cannot read. The hub's
+  own ⌘K row is still gated on the analytics union and does NOT offer them
+  the mission; their door is this module's own palette row. Worth knowing
+  before adding a lens whose readers are not the hub's usual readers.
+- **R98 — ⌘K blocks after P8.** P9 took the **3000** block (bdg_board 3000,
+  bdg_upload 3010, bdg_expenses 3020, bdg_rows 3030). P10 starts at **3100**.
+- **R99 — the P9 test logins** (D9: left in place, listed for the owner).
+  `rize.p9.head@example.com` (uid 2336, budget holder, employee 17139, manages
+  the test function 657), `rize.p9.finance@example.com` (2337),
+  `rize.p9.plain@example.com` (2338), `rize.p9.wfp@example.com` (2339),
+  `rize.p9.both@example.com` (2340) — all `{withheld: rize-p9}`. Owner debt with
+  R29/R74/R87: clear these at programme end.
+
+### P10 (pb_contract_lifecycle, 2026-09-01/02)
+
+- **R100 — a job that skips only OPEN work re-does the work that is FINISHED.**
+  `_due_for_decision` skipped a contract while its decision was open, which is
+  the obvious test and the wrong one: the night after a contract was extended
+  the SAME contract was raised again and its manager emailed about it, for
+  ever, because "done" is not "open". A nightly job that creates a record per
+  parent has to test for ANY child, not for an unfinished one — and the manual
+  door (`open_for`) has to refuse by name, saying what was decided and pointing
+  at the contract that followed. The same shape is waiting in every phase whose
+  cron opens a case per record.
+- **R101 — a REQUIRED field with a DEFAULT cannot tell you whether anybody has
+  said.** `employee_type` is required and defaults to `employee`, so "nobody
+  has typed this person" and "somebody deliberately made this person permanent"
+  are the same stored value. The nightly top-up therefore read the contract of
+  somebody who had just been converted, saw the word "contractor" in the
+  category they used to be on, and typed them back — every night, reporting a
+  cheerful count. A guess can only lose to a statement if the statement is
+  WRITTEN DOWN: `pb_employment_type_set` is set by every deliberate write (a
+  person, the connected system, a conversion) and the guess never looks at a
+  record that carries it.
+- **R102 — reusing another phase's machine means inheriting its SIDE EFFECTS,
+  not just its flow.** P5's `kind` field made a conversion evaluation free —
+  but all three of P5's verdict handlers write `pb_probation_state`, and the
+  extend one moves `trial_date_end`, which is the one in-place employment write
+  ruling D1 carves out FOR PROBATION. Run against a conversion those are false
+  records: a two-year contractor's file read "Trial period: Not passed" about a
+  trial period they never had. Snapshot the fields the borrowed machine writes
+  and put them back for your own kind; do not fork six things it does
+  correctly to change one.
+- **R103 — a borrowed machine's WORDS are part of its behaviour.** P5's four
+  emails and three letters say "trial period" and "probation" — right for a
+  trial period, wrong for somebody being considered for a permanent contract
+  after two years on fixed terms. The first live conversion told a manager
+  "…'s trial period ends soon — who should we ask?", and the one that did not
+  pass sent the person a letter saying their employment had not been confirmed,
+  over a board whose own consequence copy promises "nothing is created and
+  nobody is told they failed". Reworded WITHOUT touching P5's `noupdate` seeds
+  (R57 — that means the `ir_model_data` dance across every live review): the
+  later module ships its own templates and swaps them in with a two-line
+  `_mail` override keyed on `kind`, and suppresses the borrowed letters when it
+  is sending its own.
+- **R104 — R56 can eat a SUCCESS and report it as a failure.** The person who
+  agrees a contract extension is the employee's own MANAGER, who holds no HR
+  group by definition — and `private_email` carries `groups="hr.group_hr_user"`.
+  So the first live approval built the new contract, closed the decision and
+  filed the letter, then died working out who to email, inside the caller's
+  try/except, and posted "the new contract could not be prepared" over a
+  contract that had been created a line earlier. Two rules out of it: every
+  address helper reads the employee AS THE SYSTEM, and the notification legs
+  (letter, mail) get their own guards so paperwork can never be reported as a
+  failed agreement.
+- **R105 — a term of N months ENDS THE DAY BEFORE the anniversary.** Twelve
+  months from 1 Nov 2026 is 31 Oct 2027, not 1 Nov — `add_months` alone makes
+  every contract a day long, the next term starts on the 2nd, and each renewal
+  walks one more day from the date it is meant to keep. `contract_common
+  .term_end()` is `add_months(start, months) - 1 day` and is the only thing
+  that should compute a contract's end.
+- **R106 — a heuristic word list must not contain a word that is TRUE OF BOTH
+  SIDES.** "fixed-term" was in the contractor list, and a fixed-term EMPLOYEE
+  is an employee — the whole premise of this phase is that permanent staff can
+  be on an agreement with a date on it. The live backfill retyped a test
+  employee off a contract called "P10 fixed-term — …" and out of the headcount.
+  The "Fixed-term contractor" contract type still matches, on the word
+  "contractor" that is actually in it.
+- **R107 — `hr.contract.type` is ALREADY SEEDED on this database, twelve rows
+  from the standard `hr` module, "Intern" among them** (`hr.contract_type_intern`,
+  id 7) — not the three rows `om_hr_payroll/data/hr_contract_type.xml` implies.
+  A `<record>` of our own would have put a SECOND row called Intern in the
+  picker, and a picker with two identical options is a picker nobody can use.
+  ENSURE by name from a hook that the daily job also calls, never seed. (P10
+  created only "Fixed-term contractor", id 83.) `hr.contract.type` also has NO
+  `company_id` on this build — probe before setting one.
+- **R108 — `format_date(env, d)` with no pattern answers the LOCALE's format,
+  and for an `en_US` admin that is `02/01/2027`** — the first of February to
+  half the world and the second of January to the other half, printed beside a
+  board that writes "1 Feb 2027" from `toLocaleDateString`. Two date formats on
+  one screen is one too many and an ambiguous one on a contract letter is worse
+  than that. Pass `date_format='d MMM y'` for anything a person reads.
+- **R109 — a facet's sort order is part of what it MEANS.** Month chips sorted
+  by count read "October 2026, November 2026, August 2026, December 2026…" and
+  a reader looking for next month had to hunt. A `YYYY-MM` key sorts
+  chronologically as a string; any facet whose values have a natural order
+  wants that order, not the biggest-first default the other facets use.
+- **R110 — the assets bundle does NOT always rebuild on `-u`.** P10's lens was
+  absent from `registry.category("pb_lifecycle_lenses")` in the browser after a
+  clean `-i` with EXIT=0, on a module whose JS had been on disk the whole time.
+  The purge is the fix (`DELETE FROM ir_attachment WHERE url LIKE
+  '/web/assets/%'` then a hard reload), and the check that matters is reading
+  the registry in the browser rather than trusting the version number (R73's
+  advice, reached from the install side rather than the JS-only side).
+- **R111 — ⌘K blocks after P9.** P10 took the **3100** block (contracts_board
+  3100, contracts_decisions 3110, contracts_extensions 3120). P11 starts at
+  **3200**. Lifecycle-hub lens sequences are now Journeys (none), New joiners
+  20, Exits 30, Probation 40, Growth plans 50, **Contracts 60**; P11 starts at
+  70. "Contracts" measures 63px in the 60px rail label box — the same marginal
+  overflow as the People hub's own shipped "Contracts" (63px) and "Employees"
+  (61px), and the shortest label that is still the word on the screen.
+- **R112 — the P10 test cast** (D9: left in place, listed for the owner).
+  Employees **17140-17147** (`rize.p10.a@example.com` … `rize.p10.h@example.com`,
+  company 5, department "RIZE P4 (test)", manager 17122) each with an end-dated
+  contract 14581-14588, plus **17148** "RIZE P10 Arriving Intern"
+  (`rize.p10.intern@example.com`) created through the connected-system path to
+  prove an arriving intern arrives AS an intern. None of them has a login. The
+  approvals were made as **`rize.p4.boss@example.com` / `{withheld: rize-p4}`** (uid
+  2326, R87's account, password unchanged) to prove a manager who holds NO HR
+  group can agree an extension.
+
+
+### P11 (pb_vendor_access, 2026-09-01/02)
+
+- **R113 — "the live one first" is the WRONG headline for a register whose job
+  is to raise problems.** `pb.vendor.agreement_state` ranked `expiring` then
+  `running` then `expired`, so a supplier with a three-year licence running AND
+  a support contract that lapsed last month rendered as **Running**, the lapsed
+  row was invisible on the board, and the "already run out" figure beside it
+  read **zero** over a register that had one. Both halves were individually
+  defensible and together they were a lie. Rank the PROBLEM first — ended,
+  ending soon, running, not started, replaced — and within a band the one that
+  ends soonest, because that is the date somebody has to act on. R80 reached
+  from the other side: there the chip was wrong about the list, here the LIST
+  was wrong about the data.
+- **R114 — the kit's scrim is `.pbim-modal-scrim` and the modal is its CHILD,
+  not its sibling.** `.pbim-modal` carries no positioning of its own (R45 covers
+  its padding; this is the other half): the scrim is `position: fixed` with
+  `display:flex; align-items:center`, and that is the only thing that centres a
+  dialog. Written as a sibling — with a hand-rolled `.pbim-scrim` class that
+  does not exist — five dialogs rendered unstyled at the kit's default 1040px,
+  at the very bottom of the document, with no dimming. Nothing errored.
+  **And do not nest the dialog's own rules under the cockpit's root class.**
+  `modal.scss:43` says why in the kit's own words: "a scrim mounts OUTSIDE the
+  surface that opened it as often as inside". A descendant selector makes a
+  dialog's whole appearance depend on where in the DOM it lands, and the day
+  something portals it the rules vanish silently. Own classes, tokens
+  re-declared on the scrim.
+- **R115 — a blind `str.replace` on template indentation is how you close the
+  wrong `</div>`.** Adding the scrim's closing tag by matching
+  `'        </div>\n      </div>\n\n      <!--'` inserted it correctly for the
+  dialogs followed by a comment and NOT for the last one in each file — which
+  left the count balanced, the XML parsing cleanly, and the whole dialog block
+  sitting OUTSIDE the cockpit's root div. The tell was in the browser, not the
+  parser: `scrim.parentElement.className` read `o_action_manager`. **Verify OWL
+  template nesting by walking the parsed tree** (each scrim is a direct child of
+  the root and holds exactly one modal), never by "it still parses".
+- **R116 — R110 again, and the purge is NOT the fix on this build.**
+  `DELETE FROM ir_attachment WHERE url LIKE '/web/assets/%'` answered
+  **DELETE 0** every single time: this server has ZERO asset attachment rows and
+  serves `/web/assets/debug/web.assets_web.css` — an unversioned URL — straight
+  out of the bundler. So there is nothing to purge and the stale copy is in the
+  BROWSER. Separate the two questions before touching anything: `curl` the
+  bundle URL and grep for your own rule. If the server has it, the fix is
+  `emulate` with `Cache-Control: no-cache` plus a reload with `ignoreCache`; if
+  the server does not, it is a deploy or a Sass error. A restart alone changes
+  nothing either way.
+- **R117 — a phrase-frame with one word swapped produces "You does not have".**
+  `_("%(who)s does not have …", who=… if other else _("You"))` is the tidy
+  version and it is ungrammatical for exactly one of its two cases — and a
+  translator handed the frame and the word separately cannot fix a verb they
+  were never given (W80). Branch the WHOLE sentence. Same shape: a job that
+  reports "0 permissions were taken back" is a machine writing; "and nothing
+  needed taking back" is the same fact in words a person uses, and zero is a
+  real and common outcome here (the borrower already held it).
+- **R118 — a white-label gate must strip COMMENTS before it greps.** The
+  obvious test failed on `<!-- \`<act_window>\` is gone from the Odoo 19
+  data-file RNG -->` — the exact sentence that stops the next contributor
+  reintroducing the bug. The rule binds user-visible STRINGS; engineering
+  comments must be able to say the real name. Same lesson as W101/W114 inside
+  `pb_settings`, whose own tag gate then failed on this module's registry
+  example (`tag: "pb_vendors_board"` in a doc comment) — that gate now reads
+  `_code(_js())` like every other gate in the file.
+- **R119 — `pb_settings` had no soft registry.** Its eight categories were a
+  literal array, so P11 added ONE, exactly as P7 gave `pb_payhub` (R73), P8
+  `pb_home_hub` (R83) and P9 `pb_insights_hub` (R96) — here over CATEGORIES
+  rather than lenses, because that is the unit this hub is made of:
+  `SETTINGS_CATEGORIES = "pb_settings_category"`, `extraCategories()`, and an
+  `allCategories()` that **every rule in the file then reads** (the gate pass,
+  the card filter and the action probe all had to move off `CATEGORIES` — a
+  bolted-on category gated against the literal array renders UNGATED, and group
+  resolution fails open by design so nothing about that is visible at runtime).
+  JS ONLY, no manifest bump, and the seam is now enforced by
+  `pb_settings/tests/test_settings.py::TestSoftCategoryRegistry`. The eight
+  shipped categories carry no sequence, so bolted-on ones start at 20 — P11 took
+  **Vendors 20, Access & delegation 30**. Each has exactly ONE card, so the
+  hub's own `soleCard` rule opens it directly instead of drawing a section page
+  whose only content is that door.
+- **R120 — the catalogue is a HOOK, not a data file, and that is what keeps the
+  dependency list honest.** Every role profile points at a group owned by a
+  different module; a `<record ref="pb_pip.group_pip_head">` would make `pb_pip`
+  a hard dependency of a module about suppliers. The hook resolves each xmlid,
+  SKIPS the ones this database has never heard of, and says which in the log —
+  R107's "ensure by name, do not seed a record whose partner may not exist",
+  reached from the dependency side. One direction it must NOT fail in: a
+  RESTRICTED row whose gate group is missing is **not offered at all**, never
+  shown to everybody.
+- **R121 — the delegation snapshot must be MEASURED, not predicted, and that is
+  the whole security design.** `applied_group_ids` is
+  `after − before` read back off `res.users.group_ids` (with an
+  `invalidate_recordset` between, or the second read is the cached first).
+  Predicting it from the profiles is wrong in both directions: it over-removes
+  (a borrower who already held the group in their own right loses it
+  permanently because a two-week loan ended — proven live: snapshot `[]`, job
+  reported "nothing needed taking back", they kept it) and it under-describes
+  (edit the profile mid-window and the end takes back something the start never
+  gave). Odoo materialises only the DIRECT group on write; the implied tier
+  rides along in `all_group_ids` and leaves again with it.
+- **R122 — ⌘K blocks after P10.** P11 took the **3200** block (va_vendors 3200,
+  va_access 3210, va_delegate 3220, va_history 3230, va_roles 3240). A P12 would
+  start at **3300**.
+- **R123 — the P11 test cast and what was put back.** Vendors **11** (RIZE P11
+  Talent Partners, owner uid 2326) and **12** (RIZE P11 Cloudline Software,
+  owner uid 2333); agreements 17–20 plus the renewal; one attachment. Six
+  `pb.access.delegation` rows, all closed. **Every group membership this phase
+  touched was reverted** — `rize.p4.boss@example.com` was given the vendor-owner
+  and equipment-manager groups for T4/T7 and both were taken back, and
+  `rize.p9.plain@example.com` ended holding exactly the one group it started
+  with. Verified against a snapshot taken before the first write; all four test
+  users read identical to before P11. Records themselves are left in place
+  per D9. Passwords re-set to the ledger's values (R74's drift): `{withheld: rize-p4}`,
+  `{withheld: rize-p6}`, `{withheld: rize-p8}`, `{withheld: rize-p9}`.
+- **R124 — never put `&` (or any XML-special char) in a `res.groups.privilege`
+  or `ir.module.category` name.** Odoo 19 assembles the res.users form's
+  access-rights arch by embedding privilege names into `<group string="…">`
+  WITHOUT escaping, so `Pay Packages & Awards` (P7) and `Vendors & Access`
+  (P11) made the arch unparseable — opening ANY user from Settings → Users
+  died in an OwlError dialog ("An error occured while parsing … [object
+  HTMLCollection]"). Found live 2026-09-01 when the owner tried to change
+  their own password. Fix: renamed both to "and" (commit 20101c48) in XML +
+  live DB (`res_groups_privilege` 58/61 and the two `ir_module_category`
+  rows, jsonb `{"en_US": …}`), files rsynced; **a service restart is
+  required** — the generated arch is cached in the running registry, so the
+  SQL rename alone still crashes until restart. Verify with
+  `SELECT id,name FROM res_groups_privilege WHERE name::text LIKE '%&%'`
+  (must be zero rows) and by opening a user form.
+- **R125 — a hand-built `ir.actions.act_window` dict MUST carry `views`.**
+  `_preprocessAction` (web/static/src/webclient/actions/action_service.js:442)
+  runs `action.views.map(...)` unconditionally for act_window, and the
+  ORM-computed `views` field exists only on real `ir.actions.act_window`
+  RECORDS — a dict returned from a facade RPC and passed to `doAction` has
+  `view_mode` but no `views`, so the client throws `TypeError: Cannot read
+  properties of undefined (reading 'map')`, which the theme's error handler
+  shows as the generic "Something went wrong on our side" dialog with NO
+  useful console line (the message only appears if you attach an
+  `unhandledrejection` listener before clicking). Every cockpit "open this
+  record" door was affected; found 2026-09-01 on Lifecycle → Probation →
+  card → **Open the review**. Fix = add `'views': [[False, 'form']]`
+  (mirroring each `view_mode`) — done for 22 dicts in the RIZE modules plus 5
+  pre-existing cockpit-reachable ones (pb_payruns journals/payments,
+  pb_young_worker rules, pb_hr_payroll_base dashboard + import wizard);
+  commit 9564a8a7, Python-only (rsync + restart, no `-u`). **Regression gate:
+  an AST sweep** — walk every `pb_*/**/*.py`, flag any Dict literal whose
+  `type` is `ir.actions.act_window` and which lacks `views` when its
+  enclosing function name appears in any `.js` — must report zero.
+- **R126 — the rail must survive a drill-down; judge the STACK, not the
+  action.** `PbSidebar._resolveVisibility` only asked whether the CURRENT
+  action was ours, which every cockpit drill-down fails: `pb.probation.review`
+  is dotted (the `pb_` prefix test missed it) and `hr.contract` / `hr.employee`
+  / `pb.hr.letter` are not ours by name at all. So "Open the review" / "Their
+  record" replaced the Payobook rail with Odoo's native app menu mid-click —
+  the product changing its own chrome inside one journey. Fix (commit
+  95398c4f): `isPb()` also accepts `pb.`, and new `_openedFromOurs()` reads
+  `window.location.pathname` — Odoo 19 keeps the WHOLE stack in the path
+  (`/bizapp/pb_probation_board/pb.probation.review/4`) — showing the rail when
+  any ANCESTOR segment is a rail-claimed tag/xmlid/model. URL over remembered
+  state: survives refresh + pasted links, self-clears on app change. Trailing
+  segment excluded so a bare `/bizapp/hr.contract/1` gets no rail. **Any new
+  cockpit that opens records needs nothing extra — the path carries it.**
+- **R127 — a monetary field needs BOTH a matched inset and enough width, or
+  the currency symbol prints on the number.** The widget draws the symbol in
+  an absolutely positioned overlay: an invisible ghost copy of the value, then
+  the symbol right after it. It reads correctly only while (a) the overlay and
+  the input share their horizontal padding and (b) the field is wide enough
+  for value + symbol — the ghost carries `max-width:100%`, so a too-narrow
+  field CLAMPS it and the symbol lands mid-number. Both failed here:
+  `vu-form` gave inputs an 11px inset and left the overlay on Odoo's 8px (3px
+  drift), and Odoo's `o_hr_narrow_field` caps the contract wage at 128px —
+  fine for `5,000.00`, hopeless for `12,200,000 ₫`, which rendered `12,200,00₫`.
+  Fixed in `vu_form_engine.scss` (overlay re-pinned to 11px) and
+  `backend.scss` (`o_hr_narrow_field` cap lifted, 9.5rem floor, host
+  `.o_row.mw-50` released so `/ month` does not wrap). **VND/IDR/KHR-sized
+  amounts are this product's norm — never trust a width tuned for two decimal
+  places.** Asset change: purge `ir_attachment` `/web/assets/%` + restart.
+- **R128 — `nolabel="1"` inside a `<group>` needs `colspan="2"` or the field
+  renders ONE LABEL WIDE.** An inner group is a two-column grid (narrow label
+  column, wide value column); a label-less field takes one cell, and the cell
+  it gets is the narrow one — so a story/reason/note box came out ~150px with
+  ~1,000px of empty row beside it. Found on RnR "What they did" 2026-09-01;
+  **20 occurrences across 6 modules**, all fixed (commit a724f3e5). Fields in
+  notebook `<page>`s or `<div class="alert">`s are NOT in a grid and need
+  nothing. Safety net added in `vu_form_engine.scss`: an `.o_cell` holding
+  `.o_field_text`, `.o_field_html` or `.o_field_many2many_binary` spans
+  `1 / -1` (no `!important` — an arch can still overrule). **Audit command:**
+  find `<field nolabel="1">` whose lxml parent tag is `group` and which has no
+  `colspan`.
+- **R129 — Odoo 19 search `<group>` takes NO `string`/`expand`.** Already in
+  the global gotcha memory and hit again anyway: `<group name="group_by"
+  string="Group By">` fails RNG validation with `RELAXNG_ERR_INVALIDATTR` and
+  **aborts the whole module load** (EXIT=255, registry left down, real error
+  only in `/var/log/odoo/odoo-server.log`, not the sentinel). Write
+  `<group name="group_by">` bare.
+- **R130 — do not default a list to `group_by`.** Odoo opens groups
+  COLLAPSED, so `{'search_default_gb_area': 1}` on the Roles action landed the
+  screen on five headings and zero rows. Twenty-odd rows fit on one screen;
+  let colour-coded badge columns carry the grouping and leave Group By as a
+  press. Also: **a facet can survive a redeploy** — the client caches the last
+  search per action, so after changing an action's context clear
+  session storage (or use a fresh tab) before concluding it didn't work.
+  Column widths ARE supported on list `<field>` (`width="240px"`,
+  `common.rng`) — pin them where a long text column would otherwise starve
+  the name column.
+
+### A1 (pb_hiring, 2026-09-15)
+
+- **R131 — A TRY/EXCEPT IS NOT ENOUGH WHEN THE THING THAT FAILED REACHED THE
+  DATABASE.** This is the most important entry in the wave so far, because
+  the pattern it breaks is one every RIZE phase uses. Postgres aborts the
+  WHOLE transaction on an error; catching the exception in Python does not
+  revive it, and every statement after it fails too. A duplicate job name
+  blew up leg one of `_on_opened`; legs two, three and four then failed on a
+  transaction that was already dead — and so did the record's own status
+  write, which had happened BEFORE them. The approval request read
+  "approved" in the inbox while the hiring request read "Manager agreed" on
+  the board, for ever, with four cheerful WARNING lines in the log and
+  nothing on any screen. The R104 pattern ("every leg in its own
+  try/except") therefore does not do what P10 believed it did the moment a
+  leg touches the database. **Every such leg needs `with
+  self.env.cr.savepoint():` inside the try** — `pb_hiring`'s `_leg(name, fn)`
+  is the shape. P0–P11's own hook and cron legs are all still bare
+  try/excepts and have the same hole; they have not been audited.
+- **R132 — THE MIDDLE OF A ROUTE IS WRITTEN AS THE APPROVER, and a seat is a
+  read.** AM60 is right that being asked to decide something is not
+  permission to change it, and the seat `ir.rule` is correctly read-only. But
+  `_approval_advance` mirrors each intermediate status onto the record while
+  the acting user is the approver — who is, by design, somebody who may hold
+  no permission on that model at all (a department head's own manager). The
+  rule refused the write, the engine swallowed it (it must: a decision a
+  person really made can never be undone by a consumer that cannot follow
+  its own route, `engine.py:1336`), and the record sat one rung behind for
+  ever. Only visible as one line in `/var/log/odoo/odoo-server.log`.
+  **Fix: override `_chain_engine_write` to run `self.sudo()`.** The trail is
+  unaffected — `_chain_log` still runs as the acting user, so the approval
+  log keeps the real name. **Any consumer whose `register_chain(driven=…)`
+  tuple has MORE THAN ONE intermediate status needs this.** Wave 1 never met
+  it because every wave-1 chain has at most one.
+- **R133 — `hr.job` is UNIQUE on (name, company_id, department_id).** A
+  company asking for two Field Officers in the same team in the same year is
+  not doing anything unusual, and the second `create` dies on a raw Postgres
+  error. Under R131 that error also killed everything after it. Anything
+  that makes an `hr.job` must **find-or-create**, which is the better answer
+  anyway: candidates apply to a ROLE, not to a piece of paperwork, so two
+  requests for one role share one pipeline and the target head count is the
+  sum of the live requests pointing at it.
+- **R134 — the pbim kit has NO dark palette, product-wide.** R20 recorded
+  that native list views break under `data-theme="dark"`; the fuller truth
+  is that `biz_theme`'s dark block redefines only the `--vu-*` tokens, and
+  the `--pbim-*` tokens every RIZE cockpit is built from are declared once,
+  light. Verified side by side on 2026-09-15: the Hiring lens and the
+  shipped Contracts lens render IDENTICALLY under `data-theme="dark"` and
+  under an emulated `prefers-color-scheme: dark`. So "validate in light AND
+  dark" on a pbim cockpit is satisfied, exactly as R39 says for the portal,
+  by proving every colour RESOLVES — it is a `pb_import_kit` job with a
+  blast radius of every cockpit in the product, and not a feature phase's.
+- **R135 — a shared CSS primitive may not live under either surface that
+  uses it.** R114 says a dialog's rules must not be nested under the
+  cockpit's root class. The other half: `.pbhr-in` was written INSIDE the
+  `.pbhr-scrim` block, so the four filter pickers on the board — which are
+  not in a scrim — rendered as raw browser selects with their text clipped,
+  next to a search box that looked like the product. A primitive both
+  surfaces use goes at the TOP LEVEL of the stylesheet. Related: the `.pbme`
+  portal kit styles `input` and `textarea` and NOT `select`, so any portal
+  form with a picker has to style it itself or one field will look like the
+  operating system while the rest look like the product.
+- **R136 — the standard applicant store, as it actually is on this build.**
+  `hr.applicant` has **no `description` field** — the notes column is
+  `applicant_notes`. Refusing is `write({'refuse_reason_id': …, 'active':
+  False, 'refuse_date': now})`, exactly what the standard wizard does. The
+  talent-pool constraint only fires for a record that IS a talent
+  (`pool_applicant_id == self`), so writing `talent_pool_ids` on an ordinary
+  applicant is safe. `hr.job.website_published` is a COMPUTED field whose
+  inverse writes the stored `is_published`; assert on `is_published`.
+  `hr.job.requirements` carries `groups="hr.group_hr_user"`, so write it
+  under sudo.
+- **R137 — `value_to_html` is the wrong money helper for a stored sentence.**
+  `self.env['ir.qweb.field.monetary'].value_to_html(...)` answers
+  `<span class="oe_currency_value">600,000,000</span> ₫`, which is right
+  inside a rendered report and is the report's own source code the moment it
+  lands in a Char field a board shows with `t-esc` (R51 from the writing
+  side). `odoo.tools.misc.formatLang(env, amount, currency_obj=…)` answers
+  the same number as plain text.
+- **R138 — a non-stored compute is right ONCE unless its `depends` names
+  every hop.** `pb.hiring.referral.state` depended on `applicant_id` alone,
+  so it was correct the first time it was read and then frozen for the life
+  of the environment — a referral reading "Received" over a candidate turned
+  down half an hour earlier. Odoo uses the dependency list to invalidate the
+  cache as well as to recompute; name the fields the answer is MADE of
+  (`applicant_id.application_status`, `.active`, `.stage_id`), not just the
+  record it hangs off.
+- **R139 — a raw-SQL age applied to a record with an unflushed ORM write is
+  undone by the next `search()`.** R22 from the test side: the state write
+  sat in the `towrite` buffer, `search()` flushed it, and the flush stamped
+  `write_date` back to now — so the daily job found nothing and read as
+  broken. `env.flush_all()` before the SQL, `env.invalidate_all()` after it.
+- **R140 — the RIZE settings card may be an XMLID and needs no client
+  action.** `pb_settings`'s `_cardPresent` accepts `{tag}` or `{xmlid}`
+  (`settings_hub.js:565` region) and `settingsActionXmlids()` probes the
+  xmlid ones server-side, so a single-card category pointing at an
+  `ir.actions.act_window` xmlid opens the list directly through `soleCard`.
+  A1 took **Hiring, sequence 40** (Vendors 20 and Access 30 are P11's).
+- **R141 — ⌘K and lens numbers after A1.** A1 took the **3500** block
+  (hiring_board 3500, hiring_requests 3510, hiring_jds 3520,
+  hiring_referrals 3530, hiring_rules 3540); B1 starts at **3600** per the
+  wave plan. Lifecycle-hub lens sequences are now **Hiring 10**, New joiners
+  20, Exits 30, Probation 40, Growth plans 50, Contracts 60 (Journeys is a
+  literal in the hub's own config and carries none). "Hiring" measures
+  **37px** in the 60px rail label box — comfortably inside, unlike
+  "Probation" (60px) and "Contracts" (63px).
+- **R142 — the A1 test cast and what was put back.** Test data stays and is
+  named "RIZE W2 …" (D9). New: user **4446** `rize.w2.recruiter@example.com`
+  / `RizeW2!2026` (employee 17338, company 5, department 657, manager 17122)
+  — this account KEEPS `pb_hiring.group_hiring_user`, because an account
+  with no role is an account nobody can use; it is the only grant not
+  reverted. Employee **17139** was given `parent_id = 17122` and keeps it
+  (demo data, D9 — the handover asked for this). Twelve `pb.budget.line`
+  rows for department 657, FY2026 (1,200,000,000 ₫ budgeted, 600,000,000 ₫
+  spent) so the budget check has something to read. Nine hiring requests
+  HR-2026-0055…0063, four `hr.job` rows, one hiring rule, four adverts,
+  one referral. **Everything borrowed was given back and verified against a
+  snapshot taken before the first write**: uid 2065's `group_budget_team`
+  and `group_hiring_admin`, and the company-5 `hr_lead` and `finance`
+  responsibility seats (both were the owner's account and are the owner's
+  again). All five pre-existing test logins read group-for-group identical
+  to before. Every test mail was cancelled in the same script that sent it.
+
+### A2 (pb_hiring, 2026-09-15/16)
+
+- **R143 — A `default` ON A STORED COMPUTE MEANS THE COMPUTE NEVER RUNS.**
+  `kind` was `default='interview'` with `compute=…, store=True,
+  readonly=False`. A stored compute that is `readonly=False` is skipped
+  whenever a value is supplied — and a default supplies one on *every single
+  create*. So `step_id` was read, `_compute_kind` never fired, and a final
+  conversation booked against the "Final conversation" step read back as an
+  ordinary interview. The debrief then refused to open on the one round it
+  exists for, with a perfectly sensible refusal about the round being the
+  wrong kind. Nothing anywhere said the kind had been ignored. **Remove the
+  default; then, because the field is `required=True` and has no value at
+  insert time, add `precompute=True`** — without it the compute runs AFTER the
+  INSERT and Postgres refuses the row on the not-null constraint. The same
+  shape bit `round_no` in its plain-Integer form: `default=1` meant `create`
+  could never tell "nobody has said" from "somebody said one", `_next_round()`
+  never ran, and **every round of every candidate read "Round 1"** — the one
+  number the model exists to keep. Zero is the absence; `create` fills it in.
+  (R101 from the other direction: there a required field with a default could
+  not tell a guess from a statement; here it cannot tell a default from an
+  answer.)
+- **R144 — `message_post` ESCAPES A PLAIN STRING BODY.** The "everybody has
+  answered" summary was assembled with `<br/>` inside a `_()` sentence and
+  reached the chatter as the four characters `&lt;br/&gt;`, so three opinions
+  rendered as one run-on line with the markup visible in it. R51 says `t-out`
+  escapes a plain string and only renders `markup()` raw; this is the same
+  rule on the WRITING side and it applies to every `message_post` in the
+  codebase. Build the body with `markupsafe.Markup`, and interpolate with
+  `Markup('%s') % value` so each value is still escaped — a panel member
+  called `Nguyễn <script>` must not be able to inject anything into a chatter
+  a whole hiring team reads.
+- **R145 — RFC 5545 FOLDS AT 75 OCTETS, so a plain `in` test fails over a
+  perfectly good calendar file.** `build_ics` folds correctly (it has to —
+  some clients refuse an unfolded file), which splits a long address across
+  two lines with a leading space: `…candidate@examp\r\n le.com`. An assertion
+  that greps the raw bytes for an address therefore fails on exactly the
+  invitations that are longest and most worth checking. Unfold with
+  `raw.replace('\r\n ', '')` before matching, and assert the folding itself
+  separately rather than tolerating it.
+- **R146 — THE ICON GATE MUST READ THE OBJECT-LITERAL MAPS, or it checks half
+  the icons.** A1's gate matched `icon: "…"` and a `//icon` trailing comment
+  and so never saw `SCREEN_ICON = { rejected: "xCircle", … }` — which shipped
+  against a registry that did not have `xCircle`. `ic()` falls back to a plain
+  circle with no error, so the "Not this time" screening button has been
+  drawing a blank circle since A1 and nothing reported it. The gate now parses
+  every `*_ICON` map in the board file as well.
+- **R147 — THE SHARED ICON REGISTRY ON THE SERVER CAN BE OLDER THAN THE
+  REPO'S, and a module that deploys only itself never notices.** `pb_hiring`
+  deploys `pb_hiring`; `pb_import_kit` on the live box was still nine icons
+  behind the repo (`workflow bell paperclip flag repeat circleDot ban minus
+  xCircle` — a purely additive block the Approval Matrix programme committed
+  and never deployed). A local check of icon names against the REPO passes and
+  the live screen still draws blank circles. **Check against the installed
+  copy** — which is what a test running on the server does, and is why the
+  gate above belongs in the test suite rather than in a pre-deploy script.
+  Repaired by rsyncing that one file (additive, JS-only, no `-u`); the tree is
+  otherwise byte-identical. Worth a sweep of the other shared modules.
+- **R148 — the reminder job matches a WINDOW, not a threshold.** "Start is
+  less than a day away" fires on every interview in the next twenty-four
+  hours, every ten minutes, for ever — only the stamp would stop it, and a
+  stamp is then a repair rather than a design. `[now+23h50, now+24h10]` and
+  `[now+25m, now+35m]` ask the honest question and the stamp is belt as well
+  as braces. Proven live both ways: one mail each to four people, then nothing
+  on the second pass.
+- **R149 — 24 WORKING hours is a different answer from 24 hours, and the
+  difference is days.** `resource.calendar.plan_hours(24, stop,
+  compute_leaves=True)` on company 5's calendar turned an interview finishing
+  Wednesday 17:45 local into a Monday deadline — because Wednesday evening,
+  Thursday, Friday and Monday is where twenty-four working hours actually
+  land. A plain `+24h` would have asked a Friday panel to answer on a
+  Saturday. `plan_hours` takes and returns NAIVE UTC (`localized()` attaches
+  UTC, `to_timezone(None)` strips it again), so the ORM's own datetimes go
+  straight in. A company with no `resource_calendar_id` is answered honestly
+  with plain hours AND a log line — never a guessed working week.
+- **R150 — the stock calendar needs BOTH silencers, and they guard different
+  things.** `dont_notify` stops the alarm setup in
+  `calendar_event.create` (:725) and `no_mail_to_attendees` stops the attendee
+  mail in `calendar_attendee._notify_attendees` (:140). Creating the event
+  with only one of them still lets a branded invitation out. Asserted by
+  counting new `mail.mail` rows whose model is `calendar.event` or
+  `calendar.attendee` and requiring zero — on scheduling AND on a reschedule,
+  because the reschedule writes to the event too.
+- **R151 — ⌘K and Settings numbers after A2.** A2 stayed inside A1's **3500**
+  block: `hiring_interviews` **3550** ("Interviews this week"),
+  `hiring_feedback` **3560** ("Feedback owed"). B1 still starts at **3600**.
+  The Hiring settings category (sequence 40) now has TWO cards — "Hiring
+  rules" and "What a panel scores on" — so `soleCard` no longer applies and it
+  draws its own section page, which is correct for a category with two real
+  things in it.
+- **R152 — the A2 test cast and what was put back.** Test data stays and is
+  named "RIZE W2 …" (D9). **No group was granted to anybody**: every live
+  action was taken as `rize.w2.recruiter@example.com` (uid 4446), which keeps
+  `pb_hiring.group_hiring_user` from A1 (R142) and whose ACL already allows
+  everything this phase needs — verified group-for-group against a snapshot
+  taken before the first write, all six accounts identical. No password was
+  reset either; `RizeW2!2026`, `RizeP4!2026`, `RizeP8!2026` and `RizeP0!2026`
+  all still worked. (X1 renamed the recruiter's login to
+  `demo.recruiter@example.com`; the password is unchanged.) New: three
+  candidates **175–177** on job 147
+  (`rize.w2.thao@`, `rize.w2.khoa@`, `rize.w2.hanh@example.com`), seven
+  interviews **77–83** on requisition 56, their opinions, one reschedule and
+  one no-show; requisition 56 was given recruiter 4446 and its steps 2 and 3
+  were pointed at the First/Second Interview stages (demo data). Every test
+  mail went to an `@example.com` address and was cancelled in the same
+  session; the outgoing queue is empty.
+
+### A3 (pb_hiring, 2026-09-15/16)
+
+- **R153 — A RELATED SELECTION MUST NOT BE GIVEN A `selection_add`, and the
+  punishment is the WHOLE REGISTRY.** `pb.hr.letter.letter_type` is
+  `related='template_id.letter_type'` and re-declares `LETTER_TYPES` for
+  documentation, so adding "Offer letter" to it looked like the obvious
+  second half of adding it to `pb.letter.template`. Odoo takes a related
+  field's selection from the SOURCE field and says so — *"selection attribute
+  will be ignored as the field is related"* — so the extension achieves
+  nothing; and it is not merely useless, because the `ondelete` spec that
+  `selection_add` requires trips
+  `assert self.default is not None` in `odoo/orm/fields_selection.py:149` and
+  **fails the entire registry load** with the real error only in
+  `/var/log/odoo/odoo-server.log`. Extend the TEMPLATE alone; every related
+  field downstream follows for free. (A related Selection also cannot be
+  given a `groups=` or a domain for the same reason — the attributes are the
+  source field's.)
+- **R154 — A DATE WINDOW THAT DECIDES A PERMISSION IS READ ON THE SERVER'S
+  CLOCK, never `context_today`.** `fields.Date.context_today` answers in the
+  READER's timezone. A Vietnamese recruiter writing a cover "from today"
+  stores tomorrow's date by the server's reckoning for seven hours of every
+  day; a colleague whose account has no timezone set then reads UTC, finds
+  the window has not started, and is refused a role they are demonstrably
+  covering — with nothing on any screen to explain it. Found by the very
+  first test that asked the question AS SOMEBODY ELSE; the same shape is
+  invisible to any test that asks it as the user who wrote the record.
+  **A permission that changes with who is asking is not a permission**:
+  `pb.hiring.cover._window_today()` is `fields.Date.today()` and every reader
+  of the window — the gate, the nightly job, the approval hook — goes through
+  it. R36 from the permission side rather than the job side.
+- **R155 — `context_today` DATES AND UTC DATETIMES CANNOT BE SUBTRACTED, and
+  a `>= 0` guard then drops exactly the fastest rows.** `opened_on` and
+  `filled_on` are written with `context_today` (the ACTING person's
+  timezone); `sent_on` is a UTC datetime. A role agreed at half past five on
+  a Vietnamese evening and offered the same evening is MINUS one day, so the
+  usual `if days >= 0` skipped it — and "Days to an offer" reported *no
+  answer* over two offers that had gone out the same day. A negative span
+  across a timezone boundary is an ARTEFACT, not data: floor it at zero and
+  count it (`analytics._span`), and make every other surface that measures
+  the same distance — here the vendor card — use the same helper, or the two
+  screens will disagree by a day and nobody will know which is right.
+- **R156 — A `from`-ONLY KEYFRAME CANNOT RESTORE WHAT THE RULE TOOK AWAY.**
+  R85 says put every moving declaration — the starting opacity, the transform
+  AND the animation — inside `@media (prefers-reduced-motion: no-preference)`,
+  and that is right. What it does not say is that the keyframe then needs an
+  explicit `to`. With `animation-fill-mode: both` and a `from`-only keyframe
+  the 100% frame is the element's OWN computed value, which the same rule has
+  just set to `opacity: 0` — so the surface animates from invisible to
+  invisible and stays there for ever. The offer panel rendered as a BLANK
+  RECTANGLE with every one of its numbers present in the DOM, no console
+  error, nothing in any log. A1's `.pbhr-card` is fine because it sets no
+  opacity of its own and lets `both` back-fill the `from`. Either shape works;
+  mixing them does not. Check it by reading `getComputedStyle(el).opacity`
+  after the animation, not by looking for an error.
+- **R157 — THE GATE THAT DECIDES WHAT SOMEBODY MAY DO AND THE GATE THAT
+  DECIDES WHETHER THEY MAY LOOK HAVE TO AGREE.** A recruiter's stand-in was
+  allowed every action on the roles they covered and was shown "Hiring is
+  looked after by the hiring team" when they went to do one: `_require_recruit`
+  had learnt about cover and `_can_read` had not. The same afternoon, the
+  second half: with the read gate fixed the board opened EMPTY, because the
+  record rules let a plain user see the roles they raised, manage or recruit
+  and a stand-in is none of those. Widening the `ir.rule` was the other option
+  and it is the worse one — a rule domain is memoised in the `default`
+  ormcache group and nothing about creating a cover invalidates it (R59), so
+  a cover would start working some time later. The board reads the covered
+  recruiter's rows AS THE SYSTEM with the recruiter clause written out in the
+  domain, which is this module's doctrine everywhere else (R89). **Any
+  permission that is granted by a RECORD rather than by a group has three
+  places to reach, not one: the door, the read gate, and the record rules.**
+- **R158 — a phase that adds a section to an existing drawer must re-open
+  that drawer AS SOMEBODY WITHOUT ITS GROUPS.** `get_requisition` built its
+  `postings` list inline, so the person who ASKED for a role — who holds no
+  hiring group by definition — got an `AccessError` naming a model they have
+  never heard of, over a drawer whose other eight sections they were entitled
+  to. A1 shipped it that way and nothing found it for two phases, because
+  every test of that screen was run by a recruiter. Every list in a drawer
+  gets its own `_safe()` probe (R92), and a recruiter is given read on the
+  letter library so the native form's picker can draw at all.
+- **R159 — ⌘K and lens numbers after A3.** A3 stayed inside A1's **3500**
+  block: `hiring_analytics` **3570** ("Hiring numbers", Insights) and
+  `hiring_cover` **3580** ("Cover for a recruiter"). B1 still starts at
+  **3600**. On the Insights hub the four shipped lenses carry no sequence and
+  bolted-on ones start at 20, so Budget is 20 (R96) and **Hiring is 30** —
+  what a role was supposed to cost, then how long it took to fill. The Hiring
+  settings category (sequence 40) now has FOUR cards: the hiring rules, what
+  a panel scores on, what a background check covers, and what a joiner is
+  asked for.
+- **R160 — the A3 test cast and what was put back.** Demo data stays and, per
+  the owner's rule of 2026-09-16, **everything this phase created is named
+  "DEMO …" and carries no programme code** — payobook.com may be shown to
+  competitors. New: requisition **798** "DEMO Senior Agronomist" (company 5,
+  department 657, head count 2, agency Talent Partners), job **762**,
+  candidates **552** "DEMO Nguyen Van An" / **553** "DEMO Tran Thi Binh" /
+  **554** "DEMO Pham Quoc Cuong" (all `demo.a3.*@example.com`), offers
+  **106/107** closed and **108** left mid-route on requisition 57 so the
+  "waiting on you" chip has something to show, employees **19613/19614**
+  with their contracts, pay packages, joining checklists and portal logins,
+  and cover **26** (ended). **Two things were borrowed and both were put
+  back**: the company-5 `hr_lead` responsibility seat (uid 2 → 2065 → uid 2)
+  and `pb_hiring.group_hiring_manager` on uid 2065, without which nothing can
+  exercise the HR-lead gates. Verified group-for-group against a snapshot
+  taken before the first write: all six accounts identical. No password was
+  reset. Every test mail went to an `@example.com` address and this phase's
+  traffic was cancelled in the same session.
+
+### X1 (pb_demo_seed — the DEMO sweep, 2026-09-16)
+
+- **R161 — A TRACKED WRITE PUTS THE OLD NAME STRAIGHT BACK IN, in a place
+  nothing can rename away afterwards.** Renaming a hiring request through the
+  ORM posts a chatter line — *"Title: RIZE W2 Field Officer → DEMO Field
+  Officer"* — and a `mail_tracking_value` row carrying the old spelling, so a
+  sweep whose whole job is to remove a word creates fresh copies of it as it
+  goes, roughly one per record, inside the history it has just finished
+  cleaning. Worse, the new rows are indistinguishable from the old ones and a
+  second pass simply makes more. **Every write in a rename goes through
+  `with_context(tracking_disable=True, mail_notrack=True,
+  mail_create_nolog=True)`.** The same applies to any bulk data repair on a
+  model with a chatter.
+- **R162 — a word boundary is `\m`/`\M` in Postgres and `\b` in Python, and a
+  pattern that carries the wrong one fails in opposite ways.** `'\mrize\M'` is
+  exactly right in SQL and raises `re.error: bad escape \m` in Python;
+  `r'\brize\b'` is right in Python and matches nothing in Postgres. The sweep
+  asks Postgres to FIND (it has the rows and does one pass per table) and
+  Python to REPLACE (one rule, case-preserving, used by every path), so it
+  carries the same test written twice — which is worth saying out loud in the
+  file, because the two spellings look like a typo for each other.
+- **R163 — DELETING A CANCELLED `mail.mail` DELETES A CHATTER MESSAGE.**
+  `mail.mail` `_inherits` `mail.message`, and `unlink` on a delegating model
+  deletes the parent row too. On this database 131 of the cancelled test mails
+  share their message with a record's chatter — so "delete the cancelled test
+  mails" would have silently taken 131 hiring conversations with them. Rewrite
+  the text instead: a cancelled mail never sends, so the only thing that
+  matters about it is what a person reading the record can see.
+- **R164 — the rows that name the customer loudest are not demo data at all.**
+  13 `pb_alert` rows say *"Rize Farms has no recent backup"* — they are the
+  fleet monitor talking about a REAL tenant of this product, the same tenant
+  `pb_tenant` holds and `pb_tenant_backup` has paths for. An alert that stops
+  naming the thing it is about is a broken alert, so all three tables are
+  survivors of the sweep, with the province of Rize in Turkey
+  (`res_country_state`) and the browser's own push rows (`bus_bus`, which
+  expire within the hour). **A rename sweep needs a survivor list with a
+  REASON against each line, printed every run** — otherwise the next person
+  reads "58 columns still carry the name" as a failure.
+- **R165 — a stored compute that names a person does NOT follow that person's
+  rename.** `pb.hiring.cover.name` is `@api.depends('recruiter_id', …)` — the
+  RECORD, not `recruiter_id.name` — so renaming the recruiter left the cover
+  reading "… covering RIZE W2 Recruiter" for ever, with nothing to invalidate
+  it (R138 from the other side: there the answer was frozen for the length of
+  an environment, here it is frozen in the database). Any sweep that renames
+  people has to finish with a pass over every text column, not only the ones
+  it meant to touch.
+- **R166 — a crawl that follows a pointer at a USER collects the whole
+  database.** Deciding which records are demo data by following what points at
+  what is the only honest method — but `create_uid` is a `many2one` to
+  `res.users` on every row in Postgres, and half the models also carry a
+  manager, an owner or an HR partner. Following those from a demo LOGIN would
+  have put real people's journeys on a register whose button deletes them.
+  **The rule is subject versus actor**: follow a pointer at a demo EMPLOYEE,
+  TEAM, ROLE or REQUEST (the record is about them), never a pointer at a demo
+  USER or CONTACT (the record was merely touched by them), and let
+  `res.users`, `res.partner`, `hr.employee`, `hr.department`, `hr.job` and
+  `pb.vendor` be named by hand and never grown by the crawl.
+- **R167 — a module installs into the company of whoever ran the install, and
+  for a shipped `noupdate` record that is for ever.** The "Demo data" panel
+  landed in company 1 — the empty shell the first install left (R16 again) —
+  so pressing Load would have built five demo people into a company nobody
+  works in and every screen would have shown an empty demo. The sweep moves
+  the panel to the operating company while it is still EMPTY (once a world is
+  loaded the company is where its people live and must not move). Any seeded
+  record with a `company_id` wants the same treatment.
+- **R169 — `_register` IS THE ORM'S OWN NAME and a method called that is
+  shadowed by `True`.** Every model class carries `_register`, the boolean
+  that says whether it belongs in the registry, so
+  `def _register(self, records…)` is silently replaced and the first call dies
+  with `TypeError: 'bool' object is not callable` — pointing at the caller,
+  not at the clash, and only when the code path is actually reached (here:
+  after a nine-minute rename, on a live database). Private helper names on an
+  Odoo model are not free: `_register`, `_name`, `_table`, `_order`, `_auto`,
+  `_inherit`, `_description` and `_sequence` all belong to the framework.
+- **R168 — the X1 register: what is on it, and what deliberately is not.**
+  981 records over 62 kinds, on one panel called **"DEMO HR programme data"**
+  (profile `adopted`, company 5), built by naming the programme's own test
+  cast from `RIZE_CLOSEOUT.md` and the per-phase entries above and then
+  following the pointers four passes deep. On it: the 31 test employees
+  (17118–17148), the two A3 joiners, their contracts, journeys, check-ins,
+  clearances, letters, documents, probation reviews, growth plans, awards,
+  settlements and pay packages; the whole hiring wave (10 requests, 7 jobs, 7
+  candidates, 5 adverts, 3 postings, 9 interviews, 3 offers, 3 background
+  checks, 2 document requests, 1 cover) with its calendar entries, attendees
+  and the entire approval trail (18 requests, 39 steps, 39 seats, 28
+  decisions, 92 events, 95 step logs); the three test departments; the demo
+  logins (switched off, not deleted, when Remove is pressed) and every demo
+  person's private contact, registered LAST. **Not on it:** vendor 11 "Talent
+  Partners" (A3 reused it rather than making it — the parent phase ruled it
+  pre-existing; its sibling 12 and agreements 18/20 are registered), any pay
+  run or payslip, `igc1.validator`, the `pb_demo` 4,500-person world, the
+  older `*.demo@payobook.com` logins, the shipped letter templates, hiring
+  rules and other configuration the product itself ships, and the derived
+  `pb.budget.actuals` rows the nightly job rebuilds anyway.
+- **R170 — a bulk ORM rename over a live database still sends ONE email, and
+  the commit is what sends it.** Part 1's commit flushed the outgoing queue
+  and a notification went out from the write to the renamed recruiter's own
+  records — to `demo.recruiter@example.com`, which is why every fixture on
+  this programme uses `@example.com` (R47: this box flushes at commit, not on
+  the hourly cron). Assume any commit on this database posts whatever is
+  sitting in `mail.mail`, and check the queue before committing a repair.
+
+### E1 (pb_training, 2026-09-16)
+
+- **R171 — A NON-STORED COMPUTED ONE2MANY ACCEPTS A WRITE AND DISCARDS IT,
+  silently.** `survey.survey.question_ids` is `compute='_compute_page_and_
+  question_ids'` over `question_and_page_ids` (survey_survey.py:73/278) with
+  no inverse, so `create({... 'question_ids': [(0,0,{...})] ...})` returns a
+  survey, raises nothing, logs nothing and has no questions. The demo test
+  was built that way and the board read "0 questions" over a test somebody
+  was about to sit; the FIXTURE looked like it had worked. Write to
+  `question_and_page_ids`, and count with `question_count` rather than
+  `len(question_ids)` — the engine keeps the number beside the field for
+  exactly this reason. **Any one2many that is a compute is a field you can
+  only read**; check for `compute=` before writing a o2m you did not declare.
+- **R172 — `survey.survey.survey_type` HAS NO "certification" VALUE on this
+  build.** It is `survey / live_session / assessment / custom`, and what
+  makes a survey a scored test is the separate `certification` Boolean beside
+  it. Writing `survey_type = 'certification'` is a hard
+  `ValueError: Wrong value for survey.survey.survey_type` on create — loud,
+  and therefore the lucky half. The quiet half was a LIST ACTION whose domain
+  was `[('survey_type','=','certification')]`: it matched nothing and opened
+  empty over a database with tests in it. A Selection this phase did not
+  declare is read out of the field before it is written to
+  (`self.env['survey.survey']._fields['survey_type'].selection`), which is
+  also what the gate now asserts.
+- **R173 — INSTALLING TWO MODULES INSTALLED FOUR.** `survey` and
+  `website_slides_survey` were the two the owner pre-authorised (D15);
+  `hr_skills_survey` and `survey_crm` came with them, because both are
+  `auto_install: True` and their other dependencies (`hr_skills`, `crm`) were
+  already on this database. Odoo does that silently as part of the same run
+  and there is no flag that stops it. **A module install's blast radius is
+  the authorised list PLUS every `auto_install` module whose whole dependency
+  set is about to be satisfied** — compute it before asking for the
+  authorisation, and diff `ir_module_module` before and after either way.
+- **R174 — THE TEST ENGINE TAKES A LEARNER OFF THE COURSE WHEN THEY FAIL
+  THEIR LAST GO.** `website_slides_survey`'s `survey.user_input.
+  _check_for_failed_attempt` (survey_user.py:33) watches for an attempt that
+  is done, unsuccessful and out of attempts, then calls `_remove_membership`
+  and sends the stock "enrol again" mail. That is a sensible design for a
+  company SELLING certifications — the candidate buys another pool of
+  attempts — and it is the wrong answer for an employer: the course vanishes
+  off the employee's own page, taking the eleven lessons they DID finish with
+  it, and nothing on any screen says where it went. Found by the test that
+  asks for a fourth go, which came back "that course is not one of yours".
+  Now `pb_training.unenrol_on_failed_test`, OFF, with the engine's behaviour
+  one switch away and asserted in both positions. **Any engine borrowed whole
+  brings its COMMERCIAL assumptions with it** (R102/R103 from a third
+  direction).
+- **R175 — `slide.channel.create` ENROLS WHOEVER MADE THE COURSE**
+  (slide_channel.py:491,505 — the `channel_partner_ids` default and
+  `_action_add_members(channel.user_id.partner_id)`). So a course made from a
+  shell runs as the superuser and the board reads "3 people" over two
+  learners and one OdooBot partner, which is honest and looks like a bug on a
+  screen somebody is being shown. Not something to "fix" — it is there so the
+  author can find their own course — but a demo fixture has to take itself
+  off afterwards, and any count of "who is on this course" is a count that
+  includes its author.
+- **R176 — `pb.demo.seed.register()` CANNOT BE CALLED OVER JSON-RPC.** It
+  takes a RECORDSET, and a recordset does not survive the wire — it arrives
+  as a plain integer and the first `records._name` is
+  `'int' object has no attribute '_name'` (R43, on X1's own API). Everything
+  a browser session creates has to be registered from a server-side script
+  afterwards, which is what E1 did. Worth an `as_id`-style coercion at that
+  door the next time `pb_demo_seed` is opened.
+- **R177 — `ess1.demo@payobook.com` AND `lam.ngo@example.com` ARE INTERNAL
+  USERS, not portal ones.** R29 recorded them as the ESS demo logins and
+  every handover since has called them portal accounts; on this database
+  today both hold `base.group_user` and `share = False`. It matters for
+  anything that GATES on internal-versus-external: E1's door on the public
+  course site passed both of them straight through, so the gate read as
+  working while never having been exercised. A portal learner had to be made
+  (`demo.learner@example.com`) before the gate could be proved at all.
+  **Check `res.users.share` before calling an account a portal account.**
+- **R178 — A PROGRESS TRACK MUST DECLARE ITS OWN `padding` AND
+  `box-sizing`.** A 100% bar drew 63% full on the drawer, because a rule
+  further up the cascade gives a `<span>` in that panel `padding: 9px 16px` —
+  the fill's containing block was 32px narrower than the track around it, so
+  "finished" rendered as "nearly finished" with no error anywhere and a
+  perfectly plausible-looking screen. The tell is arithmetic, not
+  appearance: measure `fill.getBoundingClientRect().width` against the
+  track's and check the ratio equals the number you wrote.
+- **R179 — the asset table on this box is NOT empty any more.** R116 found
+  `DELETE FROM ir_attachment WHERE url LIKE '/web/assets/%'` answering
+  `DELETE 0` every time and concluded the stale copy is always in the
+  browser. On 2026-09-16 the same statement answered **DELETE 85**, then
+  DELETE 10 on the next wave. So the purge is a real step again — keep doing
+  it — and R116's other half still holds: separate the two questions by
+  curling the bundle before blaming either side.
+- **R180 — ⌘K, lens and settings numbers after E1.** E1 took the **3900**
+  block (`training_board` 3900 "Training" on Learn, `training_courses` 3910,
+  `training_tests` 3920 "Tests and question bank", `training_my` 3930 "My
+  training"). B1 still starts at **3600**. The employee's own page is reached
+  through an `ir.actions.act_url` record, because the palette contract knows
+  exactly two doors — a client-action tag and an xmlid — and nothing else
+  (the shape `pb_rnr.action_my_recognition` set); **there is no URL door**,
+  and that was checked rather than assumed. The Learn hub's one shipped lens
+  (Lessons) carries no sequence, so bolted-on ones start at 20 and
+  **Training is 20**. "Training" measures comfortably inside the 60px rail
+  label box (R63) — it is one word, and the labels that spilled were eleven
+  characters with no break in them.
+- **R181 — the E1 test cast and what was put back.** Demo data stays and
+  every row is named DEMO and is on the register (rule 9). New: course **27**
+  "DEMO Agronomist basics" (4 lessons **112-115**, test lesson **116**),
+  survey **17** "DEMO Agronomist basics — test" with questions **40-42**,
+  quiz questions **38-39**, portal login **5344**
+  `demo.learner@example.com` / `RizeP7!2026` with partner **25801**, three
+  memberships **47-49**, three attempts **36-38** and ten lesson-completion
+  rows. The FAO's "Let's talk about soil" is the video (public, checked by
+  oEmbed before it was used — the first id tried was a maths lecture, which
+  is how a demo ends up looking wrong in front of a customer).
+  **One group was borrowed and given back**: uid 2065 was given
+  `pb_training.group_training_manager` to run the board and it was removed at
+  the end — verified group-for-group against a snapshot taken before the
+  first write, all three accounts identical. Passwords re-set to the ledger's
+  values (`RizeP7!2026` on 1984, `RizeP4!2026` on 2326). Every mail this
+  phase queued was cancelled in the same session; the outgoing queue is
+  empty.
+
+### E2 (pb_training — assignments, chasing and the way out, 2026-09-16)
+
+- **R182 — THE D19 DELETION, WHAT IT TOOK AND WHAT IT DELIBERATELY DID NOT.**
+  Identified by XMLID ORIGIN and never by name, exactly as the ruling says:
+  the seven `slide.channel` rows carrying an `ir_model_data` row from
+  `website_slides` (ids 1–7 — Basics of Gardening, Taking care of Trees,
+  Trees Wood and Gardens, Choose your wood!, Furniture Technical
+  Specifications, Basics of Furniture Creation, DIY Furniture). Deleted with
+  them: 39 slides (10 of them sections, 2 certification slides), 12
+  memberships, 16 per-lesson progress rows, 7 in-lesson questions and their 17
+  answers, 11 extra resources, the 8 course tags / 3 tag groups / 6 lesson
+  tags the same demo shipped, 5 star ratings, survey 6 "Furniture Creation
+  Certification" with its 4 questions and 2 attempts, and 56 orphaned
+  `ir_model_data` rows left behind by the cascade. **A real-looking membership
+  was among them and the owner ruled it goes anyway**: the OWNER'S OWN ACCOUNT
+  (uid 2, Mitchell Admin) was enrolled on six of the seven — the content
+  engine enrols whoever created a course (R175), and the demo data was created
+  by the install. **Deliberately left:** course 27 and everything on the demo
+  register; surveys 1–5 (`Feedback Form`, `MyCompany Vendor Certification`,
+  `Burger Quiz`, `Food Preferences`, `Let's connect!`), which are the survey
+  and CRM modules' own demo rows and are not tied to any course — **survey 2
+  is a certification and therefore still shows on Training → Tests, and is an
+  owner item**; and the five `website_slides` gamification badges and
+  challenges, which are karma configuration rather than sample content.
+  **AND IT CAN COME BACK.** `ir_module_module.demo` is still TRUE for
+  `website_slides`, `website_slides_survey` and `survey`, so a future
+  `-u website_slides` re-seeds all seven courses. Nothing E2 or E3 does
+  upgrades that module; anybody who does should expect them back.
+- **R183 — `mail.activity.create` EMAILS THE ASSIGNEE, and the switch that
+  stops it is a context key.** `mail_activity.py:285-293` notifies every new
+  activity whose `user_id` is not the acting user, unless
+  `mail_activity_quick_update` is in the context. So putting a to-do on
+  somebody's list as a courtesy sent them a second, generically worded message
+  in the same second as the module's own "a course has been added to your
+  training". The to-do is worth keeping and the duplicate is not. **Any phase
+  that calls `activity_schedule` beside its own email needs this key**, and
+  the way to find it is to count `mail.mail` rows around the write rather than
+  to read the ones you meant to send.
+- **R184 — "IS IT OPEN" IS NOT THE QUESTION A RECURRING SCHEDULE IS ASKING.**
+  A compliance schedule skipped anybody with an OPEN assignment for its
+  course. Right for somebody still working through it; wrong for somebody who
+  had ALREADY FINISHED the course before the schedule first ran — their
+  assignment is created `done` in the same breath (which is honest), it is
+  therefore not open, and the next run assigns it again. On a nightly job that
+  is one row per person per night, for ever, with a cheerful count in the log.
+  Found live the moment the audience happened to include somebody who had
+  finished the demo course: "run it twice" answered 3 and then 1. The real
+  question is the one the schedule is about — has THIS schedule already asked
+  THIS person within the period it comes round in — so the second skip is
+  `schedule_id` plus `assigned_on >= today − every_months + 1 day`. Both skips
+  are kept: the first stops a schedule stacking on an ad-hoc assignment, the
+  second stops it stacking on itself.
+- **R185 — A "RUN IT NOW" BUTTON MUST NOT MOVE THE CALENDAR.** The same
+  method rolled `next_run` on every call, so pressing it twice pushed a
+  twelve-month course to 2028 — and a schedule that had been missed for three
+  years came back one cycle on and was immediately overdue again. It now moves
+  the date only when the round was actually DUE, and walks it to the next date
+  in the FUTURE rather than one step on. (R53 says a "run it now" button must
+  do exactly what the night does; this is the other half — it must not do
+  anything the night would not.)
+- **R186 — ALL `CustomerPortal` SUBCLASSES MERGE INTO ONE CLASS, and this is
+  the third time it has bitten this programme.** A private helper named
+  `_notice` in `pb_training` and `_notice` in `pb_rnr` are the same attribute
+  on the same class; whichever module loads last silently wins. Two live
+  consequences, both invisible at runtime and both found by chasing ONE
+  missing sentence: **E1's "Marked as done." confirmation had never appeared
+  on any page since E1 shipped**, because the praise module's `_notice` was
+  answering and had never heard of the key; and E1's `_problem(self, kw)` had
+  taken the name `pb_offboarding` uses for `_problem(message)`, so a
+  resignation that failed called ours with a string and died on `kw.get` — an
+  error page on the one path that exists to explain an error. `pb_rnr`'s own
+  `_rnr_card` docstring records the same clash over `_card` taking three
+  portal pages down. **THE RULE: on a portal controller every private helper
+  carries the module's own prefix**, and `pb_training` now has a test that
+  walks the controller's AST and fails on any that does not. Framework hooks
+  (`_prepare_*`) are the exception and are overridden on purpose.
+- **R187 — A TABLE THAT SCROLLS SIDEWAYS ON A PHONE HIDES THE COLUMN THAT
+  MATTERS.** `/my/training/team` was a three-column grid with a 620px floor
+  inside an `overflow-x: auto` box — which is the right answer for a wide
+  table nobody reads on a phone and the wrong one here, because the column it
+  pushed off the screen was the DUE DATE, the single thing the page exists to
+  show. At 390px: four names, four progress bars and not one "7 days overdue"
+  anywhere, with no scrollbar visible to say there was more. Below 680px the
+  row stacks. The check is arithmetic, not appearance: read the row's text
+  content at 390px and look for the value you came for.
+- **R188 — "READ IT AGAIN" MUST READ WHAT IS ON THE SCREEN.** The board's
+  refresh button called the courses reader, so pressing it on any of the four
+  new tabs re-read a list that was not showing and left the one that was
+  exactly as stale. Found when a schedule's date was corrected underneath an
+  open board and the button would not pick it up. Any cockpit that grows a
+  second payload has to grow its refresh with it.
+- **R189 — ⌘K, lens and settings numbers after E2.** E2 stayed inside E1's
+  **3900** block: `training_assignments` **3940** ("Training assignments") and
+  `training_schedules` **3950** ("Compliance schedules"). B1 still starts at
+  **3600**. The Learn hub's Training lens is still sequence 20. **Worth
+  knowing before adding another:** `pb_probation` already owns a palette row
+  labelled **"Training courses"** (sublabel *Probation*), so searching
+  "training" in the command bar now returns seven rows, two of which open
+  different screens about training. Not a defect of either module — the
+  trial-period tracker really is called that — but the next phase to touch
+  either should consider re-wording one of them.
+- **R190 — the E2 test cast and what was put back.** Demo data stays, every
+  row is named DEMO and every row is on the register (rule 9): **62 rows added
+  to "DEMO HR programme data", which now holds 1,043.** New: assignments
+  **127** (Thái Ngọc Diệp, trial period, the one the delay route was proved
+  on), **129** (Bùi Hữu Bảo, compliance, overdue — the employee-nudge proof),
+  **131** (DEMO Joiner Mai, one-off, 7 days overdue — the manager and HR-lead
+  proof), **132** (DEMO Joiner Khanh, day one, from rule 19) and **133–135**
+  (the Facilities schedule's three); delays **13** (agreed, +5 days) and **14**
+  (turned down); day-one rule **19** "DEMO Induction"; schedules **7** "DEMO
+  Fire safety, every year" and **8** "DEMO Site safety, every year"; the
+  "Assigned training" track **7** with item **13** and status **46**; users
+  **5583**/**5584** and employees **20208**/**20209** — `demo.joiner@` and
+  `demo.joiner2@example.com`, "DEMO Joiner Mai" and "DEMO Joiner Khanh", both
+  reporting to 17122 — and joining checklist **87**. **Two things were
+  borrowed and both were put back:** `pb_training.group_training_manager` on
+  uid 2065 (granted for the D19 deletion and the board, removed at the end)
+  and the company-5 `hr_lead` responsibility seat (uid 2 → 2065 → uid 2, so
+  the HR escalation could be proved without emailing the owner). Verified
+  group-for-group against a snapshot taken before the first write: all seven
+  accounts identical. **No password was reset** — `RizeP0!2026`,
+  `RizeP9!2026` and `RizeP4!2026` all still work, and the two demo joiners
+  have no password at all. **No employee's manager was changed**: the handover
+  offered to re-point ess1.demo's `parent_id` at 17122 and it was not needed,
+  because `diep.thai` already reports to `lam.ngo`. Every mail this phase sent
+  went to an `@example.com` or `@payobook.com` address and was cancelled in
+  the same session; the outgoing queue is empty.
+- **R191 — `pb.demo.seed.register_ids` now exists, and R176 is closed.**
+  `register()` takes a recordset and a recordset does not survive JSON-RPC, so
+  everything a browser session or a validation script created had to be
+  registered afterwards from inside the server — which is exactly the step
+  somebody forgets, and a demo record that is not on the register is a demo
+  record the Remove button leaves behind. `register_ids(model_name, ids,
+  label, last)` browses and hands over to the existing method; every rule
+  about what may be registered stays in `_register_row`. Additive,
+  Python-only, no manifest bump (`pb_demo_seed` 19.0.1.2.0): rsync and
+  restart.
+
+### E3 (pb_training — the allowance, the claim, the money and the numbers, 2026-09-16)
+
+- **R192 — A `date_field` ON A CHAIN REGISTRATION DECIDES WHO IS ASKED, not
+  just when.** The shim's `_chain_date()` reads the field named in
+  `register_chain(..., date_field=...)` and the engine hands that date to
+  `biz.approval.responsibility.resolve(..., on_date)` — so naming a HISTORICAL
+  field asks "who held this seat back then". A training claim's `paid_on` is
+  the day somebody paid a college, which on a real claim is weeks or months
+  earlier; the request went straight to **blocked** with *"Nobody holds HR lead
+  for Payobook Vietnam JSC yet"* over a seat that was sitting right there with
+  the right person in it, and the Agree button did nothing at all with no error
+  anywhere. The seat on this database starts 15 September and the claim was
+  paid for on 20 August. **An approval asks who holds the seat NOW**, because
+  now is when the decision is being made — which is also what the engine's own
+  `repair()` does when it unsticks a blocked request (`engine.py:1495` uses
+  `context_today`). Name a date field only when the people are genuinely meant
+  to be resolved as of a date in the past. E3 dropped it; `repair()` unstuck
+  the one request that had already blocked.
+- **R193 — A SEAT IS A READ **AND A WRITE**, and read-only produces the worst
+  outcome there is.** `rule_claim_seat` shipped `perm_write="False"` on the
+  reasoning AM60 had recorded — being asked to decide something is not
+  permission to change it. Live, the HR lead pressed Agree, the ROUTE recorded
+  the approval, and the claim stayed on "Waiting on the HR lead": the engine
+  writes the record's own status AS THE PERSON WHO DECIDED, and that person
+  could not write to the record. Nothing was on any screen; the reason was
+  inside the request's own `block_reason` — *"Ngô Bảo Lâm (id=2326) doesn't
+  have 'write' access to: Training cost claim"*. An approval that
+  half-happens is worse than one that is refused. The narrowing belongs in the
+  DOMAIN (`seat_user_ids` is written by the engine and holds only the people it
+  asked about that one record) and never in the permission; create and delete
+  stay shut. **`rule_delay_seat` had the same shape** and escapes it only
+  because a delay's one rung is the person's own manager, whom
+  `rule_delay_mine` already gives write — both were corrected. And because
+  these rules live in a `noupdate="1"` block, **an upgrade cannot correct them
+  on a database that already has them**: the fix travels in
+  `migrations/19.0.1.2.0/post-claims.py`, by xmlid, and only where the rule is
+  still exactly as it shipped.
+- **R194 — `t-else` IS A BRANCH THAT CLAIMS EVERY TAB NOBODY HAS WRITTEN
+  YET.** The board's five tabs ended `t-if / t-elif ×3 / t-else`, with Day one
+  as the catch-all. E3 added a sixth, and Claims rendered UNDERNEATH Day one —
+  both panels, at once, on a screen that otherwise looked perfectly normal. A
+  chain of tabs names every one of them and has no `t-else` at the end.
+- **R195 — A TAB IS DRAWN BEFORE ITS OWN PAYLOAD ARRIVES.** `setTab` writes
+  `state.tab` and OWL re-renders AT ONCE — before the `await` that fetches the
+  tab's data has resolved — so the new panel is rendered once over whatever the
+  INITIAL state holds. `cPack: {}` made `state.cPack.to.length` throw *Cannot
+  read properties of undefined*, which the theme shows as the generic
+  "Something went wrong on our side" dialog with nothing useful in the console
+  (R125's dialog, reached from a new direction). Every collection in a tab's
+  initial state is a collection, and every nested object carries the keys the
+  template reads.
+- **R196 — THE KIT'S `.pbim-stats` CARRIES NO COLUMNS.** It is
+  `display: grid; gap: 12px` and nothing else (`import_kit.scss:93`); every
+  consumer sets its own `grid-template-columns`. A lens that forgets gets one
+  column of full-width rows, which looks like a broken grid rather than a
+  missing rule — six KPI tiles down the left of a 1,500px screen. Found on the
+  Insights Training lens; the board's own `.pbtn-kpis` had it right and was
+  the tell.
+- **R197 — the claim → award → payslip chain, in one paragraph.** An employee
+  raises a claim on `/my/training/claims` with a receipt and a certificate. The
+  Approval Matrix route `training_claim` (one rung, the **HR lead**) decides
+  it. On agreement the claim raises exactly ONE `pb.incentive` of the new kind
+  **`training`**, created already `approved` with `fulfilment = pending` and
+  `period_month` = **the month it was agreed in** (R81: the awards dialog picks
+  by the RUN's month, and `paid_on` can be nine months old), files the
+  uploaded certificate in the employee's vault, and emails them. It stops
+  there. The money moves when somebody puts that award into a pay run from the
+  Awards lens — `pb.oneoff.feed.preview_for_run` → `queue_for_run` — which
+  writes the amount under the scheme's `INCENTV` input component and is
+  idempotent by construction. The claim's `fulfilment` column FOLLOWS the
+  award (`pending` → `queued` → `paid`) through a `write` hook on
+  `pb.incentive` and never leads it. **Nothing in `pb_training` writes a
+  payslip**, and a unit test walks the module's own source to prove it.
+- **R198 — ⌘K, lens and settings numbers after E3.** E3 stayed inside E1's
+  **3900** block: `training_claims` **3960** ("Training claims") and
+  `training_numbers` **3970** ("Training numbers", sublabel *Insights*). B1
+  still starts at **3600**. The Insights hub's four shipped lenses carry no
+  sequence, so bolted-on ones start at 20 — Budget 20 (P9), Hiring 30 (A3),
+  **Training 40** (E3), which is also the right reading order: what a role was
+  budgeted to cost, how long it took to fill, what the person was trained on.
+  "Training" is one word of eight characters and measures comfortably inside
+  the 60px rail label box (R63). This module ships no Settings category: its
+  four dials are `ir.config_parameter` rows and its two tables have their own
+  ⌘K doors.
+- **R199 — the E3 test cast and what was put back.** Demo data stays, every row
+  is named DEMO and every row is on the register (rule 9): **8 rows added to
+  "DEMO HR programme data", which now holds 1,051.** New: allowances **23**
+  (Payobook Vietnam JSC, 2026, 5,000,000 ₫ each person) and **24** (Thái Ngọc
+  Diệp's own, 8,000,000 ₫); claims **54** (Thái Ngọc Diệp, DEMO Advanced
+  spreadsheets for finance, 2,500,000 ₫ — raised on the real portal form,
+  agreed by the HR lead) and **57** (Hồ Thị Trâm, DEMO Food safety refresher,
+  1,200,000 ₫ — typed up by HR, agreed, and the one the money door was proved
+  with); awards **50** and **51**; vault documents **143** (the claim's
+  uploaded certificate) and **145** (the certification PDF for the course Ngô
+  Bảo Lâm passed in E1, filed by the same call the completion hook makes).
+  **A REAL PAY RUN WAS TOUCHED and it is an owner item:** award 51 was queued
+  into run **339** "Demo Payroll June 2026 — Retail" (draft), which put
+  `INCENTV = 1,200,000` on payslip **140174** (Hồ Thị Trâm). The run was NOT
+  confirmed and NOT paid. **Two things were borrowed and both were put back:**
+  `pb_training.group_training_manager` on uid 2065, and the company-5 `hr_lead`
+  seat (22) — `user_id` 2 → 2065 → 2 and `backup_user_id` 7 → 2326 → 7, so a
+  route could be decided without emailing the owner. Verified group-for-group
+  against a snapshot taken before the first write: all four accounts identical.
+  **No password was reset.** Two claims were made in a dead-end state while
+  R192 and R193 were being found (55 and 56, both minutes old, neither ever
+  outside this session) and were remade rather than repaired. Every mail this
+  phase queued went to an `@example.com` address or to the engine's own
+  approver notifications; all twelve were cancelled in the same session and the
+  outgoing queue is empty.
+
+### B1 (pb_goals, 2026-09-16)
+
+- **R200 — `group_operator` IS `aggregator` ON ODOO 19, and the old spelling is
+  quietly nothing.** `odoo/orm/fields_numeric.py:23` names the attribute
+  `aggregator`; a field declared `group_operator='avg'` keeps the default,
+  which for a Float is SUM. A list of goal sheets grouped by department would
+  then add four people's percentages together and print 312% — a number that
+  is obviously wrong to a person and perfectly ordinary to a machine. Nothing
+  warns.
+- **R201 — A CONSUMER'S RUNG CANNOT BE REFUSED ANYWHERE THE ENGINE ALREADY
+  CALLS IT, and that is a hole in the engine rather than in the consumer.**
+  There are exactly two consumer hooks around a decision.
+  `_approval_validate` (`chain_shim.py:401`) is the SUBMIT check — "may this
+  be sent in at all" — and runs long before an approver has seen anything; the
+  B1 handover named it for the weights rule and it cannot do that job.
+  `_approval_advance` runs AFTER the decision is recorded and its exceptions
+  are deliberately swallowed (`engine.py:1339`: a decision a person really
+  made must never be undone by a consumer that cannot follow its own route),
+  so raising there records the approval and leaves the record behind — R132's
+  exact failure. `pb_goals` therefore adds ONE generic seam in
+  `models/approval_engine_ext.py`: an inherit of `biz.approval.engine` whose
+  `decide()` asks the record `_approval_before_approve(request, step_key)`
+  BEFORE `super()`, only for `approve`, letting `UserError`/`ValidationError`
+  through and logging anything else rather than breaking a route over one
+  module's bug. A consumer that does not answer the hook is untouched, which
+  is every one of the forty-odd routes on this database today.
+- **R202 — A REVISION STAMP MAY NOT CONTAIN ANYTHING AN APPROVER IS MEANT TO
+  CHANGE ON THE WAY THROUGH.** AM32 says never `write_date`; this is the other
+  half and it is sharper. `source_revision` is frozen at SUBMIT and compared
+  again in `_run_apply` when the last rung is agreed — so a goal sheet whose
+  stamp included the goals' WEIGHTS could never be carried out, because
+  setting those weights is the manager's whole job on their own rung. Live:
+  the HR lead pressed Agree, the engine recorded the decision and closed the
+  request, and the sheet stayed on "Waiting on the HR lead" with the reason
+  only inside the request's own `block_reason` — *"This changed after it was
+  sent in, so the approval no longer covers it."* An approval that
+  half-happens is worse than one that is refused (R193 from a new direction).
+  The stamp is now the goals themselves: how many, what each says, and when it
+  is due.
+- **R203 — AND WHEN THAT HAPPENS THE RECORD IS STRANDED, so the advice the
+  engine gives has to work.** The refusal above closes the request and tells
+  the reader to "send it back and ask for it again" — and the send-back button
+  then answered *"This has not been sent in for approval, so there is nothing
+  to decide yet"*, because the shim routes a reversal to `_chain_decide` and
+  there is no live request to decide. Reachable by an ordinary HR action
+  (rewording a goal while the sheet waits on the HR lead). `pb.goal.set
+  .action_goals_send_back` now falls back to the record's own ladder when
+  `_chain_open_request()` is empty, and the drawer shows the request's
+  `block_reason` under "This is not moving" — until then nothing was on any
+  screen at all.
+- **R204 — A CONSEQUENCE HANGS OFF THE STATUS, NEVER OFF THE DOOR.** A chain
+  consumer has two ways to move: a published route, where the engine drives
+  it, and the record's own small ladder, used where the route was never
+  switched on. The adapter's hooks (`_approval_apply`, `_approval_return`) are
+  the ROUTE'S half and are never called on the other path — so a lock written
+  in `_approval_apply` means a sheet that reaches "locked" without a route is
+  never actually frozen, silently. `_after_approval_transition(to_state)` is
+  called on BOTH paths (`biz_approval_mixin.py:77`; `chain_shim.py:426/451/
+  467/495`) and is where every consequence belongs. The one exception is the
+  shim's own `_approval_return`, which does NOT call it — a consumer that
+  overrides that hook has to call it by hand.
+- **R205 — AN OWL TEMPLATE CANNOT SEE A JAVASCRIPT GLOBAL.**
+  `[a, b, c].filter(Boolean)` is ordinary JavaScript and dies inside a
+  compiled OWL expression with *"undefined is not a function"*: the scope the
+  template runs in does not carry `Boolean` (nor `Object`, `JSON`, `Number`,
+  `parseInt`, `Array`). The whole component then fails to render and the real
+  cause sits two levels down an `OwlError`'s `cause` property. Live symptom:
+  the drawer simply never opened, with nothing on the screen and one collapsed
+  console line. Anything a template needs that is not a property or a method
+  of the component belongs IN the component; `pb_goals` has a gate that greps
+  its own template for the global names.
+- **R206 — A `flex-basis` IN PIXELS BECOMES A HEIGHT THE MOMENT THE CONTAINER
+  TURNS INTO A COLUMN.** `flex: 1 1 320px` is a sensible minimum WIDTH in a
+  row and a 320px minimum HEIGHT in a column, so the `/my/goals` header card
+  and its send panel opened on a phone with a third of a screen of empty white
+  inside each of them (411px and 409px tall for ~180px of content). Nothing
+  errors and the page merely looks badly designed. Every `flex` basis in a
+  container a media query turns into a column has to be reset to `auto` in the
+  same query. Measure it (`getBoundingClientRect().height`) rather than
+  looking at it.
+- **R207 — A PYTHON FLOAT RENDERS THROUGH QWEB EXACTLY AS PYTHON WRITES IT,
+  and `t-att-value` DROPS THE ATTRIBUTE ENTIRELY for a falsy value.** Two
+  small things with the same cause. A page that has not started read "0.0% of
+  the way", which is a machine talking; and a key result sitting at nought
+  rendered as two EMPTY boxes, so a person could not tell "nobody has said"
+  from "it is at zero". Both facades now send tidy values —
+  `pb_my_goals._pct` for percentages, `_figure` for a ten-digit Vietnamese
+  revenue target with its thousands in it — and anything going into a
+  `t-att-value` goes as a STRING, which is always truthy.
+- **R208 — THE CATALOGUE ROW IS PART OF THE ROUTE, and without it nothing
+  visibly breaks.** `Seed.lay` needs a `biz.approval.process` row for the
+  process key before it can lay anything (`seed_helper.py:181`); without one it
+  refuses with a single INFO line — *"approval seed: no goal_set row in the
+  catalogue yet"* — the install reports success, the module version lands, and
+  a goal sheet sent in simply never reaches anybody's inbox. Every module that
+  owns a business object ships its own `data/approval_process.xml`; B1 forgot
+  it and the first live install was silently routeless. Two further lessons
+  out of it: a `post_init_hook` seed is NOT re-run by `-u` on the same version,
+  so a database that missed the seed stays missed, and `pb.goals.automation
+  ._ensure_route()` therefore runs `seed_all` every morning as a third,
+  self-healing leg (idempotent — `Seed.lay` asks the database first).
+- **R209 — THE OBVIOUS GATE ON A LENS ABOUT A TEAM IS THE WRONG ONE.** The
+  Goals lens shipped gated on the three goals groups, and a line manager holds
+  none of them by definition — they are somebody's manager, not somebody in
+  HR. Live, the People hub drew NO lens rail at all for `lam.ngo`, so the team
+  view the lens exists for was invisible to every manager in the company. R157
+  again: where a permission is granted by a RECORD rule rather than by a
+  group, the gate that decides whether somebody may LOOK cannot be a group
+  test. The lens and its ⌘K row are now open to `base.group_user` and the
+  SERVER decides what is behind the door — the company for HR, their team for
+  a manager, their own sheet for everybody else, with one honest sentence at
+  the top saying which, and a "My own goals" button so the plainest case is
+  not a dead end. The two CONFIGURATION doors (goal years, templates) keep the
+  HR gate.
+- **R210 — ⌘K, lens and settings numbers after B1.** B1 took the **3600**
+  block as the wave plan says: `goals_board` **3600** ("Goals", sublabel
+  *People*), `goals_my` **3610** ("My goals"), `goals_cycles` **3620** ("Goal
+  years") and `goals_templates` **3630** ("Goal templates"). C1 starts at
+  **3700**. On the People hub the shipped lenses are Employees, Contracts,
+  Records 40, Pay, Where they work, Assets 50, Praise 60 and the Plan
+  launcher, so **Goals is 70** — after what a person IS, what they were
+  HANDED and what colleagues SAID, before what we plan to spend. "Goals"
+  measures **35px** in the 60px rail label box (R63), comfortably inside.
+  This module ships no Settings category: its seven dials are
+  `ir.config_parameter` rows and its two tables have their own ⌘K doors.
+- **R211 — the B1 test cast and what was put back.** Demo data stays, every
+  row is named DEMO and every row is on the register (rule 9): **135 rows
+  added to "DEMO HR programme data", which now holds 1,186.** New: goal years
+  **41** "DEMO Goal year 2026" (company 5, Apr–Mar, half-way 1 Oct, open),
+  **42** "DEMO Goal year 2027" (being set up — the second one, which proved a
+  company may have only one open year) and **44** "DEMO Goal year 2026 (small
+  team)" (company 2, the seven-person company the "Open it for everyone"
+  button was proved on twice); goal sheets **204–211** on company 5,
+  **197–203** on company 2 and **320** for the kick-off joiner (**205** is the
+  one that went the whole route and is agreed and locked; **206** is the one
+  that was sent back, resubmitted and is waiting on its manager); goal templates
+  **13–15**; employees **20637** "DEMO Joiner Quyen" and **20638** "DEMO
+  Joiner Trang" with their joining checklists **108/109**, which proved the
+  new step both with a goal year open and with none. **Three things were
+  borrowed and all three were put back**: `pb_goals.group_goals_manager` on
+  uid 2065, company 2 on uid 2065's allowed companies (for the bulk test on
+  the seven-person company), and the company-5 `hr_lead` seat (22) —
+  `user_id` 2 → 2065 → 2 and `backup_user_id` 7 → 2326 → 7. Verified
+  group-for-group against a snapshot taken before the first write: every
+  account identical, with ONE expected difference — uid 2 now holds
+  `pb_goals.group_goals_admin`, which the module's own security data grants to
+  `base.user_admin` exactly as `pb_training` does. **No password was reset**:
+  `RizeP0!2026`, `RizeP4!2026`, `RizeP7!2026`, `RizeP8!2026` and
+  `RizeP9!2026` all still work. **No employee's manager was changed.** The
+  HR-lead rung of two demo routes was moved to `tuan.quach` and `diep.thai` by
+  reassignment, because the seat holder was the account that had PREPARED the
+  demo sheets and the engine's independence safeguard correctly refused them.
+  Every mail this phase queued went to an `@example.com` or `@payobook.com`
+  address and was cancelled in the same session; the outgoing queue is empty.
+
+### B2 (pb_goals — the year after the goals are agreed, 2026-09-16)
+
+- **R212 — THE ONE INBOX SILENTLY DISCARDS A DRAWER ROW THAT IS NOT A DICT,
+  and B1 had been shipping lists since the day it went live.**
+  `pb_approval_config/models/inbox_facade.py:598` skips anything that is not a
+  dict with `head` / `sub` / `cells`, and it drops the whole detail ONLY when
+  there are no chips either (`:593`). So a consumer that hands it lists gets a
+  drawer with its title, its chips and its note all present and **no table** —
+  which reads as "there was nothing to show" rather than as a mistake. Nothing
+  errors, nothing is logged, and the screen looks finished. B1's
+  `pb.goal.set._approval_detail` built its rows as `[title, weight, date,
+  rating]`, so every approver asked to agree somebody's goals since B1 has been
+  shown the counts and not the goals. Found while proving B2's own
+  change-request drawer, which had copied the same shape. **A drawer row is
+  `{'head': …, 'sub': …, 'cells': [...]}` and the cells line up with
+  `columns`.** Both models corrected and a gate walks `_approval_detail` on
+  each of them.
+- **R213 — VIEW INHERITANCE MAY NOT SELECT BY `[@string=…]`, and the error
+  names the wrong line.** The global gotcha list already says xpath may not
+  select by `string`; what it does not say is that this is not a warning — it
+  is *"View inheritance may not use attribute 'string' as a selector"* and it
+  **aborts the whole module load** (EXIT=255, registry left down). Worse, the
+  ParseError names the CHILD view's own first line (`'line': 15`) rather than
+  the xpath that did it, so the line number in the log points at something
+  innocent and the file is 450 lines long. One deploy cycle. Pick a `name`, a
+  `hasclass()` or a structural anchor (`//sheet`); `pb_goals` now has a gate
+  that walks every `<xpath expr=…>` this module ships.
+- **R214 — "DID THIS ROW GET MADE JUST NOW" CANNOT BE ASKED OF
+  `create_date`.** A row made at six o'clock this morning was made TODAY, so a
+  monthly job that counted `row.create_date.date() == today` reported one
+  check-in made on EVERY run of the same day — over a table it had not
+  touched. The rows were identical every time and only the COUNT lied, on a
+  job whose whole claim is that it is idempotent (R90's exact shape, and R184's
+  and R100's). Found live by pressing "run it now" twice. The honest question
+  is which records existed BEFORE this pass, asked once, in one query, before
+  the loop starts. Both `_make_checkins` and `_make_reviews` now do that, and a
+  test asserts one-then-nought.
+- **R215 — THE ENGINE'S INDEPENDENCE SAFEGUARD REFUSES THE ACCOUNT THAT
+  RAISED THE REQUEST, and `move_it` takes a SEAT key and not a step key.**
+  R211 recorded the first half for goal sheets; B2 met it again on the first
+  goal-change request, where the validator had raised it and then held the
+  HR-lead seat — *"This step is not waiting for you"*, which is correct and is
+  the engine doing its job. The reassignment door is
+  `pb.approval.inbox.move_it(request_id, seat_key, user_id, reason)` and the
+  seat key is the `key` off `can_move_it` (`u2326`), NOT the step key (`hr`);
+  passing the step key answers *"That seat is not waiting for anyone."* Also:
+  `inbox_facade.decide` accepts `approve`, `return` and **`reject`** — not
+  `refuse` — and anything else is *"That is not something you can do here."*
+- **R216 — A REFUSAL'S REASON STAYS ON THE REQUEST UNLESS THE CONSUMER TAKES
+  IT.** `chain_shim._approval_reject` (`:484`) calls
+  `_after_approval_transition`, so the consequence fires — but the reason it
+  is handed is never written to the record, and the person who has to act on
+  it reads their own goals page and not an approval inbox. Live: the manager
+  typed a perfectly good sentence, the change read "Turned down" on
+  `/my/goals` with nothing beside it, and the turned-down email had nothing to
+  quote. Override `_approval_reject`, write the note BEFORE `super()` (which is
+  what sends the email), and only when the record has none. B1 had already
+  learnt the same thing for `_approval_return`; the refusal half was missed.
+- **R217 — A GUARD THAT READS AN EMPLOYEE AS THE CALLER REFUSES THE VERY
+  PERSON IT IS FOR.** `pb.goal.kr.write`'s "a score is not the employee's word"
+  guard filtered on `k.employee_id.user_id`, and the person writing a score is
+  by design the employee's own MANAGER, who holds no HR group — so reading one
+  field of an `hr.employee` prefetched forty, forty of which sit behind payroll
+  groups, and the manager got an AccessError naming fields nobody asked for
+  (R56/R104 from the guard side rather than the mail side). `k.sudo()
+  .employee_id.user_id`: the security boundary is the record rule that found
+  the row, not this read.
+- **R218 — A HEADLINE THAT IS NOT INSIDE ITS OWN TAB STAYS ON SCREEN.** The
+  board's B1 headline was rendered before the new tab strip, so opening the
+  conversations tab put a sentence about how many goal sheets had been agreed
+  above a panel about something else — two headlines, one of them answering a
+  question nobody had asked. Obvious once seen and invisible until the tab
+  exists. Anything above a tab strip belongs to every tab; anything that
+  belongs to one goes inside it.
+- **R219 — "1 Months missed" IS THE SAME DEFECT AS "1 goal(s)" (R46).** A KPI
+  tile's label is read as the second half of a sentence, not as a column
+  heading, and a count-noun in it has to agree with its number. Four places on
+  three new surfaces, all found by looking at a demo where every figure
+  happened to be one — which is the ordinary case on a small team and the one a
+  developer's fixture never produces. `counted()` on the count-nouns; labels
+  that are not count-nouns ("Past their day", "Written up", "To decide") are
+  right at every number and are left alone. The plural word for a row's
+  sub-line comes from the SERVER (`sheets_word`, `n_word`), because a frame
+  with a number in it is something a translator cannot fix.
+- **R220 — THE FROZEN COPY KEEPS REAL NUMBERS AND THE PAGE TIDIES THEM ON THE
+  WAY OUT.** `frozen_json` is the audit record of what a year came out at, so
+  rounding it for a screen would be rounding the evidence — but read straight
+  onto a page a Python float renders exactly as Python writes it and the
+  employee's own past year said "88.0% of the way" (R207). Tidy at the READ
+  side, in the facade, every time a frozen figure is handed to a template.
+- **R221 — A TEST THAT ASSERTS `search([])` IS EMPTY ONLY PASSES ON AN EMPTY
+  DATABASE.** This suite runs against the live demo box, so "the job made no
+  check-ins" asserted over the whole table started failing the moment this
+  phase's own demo data existed — for a reason that has nothing to do with the
+  rule it guards. Every assertion about absence is scoped to the fixture's own
+  records.
+- **R222 — the B2 API, for whatever comes next.** Models `pb.goal.checkin`
+  (`set_id, month` first-of-month, `scheduled_date`, `state` planned|done|
+  missed, `progress_note`, `blockers`, `done_at/by`, `kr_snapshot_json`;
+  `ensure_for(set, when)`, `action_checkin_done(note, blockers)`,
+  `action_checkin_missed()`, `snapshot_rows()`), `pb.goal.review` (`kind`
+  mid_year|year_end, `due_date`, `state`, `manager_note`, `employee_note`,
+  `score_at_review`; `action_review_done(manager_note, employee_note)`),
+  `pb.goal.change` (`kind` edit|add|drop|reweight, `payload_json`, `summary`,
+  `reason`, `state` draft→submitted→manager_ok→approved|refused;
+  `raise_change(set_id, kind, values, reason, goal_id)`), `pb.goal.audit`
+  (before/after JSON), `pb.goal.band` (`min_score` is what is asked, the
+  caller walks highest first). On `pb.goal.set`: `covered_from`,
+  `applies_mid_year`, `applies_year_end`, `prorated`, `applicability_note`,
+  `scored`, `score`, `score_band`, `score_tone`, `goals_done`, `frozen_json`,
+  `submitted_at`, `manager_ok_at`, `closed_at`, `_all_goals()`, `_freeze()`,
+  `frozen()`, `score_key_results(scores)`, `_stamp_applicability(force)`. On
+  `pb.goal`: `active`, `scored`, `score`, `done_at/by`, `changed_on`,
+  `change_count`. On `pb.goal.kr`: `score` (0–5 Selection), `score_value`,
+  `scored_at/by`. Facades `pb.goals.get_year(cycle, tab, filters)` +
+  `write_up_checkin` / `write_up_review` / `score_key_results` /
+  `mark_goal_done` / `ask_for_change` / `decide_change` / `preview_close` /
+  `close_cycle`, `pb.goals.analytics.get_numbers(cycle, filters)` +
+  `export_xlsx`, `pb.goals.home.get_home()` + `open_row(kind, id)`,
+  `pb.my.goals` + `write_up_checkin` / `say_on_review` / `ask_for_change` /
+  `mark_goal_done` / `past_year`. Route `goal_change` (xmlid
+  `pb_goals.process_goal_change`), bands `pb_goals.band_outstanding|strong|
+  solid|attention`, mails `mail_goals_checkin/_review_due/_change_agreed/
+  _change_refused/_year_end`. Six new switches: `pb_goals.checkins` 1,
+  `checkin_day` 25, `mid_year_min_months` 3, `year_end_min_months` 3,
+  `yearend_mail` 1, `review_lead_days` 30.
+- **R223 — ⌘K, lens and settings numbers after B2.** B2 stayed inside B1's
+  **3600** block: `goals_checkins` **3640**, `goals_changes` **3650**,
+  `goals_numbers` **3660** (sublabel *Insights*). C1 still starts at **3700**.
+  On the Insights hub the four shipped lenses carry no sequence, so bolted-on
+  ones start at 20 — Budget 20, Hiring 30, Training 40, **Goals 50**. On the
+  Home hub the two shipped lenses carry none either, so Wall is 20,
+  **Decision Room is 30 — which is the number the C1 handover reserves for
+  "Coming up"** and is already taken today — and **Goals is 40**. C1 should
+  take 50 or move the Decision Room, and should not assume 30 is free. This
+  module still ships no Settings category.
+- **R224 — the B2 test cast and what was put back.** Demo data stays, every
+  row is named DEMO and every row is on the register (rule 9): **18 rows added
+  to "DEMO HR programme data", which now holds 1,204.** New: goal year **133**
+  "DEMO Goal year 2025" (company 5, Apr–Mar, CLOSED, so `/my/goals` has a
+  finished year to open) with sheet **705** for Bùi Hữu Bảo, goals **660/661**
+  and three key results, scored and frozen at **4.2 · Strong**; check-ins
+  **61–65** on sheet 205 (May and June and August written up, **July missed**,
+  September written up by the employee on the real phone form); review **11**
+  (end-of-year, with what the employee asked to have said on it); changes
+  **23** (reword, agreed through BOTH rungs and carried out, audit row **8**),
+  **24** (add a goal, left waiting on its manager), **25** and **26** (drop,
+  turned down — 25 before the refusal note was fixed and 26 after it, which is
+  why there are two). Sheet **205**'s five key results scored, so it reads
+  **4 out of 5 · Strong**. **Three things were borrowed and all three were put
+  back**: `pb_goals.group_goals_manager` on uid 2065, the company-5 `hr_lead`
+  seat (22) — `user_id` 2 → 2065 → 2 and `backup_user_id` 7 → 2326 → 7 — and
+  the HR rung of change 23, reassigned to `linh.quan` (uid 2337) because the
+  account that raised it may not decide it (R215). Verified group-for-group
+  against a snapshot taken before the first write: **identical, with no
+  exceptions at all**. **No password was reset**: `RizeP0!2026`, `RizeP4!2026`,
+  `RizeP7!2026` and `RizeP9!2026` were all re-tested by API login at the end
+  and all four work. **No employee's manager was changed.** Sixteen mails this
+  phase queued were cancelled in the same session; the outgoing queue is empty.
+  The only rows on this database that were touched and are NOT this phase's are
+  the two `pb_alert` notices the fleet monitor sends the owner, which were
+  already queued and were deliberately left alone.
+
+### D1 (pb_timeoff + pb_driver_checkin — holidays, the leave rules, the carry watch, field staff, 2026-09-16)
+
+- **R225 — THE ESCALATION VERDICT: IT WAS NOT IN FORCE, AND WHAT WAS THERE
+  INSTEAD WAS WORSE THAN NOTHING.** `engine.escalate_cron` really does chase a
+  late step, and the ledger and the handover both read as though the sheet's
+  "tell HR after two days" was therefore already met. It was not. The ONLY
+  escalation address in the engine was `request.version_id.workflow_id
+  .owner_user_id` — whoever PUBLISHED the route — and on `payobook` that is
+  **uid 2 for all four seeded time-off routes**, i.e. the owner's own account.
+  So a manager sitting on a day-off request emailed the owner and nobody in HR
+  heard anything, for ever, with a cheerful "escalated" line in the trail. The
+  second half is that `late.reassign` cannot help: it hands the seat to
+  `seat.backup_user_id`, and a MANAGER step's seats carry no backup at all
+  (`_resolve_step_people` sets one only for a role step). So the fix is a
+  generic, additive escalation TARGET in the engine — `late: {to_role:
+  '<responsibility key>'}` — with the workflow owner as the fallback when
+  nobody holds the seat, so an overdue step is never silently unescalated. A
+  route that names no role behaves exactly as it always has, which is every
+  route on every database except time off. **Proven live:** the reminder went
+  to the manager (uid 2326) and the escalation to the HR lead (uid 2065), the
+  cron run twice produced one of each, and the request stayed `pending`.
+- **R226 — A PUBLISHED ROUTE IS FROZEN, SO A MIGRATION CANNOT EDIT ONE.**
+  `biz.approval.workflow.version.write` refuses any change to a published
+  revision — *"requests already under way keep the version they were given"* —
+  and that rule is right: a leave sent in yesterday must not start being chased
+  by different rules half-way through its own approval. The first D1 deploy
+  wrote the fixed `late` block straight onto the published version and the
+  migration leg died (its two siblings ran, under their own savepoints, which
+  is exactly what R131 is for). The repair does what a business would do on the
+  Approval Matrix instead: a NEW draft revision on the same workflow,
+  validated, published with a reason, the old one superseded. **And the
+  migration had to move to a new version number**, because 19.0.1.4.0 had
+  already landed and a migration is not re-run for a version the database
+  already carries — the repair would have been skipped for ever on the one
+  database that needs it.
+- **R227 — `hr_holidays` CONVERTS A PUBLIC HOLIDAY'S TIMES A SECOND TIME, and
+  only when the writer's timezone differs from the calendar's.**
+  `_prepare_public_holidays_values` (`hr_holidays/models/resource.py:124`)
+  reads a `resource.calendar.leaves` CREATE as "these datetimes are in the
+  ACTING USER's timezone" and shifts them into the calendar's. That is right
+  for somebody typing into the native form and wrong for a caller that has
+  already done the conversion properly. Two live symptoms, both on the real
+  screen: a Mon–Wed holiday entered from a Brussels-timezone account onto a
+  Vietnamese calendar was stored ten hours out and drawn as **four days**; and
+  Labour Day was refused as overlapping Reunification Day, because the shifted
+  1 May reached back into the already-corrected 30 April. `write` does no such
+  conversion — so the row is CREATED a century out, where nothing can overlap
+  it and the shift is harmless, and then written to the values that were
+  actually worked out. Two different days give two different placeholders, so
+  the stock overlap rule still catches a real clash, on the REAL dates.
+- **R228 — `hr.leave.name` IS A COMPUTE OVER `private_name` AND SILENTLY DOES
+  NOT STICK.** It is `compute='_compute_description'` with an inverse that
+  writes `private_name`, which carries `groups='hr_holidays.group_hr_holidays_
+  responsible'`. So a test that writes a description as an ordinary user reads
+  it back unchanged and looks exactly like a guard refusing a write it in fact
+  allowed. Anything that has to prove a write on `hr.leave` writes a DATE.
+- **R229 — `with_user()` KEEPS THE CONTEXT, INCLUDING THE FLAG THAT SWITCHES
+  YOUR OWN GUARD OFF.** A fixture built with `leave_fast_create=True` and then
+  acted on with `record.with_user(someone)` hands the guard under test the very
+  key that exempts it. Four cases passed for that reason and told nobody. A
+  fixture that a guard will be asked about is re-browsed through a clean
+  recordset (`self.Model.browse(made.id)`), never handed on from the create.
+- **R230 — SIX `pb_today` CASES HAD BEEN ERRORING ON THEIR OWN FIXTURE SINCE
+  THE APPROVAL MATRIX RETROFIT, and D1 is the first phase to run them.**
+  `_leave` filed an `hr`-validated leave and pressed `action_approve` twice.
+  Since `pb_timeoff/models/hr_leave_approval.py` that press drives a published
+  ROUTE, and the engine correctly refuses a decision from an account it never
+  asked — *"This step is not waiting for you"*. The fixture needs an APPROVED
+  leave, not an approval journey: a `no_validation` type is approved by
+  hr_holidays inside `create`, which is still never a state write. **Any
+  fixture anywhere in this codebase that approves an `hr.leave` by pressing the
+  button has the same hole.** The same shape, plus a `state` written by hand
+  that sends the stock `_check_date` constraint through
+  `dashboard_warning_message` on an empty set, bit D1's own first draft.
+- **R231 — A COMMENT-BLIND GATE FAILS ON THE FILE THAT EXPLAINS IT, and that
+  now includes the EMOJI gate and the PLURAL gate.** R118 recorded it for the
+  white-label gate. D1's emoji gate failed on `pb_timeoff.js`, whose own header
+  describes the queue's buttons as "one-click ✓/✗", and its bracketed-plural
+  gate failed on its own docstring, which contains the string `1 day(s)` as the
+  example of what it forbids. Every source gate strips comments first, whatever
+  it is looking for.
+- **R232 — A `var()` FALLBACK IS A REAL COLOUR AND `pb_today.scss:190` HAD THE
+  WRONG ONE.** `--pbim-primary-strong` is `#5A4BB0`; that line has carried
+  `#453A8C` since it was written, so the moment the token is missing the tile
+  paints a different indigo. Found by `pb_today`'s own hex gate, which had been
+  failing on it and had not been run. Fixed, and D1's new rules use the right
+  value. **The gate is only worth having if somebody runs it**: this is the
+  second pre-existing failure in this module's suite that D1 surfaced simply by
+  running it.
+- **R233 — ⌘K, lens and settings numbers after D1.** D1 took the **3800** block
+  as the wave plan says: `wf_holidays` **3800** ("Public holidays", Mission
+  Control), `wf_field` **3810** ("Field check-in map", Mission Control),
+  `wf_carry` **3820** ("Carry-forward watch", Time Off). C1 still starts at
+  **3700**. **Mission Control now has a soft lens registry** —
+  `MISSION_LENSES = "pb_mission_lens"`, exported from
+  `pb_mission/static/src/js/pb_mission.js` — and it is the LAST hub in the
+  product to get one and the awkward one: this hub DEPENDS on its guests, so a
+  guest cannot import the constant back without a manifest cycle. `pb_timeoff`
+  and `pb_driver_checkin` name the literal string and each carries a test that
+  reads `pb_mission`'s own source and fails if the spellings drift. The eight
+  shipped lenses carry no sequence, so bolted-on ones start at 20: **Holidays
+  20, Field 30**. "Holidays" and "Field" both sit inside the 60px rail label
+  box (R63). This phase ships no Settings category: its five dials are
+  `ir.config_parameter` rows and the carry log has its own ⌘K door.
+- **R234 — the D1 test cast and what was put back.** Demo data stays, every row
+  is named DEMO and every row is on the register (rule 9): **23 rows added to
+  "DEMO HR programme data", which now holds 1,227.** New: **12 public
+  holidays** on Payobook Vietnam JSC (six for 2026, six for 2027 — ids 413–427,
+  the movable feasts are indicative and are an owner item); user **6533**
+  `demo.field@example.com` / `RizeD1!2026`, which is employee **17140** Ưng
+  Hoàng Long given a login and the **Field staff** role — an agronomist, not a
+  driver, and the proof that D16 works; three demo leave types **356** "DEMO
+  Field sick day", **357** "DEMO Manager day off" and **358** "DEMO
+  Carry-forward annual"; allocations **146/147**; leaves **564** (the map's "On
+  leave" chip), **565** (the backdated sick note, with the HR alert), **566**
+  (a future sick day) and **568** (the escalation case); attendance **9580**
+  with its selfie, from the real phone app. **Two things were borrowed and both
+  were put back**: the company-5 `hr_lead` seat (22) — `user_id` 2 → 2065 → 2
+  and `backup_user_id` 7 → 2326 → 7, so the escalation and the HR alert could
+  be proved without emailing the owner — and the carry-forward cap on type
+  358, set to 12 for the live run and back to **0** afterwards, because a cap
+  ships at zero and nothing is watched until the business says so (R76).
+  **NO GROUP WAS GRANTED TO ANY EXISTING ACCOUNT**: verified group-for-group
+  against a snapshot taken before the first write, all ten accounts identical
+  with no exceptions. The Field staff role on uid 6533 STAYS — it is the
+  deliverable. **No password was reset**; `RizeP0!2026`, `RizeP4!2026` and
+  `RizeP7!2026` were all re-tested by API login at the end and all three work.
+  All five switches read their shipped values at the end. **The mail sweep was
+  wider than this phase's own traffic and that is a deviation worth recording:**
+  75 queued messages were cancelled by a pattern that matched `Time Off` as
+  well as D1's own subjects, so about thirty of Odoo's own never-sent
+  `hr_holidays` demo notifications ("Marc Demo on Sick Time Off", "Allocation
+  of Paid Time Off to Anita Oliver") went with them. None had been sent, none
+  addressed a real person, and nothing that was cancelled can now go out — but
+  the next phase should match on its OWN subjects and not on a word.
+
+### C1 (pb_hr_comm — the communication calendar, 2026-09-16)
+
+- **R235 — THE TIME A SCREEN SAYS IS THE TIME SOMEBODY ACTS ON, AND THERE ARE
+  TWO RIGHT ANSWERS.** `fields.Datetime.to_string` prints UTC, so the first
+  live reminder told a Vietnamese reader their announcement went out at
+  "2026-09-18 10:57:24" — the right moment, in the wrong time zone, in a shape
+  nobody says out loud. Seven hours is enough to be a different working day.
+  The fix is two helpers and a rule about which to use. **An EMAIL is read by
+  ONE person, so it says the time in THEIR zone** (`local_words(env, when,
+  user)`); **a shared surface is read by several people in several countries
+  about one moment that belongs to the company publishing it, so it says the
+  COMPANY'S time** (`company_words(env, when, company)`, the zone off
+  `company.resource_calendar_id.tz` — `res.company` has no zone of its own).
+  Mixing them is visible: the drawer said "1:59 pm" directly above a history
+  line saying "9:59 pm" about the same announcement. The GRID has to agree
+  with the drawer too (`company_dt`), or a post sits on Friday in the reader's
+  zone and Saturday in the company's — and the screen says which it is using,
+  once, in a muted line ("Times are each company's own"). The one surface left
+  in the reader's zone is the NATIVE FORM, because that is the framework's own
+  convention and fighting it would be a third answer; its field help says so.
+- **R236 — A COMMENT-BLIND GATE FAILS ON THE FILE THAT EXPLAINS IT, and that
+  is now four times on this programme.** R118 recorded it for the white-label
+  gate and R231 for the emoji and plural gates. C1 added two more: the
+  reserved-loop-variable gate failed on its own template header, which quotes
+  `t-as="lt"` as the thing not to write, and the mail-template gate failed on
+  the header that warns about `t-key` and dict `t-att-class` by name. **Every
+  source gate strips comments first, whatever it is looking for** — and the
+  rule is now general enough that a new gate should start from `re.sub(r'<!--
+  .*?-->', '', source, flags=re.S)` or the AST, never from the raw text.
+- **R237 — A CALENDAR PILL IS A HUNDRED PIXELS WIDE AND THE SUBJECT IS THE
+  ONLY THING ON IT THAT MEANS ANYTHING.** Laid out as one row of "time ·
+  subject", every pill on the live board read "10:55 DEMO …": the time, which
+  nobody scans a month for, and an ellipsis where the announcement was. R187's
+  lesson reached from a narrow column rather than a phone — the check is
+  arithmetic, not appearance (read the pill's text content at the real width
+  and look for the word you came for). The subject now takes two clamped lines
+  with the time under it, and the whole sentence — time, subject, audience,
+  status — is in the `title`, because a calendar's job is to show WHEN and the
+  drawer is one click away.
+- **R238 — THE IDEMPOTENCY RULE IS A ROW, AND THAT IS WHAT MAKES A BURST CAP
+  SAFE.** An announcement to four and a half thousand people cannot go out in
+  one breath, so the sender queues `pb_hr_comm.burst_cap` (500) and comes back
+  ten minutes later. Anything that decides "have we already told this person"
+  from a status, a stamp or a count is guessing, and the guess is wrong in
+  exactly the case the cap exists for — a pass that stopped half way through.
+  `pb.hr.comm.delivery` carries one row per (post, person) with a unique index
+  on the pair, and the sender skips whoever has one: Postgres decides, not
+  Python (R21/R49 from a third direction). It is also the only honest answer
+  to "did so-and-so get it" six months later. Proven live by capping at two
+  over a three-person audience and running twice.
+- **R239 — A REVERT CHANGES WHAT THE TEST ACCOUNT CAN SEE, so read the board
+  BEFORE you give the groups back.** Five minutes after the C1 reverts the
+  calendar showed two announcements where it had shown eight, which looks
+  exactly like six records having been deleted by an upgrade. They were all
+  there in Postgres: the validator no longer held any announcements group, so
+  the only rules that applied were the company rule and the SEAT rule — and
+  the two rows on the board were precisely the two the published route had
+  asked that account to decide. The permission design working, read as a data
+  loss. Check the database before believing a screen, and take the final
+  screenshots before the reverts.
+- **R240 — `hr.employee.department_id` IS SEARCHABLE EVEN THOUGH IT IS NOT A
+  COLUMN.** R14 records that Odoo 19 keeps employment fields on a version
+  record and that raw SQL for `department_id` fails; what it does not say is
+  that `hr.employee` `_inherits` `hr.version`, so the ORM resolves
+  `search([('department_id', 'in', ids)])` through the delegation and an
+  audience expansion needs no join of its own. The read is still AS THE SYSTEM
+  (R56): one field of an employee prefetches forty, about forty of which sit
+  behind payroll groups on this build, so a country HR user asking who is in
+  their own audience would otherwise get an AccessError naming fields nobody
+  asked for. Also verified live: department 657 (Quality Assurance) now holds
+  three people and 656 (Facilities) twelve — the wave-1 test cast moved, and a
+  handover naming "8 test people in 657" is out of date.
+- **R241 — ⌘K, lens and settings numbers after C1.** C1 took the **3700**
+  block as the wave plan says: `comm_calendar` **3700** ("Announcements",
+  People), `comm_new` **3710** ("Write an announcement"), `comm_templates`
+  **3720**, `comm_celebrations` **3730** ("Birthdays and anniversaries this
+  week" — the same screen as 3700 reached by the other word, with the sublabel
+  saying where it lands) and `comm_mine` **3740** ("Announcements I look
+  after", open to everybody with a login). On the People hub the shipped
+  lenses are Employees, Contracts, Records 40, Pay 45, Where they work, Assets
+  50, Praise 60, Goals 70 — so **Announcements is 80**, and the label is
+  **"Announce"**, which measures **58px** in the 60px rail label box (R63);
+  "Announcements" is thirteen characters with no break in it and would have
+  spilled like "Improvement" and "Recognition" did. On the Home hub Wall is
+  20, the Decision Room 30 and Goals 40, so **"Coming up" is 50**: 35 was free
+  and was deliberately not used — every sequence in every hub in this product
+  is a multiple of ten, and the two cards that need somebody to DO something
+  belong above the one that is telling them about something. The Settings
+  category **Announcements is 50** (Vendors 20, Access 30, Approvals and
+  Hiring 40) with two cards, Templates and Who looks after them.
+- **R242 — the C1 test cast and what was put back.** Demo data stays, every
+  row is named DEMO and every row is on the register (rule 9): **24 rows added
+  to "DEMO HR programme data", which now holds 1,251.** New: announcements
+  **97** "DEMO Town hall" (sent to three people with a poster attached), **98**
+  "DEMO Canteen closed on Friday" (scheduled, the one the two-day reminder was
+  proved on), **99–102** "DEMO Monthly safety note" (the recurring chain, the
+  last of which stopped itself), **103** "DEMO Pay day moves to the 25th" (the
+  one that went through the sign-off route and was agreed) and **104** "DEMO
+  Car park closed for resurfacing" (sent back with a note, then scheduled with
+  sign-off switched off again); 15 delivery rows and one poster attachment.
+  **Two things were borrowed and both were put back:**
+  `pb_hr_comm.group_comm_manager` on uid 2065 and the company-5 `hr_lead` seat
+  (22) — `user_id` 2 → 2065 → 2 and `backup_user_id` 7 → 2326 → 7, so a route
+  could be decided without emailing the owner. Verified group-for-group
+  against a snapshot taken before the first write: **identical, with no
+  exceptions** (uid 1 and uid 2 hold `group_comm_admin`, which the module's
+  own security data grants to `base.user_root`/`base.user_admin` exactly as
+  `pb_goals` and `pb_training` do, and which was already true in the
+  snapshot). **No password was reset**; `RizeP0!2026`, `RizeP4!2026` and
+  `RizeP9!2026` were all used for real logins during the phase and all three
+  work. The HR rung of the demo route was moved to `diep.thai` by reassignment
+  because the engine's independence safeguard correctly refuses the account
+  that raised the request (R215), and the seat key is the one off
+  `can_move_it` (`u2065`) and never the step key. Every mail this phase queued
+  went to an `@example.com` address or was an engine notification with no
+  address at all; all twenty-three were cancelled by matching THIS PHASE'S OWN
+  SUBJECTS and nothing else (D1's sweep over-matched on a word, R234). The
+  outgoing queue holds only the three fleet-monitor alerts to the owner that
+  were already there. All six switches read their shipped values at the end,
+  and `pb_rnr.anniv_mail` is still **0** (D17).

@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sudima Panels · Vietnam Demo — Capability Gap Analysis</title>
+<style>
+  :root{
+    --ink:#0f172a; --ink-2:#1e293b; --muted:#64748b; --muted-2:#94a3b8;
+    --line:#e6eaf0; --line-2:#eef2f7; --paper:#ffffff; --canvas:#f6f8fb;
+    --rail:#0b1f3a; --rail-soft:#12294a; --brand:#2f5bea; --brand-ink:#1e3a8a;
+    --ok:#15803d; --ok-bg:#ecfdf3; --ok-line:#bbf7d0;
+    --warn:#b45309; --warn-bg:#fffbeb; --warn-line:#fde68a;
+    --gap:#b91c1c; --gap-bg:#fef2f2; --gap-line:#fecaca;
+    --ux:#4338ca; --ux-bg:#eef2ff; --ux-line:#c7d2fe;
+    --na:#475569; --na-bg:#f1f5f9; --na-line:#e2e8f0;
+    --shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px rgba(15,23,42,.06);
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink); background:var(--canvas); line-height:1.55;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  .wrap{max-width:1140px; margin:0 auto; padding:0 22px}
+  a{color:var(--brand); text-decoration:none}
+
+  /* ---------- Hero ---------- */
+  .hero{background:var(--rail); color:#fff; position:relative; overflow:hidden}
+  .hero::before{content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(1100px 300px at 88% -40%, rgba(47,91,234,.35), transparent 60%),
+      radial-gradient(700px 260px at 5% 120%, rgba(47,91,234,.18), transparent 60%);
+    opacity:.9}
+  .hero .wrap{position:relative; padding:46px 22px 40px}
+  .brandrow{display:flex; align-items:center; gap:12px; margin-bottom:26px}
+  .logomark{width:34px;height:34px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .logomark svg{width:20px;height:20px}
+  .brandname{font-weight:700; letter-spacing:.2px; font-size:15px}
+  .brandname span{color:#9fb4e6}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:#a8c0f2;margin-bottom:14px}
+  .kicker .dot{width:6px;height:6px;border-radius:50%;background:#4d7bf0}
+  h1{font-size:clamp(26px,4.4vw,40px); line-height:1.12; margin:0 0 14px; font-weight:800; letter-spacing:-.5px; max-width:20ch}
+  .lede{color:#c7d5f0; font-size:16px; max-width:64ch; margin:0}
+  .metarow{display:flex; flex-wrap:wrap; gap:10px; margin-top:26px}
+  .chip{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#dce6fb;padding:7px 12px;border-radius:999px;font-size:12.5px;font-weight:600}
+  .chip svg{width:14px;height:14px;opacity:.85}
+
+  /* ---------- Section scaffolding ---------- */
+  section{padding:44px 0}
+  .eyebrow{font-size:11.5px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--brand-ink);margin:0 0 8px}
+  h2{font-size:22px;font-weight:800;letter-spacing:-.3px;margin:0 0 6px}
+  .sub{color:var(--muted); margin:0 0 26px; max-width:70ch}
+
+  /* ---------- Summary tiles ---------- */
+  .summary{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;align-items:stretch}
+  .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .tile{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 16px;box-shadow:var(--shadow);position:relative}
+  .tile .n{font-size:34px;font-weight:800;letter-spacing:-1px;line-height:1}
+  .tile .lbl{font-size:12.5px;font-weight:700;color:var(--ink-2);margin-top:8px;display:flex;align-items:center;gap:8px}
+  .tile .desc{font-size:12px;color:var(--muted);margin-top:4px}
+  .swatch{width:11px;height:11px;border-radius:4px;flex:0 0 auto}
+  .tile.ok .n{color:var(--ok)} .tile.warn .n{color:var(--warn)}
+  .tile.gap .n{color:var(--gap)} .tile.ux .n{color:var(--ux)}
+
+  .chartcard{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+  .donutwrap{position:relative;width:180px;height:180px}
+  .donutwrap .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .donutwrap .center .big{font-size:30px;font-weight:800;letter-spacing:-1px}
+  .donutwrap .center .cap{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+  .legend{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:center}
+  .legend .li{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--ink-2)}
+
+  /* ---------- Tier legend ---------- */
+  .tiergrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .tierdef{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+  .tierdef .badge{margin-bottom:10px}
+  .tierdef p{margin:0;font-size:12.5px;color:var(--muted)}
+
+  /* ---------- Badges ---------- */
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;letter-spacing:.2px;padding:4px 10px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+  .badge svg{width:13px;height:13px}
+  .b-ok{color:var(--ok);background:var(--ok-bg);border-color:var(--ok-line)}
+  .b-warn{color:var(--warn);background:var(--warn-bg);border-color:var(--warn-line)}
+  .b-gap{color:var(--gap);background:var(--gap-bg);border-color:var(--gap-line)}
+  .b-ux{color:var(--ux);background:var(--ux-bg);border-color:var(--ux-line)}
+  .b-na{color:var(--na);background:var(--na-bg);border-color:var(--na-line)}
+
+  /* ---------- Requirement matrix ---------- */
+  .group{margin-top:30px}
+  .group:first-of-type{margin-top:0}
+  .grouphd{display:flex;align-items:center;gap:10px;margin:0 0 14px;font-size:13px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
+  .grouphd .bar{width:26px;height:2px;background:var(--line);flex:0 0 auto;border-radius:2px}
+
+  .req{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+  .req .top{display:flex;align-items:flex-start;gap:14px;padding:16px 18px}
+  .req .num{flex:0 0 auto;width:30px;height:30px;border-radius:9px;background:var(--canvas);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;color:var(--ink-2)}
+  .req .head{flex:1 1 auto;min-width:0}
+  .req .title{font-size:15.5px;font-weight:700;letter-spacing:-.2px;margin:0 0 3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .req .badges{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-left:auto}
+  .req .body{border-top:1px dashed var(--line-2);display:grid;grid-template-columns:1fr 1fr;gap:0}
+  .req .cell{padding:14px 18px}
+  .req .cell + .cell{border-left:1px dashed var(--line-2)}
+  .req .cell h4{margin:0 0 7px;font-size:11px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--muted-2);display:flex;align-items:center;gap:6px}
+  .req .cell h4 svg{width:13px;height:13px}
+  .req .cell p{margin:0;font-size:13px;color:var(--ink-2)}
+  .req .cell code{font-family:"SFMono-Regular",Menlo,Consolas,monospace;font-size:11.5px;background:var(--canvas);border:1px solid var(--line-2);border-radius:5px;padding:1px 5px;color:var(--brand-ink)}
+  .impact{padding:11px 18px;background:var(--canvas);border-top:1px dashed var(--line-2);font-size:12.5px;color:var(--muted);display:flex;align-items:flex-start;gap:8px}
+  .impact svg{width:14px;height:14px;flex:0 0 auto;margin-top:2px;color:var(--brand)}
+  .impact b{color:var(--ink-2);font-weight:700}
+
+  /* ---------- Priorities ---------- */
+  .prio{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .pcard{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+  .pcard .ph{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .pcard .ico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .pcard .ico svg{width:17px;height:17px}
+  .pcard.q .ico{background:var(--ok-bg);color:var(--ok)}
+  .pcard.p .ico{background:var(--warn-bg);color:var(--warn)}
+  .pcard.h .ico{background:var(--ux-bg);color:var(--ux)}
+  .pcard h3{margin:0;font-size:15px;font-weight:800;letter-spacing:-.2px}
+  .pcard .tag{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
+  .pcard ul{margin:12px 0 0;padding:0;list-style:none}
+  .pcard li{font-size:13px;color:var(--ink-2);padding:8px 0;border-top:1px solid var(--line-2);display:flex;gap:9px;align-items:flex-start}
+  .pcard li:first-child{border-top:none}
+  .pcard li .rn{flex:0 0 auto;font-size:10.5px;font-weight:800;color:var(--muted-2);background:var(--canvas);border:1px solid var(--line-2);border-radius:5px;padding:1px 6px;margin-top:1px}
+
+  /* ---------- Callout / footer ---------- */
+  .callout{background:linear-gradient(0deg,var(--paper),var(--paper));border:1px solid var(--brand);border-left-width:4px;border-radius:12px;padding:18px 20px;display:flex;gap:14px;align-items:flex-start;box-shadow:var(--shadow)}
+  .callout svg{width:22px;height:22px;flex:0 0 auto;color:var(--brand)}
+  .callout p{margin:0;font-size:13.5px;color:var(--ink-2)}
+  .callout b{font-weight:800}
+  footer{padding:30px 0 50px;color:var(--muted);font-size:12px;text-align:center;border-top:1px solid var(--line);margin-top:10px}
+  footer .fb{font-weight:700;color:var(--ink-2)}
+
+  @media (max-width:860px){
+    .summary{grid-template-columns:1fr}
+    .tiergrid{grid-template-columns:repeat(2,1fr)}
+    .prio{grid-template-columns:1fr}
+    .req .body{grid-template-columns:1fr}
+    .req .cell + .cell{border-left:none;border-top:1px dashed var(--line-2)}
+    .req .badges{margin-left:0;width:100%}
+  }
+  @media (max-width:520px){ .tiles{grid-template-columns:1fr} .tiergrid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<!-- ======================= HERO ======================= -->
+<header class="hero">
+  <div class="wrap">
+    <div class="brandrow">
+      <span class="logomark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0b1f3a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V6a2 2 0 0 1 2-2h8l6 6v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 4v6h6"/><path d="M8 14h8M8 17h5"/></svg>
+      </span>
+      <span class="brandname">Payobook <span>AI™</span></span>
+    </div>
+    <div class="kicker"><span class="dot"></span> Capability Gap Analysis · Internal Decision Document</div>
+    <h1>Sudima Panels — Vietnam Demo Readiness</h1>
+    <p class="lede">A requirement-by-requirement assessment of the 22-point demo scope against what the live Payobook AI™ platform can do today — the map for deciding what to build to a world-class standard next.</p>
+    <div class="metarow">
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> July 2026</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 8 4v5c0 5-3.4 7.7-8 9-4.6-1.3-8-4-8-9V7Z"/></svg> Vietnam (PIT · BHXH · BHYT · BHTN)</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> 22 requirements assessed</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ======================= SUMMARY ======================= -->
+  <section>
+    <p class="eyebrow">Executive Summary</p>
+    <h2>Where the platform stands today</h2>
+    <p class="sub">The payroll spine — processing, AI validation, approvals, statutory dashboards and reporting — is live and demo-ready. The gaps cluster in field-HR workflows (attendance, trips, driver GPS) and net-new intelligence (bank-document OCR). A dashed flag marks items that work but wear a generic UI and need a WOW-grade rebuild for the demo.</p>
+
+    <div class="summary">
+      <div class="tiles">
+        <div class="tile ok">
+          <div class="n">7</div>
+          <div class="lbl"><span class="swatch" style="background:var(--ok)"></span> Present</div>
+          <div class="desc">Live in the branded cockpit, demo-ready</div>
+        </div>
+        <div class="tile warn">
+          <div class="n">9</div>
+          <div class="lbl"><span class="swatch" style="background:var(--warn)"></span> Partial</div>
+          <div class="desc">Engine or cockpit exists, sub-features missing</div>
+        </div>
+        <div class="tile gap">
+          <div class="n">5</div>
+          <div class="lbl"><span class="swatch" style="background:var(--gap)"></span> Not Built</div>
+          <div class="desc">Absent — ground-up build required</div>
+        </div>
+        <div class="tile ux">
+          <div class="n">4</div>
+          <div class="lbl"><span class="swatch" style="background:var(--ux)"></span> Needs WOW-UX</div>
+          <div class="desc">Works, but UI must be rebuilt for demo</div>
+        </div>
+      </div>
+
+      <div class="chartcard">
+        <div class="donutwrap">
+          <!-- Donut: 7 Present, 9 Partial, 5 Not Built, 1 N/A  => total 22 -->
+          <svg viewBox="0 0 42 42" width="180" height="180" role="img" aria-label="Verdict distribution across 22 requirements">
+            <circle cx="21" cy="21" r="15.915" fill="none" stroke="#eef2f7" stroke-width="6"/>
+            <!-- circumference = 100. segments start at top (-90deg via rotate) -->
+            <g transform="rotate(-90 21 21)">
+              <circle cx="21" cy="21" r="15.915" fill="none" stroke="#15803d" stroke-width="6" stroke-dasharray="31.8 68.2" stroke-dashoffset="0"/>
+              <circle cx="21" cy="21" r="15.915" fill="none" stroke="#d97706" stroke-width="6" stroke-dasharray="40.9 59.1" stroke-dashoffset="-31.8"/>
+              <circle cx="21" cy="21" r="15.915" fill="none" stroke="#dc2626" stroke-width="6" stroke-dasharray="22.7 77.3" stroke-dashoffset="-72.7"/>
+              <circle cx="21" cy="21" r="15.915" fill="none" stroke="#94a3b8" stroke-width="6" stroke-dasharray="4.6 95.4" stroke-dashoffset="-95.4"/>
+            </g>
+          </svg>
+          <div class="center"><span class="big">22</span><span class="cap">Requirements</span></div>
+        </div>
+        <div class="legend">
+          <span class="li"><span class="swatch" style="background:var(--ok)"></span> Present · 7</span>
+          <span class="li"><span class="swatch" style="background:var(--warn)"></span> Partial · 9</span>
+          <span class="li"><span class="swatch" style="background:var(--gap)"></span> Not Built · 5</span>
+          <span class="li"><span class="swatch" style="background:var(--na-2,#94a3b8)"></span> N/A · 1</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= TIER LEGEND ======================= -->
+  <section style="padding-top:0">
+    <p class="eyebrow">How to read this report</p>
+    <h2>The four verdicts</h2>
+    <p class="sub">Verdicts judge the <b>live Payobook cockpit</b> — a capability that exists only as an un-surfaced standard Odoo module counts as <b>Partial</b>, not Present.</p>
+    <div class="tiergrid">
+      <div class="tierdef">
+        <span class="badge b-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Present</span>
+        <p>Live in the branded cockpit and demonstrable today with little or no work.</p>
+      </div>
+      <div class="tierdef">
+        <span class="badge b-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> Partial</span>
+        <p>The engine or a partial cockpit exists, but key sub-features (or the branded UI) are missing.</p>
+      </div>
+      <div class="tierdef">
+        <span class="badge b-gap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg> Not Built</span>
+        <p>No meaningful implementation — a ground-up build is required to demo it.</p>
+      </div>
+      <div class="tierdef">
+        <span class="badge b-ux"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-4l11-11 4 4L8 21H4Z"/><path d="M13.5 6.5 17 10"/></svg> Needs WOW-UX</span>
+        <p>Overlay flag: functionally there, but the interface must be rebuilt to demo standard.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= REQUIREMENT MATRIX ======================= -->
+  <section style="padding-top:0">
+    <p class="eyebrow">The Assessment</p>
+    <h2>All 22 requirements, scope order</h2>
+    <p class="sub">Each card cites the implementing module(s) so the verdict is traceable, and closes with the demo impact.</p>
+
+    <!-- ---- Group A ---- -->
+    <div class="group">
+      <div class="grouphd"><span class="bar"></span> Dashboards &amp; Analytics</div>
+
+      <!-- 1 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">1</span>
+          <div class="head">
+            <p class="title">Executive Dashboard &amp; Payroll Analytics</p>
+          </div>
+          <div class="badges">
+            <span class="badge b-ux"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-4l11-11 4 4L8 21H4Z"/></svg> Needs WOW-UX</span>
+            <span class="badge b-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Present</span>
+          </div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Live KPI cockpit with headcount, gross/net &amp; employer cost, cost-by-department/cost-centre, 6-month trends and live pay-run status. <code>pb_dashboard</code> · <code>pb_hr_payroll_analytics</code> · <code>pb_insights</code>.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>Attendance/leave/overtime summary tiles are thin, and the visual treatment is functional rather than executive-grade for a client demo.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> Strong opener — data is real; a design pass turns it into a showpiece.</span></div>
+      </article>
+
+      <!-- 1b -->
+      <article class="req">
+        <div class="top">
+          <span class="num">1b</span>
+          <div class="head"><p class="title">Vietnam Compliance Dashboard</p></div>
+          <div class="badges"><span class="badge b-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Present</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Statutory telemetry cockpit: PIT liability, BHXH/BHYT/BHTN employer vs employee split, ceilings, and payable summaries. <code>pb_statutory</code> · <code>pb_hr_payroll_vietnam</code> (insurance policy + PIT table).</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>Effectively complete for the demo; a single global "compliance status" verification banner would polish it.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> A key Vietnam-localization proof point — ready to show.</span></div>
+      </article>
+    </div>
+
+    <!-- ---- Group B ---- -->
+    <div class="group">
+      <div class="grouphd"><span class="bar"></span> Employee &amp; Master Data</div>
+
+      <!-- 2 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">2</span>
+          <div class="head"><p class="title">Employee Master Management</p></div>
+          <div class="badges"><span class="badge b-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> Partial</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Branded People &amp; Contracts cockpits: personal/employment details, department &amp; manager hierarchy, position, bank details, salary-to-tax/insurance mapping. <code>pb_people</code> · <code>pb_contracts</code> · <code>hr_employee_vietnam</code>.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p><b>Cost-centre code</b>, a <b>document repository</b> (contracts/certs/IDs) and <b>employment-history logs</b> (role/dept/salary timeline) are not surfaced.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> Profile looks complete; the "document vault + history timeline" is the visible gap to close.</span></div>
+      </article>
+    </div>
+
+    <!-- ---- Group C ---- -->
+    <div class="group">
+      <div class="grouphd"><span class="bar"></span> Banking &amp; Documents</div>
+
+      <!-- 3 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">3</span>
+          <div class="head"><p class="title">AI Bank Account Validation (OCR + Approval)</p></div>
+          <div class="badges"><span class="badge b-gap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg> Not Built</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Only a bank-<i>export</i> audit log (<code>payroll_analytics_approval/bank_export_log.py</code>). No document upload, OCR extraction, or validation engine anywhere in the codebase.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>The <b>entire feature</b>: multi-format upload, OCR field capture (bank/branch/holder/account/IBAN/SWIFT), format &amp; duplicate validation, name string-match, and the Employee→HR→Finance approval chain with version history.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> A headline "AI" moment in the scope — highest-effort net-new build, highest wow ceiling.</span></div>
+      </article>
+    </div>
+
+    <!-- ---- Group D ---- -->
+    <div class="group">
+      <div class="grouphd"><span class="bar"></span> Attendance, Field &amp; Travel</div>
+
+      <!-- 4 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">4</span>
+          <div class="head"><p class="title">Attendance Management</p></div>
+          <div class="badges">
+            <span class="badge b-ux"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-4l11-11 4 4L8 21H4Z"/></svg> Needs WOW-UX</span>
+            <span class="badge b-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> Partial</span>
+          </div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Standard engines for check-in/out, GPS geo-pins, RFID and face recognition. <code>hr_attendance</code> + <code>_geolocation</code>/<code>_rfid</code>/<code>sttl_face_attendance</code> — none surfaced in the branded cockpit.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p><b>Bulk import wizard</b>, <b>missing-punch workflow</b>, <b>late-arrival/early-departure rules</b>, and <b>multi-tier correction approvals</b> — plus a branded cockpit over the raw modules.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> Feeds payroll inputs — needs both a workflow layer and a cockpit to demo cleanly.</span></div>
+      </article>
+
+      <!-- 5 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">5</span>
+          <div class="head"><p class="title">Driver GPS Check-in</p></div>
+          <div class="badges"><span class="badge b-gap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg> Not Built</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Attendance geo-pins capture lat/long at punch only. <code>hr_attendance_geolocation</code>.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>Route tracking, device context, selfie verification, and a <b>manager live-map dashboard</b> with team check-in history &amp; availability.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> Visually striking if built (live map) — net-new, moderate effort.</span></div>
+      </article>
+
+      <!-- 6 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">6</span>
+          <div class="head"><p class="title">Business Trip Management</p></div>
+          <div class="badges"><span class="badge b-gap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg> Not Built</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Only generic <code>hr_expense</code> (submit/approve expenses) — no trip concept.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>Trip-request lifecycle (destination, purpose, timelines, estimated cost, advance cash, attachments) and the <b>Employee→Manager→Finance→HR→Authorized</b> approval chain.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> Prerequisite for #7 — build the two together as one travel story.</span></div>
+      </article>
+
+      <!-- 7 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">7</span>
+          <div class="head"><p class="title">Business Trip → Attendance Integration</p></div>
+          <div class="badges"><span class="badge b-gap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg> Not Built</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Nothing — depends on #6 as a prerequisite.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>Auto "Present" during trips, exclusion from missing-punch/absence exceptions, and per-diem/travel-allowance flow into payroll.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> The "it just flows into payroll" moment — bundle with #6.</span></div>
+      </article>
+    </div>
+
+    <!-- ---- Group E ---- -->
+    <div class="group">
+      <div class="grouphd"><span class="bar"></span> Leave, Overtime &amp; Compliance Rules</div>
+
+      <!-- 8 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">8</span>
+          <div class="head"><p class="title">Leave Management</p></div>
+          <div class="badges">
+            <span class="badge b-ux"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-4l11-11 4 4L8 21H4Z"/></svg> Needs WOW-UX</span>
+            <span class="badge b-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> Partial</span>
+          </div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Full leave engine — apply/cancel/balance/history, manager approve/reject, Annual/Sick/Maternity/Unpaid types with VN defaults, and payroll sync. <code>hr_holidays</code> + <code>hr_holidays_attendance</code>.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>No branded Payobook cockpit — it currently shows as stock Odoo "Time Off", off-theme for the demo.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> Logic is production-grade; this is a skin-and-surface job, not a build.</span></div>
+      </article>
+
+      <!-- 9 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">9</span>
+          <div class="head"><p class="title">Overtime Management</p></div>
+          <div class="badges">
+            <span class="badge b-ux"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-4l11-11 4 4L8 21H4Z"/></svg> Needs WOW-UX</span>
+            <span class="badge b-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Present</span>
+          </div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Weekday/weekend/holiday/night multipliers, monthly &amp; annual ceilings with approval-required flags, and an extended-OT request workflow. <code>pb_hr_workforce/overtime_config.py</code> · <code>overtime_request.py</code>.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>Config is complete; the request/approval UI would benefit from a demo-grade visual pass.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> Vietnam-labor-law multipliers are a compliance talking point — ready to show.</span></div>
+      </article>
+
+      <!-- 10 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">10</span>
+          <div class="head"><p class="title">Young Worker Rules</p></div>
+          <div class="badges"><span class="badge b-gap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg> Not Built</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Only a tax-dependent age check (unrelated). No under-18 handling for workers themselves.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p><b>Age validation gates</b>, daily/weekly hour caps, absolute overtime blocks, and payroll exception warnings for minors.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> Small, self-contained rule engine — quick to build if the client cares about it.</span></div>
+      </article>
+
+      <!-- 11 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">11</span>
+          <div class="head"><p class="title">Overtime Meal &amp; Food Allowance</p></div>
+          <div class="badges"><span class="badge b-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> Partial</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>A static meal-allowance field folds into total salary. <code>hr_contract_vietnam.py</code>.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>No <b>OT-triggered</b> meal support (single-instance or recurring) and no statutory-cap validation in pre-payroll checks.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> An adjustment-path UI + cap check on top of existing plumbing — modest work.</span></div>
+      </article>
+    </div>
+
+    <!-- ---- Group F ---- -->
+    <div class="group">
+      <div class="grouphd"><span class="bar"></span> Payroll Run, Validation &amp; Approval</div>
+
+      <!-- 12 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">12</span>
+          <div class="head"><p class="title">Payroll Processing</p></div>
+          <div class="badges"><span class="badge b-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Present</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Flagship Excel-like formula engine: inputs → basic, allowances, premium OT, gross, BHXH/BHYT/BHTN, PIT, net; multi-cycle (regular/mid/end/F&amp;F). <code>pb_formula_studio</code> · <code>pb_hr_payroll_formula</code>.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>Nothing material for the demo — this is the platform's strongest asset.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> The centerpiece — lead the payroll run with it.</span></div>
+      </article>
+
+      <!-- 13 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">13</span>
+          <div class="head"><p class="title">Payroll Validation (AI Pre-checks)</p></div>
+          <div class="badges"><span class="badge b-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Present</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>AI Pulse engine: MoM variance, anomaly detection (cost/headcount/OT/leave), plus a Shadow Parallel-Run reconciliation certificate. <code>pb_payroll_ai_insights/payroll_ai_pulse.py</code> · <code>shadow_run.py</code>.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>Explicit "duplicate payment" flag could be surfaced more prominently; otherwise covered.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> The AI proof point of the whole scope — a genuine differentiator, ready.</span></div>
+      </article>
+
+      <!-- 14 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">14</span>
+          <div class="head"><p class="title">Payroll Approval Workflow</p></div>
+          <div class="badges"><span class="badge b-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Present</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Sequential approval cockpit with staged states, pending queues, stored totals and one-click advance to Final Lock. <code>pb_approval</code>.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>Currently 2-tier (HR→GM) vs the scope's 3-tier <b>Officer→HR→Finance</b> — a configuration extension, not a rebuild.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> Present; add the third tier to match the scope's named chain exactly.</span></div>
+      </article>
+    </div>
+
+    <!-- ---- Group G ---- -->
+    <div class="group">
+      <div class="grouphd"><span class="bar"></span> Payment, Payslips &amp; Reporting</div>
+
+      <!-- 15 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">15</span>
+          <div class="head"><p class="title">Bank Payment Processing</p></div>
+          <div class="badges"><span class="badge b-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> Partial</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>An export wizard with the bank formats enumerated (Vietcombank, BIDV, Techcombank, MB, generic CSV). <code>vietnam_bank_export_wizard.py</code>.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>The actual <b>file-generation logic is a placeholder</b>, and <b>VietinBank &amp; ACB</b> layouts from the scope are absent.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> High-value quick-win — the frame exists; fill in per-bank column mapping.</span></div>
+      </article>
+
+      <!-- 16 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">16</span>
+          <div class="head"><p class="title">Payslip Distribution</p></div>
+          <div class="badges"><span class="badge b-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> Partial</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Polished themed payslip PDF (W73) with branding, plus a read-only ESS payslip portal. <code>pb_hr_payroll_formula/report/payslip_themed.xml</code> · <code>om_hr_payroll</code> portal.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p><b>Automated email distribution</b>, <b>password-protected PDFs</b>, and a <b>native mobile app</b> (portal is responsive but not an app).</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> Auto-email + password PDF are quick-wins; mobile app is a larger, separate call.</span></div>
+      </article>
+
+      <!-- 17 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">17</span>
+          <div class="head"><p class="title">Reports &amp; Analytics</p></div>
+          <div class="badges"><span class="badge b-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Present</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Vietnam statutory XLSX (BHXH630, BHXHDSTK01, D01, tăng/giảm lao động), analytics dashboards, and Excel-grid pay-run results with variance. <code>pb_hr_govt</code> · <code>pb_hr_payroll_analytics</code> · <code>pb_payrun_results</code>.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>GL-export &amp; cost-centre journal formats are thin relative to the payroll/compliance report depth.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> Broad and Vietnam-authentic — a confident section to walk through.</span></div>
+      </article>
+    </div>
+
+    <!-- ---- Group H ---- -->
+    <div class="group">
+      <div class="grouphd"><span class="bar"></span> Self-Service, Security &amp; Governance</div>
+
+      <!-- 18 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">18</span>
+          <div class="head"><p class="title">Employee &amp; Manager Self-Service (ESS / MSS)</p></div>
+          <div class="badges"><span class="badge b-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> Partial</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>ESS: employees view/download their own payslips via portal (read-only). <code>om_hr_payroll</code> portal templates.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>Profile self-edit, tax-sheet view, cert upload, and <b>most of MSS</b> — manager approval queues, team metrics, trip authorizations.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> ESS gives a thin thread to pull; MSS is largely a net-new build.</span></div>
+      </article>
+
+      <!-- 19 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">19</span>
+          <div class="head"><p class="title">Role-Based Access Control (Phân quyền)</p></div>
+          <div class="badges"><span class="badge b-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Present</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Hierarchical security groups (User→Officer→Manager→Super-Admin), country + analytics + integration roles, and record-level rules across view/create/edit/delete/export. <code>pb_hr_payroll_base/security/payroll_base_security_enhanced.xml</code>.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>No visual permission-matrix builder for non-technical admins (config lives in XML).</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> Enterprise-grade under the hood; a matrix screen would make it visually demoable.</span></div>
+      </article>
+
+      <!-- 20 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">20</span>
+          <div class="head"><p class="title">Audit Trail &amp; Compliance</p></div>
+          <div class="badges"><span class="badge b-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> Partial</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>Odoo chatter (<code>mail.thread</code>) records message history and state transitions on payslips; bank exports are logged.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>A <b>dedicated audit model</b> (who/what/old→new), login/logout logs, salary-adjustment audit, and a consolidated compliance-audit view.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> "It's tracked" is true; a purpose-built audit console would make it convincing.</span></div>
+      </article>
+    </div>
+
+    <!-- ---- Group I ---- -->
+    <div class="group">
+      <div class="grouphd"><span class="bar"></span> Service &amp; End-to-End Story</div>
+
+      <!-- 21 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">21</span>
+          <div class="head"><p class="title">Technical Support Protocol (Post-Go-Live)</p></div>
+          <div class="badges"><span class="badge b-na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg> N/A · Process</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>The tiered SLA grid (Critical/High/Medium/Low response &amp; resolution targets) is a services commitment.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>Not a software feature — presented as a support-operations slide, optionally backed by a helpdesk tool.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> Covered by a commitment slide, not a build item.</span></div>
+      </article>
+
+      <!-- 22 -->
+      <article class="req">
+        <div class="top">
+          <span class="num">22</span>
+          <div class="head"><p class="title">Complete End-to-End Payroll Workflow</p></div>
+          <div class="badges"><span class="badge b-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> Partial</span></div>
+        </div>
+        <div class="body">
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> What exists</h4><p>The core spine runs end-to-end today: master data → inputs → formula run → AI validation → approval → statutory reports → themed payslips.</p></div>
+          <div class="cell"><h4><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg> What's missing</h4><p>The full scripted story is gated by the gaps at <b>#3 (bank OCR)</b>, <b>#5 (driver GPS)</b> and <b>#6/#7 (business trips)</b>.</p></div>
+        </div>
+        <div class="impact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg><span><b>Demo impact:</b> A compelling payroll narrative is demoable now; closing 3–4 gaps makes it complete.</span></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ======================= PRIORITIES ======================= -->
+  <section style="padding-top:0">
+    <p class="eyebrow">For your go-ahead</p>
+    <h2>Recommended build priorities</h2>
+    <p class="sub">A suggested shortlist to consider — grouped by effort-to-impact. These are candidates only; the WOW-UX build begins on the subset you approve.</p>
+
+    <div class="prio">
+      <div class="pcard q">
+        <div class="ph">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg></span>
+          <div><span class="tag">Low effort · high value</span><h3>Quick wins</h3></div>
+        </div>
+        <ul>
+          <li><span class="rn">15</span> Finish per-bank file generation (+ VietinBank, ACB)</li>
+          <li><span class="rn">16</span> Auto-email payslips + password-protected PDF</li>
+          <li><span class="rn">14</span> Add the 3rd approval tier (Officer→HR→Finance)</li>
+          <li><span class="rn">8·9</span> WOW-UX skin over Leave &amp; Overtime cockpits</li>
+        </ul>
+      </div>
+
+      <div class="pcard p">
+        <div class="ph">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-6M6 20v-4M18 20V8M4 4h16"/></svg></span>
+          <div><span class="tag">Medium effort</span><h3>Rounding-out</h3></div>
+        </div>
+        <ul>
+          <li><span class="rn">2</span> Document vault + employment-history timeline</li>
+          <li><span class="rn">4</span> Attendance cockpit: missing-punch, late rules, corrections</li>
+          <li><span class="rn">11</span> OT-triggered meal allowance + statutory cap</li>
+          <li><span class="rn">20</span> Dedicated audit console (who/what/old→new)</li>
+        </ul>
+      </div>
+
+      <div class="pcard h">
+        <div class="ph">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg></span>
+          <div><span class="tag">Net-new · high wow</span><h3>Hero features</h3></div>
+        </div>
+        <ul>
+          <li><span class="rn">3</span> AI Bank OCR validation + approval chain</li>
+          <li><span class="rn">6·7</span> Business Trip lifecycle → attendance integration</li>
+          <li><span class="rn">18</span> Manager Self-Service portal &amp; approval queues</li>
+          <li><span class="rn">5</span> Driver GPS check-in with live-map dashboard</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= CALLOUT ======================= -->
+  <section style="padding-top:0">
+    <div class="callout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z"/><path d="M12 8v5M12 16h.01"/></svg>
+      <p><b>Next step.</b> Review the verdicts above and mark the requirements you want to take forward. On your go-ahead, each approved item is designed and built to a world-class, WOW-grade standard — this report is the decision map, not the build.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fb">Payobook AI™ · Sudima Panels Vietnam Demo — Capability Gap Analysis</div>
+    Generated 22 July 2026 · Verdicts assessed against the live Payobook cockpit · 22 requirements
+  </div>
+</footer>
+
+</body>
+</html>

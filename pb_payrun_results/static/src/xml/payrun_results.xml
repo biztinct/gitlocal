@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_payrun_results.PbPayrunResults">
+    <div class="pbr-root">
+      <!-- header: W17 - the hub owns the title; the run picker and the XLSX
+           export are the toolbar and stay (`.pbr-head-actions` is margin-left:auto,
+           so it holds its place with nothing beside it). -->
+      <div class="pbr-head">
+        <div class="pbr-title" t-if="!props.embedded">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+          <div>
+            <b>Pay Run Results</b>
+            <small t-if="state.data.run">Every employee's computed components · <t t-esc="state.data.run.config_name"/></small>
+          </div>
+        </div>
+        <div class="pbr-head-actions">
+          <button class="pbr-btn" t-on-click="openPicker" title="Browse all pay runs">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            Payruns
+          </button>
+          <button class="pbr-btn primary" t-att-disabled="state.exporting or !(state.data.rows and state.data.rows.length)" t-on-click="exportXlsx">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Export to Excel
+          </button>
+        </div>
+      </div>
+
+      <!-- toolbar -->
+      <div class="pbr-toolbar" t-if="state.data.columns and state.data.columns.length">
+        <input type="search" class="pbr-search" placeholder="Search employee…" t-att-value="state.filters.search" t-on-input="onSearch"/>
+        <select class="pbr-select sm" t-on-change="selectDept">
+          <option value="">All departments</option>
+          <t t-foreach="state.data.departments or []" t-as="d" t-key="d.id">
+            <option t-att-value="d.id" t-att-selected="d.id == state.filters.department_id" t-esc="d.name"/>
+          </t>
+        </select>
+        <button t-attf-class="pbr-chip {{ state.filters.with_variance ? 'on' : '' }}" t-on-click="toggleVariance">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M21 7v6h-6"/></svg>
+          vs previous run
+        </button>
+        <span class="pbr-count" t-if="state.data.row_count"><b t-esc="state.data.row_count"/> employees</span>
+      </div>
+
+      <!-- empty -->
+      <div t-if="state.loaded and state.data.empty_reason" class="pbr-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+        <p t-esc="state.data.empty_reason"/>
+      </div>
+
+      <!-- grid -->
+      <div t-if="state.data.columns and state.data.columns.length" class="pbr-gridwrap">
+        <table class="pbr-table">
+          <thead>
+            <tr>
+              <th class="pbr-corner">Employee</th>
+              <t t-foreach="state.data.columns" t-as="col" t-key="col_index">
+                <th t-attf-class="pbr-col" t-attf-style="border-bottom-color:{{ col.color }}" t-att-title="col.category">
+                  <span class="pbr-col-name" t-esc="col.name"/>
+                  <span class="pbr-col-code" t-esc="col.code"/>
+                </th>
+              </t>
+            </tr>
+          </thead>
+          <tbody>
+            <t t-foreach="state.data.rows" t-as="row" t-key="row.slip_id">
+              <tr class="pbr-row" t-on-click="() => this.openPayslip(row)">
+                <th class="pbr-emp">
+                  <span class="pbr-emp-name" t-esc="row.employee_name"/>
+                  <span class="pbr-emp-dept" t-esc="row.department"/>
+                </th>
+                <t t-foreach="state.data.columns" t-as="col" t-key="col_index">
+                  <td class="pbr-cell">
+                    <span class="pbr-val" t-esc="fmt(col, row.values[col.code])"/>
+                    <span t-if="row.deltas and row.deltas[col.code]" t-attf-class="{{ deltaClass(row, col) }}" t-esc="deltaLabel(row, col)"/>
+                  </td>
+                </t>
+              </tr>
+            </t>
+          </tbody>
+          <tfoot>
+            <tr class="pbr-totals">
+              <th class="pbr-emp">TOTAL</th>
+              <t t-foreach="state.data.columns" t-as="col" t-key="col_index">
+                <td class="pbr-cell"><b t-esc="fmt(col, state.data.totals[col.code])"/></td>
+              </t>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- pagination -->
+      <div class="pbr-pager" t-if="state.data.page_count and state.data.page_count > 1">
+        <button class="pbr-pg" t-att-disabled="state.data.page &lt;= 1" t-on-click="() => this.gotoPage(state.data.page - 1)">‹ Prev</button>
+        <span class="pbr-pginfo">Showing <b t-esc="pageInfo.from"/>–<b t-esc="pageInfo.to"/> of <b t-esc="pageInfo.total"/></span>
+        <button class="pbr-pg" t-att-disabled="state.data.page &gt;= state.data.page_count" t-on-click="() => this.gotoPage(state.data.page + 1)">Next ›</button>
+      </div>
+
+      <!-- no run chosen yet (picker dismissed) -->
+      <div t-if="!state.picker.open and !state.runId" class="pbr-empty pbr-pick-prompt">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <p>Pick a pay run to see every employee's computed results.</p>
+        <button class="pbr-btn primary" t-on-click="openPicker">Browse payruns</button>
+      </div>
+
+      <!-- ============ Payruns picker overlay ============ -->
+      <div t-if="state.picker.open" class="pbp-overlay" t-on-click="closePicker">
+        <div class="pbp-panel" t-on-click.stop="() => {}">
+          <!-- header -->
+          <div class="pbp-head">
+            <div class="pbp-head-l">
+              <span class="pbp-head-ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+              </span>
+              <div>
+                <b>Choose a payrun</b>
+                <small>
+                  <t t-if="state.picker.activeCompany"><t t-esc="state.picker.activeCompany"/> · </t>
+                  <t t-esc="pRuns.length"/><t t-if="pRuns.length !== state.picker.all.length"> of <t t-esc="state.picker.all.length"/></t>
+                  payrun<t t-if="state.picker.all.length !== 1">s</t>
+                </small>
+              </div>
+            </div>
+            <div class="pbp-head-r">
+              <div class="pbp-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-3.5-3.5"/></svg>
+                <input type="search" placeholder="Search payruns…" t-att-value="state.picker.f.search" t-on-input="onPickerSearch"/>
+              </div>
+              <div class="pbp-viewtoggle">
+                <button t-attf-class="{{ state.picker.view === 'cards' ? 'on' : '' }}" t-on-click="() => this.setView('cards')" title="Card view">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+                </button>
+                <button t-attf-class="{{ state.picker.view === 'list' ? 'on' : '' }}" t-on-click="() => this.setView('list')" title="List view">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+                </button>
+              </div>
+              <button class="pbp-close" t-on-click="closePicker" title="Close">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- scrollable region: KPI + facets + results -->
+          <div class="pbp-scroll">
+          <!-- KPI strip -->
+          <div class="pbp-kpis" t-if="state.picker.all.length">
+            <div class="pbp-kpi"><b t-esc="pNum(pSummary.runs)"/><span>payruns</span></div>
+            <div class="pbp-kpi"><b t-esc="pNum(pSummary.employees)"/><span>employees</span></div>
+            <div class="pbp-kpi" t-if="pSummary.net > 0"><b t-esc="pMoneyShort(pSummary.net, pSummary.currency)"/><span>net pay</span></div>
+            <div class="pbp-kpi"><b t-esc="pNum(pSummary.approved)"/><span>approved</span></div>
+          </div>
+
+          <!-- facet chip rows -->
+          <div class="pbp-facets" t-if="state.picker.all.length">
+            <div class="pbp-facet-grp" t-if="statusFacets.length > 1">
+              <span class="pbp-facet-lbl">Status</span>
+              <button t-foreach="statusFacets" t-as="fc" t-key="fc.v"
+                      t-attf-class="pbp-fchip {{ state.picker.f.status === fc.v ? 'on' : '' }}"
+                      t-on-click="() => this.toggleFacet('status', fc.v)">
+                <span t-attf-class="pbp-fdot {{ fc.extra }}"/><t t-esc="fc.label"/><i t-esc="fc.n"/>
+              </button>
+            </div>
+            <div class="pbp-facet-grp" t-if="cycleFacets.length > 1">
+              <span class="pbp-facet-lbl">Cycle</span>
+              <button t-foreach="cycleFacets" t-as="fc" t-key="fc.v"
+                      t-attf-class="pbp-fchip {{ state.picker.f.cycle === fc.v ? 'on' : '' }}"
+                      t-on-click="() => this.toggleFacet('cycle', fc.v)">
+                <t t-esc="fc.label"/><i t-esc="fc.n"/>
+              </button>
+            </div>
+            <div class="pbp-facet-grp" t-if="divisionFacets.length > 1">
+              <span class="pbp-facet-lbl">Division</span>
+              <button t-foreach="divisionFacets" t-as="fc" t-key="fc.v"
+                      t-attf-class="pbp-fchip {{ state.picker.f.division === fc.v ? 'on' : '' }}"
+                      t-on-click="() => this.toggleFacet('division', fc.v)">
+                <t t-esc="fc.label"/><i t-esc="fc.n"/>
+              </button>
+            </div>
+            <div class="pbp-facet-grp" t-if="companyFacets.length > 1">
+              <span class="pbp-facet-lbl">Company</span>
+              <button t-foreach="companyFacets" t-as="fc" t-key="fc.v"
+                      t-attf-class="pbp-fchip {{ state.picker.f.company === fc.v ? 'on' : '' }}"
+                      t-on-click="() => this.toggleFacet('company', fc.v)">
+                <t t-esc="fc.label"/><i t-esc="fc.n"/>
+              </button>
+            </div>
+            <div class="pbp-facet-grp" t-if="yearFacets.length > 1">
+              <span class="pbp-facet-lbl">Year</span>
+              <button t-foreach="yearFacets" t-as="fc" t-key="fc.v"
+                      t-attf-class="pbp-fchip {{ state.picker.f.year === fc.v ? 'on' : '' }}"
+                      t-on-click="() => this.toggleFacet('year', fc.v)">
+                <t t-esc="fc.label"/><i t-esc="fc.n"/>
+              </button>
+            </div>
+            <div class="pbp-facet-grp pbp-period">
+              <span class="pbp-facet-lbl">Period</span>
+              <button t-foreach="quickRanges" t-as="qr" t-key="qr.key"
+                      t-attf-class="pbp-fchip {{ state.picker.f.range === qr.key ? 'on' : '' }}"
+                      t-on-click="() => this.setRange(qr.key)"><t t-esc="qr.label"/></button>
+              <span class="pbp-datewrap">
+                <input type="date" class="pbp-dateinput" t-att-value="state.picker.f.from" t-on-change="(ev) => this.setCustom('from', ev)" title="From date"/>
+                <span class="pbp-datesep">→</span>
+                <input type="date" class="pbp-dateinput" t-att-value="state.picker.f.to" t-on-change="(ev) => this.setCustom('to', ev)" title="To date"/>
+              </span>
+            </div>
+            <div class="pbp-facet-grp pbp-sortrow">
+              <span class="pbp-facet-lbl">Sort</span>
+              <div class="pbp-sort">
+                <button t-attf-class="{{ state.picker.f.sort === 'newest' ? 'on' : '' }}" t-on-click="() => this.setSort('newest')">Newest</button>
+                <button t-attf-class="{{ state.picker.f.sort === 'oldest' ? 'on' : '' }}" t-on-click="() => this.setSort('oldest')">Oldest</button>
+                <button t-attf-class="{{ state.picker.f.sort === 'emp' ? 'on' : '' }}" t-on-click="() => this.setSort('emp')">Employees</button>
+                <button t-attf-class="{{ state.picker.f.sort === 'net' ? 'on' : '' }}" t-on-click="() => this.setSort('net')">Net</button>
+              </div>
+              <button t-if="pickerDirty" class="pbp-clear" t-on-click="clearFilters">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.4 2.6L3 8"/><path d="M3 3v5h5"/></svg>
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <!-- body -->
+          <div class="pbp-body">
+            <!-- loading skeletons -->
+            <div t-if="state.picker.loading" class="pbp-grid">
+              <t t-foreach="[1,2,3,4,5,6,7,8]" t-as="n" t-key="n">
+                <div class="pbp-skel"/>
+              </t>
+            </div>
+
+            <!-- empty -->
+            <div t-if="!state.picker.loading and !pRuns.length" class="pbp-noresults">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-3.5-3.5"/></svg>
+              <p t-if="state.picker.all.length">No payruns match these filters.</p>
+              <p t-else="">No payruns for <b t-esc="state.picker.activeCompany or 'this company'"/> yet — switch company to view its runs.</p>
+              <button t-if="pickerDirty" class="pbp-clear" t-on-click="clearFilters">Clear filters</button>
+            </div>
+
+            <!-- cards -->
+            <div t-if="!state.picker.loading and pRuns.length and state.picker.view === 'cards'" class="pbp-grid">
+              <t t-foreach="pRuns" t-as="c" t-key="c.id">
+                <button class="pbp-card" t-attf-style="animation-delay:{{ c_index &lt; 24 ? c_index * 20 : 0 }}ms" t-on-click="() => this.chooseRun(c.id)">
+                  <div class="pbp-card-top">
+                    <span t-attf-class="pbp-badge {{ c.state_tone }}"><span class="pbp-dot"/><t t-esc="c.state_label"/></span>
+                    <span t-if="c.cycle_label" class="pbp-cyc" t-esc="c.cycle_label"/>
+                    <span t-if="c.division_label" class="pbp-divchip" t-att-title="c.division_label">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
+                      <t t-esc="c.division_label"/>
+                    </span>
+                  </div>
+                  <div class="pbp-card-name" t-esc="c.name"/>
+                  <div class="pbp-card-period">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                    <t t-esc="pPeriod(c)"/>
+                    <span t-if="state.picker.multiCompany and c.company" class="pbp-coflag" t-esc="c.company"/>
+                  </div>
+                  <div class="pbp-card-stats">
+                    <div class="pbp-stat">
+                      <span class="num" t-esc="pNum(c.employees)"/>
+                      <span class="lbl">Employee<t t-if="c.employees !== 1">s</t></span>
+                    </div>
+                    <div t-if="pRunMoney(c)" class="pbp-stat r">
+                      <span class="num money" t-esc="pRunMoney(c)"/>
+                      <span class="lbl" t-esc="pRunMoneyLabel(c)"/>
+                    </div>
+                  </div>
+                  <div class="pbp-card-foot">
+                    <span class="pbp-open">
+                      Open results
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    </span>
+                  </div>
+                </button>
+              </t>
+            </div>
+
+            <!-- list -->
+            <div t-if="!state.picker.loading and pRuns.length and state.picker.view === 'list'" class="pbp-listwrap">
+              <table class="pbp-list">
+                <thead>
+                  <tr>
+                    <th>Pay run</th><th>Period</th><th>Status</th>
+                    <th class="r">Employees</th><th class="r">Net pay</th><th class="chev"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <t t-foreach="pRuns" t-as="c" t-key="c.id">
+                    <tr class="pbp-lrow" t-on-click="() => this.chooseRun(c.id)">
+                      <td>
+                        <span class="pbp-lname" t-esc="c.name"/>
+                        <span class="pbp-lsub">
+                          <t t-if="c.division_label"><t t-esc="c.division_label"/></t>
+                          <t t-if="c.cycle_label"><t t-if="c.division_label"> · </t><t t-esc="c.cycle_label"/></t>
+                          <t t-if="state.picker.multiCompany and c.company"> · <t t-esc="c.company"/></t>
+                        </span>
+                      </td>
+                      <td class="pbp-lperiod" t-esc="pPeriod(c)"/>
+                      <td><span t-attf-class="pbp-badge {{ c.state_tone }}"><span class="pbp-dot"/><t t-esc="c.state_label"/></span></td>
+                      <td class="r" t-esc="pNum(c.employees)"/>
+                      <td class="r pbp-lnet"><t t-esc="pRunMoney(c) or '—'"/></td>
+                      <td class="chev">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+                      </td>
+                    </tr>
+                  </t>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

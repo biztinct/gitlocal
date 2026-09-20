@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- noupdate="1", as every other mail template in this codebase is: a
+         tenant that has reworded one of these must not have it reverted by
+         the next upgrade. Outgoing debranding rides automatically
+         (biz_mail_debrand).
+
+         BOTH OF THESE ARE SENT WITH AN EXPLICIT `email_to` IN
+         `email_values`. A template's own rendered address can reach
+         mail.mail EMPTY, and the message is then created, queued and
+         addressed to nobody with no error anywhere (R6). The `email_to`
+         field below is kept as documentation of who it is FOR.
+
+         NO EMOJI. Not one, not even in a happy email. Every glyph in this
+         module's mail is an inline SVG from the same Lucide set the
+         product draws on screen.
+
+         The two celebration messages and the mood board are NOT here: they
+         are `ir.qweb` templates in `views/digest_templates.xml`, because
+         each needs a number (years, a month's stories) that is not a field
+         on anything. A template that cannot see the one number it is about
+         is a template pretending to be data. -->
+
+    <!-- ================== a story has come in ================== -->
+    <record id="mail_template_rnr_hr_alert" model="mail.template">
+        <field name="name">Recognition: somebody has been nominated</field>
+        <field name="model_id" ref="model_pb_rnr_nomination"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ '' }}</field>
+        <field name="subject">Somebody has been nominated: {{ object.greeting() }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.nominator_name() or 'A colleague'"/></strong>
+                    has nominated
+                    <strong><t t-out="object.greeting() or ''"/></strong>
+                    for <strong><t t-out="object.value_name() or ''"/></strong>.
+                </p>
+                <p style="background:#F5F4FF;border-left:3px solid #6355C7;padding:11px 14px;">
+                    <t t-out="object.story_excerpt() or ''"/>
+                </p>
+                <p>
+                    It has gone to their manager first. Once the manager agrees
+                    it, it comes to you to decide — praise on its own, or praise
+                    with an award attached.
+                </p>
+                <br/>
+                The recognition team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================== they were recognised ==================
+         THE ONLY EMAIL THE PERSON THEMSELVES GETS about their own praise,
+         and it names the colleague who wrote it, because that is the part
+         that matters. -->
+    <record id="mail_template_rnr_thanks" model="mail.template">
+        <field name="name">Recognition: you have been recognised</field>
+        <field name="model_id" ref="model_pb_rnr_nomination"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.nominee_id.work_email or '' }}</field>
+        <field name="subject">Somebody said thank you</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.greeting() or ''"/>,</p>
+                <p>
+                    <strong><t t-out="object.nominator_name() or 'A colleague'"/></strong>
+                    put your name forward for
+                    <strong><t t-out="object.value_name() or ''"/></strong>,
+                    your manager agreed, and it has been recognised.
+                </p>
+                <p style="background:#F5F4FF;border-left:3px solid #6355C7;padding:11px 14px;">
+                    <t t-out="object.story_excerpt() or ''"/>
+                </p>
+                <p t-if="object.award_amount">
+                    There is an award with it. It still has to be approved by
+                    the pay team and put into a pay run, so it will reach you
+                    with a salary rather than today — and you will get a letter
+                    about it when it does.
+                </p>
+                <p>
+                    <a t-attf-href="/my/recognition"
+                       style="background:#6355C7;color:#fff;text-decoration:none;padding:10px 18px;border-radius:9px;display:inline-block;font-weight:700;">
+                       See it
+                    </a>
+                </p>
+                <p style="color:#4A5568;">
+                    Somebody took the time to write this down. That is worth
+                    knowing.
+                </p>
+                <br/>
+                The recognition team<br/>
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

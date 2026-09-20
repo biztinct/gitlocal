@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================================
+       "COMING UP" — the Home lens.
+
+       R1 — loop variables are `rw` and `ce`, never a reserved operator name.
+       R205 — no JavaScript global in here; every helper is a component
+       method.
+       ================================================================== -->
+
+  <t t-name="pb_hr_comm.PbHrCommHome">
+    <div class="pbim pbim-page pbch"
+         t-att-class="{ 'pbch--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <span class="pbim-spin"/>
+      </div>
+
+      <t t-else="">
+        <div class="pbim-wrap pbch-wrap">
+
+          <div class="pbch-head">
+            <div class="pbch-head-id">
+              <h1 t-if="!props.embedded" class="pbim-h1">Coming up</h1>
+              <h2 t-else="" class="pbch-h2">Coming up</h2>
+            </div>
+            <div class="pbch-head-actions">
+              <button class="pbim-btn ghost" t-on-click="() => this.load()"
+                      title="Read it again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <button class="pbim-btn ghost" t-on-click="openCalendar">
+                <t t-out="ic('calendar',15)"/> The calendar
+              </button>
+            </div>
+          </div>
+
+          <p class="pbch-headline" t-esc="state.headline"/>
+
+          <!-- ===================== what is going out ===================== -->
+          <div t-if="state.rows.length" class="pbch-rows">
+            <t t-foreach="state.rows" t-as="rw" t-key="rw.kind + '-' + rw.id">
+              <button class="pbch-row"
+                      t-att-class="{ 'pbch-row--mine': rw.mine }"
+                      t-on-click="() => this.openRow(rw)">
+                <span class="pbch-row-ic"><t t-out="ic(rw.icon,17)"/></span>
+                <span class="pbch-row-id">
+                  <strong t-esc="rw.title"/>
+                  <span t-esc="rw.sub"/>
+                </span>
+                <span class="pbch-row-go">
+                  <span class="pbch-when" t-esc="rw.word"/>
+                  <span class="pbch-state"
+                        t-att-class="'pbch-state--' + rw.tone"
+                        t-esc="rw.state_word"/>
+                </span>
+              </button>
+            </t>
+          </div>
+
+          <div t-if="!state.rows.length" class="pbch-clear">
+            <t t-out="ic('megaphone',24)"/>
+            <div>
+              <strong>Nothing is going out this week</strong>
+              <p>Announcements booked for the next seven days appear here, so
+                 nobody sends something on top of them.</p>
+            </div>
+          </div>
+
+          <p t-if="state.more" class="pbch-more">
+            <t t-esc="state.more"/> more are booked. The calendar has all of
+            them.
+          </p>
+
+          <!-- ======================= whose week it is ==================== -->
+          <div t-if="state.celebrations.length" class="pbch-parties">
+            <div class="pbch-parties-h">
+              <t t-out="ic('cake',15)"/>
+              <strong>Say something to somebody</strong>
+            </div>
+            <t t-foreach="state.celebrations" t-as="ce"
+               t-key="ce.name + ce.day_label + ce.kind">
+              <button class="pbch-party" t-on-click="() => this.openRow(ce)">
+                <img class="pbch-av" t-att-src="ce.avatar" t-att-alt="ce.name"/>
+                <span class="pbch-row-id">
+                  <strong t-esc="ce.name"/>
+                  <span t-esc="ce.years_label"/>
+                </span>
+                <span class="pbch-when" t-esc="ce.day_label"/>
+              </button>
+            </t>
+            <p t-if="state.celebrationMore" class="pbch-more">
+              <t t-esc="state.celebrationMore"/> more are celebrating this
+              week.
+            </p>
+          </div>
+
+        </div>
+      </t>
+    </div>
+  </t>
+
+</templates>

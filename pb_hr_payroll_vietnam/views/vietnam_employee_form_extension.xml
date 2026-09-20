@@ -98,7 +98,7 @@
                                 </div>
                             </div>
                             <field name="vn_dependent_ids" nolabel="1">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="name"/>
                                     <field name="relationship"/>
                                     <field name="date_of_birth"/>
@@ -109,7 +109,7 @@
                                            decoration-warning="status == 'pending'"
                                            decoration-danger="status == 'ineligible'"/>
                                     <field name="tax_allowance"/>
-                                </tree>
+                                </list>
                             </field>
                         </div>
                     </group>

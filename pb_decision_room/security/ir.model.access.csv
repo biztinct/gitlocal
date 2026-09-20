@@ -1,0 +1,16 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_decision_plan_user,decision plan user,model_pb_decision_plan,pb_decision_room.group_decision_user,1,1,1,1
+access_pb_decision_plan_manager,decision plan manager,model_pb_decision_plan,pb_decision_room.group_decision_manager,1,1,1,1
+access_pb_decision_plan_system,decision plan system,model_pb_decision_plan,base.group_system,1,1,1,1
+access_pb_decision_assumptions_user,decision assumptions read,model_pb_decision_assumptions,pb_decision_room.group_decision_user,1,0,0,0
+access_pb_decision_assumptions_manager,decision assumptions manager,model_pb_decision_assumptions,pb_decision_room.group_decision_manager,1,1,1,0
+access_pb_decision_assumptions_system,decision assumptions system,model_pb_decision_assumptions,base.group_system,1,1,1,1
+access_pb_decision_ruleset_user,country rules read,model_pb_decision_ruleset,pb_decision_room.group_decision_user,1,0,0,0
+access_pb_decision_ruleset_manager,country rules manager,model_pb_decision_ruleset,pb_decision_room.group_decision_manager,1,1,1,0
+access_pb_decision_ruleset_system,country rules system,model_pb_decision_ruleset,base.group_system,1,1,1,1
+access_pb_decision_plan_version_user,plan version read,model_pb_decision_plan_version,pb_decision_room.group_decision_user,1,0,0,0
+access_pb_decision_plan_version_manager,plan version manager,model_pb_decision_plan_version,pb_decision_room.group_decision_manager,1,1,1,0
+access_pb_decision_plan_version_system,plan version system,model_pb_decision_plan_version,base.group_system,1,1,1,1
+access_pb_decision_exact_job_user,exact cost job read,model_pb_decision_exact_job,pb_decision_room.group_decision_user,1,0,0,0
+access_pb_decision_exact_job_manager,exact cost job manager,model_pb_decision_exact_job,pb_decision_room.group_decision_manager,1,1,1,0
+access_pb_decision_exact_job_system,exact cost job system,model_pb_decision_exact_job,base.group_system,1,1,1,1

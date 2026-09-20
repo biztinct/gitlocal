@@ -1,0 +1,396 @@
+// =====================================================================
+//  The Exits lens — .exb-*
+//
+//  Everything structural comes from the kit (.pbim-panel, .pbim-stat,
+//  .pbim-fchip, .pbim-badge, .pbim-modal). This file only says what is
+//  SPECIFIC to a board whose row is a person who is leaving: the card, the
+//  four clearance lights, the settlement gate and the handover list.
+//
+//  No `min()`/`max()` with mixed units anywhere: Sass evaluates those and a
+//  px/% pair kills the ENTIRE asset bundle, not just this file.
+// =====================================================================
+
+.exb {
+    // ---------------------------------------------------------- header
+    .exb-head {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 18px;
+    }
+    &.exb--embedded .exb-head { margin-bottom: 12px; }
+    .exb-head-id { flex: 1 1 320px; min-width: 0; }
+    .exb-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    // The kit's `.pbim-stats` is a grid with no COLUMNS on purpose — each
+    // cockpit knows how many numbers it has (R32). Five, as the two lenses
+    // beside it on the same hub have, so all three line up.
+    .exb-kpis {
+        grid-template-columns: repeat(5, 1fr);
+        margin-bottom: 16px;
+    }
+    @media (max-width: 1180px) { .exb-kpis { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px)  { .exb-kpis { grid-template-columns: repeat(2, 1fr); } }
+
+    // --------------------------------------------------------- filters
+    .exb-filters { padding: 14px 16px; margin-bottom: 18px; }
+    .exb-filter-row {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        & + .exb-filter-row { margin-top: 10px; }
+    }
+    .exb-search {
+        display: flex; align-items: center; gap: 8px; flex: 1 1 260px;
+        border: 1px solid var(--pbim-line); border-radius: 10px;
+        padding: 8px 12px; color: var(--pbim-muted);
+        background: var(--pbim-surface);
+
+        input {
+            flex: 1; border: none; outline: none; background: transparent;
+            font: inherit; font-size: 13.5px; color: var(--pbim-text);
+            min-width: 0;
+        }
+        &:focus-within {
+            border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 3px var(--pbim-ring);
+        }
+    }
+
+    // ------------------------------------------------------- the cards
+    .exb-grid {
+        display: grid; gap: 16px;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    }
+    .exb-card {
+        padding: 18px; display: flex; flex-direction: column; gap: 12px;
+        transition: box-shadow .15s, transform .15s, border-color .15s;
+
+        &:hover { box-shadow: var(--pbim-sh-lg); transform: translateY(-2px); }
+        &.is-blocked { border-color: var(--pbim-amber); }
+        &.is-done { border-color: var(--pbim-green); }
+    }
+    .exb-card-top {
+        display: flex; align-items: center; gap: 12px; cursor: pointer;
+    }
+    .exb-av {
+        width: 46px; height: 46px; border-radius: 50%; object-fit: cover;
+        border: 2px solid var(--pbim-soft); flex: 0 0 auto;
+    }
+    .exb-av--lg { width: 64px; height: 64px; }
+    .exb-who { flex: 1; min-width: 0; }
+    .exb-name {
+        font-size: 15px; font-weight: 800; color: var(--pbim-ink);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .exb-job {
+        font-size: 12.5px; color: var(--pbim-muted); margin-top: 1px;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .exb-when { text-align: right; flex: 0 0 auto; }
+    .exb-when-d {
+        font-size: 14px; font-weight: 800; color: var(--pbim-primary-strong);
+        font-variant-numeric: tabular-nums;
+    }
+    .exb-when-w { font-size: 11.5px; color: var(--pbim-muted); }
+
+    // ---- the four lights ----
+    // The hero of this board. Four buttons, always in the same order, always
+    // the same width, so a reader scanning twenty cards is reading a COLUMN of
+    // Finance lights rather than hunting for the word each time.
+    .exb-clear {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        border-top: 1px solid var(--pbim-line-2); padding-top: 11px;
+    }
+    .exb-clear-l {
+        font-size: 10.5px; font-weight: 800; letter-spacing: .05em;
+        text-transform: uppercase; color: var(--pbim-muted);
+        flex: 0 0 auto;
+    }
+    .exb-lights { display: flex; gap: 6px; flex: 1; }
+    .exb-light {
+        flex: 1 1 0; min-width: 0; border-radius: 9px; padding: 6px 4px;
+        border: 1px solid var(--pbim-line); background: var(--pbim-surface);
+        font: inherit; font-size: 11px; font-weight: 800; cursor: pointer;
+        color: var(--pbim-muted); text-align: center;
+        transition: background .12s, border-color .12s, color .12s;
+
+        &:hover { border-color: var(--pbim-primary); }
+        &[disabled] { cursor: default; opacity: .85; }
+        &[disabled]:hover { border-color: var(--pbim-line); }
+
+        // A colour AND a weight, never a colour alone: the four lights have to
+        // be readable by somebody who does not see green and amber apart.
+        &.exb-light--ok {
+            background: var(--pbim-green-soft, #E7F6EE);
+            border-color: var(--pbim-green); color: var(--pbim-green);
+        }
+        &.exb-light--wait {
+            background: var(--pbim-amber-soft, #FDF3E2);
+            border-color: var(--pbim-amber); color: var(--pbim-amber);
+        }
+        &.exb-light--na {
+            background: var(--pbim-bg); border-color: var(--pbim-line);
+            color: var(--pbim-muted); text-decoration: line-through;
+        }
+        &.exb-light--missing {
+            border-style: dashed; color: var(--pbim-muted);
+        }
+    }
+    .exb-light-d {
+        display: block; overflow: hidden; text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    // ---- progress ----
+    .exb-bar {
+        height: 7px; border-radius: 999px; background: var(--pbim-line-2);
+        overflow: hidden;
+    }
+    .exb-bar-f {
+        display: block; height: 100%; border-radius: 999px;
+        background: var(--pbim-primary);
+        transition: width .5s cubic-bezier(.22, .8, .3, 1);
+    }
+    .exb-bar-l {
+        display: flex; justify-content: space-between; align-items: center;
+        font-size: 11.5px; color: var(--pbim-muted); margin-top: -6px;
+    }
+    .exb-late {
+        display: inline-flex; align-items: center; gap: 4px;
+        color: var(--pbim-rose); font-weight: 700;
+    }
+
+    // ---- the four facts ----
+    .exb-facts {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 9px 14px;
+        border-top: 1px solid var(--pbim-line-2); padding-top: 12px;
+    }
+    .exb-fact { min-width: 0; }
+    .exb-fact-l {
+        display: block; font-size: 10.5px; font-weight: 800;
+        letter-spacing: .05em; text-transform: uppercase;
+        color: var(--pbim-muted);
+    }
+    .exb-fact-v {
+        display: block; font-size: 12.5px; font-weight: 700; margin-top: 2px;
+        color: var(--pbim-text);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+
+        &.muted { color: var(--pbim-muted); font-weight: 500; }
+        &.warn { color: var(--pbim-amber); }
+    }
+
+    // ---- the money line ----
+    .exb-ff {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        border-top: 1px solid var(--pbim-line-2); padding-top: 11px;
+    }
+    .exb-ff-n {
+        font-size: 13px; font-weight: 800; color: var(--pbim-ink);
+        font-variant-numeric: tabular-nums; margin-left: auto;
+    }
+
+    .exb-card-act {
+        display: flex; gap: 8px; flex-wrap: wrap;
+        border-top: 1px solid var(--pbim-line-2); padding-top: 11px;
+    }
+
+    .exb-capped {
+        margin-top: 16px; font-size: 12.5px; color: var(--pbim-muted);
+        text-align: center;
+    }
+
+    // ----------------------------------------------------- empty state
+    .exb-empty { text-align: center; padding: 54px 26px; }
+    .exb-empty-ic {
+        width: 74px; height: 74px; border-radius: 50%; margin: 0 auto 16px;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong);
+        display: grid; place-items: center;
+    }
+    .exb-empty h2 { font-size: 18px; font-weight: 800; }
+    .exb-empty p {
+        color: var(--pbim-muted); margin: 8px auto 0; max-width: 520px;
+        line-height: 1.6;
+    }
+
+    // -------------------------------------------------------- drawer
+    // Cloned from the Journeys and New joiners drawers so the three surfaces
+    // on the same hub slide the same way.
+    .exb-scrim {
+        position: fixed; inset: 0; z-index: var(--pbim-z-modal, 1400);
+        background: var(--pbim-scrim, rgba(27, 23, 51, .46));
+        display: flex; justify-content: flex-end;
+    }
+    .exb-drawer {
+        width: 600px; max-width: 100%; height: 100%; overflow: auto;
+        background: var(--pbim-surface); border-left: 1px solid var(--pbim-line);
+        box-shadow: -18px 0 44px rgba(40, 50, 90, .16);
+        padding: 22px 24px 40px;
+        animation: exb-slide .22s cubic-bezier(.22, .8, .3, 1) both;
+    }
+    @keyframes exb-slide { from { transform: translateX(28px); opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+        .exb-drawer { animation: none; }
+        .exb-bar-f { transition: none; }
+    }
+
+    .exb-drawer-head {
+        display: flex; align-items: flex-start; gap: 14px;
+        padding-bottom: 16px; border-bottom: 1px solid var(--pbim-line);
+
+        h2 { font-size: 19px; font-weight: 800; margin: 0; color: var(--pbim-ink); }
+        p { font-size: 13px; color: var(--pbim-muted); margin: 2px 0 0; }
+        & > div { flex: 1; min-width: 0; }
+    }
+    .exb-drawer-when {
+        display: inline-flex; align-items: center; gap: 6px;
+        color: var(--pbim-primary-strong) !important; font-weight: 700;
+        margin-top: 6px !important;
+    }
+
+    // ---- the gate, stated in words ----
+    .exb-gate {
+        margin: 16px 0 4px; padding: 14px 16px; border-radius: 13px;
+        background: var(--pbim-amber-soft, #FDF3E2);
+        border: 1px solid var(--pbim-amber);
+
+        &.ok {
+            background: var(--pbim-green-soft, #E7F6EE);
+            border-color: var(--pbim-green);
+        }
+    }
+    .exb-gate-h {
+        display: flex; align-items: center; gap: 8px;
+        b { font-size: 14px; color: var(--pbim-ink); }
+    }
+    .exb-gate-list {
+        margin: 9px 0 0; padding-left: 20px;
+        li { font-size: 13px; line-height: 1.55; color: var(--pbim-text); }
+    }
+    .exb-gate-act {
+        display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;
+    }
+
+    .exb-drawer-h3 {
+        font-size: 12px; font-weight: 800; letter-spacing: .06em;
+        text-transform: uppercase; color: var(--pbim-muted);
+        margin: 22px 0 10px;
+        display: flex; align-items: center; gap: 10px;
+    }
+    .exb-h3-btn, .exb-kt-btn {
+        display: inline-flex; align-items: center; gap: 4px;
+        border: 1px solid var(--pbim-line); background: transparent;
+        color: var(--pbim-primary-strong); border-radius: 8px;
+        padding: 3px 9px; font: inherit; font-size: 11.5px; font-weight: 700;
+        letter-spacing: 0; text-transform: none; cursor: pointer;
+
+        &:hover { background: var(--pbim-soft); }
+    }
+    .exb-drawer-none {
+        font-size: 13px; color: var(--pbim-muted); padding: 10px 0;
+        line-height: 1.55;
+    }
+
+    .exb-item {
+        display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+        border-top: 1px solid var(--pbim-line-2); padding: 9px 0;
+        font-size: 13px;
+        &:first-of-type { border-top: none; }
+        b { flex: 1; min-width: 0; font-weight: 700; }
+    }
+
+    .exb-kt {
+        border-top: 1px solid var(--pbim-line-2); padding: 11px 0;
+        &:first-of-type { border-top: none; }
+        &.is-done b { color: var(--pbim-muted); font-weight: 600; }
+    }
+    .exb-kt-l {
+        display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+        b { font-size: 13.5px; flex: 1; min-width: 0; }
+    }
+    .exb-kt-m {
+        display: flex; gap: 10px; margin-top: 6px; align-items: center;
+        flex-wrap: wrap; font-size: 11.5px; color: var(--pbim-muted);
+        a { color: var(--pbim-primary-strong); font-weight: 700; }
+    }
+
+    .exb-fb-a {
+        border-top: 1px solid var(--pbim-line-2); padding: 10px 0;
+        &:first-of-type { border-top: none; }
+        p { font-size: 13.5px; margin: 3px 0 0; line-height: 1.55; }
+    }
+    .exb-fb-q {
+        font-size: 11px; font-weight: 800; letter-spacing: .04em;
+        text-transform: uppercase; color: var(--pbim-muted);
+    }
+
+    .exb-fw {
+        background: var(--pbim-bg); border-radius: 12px; padding: 13px 15px;
+        p { font-size: 13.5px; line-height: 1.6; margin: 0; }
+    }
+    .exb-fw-m {
+        display: flex; align-items: center; gap: 10px; margin-top: 9px;
+        font-size: 11.5px; color: var(--pbim-muted); flex-wrap: wrap;
+    }
+
+    .exb-task {
+        border-top: 1px solid var(--pbim-line-2); padding: 11px 0;
+        &:first-of-type { border-top: none; }
+        &.is-done b { color: var(--pbim-muted); font-weight: 600; }
+    }
+    .exb-task-l {
+        display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+        b { font-size: 13.5px; flex: 1; min-width: 0; }
+    }
+    .exb-task-d {
+        font-size: 12.5px; color: var(--pbim-muted); margin: 4px 0 0;
+        line-height: 1.5;
+    }
+    .exb-task-m {
+        display: flex; gap: 10px; margin-top: 5px; align-items: center;
+        flex-wrap: wrap; font-size: 11.5px; color: var(--pbim-muted);
+    }
+
+    // --------------------------------------------------- the dialogs
+    // THE KIT'S `.pbim-modal` HAS NO PADDING AND IS A COLUMN FLEX BOX. That
+    // is deliberate — it is built for the `__head` / `__body` / `__foot`
+    // rails, which carry their own — but a free-form dialog that only sets a
+    // width inherits `padding: 0` and `overflow: hidden`, so its heading is
+    // clipped flush against the left edge and its textarea runs off the right
+    // one. A dialog that writes its own contents pads itself and scrolls
+    // itself.
+    .exb-modal {
+        width: 560px; max-width: 100%;
+        display: block; padding: 22px 24px 20px; overflow: auto;
+
+        h2 { font-size: 18px; font-weight: 800; color: var(--pbim-ink);
+             margin: 0 0 4px; }
+    }
+    .exb-lbl {
+        display: block; font-size: 11px; font-weight: 800; letter-spacing: .05em;
+        text-transform: uppercase; color: var(--pbim-muted);
+        margin: 14px 0 5px;
+    }
+    .exb-in, .exb-ta {
+        width: 100%; border: 1px solid var(--pbim-line); border-radius: 10px;
+        padding: 9px 12px; font: inherit; font-size: 13.5px;
+        color: var(--pbim-text); background: var(--pbim-surface);
+        resize: vertical;
+
+        &:focus {
+            outline: none; border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 3px var(--pbim-ring);
+        }
+    }
+    .exb-owner { margin-top: 8px; }
+    .exb-modal-act {
+        display: flex; justify-content: flex-end; gap: 9px; margin-top: 16px;
+        flex-wrap: wrap;
+    }
+
+    // ---------------------------------------------------------- narrow
+    @media (max-width: 720px) {
+        .exb-grid { grid-template-columns: 1fr; }
+        .exb-facts { grid-template-columns: 1fr; }
+        .exb-drawer { width: 100%; }
+        .exb-clear { align-items: flex-start; flex-direction: column; }
+        .exb-lights { width: 100%; }
+    }
+}

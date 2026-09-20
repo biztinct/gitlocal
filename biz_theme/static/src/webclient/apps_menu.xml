@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Apps menu: replace the plain text dropdown with a searchable icon
+         grid. DropdownItem is kept as the interactive element, so selection,
+         href middle-click, hotkeys and dropdown closing all stay stock. -->
+    <t t-name="web.NavBar.AppsMenu" t-inherit="web.NavBar.AppsMenu" t-inherit-mode="extension">
+        <xpath expr="//DropdownItem" position="replace">
+            <div class="vu-apps-panel">
+                <input type="text" class="vu-apps-search" placeholder="Search apps…"
+                       autofocus="autofocus"
+                       t-model="vuApps.query"
+                       t-on-keydown="vuOnAppsSearchKeydown"/>
+                <div class="vu-apps-grid">
+                    <DropdownItem
+                        t-foreach="vuFilteredApps"
+                        t-as="app"
+                        t-key="app.id"
+                        class="{ 'vu-apps-item': true, focus: menuService.getCurrentApp() === app }"
+                        onSelected="() => this.onNavBarDropdownItemSelection(app)"
+                        attrs="{ href: getMenuItemHref(app), 'data-menu-xmlid': app.xmlid, 'data-section': app.id }"
+                    >
+                        <img t-if="app.webIconData" class="vu-apps-icon" t-att-src="app.webIconData" alt=""/>
+                        <span t-else="" class="vu-apps-icon vu-apps-icon--fallback">
+                            <t t-esc="(app.name or '?')[0]"/>
+                        </span>
+                        <span class="vu-apps-name" t-esc="app.name"/>
+                    </DropdownItem>
+                </div>
+                <div t-if="!vuFilteredApps.length" class="vu-apps-empty">
+                    No apps match "<t t-esc="vuApps.query"/>"
+                </div>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

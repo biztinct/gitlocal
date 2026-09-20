@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      Fallback batch form (the guided pb_import_wizard is the primary path).
+      Powder-blue skin + the vu_progress_rail stepper below the buttons, the
+      native statusbar hidden, and the source_type radios styled as a clean
+      segmented control. Chatter goes full-width to the bottom via the global
+      pb_theme rule. Anchors by [@name=…]/element only (Odoo-19 rule).
+    -->
+    <record id="view_payroll_import_batch_form_pb" model="ir.ui.view">
+        <field name="name">hr.payroll.import.batch.form.pb</field>
+        <field name="model">hr.payroll.import.batch</field>
+        <field name="inherit_id" ref="pb_hr_payroll_formula.view_payroll_import_batch_form"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="class" add="vu-no-hero pb-import-batch-form" separator=" "/>
+            </xpath>
+
+            <xpath expr="//header/field[@name='state']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//div[@class='oe_title']" position="before">
+                <widget name="vu_progress_rail"
+                        steps="draft,loaded,matched,validated,processing,done"
+                        labels="Draft,Loaded,Matched,Validated,Processing,Done"
+                        state_field="state"/>
+            </xpath>
+
+            <xpath expr="//field[@name='source_type']" position="attributes">
+                <attribute name="class">pb-imb-segmented</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='payroll_period']" position="attributes">
+                <attribute name="class">pb-imb-segmented</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

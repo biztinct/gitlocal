@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Contracts lens.
+
+       Section comments use `=` rules and never a doubled hyphen, because a
+       doubled hyphen inside an XML comment is a parse error that takes every
+       t-name in the file down with it (R35).
+
+       Loop variables are never named lt / gt / lte / gte / and / or / not /
+       in: OWL reserves those as operators and the whole template dies with a
+       compile error pointing at nothing useful (R1). The choice loop is `ch`,
+       the facet loops are `kd` / `dp` / `mo` / `sv`.
+
+       `t-att-class` with a DICT is correct HERE and only here — this is an
+       OWL template, where the dict form merges with the static class. In a
+       server-side `<template>` the same thing writes the Python repr into
+       the attribute and drops the static class (R42).
+       ==================================================================== -->
+  <t t-name="pb_contract_lifecycle.PbContractLifeBoard">
+    <div class="pbim pbim-page ctl"
+         t-att-class="{ 'ctl--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Loading the contracts…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <!-- ============ the reader has no lifecycle access ============ -->
+        <div t-if="!state.allowed" class="pbim-panel ctl-empty">
+          <div class="ctl-empty-ic"><t t-out="ic('lock',30)"/></div>
+          <h2>Contracts are looked after by the HR team</h2>
+          <p>This is where every agreement with an end date on it is tracked —
+             when it runs out, who has to decide, and what was decided. Ask
+             your HR administrator to add you to the lifecycle team and this
+             screen fills in.</p>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="ctl-head">
+            <div class="ctl-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Contracts</h1>
+              <p class="pbim-sub">Every agreement with an end date on it, and
+                 every intern and contractor — with the decision that has to be
+                 made before the date arrives.</p>
+            </div>
+            <div class="ctl-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh"
+                      title="Read the board again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn ghost"
+                      t-on-click="openDecisions">
+                <t t-out="ic('list',15)"/> All decisions
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn ghost"
+                      t-on-click="openExtensions">
+                <t t-out="ic('rotate',15)"/> Extensions
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn primary"
+                      t-on-click="runAutomation"
+                      title="Raise the decisions that are due, send today's reminders, escalate anything nobody has agreed and mark anything that ran out">
+                <t t-out="ic('zap',15)"/> Run today's steps
+              </button>
+            </div>
+          </div>
+
+          <!-- ============ the switch, said out loud ============
+               A feature that is switched off and does not say so is a
+               feature somebody reports as broken. This is the one thing on
+               this board an administrator has to decide, so it is stated
+               where they are, with the number it would affect. -->
+          <div t-if="state.canWrite and !state.autoOn" class="pbim-panel ctl-notice">
+            <div class="ctl-notice-ic"><t t-out="ic('info',20)"/></div>
+            <div>
+              <b>Contracts are not being raised by themselves yet</b>
+              <p>
+                <t t-esc="state.wouldRaise === 0
+                          ? 'No contract is inside its two-month window tonight, so nothing would be raised. An administrator can switch the nightly step on whenever it suits.'
+                          : (state.wouldRaise === 1
+                             ? 'One contract is inside its two-month window. Nothing happens automatically until an administrator switches the nightly step on — until then, press Run today\'s steps or raise it from a card below.'
+                             : state.wouldRaise + ' contracts are inside their two-month window. Nothing happens automatically until an administrator switches the nightly step on — until then, press Run today\'s steps or raise them from the cards below.')"/>
+              </p>
+            </div>
+          </div>
+
+          <!-- ====================== the numbers ====================== -->
+          <div class="pbim-stats ctl-kpis">
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('calendar',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.ending or 0"/>
+                <div class="l">Ending within <t t-esc="state.leadDays"/> days</div>
+              </div>
+            </div>
+            <div class="pbim-stat" t-att-class="{ err: state.kpis.undecided }">
+              <div class="pbim-stat-ic rose"><t t-out="ic('alert',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.undecided or 0"/>
+                <div class="l">Nobody has decided</div>
+              </div>
+            </div>
+            <div class="pbim-stat" t-att-class="{ warn: state.kpis.waiting }">
+              <div class="pbim-stat-ic amber"><t t-out="ic('clock',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.waiting or 0"/>
+                <div class="l">Waiting to be agreed</div>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('users',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.running or 0"/>
+                <div class="l">Being evaluated</div>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('award',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.converted or 0"/>
+                <div class="l">Made permanent this year</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ======================== filters ======================== -->
+          <div class="pbim-panel ctl-filters" t-if="state.rows.length">
+            <div class="ctl-filter-row">
+              <div class="ctl-search">
+                <t t-out="ic('search',15)"/>
+                <input type="text" t-att-value="state.q" t-on-input="onSearch"
+                       placeholder="Search by name, job, team or contract…"/>
+              </div>
+              <button t-if="hasFilters" class="pbim-btn ghost pbim-btn-sm"
+                      t-on-click="clearFilters">
+                <t t-out="ic('x',14)"/> Clear
+              </button>
+            </div>
+            <div class="ctl-filter-row">
+              <div class="pbim-chips">
+                <button t-foreach="state.kinds" t-as="kd" t-key="kd.id"
+                        t-attf-class="pbim-fchip {{ state.kind === kd.id ? 'on' : '' }}"
+                        t-on-click="() => this.setKind(kd.id)">
+                  <span t-esc="kd.label"/>
+                  <span class="c" t-esc="kd.count"/>
+                </button>
+                <button t-attf-class="pbim-fchip {{ state.attentionOnly ? 'on' : '' }}"
+                        t-on-click="toggleAttention">
+                  <t t-out="ic('alert',13)"/> Needs somebody
+                </button>
+              </div>
+            </div>
+            <div class="ctl-filter-row">
+              <div class="pbim-chips">
+                <button t-foreach="state.months" t-as="mo" t-key="mo.id"
+                        t-attf-class="pbim-fchip {{ state.month === mo.id ? 'on' : '' }}"
+                        t-on-click="() => this.setMonth(mo.id)">
+                  <span t-esc="monthLabel(mo.label)"/>
+                  <span class="c" t-esc="mo.count"/>
+                </button>
+              </div>
+            </div>
+            <div class="ctl-filter-row">
+              <div class="pbim-chips">
+                <button t-foreach="state.states" t-as="sv" t-key="sv.id"
+                        t-attf-class="pbim-fchip {{ state.reviewState === sv.id ? 'on' : '' }}"
+                        t-on-click="() => this.setReviewState(sv.id)">
+                  <span t-esc="sv.label"/>
+                  <span class="c" t-esc="sv.count"/>
+                </button>
+              </div>
+              <div class="pbim-chips">
+                <button t-foreach="state.departments" t-as="dp" t-key="dp.id"
+                        t-attf-class="pbim-fchip {{ state.dept === dp.id ? 'on' : '' }}"
+                        t-on-click="() => this.setDept(dp.id)">
+                  <span t-esc="dp.label"/>
+                  <span class="c" t-esc="dp.count"/>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================== nothing here yet ================== -->
+          <div t-if="!state.rows.length" class="pbim-panel ctl-empty">
+            <div class="ctl-empty-ic"><t t-out="ic('scrollText',30)"/></div>
+            <h2>No contract has an end date on it</h2>
+            <p>Everybody here is on an open-ended agreement, so there is nothing
+               running out. The moment somebody is given a fixed-term contract —
+               or is recorded as an intern or a contractor — they appear here,
+               and two months before the date Payobook puts the decision in
+               front of their manager: let it end, extend it, or make it
+               permanent.</p>
+          </div>
+
+          <!-- ============ the filters match nobody ============
+               A board that answers a filter with a blank page is a dead end:
+               the reader cannot tell "nobody matches" from "it is still
+               loading" from "it broke". The whole sentence is ONE expression,
+               because OWL collapses the newline between two t-esc nodes and
+               the page then reads "There are2 contracts" (R34). -->
+          <div t-elif="!visibleRows.length" class="pbim-panel ctl-empty">
+            <div class="ctl-empty-ic"><t t-out="ic('search',30)"/></div>
+            <h2>Nothing matches that</h2>
+            <p>
+              <t t-esc="state.rows.length === 1
+                        ? 'There is 1 contract on this board, but it does not fit the filters you have set.'
+                        : 'There are ' + state.rows.length + ' contracts on this board, but none of them fits the filters you have set.'"/>
+            </p>
+            <button class="pbim-btn primary" t-on-click="clearFilters">
+              <t t-out="ic('x',15)"/> Clear the filters
+            </button>
+          </div>
+
+          <!-- ======================= the contracts ======================= -->
+          <div t-else="" class="ctl-grid">
+            <div t-foreach="visibleRows" t-as="row" t-key="row.id"
+                 class="pbim-panel ctl-card"
+                 t-att-class="{ 'is-urgent': row.urgent,
+                                'is-lapsed': row.review_state === 'lapsed' }">
+
+              <div class="ctl-card-top" t-on-click="() => this.openContract(row.id)">
+                <img t-if="row.avatar" class="ctl-av" t-att-src="row.avatar"
+                     t-att-alt="row.employee"/>
+                <div t-else="" class="ctl-av ctl-av--none" t-esc="row.initials"/>
+                <div class="ctl-who">
+                  <div class="ctl-name" t-esc="row.employee"/>
+                  <div class="ctl-job">
+                    <t t-esc="row.job"/><t t-if="row.job and row.dept"> · </t><t t-esc="row.dept"/>
+                  </div>
+                </div>
+                <div class="ctl-when">
+                  <div class="ctl-when-d" t-esc="day(row.date_end)"/>
+                  <div t-attf-class="ctl-when-w ctl-when-w--{{ countdownCls(row) }}"
+                       t-esc="row.when"/>
+                </div>
+              </div>
+
+              <div class="ctl-facts">
+                <div class="ctl-fact">
+                  <span class="ctl-fact-l">Employment</span>
+                  <span class="ctl-fact-v" t-esc="row.kind_label"/>
+                </div>
+                <div class="ctl-fact">
+                  <span class="ctl-fact-l">Started</span>
+                  <span class="ctl-fact-v" t-esc="day(row.date_start)"/>
+                </div>
+                <div class="ctl-fact">
+                  <span class="ctl-fact-l">Manager</span>
+                  <span t-if="row.manager" class="ctl-fact-v" t-esc="row.manager"/>
+                  <span t-else="" class="ctl-fact-v muted">Nobody named</span>
+                </div>
+                <div class="ctl-fact">
+                  <span class="ctl-fact-l">Where it stands</span>
+                  <span t-attf-class="ctl-fact-v {{ row.needs_decision ? 'warn' : '' }}"
+                        t-esc="row.review_label"/>
+                </div>
+              </div>
+
+              <div class="ctl-chips">
+                <span t-if="row.non_permanent"
+                      class="pbim-badge info" t-esc="row.kind_label"/>
+                <span t-if="row.decision_label" class="pbim-badge ok ctl-sentence"
+                      t-esc="row.decision_label"/>
+                <span t-if="row.review_state === 'lapsed'"
+                      class="pbim-badge err ctl-sentence">
+                  Ended with nothing decided
+                </span>
+                <span t-elif="row.needs_decision"
+                      class="pbim-badge warn ctl-sentence">
+                  Somebody has to choose
+                </span>
+                <span t-if="row.days === null" class="pbim-badge muted ctl-sentence">
+                  No end date on the paperwork
+                </span>
+              </div>
+
+              <div class="ctl-card-act">
+                <button class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.openContract(row.id)">
+                  Open this contract
+                </button>
+                <button t-if="state.canWrite and !row.review_id and row.date_end"
+                        class="pbim-btn primary pbim-btn-sm"
+                        t-on-click="() => this.raiseDecision(row)">
+                  <t t-out="ic('play',13)"/> Raise the decision
+                </button>
+                <button t-if="state.canWrite and row.evaluation_id"
+                        class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.openEvaluation(row.evaluation_id)">
+                  <t t-out="ic('users',13)"/> The evaluation
+                </button>
+                <button t-if="row.new_contract_id"
+                        class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.openNewContract(row.new_contract_id)">
+                  <t t-out="ic('fileText',13)"/> The new contract
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <p t-if="state.capped" class="ctl-capped">
+            Showing the first <t t-esc="state.rows.length"/>. Narrow it down with
+            a filter to see the rest.
+          </p>
+
+        </t>
+      </div>
+
+      <!-- ==================================================================
+           THE DECISION DRAWER: one contract, whole.
+           ================================================================== -->
+      <div t-if="state.drawer" class="ctl-scrim" t-on-click="closeDrawer">
+        <div class="ctl-drawer" t-on-click.stop="">
+          <div class="ctl-drawer-head">
+            <img t-if="state.drawer.row.avatar" class="ctl-av ctl-av--lg"
+                 t-att-src="state.drawer.row.avatar"
+                 t-att-alt="state.drawer.row.employee"/>
+            <div>
+              <h2 t-esc="state.drawer.row.employee"/>
+              <p>
+                <t t-esc="state.drawer.row.job"/>
+                <t t-if="state.drawer.row.job and state.drawer.row.dept"> · </t>
+                <t t-esc="state.drawer.row.dept"/>
+              </p>
+              <p class="ctl-drawer-when">
+                <t t-out="ic('calendar',13)"/>
+                <t t-esc="state.drawer.row.review_label"/> ·
+                <t t-esc="state.drawer.row.when"/>
+              </p>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeDrawer">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+
+          <!-- ==== the agreement itself, without the money ==== -->
+          <h3 class="ctl-drawer-h3">The agreement</h3>
+          <div class="ctl-terms">
+            <div class="ctl-term">
+              <span class="ctl-term-l">Reference</span>
+              <span class="ctl-term-v" t-esc="state.drawer.row.contract_name"/>
+            </div>
+            <div class="ctl-term">
+              <span class="ctl-term-l">Category</span>
+              <span class="ctl-term-v"
+                    t-esc="state.drawer.row.contract_type or '—'"/>
+            </div>
+            <div class="ctl-term">
+              <span class="ctl-term-l">Runs from</span>
+              <span class="ctl-term-v" t-esc="day(state.drawer.row.date_start)"/>
+            </div>
+            <div class="ctl-term">
+              <span class="ctl-term-l">Runs to</span>
+              <span class="ctl-term-v" t-esc="day(state.drawer.row.date_end)"/>
+            </div>
+            <div class="ctl-term">
+              <span class="ctl-term-l">Employment</span>
+              <span class="ctl-term-v">
+                <t t-esc="state.drawer.row.kind_label"/>
+                <button t-if="state.canWrite and state.drawer.row.employee_id"
+                        class="ctl-inline-btn"
+                        t-on-click="() => this.askType(state.drawer.row)">
+                  Change
+                </button>
+              </span>
+            </div>
+            <div class="ctl-term">
+              <span class="ctl-term-l">Manager</span>
+              <span class="ctl-term-v"
+                    t-esc="state.drawer.row.manager or 'Nobody named'"/>
+            </div>
+          </div>
+
+          <!-- ==== the extension somebody is waiting on ==== -->
+          <t t-if="state.drawer.extension">
+            <h3 class="ctl-drawer-h3">An extension is waiting to be agreed</h3>
+            <div class="ctl-pending"
+                 t-att-class="{ 'is-overdue': state.drawer.extension.overdue }">
+              <p class="ctl-pending-l">
+                <t t-esc="state.drawer.extension.months"/> more months —
+                <t t-esc="day(state.drawer.extension.new_start)"/> to
+                <t t-esc="day(state.drawer.extension.new_end)"/>
+              </p>
+              <p class="ctl-pending-r" t-esc="state.drawer.extension.reason"/>
+              <p class="ctl-pending-w">
+                <t t-esc="state.drawer.extension.overdue
+                          ? 'This should have been agreed by ' + day(state.drawer.extension.approve_by) + '. The HR team has been told; it can still be agreed.'
+                          : 'With ' + (state.drawer.extension.approver or 'the manager') + ', to answer by ' + day(state.drawer.extension.approve_by) + '.'"/>
+              </p>
+              <div class="ctl-pending-act" t-if="state.canWrite">
+                <button class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="refuseExtension">
+                  Turn it down
+                </button>
+                <button class="pbim-btn primary pbim-btn-sm"
+                        t-on-click="approveExtension">
+                  <t t-out="ic('check',13)"/> Agree it
+                </button>
+              </div>
+            </div>
+          </t>
+
+          <!-- ==== the evaluation that is running ==== -->
+          <t t-if="state.drawer.evaluation">
+            <h3 class="ctl-drawer-h3">The evaluation</h3>
+            <div class="ctl-pending">
+              <p class="ctl-pending-l"
+                 t-esc="state.drawer.evaluation.state_label"/>
+              <p class="ctl-pending-w">
+                <t t-esc="state.drawer.evaluation.answers_total
+                          ? state.drawer.evaluation.answers_in + ' of ' + state.drawer.evaluation.answers_total + ' colleagues have answered.'
+                          : 'Their manager has been asked to name three to five colleagues.'"/>
+              </p>
+              <div class="ctl-pending-act">
+                <button class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.openEvaluation(state.drawer.evaluation.id)">
+                  Open the evaluation
+                </button>
+              </div>
+            </div>
+          </t>
+
+          <!-- ==== the three choices ==== -->
+          <t t-if="state.canWrite and state.drawer.review_id and ['upcoming','decide'].includes(state.drawer.review_state)">
+            <h3 class="ctl-drawer-h3">What happens to this contract</h3>
+            <div class="ctl-choices">
+              <button t-foreach="choices" t-as="ch" t-key="ch"
+                      t-attf-class="ctl-choice ctl-choice--{{ ch }}"
+                      t-on-click="() => this.askDecide(ch)">
+                <t t-out="ic(choiceIcon(ch),20)"/>
+                <b t-esc="choiceTitle(ch)"/>
+                <span t-esc="choiceBlurb(ch)"/>
+              </button>
+            </div>
+          </t>
+
+          <!-- ==== nothing has been raised yet ==== -->
+          <div t-elif="state.canWrite and !state.drawer.review_id and state.drawer.row.date_end"
+               class="ctl-drawer-none">
+            <p>No decision has been raised on this contract yet. Raising it puts
+               the three choices in front of this person's manager and the HR
+               team, by email and on this board.</p>
+            <button class="pbim-btn primary pbim-btn-sm"
+                    t-on-click="() => this.raiseDecision(state.drawer.row)">
+              <t t-out="ic('play',13)"/> Raise the decision
+            </button>
+          </div>
+
+          <!-- ==== what has already been decided ==== -->
+          <h3 class="ctl-drawer-h3" t-if="state.drawer.history.length">
+            What has been decided before
+          </h3>
+          <div t-foreach="state.drawer.history" t-as="hs" t-key="hs.id"
+               class="ctl-hist">
+            <div class="ctl-hist-l">
+              <b t-esc="hs.decision_label or hs.state_label"/>
+              <span class="ctl-hist-d" t-esc="hs.on ? day(hs.on) : day(hs.raised)"/>
+            </div>
+            <p class="ctl-hist-n">
+              <t t-esc="hs.by ? 'By ' + hs.by + '. ' : ''"/>
+              <t t-esc="'About the contract ending ' + day(hs.end_date) + '.'"/>
+            </p>
+            <p t-if="hs.note" class="ctl-hist-n" t-esc="hs.note"/>
+            <div class="ctl-hist-act">
+              <button t-if="hs.new_contract_id" class="ctl-inline-btn"
+                      t-on-click="() => this.openNewContract(hs.new_contract_id)">
+                The new contract
+              </button>
+              <button t-if="hs.letter_id" class="ctl-inline-btn"
+                      t-on-click="() => this.openLetter(hs.letter_id)">
+                The letter
+              </button>
+              <button t-if="hs.exit_case_id" class="ctl-inline-btn"
+                      t-on-click="() => this.openCase(hs.exit_case_id)">
+                The leaving checklist
+              </button>
+              <button class="ctl-inline-btn"
+                      t-on-click="() => this.openReview(hs.id)">
+                Open the record
+              </button>
+            </div>
+          </div>
+
+          <div class="ctl-drawer-act">
+            <button class="pbim-btn ghost pbim-btn-sm"
+                    t-on-click="() => this.openContractRecord(state.drawer.row)">
+              The contract record
+            </button>
+            <button t-if="state.drawer.row.employee_id"
+                    class="pbim-btn ghost pbim-btn-sm"
+                    t-on-click="() => this.openEmployee(state.drawer.row)">
+              Their record
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           THE DECISION DIALOG. The last thing anybody reads before the
+           button, and it is the SERVER'S list of what the button does.
+           ================================================================== -->
+      <div t-if="state.deciding" class="pbim-modal-scrim" t-on-click="cancelDecide">
+        <div class="pbim-modal ctl-modal" t-on-click.stop="">
+          <h2>
+            <t t-esc="choiceTitle(state.deciding.choice)"/> —
+            <t t-esc="state.deciding.who"/>
+          </h2>
+
+          <!-- ==== the extension needs a reason and a length ==== -->
+          <t t-if="state.deciding.choice === 'extend'">
+            <label class="ctl-lbl">Why this contract should run for longer</label>
+            <textarea class="ctl-ta" rows="4"
+                      t-att-value="state.deciding.reason" t-on-input="onReason"
+                      placeholder="What the work is, and why it is not finished…"/>
+            <p class="ctl-hint" t-esc="reasonHint"/>
+            <label class="ctl-lbl">For how many months</label>
+            <input type="number" min="1" max="60" class="ctl-in ctl-in--sm"
+                   t-att-value="state.deciding.months" t-on-input="onMonths"/>
+            <span class="ctl-in-unit">months</span>
+          </t>
+
+          <!-- ==== the terms the new contract copies ==== -->
+          <t t-if="['extend','convert'].includes(state.deciding.choice)">
+            <h3 class="ctl-drawer-h3">The terms it copies, unchanged</h3>
+            <div class="ctl-terms ctl-terms--modal">
+              <div class="ctl-term">
+                <span class="ctl-term-l">Pay</span>
+                <span class="ctl-term-v">
+                  <t t-esc="(state.deciding.terms.wage or 0).toLocaleString()"/>
+                  <t t-esc="state.deciding.terms.currency or ''"/>
+                </span>
+              </div>
+              <div class="ctl-term">
+                <span class="ctl-term-l">Salary structure</span>
+                <span class="ctl-term-v" t-esc="state.deciding.terms.structure"/>
+              </div>
+              <div class="ctl-term">
+                <span class="ctl-term-l">Working schedule</span>
+                <span class="ctl-term-v" t-esc="state.deciding.terms.calendar"/>
+              </div>
+              <div class="ctl-term">
+                <span class="ctl-term-l">Category</span>
+                <span class="ctl-term-v" t-esc="state.deciding.terms.type"/>
+              </div>
+            </div>
+          </t>
+
+          <!-- ==== what the button does ==== -->
+          <div t-if="state.deciding.busy" class="pbim-busy">
+            <div class="pbim-spin"/><span>Working out what this will do…</span>
+          </div>
+          <t t-elif="state.deciding.preview">
+            <div t-if="state.deciding.preview.blocked and state.deciding.preview.blocked.length"
+                 class="ctl-blocked">
+              <div class="ctl-blocked-h">
+                <t t-out="ic('lock',18)"/>
+                <b>This cannot be done yet</b>
+              </div>
+              <ul>
+                <li t-foreach="state.deciding.preview.blocked" t-as="bk"
+                    t-key="bk_index" t-esc="bk"/>
+              </ul>
+            </div>
+            <div t-else="" class="ctl-preview">
+              <div class="ctl-preview-h">
+                <t t-out="ic('info',18)"/>
+                <b>What pressing the button does</b>
+              </div>
+              <ul>
+                <li t-foreach="state.deciding.preview.lines" t-as="ln"
+                    t-key="ln_index" t-esc="ln"/>
+              </ul>
+            </div>
+          </t>
+
+          <div class="ctl-modal-act">
+            <button class="pbim-btn ghost" t-on-click="cancelDecide">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="decideBlocked"
+                    t-on-click="confirmDecide">
+              <t t-out="ic(choiceIcon(state.deciding.choice),15)"/>
+              <t t-esc="choiceTitle(state.deciding.choice)"/>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           TYPING SOMEBODY BY HAND.
+           ================================================================== -->
+      <div t-if="state.typing" class="pbim-modal-scrim" t-on-click="cancelType">
+        <div class="pbim-modal ctl-modal" t-on-click.stop="">
+          <h2>What kind of employment is <t t-esc="state.typing.who"/> on?</h2>
+          <p class="pbim-sub">This is what the headcount reports read, what the
+             trial-period rules read, and what decides whether somebody appears
+             on this board at all. It is worth being right.</p>
+          <div class="ctl-kinds">
+            <button t-foreach="state.typing.options" t-as="op" t-key="op.id"
+                    t-attf-class="ctl-kind {{ state.typing.kind === op.id ? 'is-on' : '' }}"
+                    t-on-click="() => this.pickType(op.id)">
+              <span t-esc="op.label"/>
+              <span class="ctl-kind-tick">
+                <t t-if="state.typing.kind === op.id"><t t-out="ic('check',14)"/></t>
+              </span>
+            </button>
+          </div>
+          <div class="ctl-modal-act">
+            <button class="pbim-btn ghost" t-on-click="cancelType">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="saveType">
+              <t t-out="ic('check',15)"/> Save it
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>

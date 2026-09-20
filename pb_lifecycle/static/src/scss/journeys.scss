@@ -1,0 +1,288 @@
+// =====================================================================
+//  Journeys cockpit — .lcj-*
+//
+//  Built on the shared kit: `--pbim-*` tokens, `.pbim-*` primitives, root
+//  class "pbim pbim-page lcj". Nothing here re-declares a colour; every
+//  value is a token, so this screen re-tints with the rest of the app and
+//  cannot drift into a second palette (W1/W2).
+//
+//  The two things this file owns that the kit does not:
+//
+//    1. THE BOARD — a responsive grid of journey cards with a progress rail
+//       across the bottom of each, so "how far along is this" is answered
+//       before anything is clicked.
+//    2. THE DRAWER — a right-hand panel over a scrim, holding a vertical
+//       timeline of the steps. It is `position: fixed` and it resolves
+//       against the ROOT rather than the hub canvas, which is exactly why
+//       HubShell's canvas creates no stacking context (W20/W37).
+// =====================================================================
+
+.pbim.lcj {
+    &.lcj--embedded { padding-top: 14px; }
+
+    // ------------------------------------------------------------- header
+    .lcj-head {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 16px; margin-bottom: 14px;
+    }
+    .lcj-head-id { min-width: 0; }
+    .lcj-head-id .pbim-sub { max-width: 620px; }
+    .lcj-head-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+
+    // ---------------------------------------------------------------- KPIs
+    .lcj-kpis {
+        display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+        margin-bottom: 14px;
+    }
+    @media (max-width: 1180px) { .lcj-kpis { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px)  { .lcj-kpis { grid-template-columns: repeat(2, 1fr); } }
+
+    // ------------------------------------------------------------ filters
+    .lcj-filters { margin-bottom: 14px; padding: 13px 16px; }
+    .lcj-filter-row {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; flex-wrap: wrap;
+    }
+    .lcj-filter-row + .lcj-filter-row {
+        margin-top: 10px; padding-top: 10px;
+        border-top: 1px solid var(--pbim-line-2);
+    }
+    .lcj-search {
+        display: flex; align-items: center; gap: 8px; flex: 1; min-width: 220px;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-pill);
+        padding: 6px 14px; background: #fff; color: var(--pbim-muted);
+        transition: border-color .14s, box-shadow .14s;
+        &:focus-within {
+            border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 3px var(--pbim-ring);
+        }
+        input {
+            flex: 1; border: 0; outline: 0; font: inherit; font-size: 13px;
+            color: var(--pbim-text); background: transparent;
+        }
+    }
+
+    // -------------------------------------------------------------- board
+    .lcj-board {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    }
+    @media (max-width: 1180px) { .lcj-board { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 760px)  { .lcj-board { grid-template-columns: 1fr; } }
+
+    .lcj-card {
+        padding: 15px 16px 13px; cursor: pointer; text-align: left;
+        font: inherit; color: inherit; width: 100%;
+        transition: border-color .14s, box-shadow .14s, transform .14s;
+        &:hover {
+            border-color: var(--pbim-primary);
+            box-shadow: 0 6px 18px rgba(40, 50, 90, .10);
+            transform: translateY(-1px);
+        }
+        &.is-late { border-left: 3px solid var(--pbim-rose); }
+    }
+    .lcj-card-top { display: flex; align-items: center; gap: 11px; }
+    .lcj-av {
+        width: 40px; height: 40px; border-radius: 12px; flex: none;
+        background: var(--pbim-soft); color: var(--pbim-primary);
+        display: grid; place-items: center; font-size: 13px; font-weight: 800;
+        object-fit: cover;
+    }
+    .lcj-card-id { flex: 1; min-width: 0; }
+    .lcj-card-id .nm {
+        font-size: 14px; font-weight: 800; color: var(--pbim-ink);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .lcj-card-id .mt {
+        font-size: 11.5px; color: var(--pbim-muted); margin-top: 1px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .lcj-card-chips {
+        display: flex; flex-wrap: wrap; gap: 6px; margin: 11px 0 10px;
+    }
+    .lcj-bar {
+        height: 6px; border-radius: 999px; background: var(--pbim-line-2);
+        overflow: hidden;
+    }
+    .lcj-bar > i {
+        display: block; height: 100%; border-radius: 999px;
+        background: var(--pbim-primary); transition: width .3s ease;
+    }
+    .lcj-card.is-late .lcj-bar > i { background: var(--pbim-amber); }
+    .lcj-bar-lab {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-top: 6px; font-size: 11px; font-weight: 700;
+        color: var(--pbim-muted);
+    }
+
+    // -------------------------------------------------------------- drawer
+    .lcj-scrim {
+        position: fixed; inset: 0; z-index: var(--pbim-z-modal, 1400);
+        background: var(--pbim-scrim, rgba(27, 23, 51, .46));
+        display: flex; justify-content: flex-end;
+        animation: lcj-fade .16s ease;
+    }
+    @keyframes lcj-fade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes lcj-slide { from { transform: translateX(28px); opacity: .4; } }
+
+    .lcj-drawer {
+        width: 620px; max-width: 100%; height: 100%;
+        background: var(--pbim-bg); display: flex; flex-direction: column;
+        box-shadow: -18px 0 44px rgba(40, 50, 90, .16);
+        animation: lcj-slide .18s ease;
+    }
+    .lcj-drawer-head {
+        flex: none; background: #fff; padding: 16px 20px 14px;
+        border-bottom: 1px solid var(--pbim-line);
+    }
+    .lcj-drawer-top { display: flex; align-items: center; gap: 12px; }
+    .lcj-drawer-top .lcj-drawer-id { flex: 1; min-width: 0; }
+    .lcj-drawer-top .nm { font-size: 17px; font-weight: 800; color: var(--pbim-ink); }
+    .lcj-drawer-top .mt { font-size: 12.5px; color: var(--pbim-muted); margin-top: 1px; }
+    .lcj-x {
+        border: 1px solid var(--pbim-line); background: #fff; border-radius: 10px;
+        width: 32px; height: 32px; display: grid; place-items: center;
+        cursor: pointer; color: var(--pbim-muted); flex: none;
+        &:hover { border-color: var(--pbim-primary); color: var(--pbim-primary); }
+    }
+    .lcj-drawer-acts {
+        display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px;
+    }
+    .lcj-drawer-body { flex: 1; min-height: 0; overflow: auto; padding: 16px 20px 28px; }
+    .lcj-sec-h {
+        font-size: 11px; font-weight: 800; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--pbim-muted);
+        margin: 18px 0 9px;
+        &:first-child { margin-top: 0; }
+    }
+
+    // ------------------------------------------------------------ timeline
+    .lcj-tl { position: relative; padding-left: 26px; }
+    .lcj-tl::before {
+        content: ""; position: absolute; left: 9px; top: 6px; bottom: 6px;
+        width: 2px; background: var(--pbim-line);
+    }
+    .lcj-step {
+        position: relative; background: #fff;
+        border: 1px solid var(--pbim-line); border-radius: 12px;
+        padding: 11px 13px; margin-bottom: 9px;
+    }
+    .lcj-step::before {
+        content: ""; position: absolute; left: -22px; top: 15px;
+        width: 12px; height: 12px; border-radius: 50%;
+        background: #fff; border: 2px solid var(--pbim-line);
+    }
+    .lcj-step.is-done::before {
+        background: var(--pbim-green); border-color: var(--pbim-green);
+    }
+    .lcj-step.is-skipped::before {
+        background: var(--pbim-slate); border-color: var(--pbim-slate);
+    }
+    .lcj-step.is-next::before {
+        background: var(--pbim-primary); border-color: var(--pbim-primary);
+        box-shadow: 0 0 0 4px var(--pbim-ring);
+    }
+    .lcj-step.is-late { border-color: #f3c7cf; }
+    .lcj-step.is-late::before {
+        background: var(--pbim-rose); border-color: var(--pbim-rose);
+    }
+    .lcj-step-h {
+        display: flex; align-items: flex-start; gap: 9px;
+    }
+    .lcj-step-h .nm {
+        flex: 1; min-width: 0; font-size: 13.5px; font-weight: 700;
+        color: var(--pbim-ink);
+    }
+    .lcj-step.is-done .nm, .lcj-step.is-skipped .nm {
+        color: var(--pbim-muted); text-decoration: line-through;
+        text-decoration-thickness: 1px;
+    }
+    .lcj-step-desc {
+        font-size: 12.5px; color: #4a5578; margin-top: 5px; line-height: 1.5;
+    }
+    .lcj-step-meta {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 7px;
+        margin-top: 8px; font-size: 11.5px; color: var(--pbim-muted);
+    }
+    .lcj-step-meta .who { font-weight: 700; color: #4a5578; }
+    .lcj-step-meta .late { color: var(--pbim-rose); font-weight: 800; }
+    .lcj-step-acts {
+        display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+        padding-top: 9px; border-top: 1px solid var(--pbim-line-2);
+    }
+
+    // ------------------------------------------------------- rows & chips
+    .lcj-row {
+        display: flex; align-items: center; gap: 10px; background: #fff;
+        border: 1px solid var(--pbim-line); border-radius: 12px;
+        padding: 10px 13px; margin-bottom: 8px; font-size: 13px;
+    }
+    .lcj-row .g { flex: 1; min-width: 0; }
+    .lcj-row .g .nm { font-weight: 700; color: var(--pbim-ink); }
+    .lcj-row .g .mt { font-size: 11.5px; color: var(--pbim-muted); margin-top: 1px; }
+    .lcj-row.is-flag { border-color: #f3c7cf; background: var(--pbim-rose-soft); }
+
+    // ------------------------------------------------------------ dialogs
+    .lcj-dlg-body { padding: 20px 22px; }
+    .lcj-field { margin-bottom: 14px; }
+    .lcj-field > label {
+        display: block; font-size: 12px; font-weight: 800; color: var(--pbim-ink);
+        margin-bottom: 5px;
+    }
+    .lcj-in {
+        width: 100%; border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-sm); padding: 9px 12px; font: inherit;
+        font-size: 13.5px; color: var(--pbim-text); background: #fff;
+        transition: border-color .14s, box-shadow .14s;
+        &:focus {
+            outline: none; border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 3px var(--pbim-ring);
+        }
+    }
+    textarea.lcj-in { resize: vertical; }
+    .lcj-results {
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        margin-top: 7px; max-height: 210px; overflow: auto; background: #fff;
+    }
+    .lcj-result {
+        display: flex; align-items: center; gap: 10px; width: 100%;
+        border: 0; background: transparent; font: inherit; text-align: left;
+        padding: 8px 12px; cursor: pointer;
+        & + .lcj-result { border-top: 1px solid var(--pbim-line-2); }
+        &:hover { background: var(--pbim-soft); }
+        .nm { font-size: 13px; font-weight: 700; color: var(--pbim-ink); }
+        .mt { font-size: 11.5px; color: var(--pbim-muted); }
+    }
+    .lcj-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 620px) { .lcj-grid2 { grid-template-columns: 1fr; } }
+
+    .lcj-check {
+        display: flex; align-items: center; gap: 8px; font-size: 13px;
+        font-weight: 700; color: #4a5578; cursor: pointer;
+        input { width: 16px; height: 16px; accent-color: var(--pbim-primary); }
+    }
+
+    // ------------------------------------------------------- empty states
+    .lcj-empty {
+        text-align: center; padding: 52px 26px;
+        .lcj-empty-ic {
+            width: 66px; height: 66px; margin: 0 auto 16px; border-radius: 20px;
+            background: var(--pbim-soft); color: var(--pbim-primary);
+            display: grid; place-items: center;
+            svg { width: 30px; height: 30px; }
+        }
+        h2 { font-size: 17px; font-weight: 800; color: var(--pbim-ink); margin: 0 0 7px; }
+        p {
+            font-size: 13.5px; color: var(--pbim-muted); margin: 0 auto 18px;
+            max-width: 460px; line-height: 1.6;
+        }
+    }
+}
+
+// The drawer and the dialogs mount inside the cockpit's own root, so they
+// inherit `.pbim`'s tokens — but the scrim is `position: fixed` and paints
+// over the whole viewport, so it re-declares the two the modal kit owns for
+// exactly this reason (W66).
+.pbim.lcj .lcj-scrim {
+    --pbim-scrim: rgba(27, 23, 51, .46);
+    --pbim-z-modal: 1400;
+}

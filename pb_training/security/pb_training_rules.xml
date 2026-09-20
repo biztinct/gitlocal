@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         THE RULES THAT MAKE THE PERMISSIONS ABOVE SAFE.
+
+         E2 is the first phase here to own models of its own, so this file is
+         new. Two rules govern every one of them.
+
+         SHIP THE PAIR, ALWAYS (R60/R65). `ir.rule` group rules are ORed over
+         the rules that APPLY, so a narrow rule shipped alone is a NARROWING
+         of anybody who holds both groups. Every "only my own" rule below
+         therefore has a wide "everything in my companies" rule beside it for
+         the training tiers, in the same file, and the two are never
+         separated.
+
+         A SEAT IS A READ **AND A WRITE** (ledger AM60, corrected in E3). A
+         published route may ask somebody to decide a request who holds no
+         training permission at all — the person's own line manager, or the HR
+         lead, are the everyday cases and are the whole point. The engine
+         re-checks that the decider can read the record before it accepts a
+         decision, and then WRITES THE RECORD'S OWN STATUS AS THAT PERSON. So
+         a seat rule that grants only read produces the worst outcome there
+         is: the route records the approval and the record does not move, with
+         nothing on any screen to say why. The narrowing is the DOMAIN —
+         `seat_user_ids` is written by the engine and holds only the people it
+         asked about this one record — never the permission. Create and delete
+         stay shut on every one of them.
+
+         `noupdate="1"` FREEZES THESE ROWS ON A DATABASE THAT ALREADY HAS
+         THEM, so the correction above reaches a live database through
+         `migrations/19.0.1.2.0/post-claims.py` and not through this file.
+         ================================================================== -->
+
+    <!-- ================= assignments ================= -->
+    <record id="rule_assignment_company" model="ir.rule">
+        <field name="name">Training assignment: my companies</field>
+        <field name="model_id" ref="model_pb_training_assignment"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_assignment_team" model="ir.rule">
+        <field name="name">Training assignment: my own, and my team's</field>
+        <field name="model_id" ref="model_pb_training_assignment"/>
+        <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- The wide half of the pair. Without it, a lifecycle manager who is
+         also given a training group would hold exactly ONE applicable rule —
+         the narrow one — and would lose sight of every assignment in the
+         company (R60). -->
+    <record id="rule_assignment_trainer" model="ir.rule">
+        <field name="name">Training assignment: the training team sees them all</field>
+        <field name="model_id" ref="model_pb_training_assignment"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_training_user')), (4, ref('group_training_manager')), (4, ref('group_training_admin'))]"/>
+    </record>
+
+    <!-- ================= requests for more time ================= -->
+    <record id="rule_delay_company" model="ir.rule">
+        <field name="name">More time: my companies</field>
+        <field name="model_id" ref="model_pb_training_delay"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_delay_mine" model="ir.rule">
+        <field name="name">More time: my own, and my team's</field>
+        <field name="model_id" ref="model_pb_training_delay"/>
+        <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- WRITE, AND NOT READ ONLY. E2 shipped this read-only on the reasoning
+         that being asked to decide something is not permission to change it —
+         which is true of the FIELDS and false of the decision: the engine
+         writes the record's own status as the person who decided, so a
+         decider with no write access approves the REQUEST and leaves the
+         record exactly where it was. It has never shown here, because a
+         delay's only rung is the person's own manager and `rule_delay_mine`
+         already gives them write over their team's rows; it would show the
+         day somebody adds an HR rung to this route. Corrected in E3 alongside
+         the claim rule, which hit it head on.
+
+         THE NARROWING IS THE DOMAIN: `seat_user_ids` holds only the people a
+         PUBLISHED ROUTE asked to decide THIS record, nobody else, and the
+         engine re-checks the seat before it accepts anything. -->
+    <record id="rule_delay_seat" model="ir.rule">
+        <field name="name">More time: the people the route asked to decide it</field>
+        <field name="model_id" ref="model_pb_training_delay"/>
+        <field name="domain_force">[('seat_user_ids', 'in', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_delay_trainer" model="ir.rule">
+        <field name="name">More time: the training team sees them all</field>
+        <field name="model_id" ref="model_pb_training_delay"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_training_user')), (4, ref('group_training_manager')), (4, ref('group_training_admin'))]"/>
+    </record>
+
+    <!-- ================= the two configuration tables ================= -->
+    <record id="rule_rule_company" model="ir.rule">
+        <field name="name">Day-one rule: my companies</field>
+        <field name="model_id" ref="model_pb_training_rule"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_schedule_company" model="ir.rule">
+        <field name="name">Compliance schedule: my companies</field>
+        <field name="model_id" ref="model_pb_training_schedule"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <!-- ================= E3: claims ==================
+         SHIP THE PAIR, ALWAYS (R60/R65). Every "only my own" rule has its
+         wide "everything in my companies" partner for the training tiers in
+         the same file, because group rules are ORed over the rules that
+         APPLY — a narrow rule shipped alone NARROWS anybody who holds both
+         groups, and a training manager who is also an ordinary employee
+         would lose sight of every claim but their own.
+
+         A SEAT IS A READ AND A WRITE — see the file header, and the rule
+         below, for what read-only cost live.
+
+         MONEY IS NOT A TEAM SPORT. The assignment rule lets a manager see
+         their team's rows, because a due date is their business. A claim is
+         NOT: what somebody paid for a course out of their own pocket is
+         between them and the HR lead, and a manager who could read it could
+         read the amount. So this rule says "my own" and stops there. -->
+    <record id="rule_claim_company" model="ir.rule">
+        <field name="name">Training claim: my companies</field>
+        <field name="model_id" ref="model_pb_training_claim"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_claim_mine" model="ir.rule">
+        <field name="name">Training claim: my own</field>
+        <field name="model_id" ref="model_pb_training_claim"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- A SEAT IS A READ **AND A WRITE**, and this is where that was learnt.
+         Shipped read-only first, on the reasoning that being asked to decide
+         something is not permission to change it. Live, the HR lead pressed
+         Agree, the ROUTE recorded the approval — and the claim stayed on
+         "Waiting on the HR lead", because the engine writes the record's own
+         status as the person who decided and that person could not write to
+         it. Nothing was on the screen to say so; the reason was buried in the
+         request's own `block_reason`: "Ngô Bảo Lâm doesn't have 'write'
+         access to Training cost claim". An approval that half-happens is
+         worse than one that is refused.
+
+         THE NARROWING IS THE DOMAIN, not the permission: `seat_user_ids`
+         holds only the people a PUBLISHED ROUTE asked to decide THIS record,
+         it is written by the engine and by nothing else, and the engine
+         re-checks the seat before it accepts a decision. Create and delete
+         stay shut. -->
+    <record id="rule_claim_seat" model="ir.rule">
+        <field name="name">Training claim: the people the route asked to decide it</field>
+        <field name="model_id" ref="model_pb_training_claim"/>
+        <field name="domain_force">[('seat_user_ids', 'in', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_claim_trainer" model="ir.rule">
+        <field name="name">Training claim: the training team sees them all</field>
+        <field name="model_id" ref="model_pb_training_claim"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_training_user')), (4, ref('group_training_manager')), (4, ref('group_training_admin'))]"/>
+    </record>
+
+    <!-- ================= E3: allowances =================
+         EVERYBODY READS THE COMPANY FIGURE AND THEIR OWN, and nobody reads
+         anybody else's. The company-wide row is not a secret — it is the
+         number the claim form is measured against and the employee's own page
+         prints it — but the row with a name on it is that person's business.
+         The wide half of the pair is the training team's. -->
+    <record id="rule_allowance_company" model="ir.rule">
+        <field name="name">Training allowance: my companies</field>
+        <field name="model_id" ref="model_pb_training_allowance"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_allowance_mine" model="ir.rule">
+        <field name="name">Training allowance: the company figure, and my own</field>
+        <field name="model_id" ref="model_pb_training_allowance"/>
+        <field name="domain_force">['|', ('employee_id', '=', False), ('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_allowance_trainer" model="ir.rule">
+        <field name="name">Training allowance: the training team sees them all</field>
+        <field name="model_id" ref="model_pb_training_allowance"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_training_user')), (4, ref('group_training_manager')), (4, ref('group_training_admin'))]"/>
+    </record>
+
+</data>
+</odoo>

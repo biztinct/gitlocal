@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============ Field staff ============ -->
+    <!-- RIZE W2 D1, ruling D16: A DRIVER IS A CASE OF FIELD STAFF.
+         The phone check-in was built for drivers and the people who need it
+         are not only drivers — an agronomist walking a farm has exactly the
+         same problem and there was no way to give them the app without
+         calling them a driver on their own record. So the broad group is the
+         one the app asks about, and Driver IMPLIES it: every existing driver
+         keeps working, on the day of the upgrade, with nothing to migrate.
+
+         Odoo 19 res.groups has no category_id (replaced by privilege_id); a
+         plain technical group is fine here. No `&` in the name (R124): the
+         res.users form's access-rights arch embeds these unescaped and an
+         ampersand makes opening ANY user crash. -->
+    <record id="group_pb_field_staff" model="res.groups">
+        <field name="name">Field staff</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Works away from a desk: can check in and out with their
+            location and a photo from the Payobook Field check-in app on their phone.
+            No other Payobook access. Drivers, agronomists, site teams.</field>
+    </record>
+
+    <!-- ============ Driver group ============ -->
+    <record id="group_pb_driver" model="res.groups">
+        <field name="name">Driver</field>
+        <field name="implied_ids" eval="[(4, ref('group_pb_field_staff'))]"/>
+        <field name="comment">A driver, which is a kind of field staff: check in and out
+            with GPS and stream location pings from the Payobook Field check-in app.
+            Holding this also gives Field staff. No other Payobook access.</field>
+    </record>
+
+    <data noupdate="1">
+
+        <!-- ============ biz.geo.ping record rules ============ -->
+        <!-- Every internal user sees only their OWN pings (append-only: read +
+             create, never write/unlink). The engine ACL grants base.group_user
+             read/create; this rule scopes it to self (spec §3.1). -->
+        <record id="rule_geo_ping_own" model="ir.rule">
+            <field name="name">Geo ping: own only</field>
+            <field name="model_id" ref="biz_geo_tracking.model_biz_geo_ping"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- System administrators manage all pings (GC, debugging, demo
+             seeding). The own-rule above is on base.group_user, which admins
+             also carry — without this escape hatch admins could only create
+             their OWN pings (rules are OR'd, so this broadens, never narrows). -->
+        <record id="rule_geo_ping_system_all" model="ir.rule">
+            <field name="name">Geo ping: system admin all</field>
+            <field name="model_id" ref="biz_geo_tracking.model_biz_geo_ping"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Attendance officers (and up) read ALL pings for the live map. -->
+        <record id="rule_geo_ping_officer_all" model="ir.rule">
+            <field name="name">Geo ping: officers see all</field>
+            <field name="model_id" ref="biz_geo_tracking.model_biz_geo_ping"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('hr_attendance.group_hr_attendance_officer'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- ============ Driver own-attendance ============ -->
+        <!-- Drivers manage their OWN attendance (check in/out). Scoped to self;
+             no unlink (audit integrity). -->
+        <record id="rule_driver_own_attendance" model="ir.rule">
+            <field name="name">Driver: own attendance</field>
+            <field name="model_id" ref="hr_attendance.model_hr_attendance"/>
+            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_pb_driver'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- ============ Field staff own-attendance ============ -->
+        <!-- RIZE W2 D1. THE SAME DOMAIN ON THE BROADER GROUP, as a SECOND
+             record rather than an edit to the one above — and the reason is
+             R57: these records sit in a `noupdate="1"` block, so an upgrade
+             cannot change one that a live database already has. A NEW xmlid
+             is still created, which is why the generalisation travels as a
+             new rule instead of a migration.
+
+             Rules are ORed over the rules that APPLY, and both of these carry
+             the SAME domain, so a driver (who holds Field staff through
+             `implied_ids`) is neither widened nor narrowed by having two —
+             R60's trap needs two DIFFERENT domains to spring. -->
+        <record id="rule_field_own_attendance" model="ir.rule">
+            <field name="name">Field check-in: own attendance</field>
+            <field name="model_id" ref="hr_attendance.model_hr_attendance"/>
+            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_pb_field_staff'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- The same for the location pings: an agronomist's phone streams
+             them exactly as a driver's does, and the own-only rule above is
+             on `base.group_user`, so nothing else is needed. -->
+
+    </data>
+</odoo>

@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_formula_blueprint_user,pb.formula.blueprint.user,model_pb_formula_blueprint,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_pb_formula_blueprint_manager,pb.formula.blueprint.manager,model_pb_formula_blueprint,pb_hr_payroll_formula.group_formula_manager,1,1,1,1

@@ -1,0 +1,32 @@
+/* W100 — Hover card (WP-A). Fixed like .g2-ac, pointer-events:none (no hover-trap). */
+.pbfs .pbfs-hovercard,
+.pbfs-hovercard {
+    position: fixed; z-index: 80; width: 320px; max-width: 92vw; pointer-events: none;
+    background: #fff; border: 1px solid var(--i-border, #DAD3F0); border-radius: 12px;
+    box-shadow: 0 16px 44px rgba(36, 31, 82, .22); padding: 12px 14px;
+    animation: pbfs-hc-in .1s ease;
+}
+@keyframes pbfs-hc-in { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
+.pbfs-hovercard {
+    .hc-h { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .hc-col { font-size: 10.5px; font-weight: 800; color: #fff; background: var(--i, #5A4BB0); border-radius: 5px; padding: 2px 7px; }
+    .hc-code { font-size: 12.5px; font-weight: 800; color: var(--i-deep, #2A2260); }
+    .hc-cat { margin-left: auto; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: var(--muted, #7A768F); background: var(--bg, #F5F4FA); border-radius: 999px; padding: 2px 8px; }
+    .hc-name { font-size: 12.5px; font-weight: 700; color: var(--ink, #221E3A); margin-bottom: 7px; }
+    .hc-formula { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; margin-bottom: 8px; }
+    .hc-tok { font-family: "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace; font-size: 11px; padding: 1px 5px; border-radius: 5px; }
+    .hc-tok.func { background: var(--i-soft, #EEEAFA); color: var(--i600, #5A4BB0); font-weight: 800; }
+    .hc-tok.ref { background: var(--cyan-soft, #E0F4F9); color: var(--cyan, #0E7490); font-weight: 700; }
+    .hc-tok.ref .hc-refcol, .hc-tok.range .hc-refcol { font-weight: 800; margin-right: 2px; }
+    .hc-tok.range { background: var(--amber-soft, #FBEFD9); color: var(--amber, #B45309); font-weight: 700; }
+    .hc-tok.num { color: var(--ink, #221E3A); font-weight: 700; }
+    .hc-tok.op { color: var(--muted, #7A768F); font-weight: 800; }
+    .hc-tok.op.ded { color: var(--danger, #DC2626); }
+    .hc-tok.paren, .hc-tok.comma { color: var(--muted, #7A768F); }
+    .hc-foot { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--line-soft, #EEECF6); padding-top: 7px; }
+    .hc-val { font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--ink, #221E3A); }
+    .hc-ok { margin-left: auto; display: inline-flex; color: var(--green, #059669); }
+    .hc-ok svg { width: 15px; height: 15px; }
+    .hc-bad { margin-left: auto; display: inline-flex; color: var(--danger, #DC2626); }
+    .hc-bad svg { width: 15px; height: 15px; }
+}

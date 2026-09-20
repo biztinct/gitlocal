@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_formula_studio.ComponentTreatmentBoard">
+    <div t-attf-class="pct {{ props.flow ? 'is-flow' : '' }}">
+      <div class="pct-head">
+        <div>
+          <h2>How each component is treated</h2>
+        </div>
+        <div class="pct-act">
+          <button t-if="!props.readonly" class="pct-btn" t-on-click="reclassify"
+                  t-att-disabled="state.reclassifying ? 1 : 0"
+                  title="Work out every pay role and subtotal again from this scheme's own formulas. Rows you set yourself are left alone.">
+            <t t-out="ic('refresh', 15)"/>
+            <span t-if="state.reclassifying">Re-classifying…</span>
+            <span t-else="">Re-classify from the formulas</span>
+          </button>
+          <button t-if="!props.readonly" class="pct-btn primary" t-on-click="save"
+                  t-att-disabled="(dirtyCount and !state.saving) ? 0 : 1">
+            <span t-if="state.saving">Saving…</span>
+            <span t-elif="dirtyCount">Save <t t-esc="dirtyCount"/> change(s)</span>
+            <span t-else="">Save</span>
+          </button>
+          <button t-if="props.readonly and props.onEdit" class="pct-btn primary"
+                  t-on-click="() => props.onEdit()">
+            <t t-out="ic('settings', 15)"/> Change these in Mappings
+          </button>
+        </div>
+      </div>
+
+      <p t-if="props.readonly" class="pct-note">
+        <t t-out="ic('lock', 15)"/>
+        <span>Read-only here. These settings belong to the scheme, not to this
+          pay run — changing one affects every run, past and future — so they are
+          edited under <b>Settings → Integrations → Mappings</b>.</span>
+      </p>
+
+      <div t-if="state.loading" class="pct-empty"><p>Reading the scheme…</p></div>
+      <div t-elif="state.error" class="pct-empty"><p t-esc="state.error"/></div>
+
+      <div t-elif="state.board" class="pct-body">
+        <div class="pct-filters">
+          <button t-attf-class="pct-fchip {{ !state.filter ? 'on' : '' }}"
+                  t-on-click="() => this.setFilter('')">
+            All <t t-esc="state.board.rows.length"/>
+          </button>
+          <button t-if="state.board.review_count"
+                  t-attf-class="pct-fchip warn {{ state.filter === 'review' ? 'on' : '' }}"
+                  t-on-click="() => this.setFilter('review')">
+            Needs your answer <t t-esc="state.board.review_count"/>
+          </button>
+          <button t-if="state.board.drift_count"
+                  t-attf-class="pct-fchip warn {{ state.filter === 'drift' ? 'on' : '' }}"
+                  t-on-click="() => this.setFilter('drift')">
+            Stored differently <t t-esc="state.board.drift_count"/>
+          </button>
+          <button t-if="state.board.role_conflict_count"
+                  t-attf-class="pct-fchip warn {{ state.filter === 'conflict' ? 'on' : '' }}"
+                  t-on-click="() => this.setFilter('conflict')">
+            Type says otherwise <t t-esc="state.board.role_conflict_count"/>
+          </button>
+        </div>
+
+        <!-- VALUEKIND P5. Shown, never silently rewritten: these roles were
+             derived before the value type gated them, the figures they feed are
+             correct today, and a classification somebody has been living with
+             is theirs to confirm. -->
+        <p t-if="state.board.role_conflict_count" class="pct-warn">
+          <t t-out="ic('alert', 15)"/>
+          <span><b t-esc="state.board.role_conflict_count"/> component(s) are counted in
+            hours, days or percent, yet are set to add to or come off net pay. Hours
+            reach net pay by multiplying an amount — they are not a share of it — so
+            they should be <b>Information only</b>.
+            <button t-if="!props.readonly" class="pct-linkb" t-on-click="fixConflicts"
+                    t-att-disabled="state.fixing ? 1 : 0">
+              <span t-if="state.fixing">Changing…</span>
+              <span t-else="">Set all of them to Information only</span>
+            </button>
+          </span>
+        </p>
+
+        <p t-if="state.board.drift_count" class="pct-warn">
+          <t t-out="ic('alert', 15)"/>
+          <span><b t-esc="state.board.drift_count"/> component(s) were delivered as
+            text but stored as a number on this run's payslips. Set the right value
+            type, then recompute the run to rewrite the stored values — saving alone
+            never changes a payslip.</span>
+        </p>
+
+        <div class="pct-scroll">
+        <!-- Orientation text, read once. It sits INSIDE the scroller so it
+             scrolls away with the first row rather than holding 150px of a
+             911px window for the life of the session. -->
+        <p class="pct-sub">Set once per pay component and it holds however the
+          value reaches you — a spreadsheet column, a connected system, a
+          contract, or the scheme's own formulas. <b>Group</b> is what you see
+          on the grid. <b>Pay role</b> is what every report counts it as.
+          <b>Subtotal</b> means the amount is already inside another line, so
+          totals count that one instead of this. <b>Value type</b> decides
+          whether it is read as a number or kept exactly as it arrived — and a
+          value that is not an amount cannot be added to or taken off net pay.</p>
+        <table class="pct-table">
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Comes from</th>
+              <th>Group</th>
+              <th>Pay role</th>
+              <th class="c">Subtotal</th>
+              <th>Tells the run</th>
+              <th>Value type</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr t-foreach="rows" t-as="row" t-key="row.code"
+                t-attf-class="{{ row.drift ? 'drift' : '' }} {{ row.role_conflict ? 'clash' : '' }} {{ state.dirty[row.code] ? 'dirty' : '' }}">
+              <td class="pct-name">
+                <b t-esc="row.name"/>
+                <span class="pct-code" t-esc="row.code"/>
+              </td>
+              <td>
+                <span t-attf-class="pct-lane l-{{ row.lane }}" t-esc="laneLabel(row.lane)"/>
+                <span class="pct-eg">
+                  <span t-foreach="row.delivered" t-as="eg" t-key="eg_index"
+                        class="pct-chip" t-esc="eg"/>
+                </span>
+                <span t-if="row.drift" class="pct-stored">
+                  stored as <b t-esc="row.drift_stored[0]"/>
+                </span>
+              </td>
+              <td>
+                <input t-if="!props.readonly" class="pct-input" list="pct-groups"
+                       t-att-value="valueOf(row, 'group')"
+                       t-on-change="(ev) => this.onChange(row, 'group', ev)"/>
+                <span t-else="" t-esc="row.group or '—'"/>
+              </td>
+              <td>
+                <select t-if="!props.readonly" class="pct-select"
+                        t-on-change="(ev) => this.onChange(row, 'pay_role', ev)">
+                  <option value="">— not set —</option>
+                  <option t-foreach="roleOptions(row)" t-as="pr" t-key="pr.value"
+                          t-att-value="pr.value"
+                          t-att-selected="valueOf(row, 'pay_role') === pr.value ? 'selected' : false"
+                          t-esc="pr.label"/>
+                </select>
+                <span t-else="" t-esc="roleLabel(row)"/>
+                <span class="pct-why" t-att-title="row.pay_role_reason"
+                      t-esc="row.pay_role_source === 'user' ? 'you set this' : (row.needs_review ? 'needs your answer' : row.pay_role_reason)"/>
+              </td>
+              <td class="c">
+                <input type="checkbox" t-att-checked="valueOf(row, 'rollup')"
+                       t-att-disabled="props.readonly ? 1 : 0"
+                       t-on-change="(ev) => this.onChange(row, 'rollup', ev)"/>
+              </td>
+              <td>
+                <select t-if="!props.readonly" class="pct-select"
+                        t-on-change="(ev) => this.onChange(row, 'signal', ev)">
+                  <option value="">—</option>
+                  <option t-foreach="state.board.signals" t-as="sg" t-key="sg.value"
+                          t-att-value="sg.value"
+                          t-att-selected="valueOf(row, 'signal') === sg.value ? 'selected' : false"
+                          t-esc="sg.label"/>
+                </select>
+                <span t-else="" t-esc="signalLabel(row)"/>
+              </td>
+              <td>
+                <select t-if="!props.readonly" class="pct-select"
+                        t-on-change="(ev) => this.onChange(row, 'kind', ev)">
+                  <option t-foreach="state.board.options" t-as="opt" t-key="opt.value"
+                          t-att-value="opt.value"
+                          t-att-selected="valueOf(row, 'kind') === opt.value ? 'selected' : false"
+                          t-esc="opt.label"/>
+                </select>
+                <span t-else="" t-esc="kindLabel(row)"/>
+                <span class="pct-why" t-att-title="row.kind_reason"
+                      t-esc="row.kind_source === 'user' ? 'you set this' : row.kind_reason"/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <datalist id="pct-groups">
+          <option t-foreach="state.board.groups" t-as="g" t-key="g" t-att-value="g"/>
+        </datalist>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

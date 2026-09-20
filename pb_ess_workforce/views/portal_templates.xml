@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ============================================================= -->
+  <!--  Icons (Lucide paths, inline: the portal bundle carries no JS) -->
+  <!--  W2: Lucide only, never Font Awesome, never emoji.             -->
+  <!-- ============================================================= -->
+  <!-- Call sites pass the name with t-value="'name'", NEVER as a t-set BODY.
+       A body is rendered QWeb, and on a `website=True` page the editor's
+       inherit_branding wraps rendered text in `data-oe-*` markup — so
+       `<t t-set="icon">calendar</t>` arrives here as Markup carrying branding
+       attributes, every `icon == '...'` comparison is False, and every icon in
+       the module silently falls through to the else-branch. Found live: four
+       nav pills rendering as identical empty circles, with no error anywhere.
+       A t-value is a plain string and cannot be branded. -->
+  <template id="work_icon" name="My Work icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbew-ic">
+      <t t-if="icon == 'calendar'"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'sun'"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></t>
+      <t t-elif="icon == 'zap'"><path d="M4 14h7l-1 8 10-12h-7l1-8z"/></t>
+      <t t-elif="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'check-circle'"><path d="M21.8 10A10 10 0 1 1 17 3.34"/><path d="m9 11 3 3L22 4"/></t>
+      <t t-elif="icon == 'alert'"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></t>
+      <t t-elif="icon == 'wrench'"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></t>
+      <t t-elif="icon == 'arrow-left'"><path d="m12 19-7-7 7-7M19 12H5"/></t>
+      <t t-elif="icon == 'arrow-right'"><path d="M5 12h14M12 5l7 7-7 7"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="10"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Breadcrumbs                                                   -->
+  <!-- ============================================================= -->
+  <template id="portal_work_breadcrumbs" name="My Work breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="36">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'work_schedule'" class="breadcrumb-item active">My Schedule</li>
+      <li t-if="page_name == 'work_timesheet'" class="breadcrumb-item active">My Timesheet</li>
+      <li t-if="page_name == 'work_leave'" class="breadcrumb-item active">My Leave</li>
+      <li t-if="page_name == 'work_overtime'" class="breadcrumb-item active">My Overtime</li>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my home: the "My Work" cards                                 -->
+  <!-- ============================================================= -->
+  <template id="portal_my_home_work" name="My Work home cards"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="22">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">My Schedule</t>
+        <t t-set="text">Your shifts for this week and next — confirm the ones you have seen</t>
+        <t t-set="url" t-value="'/my/work/schedule'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'work_shift_count'"/>
+      </t>
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">My Timesheet</t>
+        <t t-set="text">Hours scheduled against hours worked, day by day</t>
+        <t t-set="url" t-value="'/my/work/timesheet'"/>
+        <t t-set="config_card" t-value="True"/>
+      </t>
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">My Leave</t>
+        <t t-set="text">Your balances, and a form to request time off</t>
+        <t t-set="url" t-value="'/my/work/leave'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'work_leave_count'"/>
+      </t>
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">My Overtime</t>
+        <t t-set="text">What was recorded, what was approved, and at which rate</t>
+        <t t-set="url" t-value="'/my/work/overtime'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'work_overtime_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Shared: sub-navigation across the four pages                  -->
+  <!-- ============================================================= -->
+  <template id="work_nav" name="My Work nav">
+    <div class="pbew-nav">
+      <a t-attf-class="pbew-nav__i #{page_name == 'work_schedule' and 'is-on' or ''}" href="/my/work/schedule">
+        <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'calendar'"/><t t-set="isz" t-value="15"/></t><span>Schedule</span>
+      </a>
+      <a t-attf-class="pbew-nav__i #{page_name == 'work_timesheet' and 'is-on' or ''}" href="/my/work/timesheet">
+        <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="15"/></t><span>Timesheet</span>
+      </a>
+      <a t-attf-class="pbew-nav__i #{page_name == 'work_leave' and 'is-on' or ''}" href="/my/work/leave">
+        <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'sun'"/><t t-set="isz" t-value="15"/></t><span>Leave</span>
+      </a>
+      <a t-attf-class="pbew-nav__i #{page_name == 'work_overtime' and 'is-on' or ''}" href="/my/work/overtime">
+        <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'zap'"/><t t-set="isz" t-value="15"/></t><span>Overtime</span>
+      </a>
+    </div>
+  </template>
+
+  <template id="work_flash" name="My Work flash">
+    <div t-if="flash" class="pbew-flash">
+      <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="16"/></t>
+      <span t-esc="flash"/>
+    </div>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  My Schedule                                                   -->
+  <!-- ============================================================= -->
+  <template id="portal_my_work_schedule" name="My Schedule (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbew">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_eyebrow">My Work</t>
+          <t t-set="hero_title">My Schedule</t>
+          <t t-set="hero_sub">Your published shifts. Confirm the ones you have seen so your manager knows the roster landed.</t>
+        </t>
+        <t t-call="pb_ess_workforce.work_nav"/>
+        <t t-call="pb_ess_workforce.work_flash"/>
+
+        <!-- ==== the anonymous shift pulse ====
+             Shown only after a shift the person actually worked has ENDED
+             today, and only until they answer or dismiss. The five faces ARE
+             the rating control — they are the data, not chrome, which is the
+             one place W2's no-emoji rule does not apply. -->
+        <div t-if="pulse and pulse.get('show')" class="pbew-pulse">
+          <div class="pbew-pulse__q">
+            <div class="t">How did your shift go?</div>
+            <div class="s"><t t-esc="pulse['shift']"/></div>
+            <div class="s">Your answer is anonymous — it is never linked to your name.</div>
+          </div>
+          <form action="/my/work/pulse" method="post" class="pbew-pulse__row">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <button type="submit" name="rating" value="1" class="pbew-face" title="Bad">😞</button>
+            <button type="submit" name="rating" value="2" class="pbew-face" title="Not great">🙁</button>
+            <button type="submit" name="rating" value="3" class="pbew-face" title="OK">😐</button>
+            <button type="submit" name="rating" value="4" class="pbew-face" title="Good">🙂</button>
+            <button type="submit" name="rating" value="5" class="pbew-face" title="Great">😄</button>
+          </form>
+          <form action="/my/work/pulse/dismiss" method="post">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <button type="submit" class="pbew-pulse__skip">Not now</button>
+          </form>
+        </div>
+
+        <div class="pbew-weeknav">
+          <a class="pbme-btn pbme-btn--ghost" t-attf-href="/my/work/schedule?week=#{sched['prev_week']}">
+            <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'arrow-left'"/><t t-set="isz" t-value="14"/></t>Earlier
+          </a>
+          <span t-attf-class="pbew-weeknav__l #{sched['pending'] and '' or 'pbew-ok'}"
+                t-esc="sched['pending_label']"/>
+          <a class="pbme-btn pbme-btn--ghost" t-attf-href="/my/work/schedule?week=#{sched['next_week']}">
+            Later<t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'arrow-right'"/><t t-set="isz" t-value="14"/></t>
+          </a>
+        </div>
+
+        <t t-foreach="sched['weeks']" t-as="w">
+          <div class="pbme-card pbew-week">
+            <div class="pbew-week__h">
+              <div>
+                <h3 class="pbme-card-title"><t t-esc="w['label']"/></h3>
+                <div class="pbme-muted" t-esc="w['hours_label']"/>
+              </div>
+              <form t-if="w['pending']" action="/my/work/schedule/ack" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="week_start" t-att-value="w['week_start']"/>
+                <button type="submit" class="pbme-btn pbme-btn--primary">
+                  <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="15"/></t>
+                  <t t-esc="w['confirm_label']"/>
+                </button>
+              </form>
+              <span t-elif="w['all_acked']" class="pbew-chip pbew-chip--ok">
+                <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="13"/></t>All confirmed
+              </span>
+              <span t-else="" class="pbew-chip pbew-chip--muted" t-esc="w['ack_label']"/>
+            </div>
+
+            <div class="pbew-days">
+              <t t-foreach="w['days']" t-as="d">
+                <div t-attf-class="pbew-day #{d['is_today'] and 'is-today' or ''} #{d['is_past'] and 'is-past' or ''} #{d['is_weekend'] and 'is-weekend' or ''}">
+                  <div class="pbew-day__h">
+                    <span class="dw" t-esc="d['label']"/>
+                    <span class="dd"><t t-esc="d['day_num']"/> <t t-esc="d['month']"/></span>
+                  </div>
+                  <div t-if="d['leave']" class="pbew-leavechip"><t t-esc="d['leave']"/></div>
+                  <t t-foreach="d['shifts']" t-as="s">
+                    <div t-attf-class="pbew-shift pbew-shift--#{s['ack_state']}">
+                      <div class="pbew-shift__t"><t t-esc="s['start']"/> – <t t-esc="s['end']"/></div>
+                      <div class="pbew-shift__n"><t t-esc="s['name']"/></div>
+                      <div class="pbew-shift__h" t-esc="s['hours_label']"/>
+                      <t t-if="s['ack_state'] == 'acked'">
+                        <span class="pbew-chip pbew-chip--ok">
+                          <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="12"/></t>Confirmed
+                        </span>
+                      </t>
+                      <t t-elif="s['can_ack']">
+                        <form action="/my/work/schedule/ack" method="post">
+                          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                          <input type="hidden" name="shift_id" t-att-value="s['id']"/>
+                          <button type="submit" class="pbew-ackbtn">Confirm</button>
+                        </form>
+                      </t>
+                      <span t-else="" class="pbew-chip pbew-chip--muted">Past</span>
+                    </div>
+                  </t>
+                  <div t-if="not d['shifts'] and not d['leave']" class="pbew-day__none">—</div>
+                </div>
+              </t>
+            </div>
+          </div>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  My Timesheet                                                  -->
+  <!-- ============================================================= -->
+  <template id="portal_my_work_timesheet" name="My Timesheet (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbew">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_eyebrow">My Work</t>
+          <t t-set="hero_title">My Timesheet</t>
+          <t t-set="hero_sub">What was scheduled, what you actually worked, and the difference. Something wrong? Ask for a fix.</t>
+        </t>
+        <t t-call="pb_ess_workforce.work_nav"/>
+        <t t-call="pb_ess_workforce.work_flash"/>
+
+        <t t-if="not wk">
+          <div class="pbme-empty">
+            <div class="pbme-empty-ic"><t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="26"/></t></div>
+            <h3>No week to show</h3>
+            <p>Your timesheet appears once your attendance is set up.</p>
+          </div>
+        </t>
+
+        <t t-else="">
+          <div class="pbew-weeknav">
+            <a class="pbme-btn pbme-btn--ghost" t-attf-href="/my/work/timesheet?week=#{wk['prev_week']}">
+              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'arrow-left'"/><t t-set="isz" t-value="14"/></t>Previous week
+            </a>
+            <span class="pbew-weeknav__l"><t t-esc="wk['week_start']"/> → <t t-esc="wk['week_end']"/></span>
+            <a class="pbme-btn pbme-btn--ghost" t-attf-href="/my/work/timesheet?week=#{wk['next_week']}">
+              Next week<t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'arrow-right'"/><t t-set="isz" t-value="14"/></t>
+            </a>
+          </div>
+
+          <div class="pbme-tiles">
+            <div class="pbme-tile"><div class="pbme-tile-l">Scheduled</div><div class="pbme-tile-v"><t t-esc="wk['totals']['sched']"/> h</div></div>
+            <div class="pbme-tile"><div class="pbme-tile-l">Worked</div><div class="pbme-tile-v"><t t-esc="wk['totals']['entered']"/> h</div></div>
+            <div class="pbme-tile"><div class="pbme-tile-l">Difference</div><div class="pbme-tile-v"><t t-esc="wk['totals']['delta']"/> h</div></div>
+          </div>
+
+          <div class="pbme-card pbme-tablewrap">
+            <table class="pbew-wk">
+              <thead>
+                <tr><th>Day</th><th class="pbme-num">Scheduled</th><th class="pbme-num">Worked</th><th class="pbme-num">Difference</th><th>Fix</th></tr>
+              </thead>
+              <tbody>
+                <t t-foreach="wk['days']" t-as="d">
+                  <tr t-attf-class="#{d['is_today'] and 'is-today' or ''}">
+                    <td><b t-esc="d['label']"/></td>
+                    <td class="pbme-num"><t t-if="d['planned']"><t t-esc="d['sched']"/></t><t t-else="">—</t></td>
+                    <td class="pbme-num"><t t-esc="d['entered']"/></td>
+                    <td t-attf-class="pbme-num #{d['delta'] &lt; 0 and 'pbew-neg' or ''}"><t t-esc="d['delta']"/></td>
+                    <td>
+                      <t t-if="d['fix']">
+                        <span t-attf-class="pbme-badge pbme-badge--#{d['fix']['state']}"><t t-esc="d['fix']['state']"/></span>
+                      </t>
+                      <t t-elif="d['can_fix']">
+                        <a class="pbew-fixlink" t-attf-href="#fix-#{d['date']}">Request a fix</a>
+                      </t>
+                    </td>
+                  </tr>
+                </t>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pbme-card pbew-fixform">
+            <h3 class="pbme-card-title">
+              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'wrench'"/><t t-set="isz" t-value="16"/></t>
+              Something wrong? Request a fix
+            </h3>
+            <p class="pbme-muted">This goes to your manager as an attendance correction. It is filed for you and nobody else — you cannot file one for a colleague.</p>
+            <form action="/my/work/timesheet/fix" method="post">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <input type="hidden" name="week" t-att-value="wk['week_start']"/>
+              <div class="pbme-form-grid">
+                <label><span>Day</span>
+                  <select name="day" required="required">
+                    <t t-foreach="wk['days']" t-as="d">
+                      <option t-if="d['can_fix']" t-att-value="d['date']"><t t-esc="d['label']"/></option>
+                    </t>
+                  </select>
+                </label>
+                <label><span>Check-in (HH:MM, optional)</span><input type="text" name="check_in" placeholder="08:00"/></label>
+                <label><span>Check-out (HH:MM, optional)</span><input type="text" name="check_out" placeholder="17:00"/></label>
+                <label class="pbme-form-wide"><span>What happened?</span>
+                  <textarea name="reason" rows="2" required="required" placeholder="e.g. the badge reader did not register my arrival"/></label>
+              </div>
+              <button type="submit" class="pbme-btn pbme-btn--primary">Send to my manager</button>
+            </form>
+          </div>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  My Leave                                                      -->
+  <!-- ============================================================= -->
+  <template id="portal_my_work_leave" name="My Leave (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbew">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_eyebrow">My Work</t>
+          <t t-set="hero_title">My Leave</t>
+          <t t-set="hero_sub">Your balances and your requests, in the same approval flow HR uses.</t>
+        </t>
+        <t t-call="pb_ess_workforce.work_nav"/>
+        <t t-call="pb_ess_workforce.work_flash"/>
+
+        <div class="pbme-card pbew-nobal" t-if="not lv['balances']">
+          <p class="pbme-muted">You have no leave allocations yet. Your balances appear here once HR grants them.</p>
+        </div>
+
+        <div class="pbme-tiles" t-else="">
+          <t t-foreach="lv['balances']" t-as="b">
+            <div class="pbme-tile">
+              <div class="pbme-tile-l"><t t-esc="b['name']"/></div>
+              <div t-attf-class="pbme-tile-v #{b['low'] and 'pbew-low' or ''}" t-esc="b['balance_label']"/>
+              <div class="pbme-tile-y" t-esc="b['used_label']"/>
+            </div>
+          </t>
+        </div>
+
+        <div class="pbme-detail">
+          <div class="pbme-detail-main">
+            <div class="pbme-card">
+              <h3 class="pbme-card-title">My requests</h3>
+              <t t-if="not lv['requests']">
+                <p class="pbme-muted">You have not requested any leave yet.</p>
+              </t>
+              <table t-else="" class="pbew-wk">
+                <thead><tr><th>Type</th><th>From</th><th>To</th><th class="pbme-num">Days</th><th>Status</th></tr></thead>
+                <tbody>
+                  <t t-foreach="lv['requests']" t-as="r">
+                    <tr>
+                      <td><b t-esc="r['type']"/></td>
+                      <td><t t-esc="r['date_from']"/></td>
+                      <td><t t-esc="r['date_to']"/></td>
+                      <td class="pbme-num"><t t-esc="r['days']"/></td>
+                      <td><span t-attf-class="pbme-badge pbme-badge--#{r['state']}"><t t-esc="r['state_label']"/></span></td>
+                    </tr>
+                  </t>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="pbme-detail-side">
+            <div class="pbme-card">
+              <h3 class="pbme-card-title">Request time off</h3>
+              <form action="/my/work/leave/apply" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <label class="pbme-flabel">Type
+                  <select name="type_id" required="required">
+                    <t t-foreach="lv['types']" t-as="t"><option t-att-value="t['id']"><t t-esc="t['name']"/></option></t>
+                  </select>
+                </label>
+                <label class="pbme-flabel">First day<input type="date" name="date_from" required="required"/></label>
+                <label class="pbme-flabel">Last day<input type="date" name="date_to" required="required"/></label>
+                <label class="pbme-flabel">Reason (optional)<input type="text" name="note"/></label>
+                <button type="submit" class="pbme-btn pbme-btn--primary pbme-btn--block">Send for approval</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  My Overtime                                                   -->
+  <!-- ============================================================= -->
+  <template id="portal_my_work_overtime" name="My Overtime (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbew">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_eyebrow">My Work</t>
+          <t t-set="hero_title">My Overtime</t>
+          <t t-set="hero_sub">Overtime is recorded and approved by your manager. This is the record.</t>
+        </t>
+        <t t-call="pb_ess_workforce.work_nav"/>
+        <t t-call="pb_ess_workforce.work_flash"/>
+
+        <t t-if="not ot['rows']">
+          <div class="pbme-empty">
+            <div class="pbme-empty-ic"><t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'zap'"/><t t-set="isz" t-value="26"/></t></div>
+            <h3>No overtime recorded</h3>
+            <p>When your manager records overtime for you, it shows up here.</p>
+          </div>
+        </t>
+
+        <t t-else="">
+          <div class="pbme-tiles">
+            <div class="pbme-tile"><div class="pbme-tile-l">Approved hours</div><div class="pbme-tile-v"><t t-esc="ot['total_approved']"/> h</div></div>
+            <div class="pbme-tile"><div class="pbme-tile-l">Awaiting approval</div><div class="pbme-tile-v"><t t-esc="ot['pending']"/></div></div>
+          </div>
+          <div class="pbme-card pbme-tablewrap">
+            <table class="pbew-wk">
+              <thead><tr><th>Date</th><th>Type</th><th>Rate</th><th class="pbme-num">Planned</th><th class="pbme-num">Actual</th><th class="pbme-num">Approved</th><th>Status</th></tr></thead>
+              <tbody>
+                <t t-foreach="ot['rows']" t-as="r">
+                  <tr>
+                    <td><b t-esc="r['date']"/></td>
+                    <td><t t-esc="r['type_label']"/></td>
+                    <td><t t-esc="r['rate']"/></td>
+                    <td class="pbme-num"><t t-esc="r['planned']"/></td>
+                    <td class="pbme-num"><t t-esc="r['actual']"/></td>
+                    <td class="pbme-num"><b t-esc="r['approved']"/></td>
+                    <td><span t-attf-class="pbme-badge pbme-badge--#{r['state']}"><t t-esc="r['state']"/></span></td>
+                  </tr>
+                </t>
+              </tbody>
+            </table>
+          </div>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Fallbacks                                                     -->
+  <!-- ============================================================= -->
+  <template id="portal_work_no_employee" name="My Work: no employee (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbew">
+        <div class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>My Work is not set up for you yet</h3>
+          <p>Your login is not linked to an employee record, so there is no schedule, timesheet or leave balance to show. Ask HR to link it.</p>
+          <a href="/my" class="pbme-btn pbme-btn--primary">Back to My Payobook</a>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <template id="portal_work_error" name="My Work error (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbew">
+        <div class="pbme-empty">
+          <div class="pbme-empty-ic pbme-empty-ic--err"><t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>We couldn't do that</h3>
+          <p><t t-esc="error"/></p>
+          <a t-att-href="back_url" class="pbme-btn pbme-btn--primary">Go back</a>
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

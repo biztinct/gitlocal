@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Two checklists to start from, and they are SKELETONS on purpose: every
+         company changes them, and noupdate="1" means an upgrade never takes
+         those changes back.
+
+         Both are country-less, so they apply everywhere until somebody writes
+         a country-specific one — `pb.journey.template.pick_for` prefers the
+         specific and falls back to these. -->
+
+    <!-- ==================== a new joiner ==================== -->
+    <record id="journey_template_onboarding" model="pb.journey.template">
+        <field name="name">New joiner — standard</field>
+        <field name="case_type">onboarding</field>
+        <field name="sequence">10</field>
+        <!-- COMPANY-LESS on purpose. The field's default is the loading user's
+             own company, which on a multi-company database makes a seeded
+             checklist invisible to every OTHER company — and the record rule is
+             `company_id = False OR in company_ids` precisely so a shared
+             checklist can exist. A tenant that wants its own copy duplicates
+             this one and sets a company on the copy. -->
+        <field name="company_id" eval="False"/>
+        <field name="note">The five things that have to happen around someone's
+            first day. Add your own steps — the dates move with the joining
+            date, so a checklist written once keeps working.</field>
+    </record>
+
+    <record id="journey_step_onb_laptop" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_onboarding"/>
+        <field name="sequence">10</field>
+        <field name="name">Laptop request</field>
+        <field name="description">Order or reserve the machine so it is on the desk, set up, before they arrive.</field>
+        <field name="assignee_rule">it</field>
+        <field name="anchor">doj</field>
+        <field name="offset_days">-12</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_onb_access" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_onboarding"/>
+        <field name="sequence">20</field>
+        <field name="name">Tool access</field>
+        <field name="description">Email, chat, the systems they will use on day one. Nothing to chase on their first morning.</field>
+        <field name="assignee_rule">it</field>
+        <field name="anchor">doj</field>
+        <field name="offset_days">-5</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_onb_welcome" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_onboarding"/>
+        <field name="sequence">30</field>
+        <field name="name">Welcome email</field>
+        <field name="description">The where, the when and the who — sent to the joiner and to the team.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">doj</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">email</field>
+    </record>
+
+    <record id="journey_step_onb_intro" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_onboarding"/>
+        <field name="sequence">40</field>
+        <field name="name">Day-1 intro</field>
+        <field name="description">Meet the team, walk through the first week, agree what "going well" looks like at 30 days.</field>
+        <field name="assignee_rule">manager</field>
+        <field name="anchor">doj</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_onb_data" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_onboarding"/>
+        <field name="sequence">50</field>
+        <field name="name">Data completion</field>
+        <field name="description">Bank details, emergency contact, documents — everything payroll needs before the first pay run.</field>
+        <field name="assignee_rule">employee</field>
+        <field name="anchor">doj</field>
+        <field name="offset_days">3</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <!-- ====================== an exit ====================== -->
+    <record id="journey_template_offboarding" model="pb.journey.template">
+        <field name="name">Exit — standard</field>
+        <field name="case_type">offboarding</field>
+        <field name="sequence">20</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">What has to be finished before the final money is
+            paid. The two clearances are marked as blocking, so nothing is paid
+            out with a laptop still missing.</field>
+    </record>
+
+    <record id="journey_step_off_handover" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_offboarding"/>
+        <field name="sequence">10</field>
+        <field name="name">Handover plan</field>
+        <field name="description">Who picks up what, written down, agreed with the person leaving.</field>
+        <field name="assignee_rule">manager</field>
+        <field name="anchor">lwd</field>
+        <field name="offset_days">-20</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_off_it" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_offboarding"/>
+        <field name="sequence">20</field>
+        <field name="name">IT clearance</field>
+        <field name="description">Devices back, accounts closed, keys and cards returned.</field>
+        <field name="assignee_rule">it</field>
+        <field name="anchor">lwd</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">confirmation</field>
+        <field name="blocking_ff" eval="True"/>
+    </record>
+
+    <record id="journey_step_off_hr" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_offboarding"/>
+        <field name="sequence">30</field>
+        <field name="name">HR clearance</field>
+        <field name="description">Notice served, leave balance agreed, anything owed either way settled.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">lwd</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">confirmation</field>
+        <field name="blocking_ff" eval="True"/>
+    </record>
+
+    <record id="journey_step_off_letter" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_offboarding"/>
+        <field name="sequence">40</field>
+        <field name="name">Experience letter</field>
+        <field name="description">Prepare and send the experience letter so they leave with it in hand.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">lwd</field>
+        <field name="offset_days">1</field>
+        <field name="step_kind">letter</field>
+        <field name="letter_template_id" ref="letter_template_experience"/>
+    </record>
+
+</odoo>

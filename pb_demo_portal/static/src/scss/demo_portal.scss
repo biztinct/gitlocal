@@ -1,0 +1,125 @@
+// Payobook Demo Registration Portal — indigo, white cards, no gradients.
+$pb-indigo: #5A4BB0;
+$pb-indigo-deep: #241F52;
+$pb-indigo-hover: #4A3D96;
+$pb-soft: #EDEAF8;
+$pb-ink: #1E1B2E;
+$pb-muted: #64748B;
+$pb-border: #E2E8F0;
+$pb-success: #2E7D4F;
+
+.pbdemo-wrap {
+    min-height: 100vh;
+    background: #F4F5FB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: $pb-ink;
+
+    &.pbdemo-center { text-align: center; }
+}
+
+.pbdemo-grid {
+    width: 100%;
+    max-width: 1040px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    @media (max-width: 860px) { grid-template-columns: 1fr; }
+}
+
+.pbdemo-pitch {
+    background: $pb-indigo-deep;
+    color: #fff;
+    border-radius: 20px;
+    padding: 44px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    // Force white: Bootstrap sets a dark heading colour that overrides inherit.
+    h1 { font-size: 32px; line-height: 1.15; font-weight: 800; margin: 18px 0 14px; color: #fff; }
+    .pbdemo-lead { color: #C9C2EE; font-size: 15px; line-height: 1.6; }
+}
+.pbdemo-brand {
+    display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px;
+}
+.pbdemo-logo {
+    width: 34px; height: 34px; border-radius: 9px; background: $pb-indigo;
+    display: grid; place-items: center; font-weight: 800;
+}
+.pbdemo-points {
+    list-style: none; padding: 0; margin: 24px 0 0;
+    li { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 14px; color: #E6E2F7; }
+}
+.pbdemo-tick {
+    width: 20px; height: 20px; border-radius: 50%; flex: none;
+    background: rgba(255,255,255,.14);
+    position: relative;
+    &::after {
+        content: ''; position: absolute; left: 6px; top: 4px;
+        width: 5px; height: 9px; border: solid #fff; border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+}
+
+.pbdemo-card {
+    background: #fff;
+    border: 1px solid $pb-border;
+    border-radius: 20px;
+    padding: 36px 34px;
+    box-shadow: 0 18px 50px rgba(36, 31, 82, .08);
+
+    h2 { font-size: 24px; font-weight: 800; margin: 0 0 6px; }
+    .pbdemo-sub { color: $pb-muted; font-size: 14px; margin: 0 0 22px; }
+}
+
+.pbdemo-form {
+    label { display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 14px; }
+    input, select, textarea {
+        width: 100%; margin-top: 6px; padding: 11px 13px; font-size: 14px;
+        border: 1px solid $pb-border; border-radius: 11px; background: #fff; color: $pb-ink;
+        font-weight: 500; font-family: inherit;
+        &:focus { outline: none; border-color: $pb-indigo; box-shadow: 0 0 0 3px $pb-soft; }
+    }
+    textarea { resize: vertical; min-height: 74px; line-height: 1.5; }
+}
+
+// Kicker badge on the private-demo pitch panel.
+.pbdemo-kicker {
+    display: inline-block; align-self: flex-start;
+    padding: 4px 11px; border-radius: 999px;
+    background: rgba(255,255,255,.12); color: #C9C2EE;
+    font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+}
+.pbdemo-req { color: $pb-indigo; font-weight: 800; }
+.pbdemo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.pbdemo-submit {
+    display: inline-block; width: 100%; text-align: center;
+    margin-top: 8px; padding: 13px 18px;
+    background: $pb-indigo; color: #fff; font-weight: 700; font-size: 15px;
+    border: none; border-radius: 12px; cursor: pointer; text-decoration: none;
+    &:hover { background: $pb-indigo-hover; color: #fff; }
+}
+.pbdemo-fine { text-align: center; font-size: 13px; color: $pb-muted; margin: 16px 0 0;
+    a { color: $pb-indigo; font-weight: 600; } }
+
+.pbdemo-error {
+    background: #FDECEF; color: #B42349; border: 1px solid #F6C9D5;
+    padding: 11px 14px; border-radius: 11px; font-size: 13.5px; font-weight: 600; margin-bottom: 18px;
+}
+
+.pbdemo-done { max-width: 460px; margin: 0 auto; text-align: center;
+    p { color: $pb-muted; font-size: 15px; line-height: 1.6; margin: 8px 0 22px; } }
+.pbdemo-check {
+    width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 18px;
+    background: rgba(46,125,79,.12); position: relative;
+    &::after {
+        content: ''; position: absolute; left: 23px; top: 17px;
+        width: 13px; height: 24px; border: solid $pb-success; border-width: 0 4px 4px 0;
+        transform: rotate(45deg);
+    }
+}

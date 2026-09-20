@@ -1,0 +1,930 @@
+// ===========================================================================
+// pb_rnr — the Praise lens (People hub) and the recognition wall (Home).
+//
+// pbim tokens only, one accent, flat fills, no gradients. Every rule that
+// depends on a token also carries a literal fallback, because a lens that
+// renders where the token sheet has not loaded must still be readable rather
+// than transparent-on-transparent.
+//
+// R32 — the kit's `.pbim-stats` is a grid with NO columns on purpose (each
+// cockpit knows how many numbers it has). The KPI row below declares its own.
+//
+// R45 — the kit's `.pbim-modal` carries NO padding and IS a column flex box:
+// it is built for the __head / __body / __foot rails, which pad themselves.
+// Every dialog here ships those three rails, so it inherits the right shape.
+//
+// R33 — `.pbim-badge` capitalises every word, which is right for a status word
+// and wrong for a sentence. Nothing here puts a sentence in a badge.
+//
+// Sass `min()`/`max()` with MIXED px/% units kills the entire asset bundle —
+// none of that here; widths are declared as width/max-width pairs.
+//
+// THE VALUE COLOURS are a map, and it is the ONLY place a value's colour is
+// spelled. The Python side ships a token NAME (`primary`, `cyan`, …) and never
+// a hex, so a tenant cannot put an arbitrary colour into the palette.
+// ===========================================================================
+
+$rnr-colors: (
+    primary: (#6355C7, #F1EFFC),
+    cyan:    (#0E7490, #E6F6FA),
+    green:   (#15803D, #E9F7EE),
+    amber:   (#B45309, #FDF3E3),
+    rose:    (#BE123C, #FCEDF1),
+    slate:   (#475569, #EEF1F5),
+);
+
+// ===========================================================================
+//  Shared bits
+// ===========================================================================
+.pbim.rnr,
+.pbim.rnw {
+
+    .rnr-av,
+    .rnw-av {
+        width: 36px;
+        height: 36px;
+        border-radius: 18px;
+        object-fit: cover;
+        flex: 0 0 auto;
+        background: var(--pbim-soft, #F1EFFC);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--pbim-primary, #6355C7);
+    }
+
+    .rnr-av--sm,
+    .rnw-av--sm { width: 28px; height: 28px; border-radius: 14px; font-size: 11px; }
+
+    .rnw-av--lg { width: 54px; height: 54px; border-radius: 27px; font-size: 16px; }
+
+    .rnr-dash,
+    .rnw-dash { color: var(--pbim-muted, #64748B); }
+
+    // the pickers and text boxes
+    .rnr-in,
+    .rnw-in {
+        width: 100%;
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-text, #1B1733);
+        padding: 9px 11px;
+        font-size: 13px;
+        font-family: inherit;
+
+        &:focus {
+            outline: none;
+            border-color: var(--pbim-primary, #6355C7);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(99, 85, 199, .18));
+        }
+    }
+
+    .rnr-in--num { width: 120px; text-align: right; }
+    .rnr-ta,
+    .rnw-ta { resize: vertical; line-height: 1.6; }
+}
+
+// ===========================================================================
+//  The Praise lens
+// ===========================================================================
+.pbim.rnr {
+
+    // ---------------------------------------------------------------- header
+    .rnr-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+
+    .rnr-head-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-left: auto;
+    }
+
+    // ------------------------------------------------------------- refusal
+    .rnr-locked {
+        text-align: center;
+        padding: 48px 24px;
+
+        h2 { margin: 12px 0 6px; font-size: 18px; }
+        p { color: var(--pbim-muted, #64748B); max-width: 560px; margin: 0 auto; }
+    }
+
+    .rnr-locked-ic { color: var(--pbim-muted, #64748B); }
+
+    // ------------------------------------------------------------- the KPIs
+    .rnr-kpis {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+
+        @media (max-width: 1180px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        @media (max-width: 700px) { grid-template-columns: 1fr; }
+    }
+
+    // ---------------------------------------------------------- the switches
+    .rnr-switches {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin: 14px 0 4px;
+        padding: 10px 14px;
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r, 12px);
+        background: var(--pbim-surface, #FFFFFF);
+        font-size: 12.5px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .rnr-switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+
+        svg { flex: 0 0 auto; }
+    }
+
+    // ------------------------------------------------------------- filters
+    .rnr-filters {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 16px 0 12px;
+    }
+
+    .rnr-search {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-surface, #FFFFFF);
+        padding: 7px 11px;
+        width: 300px;
+        max-width: 100%;
+        color: var(--pbim-muted, #64748B);
+
+        input {
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: var(--pbim-text, #1B1733);
+            font-size: 13px;
+            width: 100%;
+        }
+    }
+
+    .rnr-count {
+        margin-left: auto;
+        font-size: 12.5px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // --------------------------------------------------------------- empty
+    .rnr-empty {
+        text-align: center;
+        padding: 44px 24px;
+
+        h3 { margin: 12px 0 6px; font-size: 17px; }
+        p {
+            color: var(--pbim-muted, #64748B);
+            max-width: 560px;
+            margin: 0 auto 14px;
+            line-height: 1.65;
+        }
+    }
+
+    .rnr-empty-ic { color: var(--pbim-muted, #64748B); }
+
+    // --------------------------------------------------------------- rows
+    .rnr-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .rnr-row {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr) 300px;
+        gap: 16px;
+        align-items: center;
+        padding: 14px 16px;
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-left: 3px solid var(--pbim-primary, #6355C7);
+        border-radius: var(--pbim-r, 12px);
+        background: var(--pbim-surface, #FFFFFF);
+
+        @media (max-width: 1100px) { grid-template-columns: 1fr; }
+    }
+
+    .rnr-row-who { display: flex; align-items: center; gap: 10px; }
+    .rnr-row-n { font-size: 14px; font-weight: 700; color: var(--pbim-text, #1B1733); }
+    .rnr-row-s { font-size: 12px; color: var(--pbim-muted, #64748B); }
+
+    .rnr-row-mid { min-width: 0; }
+    .rnr-row-story {
+        margin: 7px 0 0;
+        font-size: 13.5px;
+        line-height: 1.6;
+        color: var(--pbim-text, #1B1733);
+    }
+
+    .rnr-row-end {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .rnr-money { font-size: 13px; font-weight: 800; }
+
+    // R33 — `.pbim-badge` capitalises every word, which is right for a status
+    // word and wrong for a phrase. "Chosen For The Quarter" is how a screen
+    // announces nobody read it out loud.
+    .rnr-winner { text-transform: none; }
+
+    .rnr-private {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // -------------------------------------------------------------- dialogs
+    // R45 — the kit's modal is a column flex box with no padding of its own,
+    // so every dialog here ships its own head/body/foot rails.
+    .rnr-modal { width: 560px; max-width: 94vw; }
+    .rnr-modal--wide { width: 980px; }
+
+    .rnr-modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 18px 22px 12px;
+        border-bottom: 1px solid var(--pbim-line, #E2E1EF);
+
+        h3 { margin: 0; font-size: 17px; }
+    }
+
+    .rnr-modal-body {
+        padding: 18px 22px;
+        overflow: auto;
+
+        label {
+            display: block;
+            margin-bottom: 14px;
+
+            > span:first-child {
+                display: block;
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--pbim-muted, #64748B);
+                margin-bottom: 6px;
+            }
+        }
+    }
+
+    .rnr-modal-foot {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 12px 22px 18px;
+        border-top: 1px solid var(--pbim-line, #E2E1EF);
+    }
+
+    .rnr-flabel {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--pbim-muted, #64748B);
+        margin-bottom: 6px;
+    }
+
+    .rnr-check {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+
+        input { margin-top: 3px; }
+        span {
+            font-size: 12.5px;
+            line-height: 1.55;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+
+    .rnr-person { position: relative; }
+
+    .rnr-people {
+        position: absolute;
+        z-index: 3;
+        left: 0;
+        right: 0;
+        margin-top: 4px;
+        max-height: 240px;
+        overflow: auto;
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-surface, #FFFFFF);
+        box-shadow: var(--pbim-sh-lg, 0 12px 32px rgba(27, 23, 51, .14));
+    }
+
+    .rnr-person-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        width: 100%;
+        border: 0;
+        background: transparent;
+        text-align: left;
+        padding: 8px 11px;
+        font-size: 13px;
+        color: var(--pbim-text, #1B1733);
+        cursor: pointer;
+
+        small { margin-left: auto; color: var(--pbim-muted, #64748B); }
+        &:hover { background: var(--pbim-soft, #F1EFFC); }
+    }
+
+    // ------------------------------------------------------------ the values
+    .rnr-values {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 16px;
+
+        @media (max-width: 640px) { grid-template-columns: 1fr; }
+    }
+
+    .rnr-value {
+        text-align: left;
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r, 12px);
+        background: var(--pbim-surface, #FFFFFF);
+        padding: 10px 12px;
+        cursor: pointer;
+        transition: border-color .12s ease, background .12s ease;
+
+        &:hover { border-color: var(--pbim-primary, #6355C7); }
+    }
+
+    .rnr-value-n {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 800;
+        color: var(--pbim-text, #1B1733);
+    }
+
+    .rnr-value-m {
+        display: block;
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+        margin-top: 2px;
+    }
+
+    // -------------------------------------------------------------- review
+    .rnr-review {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 300px;
+        gap: 22px;
+
+        @media (max-width: 860px) { grid-template-columns: 1fr; }
+    }
+
+    .rnr-review-story {
+        font-size: 16px;
+        line-height: 1.7;
+        color: var(--pbim-text, #1B1733);
+        margin: 12px 0 16px;
+    }
+
+    .rnr-review-by { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+
+    .rnr-review-side {
+        border-left: 1px solid var(--pbim-line, #E2E1EF);
+        padding-left: 18px;
+
+        @media (max-width: 860px) { border-left: 0; padding-left: 0; }
+    }
+
+    .rnr-side-h {
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: var(--pbim-muted, #64748B);
+        margin-bottom: 10px;
+    }
+
+    .rnr-side-empty { font-size: 13px; color: var(--pbim-muted, #64748B); }
+
+    .rnr-side-row { display: flex; gap: 9px; margin-bottom: 12px; }
+    .rnr-side-v { font-size: 12.5px; font-weight: 700; }
+    .rnr-side-x {
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .rnr-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 4px;
+        margin-top: 5px;
+        flex: 0 0 auto;
+        background: var(--pbim-primary, #6355C7);
+    }
+
+    // ------------------------------------------------------------- roll-up
+    .rnr-rollup {
+        th.pick, td.pick { width: 40px; text-align: center; }
+
+        tr.is-picked { background: var(--pbim-soft, #F1EFFC); }
+    }
+
+    .rnr-who { display: inline-flex; align-items: center; gap: 8px; }
+
+    .rnr-confirm {
+        font-size: 15px;
+        line-height: 1.7;
+        color: var(--pbim-text, #1B1733);
+        margin: 0 0 14px;
+    }
+
+    .rnr-confirm-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--pbim-line, #E2E1EF);
+            font-size: 13.5px;
+        }
+    }
+
+    // ---------------------------------------------------------- mood board
+    // The email, rendered as itself. A scroll box rather than an iframe: the
+    // body is already server-escaped QWeb and an iframe would need a src.
+    .rnr-digest {
+        max-height: 62vh;
+        overflow: auto;
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r, 12px);
+    }
+
+    // ------------------------------------------------------- value colours
+    @each $key, $pair in $rnr-colors {
+        $ink: nth($pair, 1);
+        $wash: nth($pair, 2);
+
+        .rnr-row--#{$key} { border-left-color: $ink; }
+
+        .rnr-chip--#{$key} {
+            color: $ink;
+            background: $wash;
+        }
+
+        .rnr-value--#{$key} {
+            &.is-on {
+                border-color: $ink;
+                background: $wash;
+            }
+            .rnr-value-n { color: $ink; }
+        }
+
+        .rnr-dot--#{$key} { background: $ink; }
+    }
+
+    .rnr-chip {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        border-radius: 999px;
+        padding: 3px 10px;
+        margin-right: 6px;
+        color: var(--pbim-primary, #6355C7);
+        background: var(--pbim-soft, #F1EFFC);
+    }
+}
+
+// ===========================================================================
+//  The recognition wall
+// ===========================================================================
+.pbim.rnw {
+
+    .rnw-wrap { padding-bottom: 24px; }
+
+    // ---------------------------------------------------------------- header
+    .rnw-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .rnw-h {
+        margin: 0;
+        font-size: 21px;
+        font-weight: 800;
+        color: var(--pbim-text, #1B1733);
+    }
+
+    .rnw-s {
+        margin: 5px 0 0;
+        font-size: 13.5px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .rnw-head-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-left: auto;
+    }
+
+    // ---------------------------------------------------------- the banner
+    .rnw-banner {
+        border-radius: var(--pbim-r-lg, 16px);
+        background: var(--pbim-soft, #F1EFFC);
+        padding: 18px 20px;
+        margin-bottom: 16px;
+    }
+
+    .rnw-banner-t {
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--pbim-primary, #6355C7);
+        margin-bottom: 12px;
+    }
+
+    .rnw-banner-row { display: flex; gap: 22px; flex-wrap: wrap; }
+
+    .rnw-winner { text-align: center; width: 96px; }
+    .rnw-winner-n {
+        margin-top: 6px;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--pbim-text, #1B1733);
+    }
+    .rnw-winner-v { font-size: 11.5px; color: var(--pbim-primary, #6355C7); }
+
+    // ---------------------------------------------------------- value chips
+    .rnw-values {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .rnw-vchip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: 999px;
+        background: var(--pbim-surface, #FFFFFF);
+        padding: 6px 13px;
+        font-size: 12.5px;
+        font-weight: 700;
+        cursor: pointer;
+        color: var(--pbim-text, #1B1733);
+    }
+
+    // A value nothing has been filed under yet. Still SHOWN, because the list
+    // teaches what the company says it cares about — but not offered as a
+    // filter, because a filter that matches nothing is a broken promise (R27).
+    .rnw-vchip.is-empty {
+        opacity: .5;
+        cursor: default;
+    }
+
+    .rnw-vchip-c {
+        font-size: 11px;
+        font-weight: 800;
+        border-radius: 999px;
+        padding: 1px 7px;
+        background: var(--pbim-soft, #F1EFFC);
+        color: var(--pbim-primary, #6355C7);
+    }
+
+    // ------------------------------------------------------------ the body
+    .rnw-body {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 268px;
+        gap: 22px;
+        align-items: start;
+
+        @media (max-width: 1080px) { grid-template-columns: 1fr; }
+    }
+
+    .rnw-wall {
+        // A masonry-ish wall. `column-count` rather than grid, because the
+        // tiles are different heights and a grid would leave a ragged bottom
+        // edge under every short one.
+        column-count: 3;
+        column-gap: 14px;
+
+        @media (max-width: 1400px) { column-count: 2; }
+        @media (max-width: 760px) { column-count: 1; }
+    }
+
+    .rnw-tile {
+        break-inside: avoid;
+        display: block;
+        margin: 0 0 14px;
+        padding: 16px 18px;
+        border-radius: var(--pbim-r-lg, 16px);
+        background: var(--pbim-soft, #F1EFFC);
+        border: 1px solid transparent;
+    }
+
+    .rnw-tile-h { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+
+    .rnw-chip {
+        display: inline-block;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        border-radius: 999px;
+        padding: 4px 11px;
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-primary, #6355C7);
+    }
+
+    .rnw-chip--win { color: var(--pbim-text, #1B1733); }
+
+    .rnw-story {
+        margin: 0 0 14px;
+        font-size: 14.5px;
+        line-height: 1.65;
+        color: var(--pbim-text, #1B1733);
+    }
+
+    .rnw-tile-f { display: flex; align-items: center; gap: 10px; }
+    .rnw-tile-n { font-size: 13px; font-weight: 800; color: var(--pbim-text, #1B1733); }
+    .rnw-tile-s { font-size: 12px; color: var(--pbim-muted, #64748B); }
+
+    .rnw-empty {
+        text-align: center;
+        padding: 48px 24px;
+
+        h3 { margin: 12px 0 6px; font-size: 17px; }
+        p {
+            color: var(--pbim-muted, #64748B);
+            max-width: 520px;
+            margin: 0 auto 14px;
+            line-height: 1.65;
+        }
+    }
+
+    .rnw-empty-ic { color: var(--pbim-muted, #64748B); }
+
+    // ------------------------------------------------------- the side rail
+    .rnw-side {
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-lg, 16px);
+        background: var(--pbim-surface, #FFFFFF);
+        padding: 16px 18px;
+    }
+
+    .rnw-side-h {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: var(--pbim-muted, #64748B);
+        margin-bottom: 14px;
+    }
+
+    .rnw-side-empty { font-size: 13px; color: var(--pbim-muted, #64748B); }
+
+    .rnw-celeb { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .rnw-celeb-tx { min-width: 0; }
+    .rnw-celeb-n {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--pbim-text, #1B1733);
+    }
+    .rnw-celeb-w { font-size: 11.5px; color: var(--pbim-muted, #64748B); }
+
+    .rnw-side-note {
+        margin: 14px 0 0;
+        font-size: 11.5px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // ------------------------------------------------------------ the dialog
+    .rnw-modal { width: 560px; max-width: 94vw; }
+
+    .rnw-modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 18px 22px 12px;
+        border-bottom: 1px solid var(--pbim-line, #E2E1EF);
+
+        h3 { margin: 0; font-size: 17px; }
+    }
+
+    .rnw-modal-body {
+        padding: 18px 22px;
+        overflow: auto;
+
+        label {
+            display: block;
+            margin-bottom: 14px;
+
+            > span:first-child {
+                display: block;
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--pbim-muted, #64748B);
+                margin-bottom: 6px;
+            }
+        }
+    }
+
+    .rnw-modal-foot {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 12px 22px 18px;
+        border-top: 1px solid var(--pbim-line, #E2E1EF);
+    }
+
+    .rnw-flabel {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--pbim-muted, #64748B);
+        margin-bottom: 6px;
+    }
+
+    .rnw-check {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+
+        input { margin-top: 3px; }
+        span {
+            font-size: 12.5px;
+            line-height: 1.55;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+
+    .rnw-person { position: relative; }
+
+    .rnw-people {
+        position: absolute;
+        z-index: 3;
+        left: 0;
+        right: 0;
+        margin-top: 4px;
+        max-height: 240px;
+        overflow: auto;
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r-sm, 8px);
+        background: var(--pbim-surface, #FFFFFF);
+        box-shadow: var(--pbim-sh-lg, 0 12px 32px rgba(27, 23, 51, .14));
+    }
+
+    .rnw-person-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        width: 100%;
+        border: 0;
+        background: transparent;
+        text-align: left;
+        padding: 8px 11px;
+        font-size: 13px;
+        color: var(--pbim-text, #1B1733);
+        cursor: pointer;
+
+        small { margin-left: auto; color: var(--pbim-muted, #64748B); }
+        &:hover { background: var(--pbim-soft, #F1EFFC); }
+    }
+
+    .rnw-vpick {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 16px;
+
+        @media (max-width: 640px) { grid-template-columns: 1fr; }
+    }
+
+    .rnw-value {
+        text-align: left;
+        border: 1px solid var(--pbim-line, #E2E1EF);
+        border-radius: var(--pbim-r, 12px);
+        background: var(--pbim-surface, #FFFFFF);
+        padding: 10px 12px;
+        cursor: pointer;
+
+        &:hover { border-color: var(--pbim-primary, #6355C7); }
+    }
+
+    .rnw-value-n {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 800;
+        color: var(--pbim-text, #1B1733);
+    }
+
+    .rnw-value-m {
+        display: block;
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--pbim-muted, #64748B);
+        margin-top: 2px;
+    }
+
+    // ------------------------------------------------------- value colours
+    @each $key, $pair in $rnr-colors {
+        $ink: nth($pair, 1);
+        $wash: nth($pair, 2);
+
+        .rnw-tile--#{$key} {
+            background: $wash;
+
+            .rnw-chip { color: $ink; }
+        }
+
+        .rnw-vchip--#{$key} {
+            .rnw-vchip-c { color: $ink; background: $wash; }
+
+            &.is-on {
+                border-color: $ink;
+                background: $wash;
+                color: $ink;
+            }
+        }
+
+        .rnw-value--#{$key} {
+            &.is-on {
+                border-color: $ink;
+                background: $wash;
+            }
+            .rnw-value-n { color: $ink; }
+        }
+    }
+
+    // ===================================================================
+    //  THE MOTION, AND THE WHOLE OF IT.
+    //
+    //  Everything that moves is inside this block. A person who has asked
+    //  their machine for less movement gets the finished wall on the first
+    //  paint, with no opacity to recover from and no transform to undo —
+    //  because the animation is never declared for them at all, rather
+    //  than declared and then cancelled.
+    //
+    //  The stagger is `--rnw-i`, set per tile from the loop index in the
+    //  template, capped in effect by the cascade at 30 tiles (the facade's
+    //  own cap), so the last card arrives well inside a second.
+    // ===================================================================
+    @media (prefers-reduced-motion: no-preference) {
+        .rnw-tile {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: rnw-rise .42s cubic-bezier(.22, .8, .3, 1) forwards;
+            animation-delay: calc(var(--rnw-i, 0) * 28ms);
+        }
+
+        .rnw-vchip { transition: border-color .12s ease, background .12s ease; }
+    }
+}
+
+// `@keyframes` lives at the TOP LEVEL. Nested inside a selector Sass emits it
+// nested too, which is not valid CSS and which no browser plays.
+@keyframes rnw-rise {
+    to { opacity: 1; transform: none; }
+}

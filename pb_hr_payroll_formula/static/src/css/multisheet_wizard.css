@@ -2,21 +2,23 @@
    MULTI-SHEET WIZARD TABLE STYLING
    =================================== */
 
-/* Enable horizontal scrolling for all one2many tree views in wizard */
-.o_form_view .o_field_one2many .o_list_view,
-.o_form_view .o_field_one2many .o_list_renderer {
+/* Enable horizontal scrolling for all one2many tree views in wizard.
+   Scoped to `.o_pb_fx_grid` so these wide-grid rules do NOT leak onto
+   native one2many lists (e.g. the payslip-lines dialog). */
+.o_pb_fx_grid .o_field_one2many .o_list_view,
+.o_pb_fx_grid .o_field_one2many .o_list_renderer {
     overflow-x: auto !important;
     overflow-y: visible !important;
     max-width: 100% !important;
 }
 
 /* Wrapper styling */
-.o_form_view .o_field_one2many {
+.o_pb_fx_grid .o_field_one2many {
     position: relative;
 }
 
 /* Make the list view table extend to full content width */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table {
     min-width: max-content !important;
 }
 
@@ -67,46 +69,46 @@
 }
 
 /* Add scrollbar styling for better UX */
-.o_form_view .o_field_one2many .o_list_view::-webkit-scrollbar {
+.o_pb_fx_grid .o_field_one2many .o_list_view::-webkit-scrollbar {
     height: 10px;
 }
 
-.o_form_view .o_field_one2many .o_list_view::-webkit-scrollbar-track {
+.o_pb_fx_grid .o_field_one2many .o_list_view::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 5px;
 }
 
-.o_form_view .o_field_one2many .o_list_view::-webkit-scrollbar-thumb {
+.o_pb_fx_grid .o_field_one2many .o_list_view::-webkit-scrollbar-thumb {
     background: #888;
     border-radius: 5px;
 }
 
-.o_form_view .o_field_one2many .o_list_view::-webkit-scrollbar-thumb:hover {
+.o_pb_fx_grid .o_field_one2many .o_list_view::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
 
 /* Prevent text wrapping in table cells */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th,
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th,
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td {
     white-space: nowrap !important;
     overflow: visible !important;
     text-overflow: clip !important;
 }
 
 /* Set default minimum width for all columns - increased to accommodate sort arrows */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th,
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th,
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td {
     min-width: 100px !important;
     padding: 6px 12px !important;
 }
 
 /* Ensure column headers have enough space for text + sort icon */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th {
     padding-right: 24px !important; /* Extra space for sort arrow */
 }
 
 /* Make sure header text doesn't get cut off */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th .o_column_sortable {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th .o_column_sortable {
     display: flex !important;
     align-items: center !important;
     gap: 4px !important;
@@ -117,29 +119,29 @@
    =================================== */
 
 /* Sheet name columns - wider for long sheet names */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="sheet_name"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sheet_name"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="sheet_name"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sheet_name"] {
     min-width: 200px !important;
     width: auto !important;
 }
 
 /* Header/Component name columns - wider for descriptive names */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="original_header"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="original_header"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="original_header"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="original_header"] {
     min-width: 200px !important;
     max-width: 300px !important;
 }
 
 /* Generated name columns */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="generated_name"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="generated_name"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="generated_name"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="generated_name"] {
     min-width: 180px !important;
     max-width: 280px !important;
 }
 
 /* Excel formula columns - need much more space */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="excel_formula"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="excel_formula"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="excel_formula"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="excel_formula"] {
     min-width: 1000px !important;
     max-width: none !important;
     font-family: 'Courier New', monospace !important;
@@ -147,26 +149,26 @@
 }
 
 /* Component type/category columns */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="component_type"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="component_type"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="component_type"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="component_type"] {
     min-width: 150px !important;
     max-width: 200px !important;
 }
 
 /* Sample value columns */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="sample_value"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sample_value"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="sample_value"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sample_value"] {
     min-width: 120px !important;
     max-width: 180px !important;
 }
 
 /* Cross-reference sheet name columns - allow wrapping and auto-width */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="refers_to_sheet_names"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="refers_to_sheet_names"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="referenced_by_sheet_names"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_by_sheet_names"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="referenced_sheet_names"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="refers_to_sheet_names"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="refers_to_sheet_names"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="referenced_by_sheet_names"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_by_sheet_names"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="referenced_sheet_names"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names"] {
     min-width: 250px !important;
     max-width: none !important;
     width: auto !important;
@@ -175,8 +177,8 @@
 }
 
 /* Depends On badges - extra wide and no wrapping to enable horizontal scrolling */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="referenced_sheet_names_html"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="referenced_sheet_names_html"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"] {
     min-width: 1000px !important;
     max-width: none !important;
     width: auto !important;
@@ -184,7 +186,7 @@
 }
 
 /* Style badges in the Depends On column */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"] .badge {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"] .badge {
     display: inline-block;
     padding: 4px 8px;
     margin: 2px;
@@ -196,36 +198,36 @@
 }
 
 /* Hide the HTML tooltip that shows raw code */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sheet_name_html"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sheet_name_html"] {
     pointer-events: none !important; /* Disable hover tooltips */
 }
 
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"] *,
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sheet_name_html"] * {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"] *,
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sheet_name_html"] * {
     pointer-events: auto !important; /* Re-enable pointer events for child elements */
 }
 
 /* Remove title attribute that causes tooltip */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"]::before,
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sheet_name_html"]::before {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"]::before,
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sheet_name_html"]::before {
     content: none !important;
 }
 
 /* Additional tooltip prevention */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"][title],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sheet_name_html"][title] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"][title],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sheet_name_html"][title] {
     position: relative;
 }
 
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"][title]::after,
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sheet_name_html"][title]::after {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"][title]::after,
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sheet_name_html"][title]::after {
     content: '' !important;
     display: none !important;
 }
 
 /* Sheet name badge colors - will be set dynamically */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sheet_name"] .badge {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="sheet_name"] .badge {
     padding: 4px 10px;
     border-radius: 4px;
     font-size: 12px;
@@ -234,32 +236,32 @@
 }
 
 /* Data source columns */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="data_source"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="data_source"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="data_source"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="data_source"] {
     min-width: 100px !important;
     max-width: 150px !important;
 }
 
 /* Code columns */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="generated_code"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="generated_code"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="field_code"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="field_code"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="generated_code"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="generated_code"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="field_code"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="field_code"] {
     min-width: 120px !important;
     max-width: 180px !important;
     font-family: 'Courier New', monospace !important;
 }
 
 /* Field name columns */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="field_name"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="field_name"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="field_name"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="field_name"] {
     min-width: 150px !important;
     max-width: 220px !important;
 }
 
 /* Column type columns */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="column_type"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="column_type"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="column_type"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="column_type"] {
     min-width: 80px !important;
     max-width: 100px !important;
 }
@@ -269,58 +271,58 @@
    =================================== */
 
 /* Boolean toggle columns - increased width for header text + sort icon */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="is_selected"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="is_selected"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="is_main_sheet"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="is_main_sheet"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="include_in_import"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="include_in_import"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="has_formulas"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="has_formulas"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="is_duplicate"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="is_duplicate"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="is_selected"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="is_selected"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="is_main_sheet"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="is_main_sheet"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="include_in_import"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="include_in_import"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="has_formulas"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="has_formulas"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="is_duplicate"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="is_duplicate"] {
     min-width: 90px !important;
     max-width: 110px !important;
     text-align: center !important;
 }
 
 /* Slightly wider boolean columns with longer text */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="references_other_sheets"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="references_other_sheets"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="has_cross_sheet_ref"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="has_cross_sheet_ref"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="is_referenced_by_other_sheet"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="is_referenced_by_other_sheet"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="is_referenced_by_main"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="is_referenced_by_main"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="references_other_sheets"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="references_other_sheets"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="has_cross_sheet_ref"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="has_cross_sheet_ref"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="is_referenced_by_other_sheet"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="is_referenced_by_other_sheet"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="is_referenced_by_main"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="is_referenced_by_main"] {
     min-width: 105px !important;
     max-width: 130px !important;
     text-align: center !important;
 }
 
 /* Small numeric columns */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="column_count"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="column_count"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="row_count"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="row_count"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="detected_header_row"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="detected_header_row"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="selected_column_count"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="selected_column_count"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="total_column_count"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="total_column_count"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="column_count"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="column_count"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="row_count"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="row_count"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="detected_header_row"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="detected_header_row"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="selected_column_count"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="selected_column_count"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="total_column_count"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="total_column_count"] {
     min-width: 60px !important;
     max-width: 80px !important;
     text-align: center !important;
 }
 
 /* Column letter fields - very narrow */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="column_letter"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="column_letter"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="start_column_letter"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="start_column_letter"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="end_column_letter"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="end_column_letter"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="column_letter"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="column_letter"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="start_column_letter"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="start_column_letter"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="end_column_letter"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="end_column_letter"] {
     min-width: 50px !important;
     max-width: 65px !important;
     text-align: center !important;
@@ -328,8 +330,8 @@
 }
 
 /* Sequence/handle columns */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th[data-name="append_sequence"],
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="append_sequence"] {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th[data-name="append_sequence"],
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td[data-name="append_sequence"] {
     min-width: 40px !important;
     max-width: 50px !important;
 }
@@ -339,7 +341,7 @@
    =================================== */
 
 /* Make headers more readable */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table thead th {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table thead th {
     font-weight: 600 !important;
     background-color: #f8f9fa !important;
     border-bottom: 2px solid #dee2e6 !important;
@@ -349,10 +351,10 @@
 }
 
 /* Add tooltip on hover for truncated text */
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td {
     cursor: default !important;
 }
 
-.o_form_view .o_field_one2many .o_list_view table.o_list_table tbody td:hover {
+.o_pb_fx_grid .o_field_one2many .o_list_view table.o_list_table tbody td:hover {
     background-color: #f1f3f5 !important;
 }

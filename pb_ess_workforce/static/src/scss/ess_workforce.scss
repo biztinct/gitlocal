@@ -1,0 +1,212 @@
+// "My Work" — the employee workforce surface, layered on pb_me_portal's `.pbme`
+// block (same frontend bundle, same pbim tokens, same white + rail language).
+//
+// W6 kit-first: everything that already exists on .pbme (card, button, badge,
+// tile, empty, hero, detail grid) is REUSED, not forked. This file adds only
+// what is genuinely new to this surface: the sub-navigation, the week strip,
+// the day column with its shift chips, and the ack affordance.
+//
+// This is the phone surface first — an employee confirms a roster standing in a
+// stockroom, not at a desk.
+
+.pbme.pbew {
+
+    // ---------- sub-navigation ----------
+    .pbew-nav {
+        display: flex; gap: 6px; flex-wrap: wrap;
+        margin: -10px 0 18px;
+    }
+    .pbew-nav__i {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 8px 14px; border-radius: 999px;
+        border: 1px solid var(--pbim-line); background: var(--pbim-surface);
+        font-size: 13px; font-weight: 700; color: var(--pbim-muted);
+        text-decoration: none; transition: all .15s;
+        &:hover { color: var(--pbim-primary-strong); border-color: var(--pbim-primary-light); text-decoration: none; }
+        &.is-on { background: var(--pbim-primary); border-color: var(--pbim-primary); color: #fff; }
+    }
+
+    // ---------- flash ----------
+    .pbew-flash {
+        display: flex; align-items: center; gap: 9px;
+        background: var(--pbim-green-soft); color: var(--pbim-green);
+        border: 1px solid transparent; border-radius: var(--pbim-r-sm);
+        padding: 11px 14px; margin-bottom: 16px;
+        font-size: 13.5px; font-weight: 700;
+    }
+
+    // ---------- week navigation strip ----------
+    .pbew-weeknav {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .pbew-weeknav__l { font-size: 13px; font-weight: 700; color: var(--pbim-muted); }
+    .pbew-ok { color: var(--pbim-green); }
+
+    // ---------- a week ----------
+    .pbew-week { margin-bottom: 18px; }
+    .pbew-week__h {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+
+    .pbew-days {
+        display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;
+    }
+    .pbew-day {
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        padding: 9px 8px 10px; min-height: 96px;
+        background: var(--pbim-surface);
+        &.is-weekend { background: var(--pbim-bg); }
+        &.is-past { opacity: .62; }
+        &.is-today { border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+    }
+    .pbew-day__h { display: flex; align-items: baseline; gap: 5px; margin-bottom: 7px;
+        .dw { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--pbim-muted); }
+        .dd { font-size: 11px; color: var(--pbim-muted); }
+    }
+    .pbew-day__none { color: var(--pbim-muted); font-size: 13px; text-align: center; padding-top: 14px; }
+
+    .pbew-leavechip {
+        font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 7px;
+        background: var(--pbim-cyan-soft); color: var(--pbim-cyan);
+        margin-bottom: 6px;
+    }
+
+    // A shift card. The ack state is the LEFT RULE, not a colour wash: the
+    // card must still read as a shift when it is confirmed.
+    .pbew-shift {
+        border: 1px solid var(--pbim-line-2); border-left: 3px solid var(--pbim-slate);
+        border-radius: 8px; padding: 7px 8px; margin-bottom: 6px;
+        background: #fff;
+        &--pending { border-left-color: var(--pbim-amber); }
+        &--acked { border-left-color: var(--pbim-green); }
+    }
+    .pbew-shift__t { font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .pbew-shift__n { font-size: 11.5px; color: var(--pbim-muted); }
+    .pbew-shift__h { font-size: 11px; color: var(--pbim-muted); margin-bottom: 5px; }
+
+    .pbew-ackbtn {
+        width: 100%; border: 1px solid var(--pbim-primary); background: var(--pbim-primary);
+        color: #fff; border-radius: 7px; padding: 5px 8px;
+        font-size: 11.5px; font-weight: 800; cursor: pointer;
+        &:hover { background: var(--pbim-primary-hover); }
+    }
+
+    .pbew-chip {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px;
+        &--ok { background: var(--pbim-green-soft); color: var(--pbim-green); }
+        &--muted { background: var(--pbim-slate-soft); color: var(--pbim-slate); }
+    }
+
+    // ---------- week / list tables ----------
+    .pbew-wk {
+        width: 100%; border-collapse: collapse;
+        th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .04em;
+             color: var(--pbim-muted); padding: 8px 10px; border-bottom: 1px solid var(--pbim-line); white-space: nowrap; }
+        td { padding: 10px; border-bottom: 1px solid var(--pbim-line-2); font-size: 13.5px; }
+        th.pbme-num, td.pbme-num { text-align: right; font-variant-numeric: tabular-nums; }
+        tr.is-today td { background: var(--pbim-soft); }
+    }
+    .pbew-neg { color: var(--pbim-rose); font-weight: 700; }
+    .pbew-low { color: var(--pbim-amber); }
+    .pbew-fixlink { font-size: 12.5px; font-weight: 700; color: var(--pbim-primary-strong); text-decoration: none;
+        &:hover { text-decoration: underline; } }
+    .pbew-fixform { margin-top: 18px; .pbme-card-title { display: flex; align-items: center; gap: 8px; } }
+    .pbew-fixform select, .pbew-fixform textarea, .pbew-fixform input {
+        border: 1px solid var(--pbim-line); border-radius: 9px; padding: 9px 11px;
+        font-size: 13.5px; font-family: inherit; width: 100%; background: #fff;
+        &:focus { outline: none; border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+    }
+
+    // ---------- phone ----------
+    @media (max-width: 900px) {
+        .pbew-days { grid-template-columns: repeat(2, 1fr); }
+        .pbew-day { min-height: 0; }
+    }
+    @media (max-width: 520px) {
+        .pbew-days { grid-template-columns: 1fr; }
+        .pbew-nav { gap: 5px; }
+        .pbew-nav__i { padding: 7px 11px; font-size: 12px; }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// The login-less acknowledgment page (/work/ack/<token>).
+//
+// This is the only surface in the module a STRANGER can land on, and it is the
+// one an employee opens on a phone from an SMS-shaped email. One card, one
+// decision, nothing else on the page — no navigation, no branding beyond the
+// name, and nothing that could be mistaken for a way into the backend.
+// ---------------------------------------------------------------------------
+.pbme.pbew.pbew-ackpage {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 72vh; padding: 28px 16px;
+
+    .pbew-ackcard {
+        width: 100%; max-width: 420px; text-align: center;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh-lg);
+        padding: 34px 28px 30px;
+
+        h1 { font-size: 21px; font-weight: 800; margin: 0 0 6px; }
+    }
+    .pbew-ackcard__brand {
+        font-size: 11px; font-weight: 800; letter-spacing: .16em;
+        text-transform: uppercase; color: var(--pbim-primary-strong);
+        margin-bottom: 18px;
+    }
+    .pbew-ackcard__ic {
+        width: 66px; height: 66px; border-radius: 50%;
+        background: var(--pbim-soft); color: var(--pbim-primary-strong);
+        display: grid; place-items: center; margin: 0 auto 16px;
+        &--ok { background: var(--pbim-green-soft); color: var(--pbim-green); }
+        &--warn { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    }
+    .pbew-ackcard__sub { color: var(--pbim-muted); font-size: 13.5px; margin: 0 0 18px; }
+    .pbew-ackcard__shift {
+        background: var(--pbim-bg); border: 1px solid var(--pbim-line-2);
+        border-radius: var(--pbim-r-sm); padding: 16px; margin-bottom: 20px;
+        .d { font-size: 13px; font-weight: 700; color: var(--pbim-muted); }
+        .t { font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; margin: 3px 0; }
+        .n { font-size: 12.5px; color: var(--pbim-muted); }
+    }
+    .pbew-ackcard__fine { font-size: 11.5px; color: var(--pbim-muted); margin: 12px 0 0; }
+}
+
+// ---------------------------------------------------------------------------
+// The shift pulse prompt.
+//
+// One question, five faces, a way out. It appears after a shift has ended and
+// disappears the moment it is answered — a prompt that persists is a survey,
+// and nobody answers a survey twice.
+//
+// W3 note: the five glyphs are EMOJI, deliberately and by exception. They are
+// not decoration on a control, they ARE the control — the scale itself — and a
+// row of Lucide outlines cannot express "how did it go" to somebody holding a
+// phone in a stockroom. Everything around them is still Lucide and pbim.
+// ---------------------------------------------------------------------------
+.pbme.pbew {
+    .pbew-pulse {
+        display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+        background: var(--pbim-soft); border: 1px solid var(--pbim-primary-light);
+        border-radius: var(--pbim-r); padding: 14px 18px; margin-bottom: 18px;
+        .t { font-size: 14.5px; font-weight: 800; }
+        .s { font-size: 12px; color: var(--pbim-muted); margin-top: 2px; }
+    }
+    .pbew-pulse__q { flex: 1; min-width: 220px; }
+    .pbew-pulse__row { display: flex; gap: 4px; }
+    .pbew-face {
+        border: 1px solid transparent; background: transparent;
+        font-size: 25px; line-height: 1; padding: 5px 7px;
+        border-radius: 10px; cursor: pointer; transition: all .12s;
+        &:hover { background: #fff; border-color: var(--pbim-primary-light); transform: translateY(-2px); }
+    }
+    .pbew-pulse__skip {
+        border: none; background: transparent; cursor: pointer;
+        font-size: 12.5px; font-weight: 700; color: var(--pbim-muted);
+        text-decoration: underline;
+        &:hover { color: var(--pbim-primary-strong); }
+    }
+}

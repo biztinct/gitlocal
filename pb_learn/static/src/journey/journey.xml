@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- The Journey's outer chrome. Everything inside `body` is built by the
+     engine as a markup string: the spotlight and trace measure and decorate
+     live DOM, which reactive re-rendering fights rather than helps. -->
+<t t-name="pb_learn.Journey">
+    <div class="lrn-root" t-att-data-motion="state.motion" t-att-lang="state.lang === 'vi' ? 'vi' : 'en'"
+         t-on-click="onClick" t-on-input="onInput"
+         t-on-keydown="onKeydown" t-on-focusout="onFocusOut"
+         t-on-mousedown="onMouseDown">
+
+        <t t-call="pb_learn.IconSprite"/>
+
+        <div class="lrn-topbar">
+            <span class="lrn-logo">
+                <span class="lrn-mark">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-grad-cap"/></svg>
+                </span>
+                <b t-esc="brandLabel"/>
+                <span class="lrn-sep" t-if="learnLabel">·</span>
+                <span t-esc="learnLabel"/>
+            </span>
+
+            <div class="lrn-tbactions">
+                <button class="lrn-btn sm ghost" t-on-click="toggleMotion"
+                        t-att-aria-pressed="state.motion === 'reduced'">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-sparkles"/></svg>
+                    <span t-esc="motionLabel"/>
+                </button>
+                <button class="lrn-btn sm" t-on-click="toggleLang">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-globe"/></svg>
+                    <span t-esc="langLabel"/>
+                </button>
+            </div>
+        </div>
+
+        <!-- Narration for screen readers. Separate from the visual card so a
+             step change is announced once, as a sentence, rather than as the
+             card's whole subtree. -->
+        <p class="lrn-sr" aria-live="polite" t-esc="narration"/>
+
+        <div class="lrn-body" t-out="body"/>
+
+        <!-- The spotlight, coach card and trace layer draw into this. -->
+        <div class="lrn-overlay" t-ref="overlay"/>
+    </div>
+</t>
+
+</templates>

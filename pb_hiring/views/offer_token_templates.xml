@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       `/hiring/d/<token>` and `/hiring/o/<token>` — the two pages a
+       CANDIDATE sees, and the only two pages in this product written for
+       somebody who does not work here.
+
+       MOBILE FIRST, AND THAT IS NOT A STYLE NOTE. A candidate opens these
+       on a phone, between two other jobs, on a connection that is not
+       yours. So: one column, big targets, the deadline and the progress
+       above the fold, and a file input per line rather than one "attach
+       everything" box nobody can tell the state of.
+
+       ONE template per page, several outcomes. The status IS the page: a
+       separate page per status would drift, and a stranger probing the URL
+       space must not be able to tell an unknown key from a spent one.
+
+       The icons are inlined because the backend's ic() registry is a JS
+       module and cannot be called from QWeb — the same shape the feedback
+       page uses. The icon name is passed with `t-value="'name'"` and NEVER
+       as a t-set BODY (W87).
+
+       `t-attf-class`, NEVER a dict `t-att-class` (R42). No `t-key` (R5).
+       No render key called `request` (R4) — the keys here are `facts` and
+       `token`.
+       ================================================================== -->
+
+  <!-- ==================================================================
+       The documents
+       ================================================================== -->
+  <template id="hiring_documents_page" name="Send us your documents">
+    <t t-call="web.frontend_layout">
+      <div id="wrap" class="pbhf pbhf-page">
+        <div class="pbhf-card">
+
+          <div class="pbhf-card__brand">Payobook</div>
+
+          <t t-if="status == 'ok'">
+            <div class="pbhf-card__ic">
+              <t t-call="pb_hiring.hf_icon">
+                <t t-set="icon" t-value="'paperclip'"/>
+                <t t-set="isz" t-value="28"/>
+              </t>
+            </div>
+            <h1>A few things we need from you</h1>
+            <p class="pbhf-card__sub">
+              Hello <strong t-esc="facts['candidate']"/> — things are moving
+              on <strong t-esc="facts['role']"/>. Send us these and we can put
+              the offer in front of you. You can do the whole thing from your
+              phone.
+            </p>
+
+            <div class="pbhf-meta">
+              <t t-call="pb_hiring.hf_icon">
+                <t t-set="icon" t-value="facts.get('late') and 'alert' or 'clock'"/>
+                <t t-set="isz" t-value="14"/>
+              </t>
+              <span t-if="facts.get('late')">
+                We asked for these by <t t-esc="facts['deadline']"/>. It is
+                still worth sending them.
+              </span>
+              <span t-else="">Wanted by <t t-esc="facts['deadline']"/></span>
+            </div>
+
+            <div class="pbhf-progress">
+              <div class="pbhf-progress__bar">
+                <span t-attf-style="width: #{facts['total'] and (facts['in'] * 100 / facts['total']) or 0}%;"/>
+              </div>
+              <div class="pbhf-progress__tx">
+                <t t-esc="facts['in']"/> of <t t-esc="facts['total']"/> in
+              </div>
+            </div>
+
+            <div t-if="problem" class="pbhf-problem">
+              <t t-call="pb_hiring.hf_icon">
+                <t t-set="icon" t-value="'alert'"/>
+                <t t-set="isz" t-value="16"/>
+              </t>
+              <span t-esc="problem"/>
+            </div>
+
+            <t t-foreach="facts['items']" t-as="it">
+              <div t-attf-class="pbhf-doc #{it['received'] and 'pbhf-doc--in' or ''}">
+                <div class="pbhf-doc__head">
+                  <span class="pbhf-doc__tick">
+                    <t t-if="it['received']">
+                      <t t-call="pb_hiring.hf_icon">
+                        <t t-set="icon" t-value="'checkCircle'"/>
+                        <t t-set="isz" t-value="18"/>
+                      </t>
+                    </t>
+                    <t t-else="">
+                      <t t-call="pb_hiring.hf_icon">
+                        <t t-set="icon" t-value="'circle'"/>
+                        <t t-set="isz" t-value="18"/>
+                      </t>
+                    </t>
+                  </span>
+                  <span class="pbhf-doc__name">
+                    <t t-esc="it['name']"/>
+                    <em t-if="not it['required']"> — only if you have it</em>
+                  </span>
+                </div>
+                <p class="pbhf-help" t-if="it['help']" t-esc="it['help']"/>
+                <p class="pbhf-doc__got" t-if="it['received']">
+                  We have this. Send another and it replaces the first.
+                </p>
+                <form t-attf-action="/hiring/d/#{token}/upload" method="post"
+                      enctype="multipart/form-data" class="pbhf-doc__form">
+                  <input type="hidden" name="item_id" t-att-value="it['id']"/>
+                  <input type="file" name="upload" class="pbhf-file"
+                         accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"/>
+                  <button type="submit" class="pbhf-btn pbhf-btn--small">
+                    <t t-if="it['received']">Replace it</t>
+                    <t t-else="">Send it</t>
+                  </button>
+                </form>
+              </div>
+            </t>
+
+            <p class="pbhf-card__fine">
+              This link is yours alone. Only the hiring team can see what you
+              send, and nothing here is shared with anybody else.
+            </p>
+          </t>
+
+          <!-- ==================== everything is in ==================== -->
+          <t t-elif="status == 'done'">
+            <div class="pbhf-card__ic pbhf-card__ic--ok">
+              <t t-call="pb_hiring.hf_icon">
+                <t t-set="icon" t-value="'checkCircle'"/>
+                <t t-set="isz" t-value="28"/>
+              </t>
+            </div>
+            <h1>That is everything</h1>
+            <p class="pbhf-card__sub">
+              We have all of it, thank you. Your recruiter will be in touch
+              with what happens next — there is nothing left for you to do
+              here.
+            </p>
+          </t>
+
+          <!-- ==================== closed or unknown ==================== -->
+          <t t-else="">
+            <div class="pbhf-card__ic pbhf-card__ic--warn">
+              <t t-call="pb_hiring.hf_icon">
+                <t t-set="icon" t-value="'clock'"/>
+                <t t-set="isz" t-value="28"/>
+              </t>
+            </div>
+            <h1>This link has closed</h1>
+            <p class="pbhf-card__sub">
+              It has been replaced, or the role has moved on. Reply to the
+              email that brought you here and your recruiter will sort it out.
+            </p>
+          </t>
+
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ==================================================================
+       The offer
+       ================================================================== -->
+  <template id="hiring_offer_page" name="Our offer to you">
+    <t t-call="web.frontend_layout">
+      <div id="wrap" class="pbhf pbhf-page">
+        <div class="pbhf-card">
+
+          <div class="pbhf-card__brand">Payobook</div>
+
+          <t t-if="status == 'ok'">
+            <div class="pbhf-card__ic">
+              <t t-call="pb_hiring.hf_icon">
+                <t t-set="icon" t-value="'award'"/>
+                <t t-set="isz" t-value="28"/>
+              </t>
+            </div>
+            <h1>We would like you to join us</h1>
+            <p class="pbhf-card__sub">
+              Hello <strong t-esc="facts['candidate']"/> — here is our offer
+              for <strong t-esc="facts['role']"/> at
+              <t t-esc="facts['company']"/>. Read it, take your time, and tell
+              us either way.
+            </p>
+
+            <div class="pbhf-offer">
+              <div class="pbhf-offer__row">
+                <span>Starting on</span>
+                <strong t-esc="facts['start_date']"/>
+              </div>
+              <div class="pbhf-offer__row" t-if="facts.get('department')">
+                <span>Team</span>
+                <strong t-esc="facts['department']"/>
+              </div>
+              <div class="pbhf-offer__row" t-if="facts.get('location')">
+                <span>Based at</span>
+                <strong t-esc="facts['location']"/>
+              </div>
+            </div>
+
+            <div class="pbhf-money">
+              <div class="pbhf-money__big">
+                <div class="n" t-esc="facts['monthly_total']"/>
+                <div class="l">a month</div>
+              </div>
+              <div class="pbhf-money__big">
+                <div class="n" t-esc="facts['annual_total']"/>
+                <div class="l">a year</div>
+              </div>
+            </div>
+
+            <t t-foreach="facts['lines']" t-as="ln">
+              <div class="pbhf-offer__row">
+                <span t-esc="ln['name']"/>
+                <strong>
+                  <t t-esc="ln['amount']"/>
+                  <em class="pbhf-offer__when" t-esc="ln['period']"/>
+                </strong>
+              </div>
+            </t>
+
+            <p t-if="facts['has_pdf']" style="margin-top:18px;">
+              <a t-attf-href="/hiring/o/#{token}/letter"
+                 class="pbhf-btn pbhf-btn--ghost">
+                <t t-call="pb_hiring.hf_icon">
+                  <t t-set="icon" t-value="'fileText'"/>
+                  <t t-set="isz" t-value="16"/>
+                </t>
+                Read the full letter
+              </a>
+            </p>
+
+            <form t-attf-action="/hiring/o/#{token}/answer" method="post"
+                  class="pbhf-answer">
+              <label class="pbhf-label" for="comment">
+                Anything you want to say
+              </label>
+              <textarea class="pbhf-input" id="comment" name="comment" rows="3"
+                        placeholder="A question, a date that would suit you better, or nothing at all."/>
+              <div class="pbhf-answer__btns">
+                <button type="submit" name="decision" value="accepted"
+                        class="pbhf-btn pbhf-btn--primary">
+                  <t t-call="pb_hiring.hf_icon">
+                    <t t-set="icon" t-value="'check'"/>
+                    <t t-set="isz" t-value="16"/>
+                  </t>
+                  I accept
+                </button>
+                <button type="submit" name="decision" value="declined"
+                        class="pbhf-btn pbhf-btn--quiet">
+                  Not this time
+                </button>
+              </div>
+            </form>
+            <p class="pbhf-card__fine">
+              Accepting here is not a signature — your recruiter will send you
+              a copy to sign. If you would rather talk first, reply to the
+              email that brought you here.
+            </p>
+          </t>
+
+          <!-- ==================== they have answered ==================== -->
+          <t t-elif="status in ('used', 'thanks')">
+            <div t-attf-class="pbhf-card__ic #{facts.get('decision') == 'accepted' and 'pbhf-card__ic--ok' or 'pbhf-card__ic--warn'}">
+              <t t-call="pb_hiring.hf_icon">
+                <t t-set="icon" t-value="facts.get('decision') == 'accepted' and 'checkCircle' or 'clock'"/>
+                <t t-set="isz" t-value="28"/>
+              </t>
+            </div>
+            <t t-if="facts.get('decision') == 'accepted'">
+              <h1>Welcome aboard</h1>
+              <p class="pbhf-card__sub">
+                You accepted this offer, and your recruiter has been told.
+                They will send you a copy to sign and tell you what happens
+                before your first day.
+              </p>
+            </t>
+            <t t-else="">
+              <h1>Thank you for telling us</h1>
+              <p class="pbhf-card__sub">
+                You turned this offer down. That is entirely your call and we
+                are glad you said so rather than leaving us wondering — it
+                means we can move on, and it means we can come back to you if
+                something better suited comes up.
+              </p>
+            </t>
+            <p class="pbhf-card__fine" t-if="facts.get('comment')">
+              What you said: <t t-esc="facts['comment']"/>
+            </p>
+          </t>
+
+          <!-- ==================== closed or unknown ==================== -->
+          <t t-else="">
+            <div class="pbhf-card__ic pbhf-card__ic--warn">
+              <t t-call="pb_hiring.hf_icon">
+                <t t-set="icon" t-value="'clock'"/>
+                <t t-set="isz" t-value="28"/>
+              </t>
+            </div>
+            <h1>This link has closed</h1>
+            <p class="pbhf-card__sub">
+              The offer it was about has been replaced or withdrawn. Reply to
+              the email that brought you here and your recruiter will sort it
+              out.
+            </p>
+          </t>
+
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

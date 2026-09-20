@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- F113 / T113.2b — Singapore 2026 statutory pack (B4). New country pack;
+         B4's model is country-generic, so this is data only. Carries CPF
+         age-band employee/employer rates, the OW ceiling, and SDL parameters.
+         Published so the SG template resolves values at both real seed time and
+         certification time (pinned version 2026.1).
+
+         ⚠ VERIFY (see report): only the ≤55 split (20% EE / 17% ER) is long-
+         stable. The 55–60 / 60–65 / 65–70 / >70 EE-ER splits below reflect the
+         2026 senior-worker step-up and MUST be confirmed against the CPF Board's
+         published 2026 table before the SG template flips to 'certified'. -->
+    <data noupdate="1">
+        <record id="legis_pack_sg_2026" model="hr.formula.legislation.pack">
+            <field name="name">Singapore Statutory Parameters 2026</field>
+            <field name="country_code">SG</field>
+            <field name="version">2026.1</field>
+            <field name="effective_date">2026-01-01</field>
+            <field name="authority">CPF Act (2026 contribution rates) · SDL Act</field>
+            <field name="state">published</field>
+            <field name="sequence">5</field>
+            <field name="description">Singapore CPF age-banded employee &amp; employer contribution rates, Ordinary-Wage ceiling (S$8,000), and Skills Development Levy parameters, effective 2026.</field>
+        </record>
+
+        <record id="sg_owceil" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_sg_2026"/>
+            <field name="code">OWCEIL</field><field name="label">CPF Ordinary Wage Ceiling</field>
+            <field name="value">8000</field><field name="number_format">currency</field><field name="sequence">10</field>
+        </record>
+        <record id="sg_pee1" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_sg_2026"/>
+            <field name="code">PEE1</field><field name="label">CPF Employee Rate ≤55</field>
+            <field name="value">0.20</field><field name="number_format">percentage</field><field name="sequence">20</field>
+        </record>
+        <record id="sg_pee2" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_sg_2026"/>
+            <field name="code">PEE2</field><field name="label">CPF Employee Rate 55–60</field>
+            <field name="value">0.17</field><field name="number_format">percentage</field>
+            <field name="note">⚠ VERIFY 2026 senior step-up split</field><field name="sequence">30</field>
+        </record>
+        <record id="sg_pee3" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_sg_2026"/>
+            <field name="code">PEE3</field><field name="label">CPF Employee Rate 60–65</field>
+            <field name="value">0.115</field><field name="number_format">percentage</field>
+            <field name="note">⚠ VERIFY 2026 senior step-up split</field><field name="sequence">40</field>
+        </record>
+        <record id="sg_pee4" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_sg_2026"/>
+            <field name="code">PEE4</field><field name="label">CPF Employee Rate 65–70</field>
+            <field name="value">0.075</field><field name="number_format">percentage</field>
+            <field name="note">⚠ VERIFY 2026 senior step-up split</field><field name="sequence">50</field>
+        </record>
+        <record id="sg_pee5" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_sg_2026"/>
+            <field name="code">PEE5</field><field name="label">CPF Employee Rate &gt;70</field>
+            <field name="value">0.05</field><field name="number_format">percentage</field>
+            <field name="note">⚠ VERIFY 2026 split</field><field name="sequence">60</field>
+        </record>
+        <record id="sg_per1" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_sg_2026"/>
+            <field name="code">PER1</field><field name="label">CPF Employer Rate ≤55</field>
+            <field name="value">0.17</field><field name="number_format">percentage</field><field name="sequence">70</field>
+        </record>
+        <record id="sg_per2" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_sg_2026"/>
+            <field name="code">PER2</field><field name="label">CPF Employer Rate 55–60</field>
+            <field name="value">0.17</field><field name="number_format">percentage</field>
+            <field name="note">⚠ VERIFY 2026 senior step-up split</field><field name="sequence">80</field>
+        </record>
+        <record id="sg_per3" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_sg_2026"/>
+            <field name="code">PER3</field><field name="label">CPF Employer Rate 60–65</field>
+            <field name="value">0.135</field><field name="number_format">percentage</field>
+            <field name="note">⚠ VERIFY 2026 senior step-up split</field><field name="sequence">90</field>
+        </record>
+        <record id="sg_per4" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_sg_2026"/>
+            <field name="code">PER4</field><field name="label">CPF Employer Rate 65–70</field>
+            <field name="value">0.09</field><field name="number_format">percentage</field>
+            <field name="note">⚠ VERIFY 2026 senior step-up split</field><field name="sequence">100</field>
+        </record>
+        <record id="sg_per5" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_sg_2026"/>
+            <field name="code">PER5</field><field name="label">CPF Employer Rate &gt;70</field>
+            <field name="value">0.085</field><field name="number_format">percentage</field>
+            <field name="note">⚠ VERIFY 2026 split</field><field name="sequence">110</field>
+        </record>
+        <record id="sg_sdlrate" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_sg_2026"/>
+            <field name="code">SDLRATE</field><field name="label">SDL Rate</field>
+            <field name="value">0.0025</field><field name="number_format">percentage</field><field name="sequence">120</field>
+        </record>
+        <record id="sg_sdlmin" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_sg_2026"/>
+            <field name="code">SDLMIN</field><field name="label">SDL Minimum</field>
+            <field name="value">2</field><field name="number_format">currency</field><field name="sequence">130</field>
+        </record>
+        <record id="sg_sdlcap" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_sg_2026"/>
+            <field name="code">SDLCAP</field><field name="label">SDL Cap</field>
+            <field name="value">11.25</field><field name="number_format">currency</field><field name="sequence">140</field>
+        </record>
+    </data>
+</odoo>

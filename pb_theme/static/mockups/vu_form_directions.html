@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VU Form Engine — Design Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   RESET + BASE
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; }
+body {
+  font-family: "Inter", "Segoe UI", -apple-system, sans-serif;
+  background: #0B1226;
+  color: #1F2937;
+  min-height: 100vh;
+}
+button { font: inherit; cursor: pointer; border: none; background: none; }
+
+/* ============================================================
+   CHOOSER BAR (top)
+   ============================================================ */
+.chooser {
+  position: sticky; top: 0; z-index: 50;
+  background: linear-gradient(180deg, #0D1834 0%, #0B1530 100%);
+  color: #fff;
+  padding: 18px 28px 0;
+  box-shadow: 0 8px 30px rgba(0,0,0,.35);
+}
+.chooser-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.chooser-head h1 { font-size: 19px; font-weight: 800; letter-spacing: -.01em; }
+.chooser-head p  { font-size: 13px; color: #9FACCB; }
+.chooser-tabs { display: flex; gap: 10px; margin-top: 14px; }
+.ctab {
+  flex: 1; max-width: 420px; text-align: left;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.12);
+  border-bottom: none;
+  border-radius: 14px 14px 0 0;
+  padding: 14px 18px 16px;
+  color: #C7D2EC;
+  transition: background .15s ease;
+  position: relative;
+}
+.ctab:hover { background: rgba(255,255,255,.10); }
+.ctab.on { background: #F4F6FB; color: #101728; }
+.ctab .k { display:inline-grid; place-items:center; width: 24px; height: 24px; border-radius: 7px; font-weight: 800; font-size: 12px; margin-right: 8px; color:#fff; }
+.ctab.a .k { background: #1565C0; }
+.ctab.b .k { background: linear-gradient(135deg,#0F1E45,#1565C0); }
+.ctab.c .k { background: linear-gradient(135deg,#E53935,#FB8C00); }
+.ctab .t { font-weight: 700; font-size: 14.5px; }
+.ctab .d { display: block; font-size: 12px; margin-top: 5px; opacity: .75; line-height: 1.45; }
+.ctab.on .d { opacity: .65; }
+.badge-rec {
+  position: absolute; top: -9px; right: 12px;
+  background: #10B981; color: #fff; font-size: 10.5px; font-weight: 700;
+  padding: 3px 9px; border-radius: 999px; letter-spacing: .04em;
+}
+
+/* ============================================================
+   SHARED FORM MOCK STRUCTURE
+   (each .panel re-themes via CSS custom properties + overrides)
+   ============================================================ */
+.panel { display: none; }
+.panel.active { display: block; }
+
+.stage {
+  background: var(--p-bg);
+  padding: 34px clamp(16px, 4vw, 56px) 70px;
+  min-height: calc(100vh - 130px);
+}
+.breadcrumb { font-size: 12.5px; color: var(--p-muted); margin-bottom: 18px; }
+.breadcrumb b { color: var(--p-ink); font-weight: 600; }
+
+.form-canvas { max-width: 1320px; margin: 0 auto; }
+
+/* ---------- hero ---------- */
+.hero {
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  border-radius: var(--p-r-lg);
+  padding: 22px 26px;
+  margin-bottom: 18px;
+  background: var(--p-hero-bg);
+  color: var(--p-hero-ink);
+  box-shadow: var(--p-shadow);
+  border: var(--p-card-border);
+  position: relative; overflow: hidden;
+}
+.hero-avatar {
+  width: 58px; height: 58px; border-radius: 16px;
+  display: grid; place-items: center;
+  font-weight: 800; font-size: 21px;
+  background: var(--p-avatar-bg); color: var(--p-avatar-ink);
+  flex: 0 0 auto;
+}
+.hero-id { flex: 1 1 260px; min-width: 0; }
+.hero-id .nm { font-size: 21px; font-weight: 800; letter-spacing: -.01em; font-family: var(--p-head-font); display:flex; align-items:center; gap: 12px; flex-wrap: wrap;}
+.hero-id .sub { font-size: 13px; opacity: .78; margin-top: 5px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+.hero-id .sub svg { width: 13px; height: 13px; vertical-align: -2px; margin-right: 4px; opacity: .8; }
+.chip-status {
+  font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 999px;
+  background: var(--p-status-bg); color: var(--p-status-ink);
+}
+.hero-stats { display: flex; gap: 10px; flex-wrap: wrap; }
+.stat-chip {
+  display: flex; align-items: center; gap: 10px;
+  border-radius: var(--p-r-md);
+  padding: 9px 14px;
+  background: var(--p-statchip-bg);
+  border: var(--p-statchip-border);
+  color: var(--p-hero-ink);
+  min-width: 118px;
+}
+.stat-chip svg { width: 17px; height: 17px; opacity: .85; flex: 0 0 auto; }
+.stat-chip .v { font-weight: 800; font-size: 15.5px; line-height: 1.1; }
+.stat-chip .l { font-size: 10.5px; opacity: .7; letter-spacing: .05em; text-transform: uppercase; }
+
+/* ---------- statusbar: progress + actions ---------- */
+.statusbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap;
+  border-radius: var(--p-r-lg);
+  padding: 13px 20px;
+  margin-bottom: 18px;
+  background: var(--p-surface);
+  border: var(--p-card-border);
+  box-shadow: var(--p-shadow-sm);
+}
+.steps { display: flex; align-items: center; gap: 0; flex-wrap: wrap; }
+.step { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--p-muted); }
+.step .dot {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 11px; font-weight: 700;
+  border: 2px solid var(--p-line-strong); color: var(--p-muted); background: var(--p-surface);
+}
+.step.on { color: var(--p-primary); }
+.step.on .dot { background: var(--p-primary); border-color: var(--p-primary); color: #fff; box-shadow: 0 0 0 4px var(--p-primary-soft); }
+.step-link { width: 26px; height: 2px; background: var(--p-line); margin: 0 8px; }
+.actions { display: flex; gap: 9px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 13px; font-weight: 600;
+  padding: 8px 16px; border-radius: var(--p-r-sm);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.btn svg { width: 14px; height: 14px; }
+.btn:hover { transform: translateY(-1px); }
+.btn-primary { background: var(--p-btn-grad); color: #fff; box-shadow: 0 4px 14px var(--p-primary-glow); }
+.btn-ghost { background: var(--p-surface); color: var(--p-ink); border: 1px solid var(--p-line-strong); }
+.btn-danger-soft { background: #FDECEC; color: #C0332A; }
+
+/* ---------- tabs (notebook) ---------- */
+.tabs { display: flex; gap: 4px; margin-bottom: 18px; }
+.tab {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 13.5px; font-weight: 600; color: var(--p-muted);
+  padding: 9px 18px;
+}
+.tab svg { width: 15px; height: 15px; }
+.tab.on { color: var(--p-primary); }
+
+/* ---------- body: form cards, chatter below (matches real layout: chatter at bottom) ---------- */
+.body-grid { display: grid; grid-template-columns: 1fr; gap: 18px; align-items: start; }
+
+.cards-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 900px) { .cards-col { grid-template-columns: 1fr; } }
+.card-span { grid-column: 1 / -1; }
+
+/* ---------- section card ---------- */
+.card {
+  background: var(--p-surface);
+  border-radius: var(--p-r-lg);
+  border: var(--p-card-border);
+  box-shadow: var(--p-shadow-sm);
+  padding: 20px 22px;
+}
+.card-head { display: flex; align-items: center; gap: 11px; margin-bottom: 16px; }
+.icon-box {
+  width: 32px; height: 32px; border-radius: 10px;
+  display: grid; place-items: center;
+  background: var(--p-primary-soft); color: var(--p-primary);
+}
+.icon-box svg { width: 16px; height: 16px; }
+.card-head h3 {
+  font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--p-muted); font-family: var(--p-head-font);
+}
+
+/* ---------- fields ---------- */
+.frow { display: grid; grid-template-columns: 132px 1fr; gap: 10px; align-items: center; margin-bottom: 11px; }
+.frow:last-child { margin-bottom: 0; }
+.flabel { font-size: 12.5px; font-weight: 600; color: var(--p-muted); }
+.flabel.req::after { content: " *"; color: #EF4444; }
+.control {
+  position: relative;
+  font-size: 13.5px; color: var(--p-ink);
+  background: var(--p-input-bg);
+  border: 1px solid var(--p-input-line);
+  border-radius: var(--p-r-sm);
+  padding: 8px 12px;
+  min-height: 36px; display: flex; align-items: center; gap: 8px;
+}
+.control.focus { border-color: var(--p-primary); box-shadow: 0 0 0 3px var(--p-primary-soft); }
+.control .ph { color: var(--p-faint); }
+.control .caret { margin-left: auto; opacity: .45; width: 14px; height: 14px; flex: 0 0 auto; }
+.m2o-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--p-primary-soft); color: var(--p-primary);
+  font-weight: 600; font-size: 12.5px;
+  border-radius: 999px; padding: 3px 10px 3px 4px;
+}
+.m2o-chip .mini { width: 20px; height: 20px; border-radius: 50%; background: var(--p-primary); color: #fff; display: grid; place-items: center; font-size: 9.5px; font-weight: 800; }
+.tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; font-weight: 600;
+  border-radius: 999px; padding: 3px 11px;
+}
+.tag.green { background: #E7F6EF; color: #176B47; }
+.tag.blue  { background: var(--p-primary-soft); color: var(--p-primary); }
+
+/* ---------- one2many table ---------- */
+.o2m { width: 100%; border-collapse: collapse; font-size: 13px; }
+.o2m th {
+  text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--p-muted); padding: 8px 12px; border-bottom: 1px solid var(--p-line);
+}
+.o2m td { padding: 10px 12px; border-bottom: 1px solid var(--p-line); color: var(--p-ink); }
+.o2m tr:last-child td { border-bottom: none; }
+.o2m .num { text-align: right; font-variant-numeric: tabular-nums; }
+.add-line { color: var(--p-primary); font-weight: 600; font-size: 13px; padding: 10px 12px; display: inline-flex; align-items: center; gap: 6px; }
+.add-line svg { width: 13px; height: 13px; }
+
+/* ---------- chatter ---------- */
+.chatter { display: flex; flex-direction: column; gap: 12px; }
+.composer {
+  background: var(--p-surface); border: var(--p-card-border); border-radius: var(--p-r-lg);
+  box-shadow: var(--p-shadow-sm); padding: 14px 16px;
+  display: flex; gap: 10px; align-items: center;
+}
+.composer .mini-av { width: 30px; height: 30px; border-radius: 50%; background: var(--p-primary); color:#fff; display:grid; place-items:center; font-size: 11px; font-weight: 800; flex: 0 0 auto; }
+.composer .ph { color: var(--p-faint); font-size: 13px; }
+.msg {
+  background: var(--p-surface); border: var(--p-card-border); border-radius: var(--p-r-lg);
+  box-shadow: var(--p-shadow-sm); padding: 14px 16px;
+}
+.msg-head { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; }
+.msg-head .mini-av { width: 26px; height: 26px; border-radius: 50%; display:grid; place-items:center; font-size: 10px; font-weight: 800; color: #fff; }
+.msg-head .who { font-size: 13px; font-weight: 700; color: var(--p-ink); }
+.msg-head .when { font-size: 11.5px; color: var(--p-faint); margin-left: auto; }
+.msg-body { font-size: 13px; color: var(--p-ink); line-height: 1.55; }
+.lognote { border-left: 3px solid #F59E0B; }
+.lognote .msg-body { color: var(--p-muted); }
+
+/* ---------- direction footnote ---------- */
+.dir-note {
+  max-width: 1320px; margin: 26px auto 0;
+  border-radius: 14px; padding: 16px 20px;
+  background: var(--p-surface); border: var(--p-card-border); box-shadow: var(--p-shadow-sm);
+  font-size: 13px; color: var(--p-muted); line-height: 1.6;
+}
+.dir-note b { color: var(--p-ink); }
+.dir-note .pros { color: #176B47; font-weight: 600; }
+.dir-note .cons { color: #B45309; font-weight: 600; }
+
+/* ============================================================
+   DIRECTION A — "CLINICAL EVOLVE"
+   Safe evolution of today's VU light style.
+   ============================================================ */
+.dir-a {
+  --p-bg: #F5F7FA;
+  --p-surface: #FFFFFF;
+  --p-ink: #1F2937;
+  --p-muted: #5B6B7F;
+  --p-faint: #9AA7B6;
+  --p-line: #E8ECF2;
+  --p-line-strong: #D8DFE9;
+  --p-primary: #1565C0;
+  --p-primary-soft: #E3F0FB;
+  --p-primary-glow: rgba(21,101,192,.30);
+  --p-btn-grad: #1565C0;
+  --p-head-font: "Montserrat", "Segoe UI", sans-serif;
+  --p-r-sm: 8px; --p-r-md: 10px; --p-r-lg: 12px;
+  --p-shadow: 0 1px 3px rgba(21,38,71,.08);
+  --p-shadow-sm: 0 1px 3px rgba(21,38,71,.08);
+  --p-card-border: 1px solid #E8ECF2;
+  --p-hero-bg: #FFFFFF;
+  --p-hero-ink: #1F2937;
+  --p-avatar-bg: #E3F0FB; --p-avatar-ink: #1565C0;
+  --p-status-bg: #EEF1F5; --p-status-ink: #5B6B7F;
+  --p-statchip-bg: #F7FAFD; --p-statchip-border: 1px solid #E8ECF2;
+  --p-input-bg: #FFFFFF; --p-input-line: #D8DFE9;
+}
+.dir-a .hero { border-left: 4px solid #64748b; } /* state rail (draft = slate) */
+.dir-a .tabs { border-bottom: 2px solid var(--p-line); gap: 0; }
+.dir-a .tab { border-bottom: 2px solid transparent; margin-bottom: -2px; border-radius: 0; }
+.dir-a .tab.on { border-bottom-color: var(--p-primary); }
+.dir-a .stat-chip .v { color: #1565C0; }
+
+/* ============================================================
+   DIRECTION B — "INDIGO WORKSPACE"  (BFSI match, recommended)
+   ============================================================ */
+.dir-b {
+  --p-bg: #F4F6FB;
+  --p-surface: #FFFFFF;
+  --p-ink: #101728;
+  --p-muted: #6B7280;
+  --p-faint: #9CA3AF;
+  --p-line: #E5E7EB;
+  --p-line-strong: #D6DAE3;
+  --p-primary: #1565C0;
+  --p-primary-soft: #E8F0FB;
+  --p-primary-glow: rgba(21,101,192,.35);
+  --p-btn-grad: #1565C0;
+  --p-head-font: "Inter", "Segoe UI", sans-serif;
+  --p-r-sm: 10px; --p-r-md: 12px; --p-r-lg: 16px;
+  --p-shadow: 0 18px 50px rgba(16,12,40,.16);
+  --p-shadow-sm: 0 8px 24px rgba(16,12,40,.07);
+  --p-card-border: 1px solid #F1F0F7;
+  --p-hero-bg: #0F1E45;
+  --p-hero-ink: #FFFFFF;
+  --p-avatar-bg: rgba(255,255,255,.14); --p-avatar-ink: #FFFFFF;
+  --p-status-bg: rgba(255,255,255,.16); --p-status-ink: #FFFFFF;
+  --p-statchip-bg: rgba(255,255,255,.09); --p-statchip-border: 1px solid rgba(255,255,255,.16);
+  --p-input-bg: #FBFCFE; --p-input-line: #E5E7EB;
+}
+.dir-b .tabs {
+  background: #EBEEF6; border-radius: 999px; padding: 4px; width: max-content; max-width: 100%;
+}
+.dir-b .tab { border-radius: 999px; }
+.dir-b .tab.on { background: #FFFFFF; color: var(--p-primary); box-shadow: 0 2px 8px rgba(16,12,40,.10); }
+.dir-b .step.done .dot { background: #10B981; border-color: #10B981; color: #fff; }
+.dir-b .chip-status { backdrop-filter: blur(4px); }
+
+/* ============================================================
+   DIRECTION C — "PREMIUM GLASS"  (bold)
+   ============================================================ */
+.dir-c {
+  --p-bg: linear-gradient(160deg, #0D2B52 0%, #123F7A 36%, #DDE7F5 100%);
+  --p-surface: rgba(255,255,255,.74);
+  --p-ink: #122441;
+  --p-muted: #44587A;
+  --p-faint: #7C8CA8;
+  --p-line: rgba(18,36,65,.10);
+  --p-line-strong: rgba(18,36,65,.18);
+  --p-primary: #1565C0;
+  --p-primary-soft: rgba(21,101,192,.12);
+  --p-primary-glow: rgba(21,101,192,.40);
+  --p-btn-grad: linear-gradient(135deg, #1565C0, #42A5F5);
+  --p-head-font: "Inter", "Segoe UI", sans-serif;
+  --p-r-sm: 12px; --p-r-md: 16px; --p-r-lg: 20px;
+  --p-shadow: 0 24px 60px rgba(13,43,82,.18);
+  --p-shadow-sm: 0 12px 36px rgba(13,43,82,.14);
+  --p-card-border: 1px solid rgba(255,255,255,.55);
+  --p-hero-bg: rgba(255,255,255,.16);
+  --p-hero-ink: #FFFFFF;
+  --p-avatar-bg: linear-gradient(135deg, #E53935, #FB8C00); --p-avatar-ink: #FFFFFF;
+  --p-status-bg: rgba(255,255,255,.22); --p-status-ink: #FFFFFF;
+  --p-statchip-bg: rgba(255,255,255,.14); --p-statchip-border: 1px solid rgba(255,255,255,.30);
+  --p-input-bg: rgba(255,255,255,.65); --p-input-line: rgba(18,36,65,.14);
+}
+.dir-c .stage { background: var(--p-bg); }
+.dir-c .breadcrumb { color: rgba(255,255,255,.72); }
+.dir-c .breadcrumb b { color: #fff; }
+.dir-c .hero, .dir-c .card, .dir-c .statusbar, .dir-c .composer, .dir-c .msg, .dir-c .dir-note {
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+}
+.dir-c .hero-avatar { border-radius: 50%; width: 62px; height: 62px; box-shadow: 0 0 0 3px rgba(255,255,255,.6); }
+.dir-c .tabs {
+  background: rgba(255,255,255,.20); backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,.45);
+  border-radius: 999px; padding: 5px; width: max-content; max-width: 100%;
+  box-shadow: 0 10px 30px rgba(13,43,82,.16);
+}
+.dir-c .tab { border-radius: 999px; color: rgba(255,255,255,.85); }
+.dir-c .tab.on { background: #FFFFFF; color: var(--p-primary); }
+.dir-c .statusbar .step { color: var(--p-muted); }
+
+/* footer hint */
+.choose-footer {
+  position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 60;
+  background: #0F1E45; color: #fff; font-size: 13px; font-weight: 600;
+  padding: 11px 22px; border-radius: 999px; box-shadow: 0 12px 36px rgba(0,0,0,.35);
+  display: flex; gap: 8px; align-items: center; white-space: nowrap;
+}
+.choose-footer .k { background: rgba(255,255,255,.16); padding: 2px 9px; border-radius: 6px; font-weight: 800; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<!-- ====== SVG ICON SPRITE (lucide-style) ====== -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+  <symbol id="i-steth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6 6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6 6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-pkg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="i-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></symbol>
+</svg>
+
+<!-- ============ CHOOSER ============ -->
+<div class="chooser">
+  <div class="chooser-head">
+    <h1>VU Form Engine — pick a design direction</h1>
+    <p>Same native Odoo booking form, three skins. Everything below is generated automatically — no per-form XML.</p>
+  </div>
+  <div class="chooser-tabs">
+    <button class="ctab a" data-dir="panel-a" onclick="show(this)">
+      <span class="k">A</span><span class="t">Clinical Evolve</span>
+      <span class="d">Safe evolution of today's VU look — white cards, state rail, underline tabs. Lowest visual risk.</span>
+    </button>
+    <button class="ctab b on" data-dir="panel-b" onclick="show(this)">
+      <span class="badge-rec">RECOMMENDED</span>
+      <span class="k">B</span><span class="t">Indigo Workspace</span>
+      <span class="d">The hr_development_ai language: deep-navy hero band, segmented pill tabs, progress pills, layered shadows.</span>
+    </button>
+    <button class="ctab c" data-dir="panel-c" onclick="show(this)">
+      <span class="k">C</span><span class="t">Premium Glass</span>
+      <span class="d">Frosted glass cards over a gradient mesh, hibiscus avatar ring. Maximum wow, needs perf &amp; contrast care.</span>
+    </button>
+  </div>
+</div>
+
+<!-- ============ PANELS (template injected by JS) ============ -->
+<div id="panel-a" class="panel dir-a"></div>
+<div id="panel-b" class="panel dir-b active"></div>
+<div id="panel-c" class="panel dir-c"></div>
+
+<div class="choose-footer">Tell Claude: <span class="k">A</span> <span class="k">B</span> or <span class="k">C</span> — then the engine gets built in that direction</div>
+
+<!-- ============ SHARED FORM TEMPLATE ============ -->
+<template id="form-template">
+<div class="stage">
+  <div class="breadcrumb">Dashboard &nbsp;›&nbsp; Bookings &nbsp;›&nbsp; <b>VU-2026-1682 — Nguyễn Văn An</b></div>
+  <div class="form-canvas">
+
+    <!-- HERO (auto-synthesized: avatar from title field, status from header state, stat chips from button_box) -->
+    <div class="hero">
+      <div class="hero-avatar">NA</div>
+      <div class="hero-id">
+        <div class="nm">Nguyễn Văn An <span class="chip-status">Draft</span></div>
+        <div class="sub">
+          <span><svg><use href="#i-file"/></svg>VU-2026-1682 · Home Visit</span>
+          <span><svg><use href="#i-phone"/></svg>0912 345 678</span>
+          <span><svg><use href="#i-pin"/></svg>Ho Chi Minh City</span>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-chip"><svg><use href="#i-cal"/></svg><div><div class="v">28</div><div class="l">Bookings</div></div></div>
+        <div class="stat-chip"><svg><use href="#i-pkg"/></svg><div><div class="v">1</div><div class="l">Packages</div></div></div>
+        <div class="stat-chip"><svg><use href="#i-alert"/></svg><div><div class="v">2.6M</div><div class="l">Outstanding</div></div></div>
+      </div>
+    </div>
+
+    <!-- STATUSBAR: workflow pills + actions -->
+    <div class="statusbar">
+      <div class="steps">
+        <span class="step on"><span class="dot">1</span>Created</span><span class="step-link"></span>
+        <span class="step"><span class="dot">2</span>Confirmed</span><span class="step-link"></span>
+        <span class="step"><span class="dot">3</span>Assigned</span><span class="step-link"></span>
+        <span class="step"><span class="dot">4</span>In Progress</span><span class="step-link"></span>
+        <span class="step"><span class="dot">5</span>Completed</span><span class="step-link"></span>
+        <span class="step"><span class="dot">6</span>Closed</span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary"><svg><use href="#i-check"/></svg>Confirm</button>
+        <button class="btn btn-ghost"><svg><use href="#i-clock"/></svg>Reschedule</button>
+        <button class="btn btn-danger-soft"><svg><use href="#i-x"/></svg>Cancel</button>
+      </div>
+    </div>
+
+    <!-- NOTEBOOK TABS -->
+    <div class="tabs">
+      <button class="tab on"><svg><use href="#i-activity"/></svg>Overview</button>
+      <button class="tab"><svg><use href="#i-steth"/></svg>Clinical</button>
+      <button class="tab"><svg><use href="#i-cal"/></svg>Planning</button>
+      <button class="tab"><svg><use href="#i-pin"/></svg>Tracking</button>
+    </div>
+
+    <div class="body-grid">
+      <div class="cards-col">
+
+        <!-- SECTION CARD: group string="Service Details" → icon card -->
+        <div class="card">
+          <div class="card-head"><span class="icon-box"><svg><use href="#i-steth"/></svg></span><h3>Service Details</h3></div>
+          <div class="frow"><span class="flabel req">Service Type</span>
+            <div class="control">Home Visit<svg class="caret"><use href="#i-chev"/></svg></div></div>
+          <div class="frow"><span class="flabel">Category</span>
+            <div class="control"><span class="ph">Select a category…</span><svg class="caret"><use href="#i-chev"/></svg></div></div>
+          <div class="frow"><span class="flabel req">Scheduled</span>
+            <div class="control focus">Jun 8, 2026 — 12:00 PM</div></div>
+          <div class="frow"><span class="flabel req">Duration</span>
+            <div class="control">60 minutes</div></div>
+        </div>
+
+        <!-- SECTION CARD: group string="Client Information" → icon card, many2one chip -->
+        <div class="card">
+          <div class="card-head"><span class="icon-box"><svg><use href="#i-user"/></svg></span><h3>Client Information</h3></div>
+          <div class="frow"><span class="flabel req">Client</span>
+            <div class="control"><span class="m2o-chip"><span class="mini">NA</span>Nguyễn Văn An</span><svg class="caret"><use href="#i-chev"/></svg></div></div>
+          <div class="frow"><span class="flabel">Phone</span>
+            <div class="control">0912 345 678 &nbsp;<span class="tag blue">SMS</span></div></div>
+          <div class="frow"><span class="flabel">Address</span>
+            <div class="control">12 Lê Lợi, Phường Bến Nghé, HCMC</div></div>
+          <div class="frow"><span class="flabel">Facility</span>
+            <div class="control"><span class="m2o-chip"><span class="mini">H</span>HCM Facility</span><svg class="caret"><use href="#i-chev"/></svg></div></div>
+        </div>
+
+        <!-- SECTION CARD: one2many services table -->
+        <div class="card card-span">
+          <div class="card-head"><span class="icon-box"><svg><use href="#i-card"/></svg></span><h3>Services &amp; Charges</h3></div>
+          <table class="o2m">
+            <thead><tr><th>Service</th><th>Staff</th><th class="num">Duration</th><th class="num">Amount</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Nursing Care — wound dressing</td><td><span class="m2o-chip"><span class="mini">NH</span>Nurse HCMC</span></td><td class="num">60 min</td><td class="num">350,000 ₫</td><td><span class="tag green">Confirmed</span></td></tr>
+              <tr><td>Physiotherapy — mobility session</td><td><span class="m2o-chip"><span class="mini">TT</span>Trần Thanh Tâm</span></td><td class="num">30 min</td><td class="num">200,000 ₫</td><td><span class="tag blue">Planned</span></td></tr>
+            </tbody>
+          </table>
+          <button class="add-line"><svg><use href="#i-plus"/></svg>Add a line</button>
+        </div>
+      </div>
+
+      <!-- CHATTER (bottom, full-width — matches real layout) -->
+      <div class="chatter">
+        <div class="composer"><span class="mini-av">U</span><span class="ph">Send a message or log a note…</span></div>
+        <div class="msg">
+          <div class="msg-head"><span class="mini-av" style="background:#1565C0">VU</span><span class="who">VietUc Agent</span><span class="when">2 hours ago</span></div>
+          <div class="msg-body">Client confirmed availability for Monday noon. Prefers female nursing staff if possible.</div>
+        </div>
+        <div class="msg lognote">
+          <div class="msg-head"><span class="mini-av" style="background:#F59E0B">⚙</span><span class="who">Note</span><span class="when">Jun 8, 9:20 PM</span></div>
+          <div class="msg-body">Booking created from CRM lead <b>KH-0934567890</b> · stage Draft → awaiting confirmation.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dir-note" data-note></div>
+  </div>
+</div>
+</template>
+
+<script>
+const NOTES = {
+  "panel-a": '<b>Direction A — Clinical Evolve.</b> Continuous with the current VU theme: Montserrat headings, flat white hero with a colored state rail on the left (slate = draft, blue = confirmed…), 12px radii, hairline shadows, underline tabs. <span class="pros">Pros:</span> least change-shock for staff, smallest CSS delta, fully brand-consistent today. <span class="cons">Trade-off:</span> the least "new" of the three — improvement reads as polish, not a redesign.',
+  "panel-b": '<b>Direction B — Indigo Workspace (recommended).</b> The hr_development_ai BFSI language ported to VU brand-blue: deep-navy gradient hero band with white avatar &amp; status pill, stat chips inside the hero, segmented pill tabs, connected workflow pills, 16px cards with layered soft shadows, Inter type. <span class="pros">Pros:</span> matches the app you already love, strong hierarchy, scales beautifully to dense clinical forms. <span class="cons">Trade-off:</span> darker hero uses more vertical presence; needs the state-color system mapped onto the navy band.',
+  "panel-c": '<b>Direction C — Premium Glass.</b> Frosted-glass cards floating over a navy-to-light gradient mesh, hibiscus-gradient avatar ring (the only place the logo red/orange is used), floating glass tab bar, 20px radii. <span class="pros">Pros:</span> maximum wow-factor for demos and sales. <span class="cons">Trade-offs:</span> backdrop-filter costs paint time on very long forms; text-on-glass needs constant WCAG contrast care; hardest to keep consistent across hundreds of auto-generated forms.'
+};
+const tpl = document.getElementById("form-template");
+for (const id of ["panel-a", "panel-b", "panel-c"]) {
+  const panel = document.getElementById(id);
+  panel.appendChild(tpl.content.cloneNode(true));
+  panel.querySelector("[data-note]").innerHTML = NOTES[id];
+}
+// Direction B: mark first step done-style demo (keep step 1 active look consistent across A/C)
+function show(btn) {
+  document.querySelectorAll(".ctab").forEach(b => b.classList.toggle("on", b === btn));
+  document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === btn.dataset.dir));
+  window.scrollTo({ top: 0 });
+}
+</script>
+</body>
+</html>

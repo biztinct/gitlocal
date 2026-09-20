@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================================
+       B2's three pieces of the Goals board, as SUB-TEMPLATES of it.
+
+       WHY SUB-TEMPLATES AND NOT A SECOND COMPONENT. They are the same screen
+       with the same state and the same presses; a second component would need
+       every one of those handed to it as props and would then be a component
+       whose only job is to forward things. `t-call` runs in the CALLER's
+       scope, so `state`, `ic()` and every handler are simply there.
+
+       R1 — OWL RESERVES `lt`/`gt`/`lte`/`gte`/`in`/`and`/`or`/`not` AS
+       OPERATORS. A `t-as` variable called any of them compiles the loop
+       variable into a bare `<` and the whole template dies pointing at
+       itself. The loop variables here are `yr`, `ck`, `rv`, `ch`, `ad`, `sg`,
+       `kr`, `op`, `st`, `sn`.
+
+       R205 — AN OWL TEMPLATE CANNOT SEE A JAVASCRIPT GLOBAL. No `Boolean`,
+       no `Object`, no `Number`, no `JSON`: anything a template needs that is
+       not a property or a method of the component belongs IN the component.
+       ================================================================== -->
+
+  <!-- ==================================================================
+       THE FOUR TABS THAT ARE NOT THE GOAL SHEETS.
+       ================================================================== -->
+  <t t-name="pb_goals.GoalsYearPanel">
+
+    <div t-if="state.year.stats.length" class="pbim-stats pbgl-kpis">
+      <t t-foreach="state.year.stats" t-as="st" t-key="st.key">
+        <div class="pbim-stat pbgl-kpi"
+             t-att-class="{ 'pbgl-kpi--bad': st.tone === 'bad',
+                            'pbgl-kpi--warn': st.tone === 'warn',
+                            'pbgl-kpi--ok': st.tone === 'good' }">
+          <div class="pbgl-kpi-ic"><t t-out="ic(st.icon,17)"/></div>
+          <div class="pbgl-kpi-n" t-esc="st.value"/>
+          <div class="pbgl-kpi-l" t-esc="st.label"/>
+        </div>
+      </t>
+    </div>
+
+    <p t-if="state.year.headline" class="pbgl-headline"
+       t-esc="state.year.headline"/>
+
+    <div t-if="state.yearBusy" class="pbim-busy">
+      <span class="pbim-spin"/>
+    </div>
+
+    <!-- THE EMPTY STATE TEACHES. Four of them, because "there is nothing
+         here" means four different things on four different tabs and a
+         shared sentence would be true of none of them. -->
+    <div t-if="!state.yearBusy and !state.year.rows.length"
+         class="pbim-panel pbgl-empty">
+      <div class="pbgl-empty-ic"><t t-out="ic('checkCircle',30)"/></div>
+      <h2>Nothing is waiting here</h2>
+      <p t-esc="state.year.headline"/>
+    </div>
+
+    <div t-if="!state.yearBusy and state.year.rows.length" class="pbgl-rows">
+
+      <!-- ===================== the monthly conversations ===================== -->
+      <t t-if="state.tab === 'checkins'">
+        <t t-foreach="state.year.rows" t-as="ck" t-key="ck.id">
+          <button class="pbgl-row pbgl-row--year"
+                  t-att-class="{ 'pbgl-row--late': ck.overdue }"
+                  t-on-click="() => this.openSheet(ck.set_id)">
+            <img class="pbgl-av" t-att-src="ck.avatar" alt=""/>
+            <div class="pbgl-row-id">
+              <strong t-esc="ck.name"/>
+              <span t-esc="ck.department"/>
+            </div>
+            <div class="pbgl-row-mg">
+              <span class="pbgl-lbl">Manager</span>
+              <span t-esc="ck.manager || '—'"/>
+            </div>
+            <div class="pbgl-row-due">
+              <span class="pbgl-lbl">Month</span>
+              <span t-esc="ck.month_word"/>
+            </div>
+            <div class="pbgl-row-due">
+              <span class="pbgl-lbl">Planned for</span>
+              <span t-esc="ck.planned"/>
+              <span t-if="ck.due_words" class="pbgl-due"
+                    t-esc="ck.due_words"/>
+            </div>
+            <span t-attf-class="pbgl-state pbgl-state--{{checkinTone(ck.state)}}">
+              <t t-esc="ck.state_word"/>
+            </span>
+          </button>
+        </t>
+      </t>
+
+      <!-- ============================ the reviews ============================ -->
+      <t t-if="state.tab === 'reviews'">
+        <t t-foreach="state.year.rows" t-as="rv" t-key="rv.id">
+          <button class="pbgl-row pbgl-row--year"
+                  t-att-class="{ 'pbgl-row--late': rv.overdue }"
+                  t-on-click="() => this.openSheet(rv.set_id)">
+            <img class="pbgl-av" t-att-src="rv.avatar" alt=""/>
+            <div class="pbgl-row-id">
+              <strong t-esc="rv.name"/>
+              <span t-esc="rv.kind_word"/>
+            </div>
+            <div class="pbgl-row-mg">
+              <span class="pbgl-lbl">Manager</span>
+              <span t-esc="rv.manager || '—'"/>
+            </div>
+            <div class="pbgl-row-due">
+              <span class="pbgl-lbl">Due</span>
+              <span t-esc="rv.due"/>
+              <span t-if="rv.due_words" class="pbgl-due"
+                    t-esc="rv.due_words"/>
+            </div>
+            <span t-attf-class="pbgl-state pbgl-state--{{rv.state === 'done' and 'ok' or 'wait'}}">
+              <t t-esc="rv.state_word"/>
+            </span>
+          </button>
+        </t>
+      </t>
+
+      <!-- ======================== the changes asked for ======================== -->
+      <t t-if="state.tab === 'changes'">
+        <t t-foreach="state.year.rows" t-as="ch" t-key="ch.id">
+          <div class="pbgl-row pbgl-row--year pbgl-row--static">
+            <img class="pbgl-av" t-att-src="ch.avatar" alt=""/>
+            <div class="pbgl-row-id pbgl-row-id--wide">
+              <strong t-esc="ch.summary"/>
+              <span t-esc="ch.name + ' · ' + ch.kind_word"/>
+              <span class="pbgl-why" t-esc="ch.reason"/>
+            </div>
+            <div class="pbgl-row-due">
+              <span class="pbgl-lbl">Asked</span>
+              <span t-esc="ch.asked_on"/>
+              <span class="pbgl-due" t-esc="ch.asked_by"/>
+            </div>
+            <span t-attf-class="pbgl-state pbgl-state--{{changeTone(ch.state)}}">
+              <t t-esc="ch.state_word"/>
+            </span>
+            <div class="pbgl-row-acts">
+              <button class="pbim-btn ghost"
+                      t-on-click.stop="() => this.openSheet(ch.set_id)">
+                Their goals
+              </button>
+              <button class="pbim-btn ghost"
+                      t-on-click.stop="() => this.openChangeRecord(ch.id)">
+                <t t-out="ic('external',14)"/>
+              </button>
+            </div>
+          </div>
+        </t>
+      </t>
+
+      <!-- ============================= the scores ============================= -->
+      <t t-if="state.tab === 'scores'">
+        <t t-foreach="state.year.rows" t-as="sn" t-key="sn.id">
+          <button class="pbgl-row pbgl-row--year"
+                  t-on-click="() => this.openSheet(sn.set_id)">
+            <img class="pbgl-av" t-att-src="sn.avatar" alt=""/>
+            <div class="pbgl-row-id">
+              <strong t-esc="sn.name"/>
+              <span t-esc="sn.department"/>
+            </div>
+            <div class="pbgl-row-mg">
+              <span class="pbgl-lbl">Manager</span>
+              <span t-esc="sn.manager || '—'"/>
+            </div>
+            <div class="pbgl-row-n">
+              <span class="pbgl-lbl">Finished</span>
+              <span><t t-esc="sn.done"/> of <t t-esc="sn.goals"/></span>
+            </div>
+            <div class="pbgl-row-pr">
+              <div class="pbgl-track">
+                <div class="pbgl-fill"
+                     t-attf-style="width: {{sn.progress}}%"/>
+              </div>
+              <span class="pbgl-pr-n"><t t-esc="sn.progress"/>%</span>
+            </div>
+            <div class="pbgl-row-score">
+              <span t-if="sn.scored" class="pbgl-score-n"
+                    t-esc="sn.score"/>
+              <span t-if="!sn.scored" class="pbgl-w--none">not yet</span>
+              <span t-if="sn.band" t-attf-class="pbgl-band-chip pbgl-band-chip--{{sn.tone}}"
+                    t-esc="sn.band"/>
+              <span t-if="!sn.year_end" class="pbgl-chip">
+                carried to next year
+              </span>
+            </div>
+          </button>
+        </t>
+      </t>
+
+    </div>
+  </t>
+
+  <!-- ==================================================================
+       THE DRAWER'S NEW SECTIONS.
+       ================================================================== -->
+  <t t-name="pb_goals.GoalsDrawerYear">
+
+    <!-- ============ which reviews this person gets, and why ============
+         THE SENTENCE AND NOT THE BOOLEANS. Four ticks tell an administrator
+         which reviews somebody gets; the sentence tells them what the person
+         was told, which is the thing they will be asked about in March. -->
+    <div t-if="state.applicability.note" class="pbgl-dr-note pbgl-dr-note--soft">
+      <t t-out="ic('info',17)"/>
+      <div>
+        <strong>What they were told about reviews</strong>
+        <p t-esc="state.applicability.note"/>
+      </div>
+    </div>
+
+    <!-- ========================== the scores ========================== -->
+    <div t-if="state.scores.goals.length" class="pbgl-dr-block">
+      <div class="pbgl-dr-block-head">
+        <h4>How the year went</h4>
+        <span t-if="state.scores.scored" class="pbgl-score-big"
+              t-esc="state.scores.score"/>
+        <span t-if="state.scores.band"
+              t-attf-class="pbgl-band-chip pbgl-band-chip--{{state.scores.tone}}"
+              t-esc="state.scores.band"/>
+      </div>
+      <p class="pbgl-dr-sentence" t-esc="state.scores.sentence"/>
+
+      <t t-foreach="state.scores.goals" t-as="sg" t-key="sg.id">
+        <div class="pbgl-score-goal">
+          <div class="pbgl-score-goal-top">
+            <strong t-esc="sg.title"/>
+            <span class="pbgl-chip"><t t-esc="sg.weight"/>% of the year</span>
+            <span t-if="sg.score_words" class="pbgl-chip on"
+                  t-esc="sg.score_words"/>
+            <span t-if="sg.done" class="pbgl-chip on">
+              <t t-out="ic('checkCircle',13)"/> finished
+            </span>
+            <span t-if="sg.changed" class="pbgl-chip pbgl-chip--bad"
+                  t-esc="sg.changed"/>
+          </div>
+          <div class="pbgl-score-krs">
+            <t t-foreach="sg.krs" t-as="kr" t-key="kr.id">
+              <label class="pbgl-score-kr">
+                <span class="pbgl-kr-t" t-esc="kr.title"/>
+                <span class="pbgl-kr-p"><t t-esc="kr.progress"/>%</span>
+                <select t-if="state.mayScore and !state.sheetClosed"
+                        class="pbgl-in pbgl-in--sel"
+                        t-on-change="(ev) => this.onMark(kr.id, ev)">
+                  <option value="">Not scored</option>
+                  <t t-foreach="state.scoreOptions" t-as="op"
+                     t-key="op.key">
+                    <option t-att-value="op.key"
+                            t-att-selected="kr.score === op.key and 'selected' or false"
+                            t-esc="op.label"/>
+                  </t>
+                </select>
+                <span t-if="!state.mayScore or state.sheetClosed"
+                      class="pbgl-kr-score"
+                      t-esc="kr.score_word || '—'"/>
+              </label>
+            </t>
+          </div>
+          <div t-if="state.mayScore and !state.sheetClosed"
+               class="pbgl-score-acts">
+            <button t-if="!sg.done" class="pbim-btn ghost"
+                    t-on-click="() => this.markGoalDone(sg.id, true)">
+              <t t-out="ic('checkCheck',14)"/> Mark it finished
+            </button>
+            <button t-if="sg.done" class="pbim-btn ghost"
+                    t-on-click="() => this.markGoalDone(sg.id, false)">
+              <t t-out="ic('undo',14)"/> Open it again
+            </button>
+            <button t-if="state.mayChange" class="pbim-btn ghost"
+                    t-on-click="() => this.openChangeForm('edit', sg.id)">
+              <t t-out="ic('pencil',14)"/> Ask to change it
+            </button>
+            <button t-if="state.mayChange" class="pbim-btn ghost"
+                    t-on-click="() => this.openChangeForm('drop', sg.id)">
+              <t t-out="ic('minusCircle',14)"/> Ask to drop it
+            </button>
+          </div>
+        </div>
+      </t>
+    </div>
+
+    <!-- ===================== the monthly conversations ===================== -->
+    <div t-if="state.checkins.length" class="pbgl-dr-block">
+      <h4>Every month</h4>
+      <t t-foreach="state.checkins" t-as="ck" t-key="ck.id">
+        <div class="pbgl-ci"
+             t-att-class="{ 'pbgl-ci--late': ck.overdue,
+                            'pbgl-ci--missed': ck.state === 'missed' }">
+          <div class="pbgl-ci-top">
+            <strong t-esc="ck.month_word"/>
+            <span t-attf-class="pbgl-state pbgl-state--{{checkinTone(ck.state)}}">
+              <t t-esc="ck.state_word"/>
+            </span>
+            <span t-if="ck.done_on" class="pbgl-ci-who">
+              <t t-esc="ck.done_by"/> · <t t-esc="ck.done_on"/>
+            </span>
+            <button t-if="ck.state === 'planned' and state.mayCheckin"
+                    class="pbim-btn ghost"
+                    t-on-click="() => this.openCheckinForm(ck.id)">
+              <t t-out="ic('pencil',14)"/> Write it up
+            </button>
+          </div>
+          <p t-if="ck.note" class="pbgl-ci-note" t-esc="ck.note"/>
+          <p t-if="ck.blockers" class="pbgl-ci-blockers">
+            <t t-out="ic('alert',13)"/>
+            <span t-esc="ck.blockers"/>
+          </p>
+          <div t-if="state.checkinOpen === ck.id" class="pbgl-ci-form">
+            <textarea class="pbgl-in pbgl-in--area" rows="3"
+                      placeholder="What moved this month? A sentence or two is plenty."
+                      t-model="state.checkinNote"/>
+            <textarea class="pbgl-in pbgl-in--area" rows="2"
+                      placeholder="Anything in the way that somebody else has to unblock. Leave it empty if there is nothing."
+                      t-model="state.checkinBlockers"/>
+            <button class="pbim-btn primary" t-on-click="writeUpCheckin"
+                    t-att-disabled="state.busy">
+              <t t-out="ic('checkCheck',15)"/> Mark it done
+            </button>
+          </div>
+        </div>
+      </t>
+    </div>
+
+    <!-- ============================ the reviews ============================ -->
+    <div t-if="state.reviews.length" class="pbgl-dr-block">
+      <h4>The two reviews</h4>
+      <t t-foreach="state.reviews" t-as="rv" t-key="rv.id">
+        <div class="pbgl-rv">
+          <div class="pbgl-rv-top">
+            <strong t-esc="rv.kind_word"/>
+            <span class="pbgl-chip">due <t t-esc="rv.due"/></span>
+            <span t-if="rv.due_words" class="pbgl-chip"
+                  t-esc="rv.due_words"/>
+            <span t-attf-class="pbgl-state pbgl-state--{{rv.state === 'done' and 'ok' or 'wait'}}">
+              <t t-esc="rv.state_word"/>
+            </span>
+            <button t-if="rv.state === 'planned' and state.mayScore"
+                    class="pbim-btn ghost"
+                    t-on-click="() => this.openReviewForm(rv.id)">
+              <t t-out="ic('pencil',14)"/> Write it up
+            </button>
+          </div>
+          <p t-if="rv.employee_note" class="pbgl-rv-said">
+            <strong>They wanted said:</strong>
+            <span t-esc="rv.employee_note"/>
+          </p>
+          <p t-if="rv.manager_note" class="pbgl-rv-note"
+             t-esc="rv.manager_note"/>
+          <div t-if="state.reviewOpen === rv.id" class="pbgl-ci-form">
+            <textarea class="pbgl-in pbgl-in--area" rows="4"
+                      placeholder="What was said, and what it means for the rest of the year."
+                      t-model="state.reviewNote"/>
+            <button class="pbim-btn primary" t-on-click="writeUpReview"
+                    t-att-disabled="state.busy">
+              <t t-out="ic('checkCheck',15)"/> Write it up
+            </button>
+          </div>
+        </div>
+      </t>
+    </div>
+
+    <!-- ======================== the change requests ======================== -->
+    <div t-if="state.changes.length" class="pbgl-dr-block">
+      <h4>Changes asked for</h4>
+      <t t-foreach="state.changes" t-as="ch" t-key="ch.id">
+        <div class="pbgl-ch">
+          <div class="pbgl-ch-top">
+            <strong t-esc="ch.summary"/>
+            <span t-attf-class="pbgl-state pbgl-state--{{changeTone(ch.state)}}">
+              <t t-esc="ch.state_word"/>
+            </span>
+          </div>
+          <p class="pbgl-ch-why" t-esc="ch.reason"/>
+          <p class="pbgl-ch-who">
+            <t t-esc="ch.asked_by"/> · <t t-esc="ch.asked_on"/>
+          </p>
+          <p t-if="ch.refuse_note" class="pbgl-ch-refused"
+             t-esc="ch.refuse_note"/>
+          <div t-if="ch.open and state.isHr" class="pbgl-ch-acts">
+            <button class="pbim-btn ghost"
+                    t-on-click="() => this.decideChange(ch.id, 'refuse')">
+              Turn it down
+            </button>
+            <button t-if="ch.state === 'submitted'" class="pbim-btn primary"
+                    t-on-click="() => this.decideChange(ch.id, 'manager_ok')">
+              Agree it
+            </button>
+            <button t-if="ch.state === 'manager_ok'" class="pbim-btn primary"
+                    t-on-click="() => this.decideChange(ch.id, 'approve')">
+              Agree and carry it out
+            </button>
+          </div>
+        </div>
+      </t>
+    </div>
+
+    <!-- ===================== what was actually changed ===================== -->
+    <div t-if="state.audit.length" class="pbgl-dr-hist">
+      <h4>What has been changed</h4>
+      <ul>
+        <li t-foreach="state.audit" t-as="ad" t-key="ad.id">
+          <span class="pbgl-hs-when" t-esc="ad.at"/>
+          <span class="pbgl-hs-what" t-esc="ad.what"/>
+          <span class="pbgl-hs-who" t-esc="ad.who"/>
+          <span t-if="ad.reason" class="pbgl-hs-note" t-esc="ad.reason"/>
+        </li>
+      </ul>
+    </div>
+
+  </t>
+
+  <!-- ==================================================================
+       ASKING TO CHANGE AGREED GOALS.
+
+       R114 — THE SCRIM IS THE PARENT OF THE DIALOG AND NOT ITS SIBLING, and
+       neither is nested under the board's root class in the stylesheet: a
+       dialog whose appearance depends on where in the DOM it lands is a
+       dialog that goes unstyled the day something portals it.
+       ================================================================== -->
+  <t t-name="pb_goals.GoalsChangeDialog">
+    <div t-if="state.changeOpen" class="pbgl-scrim"
+         t-on-click="closeChangeForm">
+      <div class="pbgl-dialog" t-on-click.stop="() => {}">
+        <div class="pbgl-dg-head">
+          <h3>Ask to change agreed goals</h3>
+          <button class="pbgl-x" t-on-click="closeChangeForm" title="Close">
+            <t t-out="ic('x',17)"/>
+          </button>
+        </div>
+        <p class="pbgl-dg-small">These goals have been agreed and locked, so
+           the only way to move one is to ask. It goes to the same two people
+           who agreed them in the first place, and whatever happens the goal
+           keeps a note saying what changed and when.</p>
+
+        <div class="pbgl-dg-form">
+          <label t-if="state.changeKind !== 'drop'" class="pbgl-f">
+            <span>What the goal says</span>
+            <input type="text" class="pbgl-in" maxlength="200"
+                   t-model="state.changeTitle"/>
+          </label>
+          <label t-if="state.changeKind !== 'drop'" class="pbgl-f">
+            <span>Why it matters and what good looks like</span>
+            <textarea class="pbgl-in pbgl-in--area" rows="3"
+                      t-model="state.changeDescription"/>
+          </label>
+          <label t-if="state.changeKind !== 'drop'" class="pbgl-f">
+            <span>Done by</span>
+            <input type="date" class="pbgl-in" t-model="state.changeDate"/>
+          </label>
+          <label t-if="state.changeKind === 'add'" class="pbgl-f">
+            <span>Key results, one per line</span>
+            <textarea class="pbgl-in pbgl-in--area" rows="3"
+                      placeholder="New customers in the north&#10;Revenue from the north"
+                      t-model="state.changeKrs"/>
+          </label>
+          <label class="pbgl-f">
+            <span>Why this has to change</span>
+            <textarea class="pbgl-in pbgl-in--area" rows="3"
+                      placeholder="What changed in the business. This is the whole of what the manager and the HR lead have to go on."
+                      t-model="state.changeReason"/>
+          </label>
+        </div>
+
+        <div class="pbgl-dg-foot">
+          <button class="pbim-btn ghost" t-on-click="closeChangeForm">
+            Not now
+          </button>
+          <button class="pbim-btn primary" t-on-click="askChange"
+                  t-att-disabled="state.busy">
+            <t t-out="ic('send',15)"/> Ask for it
+          </button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

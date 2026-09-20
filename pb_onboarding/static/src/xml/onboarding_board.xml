@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The New joiners lens.
+
+       Section comments use `=` rules and never spell a CSS custom property,
+       because a doubled hyphen inside an XML comment is a parse error that
+       takes every t-name in the file down with it (W22/W72).
+
+       Loop variables are never named lt / gt / lte / gte / and / or / not /
+       in: OWL reserves those as operators and the whole template dies with a
+       compile error pointing at nothing useful (R1).
+       ==================================================================== -->
+  <t t-name="pb_onboarding.PbOnboardingBoard">
+    <div class="pbim pbim-page obb"
+         t-att-class="{ 'obb--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Loading the new joiners…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <!-- ============ the reader has no lifecycle access ============ -->
+        <div t-if="!state.allowed" class="pbim-panel obb-empty">
+          <div class="obb-empty-ic"><t t-out="ic('lock',30)"/></div>
+          <h2>New joiners are looked after by the HR team</h2>
+          <p>This is where everybody arriving in the next few weeks is tracked —
+             their buddy, their HR contact, their welcome session and how the
+             first days are going. Ask your HR administrator to add you to the
+             lifecycle team and this screen fills in.</p>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="obb-head">
+            <div class="obb-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">New joiners</h1>
+              <p class="pbim-sub">Everybody arriving, and everything that has to
+                 be ready before they walk in.</p>
+            </div>
+            <div class="obb-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh"
+                      title="Read the board again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn ghost"
+                      t-on-click="openBatches">
+                <t t-out="ic('calendar',15)"/> Welcome sessions
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn ghost"
+                      t-on-click="openRules">
+                <t t-out="ic('users',15)"/> HR partner rules
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn primary"
+                      t-on-click="runAutomation"
+                      title="Send today's automatic steps and checks now">
+                <t t-out="ic('zap',15)"/> Run today's steps
+              </button>
+            </div>
+          </div>
+
+          <!-- ====================== the numbers ====================== -->
+          <div class="pbim-stats obb-kpis">
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic"><t t-out="ic('sunrise',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.joining or 0"/>
+                <div class="l">Joining this week</div>
+              </div>
+            </div>
+            <div class="pbim-stat">
+              <div class="pbim-stat-ic green"><t t-out="ic('users',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.started or 0"/>
+                <div class="l">Already started</div>
+              </div>
+            </div>
+            <div class="pbim-stat" t-att-class="{ warn: state.kpis.no_buddy }">
+              <div class="pbim-stat-ic amber"><t t-out="ic('smilePlus',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.no_buddy or 0"/>
+                <div class="l">Still without a buddy</div>
+              </div>
+            </div>
+            <div class="pbim-stat" t-att-class="{ err: state.kpis.overdue }">
+              <div class="pbim-stat-ic rose"><t t-out="ic('clock',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.overdue or 0"/>
+                <div class="l">Steps overdue</div>
+              </div>
+            </div>
+            <div class="pbim-stat" t-att-class="{ err: state.kpis.red }">
+              <div class="pbim-stat-ic rose"><t t-out="ic('alert',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.red or 0"/>
+                <div class="l">Said they are struggling</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ======================== filters ======================== -->
+          <div class="pbim-panel obb-filters" t-if="state.rows.length">
+            <div class="obb-filter-row">
+              <div class="obb-search">
+                <t t-out="ic('search',15)"/>
+                <input type="text" t-att-value="state.q" t-on-input="onSearch"
+                       placeholder="Search by name, team, buddy or HR contact…"/>
+              </div>
+              <button t-if="hasFilters" class="pbim-btn ghost pbim-btn-sm"
+                      t-on-click="clearFilters">
+                <t t-out="ic('x',14)"/> Clear
+              </button>
+            </div>
+            <div class="obb-filter-row">
+              <div class="pbim-chips">
+                <button t-foreach="state.months" t-as="mo" t-key="mo.id"
+                        t-attf-class="pbim-fchip {{ state.month === mo.id ? 'on' : '' }}"
+                        t-on-click="() => this.setMonth(mo.id)">
+                  <span t-esc="monthLabel(mo.id)"/>
+                  <span class="c" t-esc="mo.count"/>
+                </button>
+              </div>
+              <div class="pbim-chips">
+                <button t-foreach="state.departments" t-as="dp" t-key="dp.id"
+                        t-attf-class="pbim-fchip {{ state.dept === dp.id ? 'on' : '' }}"
+                        t-on-click="() => this.setDept(dp.id)">
+                  <span t-esc="dp.label"/>
+                  <span class="c" t-esc="dp.count"/>
+                </button>
+              </div>
+            </div>
+            <div class="obb-filter-row">
+              <div class="pbim-chips">
+                <button t-foreach="state.countries" t-as="ct" t-key="ct.id"
+                        t-attf-class="pbim-fchip {{ state.country === ct.id ? 'on' : '' }}"
+                        t-on-click="() => this.setCountry(ct.id)">
+                  <span t-esc="ct.label"/>
+                  <span class="c" t-esc="ct.count"/>
+                </button>
+                <button t-attf-class="pbim-fchip {{ state.needsOnly ? 'on' : '' }}"
+                        t-on-click="toggleNeeds">
+                  <t t-out="ic('alert',13)"/> Needs something
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================== nothing here yet ================== -->
+          <div t-if="!state.rows.length" class="pbim-panel obb-empty">
+            <div class="obb-empty-ic"><t t-out="ic('sunrise',30)"/></div>
+            <h2>Nobody is joining just now</h2>
+            <p>When a joining checklist opens — because somebody started one, or
+               because the connected system announced a new arrival — the person
+               appears here with their first day, their buddy, their HR contact
+               and everything still to be ready.</p>
+          </div>
+
+          <!-- ============ the filters match nobody ============
+               A board that answers a filter with a blank page is a dead end:
+               the reader cannot tell "nobody matches" from "it is still
+               loading" from "it broke". Say which it is, and offer the way
+               back in the same breath. -->
+          <div t-elif="!visibleRows.length" class="pbim-panel obb-empty">
+            <div class="obb-empty-ic"><t t-out="ic('search',30)"/></div>
+            <h2>Nobody matches that</h2>
+            <!-- The whole sentence is ONE expression. Split across several
+                 t-esc nodes, OWL collapses the newline between them and the
+                 page reads "There are2 new joiners". -->
+            <p>
+              <t t-esc="state.rows.length === 1
+                        ? 'There is 1 new joiner on this board, but it does not fit the filters you have set.'
+                        : 'There are ' + state.rows.length + ' new joiners on this board, but none of them fits the filters you have set.'"/>
+            </p>
+            <button class="pbim-btn primary" t-on-click="clearFilters">
+              <t t-out="ic('x',15)"/> Clear the filters
+            </button>
+          </div>
+
+          <!-- ======================= the people ======================= -->
+          <div t-else="" class="obb-grid">
+            <div t-foreach="visibleRows" t-as="row" t-key="row.id"
+                 class="pbim-panel obb-card"
+                 t-att-class="{ 'is-red': row.pulse_red, 'is-late': row.overdue }">
+
+              <div class="obb-card-top" t-on-click="() => this.openJoiner(row.id)">
+                <img class="obb-av" t-att-src="row.avatar" t-att-alt="row.employee"/>
+                <div class="obb-who">
+                  <div class="obb-name" t-esc="row.employee"/>
+                  <div class="obb-job">
+                    <t t-esc="row.job"/><t t-if="row.job and row.dept"> · </t><t t-esc="row.dept"/>
+                  </div>
+                </div>
+                <div class="obb-when">
+                  <div class="obb-when-d" t-esc="day(row.doj)"/>
+                  <div class="obb-when-w" t-esc="row.when"/>
+                </div>
+              </div>
+
+              <div class="obb-bar" t-att-title="row.progress + '% of the checklist done'">
+                <span class="obb-bar-f" t-attf-style="width: {{ row.progress }}%"/>
+              </div>
+              <div class="obb-bar-l">
+                <span><t t-esc="row.progress"/>% done</span>
+                <span t-if="row.overdue" class="obb-late">
+                  <t t-out="ic('clock',12)"/> <t t-esc="row.overdue"/> overdue
+                </span>
+                <span t-elif="row.open_tasks"><t t-esc="row.open_tasks"/> still to do</span>
+              </div>
+
+              <div class="obb-facts">
+                <div class="obb-fact">
+                  <span class="obb-fact-l">Buddy</span>
+                  <t t-if="row.buddy">
+                    <span class="obb-fact-v">
+                      <t t-esc="row.buddy"/>
+                      <span t-if="row.buddy_temp" class="pbim-badge warn">standing in</span>
+                    </span>
+                  </t>
+                  <button t-elif="state.canWrite" class="obb-ask"
+                          t-on-click="() => this.buddyAsk(row)">
+                    <t t-out="ic('plus',12)"/> Choose one
+                  </button>
+                  <span t-else="" class="obb-fact-v muted">Not chosen</span>
+                </div>
+
+                <div class="obb-fact">
+                  <span class="obb-fact-l">HR contact</span>
+                  <span t-if="row.hrbp" class="obb-fact-v" t-esc="row.hrbp"/>
+                  <span t-else="" class="obb-fact-v muted">Nobody yet</span>
+                </div>
+
+                <div class="obb-fact">
+                  <span class="obb-fact-l">Welcome session</span>
+                  <span t-if="row.orientation" class="obb-fact-v" t-esc="day(row.orientation)"/>
+                  <span t-else="" class="obb-fact-v muted">Not booked</span>
+                </div>
+
+                <div class="obb-fact">
+                  <span class="obb-fact-l">Their record</span>
+                  <span class="obb-fact-v" t-att-title="row.missing">
+                    <t t-esc="row.complete"/>% complete
+                  </span>
+                </div>
+              </div>
+
+              <div class="obb-pulse">
+                <span class="obb-pulse-l">How it is going</span>
+                <span class="obb-dots">
+                  <span t-foreach="row.pulses" t-as="pu" t-key="pu.mark"
+                        t-attf-class="obb-dot obb-dot--{{ pu.state === 'answered' ? scoreCls(pu.score) : 'idle' }}"
+                        t-att-title="pu.mark_label + ': ' + (pu.word or 'not answered yet')"/>
+                </span>
+                <span t-if="row.pulse_last" class="obb-pulse-w" t-esc="row.pulse_last"/>
+                <span t-else="" class="obb-pulse-w muted">no answer yet</span>
+              </div>
+
+              <div class="obb-card-act">
+                <button class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.openJoiner(row.id)">
+                  Open their journey
+                </button>
+                <button t-if="state.canWrite and row.buddy" class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.tempAsk(row)">
+                  <t t-out="ic('arrowLeftRight',13)"/> Cover
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <p t-if="state.capped" class="obb-capped">
+            Showing the first <t t-esc="state.rows.length"/>. Narrow it down with
+            a filter to see the rest.
+          </p>
+
+        </t>
+      </div>
+
+      <!-- ==================================================================
+           THE DRAWER: one joiner, whole.
+           ================================================================== -->
+      <div t-if="state.drawer" class="obb-scrim" t-on-click="closeDrawer">
+        <div class="obb-drawer" t-on-click.stop="">
+          <div class="obb-drawer-head">
+            <img class="obb-av obb-av--lg" t-att-src="state.drawer.joiner.avatar"
+                 t-att-alt="state.drawer.joiner.employee"/>
+            <div>
+              <h2 t-esc="state.drawer.joiner.employee"/>
+              <p>
+                <t t-esc="state.drawer.joiner.job"/>
+                <t t-if="state.drawer.joiner.dept"> · <t t-esc="state.drawer.joiner.dept"/></t>
+              </p>
+              <p class="obb-drawer-when">
+                <t t-out="ic('sunrise',13)"/>
+                <t t-esc="day(state.drawer.joiner.doj)"/> · <t t-esc="state.drawer.joiner.when"/>
+              </p>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeDrawer">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+
+          <div class="obb-drawer-people">
+            <div class="obb-mini" t-if="state.drawer.hrbp_card">
+              <span class="obb-mini-l">HR contact</span>
+              <b t-esc="state.drawer.hrbp_card.name"/>
+              <span t-if="state.drawer.hrbp_card.email" t-esc="state.drawer.hrbp_card.email"/>
+            </div>
+            <div class="obb-mini" t-if="state.drawer.buddy_card">
+              <span class="obb-mini-l">Buddy</span>
+              <b t-esc="state.drawer.buddy_card.name"/>
+              <span t-if="state.drawer.buddy_card.email" t-esc="state.drawer.buddy_card.email"/>
+            </div>
+            <div class="obb-mini">
+              <span class="obb-mini-l">Their record</span>
+              <b><t t-esc="state.drawer.joiner.complete"/>% complete</b>
+              <span t-if="state.drawer.joiner.missing" t-esc="state.drawer.joiner.missing"/>
+            </div>
+          </div>
+
+          <h3 class="obb-drawer-h3">Still to do</h3>
+          <div t-if="!drawerOpenTasks.length" class="obb-drawer-none">
+            Everything on the checklist is settled.
+          </div>
+          <div t-foreach="drawerOpenTasks" t-as="tk" t-key="tk.id" class="obb-task">
+            <div class="obb-task-l">
+              <b t-esc="tk.name"/>
+              <span t-attf-class="pbim-badge {{ tk.overdue ? 'err' : 'info' }}"
+                    t-esc="tk.due or 'no date'"/>
+            </div>
+            <p t-if="tk.description" class="obb-task-d" t-esc="tk.description"/>
+            <div class="obb-task-m">
+              <span t-if="tk.assignee">with <t t-esc="tk.assignee"/></span>
+              <span t-esc="tk.kind_label"/>
+            </div>
+          </div>
+
+          <h3 class="obb-drawer-h3" t-if="drawerDoneTasks.length">Done</h3>
+          <div t-foreach="drawerDoneTasks" t-as="tk" t-key="tk.id"
+               class="obb-task is-done">
+            <div class="obb-task-l">
+              <b t-esc="tk.name"/>
+              <span class="pbim-badge ok" t-esc="tk.state_label"/>
+            </div>
+          </div>
+
+          <h3 class="obb-drawer-h3" t-if="state.drawer.checkins.length">Conversations</h3>
+          <div t-foreach="state.drawer.checkins" t-as="ck" t-key="ck.id"
+               class="obb-task">
+            <div class="obb-task-l">
+              <b t-esc="ck.kind_label"/>
+              <span class="pbim-badge muted" t-esc="ck.date"/>
+              <span t-if="ck.red_flag" class="pbim-badge err">needs attention</span>
+            </div>
+            <p t-if="ck.notes" class="obb-task-d" t-esc="ck.notes"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           CHOOSE A BUDDY. Every candidate is shown WITH the verdict, because
+           the manager's real question is "why not her".
+           ================================================================== -->
+      <div t-if="state.buddy" class="pbim-modal-scrim" t-on-click="buddyCancel">
+        <div class="pbim-modal obb-modal" t-on-click.stop="">
+          <h2>Choose a buddy for <t t-esc="state.buddy.who"/></h2>
+          <p class="pbim-sub">A buddy is the colleague who shows them the ropes.
+             Everybody is listed; the note beside a name is why they may not be
+             the right one.</p>
+          <div class="obb-search obb-search--modal">
+            <t t-out="ic('search',15)"/>
+            <input type="text" t-att-value="state.buddy.term"
+                   t-on-input="onBuddyInput"
+                   placeholder="Search anyone by name…"/>
+          </div>
+          <div class="obb-cands">
+            <div t-foreach="state.buddy.results" t-as="cand" t-key="cand.id"
+                 t-attf-class="obb-cand obb-cand--{{ levelCls(cand.level) }}"
+                 t-on-click="() => this.buddyPick(cand)">
+              <img class="obb-av" t-att-src="cand.avatar" t-att-alt="cand.name"/>
+              <div class="obb-cand-tx">
+                <b t-esc="cand.name"/>
+                <span class="obb-cand-job">
+                  <t t-esc="cand.job"/><t t-if="cand.job and cand.dept"> · </t><t t-esc="cand.dept"/>
+                </span>
+                <div class="obb-cand-reasons">
+                  <span t-foreach="cand.reasons" t-as="rsn" t-key="rsn_index"
+                        t-attf-class="pbim-badge {{ levelCls(rsn.level) }}"
+                        t-esc="rsn.text"/>
+                  <span t-if="!cand.reasons.length" class="pbim-badge ok">
+                    Nothing against it
+                  </span>
+                </div>
+              </div>
+              <span t-if="cand.level !== 'fail'" class="obb-cand-go">
+                <t t-out="ic('check',16)"/>
+              </span>
+            </div>
+            <p t-if="!state.buddy.results.length" class="obb-drawer-none">
+              Nobody matches that. Try part of a name.
+            </p>
+          </div>
+          <div class="obb-modal-act">
+            <button class="pbim-btn ghost" t-on-click="buddyCancel">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================== HAND THE BUDDY JOB OVER ================== -->
+      <div t-if="state.temp" class="pbim-modal-scrim" t-on-click="tempCancel">
+        <div class="pbim-modal obb-modal" t-on-click.stop="">
+          <h2>Cover for <t t-esc="state.temp.who"/>'s buddy</h2>
+          <p class="pbim-sub">The catch-ups inside these dates move to the
+             stand-in, and HR is told. Everything outside them stays put.</p>
+          <div class="obb-search obb-search--modal">
+            <t t-out="ic('search',15)"/>
+            <input type="text" t-att-value="state.temp.term"
+                   t-on-input="onTempInput"
+                   placeholder="Who is standing in?"/>
+          </div>
+          <div class="obb-cands" t-if="state.temp.results.length">
+            <div t-foreach="state.temp.results" t-as="cand" t-key="cand.id"
+                 class="obb-cand" t-on-click="() => this.tempPick(cand)">
+              <img class="obb-av" t-att-src="cand.avatar" t-att-alt="cand.name"/>
+              <div class="obb-cand-tx">
+                <b t-esc="cand.name"/>
+                <span class="obb-cand-job" t-esc="cand.job"/>
+              </div>
+            </div>
+          </div>
+          <div class="obb-dates">
+            <label>From
+              <input type="date" t-att-value="state.temp.from" t-on-change="onTempFrom"/>
+            </label>
+            <label>Until
+              <input type="date" t-att-value="state.temp.to" t-on-change="onTempTo"/>
+            </label>
+          </div>
+          <div class="obb-modal-act">
+            <button class="pbim-btn ghost" t-on-click="tempCancel">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="tempSave">
+              Save the cover
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>

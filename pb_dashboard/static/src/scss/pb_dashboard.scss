@@ -1,0 +1,335 @@
+// Payobook Dashboard cockpit — Indigo, solid (no gradients)
+.pbd-root {
+    --pbd-brand: #4F46E5;
+    --pbd-ink: #1B1733;
+    --pbd-muted: #6E6A85;
+    --pbd-border: #E7E5F2;
+    --pbd-surface: #FFFFFF;
+    --pbd-bg: #F4F5FB;
+    padding: 22px 26px 60px;
+    background: var(--pbd-bg);
+    min-height: 100%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    .pbd-loading { padding: 60px; color: var(--pbd-muted); }
+
+    // Hero — solid indigo
+    .pbd-hero {
+        background: #312E81;
+        border-radius: 18px;
+        padding: 26px 30px;
+        color: #fff;
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 18px; flex-wrap: wrap;
+        box-shadow: 0 18px 44px rgba(27,23,51,.14);
+        margin-bottom: 20px;
+    }
+    .pbd-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #C7CBF5; }
+    .pbd-hero h1 { font-size: 28px; font-weight: 800; margin: 8px 0 6px; color: #fff; letter-spacing: -.02em; }
+    .pbd-sub { color: #C7CBF5; font-size: 14px; }
+    .pbd-hero-r { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pbd-btn-glass {
+        display: inline-flex; align-items: center; gap: 7px;
+        background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.2);
+        padding: 9px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
+        &:hover { background: rgba(255,255,255,.22); }
+        svg { vertical-align: -.18em; }
+    }
+
+    // Activation checklist — white surface, left rail accent, solid indigo.
+    // Same vocabulary as .pbd-kpi, one step warmer. Solid colours only, no
+    // gradient, Lucide strokes, and the only animation is the tick drawing
+    // itself.
+    .pbd-act {
+        background: var(--pbd-surface); border: 1px solid var(--pbd-border); border-radius: 18px;
+        padding: 20px 22px; margin-bottom: 20px; position: relative; overflow: hidden;
+        box-shadow: 0 6px 18px rgba(27,23,51,.08);
+        &::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--pbd-brand); }
+    }
+    .pbd-act-head { display: flex; align-items: flex-start; gap: 12px; }
+    .pbd-act-hic {
+        display: inline-grid; place-items: center; width: 36px; height: 36px; flex: 0 0 36px;
+        border-radius: 10px; background: #EEF0FE; color: var(--pbd-brand);
+    }
+    .pbd-act-hx { flex: 1 1 auto; min-width: 0; }
+    .pbd-act-t { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+    .pbd-act-s { color: var(--pbd-muted); font-size: 13px; margin-top: 3px; }
+    .pbd-act-count {
+        flex: 0 0 auto; font-size: 11.5px; font-weight: 700; color: var(--pbd-muted);
+        background: #F4F5FB; border: 1px solid var(--pbd-border);
+        padding: 5px 11px; border-radius: 999px; white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .pbd-acts { margin: 16px 0 0; padding: 0; list-style: none; border-top: 1px solid #F0EFF7; }
+    .pbd-act-i {
+        display: flex; align-items: center; gap: 14px; padding: 14px 2px 14px 0;
+        border-bottom: 1px solid #F0EFF7; position: relative;
+        &:last-child { border-bottom: none; padding-bottom: 2px; }
+
+        // The step being asked for. A rail rather than a fill: the row still
+        // has to read as one of a list, and a filled row would compete with
+        // the hero above it.
+        &.is-next {
+            padding-left: 12px;
+            &::before {
+                content: ""; position: absolute; left: 0; top: 10px; bottom: 10px;
+                width: 3px; border-radius: 3px; background: var(--pbd-brand);
+            }
+            .pbd-act-mark { background: #EEF0FE; border-color: #C7CBF5; }
+        }
+        // Behind you. Dimmed, never struck through — a finished step is still
+        // a place somebody may want to go back to.
+        &.is-done {
+            .pbd-act-n { color: var(--pbd-muted); }
+            .pbd-act-mark { background: #E7F8F1; border-color: #A7E4CD; color: #0F8A63; }
+        }
+    }
+    .pbd-act-mark {
+        display: inline-grid; place-items: center; width: 34px; height: 34px; flex: 0 0 34px;
+        border-radius: 10px; background: #F4F5FB; color: var(--pbd-brand);
+        border: 1px solid var(--pbd-border);
+    }
+    .pbd-act-x { flex: 1 1 auto; min-width: 0; }
+    .pbd-act-n { font-size: 14px; font-weight: 700; letter-spacing: -.01em; }
+    .pbd-act-d { font-size: 12.5px; color: var(--pbd-muted); margin-top: 2px; }
+    .pbd-btn {
+        flex: 0 0 auto; background: var(--pbd-brand); color: #fff; border: 1px solid var(--pbd-brand);
+        padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;
+        &:hover { background: #4338CA; border-color: #4338CA; }
+        // Every step is reachable; only one is being asked for. A ghost button
+        // is still a button, which is the point — somebody who wants to import
+        // first is not wrong.
+        &.ghost {
+            background: transparent; color: var(--pbd-brand); border-color: var(--pbd-border);
+            font-weight: 600;
+            &:hover { background: #F4F5FB; border-color: #C7CBF5; }
+        }
+    }
+
+    // THE TICK DRAWS ITSELF. CSS only — no library, no sprite, no emoji: the
+    // Lucide check is a single stroked path, so dashing it and animating the
+    // offset draws it left to right exactly once, when the row first appears
+    // with its state already decided by the server.
+    .pbd-act-i.is-done .pbd-act-mark svg path {
+        stroke-dasharray: 24;
+        stroke-dashoffset: 24;
+        animation: pbd-tick .42s cubic-bezier(.65,0,.35,1) forwards;
+    }
+    @keyframes pbd-tick { to { stroke-dashoffset: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+        .pbd-act-i.is-done .pbd-act-mark svg path { animation: none; stroke-dashoffset: 0; }
+    }
+
+    @media (max-width: 640px) {
+        .pbd-act-i { flex-wrap: wrap; }
+        .pbd-btn { width: 100%; }
+    }
+
+    // ----------------------------------------------------- the pay month
+    // WHICH MONTH THE FIGURES BELOW ARE ABOUT. One line, before the numbers,
+    // because a reader who never touches the strip still has to know.
+    //
+    // NOTHING HERE HAS A FIXED HEIGHT (L2): every string in this block is
+    // translated and every one of them wraps on a phone, so the row grows by
+    // what it has to say instead of printing over the numbers under it.
+    .pbd-period {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+    .pbd-period-ic { display: inline-flex; color: var(--pbd-brand); }
+    .pbd-period-ic svg { vertical-align: -.18em; }
+    .pbd-period-t { font-size: 15px; font-weight: 800; letter-spacing: -.01em; color: var(--pbd-ink); }
+    .pbd-period-tag {
+        font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+        background: #EEF1F5; color: #64748B;
+        &.now { background: var(--pbd-ink); color: #FFFFFF; }
+    }
+    .pbd-period-busy { font-size: 12px; font-weight: 700; color: var(--pbd-brand); }
+    .pbd-period-back {
+        background: none; border: 1px solid var(--pbd-border); border-radius: 999px;
+        padding: 4px 12px; font-size: 12px; font-weight: 700; font-family: inherit;
+        color: var(--pbd-brand); cursor: pointer;
+        &:hover { background: #F4F5FB; border-color: #C7CBF5; }
+    }
+    .pbd-period-note {
+        margin: -4px 0 12px; padding: 8px 13px; border-radius: 10px;
+        background: #FEF3E2; color: #8A5A12; font-size: 12.5px; font-weight: 600;
+    }
+
+    // THE STRIP. One chip per payroll month, oldest to newest. Many months
+    // SCROLL — a chip is never squeezed until it cannot be read, and no month
+    // is ever dropped. The bar is how many people were paid that month against
+    // the busiest month, which is this strip's own question.
+    // THE STRIP SCROLLS, AND IT SAYS SO. A platform's overlay scrollbar is
+    // invisible at rest, so a strip that runs off its own edge looks like a
+    // strip that simply starts in April. This one keeps a slim track that is
+    // always drawn — a real affordance rather than a gradient the design
+    // system does not allow, and it costs no motion at all.
+    .pbd-strip {
+        display: flex; gap: 0; align-items: stretch;
+        overflow-x: auto; overflow-y: hidden;
+        margin-bottom: 8px; padding: 2px 2px 6px;
+        scrollbar-width: thin;
+        scrollbar-color: #C7CBF5 #EDECF6;
+
+        &::-webkit-scrollbar { height: 7px; }
+        &::-webkit-scrollbar-track {
+            background: #EDECF6; border-radius: 4px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: #C7CBF5; border-radius: 4px;
+            &:hover { background: var(--pbd-brand); }
+        }
+    }
+    .pbd-mchip {
+        position: relative; flex: 0 0 96px;
+        display: flex; flex-direction: column; align-items: stretch; gap: 5px;
+        text-align: left; font-family: inherit; cursor: pointer;
+        border: 1px solid var(--pbd-border); border-radius: 0;
+        background: var(--pbd-surface); padding: 9px 10px 8px;
+        margin-left: -1px;
+
+        &:first-child { margin-left: 0; border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+        &:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
+
+        &:hover { border-color: var(--pbd-brand); z-index: 2; }
+        &:focus-visible {
+            outline: none; z-index: 3;
+            border-color: var(--pbd-brand);
+            box-shadow: 0 0 0 3px rgba(79,70,229,.18);
+        }
+        // The chosen month. Its border wins the one-pixel collapse with its
+        // neighbours, so the chip reads as one lit thing rather than as a
+        // chip with a broken edge.
+        &.is-on {
+            z-index: 4;
+            border-color: var(--pbd-brand);
+            background: #EEF0FD;
+            border-radius: 10px;
+            box-shadow: 0 0 0 2px rgba(79,70,229,.18);
+        }
+        // A month nobody was paid in is quiet, not disabled: it is still a
+        // month a person may want to stand in to see that for themselves.
+        &.is-quiet { opacity: .66; }
+        &.is-now { border-color: var(--pbd-ink); }
+    }
+    // The month AND its year, on every chip: this strip runs over whatever
+    // months a database has, and two chips both reading "Oct" is the one thing
+    // a period control may never do.
+    .pbd-mchip-l {
+        display: flex; align-items: baseline; gap: 4px; line-height: 1.2;
+        b { font-size: 12px; font-weight: 800; color: var(--pbd-ink); }
+        i { font-style: normal; font-size: 10px; font-weight: 700;
+            color: var(--pbd-muted); font-variant-numeric: tabular-nums; }
+    }
+    // The micro bar: the track is the busiest month, the fill is this one.
+    .pbd-mchip-bar { display: block; height: 5px; border-radius: 3px; background: #EDECF6; overflow: hidden; }
+    .pbd-mchip-fill { display: block; height: 5px; border-radius: 3px; background: var(--pbd-brand); }
+    .pbd-mchip-v {
+        font-size: 10.5px; font-weight: 700; color: var(--pbd-muted);
+        font-variant-numeric: tabular-nums; line-height: 1.25;
+    }
+    .pbd-mchip-flag {
+        position: absolute; top: -7px; right: 6px;
+        border-radius: 999px; padding: 1px 7px;
+        font-size: 9.5px; font-weight: 800;
+        background: var(--pbd-brand); color: #FFFFFF;
+    }
+    .pbd-striphint { font-size: 12px; color: var(--pbd-muted); margin-bottom: 20px; }
+    .pbd-strip-empty {
+        display: flex; align-items: flex-start; gap: 10px;
+        margin-bottom: 20px; padding: 12px 15px;
+        border: 1px dashed var(--pbd-border); border-radius: 12px;
+        background: var(--pbd-surface); color: var(--pbd-muted); font-size: 12.5px;
+        b { color: var(--pbd-ink); }
+        svg { flex: 0 0 auto; margin-top: 1px; color: var(--pbd-brand); }
+    }
+
+    // KPI strip
+    .pbd-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .pbd-kpi {
+        background: var(--pbd-surface); border: 1px solid var(--pbd-border); border-radius: 16px;
+        padding: 16px 18px; box-shadow: 0 2px 6px rgba(27,23,51,.06); position: relative; overflow: hidden;
+        &::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--pbd-brand); }
+        &.k-green::before { background: #10B981; } &.k-amber::before { background: #B7791F; }
+        &.k-cyan::before { background: #0891B2; } &.k-indigo::before { background: #4F46E5; }
+        .kl { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--pbd-muted);
+              display: flex; align-items: center; justify-content: space-between; }
+        .kl svg { opacity: .6; }
+        .kv { font-size: 26px; font-weight: 800; margin-top: 8px; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+        .ks { font-size: 12px; color: var(--pbd-muted); margin-top: 4px; }
+    }
+
+    // Cockpit cards
+    .pbd-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 18px; }
+    .pbd-card {
+        background: var(--pbd-surface); border: 1px solid var(--pbd-border); border-radius: 18px;
+        padding: 20px 22px; box-shadow: 0 6px 18px rgba(27,23,51,.08);
+        // The lift on hover MOVES, so it lives in the reduced-motion block at
+        // the foot of this file with everything else that does (R85). It sat
+        // here, unguarded, from the day this cockpit shipped until LOOK P4.
+        &:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(27,23,51,.14); }
+    }
+    .pbd-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+    .pbd-card-t { font-size: 16px; font-weight: 800; letter-spacing: -.01em; }
+    .pbd-card-m { color: var(--pbd-muted); font-size: 12.5px; margin-top: 3px; }
+    .pbd-ring { position: relative; display: inline-grid; place-items: center; }
+    .pbd-ring-n { position: absolute; font-weight: 800; }
+    // Stands where the dial would: nothing measured yet, and the card keeps
+    // its shape rather than jumping when the first figure arrives.
+    .pbd-ring-none {
+        display: inline-grid; place-items: center; width: 66px; height: 66px;
+        color: var(--pbd-muted); font-size: 20px; font-weight: 800; flex: 0 0 66px;
+    }
+
+    .pbd-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .pbd-pill { font-size: 11.5px; font-weight: 700; padding: 4px 11px; border-radius: 999px; }
+    .pbd-pill.ok { background: #E7F8F1; color: #0F8A63; }
+    .pbd-pill.warn { background: #FEF3E2; color: #B7791F; }
+    .pbd-pill.cyan { background: #E0F4F9; color: #0E7490; }
+    .pbd-pill.muted { background: #EEF1F5; color: #64748B; }
+
+    .pbd-mini { display: flex; gap: 22px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #F0EFF7; flex-wrap: wrap;
+        .mv { font-size: 17px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+        .ml { font-size: 11px; color: var(--pbd-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
+    }
+    .pbd-link { margin-top: 16px; background: none; border: none; color: var(--pbd-brand); font-weight: 700; font-size: 13px; cursor: pointer; padding: 0;
+        &:hover { text-decoration: underline; } }
+
+    // ------------------------------------------------------------- motion
+    // EVERY MOVING DECLARATION IN THIS COCKPIT IS INSIDE THIS BLOCK (R85).
+    // Under a reduced-motion preference none of them is applied at all, so the
+    // page paints finished on the first frame with nothing to recover from —
+    // which is a better property than declaring an animation and cancelling
+    // it. The check's own `@keyframes` stays at the top level of the file,
+    // where a browser will play it, with its `reduce` branch beside it.
+    @media (prefers-reduced-motion: no-preference) {
+        .pbd-card { transition: transform .2s, box-shadow .2s; }
+        // Picking a month re-scopes the board rather than replacing it: the
+        // cards keep their places and the bars TRAVEL to their new heights.
+        .pbd-mchip-fill { transition: width .4s cubic-bezier(.22, .68, .36, 1); }
+        .pbd-mchip {
+            transition: border-color .14s, background .14s, box-shadow .14s,
+                        border-radius .18s cubic-bezier(.22, .68, .36, 1),
+                        opacity .14s;
+        }
+        .pbd-period-back { transition: background .14s, border-color .14s; }
+    }
+}
+
+// ------------------------------------------------------------------ embedded
+// The Dashboard as the PULSE lens of the Home hub (W17).
+//
+// Two things change and nothing else. The padding tightens, because the hub
+// owns the outer frame. And the root becomes its own SCROLLPORT: standalone it
+// is `min-height: 100%` inside the web client's scrolling action host, but
+// `.pbhub-lens` is a definite-height flex box, so a child that only flows grows
+// past the bottom of the workspace with nothing to scroll it (W20 — the failure
+// has no error and simply looks like a page that ends early).
+.pbd-root.pbd-root--embedded {
+    height: 100%;
+    min-height: 0;
+    overflow: auto;
+    padding: 18px 22px 40px;
+}

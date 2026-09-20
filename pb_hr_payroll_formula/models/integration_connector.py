@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import time
+import logging
+from datetime import date, datetime
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
-import logging
+
+from .integration_endpoint import SOURCE_DATA_TYPES
 
 _logger = logging.getLogger(__name__)
 
@@ -14,7 +19,7 @@ class HrIntegrationConnector(models.Model):
     """
     _name = 'hr.integration.connector'
     _description = 'HR System Integration Connector'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread']
     _order = 'sequence, name'
     _rec_name = 'name'
 
@@ -32,7 +37,9 @@ class HrIntegrationConnector(models.Model):
         ('excel', 'Excel File Import'),
         ('sap', 'SAP SuccessFactors'),
         ('workday', 'Workday'),
-        ('oracle', 'Oracle HCM')
+        ('oracle', 'Oracle HCM'),
+        ('darwin', 'DarwinHR (Darwinbox)'),
+        ('demo', 'Demo / Stub (Testing)')
     ], string='Connector Type', required=True, tracking=True)
 
     description = fields.Text(
@@ -135,6 +142,12 @@ class HrIntegrationConnector(models.Model):
         string='OAuth Scope'
     )
 
+    oauth_redirect_uri = fields.Char(
+        string='OAuth Redirect URI',
+        help="Exact callback URI registered with the OAuth provider. When "
+             "empty, Payobook uses <web base URL>/zoho/callback."
+    )
+
     # ==========================================
     # FIELD MAPPINGS
     # ==========================================
@@ -150,6 +163,38 @@ class HrIntegrationConnector(models.Model):
     )
 
     # ==========================================
+    # ENDPOINTS — one connector, many feeds
+    # ==========================================
+    endpoint_ids = fields.One2many(
+        'hr.integration.endpoint',
+        'connector_id',
+        string='Endpoints',
+    )
+
+    endpoint_count = fields.Integer(
+        string='Endpoints',
+        compute='_compute_endpoint_count',
+    )
+
+    # ==========================================
+    # API DATA STORE & TRANSFORMATION RULES
+    # ==========================================
+    data_store_ids = fields.One2many(
+        'hr.api.data.store',
+        'connector_id',
+        string='Stored Data',
+    )
+    data_store_count = fields.Integer(
+        string='Stored Records',
+        compute='_compute_data_store_count',
+    )
+    transformation_rule_ids = fields.One2many(
+        'hr.api.transformation.rule',
+        'connector_id',
+        string='Transformation Rules',
+    )
+
+    # ==========================================
     # CONNECTION STATUS
     # ==========================================
     connection_status = fields.Selection([
@@ -160,7 +205,24 @@ class HrIntegrationConnector(models.Model):
     ], string='Status', default='disconnected', tracking=True)
 
     last_sync = fields.Datetime(
-        string='Last Sync'
+        string='Last Sync',
+        help="When this connector last PULLED data. Not written by a "
+             "connection test — see last_connection_test.",
+    )
+
+    # Integrations Cycle 7, WP-5. `base_connector.update_connector_status()`
+    # stamped `last_sync` on every CONNECTION-STATUS change, so a successful
+    # "Test connection" wrote the clock that the cockpit header prints as
+    # "Last sync". On abm that produced two truths on one screen: the header
+    # read `Connected · Last sync 2026-08-20 23:25` above seven feeds all
+    # reading `Never synced · 0 staged · 0 pulled`. The row proves it —
+    # last_sync_status NULL, total_synced_records NULL, zero store rows, and
+    # last_sync_message the literal string "Connection successful".
+    # A test is a fact about the CONNECTION and now has its own field.
+    last_connection_test = fields.Datetime(
+        string='Last Connection Test', readonly=True, copy=False,
+        help="When the connection to this system was last tested. A test "
+             "proves the credentials work; it moves no data.",
     )
 
     last_sync_status = fields.Selection([
@@ -178,9 +240,10 @@ class HrIntegrationConnector(models.Model):
     )
 
     sync_interval = fields.Integer(
-        string='Sync Interval (minutes)',
+        string='Expected Sync Cadence (minutes)',
         default=60,
-        help="Automatic sync interval in minutes (0 = manual only)"
+        help="Freshness target used to flag overdue feeds. It does not create "
+             "a scheduled job; 0 means manual-only with no overdue ageing."
     )
 
     # ==========================================
@@ -247,9 +310,836 @@ class HrIntegrationConnector(models.Model):
         for record in self:
             record.mapping_count = len(record.field_mapping_ids)
 
+    def _compute_data_store_count(self):
+        for record in self:
+            record.data_store_count = self.env['hr.api.data.store'].search_count([
+                ('connector_id', '=', record.id),
+                ('state', '!=', 'archived'),
+            ])
+
+    @api.depends('endpoint_ids')
+    def _compute_endpoint_count(self):
+        ready = self.env['hr.integration.endpoint']._schema_ready()
+        for record in self:
+            record.endpoint_count = len(record.endpoint_ids) if ready else 0
+
+    # ==========================================
+    # ENDPOINT CATALOGUE
+    # ==========================================
+    @api.model_create_multi
+    def create(self, vals_list):
+        """A new connector catalogues its own feeds.
+
+        Nothing has to be pulled for that to be useful: the vendor catalogue
+        (Cycle 3's data) knows what a Zoho People connector talks to before it
+        has ever been connected. The sync is create-only and idempotent, so
+        running it here costs a new connector one query and can never overwrite
+        anything.
+        """
+        records = super().create(vals_list)
+        if self.env['hr.integration.endpoint']._schema_ready():
+            for record in records:
+                record.action_sync_endpoint_catalog()
+        return records
+
+    @api.model
+    def _free_endpoint_code(self, base, taken):
+        """A code no endpoint on this connector holds yet.
+
+        `(connector_id, code)` is a database UNIQUE, so a derived feed whose
+        natural code was already claimed by a vendor template row for ANOTHER
+        data type must not simply be dropped — that would leave a data type
+        sitting in the store with no feed describing it, silently.
+        """
+        if base not in taken:
+            return base
+        for suffix in ('_feed', '_feed2', '_feed3'):
+            if base + suffix not in taken:
+                return base + suffix
+        return '%s_%s' % (base, len(taken))
+
+    def action_sync_endpoint_catalog(self):
+        """Catalogue this connector's feeds from the two sources we have.
+
+        (a) the vendor catalogue — every `hr.integration.endpoint.template` row
+            for this connector type; and
+        (b) the evidence — every distinct `data_type` already present in this
+            connector's stored rows that no endpoint covers yet.
+
+        CREATE-ONLY, and that is the whole contract: this runs on create, from
+        the cockpit's "Detect feeds" button and from the demo seeder, so it will
+        meet endpoints an operator has renamed, re-pathed or deactivated. A row
+        that already exists by `code` (or, for the derived half, by `data_type`)
+        is counted as SKIPPED and left exactly as it is — the same
+        never-overwrite semantics `action_apply_mapping_template` has.
+
+        Returns `{'created': n, 'skipped': n}`.
+        """
+        self.ensure_one()
+        Endpoint = self.env['hr.integration.endpoint']
+        Template = self.env['hr.integration.endpoint.template']
+        if not Endpoint._schema_ready():
+            return {'created': 0, 'skipped': 0}
+
+        # `active_test=False`: a DEACTIVATED endpoint still owns its code, and
+        # re-creating it because it is filtered out of the o2m would be the
+        # rudest possible reading of "create-only".
+        existing = self.env['hr.integration.endpoint'].with_context(
+            active_test=False).search([('connector_id', '=', self.id)])
+        codes = {e.code for e in existing if e.code}
+        covered_types = {e.data_type for e in existing if e.data_type}
+
+        vals_list = []
+        skipped = 0
+
+        for t in Template.with_context(active_test=False).search(
+                [('connector_type', '=', self.connector_type)]):
+            if not t.code or t.code in codes:
+                skipped += 1
+                continue
+            vals_list.append({
+                'connector_id': self.id,
+                'name': t.name or t.code,
+                'code': t.code,
+                'data_type': t.data_type,
+                'operation': t.operation or 'catalog_only',
+                'http_method': t.http_method or 'get',
+                'path': t.path or False,
+                'params_note': t.params_note or False,
+                'description': t.description or False,
+                'sequence': t.sequence or 10,
+                'is_legacy_abm': t.is_legacy_abm,
+                'active': t.active,
+            })
+            codes.add(t.code)
+            covered_types.add(t.data_type)
+
+        # The derived half: a data type sitting in the store with no feed
+        # describing it is a feed somebody ran before this model existed.
+        labels = dict(self.env['hr.api.data.store']._fields['data_type'].selection)
+        present = [
+            dt for dt, in self.env['hr.api.data.store']._read_group(
+                [('connector_id', '=', self.id)], ['data_type'])
+            if dt
+        ]
+        for dt in sorted(present):
+            if dt in covered_types:
+                skipped += 1
+                continue
+            vals_list.append({
+                'connector_id': self.id,
+                'name': labels.get(dt, dt),
+                'code': self._free_endpoint_code(dt, codes),
+                'data_type': dt,
+                'operation': 'generic',
+                'http_method': 'get',
+                'description': _(
+                    'Derived from records already in the API data store.'),
+                'sequence': 50,
+            })
+            codes.add(vals_list[-1]['code'])
+            covered_types.add(dt)
+
+        if vals_list:
+            Endpoint.create(vals_list)
+        result = {'created': len(vals_list), 'skipped': skipped}
+        # Cycle 6 — a feed's SHAPE is catalogued through the same door as the
+        # feed. Deliberately the same hook rather than a second button: an
+        # operator who has just pressed "Detect feeds" has said everything they
+        # need to say, and a catalogue that lists seven APIs and nothing about
+        # any of them is the half-answer this cycle exists to stop giving.
+        result['fields'] = self.action_sync_endpoint_field_catalog()
+        return result
+
+    def action_sync_endpoint_field_catalog(self, force_templates=False):
+        """Instantiate this vendor's endpoint-FIELD templates on this connector.
+
+        `force_templates` (SC-1) is the EXPLICIT-RESTORE door: a live system
+        never receives shipped paper implicitly (see the gate below), but an
+        operator deliberately restoring the shipped catalogue — or a test
+        recreating the pre-SC-1 world — may ask for it by name. Rows created
+        this way still carry `origin='template'`, so the board still marks
+        their samples as illustrations and the purge can still find them.
+
+        CREATE-ONLY, matched on `(endpoint_id, path)`, with `active_test=False`
+        so a row an operator deactivated still owns its path and is not
+        resurrected as a duplicate — the identical argument
+        `action_sync_endpoint_catalog` makes about a deactivated feed's code.
+
+        A template whose `endpoint_code` this connector has no feed for is
+        SKIPPED and counted, never mapped onto "some other feed": the whole
+        value of the catalogue is that a path is attached to the API that
+        actually returns it.
+
+        Returns `{'created': n, 'skipped': n, 'unresolved': n}`.
+        """
+        self.ensure_one()
+        Field = self.env['hr.integration.endpoint.field']
+        Template = self.env['hr.integration.endpoint.field.template']
+        Endpoint = self.env['hr.integration.endpoint']
+        if not (Endpoint._schema_ready() and Field._schema_ready()):
+            return {'created': 0, 'skipped': 0, 'unresolved': 0}
+        # SC-1 — a LIVE system's catalogue is never seeded from the shipped
+        # paper. Zoho and Excel can be ASKED what they deliver (discovery) and
+        # SHOW what they deliver (observation, on every pull), so an invented
+        # field list adds nothing but the exact confusion that mapped payroll
+        # to `Salary` while the payload carried `Base_Salary`. Simulated
+        # systems (demo, darwin) keep their templates: their sample record IS
+        # the system.
+        if self.FIELD_FETCH_SUPPORT.get(self.connector_type) == 'live' \
+                and not force_templates:
+            return {'created': 0, 'skipped': 0, 'unresolved': 0,
+                    'suppressed': True}
+
+        endpoints = Endpoint.with_context(active_test=False).search(
+            [('connector_id', '=', self.id)])
+        by_code = {e.code: e for e in endpoints if e.code}
+        if not by_code:
+            return {'created': 0, 'skipped': 0, 'unresolved': 0}
+
+        existing = Field.with_context(active_test=False).search(
+            [('endpoint_id', 'in', endpoints.ids)])
+        taken = {(f.endpoint_id.id, f.path) for f in existing}
+
+        vals_list, skipped, unresolved = [], 0, 0
+        for t in Template.with_context(active_test=False).search(
+                [('connector_type', '=', self.connector_type)]):
+            ep = by_code.get(t.endpoint_code)
+            if not ep:
+                unresolved += 1
+                continue
+            key = (ep.id, t.path)
+            if not t.path or key in taken:
+                skipped += 1
+                continue
+            vals_list.append({
+                'endpoint_id': ep.id,
+                'path': t.path,
+                'label': t.label or t.path,
+                'source_data_type': t.source_data_type or 'string',
+                'sample_value': t.sample_value or False,
+                'is_required': t.is_required,
+                'notes': t.notes or False,
+                'sequence': t.sequence or 10,
+                'is_legacy_abm': t.is_legacy_abm,
+                'active': t.active,
+                'origin': 'template',
+            })
+            taken.add(key)
+
+        if vals_list:
+            Field.create(vals_list)
+        return {'created': len(vals_list), 'skipped': skipped,
+                'unresolved': unresolved}
+
+    # ==========================================
+    # VENDOR METADATA FETCH (Cycle 6, WP-3)
+    # ==========================================
+    #
+    # Which connector classes can actually be ASKED what they deliver, and what
+    # the honest name for their answer is. Three tiers, because there are three
+    # genuinely different things `get_available_fields()` does in this codebase
+    # and calling them all "field discovery" would let a hard-coded example list
+    # arrive on screen wearing a live sync's clothes:
+    #
+    #   'live'   — a real request to the vendor. `zoho_connector.py:216` GETs
+    #              `forms/{form}/components`; `excel_connector.py:272` reads the
+    #              headers of the file that is loaded.
+    #   'sample' — derived from a sample record built into the connector class
+    #              (`darwin_connector.py:116`, `demo_connector.py:421`). Real
+    #              paths, real types, no network. Worth having, and worth saying.
+    #   None     — a STUB. `sap_connector.py:79`, `workday_connector.py:75` and
+    #              `oracle_connector.py:77` each log "not implemented" and then
+    #              return a hard-coded example list. Writing those into a
+    #              catalogue would publish four invented fields as SAP's schema,
+    #              which is the exact failure this whole cycle is about.
+    FIELD_FETCH_SUPPORT = {
+        'zoho': 'live',
+        'excel': 'live',
+        'darwin': 'sample',
+        'demo': 'sample',
+        'sap': None,
+        'workday': None,
+        'oracle': None,
+    }
+
+    # Zoho's metadata call reports the FORM a component belongs to; the feed
+    # catalogue is keyed on our own endpoint codes. Anything not listed falls
+    # back to the feed the operator pressed the button on.
+    # Vendor form link name -> the feed that reads it. These are the names Zoho
+    # itself lists at `GET /forms`; the `P_`-prefixed guesses that used to be
+    # here (`P_Salary`, `P_Attendance`) are rejected by Zoho as invalid form
+    # names, so every discovered field fell through to the fallback feed.
+    _VENDOR_FORM_ENDPOINT = {
+        'employee': 'zohoemployees',
+        'salary_details': 'zohosalary',
+        'leave': 'zoholeave',
+        'overtime_request': 'zohoovertime',
+    }
+
+    def field_fetch_capability(self):
+        """`{'mode', 'ready', 'reason'}` — can this connector be asked?
+
+        Split from the fetch itself so a UI can grey the button out with a
+        sentence rather than offering a door that always answers "no".
+        """
+        self.ensure_one()
+        mode = self.FIELD_FETCH_SUPPORT.get(self.connector_type)
+        if not mode:
+            return {'mode': None, 'ready': False, 'reason': _(
+                "Payobook's %s connector cannot yet ask that system what "
+                "fields it has. The expected fields below come from the "
+                "shipped catalogue instead.") % (
+                    dict(self._fields['connector_type'].selection).get(
+                        self.connector_type, self.connector_type))}
+        if mode == 'live' and not self._has_credentials():
+            return {'mode': mode, 'ready': False, 'reason': _(
+                "Add this connector's credentials first — the field list is "
+                "read from the vendor, over an authenticated call.")}
+        return {'mode': mode, 'ready': True, 'reason': ''}
+
+    def _has_credentials(self):
+        """Is there anything to authenticate WITH?
+
+        Read as booleans only. No caller of this method, and nothing it returns,
+        ever carries a secret's VALUE — the cockpit payload is built from this,
+        and a credential that reached the browser to be greyed out would be a
+        credential in a JSON response.
+        """
+        self.ensure_one()
+        if self.connector_type == 'excel':
+            return True          # the file is the credential
+        # `sudo()`: every one of these carries `groups="base.group_system"`
+        # (:98-121), so a payroll manager reading them directly gets an
+        # AccessError, not a False — and "is there a credential" is a question
+        # that must be answerable by the person looking at the cockpit. The
+        # sudo reads them and immediately throws the values away; only the
+        # boolean leaves this method.
+        rec = self.sudo()
+        return bool(rec.api_key or rec.access_token or rec.refresh_token
+                    or rec.password or rec.username)
+
+    def action_fetch_endpoint_fields(self, endpoint_id=None):
+        """Ask the vendor what this feed delivers, and catalogue the answer.
+
+        CREATE-ONLY on `(endpoint_id, path)` like every other catalogue in this
+        file, with ONE deliberate exception the handover asks for: an existing
+        row's `label` and `source_data_type` are REFRESHED from the vendor,
+        because those two are the vendor's to name and a renamed picklist that
+        keeps its old caption is a catalogue lying quietly. Everything an
+        operator can be said to own — `notes`, `active`, `sequence`,
+        `sample_value` — is left exactly as it is.
+
+        Returns `{'ok', 'created', 'updated', 'skipped', 'mode', 'msg'}`. It
+        never returns a credential, and it never raises at the caller: a vendor
+        that is down is a sentence, not a traceback.
+        """
+        self.ensure_one()
+        Field = self.env['hr.integration.endpoint.field']
+        Endpoint = self.env['hr.integration.endpoint']
+        blank = {'ok': False, 'created': 0, 'updated': 0, 'skipped': 0}
+        if not (Endpoint._schema_ready() and Field._schema_ready()):
+            return dict(blank, mode=None, msg=_(
+                "This database has not been upgraded for the field catalogue "
+                "yet."))
+        cap = self.field_fetch_capability()
+        if not cap['ready']:
+            return dict(blank, mode=cap['mode'], msg=cap['reason'])
+
+        endpoints = Endpoint.with_context(active_test=False).search(
+            [('connector_id', '=', self.id)])
+        by_code = {e.code: e for e in endpoints if e.code}
+        wanted = endpoints.filtered(lambda e: e.id == int(endpoint_id or 0))[:1]
+        fallback = wanted or endpoints.filtered(
+            lambda e: e.data_type == 'employee')[:1] or endpoints[:1]
+        if not fallback:
+            return dict(blank, mode=cap['mode'], msg=_(
+                "Catalogue this connector's feeds first."))
+
+        try:
+            raw = self._get_connector_instance().get_available_fields() or []
+        except Exception as e:
+            _logger.warning("Field fetch failed on connector %s (%s): %s: %s",
+                            self.id, self.connector_type, type(e).__name__, e)
+            return dict(blank, mode=cap['mode'], msg=_(
+                "That system could not be reached for its field list. The "
+                "details are in the server log."))
+
+        types = {k for k, _l in SOURCE_DATA_TYPES}
+        existing = {(f.endpoint_id.id, f.path): f
+                    for f in Field.with_context(active_test=False).search(
+                        [('endpoint_id', 'in', endpoints.ids)])}
+        vals_list, created, updated, skipped = [], 0, 0, 0
+        seen = set()
+        for item in raw:
+            if not isinstance(item, dict):
+                continue
+            # The vendor's `path` may be form-prefixed (`P_Employee.EmailID`);
+            # a mapping's `source_field` never is, and a catalogue row that
+            # does not JOIN to a mapping is a row nobody will ever see.
+            path = (item.get('name') or '').strip() or \
+                (item.get('path') or '').split('.')[-1].strip()
+            if not path:
+                continue
+            ep = by_code.get(
+                self._VENDOR_FORM_ENDPOINT.get(item.get('form') or '', ''),
+                fallback)
+            if wanted and ep.id != wanted.id:
+                continue
+            key = (ep.id, path)
+            if key in seen:
+                continue
+            seen.add(key)
+            dtype = item.get('data_type') or 'string'
+            dtype = dtype if dtype in types else 'string'
+            row = existing.get(key)
+            if row:
+                fresh = {}
+                label = (item.get('label') or '').strip()
+                if label and label != row.label:
+                    fresh['label'] = label
+                if dtype != row.source_data_type:
+                    fresh['source_data_type'] = dtype
+                # SC-1 — the vendor's metadata just confirmed this path, so a
+                # row that was only shipped paper stops being fiction. Never
+                # the other way: `observed` outranks both and stays.
+                if getattr(row, 'origin', '') == 'template':
+                    fresh['origin'] = 'discovered'
+                if fresh:
+                    row.write(fresh)
+                    updated += 1
+                else:
+                    skipped += 1
+                continue
+            vals_list.append({
+                'endpoint_id': ep.id,
+                'path': path,
+                'label': (item.get('label') or '').strip() or path,
+                'source_data_type': dtype,
+                'sample_value': self._sample_str(item.get('sample_value')),
+                'is_required': bool(item.get('required')),
+                'sequence': 20,
+                'origin': 'discovered',
+            })
+        if vals_list:
+            Field.create(vals_list)
+            created = len(vals_list)
+        if not (created or updated or skipped):
+            return dict(blank, mode=cap['mode'], msg=_(
+                "That system returned no fields for this feed."))
+        return {'ok': True, 'created': created, 'updated': updated,
+                'skipped': skipped, 'mode': cap['mode'],
+                'msg': _("%(new)s new, %(upd)s updated, %(same)s unchanged.",
+                         new=created, upd=updated, same=skipped)}
+
+    @staticmethod
+    def _sample_str(value):
+        """A vendor's sample, as a short string — or nothing at all.
+
+        `False` rather than `''` so the Char is genuinely empty; a sample that
+        is the literal string "None" is how a placeholder starts looking like
+        data.
+        """
+        if value is None or value is False or value == '':
+            return False
+        return str(value)[:128]
+
+    # ==========================================
+    # SC-1 — OBSERVATION: the catalogue learns from what actually arrives
+    # ==========================================
+    #
+    # How many freshly pulled rows per feed the observation pass flattens.
+    # Each key only has to be seen once, so a handful of rows per feed is
+    # plenty — the same argument `_LIVE_SAMPLE_PER_FEED` makes on the board's
+    # live layer, made here about write cost instead of read cost.
+    _OBSERVE_ROWS_PER_FEED = 20
+
+    def _observe_endpoint_fields(self, records):
+        """Upsert the field catalogue from rows a pull just wrote.
+
+        Called at the end of every successful pull, over the store rows that
+        pull produced. For each feed it flattens a bounded sample of payloads
+        (`raw_payload` + `extracted_data` — NOT `computed_data`: keys Payobook
+        computes are not the vendor's shape, and the board already carries
+        them through the transformation-rule layer) and then, per
+        `(endpoint_id, path)`:
+
+          * a NEW path becomes a row with `origin='observed'`, a REAL sample
+            and an inferred type;
+          * an EXISTING row gets `last_seen` refreshed, its sample replaced by
+            the real one when a non-empty value arrived, and its origin
+            promoted to `observed` — template and discovered rows graduate the
+            moment the field is seen in real data, and nothing ever demotes.
+
+        This is why a live system needs no shipped paper: after one pull the
+        catalogue lists exactly what that system sends, with what it really
+        looks like. Never raises — a catalogue bookkeeping failure must not
+        turn a successful pull into a failed one.
+        """
+        self.ensure_one()
+        Field = self.env['hr.integration.endpoint.field']
+        Endpoint = self.env['hr.integration.endpoint']
+        FM = self.env['hr.integration.field.mapping']
+        if not records:
+            return
+        try:
+            if not (Endpoint._schema_ready() and Field._schema_ready()):
+                return
+            # Group this pull's rows by the feed they belong to. A row stored
+            # without an endpoint (the legacy full-pull path on a connector
+            # with several feeds per data type) is resolved the way
+            # `_stamp_endpoint` resolves it: first feed of its data type.
+            by_ep, fallback = {}, {}
+            for rec in records:
+                ep = rec.endpoint_id
+                if not ep:
+                    dt = rec.data_type
+                    if dt not in fallback:
+                        fallback[dt] = Endpoint.search(
+                            [('connector_id', '=', self.id),
+                             ('data_type', '=', dt)],
+                            order='sequence, id', limit=1)
+                    ep = fallback[dt]
+                if not ep:
+                    continue
+                rows = by_ep.setdefault(ep.id, [])
+                if len(rows) < self._OBSERVE_ROWS_PER_FEED:
+                    rows.append(rec)
+            if not by_ep:
+                return
+
+            now = fields.Datetime.now()
+            existing = {
+                (f.endpoint_id.id, f.path): f
+                for f in Field.with_context(active_test=False).search(
+                    [('endpoint_id', 'in', list(by_ep))])}
+            # `_infer_source_type` speaks the store's vocabulary; the field
+            # speaks the mapping's. `list` and anything unrecognised fall
+            # through to 'string' rather than to a wrong opinion.
+            type_map = {'string': 'string', 'integer': 'integer',
+                        'float': 'float', 'boolean': 'boolean',
+                        'date': 'date', 'datetime': 'datetime'}
+            vals_list = []
+            for ep_id, rows in by_ep.items():
+                seen = {}
+                for rec in rows:
+                    for source in (rec.raw_payload, rec.extracted_data):
+                        if isinstance(source, dict):
+                            FM._flatten_source(source, '', seen)
+                for path, item in seen.items():
+                    row = existing.get((ep_id, path))
+                    sample = self._sample_str(item.get('sample'))
+                    if row is None:
+                        vals_list.append({
+                            'endpoint_id': ep_id,
+                            'path': path,
+                            'label': item.get('label') or path,
+                            'source_data_type': type_map.get(
+                                item.get('type'), 'string'),
+                            'sample_value': sample,
+                            'sequence': 30,
+                            'origin': 'observed',
+                            'last_seen': now,
+                        })
+                        continue
+                    fresh = {'last_seen': now}
+                    if row.origin != 'observed':
+                        fresh['origin'] = 'observed'
+                    if sample and sample != row.sample_value:
+                        fresh['sample_value'] = sample
+                    row.write(fresh)
+            if vals_list:
+                Field.create(vals_list)
+                _logger.info(
+                    "SC-1: connector %s catalogued %d newly observed fields",
+                    self.id, len(vals_list))
+        except Exception:       # noqa: BLE001 — bookkeeping, never the pull
+            _logger.warning(
+                "SC-1: field observation failed on connector %s; the pull "
+                "itself is unaffected", self.id, exc_info=True)
+
+    def _sc1_purge_fictional_rows(self):
+        """Delete this connector's never-observed shipped-paper rows.
+
+        Only on a connector whose system can really be asked and observed
+        (`FIELD_FETCH_SUPPORT == 'live'`), and only rows that are still
+        `origin='template'` — i.e. never confirmed by vendor metadata and
+        never seen in a payload. A fictional row a wire still points at is
+        KEPT: deleting it would orphan the feed routing of a mapping the
+        operator drew, and it renders truthfully amber instead.
+
+        Returns the number of rows deleted. Called by the 19.0.1.116.0
+        migration; kept as a model method so it is testable and re-runnable.
+        """
+        self.ensure_one()
+        Field = self.env['hr.integration.endpoint.field']
+        if not Field._schema_ready():
+            return 0
+        if self.FIELD_FETCH_SUPPORT.get(self.connector_type) != 'live':
+            return 0
+        wired = {
+            m.source_field for m in self.env[
+                'hr.integration.field.mapping'].with_context(
+                    active_test=False).search(
+                        [('connector_id', '=', self.id)])
+            if m.source_field}
+        rows = Field.with_context(active_test=False).search(
+            [('connector_id', '=', self.id), ('origin', '=', 'template')])
+        doomed = rows.filtered(lambda f: f.path not in wired)
+        count = len(doomed)
+        if count:
+            _logger.info(
+                "SC-1: connector %s: deleting %d fictional catalogue rows "
+                "(%d kept because a mapping still names them)",
+                self.id, count, len(rows) - count)
+            doomed.unlink()
+        return count
+
+    def _stamp_endpoint(self, data_type, status, error=False,
+                        period_from=None, period_to=None):
+        """Record a pull's outcome on the feed that produced it.
+
+        Create-if-missing through the same catalogue path, so a connector that
+        pulls a data type nobody catalogued ends up with the feed rather than
+        with the outcome silently going nowhere. One endpoint per data type is
+        stamped — the first by sequence — because `action_pull_data` pulls a
+        TYPE, not a path.
+        """
+        self.ensure_one()
+        Endpoint = self.env['hr.integration.endpoint']
+        if not Endpoint._schema_ready():
+            return Endpoint
+        ep = Endpoint.search(
+            [('connector_id', '=', self.id), ('data_type', '=', data_type)],
+            order='sequence, id', limit=1)
+        if not ep:
+            self.action_sync_endpoint_catalog()
+            ep = Endpoint.search(
+                [('connector_id', '=', self.id), ('data_type', '=', data_type)],
+                order='sequence, id', limit=1)
+        if not ep:
+            # A pull that produced no rows leaves the catalogue nothing to
+            # derive from, and "this feed failed" is exactly the outcome that
+            # must not be dropped. Mint the generic feed here, under the same
+            # code the catalogue would have used, so a later sync skips it.
+            labels = dict(
+                self.env['hr.api.data.store']._fields['data_type'].selection)
+            taken = set(Endpoint.with_context(active_test=False).search(
+                [('connector_id', '=', self.id)]).mapped('code'))
+            ep = Endpoint.create({
+                'connector_id': self.id,
+                'name': labels.get(data_type, data_type),
+                'code': self._free_endpoint_code(data_type, taken),
+                'data_type': data_type,
+                'operation': 'generic',
+                'sequence': 50,
+            })
+        vals = {
+            'last_sync': fields.Datetime.now(),
+            'last_sync_status': status,
+            'last_error': (error or '')[:512] or False,
+        }
+        if period_from:
+            # Same reason as the endpoint-scoped pull: the window a feed was
+            # asked for is a different fact from the moment it was asked, and
+            # only one of the two is on the card unless this is recorded.
+            vals['last_period_from'] = period_from
+            vals['last_period_to'] = period_to or period_from
+        ep.write(vals)
+        return ep
+
+    # ==========================================
+    # TRANSFORMATION-RULE CATALOGUE (Cycle 3)
+    # ==========================================
+    def action_sync_transformation_rules(self):
+        """Instantiate this vendor's transformation-rule templates.
+
+        The third catalogue, and the same contract as the other two: CREATE-ONLY,
+        matched on `output_key`. An operator who has retuned a rule — changed the
+        filter, changed the default, switched it off — keeps their version
+        through every later apply, because a rule that silently reverts to the
+        vendor's arithmetic is a payslip that silently changes.
+
+        `active_test=False` for the same reason the feed catalogue uses it: a
+        DEACTIVATED rule still owns its output key, and re-creating it because
+        the search filtered it out would be the rudest possible reading of
+        create-only.
+
+        Returns `{'created': n, 'skipped': n}`.
+        """
+        self.ensure_one()
+        Rule = self.env['hr.api.transformation.rule']
+        Template = self.env['hr.api.transformation.rule.template']
+        if not Template._schema_ready():
+            return {'created': 0, 'skipped': 0}
+
+        existing = Rule.with_context(active_test=False).search(
+            [('connector_id', '=', self.id)])
+        keys = {r.output_key for r in existing if r.output_key}
+
+        vals_list = []
+        skipped = 0
+        for t in Template.with_context(active_test=False).search(
+                [('connector_type', '=', self.connector_type)]):
+            if not t.output_key or t.output_key in keys:
+                skipped += 1
+                continue
+            vals = t._rule_vals(self)
+            vals['active'] = t.active
+            vals_list.append(vals)
+            keys.add(t.output_key)
+
+        if vals_list:
+            Rule.create(vals_list)
+        return {'created': len(vals_list), 'skipped': skipped}
+
     # ==========================================
     # CONNECTION ACTIONS
     # ==========================================
+    def action_apply_mapping_template(self, config_id=None):
+        """F114 — seed field mappings from this vendor's ready-made template.
+        Matched by canonical code → 'active'; unmatched or verify/derive rows →
+        'suggested' (never load-bearing). Idempotent: an existing mapping for a
+        source path is never overwritten."""
+        self.ensure_one()
+        Tmpl = self.env['hr.integration.mapping.template']
+        Map = self.env['hr.integration.field.mapping']
+        rows = Tmpl.search([('connector_type', '=', self.connector_type)])
+        # sudo the config read — configs are company-scoped/record-rule-gated
+        # (same pattern the studio uses); the mapping setup is a trusted action.
+        config = False
+        if config_id:
+            config = self.env['hr.formula.config'].sudo().browse(int(config_id))
+            if not config.exists():
+                config = False
+        if not config:
+            config = self.env['hr.formula.config'].sudo().search([('connector_id', '=', self.id)], limit=1)
+        existing_src = set((self.field_mapping_ids.mapped('source_field')) or [])
+        applied = suggested = 0
+        # Which feed each template row reads from, by endpoint code. Resolved
+        # ONCE against this connector's own endpoints — a template's
+        # `endpoint_code` is a vendor's name for an API, and the connector may
+        # not have catalogued it (or may have renamed the row). An unresolved
+        # code leaves `endpoint_id` empty rather than inventing a feed.
+        Endpoint = self.env['hr.integration.endpoint']
+        endpoints_by_code = {
+            e.code: e.id
+            for e in Endpoint.with_context(active_test=False).search(
+                [('connector_id', '=', self.id)])
+            if e.code
+        } if Endpoint._schema_ready() else {}
+
+        def _norm(s):
+            return ''.join(ch for ch in (s or '').upper() if ch.isalnum())
+
+        for t in rows:
+            if t.source_path in existing_src:
+                continue
+            rule = self.env['hr.formula.rule']
+            exact = False
+            if config:
+                inputs = config.rule_ids.filtered(lambda r: r.column_type == 'input')
+                tc = (t.target_code or '').upper()
+                rule = inputs.filtered(lambda r: (r.code or '').upper() == tc)[:1]
+                exact = bool(rule)
+                if not rule:
+                    # normalized fallback (strip non-alphanumerics), e.g. a tenant
+                    # 'BASICSAL' ~ template 'BASIC_SAL'. A fuzzy match only PROPOSES
+                    # a target — it stays 'suggested' until the batch test confirms.
+                    ntc = _norm(t.target_code)
+                    rule = inputs.filtered(lambda r: _norm(r.code) == ntc)[:1]
+            # 'active' only for an EXACT, non-verify match; every fuzzy / unmatched
+            # / verify row stays 'suggested' and is never load-bearing (D114.2).
+            state = 'active' if (rule and exact and not t.verify) else 'suggested'
+            Map.create({
+                'connector_id': self.id,
+                'connector_type': self.connector_type,
+                'source_field': t.source_path,
+                'source_field_label': t.target_label or t.target_code,
+                'target_rule_id': rule.id if rule else False,
+                'transformation_type': t.transformation_type or 'direct',
+                'transformation_value': t.transformation_value or 0.0,
+                'transformation_code': t.transformation_code or False,
+                'is_required': t.is_required,
+                'default_value': t.default_value or 0.0,
+                'notes': t.note or False,
+                'active_state': state,
+                'endpoint_id': endpoints_by_code.get(t.endpoint_code or ''),
+            })
+            existing_src.add(t.source_path)
+            if state == 'active':
+                applied += 1
+            else:
+                suggested += 1
+        # The vendor's AGGREGATIONS are the sibling step (Cycle 3): a field map
+        # that says "OTHRS150 → Overtime 150%" is a wire to a key nothing
+        # computes until the rule that computes it exists. Applying a template
+        # is the moment both halves of the vendor's answer arrive, and the step
+        # is create-only, so a second apply adds nothing.
+        rules = self.action_sync_transformation_rules()
+        return {'applied': applied, 'suggested': suggested,
+                'total': applied + suggested,
+                'rules_created': rules['created'],
+                'rules_skipped': rules['skipped']}
+
+    def _sample_payload(self):
+        """A representative source record for mapping tests: the newest stored
+        payload if a data pull has run, else the demo/stub connector's own
+        built-in sample. Returns a dict or None."""
+        self.ensure_one()
+        store = self.env['hr.api.data.store'].sudo().search(
+            [('connector_id', '=', self.id), ('raw_payload', '!=', False)],
+            order='pull_date desc, id desc', limit=1)
+        payload = store.raw_payload if store else None
+        if isinstance(payload, dict):
+            return payload
+        if isinstance(payload, list) and payload and isinstance(payload[0], dict):
+            return payload[0]
+        try:
+            emps = self._get_connector_instance().fetch_employees({}) or []
+        except Exception:
+            emps = []
+        return emps[0] if emps and isinstance(emps[0], dict) else None
+
+    def action_test_field_mappings(self, config_id=None):
+        """F114 promotion path (D114.2): test each 'suggested' mapping against a
+        real sample payload and promote the ones that resolve to a value to
+        'active'. Rows that don't resolve, or have no target rule yet, stay
+        'suggested'. This is the ONLY way a template guess becomes load-bearing."""
+        self.ensure_one()
+        sample = self._sample_payload()
+        suggested = self.field_mapping_ids.filtered(
+            lambda m: m.active_state == 'suggested')
+        if sample is None:
+            return {'ok': False, 'promoted': 0, 'tested': 0,
+                    'msg': _("No sample payload yet — run a data pull (or use the "
+                             "demo connector) before testing.")}
+        promoted = tested = 0
+        for m in suggested:
+            if not m.target_rule_id:
+                continue
+            tested += 1
+            try:
+                val = m.get_value_from_record(sample)
+            except Exception:
+                val = None
+            if val is not None:
+                m.active_state = 'active'
+                promoted += 1
+        return {'ok': True, 'promoted': promoted, 'tested': tested,
+                'remaining': len(suggested) - promoted}
+
+    @api.model
+    def action_open_onboarding(self):
+        """Launch the 4-step connect-your-HR-system wizard."""
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Connect an HR / Timesheet System'),
+            'res_model': 'hr.integration.onboarding.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+        }
+
     def action_test_connection(self):
         """Test the connection to the external system"""
         self.ensure_one()
@@ -378,31 +1268,627 @@ class HrIntegrationConnector(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('Field Mappings'),
             'res_model': 'hr.integration.field.mapping',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('connector_id', '=', self.id)],
             'context': {'default_connector_id': self.id},
         }
 
     def action_view_sync_history(self):
-        """View sync history"""
+        """View sync history — now shows data store records."""
         self.ensure_one()
-        # TODO: Implement sync history model
-        pass
+        return self.action_view_data_store()
 
-    def action_launch_payroll_import(self):
-        """Launch payroll import using this connector"""
+    def action_view_data_store(self):
+        """View stored API data records for this connector."""
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('New Payroll Import'),
-            'res_model': 'hr.payroll.import.batch',
-            'view_mode': 'form',
-            'target': 'current',
+            'name': _('API Data Store — %s') % self.name,
+            'res_model': 'hr.api.data.store',
+            # Odoo 19's web client reads action.views.map(...) in _preprocessAction,
+            # so a bare view_mode (no views) crashes with "action.views is undefined".
+            # Provide the views pairs explicitly (view_mode kept for completeness).
+            'views': [(False, 'list'), (False, 'form')],
+            'view_mode': 'list,form',
+            'domain': [('connector_id', '=', self.id)],
             'context': {
                 'default_connector_id': self.id,
-                'default_source_type': 'connector' if self.connector_type != 'excel' else 'excel',
+                'search_default_active_records': 1,
             },
         }
+
+    # ==========================================
+    # PULL DATA — Core API Integration
+    # ==========================================
+    def action_pull_endpoint(self, endpoint_id, period_from=None, period_to=None,
+                             triggered_by='manual'):
+        """Execute exactly one configured feed.
+
+        This is deliberately endpoint-scoped, not data-type-scoped.  A Zoho
+        connector has two attendance feeds and two custom feeds; reducing the
+        click to `attendance` or `custom` discarded the path the user selected.
+        Older connectors remain safe because their seeded operation is filled
+        by the module migration, and newly catalogued rows carry it directly.
+        """
+        self.ensure_one()
+        endpoint = self.endpoint_ids.filtered(
+            lambda row: row.id == int(endpoint_id or 0))[:1]
+        if not endpoint:
+            raise UserError(_('That feed does not belong to this connector.'))
+        if not endpoint.active:
+            raise UserError(_('Activate this feed before syncing it.'))
+        if (endpoint.operation or 'catalog_only') == 'catalog_only':
+            raise UserError(_(
+                'This feed is catalogued for reference but has no executable '
+                'handler. Choose an execution type in Feed configuration.'))
+        if not endpoint.path and self.connector_type == 'zoho':
+            raise UserError(_('Add a path before syncing this feed.'))
+
+        import calendar
+        if not period_from:
+            today = date.today()
+            period_from = today.replace(day=1)
+            period_to = today.replace(
+                day=calendar.monthrange(today.year, today.month)[1])
+        period_to = period_to or period_from
+
+        connector = self._get_connector_instance()
+        # Connectors that have one feed per data type keep their established
+        # pull implementation. Zoho implements the endpoint-aware interface
+        # because it is the connector where several feeds share a data type.
+        if not hasattr(connector, 'fetch_endpoint_records'):
+            return self.with_context(pb_source_endpoint_id=endpoint.id).action_pull_data(
+                data_types=[endpoint.data_type], period_from=period_from,
+                period_to=period_to, triggered_by=triggered_by)
+        if not connector.authenticate():
+            endpoint.write({
+                'last_sync': fields.Datetime.now(),
+                'last_sync_status': 'failed',
+                'last_error': _('Authentication failed'),
+            })
+            raise UserError(_('Authentication failed for connector %s') % self.name)
+        results = {'pulled': 0, 'changes': 0, 'errors': []}
+        try:
+            employees = self.env['hr.api.data.store'].search([
+                ('connector_id', '=', self.id),
+                ('data_type', '=', 'employee'),
+                ('state', '!=', 'archived'),
+            ])
+            employee_refs = []
+            seen_employee_ids = set()
+            for row in employees:
+                external_id = row.employee_external_id
+                if not external_id or external_id in seen_employee_ids:
+                    continue
+                payload = row.raw_payload if isinstance(row.raw_payload, dict) else {}
+                raw = payload.get('_raw') if isinstance(payload.get('_raw'), dict) else {}
+                employee_refs.append({
+                    'id': external_id,
+                    'email': payload.get('email') or payload.get('EmailID') or
+                             raw.get('EmailID') or '',
+                    # The vendor's own employee NUMBER, which is a different
+                    # identifier from the record id in `id` — Zoho's daily
+                    # attendance report answers "Invalid User" for the record
+                    # id and accepts only this or the email address.
+                    'employee_id': str(payload.get('employee_id') or
+                                       payload.get('EmployeeID') or
+                                       raw.get('EmployeeID') or ''),
+                })
+                seen_employee_ids.add(external_id)
+            started = time.time()
+            rows = connector.fetch_endpoint_records(
+                endpoint, employee_refs, str(period_from), str(period_to))
+            pull_ms = int((time.time() - started) * 1000)
+            Store = self.env['hr.api.data.store']
+            pulled = Store.browse()
+            for item in rows:
+                stored = self._store_api_record(
+                    Store, item.get('payload') or {},
+                    data_type=endpoint.data_type,
+                    endpoint_id=endpoint.id,
+                    employee_external_id=item.get('employee_external_id') or None,
+                    period_from=period_from,
+                    period_to=period_to,
+                    pull_ms=pull_ms,
+                    triggered_by=triggered_by,
+                    results=results,
+                )
+                if stored:
+                    pulled |= stored
+            # J3 S3 — the per-feed sync now does what the full sync has always
+            # done. Before this line a rule-fed component read EMPTY after a feed
+            # refresh, because nothing ever wrote `computed_data` on these rows.
+            # Same helper, same rules, scoped to what this pull produced.
+            self._run_transformation_rules(pulled)
+            # SC-1 — the catalogue learns from what just arrived.
+            self._observe_endpoint_fields(pulled)
+            now = fields.Datetime.now()
+            outcome = ('partial' if results['errors'] and results['pulled']
+                       else 'failed' if results['errors'] else 'success')
+            error_text = '; '.join(results['errors'][:3])[:512] or False
+            endpoint.write({
+                'last_sync': now, 'last_sync_status': outcome,
+                'last_error': error_text,
+                # The window this pull actually asked for, recorded beside the
+                # time it was asked. Every dated feed here is scoped by it, and
+                # without it a card saying "Synced 1h ago" cannot be read as a
+                # claim about any particular month.
+                'last_period_from': period_from,
+                'last_period_to': period_to,
+            })
+            self.write({
+                'connection_status': 'connected',
+                'last_sync': now,
+                'last_sync_status': outcome,
+                'last_sync_message': _(
+                    '%(feed)s pulled %(count)s records with %(errors)s errors.',
+                    feed=endpoint.name, count=results['pulled'],
+                    errors=len(results['errors'])) if results['errors'] else _(
+                        '%(feed)s pulled %(count)s records.',
+                        feed=endpoint.name, count=results['pulled']),
+                'total_synced_records': results['pulled'],
+                'last_error': error_text,
+            })
+            return results
+        except Exception as exc:
+            endpoint.write({
+                'last_sync': fields.Datetime.now(),
+                'last_sync_status': 'failed',
+                'last_error': str(exc)[:512],
+            })
+            self.write({
+                'last_sync_status': 'failed',
+                'last_sync_message': _('%s failed.') % endpoint.name,
+                'last_error': str(exc),
+            })
+            raise
+
+    def action_pull_data(self, data_types=None, period_from=None, period_to=None,
+                         triggered_by='manual'):
+        """
+        Pull data from external HRIS and store in hr.api.data.store.
+
+        This is the primary entry point for the Pull → Store → Transform pipeline.
+
+        Args:
+            data_types: list of data type strings to pull (default: ['employee', 'salary'])
+            period_from: start of period (date)
+            period_to: end of period (date)
+            triggered_by: 'manual' or 'cron'
+
+        Returns:
+            Action dict with notification of results.
+        """
+        self.ensure_one()
+        DataStore = self.env['hr.api.data.store']
+
+        if not data_types:
+            data_types = ['employee', 'salary']
+            # Demo connector supports all data types
+            if self.connector_type == 'demo':
+                data_types = ['employee', 'salary', 'dependent', 'attendance', 'leave']
+
+        # Default period: current month
+        if not period_from:
+            import calendar
+            today = date.today()
+            period_from = today.replace(day=1)
+            last_day = calendar.monthrange(today.year, today.month)[1]
+            period_to = today.replace(day=last_day)
+
+        results = {
+            'pulled': 0,
+            'changes': 0,
+            'errors': [],
+        }
+        endpoint_by_type = {}
+        Endpoint = self.env['hr.integration.endpoint']
+        if Endpoint._schema_ready():
+            grouped = {}
+            for row in Endpoint.with_context(active_test=False).search([
+                    ('connector_id', '=', self.id)]):
+                grouped.setdefault(row.data_type, []).append(row.id)
+            endpoint_by_type = {
+                data_type: ids[0] for data_type, ids in grouped.items()
+                if len(ids) == 1
+            }
+
+        try:
+            connector = self._get_connector_instance()
+
+            # Authenticate
+            if not connector.authenticate():
+                raise UserError(_('Authentication failed for connector %s') % self.name)
+
+            # Pull employee data
+            if 'employee' in data_types:
+                start_time = time.time()
+                employees = connector.fetch_employees()
+                pull_ms = int((time.time() - start_time) * 1000)
+
+                if employees:
+                    for emp_data in employees:
+                        self._store_api_record(
+                            DataStore, emp_data,
+                            data_type='employee',
+                            endpoint_id=endpoint_by_type.get('employee'),
+                            period_from=period_from,
+                            period_to=period_to,
+                            pull_ms=pull_ms,
+                            triggered_by=triggered_by,
+                            results=results,
+                        )
+                # The employee branch has no inner try/except — a failure here
+                # propagates to the outer one, which stamps nothing because the
+                # whole pull failed and the CONNECTOR carries that. What this
+                # records is the branch that ran.
+                self._stamp_endpoint('employee', 'success',
+                                      period_from=period_from, period_to=period_to)
+
+            # Pull salary/payroll data
+            if 'salary' in data_types:
+                start_time = time.time()
+                try:
+                    # Get employee IDs for payroll pull
+                    emp_ids = []
+                    emp_records = DataStore.search([
+                        ('connector_id', '=', self.id),
+                        ('data_type', '=', 'employee'),
+                        ('state', 'in', ['extracted']),
+                    ])
+                    for emp_rec in emp_records:
+                        ext_id = emp_rec.employee_external_id
+                        if ext_id and ext_id not in emp_ids:
+                            emp_ids.append(ext_id)
+
+                    if emp_ids:
+                        payroll_data = connector.fetch_payroll_data(
+                            emp_ids,
+                            str(period_from),
+                            str(period_to),
+                        )
+                        pull_ms = int((time.time() - start_time) * 1000)
+
+                        if payroll_data:
+                            for emp_id, salary_data in payroll_data.items():
+                                self._store_api_record(
+                                    DataStore, salary_data,
+                                    data_type='salary',
+                                    endpoint_id=endpoint_by_type.get('salary'),
+                                    employee_external_id=str(emp_id),
+                                    period_from=period_from,
+                                    period_to=period_to,
+                                    pull_ms=pull_ms,
+                                    triggered_by=triggered_by,
+                                    results=results,
+                                )
+                    self._stamp_endpoint('salary', 'success',
+                                      period_from=period_from, period_to=period_to)
+                except Exception as e:
+                    results['errors'].append(f"Salary pull error: {str(e)}")
+                    _logger.warning("Salary pull failed for connector %s: %s", self.name, str(e))
+                    self._stamp_endpoint('salary', 'failed', str(e),
+                                      period_from=period_from, period_to=period_to)
+
+            # Pull dependent data (one record per dependent)
+            if 'dependent' in data_types and hasattr(connector, 'fetch_dependents'):
+                try:
+                    start_time = time.time()
+                    emp_ids = list(set(
+                        r.employee_external_id for r in DataStore.search([
+                            ('connector_id', '=', self.id),
+                            ('data_type', '=', 'employee'),
+                            ('state', 'in', ['extracted']),
+                        ]) if r.employee_external_id
+                    ))
+                    if emp_ids:
+                        dep_data = connector.fetch_dependents(emp_ids)
+                        pull_ms = int((time.time() - start_time) * 1000)
+                        for emp_id, deps in dep_data.items():
+                            for dep_record in deps:
+                                self._store_api_record(
+                                    DataStore, dep_record,
+                                    data_type='dependent',
+                                    endpoint_id=endpoint_by_type.get('dependent'),
+                                    employee_external_id=str(emp_id),
+                                    period_from=period_from,
+                                    period_to=period_to,
+                                    pull_ms=pull_ms,
+                                    triggered_by=triggered_by,
+                                    results=results,
+                                )
+                    self._stamp_endpoint('dependent', 'success',
+                                      period_from=period_from, period_to=period_to)
+                except Exception as e:
+                    results['errors'].append(f"Dependent pull error: {str(e)}")
+                    _logger.warning("Dependent pull failed for connector %s: %s", self.name, str(e))
+                    self._stamp_endpoint('dependent', 'failed', str(e),
+                                      period_from=period_from, period_to=period_to)
+
+            # Pull attendance data
+            if 'attendance' in data_types and hasattr(connector, 'fetch_attendance'):
+                try:
+                    start_time = time.time()
+                    emp_ids = list(set(
+                        r.employee_external_id for r in DataStore.search([
+                            ('connector_id', '=', self.id),
+                            ('data_type', '=', 'employee'),
+                            ('state', 'in', ['extracted']),
+                        ]) if r.employee_external_id
+                    ))
+                    if emp_ids:
+                        att_data = connector.fetch_attendance(emp_ids, str(period_from), str(period_to))
+                        pull_ms = int((time.time() - start_time) * 1000)
+                        for emp_id, att_record in att_data.items():
+                            self._store_api_record(
+                                DataStore, att_record,
+                                data_type='attendance',
+                                endpoint_id=endpoint_by_type.get('attendance'),
+                                employee_external_id=str(emp_id),
+                                period_from=period_from,
+                                period_to=period_to,
+                                pull_ms=pull_ms,
+                                triggered_by=triggered_by,
+                                results=results,
+                            )
+                    self._stamp_endpoint('attendance', 'success',
+                                      period_from=period_from, period_to=period_to)
+                except Exception as e:
+                    results['errors'].append(f"Attendance pull error: {str(e)}")
+                    _logger.warning("Attendance pull failed for connector %s: %s", self.name, str(e))
+                    self._stamp_endpoint('attendance', 'failed', str(e),
+                                      period_from=period_from, period_to=period_to)
+
+            # Pull leave data (one record per leave entry)
+            if 'leave' in data_types and hasattr(connector, 'fetch_leaves'):
+                try:
+                    start_time = time.time()
+                    emp_ids = list(set(
+                        r.employee_external_id for r in DataStore.search([
+                            ('connector_id', '=', self.id),
+                            ('data_type', '=', 'employee'),
+                            ('state', 'in', ['extracted']),
+                        ]) if r.employee_external_id
+                    ))
+                    if emp_ids:
+                        leave_data = connector.fetch_leaves(emp_ids, str(period_from), str(period_to))
+                        pull_ms = int((time.time() - start_time) * 1000)
+                        for emp_id, leaves in leave_data.items():
+                            for leave_record in leaves:
+                                self._store_api_record(
+                                    DataStore, leave_record,
+                                    data_type='leave',
+                                    endpoint_id=endpoint_by_type.get('leave'),
+                                    employee_external_id=str(emp_id),
+                                    period_from=period_from,
+                                    period_to=period_to,
+                                    pull_ms=pull_ms,
+                                    triggered_by=triggered_by,
+                                    results=results,
+                                )
+                    self._stamp_endpoint('leave', 'success',
+                                      period_from=period_from, period_to=period_to)
+                except Exception as e:
+                    results['errors'].append(f"Leave pull error: {str(e)}")
+                    _logger.warning("Leave pull failed for connector %s: %s", self.name, str(e))
+                    self._stamp_endpoint('leave', 'failed', str(e),
+                                      period_from=period_from, period_to=period_to)
+
+            # Update connector sync status
+            self.write({
+                'last_sync': fields.Datetime.now(),
+                'last_sync_status': 'success' if not results['errors'] else 'partial',
+                'last_sync_message': _(
+                    'Pulled %d records (%d with changes). %d errors.'
+                ) % (results['pulled'], results['changes'], len(results['errors'])),
+                'total_synced_records': results['pulled'],
+            })
+
+            # Run transformation rules on newly pulled records
+            new_records = DataStore.search([
+                ('connector_id', '=', self.id),
+                ('state', '=', 'extracted'),
+                ('pull_date', '>=', fields.Datetime.now()),
+            ])
+            self._run_transformation_rules(new_records)
+            # SC-1 — the catalogue learns from what just arrived.
+            self._observe_endpoint_fields(new_records)
+
+        except Exception as e:
+            self.write({
+                'last_sync_status': 'failed',
+                'last_error': str(e),
+                'last_sync_message': _('Pull failed: %s') % str(e),
+            })
+            _logger.exception("Pull failed for connector %s: %s", self.name, str(e))
+            raise UserError(_('Data pull failed: %s') % str(e))
+
+        msg = _('Pulled %d records from %s. %d changes detected.') % (
+            results['pulled'], self.name, results['changes']
+        )
+        if results['errors']:
+            msg += _(' %d errors encountered.') % len(results['errors'])
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Data Pull Complete'),
+                'message': msg,
+                'type': 'success' if not results['errors'] else 'warning',
+            }
+        }
+
+    def _run_transformation_rules(self, records):
+        """Run this connection's active transformation rules over `records`.
+
+        JOURNEY J3 S3. There were two call sites doing this (`action_pull_data`
+        and `action_recompute_transformations`) and a third that should have been
+        and was not — `action_pull_endpoint`, the per-feed sync, which is the
+        button a user actually presses when they want one feed refreshed. The
+        consequence was invisible and total: a component bound to a
+        transformation-rule OUTPUT read empty after a per-feed pull, because the
+        store rows arrived with `extracted_data` and no `computed_data` at all.
+        The full "Pull Data" button then fixed it, which is the worst kind of bug
+        — the workaround looks like an unrelated action working better.
+
+        Scoped to the records handed in, never to the whole store: recomputing
+        every historical row on every feed refresh would make one button's cost
+        grow with the database's age.
+
+        Returns the records it transformed (possibly empty), so a caller can say
+        what happened. Silent no-op when there is nothing to do — a pull with no
+        rules configured is the normal case, not an error (which is precisely why
+        `action_recompute_transformations`, whose whole purpose IS transforming,
+        keeps its own `UserError` instead of calling through here for that).
+        """
+        self.ensure_one()
+        if not records:
+            return records.browse() if hasattr(records, 'browse') else records
+        active_rules = self.transformation_rule_ids.filtered('active')
+        if not active_rules:
+            return records.browse()
+        active_rules._execute_for_records(records)
+        return records
+
+    def _store_api_record(self, DataStore, raw_data, data_type,
+                          endpoint_id=None,
+                          employee_external_id=None, period_from=None,
+                          period_to=None, pull_ms=0, triggered_by='manual',
+                          results=None):
+        """
+        Create a data store record from raw API data.
+
+        Handles:
+        1. Storing the raw payload
+        2. Extracting flattened data
+        3. Computing version + diff against previous
+        4. Attempting employee matching
+        """
+        if results is None:
+            results = {'pulled': 0, 'changes': 0, 'errors': []}
+        endpoint_id = endpoint_id or self.env.context.get(
+            'pb_source_endpoint_id') or False
+
+        # Try to extract employee external ID from the data if not provided.
+        #
+        # Compared with case and underscores removed, because one vendor spells
+        # the SAME field three ways across its own feeds: Zoho sends
+        # `EmployeeID` on the employee form, `Employee_ID` on the salary form
+        # and `employeeId` on the attendance report. The old exact-match list
+        # held only the first, so salary linked 3 records of 1,368 and
+        # attendance linked 0 of 3,064 — the data arrived, attached to nobody,
+        # and every component reading it fell back to a default while the pay
+        # run reported success.
+        if not employee_external_id and isinstance(raw_data, dict):
+            normalised = {}
+            for key, val in raw_data.items():
+                if not isinstance(key, str):
+                    continue
+                normalised.setdefault(key.replace('_', '').lower(), val)
+            # Order is priority: an employee-specific key beats a bare `id`,
+            # which on a form record is the record's own id, not a person's.
+            for key in ('employeeid', 'empid', 'recordid', 'id'):
+                val = normalised.get(key)
+                if val:
+                    employee_external_id = str(val)
+                    break
+
+        try:
+            record = DataStore.create({
+                'connector_id': self.id,
+                'endpoint_id': endpoint_id or False,
+                'data_type': data_type,
+                'employee_external_id': employee_external_id,
+                'period_from': period_from,
+                'period_to': period_to,
+                'raw_payload': raw_data,
+                'pull_date': fields.Datetime.now(),
+                'pull_duration_ms': pull_ms,
+                'pull_triggered_by': triggered_by,
+                'state': 'raw',
+                'company_id': self.company_id.id,
+            })
+
+            # Extract data
+            record.action_extract()
+
+            # Compute version and diff
+            record._compute_version_and_diff()
+
+            # Try to match employee
+            record._find_matching_employee()
+            if record._find_matching_employee():
+                record.employee_id = record._find_matching_employee().id
+
+            results['pulled'] += 1
+            if record.has_changes:
+                results['changes'] += 1
+            # J3 S3 — the caller needs to know WHICH rows it just wrote, so it can
+            # run the transformation rules over those and not over the store's
+            # whole history. Additive: this returned None before and no caller
+            # read it, so every existing call site is unchanged.
+            return record
+
+        except Exception as e:
+            results['errors'].append(str(e))
+            _logger.warning("Failed to store API record: %s", str(e))
+        return None
+
+    def action_recompute_transformations(self):
+        """Recompute all transformation rules for extracted data store records."""
+        self.ensure_one()
+        records = self.env['hr.api.data.store'].search([
+            ('connector_id', '=', self.id),
+            ('state', '=', 'extracted'),
+        ])
+        if not records:
+            raise UserError(_('No extracted records found to transform.'))
+
+        active_rules = self.transformation_rule_ids.filtered('active')
+        if not active_rules:
+            raise UserError(_('No active transformation rules configured.'))
+
+        # J3 S3 — same helper as the two pull paths. The two `UserError`s above
+        # stay here rather than moving into it: this button's whole purpose is to
+        # transform, so "nothing to transform" is a refusal worth saying, while on
+        # a pull it is an ordinary outcome.
+        self._run_transformation_rules(records)
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Transformations Complete'),
+                'message': _('Recomputed %d rules for %d records.') % (
+                    len(active_rules), len(records)
+                ),
+                'type': 'success',
+            }
+        }
+
+    def action_launch_payroll_import(self):
+        """Load pay data through this connection — in the guided flow.
+
+        JOURNEY J2: the source-type heuristic below is unchanged (it is the
+        only thing that knows whether this connection has a data store worth
+        pulling); what changed is where it lands. One flow, whichever door.
+        """
+        self.ensure_one()
+
+        # Determine best source type
+        if self.connector_type == 'excel':
+            source_type = 'excel'
+        else:
+            # J3 S5 — everything that is not an Excel connection loads through the
+            # data store. The old `else: 'connector'` branch (taken when the store
+            # was still empty) produced a batch nothing could load; the guided flow
+            # now lands on the store path and says the store is empty, which is a
+            # true sentence about a real state instead of a dead source type.
+            source_type = 'api_data_store'
+
+        return self.env['hr.payroll.import.batch'].action_open_guided_import(
+            connector=self, source_type=source_type)
 
     # ==========================================
     # CONNECTOR FACTORY
@@ -417,6 +1903,8 @@ class HrIntegrationConnector(models.Model):
             SAPConnector,
             WorkdayConnector,
             OracleConnector,
+            DemoConnector,
+            DarwinHRConnector,
         )
 
         connector_map = {
@@ -425,6 +1913,8 @@ class HrIntegrationConnector(models.Model):
             'sap': SAPConnector,
             'workday': WorkdayConnector,
             'oracle': OracleConnector,
+            'darwin': DarwinHRConnector,
+            'demo': DemoConnector,
         }
 
         connector_class = connector_map.get(self.connector_type)
@@ -443,16 +1933,173 @@ class HrIntegrationConnector(models.Model):
         return connector.fetch_employees(filters)
 
     def fetch_payroll_data(self, employee_ids, date_from, date_to):
-        """Fetch payroll data for specific employees and period"""
+        """Fetch payroll data for specific employees and period.
+
+        RD49 — asks for only the feed kinds this connector's ACTIVE wires read.
+        The Zoho pull makes three requests per employee (salary, attendance,
+        leave); on the reference tenant nothing maps a leave field, so a third
+        of a 456-request sync was fetching data no component could ever use.
+
+        The argument is passed ONLY to an implementation whose signature accepts
+        it. Seven connectors implement this method and most still take three
+        arguments; a keyword they do not declare would turn a saving into a
+        TypeError mid-sync.
+        """
         self.ensure_one()
         connector = self._get_connector_instance()
+        kinds = self._mapped_feed_kinds()
+        try:
+            import inspect
+            params = inspect.signature(connector.fetch_payroll_data).parameters
+        except (TypeError, ValueError):     # noqa: BLE001 — builtins, C impls
+            params = {}
+        if kinds and 'kinds' in params:
+            return connector.fetch_payroll_data(
+                employee_ids, date_from, date_to, kinds=kinds)
         return connector.fetch_payroll_data(employee_ids, date_from, date_to)
+
+    def action_probe_salary_bulk(self, sample=8):
+        """RD51 — prove the bulk salary read agrees with the per-employee one.
+
+        Reads the whole salary form ONCE and, for a sample of employees, also
+        asks Zoho the old way — then reports where the two disagree. It writes
+        nothing and computes nothing; it exists so "the fast path returns the
+        same numbers" is something measured against the live tenant rather than
+        argued from the code.
+
+        Returns a dict the caller can read: how many employees the bulk read
+        covered, how many of the sample matched, and the first few differences
+        in full.
+        """
+        self.ensure_one()
+        connector = self._get_connector_instance()
+        if not hasattr(connector, '_salary_index'):
+            return {'ok': False, 'reason': 'This connector has no bulk read.'}
+        # The convention in this connector is that the ENTRY POINT
+        # authenticates — `fetch_payroll_data` does it and every `_get_*`
+        # helper assumes it has been done. A probe that reads the form directly
+        # has to do the same, or Zoho answers "The provided OAuth token is
+        # invalid" and the probe reports a parity failure that is entirely its
+        # own doing. (It did, on the first run.)
+        try:
+            if not connector.authenticate():
+                return {'ok': False,
+                        'reason': 'Zoho would not authenticate this connection.'}
+        except Exception as exc:            # noqa: BLE001
+            return {'ok': False, 'reason': 'Zoho refused the connection: %s' % exc}
+        Store = self.env['hr.api.data.store'].sudo()
+        rows = Store.search([('connector_id', '=', self.id),
+                             ('data_type', '=', 'employee')])
+        ext_ids, seen = [], set()
+        for row in rows:
+            ext = (row.employee_external_id or '').strip()
+            if ext and ext not in seen:
+                seen.add(ext)
+                ext_ids.append(ext)
+        if not ext_ids:
+            return {'ok': False, 'reason': 'No employee rows to probe with.'}
+
+        index = connector._salary_index()
+        checked, agreed, diffs = 0, 0, []
+        for ext in ext_ids[:int(sample or 8)]:
+            bulk = index.get(ext) or {}
+            # The old path, forced: bypass the index so the two are independent.
+            saved, connector._salary_cache = connector._salary_cache, {}
+            try:
+                single = connector._get_employee_salary(ext) or {}
+            except Exception as exc:        # noqa: BLE001
+                single = {'__error__': str(exc)}
+            finally:
+                connector._salary_cache = saved
+            checked += 1
+            if bulk == single:
+                agreed += 1
+            elif len(diffs) < 3:
+                diffs.append({
+                    'employee_external_id': ext,
+                    'bulk_keys': sorted(bulk)[:12],
+                    'single_keys': sorted(single)[:12],
+                    'bulk_base': bulk.get('Base_Salary'),
+                    'single_base': single.get('Base_Salary'),
+                })
+        # How many DIFFERENT base salaries the bulk read sees. One distinct
+        # value across a whole workforce is the signature of the defect this
+        # probe found: the per-employee search returned the same row for
+        # everybody, so every employee's pay was one person's pay.
+        bases = {}
+        for key, row in index.items():
+            bases.setdefault(str(row.get('Base_Salary') or ''), set()).add(key)
+        return {
+            'ok': True,
+            'employees_in_store': len(ext_ids),
+            'employees_indexed_by_bulk': len(index),
+            'checked': checked,
+            'agreed': agreed,
+            'bulk_distinct_base_salaries': len(bases),
+            'bulk_base_sample': sorted(bases)[:8],
+            'differences': diffs,
+        }
+
+    def _mapped_feed_kinds(self):
+        """Which feed kinds this connector's active wires actually read.
+
+        Empty means "cannot tell" — no wires, or wires with no endpoint — and
+        every caller reads that as "fetch everything", which is what happened
+        before this existed. Never guess a SMALLER set from missing data: the
+        cost of an unnecessary request is a slower sync, the cost of a missing
+        one is a payslip computed on nothing.
+        """
+        self.ensure_one()
+        kinds = {m.endpoint_id.data_type
+                 for m in self._sync_mapping_ids() if m.endpoint_id}
+        return sorted(k for k in kinds if k)
+
+    def _sync_mapping_ids(self):
+        """Field mappings that are load-bearing for sync (F114/D114.2): only
+        confirmed 'active' rows. 'suggested' rows are unconfirmed vendor-template
+        guesses and 'ignored' rows are switched off — neither may ever feed a
+        real payslip input until promoted via the onboarding batch test."""
+        self.ensure_one()
+        return self.field_mapping_ids.filtered(
+            lambda m: m.active and m.active_state == 'active')
 
     def transform_data(self, raw_data):
         """Transform raw data using field mappings"""
         self.ensure_one()
         connector = self._get_connector_instance()
-        return connector.transform_data(raw_data, self.field_mapping_ids)
+        return connector.transform_data(raw_data, self._sync_mapping_ids())
+
+    # ==========================================
+    # INBOUND WEBHOOK (push ingestion)
+    # ==========================================
+    MAX_WEBHOOK_RECORDS = 5000
+
+    def webhook_ingest(self, data_type, records):
+        """Store records pushed by an external system (DarwinHR) as raw
+        hr.api.data.store rows. Validation of the caller happens in the
+        controller; this only runs for an active connector that supports push.
+        Raw-only — never transforms/posts. Returns a small summary dict."""
+        self.ensure_one()
+        if not self.active:
+            raise UserError(_('Connector %s is inactive.') % self.name)
+        connector = self._get_connector_instance()
+        if not hasattr(connector, 'ingest_records'):
+            raise UserError(_('Connector type %s does not accept pushed data.')
+                            % self.connector_type)
+        records = records or []
+        if len(records) > self.MAX_WEBHOOK_RECORDS:
+            raise UserError(_('Too many records in one push (max %d).')
+                            % self.MAX_WEBHOOK_RECORDS)
+        res = connector.ingest_records(data_type or 'employee', records)
+        self.sudo().write({'last_sync': fields.Datetime.now(),
+                           'last_sync_status': 'success'})
+        # …and the FEED, in the same breath. A push that stamps only the
+        # connector leaves the cockpit header saying "Last sync <now>" over a
+        # card that still reads "Never synced" — the same two-truths-on-one-
+        # screen defect WP-5 closed for the connection test, reached by the
+        # other door (Integrations Cycle 7).
+        self.sudo()._stamp_endpoint(data_type or 'employee', 'success')
+        return res
 
     # ==========================================
     # EXCEL IMPORT

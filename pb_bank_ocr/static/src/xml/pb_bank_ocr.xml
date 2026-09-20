@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_bank_ocr.PbBankOcr">
+    <div class="pbbk pbim" t-att-class="{ 'pbbk--embedded': props.embedded }">
+      <!-- ============================ QUEUE VIEW ============================ -->
+      <div class="pbbk-queue" t-if="state.view === 'queue'">
+        <div class="pbbk-hero">
+          <!-- Chrome the Compliance hub's command bar already owns (W17). The
+               KPI strip beside it is DATA and renders in both modes. -->
+          <div class="pbbk-hero__l" t-if="!props.embedded">
+            <h1 class="pbbk-hero__title">Bank Verification</h1>
+            <p class="pbbk-hero__sub">AI-assisted bank-document validation with human approval.</p>
+          </div>
+          <div class="pbbk-hero__kpis">
+            <div class="pbbk-kpi"><span class="pbbk-kpi__v" t-esc="state.data.kpis.mine_open || 0"/><span class="pbbk-kpi__l">My open</span></div>
+            <div class="pbbk-kpi" t-if="state.data.is_hr"><span class="pbbk-kpi__v" t-esc="state.data.kpis.hr_pending || 0"/><span class="pbbk-kpi__l">HR review</span></div>
+            <div class="pbbk-kpi" t-if="state.data.is_finance"><span class="pbbk-kpi__v" t-esc="state.data.kpis.finance_pending || 0"/><span class="pbbk-kpi__l">Finance</span></div>
+          </div>
+        </div>
+
+        <div class="pbbk-cols">
+          <div class="pbbk-main">
+            <div class="pbbk-upload">
+              <div class="pbbk-upload__hd">New bank-change request</div>
+              <DocDrop onFile.bind="onUpload" label="'Drop a bank confirmation letter / statement / passbook'"/>
+              <div class="pbbk-busy" t-if="state.busy"><span class="pbbk-spin" t-out="ic('loader', 14)"/> Working…</div>
+            </div>
+
+            <t t-call="pb_bank_ocr.Lane"><t t-set="title" t-value="'My requests'"/><t t-set="cards" t-value="state.data.queues.mine"/></t>
+            <t t-call="pb_bank_ocr.Lane" t-if="state.data.is_hr"><t t-set="title" t-value="'HR review'"/><t t-set="cards" t-value="state.data.queues.hr"/></t>
+            <t t-call="pb_bank_ocr.Lane" t-if="state.data.is_finance"><t t-set="title" t-value="'Finance review'"/><t t-set="cards" t-value="state.data.queues.finance"/></t>
+            <t t-call="pb_bank_ocr.Lane"><t t-set="title" t-value="'Done'"/><t t-set="cards" t-value="state.data.queues.done"/></t>
+          </div>
+
+          <aside class="pbbk-side">
+            <div class="pbbk-card pbbk-provider">
+              <div class="pbbk-card__hd">OCR Provider</div>
+              <div class="pbbk-provider__row">
+                <span t-attf-class="pbbk-chip pbbk-chip--{{ state.data.provider.available ? 'ok' : 'off' }}">
+                  <t t-esc="state.data.provider.type"/>
+                </span>
+                <span class="pbbk-provider__model" t-esc="state.data.provider.model"/>
+              </div>
+              <button class="pbbk-btn pbbk-btn--ghost" t-on-click="testProvider">Test connection</button>
+              <div class="pbbk-provider__note">Deterministic fallback is always on.</div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <!-- ============================ DETAIL VIEW ============================ -->
+      <div class="pbbk-detail" t-if="state.view === 'detail' and state.req">
+        <div class="pbbk-detail__bar">
+          <button class="pbbk-btn pbbk-btn--ghost" t-on-click="back"><t t-out="ic('back', 14)"/> Back</button>
+          <div class="pbbk-detail__title">
+            <span t-esc="state.req.name"/> · <span t-esc="state.req.employee"/>
+          </div>
+          <span t-attf-class="pbbk-state pbbk-state--{{ state.req.state }}" t-esc="stateLabel(state.req.state)"/>
+        </div>
+
+        <div class="pbbk-split">
+          <!-- LEFT: document -->
+          <div class="pbbk-doc">
+            <div class="pbbk-doc__scan" t-if="state.scanning"><span class="pbbk-scanline"/></div>
+            <t t-if="!isPdf">
+              <img class="pbbk-doc__img" t-att-src="state.req.doc_url" alt="document"/>
+            </t>
+            <t t-else="">
+              <iframe class="pbbk-doc__pdf" t-att-src="state.req.doc_url" title="document"/>
+            </t>
+          </div>
+
+          <!-- RIGHT: fields + validation + actions -->
+          <div class="pbbk-panel">
+            <div class="pbbk-panel__hd">
+              <span>Extracted fields</span>
+              <span class="pbbk-provider__model" t-if="state.req.ocr_provider">via <t t-esc="state.req.ocr_provider"/></span>
+              <button class="pbbk-btn pbbk-btn--ghost pbbk-btn--sm" t-on-click="runOcr"
+                      t-att-disabled="state.scanning"><t t-out="ic('refresh', 14)"/> Re-scan</button>
+            </div>
+
+            <div class="pbbk-fields">
+              <t t-foreach="fieldDefs" t-as="f" t-key="f.key">
+                <div class="pbbk-field">
+                  <label class="pbbk-field__lbl" t-esc="f.label"/>
+                  <div class="pbbk-field__row">
+                    <input class="pbbk-field__in" t-att-value="fieldVal(f.key)"
+                           t-on-input="(ev) => this.onFieldInput(f.key, ev)"/>
+                    <span t-if="isEdited(f.key)" class="pbbk-tag pbbk-tag--edited">edited</span>
+                    <span t-elif="confidence(f.key) !== null"
+                          t-attf-class="pbbk-pill pbbk-pill--{{ confBand(f.key) }}">
+                      <t t-esc="confidence(f.key)"/>%
+                    </span>
+                    <span t-else="" class="pbbk-tag">from document</span>
+                  </div>
+                </div>
+              </t>
+            </div>
+
+            <!-- diff card -->
+            <div class="pbbk-card pbbk-diff">
+              <div class="pbbk-card__hd">Current on file → Extracted</div>
+              <t t-foreach="state.req.diff" t-as="d" t-key="d.label">
+                <div t-attf-class="pbbk-diff__row {{ d.changed ? 'pbbk-diff__row--chg' : '' }}">
+                  <span class="pbbk-diff__lbl" t-esc="d.label"/>
+                  <span class="pbbk-diff__cur" t-esc="d.current || '—'"/>
+                  <span class="pbbk-diff__arr" t-out="ic('arrow', 14)"/>
+                  <span class="pbbk-diff__new" t-esc="d.extracted || '—'"/>
+                </div>
+              </t>
+            </div>
+
+            <!-- name-match gauge + format -->
+            <div class="pbbk-card pbbk-checks">
+              <div class="pbbk-gauge">
+                <div class="pbbk-gauge__dial">
+                  <span class="pbbk-gauge__needle" t-attf-style="transform: rotate({{ nameGaugeAngle }}deg)"/>
+                </div>
+                <div class="pbbk-gauge__meta">
+                  <span t-attf-class="pbbk-band pbbk-band--{{ state.req.validation.name_band }}">
+                    <t t-esc="state.req.validation.name_score"/>%
+                  </span>
+                  <span class="pbbk-gauge__lbl" t-esc="bandLabel(state.req.validation.name_band)"/>
+                </div>
+              </div>
+              <div t-attf-class="pbbk-format pbbk-format--{{ state.req.validation.format_ok ? 'ok' : 'bad' }}">
+                <span t-out="ic(state.req.validation.format_ok ? 'checkCircle' : 'alert', 15)"/>
+                <span t-esc="state.req.validation.format_msg"/>
+              </div>
+            </div>
+
+            <!-- duplicate banner -->
+            <div class="pbbk-dupe" t-if="state.req.duplicates.length">
+              <div class="pbbk-dupe__hd"><t t-out="ic('alert', 15)"/> This account matches other employees</div>
+              <t t-foreach="state.req.duplicates" t-as="dup" t-key="dup.id">
+                <div class="pbbk-dupe__row"><t t-esc="dup.name"/> · <t t-esc="dup.account"/></div>
+              </t>
+              <label class="pbbk-dupe__ack">
+                <input type="checkbox" t-att-checked="state.req.duplicate_ack" t-on-change="toggleAck"/>
+                <span>I have verified this is not a duplicate payment target.</span>
+              </label>
+            </div>
+
+            <!-- actions -->
+            <div class="pbbk-actions">
+              <button class="pbbk-btn pbbk-btn--ghost" t-on-click="saveAndValidate" t-att-disabled="state.busy">Save &amp; validate</button>
+              <button class="pbbk-btn pbbk-btn--ghost" t-on-click="toggleHistory">History</button>
+              <span class="pbbk-actions__spacer"/>
+              <button class="pbbk-btn" t-if="state.req.can.refuse" t-on-click="() => this.doAction('refuse')">Refuse</button>
+              <button class="pbbk-btn pbbk-btn--primary" t-if="state.req.can.submit" t-on-click="() => this.doAction('submit')">Submit</button>
+              <button class="pbbk-btn pbbk-btn--primary" t-if="state.req.can.hr_approve" t-on-click="() => this.doAction('hr_approve')">Approve as HR</button>
+              <button class="pbbk-btn pbbk-btn--primary" t-if="state.req.can.finance_approve" t-on-click="() => this.doAction('finance_approve')">Approve as Finance</button>
+            </div>
+
+            <!-- history drawer -->
+            <div class="pbbk-card pbbk-history" t-if="state.history">
+              <div class="pbbk-card__hd">Bank change history</div>
+              <div class="pbbk-history__empty" t-if="!state.history.length">No prior changes.</div>
+              <t t-foreach="state.history" t-as="h" t-key="h_index">
+                <div class="pbbk-history__row">
+                  <span t-out="ic(h.source === 'ocr_request' ? 'scan' : 'pencil', 14)"/>
+                  <span class="pbbk-history__acct"><t t-esc="h.old_account || '—'"/> → <t t-esc="h.new_account || '—'"/></span>
+                  <span class="pbbk-history__meta"><t t-esc="h.by"/> · <t t-esc="h.at"/></span>
+                </div>
+              </t>
+            </div>
+          </div>
+        </div>
+
+        <!-- refuse modal -->
+        <div class="pbbk-modal" t-if="state.refuseOpen">
+          <div class="pbbk-modal__box">
+            <div class="pbbk-modal__hd">Refuse request</div>
+            <textarea class="pbbk-modal__note" placeholder="Reason (optional)…"
+                      t-att-value="state.refuseNote" t-on-input="onRefuseNote"/>
+            <div class="pbbk-modal__act">
+              <button class="pbbk-btn pbbk-btn--ghost" t-on-click="cancelRefuse">Cancel</button>
+              <button class="pbbk-btn pbbk-btn--primary" t-on-click="confirmRefuse">Refuse</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pbbk-loading" t-if="!state.loaded"><span class="pbbk-spin" t-out="ic('loader', 28)"/></div>
+    </div>
+  </t>
+
+  <!-- reusable lane -->
+  <t t-name="pb_bank_ocr.Lane">
+    <div class="pbbk-lane" t-if="cards and cards.length">
+      <div class="pbbk-lane__hd"><t t-esc="title"/> <span class="pbbk-lane__n" t-esc="cards.length"/></div>
+      <div class="pbbk-lane__cards">
+        <t t-foreach="cards" t-as="c" t-key="c.id">
+          <div class="pbbk-rcard" t-on-click="() => this.openReq(c.id)">
+            <img class="pbbk-rcard__av" t-att-src="c.avatar_url" alt=""/>
+            <div class="pbbk-rcard__body">
+              <div class="pbbk-rcard__top"><span class="pbbk-rcard__emp" t-esc="c.employee"/>
+                <span t-if="c.name_band" t-attf-class="pbbk-band pbbk-band--{{ c.name_band }} pbbk-band--sm"><t t-esc="c.name_score"/>%</span>
+              </div>
+              <div class="pbbk-rcard__sub"><t t-esc="c.bank || '—'"/> · <t t-esc="c.account"/></div>
+            </div>
+            <span class="pbbk-rcard__dupe" t-if="c.has_dupes" t-out="ic('alert', 15)"/>
+          </div>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

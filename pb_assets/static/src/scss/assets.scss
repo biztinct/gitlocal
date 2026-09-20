@@ -1,0 +1,333 @@
+// =====================================================================
+//  Assets board — .ast-*
+//
+//  Built on the shared kit: `--pbim-*` tokens, `.pbim-*` primitives, root
+//  class "pbim pbim-page ast". Nothing here re-declares a colour; every
+//  value is a token, so this screen re-tints with the rest of the app and
+//  cannot drift into a second palette.
+//
+//  The three things this file owns that the kit does not:
+//
+//    1. THE TABLE — a register reads as rows, not cards: a person scanning
+//       for one serial number needs a column to run their eye down.
+//    2. THE DRAWER — a right-hand panel over a scrim holding one item's
+//       whole history. `position: fixed`, resolving against the ROOT
+//       rather than the hub canvas.
+//    3. THE BULK BAR — fixed to the bottom, appearing only when something
+//       is ticked, and saying what it will act on before it offers to.
+// =====================================================================
+
+.pbim.ast {
+    &.ast--embedded { padding-top: 14px; }
+
+    // ------------------------------------------------------------- header
+    .ast-head {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 16px; margin-bottom: 14px;
+    }
+    .ast-head-id { min-width: 0; }
+    .ast-head-id .pbim-sub { max-width: 620px; }
+    .ast-head-actions {
+        display: flex; align-items: center; gap: 8px; flex: none;
+        flex-wrap: wrap; justify-content: flex-end;
+    }
+
+    // ---------------------------------------------------------------- KPIs
+    .ast-kpis {
+        display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;
+        margin-bottom: 14px;
+    }
+    @media (max-width: 1320px) { .ast-kpis { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px)  { .ast-kpis { grid-template-columns: repeat(2, 1fr); } }
+
+    // ------------------------------------------------------------ segments
+    .ast-seg { margin-bottom: 14px; }
+    .ast-seg-c {
+        margin-left: 6px; font-size: 11px; font-weight: 800;
+        background: var(--pbim-primary); color: #fff;
+        border-radius: 999px; padding: 1px 7px;
+    }
+
+    // ------------------------------------------------------------ filters
+    .ast-filters { margin-bottom: 14px; padding: 13px 16px; }
+    .ast-filter-row {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; flex-wrap: wrap;
+    }
+    .ast-filter-row + .ast-filter-row {
+        margin-top: 10px; padding-top: 10px;
+        border-top: 1px solid var(--pbim-line-2);
+    }
+    .ast-search {
+        display: flex; align-items: center; gap: 8px; flex: 1; min-width: 220px;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-pill);
+        padding: 6px 14px; background: #fff; color: var(--pbim-muted);
+        transition: border-color .14s, box-shadow .14s;
+        &:focus-within {
+            border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 3px var(--pbim-ring);
+        }
+        input {
+            flex: 1; border: 0; outline: 0; font: inherit; font-size: 13px;
+            color: var(--pbim-text); background: transparent;
+        }
+    }
+    // Both selectors, because `.ast-in` further down this file sets
+    // `width: 100%` at the same specificity and would win on source order —
+    // the country picker then eats its own row and pushes the chips down.
+    .ast-in.ast-country { flex: none; width: 200px; }
+
+    // -------------------------------------------------------------- table
+    // The bulk bar is fixed to the bottom of the viewport, so the table
+    // needs room underneath it or the last row is never fully readable.
+    .ast-tablewrap { padding: 0; overflow: hidden; margin-bottom: 84px; }
+    .ast-table {
+        width: 100%;
+        th, td { vertical-align: middle; }
+        th { white-space: nowrap; }
+        .ast-r { text-align: right; }
+        .ast-tick { width: 38px; text-align: center; }
+        .ast-tick input { width: 15px; height: 15px; accent-color: var(--pbim-primary); }
+    }
+    .ast-row {
+        cursor: pointer;
+        transition: background .12s;
+        &:hover { background: var(--pbim-soft); }
+        &.is-picked { background: var(--pbim-soft); }
+    }
+    .ast-item { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .ast-ic {
+        width: 32px; height: 32px; border-radius: 10px; flex: none;
+        background: var(--pbim-soft); color: var(--pbim-primary);
+        display: grid; place-items: center;
+        &.lg { width: 44px; height: 44px; border-radius: 14px; }
+    }
+    .ast-item-tx { min-width: 0; display: block; }
+    .ast-item-tx .nm {
+        display: block; font-size: 13.5px; font-weight: 700;
+        color: var(--pbim-ink);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ast-item-tx .mt {
+        display: block; font-size: 11.5px; color: var(--pbim-muted);
+        margin-top: 1px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ast-warr { margin-left: 6px; }
+    .ast-who { display: inline-flex; align-items: center; gap: 8px; }
+    .ast-dash { color: var(--pbim-muted); }
+    .ast-av {
+        width: 26px; height: 26px; border-radius: 9px; flex: none;
+        background: var(--pbim-soft); color: var(--pbim-primary);
+        display: inline-grid; place-items: center;
+        font-size: 10.5px; font-weight: 800;
+    }
+
+    // ------------------------------------------------------------ bulk bar
+    .ast-bulk {
+        position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+        z-index: 1300;
+        display: flex; align-items: center; gap: 10px; min-width: 460px;
+        max-width: calc(100% - 40px);
+        background: #fff; border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-pill); padding: 8px 12px 8px 18px;
+        box-shadow: 0 12px 34px rgba(40, 50, 90, .18);
+        animation: ast-rise .16s ease;
+    }
+    @keyframes ast-rise {
+        from { transform: translate(-50%, 12px); opacity: 0; }
+        to   { transform: translate(-50%, 0); opacity: 1; }
+    }
+    .ast-bulk-n {
+        font-size: 13px; font-weight: 800; color: var(--pbim-ink);
+    }
+
+    // -------------------------------------------------------------- drawer
+    .ast-scrim {
+        position: fixed; inset: 0; z-index: var(--pbim-z-modal, 1400);
+        background: var(--pbim-scrim, rgba(27, 23, 51, .46));
+        display: flex; justify-content: flex-end;
+        animation: ast-fade .16s ease;
+    }
+    @keyframes ast-fade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes ast-slide { from { transform: translateX(28px); opacity: .4; } }
+
+    .ast-drawer {
+        width: 620px; max-width: 100%; height: 100%;
+        background: var(--pbim-bg); display: flex; flex-direction: column;
+        box-shadow: -18px 0 44px rgba(40, 50, 90, .16);
+        animation: ast-slide .18s ease;
+    }
+    .ast-drawer-head {
+        flex: none; background: #fff; padding: 16px 20px 14px;
+        border-bottom: 1px solid var(--pbim-line);
+    }
+    .ast-drawer-top { display: flex; align-items: center; gap: 12px; }
+    .ast-drawer-top .ast-drawer-id { flex: 1; min-width: 0; }
+    .ast-drawer-top .nm { font-size: 17px; font-weight: 800; color: var(--pbim-ink); }
+    .ast-drawer-top .mt { font-size: 12.5px; color: var(--pbim-muted); margin-top: 1px; }
+    .ast-x {
+        border: 1px solid var(--pbim-line); background: #fff; border-radius: 10px;
+        width: 32px; height: 32px; display: grid; place-items: center;
+        cursor: pointer; color: var(--pbim-muted); flex: none;
+        &:hover { border-color: var(--pbim-primary); color: var(--pbim-primary); }
+    }
+    .ast-drawer-chips {
+        display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;
+    }
+    .ast-drawer-acts {
+        display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px;
+        padding-top: 11px; border-top: 1px solid var(--pbim-line-2);
+    }
+    .ast-drawer-body { flex: 1; min-height: 0; overflow: auto; padding: 16px 20px 28px; }
+    .ast-sec-h {
+        font-size: 11px; font-weight: 800; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--pbim-muted);
+        margin: 18px 0 9px;
+        &:first-child { margin-top: 0; }
+    }
+
+    // ------------------------------------------------------- facts & notes
+    .ast-kv {
+        background: #fff; border: 1px solid var(--pbim-line);
+        border-radius: 12px; padding: 12px 15px;
+        display: flex; flex-direction: column; gap: 7px;
+        > div {
+            display: flex; align-items: baseline; justify-content: space-between;
+            gap: 14px; font-size: 12.5px;
+        }
+        span { color: var(--pbim-muted); }
+        b { color: var(--pbim-ink); font-weight: 700; text-align: right; }
+    }
+    .ast-notes {
+        margin-top: 9px; font-size: 12.5px; color: #4a5578; line-height: 1.55;
+    }
+
+    // ------------------------------------------------------------ timeline
+    .ast-tl { position: relative; padding-left: 26px; }
+    .ast-tl::before {
+        content: ""; position: absolute; left: 9px; top: 6px; bottom: 6px;
+        width: 2px; background: var(--pbim-line);
+    }
+    .ast-step {
+        position: relative; background: #fff;
+        border: 1px solid var(--pbim-line); border-radius: 12px;
+        padding: 11px 13px; margin-bottom: 9px;
+    }
+    .ast-step::before {
+        content: ""; position: absolute; left: -22px; top: 17px;
+        width: 12px; height: 12px; border-radius: 50%;
+        background: #fff; border: 2px solid var(--pbim-line);
+    }
+    .ast-step.is-open::before {
+        background: var(--pbim-primary); border-color: var(--pbim-primary);
+        box-shadow: 0 0 0 4px var(--pbim-ring);
+    }
+    .ast-step.is-done::before {
+        background: var(--pbim-slate); border-color: var(--pbim-slate);
+    }
+    .ast-step-h { display: flex; align-items: center; gap: 9px; }
+    .ast-step-h .nm {
+        flex: 1; min-width: 0; font-size: 13.5px; font-weight: 700;
+        color: var(--pbim-ink);
+    }
+    .ast-step-meta {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 7px;
+        margin-top: 8px; font-size: 11.5px; color: var(--pbim-muted);
+        .ok { color: var(--pbim-green); font-weight: 800; }
+        .warn { color: var(--pbim-amber); font-weight: 800; }
+    }
+    .ast-cond {
+        margin-top: 9px; padding-top: 8px;
+        border-top: 1px solid var(--pbim-line-2);
+        display: flex; flex-direction: column; gap: 4px; font-size: 12px;
+        > div { display: flex; gap: 10px; }
+        span {
+            flex: none; width: 42px; color: var(--pbim-muted);
+            font-weight: 700; text-transform: uppercase; font-size: 10.5px;
+            letter-spacing: .06em; padding-top: 1px;
+        }
+        b { color: #4a5578; font-weight: 600; }
+    }
+    .ast-step-acts {
+        display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+        padding-top: 9px; border-top: 1px solid var(--pbim-line-2);
+    }
+
+    // ------------------------------------------------------------- rowline
+    .ast-rowline {
+        display: flex; align-items: center; gap: 10px; background: #fff;
+        border: 1px solid var(--pbim-line); border-radius: 12px;
+        padding: 10px 13px; margin-bottom: 8px; font-size: 13px;
+        .g { flex: 1; min-width: 0; }
+        .g .nm { font-weight: 700; color: var(--pbim-ink); }
+        .g .mt { font-size: 11.5px; color: var(--pbim-muted); margin-top: 1px; }
+    }
+
+    // ------------------------------------------------------------ dialogs
+    .ast-dlg-body { padding: 20px 22px; }
+    .ast-field { margin-bottom: 14px; }
+    .ast-field > label {
+        display: block; font-size: 12px; font-weight: 800; color: var(--pbim-ink);
+        margin-bottom: 5px;
+    }
+    .ast-in {
+        width: 100%; border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-sm); padding: 9px 12px; font: inherit;
+        font-size: 13.5px; color: var(--pbim-text); background: #fff;
+        transition: border-color .14s, box-shadow .14s;
+        &:focus {
+            outline: none; border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 3px var(--pbim-ring);
+        }
+    }
+    textarea.ast-in { resize: vertical; }
+    .ast-results {
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        margin-top: 7px; max-height: 210px; overflow: auto; background: #fff;
+    }
+    .ast-result {
+        display: flex; align-items: center; gap: 10px; width: 100%;
+        border: 0; background: transparent; font: inherit; text-align: left;
+        padding: 8px 12px; cursor: pointer;
+        & + .ast-result { border-top: 1px solid var(--pbim-line-2); }
+        &:hover { background: var(--pbim-soft); }
+        .nm { font-size: 13px; font-weight: 700; color: var(--pbim-ink); }
+        .mt { font-size: 11.5px; color: var(--pbim-muted); }
+    }
+    .ast-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .ast-grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    @media (max-width: 620px) {
+        .ast-grid2, .ast-grid3 { grid-template-columns: 1fr; }
+    }
+    .ast-check {
+        display: flex; align-items: center; gap: 8px; font-size: 13px;
+        font-weight: 700; color: #4a5578; cursor: pointer;
+        input { width: 16px; height: 16px; accent-color: var(--pbim-primary); }
+    }
+
+    // ------------------------------------------------------- empty states
+    .ast-empty {
+        text-align: center; padding: 52px 26px;
+        .ast-empty-ic {
+            width: 66px; height: 66px; margin: 0 auto 16px; border-radius: 20px;
+            background: var(--pbim-soft); color: var(--pbim-primary);
+            display: grid; place-items: center;
+            svg { width: 30px; height: 30px; }
+        }
+        h2 { font-size: 17px; font-weight: 800; color: var(--pbim-ink); margin: 0 0 7px; }
+        p {
+            font-size: 13.5px; color: var(--pbim-muted); margin: 0 auto 18px;
+            max-width: 480px; line-height: 1.6;
+        }
+    }
+}
+
+// The drawer, the dialogs and the bulk bar mount inside the cockpit's own
+// root, so they inherit `.pbim`'s tokens — but the scrim is `position: fixed`
+// and paints over the whole viewport, so it re-declares the two the modal kit
+// owns for exactly this reason.
+.pbim.ast .ast-scrim {
+    --pbim-scrim: rgba(27, 23, 51, .46);
+    --pbim-z-modal: 1400;
+}

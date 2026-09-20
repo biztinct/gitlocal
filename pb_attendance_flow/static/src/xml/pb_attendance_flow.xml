@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_attendance_flow.PbAttendanceFlow">
+    <div class="pbaf pbim" t-att-class="{ 'pbaf--embedded': props.embedded }">
+
+      <!-- ============================ loading ============================ -->
+      <div t-if="!state.loaded" class="pbaf-loading">
+        <div class="pbaf-spin"/><span>Loading Attendance Control…</span>
+      </div>
+
+      <!-- ============================ BOARD ============================= -->
+      <div t-elif="state.view === 'board' and state.data" class="pbaf-wrap">
+
+        <!-- hero + KPIs. Embedded: the Time hub already drew the page header,
+             the window is the hub's week and Import is a sibling lens — so the
+             whole hero goes (W17: suppress only chrome the host owns). -->
+        <div class="pbaf-hero" t-if="!props.embedded">
+          <div class="pbaf-hero-main">
+            <div class="eyebrow"><span class="i" t-out="ic('clock',15)"/> Attendance Control</div>
+            <h1>Exceptions &amp; corrections</h1>
+            <div class="sub">
+              <span t-esc="state.data.window.from"/> → <span t-esc="state.data.window.to"/>
+              <t t-if="state.data.truncated">
+                <span class="dot">•</span>
+                <span class="warn"><t t-esc="state.data.truncated"/> more employees not shown</span>
+              </t>
+            </div>
+          </div>
+          <button class="pbaf-btn ghost" t-on-click="openImport">
+            <span t-out="ic('upload',16)"/><span>Import punches</span>
+          </button>
+        </div>
+
+        <div class="pbaf-kpis">
+          <div t-attf-class="kpi {{ state.data.kpis.open_exceptions > 20 ? 'pulse rose' : '' }}">
+            <span class="ico" t-out="ic('alertCircle',18)"/>
+            <span class="n" t-esc="state.data.kpis.open_exceptions"/>
+            <span class="l">open exceptions</span>
+          </div>
+          <div class="kpi">
+            <span class="ico" t-out="ic('edit',18)"/>
+            <span class="n" t-esc="state.data.kpis.pending_corrections"/>
+            <span class="l">pending corrections</span>
+          </div>
+          <div class="kpi">
+            <span class="ico" t-out="ic('timer',18)"/>
+            <span class="n"><t t-esc="state.data.kpis.late_pct"/>%</span>
+            <span class="l">late this week</span>
+          </div>
+          <div class="kpi">
+            <span class="ico" t-out="ic('upload',18)"/>
+            <span class="n" t-esc="state.data.kpis.imports_month"/>
+            <span class="l">imports this month</span>
+          </div>
+        </div>
+
+        <div class="pbaf-cols">
+
+          <!-- ===================== exceptions queue ==================== -->
+          <section class="pbaf-panel exceptions">
+            <div class="panel-h">
+              <div class="ttl"><span t-out="ic('inbox',18)"/> Exceptions queue</div>
+            </div>
+
+            <!-- The shared context's pinned person, as a clearable chip
+                 (P1b §2.4). A filtered queue that does not SAY it is filtered
+                 reads as "this person has no exceptions" — which is the
+                 opposite of the truth when the pin simply matched nobody. -->
+            <div class="pbaf-pfilter" t-if="personFilter">
+              <span class="i" t-out="ic('user',13)"/>
+              <span class="n" t-esc="personFilter.name or ('#' + personFilter.id)"/>
+              <span class="s">only</span>
+              <button class="x" t-on-click="() => this.clearPersonFilter()"
+                      title="Show everyone" aria-label="Show everyone">
+                <span t-out="ic('x',12)"/>
+              </button>
+            </div>
+
+            <div class="pbaf-tabs">
+              <button t-attf-class="tab {{ state.activeKind === 'all' ? 'active' : '' }}"
+                      t-on-click="() => this.setKind('all')">
+                All <span class="c" t-esc="state.data.exceptions.length"/>
+              </button>
+              <button t-foreach="kindTabs" t-as="t" t-key="t.kind"
+                      t-attf-class="tab {{ state.activeKind === t.kind ? 'active' : '' }}"
+                      t-on-click="() => this.setKind(t.kind)">
+                <span class="i" t-out="ic(t.icon,14)"/>
+                <t t-esc="t.label"/> <span class="c" t-esc="t.count"/>
+              </button>
+            </div>
+
+            <!-- empty state -->
+            <div t-if="!visibleExceptions.length" class="pbaf-empty">
+              <span class="i" t-out="ic('checkCircle',30)"/>
+              <div class="t">All clear</div>
+              <div class="s">No attendance exceptions in this window. Nice.</div>
+            </div>
+
+            <div t-else="" class="pbaf-exc-list">
+              <div t-foreach="visibleExceptions" t-as="x" t-key="x_index"
+                   t-attf-class="exc-row {{ KIND_META[x.kind].tone }}">
+                <span class="kind-ico" t-out="ic(kindIcon(x.kind),18)"/>
+                <img class="av" t-att-src="x.avatar_url" alt=""/>
+                <div class="who">
+                  <div class="nm" t-esc="x.name"/>
+                  <div class="dt">
+                    <t t-esc="x.date"/>
+                    <t t-if="x.shift_code"> · <span class="chip" t-esc="x.shift_code"/></t>
+                  </div>
+                </div>
+                <div class="detail" t-esc="x.detail"/>
+                <span t-if="x.minutes" t-attf-class="mins {{ minutesTone(x.minutes) }}">
+                  <t t-esc="x.minutes"/>m
+                </span>
+                <div class="acts">
+                  <button class="pbaf-btn tiny primary" t-on-click="() => this.fileCorrection(x)">
+                    <span t-out="ic('edit',13)"/><span>File correction</span>
+                  </button>
+                  <button class="pbaf-btn tiny ghost" t-on-click="() => this.openEmployee(x.employee_id)"
+                          title="Open employee record">
+                    <span t-out="ic('user',13)"/>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===================== corrections pipeline ================ -->
+          <section class="pbaf-panel corrections">
+            <div class="panel-h">
+              <div class="ttl"><span t-out="ic('edit',18)"/> Corrections</div>
+            </div>
+
+            <div t-if="!state.data.corrections.length" class="pbaf-empty small">
+              <span class="i" t-out="ic('sparkles',26)"/>
+              <div class="t">No corrections yet</div>
+              <div class="s">File one from an exception on the left.</div>
+            </div>
+
+            <div t-else="" class="pbaf-corr-list">
+              <div t-foreach="state.data.corrections" t-as="c" t-key="c.id"
+                   class="corr-card" t-on-click="() => this.openCorrection(c.id)">
+                <img class="av" t-att-src="c.avatar_url" alt=""/>
+                <div class="body">
+                  <div class="row1">
+                    <span class="nm" t-esc="c.employee"/>
+                    <span t-attf-class="badge {{ stateTone(c.state) }}" t-esc="stateLabel(c.state)"/>
+                  </div>
+                  <div class="row2">
+                    <span class="ty" t-esc="typeLabel(c.type)"/>
+                    <span class="dot">•</span>
+                    <span t-esc="c.date"/>
+                  </div>
+                  <div t-if="c.apply_error" class="err" t-esc="c.apply_error"/>
+                </div>
+                <span class="go" t-out="ic('chevron',16)"/>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- ============================ COMPOSER ========================== -->
+      <div t-elif="state.view === 'composer' and state.composer" class="pbaf-wrap composer">
+        <div class="pbaf-sub-head">
+          <button class="pbaf-back" t-on-click="backToBoard" t-out="ic('back',18)"/>
+          <div class="h">
+            <h1><t t-esc="state.composer.name"/></h1>
+            <div class="sub">
+              <span t-esc="state.composer.employee"/>
+              <span class="dot">•</span>
+              <span t-esc="state.composer.date"/>
+              <span t-attf-class="badge {{ stateTone(state.composer.state) }}"
+                    t-esc="stateLabel(state.composer.state)"/>
+            </div>
+          </div>
+        </div>
+
+        <div t-if="state.composer.apply_error" class="pbaf-refusal">
+          <span t-out="ic('xCircle',18)"/>
+          <div><b>Refused on apply:</b> <t t-esc="state.composer.apply_error"/></div>
+        </div>
+
+        <div class="pbaf-split">
+          <!-- LEFT: the day's punches timeline -->
+          <div class="pane punches">
+            <div class="pane-h">The day’s punches</div>
+            <div t-if="!state.composer.day_punches.length" class="pbaf-empty small">
+              <span class="i" t-out="ic('calendar',24)"/>
+              <div class="t">No punches this day</div>
+            </div>
+            <div t-else="" class="punch-list">
+              <div t-foreach="state.composer.day_punches" t-as="p" t-key="p.id"
+                   t-attf-class="punch {{ p.is_device ? 'device' : '' }} {{ state.composer.attendance_id === p.id ? 'picked' : '' }}"
+                   t-on-click="() => this.pickTargetPunch(p.id)">
+                <span class="src">
+                  <span t-if="p.is_device" class="shield" title="Device punch — protected"
+                        t-out="ic('shield',14)"/>
+                  <span t-else="" t-out="ic('edit',14)"/>
+                  <t t-esc="p.source"/>
+                </span>
+                <span class="tm"><t t-esc="p.check_in"/> → <t t-esc="p.check_out || '—'"/></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: the proposed change + stepper -->
+          <div class="pane change">
+            <div class="pane-h">Proposed change</div>
+
+            <div class="pbaf-typerow">
+              <button t-foreach="['create','adjust','delete']" t-as="ty" t-key="ty"
+                      t-attf-class="tychip {{ state.composer.type === ty ? 'active' : '' }}"
+                      t-on-click="() => this.setComposerType(ty)"
+                      t-esc="typeLabel(ty)"/>
+            </div>
+
+            <div t-if="state.composer.type !== 'delete'" class="pbaf-fields">
+              <label>
+                <span>Check-in</span>
+                <input type="text" t-att-value="state.composer.new_check_in"
+                       t-on-input="(ev) => this.onComposerField('new_check_in', ev)"
+                       placeholder="YYYY-MM-DD HH:MM:SS"/>
+              </label>
+              <label>
+                <span>Check-out</span>
+                <input type="text" t-att-value="state.composer.new_check_out"
+                       t-on-input="(ev) => this.onComposerField('new_check_out', ev)"
+                       placeholder="YYYY-MM-DD HH:MM:SS"/>
+              </label>
+            </div>
+            <div t-else="" class="pbaf-note">
+              <span t-out="ic('trash',15)"/> This will remove the selected punch.
+            </div>
+
+            <label class="pbaf-reason">
+              <span>Reason</span>
+              <textarea t-on-input="(ev) => this.onComposerField('reason', ev)"
+                        placeholder="Why is this correction needed?"
+                        t-esc="state.composer.reason"/>
+            </label>
+
+            <!-- approval stepper (rendered from the chain trail JSON) -->
+            <t t-set="stp" t-value="parsedStepper(state.composer.stepper)"/>
+            <div class="pbaf-stepper">
+              <div t-foreach="stp.steps || []" t-as="s" t-key="s_index"
+                   t-attf-class="step {{ stp.current === s.state ? 'current' : '' }} {{ (stp.trail || []).find(l => l.to_state === s.state) ? 'done' : '' }}">
+                <span class="dot"/>
+                <div class="lbl">
+                  <div class="n" t-esc="s.label"/>
+                  <div class="g" t-esc="s.group_label"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- refuse note panel -->
+            <div t-if="state.refuseOpen" class="pbaf-refuse-box">
+              <textarea t-on-input="onRefuseNote" placeholder="Reason for refusal (optional)"/>
+              <div class="acts">
+                <button class="pbaf-btn tiny ghost" t-on-click="cancelRefuse">Cancel</button>
+                <button class="pbaf-btn tiny bad" t-on-click="confirmRefuse">Refuse</button>
+              </div>
+            </div>
+
+            <!-- actions -->
+            <div class="pbaf-actbar">
+              <button t-if="state.composer.state === 'draft'" class="pbaf-btn ghost"
+                      t-att-disabled="state.busy" t-on-click="saveComposer">
+                <span t-out="ic('check',15)"/><span>Save</span>
+              </button>
+              <button t-if="state.composer.can_submit" class="pbaf-btn primary"
+                      t-att-disabled="state.busy" t-on-click="() => this.composerAction('submit')">
+                <span t-out="ic('arrow',15)"/><span>Submit</span>
+              </button>
+              <button t-if="state.composer.can_approve" class="pbaf-btn primary"
+                      t-att-disabled="state.busy" t-on-click="() => this.composerAction('approve')">
+                <span t-out="ic('check',15)"/><span>Approve &amp; apply</span>
+              </button>
+              <button t-if="state.composer.can_refuse" class="pbaf-btn bad ghost"
+                      t-att-disabled="state.busy" t-on-click="() => this.composerAction('refuse')">
+                <span t-out="ic('x',15)"/><span>Refuse</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ IMPORT =========================== -->
+      <div t-elif="state.view === 'import'" class="pbaf-wrap import">
+        <div class="pbaf-sub-head">
+          <button class="pbaf-back" t-if="canLeaveImport"
+                  t-on-click="backFromImport" t-out="ic('back',18)"/>
+          <div class="h">
+            <h1 t-if="!props.embedded">Import attendance</h1>
+            <div class="sub">CSV or XLSX · columns: Employee · Date · Check-in · Check-out</div>
+          </div>
+        </div>
+
+        <!-- step rail -->
+        <div class="pbaf-steprail">
+          <div t-foreach="['upload','map','validate','done']" t-as="st" t-key="st"
+               t-attf-class="s {{ state.imp.step === st ? 'active' : '' }}">
+            <span class="d"/><span class="t" t-esc="st"/>
+          </div>
+        </div>
+
+        <!-- UPLOAD -->
+        <div t-if="state.imp.step === 'upload'" class="pbaf-drop">
+          <span class="i" t-out="ic('upload',34)"/>
+          <div class="t">Drop a punch file</div>
+          <div class="s">Employee (badge or name), Date, Check-in, and optionally Check-out.</div>
+          <label class="pbaf-btn primary">
+            <span>Choose file</span>
+            <input type="file" accept=".csv,.xlsx,.xlsm" t-on-change="onImportFile" style="display:none"/>
+          </label>
+        </div>
+
+        <!-- MAP -->
+        <div t-elif="state.imp.step === 'map'" class="pbaf-mapwrap">
+          <div class="pbaf-map">
+            <div class="mh"><t t-esc="state.imp.fileName"/> · <t t-esc="state.imp.total"/> rows</div>
+            <div class="maprow" t-foreach="['employee','date','check_in','check_out']" t-as="tg" t-key="tg">
+              <span class="tg" t-esc="tg"/>
+              <select t-on-change="(ev) => this.onMap(tg, ev)">
+                <option value="">— none —</option>
+                <option t-foreach="state.imp.columns" t-as="col" t-key="col_index"
+                        t-att-value="col" t-att-selected="state.imp.mapping[tg] === col"
+                        t-esc="col"/>
+              </select>
+            </div>
+          </div>
+          <div class="pbaf-sample">
+            <table>
+              <thead><tr><th t-foreach="state.imp.columns" t-as="col" t-key="col_index" t-esc="col"/></tr></thead>
+              <tbody>
+                <tr t-foreach="state.imp.sample" t-as="row" t-key="row_index">
+                  <td t-foreach="state.imp.columns" t-as="col" t-key="col_index" t-esc="row[col]"/>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pbaf-actbar">
+            <button class="pbaf-btn primary" t-att-disabled="!canValidate or state.busy"
+                    t-on-click="validateImport">
+              <span t-out="ic('check',15)"/><span>Validate</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- VALIDATE -->
+        <div t-elif="state.imp.step === 'validate' and state.imp.validation" class="pbaf-valwrap">
+          <div class="pbaf-valsum">
+            <div class="s ok"><b t-esc="state.imp.validation.summary.valid"/><span>valid</span></div>
+            <div class="s bad"><b t-esc="state.imp.validation.summary.invalid"/><span>flagged</span></div>
+            <div class="s"><b t-esc="state.imp.validation.summary.total"/><span>rows</span></div>
+          </div>
+          <div class="pbaf-valtable">
+            <div t-foreach="state.imp.validation.rows" t-as="r" t-key="r_index"
+                 t-attf-class="vr {{ r.ok ? 'ok' : 'bad' }}">
+              <span class="pill" t-out="ic(r.ok ? 'checkCircle' : 'xCircle',15)"/>
+              <span class="ix">#<t t-esc="r.index"/></span>
+              <span class="emp" t-esc="r.employee"/>
+              <span class="dt" t-esc="r.date"/>
+              <span class="reasons">
+                <span t-foreach="r.errors" t-as="er" t-key="er_index" class="chip" t-esc="er"/>
+              </span>
+            </div>
+          </div>
+          <div class="pbaf-actbar">
+            <button class="pbaf-btn ghost" t-on-click="backToMap">
+              <span t-out="ic('back',15)"/><span>Back to mapping</span>
+            </button>
+            <button class="pbaf-btn primary" t-att-disabled="!state.imp.validation.summary.valid or state.busy"
+                    t-on-click="commitImport">
+              <span t-out="ic('download',15)"/>
+              <span>Import <t t-esc="state.imp.validation.summary.valid"/> rows</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- DONE -->
+        <div t-elif="state.imp.step === 'done' and state.imp.result" class="pbaf-done">
+          <span class="i" t-out="ic('checkCircle',40)"/>
+          <div class="t"><t t-esc="state.imp.result.created"/> punches imported</div>
+          <div class="s">
+            <t t-esc="state.imp.result.skipped"/> skipped of <t t-esc="state.imp.result.total"/> rows.
+          </div>
+          <div t-if="state.imp.result.errors.length" class="pbaf-errtable">
+            <div class="eh">Skipped rows</div>
+            <div t-foreach="state.imp.result.errors" t-as="er" t-key="er_index" class="er">
+              <span class="ix">#<t t-esc="er.index"/></span>
+              <span class="emp" t-esc="er.employee"/>
+              <span class="rs" t-esc="er.reason"/>
+            </div>
+          </div>
+          <div class="pbaf-actbar center">
+            <button class="pbaf-btn ghost" t-on-click="openImport">Import another</button>
+            <button class="pbaf-btn primary" t-on-click="backFromImport">
+              <t t-if="canLeaveImport">Back to control</t>
+              <t t-else="">Done</t>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ error ============================ -->
+      <div t-else="" class="pbaf-empty">
+        <span class="i" t-out="ic('alertCircle',28)"/>
+        <div class="t">Couldn’t load Attendance Control</div>
+        <button class="pbaf-btn ghost" t-on-click="load">Retry</button>
+      </div>
+    </div>
+  </t>
+
+</templates>

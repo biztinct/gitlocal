@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       THE TEST RUNS ON THE ENGINE'S OWN PAGE, AND THAT PAGE HAS TO SOUND
+       LIKE THE REST OF THE PRODUCT.
+
+       A learner presses "Take the test" on a page that says lesson, course
+       and test, and lands on a page that says survey, certification and
+       "Start Certification". Nothing there is branded — `biz_debrand`
+       rewrites every server-rendered template and the page greps clean for
+       the vendor name — but it is the OTHER standing rule: plain English, in
+       the words on the screen rather than the words in the code.
+
+       TWO STRINGS AND NO MORE. Everything else on the start page is the
+       test's own title and description, which the training team typed. The
+       confirmation dialog on submit still says "survey": it is built in
+       JavaScript (`survey_form.js:418`) rather than in a template, so it
+       cannot be reached from here — it is written down in the phase report
+       as a known one rather than patched into somebody else's component.
+
+       The xpaths select by STRUCTURE and never by `[@string=...]`, which
+       Odoo 19 view inheritance cannot do. Every attribute of the button is
+       carried over unchanged: `survey_form.js` binds to `value="start"` and
+       removes the `disabled` class itself once the page is ready, so a
+       button that lost one of them would be a button nobody can press.
+       ================================================================== -->
+  <template id="survey_start_words" inherit_id="survey.survey_fill_form_start"
+            name="The test's own words">
+
+    <xpath expr="//div[hasclass('o_survey_start')]//p" position="replace">
+      <p>
+        <span t-if="not survey.certification">You have </span>
+        <span t-else="">You have </span>
+        <span class="fw-bold text-danger" t-field="survey.time_limit"
+              t-options="{'widget': 'duration', 'unit': 'minute'}"/>
+        <span> to finish it.</span>
+      </p>
+    </xpath>
+
+    <xpath expr="//div[hasclass('o_survey_start')]//button[@value='start']"
+           position="replace">
+      <button type="submit" value="start" class="btn btn-primary btn-lg disabled">
+        <t t-if="survey.certification">Start the test</t>
+        <t t-else="">Start</t>
+      </button>
+    </xpath>
+
+  </template>
+
+</odoo>

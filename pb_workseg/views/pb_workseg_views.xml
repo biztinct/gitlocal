@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Plain lists and forms so an administrator can always reach the rows
+         behind the screen. The screen is the way in; these are the way to
+         check what it wrote. -->
+
+    <record id="view_pb_person_list" model="ir.ui.view">
+        <field name="name">pb.person.list</field>
+        <field name="model">pb.person</field>
+        <field name="arch" type="xml">
+            <list string="People">
+                <field name="name"/>
+                <field name="national_id"/>
+                <field name="employment_count" string="Employments"/>
+                <field name="home_employee_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_person_form" model="ir.ui.view">
+        <field name="name">pb.person.form</field>
+        <field name="model">pb.person</field>
+        <field name="arch" type="xml">
+            <form string="Person">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="national_id"/>
+                            <field name="tax_id"/>
+                        </group>
+                        <group>
+                            <field name="birthday"/>
+                            <field name="email"/>
+                            <field name="home_employee_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Employments">
+                            <field name="employee_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="company_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_work_segment_list" model="ir.ui.view">
+        <field name="name">pb.work.segment.list</field>
+        <field name="model">pb.work.segment</field>
+        <field name="arch" type="xml">
+            <list string="Where they work">
+                <field name="person_id"/>
+                <field name="home_company_id"/>
+                <field name="host_company_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="days"/>
+                <field name="share"/>
+                <field name="effective_policy"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_work_segment_form" model="ir.ui.view">
+        <field name="name">pb.work.segment.form</field>
+        <field name="model">pb.work.segment</field>
+        <field name="arch" type="xml">
+            <form string="Where someone works">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="person_id"/>
+                            <field name="home_employee_id"/>
+                            <field name="host_company_id"/>
+                            <field name="host_employee_id"/>
+                            <field name="division_id"/>
+                            <field name="config_id"/>
+                        </group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="days"/>
+                            <field name="month_days"/>
+                            <field name="share"/>
+                            <field name="fte"/>
+                            <field name="kind"/>
+                            <field name="pay_policy"/>
+                            <field name="effective_policy"/>
+                            <field name="state"/>
+                            <field name="derived"/>
+                        </group>
+                    </group>
+                    <field name="note"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_cost_transfer_list" model="ir.ui.view">
+        <field name="name">pb.cost.transfer.list</field>
+        <field name="model">pb.cost.transfer</field>
+        <field name="arch" type="xml">
+            <list string="Charged between entities">
+                <field name="date_from"/>
+                <field name="person_id"/>
+                <field name="from_company_id"/>
+                <field name="to_company_id"/>
+                <field name="share"/>
+                <field name="amount"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_cost_transfer_form" model="ir.ui.view">
+        <field name="name">pb.cost.transfer.form</field>
+        <field name="model">pb.cost.transfer</field>
+        <field name="arch" type="xml">
+            <form string="Charged between entities">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="person_id"/>
+                            <field name="home_employee_id"/>
+                            <field name="payslip_id"/>
+                        </group>
+                        <group>
+                            <field name="from_company_id"/>
+                            <field name="to_company_id"/>
+                            <field name="currency_id"/>
+                            <field name="amount"/>
+                            <field name="share"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    <field name="note"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

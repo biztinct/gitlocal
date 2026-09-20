@@ -6,7 +6,7 @@
         <field name="name">hr.payroll.employee.detail.tree</field>
         <field name="model">hr.payroll.employee.detail</field>
         <field name="arch" type="xml">
-            <tree string="Employee Payroll Details" create="false" edit="false" decoration-info="True">
+            <list string="Employee Payroll Details" create="false" edit="false" decoration-info="True">
                 <field name="department_name" string="Department"/>
                 <field name="employee_name"/>
                 <field name="month_name"/>
@@ -14,7 +14,7 @@
                 <field name="allowances" sum="Total Allowances"/>
                 <field name="contributions" sum="Total Contributions"/>
                 <field name="total" sum="Grand Total"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -68,7 +68,7 @@
     <record id="action_hr_payroll_employee_detail" model="ir.actions.act_window">
         <field name="name">Employee Payroll Details</field>
         <field name="res_model">hr.payroll.employee.detail</field>
-        <field name="view_mode">pivot,tree,graph</field>
+        <field name="view_mode">pivot,list,graph</field>
         <field name="context">{
             'group_by': ['employee_name'],
             'pivot_measures': ['basic_salary', 'allowances', 'contributions', 'total'],

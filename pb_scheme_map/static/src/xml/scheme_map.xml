@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- ==================================================================
+     Who is paid by what.
+
+     Three things on one surface: the picture (teams and divisions on the
+     left, schemes on the right, a drawn line for every attachment), the
+     drafted map (the hero, behind one button), and the people nobody pays
+     (a rose chip that opens a list of names).
+
+     Every state is designed: no schemes, no map, nobody uncovered, a
+     reader who may look but not change, a company with one scheme and
+     nothing to learn.
+     ================================================================== -->
+
+<t t-name="pb_scheme_map.SchemeMapBoard">
+  <div class="pbim smp" t-ref="root">
+
+    <!-- ==================================================== still reading -->
+    <div t-if="!state.loaded" class="smp-empty">
+      <span class="smp-empty__icon"><t t-out="ic('loader', 22)"/></span>
+      <p class="smp-empty__title">Reading the map…</p>
+    </div>
+
+    <!-- ======================================================= it refused -->
+    <div t-elif="state.failed" class="smp-empty">
+      <span class="smp-empty__icon is-bad"><t t-out="ic('alert', 22)"/></span>
+      <p class="smp-empty__title"><t t-esc="state.failed"/></p>
+      <button class="pbim-btn outline" t-on-click="() => this.load()">
+        <t t-out="ic('refresh', 15)"/> Try again
+      </button>
+    </div>
+
+    <!-- ================================================ nothing to show you -->
+    <div t-elif="!allowed" class="smp-empty">
+      <span class="smp-empty__icon"><t t-out="ic('lock', 22)"/></span>
+      <p class="smp-empty__title">This is a payroll screen</p>
+      <p class="smp-empty__sub">
+        Who is paid by which scheme is set up by a payroll manager. Ask one of
+        them for access and this map opens.
+      </p>
+    </div>
+
+    <div t-else="" class="smp-board">
+
+      <!-- ============================================== the header strip -->
+      <div class="smp-strip">
+        <div class="smp-strip__where">
+          <span class="smp-strip__icon"><t t-out="ic('building', 15)"/></span>
+          <select t-if="manyCompanies" class="smp-select"
+                  aria-label="Company this map is for"
+                  t-on-change="pickCompany">
+            <option t-foreach="companies" t-as="c" t-key="c.id"
+                    t-att-value="c.id"
+                    t-att-selected="c.id === state.companyId ? 'selected' : false"
+                    t-esc="c.name"/>
+          </select>
+          <span t-else="" class="smp-strip__company" t-esc="board.company"/>
+        </div>
+
+        <p class="smp-strip__line" t-esc="coverLine"/>
+
+        <div class="smp-strip__acts">
+          <button t-if="exceptionCount" class="smp-chip is-bad"
+                  t-on-click="toggleExceptions"
+                  t-att-aria-expanded="state.showExceptions ? 'true' : 'false'">
+            <t t-out="ic('userX', 14)"/>
+            <b t-esc="num(exceptionCount)"/>
+            <span> not covered</span>
+          </button>
+          <span t-if="staleCount" class="smp-chip is-warn"
+                title="The map changed and these people have not been read again yet.">
+            <t t-out="ic('clock', 14)"/>
+            <b t-esc="num(staleCount)"/>
+            <span> to work out again</span>
+          </span>
+          <button t-if="canEdit and hasSchemes" class="pbim-btn primary"
+                  t-att-disabled="state.busy ? 'disabled' : false"
+                  t-on-click="startDraft">
+            <t t-out="ic('sparkles', 15)"/> Draft the map from what you paid
+          </button>
+          <button t-if="canEdit" class="pbim-btn outline"
+                  t-att-disabled="state.busy ? 'disabled' : false"
+                  t-on-click="recompute">
+            <t t-out="ic('refresh', 15)"/> Work it out again
+          </button>
+        </div>
+      </div>
+
+      <!-- ======================================== no schemes on this company -->
+      <div t-if="!hasSchemes" class="smp-empty">
+        <span class="smp-empty__icon"><t t-out="ic('layers', 22)"/></span>
+        <p class="smp-empty__title">This company has no payroll scheme yet</p>
+        <p class="smp-empty__sub">
+          A scheme is the set of rules that works out one group of people's pay.
+          Build the first one, then come back here and say who it pays.
+        </p>
+        <button class="pbim-btn primary" t-on-click="openStudio">
+          <t t-out="ic('calculator', 15)"/> Build a scheme
+        </button>
+      </div>
+
+      <!-- ============================================== the picture -->
+      <div t-else="" class="smp-wire" t-ref="wires">
+
+        <svg class="smp-lines" aria-hidden="true">
+          <path t-foreach="state.paths" t-as="p" t-key="p.id"
+                t-att-d="p.d"
+                t-att-class="p.lit ? 'smp-line is-on' : (p.dim ? 'smp-line is-dim' : (p.drafted ? 'smp-line is-drafted' : 'smp-line'))"/>
+        </svg>
+
+        <!-- ================================================ left: segments -->
+        <div class="smp-col">
+          <div class="smp-col__head">
+            <h3 class="smp-col__title">Who</h3>
+            <p class="smp-col__sub">Divisions and teams in this company</p>
+          </div>
+
+          <div t-if="state.picked.length" class="smp-bulk">
+            <span><b t-esc="state.picked.length"/> chosen</span>
+            <button class="pbim-btn primary sm" t-on-click="openAttachForPicked">
+              <t t-out="ic('link', 14)"/> Attach to a scheme
+            </button>
+            <button class="pbim-btn ghost sm" t-on-click="clearPicked">Clear</button>
+          </div>
+
+          <div t-foreach="segments" t-as="segment" t-key="segment.key"
+               class="smp-seg">
+            <div t-att-data-smp-seg="segment.key"
+                 tabindex="0"
+                 t-att-draggable="canEdit ? 'true' : 'false'"
+                 t-attf-class="smp-seg__row {{ isDragging(segment.key) ? 'is-held' : '' }} {{ isTraced('segment', segment.key) ? 'is-traced' : '' }}"
+                 t-att-aria-label="segment.label"
+                 t-on-keydown="(ev) => this.onSegmentKey(ev, segment)"
+                 t-on-dragstart="(ev) => this.onSegmentDragStart(ev, segment)"
+                 t-on-dragend="onDragEnd"
+                 t-on-mouseenter="() => this.setHover(segment.key)"
+                 t-on-mouseleave="clearHover">
+              <span t-if="canEdit" class="smp-grip"
+                    title="Drag this team onto a scheme on the right">
+                <t t-out="ic('grip', 14)"/>
+              </span>
+              <input type="checkbox" class="smp-tick"
+                     t-att-aria-label="segment.label"
+                     t-att-checked="isPicked(segment.key) ? 'checked' : false"
+                     t-on-change="() => this.togglePick(segment.key)"/>
+              <span class="smp-seg__icon">
+                <t t-if="segment.kind === 'division'" t-out="ic('layers', 15)"/>
+                <t t-else="" t-out="ic('users', 15)"/>
+              </span>
+              <span class="smp-seg__name">
+                <b t-esc="segment.label"/>
+                <small><t t-esc="segment.sublabel"/> · <t t-esc="num(segment.people)"/> <t t-esc="peopleWord(segment.people)"/></small>
+              </span>
+              <span t-if="segment.people and !segment.missing" class="smp-tag is-good">All covered</span>
+              <span t-elif="segment.missing and segment.missing &lt; segment.people" class="smp-tag is-warn">
+                <t t-esc="num(segment.missing)"/> not covered
+              </span>
+              <span t-elif="segment.missing" class="smp-tag is-bad">No scheme</span>
+              <button t-if="canEdit" class="smp-icon"
+                      title="Attach a scheme"
+                      t-on-click="() => this.openAttach([segment.key])">
+                <t t-out="ic('plus', 14)"/>
+              </button>
+              <button t-if="segment.children.length" class="smp-icon"
+                      t-att-title="'Teams inside ' + segment.label"
+                      t-on-click="() => this.toggleOpen(segment.key)">
+                <t t-if="state.open === segment.key" t-out="ic('chevronUp', 14)"/>
+                <t t-else="" t-out="ic('chevronDown', 14)"/>
+              </button>
+            </div>
+
+            <div t-if="wiresFor(segment.key).length" class="smp-seg__wires">
+              <span t-foreach="wiresFor(segment.key)" t-as="wire" t-key="wire.id"
+                    tabindex="0" role="button"
+                    t-att-draggable="canEdit ? 'true' : 'false'"
+                    t-attf-class="smp-wirechip {{ state.traced === wire.id ? 'is-traced' : '' }}"
+                    t-attf-aria-label="{{ wire.config }} pays {{ wire.segment_label }}. Press Delete to take it off."
+                    t-on-keydown="(ev) => this.onWireKey(ev, wire)"
+                    t-on-dragstart="(ev) => this.onWireDragStart(ev, wire)"
+                    t-on-dragend="onDragEnd"
+                    t-on-focus="() => this.traceWire(wire.id)"
+                    t-on-blur="clearTrace"
+                    t-on-mouseenter="() => this.traceWire(wire.id)"
+                    t-on-mouseleave="clearTrace">
+                <b t-esc="wire.config"/>
+                <span class="smp-badge" t-esc="wire.cycle_label"/>
+                <span t-if="wire.source !== 'manual'" class="smp-badge is-soft">proposed</span>
+                <button t-if="canEdit" class="smp-icon"
+                        t-att-title="'Take ' + wire.config + ' off ' + wire.segment_label"
+                        t-on-click="() => this.detach(wire)">
+                  <t t-out="ic('unlink', 13)"/>
+                </button>
+              </span>
+            </div>
+
+            <div t-if="state.open === segment.key" class="smp-seg__kids">
+              <div t-foreach="segment.children" t-as="child" t-key="child.key"
+                   class="smp-seg__kid" t-att-data-smp-seg="child.key">
+                <span class="smp-seg__name">
+                  <b t-esc="child.label"/>
+                  <small><t t-esc="num(child.people)"/> <t t-esc="peopleWord(child.people)"/></small>
+                </span>
+                <span t-foreach="wiresFor(child.key)" t-as="wire" t-key="wire.id"
+                      class="smp-wirechip">
+                  <b t-esc="wire.config"/>
+                  <span class="smp-badge" t-esc="wire.cycle_label"/>
+                  <button t-if="canEdit" class="smp-icon"
+                          title="Take this scheme off this team"
+                          t-on-click="() => this.detach(wire)">
+                    <t t-out="ic('unlink', 13)"/>
+                  </button>
+                </span>
+                <button t-if="canEdit" class="smp-icon"
+                        title="Attach a scheme to this team"
+                        t-on-click="() => this.openAttach([child.key])">
+                  <t t-out="ic('plus', 13)"/>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GROUP P7 — the bar that answers a wire drag. `position: fixed`
+             and not `position: sticky`, because a control that answers a
+             gesture has to resolve against the window the mouse is in
+             (GR40). It exists only while a line is in somebody's hand. -->
+        <div t-if="draggingWire"
+             t-attf-class="smp-trash {{ state.overTrash ? 'is-over' : '' }}"
+             role="status"
+             t-on-dragover="onTrashDragOver"
+             t-on-dragleave="onTrashDragLeave"
+             t-on-drop="onTrashDrop">
+          <t t-out="ic('unlink', 18)"/>
+          <span t-esc="trashLabel"/>
+        </div>
+
+        <!-- ================================================= right: schemes -->
+        <div class="smp-col is-right">
+          <div class="smp-col__head">
+            <h3 class="smp-col__title">Paid by</h3>
+            <p class="smp-col__sub">The payroll schemes this company runs</p>
+            <p t-if="canEdit" class="smp-col__hint">
+              Drag a team onto a scheme to attach it. Hover a line to follow it. Pull a line off to take it away — or use the keyboard: Enter on a team attaches it, Delete on a line takes it off.
+            </p>
+          </div>
+
+          <div t-foreach="schemeGroups" t-as="group" t-key="group.key"
+               class="smp-group">
+            <p class="smp-group__label" t-esc="group.label"/>
+            <div t-foreach="group.items" t-as="scheme" t-key="scheme.id"
+                 t-att-data-smp-scheme="scheme.id"
+                 t-attf-class="smp-scheme {{ state.dropOn === scheme.id ? 'is-drop' : '' }} {{ isTraced('scheme', scheme.id) ? 'is-traced' : '' }}"
+                 t-on-dragover="(ev) => this.onSchemeDragOver(ev, scheme)"
+                 t-on-dragleave="() => this.onSchemeDragLeave(scheme)"
+                 t-on-drop="(ev) => this.onSchemeDrop(ev, scheme)"
+                 t-on-mouseenter="() => this.setHover('scheme-' + scheme.id)"
+                 t-on-mouseleave="clearHover">
+              <svg class="smp-ring" viewBox="0 0 36 36" aria-hidden="true">
+                <circle class="smp-ring__track" cx="18" cy="18" r="15"/>
+                <circle class="smp-ring__fill" cx="18" cy="18" r="15"
+                        t-att-stroke-dashoffset="ringOffset(scheme.covered, board.people)"/>
+              </svg>
+              <span class="smp-scheme__name">
+                <b t-esc="scheme.name"/>
+                <small>
+                  <t t-esc="num(scheme.covered)"/> covered
+                  <t t-if="scheme.last_run.name">
+                    · last run <t t-esc="scheme.last_run.name"/>
+                  </t>
+                </small>
+              </span>
+              <span t-if="!scheme.covered" class="smp-tag is-warn">Nobody yet</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ no map drawn at all -->
+      <div t-if="hasSchemes and !hasWires" class="smp-teach">
+        <span class="smp-teach__icon"><t t-out="ic('sparkles', 20)"/></span>
+        <div>
+          <p class="smp-teach__title">Nothing is attached to a scheme yet</p>
+          <p class="smp-teach__sub">
+            You have been paying people for months, so the map already exists —
+            it is just not written down. Press "Draft the map from what you
+            paid" and this system reads the last runs and proposes it back to
+            you, line by line, with the numbers behind each one.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================ the attach panel -->
+    <div t-if="state.attaching" class="smp-scrim" t-on-click="closeAttach">
+      <div class="smp-panel" role="dialog" aria-label="Attach a scheme"
+           t-on-click.stop="onPanelClick">
+        <div class="smp-panel__head">
+          <h3>Attach <t t-esc="attachSegmentLabel"/> to a scheme</h3>
+          <button class="smp-icon" title="Close" t-on-click="closeAttach">
+            <t t-out="ic('x', 16)"/>
+          </button>
+        </div>
+
+        <p class="smp-panel__sub">
+          Everyone in this part of the business will be paid by the scheme you
+          pick, for the kind of run you pick.
+        </p>
+
+        <div class="smp-kinds" role="radiogroup" aria-label="Kind of run">
+          <button t-foreach="cycleChoices" t-as="kind" t-key="kind.value"
+                  class="smp-kind"
+                  t-att-aria-pressed="state.attaching.cycle === kind.value ? 'true' : 'false'"
+                  t-att-data-smp-on="state.attaching.cycle === kind.value ? '1' : '0'"
+                  t-on-click="() => this.setAttachCycle(kind.value)">
+            <t t-esc="kind.label"/>
+          </button>
+        </div>
+
+        <input type="search" class="smp-search" placeholder="Find a scheme…"
+               aria-label="Find a scheme"
+               t-att-value="state.attachQuery" t-on-input="onAttachQuery"/>
+
+        <p t-if="state.dialogError" class="smp-refuse" t-esc="state.dialogError"/>
+
+        <div class="smp-panel__list">
+          <div t-foreach="attachChoices" t-as="group" t-key="group.key">
+            <p class="smp-group__label" t-esc="group.label"/>
+            <button t-foreach="group.items" t-as="scheme" t-key="scheme.id"
+                    class="smp-pick"
+                    t-att-disabled="state.busy ? 'disabled' : false"
+                    t-on-click="() => this.attachTo(scheme.id)">
+              <span class="smp-pick__name">
+                <b t-esc="scheme.name"/>
+                <small t-esc="scheme.cycle_label"/>
+              </span>
+              <span class="smp-pick__go"><t t-out="ic('arrowRight', 15)"/></span>
+            </button>
+          </div>
+          <p t-if="!attachChoices.length" class="smp-panel__none">
+            No scheme here matches that.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- =============================================== the drafted map -->
+    <div t-if="state.drafting" class="smp-scrim" t-on-click="closeDraft">
+      <div class="smp-panel is-wide" role="dialog"
+           aria-label="The map read from what you paid"
+           t-on-click.stop="onPanelClick">
+        <div class="smp-panel__head">
+          <h3>The map, read from what you paid</h3>
+          <button class="smp-icon" title="Close" t-on-click="closeDraft">
+            <t t-out="ic('x', 16)"/>
+          </button>
+        </div>
+
+        <div t-if="!state.draft" class="smp-empty">
+          <span class="smp-empty__icon"><t t-out="ic('loader', 20)"/></span>
+          <p class="smp-empty__title">Reading the last runs…</p>
+        </div>
+
+        <div t-elif="!draftRows.length" class="smp-empty">
+          <span class="smp-empty__icon"><t t-out="ic('history', 20)"/></span>
+          <p class="smp-empty__title">There is nothing to read yet</p>
+          <p class="smp-empty__sub">
+            Nobody in this company has been paid under a scheme yet, so there is
+            no history to propose a map from. Attach the first team by hand and
+            the rest becomes easy.
+          </p>
+        </div>
+
+        <div t-else="" class="smp-panel__body">
+          <p class="smp-panel__sub">
+            <b t-esc="draftRows.length"/> lines, read from the last runs.
+            <t t-if="unsureCount">
+              <t t-esc="unsureCount"/> of them are worth a look — their people
+              did not all agree.
+            </t>
+          </p>
+
+          <div class="smp-panel__list">
+            <div t-foreach="draftRows" t-as="row" t-key="draftKey(row)"
+                 class="smp-draft"
+                 t-att-data-smp-on="isSkipped(row) ? '0' : '1'">
+              <svg class="smp-ring" viewBox="0 0 36 36" aria-hidden="true">
+                <circle class="smp-ring__track" cx="18" cy="18" r="15"/>
+                <circle class="smp-ring__fill" cx="18" cy="18" r="15"
+                        t-att-data-smp-on="row.confident ? '1' : '0'"
+                        t-att-stroke-dashoffset="ringOffset(row.agree, row.total)"/>
+              </svg>
+              <div class="smp-draft__body">
+                <p class="smp-draft__wire">
+                  <b t-esc="row.department"/>
+                  <span class="smp-draft__arrow"><t t-out="ic('arrowRight', 14)"/></span>
+                  <b t-esc="row.config"/>
+                  <span class="smp-badge" t-esc="row.cycle_label"/>
+                  <span t-if="!row.confident" class="smp-tag is-warn">Worth a look</span>
+                  <span t-if="row.already" class="smp-tag">Replaces <t t-esc="row.already"/></span>
+                </p>
+                <p class="smp-draft__why" t-esc="row.sentence"/>
+              </div>
+              <button class="pbim-btn ghost sm" t-on-click="() => this.toggleSkip(row)">
+                <t t-if="isSkipped(row)">Put back</t>
+                <t t-else="">Skip</t>
+              </button>
+            </div>
+          </div>
+
+          <div class="smp-panel__acts">
+            <button class="pbim-btn primary"
+                    t-att-disabled="state.busy or !confidentRows.length ? 'disabled' : false"
+                    t-on-click="acceptConfident">
+              <t t-out="ic('check', 15)"/>
+              Accept the <t t-esc="confidentRows.length"/> everyone agreed on
+            </button>
+            <button class="pbim-btn outline"
+                    t-att-disabled="state.busy or !keptRows.length ? 'disabled' : false"
+                    t-on-click="acceptAllKept">
+              Accept all <t t-esc="keptRows.length"/>
+            </button>
+            <button class="pbim-btn ghost" t-on-click="closeDraft">Not now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ the people nobody pays -->
+    <div t-if="state.showExceptions" class="smp-scrim"
+         t-on-click="toggleExceptions">
+      <div class="smp-panel" role="dialog" aria-label="People not covered"
+           t-on-click.stop="onPanelClick">
+        <div class="smp-panel__head">
+          <h3>Nobody pays these people yet</h3>
+          <button class="smp-icon" title="Close" t-on-click="toggleExceptions">
+            <t t-out="ic('x', 16)"/>
+          </button>
+        </div>
+        <p class="smp-panel__sub">
+          A pay run will leave them out until their team is attached to a
+          scheme. Fixing the team fixes everybody in it at once.
+        </p>
+        <div class="smp-panel__list">
+          <div t-foreach="exceptionPeople" t-as="person" t-key="person.employee_id"
+               class="smp-person">
+            <span class="smp-person__who">
+              <b t-esc="person.name"/>
+              <small>
+                <t t-if="person.department" t-esc="person.department"/>
+                <t t-else="">No team</t>
+                · <t t-esc="person.reason"/>
+              </small>
+            </span>
+            <button t-if="canEdit" class="pbim-btn outline sm"
+                    t-on-click="() => this.openAttachForDepartment(person.department_id)">
+              <t t-out="ic('link', 14)"/> Attach a scheme
+            </button>
+          </div>
+          <p t-if="exceptionCount > exceptionPeople.length" class="smp-panel__none">
+            and <t t-esc="num(exceptionCount - exceptionPeople.length)"/> more.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</t>
+
+<!-- ==================================================================
+     "Paid by" on a person's card.
+
+     One chip in the Employee 360 drawer's header saying which scheme pays
+     this person, which pays their advance, and — in the tooltip — how that
+     was worked out. A person no scheme covers says so plainly rather than
+     showing an empty space that reads as "not loaded".
+     ================================================================== -->
+
+<t t-name="pb_scheme_map.PaidByChip">
+  <span t-if="state.data.found" class="smp-paidby"
+        t-att-data-smp-on="state.data.config_id ? '1' : '0'"
+        t-att-title="tooltip">
+    <span class="smp-paidby__icon"><t t-out="ic('banknote', 14)"/></span>
+    <span class="smp-paidby__text">
+      <small>Paid by</small>
+      <b t-esc="state.data.label"/>
+    </span>
+    <span t-if="state.data.advance" class="smp-badge">
+      Advance: <t t-esc="state.data.advance"/>
+    </span>
+  </span>
+</t>
+
+</templates>

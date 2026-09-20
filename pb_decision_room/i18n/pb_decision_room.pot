@@ -1,0 +1,5653 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_decision_room
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-07 12:13+0000\n"
+"PO-Revision-Date: 2026-09-07 12:13+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid " (instead of %s)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid " Joining and leaving costs land here."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+" Only %(n)s of the %(all)s people in this view have been paid in a closed "
+"run so far, so this is part of the picture rather than all of it."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid " The yearly bonus is paid this month."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+" This team does not earn revenue in this model, so adding people here "
+"changes cost only."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid " and "
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid " in steps of %s people"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid " or "
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid " with %s smaller changes"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid " with 1 smaller change"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid " — in %s, cannot be compared"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "\"%(label)s\" has to be between %(low)s and %(high)s."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "\"%(name)s\" was saved by %(who)s. Ask them to propose it."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "\"%s\" cannot be negative."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "\"%s\" has already been approved."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid ""
+"\"%s\" has been approved, so its numbers stay as they were agreed. Use "
+"\"Keep editing a copy\" to carry on from here."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "\"%s\" needs to be a number."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid ""
+"\"%s\" was saved by %s. Ask them to replace it, or save yours under another "
+"name."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "\"%s\" was saved by %s. Only they, or your HR lead, can remove it."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(bound)s %(target)s · %(gap)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "%(companies)s companies in %(group)s."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"%(cost)s of workforce cost for the year, %(perhead)s for each person on "
+"average. Add a revenue target and profit appears."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(delta)s against %(name)s. %(tail)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"%(delta)s of yearly profit against your previous plan. %(met)s of %(all)s "
+"goals met. Your previous plan is kept until you choose."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(delta)s vs %(name)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"%(evening)s of the people who earn revenue work evenings and %(night)s work "
+"nights, paid %(eu)s and %(nu)s above base pay. The work itself arrives "
+"%(dd)s during the day, %(de)s in the evening and %(dn)s at night — a shift "
+"can only serve the work that arrives on it."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(fixed)s a month, plus %(pct)s of whatever you sell."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(gaps)s. %(keeps)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"%(gaps)s. Adding people, hours or productive time only moves the plan "
+"further away, so the search came back to where you started. Ease a goal, "
+"change the revenue target, or look at what the work itself is worth."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%(lead)s adds %(money)s of profit for the year%(rest)s."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%(lead)s costs %(money)s of profit for the year%(rest)s."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(met)s of %(all)s goals met. Let us close the gaps."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(met)s of %(all)s goals met. Room to think bigger."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%(month)s came in %(money)s %(direction)s; %(why)s.%(partial)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(month)s is your %(measure)s month at %(value)s.%(extra)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%(month)s loses money (%(money)s) — %(why)s."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(month)s: %(cost)s of workforce cost"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(month)s: %(now)s (was %(was)s)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(month)s: %(profit)s profit, %(served)s of demand served"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(months)s of pay, in %(month)s."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%(n)s fewer people in %(team)s from %(month)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%(n)s fewer person in %(team)s from %(month)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(n)s goal%(s)s still missed"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(n)s h"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%(n)s h a month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(n)s in %(team)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(n)s more in %(team)s · preview"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(n)s more in %(where)s · preview"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(n)s more people in %(team)s from %(month)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(n)s more people in %(team)s would add %(money)s of profit."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(n)s more people in %(team)s would cost %(money)s of profit."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%(n)s more person in %(team)s from %(month)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+"%(n)s new people is a lot to recruit at once — roughly %(months)s recruiter-"
+"months of work. Spreading them over two or three months is kinder to "
+"everyone."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid ""
+"%(n)s of the schemes here have not had their components classified yet "
+"(%(names)s), so their people are not in this figure."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "%(n)s people"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"%(n)s people arrive during the year, paid in full from their first day and "
+"about half as productive while they learn. Recruiting them costs %(cost)s, "
+"once."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "%(n)s person"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(n)sk h"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(n)sm h"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(name)s %(before)s → your plan %(after)s. %(tail)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%(name)s (carrying on %(n)s)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(name)s: %(heads)s people, comparison %(was)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"%(people)s people in %(teams)s teams, as they stood on %(date)s. Pay is the "
+"monthly salary on each open contract."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(range)s more people in %(where)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"%(rev)s of revenue − %(people)s of workforce − %(other)s of other costs = "
+"%(profit)s of operating profit. Margin %(margin)s."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%(role)s in %(team)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%(share)s of demand goes unserved — %(money)s left on the table."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "%(value)s pp"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%(who)s approved this plan.%(note)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%(who)s proposed this plan for approval."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%(who)s sent this plan back.%(note)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%(who)s would like a decision on \"%(plan)s\" (%(scope)s)."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "%s (carrying on)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s a month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"%s fewer roles than the comparison. Nothing here changes anybody's job — it "
+"is a picture, not a decision."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s h a month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s hours"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+"%s hours of overtime a person brushes the legal monthly cap for factory "
+"roles. Hiring may cost less."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%s hours of overtime per person"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s months"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%s months of bonus"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s of demand goes unserved this year."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s of demand is left on the table."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%s of demand still goes unserved."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s of room left"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s of the hours this team can work"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s of the work served"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"%s of this group's money could not be converted when this plan was saved, so"
+" the total in it is a partial one. The version keeps that note."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s of work goes unserved on this shift"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%s on payroll by December."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s on payroll in December."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s over"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s people"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s plans are saved for this company. Remove one first."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s plans are waiting for your decision."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s short"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s teams"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s to spare"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s · preview"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%s%% less productive time"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%s%% less work by December"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%s%% more productive time"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%s%% more work by December"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%s%% of the team on evenings"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%s%% of the team on nights"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "%s%% unavailable time"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"%sThese numbers are looked after by your HR or finance lead. Ask them if one"
+" of them looks wrong."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "%s× normal"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "+%s on top of base pay"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "+%s people"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ", capped at %s a month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ", for everyone."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "0 people"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "1 %(src)s = %(rate)s %(dst)s%(when)s"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__bonus_month_index
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__bonus_month_index
+msgid "1 is January. Zero means no yearly bonus."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "1 month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "1 plan is waiting for your decision."
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "<span class=\"eyebrow\">DECISION BRIEF</span>"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "<strong>Difference in operating profit</strong>"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "= What reaches employees"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+"A %s%% increase is well above a normal year. Good for keeping people; check "
+"the yearly bill."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "A 5% increase from January, and 5% more productive time"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "A DECISION, RECORDED"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "A LITTLE HELP, A BETTER PLAN"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "A POSSIBILITY WORTH KEEPING"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan_version__label
+msgid ""
+"A few words about why this version exists — \"proposed to the board\", "
+"\"after the pay review\"."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "A goal breaks here"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__ramp_first_month_pct
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__ramp_first_month_pct
+msgid "A new person delivers (%) in their first month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid ""
+"A plan called \"%s\" already exists. Replace it, or give this one another "
+"name."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "A plan called “"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__status
+msgid ""
+"A plan starts as a draft, is proposed, and is then approved or sent back. "
+"Nothing about payroll changes at any point."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.constraint,message:pb_decision_room.constraint_pb_decision_plan_name_uniq
+msgid "A plan with this name already exists for this scope."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "A share of the people who earn revenue."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "A whole team. A clear money story."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "AMBITION, WITH BOUNDARIES"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"AN ANSWER BEFORE ANOTHER\n"
+"                      COMMITMENT"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_needaction
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_needaction
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__active
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__active
+msgid "Active"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Add or remove people"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Add people where the work is"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Add this team"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__recruit_cost_months
+msgid ""
+"Agency fees, advertising and onboarding, counted once in the month the "
+"person arrives."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Allowances"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__allowance_pct
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__allowance_pct
+msgid "Allowances (% of pay)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "An assumed improvement in how much gets done in an hour."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "And if demand surprises us?"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__note
+msgid "Anything a reader should know about these numbers."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Anything to say with it?"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Applies to everyone from the month you choose."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Approve"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Approve it"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "Approve the plan \"%s\""
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Approve “%s”?"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__status__approved
+msgid "Approved"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid ""
+"Approving a plan is your HR or finance lead's to do. Ask them to take a look"
+" — it is waiting on their home page."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid ""
+"Approving a plan is your HR or finance lead's to do. Ask them to take a look"
+" — they will see it waiting on their home page."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Approving keeps a version of this plan exactly as it stands, so what you "
+"agreed to survives every edit made afterwards. Nothing about payroll "
+"changes."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "Apr"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "April"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "As planned"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__user_id
+msgid "Asked by"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:res.groups,name:pb_decision_room.group_decision_manager
+msgid "Assumptions"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Assumptions saved for %s. Every plan now uses them."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_assumptions.py:0
+msgid "Assumptions · %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "At least"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "At most"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"At this size %(n)s people barely move what you can deliver. Workforce cost "
+"rises %(cost)s across the year."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_attachment_count
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_attachment_count
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "Aug"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "August"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Back on the rules for %s."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Back to my plan"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Back to the company as it is today."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Blend the two"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_assumptions_form
+msgid "Bonus"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__bonus_month_index
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__bonus_month_index
+msgid "Bonus is paid in month"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__bonus_months
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__bonus_months
+msgid "Bonus size (months of pay)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Build the team"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Building the brief…"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "CHANGE THE NUMBERS"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__kh
+msgid "Cambodia"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:res.groups,comment:pb_decision_room.group_decision_manager
+msgid "Change the numbers behind the picture, and remove anyone's plan."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Checked %s combinations, keeping your demand, pay, shifts and hiring month "
+"exactly as they are."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Choose a goal to see your room to hire."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Click a month to explore it"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Click a step to look closer"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Close"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "Closed pay runs are not being collected on this database yet."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__company_ids
+msgid "Companies in this plan"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__company_ids
+msgid "Companies in this scope"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__company_id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__company_id
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_assumptions__scope_kind__company
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__scope_kind__company
+msgid "Company"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Compare"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Compare against"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__is_reference
+msgid "Compare against this by default"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Compare possibilities, with confidence."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Contributions"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Contributions & deductions"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__contribution_cap
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__contribution_cap
+msgid "Contributions are capped at"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Contributions capped at"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Cost"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__productivity_cost_per_point
+msgid "Cost of one point of productivity"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__severance_months
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__severance_months
+msgid "Cost to let someone go (months of pay)"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__recruit_cost_months
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__recruit_cost_months
+msgid "Cost to recruit someone (months of pay)"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_exact_job__state__failed
+msgid "Could not finish"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__severance_months
+msgid "Counted once in the month the role ends."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__country_code
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_assumptions__scope_kind__country
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__scope_kind__country
+msgid "Country"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.actions.act_window,name:pb_decision_room.action_pb_decision_ruleset
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__ruleset_id
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_form
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_list
+msgid "Country rules"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__create_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__create_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__create_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__create_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__create_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__create_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__create_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__create_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__currency_id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "DECISION ROOM"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "DEMAND SERVED THIS YEAR"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "DEMAND SERVED · %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Day"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Day, evening and night have to add up to 100%% of the work. They add up to "
+"%s%% right now."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_assumptions.py:0
+msgid ""
+"Day, evening and night have to add up to 100%% of the work. They currently "
+"add up to %(total)s%% (%(day)s + %(evening)s + %(night)s)."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "Dec"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "December"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__decided_by
+msgid "Decided by"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__decided_at
+msgid "Decided on"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_palette.js:0
+#: model:ir.actions.client,name:pb_decision_room.action_pb_decision_room
+#: model:ir.module.category,name:pb_decision_room.module_category_decision_room
+#: model:res.groups.privilege,name:pb_decision_room.res_groups_privilege_decision_room
+msgid "Decision Room"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.actions.act_window,name:pb_decision_room.action_pb_decision_assumptions
+#: model:ir.model,name:pb_decision_room.model_pb_decision_assumptions
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_assumptions_form
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_assumptions_list
+msgid "Decision Room assumptions"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_ruleset
+msgid "Decision Room country rules"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_room
+msgid "Decision Room data"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_exact
+msgid "Decision Room exact cost"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_exact_job
+msgid "Decision Room exact-cost job"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_plan_version
+msgid "Decision Room plan version"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_plan
+msgid "Decision Room saved plan"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model,name:pb_decision_room.model_pb_decision_scope
+msgid "Decision Room scope"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.actions.server,name:pb_decision_room.cron_decision_exact_ir_actions_server
+msgid "Decision Room: work out an exact cost"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Decision brief opened in a new tab — use Print to save it as a PDF."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Decision brief · %s"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Decisions that differ from the comparison"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Deductions"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Deductions are shown once, inside gross pay. They never\n"
+"                      add to business cost."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Delivery hours a month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Demand reality check"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Demand served"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Demand served changes by %(delta)s, to %(now)s."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Demand served moves %(cov)s for %(cost)s more workforce cost across the "
+"year."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Develop the team"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Difference in profit"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_room__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__display_name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_scope__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_assumptions__scope_kind__division
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__scope_kind__division
+msgid "Division"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_exact_job__state__done
+msgid "Done"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__progress
+msgid "Done (%)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Dotted line: an even pace to your profit goal"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Dotted line: an even share of your cost limit"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Dotted line: your demand-served goal"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__status__draft
+msgid "Draft"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "EVERY MONTH TELLS A STORY"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Each company"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Each in its own money"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Ease overtime"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Effect on profit"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Employee contributions"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Employee contributions %(rate)s of pay, then income tax. Neither is an extra"
+" cost to the business — they only change what reaches the employee."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__employee_rate_pct
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__employee_rate_pct
+msgid "Employee contributions (% of pay)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Employee deductions"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Employer contributions"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Employer contributions %(rate)s of pay%(cap)s. Allowances add %(allow)s of "
+"base pay."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__employer_rate_pct
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__employer_rate_pct
+msgid "Employer contributions (% of pay)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Employer contributions, paid on top"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Enough people. In the right places."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Evening"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_assumptions.py:0
+msgid ""
+"Evening and night together cannot be more than 80% of your people — somebody"
+" has to work the day."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__evening_uplift_pct
+msgid "Evening work uplift (%)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Every company is worked out in its own money and added up in %(money)s. The "
+"revenue target is shared out by how much of the group's pay bill sits in "
+"each one."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Every difference has a reason."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Every direction the search tried came back to the plan you already have. "
+"Raise a goal and look again — there is room to think bigger."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Every extra person in %s breaks at least one of your goals. Ease a goal, or "
+"look at hours and productive time instead."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Every goal still met"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Every goal you switched on is met. %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Every hour covered · spare capacity here"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Every hour of the work you planned for is covered."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Every hour of this shift is covered"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__company_ids
+msgid "Every legal entity these assumptions cover."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Every one of those keeps all your goals. Demand, pay, shifts, overtime and "
+"the hiring month all stay exactly where you left them."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Every time a plan is proposed or approved, the\n"
+"              levers, the goals, the numbers and the rules behind them are\n"
+"              kept. Editing the plan afterwards never changes these."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Everyone"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Everyone at"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__snapshot
+msgid "Everything as it stood"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Everything is now measured against “%s”."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_assumptions_form
+msgid "Everything that is not people"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Everything that was set"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__state
+msgid ""
+"Everything you moved: people per team, the raise, overtime, when the hires "
+"arrive, and the revenue target."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__exact_result
+msgid "Exact cost"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Exact cost %(exact)s · the estimate was %(estimate)s (%(gap)s)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Exact cost worked out in %s seconds."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Explore a month — space plays the year"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Explore freely. Nothing here changes payroll."
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid ""
+"Explore freely. Nothing in payroll, hiring or contracts is\n"
+"                    changed by this document. It is a planning sketch built on\n"
+"                    the roster and the assumptions above, not a payroll\n"
+"                    calculation and not a forecast guarantee."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Exploring the possibilities…"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Export the decision brief"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Extra hires, with every other decision held exactly\n"
+"                      where you left it."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Extra hours"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Extra hours a month, paid at the overtime rate."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__evening_uplift_pct
+msgid "Extra pay for evening shifts, on top of base pay."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__night_uplift_pct
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__night_uplift_pct
+msgid "Extra pay for night shifts, on top of base pay."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "FOLLOW THE CONNECTION"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "FROM"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "Feb"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "February"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Find paths to these goals"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Find the gap before adding more cost."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Finish trying this possibility first — keep it, or go back to your plan."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__finished_at
+msgid "Finished"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__use_country_rules
+msgid "Follow the rules for this country"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Follow the whole way from the comparison to your result."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_follower_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_follower_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_partner_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_partner_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "GIVE THE PLAN A REALITY CHECK"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Give the plan a name first."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Give the team a name and a monthly pay first."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Give your plan a name."
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Goal"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Gross pay to employees"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Grow thoughtfully"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "HIRING & HOURS"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__has_message
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__has_message
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__summary
+msgid "Headline numbers"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Hiring and productive time can both move."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Hiring stays exactly as you planned it."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Hiring, developing the team you have, or a blend of the two —\n"
+"                worked out from this company's own roster and pay. You can try\n"
+"                a direction before you keep it."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Hours beyond the normal month, and the uplift for evenings and nights"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_form
+msgid "Hours, joining and leaving"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"How gross pay splits between take-home and"
+"                                      deductions"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "How many people"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "How many people are on the payroll, and what they are paid"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "How much more work arrives at the end of the year."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__demand_growth_pct
+msgid ""
+"How much more work arrives in December than today, as a percentage. Zero "
+"means the year is flat."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__demand_night_pct
+msgid "How much of the work has to be done at night."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__demand_evening_pct
+msgid "How much of the work has to be done in the evening."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "How much room do we have?"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"How the difference in operating profit is"
+"                                       made up"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__demand_day_pct
+msgid ""
+"How the year's work is spread across the three shifts. The three shares must"
+" add up to 100."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_room__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_scope__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__message_needaction
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__message_needaction
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__message_has_error
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__message_has_sms_error
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__message_has_error
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__message_has_sms_error
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__message_has_error
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "If demand lands 10% either side"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "In one sentence"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_form
+msgid "Income tax"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__pit_ladder
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__pit_ladder
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_assumptions_form
+msgid "Income tax ladder"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__in
+msgid "India"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Individual people, working-capital timing, roster legality and tax filings. "
+"This is a planning sketch, not a payroll calculation — and nothing here "
+"changes payroll."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__id
+msgid "Indonesia"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Input"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Insurance the business pays on top of pay, up to the cap"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Invest in people"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_is_follower
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_is_follower
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"It varies three things: how many people you add to your biggest\n"
+"                revenue-earning team, how much overtime everyone works, and how\n"
+"                much more gets done in an hour. It leaves everything else you\n"
+"                decided exactly alone — your revenue target, the growth you\n"
+"                expect, the salary increase, the shift shares, the month new\n"
+"                people arrive and the reality check. Nobody's job is at stake\n"
+"                in any of this: the search only ever adds people to a plan.\n"
+"                Each card is the least costly version of its direction. If no\n"
+"                direction meets every goal, they are ranked by how few goals\n"
+"                are missed, then by how narrowly. These are calculations from\n"
+"                the numbers on this page, not predictions."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "Jan"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "January"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_assumptions_form
+msgid "Joining and leaving"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Joining and leaving costs land this month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "Jul"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "July"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "Jun"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "June"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "KEEP A GOOD IDEA. TRY ANOTHER."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "KEPT, EXACTLY AS IT STOOD"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Keep editing a copy"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Keep this direction"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__created_by
+msgid "Kept by"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__created_at
+msgid "Kept on"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Kept. You can still undo it."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__write_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__write_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__write_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__write_uid
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__write_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__write_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__write_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__write_date
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Last changed by %(who)s on %(when)s. "
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Leave, absence and everything else that is paid but not delivered."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Live"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Look closer at this decision"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "MOST FLEXIBLE"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__my
+msgid "Malaysia"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "Mar"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "March"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Margin"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Margin %(margin)s on %(revenue)s of revenue."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Margin at %s is thin."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Margin falls to %s. Below 10%% there is no room for a slow quarter."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Match shifts to demand"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__other_pct_revenue
+msgid ""
+"Materials, delivery and commission — costs that rise with what you sell."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "May"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__allowance_pct
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__allowance_pct
+msgid "Meal, transport and phone allowances, as a share of base pay."
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Measure"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Measured against"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Meets every goal you switched on"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_has_error
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_has_error
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Met"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__currency_code
+msgid "Money the cap is written in"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Month"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Month by month"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__contribution_cap
+msgid ""
+"Monthly pay above this does not raise contributions. Zero means there is no "
+"cap."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__contribution_cap
+msgid ""
+"Monthly pay above this does not raise contributions. Zero means there is no "
+"ceiling."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Monthly pay each"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "More work by December"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__demand_growth_pct
+msgid "More work by December (%)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Motion off"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Motion on"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+"Move one lever on the left and watch people, the work you can deliver and "
+"profit respond together."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "NOBODY ON RECORD YET"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__name
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__name
+msgid "Name"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "New people arrive in"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Night"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__night_uplift_pct
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__night_uplift_pct
+msgid "Night work uplift (%)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "No"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "No additional hiring meets every goal."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "No company in the group is in that country any more."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"No goals are switched on. Set one and every number on this page\n"
+"                starts keeping score."
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "No goals were switched on for this plan."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "No overtime, and 8% more productive time"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid ""
+"No pay run has been closed for %s yet, so there is nothing to draw over the "
+"plan."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+"No pay run has been closed for this year yet, so there is nothing to draw "
+"over the plan."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "No yearly bonus is assumed."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid ""
+"Nobody has confirmed what each part of %(names)s does, so the scheme's own "
+"net pay formula was read to work it out. Confirm the components on the "
+"scheme and this figure becomes final."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Not converted"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Not converted at the time:"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Not met yet"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Not now"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__note
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__note
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_assumptions_form
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_plan_form
+msgid "Note"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Nothing differs — this is the comparison itself."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Nothing kept yet."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Nothing reaches these goals from here."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Nothing to search: switch on a goal first."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "Nov"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "November"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Now"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Now %(now)s · %(gap)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Now planning %s."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_needaction_counter
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_needaction_counter
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_has_error_counter
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_has_error_counter
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__message_needaction_counter
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__message_needaction_counter
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__message_has_error_counter
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__message_has_error_counter
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "ONE HONEST ANSWER"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "ONE SMALL EXPERIMENT"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "OPERATING PROFIT FOR THE YEAR"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "Oct"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "October"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__use_country_rules
+msgid ""
+"On: contributions, the ceiling, allowances, working days and the bonus come "
+"from the rules shipped for this company's country. Off: they are the numbers"
+" typed here."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "One ambition. More than one way there."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "One company, so a plan is a plan for that company."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "One decision. A ripple through the business."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__bonus_months
+msgid "One means everybody gets one extra month's pay."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__is_reference
+msgid ""
+"One plan per company can be the one everything else is measured against."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "One-off costs of people joining and leaving, and of better hours"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__attrition_pct_year
+msgid "Only used when you switch leavers on in the room."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Open"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Open People & pay"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Open Why profit changed"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Open Work & shifts"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:res.groups,comment:pb_decision_room.group_decision_user
+msgid "Open the Decision Room, explore the year and keep your own plans."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Open the change history"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Operating margin"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Operating profit"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Operating profit as more people are                                       "
+"added"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Operating profit for the year"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Other costs"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__other_fixed_monthly
+msgid "Other costs a month"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__other_pct_revenue
+msgid "Other costs that follow revenue (%)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Other operating costs"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "Other roles"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "Other teams"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Override for this scheme"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Overtime"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Overtime and premiums"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Overtime and shift premiums"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Overtime from"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__ot_multiplier
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__ot_multiplier
+msgid "Overtime is paid at"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Overtime is paid at %(mult)s times the normal hourly rate, worked out over "
+"%(days)s paid days a month."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Overtime per person"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Overtime rate"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "PEOPLE ON PAYROLL · %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"PEOPLE, PAY AND WHAT REACHES\n"
+"                      THEM"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "PLAN FOR"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__employer_rate_pct
+msgid "Paid by the business on top of pay."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__employer_rate_pct
+msgid ""
+"Paid by the business on top of pay: social, health and unemployment "
+"insurance and the union fund."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Paid in full from their first day, about half as\n"
+"                  productive while they learn."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Paid working days"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__work_days
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__work_days
+msgid "Paid working days a month"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_form
+msgid "Pay and contributions"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__groups
+msgid "Pay bands priced"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Pay, development & available time"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_assumptions__scope_kind__scheme
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__scope_kind__scheme
+msgid "Payroll scheme"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_palette.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "People"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "People & pay"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "People added or removed"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "People cost"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "People in December"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "People on the evening shift"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__shift_evening_pct
+msgid "People on the evening shift (%)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "People on the night shift"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__shift_night_pct
+msgid "People on the night shift (%)"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__people
+msgid "People priced"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "People to add"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__attrition_pct_year
+msgid "People who leave in a year (%)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "People · Dec"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__ph
+msgid "Philippines"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Pick a team to explore."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Picking one changes the roster, the rules and\n"
+"              every number together. Nothing about payroll changes."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__plan_id
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__plan_id
+#: model:res.groups,name:pb_decision_room.group_decision_user
+msgid "Plan"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Plan against what happened · %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Plan for"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__name
+msgid "Plan name"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_palette.js:0
+msgid "Plan the group"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Planning the year is done by the people who hold the Decision Room role. Ask"
+" your HR or finance lead to add you, and this screen fills itself in."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_palette.js:0
+msgid "Plans awaiting approval"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Play through the year"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Preview %s more people"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Productive time"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Productive time stays as you assumed it."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Profit"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__summary
+msgid ""
+"Profit, cost, revenue, demand served, people and margin, as they stood when "
+"the plan was saved."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Propose"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Propose the plan and the first version\n"
+"                is kept the moment you do."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "Proposed"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__proposed_by
+msgid "Proposed by"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__proposed_at
+msgid "Proposed on"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Put every lever back where the company is today"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__rating_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__rating_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Read the roster again. Your plan stays exactly as it is."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Reading your group…"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Reading your roster…"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Reading…"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Recruiting and severance"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Recruiting someone costs %(hire)s of their pay, once, in the month they "
+"arrive. They are paid in full from day one and deliver about %(ramp)s in "
+"that first month. Ending a role costs %(sev)s."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Recruiting, severance and better hours"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Refresh"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Rename it"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__other_fixed_monthly
+msgid "Rent, energy, software and everything else that is not people."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Rent, materials and everything else that is not people"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Replace everyone who leaves"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Replace it"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Reset"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Reset to country rules"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Revenue delivered"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__revenue_target
+msgid "Revenue target for the year"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Revenue target saved for everyone at %s."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Roles"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Room to hire"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Roster read again. Your plan is untouched."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Rules for this company"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Rules for this payroll scheme%s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Run this plan's people through their own payroll scheme"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "SHAPE YOUR PLAN"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "SHIFT COVERAGE ·"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "SKILLS & HOURS"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__message_has_sms_error
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__message_has_sms_error
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Salaries and allowances"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Salary increase"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Save plan"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Save these assumptions"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Save this plan"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__user_id
+msgid "Saved by"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Saved for everyone at"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_plan_form
+msgid "Saved plan"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_palette.js:0
+#: model:ir.actions.act_window,name:pb_decision_room.action_pb_decision_plan
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_plan_list
+msgid "Saved plans"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Saving…"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Say what a good year looks like"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__scope_label
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__scope_label
+msgid "Scope"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__seconds
+msgid "Seconds taken"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "See the assumptions"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "See the year before you commit to it."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Send back"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Send it back"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Send “%s” back?"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "Sending a plan back is your HR or finance lead's to do."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__status__rejected
+msgid "Sent back"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "Sep"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_format.js:0
+msgid "September"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Served"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Set goals"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Set your goals. Shape your team. Watch the business respond."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Shape your plan"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Shift shares apply all year and describe a pool of hours, not\n"
+"                  a roster."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_assumptions_form
+msgid "Shifts and when the work arrives"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Shifts matched to the work: %(evening)s on evenings, %(night)s on nights."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Show only the difference"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Show the full picture"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Show the group total"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__sg
+msgid "Singapore"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Six goals. The room keeps score."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Sketch a team"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Sketch a team."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Softer demand"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Solid bar: your plan. Faint bar:"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Some people leave during the year"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__started_at
+msgid "Started"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Step"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Stronger demand"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+"Stronger demand would leave %s of it unserved: the limit becomes your "
+"people, not the market."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Switch on at least one goal first — the search needs something to aim at."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Switch on margin, profit, cost, demand served, team size or overtime and "
+"this becomes an answer."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Switch on what matters. Every number on the page\n"
+"              then keeps score against it."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Switched off. Turn it on to hold the plan to it."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "TAKE-HOME PAY · %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "THE FINANCIAL RESULT"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "THE THINKING BEHIND THE PICTURE"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "THE WORK YOU CAN DELIVER"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "TO YOUR PLAN"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "TRYING A POSSIBILITY"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Take a look"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Take-home %s"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__employee_rate_pct
+msgid ""
+"Taken out of the employee's pay. Not an extra cost to the business — it only"
+" changes what reaches the employee."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__employee_rate_pct
+msgid "Taken out of the employee's pay. Not an extra cost to the business."
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Target"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Team"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Team name"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Team size"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__revenue_team_ids
+msgid "Teams that earn revenue"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__th
+msgid "Thailand"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"That did not go through. Try again, and tell your administrator if it keeps "
+"happening."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "That division has no teams on it any more."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid "That division has no teams on it, so there is nobody to price."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "That payroll scheme is not here any more."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "That plan is not here any more."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_ruleset.py:0
+msgid ""
+"The %(country)s ceiling is written in %(cap)s and this company keeps its "
+"books in %(own)s, so no ceiling is applied here. Type one under Pay & "
+"contributions if you need it."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "The Decision Room is not open to you."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid ""
+"The Decision Room is opened by the people who plan the year. Ask your HR or "
+"finance lead to add you."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__pit_ladder
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__pit_ladder
+msgid ""
+"The bands used to estimate what an employee takes home. It never changes the"
+" cost to the business."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "The brief could not be built. %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "The company as it is today"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__company_id
+msgid ""
+"The company these assumptions describe. For a group or a country this is the"
+" first company in it, and the scope below is what the row is really about."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__country_code
+msgid ""
+"The country these rules describe. A company picks up the rules for its own "
+"country automatically."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "The difference in %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "The exact cost could not be worked out. Try again."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"The exact cost is taking longer than expected. It will appear on the plan "
+"when it finishes."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid ""
+"The exact cost is worked out from the payroll scheme that pays each person. "
+"Nobody here has a scheme that says what each of its parts does, so there is "
+"nothing to run. Open Mapping → Who is paid by what, then re-classify the "
+"scheme's components, and try again."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__goals
+msgid "The goals"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "The increase starts in"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__state
+msgid "The levers"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan_version__snapshot
+msgid ""
+"The levers, the goals, the headline numbers, the scope and the rules the "
+"numbers were built on, exactly as they were."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__currency_id
+msgid ""
+"The money the amounts on this row are written in. For a scope that spans two"
+" currencies it is the group's own money."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__scope_label
+msgid "The name a reader sees on the chip at the top of the room."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid "The pay engine stopped part way through: %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+"The pay runs for this year cannot be added up in this money yet, because a "
+"rate is missing."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"The plan goes back to its author as a draft, with whatever you write below."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "The room could not read your roster."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "The roster could not be read again. %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"The same team as the comparison. Any change is coming from hours, pay or the"
+" work itself."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"The same team, better paid or better supported. The cost moves; the "
+"headcount does not."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "The search could not finish. %s"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__decision_note
+msgid "The sentence that came with the decision."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__ruleset_id
+msgid ""
+"The set of country rules this scope follows when the switch above is on."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "The shape of the year"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "The share of demand you serve is unchanged."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__shift_night_pct
+msgid "The share of the people who earn revenue who work nights."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__shift_evening_pct
+msgid ""
+"The share of the people who earn revenue who work the evening shift. The "
+"rest of the day is covered by the day shift."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"The target could not be saved. It is still in your plan on this screen."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "The team could absorb the upside without leaving work behind."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+"The team could deliver more than the work coming in. Fewer hires, or later "
+"ones, would keep the margin."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__revenue_team_ids
+msgid ""
+"The teams whose people directly produce what the company sells. Support "
+"teams matter, but adding one of them does not raise what the business can "
+"deliver."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "The work arrives %(day)s day, %(evening)s evening, %(night)s night."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"The work arriving, what the team could"
+"                                         deliver, and what is delivered, "
+"month                                         by month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "The work the team could actually serve, at the same price an hour"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "The year, in total"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "The yearly bonus"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "The yearly bonus is paid"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "The yearly bonus, paid in its month"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.constraint,message:pb_decision_room.constraint_pb_decision_assumptions_scope_uniq
+msgid "There is already a set of Decision Room assumptions for this."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.constraint,message:pb_decision_room.constraint_pb_decision_ruleset_country_uniq
+msgid "There is already a set of rules for this country."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+msgid "There is no group on this database yet, so this is one company."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid "There is nobody on this scope's roster to price."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "These apply to every plan at"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__scope_kind
+msgid "These numbers are for"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"These numbers are looked after by your HR or finance lead. Ask them if one "
+"of them looks wrong."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "These numbers are now this scope's own."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"These numbers were typed here and are not touched by an upgrade. Put them "
+"back on the country's rules below if you would rather follow those."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__ramp_first_month_pct
+msgid ""
+"They are paid in full from day one. This is how much work they get done "
+"while they are learning."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"This bridge reconciles the difference. It does not claim each\n"
+"                  input acts alone. The scale is zoomed to the change, not to\n"
+"                  zero, so that every step is visible — the two dark columns\n"
+"                  are totals and their height is not to scale."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "This company"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "This company has nobody on record yet."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "This is %s. Nothing has changed yet."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__scope_kind
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_plan_form
+msgid "This is a plan for"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_exact.py:0
+msgid ""
+"This is taking longer than ten minutes, so it stopped. Try a smaller scope —"
+" one company or one scheme."
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "This plan"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid ""
+"This plan could not be saved: its %s is not in the shape the room writes."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "This plan is now the comparison. Every number is measured against it."
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid ""
+"This reconciles the difference. It does not claim\n"
+"                each input acts alone."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"This stays on your screen. It is not saved to\n"
+"              anybody's record and it changes nothing."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__currency_code
+msgid ""
+"Three letters, for example SGD. A contribution ceiling is a sentence about "
+"one country's money; it is only applied to a company that keeps its books in"
+" it."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__ot_multiplier
+msgid "Times the normal hourly rate."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__ot_multiplier
+msgid "Times the normal hourly rate. 1.5 means time and a half."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Today"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Total workforce cost to the business"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Try %s more"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Try again"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Try this direction"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Type a revenue target and profit appears here too."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Type a revenue target and the room can stress-test the plan."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Type a revenue target on the left and this card starts showing how much of "
+"the work your team can actually deliver."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Type a revenue target to see demand against capacity. Until\n"
+"                    then this shows the hours your people can work."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Type a revenue target to stress-test the plan."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Type it the way you say it — 2,200 B, 2.2 t or the whole\n"
+"                  number. Profit appears the moment it is there."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Type our own numbers"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Typical mix"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Typical mix of the team"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "Unassigned"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Unavailable paid time"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+"Under %(label)s this plan makes %(profit)s and serves %(served)s of the "
+"work. If demand lands 10% either side of that, profit runs from %(low)s to "
+"%(high)s. %(upside)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Undo"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Undo the last change (Ctrl+Z)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Use this plan as the comparison"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Use your browser's Print command to save this page as a PDF."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__work_days
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__work_days
+msgid "Used to turn a monthly salary into an hourly rate."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__number
+msgid "Version"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Version %(n)s · %(label)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_plan.py:0
+msgid "Version %(n)s · %(plan)s"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__version_ids
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_plan_form
+msgid "Versions"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__version_count
+msgid "Versions kept"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Versions of this plan."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_ruleset.py:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_ruleset__country_code__vn
+msgid "Vietnam"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "WORKFORCE COST FOR THE YEAR"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "WORKFORCE COST · %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__status__proposed
+msgid "Waiting for approval"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_exact_job__state__queued
+msgid "Waiting to start"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Waiting to start…"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Walked from 0 to %(max)s more people%(step)s, holding every other decision "
+"fixed.%(note)s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Was"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__website_message_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__website_message_ids
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__website_message_ids
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__website_message_ids
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__note
+msgid "What a reader should know before trusting these numbers."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "What actually happened"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_assumptions_form
+msgid "What an employee costs"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "What do you plan to earn this year?"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__message
+msgid "What happened"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "What if we…"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "What is this a plan for?"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__productivity_cost_per_point
+msgid ""
+"What it costs, per person per month, to gain one percent more productive "
+"time — training, tools and supervision. Zero means the improvement is "
+"assumed to be free."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "What reaches employees"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"What the business pays and what an employee takes home\n"
+"                      are two different numbers."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "What the business pays on top"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__revenue_target
+msgid ""
+"What the business plans to earn this year. Leave it at zero until you know "
+"it — the room then shows people and cost only."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "What the chart shows"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "What the employee has taken off"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "What the search changes — and what it protects"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "What the team could deliver"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__scope_kind
+msgid ""
+"What these assumptions describe: the whole group, one country, one company, "
+"one division, or the people one payroll scheme pays."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_ruleset__name
+msgid "What these rules are called on screen."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__decision_note
+msgid "What they said"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "What this leaves out"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "What this picture believed"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__exact_result
+msgid ""
+"What this plan's people cost when each one is run through their own payroll "
+"scheme's formulas, rather than through company averages."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "What this room believes."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_ruleset__note
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_ruleset_form
+msgid "What this simplifies"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan_version__label
+msgid "What this version was"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_plan_form
+msgid "What was saved"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_assumptions_form
+msgid "What we plan to sell"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "What would make this a good year?"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__goals
+msgid "What you said would make this a good plan."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_plan__name
+msgid "What you would call this in a meeting."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Where a year of pay goes"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_exact_job__state
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__status
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.view_pb_decision_plan_form
+msgid "Where it stands"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Where the comparison sits"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,help:pb_decision_room.field_pb_decision_assumptions__scope_ref
+msgid "Which group, country, company, division or scheme."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__scope_ref
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_plan__scope_ref
+msgid "Which one"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Which roles?"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Which team?"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Who is on the team in December"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Who this is about"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_scope.py:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_assumptions__scope_kind__group
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_plan__scope_kind__group
+msgid "Whole group"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Why profit changed"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Why the result is different"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Will the work and the team line up?"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Work & shifts"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Work arriving"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Work delivered"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Work is not spread evenly: the curve is quiet after the new year and busiest"
+" in October and November. Your revenue target is spread along it."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__demand_night_pct
+msgid "Work that arrives at night (%)"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__demand_day_pct
+msgid "Work that arrives during the day (%)"
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields,field_description:pb_decision_room.field_pb_decision_assumptions__demand_evening_pct
+msgid "Work that arrives in the evening (%)"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Workforce cost"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Workforce cost for the year"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Workforce cost is %(delta)s for the year at %(total)s."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Workforce cost is unchanged."
+msgstr ""
+
+#. module: pb_decision_room
+#: model:ir.model.fields.selection,name:pb_decision_room.selection__pb_decision_exact_job__state__running
+msgid "Working it out"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Working it out…"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Working it out… %s%%"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "YOUR DEFINITION OF A GOOD YEAR"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "YOUR PEOPLE"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Yearly bonus"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Yearly bonus in months of pay"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "Yes"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "You can change these numbers."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"You can change these numbers. Everyone planning %s will see the change."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid ""
+"You can plan freely, but the assumptions behind the numbers are looked after"
+" by your HR or finance lead. Ask them to change them."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid ""
+"Your browser blocked the new tab. Allow pop-ups for this site and try again."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"Your current demand, pay, shifts and hiring month\n"
+"                  stay exactly in place."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Your forecast"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "Your goals"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Your own numbers%s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Your plan"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Your plan already meets these goals."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Your previous plan is back, exactly as it was."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "Your working plan"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Your year, at a glance."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "Your year, month by month, against the comparison"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "a %(pct)s% salary increase"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "a cut of %(pct)s% in salaries"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "a month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "a revenue target of %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "across the year."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "base rate"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "by"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "capacity"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "change in what you can serve"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "cost"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "costliest"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "costs outrun revenue this month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "demand down %s%%"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "demand served each month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "demand up %s%%"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "e.g. Board draft"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "h / month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "hires arriving in %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "in this selection today"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "joining and leaving costs land together this month"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "kept"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "lowest-profit"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "months"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "no cap"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "no yearly bonus"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "nobody leaving"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "none"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "not converted"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "not replacing leavers"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "of the team"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid "on"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "operating profit for the year"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "operating profit ·"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "operating profit · this is the plan you have"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "over plan"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "overtime from %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "pay per person was the difference"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "people"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "people in December"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "people leaving through the year"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "people ·"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"people ·\n"
+"                roster read at"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"plans ·\n"
+"                  nothing here changes payroll."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "profit"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "profit, adding up through the year"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "replacing everyone who leaves"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "softer demand"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-python
+#: code:addons/pb_decision_room/models/pb_decision_room.py:0
+msgid "someone else"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "stronger demand"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+"the bonus and the new arrivals land in the same month — move the hires later"
+" and it recovers"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "the increase starting in %s"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid ""
+"the yearly bonus is paid this month; it is normal, but the cash has to be "
+"there"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "there were %s fewer people on the payroll than planned"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "there were %s more people on the payroll than planned"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "today"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "under plan"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "value"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "versions"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "vs comparison"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "vs your plan"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"will be able to open\n"
+"              it and compare against it."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "workforce cost for the year"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "workforce cost, adding up through the year"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_engine.js:0
+msgid "your own forecast"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid ""
+"·\n"
+"                    all figures in"
+msgstr ""
+
+#. module: pb_decision_room
+#: model_terms:ir.ui.view,arch_db:pb_decision_room.brief
+msgid ""
+"·\n"
+"                    prepared by"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid ""
+"·\n"
+"                  up to"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "· comparison"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "· on screen"
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%(name)s” saved for everyone at %(company)s."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” added to this sketch. It is not saved to anybody's record."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” is a fresh draft that starts where the approved plan ends."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” is approved."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” is on the canvas."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” is on the canvas. Change any lever to make it yours."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” is with your approver. They will find it on their home page."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” removed."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "“%s” went back to %s."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/xml/decision_room.xml:0
+msgid "” already exists."
+msgstr ""
+
+#. module: pb_decision_room
+#. odoo-javascript
+#: code:addons/pb_decision_room/static/src/js/decision_room.js:0
+msgid "− Employee contributions and income tax"
+msgstr ""

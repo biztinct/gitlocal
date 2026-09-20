@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- A configurable read-only audience for the trail. A consuming app (e.g.
+         the Phase-J audit console) adds users/implied groups; on its own it
+         grants nothing beyond what system already has. Plain technical group —
+         no privilege_id (a bare technical group is valid in Odoo 19, C18.8). -->
+    <record id="group_audit_reader" model="res.groups">
+        <field name="name">Audit Trail Reader</field>
+    </record>
+</odoo>
