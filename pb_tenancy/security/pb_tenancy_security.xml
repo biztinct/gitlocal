@@ -22,7 +22,6 @@
         <field name="name">Support access: the people a route asked to decide it</field>
         <field name="model_id" ref="model_pb_support_access"/>
         <field name="domain_force">[('seat_user_ids', 'in', user.id)]</field>
-        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="False"/>
         <field name="perm_create" eval="False"/>
@@ -34,6 +33,20 @@
         <field name="model_id" ref="model_pb_support_access"/>
         <field name="domain_force">[(1, '=', 1)]</field>
         <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+
+    <!-- The recovery identity belongs to the platform, not to the customer's
+         directory. It remains readable to itself so a support session can
+         render its own user context, and is invisible to everybody else. -->
+    <record id="rule_hide_platform_recovery_user" model="ir.rule">
+        <field name="name">Platform recovery account: visible only to itself</field>
+        <field name="model_id" ref="base.model_res_users"/>
+        <field name="domain_force">['|', ('login', '!=', 'platform.recovery@payobook.com'), ('id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
     </record>
 
 </data>

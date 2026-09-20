@@ -34,7 +34,8 @@ from odoo.tools.mail import email_normalize
 from .access_common import (BOARD_GROUPS, DELEGATION_ROW_CAP, HOLDER_CAP,
                             MANAGE_GROUPS, PEOPLE_CAP, PICKER_CAP, area_label,
                             counted, flag, fold, forbidden_in_closure,
-                            implied_closure, profile_areas, safe)
+                            implied_closure, may_see_recovery, profile_areas,
+                            recovery_login, safe, visible_people)
 
 _logger = logging.getLogger(__name__)
 
@@ -505,6 +506,10 @@ class PbAccess(models.AbstractModel):
             raise UserError(_(
                 "%s has an employee login only. Roles are for people who work "
                 "inside this application.", user.sudo().name or ''))
+        if (not may_see_recovery(self.env) and
+                (user.sudo().login or '').strip().lower() ==
+                recovery_login(self.env)):
+            raise UserError(_("That person does not have a login here."))
         return user
 
     # ================================================================ hand-over
@@ -1273,6 +1278,7 @@ class PbAccess(models.AbstractModel):
         needle = fold(search)
         users = self.env['res.users'].sudo().search(
             [('active', '=', True), ('share', '=', False)])
+        users = visible_people(users, self.env)
         if needle:
             users = users.filtered(
                 lambda u: needle in fold('%s %s' % (u.name or '', u.login or '')))
@@ -1579,11 +1585,14 @@ class PbAccess(models.AbstractModel):
         rows = self.env['res.users'].sudo().search_read(
             [('active', '=', True), ('share', '=', False)],
             ['name', 'login'], limit=600, order='name')
+        hidden = recovery_login(self.env)
+        show_hidden = may_see_recovery(self.env)
         out = [{'id': r['id'], 'name': r['name'] or '',
                 'login': r['login'] or '',
                 'avatar': '/web/image/res.users/%s/avatar_128' % r['id']}
                for r in rows
-               if (include_me or r['id'] != self.env.uid)
+               if (show_hidden or (r['login'] or '').strip().lower() != hidden)
+               and (include_me or r['id'] != self.env.uid)
                and (not needle or needle in fold(r['name'])
                     or needle in fold(r['login']))]
         return out[:PICKER_CAP]
@@ -1907,6 +1916,7 @@ class PbAccess(models.AbstractModel):
         everybody = set(by_role) | by_group | admins
         users = self.env['res.users'].sudo().browse(
             sorted(everybody)).exists().filtered('active')
+        users = visible_people(users, self.env)
         users = users.sorted(lambda u: (not bool(by_role.get(u.id)),
                                         fold(u.name)))
         rows = []

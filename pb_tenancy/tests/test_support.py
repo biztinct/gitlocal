@@ -42,6 +42,37 @@ def _row(now, token='tok', **over):
     return row
 
 
+@tagged('post_install', '-at_install')
+class TestRecoveryAccountPrivacy(TransactionCase):
+
+    def setUp(self):
+        super().setUp()
+        Users = self.env['res.users'].sudo().with_context(active_test=False)
+        self.recovery = Users.search([('login', '=', RECOVERY)], limit=1)
+        if not self.recovery:
+            self.recovery = Users.create({
+                'name': 'Platform support (recovery account)',
+                'login': RECOVERY,
+                'group_ids': [(6, 0, [self.env.ref('base.group_user').id,
+                                      self.env.ref('base.group_system').id])],
+            })
+        self.ordinary = Users.create({
+            'name': 'Recovery privacy probe',
+            'login': 'recovery.privacy.probe',
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])],
+        })
+
+    def test_everybody_else_is_refused_the_recovery_identity(self):
+        found = self.env['res.users'].with_user(self.ordinary).search(
+            [('id', '=', self.recovery.id)])
+        self.assertFalse(found)
+
+    def test_recovery_identity_can_read_itself(self):
+        found = self.env['res.users'].with_user(self.recovery).search(
+            [('id', '=', self.recovery.id)])
+        self.assertEqual(found, self.recovery)
+
+
 # =============================================================================
 @tagged('post_install', '-at_install')
 

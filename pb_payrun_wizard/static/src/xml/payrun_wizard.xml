@@ -136,8 +136,6 @@
                             <div class="pw-kv"><span>Currency</span><b t-esc="moneyLabel"/></div>
                             <div class="pw-kv" t-if="chosenScheme"><span>Payroll scheme</span><b t-esc="chosenScheme.name"/></div>
                             <div class="pw-kv" t-elif="divInfo"><span>Configuration</span><b t-esc="divInfo.config"/></div>
-                            <div class="pw-kv"><span>Eligible employees</span><b t-esc="eligibleCount"/></div>
-
                             <!-- VALUEKIND P4 — who this run covers. Shown only
                                  when a scheme names a component carrying
                                  employment status; otherwise the wizard looks

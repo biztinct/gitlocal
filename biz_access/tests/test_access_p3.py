@@ -363,6 +363,28 @@ class TestThePassport(PassportCase):
 @tagged('post_install', '-at_install')
 class TestThePeopleList(PassportCase):
 
+    def test_platform_recovery_is_visible_only_to_itself(self):
+        recovery = self.Users.with_context(active_test=False).search(
+            [('login', '=', 'platform.recovery@payobook.com')], limit=1)
+        if not recovery:
+            recovery = self.Users.create({
+                'name': 'Platform support (recovery account)',
+                'login': 'platform.recovery@payobook.com',
+                'group_ids': [(6, 0, [self.env.ref('base.group_user').id,
+                                      self.env.ref('base.group_system').id])],
+            })
+        self.assertNotIn(recovery.id,
+                         [row['id'] for row in self.mgr_access.people()])
+        self.assertNotIn(recovery.id,
+                         [row['id'] for row in self.mgr_access.user_options(
+                             'platform', True)])
+        with self.assertRaises(UserError):
+            self.mgr_access.passport(recovery.id)
+
+        own = self.env['pb.access'].with_user(recovery)
+        self.assertIn(recovery.id, [row['id'] for row in own.people()])
+        self.assertEqual(own.passport(recovery.id)['header']['id'], recovery.id)
+
     def test_the_access_team_sees_everybody_and_me_first(self):
         self._user('Zeta', self.above)
         rows = self.mgr_access.people()

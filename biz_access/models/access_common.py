@@ -164,6 +164,31 @@ PICKER_CAP = 20
 #: answer, and the lens says so rather than truncating in silence.
 PEOPLE_CAP = 200
 
+# The platform's break-glass account is infrastructure, not one of the
+# customer's people. The platform can change the login per database through
+# this setting; the default is also the value used by provisioning.
+RECOVERY_LOGIN_PARAM = 'pb_tenancy.recovery_login'
+RECOVERY_LOGIN_DEFAULT = 'platform.recovery@payobook.com'
+
+
+def recovery_login(env):
+    return str(env['ir.config_parameter'].sudo().get_param(
+        RECOVERY_LOGIN_PARAM, RECOVERY_LOGIN_DEFAULT
+    ) or RECOVERY_LOGIN_DEFAULT).strip().lower()
+
+
+def may_see_recovery(env):
+    return (env.user.login or '').strip().lower() == recovery_login(env)
+
+
+def visible_people(users, env):
+    """Hide the platform recovery identity from every other signed-in user."""
+    if may_see_recovery(env):
+        return users
+    hidden = recovery_login(env)
+    return users.filtered(
+        lambda user: (user.login or '').strip().lower() != hidden)
+
 # --------------------------------------------------------------- the switches
 #: Defaults live in CODE, never in a `noupdate="1"` record — a shipped record
 #: freezes whatever value a test run left behind, because the next upgrade

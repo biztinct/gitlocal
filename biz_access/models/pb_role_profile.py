@@ -48,7 +48,8 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 from .access_common import (default_area, forbidden_group_ids,
-                            forbidden_in_closure, profile_areas)
+                            forbidden_in_closure, profile_areas,
+                            visible_people)
 
 _logger = logging.getLogger(__name__)
 
@@ -179,7 +180,8 @@ class PbRoleProfile(models.Model):
                 users = current if users is None else (users & current)
                 if not users:
                     break
-            return users if users is not None else self.env['res.users'].browse()
+            users = users if users is not None else self.env['res.users'].browse()
+            return visible_people(users, self.env)
         except Exception:                       # noqa: BLE001
             _logger.warning(
                 'pb.role.profile: could not count holders of %s',
