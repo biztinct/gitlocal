@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
+    <!-- One app is already the whole workspace. In that state the launcher
+         can only reopen Payroll, so the nine-dot control is noise. The menu
+         service is server-filtered; platform administrators still receive
+         several apps and therefore keep this control. This wraps both the
+         desktop dropdown and the mobile sidebar trigger. -->
+    <t t-name="biz_theme.NavBar.SingleAppLauncher"
+       t-inherit="web.NavBar" t-inherit-mode="extension">
+        <xpath expr="//t[@t-call='web.NavBar.AppsMenu']" position="attributes">
+            <attribute name="t-if">menuService.getApps().length > 1</attribute>
+        </xpath>
+    </t>
+
     <!-- Apps menu: replace the plain text dropdown with a searchable icon
          grid. DropdownItem is kept as the interactive element, so selection,
          href middle-click, hotkeys and dropdown closing all stay stock. -->
