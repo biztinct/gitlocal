@@ -17,7 +17,9 @@ class TestSingleAppLauncher(TransactionCase):
                             'static/src/webclient/apps_menu.xml')
         tree = etree.parse(path)
         nodes = tree.xpath(
-            "//t[@t-inherit='web.NavBar']//t[@t-call='web.NavBar.AppsMenu']")
+            "//t[@t-inherit='web.NavBar']"
+            "/xpath[@expr=\"//t[@t-call='web.NavBar.AppsMenu']\"]"
+            "/attribute[@name='t-if']")
         self.assertEqual(len(nodes), 1)
-        self.assertEqual(nodes[0].get('t-if'),
+        self.assertEqual((nodes[0].text or '').strip(),
                          'menuService.getApps().length > 1')
