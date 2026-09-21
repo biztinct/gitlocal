@@ -719,9 +719,22 @@ class PbSchemeMap(models.AbstractModel):
             division_id = int(row.get('division_id') or 0)
             if not config_id or not (department_id or division_id):
                 continue
-            base = [('active', '=', True), ('cycle_type', '=', cycle)]
-            base += ([('department_id', '=', department_id)] if department_id
-                     else [('division_id', '=', division_id)])
+            # The base assignment model still has its original database
+            # uniqueness rule on (department, scheme).  A team may therefore
+            # already have the same scheme through the older/general ``any``
+            # row even though this draft is the more precise ``regular`` row.
+            # Replace both the semantic clash (same segment + cycle) and that
+            # storage clash (same department + scheme) before creating.  The
+            # latter is department-only because the legacy constraint never
+            # covered divisions.
+            segment = ([('department_id', '=', department_id)]
+                       if department_id else
+                       [('division_id', '=', division_id)])
+            conflict = [('cycle_type', '=', cycle)]
+            if department_id:
+                conflict = ['|', ('cycle_type', '=', cycle),
+                            ('config_id', '=', config_id)]
+            base = [('active', '=', True)] + segment + conflict
             clash = Assign.sudo().search(base)
             if clash:
                 clash.unlink()

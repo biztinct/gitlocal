@@ -409,6 +409,31 @@ class TestSchemeMap(TransactionCase):
         self.assertEqual(suggestion['people_total'], 4)
         self.assertEqual(suggestion['runs'], 3)
 
+    def test_t5_accept_draft_replaces_general_row_for_same_scheme(self):
+        """A precise drafted row replaces a legacy/general mapping cleanly."""
+        general = self.Assign.create({
+            'department_id': self.child.id,
+            'config_id': self.end.id,
+            'cycle_type': 'any',
+            'source': 'manual',
+        })
+        result = self.Map.accept_draft([{
+            'department_id': self.child.id,
+            'config_id': self.end.id,
+            'cycle_type': 'regular',
+            'confidence': 1.0,
+            'sentence': 'Everyone matched the last regular payroll.',
+        }])
+        self.assertEqual(result, {'created': 1, 'replaced': 1})
+        self.assertFalse(general.exists())
+        written = self.Assign.search([
+            ('department_id', '=', self.child.id),
+            ('config_id', '=', self.end.id),
+        ])
+        self.assertEqual(len(written), 1)
+        self.assertEqual(written.cycle_type, 'regular')
+        self.assertEqual(written.source, 'accepted')
+
     def _demo_company(self):
         self.env.cr.execute("""
             SELECT company_id, COUNT(*)
