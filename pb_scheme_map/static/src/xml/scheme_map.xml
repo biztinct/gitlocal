@@ -270,7 +270,7 @@
                     · last run <t t-esc="scheme.last_run.name"/>
                   </t>
                 </small>
-                <small t-if="scheme.last_run.spreadsheet.filename"
+                <small t-if="scheme.last_run.spreadsheet and scheme.last_run.spreadsheet.filename"
                        class="smp-scheme__source"
                        t-att-title="'Imported for ' + (scheme.last_run.spreadsheet.run || scheme.name)">
                   Suggested by spreadsheet <b t-esc="scheme.last_run.spreadsheet.filename"/>
