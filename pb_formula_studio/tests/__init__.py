@@ -62,3 +62,6 @@ from . import test_runsrc_left_columns
 # vocabulary finally learning `period` (every such chip read "No source").
 from . import test_runsrc_pc_board_lane
 from . import test_settings_door
+
+# Formula Studio cards — viewport-aware side rails with small-screen drawers.
+from . import test_studio_responsive_rails
