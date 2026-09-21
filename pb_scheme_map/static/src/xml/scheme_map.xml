@@ -156,7 +156,8 @@
                        class="smp-seg__suggestion">
                   Suggested: <b t-esc="segment.suggestion.config"/>
                   · <t t-esc="num(segment.suggestion.people_agree)"/> of
-                  <t t-esc="num(segment.suggestion.people_total)"/> people matched
+                  <t t-esc="num(segment.suggestion.people_total)"/>
+                  <t t-esc="peopleWord(segment.suggestion.people_total)"/> matched
                   across <t t-esc="num(segment.suggestion.runs)"/> recent
                   pay run<t t-if="segment.suggestion.runs !== 1">s</t>
                 </small>
