@@ -485,6 +485,13 @@ export class SchemeMapBoard extends Component {
         this.openAttach([key]);
     }
 
+    openAttachKey(ev, key) {
+        if (ev.key !== "Enter" && ev.key !== " " && ev.key !== "Spacebar") {
+            return;
+        }
+        this.openAttachClick(ev, key);
+    }
+
     togglePickClick(ev, key) {
         ev.stopPropagation();
         this.togglePick(key);
@@ -496,16 +503,34 @@ export class SchemeMapBoard extends Component {
         this.closeAttach();
     }
 
+    closeAttachKey(ev) {
+        if (ev.key === "Enter" || ev.key === " " || ev.key === "Spacebar") {
+            this.closeAttachClick(ev);
+        }
+    }
+
     closeDraftClick(ev) {
         ev.preventDefault();
         ev.stopPropagation();
         this.closeDraft();
     }
 
+    closeDraftKey(ev) {
+        if (ev.key === "Enter" || ev.key === " " || ev.key === "Spacebar") {
+            this.closeDraftClick(ev);
+        }
+    }
+
     closeExceptionsClick(ev) {
         ev.preventDefault();
         ev.stopPropagation();
         this.toggleExceptions();
+    }
+
+    closeExceptionsKey(ev) {
+        if (ev.key === "Enter" || ev.key === " " || ev.key === "Spacebar") {
+            this.closeExceptionsClick(ev);
+        }
     }
 
 
