@@ -388,7 +388,13 @@ class PbPayrunWizard(models.AbstractModel):
         today = date.today()
         start = today.replace(day=1)
         end = (start + relativedelta(months=1)) - relativedelta(days=1)
-        structs = self.env['hr.payroll.structure'].search([], limit=50)
+        # The Payobook Payroll officer tier deliberately does not grant the
+        # broad Odoo HR/Payroll officer groups.  Salary structures are only
+        # reference data in this picker (id + name); the run's own write paths
+        # enforce their permissions separately.  Read the picker catalogue as
+        # system so a valid Payobook officer can open the wizard without being
+        # rejected by hr.payroll.structure's stock ACL.
+        structs = self.env['hr.payroll.structure'].sudo().search([], limit=50)
         emp_ids = self._eligible_employees()
         schemes = self._scheme_cards()
         # SCHEMECTX P1 — the Scope panel opens on the money the PRE-SELECTED
