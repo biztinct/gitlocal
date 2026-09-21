@@ -29,6 +29,8 @@ from odoo import fields
 from odoo.exceptions import AccessError, UserError
 from odoo.tests import TransactionCase, tagged
 
+from odoo.addons.biz_access.models.access_common import fold
+
 
 def _wave_role_changes_through(env):
     """Publish "No approval needed" for role changes, for these cases only.
@@ -392,7 +394,7 @@ class TestThePeopleList(PassportCase):
         self.assertTrue(rows[0]['is_me'])
         self.assertEqual(rows[0]['id'], self.manager.id)
         names = [r['name'] for r in rows[1:]]
-        self.assertEqual(names, sorted(names, key=lambda n: n.lower()))
+        self.assertEqual(names, sorted(names, key=fold))
 
     def test_it_counts_the_roles_each_person_holds(self):
         holder = self._user('Counted', self.above)
