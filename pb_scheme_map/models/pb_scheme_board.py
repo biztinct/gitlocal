@@ -29,6 +29,7 @@ administrator to also hold an HR permission.
 
 import logging
 import time
+from collections import defaultdict
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
