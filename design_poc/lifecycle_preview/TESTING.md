@@ -20,3 +20,5 @@
 ## Limits
 
 No production backend, email, uploads, calendar or signature integration tested; those are intentionally simulated in this design preview. The social preview PNG is a product asset. Browser screenshots were emitted directly for inspection without saving testing screenshot files.
+
+Additional Chrome checks passed: referral consent set to No disables submission; two peer selections disable confirmation; mobile breakpoint at 390 × 844 has no page-level horizontal overflow, and navigation/steps scroll within their containers. Temporary viewport restored.
