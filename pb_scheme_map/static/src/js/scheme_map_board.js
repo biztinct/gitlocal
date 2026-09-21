@@ -479,6 +479,35 @@ export class SchemeMapBoard extends Component {
         this.state.attaching = { segments: keys.slice(), cycle: "any" };
     }
 
+    openAttachClick(ev, key) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this.openAttach([key]);
+    }
+
+    togglePickClick(ev, key) {
+        ev.stopPropagation();
+        this.togglePick(key);
+    }
+
+    closeAttachClick(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this.closeAttach();
+    }
+
+    closeDraftClick(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this.closeDraft();
+    }
+
+    closeExceptionsClick(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this.toggleExceptions();
+    }
+
 
     /**
      * What the board says back, now that a wiring change can become a request.

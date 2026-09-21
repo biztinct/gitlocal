@@ -147,8 +147,7 @@
               <input type="checkbox" class="smp-tick"
                      t-att-aria-label="segment.label"
                      t-att-checked="isPicked(segment.key) ? 'checked' : false"
-                     t-on-click.stop="onPanelClick"
-                     t-on-change.stop="() => this.togglePick(segment.key)"/>
+                     t-on-change="(ev) => this.togglePickClick(ev, segment.key)"/>
               <span class="smp-seg__icon">
                 <t t-if="segment.kind === 'division'" t-out="ic('layers', 15)"/>
                 <t t-else="" t-out="ic('users', 15)"/>
@@ -171,12 +170,12 @@
                 <t t-esc="num(segment.missing)"/> not covered
               </span>
               <span t-elif="segment.missing" class="smp-tag is-bad">No scheme</span>
-              <button t-if="canEdit" class="smp-icon"
+              <button t-if="canEdit" type="button" class="smp-icon"
                       title="Attach a scheme"
-                      t-on-click.stop="() => this.openAttach([segment.key])">
+                      t-on-click="(ev) => this.openAttachClick(ev, segment.key)">
                 <t t-out="ic('plus', 14)"/>
               </button>
-              <button t-if="segment.children.length" class="smp-icon"
+              <button t-if="segment.children.length" type="button" class="smp-icon"
                       t-att-title="'Teams inside ' + segment.label"
                       t-on-click.stop="() => this.toggleOpen(segment.key)">
                 <t t-if="state.open === segment.key" t-out="ic('chevronUp', 14)"/>
@@ -317,8 +316,8 @@
            t-on-click.stop="onPanelClick">
         <div class="smp-panel__head">
           <h3>Attach <t t-esc="attachSegmentLabel"/> to a scheme</h3>
-          <button class="smp-icon" title="Close"
-                  t-on-click.stop.prevent="() => this.closeAttach()">
+          <button type="button" class="smp-icon" title="Close"
+                  t-on-click="closeAttachClick">
             <t t-out="ic('x', 16)"/>
           </button>
         </div>
@@ -373,8 +372,8 @@
            t-on-click.stop="onPanelClick">
         <div class="smp-panel__head">
           <h3>The map, read from what you paid</h3>
-          <button class="smp-icon" title="Close"
-                  t-on-click.stop.prevent="() => this.closeDraft()">
+          <button type="button" class="smp-icon" title="Close"
+                  t-on-click="closeDraftClick">
             <t t-out="ic('x', 16)"/>
           </button>
         </div>
@@ -461,8 +460,8 @@
            t-on-click.stop="onPanelClick">
         <div class="smp-panel__head">
           <h3>Nobody pays these people yet</h3>
-          <button class="smp-icon" title="Close"
-                  t-on-click.stop.prevent="toggleExceptions">
+          <button type="button" class="smp-icon" title="Close"
+                  t-on-click="closeExceptionsClick">
             <t t-out="ic('x', 16)"/>
           </button>
         </div>
