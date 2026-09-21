@@ -218,6 +218,19 @@
 
     .smp-col { min-width: 0; }
 
+    // The mapping surface sits inside a viewport-height action.  Let the
+    // workforce list own its scroll so the final divisions never disappear
+    // below the canvas while the payroll choices remain in view.
+    .smp-col--segments {
+        max-height: calc(100vh - 330px);
+        min-height: 280px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 8px;
+        scrollbar-gutter: stable;
+        overscroll-behavior: contain;
+    }
+
     .smp-col__head { margin-bottom: 8px; }
 
     .smp-col__title {
@@ -368,6 +381,23 @@
 
         b { font-size: 13.5px; overflow-wrap: anywhere; }
         small { color: var(--pbim-muted); font-size: 11.5px; }
+    }
+
+    .smp-scheme__source {
+        margin-top: 3px;
+        color: var(--pbim-primary-dark) !important;
+
+        b { font-size: inherit; font-weight: 600; }
+    }
+
+    .smp-draft__source {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px;
+        margin: 5px 0 0;
+        color: var(--pbim-muted);
+        font-size: 11px;
     }
 
     // ---------------------------------------------------------------- a ring

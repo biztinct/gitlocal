@@ -81,17 +81,6 @@
                             </div>
                         </div>
 
-                        <div t-if="state.scheme.preview" class="pw-schemesum">
-                            <b t-esc="num(state.scheme.preview.covered)"/>
-                            <span> people</span>
-                            <t t-if="state.scheme.preview.not_covered">
-                                <span class="pw-schemesum__sep">·</span>
-                                <button class="pw-linkb" t-on-click="toggleNotCovered">
-                                    <t t-esc="num(state.scheme.preview.not_covered)"/> not covered — see who
-                                </button>
-                            </t>
-                        </div>
-
                         <div t-if="state.scheme.open" class="pw-notcovered">
                             <p class="pw-muted">
                                 No scheme covers these people, so this run will

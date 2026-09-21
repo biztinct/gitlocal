@@ -262,6 +262,29 @@ class PbSchemeBoard(models.AbstractModel):
                 'date_end': fields.Date.to_string(date_end) if date_end else '',
                 'people': people or 0,
             }
+        # A spreadsheet loaded in the pay-run wizard is stored as an import
+        # batch which names both the scheme and the run.  Keep that provenance
+        # beside the last-run fact so the mapping board can make a useful,
+        # evidence-based suggestion instead of inferring a payroll from a
+        # division name.
+        if 'hr.payroll.import.batch' in self.env:
+            batches = self.env['hr.payroll.import.batch'].sudo().search([
+                ('formula_config_id', 'in', [int(c) for c in config_ids]),
+                ('source_type', '=', 'excel'),
+                ('import_filename', '!=', False),
+            ], order='date_to desc, id desc')
+            seen = set()
+            for batch in batches:
+                config_id = batch.formula_config_id.id
+                if config_id in seen:
+                    continue
+                seen.add(config_id)
+                out.setdefault(config_id, {})['spreadsheet'] = {
+                    'filename': batch.import_filename or '',
+                    'run': batch.payslip_run_id.name or '',
+                    'date_to': fields.Date.to_string(batch.date_to)
+                               if batch.date_to else '',
+                }
         return out
 
     @api.model

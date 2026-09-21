@@ -111,7 +111,7 @@
         </svg>
 
         <!-- ================================================ left: segments -->
-        <div class="smp-col">
+        <div class="smp-col smp-col--segments" t-on-scroll="measure">
           <div class="smp-col__head">
             <h3 class="smp-col__title">Who</h3>
             <p class="smp-col__sub">Divisions and teams in this company</p>
@@ -270,6 +270,11 @@
                     · last run <t t-esc="scheme.last_run.name"/>
                   </t>
                 </small>
+                <small t-if="scheme.last_run.spreadsheet.filename"
+                       class="smp-scheme__source"
+                       t-att-title="'Imported for ' + (scheme.last_run.spreadsheet.run || scheme.name)">
+                  Suggested by spreadsheet <b t-esc="scheme.last_run.spreadsheet.filename"/>
+                </small>
               </span>
               <span t-if="!scheme.covered" class="smp-tag is-warn">Nobody yet</span>
             </div>
@@ -401,6 +406,11 @@
                   <span t-if="row.already" class="smp-tag">Replaces <t t-esc="row.already"/></span>
                 </p>
                 <p class="smp-draft__why" t-esc="row.sentence"/>
+                <p t-if="row.spreadsheets.length" class="smp-draft__source">
+                  Suggested from
+                  <span t-foreach="row.spreadsheets" t-as="filename" t-key="filename"
+                        class="smp-badge" t-esc="filename"/>
+                </p>
               </div>
               <button class="pbim-btn ghost sm" t-on-click="() => this.toggleSkip(row)">
                 <t t-if="isSkipped(row)">Put back</t>

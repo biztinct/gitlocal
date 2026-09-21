@@ -523,7 +523,17 @@ class PbSchemeMap(models.AbstractModel):
                                      months=DRAFT_MONTHS)
         cr.execute("""
             SELECT s.employee_id, s.formula_config_id, fc.cycle_type,
-                   COALESCE(s.payslip_run_id, 0), COALESCE(r.date_end, s.date_to)
+                   COALESCE(s.payslip_run_id, 0), COALESCE(r.date_end, s.date_to),
+                   COALESCE((
+                       SELECT b.import_filename
+                         FROM hr_payroll_import_batch b
+                        WHERE b.payslip_run_id = s.payslip_run_id
+                          AND b.formula_config_id = s.formula_config_id
+                          AND b.source_type = 'excel'
+                          AND b.import_filename IS NOT NULL
+                        ORDER BY b.id DESC
+                        LIMIT 1
+                   ), '')
               FROM hr_payslip s
               JOIN hr_formula_config fc ON fc.id = s.formula_config_id
          LEFT JOIN hr_payslip_run r ON r.id = s.payslip_run_id
@@ -561,10 +571,13 @@ class PbSchemeMap(models.AbstractModel):
         runs = defaultdict(dict)
         # (department, cycle, run_id) -> {config_id: count}
         tally = defaultdict(lambda: defaultdict(int))
-        for employee_id, config_id, cycle, run_id, date_end in history:
+        spreadsheet_by_run = {}
+        for employee_id, config_id, cycle, run_id, date_end, filename in history:
             dept_id = roster.get(employee_id, (0, 0))[0]
             if not dept_id:
                 continue
+            if filename:
+                spreadsheet_by_run[(run_id, config_id)] = filename
             for candidate in (chains.get(dept_id) or [dept_id]):
                 runs[(candidate, cycle)][run_id] = date_end
                 tally[(candidate, cycle, run_id)][config_id] += 1
@@ -592,6 +605,11 @@ class PbSchemeMap(models.AbstractModel):
                 'config_id': winner, 'agree': agree, 'total': total,
                 'share': round(agree / float(total), 4),
                 'runs': len(recent),
+                'spreadsheets': list(dict.fromkeys(
+                    spreadsheet_by_run.get((run_id, winner), '')
+                    for run_id, _day in recent
+                    if spreadsheet_by_run.get((run_id, winner), '')
+                )),
             }
 
         cycles = sorted({cycle for _d, cycle in stats})
@@ -665,6 +683,7 @@ class PbSchemeMap(models.AbstractModel):
             'agree': stat['agree'],
             'total': stat['total'],
             'runs': stat['runs'],
+            'spreadsheets': stat.get('spreadsheets') or [],
             'confident': stat['share'] >= DRAFT_CONFIDENT,
             'already_id': already.id if already else 0,
             'already': (already.config_id.name or '') if already else '',
