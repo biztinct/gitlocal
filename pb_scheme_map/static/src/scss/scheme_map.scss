@@ -288,6 +288,13 @@
         small { color: var(--pbim-muted); font-size: 11.5px; }
     }
 
+    .smp-seg__suggestion {
+        margin-top: 3px;
+        color: var(--pbim-primary-dark) !important;
+
+        b { font-size: inherit; font-weight: 600; }
+    }
+
     .smp-seg__wires {
         display: flex;
         flex-wrap: wrap;

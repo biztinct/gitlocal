@@ -571,6 +571,10 @@ class PbSchemeMap(models.AbstractModel):
         runs = defaultdict(dict)
         # (department, cycle, run_id) -> {config_id: count}
         tally = defaultdict(lambda: defaultdict(int))
+        # The same evidence as people rather than payslip rows.  A person can
+        # appear in several recent runs; the board's compact suggestion must
+        # still say "4 of 4 people", not "12 of 12 payslips".
+        paid_people = defaultdict(set)
         spreadsheet_by_run = {}
         for employee_id, config_id, cycle, run_id, date_end, filename in history:
             dept_id = roster.get(employee_id, (0, 0))[0]
@@ -581,6 +585,8 @@ class PbSchemeMap(models.AbstractModel):
             for candidate in (chains.get(dept_id) or [dept_id]):
                 runs[(candidate, cycle)][run_id] = date_end
                 tally[(candidate, cycle, run_id)][config_id] += 1
+                paid_people[(candidate, cycle, run_id, config_id)].add(
+                    employee_id)
 
         configs = {c.id: c for c in self.env['hr.formula.config'].sudo().browse(
             sorted({row[1] for row in history})).exists()}
@@ -601,10 +607,19 @@ class PbSchemeMap(models.AbstractModel):
             if not total:
                 continue
             winner, agree = max(counts.items(), key=lambda kv: (kv[1], -kv[0]))
+            all_people, agreeing_people = set(), set()
+            for run_id, _day in recent:
+                for config_id in tally[(dept_id, cycle, run_id)]:
+                    people = paid_people[(dept_id, cycle, run_id, config_id)]
+                    all_people.update(people)
+                    if config_id == winner:
+                        agreeing_people.update(people)
             stats[(dept_id, cycle)] = {
                 'config_id': winner, 'agree': agree, 'total': total,
                 'share': round(agree / float(total), 4),
                 'runs': len(recent),
+                'people_agree': len(agreeing_people),
+                'people_total': len(all_people),
                 'spreadsheets': list(dict.fromkeys(
                     spreadsheet_by_run.get((run_id, winner), '')
                     for run_id, _day in recent
@@ -682,6 +697,8 @@ class PbSchemeMap(models.AbstractModel):
             'confidence': stat['share'],
             'agree': stat['agree'],
             'total': stat['total'],
+            'people_agree': stat.get('people_agree', 0),
+            'people_total': stat.get('people_total', 0),
             'runs': stat['runs'],
             'spreadsheets': stat.get('spreadsheets') or [],
             'confident': stat['share'] >= DRAFT_CONFIDENT,

@@ -382,6 +382,33 @@ class TestSchemeMap(TransactionCase):
             self.assertTrue(written.note)
             written.unlink()
 
+    def test_t5_board_suggests_scheme_from_payruns_not_import_channel(self):
+        """The compact team hint consumes pay-run evidence only.
+
+        There is intentionally no import batch in this fixture: Excel, API and
+        manual runs must all lead to the same suggestion once payslips exist.
+        """
+        segments = [{
+            'id': self.top.id, 'kind': 'department', 'children': [],
+        }]
+        rows = [{
+            'department_id': self.top.id,
+            'config_id': self.end.id,
+            'config': self.end.name,
+            'cycle_type': 'end_cycle',
+            'cycle_label': 'end of month',
+            'people_agree': 3,
+            'people_total': 4,
+            'runs': 3,
+            'confidence': 0.75,
+        }]
+        self.env['pb.scheme.board']._add_history_suggestions(segments, rows)
+        suggestion = segments[0]['suggestion']
+        self.assertEqual(suggestion['config_id'], self.end.id)
+        self.assertEqual(suggestion['people_agree'], 3)
+        self.assertEqual(suggestion['people_total'], 4)
+        self.assertEqual(suggestion['runs'], 3)
+
     def _demo_company(self):
         self.env.cr.execute("""
             SELECT company_id, COUNT(*)

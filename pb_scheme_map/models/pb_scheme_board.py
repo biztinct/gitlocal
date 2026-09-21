@@ -175,6 +175,12 @@ class PbSchemeBoard(models.AbstractModel):
                    for k, v in (cover.get('by_department') or {}).items()}
         segments = self._safe(lambda: self._segments(company_id, missing),
                               default=[])
+        # Suggestions are deliberately sourced from resulting payslips, not
+        # from an Excel/API/manual import record.  That makes the evidence the
+        # same whichever route fed the run and answers the useful question:
+        # "which scheme actually paid the people now in this team?"
+        draft = self._safe(lambda: Map.draft(company_id), default={'rows': []})
+        self._add_history_suggestions(segments, draft.get('rows') or [])
 
         stale = self._safe(
             lambda: self.env['hr.employee'].sudo().search_count(
@@ -206,6 +212,43 @@ class PbSchemeBoard(models.AbstractModel):
             'studio_action': 'pb_formula_studio.action_pb_formula_studio',
             'ms': int((time.time() - started) * 1000),
         }
+
+    @api.model
+    def _add_history_suggestions(self, segments, rows):
+        """Put the strongest recent-pay-run answer on each department row."""
+        priority = {'end_cycle': 0, 'regular': 1, 'full_final': 2,
+                    'any': 3, 'mid_cycle': 4}
+        by_department = defaultdict(list)
+        for row in rows:
+            if row.get('department_id') and row.get('config_id'):
+                by_department[int(row['department_id'])].append(row)
+
+        def suggestion(department_id):
+            choices = by_department.get(int(department_id or 0), [])
+            if not choices:
+                return False
+            row = sorted(
+                choices,
+                key=lambda r: (priority.get(r.get('cycle_type'), 9),
+                               -float(r.get('confidence') or 0),
+                               -int(r.get('people_total') or 0)),
+            )[0]
+            return {
+                'config_id': row.get('config_id') or 0,
+                'config': row.get('config') or '',
+                'cycle_label': row.get('cycle_label') or '',
+                'people_agree': row.get('people_agree') or 0,
+                'people_total': row.get('people_total') or 0,
+                'runs': row.get('runs') or 0,
+                'confidence': row.get('confidence') or 0.0,
+            }
+
+        for segment in segments:
+            segment['suggestion'] = suggestion(segment['id']) \
+                if segment.get('kind') == 'department' else False
+            for child in segment.get('children') or []:
+                child['suggestion'] = suggestion(child.get('id'))
+        return segments
 
     @api.model
     def _cycles(self):
