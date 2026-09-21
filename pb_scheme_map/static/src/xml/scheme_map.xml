@@ -117,34 +117,38 @@
             <p class="smp-col__sub">Divisions and teams in this company</p>
           </div>
 
-          <div t-if="state.picked.length" class="smp-bulk">
-            <span><b t-esc="state.picked.length"/> chosen</span>
-            <button class="pbim-btn primary sm" t-on-click="openAttachForPicked">
-              <t t-out="ic('link', 14)"/> Attach to a scheme
-            </button>
-            <button class="pbim-btn ghost sm" t-on-click="clearPicked">Clear</button>
+          <div t-attf-class="smp-bulk {{ state.picked.length ? '' : 'is-empty' }}"
+               t-att-aria-hidden="state.picked.length ? 'false' : 'true'">
+            <t t-if="state.picked.length">
+              <span><b t-esc="state.picked.length"/> chosen</span>
+              <button class="pbim-btn primary sm" t-on-click.stop="openAttachForPicked">
+                <t t-out="ic('link', 14)"/> Attach to a scheme
+              </button>
+              <button class="pbim-btn ghost sm" t-on-click.stop="clearPicked">Clear</button>
+            </t>
           </div>
 
           <div t-foreach="segments" t-as="segment" t-key="segment.key"
                class="smp-seg">
             <div t-att-data-smp-seg="segment.key"
                  tabindex="0"
-                 t-att-draggable="canEdit ? 'true' : 'false'"
                  t-attf-class="smp-seg__row {{ isDragging(segment.key) ? 'is-held' : '' }} {{ isTraced('segment', segment.key) ? 'is-traced' : '' }}"
                  t-att-aria-label="segment.label"
                  t-on-keydown="(ev) => this.onSegmentKey(ev, segment)"
-                 t-on-dragstart="(ev) => this.onSegmentDragStart(ev, segment)"
-                 t-on-dragend="onDragEnd"
                  t-on-mouseenter="() => this.setHover(segment.key)"
                  t-on-mouseleave="clearHover">
               <span t-if="canEdit" class="smp-grip"
+                    draggable="true"
+                    t-on-dragstart="(ev) => this.onSegmentDragStart(ev, segment)"
+                    t-on-dragend="onDragEnd"
                     title="Drag this team onto a scheme on the right">
                 <t t-out="ic('grip', 14)"/>
               </span>
               <input type="checkbox" class="smp-tick"
                      t-att-aria-label="segment.label"
                      t-att-checked="isPicked(segment.key) ? 'checked' : false"
-                     t-on-change="() => this.togglePick(segment.key)"/>
+                     t-on-click.stop="onPanelClick"
+                     t-on-change.stop="() => this.togglePick(segment.key)"/>
               <span class="smp-seg__icon">
                 <t t-if="segment.kind === 'division'" t-out="ic('layers', 15)"/>
                 <t t-else="" t-out="ic('users', 15)"/>
@@ -169,12 +173,12 @@
               <span t-elif="segment.missing" class="smp-tag is-bad">No scheme</span>
               <button t-if="canEdit" class="smp-icon"
                       title="Attach a scheme"
-                      t-on-click="() => this.openAttach([segment.key])">
+                      t-on-click.stop="() => this.openAttach([segment.key])">
                 <t t-out="ic('plus', 14)"/>
               </button>
               <button t-if="segment.children.length" class="smp-icon"
                       t-att-title="'Teams inside ' + segment.label"
-                      t-on-click="() => this.toggleOpen(segment.key)">
+                      t-on-click.stop="() => this.toggleOpen(segment.key)">
                 <t t-if="state.open === segment.key" t-out="ic('chevronUp', 14)"/>
                 <t t-else="" t-out="ic('chevronDown', 14)"/>
               </button>
@@ -307,12 +311,14 @@
     </div>
 
     <!-- ================================================ the attach panel -->
-    <div t-if="state.attaching" class="smp-scrim" t-on-click="closeAttach">
+    <div t-if="state.attaching" class="smp-scrim"
+         t-on-click="() => this.closeAttach()">
       <div class="smp-panel" role="dialog" aria-label="Attach a scheme"
            t-on-click.stop="onPanelClick">
         <div class="smp-panel__head">
           <h3>Attach <t t-esc="attachSegmentLabel"/> to a scheme</h3>
-          <button class="smp-icon" title="Close" t-on-click="closeAttach">
+          <button class="smp-icon" title="Close"
+                  t-on-click.stop.prevent="() => this.closeAttach()">
             <t t-out="ic('x', 16)"/>
           </button>
         </div>
@@ -360,13 +366,15 @@
     </div>
 
     <!-- =============================================== the drafted map -->
-    <div t-if="state.drafting" class="smp-scrim" t-on-click="closeDraft">
+    <div t-if="state.drafting" class="smp-scrim"
+         t-on-click="() => this.closeDraft()">
       <div class="smp-panel is-wide" role="dialog"
            aria-label="The map read from what you paid"
            t-on-click.stop="onPanelClick">
         <div class="smp-panel__head">
           <h3>The map, read from what you paid</h3>
-          <button class="smp-icon" title="Close" t-on-click="closeDraft">
+          <button class="smp-icon" title="Close"
+                  t-on-click.stop.prevent="() => this.closeDraft()">
             <t t-out="ic('x', 16)"/>
           </button>
         </div>
@@ -453,7 +461,8 @@
            t-on-click.stop="onPanelClick">
         <div class="smp-panel__head">
           <h3>Nobody pays these people yet</h3>
-          <button class="smp-icon" title="Close" t-on-click="toggleExceptions">
+          <button class="smp-icon" title="Close"
+                  t-on-click.stop.prevent="toggleExceptions">
             <t t-out="ic('x', 16)"/>
           </button>
         </div>

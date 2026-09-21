@@ -163,7 +163,6 @@
         flex: none; display: inline-flex; color: var(--pbim-muted);
         cursor: grab;
     }
-    .smp-seg__row[draggable="true"] { cursor: grab; }
     .smp-seg__row.is-held {
         opacity: .45; border-style: dashed;
         border-color: var(--pbim-primary);
@@ -248,11 +247,15 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        min-height: 48px;
+        box-sizing: border-box;
         padding: 8px 10px;
         margin-bottom: 8px;
         border-radius: var(--pbim-r-sm);
         background: var(--pbim-soft);
         font-size: 12px;
+
+        &.is-empty { visibility: hidden; pointer-events: none; }
     }
 
     // ------------------------------------------------------------- a segment
