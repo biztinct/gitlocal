@@ -1568,8 +1568,23 @@ class HrPayslipRun(models.Model):
             row_idx = 1
             sorted_slips = slips.sorted(key=lambda s: s.employee_id.name or s.name or '')
             for slip in sorted_slips:
-                employee = slip.employee_id
-                contract = slip.contract_id
+                # WHAT GOES IN A COLUMN OF THE PAY REGISTER IS NOT A PERMISSION
+                # QUESTION.
+                #
+                # The workbook's people columns are mapped to employee and
+                # contract fields (`hr.payslip.import.mapping`), and some of
+                # those fields are reserved to HR Administrator — Rize maps
+                # "Date contract" to `hr.employee.contract_date_start`. Read as
+                # the acting user, Download Excel therefore failed for a
+                # PAYROLL SUPER ADMINISTRATOR with "You don't have access to
+                # this yet", on a run they may open, recompute and approve.
+                #
+                # These reads grant nothing. The gate is the pay run itself:
+                # a person who cannot open the run never reaches this method,
+                # and every column below is one the scheme put on its own pay
+                # register on purpose.
+                employee = slip.employee_id.sudo()
+                contract = slip.contract_id.sudo()
                 contract_component_amounts = _get_contract_component_amounts(contract)
                 computed_values = {}
                 if hasattr(slip, 'formula_computed_values') and slip.formula_computed_values:
