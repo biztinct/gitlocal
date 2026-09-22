@@ -710,3 +710,236 @@ class TestNetRoleClassifier(TransactionCase):
         # A classification that says nothing at all IS a blank, and stays one.
         nothing = {r.code: False for r in self.config.rule_ids}
         self.assertIsNone(self.config._net_role_balance_gap(nothing, details))
+
+    # ------------------------------------------------------------------ 31
+    def test_31_a_scheme_may_say_plus_and_mean_minus(self):
+        """The reference demo world writes deductions as negatives, added in.
+
+            SIEMP   = -round(min(BASIC, CAPLO) * EESI)
+            FULLPAY = GROSS + SIEMP + HIEMP + UIEMP + PIT + LOANREP
+
+        Read as arithmetic that is six earnings, and ₫25.7bn of insurance, tax
+        and loan repayments classified as pay across 47 pay runs. A sign walk
+        cannot know better — it reads the shape of the formula, never the size
+        of the answer.
+
+        The amounts are the evidence, and they are decisive: nothing added to
+        somebody's pay is consistently negative. It is the same rule the
+        employee's own pay statement has always used.
+        """
+        config = self.env['hr.formula.config'].create({
+            'name': 'Negatives added in', 'code': 'NEGADD', 'country_code': 'VN'})
+        other = self.env['hr.salary.rule.category'].search(
+            [('code', '=', 'OTH')], limit=1)
+        spec = [
+            ('A', 'PAY', 'Salary', 'input', ''),
+            ('B', 'TAXOFF', 'Tax', 'input', ''),
+            ('C', 'SWINGY', 'Adjustment', 'input', ''),
+            ('D', 'TAKEHOME', 'Net pay', 'formula', '=A5+B5+C5'),
+        ]
+        rules, sequence = {}, 10
+        for letter, code, name, ctype, formula in spec:
+            vals = {'config_id': config.id, 'name': name, 'code': code,
+                    'column_type': ctype, 'sequence': sequence,
+                    'column_letter': letter, 'appears_on_payslip': True,
+                    'category_id': other.id}
+            if formula:
+                vals['excel_formula'] = formula
+            rule = self.env['hr.formula.rule'].create(vals)
+            rule.salary_rule_id = self.env['hr.salary.rule'].create({
+                'name': name, 'code': code, 'sequence': sequence,
+                'category_id': other.id, 'condition_select': 'none',
+                'amount_select': 'fix'}).id
+            rules[code] = rule
+            sequence += 10
+        config.invalidate_recordset()
+
+        # With no payslips, the formulas are all there is: everything is added
+        # in, so everything reads as an earning.
+        config.classify_net_roles()
+        self.assertEqual(rules['TAXOFF'].net_role, 'earning',
+                         "with no amounts to read, the formula is the only word")
+
+        # Now give it a run. Tax is negative for everyone; the adjustment
+        # swings both ways and must be left alone.
+        run = self.env['hr.payslip.run'].create({'name': 'Negatives run'})
+        for index, (pay, tax, swing) in enumerate(
+                [(9000.0, -900.0, 50.0), (8000.0, -800.0, -30.0)]):
+            employee = self.env['hr.employee'].create(
+                {'name': 'Negatives Person %s' % index})
+            contract = self.env['hr.contract'].create({
+                'name': 'Negatives contract %s' % index,
+                'employee_id': employee.id, 'wage': 10000.0,
+                'state': 'open', 'date_start': '2020-01-01'})
+            slip = self.env['hr.payslip'].create({
+                'employee_id': employee.id, 'name': 'Negatives slip %s' % index,
+                'contract_id': contract.id, 'payslip_run_id': run.id,
+                'date_from': '2026-06-01', 'date_to': '2026-06-30'})
+            slip.formula_config_id = config.id
+            slip._create_payslip_lines_from_formulas(config.rule_ids, {
+                'PAY': pay, 'TAXOFF': tax, 'SWINGY': swing,
+                'TAKEHOME': pay + tax + swing})
+
+        for rule in config.rule_ids:
+            rule.net_role_source = 'auto'
+        config.classify_net_roles()
+        self.assertEqual(rules['TAKEHOME'].net_role, 'net')
+        self.assertEqual(rules['TAXOFF'].net_role, 'deduction',
+                         "added in, but never positive — it is a deduction")
+        self.assertIn('amounts decide', rules['TAXOFF'].net_role_reason)
+        self.assertEqual(rules['PAY'].net_role, 'earning')
+        self.assertEqual(rules['SWINGY'].net_role, 'earning',
+                         "a component that swings both ways is left as written")
+
+    # ------------------------------------------------------------------ 32
+    def test_32_a_positive_amount_is_never_evidence_of_an_earning(self):
+        """The guard on test 31, and it caught a real one.
+
+        The ORDINARY way to write a deduction is a positive number that the net
+        formula SUBTRACTS — this fixture's `SIAMT` is 945 and `NETPAY` takes it
+        off. A rule that read a positive amount as "therefore an earning" would
+        turn every properly-written deduction in every scheme into pay. A first
+        draft did exactly that and this fixture stopped it: the run went from
+        reconciling to 2,000 out.
+
+        Only "added in, yet never positive" is a contradiction worth acting on.
+        """
+        employee = self.env['hr.employee'].create({'name': 'Positive Person'})
+        contract = self.env['hr.contract'].create({
+            'name': 'Positive contract', 'employee_id': employee.id,
+            'wage': 10000.0, 'state': 'open', 'date_start': '2020-01-01'})
+        run = self.env['hr.payslip.run'].create({'name': 'Positive run'})
+        slip = self.env['hr.payslip'].create({
+            'employee_id': employee.id, 'name': 'Positive slip',
+            'contract_id': contract.id, 'payslip_run_id': run.id,
+            'date_from': '2026-06-01', 'date_to': '2026-06-30'})
+        slip.formula_config_id = self.config.id
+        self._classify()
+        slip._create_payslip_lines_from_formulas(self.config.rule_ids, {
+            'BASE': 9000.0, 'ALWONE': 500.0, 'ALWTWO': 0.0, 'GROSSAGG': 9500.0,
+            'SICAP': 0.0, 'SIBASE': 9000.0, 'SIAMT': 945.0, 'PITAMT': 55.0,
+            'DEDAGG': 1000.0, 'REFUND': 0.0, 'SWINGSRC': 0.0, 'SWINGADJ': 0.0,
+            'NETPAY': 8500.0, 'ERSI': 1575.0, 'ERCOST': 10075.0,
+            'INFOFIELD': 0.0})
+        for rule in self.config.rule_ids:
+            rule.net_role_source = 'auto'
+        self._classify()
+        for code in ('SIAMT', 'PITAMT', 'DEDAGG'):
+            self.assertEqual(self._role(code), 'deduction',
+                             "%s is positive AND subtracted — still a deduction"
+                             % code)
+        roles = {r.code: r.net_role for r in self.config.rule_ids}
+        details = {r.code: r.net_role_detail for r in self.config.rule_ids}
+        self.assertEqual(self.config._net_role_balance_gap(roles, details)[0],
+                         0.0, "9,500 − 1,000 = 8,500, before and after")
+
+    # ------------------------------------------------------------------ 33
+    def test_33_two_components_in_the_net_category_is_not_a_coin_toss(self):
+        """The demo world files both `FULLPAY` and `NET` under the NET category.
+
+        `FULLPAY` is gross less deductions; `NET` is that less the mid-month
+        advance already paid, and it is what lands in the bank. Taking the
+        first one in sequence took FULLPAY — which made the REAL net pay a
+        component that "contains net pay", i.e. an employer cost. The run then
+        reported no take-home at all and the ₫19.8bn advance was a deduction of
+        nothing.
+
+        The component's own code says which is which.
+        """
+        config = self.env['hr.formula.config'].create({
+            'name': 'Two in net', 'code': 'TWOINNET', 'country_code': 'VN'})
+        cat = {c.code: c for c in self.env['hr.salary.rule.category'].search(
+            [('code', 'in', ('OTH', 'NET'))])}
+        spec = [
+            ('A', 'PAYX', 'Salary', 'input', '', 'OTH'),
+            ('B', 'ADVX', 'Advance already paid', 'input', '', 'OTH'),
+            # FULLPAY first, exactly as the demo world orders them.
+            ('C', 'FULLPAY', 'Full month pay', 'formula', '=A5', 'NET'),
+            ('D', 'NET', 'Net payment', 'formula', '=C5-B5', 'NET'),
+        ]
+        rules, sequence = {}, 10
+        for letter, code, name, ctype, formula, category in spec:
+            vals = {'config_id': config.id, 'name': name, 'code': code,
+                    'column_type': ctype, 'sequence': sequence,
+                    'column_letter': letter, 'appears_on_payslip': True,
+                    'category_id': cat[category].id}
+            if formula:
+                vals['excel_formula'] = formula
+            rules[code] = self.env['hr.formula.rule'].create(vals)
+            sequence += 10
+        config.invalidate_recordset()
+        summary = config.classify_net_roles()[config.id]
+        self.assertIsNone(summary['error'], summary.get('error'))
+        self.assertEqual(summary['net_code'], 'NET',
+                         "the one named NET is the one that reaches the bank")
+        self.assertEqual(rules['NET'].net_role, 'net')
+        self.assertEqual(rules['ADVX'].net_role, 'deduction',
+                         "an advance already paid reduces what is paid now")
+        self.assertNotEqual(rules['NET'].net_role, 'employer_cost')
+
+    # ------------------------------------------------------------------ 34
+    def test_34_a_plus_with_a_negative_amount_is_still_a_subtraction(self):
+        """`A - B` and `A + B` with B negative are the same subtraction.
+
+        The demo world writes `FULLPAY = GROSS + SIEMP + ... + PIT`, where
+        every deduction is a negative amount added in. Read by the plus signs
+        alone that is a total of six earnings, so it was not recognised as a
+        running total — and `GROSS` was then marked a detail OF it. Since
+        FULLPAY is not itself on the payslip, the run reported a gross of ZERO
+        against ₫4.96bn of take-home.
+        """
+        config = self.env['hr.formula.config'].create({
+            'name': 'Plus means minus', 'code': 'PLUSMINUS',
+            'country_code': 'VN'})
+        cat = {c.code: c for c in self.env['hr.salary.rule.category'].search(
+            [('code', 'in', ('OTH', 'NET'))])}
+        spec = [
+            ('A', 'PAYA', 'Salary', 'input', '', 'OTH'),
+            ('B', 'TAXA', 'Tax', 'input', '', 'OTH'),
+            ('C', 'GROSSA', 'Gross pay', 'formula', '=A5', 'OTH'),
+            # Every deduction ADDED, exactly as the demo world writes it.
+            ('D', 'FULLA', 'Full pay', 'formula', '=C5+B5', 'NET'),
+            ('E', 'NET', 'Net payment', 'formula', '=D5', 'NET'),
+        ]
+        rules, sequence = {}, 10
+        for letter, code, name, ctype, formula, category in spec:
+            vals = {'config_id': config.id, 'name': name, 'code': code,
+                    'column_type': ctype, 'sequence': sequence,
+                    'column_letter': letter, 'appears_on_payslip': True,
+                    'category_id': cat[category].id}
+            if formula:
+                vals['excel_formula'] = formula
+            rule = self.env['hr.formula.rule'].create(vals)
+            rule.salary_rule_id = self.env['hr.salary.rule'].create({
+                'name': name, 'code': code, 'sequence': sequence,
+                'category_id': cat[category].id, 'condition_select': 'none',
+                'amount_select': 'fix'}).id
+            rules[code] = rule
+            sequence += 10
+        config.invalidate_recordset()
+
+        run = self.env['hr.payslip.run'].create({'name': 'Plus-minus run'})
+        employee = self.env['hr.employee'].create({'name': 'Plus Minus Person'})
+        contract = self.env['hr.contract'].create({
+            'name': 'Plus-minus contract', 'employee_id': employee.id,
+            'wage': 10000.0, 'state': 'open', 'date_start': '2020-01-01'})
+        slip = self.env['hr.payslip'].create({
+            'employee_id': employee.id, 'name': 'Plus-minus slip',
+            'contract_id': contract.id, 'payslip_run_id': run.id,
+            'date_from': '2026-06-01', 'date_to': '2026-06-30'})
+        slip.formula_config_id = config.id
+        slip._create_payslip_lines_from_formulas(config.rule_ids, {
+            'PAYA': 9000.0, 'TAXA': -900.0, 'GROSSA': 9000.0,
+            'FULLA': 8100.0, 'NET': 8100.0})
+        config.classify_net_roles()
+
+        self.assertEqual(rules['FULLA'].net_role, 'info',
+                         "it adds pay and takes tax off — a running total")
+        self.assertEqual(rules['GROSSA'].net_role, 'earning')
+        self.assertFalse(rules['GROSSA'].net_role_detail,
+                         "THE BUG: gross was a detail of a total nobody counts")
+        self.assertEqual(rules['TAXA'].net_role, 'deduction')
+        roles = {r.code: r.net_role for r in config.rule_ids}
+        details = {r.code: r.net_role_detail for r in config.rule_ids}
+        self.assertEqual(config._net_role_balance_gap(roles, details)[0], 0.0,
+                         "9,000 − 900 = 8,100")

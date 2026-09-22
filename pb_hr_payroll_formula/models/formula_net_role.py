@@ -582,6 +582,8 @@ class NetRoleClassification:
         #: apart so each can be given its own reason on the treatment board.
         self.demoted_ingredients = set()
         self.demoted_totals = set()
+        #: Rule ids whose own amounts contradicted the formula's sign.
+        self.flipped = set()
 
 
 class HrFormulaRuleNetRole(models.Model):
@@ -842,13 +844,35 @@ class HrFormulaConfigNetRole(models.Model):
         self.ensure_one()
         return self.rule_ids.sorted(key=lambda r: (r.sequence, r.id))
 
+    #: What a component called net pay is actually named.
+    _NET_ROLE_NET_CODES = ('NET', 'NETPAY', 'NETSALARY')
+
     def _net_role_find_net_rule(self, rules):
-        """The net-pay component, or an empty recordset. Never a guess."""
+        """The net-pay component, or an empty recordset. Never a guess.
+
+        WHEN TWO COMPONENTS SHARE THE NET CATEGORY, the first one in the list
+        is not an answer, it is an accident of sequence. The reference demo
+        world files both `FULLPAY` (gross less deductions) and `NET` (= FULLPAY
+        − the mid-month advance) under NET, and `FULLPAY` comes first. Picking
+        it made the REAL net pay a component that "contains net pay" — an
+        employer cost — so the run reported no take-home at all, and the
+        ₫19.8bn advance was a deduction of nothing.
+
+        Its own code says which is which, so ask that before falling back to
+        position.
+        """
+        candidates = [rule for rule in rules
+                      if rule.category_id
+                      and (rule.category_id.code or '').upper() == 'NET']
+        if len(candidates) > 1:
+            named = [rule for rule in candidates
+                     if (rule.code or '').upper() in self._NET_ROLE_NET_CODES]
+            if len(named) == 1:
+                return named[0]
+        if candidates:
+            return candidates[0]
         for rule in rules:
-            if rule.category_id and (rule.category_id.code or '').upper() == 'NET':
-                return rule
-        for rule in rules:
-            if (rule.code or '').upper() in ('NET', 'NETPAY', 'NETSALARY'):
+            if (rule.code or '').upper() in self._NET_ROLE_NET_CODES:
                 return rule
         for rule in rules:
             name = (rule.name or '').strip().lower()
@@ -1004,6 +1028,10 @@ class HrFormulaConfigNetRole(models.Model):
 
         self._net_role_mark_employer_cost(
             classification, net_rule, incoming, outgoing)
+        # BEFORE the demotions, because a running total is recognised by the
+        # roles of what it combines, and this is what makes those roles right.
+        classification.flipped = self._net_role_apply_observed_signs(
+            classification, net_rule)
         # ORDER MATTERS. Ingredients go first: a base that is really a working
         # figure must stop being money before a running total is asked which
         # money components it combines. Details go LAST, because both passes
@@ -1261,10 +1289,14 @@ class HrFormulaConfigNetRole(models.Model):
             elif role == 'earning':
                 gross += amount
             elif role == 'deduction':
-                deductions += amount
+                # Each deduction's own SIZE, never the signed sum: a scheme may
+                # write insurance as negative and the mid-month advance as
+                # positive, and summing them lets one cancel the other. Same
+                # arithmetic as the pay run header and the pay statement.
+                deductions += abs(amount)
         if not gross and not deductions and not net:
             return None
-        return gross - abs(deductions) - net, gross
+        return gross - deductions - net, gross
 
     def _net_role_would_worsen(self, classification):
         """Is the classification about to be written worse than the stored one?
@@ -1320,6 +1352,113 @@ class HrFormulaConfigNetRole(models.Model):
             return None
         return {'gap_after': gap_after, 'gap_before': before[0],
                 'gross_after': gross_after}
+
+    def _net_role_apply_observed_signs(self, classification, net_rule):
+        """A component ADDED into net pay whose amounts are negative is a
+        deduction, and the other way round.
+
+        A SCHEME MAY SAY "PLUS" AND MEAN "MINUS". The reference demo world
+        writes every deduction as a negative amount and then adds it in:
+
+            SIEMP   = -round(min(BASIC, CAPLO) * EESI)
+            FULLPAY = GROSS + SIEMP + HIEMP + UIEMP + PIT + LOANREP
+
+        Read as arithmetic that is six earnings, and a sign walk has no way to
+        know better — it reads the shape of the formula, never the size of the
+        answer. So the demo world's ₫25.7bn of insurance, tax and loan
+        repayments classified as pay, its ₫30.7bn of gross classified as pay
+        twice over, and re-classifying those schemes would have produced no
+        deductions at all. `_net_role_would_worsen` stopped it, which is a
+        refusal, not an answer.
+
+        The answer is the one the employee's own pay statement has always used
+        (`pb_payslip`: "a line the scheme calls an earning but which came out
+        negative is a correction that REDUCES pay"). The amounts are evidence,
+        and here they are decisive: nothing that is added to somebody's pay is
+        consistently negative.
+
+        CONSISTENTLY is the first guard. A component that is negative for some
+        people and positive for others is an adjustment that genuinely swings
+        both ways, and it is left exactly as the formulas read it. So is one
+        with no computed amounts to look at.
+
+        ONE DIRECTION ONLY is the second, and it is the one that matters. The
+        ORDINARY way to write a deduction is a positive number that the net
+        formula SUBTRACTS — rize's `BHXH 8%` is ₫640,000 and net pay takes it
+        off. A symmetric rule would see a positive amount, decide it must be an
+        earning, and turn every properly-written deduction in every scheme into
+        pay. Test 28 caught exactly that. So a positive amount is never
+        evidence of anything here: it is what both an earning and a deduction
+        normally look like. Only "added in, yet never positive" is a
+        contradiction, and only that is acted on.
+        """
+        self.ensure_one()
+        by_id = {}
+        observed = self._net_role_observed_signs()
+        if not observed:
+            return set()
+        flipped = set()
+        for rule in classification.rules:
+            by_id[rule.id] = rule
+            if rule.id == net_rule.id:
+                continue
+            if classification.roles.get(rule.id) != 'earning':
+                continue
+            if observed.get(rule.code) != -1:
+                continue
+            classification.roles[rule.id] = 'deduction'
+            # The formulas and the figures disagree, and the figures won. That
+            # is worth a person's glance even though it is almost always right.
+            classification.confidences[rule.id] = LIKELY
+            flipped.add(rule.id)
+        if flipped:
+            _logger.info(
+                "NETROLE: scheme %s — %s component(s) were added into net pay "
+                "but their own amounts run the other way: %s", self.id,
+                len(flipped),
+                ', '.join(sorted(by_id[i].code or str(i) for i in flipped)))
+        return flipped
+
+    def _net_role_observed_signs(self):
+        """``{code: -1 | 1}`` for components whose amounts never change sign.
+
+        Read from the scheme's most recent run — the same one
+        `_net_role_balance_gap` measures against, so the evidence and the check
+        are looking at the same payroll. A component with both signs, or with
+        nothing but zeros, is absent from the result and decides nothing.
+        """
+        self.ensure_one()
+        self.env['hr.payslip'].flush_model(
+            ['formula_config_id', 'payslip_run_id', 'state'])
+        self.env['hr.payslip.line'].flush_model(['slip_id', 'code', 'total'])
+        self.env.cr.execute("""
+            SELECT p.payslip_run_id
+              FROM hr_payslip p
+             WHERE p.formula_config_id = %s AND p.payslip_run_id IS NOT NULL
+               AND p.state <> 'cancel'
+             GROUP BY p.payslip_run_id
+             ORDER BY p.payslip_run_id DESC
+             LIMIT 1
+        """, (self.id,))
+        row = self.env.cr.fetchone()
+        if not row:
+            return {}
+        self.env.cr.execute("""
+            SELECT pl.code,
+                   COUNT(*) FILTER (WHERE pl.total > 0) AS positives,
+                   COUNT(*) FILTER (WHERE pl.total < 0) AS negatives
+              FROM hr_payslip_line pl
+              JOIN hr_payslip p ON p.id = pl.slip_id AND p.state <> 'cancel'
+             WHERE p.payslip_run_id = %s
+             GROUP BY pl.code
+        """, (row[0],))
+        signs = {}
+        for code, positives, negatives in self.env.cr.fetchall():
+            if positives and not negatives:
+                signs[code] = 1
+            elif negatives and not positives:
+                signs[code] = -1
+        return signs
 
     def _net_role_demote_ingredients(self, classification, best):
         """A component that only ever arrives SCALED is an ingredient, not pay.
@@ -1397,14 +1536,29 @@ class HrFormulaConfigNetRole(models.Model):
         taxable income feeds nothing but a working figure either.
         """
         money_roles = ('earning', 'deduction')
+        # WHAT A SOURCE DOES TO THIS FIGURE, not what the formula looks like.
+        # `A - B` and `A + B` where B is negative are the same subtraction, and
+        # the reference demo world writes the second: `FULLPAY = GROSS + SIEMP
+        # + ... + PIT` is gross less deductions, every one of them added. Read
+        # by the plus signs alone it is a total of six earnings, so it was not
+        # recognised as a running total, `GROSS` was marked a detail OF it, and
+        # a run reported no gross at all.
+        #
+        # Multiplying the formula's sign by the amount's own sign says what
+        # actually happens. Unknown amounts count as positive, which is what
+        # the sign alone always assumed, so a scheme with no pay run yet reads
+        # exactly as it did before.
+        observed = self._net_role_observed_signs()
+        code_by_id = {rule.id: rule.code for rule in classification.rules}
         mixed_sources = {}
         for rule_id, edges in incoming.items():
             signs = set()
             for source, sign, derived, _conf in edges:
                 if derived or sign is None:
                     continue
-                if classification.roles.get(source) in money_roles:
-                    signs.add(sign)
+                if classification.roles.get(source) not in money_roles:
+                    continue
+                signs.add(sign * observed.get(code_by_id.get(source), 1))
             if signs == {1, -1}:
                 mixed_sources[rule_id] = True
 
@@ -1529,6 +1683,10 @@ class HrFormulaConfigNetRole(models.Model):
             else:
                 reason = _("Never reaches %(net)s, so it is information rather "
                            "than pay.", net=net_name)
+            if rule.id in classification.flipped:
+                reason = _(
+                    "%(reason)s The formula adds it in, but its own amounts run "
+                    "the other way, so the amounts decide.", reason=reason)
             if detail and via and role != 'info':
                 reason = _("%(reason)s Already counted inside %(via)s, so a pay "
                            "run does not add it again.", reason=reason, via=via)
