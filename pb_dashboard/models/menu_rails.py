@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Expose the stock application launcher only to platform administrators."""
 
-from odoo import models
+from odoo import api, models
 
 
 PAYROLL_MENU_XMLID = 'om_hr_payroll.menu_hr_payroll_root'
@@ -27,6 +27,47 @@ def may_use_full_launcher(env, user=None):
 
 class IrUiMenu(models.Model):
     _inherit = 'ir.ui.menu'
+
+    @api.model
+    def get_user_roots(self):
+        """Prune the root list exactly as ``load_web_menus`` prunes the tree.
+
+        The two must agree. ``website``'s frontend "go to the backend" corner
+        widget (``website/views/website_templates.xml``, rendered under
+        ``groups="base.group_user"``) builds its dropdown from
+        ``load_menus_root()['children']`` and, with ``force_action=True``,
+        indexes ``load_web_menus()`` by each root's id
+        (``website/models/ir_ui_menu.py``)::
+
+            not menu['action'] and web_menus[menu['id']]['actionModel']
+
+        ``load_menus_root`` is built from ``get_user_roots`` and so never saw
+        the filter below, while ``web_menus`` did. Every action-less root we
+        prune is therefore a ``KeyError`` raised while rendering
+        ``website.layout`` — a 500 on every frontend page for every signed-in
+        internal user, public visitors excepted because the widget is not
+        rendered for them at all. Live on ``rize`` 2026-09-22: ``KeyError: 132``
+        (the action-less *Calendar* root), reference ``SQ1J-7RQM``.
+
+        The guard mirrors ``load_web_menus``' own ``payroll.id not in menus``,
+        so in every branch both views are filtered or neither is.
+
+        ``get_user_roots`` has exactly two readers on this build — the
+        ``load_menus_root`` above and ``web/controllers/webmanifest.py``'s
+        installable-app shortcuts. The backend launcher reads
+        ``load_web_menus`` instead, so this override narrows no screen that the
+        filter below was not already narrowing.
+        """
+        roots = super().get_user_roots()
+        user = self.env.user
+        if not user._is_internal() or may_use_full_launcher(self.env, user):
+            return roots
+        payroll = self.env.ref(PAYROLL_MENU_XMLID, raise_if_not_found=False)
+        railed = (roots & payroll) if payroll else self.browse()
+        # Empty means the payroll root is not visible to this user at all.
+        # load_web_menus leaves the menus untouched in that case, so must we:
+        # pruning to nothing would hand them an empty launcher.
+        return railed or roots
 
     def load_web_menus(self, debug):
         menus = super().load_web_menus(debug)

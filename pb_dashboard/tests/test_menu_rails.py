@@ -83,3 +83,38 @@ class TestPayrollOnlyMenuRail(TransactionCase):
 
     def test_payroll_home_exists(self):
         self.assertTrue(self.env.ref(PAYROLL_HOME_XMLID))
+
+    # ------------------------------------------------------------------
+    # The root list has to agree with the tree (KeyError: 132 on rize)
+    # ------------------------------------------------------------------
+    def test_root_list_agrees_with_the_pruned_tree(self):
+        """Every root the frontend walks must be a key in load_web_menus.
+
+        This is the whole of the live 500: website's corner widget indexes the
+        pruned tree by the unpruned root list.
+        """
+        payroll = self.env.ref(PAYROLL_MENU_XMLID)
+        menu = self.env['ir.ui.menu'].with_user(self.ordinary)
+        roots = menu.get_user_roots()
+        web_menus = menu.load_web_menus(False)
+        self.assertEqual(roots.ids, [payroll.id])
+        for root_id in roots.ids:
+            self.assertIn(root_id, web_menus)
+
+    def test_frontend_apps_dropdown_renders(self):
+        """The exact call in website_templates.xml, force_action and all."""
+        if not self.env['ir.module.module'].sudo().search_count(
+                [('name', '=', 'website'), ('state', '=', 'installed')]):
+            self.skipTest('website is not installed')
+        payroll = self.env.ref(PAYROLL_MENU_XMLID)
+        root_menus = self.env['ir.ui.menu'].with_user(
+            self.ordinary).with_context(force_action=True).load_menus_root()
+        self.assertEqual([m['id'] for m in root_menus['children']],
+                         [payroll.id])
+
+    def test_platform_administrator_keeps_every_root(self):
+        self.env['ir.config_parameter'].sudo().set_param(TENANT_SLUG_PARAM, '')
+        admin = self.env.ref('base.group_system').all_user_ids.filtered('active')[:1]
+        self.assertTrue(admin, 'the database has no active platform administrator')
+        menu = self.env['ir.ui.menu'].with_user(admin)
+        self.assertGreater(len(menu.get_user_roots()), 1)

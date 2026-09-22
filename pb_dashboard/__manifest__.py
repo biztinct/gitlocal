@@ -5,7 +5,9 @@
     # LOOK P4. The home page names the payroll month its figures are about and
     # offers a strip to change it. Python and assets both change; a code change
     # with no version bump is invisible to the deploy-time version-diff gate.
-    'version': '19.0.1.5.0',
+    # 1.6.0: get_user_roots is pruned alongside load_web_menus, so website's
+    # frontend corner widget stops raising KeyError on an action-less root.
+    'version': '19.0.1.6.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
