@@ -37,13 +37,15 @@ class PbMePortal(CustomerPortal):
             [('user_id', '=', request.env.user.id)], limit=1)
 
     def _ess_net(self, slip):
-        """The slip's own NET figure — by category 'NET' (code fallback). None
-        if neither exists (never derive money — C17)."""
-        net_line = slip.line_ids.filtered(
-            lambda l: (l.category_id and l.category_id.code == 'NET'))
-        if not net_line:
-            net_line = slip.line_ids.filtered(lambda l: l.code == 'NET')
-        return net_line[:1].total if net_line else None
+        """The slip's own NET figure. None if it has none (never derive money
+        — C17).
+
+        The scheme names its own take-home line, and a scheme may put more
+        than one component in the NET category — picking the first by category
+        showed a running total instead of what the person is actually paid.
+        """
+        net_line = slip.line_ids.pb_net_line()
+        return net_line.total if net_line else None
 
     # -------------------------------------------------- home portal cards
     def _prepare_home_portal_values(self, counters):

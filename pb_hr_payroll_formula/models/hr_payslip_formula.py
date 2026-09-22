@@ -1477,9 +1477,10 @@ class HrPayslipFormula(models.Model):
         # rather than print a derived number on an employee-facing PDF.
         net = dsal.get('NET')
         if net is None:
-            net_lines = self.line_ids.filtered(
-                lambda l: l.category_id and l.category_id.code == 'NET')
-            net = sum(net_lines.mapped('total')) if net_lines else None
+            # The scheme names its own take-home line; the NET category may
+            # hold more than one component and the first is not always it.
+            net_line = self.line_ids.pb_net_line()
+            net = net_line.total if net_line else None
         meta = {
             'employee_name': self.employee_id.name or '',
             'employee_id': (self.employee_id.employee_id

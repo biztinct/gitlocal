@@ -176,13 +176,22 @@ class HrPayrollEmployeeDetail(models.TransientModel):
                     
                     for payslip in payslips:
                         for line in payslip.line_ids:
-                            # Categorize based on salary rule category
-                            if line.category_id.code in ['BASIC', 'ALW']:
-                                if 'BASIC' in line.category_id.code:
-                                    basic += line.total
-                                else:
-                                    allowances += line.total
-                            elif line.category_id.code in ['DED', 'COMP']:
+                            # A subtotal is already inside another line, so
+                            # adding it here counts the same money twice.
+                            if not line.pb_counts_in_totals():
+                                continue
+                            code = (line.category_id.code or '').upper() \
+                                if line.category_id else ''
+                            # Basic and Allowances are presentation groupings
+                            # and stay on the rule category. What is WITHHELD
+                            # is the scheme's own answer — a DED category also
+                            # holds insurance and tax bases, which are working
+                            # figures nobody's pay is reduced by.
+                            if code == 'BASIC':
+                                basic += line.total
+                            elif code in ('ALW', 'ALLOWANCE'):
+                                allowances += line.total
+                            elif line.pb_pay_band() == 'DED':
                                 contrib += abs(line.total)
                     
                     # Create record

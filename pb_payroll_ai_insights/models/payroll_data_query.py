@@ -793,7 +793,14 @@ class PayrollDataQuery(models.Model):
 
     @_guarded('deduction')
     def _query_deduction_data(self, message, context):
-        """Query deduction/contribution data."""
+        """Query deduction/contribution data.
+
+        WHAT COUNTS AS A DEDUCTION is the scheme's own answer, not the rule
+        category. A category named DED holds insurance bases and tax bases on
+        an imported scheme — working figures that nobody's pay is reduced by —
+        and listing them here reported ₫10.7bn of deductions against ₫290m
+        actually withheld.
+        """
         PayslipLine = self.env['hr.payslip.line']
 
         today = fields.Date.today()
@@ -802,13 +809,14 @@ class PayrollDataQuery(models.Model):
         domain = [
             ('slip_id.state', 'in', ['done', 'paid']),
             ('slip_id.date_from', '>=', first_of_month),
-            ('category_id.code', 'in', ['DED', 'DEDUCTION', 'COMP']),
-        ]
+        ] + PayslipLine.pb_band_domain('deductions')
 
         lines = PayslipLine.search(domain)
 
         rule_data = {}
         for line in lines:
+            if not line.pb_counts_in_totals():
+                continue
             rule_name = line.salary_rule_id.name or line.name or 'Other'
             if rule_name not in rule_data:
                 rule_data[rule_name] = 0
@@ -875,12 +883,14 @@ class PayrollDataQuery(models.Model):
                 key, {'label': label, 'gross': 0, 'net': 0, 'count': 0,
                       'money': money})
 
-            # Get NET from payslip lines
-            for line in slip.line_ids:
-                if line.category_id.code == 'NET':
-                    data['net'] += line.total
-                elif line.category_id.code in ('GROSS', 'BASIC'):
-                    data['gross'] += line.total
+            # Gross and net come from the scheme's own answer for each line,
+            # through the shared helper, so an answer here agrees with the pay
+            # run it is quoting. Reading the rule category instead added
+            # `GROSS` to `BASIC` on a scheme that reports both, and reported
+            # nothing at all on a scheme that has neither category.
+            slip_totals = slip.line_ids.pb_pay_totals()
+            data['net'] += slip_totals['net']
+            data['gross'] += slip_totals['gross']
             data['count'] += 1
 
         result = [

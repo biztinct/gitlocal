@@ -98,10 +98,22 @@
                         domain="[('category_id.code','=','ALW')]"/>
                 <filter string="Gross Salary" name="gross"
                         domain="[('category_id.code','=','GROSS')]"/>
+                <!-- What is actually taken off pay, and what is actually
+                     take-home, are the scheme's own answers. A category coded
+                     DED also holds insurance bases, tax bases and day counts,
+                     which are working figures nobody's pay is reduced by, and
+                     a category coded NET may hold a running total beside the
+                     real net line. The category answers for components filed
+                     before the scheme started saying. -->
                 <filter string="Deductions" name="deductions"
-                        domain="[('category_id.code','=','DED')]"/>
+                        domain="[('component_detail','!=',True),
+                                 '|', ('pay_role','=','deduction'),
+                                 '&amp;', ('pay_role','=',False),
+                                 ('category_id.code','=','DED')]"/>
                 <filter string="Net Salary" name="net"
-                        domain="[('category_id.code','=','NET')]"/>
+                        domain="['|', ('pay_role','=','net'),
+                                 '&amp;', ('pay_role','=',False),
+                                 ('category_id.code','=','NET')]"/>
                 <filter string="Other Components" name="other"
                         domain="[('category_id.code','=','OTHER')]"/>
 

@@ -271,12 +271,21 @@ class HrFullFinalSettlement(models.Model):
                     return None
             return None
 
+        # Where the scheme has said what a component IS, that answer wins over
+        # anything read off the component's name or category: a category named
+        # DED also holds insurance and tax bases, which are working figures and
+        # not money anybody's settlement is reduced by.
         def is_net_line(line):
+            band = line.pb_pay_band()
+            if band:
+                return band == 'NET'
             code = normalize_code(line.code)
             category_code = normalize_code(line.category_id.code if line.category_id else '')
             return code == 'NET' or category_code == 'NET'
 
         def is_deduction_line(line):
+            if 'pay_role' in line._fields and line.pay_role:
+                return line.pay_role == 'deduction'
             category_code = normalize_code(line.category_id.code if line.category_id else '')
             if category_code in {'DED', 'DEDUCTION', 'TAX', 'LOAN', 'ADV'}:
                 return True

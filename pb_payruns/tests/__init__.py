@@ -10,6 +10,11 @@ from . import test_approval_engine
 # and the missing GROSS category (ABM June 2026, "146 employees, 0.00").
 from . import test_run_totals
 
+# Every screen reads Gross and Deductions the same way: the shared band helper,
+# and its parity with the KPI band's SQL (Rize: the run said ₫2.06bn gross, the
+# Payroll Report opened from its own button said ₫0).
+from . import test_pay_bands
+
 # The Generate Payslips dialog opens on a tenant that has never seen Zoho.
 from . import test_generate_payslips_dialog
 

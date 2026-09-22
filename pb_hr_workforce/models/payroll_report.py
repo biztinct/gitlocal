@@ -11,6 +11,40 @@ class PayrollReport(models.TransientModel):
     _name = 'hr.payroll.report.api'
     _description = 'Payroll Report API'
 
+    @staticmethod
+    def _sum_category(lines, codes):
+        """Total the lines in these rule categories, skipping subtotals."""
+        return sum(l.total for l in lines
+                   if l.category_id and (l.category_id.code or '').upper() in codes
+                   and l.pb_counts_in_totals())
+
+    @staticmethod
+    def _breakdown(lines, prev_lines, signed=False):
+        """One row per component, with the previous period's figure beside it.
+
+        NO EARLIER PAYSLIP IS NOT A CHANGE OF ZERO. Where there is nothing to
+        compare against, the difference is left at zero so the screen shows a
+        dash — subtracting an absent figure said everybody's pay had just gone
+        up by the whole of it.
+        """
+        rows = []
+        for line in lines:
+            if not line.total:
+                continue
+            prev = prev_lines.filtered(
+                lambda x: x.salary_rule_id.id == line.salary_rule_id.id)
+            prev_val = prev[0].total if prev else 0.0
+            current = line.total if signed else abs(line.total)
+            previous = prev_val if signed else abs(prev_val)
+            rows.append({
+                'name': line.name,
+                'code': line.code,
+                'current': current,
+                'previous': previous,
+                'diff': (current - previous) if prev_lines else 0.0,
+            })
+        return rows
+
     @api.model
     def get_batch_report(self, batch_id):
         """
@@ -40,22 +74,32 @@ class PayrollReport(models.TransientModel):
             emp = slip.employee_id
             lines = slip.line_ids
 
-            # Categorize lines
-            gross = sum(l.total for l in lines if l.category_id.code == 'GROSS')
-            net = sum(l.total for l in lines if l.category_id.code == 'NET')
-            deductions = sum(l.total for l in lines if l.category_id.code in ('DED', 'DEDUCTION', 'COMP'))
-            basic = sum(l.total for l in lines if l.category_id.code == 'BASIC')
-            allowances = sum(l.total for l in lines if l.category_id.code in ('ALW', 'ALLOWANCE'))
+            # Which band each line belongs in is the scheme's own answer, read
+            # through the shared helper so this screen can never disagree with
+            # the pay run it was opened from. Reading the rule category here
+            # instead reported ₫0 gross and ₫10,747,123,945 deductions against
+            # a run of ₫2,060,124,305 and ₫289,886,044.
+            totals = lines.pb_pay_totals()
+            gross = totals['gross']
+            net = totals['net']
+            deductions = totals['deductions']
+            # Basic and Allowances are columns of their own, not bands of net
+            # pay, so they stay on the rule category — but only over the lines
+            # the totals above already count, so a subtotal is never added on
+            # top of the components it is a subtotal of.
+            basic = self._sum_category(lines, ('BASIC',))
+            allowances = self._sum_category(lines, ('ALW', 'ALLOWANCE'))
 
             # Get previous slip for comparison
             prev_slip = prev_slips.filtered(lambda s: s.employee_id.id == emp.id)
             prev_gross = prev_net = prev_deductions = prev_basic = 0
             if prev_slip:
                 prev_lines = prev_slip[0].line_ids
-                prev_gross = sum(l.total for l in prev_lines if l.category_id.code == 'GROSS')
-                prev_net = sum(l.total for l in prev_lines if l.category_id.code == 'NET')
-                prev_deductions = sum(l.total for l in prev_lines if l.category_id.code in ('DED', 'DEDUCTION', 'COMP'))
-                prev_basic = sum(l.total for l in prev_lines if l.category_id.code == 'BASIC')
+                prev_totals = prev_lines.pb_pay_totals()
+                prev_gross = prev_totals['gross']
+                prev_net = prev_totals['net']
+                prev_deductions = prev_totals['deductions']
+                prev_basic = self._sum_category(prev_lines, ('BASIC',))
 
             # Detect changes (related events)
             events = []
@@ -69,41 +113,23 @@ class PayrollReport(models.TransientModel):
                 if abs(diff) > 0:
                     events.append(f"Basic salary changed by {diff:+,.0f}")
 
-            # Earnings breakdown
-            earnings = []
-            for l in lines.filtered(lambda x: x.total > 0 and x.category_id.code in ('BASIC', 'ALW', 'ALLOWANCE', 'GROSS')):
-                prev_val = 0
-                if prev_slip:
-                    prev_line = prev_slip[0].line_ids.filtered(lambda x: x.salary_rule_id.id == l.salary_rule_id.id)
-                    prev_val = prev_line[0].total if prev_line else 0
-                earnings.append({
-                    'name': l.name,
-                    'code': l.code,
-                    'current': l.total,
-                    'previous': prev_val,
-                    'diff': l.total - prev_val,
-                })
-
-            # Deductions breakdown
-            deduction_lines = []
-            for l in lines.filtered(lambda x: x.category_id.code in ('DED', 'DEDUCTION', 'COMP')):
-                prev_val = 0
-                if prev_slip:
-                    prev_line = prev_slip[0].line_ids.filtered(lambda x: x.salary_rule_id.id == l.salary_rule_id.id)
-                    prev_val = prev_line[0].total if prev_line else 0
-                deduction_lines.append({
-                    'name': l.name,
-                    'code': l.code,
-                    'current': abs(l.total),
-                    'previous': abs(prev_val),
-                    'diff': abs(l.total) - abs(prev_val),
-                })
+            # Earnings and deductions breakdowns. Both list exactly the lines
+            # the figures above are made of — a breakdown that does not add up
+            # to the number it sits under is worse than no breakdown.
+            prev_line_ids = prev_slip[0].line_ids if prev_slip \
+                else self.env['hr.payslip.line']
+            earnings = self._breakdown(
+                lines.pb_lines_in_band('gross'), prev_line_ids, signed=True)
+            deduction_lines = self._breakdown(
+                lines.pb_lines_in_band('deductions'), prev_line_ids)
 
             dept = emp.department_id.name if emp.department_id else 'Unassigned'
             dept_totals.setdefault(dept, {'gross': 0, 'net': 0, 'deductions': 0, 'count': 0})
             dept_totals[dept]['gross'] += gross
             dept_totals[dept]['net'] += net
-            dept_totals[dept]['deductions'] += abs(deductions)
+            # Already totalled as magnitudes, so no outer abs() here: one at
+            # the end cannot put back what opposite signs cancelled on the way.
+            dept_totals[dept]['deductions'] += deductions
             dept_totals[dept]['count'] += 1
 
             employees.append({
@@ -114,14 +140,16 @@ class PayrollReport(models.TransientModel):
                 'avatar_url': f'/web/image/hr.employee/{emp.id}/avatar_128',
                 'gross': gross,
                 'net': net,
-                'deductions': abs(deductions),
+                'deductions': deductions,
                 'basic': basic,
                 'allowances': allowances,
                 'prev_gross': prev_gross,
                 'prev_net': prev_net,
-                'prev_deductions': abs(prev_deductions),
-                'diff_gross': gross - prev_gross,
-                'diff_net': net - prev_net,
+                'prev_deductions': prev_deductions,
+                # A dash, not a rise, where this person has no earlier payslip
+                # to be compared with — see :meth:`_breakdown`.
+                'diff_gross': (gross - prev_gross) if prev_slip else 0.0,
+                'diff_net': (net - prev_net) if prev_slip else 0.0,
                 'events': events,
                 'earnings': earnings,
                 'deduction_lines': deduction_lines,

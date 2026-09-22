@@ -1829,21 +1829,18 @@ class PbPayrunWizard(models.AbstractModel):
     def _slip_net(self, slip):
         """What this employee is actually paid.
 
-        The component's CATEGORY is what says "this is net pay"; its code is
-        whatever the person who built the scheme called it. ABM's net component
-        is `NETPAY`, so matching on the code `NET` found nothing, every payslip
-        read as zero, and the review step flagged all 152 as needing attention
-        while the run itself totalled ₫727,655,630. The pay run's own KPI band
-        already aggregates by category — this now agrees with it.
+        The component's code is whatever the person who built the scheme
+        called it. ABM's net component is `NETPAY`, so matching on the code
+        `NET` found nothing, every payslip read as zero, and the review step
+        flagged all 152 as needing attention while the run itself totalled
+        ₫727,655,630. The CATEGORY was the answer until a scheme turned up with
+        two components in it. The scheme's own answer, through the shared
+        helper, is what every screen now reads.
         """
         try:
-            lines = slip.line_ids.filtered(
-                lambda l: (l.category_id.code or '').upper() == 'NET')
-            if not lines:
-                lines = slip.line_ids.filtered(
-                    lambda l: (l.code or '').upper() == 'NET')
-            if lines:
-                return sum(lines.mapped('total'))
+            line = slip.line_ids.pb_net_line()
+            if line:
+                return line.total
             # fallback: last line total
             return slip.line_ids and slip.line_ids[-1].total or 0.0
         except Exception:

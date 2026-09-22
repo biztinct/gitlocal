@@ -68,13 +68,15 @@ class VietnamBankExportWizard(models.TransientModel):
     # ------------------------------------------------------------- helpers
     @api.model
     def _slip_net(self, slip):
-        """NET amount via the verified :267 pattern, category fallback."""
-        lines = slip.line_ids.filtered(lambda l: (l.code or '').upper() == 'NET')
-        if lines:
-            return sum(lines.mapped('total'))
-        cat = slip.line_ids.filtered(
-            lambda l: l.category_id and (l.category_id.code or '').upper() == 'NET')
-        return sum(cat.mapped('total')) if cat else 0.0
+        """The amount to pay this person: the scheme's own take-home line.
+
+        THIS FIGURE LEAVES A BANK ACCOUNT, so it must be the one line the
+        scheme calls net pay — not the first of several in the NET category,
+        which on a scheme carrying both a running total and a net line is a
+        figure nobody is owed.
+        """
+        line = slip.line_ids.pb_net_line()
+        return line.total if line else 0.0
 
     def _resolve_slips(self):
         """The slips to export: explicit payslip_ids, else the run's done slips."""
