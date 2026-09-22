@@ -113,6 +113,12 @@ const EXCEPTION_VARIANT = {
  * formats also use bullets for MODEL names ("records of type:\n- Excel
  * Formula Configuration (hr.formula.config)"); those must never be presented
  * as roles.
+ *
+ * The server has TWO shapes and only the record-level one is a bullet list.
+ * A FIELD-level refusal (models.py `_check_field_access`) writes the roles
+ * inline instead — `Groups: allowed for groups 'Employees / Administrator'` —
+ * so the chips never appeared for it, and the dialog told a payroll officer
+ * who pressed Download Excel nothing at all about what was missing.
  */
 export function parseAccessGroups(message) {
     const groups = [];
@@ -120,6 +126,19 @@ export function parseAccessGroups(message) {
     for (const line of (message || "").split("\n")) {
         if (/groups\s*:\s*$/i.test(line.trim())) {
             inGroupList = true;
+            continue;
+        }
+        const inline = /allowed for groups\s+(.+?)\s*$/i.exec(line);
+        if (inline) {
+            // `', '.join(repr(g.display_name))` — Python reprs, so single
+            // quotes normally and double quotes when the name contains one.
+            for (const m of inline[1].matchAll(/'([^']+)'|"([^"]+)"/g)) {
+                const name = m[1] || m[2];
+                if (name && name.length <= 80) {
+                    groups.push(name);
+                }
+            }
+            inGroupList = false;
             continue;
         }
         const m = /^\s*-\s+(.+?)\s*$/.exec(line);
@@ -132,6 +151,28 @@ export function parseAccessGroups(message) {
         }
     }
     return groups;
+}
+
+/**
+ * The thing that was refused, in the words the server already has for it:
+ * "Employee", "Excel Formula Configuration", "Employee Contract". Both message
+ * shapes name it beside its technical model, which the user never sees.
+ *
+ * This is the fallback that matters: on a field-level refusal the server only
+ * appends the role names for a developer-mode user, so for everyone else there
+ * is no role to chip and the dialog has to say at least WHAT was out of reach.
+ */
+export function parseAccessSubject(message) {
+    const text = message || "";
+    const m =
+        /access '([^']+)' \([\w.]+\)/.exec(text) ||
+        /\son ([^()\n]+?) \([\w.]+\)/.exec(text) ||
+        /records of type:\s*\n\s*-\s*([^()\n]+?) \([\w.]+\)/.exec(text);
+    if (!m) {
+        return "";
+    }
+    const subject = m[1].trim();
+    return subject.length <= 60 ? subject : "";
 }
 
 export class BizErrorDialog extends Component {
@@ -157,6 +198,7 @@ export class BizErrorDialog extends Component {
         this.variant = this.inferVariant();
         this.meta = VARIANTS[this.variant];
         this.groups = this.variant === "access" ? parseAccessGroups(this.message) : [];
+        this.subject = this.variant === "access" ? parseAccessSubject(this.message) : "";
         // For access errors the raw message is server-speak; show it only in
         // the details section. Attention/missing variants surface it directly.
         this.bodyMessage = this.variant === "attention" ? this.message : "";
@@ -170,6 +212,18 @@ export class BizErrorDialog extends Component {
             return "timeout";
         }
         return "crash";
+    }
+
+    /**
+     * One plain sentence naming what was out of reach, shown above the generic
+     * hint. Without it an access dialog says only "limited to certain roles",
+     * which leaves the person nothing to ask their administrator FOR.
+     */
+    get accessSubject() {
+        if (this.variant !== "access" || !this.subject) {
+            return "";
+        }
+        return _t("What it needs: access to %s.", this.subject);
     }
 
     get technicalDetails() {

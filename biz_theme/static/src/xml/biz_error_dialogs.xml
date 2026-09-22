@@ -34,9 +34,10 @@
                 <h3 class="biz-err__title" t-esc="meta.title"/>
                 <p t-if="bodyMessage" class="biz-err__message" t-esc="bodyMessage"/>
                 <p t-if="meta.hint" class="biz-err__hint" t-esc="meta.hint"/>
+                <p t-if="accessSubject" class="biz-err__subject" t-esc="accessSubject"/>
 
                 <div t-if="groups.length" class="biz-err__groups">
-                    <div class="biz-err__groups-label">Roles with access</div>
+                    <div class="biz-err__groups-label">Ask your administrator for one of these roles</div>
                     <div class="biz-err__chips">
                         <span t-foreach="groups" t-as="g" t-key="g_index" class="biz-err__chip" t-esc="g"/>
                     </div>
