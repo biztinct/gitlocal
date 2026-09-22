@@ -34,7 +34,12 @@ tier. All assets are local — no CDN, no external chart library.
     # with the caller's rights behind W105/W111's rules; the three sudos left
     # are people/workforce reads, narrowed to their own line and explained
     # there.
-    'version': '19.0.5.2.0',
+    # 19.0.5.3.0 — SCHEMECTX P1: every total on this board is a sum over runs,
+    # and a run is priced by its SCHEME. Bucketing currencies by the companies
+    # in the switcher answered "one currency" for a tenant running two
+    # countries out of one company, and the headline then added the two
+    # together (rize: INR 6,299,386 counted as dong).
+    'version': '19.0.5.3.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

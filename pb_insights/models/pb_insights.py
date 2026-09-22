@@ -304,15 +304,27 @@ class PbInsights(models.AbstractModel):
         # with the number of runs in the window).
         runs = timed('runs', lambda: self._runs(),
                      default=self.env['hr.payslip.run'])
-        in_window = runs.filtered(
+        # SCHEMECTX P1 — a run is paid in its SCHEME's money, and one company
+        # can hold several schemes (rize: a Vietnam and an India payroll inside
+        # one VND company). EVERY total below is a sum over runs, so the runs
+        # that are not in this board's money have to be held out of it: adding
+        # rupees onto dong is not a mislabel, it is a wrong number
+        # (GROUP rule 7). They are not dropped — `_money` names them and the
+        # board says so out loud.
+        currency_of = timed('currencies', lambda: self._run_currencies(runs),
+                            default={})
+        base = self._safe(lambda: self._board_currency(runs, currency_of),
+                          default=self.env.company.currency_id)
+        own = runs.filtered(lambda r: currency_of.get(r.id, base) == base)
+        in_window = own.filtered(
             lambda r: r.date_end and r.date_end >= window)
         # the hero run is the newest company-scoped run — it stands even when
         # the window itself is empty (a quiet quarter still gets a headline)
-        latest = runs[:1]
+        latest = own[:1]
 
-        hero = timed('hero', lambda: self._hero(runs), default={})
+        hero = timed('hero', lambda: self._hero(own), default={})
         trend = timed('trend', lambda: self._trend(in_window, months), default={})
-        departments = timed('departments', lambda: self._departments(runs),
+        departments = timed('departments', lambda: self._departments(own),
                             default={})
         statutory = timed('statutory', lambda: self._statutory(latest), default={})
         # PULSE KEEPS SUDO. Its tiles read `hr.overtime.request`,
@@ -329,7 +341,7 @@ class PbInsights(models.AbstractModel):
                          default={'available': False, 'xmlid': ''})
 
         company = self.env.company
-        money = timed('money', lambda: self._money(runs),
+        money = timed('money', lambda: self._money(runs, currency_of, base),
                       default={'symbol': company.currency_id.symbol or '',
                                'name': company.currency_id.name or '',
                                'many': False, 'parts': [], 'note': ''})
@@ -364,61 +376,119 @@ class PbInsights(models.AbstractModel):
         }
 
     # --------------------------------------------------------------- money
-    def _money(self, runs):
-        """Which money this board's totals are in, and whether they add up.
+    def _run_currencies(self, runs):
+        """{run id: res.currency} — the money each run was ACTUALLY paid in.
 
-        Every figure on this board is summed over the COMPANIES IN THE
-        SWITCHER. If those companies keep their books in one currency, the
-        answer is that currency and nothing else needs saying. If they do not,
-        the board says so and shows the parts, converting through the ONE
-        conversion service (`pb.fx`) at the group's own rate policy when a rate
-        exists — and refusing, in words, when it does not. It never adds two
-        currencies together and it never guesses a rate (GROUP rule 7).
+        SCHEMECTX P1. The scheme decides, because the scheme is what carries a
+        country: an India scheme run inside a Vietnamese company is an India
+        run and its payslips are already in rupees. The company is the fallback
+        for a run with no scheme at all (traditional structure payroll), and it
+        is read for those runs only, in ONE indexed query — `hr.payslip.run`
+        has no company of its own on this build (C18.43).
+
+        Same derivation as the Pay Runs board's `_scheme_currency_by_run`
+        (`pb_payruns`), through `hr.payslip.run._pb_scheme_currency` rather
+        than the stored `pb_currency_id`, which on some runs was computed under
+        a different company context.
+        """
+        if not runs:
+            return {}
+        out = {}
+        for run in runs:
+            currency = self._safe(lambda r=run: r._pb_scheme_currency(),
+                                  default=None)
+            if currency:
+                out[run.id] = currency
+        missing = [r.id for r in runs if r.id not in out]
+        if missing:
+            # NO SUDO (and none needed — test_sudo_drop guards that): the
+            # company's own currency comes back with the same query that finds
+            # the company, carrying this board's usual explicit
+            # `company_id IN %s` predicate, and `res.currency` is readable by
+            # every internal user.
+            self.env.cr.execute("""
+                SELECT p.payslip_run_id, MIN(c.currency_id)
+                FROM hr_payslip p
+                JOIN res_company c ON c.id = p.company_id
+                WHERE p.payslip_run_id IN %s AND p.company_id IN %s
+                  AND p.state != 'cancel'
+                GROUP BY 1
+            """, (tuple(missing), self._co_ids()))
+            rows = self.env.cr.fetchall()
+            currencies = {
+                c.id: c for c in self.env['res.currency'].browse(
+                    sorted({cid for _rid, cid in rows if cid}))}
+            for run_id, currency_id in rows:
+                currency = currencies.get(currency_id)
+                if currency:
+                    out[run_id] = currency
+        return out
+
+    def _board_currency(self, runs, currency_of):
+        """The ONE money this board's totals are added up in.
+
+        The reader's own company (or the group's presentation currency where
+        `pb.fx` names one), so the headline does not move the day a second
+        payroll in another currency is run beside it. One exception: a board
+        where NO run at all is in that money would show an empty headline over
+        a full board, which is worse than answering in the runs' own money — so
+        the newest run's currency wins there.
         """
         # No sudo: `res.company` and `res.currency` are readable by every
         # internal user, and `env.companies` is already the reader's own
         # allowed set — a sudo here would widen nothing and hide the fact.
-        companies = self.env.companies
-        by_currency = {}
-        for co in companies:
-            if co.currency_id:
-                by_currency.setdefault(co.currency_id, []).append(co.id)
-        target = companies[:1].currency_id
+        target = self.env.company.currency_id or self.env.companies[:1].currency_id
         if 'pb.fx' in self.env:
-            target = self.env['pb.fx'].presentation_currency(self.env.company) \
-                or target
-        if len(by_currency) < 2:
-            only = next(iter(by_currency), target)
+            target = self._safe(
+                lambda: self.env['pb.fx'].presentation_currency(self.env.company),
+                default=None) or target
+        if runs and not any(currency_of.get(r.id) == target for r in runs):
+            target = currency_of.get(runs[0].id) or target
+        return target
+
+    def _money(self, runs, currency_of=None, target=None):
+        """Which money this board's totals are in, and whether they add up.
+
+        Every figure on this board is a sum over RUNS, and each run is priced
+        by its own scheme (`_run_currencies`). Where they all agree, the answer
+        is that currency and nothing else needs saying. Where they do not, the
+        board says so and names each currency's own net, converting through the
+        ONE conversion service (`pb.fx`) at the group's own rate policy when a
+        rate exists — and refusing, in words, when it does not. It never adds
+        two currencies together and it never guesses a rate (GROUP rule 7).
+
+        This used to bucket by the currencies of the COMPANIES IN THE SWITCHER,
+        which answered "one currency" for a tenant running two countries' pay
+        out of one company — so the headline silently added the two together
+        (rize, 2026-09-22: INR 6,299,386 counted as dong).
+        """
+        if currency_of is None:
+            currency_of = self._run_currencies(runs)
+        if target is None:
+            target = self._board_currency(runs, currency_of)
+        totals = {}
+        for run in runs:
+            currency = currency_of.get(run.id) or target
+            if currency:
+                totals[currency] = totals.get(currency, 0.0) \
+                    + (run.pb_total_net or 0.0)
+        if len(totals) < 2:
+            only = next(iter(totals), target)
             return {'name': only.name if only else '',
                     'symbol': (only.symbol or only.name) if only else '',
                     'many': False, 'parts': [], 'note': '', 'unconverted': []}
 
         # More than one money in scope: name the parts.
-        # Which company each run belongs to, in ONE indexed query — a run has
-        # no company of its own (C18.43), and reading it per run would put a
-        # query per row on a board that is measured in milliseconds.
-        owner = {}
-        if runs:
-            self.env.cr.execute(
-                "SELECT payslip_run_id, MIN(company_id) FROM hr_payslip "
-                "WHERE payslip_run_id IN %s AND state != 'cancel' GROUP BY 1",
-                (tuple(runs.ids),))
-            owner = dict(self.env.cr.fetchall())
-        totals = {}
-        for run in runs:
-            company_id = owner.get(run.id, 0)
-            for currency, ids in by_currency.items():
-                if company_id in ids:
-                    totals[currency] = totals.get(currency, 0.0) \
-                        + (run.pb_total_net or 0.0)
         parts, unconverted = [], []
         for currency, amount in totals.items():
             parts.append({'name': currency.name,
                           'symbol': currency.symbol or currency.name,
                           'net': round(amount, 2)})
             if currency != target and 'pb.fx' in self.env:
-                _v, known, meta = self.env['pb.fx'].convert(
-                    amount, currency, target, date.today())
+                _v, known, meta = self._safe(
+                    lambda c=currency, a=amount: self.env['pb.fx'].convert(
+                        a, c, target, date.today()),
+                    default=(0.0, False, {}))
                 if not known:
                     unconverted.append({'name': currency.name,
                                         'note': meta.get('note') or ''})
@@ -427,8 +497,9 @@ class PbInsights(models.AbstractModel):
             'name': target.name if target else '',
             'symbol': (target.symbol or target.name) if target else '',
             'many': True, 'parts': parts, 'unconverted': unconverted,
-            'note': _("These companies keep their books in more than one "
-                      "currency, so the parts are shown separately."),
+            'note': _("The figures above count %s only. Each other currency's "
+                      "own total is shown here, never added in.",
+                      target.name if target else ''),
         }
 
     def _schemes(self, runs):
