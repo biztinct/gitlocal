@@ -463,7 +463,7 @@
             font-size: 16px; font-weight: 800;
         }
     }
-    .pbam-row {
+    .pbam-hbar {
         display: flex; align-items: center; justify-content: space-between;
         gap: 12px; flex-wrap: wrap;
     }
@@ -951,6 +951,139 @@
     }
     .pbam-choice-w { display: flex; margin-top: 10px; }
     .pbam-choice-pick { display: block; margin-top: 10px; }
+
+    // ============================================ many rows, one press
+    //
+    // The bar sits INSIDE the table's own frame, above the header row, so the
+    // button reads as an action on exactly the rows beneath it. Its label and
+    // count follow the filters, which are the selection.
+    .pbam-bulkbar {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        padding: 10px 14px; border-bottom: 1px solid var(--pbim-line);
+        background: var(--pbim-surface);
+    }
+    .pbam-bulkbar-n { font-size: 12.5px; color: var(--pbim-muted); }
+    .pbam-bulkbar-n b { color: var(--pbim-ink); }
+    .pbam-bulkbtn {
+        margin-left: auto; display: inline-flex; align-items: center; gap: 7px;
+        padding: 7px 8px 7px 13px; border-radius: 999px; cursor: pointer;
+        font-size: 12.5px; font-weight: 800;
+        color: var(--pbim-green); background: var(--pbim-green-soft);
+        border: 1px solid transparent;
+
+        &:hover:not(:disabled) {
+            border-color: var(--pbim-green); box-shadow: var(--pbim-sh);
+        }
+        &:disabled {
+            color: var(--pbim-muted); background: var(--pbim-slate-soft);
+            cursor: not-allowed;
+        }
+    }
+    .pbam-bulkbtn-n {
+        min-width: 22px; padding: 1px 7px; border-radius: 999px;
+        font-size: 11px; text-align: center; font-variant-numeric: tabular-nums;
+        background: var(--pbim-surface); color: inherit;
+    }
+    .pbam-row.is-flash td { background: var(--pbim-green-soft); }
+    .pbam-bulkdone .pbam-x { margin-left: 0; color: inherit; }
+
+    .pbam-bulk-ic {
+        width: 38px; height: 38px; border-radius: 11px; flex: none;
+        display: inline-flex; align-items: center; justify-content: center;
+        color: var(--pbim-green); background: var(--pbim-green-soft);
+    }
+    .pbam-bulk-what {
+        display: flex; flex-direction: column; gap: 8px; padding: 14px 16px;
+        border-radius: 12px; background: var(--pbim-bg);
+        border: 1px solid var(--pbim-line);
+    }
+    .pbam-bulk-fact {
+        display: flex; align-items: center; gap: 10px; font-size: 13px;
+        color: var(--pbim-text);
+
+        svg { color: var(--pbim-green); flex: none; }
+    }
+    .pbam-bulk-listh {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: -8px;
+    }
+    .pbam-linkbtn {
+        display: inline-flex; align-items: center; gap: 5px; padding: 2px 0;
+        background: none; border: 0; cursor: pointer;
+        font-size: 12.5px; font-weight: 700; color: var(--pbim-primary);
+
+        &:hover { color: var(--pbim-primary-hover); text-decoration: underline; }
+    }
+    .pbam-bulk-list {
+        display: flex; flex-direction: column;
+        border: 1px solid var(--pbim-line); border-radius: 12px;
+        overflow: hidden;
+    }
+    .pbam-bulk-area,
+    .pbam-bulk-row {
+        display: flex; align-items: center; gap: 10px; width: 100%;
+        text-align: left; border: 0; cursor: pointer;
+        border-top: 1px solid var(--pbim-line);
+    }
+    .pbam-bulk-area {
+        padding: 8px 14px; background: var(--pbim-line-2);
+        font-size: 11px; font-weight: 800; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--pbim-text);
+
+        &:first-child { border-top: 0; }
+        .pbam-area-n { margin-left: 0; }
+    }
+    .pbam-bulk-row {
+        padding: 11px 14px; background: var(--pbim-surface);
+
+        &:hover { background: var(--pbim-soft); }
+        &:not(.is-on) .pbam-bulk-main { opacity: .55; }
+    }
+    .pbam-bulk-main {
+        display: flex; flex-direction: column; gap: 3px; min-width: 0;
+    }
+    .pbam-bulk-name {
+        display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+        font-weight: 800; font-size: 13.5px; color: var(--pbim-ink);
+    }
+    .pbam-bulk-change {
+        display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+        font-size: 12.5px;
+    }
+    .pbam-bulk-was {
+        color: var(--pbim-muted); text-decoration: line-through;
+        text-decoration-color: var(--pbim-line);
+    }
+    .pbam-bulk-row:not(.is-on) .pbam-bulk-was { text-decoration: none; }
+    .pbam-bulk-now { font-weight: 800; color: var(--pbim-green); }
+    .pbam-fl.pbam-fl-amber {
+        color: var(--pbim-amber); background: var(--pbim-amber-soft);
+    }
+    .pbam-bulk-skip {
+        display: flex; flex-direction: column; gap: 8px; margin-top: -6px;
+    }
+    .pbam-bulk-skipg {
+        padding: 9px 12px; border-radius: 10px; background: var(--pbim-line-2);
+        font-size: 12.5px;
+    }
+    .pbam-bulk-skipl { font-weight: 800; color: var(--pbim-text); }
+    .pbam-bulk-skipn { color: var(--pbim-muted); margin-top: 2px; }
+    .pbam-bulk-opt,
+    .pbim-note.pbam-bulk-money {
+        display: flex; align-items: flex-start; gap: 10px; cursor: pointer;
+        font-size: 12.5px;
+
+        input { margin-top: 2px; flex: none; accent-color: var(--pbim-primary); }
+    }
+    .pbam-bulk-opt {
+        padding: 12px 14px; border-radius: 12px;
+        border: 1px solid var(--pbim-line);
+    }
+    .pbam-bulk-why { display: flex; flex-direction: column; gap: 6px; }
+    .pbam-spin-sm { width: 14px; height: 14px; border-width: 2px; }
+    // the round quick-actions button floats bottom-right over every screen;
+    // keep the confirm button clear of it
+    .pbam-bulk .pbam-df { padding-right: 96px; }
 }
 
 // =====================================================================
@@ -995,7 +1128,20 @@
         .pbam-switch i,
         .pbam-switch i::after { transition: background .14s, transform .14s; }
         .pbam-tab { transition: background .14s, color .14s; }
+        .pbam-bulkbtn { transition: border-color .14s, box-shadow .14s; }
+        .pbam-row td { transition: background .6s; }
+        .pbam-bulk { animation: pbam-slide-in .22s ease-out; }
+        .pbam-bulkdone { animation: pbam-rise .28s ease-out; }
     }
+}
+
+@keyframes pbam-slide-in {
+    from { transform: translateX(40px); opacity: 0; }
+    to { transform: none; opacity: 1; }
+}
+@keyframes pbam-rise {
+    from { transform: translateY(-6px); opacity: 0; }
+    to { transform: none; opacity: 1; }
 }
 
 /* ======================================================================

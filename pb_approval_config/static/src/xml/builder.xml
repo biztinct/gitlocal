@@ -361,7 +361,7 @@
                     </span>
                   </label>
                 </div>
-                <div class="pbam-row">
+                <div class="pbam-hbar">
                   <label class="pbam-switch"
                          t-att-class="{ 'is-on': safeguards.self_exception.enabled }"
                          t-on-click="() => this.toggleSelfException()">

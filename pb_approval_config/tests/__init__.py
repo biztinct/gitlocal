@@ -11,3 +11,5 @@ from . import test_p7_import
 from . import test_p7_matrix
 # The browser walk's five findings.
 from . import test_p7_walk_fixes
+# Many processes switched to "No approval needed" in one press.
+from . import test_bulk_no_approval

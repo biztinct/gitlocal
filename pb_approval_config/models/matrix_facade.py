@@ -291,6 +291,21 @@ class PbApprovalMatrix(models.AbstractModel):
         if binding and binding.mode == 'paused':
             sub = _('Paused — nothing new is accepted')
 
+        fast = bool(version and any(
+            s['kind'] == 'fast' for s in D.normalise(
+                version.definition)['steps']))
+        # WHETHER "SWITCH APPROVAL OFF FOR ALL OF THESE" CAN TAKE THIS ROW.
+        # Empty means yes; anything else is the reason it is left alone, which
+        # the review drawer says in words rather than hiding the row.
+        if status == 'covered':
+            bulk = 'covered'
+        elif not process.connected:
+            bulk = 'soon'
+        elif fast and published:
+            bulk = 'fast'
+        else:
+            bulk = ''
+
         return {
             'process_key': process.key,
             'name': process.name,
@@ -303,9 +318,9 @@ class PbApprovalMatrix(models.AbstractModel):
             'sub': sub,
             'version': (_('v%s', version.revision) if published
                         else (_('Draft') if version else '')),
-            'fast': bool(version and any(
-                s['kind'] == 'fast' for s in D.normalise(
-                    version.definition)['steps'])),
+            'fast': fast,
+            'bulk': bulk,
+            'exceptions': len(narrower),
             'money': bool(process.money),
             'connected': bool(process.connected),
             'workflow_id': workflow.id if workflow else 0,
@@ -1062,6 +1077,180 @@ class PbApprovalMatrix(models.AbstractModel):
         } for event in events]
         return {'rows': rows,
                 'cursor': rows[-1]['id'] if len(rows) == MAX_HISTORY else 0}
+
+    # ============================================ many rows, one press
+    @api.model
+    def _bulk_processes(self, process_keys):
+        keys = []
+        for key in (process_keys or [])[:MAX_ROWS]:
+            if isinstance(key, str) and key and key not in keys:
+                keys.append(key)
+        Process = self.env['biz.approval.process'].sudo()
+        return [p for p in (Process._by_key(k) for k in keys) if p]
+
+    @api.model
+    def bulk_no_approval_preview(self, process_keys, company_id=None):
+        """What switching approval off for these would touch, before it does.
+
+        Requests already waiting keep the route they started on — a published
+        version is never edited — so they are counted, not changed.
+        """
+        self._require_config()
+        company = self._company(company_id)
+        Binding = self.env['biz.approval.binding'].sudo()
+        Request = self.env['biz.approval.request'].sudo()
+        rows = []
+        for process in self._bulk_processes(process_keys):
+            exceptions = Binding.search_count([
+                ('company_id', '=', company.id),
+                ('process_id', '=', process.id),
+                ('scope_key', '!=', ''), ('active', '=', True),
+                ('workflow_id.name', '!=', NO_APPROVAL_NAME)])
+            waiting = Request.search_count([
+                ('company_id', '=', company.id),
+                ('process_id', '=', process.id),
+                ('state', 'in', ('pending', 'blocked'))])
+            rows.append({'process_key': process.key,
+                         'exceptions': exceptions, 'waiting': waiting,
+                         'money': bool(process.money)})
+        return {
+            'rows': rows,
+            'exceptions': sum(r['exceptions'] for r in rows),
+            'waiting': sum(r['waiting'] for r in rows),
+            'can_publish': self._can_publish(),
+        }
+
+    @api.model
+    def set_no_approval_bulk(self, process_keys, company_id=None,
+                             include_exceptions=True, reason=None,
+                             confirmations=None):
+        """Put every named process on "No approval needed" in one press.
+
+        Each process goes through the same seed call a single row uses, inside
+        its own savepoint, so one that cannot be switched is reported and the
+        rest still are. What each one was on before is returned as an undo
+        note: the old company-wide route is ENDED, never deleted, so putting
+        it back is re-activating what was there.
+        """
+        self._require_config()
+        if not self._can_publish():
+            raise AccessError(_(
+                "Switching approval off is a publish. Ask whoever may publish "
+                "approval routes."))
+        company = self._company(company_id)
+        processes = self._bulk_processes(process_keys)
+        confirmed = set(confirmations or [])
+        money = [p.name for p in processes if p.money and p.connected]
+        if money and 'money_fast' not in confirmed:
+            raise UserError(_(
+                "Money leaves the company on %s. Confirm that nobody needs to "
+                "check it first.", ', '.join(money)))
+
+        why = _clip(reason) or _('Switched off together from the Matrix')
+        Seed = self.env['biz.approval.seed']
+        Binding = self.env['biz.approval.binding'].sudo()
+        done, skipped, undo = [], [], []
+        for process in processes:
+            if not process.connected:
+                skipped.append({'process_key': process.key, 'name': process.name,
+                                'why': _('Not connected yet')})
+                continue
+            active = Binding.search([('company_id', '=', company.id),
+                                     ('process_id', '=', process.id),
+                                     ('active', '=', True)])
+            before_default = active.filtered(lambda b: not (b.scope_key or ''))
+            narrower = active - before_default
+            if len(before_default) == 1 \
+                    and before_default.workflow_id.name == NO_APPROVAL_NAME \
+                    and (not include_exceptions or all(
+                        b.workflow_id.name == NO_APPROVAL_NAME
+                        for b in narrower)):
+                skipped.append({'process_key': process.key, 'name': process.name,
+                                'why': _('Already needs no approval')})
+                continue
+            try:
+                with self.env.cr.savepoint():
+                    binding = Seed.set_no_approval_needed(
+                        company, process.key, reason=why)
+                    fast_wf = binding.workflow_id
+                    repointed = []
+                    if include_exceptions:
+                        for other in narrower.filtered(
+                                lambda b: b.workflow_id != fast_wf):
+                            repointed.append([other.id, other.workflow_id.id])
+                            other.write({'workflow_id': fast_wf.id})
+            except (UserError, AccessError) as exc:
+                skipped.append({'process_key': process.key, 'name': process.name,
+                                'why': str(exc.args[0] if exc.args else exc)})
+                continue
+            undo.append({
+                'process_key': process.key,
+                'restore': (before_default - binding).ids,
+                'fast_binding': binding.id,
+                'fast_was_active': binding in before_default,
+                'repointed': repointed,
+            })
+            done.append({'process_key': process.key, 'name': process.name})
+
+        if done:
+            self.env['biz.approval.event']._log(
+                'binding_changed',
+                _("%(who)s set %(n)s processes to \"No approval needed\": "
+                  "%(names)s", who=self.env.user.name, n=len(done),
+                  names=', '.join(d['name'] for d in done)),
+                company=company,
+                payload={'bulk': 'no_approval', 'reason': why,
+                         'confirmations': sorted(confirmed), 'undo': undo})
+        return {'done': done, 'skipped': skipped, 'undo': undo}
+
+    @api.model
+    def undo_no_approval_bulk(self, undo, company_id=None):
+        """Put back what one bulk switch replaced, exactly."""
+        self._require_config()
+        if not self._can_publish():
+            raise AccessError(_(
+                "Putting the checks back is a publish. Ask whoever may "
+                "publish approval routes."))
+        company = self._company(company_id)
+        Binding = self.env['biz.approval.binding'].sudo().with_context(
+            active_test=False)
+        Workflow = self.env['biz.approval.workflow'].sudo()
+
+        def mine(ids, process):
+            rows = Binding.browse([int(i) for i in ids or []]).exists()
+            return rows.filtered(lambda b: b.company_id == company
+                                 and b.process_id == process)
+
+        restored = []
+        for note in (undo or [])[:MAX_ROWS]:
+            if not isinstance(note, dict):
+                continue
+            process = self.env['biz.approval.process'].sudo()._by_key(
+                note.get('process_key') or '')
+            if not process:
+                continue
+            fast = mine([note.get('fast_binding')], process)
+            if fast and not note.get('fast_was_active'):
+                fast.write({'active': False})
+            mine(note.get('restore'), process).write({'active': True})
+            for pair in note.get('repointed') or []:
+                if not isinstance(pair, (list, tuple)) or len(pair) != 2:
+                    continue
+                other = mine([pair[0]], process)
+                workflow = Workflow.browse(int(pair[1])).exists()
+                if other and workflow and workflow.company_id == company \
+                        and workflow.process_id == process:
+                    other.write({'workflow_id': workflow.id})
+            restored.append(process.name)
+
+        if restored:
+            self.env['biz.approval.event']._log(
+                'binding_changed',
+                _("%(who)s put the checks back on %(n)s processes: %(names)s",
+                  who=self.env.user.name, n=len(restored),
+                  names=', '.join(restored)),
+                company=company, payload={'bulk': 'undo_no_approval'})
+        return {'restored': len(restored)}
 
     # ================================================== where it applies
     @api.model

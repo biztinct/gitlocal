@@ -166,6 +166,19 @@
             </div>
           </div>
 
+          <div t-if="state.bulkDone and state.bulkDone.done.length" class="pbam-attn pbam-attn-green pbam-bulkdone">
+            <t t-out="ic('zap',18)"/>
+            <span t-esc="bulkDoneLine"/>
+            <span class="pbam-sp"/>
+            <button class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.bulkBusy"
+                    t-on-click="() => this.undoBulk()">
+              <t t-out="ic('undo',14)"/> <span>Undo</span>
+            </button>
+            <button class="pbam-x" aria-label="Dismiss" t-on-click="() => this.dismissBulkDone()">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+
           <div t-if="data.attention.count" class="pbam-attn">
             <t t-out="ic('alert',18)"/>
             <span>
@@ -207,6 +220,19 @@
           </div>
 
           <div t-else="" class="pbam-tablewrap">
+            <div class="pbam-bulkbar">
+              <span class="pbam-bulkbar-n">
+                <b t-esc="bulkShownLine"/>
+                <t t-if="bulkFiltered"> · <t t-esc="bulkScopeLine"/></t>
+              </span>
+              <button class="pbam-bulkbtn" t-att-title="bulkButtonTitle"
+                      t-att-disabled="!data.can_publish or !bulkCandidates.length"
+                      t-on-click="() => this.openBulk()">
+                <t t-out="ic('zap',14)"/>
+                <span t-esc="bulkButtonLabel"/>
+                <span class="pbam-bulkbtn-n" t-esc="bulkCandidates.length"/>
+              </button>
+            </div>
             <div class="pbam-tablex">
               <table class="pbam-table">
                 <thead>
@@ -228,7 +254,8 @@
                       </td>
                     </tr>
                     <tr t-foreach="ar.rows" t-as="rw" t-key="rw.process_key"
-                        class="pbam-row" t-on-click="() => this.openRow(rw)">
+                        class="pbam-row" t-att-class="{ 'is-flash': state.flash[rw.process_key] }"
+                        t-on-click="() => this.openRow(rw)">
                       <td>
                         <div class="pbam-pn">
                           <span t-esc="rw.name"/>
@@ -286,6 +313,145 @@
         <HistoryTab t-else="" companyId="data.company_id"/>
 
       </div>
+
+      <!-- ===================================== many rows, one press -->
+      <t t-if="state.bulkOpen">
+        <div class="pbam-scrim" t-on-click="() => this.closeBulk()"/>
+        <aside class="pbam-drawer pbam-drawer-wide pbam-bulk">
+          <div class="pbam-dh">
+            <span class="pbam-bulk-ic"><t t-out="ic('zap',20)"/></span>
+            <div>
+              <h2>No approval needed</h2>
+              <p class="pbim-sub" t-esc="bulkScopeLine"/>
+            </div>
+            <button class="pbam-x" aria-label="Close" t-on-click="() => this.closeBulk()">
+              <t t-out="ic('x',18)"/>
+            </button>
+          </div>
+
+          <div class="pbam-db">
+            <div class="pbam-bulk-what">
+              <div class="pbam-bulk-fact">
+                <t t-out="ic('zap',15)"/>
+                <span>They happen at once. Nobody is asked to check them first.</span>
+              </div>
+              <div class="pbam-bulk-fact">
+                <t t-out="ic('history',15)"/>
+                <span>Every one is still recorded, and shows in History.</span>
+              </div>
+              <div class="pbam-bulk-fact">
+                <t t-out="ic('undo',15)"/>
+                <span>You can undo straight after, or bring a check back on any row later.</span>
+              </div>
+            </div>
+
+            <div class="pbam-bulk-listh">
+              <span class="pbam-k" t-esc="bulkChosenLine"/>
+              <button class="pbam-linkbtn" t-on-click="() => this.toggleBulkAll()">
+                <t t-if="bulkPickedRows.length === bulkCandidates.length">Choose none</t>
+                <t t-else="">Choose all</t>
+              </button>
+            </div>
+
+            <div class="pbam-bulk-list">
+              <t t-foreach="bulkGroups" t-as="gp" t-key="gp.key">
+                <button class="pbam-bulk-area" t-on-click="() => this.toggleBulkGroup(gp)">
+                  <span class="pbam-cb" t-att-class="{ 'is-on': bulkGroupAllOn(gp) }">
+                    <t t-if="bulkGroupAllOn(gp)" t-out="ic('check',12)"/>
+                  </span>
+                  <t t-out="ic(gp.icon,13)"/> <span t-esc="gp.name"/>
+                  <span class="pbam-area-n" t-esc="gp.rows.length"/>
+                </button>
+                <button t-foreach="gp.rows" t-as="rw" t-key="rw.process_key"
+                        class="pbam-bulk-row"
+                        t-att-class="{ 'is-on': state.bulkPicked[rw.process_key] }"
+                        t-on-click="() => this.toggleBulkRow(rw)">
+                  <span class="pbam-cb" t-att-class="{ 'is-on': state.bulkPicked[rw.process_key] }">
+                    <t t-if="state.bulkPicked[rw.process_key]" t-out="ic('check',12)"/>
+                  </span>
+                  <span class="pbam-bulk-main">
+                    <span class="pbam-bulk-name">
+                      <span t-esc="rw.name"/>
+                      <span t-if="rw.money" class="pbam-fl pbam-fl-amber">
+                        <t t-out="ic('banknote',10)"/> <span>money out</span>
+                      </span>
+                    </span>
+                    <span class="pbam-bulk-change">
+                      <span class="pbam-bulk-was">
+                        <t t-if="rw.route_labels.length" t-esc="rw.route_labels.join(' · ')"/>
+                        <t t-else="">Not written yet</t>
+                      </span>
+                      <span class="pbam-ar"><t t-out="ic('arrowRight',12)"/></span>
+                      <span class="pbam-bulk-now">No approval needed</span>
+                    </span>
+                  </span>
+                </button>
+              </t>
+            </div>
+
+            <div t-if="bulkSkippedCount" class="pbam-bulk-skip">
+              <button class="pbam-linkbtn" t-on-click="() => this.toggleBulkSkipped()">
+                <t t-out="ic(state.bulkShowSkipped ? 'chevronDown' : 'chevron',13)"/>
+                <span t-esc="bulkSkippedLine"/>
+              </button>
+              <t t-if="state.bulkShowSkipped">
+                <div t-foreach="bulkSkipped" t-as="sk" t-key="sk.key" class="pbam-bulk-skipg">
+                  <div class="pbam-bulk-skipl" t-esc="sk.label"/>
+                  <div class="pbam-bulk-skipn">
+                    <t t-esc="sk.rows.map((one) => one.name).join(', ')"/>
+                  </div>
+                </div>
+              </t>
+            </div>
+
+            <label t-if="bulkExceptionCount" class="pbam-bulk-opt">
+              <input type="checkbox" t-att-checked="state.bulkExceptions"
+                     t-on-change="(ev) => this.setBulkField('bulkExceptions', ev.target.checked)"/>
+              <span>
+                <b t-esc="bulkExceptionLine"/>
+                <span class="pbim-sub"> Untick to leave those checks in place.</span>
+              </span>
+            </label>
+
+            <div t-if="bulkWaiting" class="pbim-note pbam-note">
+              <t t-out="ic('info',15)"/>
+              <span t-esc="bulkWaitingLine"/>
+            </div>
+
+            <label t-if="bulkMoneyRows.length" class="pbim-note pbam-note-amber pbam-bulk-money">
+              <input type="checkbox" t-att-checked="state.bulkMoneyOk"
+                     t-on-change="(ev) => this.setBulkField('bulkMoneyOk', ev.target.checked)"/>
+              <span>
+                <b t-esc="bulkMoneyLine"/>
+                Two people are the usual safeguard. Tick to confirm nobody needs to check it first.
+              </span>
+            </label>
+
+            <label class="pbam-bulk-why">
+              <span class="pbam-k">Why (optional)</span>
+              <input type="text" class="pbam-input" maxlength="240"
+                     placeholder="For example: small team, we check the totals ourselves"
+                     t-att-value="state.bulkReason"
+                     t-on-input="(ev) => this.setBulkField('bulkReason', ev.target.value)"/>
+            </label>
+          </div>
+
+          <div class="pbam-df">
+            <button class="pbim-btn ghost" t-att-disabled="state.bulkBusy"
+                    t-on-click="() => this.closeBulk()">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!bulkCanApply"
+                    t-on-click="() => this.applyBulk()">
+              <t t-if="state.bulkBusy">
+                <span class="pbim-spin pbam-spin-sm"/> <span>Switching…</span>
+              </t>
+              <t t-else="">
+                <t t-out="ic('zap',15)"/>
+                <span t-esc="bulkApplyLine"/>
+              </t>
+            </button>
+          </div>
+        </aside>
+      </t>
 
       <!-- ===================================== where a row applies -->
       <t t-if="state.scopeFor">

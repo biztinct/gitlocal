@@ -86,6 +86,17 @@ export class PbApprovalMatrix extends Component {
             importOpen: false,
             importBusy: false,
             importResult: null,
+            // "No approval needed" for many rows at once
+            bulkOpen: false,
+            bulkPicked: {},
+            bulkExceptions: true,
+            bulkMoneyOk: false,
+            bulkReason: "",
+            bulkBusy: false,
+            bulkInfo: null,
+            bulkShowSkipped: false,
+            bulkDone: null,
+            flash: {},
         });
 
         this.onEscape = this.onEscape.bind(this);
@@ -112,6 +123,7 @@ export class PbApprovalMatrix extends Component {
     onEscape(ev) {
         if (ev.key !== "Escape") { return; }
         if (this.state.scopeFor) { this.state.scopeFor = null; return; }
+        if (this.state.bulkOpen) { this.closeBulk(); return; }
         if (this.state.importOpen) { this.state.importOpen = false; return; }
         if (this.state.presetsOpen) { this.state.presetsOpen = false; }
     }
@@ -191,6 +203,283 @@ export class PbApprovalMatrix extends Component {
     get nothingMatches() {
         return !this.state.loading && this.visibleAreas.length === 0;
     }
+
+    // ============================================ many rows, one press
+    /**
+     * "No approval needed" for everything the filters show.
+     *
+     * THE BUTTON FOLLOWS THE FILTERS, BECAUSE THE FILTERS ARE THE SELECTION.
+     * All areas means every process; choosing Pay means the Pay rows and no
+     * others; a search narrows it again. Nothing changes on the press itself:
+     * it opens a review drawer that lists every row it would switch, each one
+     * a tick that can be taken off, and the rows it leaves alone with the
+     * reason. Only the drawer's own button changes anything, and the Matrix
+     * then offers to put it all back.
+     */
+    get shownRows() {
+        return this.visibleAreas.flatMap((area) => area.rows);
+    }
+
+    get bulkCandidates() {
+        return this.shownRows.filter((row) => !row.bulk);
+    }
+
+    get bulkFiltered() {
+        return this.state.area !== "all" || this.state.status !== "all"
+            || Boolean(this.state.search.trim());
+    }
+
+    get bulkAreaName() {
+        const area = (this.data.areas || []).find(
+            (one) => one.key === this.state.area);
+        return area ? area.name : "";
+    }
+
+    get bulkButtonLabel() {
+        if (!this.bulkFiltered) {
+            return _t("No approval needed for all");
+        }
+        if (this.state.status === "all" && !this.state.search.trim()
+                && this.bulkAreaName) {
+            return _t("No approval needed for all %s", this.bulkAreaName);
+        }
+        return _t("No approval needed for these");
+    }
+
+    get bulkButtonTitle() {
+        if (!this.data.can_publish) {
+            return _t("Only somebody who may publish approval routes can do this.");
+        }
+        if (!this.bulkCandidates.length) {
+            return _t("Every process shown already needs no approval, or has nothing of its own to switch off.");
+        }
+        return _t("Review the list first. Nothing changes until you confirm.");
+    }
+
+    /** The drawer's list: the rows it would switch, grouped by area. */
+    get bulkGroups() {
+        const out = [];
+        for (const area of this.visibleAreas) {
+            const rows = area.rows.filter((row) => !row.bulk);
+            if (rows.length) { out.push({ key: area.key, name: area.name,
+                                          icon: area.icon, rows }); }
+        }
+        return out;
+    }
+
+    /** The rows it leaves alone, by reason. */
+    get bulkSkipped() {
+        const reasons = {
+            fast: _t("Already needs no approval"),
+            covered: _t("Decided with another process"),
+            soon: _t("Not connected yet, so nothing is checked"),
+        };
+        const out = [];
+        for (const key of ["fast", "covered", "soon"]) {
+            const rows = this.shownRows.filter((row) => row.bulk === key);
+            if (rows.length) { out.push({ key, label: reasons[key], rows }); }
+        }
+        return out;
+    }
+
+    get bulkSkippedCount() {
+        return this.bulkSkipped.reduce((n, group) => n + group.rows.length, 0);
+    }
+
+    get bulkPickedRows() {
+        return this.bulkCandidates.filter(
+            (row) => this.state.bulkPicked[row.process_key]);
+    }
+
+    get bulkMoneyRows() {
+        return this.bulkPickedRows.filter((row) => row.money);
+    }
+
+    get bulkExceptionCount() {
+        return this.bulkPickedRows.reduce(
+            (n, row) => n + (row.exceptions || 0), 0);
+    }
+
+    get bulkWaiting() {
+        const info = this.state.bulkInfo;
+        if (!info) { return 0; }
+        return (info.rows || []).filter(
+            (row) => this.state.bulkPicked[row.process_key])
+            .reduce((n, row) => n + row.waiting, 0);
+    }
+
+    get bulkCanApply() {
+        return this.bulkPickedRows.length > 0 && !this.state.bulkBusy
+            && (!this.bulkMoneyRows.length || this.state.bulkMoneyOk);
+    }
+
+    get bulkScopeLine() {
+        if (!this.bulkFiltered) {
+            return _t("Every process in the Matrix");
+        }
+        if (this.state.status === "all" && !this.state.search.trim()
+                && this.bulkAreaName) {
+            return _t("Every %s process", this.bulkAreaName);
+        }
+        return _t("The processes your filters show");
+    }
+
+    // Whole sentences, so each one translates as a sentence.
+    get bulkShownLine() {
+        return _t("%s shown", this.shownRows.length);
+    }
+
+    get bulkChosenLine() {
+        return _t("%s of %s chosen", this.bulkPickedRows.length,
+                  this.bulkCandidates.length);
+    }
+
+    get bulkSkippedLine() {
+        return _t("%s shown but left as they are", this.bulkSkippedCount);
+    }
+
+    get bulkExceptionLine() {
+        return this.bulkExceptionCount === 1
+            ? _t("Include the 1 part of the business with its own route.")
+            : _t("Include the %s parts of the business with their own route.",
+                 this.bulkExceptionCount);
+    }
+
+    get bulkWaitingLine() {
+        return _t("Requests already waiting (%s) keep the route they started on. Only new ones skip the check.",
+                  this.bulkWaiting);
+    }
+
+    get bulkMoneyLine() {
+        return _t("Money leaves the company on %s.",
+                  this.bulkMoneyRows.map((row) => row.name).join(", "));
+    }
+
+    get bulkApplyLine() {
+        return _t("Switch off approval for %s", this.bulkPickedRows.length);
+    }
+
+    get bulkDoneLine() {
+        const n = this.state.bulkDone ? this.state.bulkDone.done.length : 0;
+        return n === 1
+            ? _t("1 process now needs no approval. It still shows up in History each time it is used.")
+            : _t("%s processes now need no approval. Each one still shows up in History when it is used.", n);
+    }
+
+    bulkGroupAllOn(group) {
+        return group.rows.every((row) => this.state.bulkPicked[row.process_key]);
+    }
+
+    async openBulk() {
+        if (!this.data.can_publish || !this.bulkCandidates.length) { return; }
+        const picked = {};
+        for (const row of this.bulkCandidates) { picked[row.process_key] = true; }
+        this.state.bulkPicked = picked;
+        this.state.bulkExceptions = true;
+        this.state.bulkMoneyOk = false;
+        this.state.bulkReason = "";
+        this.state.bulkShowSkipped = false;
+        this.state.bulkInfo = null;
+        this.state.bulkOpen = true;
+        try {
+            this.state.bulkInfo = await this.orm.call(
+                "pb.approval.matrix", "bulk_no_approval_preview",
+                [this.bulkCandidates.map((row) => row.process_key), false]);
+        } catch {
+            // The drawer still works without the counts; it only says less.
+            this.state.bulkInfo = null;
+        }
+    }
+
+    closeBulk() {
+        if (this.state.bulkBusy) { return; }
+        this.state.bulkOpen = false;
+    }
+
+    toggleBulkSkipped() {
+        this.state.bulkShowSkipped = !this.state.bulkShowSkipped;
+    }
+
+    setBulkField(name, value) { this.state[name] = value; }
+
+    toggleBulkRow(row) {
+        this.state.bulkPicked[row.process_key]
+            = !this.state.bulkPicked[row.process_key];
+    }
+
+    toggleBulkGroup(group) {
+        const on = !this.bulkGroupAllOn(group);
+        for (const row of group.rows) {
+            this.state.bulkPicked[row.process_key] = on;
+        }
+    }
+
+    toggleBulkAll() {
+        const on = this.bulkPickedRows.length !== this.bulkCandidates.length;
+        for (const row of this.bulkCandidates) {
+            this.state.bulkPicked[row.process_key] = on;
+        }
+    }
+
+    async applyBulk() {
+        if (!this.bulkCanApply) { return; }
+        const keys = this.bulkPickedRows.map((row) => row.process_key);
+        this.state.bulkBusy = true;
+        try {
+            const result = await this.orm.call(
+                "pb.approval.matrix", "set_no_approval_bulk", [keys], {
+                    company_id: false,
+                    include_exceptions: this.state.bulkExceptions,
+                    reason: this.state.bulkReason,
+                    confirmations: this.bulkMoneyRows.length ? ["money_fast"] : [],
+                });
+            this.state.bulkBusy = false;
+            this.state.bulkOpen = false;
+            this.state.bulkDone = result;
+            const flash = {};
+            for (const row of result.done) { flash[row.process_key] = true; }
+            this.state.flash = flash;
+            await this.load();
+            setTimeout(() => { this.state.flash = {}; }, 2600);
+            if (result.skipped.length) {
+                this.notif.add(
+                    _t("%s could not be switched: %s", result.skipped.length,
+                       result.skipped.map((row) => `${row.name} (${row.why})`).join(", ")),
+                    { type: "warning" });
+            }
+        } catch (error) {
+            this.state.bulkBusy = false;
+            this.notif.add(
+                (error.data && error.data.message)
+                    || _t("Approval could not be switched off."),
+                { type: "danger" });
+        }
+    }
+
+    async undoBulk() {
+        const done = this.state.bulkDone;
+        if (!done || this.state.bulkBusy) { return; }
+        this.state.bulkBusy = true;
+        try {
+            const result = await this.orm.call(
+                "pb.approval.matrix", "undo_no_approval_bulk",
+                [done.undo, false]);
+            this.state.bulkDone = null;
+            this.notif.add(
+                _t("The checks are back on %s processes.", result.restored),
+                { type: "success" });
+            await this.load();
+        } catch (error) {
+            this.notif.add(
+                (error.data && error.data.message)
+                    || _t("The checks could not be put back."),
+                { type: "danger" });
+        } finally {
+            this.state.bulkBusy = false;
+        }
+    }
+
+    dismissBulkDone() { this.state.bulkDone = null; }
 
     // ============================================================== acting
     setTab(key) {

@@ -4864,3 +4864,276 @@ msgstr "Ai sẽ quyết định thay?"
 #: code:addons/pb_approval_config/static/src/js/request_drawer.js:0
 msgid "Why is it moving? (required)"
 msgstr "Vì sao chuyển? (bắt buộc)"
+
+# ===== "No approval needed" for many processes in one press (bulk switch) =====
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%(who)s put the checks back on %(n)s processes: %(names)s"
+msgstr "%(who)s đã khôi phục bước kiểm tra cho %(n)s quy trình: %(names)s"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "%(who)s set %(n)s processes to \"No approval needed\": %(names)s"
+msgstr "%(who)s đã chuyển %(n)s quy trình sang \"Không cần phê duyệt\": %(names)s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Already needs no approval"
+msgstr "Đã không cần phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Money leaves the company on %s. Confirm that nobody needs to check it first."
+msgstr "Tiền rời khỏi công ty ở %s. Hãy xác nhận rằng không ai cần kiểm tra trước."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Putting the checks back is a publish. Ask whoever may publish approval routes."
+msgstr "Khôi phục bước kiểm tra là một lần ban hành. Hãy nhờ người có quyền ban hành lộ trình phê duyệt."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Switched off together from the Matrix"
+msgstr "Tắt cùng lúc từ Ma trận phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Switching approval off is a publish. Ask whoever may publish approval routes."
+msgstr "Tắt phê duyệt là một lần ban hành. Hãy nhờ người có quyền ban hành lộ trình phê duyệt."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "%s could not be switched: %s"
+msgstr "Không thể chuyển %s mục: %s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Approval could not be switched off."
+msgstr "Không thể tắt phê duyệt."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Decided with another process"
+msgstr "Được quyết định cùng quy trình khác"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Every %s process"
+msgstr "Mọi quy trình %s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Every process in the Matrix"
+msgstr "Mọi quy trình trong Ma trận phê duyệt"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Every process shown already needs no approval, or has nothing of its own to switch off."
+msgstr "Mọi quy trình đang hiển thị đều đã không cần phê duyệt, hoặc không có gì riêng để tắt."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "No approval needed for all"
+msgstr "Không cần phê duyệt cho tất cả"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "No approval needed for all %s"
+msgstr "Không cần phê duyệt cho tất cả mục %s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "No approval needed for these"
+msgstr "Không cần phê duyệt cho các mục này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Not connected yet, so nothing is checked"
+msgstr "Chưa được kết nối nên không có gì được kiểm tra"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Only somebody who may publish approval routes can do this."
+msgstr "Chỉ người có quyền ban hành lộ trình phê duyệt mới làm được việc này."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Review the list first. Nothing changes until you confirm."
+msgstr "Hãy xem danh sách trước. Không có gì thay đổi cho đến khi bạn xác nhận."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "The checks are back on %s processes."
+msgstr "Đã khôi phục bước kiểm tra cho %s quy trình."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "The checks could not be put back."
+msgstr "Không thể khôi phục bước kiểm tra."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "The processes your filters show"
+msgstr "Các quy trình theo bộ lọc của bạn"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "%s shown"
+msgstr "Đang hiển thị %s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "%s of %s chosen"
+msgstr "Đã chọn %s trên %s"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "%s shown but left as they are"
+msgstr "%s mục đang hiển thị được giữ nguyên"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Include the 1 part of the business with its own route."
+msgstr "Bao gồm 1 bộ phận có lộ trình riêng."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Include the %s parts of the business with their own route."
+msgstr "Bao gồm %s bộ phận có lộ trình riêng."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Requests already waiting (%s) keep the route they started on. Only new ones skip the check."
+msgstr "Các yêu cầu đang chờ (%s) giữ nguyên lộ trình ban đầu. Chỉ yêu cầu mới được bỏ qua bước kiểm tra."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Money leaves the company on %s."
+msgstr "Tiền rời khỏi công ty ở %s."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "Switch off approval for %s"
+msgstr "Tắt phê duyệt cho %s mục"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "1 process now needs no approval. It still shows up in History each time it is used."
+msgstr "1 quy trình giờ không cần phê duyệt. Mỗi lần dùng vẫn hiện trong Lịch sử."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "%s processes now need no approval. Each one still shows up in History when it is used."
+msgstr "%s quy trình giờ không cần phê duyệt. Mỗi lần dùng vẫn hiện trong Lịch sử."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Choose all"
+msgstr "Chọn tất cả"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Choose none"
+msgstr "Bỏ chọn tất cả"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Dismiss"
+msgstr "Ẩn"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Every one is still recorded, and shows in History."
+msgstr "Mọi lần vẫn được ghi lại và hiện trong Lịch sử."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "For example: small team, we check the totals ourselves"
+msgstr "Ví dụ: nhóm nhỏ, chúng tôi tự kiểm tra tổng số"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "They happen at once. Nobody is asked to check them first."
+msgstr "Chúng được thực hiện ngay. Không ai được yêu cầu kiểm tra trước."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Two people are the usual safeguard. Tick to confirm nobody needs to check it first."
+msgstr "Hai người là biện pháp an toàn thông thường. Đánh dấu để xác nhận không ai cần kiểm tra trước."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Undo"
+msgstr "Hoàn tác"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Untick to leave those checks in place."
+msgstr "Bỏ đánh dấu để giữ nguyên các bước kiểm tra đó."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Why (optional)"
+msgstr "Lý do (không bắt buộc)"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "You can undo straight after, or bring a check back on any row later."
+msgstr "Bạn có thể hoàn tác ngay sau đó, hoặc thêm lại bước kiểm tra cho bất kỳ dòng nào sau này."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "money out"
+msgstr "chi tiền"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
+msgid "Switching…"
+msgstr "Đang chuyển…"
