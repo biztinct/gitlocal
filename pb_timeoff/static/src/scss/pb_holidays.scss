@@ -372,3 +372,68 @@
 .pbhd-import-row {display:flex;align-items:center;gap:16px;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--pbim-line,#ddd9e8);font-size:13px;p {margin:4px 0;color:var(--pbim-muted);}select{min-width:130px;}}
 .pbhd-import-issue {display:block;color:#946b21;line-height:1.5;}
 .pbhd-import-ack {display:flex;gap:12px;margin-top:22px;font-size:12px;line-height:1.6;input {align-self:flex-start;margin-top:4px;}}
+
+// =====================================================================
+//  COLOUR WITH A MEANING (2026-09-23)
+//
+//  The calendar had gone one indigo: the banner, every holiday, the tabs.
+//  A holiday calendar reads by KIND — a red-letter public day is not the
+//  same thing as a day the company gives, or leave everybody must take —
+//  so each kind now has its own colour, with a key under the grid, and the
+//  weekend is shaded so a holiday falling on one is obvious at a glance.
+// =====================================================================
+.pbhd {
+    // the next holiday is warm news, not a brand banner
+    .pbhd-headline {
+        background: var(--pbim-amber-soft, #FEF3C7);
+        border-color: transparent;
+        color: #92400E;
+        box-shadow: inset 4px 0 0 var(--pbim-amber, #D97706);
+    }
+    .pbhd-headline__ic { color: var(--pbim-amber, #D97706); }
+
+    // one toolbar row: views on the left, entity and import on the right
+    .pbhd-journey-bar {
+        flex-wrap: wrap; margin: 6px 0; padding: 8px;
+        background: var(--pbim-surface, #fff);
+        border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 14px;
+    }
+    .pbhd-view-tabs button { cursor: pointer; }
+    .pbhd-view-tabs button:hover:not(.on) { color: var(--pbim-ink, #1B1733); }
+    .pbhd-select { width: auto; min-width: 190px; max-width: 280px; }
+
+    .pbhd-month-nav { display: flex; gap: 6px; }
+    .pbhd-month-nav .pbim-btn { padding: 8px 10px; }
+
+    // weekends shaded (header row included: 7 headers keep the columns)
+    .pbhd-weekday:nth-child(7n+6), .pbhd-weekday:nth-child(7n+7),
+    .pbhd-day:nth-child(7n+6), .pbhd-day:nth-child(7n+7) {
+        background: #FAFAFC;
+    }
+    .pbhd-day.outside { background: var(--pbim-bg, #F6F6FB); }
+
+    // a holiday is coloured by what kind of day it is
+    .pbhd-day-event {
+        border-left: 3px solid currentColor;
+        &.pbhd-ev--public { background: var(--pbim-rose-soft, #FFE4E6); color: #BE123C; }
+        &.pbhd-ev--company { background: #D5F5F1; color: #0F766E; }
+        &.pbhd-ev--collective { background: var(--pbim-amber-soft, #FEF3C7); color: #92400E; }
+    }
+
+    .pbhd-legend {
+        display: flex; align-items: center; gap: 8px 18px; flex-wrap: wrap;
+        font-size: 12px; color: var(--pbim-muted, #64748B);
+        span { color: inherit; }
+    }
+    .pbhd-key {
+        display: inline-flex; align-items: center; gap: 7px; font-weight: 600;
+        color: var(--pbim-text, #334155) !important;
+        &::before { content: ""; width: 12px; height: 12px; border-radius: 3px; }
+    }
+    .pbhd-key--public::before { background: var(--pbim-rose-soft, #FFE4E6); box-shadow: inset 3px 0 0 #BE123C; }
+    .pbhd-key--company::before { background: #D5F5F1; box-shadow: inset 3px 0 0 #0F766E; }
+    .pbhd-key--collective::before { background: var(--pbim-amber-soft, #FEF3C7); box-shadow: inset 3px 0 0 #92400E; }
+    .pbhd-legend-note { margin-left: auto; }
+
+    .pbim-badge.pbhd-badge-wait { background: var(--pbim-amber-soft, #FEF3C7); color: var(--pbim-amber, #D97706); }
+}

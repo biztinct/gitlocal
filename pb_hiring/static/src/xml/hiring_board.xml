@@ -49,7 +49,7 @@
         <t t-else="">
 
           <!-- ===================== header ===================== -->
-          <section class="pbhr-journey-hero"><div><span class="pbhr-eyebrow">PEOPLE / HIRING</span><h2>Great teams start here.</h2><p>One connected path. A clear next step for every role.</p></div><div class="pbhr-hero-count"><strong t-esc="state.kpis.waiting_mine or 0"/><span>decisions waiting on you</span><button class="pbim-btn ghost" t-on-click="() =&gt; this.toggleFocus('mine')">Review decisions →</button></div></section><div class="pbhr-head">
+          <div class="pbhr-head">
             <div class="pbhr-head-id" t-if="!props.embedded">
               <h1 class="pbim-h1">Hiring</h1>
               <p class="pbim-sub">Every request for a new person, from the
@@ -78,6 +78,83 @@
             </div>
           </div>
 
+          <!-- ====================== the numbers ======================
+               Every tile is a filter, because a number you cannot click is a
+               number you have to go and look for. -->
+          <div class="pbim-stats pbhr-kpis">
+            <button class="pbim-stat pbhr-stat" t-att-class="{ on: state.focus === 'open' }" t-on-click="() =&gt; this.toggleFocus('open')">
+              <div class="pbim-stat-ic green"><t t-out="ic('briefcase',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.open or 0"/>
+                <div class="l">Open for candidates</div>
+              </div>
+            </button>
+            <button class="pbim-stat pbhr-stat" t-att-class="{ on: state.focus === 'waiting',                                    warn: state.kpis.waiting }" t-on-click="() =&gt; this.toggleFocus('waiting')">
+              <div class="pbim-stat-ic amber"><t t-out="ic('clock',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.waiting or 0"/>
+                <div class="l">Waiting for a sign-off</div>
+              </div>
+            </button>
+            <button class="pbim-stat pbhr-stat" t-att-class="{ on: state.focus === 'mine',                                    ok: state.kpis.waiting_mine }" t-on-click="() =&gt; this.toggleFocus('mine')">
+              <div class="pbim-stat-ic"><t t-out="ic('userCheck',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.waiting_mine or 0"/>
+                <div class="l">Waiting on you</div>
+              </div>
+            </button>
+            <div class="pbim-stat pbhr-stat pbhr-stat--flat">
+              <div class="pbim-stat-ic blue"><t t-out="ic('users',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.candidates or 0"/>
+                <div class="l">Candidates in play</div>
+              </div>
+            </div>
+            <div class="pbim-stat pbhr-stat pbhr-stat--flat">
+              <div class="pbim-stat-ic teal"><t t-out="ic('userPlus',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.referrals or 0"/>
+                <div class="l">Referrals this month</div>
+              </div>
+            </div>
+            <button class="pbim-stat pbhr-stat" t-att-class="{ on: state.focus === 'over',                                    err: state.kpis.over_budget }" t-on-click="() =&gt; this.toggleFocus('over')">
+              <div class="pbim-stat-ic rose"><t t-out="ic('alert',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.over_budget or 0"/>
+                <div class="l">Over budget</div>
+              </div>
+            </button>
+            <button class="pbim-stat pbhr-stat" t-on-click="() =&gt; { this.setTab('interviews'); this.toggleIvFocus('today'); }">
+              <div class="pbim-stat-ic blue"><t t-out="ic('calendar',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.interviews_week or 0"/>
+                <div class="l">Interviews this week</div>
+              </div>
+            </button>
+            <button class="pbim-stat pbhr-stat" t-att-class="{ err: state.kpis.feedback_late }" t-on-click="() =&gt; { this.setTab('interviews'); this.toggleIvFocus('late'); }">
+              <div class="pbim-stat-ic rose"><t t-out="ic('clock',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.feedback_late or 0"/>
+                <div class="l">Opinions overdue</div>
+              </div>
+            </button>
+            <div class="pbim-stat pbhr-stat pbhr-stat--flat">
+              <div class="pbim-stat-ic pink"><t t-out="ic('send',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.offers_out or 0"/>
+                <div class="l">Offers with a candidate</div>
+              </div>
+            </div>
+            <div class="pbim-stat pbhr-stat pbhr-stat--flat">
+              <div class="pbim-stat-ic green"><t t-out="ic('sunrise',21)"/></div>
+              <div class="pbim-stat-tx">
+                <div class="n" t-esc="state.kpis.filled_month or 0"/>
+                <div class="l">Joined this month</div>
+              </div>
+            </div>
+          </div>
+
+
           <nav class="pbhr-journey-nav" aria-label="Hiring journey"><button t-foreach="[{key:'all',n:'01',title:'Overview',sub:'Your hiring workspace'},{key:'request',n:'02',title:'Request &amp; approve',sub:'Agree the role and budget'},{key:'publish',n:'03',title:'Prepare &amp; publish',sub:'Bring the opportunity to life'},{key:'recruit',n:'04',title:'Meet your candidates',sub:'Screen, discuss and offer'},{key:'joined',n:'05',title:'Welcome aboard',sub:'A smooth start'}]" t-as="phase" t-key="phase.key" t-att-class="{on:state.journeyFocus === phase.key}" t-on-click="() =&gt; this.chooseJourney(phase.key)"><span t-esc="phase.n"/><div><b t-esc="phase.title"/><small t-esc="phase.sub"/></div></button></nav><!-- ============ no hiring rule has been written ============
                A thing that is not set up and does not SAY so is reported as
                broken (R54). This is the one thing an administrator has to do
@@ -99,83 +176,7 @@
             </div>
           </div>
 
-          <!-- ====================== the numbers ======================
-               Every tile is a filter, because a number you cannot click is a
-               number you have to go and look for. -->
-          <details class="pbhr-operational"><summary>Hiring activity and operational measures</summary><div class="pbim-stats pbhr-kpis">
-            <button class="pbim-stat pbhr-stat" t-att-class="{ on: state.focus === 'open' }" t-on-click="() =&gt; this.toggleFocus('open')">
-              <div class="pbim-stat-ic"><t t-out="ic('briefcase',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.open or 0"/>
-                <div class="l">Open for candidates</div>
-              </div>
-            </button>
-            <button class="pbim-stat pbhr-stat" t-att-class="{ on: state.focus === 'waiting',                                    warn: state.kpis.waiting }" t-on-click="() =&gt; this.toggleFocus('waiting')">
-              <div class="pbim-stat-ic"><t t-out="ic('clock',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.waiting or 0"/>
-                <div class="l">Waiting for a sign-off</div>
-              </div>
-            </button>
-            <button class="pbim-stat pbhr-stat" t-att-class="{ on: state.focus === 'mine',                                    ok: state.kpis.waiting_mine }" t-on-click="() =&gt; this.toggleFocus('mine')">
-              <div class="pbim-stat-ic"><t t-out="ic('userCheck',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.waiting_mine or 0"/>
-                <div class="l">Waiting on you</div>
-              </div>
-            </button>
-            <div class="pbim-stat pbhr-stat pbhr-stat--flat">
-              <div class="pbim-stat-ic"><t t-out="ic('users',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.candidates or 0"/>
-                <div class="l">Candidates in play</div>
-              </div>
-            </div>
-            <div class="pbim-stat pbhr-stat pbhr-stat--flat">
-              <div class="pbim-stat-ic"><t t-out="ic('userPlus',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.referrals or 0"/>
-                <div class="l">Referrals this month</div>
-              </div>
-            </div>
-            <button class="pbim-stat pbhr-stat" t-att-class="{ on: state.focus === 'over',                                    err: state.kpis.over_budget }" t-on-click="() =&gt; this.toggleFocus('over')">
-              <div class="pbim-stat-ic"><t t-out="ic('alert',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.over_budget or 0"/>
-                <div class="l">Over budget</div>
-              </div>
-            </button>
-            <button class="pbim-stat pbhr-stat" t-on-click="() =&gt; { this.setTab('interviews'); this.toggleIvFocus('today'); }">
-              <div class="pbim-stat-ic"><t t-out="ic('calendar',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.interviews_week or 0"/>
-                <div class="l">Interviews this week</div>
-              </div>
-            </button>
-            <button class="pbim-stat pbhr-stat" t-att-class="{ err: state.kpis.feedback_late }" t-on-click="() =&gt; { this.setTab('interviews'); this.toggleIvFocus('late'); }">
-              <div class="pbim-stat-ic"><t t-out="ic('clock',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.feedback_late or 0"/>
-                <div class="l">Opinions overdue</div>
-              </div>
-            </button>
-            <div class="pbim-stat pbhr-stat pbhr-stat--flat">
-              <div class="pbim-stat-ic"><t t-out="ic('send',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.offers_out or 0"/>
-                <div class="l">Offers with a candidate</div>
-              </div>
-            </div>
-            <div class="pbim-stat pbhr-stat pbhr-stat--flat">
-              <div class="pbim-stat-ic"><t t-out="ic('sunrise',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.filled_month or 0"/>
-                <div class="l">Joined this month</div>
-              </div>
-            </div>
-          </div>
-
-          </details><!-- ============ this reader is standing in for somebody ============
+<!-- ============ this reader is standing in for somebody ============
                A cover is invisible by design — nothing about anybody's
                permissions changes — so the one place it has to be VISIBLE is
                the board of the person doing the covering. Without this they
@@ -915,6 +916,7 @@
               <div t-foreach="state.drawer.candidates_list" t-as="cd" t-key="cd.id" class="pbhr-cand" t-att-class="{ 'is-out': !cd.active, 'is-picked': cd.selected }">
 
                 <div class="pbhr-cand-top">
+                  <span class="pbhr-cand-av" t-att-class="'pbhr-av--' + (cd.id % 6)" t-esc="initials(cd.name)"/>
                   <div class="pbhr-list-main">
                     <div class="pbhr-list-name">
                       <t t-esc="cd.name"/>
@@ -923,7 +925,7 @@
                       </span>
                     </div>
                     <div class="pbhr-list-meta">
-                      <t t-esc="cd.stage"/>
+                      <span class="pbhr-stage-chip" t-esc="cd.stage"/>
                       <t t-if="cd.source"> · <t t-esc="cd.source"/></t>
                       <t t-if="cd.screen_label"> · <t t-esc="cd.screen_label"/></t>
                       <t t-if="cd.rounds">
@@ -933,12 +935,12 @@
                     </div>
                   </div>
                   <div class="pbhr-list-acts" t-if="state.canRecruit and cd.active">
-                    <button class="pbim-btn ghost" t-on-click="() =&gt; this.startStageMove(cd)">Move stage</button><button class="pbim-btn ghost" t-on-click="() =&gt; this.startMessage(cd)">Email candidate</button><button t-foreach="screenOrder" t-as="tg" t-key="tg" class="pbim-btn ghost pbhr-scr" t-att-class="{ on: cd.screen === tg }" t-att-title="screenLabel(tg)" t-on-click="() =&gt; this.screen(cd, tg)">
+                    <button class="pbim-btn ghost pbhr-quiet" t-on-click="() =&gt; this.startStageMove(cd)"><t t-out="ic('layers',13)"/> Move stage</button><button class="pbim-btn ghost pbhr-quiet" t-on-click="() =&gt; this.startMessage(cd)"><t t-out="ic('mail',13)"/> Email candidate</button><span class="pbhr-scr-group"><button t-foreach="screenOrder" t-as="tg" t-key="tg" class="pbim-btn ghost pbhr-scr" t-att-class="'pbhr-scr--' + tg + (cd.screen === tg ? ' on' : '')" t-att-title="screenLabel(tg)" t-on-click="() =&gt; this.screen(cd, tg)">
                       <t t-out="ic(screenIcon(tg),14)"/>
-                    </button>
+                    </button></span>
                   </div>
                   <div class="pbhr-list-acts">
-                    <button class="pbim-btn ghost" t-on-click="() =&gt; this.act('open_applicant', { applicant_id: cd.id }, { reload: false })">
+                    <button class="pbim-btn ghost pbhr-quiet pbhr-icon" title="Open the application" t-on-click="() =&gt; this.act('open_applicant', { applicant_id: cd.id }, { reload: false })">
                       <t t-out="ic('external',13)"/>
                     </button>
                   </div>
@@ -995,10 +997,10 @@
                   <button class="pbim-btn primary" t-on-click="() =&gt; this.startSchedule(cd)">
                     <t t-out="ic('calendar',13)"/> Arrange an interview
                   </button>
-                  <button class="pbim-btn ghost" t-on-click="() =&gt; this.nextRound(cd)">
+                  <button class="pbim-btn ghost pbhr-go" t-on-click="() =&gt; this.nextRound(cd)">
                     <t t-out="ic('arrowRight',13)"/> Through to the next round
                   </button>
-                  <button class="pbim-btn ghost" t-on-click="() =&gt; this.startReject(cd)">
+                  <button class="pbim-btn ghost pbhr-no" t-on-click="() =&gt; this.startReject(cd)">
                     <t t-out="ic('xCircle',13)"/> Not this time
                   </button>
                 </div>
@@ -1008,16 +1010,16 @@
 
           <!-- ========================== the doors ========================== -->
           <div class="pbim-modal__foot pbhr-drawer-foot">
-            <button class="pbim-btn ghost" t-on-click="() =&gt; this.act('open_requisition', { requisition_id: state.drawer.id }, { reload: false })">
+            <button class="pbim-btn ghost pbhr-quiet" t-on-click="() =&gt; this.act('open_requisition', { requisition_id: state.drawer.id }, { reload: false })">
               <t t-out="ic('external',14)"/> Open the record
             </button>
-            <button t-if="state.drawer.job_id" class="pbim-btn ghost" t-on-click="() =&gt; this.act('open_job', { requisition_id: state.drawer.id }, { reload: false })">
+            <button t-if="state.drawer.job_id" class="pbim-btn ghost pbhr-quiet" t-on-click="() =&gt; this.act('open_job', { requisition_id: state.drawer.id }, { reload: false })">
               <t t-out="ic('briefcase',14)"/> The job
             </button>
             <span class="pbhr-foot-gap"/>
             <button t-if="state.canRaise and state.drawer.state === 'draft'" class="pbim-btn primary" t-on-click="() =&gt; this.act('submit', {requisition_id: state.drawer.id})">Send for approval</button>
             <button t-if="state.drawer.waiting_mine" class="pbim-btn primary" t-on-click="() =&gt; this.act('open_requisition', {requisition_id: state.drawer.id}, {reload:false})">Review approval</button>
-            <button t-if="state.canRecruit and state.drawer.state === 'open'" class="pbim-btn ghost" t-on-click="() =&gt; this.act('toggle_referrals', { requisition_id: state.drawer.id })">
+            <button t-if="state.canRecruit and state.drawer.state === 'open'" class="pbim-btn ghost pbhr-quiet" t-on-click="() =&gt; this.act('toggle_referrals', { requisition_id: state.drawer.id })">
               <t t-out="ic('userPlus',14)"/>
               <t t-if="state.drawer.referral_open">Close to referrals</t>
               <t t-else="">Open to referrals</t>
@@ -1025,7 +1027,7 @@
             <button t-if="state.canRecruit and state.drawer.state === 'open' and !state.drawer.published" class="pbim-btn primary" t-on-click="() =&gt; this.act('publish', { requisition_id: state.drawer.id })">
               <t t-out="ic('globe',14)"/> Advertise it
             </button>
-            <button t-if="state.canWrite and state.drawer.state === 'open'" class="pbim-btn ghost" t-on-click="() =&gt; this.act('mark_filled', { requisition_id: state.drawer.id })">
+            <button t-if="state.canWrite and state.drawer.state === 'open'" class="pbim-btn ghost pbhr-go" t-on-click="() =&gt; this.act('mark_filled', { requisition_id: state.drawer.id })">
               <t t-out="ic('checkCircle',14)"/> Filled
             </button>
           </div>
@@ -1036,7 +1038,7 @@
            RAISE A HIRING REQUEST
            ================================================================== -->
       <div t-if="state.raising" class="pbim-modal-scrim pbhr-scrim" t-on-click="cancelRaise"><div class="pbim-modal pbhr-dialog pbhr-wizard" role="dialog" aria-modal="true" aria-label="Raise a hiring request" t-on-click.stop="() =&gt; {}">
-<div class="pbim-modal__head"><div><span class="pbhr-eyebrow">BUILD YOUR TEAM</span><div class="pbhr-drawer-title">Let’s shape your next hire.</div><div class="pbhr-drawer-sub">Requested by <t t-esc="state.journey.requestor"/> · Saved as a draft before approval.</div></div><button class="pbim-btn ghost" t-on-click="cancelRaise" aria-label="Close request">×</button></div>
+<div class="pbim-modal__head"><div><span class="pbhr-eyebrow">BUILD YOUR TEAM</span><div class="pbhr-drawer-title">Let’s shape your next hire.</div><div class="pbhr-drawer-sub">Requested by <t t-esc="state.journey.requestor"/> · Saved as a draft before approval.</div></div><button class="pbim-btn ghost" t-on-click="cancelRaise" aria-label="Close request" title="Close"><t t-out="ic('x',16)"/></button></div>
 <nav class="pbhr-wizard-steps" aria-label="Request steps"><span t-foreach="['The role','Responsibilities','Interview plan','Budget &amp; review']" t-as="step" t-key="step" t-att-class="{on:state.raising.step === step_index,done:state.raising.step &gt; step_index}"><b t-esc="step_index + 1"/><t t-esc="step"/></span></nav>
 <div class="pbim-modal__body pbhr-form">
 <t t-if="state.raising.step === 0"><h3 class="pbhr-f--wide">Who does your team need?</h3>

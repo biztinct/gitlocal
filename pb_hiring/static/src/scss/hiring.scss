@@ -805,3 +805,158 @@ textarea.pbhr-in { resize: vertical; line-height: 1.55; }
 .pbhr .pbhr-tools summary::-webkit-details-marker { display:none; }
 .pbhr .pbhr-tools-menu { position:absolute; top:calc(100% + 8px); right:0; z-index:25; width:260px; padding:10px; display:grid; gap:6px; background:var(--pbim-surface,#fff); border:1px solid var(--pbim-border,#e5e7eb); border-radius:16px; box-shadow:0 12px 32px rgba(20,25,50,.12); }
 .pbhr .pbhr-tools-menu .pbim-btn { justify-content:flex-start; }
+
+// =====================================================================
+//  COLOUR WITH A MEANING (2026-09-23)
+//
+//  The board had drifted to one indigo for everything: every button in
+//  the role pop-up, every badge, the notice, the pipeline. Growth plans
+//  and Contracts on the same hub give each kind of thing its own colour,
+//  and this block brings Hiring back to that vocabulary:
+//
+//    indigo  the one main action, and what is selected
+//    green   good / moving forward (open, within budget, next round, filled)
+//    amber   waiting on somebody, or something not set up yet
+//    rose    a problem, or saying no
+//    blue    time and people-in-play information
+//    grey    everything secondary
+//
+//  Appended rather than edited in place, so every earlier rule still
+//  reads the way its own comment says and this is the one layer on top.
+// =====================================================================
+.pbhr {
+    // ten numbers, two rows of five, like the lenses beside it
+    .pbhr-kpis { grid-template-columns: repeat(5, 1fr); }
+    @media (max-width: 1180px) { .pbhr-kpis { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px)  { .pbhr-kpis { grid-template-columns: repeat(2, 1fr); } }
+    .pbhr-stat.warn .pbim-stat-ic,
+    .pbhr-stat.err .pbim-stat-ic,
+    .pbhr-stat.ok .pbim-stat-ic { color: inherit; }
+    .pbhr-stat.warn { border-color: var(--pbim-amber); }
+    .pbhr-stat.err { border-color: var(--pbim-rose); }
+
+    // the five steps: white cards, a numbered dot, the chosen one lifted
+    .pbhr-journey-nav button {
+        align-items: center; transition: border-color .14s, box-shadow .14s;
+        > span {
+            flex: none; width: 28px; height: 28px; border-radius: 50%;
+            display: grid; place-items: center; padding: 0;
+            background: var(--pbim-line-2); color: var(--pbim-muted);
+            font-size: 11px; font-weight: 800;
+        }
+        &:hover { border-color: var(--pbim-primary); }
+        &.on {
+            background: var(--pbim-surface); border-color: var(--pbim-primary);
+            box-shadow: 0 0 0 3px var(--pbim-ring);
+            > span { background: var(--pbim-primary); color: #fff; }
+            b { color: var(--pbim-ink); }
+        }
+    }
+
+    // badges on a role card carry their meaning in their tint
+    .pbim-badge.pbhr-state--open, .pbim-badge.pbhr-state--filled,
+    .pbim-badge.pbhr-budget--within {
+        background: var(--pbim-green-soft); color: var(--pbim-green);
+    }
+    .pbim-badge.pbhr-state--submitted, .pbim-badge.pbhr-state--manager_ok,
+    .pbim-badge.pbhr-state--hr_ok {
+        background: var(--pbim-amber-soft); color: var(--pbim-amber);
+    }
+    .pbim-badge.pbhr-budget--over {
+        background: var(--pbim-rose-soft); color: var(--pbim-rose);
+    }
+    .pbim-badge.pbhr-ref { background: #D5F5F1; color: #0D9488; }
+    .pbim-badge.pbhr-pub { background: var(--pbim-cyan-soft); color: var(--pbim-cyan); }
+
+    // the pipeline runs cool to warm to green, earliest stage first
+    .pbhr-pipe-seg {
+        background: var(--pbim-cyan-soft); color: var(--pbim-cyan);
+        &:nth-child(2) { background: #E0E7FF; color: #4338CA; }
+        &:nth-child(3) { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+        &:nth-child(n+4) { background: var(--pbim-green-soft); color: var(--pbim-green); }
+        &:last-child:not(:first-child) { background: var(--pbim-green); color: #fff; }
+    }
+    .pbhr-card.is-mine { box-shadow: inset 4px 0 0 var(--pbim-primary); }
+    .pbhr-card.is-over { box-shadow: inset 4px 0 0 var(--pbim-rose); }
+}
+
+// ------------------------------------------------ the role pop-up
+.pbhr-scrim {
+    // secondary buttons are grey; colour is kept for what it means
+    .pbim-btn.ghost.pbhr-quiet { color: var(--pbim-text, #334155); }
+    .pbim-btn.ghost.pbhr-quiet:hover { color: var(--pbim-ink, #1B1733); }
+    .pbim-btn.pbhr-icon { padding: 9px 11px; }
+    .pbim-btn.ghost.pbhr-go {
+        color: var(--pbim-green, #059669);
+        border-color: #A7F3D0;
+        &:hover { background: var(--pbim-green-soft, #D1FAE5); }
+    }
+    .pbim-btn.ghost.pbhr-no {
+        color: var(--pbim-muted, #64748B);
+        &:hover {
+            color: var(--pbim-rose, #E11D48); border-color: #F3C7CF;
+            background: var(--pbim-rose-soft, #FFE4E6);
+        }
+    }
+
+    // the four screening answers read as one control, each with its colour
+    .pbhr-scr-group {
+        display: inline-flex; border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 10px; overflow: hidden; background: #fff;
+    }
+    .pbhr-scr-group .pbim-btn.pbhr-scr {
+        border: 0; border-radius: 0; padding: 9px 11px;
+        color: var(--pbim-muted, #64748B);
+        & + .pbhr-scr { border-left: 1px solid var(--pbim-line, #E2E8F0); }
+    }
+    .pbhr-scr--shortlisted:hover, .pbhr-scr--shortlisted.on {
+        color: var(--pbim-green, #059669) !important; background: var(--pbim-green-soft, #D1FAE5) !important; }
+    .pbhr-scr--future_fit:hover, .pbhr-scr--future_fit.on {
+        color: var(--pbim-cyan, #0891B2) !important; background: var(--pbim-cyan-soft, #CFFAFE) !important; }
+    .pbhr-scr--other_role:hover, .pbhr-scr--other_role.on {
+        color: var(--pbim-amber, #D97706) !important; background: var(--pbim-amber-soft, #FEF3C7) !important; }
+    .pbhr-scr--rejected:hover, .pbhr-scr--rejected.on {
+        color: var(--pbim-rose, #E11D48) !important; background: var(--pbim-rose-soft, #FFE4E6) !important; }
+
+    // a candidate is a person: a face, a stage, then what to do next
+    .pbhr-cand {
+        transition: box-shadow .15s, border-color .15s;
+        &:hover { box-shadow: 0 6px 18px rgba(20, 25, 50, .07); }
+        &.is-picked { box-shadow: inset 4px 0 0 var(--pbim-green, #059669); border-color: var(--pbim-line, #E2E8F0); }
+    }
+    .pbhr-cand-av {
+        flex: none; width: 38px; height: 38px; border-radius: 50%;
+        display: grid; place-items: center;
+        font-size: 13px; font-weight: 800; letter-spacing: .02em;
+    }
+    .pbhr-av--0 { background: #E0E7FF; color: #4338CA; }
+    .pbhr-av--1 { background: #D5F5F1; color: #0D9488; }
+    .pbhr-av--2 { background: #FEF3C7; color: #B45309; }
+    .pbhr-av--3 { background: #FCE7F3; color: #BE185D; }
+    .pbhr-av--4 { background: #CFFAFE; color: #0E7490; }
+    .pbhr-av--5 { background: #D1FAE5; color: #047857; }
+    .pbhr-stage-chip {
+        display: inline-block; padding: 1px 8px; border-radius: 999px;
+        background: var(--pbim-cyan-soft, #CFFAFE); color: var(--pbim-cyan, #0891B2);
+        font-weight: 700; font-size: 11px;
+    }
+    .pbim-badge.pbhr-cur { background: var(--pbim-green-soft, #D1FAE5); color: var(--pbim-green, #059669); }
+    .pbhr-cand-next {
+        background: var(--pbim-cyan-soft, #CFFAFE); color: #155E75;
+    }
+    .pbhr-round-n { background: var(--pbim-slate-soft, #E2E8F0); color: var(--pbim-text, #334155); }
+    .pbhr-cand-acts { padding-top: 11px; border-top: 1px dashed var(--pbim-line, #E2E8F0); }
+
+    // the budget panel says good, bad or unknown in its colour
+    .pbhr-money--within { background: var(--pbim-green-soft, #D1FAE5); border-color: transparent; }
+    .pbhr-money--within .pbhr-money-ic { color: var(--pbim-green, #059669); }
+    .pbhr-money--over { background: var(--pbim-rose-soft, #FFE4E6); border-color: transparent; }
+}
+
+// The close button belongs in the corner, as a quiet icon, not as a
+// second box beside the title (every dialog on this board uses this head).
+.pbhr-scrim .pbim-modal__head > .pbim-btn.ghost:last-child {
+    margin-left: auto; border-color: transparent; padding: 7px;
+    color: var(--pbim-muted, #64748B);
+    &:hover { background: var(--pbim-line-2, #F1F5F9); color: var(--pbim-ink, #1B1733); }
+}

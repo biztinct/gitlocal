@@ -188,6 +188,15 @@ export class PbHiringBoard extends Component {
 
     screenIcon(tag) { return SCREEN_ICON[tag] || "circle"; }
 
+    /** Two letters for a candidate's badge. A "DEMO " prefix is skipped so
+     *  the example people read as people, not as "DS". */
+    initials(name) {
+        const words = String(name || "").replace(/^DEMO\s+/, "").trim()
+            .split(/\s+/).filter(Boolean);
+        return ((words[0] || "?")[0] + (words.length > 1
+            ? words[words.length - 1][0] : "")).toUpperCase();
+    }
+
     /** The word for a screening answer, from the SERVER's own list — never a
      *  second copy in JavaScript that would drift out of step. */
     screenLabel(tag) {

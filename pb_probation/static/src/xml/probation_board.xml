@@ -41,7 +41,7 @@
         <t t-else="">
 
           <!-- ===================== header ===================== -->
-          <section class="prb-journey-hero"><span>PEOPLE / PROBATION</span><h2>Help every new colleague thrive.</h2><p>A thoughtful review, with a clear owner at every step.</p><ol aria-label="Probation review journey"><li>Choose peers</li><li>Gather perspectives</li><li>Manager conversation</li><li>HR &amp; leadership review</li><li>Share the outcome</li></ol></section>
+          
           <div class="prb-head">
             <div class="prb-head-id" t-if="!props.embedded">
               <h1 class="pbim-h1">Probation</h1>
@@ -83,6 +83,7 @@
           </div>
 
           <!-- ====================== the numbers ====================== -->
+          
           <div class="pbim-stats prb-kpis">
             <div class="pbim-stat">
               <div class="pbim-stat-ic"><t t-out="ic('stamp',21)"/></div>
@@ -120,6 +121,8 @@
               </div>
             </div>
           </div>
+
+          <div class="prb-flow" aria-label="How a probation review runs"><span class="prb-flow-k">How a review runs</span><ol><li class="prb-flow--1">Choose peers</li><li class="prb-flow--2">Gather perspectives</li><li class="prb-flow--3">Manager conversation</li><li class="prb-flow--4">HR &amp; leadership review</li><li class="prb-flow--5">Share the outcome</li></ol></div>
 
           <!-- ======================== filters ======================== -->
           <div class="pbim-panel prb-filters" t-if="state.rows.length">
