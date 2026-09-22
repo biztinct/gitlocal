@@ -7,3 +7,6 @@ from . import test_sc4_lane_gates
 # SCHEMECTX P1 — every scheme card says what it pays in.
 from . import test_schemectx_currency
 from . import test_officer_access
+
+# The two-scheme month: another payroll is not this one's duplicate.
+from . import test_two_schemes_one_month

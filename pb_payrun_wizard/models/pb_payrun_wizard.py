@@ -354,6 +354,23 @@ class PbPayrunWizard(models.AbstractModel):
             count=len(configs)))
 
     @api.model
+    def _scheme_from_vals(self, vals):
+        """The scheme named in `vals`, or an empty value — never raises.
+
+        `_require_scheme` is the one that refuses, and it belongs on the door
+        that asks the question. This is for the callers that only need to know
+        "which payroll is this, if it says" — the duplicate check, above all,
+        which must not start raising on a door that never asked.
+        """
+        configs = self._formula_configs()
+        if configs is None or not configs:
+            return None
+        wanted = int((vals or {}).get('formula_config_id') or 0)
+        if wanted:
+            return configs.filtered(lambda c: c.id == wanted)[:1] or None
+        return configs[:1] if len(configs) == 1 else None
+
+    @api.model
     def scheme_preview(self, vals=None):
         """Who a run for this scheme would cover, and who it would leave out.
 
@@ -577,17 +594,65 @@ class PbPayrunWizard(models.AbstractModel):
                 'statuses': self.employment_status_options()}
 
     # ---------------- Existing-payroll detection + cleanup ----------------
-    def _period_runs(self, ds, de):
-        """Runs in the active company set overlapping [ds, de] that have payslips."""
+    @api.model
+    def _run_scheme_ids(self, run):
+        """Which scheme(s) a run belongs to, as a set of ids.
+
+        The run itself names it (`pb_formula_config_id`, written by this wizard
+        since GROUP P2); older runs and runs built by other doors only have it
+        on their payslips. An empty set means "this run does not say" — and a
+        run that does not say is never assumed to belong to somebody else.
+        """
+        ids = set()
+        if 'pb_formula_config_id' in run._fields and run.pb_formula_config_id:
+            ids.add(run.pb_formula_config_id.id)
+        if 'formula_config_id' in self.env['hr.payslip']._fields:
+            ids |= set(run.slip_ids.mapped('formula_config_id').ids)
+        return ids
+
+    def _period_runs(self, ds, de, config=None):
+        """Runs in the active company set overlapping [ds, de] that have payslips.
+
+        **Scoped to one scheme when the run names one.** A company running two
+        schemes — say a Vietnam payroll and an India payroll — has two separate
+        payrolls in the same month, and they are not each other's duplicate. The
+        unscoped version asked "is there any August?", so starting Vietnam's
+        August after India's was answered with "this month's payroll already
+        exists", and *Clean and Run* would then have deleted India's run and
+        every payslip in it. Reported live on the `rize` tenant 2026-09-22.
+
+        A run that names no scheme at all is still returned: it cannot be shown
+        to belong to a different payroll, it may well cover the same people, and
+        warning about it is the safe side of the guess.
+        """
         runs = self.env['hr.payslip.run'].search([
             ('date_start', '<=', de), ('date_end', '>=', ds),
             ('company_id', 'in', self.env.companies.ids)
         ]) if 'company_id' in self.env['hr.payslip.run']._fields else \
             self.env['hr.payslip.run'].search([('date_start', '<=', de), ('date_end', '>=', ds)])
-        return runs.filtered(lambda r: r.slip_ids)
+        runs = runs.filtered(lambda r: r.slip_ids)
+        if not config:
+            return runs
+        wanted = config.id
+        return runs.filtered(
+            lambda r: (lambda s: not s or wanted in s)(self._run_scheme_ids(r)))
+
+    @api.model
+    def _exists_message(self, existing, config):
+        """The "already exists" sentence, naming what *Clean and Run* would clear."""
+        names = [r.name for r in existing if r.name][:3]
+        what = config.name if config else None
+        lead = (_("This month’s %(scheme)s payroll already exists.",
+                  scheme=what) if what
+                else _("This month’s payroll already exists."))
+        if names:
+            lead += ' ' + _("It is %(runs)s.", runs=', '.join(names))
+        return lead + ' ' + _(
+            "Would you like to clear it and run this payroll again? Nothing "
+            "belonging to another payroll scheme is touched.")
 
     # ---------------- Payslips this period already has, outside any run ----------------
-    def _loose_slips(self, ds, de):
+    def _loose_slips(self, ds, de, config=None):
         """Computed payslips for exactly this period that belong to no pay run.
 
         An import batch produces payslips and groups them in its own run; delete
@@ -610,6 +675,12 @@ class PbPayrunWizard(models.AbstractModel):
         ]
         if 'company_id' in Slip._fields:
             domain.append(('company_id', 'in', self.env.companies.ids))
+        # ...and the same scheme rule the duplicate check uses: an orphan
+        # payslip belonging to another scheme's payroll is not this run's to
+        # adopt. One with no scheme at all still is — that is the ABM case this
+        # method was written for.
+        if config and 'formula_config_id' in Slip._fields:
+            domain.append(('formula_config_id', 'in', [config.id, False]))
         return Slip.sudo().search(domain).filtered(lambda s: s.line_ids)
 
     def _adopt_loose_slips(self, run, ds, de):
@@ -620,7 +691,9 @@ class PbPayrunWizard(models.AbstractModel):
         of one that already exists. Nothing is recomputed: the numbers a batch
         produced are the numbers the run shows.
         """
-        slips = self._loose_slips(ds, de)
+        config = (run.pb_formula_config_id
+                  if 'pb_formula_config_id' in run._fields else None) or None
+        slips = self._loose_slips(ds, de, config=config)
         if slips:
             # Link them through the RUN's own one2many rather than by writing
             # the payslip's many2one. Both move the payslip; only this one tells
@@ -679,8 +752,13 @@ class PbPayrunWizard(models.AbstractModel):
         de = vals.get('date_end')
         force_clean = vals.get('force_clean')
 
-        # Guard: if payroll already exists for this period, ask before overwriting.
-        existing = self._period_runs(ds, de)
+        # Guard: if payroll already exists for this period, ask before
+        # overwriting — for THIS scheme. `_require_scheme` would raise on a
+        # multi-scheme company, and this older door does not ask the question;
+        # it scopes by the scheme when one was passed and behaves as it always
+        # did when one was not.
+        config = self._scheme_from_vals(vals)
+        existing = self._period_runs(ds, de, config=config)
         if existing and not force_clean:
             locked = any(getattr(r, 'locked', False) for r in existing)
             if locked:
@@ -692,13 +770,15 @@ class PbPayrunWizard(models.AbstractModel):
                 }
             return {
                 'needs_confirmation': True, 'kind': 'exists',
-                'message': "This month’s payroll already exists. Would you like to "
-                           "clear existing payroll data and run payroll again?",
+                'message': self._exists_message(existing, config),
             }
         if force_clean and existing:
             self._clean_period(existing)
 
-        run = Run.create({'name': name, 'date_start': ds, 'date_end': de})
+        run_vals = {'name': name, 'date_start': ds, 'date_end': de}
+        if config and 'pb_formula_config_id' in Run._fields:
+            run_vals['pb_formula_config_id'] = config.id
+        run = Run.create(run_vals)
 
         adopted = self._adopt_loose_slips(run, ds, de)      # see prepare_run
         emp_ids = [e for e in self._eligible_employees()
@@ -793,7 +873,10 @@ class PbPayrunWizard(models.AbstractModel):
         # is the salary-structure run it always was.
         config = self._require_scheme(vals)
 
-        existing = self._period_runs(ds, de)
+        # Scoped to the scheme this run is for: two schemes in one month are two
+        # payrolls, not a duplicate, and *Clean and Run* must never reach into
+        # the other one. See `_period_runs`.
+        existing = self._period_runs(ds, de, config=config)
         if existing and not force_clean:
             locked = any(getattr(r, 'locked', False) for r in existing)
             if locked:
@@ -805,8 +888,7 @@ class PbPayrunWizard(models.AbstractModel):
                 }
             return {
                 'needs_confirmation': True, 'kind': 'exists',
-                'message': "This month’s payroll already exists. Would you like to "
-                           "clear existing payroll data and run payroll again?",
+                'message': self._exists_message(existing, config),
             }
         # Run the mutations as sudo: on the shared demo the acting user can create
         # and compute payslips but not *unlink* them (record rules), so cleaning a
