@@ -183,6 +183,40 @@ class TestRunTotals(TransactionCase):
         self.assertEqual(self.run.pb_total_gross, 9500.0)
         self.assertEqual(self.run.pb_total_deductions, 0.0)
 
+    def test_deductions_signed_both_ways_add_up_rather_than_cancel(self):
+        """Money taken off is taken off, however the scheme signs it.
+
+        The reference demo world writes insurance and tax as NEGATIVE amounts
+        and the mid-month advance already paid as a POSITIVE one — all three
+        are deductions. Summing the raw figures let ₫19.8bn of advance cancel
+        ₫5.9bn of insurance and tax down to ₫13.9bn, and the single abs() that
+        wrapped the total could not put back what had already cancelled.
+
+        Each deduction's own size is what it takes off, which is what the
+        employee's pay statement has always shown.
+        """
+        slip = self._slip_with({'GROSS': 10000.0})
+        self._line(slip, 'INSURANCE', 'DED', -900.0, role='deduction')
+        self._line(slip, 'ADVANCE', 'DED', 600.0, role='deduction')
+        self.assertEqual(self.run.pb_total_deductions, 1500.0,
+                         "900 off and 600 off is 1,500 off, not 300")
+
+    def test_the_balance_check_sees_the_same_deductions(self):
+        """The warning and the figure it warns about must agree.
+
+        With the signed sum, this run read gross 10,000, deductions 300 and net
+        8,500 — 1,200 unaccounted for — and the banner would have blamed a
+        scheme that is in fact correct.
+        """
+        slip = self._slip_with({'GROSS': 10000.0})
+        self._line(slip, 'INSURANCE', 'DED', -900.0, role='deduction')
+        self._line(slip, 'ADVANCE', 'DED', 600.0, role='deduction')
+        self._line(slip, 'TAKEHOME', 'NET', 8500.0, role='net')
+        self.assertEqual(self.run.pb_total_deductions, 1500.0)
+        self.assertEqual(self.run.pb_total_net, 8500.0)
+        self.assertEqual(self.run.pb_balance_gap, 0.0)
+        self.assertTrue(self.run.pb_balance_ok)
+
     def test_the_pay_role_beats_the_category_it_was_filed_under(self):
         """A workbook-built scheme files a deduction under `ALW` as often as
         not; the scheme's own net-pay formula is the authority."""

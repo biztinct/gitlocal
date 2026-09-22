@@ -420,7 +420,19 @@ class HrPayslipRun(models.Model):
         bucket = self._pb_bucket_sql(role_aware)
         cr.execute("""
             SELECT p.payslip_run_id, """ + bucket + """ AS bucket,
-                   COALESCE(SUM(pl.total), 0)
+                   -- MONEY TAKEN OFF IS TAKEN OFF, however the scheme signs it.
+                   -- A run may carry both: the reference demo world writes
+                   -- insurance and tax as NEGATIVE amounts and the mid-month
+                   -- advance as a POSITIVE one, all of them deductions. Summing
+                   -- the raw figures let ₫19.8bn of advance cancel ₫5.9bn of
+                   -- insurance and tax down to ₫13.9bn, and one outer abs() at
+                   -- the end could not put it back. Each deduction's own size
+                   -- is what it takes off — which is what the employee's pay
+                   -- statement has always shown.
+                   COALESCE(SUM(CASE
+                       WHEN """ + bucket + """ IN ('DED', 'DEDUCTION', 'COMP',
+                                                   'ERCOST')
+                       THEN ABS(pl.total) ELSE pl.total END), 0)
             FROM hr_payslip_line pl
             JOIN hr_payslip p ON p.id = pl.slip_id AND p.state != 'cancel'
             JOIN hr_salary_rule_category c ON c.id = pl.category_id
@@ -439,9 +451,10 @@ class HrPayslipRun(models.Model):
             run.pb_total_net = d.get('NET', 0.0)
             run.pb_total_gross = d.get('GROSS') or (
                 d.get('BASIC', 0.0) + d.get('ALW', 0.0))
-            run.pb_total_deductions = abs(d.get('DED', 0.0) + d.get('DEDUCTION', 0.0)
-                                          + d.get('COMP', 0.0))
-            run.pb_total_employer_cost = abs(d.get('ERCOST', 0.0))
+            # Already summed as magnitudes in SQL, so no outer abs() here.
+            run.pb_total_deductions = (d.get('DED', 0.0) + d.get('DEDUCTION', 0.0)
+                                       + d.get('COMP', 0.0))
+            run.pb_total_employer_cost = d.get('ERCOST', 0.0)
             run._pb_set_balance(bool(d.get('NET')))
 
     def _pb_set_balance(self, has_net):
