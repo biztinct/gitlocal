@@ -144,8 +144,9 @@ class TestHolidaysFacade(TransactionCase):
     def test_a_company_with_no_working_hours_is_told_why(self):
         bare = self.env['res.company'].create({'name': 'D1 No Hours Co'})
         bare.resource_calendar_id = False
+        self.officer.write({'company_ids': [(4, bare.id)]})
         with self.assertRaises(UserError) as caught:
-            self.HolCo.add(bare.id, 'DEMO Anything',
+            self.HolCo.with_company(bare).add(bare.id, 'DEMO Anything',
                            self.today.isoformat())
         self.assertIn('working hours', str(caught.exception))
 

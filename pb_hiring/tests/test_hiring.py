@@ -319,7 +319,10 @@ class TestReferrals(HiringCase):
             req.id, self.boss.id,
             {'name': 'RIZE W2 Test Candidate',
              'email': 'rize.w2.candidate@example.com',
-             'phone': '', 'note': 'Worked with them.'})
+             'phone': '+10000000000', 'note': 'Worked with them.',
+             'consent': True, 'declaration': True, 'nationality': 'Test', 'location': 'Test',
+             'relationship': 'Former colleague', 'linkedin': 'https://example.invalid/profile',
+             'attachment': {'name':'qa.pdf','datas':'JVBERi0xLjQK','mimetype':'application/pdf'}})
         applicant = referral.applicant_id
         self.assertTrue(applicant)
         self.assertEqual(applicant.job_id.id, req.job_id.id)
@@ -331,7 +334,10 @@ class TestReferrals(HiringCase):
         referral = self.env['pb.hiring.referral'].refer(
             req.id, self.boss.id,
             {'name': 'RIZE W2 Test Candidate 2',
-             'email': 'rize.w2.candidate2@example.com'})
+             'email': 'rize.w2.candidate2@example.com', 'phone': '+10000000000',
+             'consent': True, 'declaration': True, 'nationality': 'Test', 'location': 'Test',
+             'relationship': 'Former colleague', 'linkedin': 'https://example.invalid/profile',
+             'attachment': {'name':'qa.pdf','datas':'JVBERi0xLjQK','mimetype':'application/pdf'}})
         self.assertEqual(referral.state, 'received')
         referral.applicant_id.sudo().write({'active': False})
         self.env.flush_all()

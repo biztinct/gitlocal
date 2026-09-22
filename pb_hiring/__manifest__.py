@@ -94,7 +94,7 @@ WHAT THIS MODULE IS
     them, and whether an agency is faster than doing it yourself — with the
     whole thing downloadable as a spreadsheet.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -148,6 +148,9 @@ WHAT THIS MODULE IS
         'views/portal_templates.xml',
         'views/token_templates.xml',
         'views/offer_token_templates.xml',
+        'views/journey_views.xml',
+        'views/application_templates.xml',
+        'data/journey_seed.xml',
     ],
     'assets': {
         'web.assets_backend': [

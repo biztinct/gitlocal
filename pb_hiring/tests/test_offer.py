@@ -46,6 +46,7 @@ class OfferCase(TransactionCase):
 
     def setUp(self):
         super().setUp()
+        self.env['ir.config_parameter'].sudo().set_param('pb_hiring.offer_mail', '1')
         self.company = self.env.company
         Employee = self.env['hr.employee']
         self.boss = Employee.create({

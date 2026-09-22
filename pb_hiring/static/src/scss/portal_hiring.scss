@@ -487,3 +487,21 @@
     margin-top: 0; border-color: #C7D2FE; color: #3730A3; background: #FFFFFF;
 }
 .pbhf-btn--quiet { color: #64748B; }
+
+.pb-apply { background: #f7f8fc; color: #241f52; min-height: 85vh; padding: 48px 20px 80px;
+  .pb-apply-wrap { max-width: 900px; margin: auto; }
+  .pb-apply-back { color: #5a4bb0; text-decoration: none; font-weight: 600; }
+  .pb-apply-heading { padding: 36px 0 28px; h1 { font-size: clamp(28px,4vw,42px); letter-spacing: -.035em; margin: 10px 0; } }
+  .pb-apply-eyebrow { color: #5a4bb0; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .pb-apply-card { background: white; border: 1px solid #e6e3ef; border-radius: 20px; padding: 36px; box-shadow: 0 8px 32px rgba(36,31,82,.04); }
+  .pb-apply-path { display:flex; gap: 24px; border-bottom:1px solid #e6e3ef; padding-bottom:24px; flex-wrap:wrap; a { color:#5a4bb0; text-decoration:none; font-weight:600; } }
+  section { padding:28px 0; scroll-margin-top:100px; h2 { font-size:23px; letter-spacing:-.02em; } p { color:#6d6982; } }
+  .pb-apply-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; margin-top:24px; }
+  label { display:flex; flex-direction:column; gap:8px; font-size:14px; font-weight:600; }
+  small { color:#767286; font-weight:400; }
+  input,select,textarea { width:100%; border:1px solid #dcd8e8; border-radius:9px; padding:12px; background:#fff; color:#241f52; font:inherit; font-weight:400; &:focus { outline:2px solid #cbc2ee; border-color:#5a4bb0; } }
+  .pb-apply-wide { grid-column:1/-1; }
+  footer { border-top:1px solid #e6e3ef; padding-top:24px; display:flex; align-items:center; gap:24px; justify-content:space-between; p { font-size:12px; color:#767286; max-width:360px; } }
+  .btn-primary { background:#5a4bb0; border-color:#5a4bb0; border-radius:9px; padding:12px 24px; }
+  @media(max-width:600px) { padding:24px 12px; .pb-apply-card { padding:22px; } .pb-apply-grid { grid-template-columns:1fr; } footer { flex-direction:column; align-items:stretch; } }
+}

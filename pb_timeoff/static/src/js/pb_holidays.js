@@ -44,9 +44,12 @@ export class PbHolidays extends Component {
     setup() {
         this.orm = useService("orm");
         this.notif = useService("notification");
+        this.action = useService("action");
         this.ic = ic;
         this.state = useState({
             loaded: false,
+            view: "month", month: new Date().getMonth(), company: "all", workspace: {batches:[],policies:[]},
+            importing: null, importBusy: false,
             busy: false,
             data: null,
             year: false,
@@ -63,6 +66,7 @@ export class PbHolidays extends Component {
             this.state.data = await this.orm.call(MODEL, "year",
                                                   [this.state.year]);
             this.state.year = this.state.data.year;
+            this.state.workspace = await this.orm.call(MODEL, "import_workspace", [this.state.year]);
         } catch (e) {
             this.notif.add(this._err(e), { type: "danger" });
         } finally {
@@ -73,7 +77,7 @@ export class PbHolidays extends Component {
 
     // ------------------------------------------------------------- getters
     get d() { return this.state.data || {}; }
-    get columns() { return this.d.companies || []; }
+    get columns() { return (this.d.companies || []).filter(c => this.state.company === "all" || String(c.id) === this.state.company); }
     get years() { return this.d.years || []; }
     get canEdit() { return !!this.d.can_edit; }
 
@@ -116,6 +120,41 @@ export class PbHolidays extends Component {
         return counted(col.count, _t("day off"), _t("days off"));
     }
 
+    get monthLabel() { return new Date(this.state.year, this.state.month, 1).toLocaleDateString(undefined, {month:"long", year:"numeric"}); }
+    get calendarDays() {
+        const first = new Date(this.state.year, this.state.month, 1);
+        const offset = (first.getDay() + 6) % 7;
+        return Array.from({length:42}, (_,index) => {
+            const day = new Date(this.state.year, this.state.month, index - offset + 1);
+            const iso = `${day.getFullYear()}-${String(day.getMonth()+1).padStart(2,"0")}-${String(day.getDate()).padStart(2,"0")}`;
+            const events = this.columns.flatMap(col => col.rows.filter(r => r.date <= iso && (r.date_to || r.date) >= iso).map(r => ({...r,company:col.name,country:col.country_code})));
+            return {iso, day:day.getDate(), current:day.getMonth() === this.state.month, today:iso === this.d.today, events};
+        });
+    }
+    changeMonth(delta) { const date = new Date(this.state.year, this.state.month + delta, 1); this.state.month = date.getMonth(); if (date.getFullYear() !== this.state.year) this.pickYear(date.getFullYear()); }
+    startImport(companyId) { this.state.importing = {company_id:String(companyId || this.columns[0]?.id || ""),source:"",lines:"",batch:null,ack:false}; }
+    async prepareImport(useSource=false) {
+        const form = this.state.importing; if (this.state.importBusy) return;
+        this.state.importBusy = true;
+        try { form.batch = await this.orm.call(MODEL,"prepare_import",[Number(form.company_id),this.state.year,useSource ? "Supplied 2026 workbook · country sheets" : form.source,form.lines,useSource]); }
+        catch(e) { this.notif.add(this._err(e),{type:"danger"}); }
+        finally { this.state.importBusy = false; }
+    }
+    openBatch(batch) { this.state.importing = {batch:JSON.parse(JSON.stringify(batch)),ack:false}; }
+    get importReady() { const form=this.state.importing; return !!(form?.batch && form.ack && form.batch.rows.every(r=>r.decision !== "review") && form.batch.rows.some(r=>r.decision === "include")); }
+    async saveImport(publish=false) {
+        const form=this.state.importing; if (this.state.importBusy || (publish && !this.importReady)) return;
+        this.state.importBusy=true;
+        try {
+            await this.orm.call(MODEL,"resolve_import",[form.batch.id,Object.fromEntries(form.batch.rows.map(r=>[String(r.id),r.decision]))]);
+            if (publish) { const result=await this.orm.call(MODEL,"publish_import",[form.batch.id]); this.notif.add(`${result.added} holidays published to the calendar.`,{type:"success"}); }
+            else this.notif.add("Review decisions saved. The calendar has not changed.",{type:"success"});
+            this.state.importing=null;await this.load();
+        } catch(e) { this.notif.add(this._err(e),{type:"danger"}); }
+        finally { this.state.importBusy=false; }
+    }
+    async editPolicies() { try {await this.action.doAction(await this.orm.call(MODEL,"policy_action",[]));} catch(e) {this.notif.add(this._err(e),{type:"danger"});} }
+
     // -------------------------------------------------------------- year
     pickYear(year) {
         if (year === this.state.year) { return; }
@@ -129,10 +168,7 @@ export class PbHolidays extends Component {
         this.state.dialog = { mode: "one", companyId };
     }
 
-    openMany(companyId) {
-        this.state.form = { name: "", date_from: "", date_to: "", lines: "" };
-        this.state.dialog = { mode: "many", companyId };
-    }
+    openMany(companyId) { this.startImport(companyId); }
 
     closeDialog() { this.state.dialog = null; }
 

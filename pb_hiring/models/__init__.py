@@ -29,3 +29,5 @@ from . import (
     pb_hiring_a3,
     hiring_automation,
 )
+
+from . import journey

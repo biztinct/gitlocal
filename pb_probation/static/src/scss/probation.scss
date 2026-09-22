@@ -546,3 +546,14 @@
         .prb-stage:nth-child(2)::after { display: none; }
     }
 }
+
+.prb-review-gate { background:var(--pbim-soft,#EDEAF8); border:1px solid var(--pbim-line,#e2dfed); border-radius:14px; padding:22px; margin:18px 0; h3 {font-size:20px;letter-spacing:-.025em;color:var(--pbim-ink,#241F52);} p {font-size:13px;line-height:1.7;color:var(--pbim-text,#334155);} }
+.prb-manager-assessment {padding:22px;border:1px solid var(--pbim-line,#e2dfed);border-radius:14px;margin-bottom:24px;h3 {font-size:20px;letter-spacing:-.02em;}p {font-size:12px;color:var(--pbim-muted);}label {display:block;margin:16px 0;}select {width:100%;margin-top:8px;}}
+
+.prb .prb-journey-hero { padding:28px 30px; margin-bottom:20px; border:1px solid var(--pbim-border,#e5e7eb); border-radius:20px; background:var(--pbim-surface,#fff); }
+.prb .prb-journey-hero > span { font-size:10px; font-weight:700; letter-spacing:.14em; color:var(--pbim-accent,#5A4BB0); }
+.prb .prb-journey-hero h2 { margin:10px 0; font-size:28px; letter-spacing:-.04em; }
+.prb .prb-journey-hero p { color:var(--pbim-muted,#687082); }
+.prb .prb-journey-hero ol { display:flex; flex-wrap:wrap; gap:12px 28px; list-style:none; counter-reset:review; padding:16px 0 0; margin:18px 0 0; border-top:1px solid var(--pbim-border,#e5e7eb); }
+.prb .prb-journey-hero li { counter-increment:review; font-size:12px; display:flex; align-items:center; gap:8px; }
+.prb .prb-journey-hero li::before { content:counter(review); width:24px; height:24px; display:grid; place-items:center; border-radius:50%; color:var(--pbim-accent,#5A4BB0); background:#efecf8; font-weight:700; }

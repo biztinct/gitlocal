@@ -42,8 +42,7 @@ _PROBLEMS = {
     'size': _("That file is bigger than 5 MB. Send a smaller one, or leave "
               "it out and email it to the recruiter."),
     'type': _("Attach a PDF or a Word document."),
-    'denied': _("That could not be saved. Try again, and tell the HR team if "
-                "it keeps happening."),
+    'denied': _("Complete all candidate fields, attach the resume, and confirm consent and the relationship declaration."),
 }
 
 
@@ -66,6 +65,7 @@ class PbHiringPortal(CustomerPortal):
         return request.env['pb.hiring.requisition'].sudo().search([
             ('state', '=', 'open'),
             ('referral_open', '=', True),
+            ('role_type', '!=', 'sensitive_replacement'),
             ('company_id', 'in', co_ids),
         ], order='opened_on desc, id desc', limit=60)
 
@@ -274,7 +274,9 @@ class PbHiringPortal(CustomerPortal):
             request.env['pb.hiring.referral'].refer(
                 role_id, emp.id,
                 {'name': name, 'email': email, 'phone': phone, 'note': note,
-                 'attachment': attachment})
+                 'attachment': attachment,
+                 'consent': post.get('consent') == 'yes', 'declaration': post.get('declaration') == 'yes',
+                 **{key: (post.get(key) or '').strip()[:500] for key in ('nationality', 'location', 'relationship', 'linkedin')}})
         except ValueError:
             # The role is not open, or is another company's. Said plainly,
             # never as a traceback.

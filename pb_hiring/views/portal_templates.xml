@@ -188,7 +188,9 @@
             <div class="pbme-card-title">Who do you have in mind?</div>
             <form action="/my/refer/submit" method="post"
                   enctype="multipart/form-data">
-              <input type="hidden" name="csrf_token"
+              <div class="pbhr-referrer-summary"><h3>Your details</h3><p><strong t-esc="employee.name"/> · <t t-esc="employee.work_email or employee.user_id.email"/></p><p><t t-esc="employee.department_id.name"/> · <t t-esc="employee.job_title"/> · <t t-esc="employee.employee_type"/> · <t t-esc="employee.company_id.name"/></p></div>
+              <label class="pbhr-f"><span>Has the candidate consented to this referral?</span><select name="consent" required="required" class="pbhr-in"><option value="">Choose one</option><option value="yes">Yes</option><option value="no">No — obtain consent before submitting</option></select></label>
+<input type="hidden" name="csrf_token"
                      t-att-value="request.csrf_token()"/>
               <div class="pbme-form-grid">
                 <label class="pbme-form-wide">
@@ -215,22 +217,22 @@
                 </label>
                 <label>
                   <span class="pbme-flabel">Their phone</span>
-                  <input type="text" name="phone" maxlength="40"
+                  <input required="required" type="text" name="phone" maxlength="40"
                          placeholder="Optional if you gave an email"/>
                 </label>
                 <label>
                   <span class="pbme-flabel">Their CV</span>
-                  <input type="file" name="cv"
+                  <input required="required" type="file" name="cv"
                          accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
                   <span class="pbhr-hint">PDF or Word, up to 5 MB. Optional.</span>
                 </label>
-                <label class="pbme-form-wide">
+                <label class="pbhr-f"><span>Candidate nationality</span><input class="pbhr-in" type="text" name="nationality" required="required" maxlength="500"/></label><label class="pbhr-f"><span>Candidate current location</span><input class="pbhr-in" type="text" name="location" required="required" maxlength="500"/></label><label class="pbhr-f"><span>Relationship with candidate</span><input class="pbhr-in" type="text" name="relationship" required="required" maxlength="500"/></label><label class="pbhr-f"><span>Candidate LinkedIn profile URL</span><input class="pbhr-in" type="url" name="linkedin" required="required" maxlength="500"/></label><label class="pbme-form-wide">
                   <span class="pbme-flabel">Why they would be good</span>
                   <textarea name="note" rows="4" maxlength="2000"
                             placeholder="One real example beats three adjectives. What have you seen them do?"/>
                 </label>
               </div>
-              <button type="submit" class="pbme-btn pbhr-submit">
+              <label class="pbhr-declaration"><input type="checkbox" name="declaration" value="yes" required="required"/> I confirm that I have declared any personal or familial relationship with the candidate above. I understand that I must not be part of the interview panel if I have referred this candidate.</label><button type="submit" class="pbme-btn pbhr-submit">
                 <t t-call="pb_hiring.hr_icon">
                   <t t-set="icon" t-value="'send'"/>
                   <t t-set="isz" t-value="15"/>

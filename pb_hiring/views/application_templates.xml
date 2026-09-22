@@ -1,0 +1,32 @@
+<odoo>
+  <template id="application_journey" name="Application journey"><t t-call="website.layout">
+    <main class="pb-apply"><div class="pb-apply-wrap">
+      <a href="/jobs" class="pb-apply-back">← All opportunities</a>
+      <div class="pb-apply-heading"><span class="pb-apply-eyebrow" t-esc="brand"/><h1 t-esc="job.name"/><p>A meaningful next step starts with a conversation.</p></div>
+      <section t-if="done" class="pb-apply-card"><span class="pb-apply-eyebrow">Application received</span><h2>Thank you for introducing yourself.</h2><p>Our talent team will review your application and get in touch about the next step.</p><a href="/jobs" class="btn btn-primary">Explore other opportunities</a></section>
+      <form t-else="" t-att-action="'/hiring/apply/%s' % job.id" method="post" enctype="multipart/form-data" class="pb-apply-card">
+        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+        <div class="d-none" aria-hidden="true"><input name="company_website" tabindex="-1" autocomplete="off"/></div>
+        <div t-if="error" class="alert alert-danger" role="alert" t-esc="error"/>
+        <nav class="pb-apply-path" aria-label="Application sections"><a href="#personal">01 · About you</a><a href="#profile">02 · Your experience</a><a href="#fit">03 · Role fit</a></nav>
+        <section id="personal"><h2>Let’s start with you</h2><p>Use the contact details where we can reach you.</p><div class="pb-apply-grid">
+          <label>Full name<input name="name" required="required" autocomplete="name" t-att-value="values.get('name')"/></label>
+          <label>Email address<input type="email" name="email" required="required" autocomplete="email" t-att-value="values.get('email')"/></label>
+          <label>Phone number<input type="tel" name="phone" required="required" autocomplete="tel" t-att-value="values.get('phone')"/></label>
+          <label>Country / current location<input name="location" required="required" t-att-value="values.get('location')"/></label>
+        </div></section>
+        <section id="profile"><h2>Your professional profile</h2><p>Help us understand your experience and the work you’re proud of.</p><div class="pb-apply-grid">
+          <label>LinkedIn profile URL<input name="linkedin" type="url" placeholder="https://linkedin.com/in/…" required="required" t-att-value="values.get('linkedin')"/></label>
+          <label>Website / portfolio <small>Optional</small><input name="portfolio" type="url" t-att-value="values.get('portfolio')"/></label>
+          <label class="pb-apply-wide">Resume / CV <small>PDF or Word · maximum 5 MB</small><input name="cv" type="file" accept=".pdf,.doc,.docx" required="required"/></label>
+        </div></section>
+        <section id="fit"><h2>A few things about the role</h2><div class="pb-apply-grid">
+          <label>Do you currently have the right to work in <t t-esc="role_country"/>?<select name="authorization" required="required"><option value="">Choose your current status</option><option t-foreach="authorizations" t-as="choice" t-att-value="choice[0]" t-att-selected="values.get('authorization') == choice[0]" t-esc="choice[1]"/></select></label>
+          <label>Are you willing to relocate to <t t-esc="role_location"/> if required?<select name="relocation" required="required"><option value="">Choose one</option><option t-foreach="relocations" t-as="choice" t-att-value="choice[0]" t-att-selected="values.get('relocation') == choice[0]" t-esc="choice[1]"/></select></label>
+          <label class="pb-apply-wide">Why are you interested in joining <t t-esc="brand"/>?<small>150–250 words. Tell us what interests you and what you would bring.</small><textarea name="motivation" rows="7" required="required" maxlength="12000" t-esc="values.get('motivation', '')"/></label>
+        </div></section>
+        <footer><p>Your application is shared with the recruitment team for this role.</p><button class="btn btn-primary" type="submit">Send my application →</button></footer>
+      </form>
+    </div></main>
+  </t></template>
+</odoo>

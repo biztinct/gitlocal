@@ -8,7 +8,7 @@ Run it inside an Odoo shell against the tenant you mean::
         < tools/pb_demo_seed_cli.py
 
 The action is taken from the ``PB_DEMO_ACTION`` environment variable — ``load``,
-``remove``, ``status`` or ``mapping`` — because an Odoo shell script has no
+``remove``, ``status``, ``mapping``, ``lifecycle-load`` or ``lifecycle-remove`` — because an Odoo shell script has no
 argv of its own. ``status`` is the default, so running it by accident tells you
 what is there rather than changing it.
 
@@ -120,7 +120,23 @@ def mapping(env):
     return report
 
 
-ACTIONS = {'status': status, 'load': load, 'remove': remove,
+def lifecycle_load(env):
+    from odoo.addons.pb_demo_seed.seeds.lifecycle import load
+    seed = load(env)
+    env.cr.commit()
+    print('Lifecycle demo: %s registered records.' % seed.record_count)
+    return seed
+
+
+def lifecycle_remove(env):
+    from odoo.addons.pb_demo_seed.seeds.lifecycle import remove
+    result = remove(env)
+    env.cr.commit()
+    print('Lifecycle demo removal (removed, disabled, blocked): %s' % (result,))
+    return result
+
+
+ACTIONS = {'lifecycle-load': lifecycle_load, 'lifecycle-remove': lifecycle_remove, 'status': status, 'load': load, 'remove': remove,
            'mapping': mapping}
 
 # NO `if __name__ == "__main__"` GUARD, deliberately. This file is piped into

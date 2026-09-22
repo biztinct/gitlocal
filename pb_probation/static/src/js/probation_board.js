@@ -96,7 +96,7 @@ export class PbProbationBoard extends Component {
 
             // the open person
             drawer: null,
-            drawerBusy: false,
+            drawerBusy: false, reviewNote: "", reviewBusy: false,
 
             // dialogs — one at a time, each one plain state
             nominating: null,
@@ -293,6 +293,13 @@ export class PbProbationBoard extends Component {
         }
     }
 
+    async reviewRecommendation(decision) {
+        if (this.state.reviewBusy) return;
+        this.state.reviewBusy = true;
+        const result = await this.call("review_recommendation", [this.state.drawer.row.review_id, decision, this.state.reviewNote]);
+        this.state.reviewBusy = false;
+        if (result) { this.notif.add(result.note, {type:"success"}); this.state.reviewNote = ""; await this.refresh(); }
+    }
     closeDrawer() { this.state.drawer = null; }
 
     // =====================================================================
@@ -307,6 +314,9 @@ export class PbProbationBoard extends Component {
             chosen: [],
             busy: true,
         };
+        const person = await this.orm.call("pb.probation", "get_person", [row.id]);
+        this.state.minNominees = person.sop?.peer_min || 3;
+        this.state.maxNominees = person.sop?.peer_max || 4;
         await this.loadNominees();
     }
 
@@ -348,7 +358,7 @@ export class PbProbationBoard extends Component {
         }
         if (n.chosen.length >= this.state.maxNominees) {
             this.notif.add(
-                _t("That is already %s colleagues. Past five, people assume somebody else will answer and nobody does.",
+                _t("This policy allows up to %s colleagues.",
                    this.state.maxNominees),
                 { type: "warning" });
             return;
@@ -457,7 +467,7 @@ export class PbProbationBoard extends Component {
             who: row.employee,
             step: 1,
             report: "",
-            avg: 0,
+            avg: 0, scale: 4, ratings: {quality:"",culture:"",adaptability:"",initiative:"",leadership:""}, leadership: false, improvementPlan: "",
             strengths: "",
             improvements: "",
             verdict: "",
@@ -472,6 +482,10 @@ export class PbProbationBoard extends Component {
             if (v) {
                 v.report = person.report || "";
                 v.avg = person.avg_rating || 0;
+                v.scale = person.sop?.scale || 5;
+                v.ratings = person.sop?.ratings || v.ratings;
+                v.leadership = person.sop?.leadership || false;
+                v.improvementPlan = person.sop?.improvement_plan || "";
                 v.strengths = person.strengths || "";
                 v.improvements = person.improvements || "";
             }
@@ -525,6 +539,8 @@ export class PbProbationBoard extends Component {
         const v = this.state.verdicting;
         if (!v || v.busy || !v.verdict || this.verdictBlocked) { return; }
         v.busy = true;
+        const saved = await this.call("save_manager_evaluation", [v.reviewId, {...v.ratings}, v.leadership, v.improvementPlan]);
+        if (!saved) { v.busy = false; return; }
         const res = await this.call(
             "save_verdict",
             [v.reviewId, v.verdict, v.strengths || false,
@@ -536,7 +552,7 @@ export class PbProbationBoard extends Component {
                 fail: _t("Recorded. Nothing about their leaving has been started — that is a separate button."),
             }[v.verdict];
             this.state.verdicting = null;
-            this.notif.add(done, { type: "success" });
+            this.notif.add(res.note || done, { type: "success" });
             await this.refresh();
         } else if (this.state.verdicting) {
             this.state.verdicting.busy = false;

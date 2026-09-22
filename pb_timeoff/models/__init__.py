@@ -10,3 +10,5 @@ from . import hr_leave_approval
 from . import leave_rules
 from . import pb_holidays
 from . import carry_watch
+
+from . import holiday_journey

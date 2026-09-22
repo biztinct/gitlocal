@@ -96,3 +96,6 @@ access_pb_hiring_cover_admin,Cover head of hiring,model_pb_hiring_cover,pb_hirin
 access_pb_hiring_cover_system,Cover system,model_pb_hiring_cover,base.group_system,1,1,1,1
 access_pb_letter_template_hiring_user,Letter wording recruiter,pb_lifecycle.model_pb_letter_template,pb_hiring.group_hiring_user,1,0,0,0
 access_pb_letter_template_hiring_admin,Letter wording head of hiring,pb_lifecycle.model_pb_letter_template,pb_hiring.group_hiring_admin,1,1,0,0
+access_hiring_message_user,Hiring email templates,model_pb_hiring_message_template,pb_hiring.group_hiring_user,1,0,0,0
+access_hiring_message_admin,Hiring email templates admin,model_pb_hiring_message_template,pb_hiring.group_hiring_admin,1,1,1,1
+access_hiring_message_system,Hiring email templates system,model_pb_hiring_message_template,base.group_system,1,1,1,1

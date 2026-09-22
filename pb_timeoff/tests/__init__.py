@@ -4,3 +4,4 @@ from . import test_leave_approval
 from . import test_holidays
 from . import test_leave_rules
 from . import test_carry_watch
+from . import test_holiday_journey

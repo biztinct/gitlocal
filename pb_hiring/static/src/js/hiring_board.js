@@ -99,6 +99,9 @@ export class PbHiringBoard extends Component {
 
         this.state = useState({
             loaded: false,
+            journey: { stages: [], managers: [], users: [], currencies: [], company_sections: [] },
+            journeyFocus: "all", drawerSection: "candidates", stageMove: null, messageForm: null,
+            savingRequest: false,
             allowed: true,
             canWrite: false,
             canRecruit: false,
@@ -198,6 +201,7 @@ export class PbHiringBoard extends Component {
     async load() {
         try {
             const d = await this.orm.call("pb.hiring", "get_board", []);
+            if (d.allowed) { this.state.journey = await this.orm.call("pb.hiring", "journey_options", []); }
             Object.assign(this.state, {
                 allowed: d.allowed,
                 canWrite: d.can_write,
@@ -252,6 +256,11 @@ export class PbHiringBoard extends Component {
     get filtered() {
         const q = (this.state.q || "").trim().toLowerCase();
         return this.state.rows.filter((r) => {
+            const jf = this.state.journeyFocus;
+            if (jf === "request" && !["draft", "submitted", "manager_ok", "hr_ok"].includes(r.state)) return false;
+            if (jf === "publish" && (r.state !== "open" || r.published)) return false;
+            if (jf === "recruit" && r.state !== "open") return false;
+            if (jf === "joined" && r.state !== "filled") return false;
             if (this.state.dept !== "all"
                 && String(r.department_id) !== String(this.state.dept)) {
                 return false;
@@ -305,10 +314,12 @@ export class PbHiringBoard extends Component {
 
     // ---------------------------------------------------------------- drawer
     async openDrawer(id) {
+        const changedRole = this.state.drawer?.id !== id;
         this.state.drawerBusy = true;
         try {
             this.state.drawer = await this.orm.call(
                 "pb.hiring", "get_requisition", [id]);
+            if (changedRole) this.state.drawerSection = this.state.drawer.state === "open" ? "candidates" : "request";
         } catch (e) {
             this.fail(e);
         } finally {
@@ -359,8 +370,50 @@ export class PbHiringBoard extends Component {
         this.state.raising = {
             title: "", role_type: "new_role", department_id: "",
             headcount: 1, budget_cost: 0, location: "",
-            country_id: "", target_start_date: "", requirements: "",
+            country_id: "", target_close_date: "", requirements: "",
+            step: 0, role_level: "", reporting_manager_id: "", currency_id: this.state.journey.currency_id,
+            assignment: false, jd_file: "", jd_filename: "", assignment_file: "", assignment_filename: "",
+            interviews: [1,2,3].map(() => ({ owner_id: "", focus: "" })),
         };
+    }
+
+    validateRequestStep() {
+        const f = this.state.raising;
+        let warning = "";
+        if (!f.title.trim() || !f.department_id || !f.country_id) warning = "Add the role title, department and country.";
+        else if (f.step >= 1 && (!f.reporting_manager_id || !f.role_level.trim() || (!f.requirements.trim() && !f.jd_file))) warning = "Add the reporting manager, role level and a role description or JD attachment.";
+        else if (f.step >= 2 && f.interviews.some(r => !r.owner_id || !r.focus.trim())) warning = "Choose an interviewer and focus for each discussion.";
+        else if (f.step >= 3 && (!f.target_close_date || !f.currency_id || Number(f.budget_cost) <= 0)) warning = "Add a target closing date and a positive annual budget with its currency.";
+        if (warning) { this.notif.add(warning, {type: "warning"}); return false; }
+        return true;
+    }
+    nextRequestStep() { if (this.validateRequestStep()) this.state.raising.step++; }
+    async requestUpload(event, kind) {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (file.size > 10 * 1024 * 1024 || !/\.(pdf|docx?)$/i.test(file.name)) {
+            this.notif.add("Use a PDF or Word document smaller than 10 MB.", {type: "warning"}); event.target.value = ""; return;
+        }
+        const data = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result.split(",")[1]); reader.onerror = reject; reader.readAsDataURL(file); });
+        this.state.raising[kind + "_file"] = data;
+        this.state.raising[kind + "_filename"] = file.name;
+    }
+    chooseJourney(key) { this.state.journeyFocus = key; this.state.focus = ""; this.state.tab = "roles"; }
+    startStageMove(candidate) { this.state.stageMove = {applicant_id: candidate.id, name: candidate.name, stage_id: "", reason: "", update_date: ""}; }
+    async saveStageMove() { const res = await this.act("journey_stage", {...this.state.stageMove}); if (res) this.state.stageMove = null; }
+    startMessage(candidate) { this.state.messageForm = {applicant_id: candidate.id, name: candidate.name, key: "phone", values: {}, preview: null, busy: false}; }
+    get messageFields() {
+        return this.state.journey.message_fields?.[this.state.messageForm?.key] || [];
+    }
+    async previewMessage() {
+        const f = this.state.messageForm;
+        f.preview = await this.act("message_preview", {applicant_id: f.applicant_id, key: f.key, values: {...f.values}}, {reload: false, silent: true});
+    }
+    async sendMessage() {
+        const f = this.state.messageForm;
+        if (f.busy) return; f.busy = true;
+        const result = await this.act("message_send", {applicant_id: f.applicant_id, key: f.key, values: {...f.values}}, {reload: false});
+        f.busy = false; if (result) this.state.messageForm = null;
     }
 
     cancelRaise() { this.state.raising = null; }
@@ -373,7 +426,10 @@ export class PbHiringBoard extends Component {
                 { type: "warning" });
             return;
         }
+        if (this.state.savingRequest || !this.validateRequestStep()) return;
+        this.state.savingRequest = true;
         const res = await this.act("create", { ...form });
+        this.state.savingRequest = false;
         if (res) {
             this.state.raising = null;
             if (res.id) { await this.openDrawer(res.id); }
@@ -383,7 +439,7 @@ export class PbHiringBoard extends Component {
     // ---------------------------------------------------------- the advert
     startJd() {
         const d = this.state.drawer;
-        this.state.writingJd = { title: d ? d.title : "", summary: "", body: "" };
+        this.state.writingJd = { title: d ? d.title : "", summary: "", body: "", sections: {role: "", duties: "", must: "", nice: "", process: ""} };
     }
 
     cancelJd() { this.state.writingJd = null; }
@@ -394,7 +450,7 @@ export class PbHiringBoard extends Component {
         if (!d) { return; }
         const res = await this.act("new_jd", {
             requisition_id: d.id, title: form.title,
-            summary: form.summary, body: form.body,
+            summary: form.summary, body: form.body, sections: {...form.sections},
         });
         if (res) { this.state.writingJd = null; }
     }

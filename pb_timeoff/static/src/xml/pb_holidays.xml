@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <templates xml:space="preserve">
 
   <t t-name="pb_timeoff.PbHolidays">
@@ -25,18 +25,14 @@
             <span class="pbhd-headline__tx" t-esc="headline"/>
           </div>
           <div class="pbhd-years" role="group" aria-label="Year">
-            <button t-foreach="years" t-as="y" t-key="y"
-                    class="pbhd-year"
-                    t-att-class="{ 'is-on': y === state.year }"
-                    t-att-aria-current="y === state.year ? 'true' : false"
-                    t-on-click="() => this.pickYear(y)">
+            <button t-foreach="years" t-as="y" t-key="y" class="pbhd-year" t-att-class="{ 'is-on': y === state.year }" t-att-aria-current="y === state.year ? 'true' : false" t-on-click="() =&gt; this.pickYear(y)">
               <span t-esc="y"/>
             </button>
           </div>
         </div>
 
         <!-- ========================= the columns ========================= -->
-        <div class="pbhd-cols">
+        <div class="pbhd-journey-bar"><div class="pbhd-view-tabs"><button t-foreach="[{key:'month',label:'Monthly calendar'},{key:'compare',label:'Compare entities'},{key:'imports',label:'Review &amp; publish'},{key:'policies',label:'Leave policy reference'}]" t-as="view" t-key="view.key" t-att-class="{on:state.view === view.key}" t-on-click="() =&gt; state.view = view.key"><t t-esc="view.label"/></button></div><select class="pbhd-select" aria-label="Filter by entity" t-model="state.company"><option value="all">All entities</option><option t-foreach="d.companies or []" t-as="company" t-key="company.id" t-att-value="'' + company.id" t-esc="company.name"/></select><button t-if="canEdit" class="pbim-btn primary" t-on-click="() =&gt; this.startImport()">Import calendar</button></div><section t-if="state.view === 'month'" class="pbhd-month-panel"><div class="pbhd-month-head"><div><span class="pbim-eyebrow">PLAN TOGETHER</span><h2 t-esc="monthLabel"/></div><div><button class="pbim-btn ghost" aria-label="Previous month" t-on-click="() =&gt; this.changeMonth(-1)">←</button><button class="pbim-btn ghost" aria-label="Next month" t-on-click="() =&gt; this.changeMonth(1)">→</button></div></div><div class="pbhd-calendar-scroll"><div class="pbhd-month-grid"><b t-foreach="['Mon','Tue','Wed','Thu','Fri','Sat','Sun']" t-as="weekday" t-key="weekday" class="pbhd-weekday" t-esc="weekday"/><div t-foreach="calendarDays" t-as="day" t-key="day.iso" class="pbhd-day" t-att-class="{outside:!day.current,today:day.today}"><span class="pbhd-day-number" t-esc="day.day"/><div t-foreach="day.events" t-as="event" t-key="event.id" class="pbhd-day-event" t-att-class="{collective:event.kind === 'collective'}" t-att-title="event.company + ' · ' + event.name"><small t-esc="event.country"/><b t-esc="event.name"/></div></div></div></div><p class="pbhd-legend">Public and company holidays · <span>Collective leave</span> · Calendar entries affect working-day calculations.</p></section><section t-if="state.view === 'imports'" class="pbhd-review-panel"><span class="pbim-eyebrow">A CONSIDERED CALENDAR</span><h2>Review once. Plan with confidence.</h2><p>Import a draft, resolve differences, then publish to the working calendar. Each version keeps its source and decisions.</p><div t-if="!state.workspace.batches.length" class="pbim-empty">No calendar versions yet. Import a calendar to start a review.</div><div t-foreach="state.workspace.batches" t-as="batch" t-key="batch.id" class="pbhd-version"><div><b t-esc="batch.name"/><p t-esc="batch.source"/></div><span class="pbim-badge" t-esc="batch.state === 'published' ? 'Published' : 'In review'"/><button class="pbim-btn ghost" t-on-click="() =&gt; this.openBatch(batch)">Open version →</button></div></section><section t-if="state.view === 'policies'" class="pbhd-review-panel"><div class="pbhd-month-head"><div><span class="pbim-eyebrow">POLICY REFERENCE</span><h2>Leave, clearly explained.</h2></div><button t-if="canEdit" class="pbim-btn ghost" t-on-click="editPolicies">Manage reference</button></div><p>This reference does not change leave allocations. Entries marked “HR review needed” are draft source information.</p><div t-if="!state.workspace.policies.length" class="pbim-empty">Add your company’s leave policy reference to make it available here.</div><div class="pbhd-policy-scroll"><table t-if="state.workspace.policies.length" class="pbhd-policy-table"><thead><tr><th>Leave category</th><th>Country</th><th>Entitlement</th><th>Carry-forward / rule</th><th>Review</th></tr></thead><tbody><tr t-foreach="state.workspace.policies" t-as="policy" t-key="policy.id"><td t-esc="policy.name"/><td t-esc="policy.country"/><td t-esc="policy.entitlement"/><td t-esc="policy.carry_rule"/><td t-esc="policy.reviewed ? 'HR reviewed' : 'HR review needed'"/></tr></tbody></table></div></section><div class="pbhd-cols" t-if="state.view === 'compare'">
           <section t-foreach="columns" t-as="col" t-key="col.id" class="pbhd-col">
 
             <header class="pbhd-col__h">
@@ -56,20 +52,17 @@
               <span class="pbhd-empty__ic" t-out="ic('calendar', 26)"/>
               <div class="pbhd-empty__t" t-esc="columnNote(col)"/>
               <div t-if="canEdit and col.has_calendar" class="pbhd-empty__do">
-                <button class="pbim-btn pbim-btn-sm"
-                        t-on-click="() => this.openMany(col.id)">
+                <button class="pbim-btn pbim-btn-sm" t-on-click="() =&gt; this.openMany(col.id)">
                   <span t-out="ic('plus', 14)"/><span>Paste the year in</span>
                 </button>
-                <button class="pbhd-link" t-on-click="() => this.openOne(col.id)">
+                <button class="pbhd-link" t-on-click="() =&gt; this.openOne(col.id)">
                   or add one day
                 </button>
               </div>
             </div>
 
             <ul t-else="" class="pbhd-list">
-              <li t-foreach="col.rows" t-as="row" t-key="row.id"
-                  class="pbhd-row"
-                  t-att-class="{ 'is-past': row.is_past, 'is-today': row.is_today }">
+              <li t-foreach="col.rows" t-as="row" t-key="row.id" class="pbhd-row" t-att-class="{ 'is-past': row.is_past, 'is-today': row.is_today }">
                 <span class="pbhd-date">
                   <span class="pbhd-date__d" t-esc="row.day"/>
                   <span class="pbhd-date__m" t-esc="row.month"/>
@@ -78,13 +71,11 @@
                   <span class="pbhd-row__n" t-esc="row.name"/>
                   <span class="pbhd-row__m">
                     <t t-esc="row.weekday"/>
-                    <t t-if="row.days > 1"> · <t t-esc="row.days"/> days</t>
+                    <t t-if="row.days &gt; 1"> · <t t-esc="row.days"/> days</t>
                   </span>
                 </span>
                 <span t-if="row.is_today" class="pbhd-today">Today</span>
-                <button t-if="canEdit" class="pbhd-x" title="Take this day off the calendar"
-                        aria-label="Take this day off the calendar"
-                        t-on-click="() => this.remove(row)">
+                <button t-if="canEdit" class="pbhd-x" title="Take this day off the calendar" aria-label="Take this day off the calendar" t-on-click="() =&gt; this.remove(row)">
                   <span t-out="ic('x', 13)"/>
                 </button>
               </li>
@@ -95,12 +86,11 @@
                  with nothing on it was offering "Paste the year in" and
                  "Add a day / Paste a list" underneath it, and a company
                  with no working hours said the same sentence twice. -->
-            <footer t-if="canEdit and col.has_calendar and col.rows.length"
-                    class="pbhd-col__f">
-              <button class="pbim-btn pbim-btn-sm" t-on-click="() => this.openOne(col.id)">
+            <footer t-if="canEdit and col.has_calendar and col.rows.length" class="pbhd-col__f">
+              <button class="pbim-btn pbim-btn-sm" t-on-click="() =&gt; this.openOne(col.id)">
                 <span t-out="ic('plus', 14)"/><span>Add a day</span>
               </button>
-              <button class="pbhd-link" t-on-click="() => this.openMany(col.id)">
+              <button class="pbhd-link" t-on-click="() =&gt; this.openMany(col.id)">
                 Paste a list
               </button>
             </footer>
@@ -113,9 +103,8 @@
            CHILD (R114); the modal carries no padding of its own, which is why
            the head / body / foot rails are used rather than free-form
            content (R45). -->
-      <div t-if="state.dialog" class="pbim pbim-modal-scrim"
-           t-on-click="() => this.closeDialog()">
-        <div class="pbim-modal is-narrow" t-on-click.stop="() => {}">
+      <div t-if="state.dialog" class="pbim pbim-modal-scrim" t-on-click="() =&gt; this.closeDialog()">
+        <div class="pbim-modal is-narrow" t-on-click.stop="() =&gt; {}">
           <div class="pbim-modal__head">
             <div>
               <div class="pbim-modal__ttl">
@@ -125,8 +114,7 @@
               <div class="pbim-modal__sub" t-esc="dialogCompany.name"/>
             </div>
             <span class="pbim-modal__sp"/>
-            <button class="pbim-modal__x" t-on-click="() => this.closeDialog()"
-                    aria-label="Close">
+            <button class="pbim-modal__x" t-on-click="() =&gt; this.closeDialog()" aria-label="Close">
               <span t-out="ic('x', 15)"/>
             </button>
           </div>
@@ -134,19 +122,15 @@
           <div class="pbim-modal__body pbhd-form">
             <t t-if="state.dialog.mode === 'one'">
               <label class="pbhd-lab">What is it called?</label>
-              <input class="pbhd-in" type="text" placeholder="Reunification Day"
-                     t-att-value="state.form.name"
-                     t-on-input="(ev) => this.onField('name', ev)"/>
+              <input class="pbhd-in" type="text" placeholder="Reunification Day" t-att-value="state.form.name" t-on-input="(ev) =&gt; this.onField('name', ev)"/>
               <div class="pbhd-two">
                 <div>
                   <label class="pbhd-lab">First day</label>
-                  <input class="pbhd-in" type="date" t-att-value="state.form.date_from"
-                         t-on-input="(ev) => this.onField('date_from', ev)"/>
+                  <input class="pbhd-in" type="date" t-att-value="state.form.date_from" t-on-input="(ev) =&gt; this.onField('date_from', ev)"/>
                 </div>
                 <div>
                   <label class="pbhd-lab">Last day <span class="pbhd-opt">only if it runs on</span></label>
-                  <input class="pbhd-in" type="date" t-att-value="state.form.date_to"
-                         t-on-input="(ev) => this.onField('date_to', ev)"/>
+                  <input class="pbhd-in" type="date" t-att-value="state.form.date_to" t-on-input="(ev) =&gt; this.onField('date_to', ev)"/>
                 </div>
               </div>
             </t>
@@ -156,25 +140,19 @@
                 A name, a vertical bar and a date. Add a second date after
                 another bar when the holiday runs over several days.
               </div>
-              <textarea class="pbhd-in pbhd-ta" rows="9"
-                        placeholder="Tết | 2026-02-16 | 2026-02-20&#10;Hùng Kings | 2026-04-26&#10;Reunification Day | 2026-04-30&#10;Labour Day | 2026-05-01&#10;National Day | 2026-09-02"
-                        t-on-input="(ev) => this.onField('lines', ev)"><t t-esc="state.form.lines"/></textarea>
+              <textarea class="pbhd-in pbhd-ta" rows="9" placeholder="Tết | 2026-02-16 | 2026-02-20&#10;Hùng Kings | 2026-04-26&#10;Reunification Day | 2026-04-30&#10;Labour Day | 2026-05-01&#10;National Day | 2026-09-02" t-on-input="(ev) =&gt; this.onField('lines', ev)"><t t-esc="state.form.lines"/></textarea>
             </t>
           </div>
 
           <div class="pbim-modal__foot">
-            <button class="pbhd-link" t-on-click="() => this.closeDialog()">Cancel</button>
+            <button class="pbhd-link" t-on-click="() =&gt; this.closeDialog()">Cancel</button>
             <span class="pbim-modal__sp"/>
-            <button t-if="state.dialog.mode === 'one'" class="pbim-btn"
-                    t-att-disabled="!canSaveOne or state.busy"
-                    t-on-click="() => this.saveOne()">Add it</button>
-            <button t-else="" class="pbim-btn"
-                    t-att-disabled="!canSaveMany or state.busy"
-                    t-on-click="() => this.saveMany()">Add them</button>
+            <button t-if="state.dialog.mode === 'one'" class="pbim-btn" t-att-disabled="!canSaveOne or state.busy" t-on-click="() =&gt; this.saveOne()">Add it</button>
+            <button t-else="" class="pbim-btn" t-att-disabled="!canSaveMany or state.busy" t-on-click="() =&gt; this.saveMany()">Add them</button>
           </div>
         </div>
       </div>
-    </div>
+    <div t-if="state.importing" class="pbim-modal-scrim pbhd-scrim"><div class="pbim-modal pbhd-import-modal" role="dialog" aria-modal="true" aria-label="Calendar review"><div class="pbim-modal__head"><div><span class="pbim-eyebrow">IMPORT → REVIEW → PUBLISH</span><h2>Build a calendar everyone can trust.</h2></div><button class="pbim-btn ghost" t-on-click="() =&gt; state.importing = null">×</button></div><div class="pbim-modal__body"><t t-if="!state.importing.batch"><label class="pbhd-import-field">Entity<select class="pbhd-select" t-model="state.importing.company_id"><option value="">Choose entity</option><option t-foreach="d.companies or []" t-as="company" t-key="company.id" t-att-value="'' + company.id" t-esc="company.name"/></select></label><label class="pbhd-import-field">Source / version<input class="pbhd-select" t-model="state.importing.source" placeholder="e.g. HR-approved calendar, version 2"/></label><label class="pbhd-import-field">Holiday rows<textarea class="pbhd-select" rows="8" t-model="state.importing.lines" placeholder="New Year | 2027-01-01 | | public&#10;Company break | 2027-02-01 | 2027-02-02 | company"/></label><p>Name | start date | optional end date | public, collective or company</p><button t-if="state.workspace.can_source and state.year === 2026" class="pbim-btn ghost" t-att-disabled="state.importBusy" t-on-click="() =&gt; this.prepareImport(true)">Review supplied 2026 workbook</button></t><t t-else=""><h3 t-esc="state.importing.batch.name"/><p t-esc="state.importing.batch.source"/><div t-foreach="state.importing.batch.rows" t-as="row" t-key="row.id" class="pbhd-import-row"><div><b t-esc="row.name"/><p><t t-esc="row.date"/> · <t t-esc="row.kind"/></p><small t-if="row.issue" class="pbhd-import-issue" t-esc="row.issue"/></div><select class="pbhd-select" t-model="row.decision" t-att-disabled="state.importing.batch.state === 'published' or !canEdit"><option value="review">Needs review</option><option value="include">Include</option><option value="skip">Skip</option></select></div><label t-if="state.importing.batch.state !== 'published' and canEdit" class="pbhd-import-ack"><input type="checkbox" t-model="state.importing.ack"/> I have reviewed these dates, categories and source differences for this entity. Publishing will update its working calendar.</label></t></div><div class="pbim-modal__foot"><button class="pbim-btn ghost" t-on-click="() =&gt; state.importing = null">Close</button><button t-if="!state.importing.batch" class="pbim-btn primary" t-att-disabled="state.importBusy" t-on-click="() =&gt; this.prepareImport(false)">Prepare review →</button><t t-elif="state.importing.batch.state !== 'published' and canEdit"><button class="pbim-btn ghost" t-att-disabled="state.importBusy" t-on-click="() =&gt; this.saveImport(false)">Save review</button><button class="pbim-btn primary" t-att-disabled="!importReady or state.importBusy" t-on-click="() =&gt; this.saveImport(true)">Publish calendar</button></t></div></div></div></div>
   </t>
 
 </templates>
