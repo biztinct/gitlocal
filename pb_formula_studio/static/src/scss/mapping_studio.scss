@@ -932,3 +932,148 @@
         .pbms-rcn__samples, .pbms-rcn__choice { grid-column: 2; justify-content: flex-start; }
     }
 }
+
+/* ==========================================================================
+   COMPACT CHROME — so the board is the thing on screen, not its header
+   ==========================================================================
+
+   Reported 2026-09-22 on a laptop: on the Employee & contract board "you
+   cannot see the mapping columns at all". Nothing was broken — there was
+   simply nothing left to see them in. Six bands stack above the lists before
+   a single row is drawn, and at full size they come to roughly:
+
+       the dark bar            44px
+       FROM ══▶ TO             92px
+       the board chips         88px   (two rows — the strip wraps at ~1400)
+       find / browse           48px
+       the lane chips          44px
+       each column's head      92px
+       ------------------------------
+                              408px
+
+   On a 1300px-high window with the browser's own furniture taken off the top,
+   that is every pixel the reader had. The same screen on the Journey board is
+   legible because Journey's type is a size smaller throughout — so this is
+   Journey's scale, applied to the chrome of every board.
+
+   Roughly 224px afterwards: the header nearly halves and six or seven rows
+   appear where one did.
+
+   TWO TRIGGERS, ONE SCALE. Height, because that is what the header actually
+   consumes; and width, because below ~1280 the board-chip strip wraps onto a
+   second row and costs another 44px on a screen that has none to give. A
+   `@content` mixin rather than a comma-joined selector list: the two queries
+   are genuinely independent conditions, and either one alone should compact.
+
+   WHAT THIS DELIBERATELY DOES NOT DO: hide a control until the pointer finds
+   it. A filter that only exists on hover is a filter nobody knows about, it
+   has no keyboard or touch equivalent, and the reader cannot tell "this board
+   has no search" from "the search is somewhere". Density buys back the room
+   without spending discoverability. The one band worth collapsing later is
+   FROM ══▶ TO — it is the biggest, and it says what you already know while
+   you work — but that is a disclosure with a real affordance and a pinned
+   state, not a hover, and it is not this change.
+   ========================================================================== */
+
+@mixin pbms-compact-chrome {
+
+    /* ---- the dark bar: a nameplate does not need 44px ---- */
+    .pbms-wrap .pbms-top { padding: 5px 16px; gap: 9px; }
+    .pbms-wrap .pbms-brand { padding: 3px 9px 3px 7px; }
+    .pbms-wrap .pbms-brand__t { font-size: 10.5px; }
+
+    /* ---- FROM ══▶ TO: one line each side instead of a stacked pair ----
+       The kicker moves beside the card rather than above it. It is three
+       letters; it never needed a line of its own. */
+    .pbms-story { padding: 7px 16px 6px; gap: 10px; align-items: center; }
+    .pbms-end {
+        flex-direction: row; align-items: center; gap: 7px;
+    }
+    .pbms-end.to { flex-direction: row-reverse; }
+    .pbms-end__kicker { font-size: 9px; letter-spacing: .1em; flex: none; }
+    .pbms-pick { padding: 5px 9px; gap: 8px; max-width: 380px; }
+    .pbms-pick__txt .n { font-size: 12.5px; }
+    .pbms-pick__txt .s { font-size: 10.5px; }
+    .pbms-link__svg { width: 150px; height: 16px; }
+    .pbms-count { font-size: 11px; }
+
+    /* ---- the board chips: one row that scrolls, never two that stack ----
+       A strip that grows a second row whenever a board is added is a strip
+       whose height nobody can predict. Sideways is the axis with room. */
+    .pbms-modes {
+        padding: 6px 16px; gap: 5px;
+        flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
+        scrollbar-width: thin;
+    }
+    .pbms-modes::-webkit-scrollbar { height: 5px; }
+    .pbms-modes::-webkit-scrollbar-thumb {
+        background: var(--pbim-line); border-radius: 999px;
+    }
+    .pbms-mode, .pbms-schemechip { flex: none; }
+    .pbms-mode { padding: 4px 10px; font-size: 11.5px; gap: 5px; }
+    .pbms-schemechip { padding: 4px 10px; font-size: 11.5px; }
+
+    /* ---- find a field / browse the two records ---- */
+    .pbms-wrap .pbms-emptools { padding: 5px 16px; gap: 8px; }
+    .pbms-wrap .pbms-empfind { padding: 3px 9px; flex-basis: 260px; }
+    .pbms-wrap .pbms-empfind input { font-size: 11.5px; }
+    .pbms-wrap .pbms-empbtn { padding: 3px 9px; font-size: 11.5px; }
+
+    /* ---- the lane chips: the table of contents, and the filter ---- */
+    .pbms-wrap .pbms-lanes {
+        padding: 5px 16px; gap: 5px;
+        flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
+        scrollbar-width: thin;
+    }
+    .pbms-wrap .pbms-lanes::-webkit-scrollbar { height: 5px; }
+    .pbms-wrap .pbms-lanes::-webkit-scrollbar-thumb {
+        background: var(--pbim-line); border-radius: 999px;
+    }
+    .pbms-wrap .pbms-lane {
+        flex: none; padding: 3px 8px 3px 6px; font-size: 11px; gap: 5px;
+    }
+    .pbms-wrap .pbms-lane svg { width: 12px; height: 12px; }
+    .pbms-wrap .pbms-lane .n { font-size: 10px; }
+    .pbms-wrap .pbms-lane .u { font-size: 9.5px; padding: 0 5px; }
+}
+
+/* The column heads belong to the canvas, which is loaded before this file, so
+   these carry its own `.mapping-canvas` prefix to win on equal specificity
+   rather than on source order alone. Three stacked rows — name, search,
+   chips — become a single wrapped row: at this width the name and the count
+   do not need the full column to themselves. */
+@mixin pbms-compact-columns {
+    .mapping-canvas .mc-col-head {
+        flex-direction: row; flex-wrap: wrap; align-items: center;
+        gap: 5px 8px; padding: 6px 10px 5px;
+    }
+    .mapping-canvas .mc-col-head__t { flex: 1 1 100%; gap: 6px; }
+    .mapping-canvas .mc-col-title { font-size: 10px; }
+    .mapping-canvas .mc-col-count { font-size: 10px; padding: 0 6px; }
+    .mapping-canvas .mc-col-q { flex: 1 1 150px; padding: 3px 8px; gap: 5px; }
+    .mapping-canvas .mc-col-q input { font-size: 11.5px; }
+    .mapping-canvas .mc-col-f { flex: none; gap: 3px; }
+    .mapping-canvas .mc-chip { padding: 2px 7px; font-size: 10px; }
+    .mapping-canvas .mc-col-hid { flex: 1 1 100%; font-size: 10px; }
+}
+
+@media (max-height: 950px) {
+    .pbim.pbms { @include pbms-compact-chrome; }
+    @include pbms-compact-columns;
+}
+
+@media (max-width: 1280px) {
+    .pbim.pbms { @include pbms-compact-chrome; }
+    @include pbms-compact-columns;
+}
+
+/* A short window AND a narrow one: the last few pixels come off the second
+   line of each card, which repeats what the card above it already says. */
+@media (max-height: 820px) {
+    .pbim.pbms {
+        .pbms-story { padding: 5px 16px 4px; }
+        .pbms-pick__txt .s { display: none; }
+        .pbms-pick { padding: 4px 9px; }
+        .pbms-top { padding: 4px 16px; }
+    }
+}
