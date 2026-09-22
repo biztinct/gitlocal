@@ -1014,10 +1014,14 @@
 
         &:hover { color: var(--pbim-primary-hover); text-decoration: underline; }
     }
+    // THE LIST SCROLLS INSIDE ITSELF. The drawer body is a flex column, so
+    // without `flex: none` every section shrinks to fit and the list was
+    // clipped with no scrollbar once "All areas" put 20+ rows in it.
+    .pbam-bulk .pbam-db > * { flex: none; }
     .pbam-bulk-list {
         display: flex; flex-direction: column;
         border: 1px solid var(--pbim-line); border-radius: 12px;
-        overflow: hidden;
+        max-height: 52vh; overflow-y: auto; overscroll-behavior: contain;
     }
     .pbam-bulk-area,
     .pbam-bulk-row {
@@ -1032,6 +1036,8 @@
 
         &:first-child { border-top: 0; }
         .pbam-area-n { margin-left: 0; }
+        // the area name stays in view while its rows scroll under it
+        position: sticky; top: 0; z-index: 1;
     }
     .pbam-bulk-row {
         padding: 11px 14px; background: var(--pbim-surface);
