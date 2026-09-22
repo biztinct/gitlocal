@@ -62,8 +62,22 @@ _MAX_ROUNDS = 200
 #: remaining arguments are precision/caps, not contributions.
 _FIRST_ARG_FUNCS = {
     'ROUND', 'ROUNDUP', 'ROUNDDOWN', 'MROUND', 'INT', 'TRUNC',
-    'FLOOR', 'CEILING', 'MIN', 'MAX',
+    'FLOOR', 'CEILING',
 }
+#: Functions that pick BETWEEN their arguments rather than carry one through.
+#:
+#: `MIN` and `MAX` used to sit in `_FIRST_ARG_FUNCS`, which followed argument one
+#: as an unscaled contribution and ignored the rest. That is arbitrary in both
+#: directions: `MIN(base, cap)` read the base as money flowing and never saw the
+#: cap, and `MIN(cap, base)` read the CAP as the money. On rize that made
+#: `Constant Cap lương đóng BHXH` — a ₫50,600,000 ceiling nobody is paid or
+#: charged — a deduction, and it was subtracted from one person's pay.
+#:
+#: A ceiling is not an amount. Every argument of a cap contributes, and every
+#: one of them arrives DERIVED: whichever is chosen, the component is the basis
+#: of the answer rather than the answer. `_net_role_demote_ingredients` then
+#: reads that for what it is.
+_CAPPED_FUNCS = {'MIN', 'MAX'}
 #: Functions that are pure addition over their arguments.
 _ADDITIVE_FUNCS = {'SUM', 'SUMPRODUCT', 'AVERAGE', 'SUBTOTAL'}
 #: Functions whose arguments are a QUESTION, not money. Their references say
@@ -350,6 +364,11 @@ def _collect_function(node, sign, derived, confidence, out):
     if name in _FIRST_ARG_FUNCS:
         collect_signed_references(args[0], sign, derived, confidence, out)
         return
+    if name in _CAPPED_FUNCS:
+        weaker = LIKELY if _CONF_RANK[confidence] < _CONF_RANK[LIKELY] else confidence
+        for arg in args:
+            collect_signed_references(arg, sign, True, weaker, out)
+        return
     if name == 'IF':
         # The condition decides WHICH branch pays, never HOW MUCH. Both
         # branches contribute, but conditionally — hence `likely`.
@@ -559,6 +578,10 @@ class NetRoleClassification:
         self.confidences = {}
         #: NETROLE P2 — rule ids that count something rather than pay it.
         self.quantities = set()
+        #: Rule ids the two demotion passes turned into working figures, kept
+        #: apart so each can be given its own reason on the treatment board.
+        self.demoted_ingredients = set()
+        self.demoted_totals = set()
 
 
 class HrFormulaRuleNetRole(models.Model):
@@ -643,6 +666,24 @@ class HrFormulaConfigNetRole(models.Model):
                 summary[config.id] = result
                 continue
             classification = result.pop('_classification')
+            # THE RAIL (see `_net_role_would_worsen`). Measured BEFORE anything
+            # is written, so a scheme whose arithmetic the walk cannot read is
+            # left exactly as it was rather than half-rewritten.
+            worse = config._net_role_would_worsen(classification)
+            if worse:
+                result['blocked'] = worse
+                result['error'] = _(
+                    "reading its formulas would leave %(gap)s of its last pay "
+                    "run unaccounted for, which is worse than the way it is set "
+                    "up now. Nothing was changed. Set these components by hand "
+                    "on Component treatment instead.",
+                    gap='{:,.0f}'.format(abs(worse['gap_after'])))
+                summary[config.id] = result
+                _logger.warning(
+                    "NETROLE: refused to re-classify scheme %s — gap would go "
+                    "from %s to %s on its latest run.", config.id,
+                    worse['gap_before'], worse['gap_after'])
+                continue
             gated = []
             kept = []
             for rule in config.rule_ids:
@@ -963,6 +1004,15 @@ class HrFormulaConfigNetRole(models.Model):
 
         self._net_role_mark_employer_cost(
             classification, net_rule, incoming, outgoing)
+        # ORDER MATTERS. Ingredients go first: a base that is really a working
+        # figure must stop being money before a running total is asked which
+        # money components it combines. Details go LAST, because both passes
+        # change which roll-ups are still counted.
+        ingredients = self._net_role_demote_ingredients(classification, best)
+        totals = self._net_role_demote_running_totals(
+            classification, net_rule, incoming, outgoing)
+        classification.demoted_ingredients = ingredients
+        classification.demoted_totals = totals
         self._net_role_mark_details(classification, net_rule, outgoing)
         self._net_role_write_reasons(classification, net_rule, outgoing, best)
 
@@ -1151,6 +1201,241 @@ class HrFormulaConfigNetRole(models.Model):
             # into a pay run's KPI band: every dong in it is counted elsewhere.
             classification.details[rule_id] = True
 
+    # ------------------------------------------------------------------
+    # The arithmetic check — the rail that makes "re-classify" safe to press
+    # ------------------------------------------------------------------
+    def _net_role_balance_gap(self, roles_by_code, details_by_code):
+        """``(gap, gross)`` for this scheme's most recent run, or ``None``.
+
+        Gross minus deductions IS take-home. A classification that leaves those
+        three figures not adding up has filed something under the wrong
+        heading, and the amount left over says by how much.
+
+        `None` means there is nothing to measure: no pay run yet, or a
+        classification that says nothing at all about the run (every line
+        unclassified). A scheme nobody has run is exactly the case this whole
+        feature exists for, so "no evidence" must never read as "no good".
+
+        A classification that finds money but NO net pay is not "nothing to
+        measure" — it is the whole run unaccounted for, and it is reported as
+        such. That distinction is the one the demo world turns on: reading its
+        formulas yields ₫24.8bn of gross, no deductions and no net, and an
+        earlier draft of this method waved that through as unmeasurable.
+        """
+        self.ensure_one()
+        # This reads the tables directly, so anything still sitting in the
+        # ORM's write buffer is invisible to it — and the payslips this is
+        # asked about are routinely written in the same transaction that then
+        # classifies the scheme. `pb_payruns._compute_pb_totals` carries the
+        # same flush for the same reason.
+        self.env['hr.payslip'].flush_model(
+            ['formula_config_id', 'payslip_run_id', 'state'])
+        self.env['hr.payslip.line'].flush_model(['slip_id', 'code', 'total'])
+        self.env.cr.execute("""
+            SELECT p.payslip_run_id
+              FROM hr_payslip p
+             WHERE p.formula_config_id = %s AND p.payslip_run_id IS NOT NULL
+               AND p.state <> 'cancel'
+             GROUP BY p.payslip_run_id
+             ORDER BY p.payslip_run_id DESC
+             LIMIT 1
+        """, (self.id,))
+        row = self.env.cr.fetchone()
+        if not row:
+            return None
+        self.env.cr.execute("""
+            SELECT pl.code, COALESCE(SUM(pl.total), 0)
+              FROM hr_payslip_line pl
+              JOIN hr_payslip p ON p.id = pl.slip_id AND p.state <> 'cancel'
+             WHERE p.payslip_run_id = %s
+             GROUP BY pl.code
+        """, (row[0],))
+        gross = deductions = net = 0.0
+        for code, amount in self.env.cr.fetchall():
+            role = roles_by_code.get(code)
+            amount = float(amount or 0.0)
+            if role == 'net':
+                net += amount
+            elif details_by_code.get(code):
+                continue
+            elif role == 'earning':
+                gross += amount
+            elif role == 'deduction':
+                deductions += amount
+        if not gross and not deductions and not net:
+            return None
+        return gross - abs(deductions) - net, gross
+
+    def _net_role_would_worsen(self, classification):
+        """Is the classification about to be written worse than the stored one?
+
+        THE RAIL. "Re-classify from the formulas" reads a scheme's arithmetic
+        and rewrites every automatic role from it — and on a scheme whose
+        formulas express deductions as negative amounts ADDED IN, the sign walk
+        reads every one of them as an earning. On the reference demo world that
+        turns ₫30.7bn of gross with ₫4.96bn of take-home into ₫24.8bn of gross,
+        no deductions and no net at all.
+
+        So the button measures itself. It compares what its answer does to the
+        scheme's own most recent run against what the stored answer does, and
+        declines to make the figures add up LESS well than they already do. An
+        improvement is never blocked — rize's scheme did not balance before
+        this was written, which is the whole reason it exists.
+        """
+        self.ensure_one()
+        new_roles, new_details = {}, {}
+        old_roles, old_details = {}, {}
+        for rule in self.rule_ids:
+            code = rule.code
+            if not code:
+                continue
+            if rule.net_role_source == 'user':
+                # Not up for re-derivation, so it is the same on both sides.
+                new_roles[code] = old_roles[code] = rule.net_role
+                new_details[code] = old_details[code] = rule.net_role_detail
+                continue
+            role = classification.roles.get(rule.id) or False
+            role, _demoted = value_kind_classifier.gate_role(rule.value_kind, role)
+            new_roles[code] = role
+            new_details[code] = classification.details.get(rule.id, False)
+            old_roles[code] = rule.net_role
+            old_details[code] = rule.net_role_detail
+        after = self._net_role_balance_gap(new_roles, new_details)
+        if after is None:
+            # Nothing to measure. A scheme with no run yet is the case this was
+            # built for; refusing it for lack of evidence would be backwards.
+            return None
+        before = self._net_role_balance_gap(old_roles, old_details)
+        gap_after, gross_after = after
+        # Within a unit per payslip either way is rounding, not a mis-filing.
+        if abs(gap_after) <= max(abs(gross_after) * 0.0001, 1.0):
+            return None
+        if before is None:
+            # The scheme had no net figure to check against before and has one
+            # that does not reconcile now. That is a step backwards even though
+            # there is no number to compare it with.
+            return {'gap_after': gap_after, 'gap_before': None,
+                    'gross_after': gross_after}
+        if abs(gap_after) <= abs(before[0]):
+            return None
+        return {'gap_after': gap_after, 'gap_before': before[0],
+                'gross_after': gross_after}
+
+    def _net_role_demote_ingredients(self, classification, best):
+        """A component that only ever arrives SCALED is an ingredient, not pay.
+
+        The module docstring already says "bases are not contributions", but
+        until now `derived` only RANKED routes: when every route was scaled the
+        cheapest scaled one still won, and the component was called money. So
+        rize's `Lương bảo hiểm` (insurance salary) became a deduction because
+        the 8% charged on it is one, and `Ngày công chuẩn` (standard working
+        days) became an earning because the monthly salary is DIVIDED by it. A
+        payslip then showed "Standard working days ₫21".
+
+        Neither is paid or withheld. The 8% is. The salary is.
+
+        The test is free, because `best` is the lexicographic minimum of
+        ``(derived hops, hops)`` — so ``best[id][0]`` IS the smallest number of
+        scaled hops on any route to net pay. One or more means there is no
+        additive route at all.
+
+        THE GUARD. A scheme whose only money component reaches net scaled
+        (``NET = BASIC * 0.9``) would lose its last earning and report a gross
+        of zero — a different wrong answer, not a right one. If the pass would
+        leave nothing to count, it is abandoned wholesale and the scheme is sent
+        for review instead. Silence is not on the menu either way.
+        """
+        candidates = {
+            rule_id for rule_id, role in classification.roles.items()
+            if role in ('earning', 'deduction', 'mixed')
+            and best.get(rule_id, (0, 0))[0] >= 1
+        }
+        if not candidates:
+            return set()
+        survivors = [
+            rule_id for rule_id, role in classification.roles.items()
+            if role == 'earning' and rule_id not in candidates
+        ]
+        if not survivors:
+            _logger.info(
+                "NETROLE: scheme %s reaches net pay only through scaled "
+                "references; leaving every role as the walk found it and "
+                "asking for a person to look.", self.id)
+            for rule_id in candidates:
+                classification.confidences[rule_id] = REVIEW
+            return set()
+        for rule_id in candidates:
+            classification.roles[rule_id] = 'info'
+            classification.confidences[rule_id] = CERTAIN
+            classification.details[rule_id] = False
+        return candidates
+
+    def _net_role_demote_running_totals(self, classification, net_rule,
+                                        incoming, outgoing):
+        """A figure that combines money BOTH ways is a running total, not pay.
+
+        rize's scheme carries two nets: `Thu nhập ròng VND` (Net Income VND) and
+        then `Số tiền thực nhận VND` = Net Income + PIT refund. Because that
+        last step is a plain addition, Net Income flowed straight into net pay
+        with sign +1 over one unscaled hop — the cheapest route there is — and
+        was called an earning with the HIGHEST confidence the classifier has.
+
+        Everything feeding it, including the scheme's real gross `Tổng thu nhập`,
+        was then marked "already counted inside Net Income VND". Gross became a
+        net, the true gross became a detail of it, and one payslip read
+        −₫149,519,958.
+
+        A component that additively combines money with BOTH signs is not one
+        amount: it is an arithmetic step on the way to one — taxable income,
+        assessable income, a sub-net. What makes it a STEP rather than the
+        answer is that nothing downstream still treats it as money: it feeds
+        net pay, or another step, and never an earning or a deduction. A real
+        earning computed as ``rate * hours - already paid`` also mixes signs,
+        but it is added into gross, so it is left alone.
+
+        Run to a fixpoint: demoting assessable income is what reveals that
+        taxable income feeds nothing but a working figure either.
+        """
+        money_roles = ('earning', 'deduction')
+        mixed_sources = {}
+        for rule_id, edges in incoming.items():
+            signs = set()
+            for source, sign, derived, _conf in edges:
+                if derived or sign is None:
+                    continue
+                if classification.roles.get(source) in money_roles:
+                    signs.add(sign)
+            if signs == {1, -1}:
+                mixed_sources[rule_id] = True
+
+        demoted = set()
+        for _round in range(_MAX_ROUNDS):
+            changed = False
+            for rule_id in list(mixed_sources):
+                if rule_id in demoted or rule_id == net_rule.id:
+                    continue
+                if classification.roles.get(rule_id) not in money_roles:
+                    continue
+                carries_on = any(
+                    target != net_rule.id and not derived and sign is not None
+                    and classification.roles.get(target) in money_roles
+                    for target, sign, derived, _conf in outgoing.get(rule_id, [])
+                )
+                if carries_on:
+                    continue
+                classification.roles[rule_id] = 'info'
+                # `likely`, not `certain`. The ingredient test above is a proof
+                # — there is demonstrably no additive route. This one is a
+                # reading of intent, and "wrong but certain" is precisely what
+                # called a net an earning in the first place.
+                classification.confidences[rule_id] = LIKELY
+                classification.details[rule_id] = False
+                demoted.add(rule_id)
+                changed = True
+            if not changed:
+                break
+        return demoted
+
     def _net_role_mark_details(self, classification, net_rule, outgoing):
         """A component folded into a same-role roll-up is a detail.
 
@@ -1228,6 +1513,19 @@ class HrFormulaConfigNetRole(models.Model):
                 reason = _("Reaches %(net)s both as an addition and as a "
                            "subtraction, so a person has to decide what it is.",
                            net=net_name)
+            elif rule.id in classification.demoted_ingredients:
+                # Say what it IS, not merely what it is not: this is the row a
+                # person overrules when the guess is wrong, and "never reaches
+                # net pay" would be a false statement about it besides.
+                reason = (_("Used to work out %(via)s rather than paid or "
+                            "taken off, so it is a working figure.", via=via)
+                          if via else
+                          _("Used to work other figures out rather than paid "
+                            "or taken off, so it is a working figure."))
+            elif rule.id in classification.demoted_totals:
+                reason = _("Adds and takes off money on the way to %(net)s, so "
+                           "it is a running total rather than an amount of its "
+                           "own.", net=net_name)
             else:
                 reason = _("Never reaches %(net)s, so it is information rather "
                            "than pay.", net=net_name)
