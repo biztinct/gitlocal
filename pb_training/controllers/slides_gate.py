@@ -28,7 +28,7 @@ than a deletion — and is why the switch is tested in both positions.
 
 import logging
 
-from odoo.http import request
+from odoo.http import request, route
 from odoo.addons.website_slides.controllers.legacy import WebsiteSlidesLegacy
 from odoo.addons.website_slides.controllers.main import WebsiteSlides
 
@@ -104,6 +104,7 @@ class PbTrainingSlidesLegacyGate(WebsiteSlidesLegacy):
     watching the address bar visit a catalogue they may not open.
     """
 
+    @route()
     def slides_channel_all(self, *args, **kwargs):
         return _send_away() or super().slides_channel_all(*args, **kwargs)
 
@@ -115,17 +116,29 @@ class PbTrainingSlidesGate(WebsiteSlides):
     pages are overridden from the same class — one insertion point rather than
     two controllers that could disagree with each other.
 
-    None of these redefinitions carries an `@http.route` decorator: the
-    routing is inherited unchanged from the method being overridden, so this
-    file cannot accidentally widen, narrow or rename a route while adding a
-    gate to it.
+    Every redefinition carries a BARE `@route()` — no arguments. That is the
+    Odoo idiom for "gate this route, change nothing about it": with no `route`
+    argument the decorator sets no URLs of its own, so `_generate_routing_rules`
+    merges the routing of the method being overridden and this file still cannot
+    widen, narrow or rename anything.
+
+    It used to carry no decorator at all, for that same reason. The cost was
+    invisible until it was not: an undecorated override is wrapped by the
+    framework itself ("is not decorated by @route(), decorating it myself"),
+    and the endpoint it builds has no `original_endpoint` attribute. The website
+    module reads exactly that attribute for every rule in the routing map when
+    it builds `/sitemap.xml` — so **payobook.com/sitemap.xml answered 500 to
+    every search-engine crawler** with `AttributeError: 'functools.partial'
+    object has no attribute 'original_endpoint'`. Found 2026-09-22.
     """
 
     # ------------------------------------------------- the catalogue & course
+    @route()
     def slides_channel(self, *args, **kwargs):
         """`/slides`, `/slides/page/<n>`, `/slides/tag/<tags>` — the catalogue."""
         return _send_away() or super().slides_channel(*args, **kwargs)
 
+    @route()
     def channel(self, channel=False, channel_id=False, *args, **kwargs):
         """The course page, in all nine of its URL shapes.
 
@@ -138,6 +151,7 @@ class PbTrainingSlidesGate(WebsiteSlides):
         return super().channel(channel=channel, channel_id=channel_id,
                                *args, **kwargs)
 
+    @route()
     def slide_view(self, slide, **kwargs):
         """The lesson page. Same idea: the slide names its own course."""
         if _send_away():
@@ -145,13 +159,16 @@ class PbTrainingSlidesGate(WebsiteSlides):
         return super().slide_view(slide, **kwargs)
 
     # ------------------------------------------------------- the public people
+    @route()
     def view_user_profile(self, *args, **kwargs):
         """Somebody else's public profile — karma, badges, courses taken."""
         return _send_away() or super().view_user_profile(*args, **kwargs)
 
+    @route()
     def view_all_users_page(self, *args, **kwargs):
         """The leaderboard. A list of colleagues ranked by points."""
         return _send_away() or super().view_all_users_page(*args, **kwargs)
 
+    @route()
     def view_ranks_badges(self, *args, **kwargs):
         return _send_away() or super().view_ranks_badges(*args, **kwargs)
