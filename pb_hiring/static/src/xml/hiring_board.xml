@@ -724,8 +724,7 @@
                         <t t-out="ic('download',14)"/> The PDF
                       </button>
                       <span class="pbhr-foot-gap"/>
-            <button t-if="state.canRaise and state.drawer.state === 'draft'" class="pbim-btn primary" t-on-click="() =&gt; this.act('submit', {requisition_id: state.drawer.id})">Send for approval</button>
-            <button t-if="state.drawer.waiting_mine" class="pbim-btn primary" t-on-click="() =&gt; this.act('open_requisition', {requisition_id: state.drawer.id}, {reload:false})">Review approval</button>
+
                       <button t-if="state.canRecruit and offer.state === 'draft'" class="pbim-btn primary" t-on-click="submitOffer">
                         <t t-out="ic('send',14)"/> Send for sign-off
                       </button>
@@ -1016,6 +1015,8 @@
               <t t-out="ic('briefcase',14)"/> The job
             </button>
             <span class="pbhr-foot-gap"/>
+            <button t-if="state.canRaise and state.drawer.state === 'draft'" class="pbim-btn primary" t-on-click="() =&gt; this.act('submit', {requisition_id: state.drawer.id})">Send for approval</button>
+            <button t-if="state.drawer.waiting_mine" class="pbim-btn primary" t-on-click="() =&gt; this.act('open_requisition', {requisition_id: state.drawer.id}, {reload:false})">Review approval</button>
             <button t-if="state.canRecruit and state.drawer.state === 'open'" class="pbim-btn ghost" t-on-click="() =&gt; this.act('toggle_referrals', { requisition_id: state.drawer.id })">
               <t t-out="ic('userPlus',14)"/>
               <t t-if="state.drawer.referral_open">Close to referrals</t>
