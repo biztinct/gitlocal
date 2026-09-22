@@ -133,7 +133,16 @@ export class PbPayruns extends Component {
 
     nextLabel(a) { return NEXT_LABEL[a] || _t("Open"); }
 
-    /** One run's money, in the money that run was actually paid in. */
+    /* A run's own figures are ALWAYS drawn through these two, never through
+       `money()` directly. `money()` falls back to the board's currency, which
+       is the reader's company — so an India run on a Vietnamese board came out
+       in dong. One board can hold several currencies; a per-run figure has no
+       business defaulting to any of them. */
+
+    /** One run's gross, in the money that run was actually paid in. */
+    runGross(b) { return this.money(b.gross, b.currency); }
+
+    /** One run's net, in the money that run was actually paid in. */
     runMoney(b) { return this.money(b.net, b.currency); }
 
     money(n, symbol) {

@@ -7,7 +7,10 @@
     # 19.0.2.0.0 — the three-tier ladder is gone. A pay run is approved by
     # whatever route the business published for its scheme, its part of the
     # business and its kind of run (biz_approval_workflow).
-    'version': '19.0.2.2.0',
+    # 2.3.0: the board prices each run in its SCHEME's money (SCHEMECTX P1).
+    # Python, JS and QWeb all change, so the version has to move for the
+    # deploy-time version-diff gate to see it.
+    'version': '19.0.2.3.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

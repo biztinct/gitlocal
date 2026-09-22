@@ -12,3 +12,8 @@ from . import test_run_totals
 
 # The Generate Payslips dialog opens on a tenant that has never seen Zoho.
 from . import test_generate_payslips_dialog
+
+# Each run on the board is priced in its SCHEME's money, not in that of the
+# company that happens to own the payslips (Rize: India payroll in a VND
+# company was shown in dong).
+from . import test_board_currency

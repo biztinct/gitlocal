@@ -79,7 +79,7 @@
                   <div class="pbr-card-period" t-esc="b.period"/>
                   <div class="pbr-card-stats">
                     <span class="st"><span class="k">Employees</span><span class="vv" t-esc="b.employees"/></span>
-                    <span class="st"><span class="k">Gross</span><span class="vv" t-esc="money(b.gross)"/></span>
+                    <span class="st"><span class="k">Gross</span><span class="vv" t-esc="runGross(b)"/></span>
                     <span class="st"><span class="k">Net</span><span class="vv" t-esc="runMoney(b)"/></span>
                   </div>
                   <!-- t-if on the ROW, not only on its children: an empty flex

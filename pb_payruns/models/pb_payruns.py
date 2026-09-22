@@ -49,6 +49,7 @@ class PbPayruns(models.AbstractModel):
         runs = runs.filtered(
             lambda r: owner.get(r.id, company.id) in allowed)[:BOARD_LIMIT]
         currency_of = self._currency_by_company()
+        scheme_currency_of = self._scheme_currency_by_run(runs)
 
         # Batch-compute all run totals in ONE pass (single SQL) instead of letting
         # each per-run field access trigger its own aggregation.
@@ -75,8 +76,12 @@ class PbPayruns(models.AbstractModel):
 
             net = self._safe(lambda r=run: r.pb_total_net)
             run_company = owner.get(run.id, company.id)
-            run_currency = currency_of.get(run_company) or {
-                'name': cur.name or '', 'symbol': cur.symbol or ''}
+            # The scheme decides; the company is only the fallback for a run
+            # with no scheme at all (traditional structure payroll).
+            run_currency = (scheme_currency_of.get(run.id)
+                            or currency_of.get(run_company)
+                            or {'name': cur.name or '',
+                                'symbol': cur.symbol or ''})
             if state == 'done' and run_currency['name'] == (cur.name or ''):
                 # Only ever add up money of the SAME kind. A cross-currency
                 # total is not a rounding problem, it is a wrong number.
@@ -221,6 +226,32 @@ class PbPayruns(models.AbstractModel):
         for run_id, company_id in self.env.cr.fetchall():
             if company_id:
                 out[run_id] = company_id      # payslip truth wins
+        return out
+
+    @api.model
+    def _scheme_currency_by_run(self, runs):
+        """Each run's SCHEME currency, where it has a scheme.
+
+        SCHEMECTX P1 — an India scheme inside a Vietnamese company is an India
+        run, so the money on the card is the scheme's, not that of the company
+        which happens to own the payslips. Rize runs both its Vietnam and its
+        India payroll out of one VND company, so reading the company priced the
+        India run's gross and net in dong while the payslips inside it were
+        correctly in rupees.
+
+        Same precedent as ``pb_payrun_results`` (SCHEMECTX P1 there too), and
+        derived live through ``hr.payslip.run._pb_scheme_currency`` — the very
+        method the stored ``pb_currency_id`` is computed from — rather than
+        read off that stored field, which on some demo runs was computed under
+        a different company context.
+        """
+        out = {}
+        for run in runs:
+            currency = self._safe(lambda r=run: r._pb_scheme_currency(),
+                                  default=None)
+            if currency:
+                out[run.id] = {'name': currency.name,
+                               'symbol': currency.symbol or currency.name}
         return out
 
     @api.model
