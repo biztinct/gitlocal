@@ -48,7 +48,7 @@ not a password on a system we control, so it cannot be changed from here.
 
 ## 2. The admin login
 
-`ash@biztinct.com` is active on **five databases** and its password differs between
+`ash@biztinct.com` is active on **three databases** and its password differs between
 them. All of these were published:
 
 | Database | Is the login active | Published password |
@@ -56,9 +56,8 @@ them. All of these were published:
 | `payobook` (live) | yes | `{withheld: apex-admin-2026-08}`, and an older one |
 | `abm` (live) | yes | `{withheld: abm-admin}` |
 | `rize` (live tenant) | yes | `{withheld: rize-admin}` |
-| `p9clone` | yes | as per `payobook` |
-| `rztest` | yes | as per `rize` |
 | `payobook_template` | no such login | — |
+| ~~`p9clone`~~, ~~`rztest`~~ | database dropped 2026-09-22 | n/a — rehearsal clones, gone |
 
 Change it on each one, through **Settings → Users** or the user's own preferences.
 Use a different password per database, as now. Do not reuse any published value or an
@@ -69,11 +68,12 @@ on any database, change it too.
 
 ## 3. The demo and test logins
 
-Published, and active on `payobook` and `p9clone`:
+Published, and active on `payobook` (the `p9clone` copies went with that database on
+2026-09-22):
 
 * `demo@payobook.com`
 * `ess1.demo@payobook.com` … `ess9.demo@payobook.com`
-* `igc1.validator` (on `p9clone`)
+* ~~`igc1.validator`~~ (was `p9clone`-only — database dropped)
 
 These are demo actors rather than staff, so the risk is lower — but they are real logins
 on a live database and several carry employee records. Change them, or deactivate the

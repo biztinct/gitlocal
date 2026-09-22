@@ -137,9 +137,13 @@ This is what took `/my/journey`, `/my/buddy` and `/my/orgchart` down on all six 
 
 ## ER9 — Databases and deploy
 
-Six databases, all carrying the same module set: `payobook`, `payobook_template`, `abm`, `p9clone`,
-`rize`, `rztest`. A new module must be installed on **every** one (standing tenant rule: tenants get
-every module the master gets, except `pb_tenants`/`pb_demo`/`pb_demo_portal`/`pb_website`).
+Four databases, all carrying the same module set: `payobook`, `payobook_template`, `abm`, `rize`.
+A new module must be installed on **every** one (standing tenant rule: tenants get every module
+the master gets, except `pb_tenants`/`pb_demo`/`pb_demo_portal`/`pb_website`).
+
+The rehearsal clones `p9clone` (of `payobook`) and `rztest` (of `rize`) were **dropped 2026-09-22**
+— final `pg_dump`s sit in `/odoo/backups/retired/`. Older material that still names them (handovers,
+ledgers, the credential checklist) is history; do not add them back to any deploy wave.
 
 Deploy contract is in `CLAUDE.md`: one addons directory, `/odoo/odoo-server/addons`; clean the
 staging dir first; `--delete` is scoped to a single module directory and **never** to the addons
