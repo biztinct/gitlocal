@@ -32,6 +32,7 @@ class HrPayslip(models.Model):
         string='Pay statement', compute='_compute_pb_statement_json')
 
     @api.depends('line_ids', 'line_ids.total', 'line_ids.category_id',
+                 'line_ids.pay_role', 'line_ids.component_detail',
                  'worked_days_line_ids', 'worked_days_line_ids.number_of_hours',
                  'employee_id', 'date_from', 'date_to', 'struct_id', 'state',
                  'number', 'name')
@@ -42,6 +43,36 @@ class HrPayslip(models.Model):
             except Exception as e:
                 _logger.debug("payslip statement build failed: %s", e)
                 slip.pb_statement_json = '{}'
+
+    @staticmethod
+    def _pb_fold_subtotals(rows):
+        """Split a bucket into what an employee reads and what it adds up to.
+
+        `detail` rows are the components themselves; the rest are either
+        subtotals OF those components or stand-alone amounts that sit outside
+        them. The TOTAL is the non-detail rows — that is what `component_detail`
+        means and what the pay run header counts.
+
+        The LIST is the other way round: a payslip that shows both "Actual gross
+        salary ₫8,000,000" and "Total monthly income ₫9,100,000" and then a gross
+        of ₫9,100,000 reads as if a line went missing. So the one non-detail row
+        that exactly equals the sum of the detail rows is recognised as their
+        subtotal and dropped from the list — it is already on screen as the
+        Gross (or Deductions) figure. Every other row stays, and when nothing
+        matches, nothing is hidden.
+        """
+        detail_sum = sum(r['amount'] for r in rows if r['detail'])
+        outer = [r for r in rows if not r['detail']]
+        # Every row folded into a total that is not itself on the payslip leaves
+        # nothing to count. That is a mis-flagged scheme, not a payslip of zero:
+        # count the components rather than print ₫0.
+        total = sum(r['amount'] for r in outer) if outer else detail_sum
+        listed = rows
+        if detail_sum:
+            folded = [r for r in outer if round(r['amount']) == round(detail_sum)]
+            if len(folded) == 1:
+                listed = [r for r in rows if r is not folded[0]]
+        return listed, total
 
     def _pb_build_statement(self):
         self.ensure_one()
@@ -64,8 +95,16 @@ class HrPayslip(models.Model):
         #   * the mid-cycle advance is shown as a reduction so the figures
         #     reconcile: Gross − Deductions − Advance = Net (on every cycle).
         earnings, deductions, employer = [], [], []
-        gross = net = ded_total = emp_total = 0.0
+        gross = net = 0.0
         has_end_adv = has_mid_adv = False
+        # A scheme built from a workbook carries its own subtotals as ordinary
+        # components: "Total monthly income" sits on the payslip next to the
+        # base salary and the allowances it is the sum OF. `component_detail`
+        # is the flag that says "this amount is already inside another line's
+        # total"; the pay run header has skipped those rows since VALUEKIND P5
+        # and this statement never did — so it added every leaf on top of its
+        # own subtotal and printed a gross of ₫34.4m against a true ₫9.1m.
+        # Totals now count the same rows the run header counts.
         for line in self.line_ids:
             cat = line.category_id
             code = (line.code or '').upper()
@@ -107,7 +146,8 @@ class HrPayslip(models.Model):
             # rule in the reader's language, falling back to the frozen line snapshot.
             label = (line.salary_rule_id.name if line.salary_rule_id else False) \
                 or line.name or line.code or '—'
-            row = {'name': label, 'code': line.code or '', 'amount': abs(amt)}
+            row = {'name': label, 'code': line.code or '', 'amount': abs(amt),
+                   'detail': bool(getattr(line, 'component_detail', False))}
             # A component counted in hours or days, or one the scheme calls
             # information, is not money and belongs in none of these three
             # buckets. Before P5 such a component could carry `earning` and was
@@ -119,10 +159,16 @@ class HrPayslip(models.Model):
                     not role and (ctype == EMPLOYER_CAT_TYPE
                                   or ccode in EMPLOYER_CAT_CODES)):
                 employer.append(row)
-                emp_total += abs(amt)
                 continue
-            # Other net-category helpers (e.g. FULLPAY) are never an earning.
+            # The scheme's own net-pay component. It is not an earning, and it
+            # is the ANSWER for take-home: reading it here means the hero no
+            # longer has to infer net from gross − deductions, which is how a
+            # mis-typed subtotal turned ₫8,190,000 of take-home into −₫149.5m.
+            # Only a non-detail one — a scheme can carry an intermediate net
+            # (`Net Income VND`) that is folded into the real one.
             if role == 'net' or (not role and (ctype == 'net' or ccode in NET_CODES)):
+                if not row['detail'] and not net:
+                    net = amt
                 continue
             # `amt < 0` stays unconditional. A line the scheme calls an earning
             # but which came out negative is a correction that REDUCES pay;
@@ -132,11 +178,16 @@ class HrPayslip(models.Model):
                     not role and (ctype in DED_CAT_TYPES
                                   or ccode in DED_CAT_CODES)):
                 deductions.append(row)
-                ded_total += abs(amt)
             else:
                 earnings.append(row)
+
+        # Totals count only the rows that are not already inside another line's
+        # total — the same rule as the pay run header (`_pb_bucket_sql`).
+        earnings, earn_total = self._pb_fold_subtotals(earnings)
+        deductions, ded_total = self._pb_fold_subtotals(deductions)
+        employer, emp_total = self._pb_fold_subtotals(employer)
         if not gross:
-            gross = sum(e['amount'] for e in earnings)
+            gross = earn_total
         if not net:
             net = gross - ded_total
         # Bridge = whatever separates (gross − deductions) from net: the advance
