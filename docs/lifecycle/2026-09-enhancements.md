@@ -46,7 +46,7 @@ Regression and Chrome workflow checks are performed on an isolated restored tena
 
 ## Removable demo examples
 
-Payobook and Rize are authorized to retain examples. Run the existing shell script with `PB_DEMO_ACTION=lifecycle-load` to add `DEMO Lifecycle journeys`, or `PB_DEMO_ACTION=lifecycle-remove` to remove its exact registered records. Repeated loads do not duplicate records, and the existing five-person demo world is preserved. The separate register is also visible under demo settings.
+Payobook and Rize are authorized to retain examples. Run the existing shell script with `PB_DEMO_ACTION=lifecycle-load` to add `DEMO Lifecycle journeys`, or `PB_DEMO_ACTION=lifecycle-remove` to remove its exact registered records. The CLI defaults to the operating company with the most employees; set `PB_DEMO_COMPANY_ID` to select a specific company for both load and removal. Repeated loads do not duplicate records, and the existing five-person demo world is preserved. The separate register is also visible under demo settings.
 
 Examples include two hiring roles, three candidates, a manager evaluation and a draft holiday review. All new named business records begin with `DEMO`. Careers jobs remain unpublished and the holiday draft does not change working days. No real recipients are emailed by the loader. ABM and the template receive code only.
 

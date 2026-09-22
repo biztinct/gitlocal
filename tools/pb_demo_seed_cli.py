@@ -120,9 +120,17 @@ def mapping(env):
     return report
 
 
+def _lifecycle_env(env):
+    company_id = int(os.environ.get('PB_DEMO_COMPANY_ID') or env['pb.demo.seed']._programme_company().id)
+    company = env['res.company'].browse(company_id).exists()
+    if not company:
+        raise ValueError('PB_DEMO_COMPANY_ID does not identify a company.')
+    return env(context=dict(env.context, allowed_company_ids=[company.id]))
+
+
 def lifecycle_load(env):
     from odoo.addons.pb_demo_seed.seeds.lifecycle import load
-    seed = load(env)
+    seed = load(_lifecycle_env(env))
     env.cr.commit()
     print('Lifecycle demo: %s registered records.' % seed.record_count)
     return seed
@@ -130,7 +138,7 @@ def lifecycle_load(env):
 
 def lifecycle_remove(env):
     from odoo.addons.pb_demo_seed.seeds.lifecycle import remove
-    result = remove(env)
+    result = remove(_lifecycle_env(env))
     env.cr.commit()
     print('Lifecycle demo removal (removed, disabled, blocked): %s' % (result,))
     return result
