@@ -230,6 +230,23 @@ class HrPayslipRun(models.Model):
     pb_total_deductions = fields.Monetary(
         string='Total Deductions', compute='_compute_pb_totals',
         currency_field='pb_currency_id', store=True)
+    # THE ARITHMETIC CHECK. Gross minus deductions IS take-home — on every
+    # scheme, in every country, with no exceptions worth a banner. When a run
+    # says otherwise, a component is filed under the wrong heading, and until
+    # now nothing said so: rize's August run read ₫2,957,538,261 gross against
+    # ₫1,770,238,261 net with only ₫289,886,044 of deductions between them —
+    # ₫897m unaccounted for — and the screen showed all three figures calmly.
+    #
+    # Stored beside the totals because it is the same aggregation: the numbers
+    # are already in hand, so the check costs nothing to keep.
+    pb_balance_gap = fields.Monetary(
+        string='Unaccounted for', compute='_compute_pb_totals',
+        currency_field='pb_currency_id', store=True,
+        help="Total gross minus deductions minus net pay. Anything other than "
+             "zero means a component is counted under the wrong heading.")
+    pb_balance_ok = fields.Boolean(
+        string='Figures add up', compute='_compute_pb_totals', store=True,
+        help="False when the run's own figures do not reconcile.")
     # VALUEKIND P5 — what the employer pays ON TOP of gross, which used to be
     # summed into Deductions because it shares the `COMP` category with them.
     # It is not taken off anybody's pay and it never belonged there.
@@ -291,6 +308,11 @@ class HrPayslipRun(models.Model):
     _PB_CATEGORY_BUCKETS = ('NET', 'GROSS', 'DED', 'DEDUCTION', 'COMP',
                             'BASIC', 'ALW')
 
+    #: How far out a run's own figures may be before the screen says so, as a
+    #: share of gross. One percent: a rounding difference is orders of magnitude
+    #: smaller and a mis-filed component is orders of magnitude larger.
+    _PB_BALANCE_SHARE = 0.01
+
     @api.model
     def _pb_bucket_sql(self, role_aware):
         """Which KPI band a payslip line belongs in, as a SQL expression.
@@ -340,6 +362,8 @@ class HrPayslipRun(models.Model):
             run.pb_total_net = run.pb_total_gross = run.pb_total_deductions = 0.0
             run.pb_total_employer_cost = 0.0
             run.pb_unsourced_count = 0
+            run.pb_balance_gap = 0.0
+            run.pb_balance_ok = True
             company = getattr(run, 'company_id', False) or self.env.company
             # SCHEMECTX P1 — a run belongs to a scheme, and the scheme's
             # country decides the money. The company's is the answer only
@@ -418,6 +442,32 @@ class HrPayslipRun(models.Model):
             run.pb_total_deductions = abs(d.get('DED', 0.0) + d.get('DEDUCTION', 0.0)
                                           + d.get('COMP', 0.0))
             run.pb_total_employer_cost = abs(d.get('ERCOST', 0.0))
+            run._pb_set_balance(bool(d.get('NET')))
+
+    def _pb_set_balance(self, has_net):
+        """Does gross − deductions − net come to nothing?
+
+        Only asked when the run HAS a net figure. Without one there is nothing
+        to reconcile against and the answer would be "your whole gross is
+        unaccounted for", which is a statement about the question, not the run.
+
+        TOLERANCE. Rounding is per payslip, so a run of 4,500 people may
+        legitimately be a few units out; and a scheme that pays a mid-cycle
+        advance reconciles over the pair of runs, not within one. So the bar is
+        a share of gross, not zero — big enough that ordinary arithmetic never
+        trips it, small enough that the ₫897m this was built for is caught
+        thirty times over.
+        """
+        self.ensure_one()
+        gap = (self.pb_total_gross or 0.0) - (self.pb_total_deductions or 0.0) \
+            - (self.pb_total_net or 0.0)
+        self.pb_balance_gap = gap
+        if not has_net:
+            self.pb_balance_ok = True
+            return
+        floor = float(max(self.pb_employee_count, 1))
+        limit = max(floor, abs(self.pb_total_gross or 0.0) * self._PB_BALANCE_SHARE)
+        self.pb_balance_ok = abs(gap) <= limit
 
     # ---- context-aware permission flags for kanban card buttons ----
     # NOTE: these are COSMETIC. Enforcement lives in the engine and in the

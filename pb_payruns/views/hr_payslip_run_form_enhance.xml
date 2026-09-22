@@ -93,6 +93,33 @@
                     are not this period's pay. Run payroll again with this period's
                     pay data, or sync the connected system first.
                 </div>
+                <!-- Gross minus deductions IS take-home. When it is not, a
+                     component sits under the wrong heading and every figure in
+                     the band below is affected — so this warning goes above
+                     them, exactly like the no-data one. It names the amount
+                     that is unaccounted for and where to go and fix it; it
+                     never blocks the run, because the run may still be right
+                     for reasons only a person can know. -->
+                <field name="pb_balance_ok" invisible="1"/>
+                <!-- ONE child, deliberately. The theme lays an `alert` out with
+                     `display:flex`, and Odoo wraps every `<field>` in a div of
+                     its own — so a sentence with an amount in the middle of it
+                     came out as four side-by-side columns. Wrapping the whole
+                     message in a single element gives the flex row one item and
+                     hands the text back to normal flow inside it. -->
+                <div class="alert alert-warning pb-payrun-unbalanced" role="alert"
+                     invisible="pb_balance_ok">
+                    <div>
+                        <b>These figures do not add up.</b>
+                        Gross pay less deductions should be take-home pay, and
+                        <field name="pb_balance_gap" nolabel="1" readonly="1"
+                               class="pb-unb-gap d-inline-block"/>
+                        is unaccounted for. Usually a component is set to the
+                        wrong thing — a working figure counted as pay, or a
+                        running total counted twice. Open the pay scheme and
+                        check Component treatment.
+                    </div>
+                </div>
                 <div class="pb-payrun-kpis">
                     <div class="pb-pk">
                         <span class="pb-pk-l">Total gross</span>
