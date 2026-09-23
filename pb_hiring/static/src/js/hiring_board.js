@@ -103,6 +103,11 @@ export class PbHiringBoard extends Component {
         this.orm = useService("orm");
         this.notif = useService("notification");
         this.action = useService("action");
+        // A client action with no control panel names itself, or the trail
+        // above anything it opens reads "Unnamed".
+        if (!this.props.embedded && this.env.config && this.env.config.setDisplayName) {
+            this.env.config.setDisplayName(_t("Hiring"));
+        }
         this.screenOrder = SCREEN_ORDER;
         this.ivFocusKeys = IV_FOCUS;
 

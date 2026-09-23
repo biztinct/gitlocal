@@ -1233,9 +1233,16 @@ a {
 .o_form_view .o_statusbar_status {
     font-size: 0.75rem;
 
+    // THE ARROW HEADS NEED ROOM (2026-09-23). A symmetric 12px left each
+    // step's text running into the previous step's arrow head, so the chain
+    // read as overlapping words. The left side carries the incoming head,
+    // the right side its own; the leftmost step (Odoo's `.o_last`, the widget
+    // runs row-reverse) has no incoming head to clear.
     .o_arrow_button {
-        padding: 3px 12px !important;
+        padding: 4px 16px 4px 26px !important;
         font-size: 0.75rem;
+
+        &.o_last { padding-left: 14px !important; }
     }
 }
 

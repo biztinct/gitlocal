@@ -94,7 +94,7 @@ WHAT THIS MODULE IS
     them, and whether an agency is faster than doing it yourself — with the
     whole thing downloadable as a spreadsheet.
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.3.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

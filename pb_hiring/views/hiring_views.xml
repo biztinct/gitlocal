@@ -149,8 +149,8 @@
                             </field>
                         </page>
                         <page string="Job descriptions" name="jds">
-                            <field name="jd_ids" readonly="1">
-                                <list>
+                            <field name="jd_ids">
+                                <list create="0" delete="0">
                                     <field name="version"/>
                                     <field name="title"/>
                                     <field name="is_current"/>
@@ -303,7 +303,7 @@
                         <group>
                             <field name="requisition_id"
                                    readonly="state != 'draft'"/>
-                            <field name="title"/>
+                            <field name="title" readonly="state != 'draft'"/>
                             <field name="version" readonly="1"/>
                         </group>
                         <group>
@@ -314,10 +314,12 @@
                     </group>
                     <group string="The one-line version">
                         <field name="summary" nolabel="1" colspan="2"
+                               readonly="state != 'draft'"
                                placeholder="One sentence a candidate would read on a list of jobs…"/>
                     </group>
                     <group string="The advert">
                         <field name="body" nolabel="1" colspan="2"
+                               readonly="state != 'draft'"
                                placeholder="What a candidate reads. This goes onto the careers page word for word…"/>
                     </group>
                     <group string="Why it was sent back"

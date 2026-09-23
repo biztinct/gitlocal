@@ -1,3 +1,4 @@
+import { markup } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { session } from "@web/session";
 
@@ -85,3 +86,39 @@ export const bizTitleService = {
 };
 
 registry.category("services").add("title", bizTitleService, { force: true });
+
+// =========================================================================
+// EMPTY-LIST MESSAGES OPENED FROM OUR OWN SCREENS (2026-09-23)
+//
+// A cockpit button that returns `action.read()[0]` hands the client an action
+// whose `help` is a plain string. Core only turns `help` into markup on the
+// two paths it loads itself (by id, or from a form button), so on this path
+// the empty-list message rendered as literal "<p class=...>" text. Every
+// doAction(object) now gets the same treatment core gives its own paths.
+// `help` comes from action records written by developers or administrators,
+// the same source core already trusts on those paths.
+// =========================================================================
+const services = registry.category("services");
+const actionDef = services.get("action", null);
+if (actionDef && !actionDef.bizHelpMarkup) {
+    const withMarkupHelp = (action) =>
+        (action && typeof action === "object" && typeof action.help === "string")
+            ? { ...action, help: markup(action.help) }
+            : action;
+    const wrap = (api) => {
+        if (api && typeof api.doAction === "function") {
+            const doAction = api.doAction;
+            api.doAction = (action, options) => doAction(withMarkupHelp(action), options);
+        }
+        return api;
+    };
+    services.add("action", {
+        ...actionDef,
+        bizHelpMarkup: true,
+        start(...args) {
+            const api = actionDef.start.apply(this, args);
+            return api && typeof api.then === "function" ? api.then(wrap) : wrap(api);
+        },
+    }, { force: true });
+}
+
