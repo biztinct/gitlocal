@@ -26,17 +26,9 @@ def clean_url(value):
 
 class HiringApplications(WebsiteHrRecruitment):
     def _pb_hiring_public_job(self, job):
+        # The rule lives on hr.job so the careers page can ask it too.
         job = job.sudo().exists()
-        if not job or not job.active or not job.is_published:
-            return None
-        if job.company_id != request.website.company_id:
-            return None
-        if job.website_id and job.website_id != request.website:
-            return None
-        req = request.env['pb.hiring.requisition'].sudo().search([('job_id', '=', job.id)], order='id desc', limit=1)
-        if req and (req.state != 'open' or req.role_type == 'sensitive_replacement'):
-            return None
-        return job
+        return job if job.pb_hiring_accepts_applications(request.website) else None
 
     def _pb_hiring_touch(self, kwargs):
         touch = {key: str(kwargs.get('utm_' + key) or '')[:200] for key in ('source', 'medium', 'campaign', 'term', 'content')}

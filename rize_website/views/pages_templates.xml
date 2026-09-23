@@ -52,6 +52,22 @@
     </xpath>
   </template>
 
+  <!-- "Page not found": stock ghost drawing inside the generic header/footer.
+       Replacing #wrap drops the plausible-analytics input another view puts
+       inside it; that tracker is not configured on this site. -->
+  <template id="rz_404" inherit_id="http_routing.404" priority="90" name="Rize page not found">
+    <xpath expr="//div[@id='wrap']" position="replace">
+      <t t-call="rize_website.rz_notice">
+        <t t-set="rz_title">This page isn't here</t>
+        <t t-set="rz_text">The link may be old, or the role may no longer be open. The open roles and the front page are one click away.</t>
+        <t t-set="rz_go_label">See open roles</t>
+        <t t-set="rz_go_url">/jobs</t>
+        <t t-set="rz_alt_label">Back to home</t>
+        <t t-set="rz_alt_url">/</t>
+      </t>
+    </xpath>
+  </template>
+
   <!-- This page has no #wrap: its content is the first div under the layout call. -->
   <template id="rz_task_submitted" inherit_id="website_project.task_submitted" priority="90" name="Rize request thank-you">
     <xpath expr="//t[@t-call='website.layout']/div[1]" position="replace">

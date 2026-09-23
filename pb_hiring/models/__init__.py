@@ -25,6 +25,7 @@ from . import (
     vendor_ext,
     analytics,
     hr_applicant_ext,
+    hr_job_ext,
     pb_hiring,
     pb_hiring_a3,
     hiring_automation,
