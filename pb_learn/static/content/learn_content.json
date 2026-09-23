@@ -1,6 +1,10 @@
 {
   "__generated__": "GENERATED FILE. Do not edit. Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py",
   "chrome": {
+    "aboutWord": {
+      "en": "about",
+      "vi": "khoảng"
+    },
     "askDataInstead": {
       "en": "Ask about your pay data instead",
       "vi": "Hỏi về dữ liệu lương của bạn"
@@ -44,6 +48,30 @@
     "cancelAct": {
       "en": "Go back",
       "vi": "Quay lại"
+    },
+    "ch1Lead": {
+      "en": "Where things live and who signs what.",
+      "vi": "Mọi thứ nằm ở đâu và ai ký duyệt việc gì."
+    },
+    "ch1Title": {
+      "en": "Get around",
+      "vi": "Làm quen"
+    },
+    "ch2Lead": {
+      "en": "From people and pay data to money out.",
+      "vi": "Từ nhân sự và dữ liệu lương đến lúc chi trả."
+    },
+    "ch2Title": {
+      "en": "Run pay",
+      "vi": "Chạy lương"
+    },
+    "ch3Lead": {
+      "en": "Reports, rules and rates.",
+      "vi": "Báo cáo, quy tắc và tỷ lệ."
+    },
+    "ch3Title": {
+      "en": "Keep it right",
+      "vi": "Giữ cho đúng"
     },
     "check": {
       "en": "Understanding check",
@@ -113,6 +141,14 @@
       "en": "Continue",
       "vi": "Tiếp tục"
     },
+    "dayWord": {
+      "en": "day",
+      "vi": "ngày"
+    },
+    "daysWord": {
+      "en": "days",
+      "vi": "ngày"
+    },
     "debriefTitle": {
       "en": "Debrief",
       "vi": "Tổng kết"
@@ -144,6 +180,14 @@
     "fullLesson": {
       "en": "Full lesson",
       "vi": "Bài học đầy đủ"
+    },
+    "fvLater": {
+      "en": "Not now",
+      "vi": "Để sau"
+    },
+    "fvOn": {
+      "en": "First time on",
+      "vi": "Lần đầu ở"
     },
     "groundedIn": {
       "en": "Grounded in this screen:",
@@ -180,6 +224,10 @@
     "less": {
       "en": "Say it the full way",
       "vi": "Giải thích đầy đủ lại"
+    },
+    "lessonsWord": {
+      "en": "lessons",
+      "vi": "bài"
     },
     "lineProgress": {
       "en": "done in this section",
@@ -357,9 +405,69 @@
       "en": "Mistakes this prevents",
       "vi": "Những lỗi bài này giúp tránh"
     },
+    "monthEndBody": {
+      "en": "A short refresher on what to check before a run goes for approval.",
+      "vi": "Ôn nhanh những gì cần kiểm tra trước khi gửi phê duyệt một đợt lương."
+    },
+    "monthEndIn": {
+      "en": "Changes close in",
+      "vi": "Hạn chốt thay đổi còn"
+    },
+    "monthEndSkip": {
+      "en": "Skip this month",
+      "vi": "Bỏ qua tháng này"
+    },
+    "monthEndTitle": {
+      "en": "Before month-end",
+      "vi": "Trước khi chốt tháng"
+    },
+    "monthEndToday": {
+      "en": "Changes close today",
+      "vi": "Hôm nay là hạn chốt thay đổi"
+    },
     "motionOn": {
       "en": "Motion on",
       "vi": "Bật chuyển động"
+    },
+    "msDoneB": {
+      "en": "Next come the government reports for the month.",
+      "vi": "Tiếp theo là các báo cáo gửi cơ quan nhà nước của tháng."
+    },
+    "msDoneT": {
+      "en": "Your first pay run is finished",
+      "vi": "Đợt lương đầu tiên đã hoàn tất"
+    },
+    "msEmployeeB": {
+      "en": "Next, give them a contract, so payroll knows what to pay them.",
+      "vi": "Tiếp theo, hãy tạo hợp đồng để hệ thống biết cần trả lương bao nhiêu."
+    },
+    "msEmployeeT": {
+      "en": "Your company has its first employee",
+      "vi": "Công ty đã có nhân viên đầu tiên"
+    },
+    "msGo": {
+      "en": "What happens next",
+      "vi": "Bước tiếp theo là gì"
+    },
+    "msOk": {
+      "en": "Fine, thanks",
+      "vi": "Đã hiểu"
+    },
+    "msRunB": {
+      "en": "Nothing is paid yet. Open one payslip and read it from top to bottom before the run goes for approval.",
+      "vi": "Chưa có khoản nào được chi. Hãy mở một phiếu lương và đọc từ trên xuống trước khi gửi phê duyệt."
+    },
+    "msRunT": {
+      "en": "Your company's first pay run is here",
+      "vi": "Đợt lương đầu tiên của công ty đã được tạo"
+    },
+    "msSubmittedB": {
+      "en": "Nothing is paid yet. The approver sees it in their inbox. Once they sign, it can be paid.",
+      "vi": "Chưa có khoản nào được chi. Người phê duyệt sẽ thấy trong hộp thư. Khi họ ký, đợt lương có thể được chi trả."
+    },
+    "msSubmittedT": {
+      "en": "A pay run went for approval",
+      "vi": "Một đợt lương đã được gửi phê duyệt"
     },
     "nbAllDone": {
       "en": "You have finished every lesson here. Practice mode is always open.",
@@ -432,6 +540,10 @@
     "of": {
       "en": "of",
       "vi": "trên"
+    },
+    "offPath": {
+      "en": "Not on your path",
+      "vi": "Không thuộc lộ trình của bạn"
     },
     "onScreen": {
       "en": "On:",
@@ -561,6 +673,34 @@
       "en": "Can I undo it",
       "vi": "Có hoàn tác được không"
     },
+    "roleApprover": {
+      "en": "Approver",
+      "vi": "Người phê duyệt"
+    },
+    "roleGuess": {
+      "en": "Picked from your access. Change it any time.",
+      "vi": "Chọn theo quyền truy cập của bạn. Bạn đổi lúc nào cũng được."
+    },
+    "roleHr": {
+      "en": "HR admin",
+      "vi": "Quản trị nhân sự"
+    },
+    "roleLabel": {
+      "en": "I am the",
+      "vi": "Tôi là"
+    },
+    "roleNeeds": {
+      "en": "Required for you:",
+      "vi": "Bắt buộc với bạn:"
+    },
+    "roleOfficer": {
+      "en": "Payroll officer",
+      "vi": "Chuyên viên tính lương"
+    },
+    "roleOwner": {
+      "en": "Owner",
+      "vi": "Chủ doanh nghiệp"
+    },
     "runPayroll": {
       "en": "Run payroll",
       "vi": "Chạy bảng lương"
@@ -585,6 +725,10 @@
       "en": "Expected",
       "vi": "Cần nhập"
     },
+    "scJump": {
+      "en": "Go back to this step",
+      "vi": "Quay lại bước này"
+    },
     "scNotOnScreen": {
       "en": "That control is not on this screen right now. So here is what it does, rather than an arrow pointing at nothing.",
       "vi": "Nút đó hiện không có trên màn hình này. Vậy nên tôi mô tả nó ở đây, thay vì chỉ mũi tên vào chỗ trống."
@@ -608,6 +752,10 @@
     "scSkip": {
       "en": "Skip this step",
       "vi": "Bỏ qua bước này"
+    },
+    "scSwitch": {
+      "en": "Switch mode",
+      "vi": "Đổi chế độ"
     },
     "scTry": {
       "en": "Try",
@@ -828,6 +976,78 @@
     "tabPractice": {
       "en": "Practice",
       "vi": "Thực hành"
+    },
+    "teamEmpty": {
+      "en": "Nobody in this company works on payroll yet.",
+      "vi": "Công ty chưa có ai làm việc với bảng lương."
+    },
+    "teamFailed": {
+      "en": "That reminder did not send. Try again.",
+      "vi": "Chưa gửi được lời nhắc. Hãy thử lại."
+    },
+    "teamGuessed": {
+      "en": "path guessed from access",
+      "vi": "lộ trình đoán theo quyền truy cập"
+    },
+    "teamLastSeen": {
+      "en": "Last in Learn:",
+      "vi": "Lần cuối vào Học tập:"
+    },
+    "teamLead": {
+      "en": "The required lessons on each person's path. Progress only. Nobody's questions are shown here.",
+      "vi": "Các bài bắt buộc trên lộ trình của từng người. Chỉ hiện tiến độ. Không hiện câu hỏi của ai."
+    },
+    "teamLeft": {
+      "en": "min left",
+      "vi": "phút còn lại"
+    },
+    "teamLens": {
+      "en": "Team",
+      "vi": "Nhóm"
+    },
+    "teamNever": {
+      "en": "never",
+      "vi": "chưa bao giờ"
+    },
+    "teamNext": {
+      "en": "Next:",
+      "vi": "Tiếp theo:"
+    },
+    "teamNot": {
+      "en": "Not started",
+      "vi": "Chưa bắt đầu"
+    },
+    "teamOf": {
+      "en": "of",
+      "vi": "trên"
+    },
+    "teamOnly": {
+      "en": "Only a payroll manager or an administrator can see the team.",
+      "vi": "Chỉ trưởng bộ phận lương hoặc quản trị viên mới xem được nhóm."
+    },
+    "teamReady": {
+      "en": "Ready",
+      "vi": "Sẵn sàng"
+    },
+    "teamReadyWord": {
+      "en": "people are ready",
+      "vi": "người đã sẵn sàng"
+    },
+    "teamRemind": {
+      "en": "Send a reminder",
+      "vi": "Gửi lời nhắc"
+    },
+    "teamReminded": {
+      "en": "Reminder sent",
+      "vi": "Đã gửi lời nhắc"
+    },
+    "teamStarted": {
+      "en": "In progress",
+      "vi": "Đang học"
+    },
+    "teamTitle": {
+      "en": "Who is ready for month-end",
+      "vi": "Ai đã sẵn sàng cho kỳ chốt lương"
     },
     "thisScreen": {
       "en": "This screen",
@@ -14207,5 +14427,5 @@
       }
     }
   ],
-  "version": "bfee0f20ce35"
+  "version": "4c34cbac7589"
 }

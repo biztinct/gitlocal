@@ -1031,3 +1031,39 @@ msgstr "công ty bạn"
 #: model:learn.tenant.override,value:pb_learn.slot_payrollsupportcontact
 msgid "your payroll administrator"
 msgstr "quản trị viên tính lương của bạn"
+
+#. module: pb_learn
+#. odoo-javascript
+#: code:addons/pb_learn/static/src/hub/learn_palette.js:0
+msgid "Lesson"
+msgstr "Bài học"
+
+#. module: pb_learn
+#. odoo-javascript
+#: code:addons/pb_learn/static/src/hub/learn_palette.js:0
+msgid "Guide"
+msgstr "Hướng dẫn"
+
+#. module: pb_learn
+#. odoo-javascript
+#: code:addons/pb_learn/static/src/hub/learn_palette.js:0
+msgid "Walkthrough"
+msgstr "Hướng dẫn từng bước"
+
+#. module: pb_learn
+#. odoo-javascript
+#: code:addons/pb_learn/static/src/hub/learn_palette.js:0
+msgid "how to"
+msgstr "cách làm"
+
+#. module: pb_learn
+#. odoo-javascript
+#: code:addons/pb_learn/static/src/hub/learn_hub.js:0
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_learn
+#. odoo-javascript
+#: code:addons/pb_learn/static/src/hub/learn_hub.js:0
+msgid "Settings"
+msgstr "Cài đặt"

@@ -54,6 +54,7 @@ import { HubShell } from "@pb_hub/js/hub_shell";
 
 import { LearnJourney } from "@pb_learn/journey/journey";
 import { LearnSettings } from "@pb_learn/hub/learn_settings";
+import { LearnTeam } from "@pb_learn/hub/learn_team";
 
 /** Where a later module bolts a lens onto Learn. */
 export const LEARN_LENSES = "pb_learn_lens";
@@ -81,6 +82,13 @@ export class LearnHub extends Component {
                 // LEARN v3 — every learning switch on one card. LAST, and
                 // administrators only: the lens gate hides it, and
                 // learn.settings re-asks on every read and write.
+                // LEARN v3 — who is ready for month-end. Payroll managers and
+                // administrators; learn.path re-asks on every call.
+                { key: "team", icon: "users", label: _t("Team"),
+                  Component: LearnTeam,
+                  groups: ["pb_hr_payroll_base.group_payroll_base_manager",
+                           "pb_hr_payroll_base.group_payroll_super_admin",
+                           "base.group_system"] },
                 { key: "settings", icon: "sliders", label: _t("Settings"),
                   Component: LearnSettings, groups: ["base.group_system"] },
             ],

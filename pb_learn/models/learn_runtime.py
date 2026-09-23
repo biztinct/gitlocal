@@ -510,8 +510,15 @@ class LearnRuntime(models.AbstractModel):
         Content = self.env['learn.content']
         progress = self.env['learn.progress'].my_progress()
         gate_open = self.env['learn.live'].gate_open()
+        # LEARN v3 — the learner's path decides what is REQUIRED for them, so
+        # the suggestion comes from their path. Every other station is still
+        # offered, as rule 5's optional work. Copies, never the content dicts.
+        role, _chosen = self.env['learn.path'].role_of()
+        on_path = self.env['learn.path'].required_for(role)
+        stations = [dict(s, required=s['key'] in on_path)
+                    for s in Content.stations()]
         key, kind, line, reason_key = choose_next(
-            Content.stations(), Content.missions(), progress,
+            stations, Content.missions(), progress,
             Content.line_order(), gate_open, skip or self._unreachable_keys())
         return {
             'key': key or '',
@@ -657,4 +664,7 @@ class LearnRuntime(models.AbstractModel):
             'streak': self.streak(),
             'line_order': Content.line_order(),
             'skill_tree': _flag_on(self.env, SKILL_TREE_FLAG),
+            # LEARN v3 — the learner's path, every path, and the month-end
+            # date when the pay calendar has one coming up.
+            'path': self.env['learn.path'].bootstrap_extra(),
         }

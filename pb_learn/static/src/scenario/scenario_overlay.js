@@ -552,6 +552,46 @@ export class ScenarioOverlay extends Component {
             this.onBack();
         } else if (act === "s-leave") {
             this.onLeave();
+        } else if (act === "s-jump") {
+            // LEARN v3 — the step bar. Only BACKWARDS: jumping ahead would
+            // walk past a step the learner has not been shown.
+            const i = parseInt(el.dataset.i, 10);
+            if (i >= 0 && i < this.state.index) {
+                this.sc.goTo(i);
+            }
+        } else if (act === "s-mode") {
+            this.switchMode(el.dataset.mode);
+        }
+    }
+
+    /** LEARN v3 — one switch for Watch / Try / Do, keeping your place.
+     *
+     *  The place is the step KEY, never the index: a step may narrow itself
+     *  to one mode, so step 4 of Watch is not step 4 of Do. Try belongs to
+     *  the lesson map (over the practice copy), so switching to it hands the
+     *  walkthrough over there from the start. */
+    async switchMode(mode) {
+        const sc = this.scenario;
+        if (!sc || mode === this.state.mode || !(sc.modes || []).includes(mode)) {
+            return;
+        }
+        const key = sc.key;
+        const stepKey = this.step ? this.step.key : "";
+        this._detachClick();
+        this._clearTimer();
+        this._clearTyper();
+        if (mode === "try") {
+            this.sc.stop();
+            await this.sc.begin(key, "try");
+            return;
+        }
+        const started = await this.sc.begin(key, mode);
+        if (!started || !stepKey) {
+            return;
+        }
+        const index = this.sc.steps(key, mode).findIndex((st) => st.key === stepKey);
+        if (index > 0) {
+            this.sc.goTo(index);
         }
     }
 
@@ -677,13 +717,34 @@ export class ScenarioOverlay extends Component {
             ? ""
             : `<span class="lrn-scstep">${esc(T("step"))}${SP}${this.state.index + 1}${
                 SP}${esc(T("of"))}${SP}${this.steps.length}</span>`;
+        // LEARN v3 — the modes this walkthrough offers, as one switch. The
+        // current one is the solid choice; the chip underneath still says
+        // that this is the real screen.
+        const label = { watch: "scWatch", try: "scTry", do: "scDo" };
+        const icon = { watch: "play", try: "flask", do: "target" };
+        const modes = (s.modes || []).length > 1 && !this.state.done
+            ? `<span class="lrn-scmodes" role="group" aria-label="${esc(T("scSwitch"))}">${
+                s.modes.map((m) => `<button class="lrn-scmode" data-act="s-mode" data-mode="${m}"
+                    aria-pressed="${m === this.state.mode ? "true" : "false"}"
+                    >${ic(icon[m])}${esc(T(label[m]))}</button>`).join("")}</span>`
+            : `<span class="lrn-chip a">${ic(this.isWatch ? "play" : "target")}${
+                esc(this.isWatch ? T("scWatch") : T("scDo"))}</span>`;
+        // LEARN v3 — one segment per step; the finished ones take you back.
+        const segs = this.state.done ? "" : `<div class="lrn-scsegs">${
+            this.steps.map((st, i) => {
+                const cls = i < this.state.index ? "done" : (i === this.state.index ? "cur" : "");
+                return `<button class="lrn-scseg ${cls}" data-act="s-jump" data-i="${i}"
+                    ${i < this.state.index ? "" : "disabled"}
+                    title="${esc(i < this.state.index ? T("scJump") + " · " + tx(st.title) : tx(st.title))}"
+                    aria-label="${esc(T("step"))}${SP}${i + 1}"></button>`;
+            }).join("")}</div>`;
         return `
         <div class="lrn-schead">
-            <span class="lrn-chip a">${ic(this.isWatch ? "play" : "target")}${
-                esc(this.isWatch ? T("scWatch") : T("scDo"))}</span>
+            ${modes}
             <span class="lrn-chip">${ic("shield-check")}${esc(this.modeBadge)}</span>
             ${counter}
-        </div>`;
+        </div>
+        ${segs}`;
     }
 }
 

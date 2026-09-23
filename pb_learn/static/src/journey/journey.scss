@@ -1423,3 +1423,162 @@
 
     .lrn-in { max-width: 240px; }
 }
+
+/* =============================================================================
+   LEARN v3 — the map as a path: "next up", the role picker, month-end, and
+   three chapters. Appended so it wins over the Phase 6 strip it restyles.
+   ========================================================================== */
+.lrn-continue:not(.done) {
+    position: relative;
+    gap: 18px;
+    padding: 18px 20px;
+    border-radius: 18px;
+    border-left-width: 5px;
+    box-shadow: 0 10px 28px -18px rgba(36, 31, 82, .45);
+
+    > .lrn-cardico {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: var(--vuf-primary-soft, #EDEAF8);
+        color: var(--vuf-primary, #5A4BB0);
+        .lrn-ic { width: 26px; height: 26px; }
+    }
+    .lrn-clabel { color: var(--vuf-primary, #5A4BB0); }
+    .lrn-cardtitle { font-size: 18px; font-weight: 800; letter-spacing: -.01em; }
+}
+
+.lrn-roles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+
+    .lrn-clabel { margin: 0 4px 0 0; }
+}
+
+.lrn-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--vuf-line, #E2E8F0);
+    border-radius: 999px;
+    background: var(--vuf-surface, #fff);
+    color: var(--vuf-ink-soft, #4B4866);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s;
+
+    .lrn-ic { width: 14px; height: 14px; }
+    &:hover { border-color: var(--vuf-primary-light, #CBC2EE); }
+    &[aria-pressed="true"] {
+        background: var(--vuf-primary, #5A4BB0);
+        border-color: var(--vuf-primary, #5A4BB0);
+        color: #fff;
+    }
+    &:focus-visible { outline: 2px solid var(--vuf-primary, #5A4BB0); outline-offset: 2px; }
+}
+
+.lrn-rolemeta {
+    font-size: 12px;
+    color: var(--vuf-muted, #6B7280);
+
+    em { display: block; font-style: normal; font-size: 11px; opacity: .85; }
+}
+
+.lrn-monthend {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--vuf-line, #E2E8F0);
+    border-radius: 14px;
+
+    .lrn-cardmain { flex: 1 1 auto; min-width: 0; }
+    .lrn-cardtitle { font-weight: 800; }
+    .lrn-clabel { display: block; margin-bottom: 2px; }
+}
+
+.lrn-mecal {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 50px;
+    flex: 0 0 auto;
+    border-radius: 12px;
+    background: #FBE3EA;
+    color: #DC2668;
+
+    b { font-size: 20px; font-weight: 800; }
+}
+
+.lrn-chapter {
+    margin-bottom: 26px;
+    padding-top: 4px;
+}
+
+.lrn-chhead {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--vuf-line, #E2E8F0);
+
+    b { display: block; font-size: 16px; font-weight: 800; }
+    .lrn-note { margin: 0; }
+}
+
+.lrn-chno {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--vuf-primary, #5A4BB0);
+    color: #fff;
+    font-weight: 800;
+    font-size: 13px;
+}
+
+.lrn-chmain { flex: 1 1 auto; min-width: 0; }
+
+.lrn-chprog {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+}
+
+.lrn-chbar {
+    width: 110px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--vuf-primary-soft, #EDEAF8);
+    overflow: hidden;
+
+    i { display: block; height: 100%; border-radius: 3px; background: var(--vuf-primary, #5A4BB0); transition: width .3s; }
+}
+
+.lrn-chcount { font-size: 12px; font-weight: 700; color: var(--vuf-muted, #6B7280); font-variant-numeric: tabular-nums; }
+
+/* Off the learner's path: still open, quieter. */
+.lrn-card.offpath:not(.done) { opacity: .62; }
+.lrn-card.offpath:not(.done):hover { opacity: 1; }
+
+@media (max-width: 640px) {
+    .lrn-continue:not(.done) { flex-wrap: wrap; }
+    .lrn-monthend { flex-wrap: wrap; }
+    .lrn-chbar { width: 60px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-role, .lrn-chbar i { transition: none; }
+}

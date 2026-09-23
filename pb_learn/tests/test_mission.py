@@ -213,7 +213,10 @@ class TestMission(TransactionCase):
         src = re.sub(r'/\*.*?\*/', '', src, flags=re.S)
         src = re.sub(r'(?<!:)//[^\n]*', '', src)
         calls = set(re.findall(r'orm\.call\(\s*"([a-z_.]+)"', src))
-        allowed = {'learn.runtime', 'learn.progress', 'learn.event', 'learn.confidence'}
+        # LEARN v3: learn.path (the learner's own role pick) is part of the
+        # learning spine too.
+        allowed = {'learn.runtime', 'learn.progress', 'learn.event', 'learn.confidence',
+                   'learn.path'}
         self.assertFalse(calls - allowed,
                          "The Journey calls models outside the learning spine: %s"
                          % (calls - allowed))

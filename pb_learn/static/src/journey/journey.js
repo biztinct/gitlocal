@@ -73,6 +73,22 @@ import { morphHTML, calcHTML, pipeHTML, runPipeline } from "../engine/visuals";
 
 const LOCAL_PREFS = "pbLearnPrefs";
 
+/* LEARN v3 — THREE CHAPTERS. The six lines, grouped the way a person meets
+   the work: find your way around, run a month of pay, keep it right. The
+   lines keep their own order inside a chapter (lineOrder), so the map and
+   `next_best` still agree about what comes next. A line in no chapter is
+   drawn in the last one rather than disappearing. */
+const CHAPTERS = [
+    { key: "ch1", lines: ["overview"] },
+    { key: "ch2", lines: ["payrun", "people"] },
+    { key: "ch3", lines: ["insights", "compliance", "setup"] },
+];
+const ROLE_ORDER = ["officer", "approver", "hr", "owner"];
+const ROLE_LABEL = { officer: "roleOfficer", approver: "roleApprover", hr: "roleHr", owner: "roleOwner" };
+const ROLE_ICON = { officer: "calculator", approver: "clipboard-check", hr: "users", owner: "trending-up" };
+/* Per-browser "skip this month" for the month-end card. */
+const MONTH_END_SKIP = "pbLearnMonthEndSkip";
+
 export class LearnJourney extends Component {
     static template = "pb_learn.Journey";
     /* A client action is handed `action`, `actionId`, `className` and
@@ -131,6 +147,10 @@ export class LearnJourney extends Component {
             // replica the learner is standing on and survives a trip back to
             // the map, so re-opening the sandbox resumes where they left it.
             pScreen: "dashboard",
+            // LEARN v3 — the path. `role` is the learner's pick, or the guess.
+            role: "",
+            roleChosen: false,
+            monthEndSkipped: false,
             lang: "en",
             motion: "auto",
             error: "",
@@ -239,6 +259,8 @@ export class LearnJourney extends Component {
             progress: runtime.progress || {},
             confidence: runtime.confidence || {},
             user: runtime.user || {},
+            // LEARN v3 — the learner's path and the month-end date.
+            path: runtime.path || {},
         };
         RT.tokens = this.bundle.tokens || {};
         RT.chrome = this.bundle.chrome || {};
@@ -248,6 +270,15 @@ export class LearnJourney extends Component {
         setGlossary(this.bundle.glossary);
         installGlossary();
         this.progress = this.bundle.progress || {};
+        this.state.role = (this.bundle.path && this.bundle.path.role) || "";
+        this.state.roleChosen = !!(this.bundle.path && this.bundle.path.role_chosen);
+        try {
+            const me = this.bundle.path && this.bundle.path.month_end;
+            this.state.monthEndSkipped = !!(me && me.month
+                && window.localStorage.getItem(MONTH_END_SKIP) === me.month);
+        } catch {
+            this.state.monthEndSkipped = false;
+        }
         this.visible = new Set(
             this.bundle.stations.filter((s) => s.visible).map((s) => s.key));
         // The rail path for a screen that is reachable but has no menu line of
@@ -345,6 +376,47 @@ export class LearnJourney extends Component {
 
     stateOf(key) {
         return (this.progress[key] || {}).state || "not_started";
+    }
+
+    /* ------------------------------------------------------ LEARN v3 path */
+    /** The station keys REQUIRED on this learner's path, or null when the
+     *  server sent no paths (a stale bundle): then the authored flags stand. */
+    get pathKeys() {
+        const roles = (this.bundle && this.bundle.path && this.bundle.path.roles) || {};
+        const keys = roles[this.state.role];
+        return keys ? new Set(keys) : null;
+    }
+
+    onPath(station) {
+        const keys = this.pathKeys;
+        return keys ? keys.has(station.key) : !!station.required;
+    }
+
+    async setRole(role) {
+        if (!ROLE_ORDER.includes(role) || role === this.state.role) {
+            return;
+        }
+        this.state.role = role;
+        this.state.roleChosen = true;
+        try {
+            const extra = await this.orm.call("learn.path", "set_role", [role]);
+            this.bundle.path = extra || this.bundle.path;
+            // The suggestion comes from the path, so it changes with it.
+            this.bundle.nextBest = await this.orm.call("learn.runtime", "next_best", []) || {};
+            this.render(true);
+        } catch {
+            // The pick still drives this page; the server re-syncs next load.
+        }
+    }
+
+    skipMonthEnd() {
+        const me = (this.bundle.path && this.bundle.path.month_end) || {};
+        this.state.monthEndSkipped = true;
+        try {
+            window.localStorage.setItem(MONTH_END_SKIP, me.month || "1");
+        } catch {
+            // A locked-down profile only loses the memory of the skip.
+        }
     }
 
     get doneCount() {
@@ -495,7 +567,7 @@ export class LearnJourney extends Component {
             Object.keys(screnLines).filter((k) => !lines[k]));
         const ordered = order.filter((k) => keys.includes(k))
             .concat(keys.filter((k) => !order.includes(k)));
-        const lineHTML = ordered.map((lineKey) => {
+        const lineSection = (lineKey) => {
             const items = (lines[lineKey] || []).filter(match);
             const screns = (screnLines[lineKey] || []).filter(screnMatch);
             if (!items.length && !screns.length) {
@@ -507,6 +579,36 @@ export class LearnJourney extends Component {
                     ${this._lineRingHTML(lines[lineKey] || [])}</h3>
                 <div class="lrn-cards">${items.map((s) => this._cardHTML(s)).join("")}</div>
                 ${this._scenarioRowHTML(screns)}
+            </section>`;
+        };
+        // LEARN v3 — the lines, grouped into three chapters. Each chapter says
+        // how much of YOUR path in it is done; a search that empties a whole
+        // chapter drops its header too.
+        const chaptered = new Set(CHAPTERS.flatMap((c) => c.lines));
+        const lineHTML = CHAPTERS.map((ch, i) => {
+            const own = ordered.filter((k) => ch.lines.includes(k)
+                || (i === CHAPTERS.length - 1 && !chaptered.has(k)));
+            const inner = own.map(lineSection).join("");
+            if (!inner) {
+                return "";
+            }
+            const onPath = this.stations.filter(
+                (s) => own.includes(s.line) && this.onPath(s));
+            const done = onPath.filter((s) => this.stateOf(s.key) === "done").length;
+            const pct = onPath.length ? Math.round(done / onPath.length * 100) : 100;
+            return `<section class="lrn-chapter">
+                <header class="lrn-chhead">
+                    <span class="lrn-chno">${i + 1}</span>
+                    <span class="lrn-chmain">
+                        <b>${esc(T(ch.key + "Title"))}</b>
+                        <span class="lrn-note">${esc(T(ch.key + "Lead"))}</span>
+                    </span>
+                    <span class="lrn-chprog" title="${done}${SP}/ ${onPath.length}">
+                        <span class="lrn-chbar"><i style="width:${pct}%"></i></span>
+                        <span class="lrn-chcount">${done}${SP}/ ${onPath.length}</span>
+                    </span>
+                </header>
+                ${inner}
             </section>`;
         }).join("");
 
@@ -532,6 +634,8 @@ export class LearnJourney extends Component {
             </div>
         </header>
         ${this._continueHTML()}
+        ${this._roleBarHTML()}
+        ${this._monthEndHTML()}
         <div class="lrn-toolbar">
             <button class="lrn-btn pri" data-act="to-missions"
                 >${ic("flask")}${esc(T("missions"))}</button>
@@ -554,6 +658,54 @@ export class LearnJourney extends Component {
        Drawn only when the server sent one — the flag being off, or every
        lesson being finished with the capstone out of reach, both produce an
        empty payload and no strip. */
+    /** LEARN v3 — "I am the …". The pick decides which stations are required
+     *  for this learner; everything stays open. */
+    _roleBarHTML() {
+        if (!this.pathKeys) {
+            return "";
+        }
+        const keys = this.pathKeys;
+        const onPath = this.stations.filter((s) => keys.has(s.key));
+        const left = onPath.filter((s) => this.stateOf(s.key) !== "done");
+        const mins = left.reduce((n, s) => n + (s.duration_min || 0), 0);
+        const buttons = ROLE_ORDER.map((r) => `
+            <button class="lrn-role" data-act="role" data-role="${r}"
+                    aria-pressed="${r === this.state.role ? "true" : "false"}"
+                >${ic(ROLE_ICON[r])}${esc(T(ROLE_LABEL[r]))}</button>`).join("");
+        return `<div class="lrn-roles" role="group" aria-label="${esc(T("roleLabel"))}">
+            <span class="lrn-clabel">${esc(T("roleLabel"))}</span>
+            ${buttons}
+            <span class="lrn-rolemeta">${esc(T("roleNeeds"))}${SP}${onPath.length}${SP}${
+                esc(T("lessonsWord"))}${left.length ? `,${SP}${esc(T("aboutWord"))}${SP}${mins}${SP}${esc(T("min"))}` : ""}
+                ${this.state.roleChosen ? "" : `<em>${esc(T("roleGuess"))}</em>`}</span>
+        </div>`;
+    }
+
+    /** LEARN v3 — the pay calendar's next "changes close" date, with a short
+     *  refresher. Drawn only when the pay calendar has one within a week. */
+    _monthEndHTML() {
+        const me = (this.bundle.path && this.bundle.path.month_end) || {};
+        if (!me.cutoff || this.state.monthEndSkipped) {
+            return "";
+        }
+        const days = me.days || 0;
+        const when = days <= 0 ? esc(T("monthEndToday"))
+            : `${esc(T("monthEndIn"))}${SP}${days}${SP}${esc(T(days === 1 ? "dayWord" : "daysWord"))}`;
+        const refresher = this.scenarios.some((sc) => sc.key === "sc_payslips"
+            && (sc.modes || []).includes("watch"));
+        return `<div class="lrn-monthend">
+            <span class="lrn-mecal"><b>${days <= 0 ? "!" : days}</b></span>
+            <span class="lrn-cardmain">
+                <span class="lrn-clabel">${esc(T("monthEndTitle"))}</span>
+                <span class="lrn-cardtitle">${when}</span>
+                <span class="lrn-carddesc">${esc(T("monthEndBody"))}</span>
+            </span>
+            ${refresher ? `<button class="lrn-btn pri" data-scenario="sc_payslips" data-mode="watch"
+                >${ic("play")}${esc(T("scWatch"))}</button>` : ""}
+            <button class="lrn-btn ghost" data-act="month-skip">${esc(T("monthEndSkip"))}</button>
+        </div>`;
+    }
+
     _continueHTML() {
         const nb = this.nextBest;
         if (!nb.reason_key) {
@@ -667,9 +819,11 @@ export class LearnJourney extends Component {
         const badge = s.kind === "lesson"
             ? `<span class="lrn-chip b">${ic("play")}${esc(T("fullLesson"))}</span>`
             : `<span class="lrn-chip">${ic("list-checks")}${esc(T("outline"))}</span>`;
-        const need = s.required
+        // LEARN v3 — "required" means required on THIS learner's path.
+        const onPath = this.onPath(s);
+        const need = onPath
             ? `<span class="lrn-chip a">${esc(T("required"))}</span>`
-            : `<span class="lrn-chip">${esc(T("optional"))}</span>`;
+            : `<span class="lrn-chip">${esc(this.pathKeys ? T("offPath") : T("optional"))}</span>`;
         // Three states, not two. A screen that moved into a hub is REACHABLE —
         // saying "not in your menu" about it was the wrong word in the
         // direction that makes a reader stop looking, so it gets a plain chip
@@ -700,7 +854,7 @@ export class LearnJourney extends Component {
                         : tier === "silver" ? "tierSilver" : "tierBronze"))}</span>`
             : "";
         return `
-        <button class="lrn-card ${s.star ? "star" : ""}${SP}${st === "done" ? "done" : ""}${
+        <button class="lrn-card ${s.star ? "star" : ""}${SP}${onPath ? "" : "offpath"}${SP}${st === "done" ? "done" : ""}${
                 SP}${tier ? "t-" + tier : ""}${SP}${start ? "pulse" : ""}"
                 data-station="${esc(s.key)}">
             <span class="lrn-cardico">${ic(s.icon)}</span>
@@ -1533,6 +1687,8 @@ export class LearnJourney extends Component {
                     this.openStation(key);
                 }
             },
+            "role": () => this.setRole(act.dataset.role),
+            "month-skip": () => this.skipMonthEnd(),
             "morph-before": () => { this.state.morphSide = "before"; },
             "morph-after": () => { this.state.morphSide = "after"; },
         }[a];
@@ -1683,6 +1839,18 @@ export class LearnJourney extends Component {
         // server suggested. A station key, not a lesson key: the suggestion is
         // made over stations (outlines included, which have no lesson to name),
         // and `openStation` is the same door a card press uses.
+        // LEARN v3 — a ⌘K row arrives with `pb_focus`, the hub's own arrival
+        // key: "station:<key>" or "scenario:<key>:<mode>".
+        const focus = typeof ctx.pb_focus === "string" ? ctx.pb_focus : "";
+        const fm = /^(station|scenario):([a-z0-9_]+)(?::([a-z]+))?$/.exec(focus);
+        if (fm && fm[1] === "station" && this.station(fm[2])) {
+            this.openStation(fm[2]);
+            return;
+        }
+        if (fm && fm[1] === "scenario" && this.scenarios.some((x) => x.key === fm[2])) {
+            this.openScenario(fm[2], fm[3] || "watch");
+            return;
+        }
         const stKey = typeof ctx.station === "string" ? ctx.station : "";
         if (stKey && this.station(stKey)) {
             this.openStation(stKey);

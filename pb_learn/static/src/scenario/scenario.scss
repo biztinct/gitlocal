@@ -268,3 +268,72 @@
     }
     .lrn-scren { flex-wrap: wrap; }
 }
+
+/* =============================================================================
+   LEARN v3 — the walkthrough card as a player: one Watch / Try / Do switch,
+   and a step bar whose finished segments take you back. The old meter is
+   replaced by the bar, which says the same thing and can be pressed.
+   ========================================================================== */
+.lrn-sccard .lrn-scmeter { display: none; }
+
+.lrn-scmodes {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 10px;
+    background: var(--vuf-primary-soft, #F6F4FC);
+}
+
+.lrn-scmode {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 9px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--vuf-ink-soft, #4B4866);
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+
+    .lrn-ic { width: 13px; height: 13px; }
+    &[aria-pressed="true"] {
+        background: var(--vuf-surface, #fff);
+        color: var(--vuf-primary, #5A4BB0);
+        box-shadow: 0 1px 3px rgba(30, 27, 46, .14);
+    }
+    &:focus-visible { outline: 2px solid var(--vuf-primary, #5A4BB0); outline-offset: 1px; }
+}
+
+.lrn-scsegs {
+    display: flex;
+    gap: 3px;
+    margin: 10px 0 2px;
+}
+
+.lrn-scseg {
+    flex: 1 1 0;
+    height: 6px;
+    padding: 0;
+    border: 0;
+    border-radius: 3px;
+    background: var(--vuf-line, #E2E8F0);
+    cursor: default;
+
+    &.done { background: #2E7D4F; cursor: pointer; }
+    &.done:hover { background: #256943; transform: scaleY(1.5); }
+    &.cur { background: var(--vuf-primary, #5A4BB0); }
+    &:focus-visible { outline: 2px solid var(--vuf-primary, #5A4BB0); outline-offset: 2px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-scseg.done:hover { transform: none; }
+}
+
+/* The switch takes the header's first row on its own; the "real screens" chip
+   and the step counter wrap under it. A 372px card cannot hold all four. */
+.lrn-sccard .lrn-schead { flex-wrap: wrap; row-gap: 8px; }
+.lrn-scmodes { flex: 1 1 100%; }
+.lrn-scmode { flex: 1 1 0; justify-content: center; white-space: nowrap; }

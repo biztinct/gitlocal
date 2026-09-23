@@ -201,6 +201,15 @@ class LearnEvent(models.Model):
             ('practice_open', self.env._('Practice mode opened')),
             ('practice_nav', self.env._('Practice mode screen opened')),
             ('practice_exit', self.env._('Practice mode left')),
+            # LEARN v3. Which helper tab people use; the milestone notes
+            # (a baseline row, then one row per first that was shown); the
+            # first-visit strip; a manager's reminder; a path picked.
+            ('coach_tab', self.env._('Helper tab opened')),
+            ('milestone_base', self.env._('Milestones baseline')),
+            ('milestone_seen', self.env._('Milestone note shown')),
+            ('first_visit', self.env._('First-visit note shown')),
+            ('team_remind', self.env._('Reminder sent by a manager')),
+            ('role_set', self.env._('Learning path picked')),
         ]
 
     # -- append-only ------------------------------------------------------

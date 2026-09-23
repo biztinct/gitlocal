@@ -34,6 +34,10 @@
             <kbd class="lrn-fabkey" t-if="!state.open" aria-hidden="true">?</kbd>
         </button>
 
+        <!-- LEARN v3 — one moment card above the button: a milestone, the
+             month-end nudge, or "first time on this screen". -->
+        <div class="lrn-momenthost" t-if="state.moment and !state.open" t-out="momentHTML"/>
+
         <aside class="lrn-drawer" t-if="state.open" role="dialog"
                t-att-aria-label="coachName">
             <header class="lrn-dhead">

@@ -39,7 +39,7 @@ import { useBus, useService } from "@web/core/utils/hooks";
 import { registry } from "@web/core/registry";
 import { user } from "@web/core/user";
 
-import { RT, T, tx, esc, ic } from "../engine/runtime";
+import { RT, T, tx, esc, ic, SP } from "../engine/runtime";
 /* The glossary hovercard (LEARNOS Phase 2). Answer blocks are the one
    place in the drawer that inserts authored prose RAW, so they are the
    one place `gtx` replaces `tx`. */
@@ -49,6 +49,7 @@ import { loadContent, composeScreens } from "../content/content_loader";
 import { flashRing } from "../engine/spotlight";
 import { calcHTML, calcKpiHTML } from "../engine/visuals";
 import { markLauncherStack, maybeGreet, maybeWelcome } from "./first_login";
+import { registerLessonRows } from "../hub/learn_palette";
 
 /* Shared with the Journey: one language preference for the whole system. */
 const LOCAL_PREFS = "pbLearnPrefs";
@@ -90,6 +91,12 @@ export const COACH_ACTIONS = new Set([
     // the hand-off only puts the question text into its box and presses its
     // send — exactly what the learner would do by retyping it.
     "c-tab", "c-askdata",
+    // LEARN v3 — the moment card above the helper button: a milestone note,
+    // the month-end nudge, or a first-visit note. Each either opens something
+    // this drawer already opens (a lesson, a walkthrough, "explain this
+    // screen") or dismisses the card. None reaches a product method; the only
+    // writes are this learner's own learning-log rows.
+    "c-mgo", "c-mok", "c-fvexplain", "c-fvwatch", "c-mlater", "c-mewatch", "c-meskip",
 ]);
 
 /* LEARN v3 — ONE HELPER, NOT TWO BUTTONS.
@@ -116,6 +123,37 @@ registry.category(HELPER_HOST).add("orb", { module: "pb_learn" });
 /* Which tab the drawer opens on. Guide, always: the person pressed the button
    because of the screen in front of them. */
 const TAB_ORDER = ["guide", "ask", "practice"];
+
+/* LEARN v3 — moments. Screens this browser has already been told about, and
+   the month the month-end nudge was skipped for (shared with the map). */
+const SEEN_SCREENS = "pbLearnSeenScreens";
+const MONTH_END_SKIP = "pbLearnMonthEndSkip";
+const MONTH_END_TODAY = "pbLearnMonthEndShown";
+/* Milestones are asked of the server at most this often. */
+const MILESTONE_EVERY_MS = 60000;
+const MILESTONE_COPY = {
+    m_employee: ["msEmployeeT", "msEmployeeB"],
+    m_run: ["msRunT", "msRunB"],
+    m_submitted: ["msSubmittedT", "msSubmittedB"],
+    m_done: ["msDoneT", "msDoneB"],
+};
+
+function lsGet(key, fallback) {
+    try {
+        const v = window.localStorage.getItem(key);
+        return v === null ? fallback : v;
+    } catch {
+        return fallback;
+    }
+}
+
+function lsSet(key, value) {
+    try {
+        window.localStorage.setItem(key, value);
+    } catch {
+        // A locked-down profile only loses the memory of a dismissal.
+    }
+}
 
 export class CoachHost extends Component {
     static template = "pb_learn.CoachHost";
@@ -148,7 +186,10 @@ export class CoachHost extends Component {
             tab: "guide",
             handoff: null,
             lastQ: "",
+            // LEARN v3 — the one moment card showing, or null.
+            moment: null,
         });
+        this._milestoneAt = 0;
         // Passed to the Ask tab as a prop. A stable function, made once, so
         // the tab is not re-rendered by a new identity on every drawer render.
         this.closeHelper = () => this.close();
@@ -201,7 +242,15 @@ export class CoachHost extends Component {
                     // LEARN v3 — for the next-step card's title. The key alone
                     // is not something a learner can read.
                     stations: content.stations || [],
+                    // LEARN v3 — the month-end date, for the Dashboard nudge.
+                    path: runtime.path || {},
                 };
+                // LEARN v3 — lessons in the ⌘K search, from the same content.
+                try {
+                    registerLessonRows(content);
+                } catch (e) {
+                    console.warn("pb_learn: lesson rows not added to the search", e);
+                }
                 // Same fetch, no second round trip: the scenario service reads
                 // the memoised content plane the drawer has just resolved.
                 await this.sc.load();
@@ -288,6 +337,9 @@ export class CoachHost extends Component {
         const key = found ? found.key : null;
         if (key !== this.state.screen) {
             this.state.screen = key;
+            // LEARN v3. A moment belongs to the screen it was shown on.
+            this.state.moment = null;
+            setTimeout(() => this._pickMoment(), 900);
             // A question asked about the previous screen is not an answer about
             // this one. Clear rather than leave something subtly wrong on show.
             this.state.answer = null;
@@ -327,9 +379,144 @@ export class CoachHost extends Component {
 
     toggle() {
         this.state.open = !this.state.open;
+        this.state.moment = null;
         if (this.state.open) {
             this._log("coach_open");
             setTimeout(() => this.inputRef.el?.focus(), 60);
+        }
+    }
+
+    // ---------------------------------------------------- LEARN v3 moments
+    /** Choose at most one moment for the screen the learner is on.
+     *
+     *  In this order, because it is the order of usefulness: something the
+     *  COMPANY just achieved, then the month-end date, then "first time on
+     *  this screen". Nothing while the drawer is open, a walkthrough is
+     *  running, the lesson map is open or the first-run welcome card is up. */
+    async _pickMoment() {
+        if (!this.bundle || this.state.open || this.state.moment) {
+            return;
+        }
+        if (this.sc.state.active || document.body.classList.contains("lrn-open")
+                || document.querySelector(".lrn-welcome")) {
+            return;
+        }
+        const now = Date.now();
+        if (now - this._milestoneAt > MILESTONE_EVERY_MS) {
+            this._milestoneAt = now;
+            try {
+                const list = await this.orm.call("learn.path", "milestones", []);
+                const m = (list || []).find((x) => MILESTONE_COPY[x.key]);
+                if (m && !this.state.open) {
+                    this.state.moment = { kind: "milestone", key: m.key, station: m.station };
+                    return;
+                }
+            } catch {
+                // A moment is a courtesy; its failure is silent.
+            }
+        }
+        const me = (this.bundle.path && this.bundle.path.month_end) || {};
+        const today = new Date().toISOString().slice(0, 10);
+        if (this.state.screen === "dashboard" && me.cutoff
+                && lsGet(MONTH_END_SKIP, "") !== me.month
+                && lsGet(MONTH_END_TODAY, "") !== today) {
+            lsSet(MONTH_END_TODAY, today);
+            this.state.moment = { kind: "monthend", days: me.days || 0, month: me.month };
+            return;
+        }
+        const screen = this.screenInfo;
+        if (screen) {
+            let seen = [];
+            try {
+                seen = JSON.parse(lsGet(SEEN_SCREENS, "[]")) || [];
+            } catch {
+                seen = [];
+            }
+            if (!seen.includes(screen.key)) {
+                seen.push(screen.key);
+                lsSet(SEEN_SCREENS, JSON.stringify(seen));
+                const watch = this.screenScenarios.find((x) => (x.modes || []).includes("watch"));
+                this.state.moment = { kind: "first", watch: watch ? watch.key : "" };
+                this._log("first_visit", screen.key);
+            }
+        }
+    }
+
+    get momentHTML() {
+        void this.state.lang;
+        const m = this.state.moment;
+        if (!m || this.state.open) {
+            return markup("");
+        }
+        let icon = "sparkles";
+        let title = "";
+        let body = "";
+        let tools = "";
+        if (m.kind === "milestone") {
+            const [t, b] = MILESTONE_COPY[m.key];
+            icon = "check-circle";
+            title = T(t);
+            body = T(b);
+            tools = `<button class="lrn-btn sm pri" data-act="c-mgo">${esc(T("msGo"))}</button>
+                <button class="lrn-btn sm ghost" data-act="c-mok">${esc(T("msOk"))}</button>`;
+        } else if (m.kind === "monthend") {
+            icon = "calendar";
+            title = m.days <= 0 ? T("monthEndToday")
+                : `${T("monthEndIn")}${SP}${m.days}${SP}${T(m.days === 1 ? "dayWord" : "daysWord")}`;
+            body = T("monthEndBody");
+            tools = `${this._offers("sc_payslips", "watch")
+                ? `<button class="lrn-btn sm pri" data-act="c-mewatch">${ic("play")}${esc(T("scWatch"))}</button>` : ""}
+                <button class="lrn-btn sm ghost" data-act="c-meskip">${esc(T("monthEndSkip"))}</button>`;
+        } else {
+            const s = this.screenInfo;
+            if (!s) {
+                return markup("");
+            }
+            icon = "compass";
+            title = `${T("fvOn")}${SP}${tx(s.name)}?`;
+            body = tx(s.blurb);
+            tools = `<button class="lrn-btn sm pri" data-act="c-fvexplain">${ic("info")}${esc(T("explainScreen"))}</button>
+                ${m.watch ? `<button class="lrn-btn sm" data-act="c-fvwatch">${ic("play")}${esc(T("scWatch"))}</button>` : ""}
+                <button class="lrn-btn sm ghost" data-act="c-mlater">${esc(T("fvLater"))}</button>`;
+        }
+        return markup(`<div class="lrn-hmoment ${m.kind}" role="status">
+            <span class="lrn-momentic">${ic(icon)}</span>
+            <div class="lrn-momentmain">
+                <b>${esc(title)}</b>
+                <p>${esc(body)}</p>
+                <div class="lrn-ctools">${tools}</div>
+            </div>
+            <button class="lrn-momentx" data-act="c-mlater" aria-label="${esc(T("fvLater"))}">${ic("x")}</button>
+        </div>`);
+    }
+
+    async _momentAct(act) {
+        const m = this.state.moment;
+        this.state.moment = null;
+        if (!m) {
+            return;
+        }
+        if (m.kind === "milestone") {
+            try {
+                await this.orm.call("learn.path", "ack_milestone", [m.key]);
+            } catch {
+                // Told again next time, which is the right way to fail.
+            }
+            if (act === "c-mgo" && m.station) {
+                this.openSuggested(m.station);
+            }
+            return;
+        }
+        if (act === "c-meskip" && m.month) {
+            lsSet(MONTH_END_SKIP, m.month);
+        } else if (act === "c-mewatch") {
+            this.startScenario("sc_payslips", "watch", "");
+        } else if (act === "c-fvexplain") {
+            this.state.open = true;
+            this._log("coach_open");
+            this.explainScreen();
+        } else if (act === "c-fvwatch" && m.watch) {
+            this.startScenario(m.watch, "watch", "");
         }
     }
 
@@ -776,7 +963,7 @@ export class CoachHost extends Component {
         const station = (this.bundle.stations || []).find((s) => s.key === nb.key);
         const title = station && nb.kind === "station" ? tx(station.name) : "";
         const mins = station && station.duration_min
-            ? `<span class="lrn-cnext-min">${ic("clock")}${esc(String(station.duration_min))} min</span>` : "";
+            ? `<span class="lrn-cnext-min">${ic("clock")}${esc(String(station.duration_min))}${SP}${esc(T("min"))}</span>` : "";
         return `<div class="lrn-cnext">
             <div class="lrn-clabel">${esc(T("nextStep"))}</div>
             ${title ? `<div class="lrn-cnext-t">${esc(title)}${mins}</div>` : ""}
@@ -1118,6 +1305,9 @@ export class CoachHost extends Component {
             this.setTab(el.dataset.tab);
         } else if (act === "c-askdata") {
             this.askData();
+        } else if (["c-mgo", "c-mok", "c-fvexplain", "c-fvwatch", "c-mlater",
+                    "c-mewatch", "c-meskip"].includes(act)) {
+            this._momentAct(act);
         }
     }
 
