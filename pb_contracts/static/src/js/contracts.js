@@ -33,7 +33,7 @@ export class PbContracts extends Component {
         this.action = useService("action");
         this.state = useState({
             loaded: false, currency: "", kpis: {}, structures: [],
-            contracts: [], total: 0,
+            contracts: [], total: 0, stepCounts: {}, listedTotal: 0,
             search: "", status: "all", step: "", structure: "", dateFilter: "all", from: "", to: "",
             drawerContractId: null,
         });
@@ -66,10 +66,13 @@ export class PbContracts extends Component {
     closeDrawer() { this.state.drawerContractId = null; }
 
     async load() {
-        const d = await this.orm.call("pb.contracts", "get_board", []);
+        // A step lists that step's own newest contracts (the roster is
+        // capped), so pressing one asks the server again.
+        const d = await this.orm.call("pb.contracts", "get_board", [], { step: this.state.step || null });
         Object.assign(this.state, {
             currency: d.currency, kpis: d.kpis, structures: d.structures,
             contracts: d.contracts, total: d.total, loaded: true,
+            stepCounts: d.step_counts || {}, listedTotal: d.listed_total || 0,
         });
     }
 
@@ -87,7 +90,11 @@ export class PbContracts extends Component {
         return cur + Math.round(n);
     }
 
-    setStatus(s) { this.state.status = s; this.state.step = ""; }
+    setStatus(s) {
+        const hadStep = this.state.step;
+        this.state.status = s; this.state.step = "";
+        if (hadStep) this.load();
+    }
     setStructure(s) { this.state.structure = this.state.structure === s ? "" : s; }
     setDate(d) { this.state.dateFilter = d; }
     onSearch(ev) { this.state.search = (ev.target.value || "").toLowerCase(); }
@@ -151,9 +158,10 @@ export class PbContracts extends Component {
         return "";
     }
     get steps() {
-        const rows = this.state.contracts;
+        // counted over every contract by the server, not the listed ones
+        const counts = this.state.stepCounts || {};
         return STEPS.map((st, i) => {
-            const count = rows.filter((c) => this.stepOf(c) === st.key).length;
+            const count = counts[st.key] || 0;
             return {
                 ...st, n: String(i + 1).padStart(2, "0"), count,
                 countLabel: count === 1 ? _t("1 contract") : _t("%s contracts", count),
@@ -161,29 +169,35 @@ export class PbContracts extends Component {
             };
         });
     }
-    pickStep(key) {
+    async pickStep(key) {
         this.state.step = this.state.step === key ? "" : key;
         this.state.status = "all";
+        await this.load();
     }
     get anyFilter() {
         const s = this.state;
         return s.step || s.status !== "all" || s.structure || s.dateFilter !== "all" || s.search;
     }
     get showingLine() {
-        const all = this.state.contracts.length;
+        const all = this.state.total || 0;
         const st = STEPS.find((x) => x.key === this.state.step);
         if (!this.anyFilter) {
             return { all: true, text: !all ? _t("no contracts yet") : all === 1 ? _t("all 1 contract") : _t("all %s contracts", all) };
         }
-        return { all: false, text: _t("%s of %s contracts", this.filtered.length, all), where: st ? st.title : "" };
+        const s = this.state;
+        const onlyStep = s.step && s.status === "all" && !s.structure && s.dateFilter === "all" && !s.search;
+        const shown = onlyStep ? (s.stepCounts[s.step] || 0) : this.filtered.length;
+        return { all: false, text: _t("%s of %s contracts", shown, all), where: st ? st.title : "" };
     }
     get listedNote() {
-        const shown = this.state.contracts.length, total = this.state.total || 0;
+        const shown = this.state.contracts.length, total = this.state.listedTotal || this.state.total || 0;
         return total > shown ? _t("The newest %s of %s contracts are listed here", shown, total) : "";
     }
     showAll() {
+        const hadStep = this.state.step;
         Object.assign(this.state, { step: "", status: "all", structure: "", dateFilter: "all", from: "", to: "", search: "" });
         if (this.searchRef.el) this.searchRef.el.value = "";
+        if (hadStep) this.load();
     }
 
     countStatus(id) { return this.state.contracts.filter(c => this._matchStatus(c, id)).length; }

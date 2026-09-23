@@ -38,7 +38,7 @@ class PbContracts(models.AbstractModel):
             return default
 
     @api.model
-    def get_board(self):
+    def get_board(self, step=None):
         C = self.env['hr.contract']
         company = self.env.company
         cur = company.currency_id
@@ -74,8 +74,24 @@ class PbContracts(models.AbstractModel):
         except Exception:
             structures = []
 
+        # The numbered steps count over EVERY contract (not the 240 listed),
+        # and pressing a step lists that step's own newest contracts, so a
+        # step never shows "234" when 4,276 contracts are there.
+        ending_dom = [('state', '=', 'open'), ('date_end', '>=', str(today)),
+                      ('date_end', '<=', str(soon))]
+        step_dom = {
+            'draft': [('state', '=', 'draft')],
+            'running': [('state', '=', 'open'), '|', '|', ('date_end', '=', False),
+                        ('date_end', '<', str(today)), ('date_end', '>', str(soon))],
+            'ending': ending_dom,
+            'ended': [('state', '=', 'close')],
+        }
+        step_counts = {'draft': draft, 'ending': expiring, 'ended': expired,
+                       'running': max(running - expiring, 0)}
+        list_dom = DOM + step_dom.get(step or '', [])
+
         rows = []
-        cs = self._safe(lambda: C.search(DOM, order='date_start desc, id desc', limit=ROSTER_LIMIT),
+        cs = self._safe(lambda: C.search(list_dom, order='date_start desc, id desc', limit=ROSTER_LIMIT),
                         default=C.browse())
         for c in cs:
             try:
@@ -105,6 +121,8 @@ class PbContracts(models.AbstractModel):
             'structures': structures,
             'contracts': rows,
             'total': self._safe(lambda: C.search_count(DOM)),
+            'step_counts': step_counts,
+            'listed_total': self._safe(lambda: C.search_count(list_dom)),
             'shown': len(rows),
             # CD-1: the contract drawer's bundled read exists on this build, so
             # the list can offer it without probing for the method first.
