@@ -360,7 +360,7 @@ export class PbHiringBoard extends Component {
         const all = this.state.rows.length;
         const st = JOURNEY_STAGES.find((x) => x.key === this.state.journeyFocus);
         if (!st && !this.anyFilter) {
-            return { all: true, text: all === 1 ? _t("all 1 role") : _t("all %s roles", all) };
+            return { all: true, text: !all ? _t("no roles yet") : all === 1 ? _t("all 1 role") : _t("all %s roles", all) };
         }
         return { all: false, text: _t("%s of %s roles", shown, all), where: st ? st.title : "" };
     }
