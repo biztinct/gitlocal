@@ -35,6 +35,15 @@ export class SyncWizard extends Component {
     }
 
     ic(n, s = 16) { return ic(n, s); }
+
+    // The preview figures as one quiet line (QUIET_BOARD_ROLLOUT).
+    get previewGlance() {
+        const p = (this.state.summary && this.state.summary.preview) || {};
+        return [
+            { key: "found", n: p.employees || 0, label: _t("Employees found"), tone: "", run: null },
+            { key: "records", n: p.records || 0, label: _t("Total records"), tone: "", run: null },
+        ];
+    }
     get steps() { return STEPS; }
     onField(f, ev) { this.state.form[f] = ev.target.value; }
     toggle(f) { this.state.form[f] = !this.state.form[f]; }

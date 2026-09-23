@@ -2808,12 +2808,14 @@
                 <small><t t-if="state.csBoard and state.csBoard.company"><t t-esc="state.csBoard.company"/> · </t>every configuration at a glance</small>
               </div>
             </div>
+            <!-- the numbers: one quiet line (grey at zero; rose = errors,
+                 amber = changes nobody has released). "active" narrows the
+                 gallery like the Status chip does. -->
             <div class="cs-summary" t-if="csCards.length">
-              <div class="cs-stat"><b t-esc="csSummary.total"/><span>configs</span></div>
-              <div class="cs-stat"><b t-esc="csSummary.active"/><span>active</span></div>
-              <div t-attf-class="cs-stat {{ csSummary.withErrors ? 'err' : '' }}"><b t-esc="csSummary.withErrors"/><span>with errors</span></div>
-              <div t-attf-class="cs-stat {{ csSummary.unreleased ? 'warn' : '' }}"><b t-esc="csSummary.unreleased"/><span>unreleased</span></div>
-              <div class="cs-stat"><b t-esc="csSummary.employees.toLocaleString('en-US')"/><span>employees</span></div>
+              <t t-call="pb_import_kit.QuietGlance">
+                <t t-set="qGlance" t-value="csGlance"/>
+                <t t-set="qGlanceOn" t-value="state.csState === 'active' ? 'active' : ''"/>
+              </t>
             </div>
             <!-- The primary act of this screen, at the top where a primary act
                  belongs. It sat in the footer, below the fold of a scrolling
@@ -3019,11 +3021,13 @@
 
                 <!-- coverage summary strip -->
                 <div t-if="state.legisCoverage and state.legisCoverage.ok" class="lg-summary">
+                  <!-- one quiet line; amber = configurations that need the
+                       update, green = already aligned -->
                   <div class="lg-sum-stats">
-                    <div t-attf-class="lg-sum {{ state.legisCoverage.summary.drift ? 'drift' : '' }}"><b t-esc="state.legisCoverage.summary.drift"/><span>need update</span></div>
-                    <div class="lg-sum ok"><b t-esc="state.legisCoverage.summary.aligned"/><span>aligned</span></div>
-                    <div class="lg-sum muted"><b t-esc="state.legisCoverage.summary.na"/><span>n/a</span></div>
-                    <div t-if="state.legisCoverage.summary.drift" class="lg-sum"><b t-esc="state.legisCoverage.summary.employees_affected.toLocaleString('en-US')"/><span>employees affected</span></div>
+                    <t t-call="pb_import_kit.QuietGlance">
+                      <t t-set="qGlance" t-value="legisGlance"/>
+                      <t t-set="qGlanceOn" t-value="''"/>
+                    </t>
                   </div>
                   <button t-if="state.legisCanEdit and state.legisCoverage.summary.drift" class="pbfs-btn primary lg-applyall" t-att-disabled="state.legisApplying" t-on-click="legisApplyAll">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -3447,11 +3451,12 @@
                 <small><t t-esc="state.config.name"/> · every component, in computation order</small>
               </div>
             </div>
+            <!-- one quiet line; rose only when there is a cycle -->
             <div class="dp-stats">
-              <div class="dp-stat"><b t-esc="depStats.nodes"/><span>components</span></div>
-              <div class="dp-stat"><b t-esc="depStats.depth"/><span>layers deep</span></div>
-              <div class="dp-stat"><b t-esc="depStats.critical"/><span>longest chain</span></div>
-              <div t-attf-class="dp-stat {{ depStats.cycles ? 'err' : '' }}"><b t-esc="depStats.cycles"/><span>cycles</span></div>
+              <t t-call="pb_import_kit.QuietGlance">
+                <t t-set="qGlance" t-value="depGlance"/>
+                <t t-set="qGlanceOn" t-value="''"/>
+              </t>
             </div>
             <button class="hs-x" t-on-click="closeDepMap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>

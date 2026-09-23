@@ -56,7 +56,7 @@ layer over them, and the reason every learner page is ours is that the pages
 that came with them are a public web site, and an employee's training is not
 public.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.2.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

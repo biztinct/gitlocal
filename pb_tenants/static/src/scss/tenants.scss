@@ -35,8 +35,6 @@
     .tnx-live-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--pbim-green, #2E7D4F); box-shadow: 0 0 0 4px rgba(46,125,79,.15); }
 
     // ---------------- KPI band
-    .tnx-stats { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 20px; }
-    .tnx-pct { font-size: 12px; color: var(--pbim-muted); font-weight: 600; }
 
     // ---------------- tenant grid
     .tnx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 16px; }
@@ -533,15 +531,6 @@
     &.ok { color: var(--pbim-green, #2E7D4F); }
     &.bad { color: #DC2668; } }
 
-// ---------------- the capacity gauge
-.tnx-cap { position: relative;
-    .tnx-capbar { display: block; height: 4px; border-radius: 999px; background: var(--pbim-line-2);
-        margin-top: 7px; overflow: hidden;
-        i { display: block; height: 100%; border-radius: 999px; background: var(--pbim-green, #2E7D4F);
-            transition: width .5s cubic-bezier(.4,0,.2,1); } }
-    &.warn .tnx-capbar i { background: #D97706; }
-    &.full .tnx-capbar i { background: #DC2668; } }
-
 // The wizard's own warning, before a form is filled in that would be refused.
 .tnx-caproom { display: flex; gap: 12px; padding: 13px 16px; border-radius: 12px; margin-bottom: 16px;
     background: #FEF3C7; border: 1px solid #D9760640;
@@ -642,10 +631,8 @@
     // not animate their way there.
     .tnx .tnx-ro, .tnx .tnx-tl-detail { animation: none; }
     .tnx .tnx-ring { transition: none; }
-    // FLEET P3: a new alert still enters, it simply does not slide in, and the
-    // capacity bar still moves, it simply arrives already there.
+    // FLEET P3: a new alert still enters, it simply does not slide in.
     .tnx .tnx-alert, .tnx .tnx-channeldown, .tnx .tnx-alert-none-ic { animation: none; }
-    .tnx .tnx-capbar i { transition: none; }
     .tnx .tnx-chip.r .tnx-chip-dot, .tnx .tnx-ro-step.running .tnx-ro-step-dot { animation: none; }
 }
 

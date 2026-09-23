@@ -246,6 +246,32 @@ export class PbIntegrations extends Component {
         }
     }
 
+    /**
+     * The numbers as one quiet line. Grey at zero; rose for connectors in
+     * error, amber when a feed is overdue. Connected / Errors filter the
+     * connector list (switching back to it from Data); pressing the lit one
+     * again shows every connector.
+     */
+    get glance() {
+        const k = this.state.kpis || {};
+        const pick = (id) => () => {
+            if (this.state.view !== "connectors") { this.setView("connectors"); }
+            this.setStatus(this.state.status === id ? "all" : id);
+        };
+        const rows = [
+            { key: "all", n: k.connectors || 0, label: _t("Connectors"), tone: "", run: null },
+            { key: "connected", n: k.connected || 0, label: _t("Connected"), tone: "", run: pick("connected") },
+            { key: "error", n: k.errors || 0, label: _t("Errors"), tone: k.errors ? "rose" : "", run: pick("error") },
+            { key: "synced", n: k.synced || 0, label: _t("Synced records"), tone: "", run: null },
+            { key: "mappings", n: k.mappings || 0, label: _t("Field mappings"), tone: "", run: null },
+            { key: "staged", n: k.staged || 0, label: _t("Staged records"), tone: "", run: null },
+        ];
+        if (this.feedsKnown) {
+            rows.push({ key: "feeds", n: k.feeds || 0, label: this.feedsKpiLabel, tone: k.feeds_stale ? "amber" : "", run: null });
+        }
+        return rows;
+    }
+
     /** "Feeds", or "Feeds · N stale" when any of them are overdue. */
     get feedsKpiLabel() {
         const stale = (this.state.kpis && this.state.kpis.feeds_stale) || 0;

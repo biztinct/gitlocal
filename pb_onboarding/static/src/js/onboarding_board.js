@@ -57,6 +57,8 @@ export class PbOnboardingBoard extends Component {
             dept: "all",
             month: "all",
             needsOnly: false,
+            focus: "",      // the figure on the numbers line now filtering
+            step: "",       // the step now filtering
 
             // the open joiner
             drawer: null,
@@ -120,6 +122,12 @@ export class PbOnboardingBoard extends Component {
                 && !(r.overdue || !r.buddy || !r.hrbp || r.pulse_red)) {
                 return false;
             }
+            if (this.state.focus && !this.matchesFocus(r, this.state.focus)) {
+                return false;
+            }
+            if (this.state.step && this.stepOf(r) !== this.state.step) {
+                return false;
+            }
             if (!q) { return true; }
             return (r.employee + " " + (r.job || "") + " " + (r.dept || "")
                 + " " + (r.buddy || "") + " " + (r.hrbp || ""))
@@ -130,13 +138,107 @@ export class PbOnboardingBoard extends Component {
     get hasFilters() {
         return this.state.q || this.state.country !== "all"
             || this.state.dept !== "all" || this.state.month !== "all"
-            || this.state.needsOnly;
+            || this.state.needsOnly || this.state.focus || this.state.step;
     }
 
     clearFilters() {
         Object.assign(this.state, {
             q: "", country: "all", dept: "all", month: "all", needsOnly: false,
+            focus: "", step: "",
         });
+    }
+
+    // ----------------------------------------------------- the quiet board
+    //
+    // One slim line of numbers instead of a row of tiles, and the three steps
+    // a joiner moves through. A joiner is at EXACTLY ONE step (stepOf), so
+    // the step counts add up to the board. Pressing a lit figure or step
+    // again clears it.
+    matchesFocus(r, key) {
+        const days = r.doj ? r.days : null;
+        if (key === "joining") { return days !== null && days >= 0 && days <= 7; }
+        if (key === "started") { return days !== null && days <= 0; }
+        if (key === "nobuddy") { return !r.buddy; }
+        if (key === "overdue") { return !!r.overdue; }
+        if (key === "red") { return !!r.pulse_red; }
+        return true;
+    }
+
+    toggleFocus(key) { this.state.focus = this.state.focus === key ? "" : key; }
+
+    get glance() {
+        const k = this.state.kpis || {};
+        const tone = (v, t) => (v ? t : "");
+        return [
+            { key: "joining", n: k.joining || 0, label: _t("Joining this week"), tone: "",
+              run: () => this.toggleFocus("joining") },
+            { key: "started", n: k.started || 0, label: _t("Already started"), tone: tone(k.started, "green"),
+              run: () => this.toggleFocus("started") },
+            { key: "nobuddy", n: k.no_buddy || 0, label: _t("Still without a buddy"), tone: tone(k.no_buddy, "amber"),
+              run: () => this.toggleFocus("nobuddy") },
+            { key: "overdue", n: k.overdue || 0, label: _t("Steps overdue"), tone: tone(k.overdue, "rose"),
+              run: () => this.toggleFocus("overdue") },
+            { key: "red", n: k.red || 0, label: _t("Said they are struggling"), tone: tone(k.red, "rose"),
+              run: () => this.toggleFocus("red") },
+        ];
+    }
+
+    /** Before the first day → settling in → checklist finished. */
+    stepOf(r) {
+        const arrived = !!r.doj && r.days !== null && r.days <= 0;
+        if (!arrived) { return "ready"; }
+        return (r.progress || 0) >= 100 ? "done" : "settling";
+    }
+
+    get stepDefs() {
+        return [
+            { key: "ready", title: _t("Getting ready"), sub: _t("Before their first day") },
+            { key: "settling", title: _t("Settling in"), sub: _t("Started, checklist still open") },
+            { key: "done", title: _t("Checklist done"), sub: _t("Everything on the checklist is settled") },
+        ];
+    }
+
+    get steps() {
+        const rows = this.state.rows;
+        return this.stepDefs.map((st, i) => {
+            const at = rows.filter((r) => this.stepOf(r) === st.key);
+            const late = at.filter((r) => r.overdue).length;
+            return {
+                ...st,
+                n: String(i + 1).padStart(2, "0"),
+                count: at.length,
+                countLabel: at.length === 1 ? _t("1 new joiner") : _t("%s new joiners", at.length),
+                flag: !late ? "" : late === 1 ? _t("1 with steps overdue") : _t("%s with steps overdue", late),
+                flagTone: "rose",
+                on: this.state.step === st.key,
+            };
+        });
+    }
+
+    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
+
+    stepMeta(r) {
+        const defs = this.stepDefs;
+        const index = defs.findIndex((st) => st.key === this.stepOf(r));
+        return {
+            label: _t("Step %s of %s", index + 1, defs.length),
+            title: defs[index].title,
+            marks: defs.map((st, j) => (j < index ? "done" : j === index ? "here" : "")),
+        };
+    }
+
+    get showingLine() {
+        const all = this.state.rows.length;
+        if (!this.hasFilters) {
+            return { all: true, text: !all ? _t("Showing no new joiners yet")
+                : all === 1 ? _t("Showing all 1 new joiner · press a step or a number to narrow it")
+                    : _t("Showing all %s new joiners · press a step or a number to narrow it", all) };
+        }
+        const shown = this.visibleRows.length;
+        const st = this.stepDefs.find((x) => x.key === this.state.step);
+        return { all: false, text: st
+            ? _t("Showing %s of %s new joiners at %s", shown, all, st.title)
+            : _t("Showing %s of %s new joiners", shown, all) };
     }
 
     onSearch(ev) { this.state.q = ev.target.value; }

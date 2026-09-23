@@ -121,6 +121,16 @@ class PbGoals(models.AbstractModel):
         rows = self._safe('the goal sheets',
                           lambda: self._rows(cycle_id, filters, today),
                           []) or []
+        # THE STEP STRIP AND THE NUMBERS COUNT EVERY SHEET AT EVERY STEP, so
+        # pressing a step does not empty the others. Same filters, minus the
+        # state one; read a second time only when a state filter is on.
+        if filters.get('state'):
+            unstated = dict(filters, state='')
+            all_rows = self._safe('the goal sheets',
+                                  lambda: self._rows(cycle_id, unstated, today),
+                                  []) or []
+        else:
+            all_rows = rows
         return {
             'allowed': True,
             'is_hr': self._is_hr(),
@@ -130,7 +140,10 @@ class PbGoals(models.AbstractModel):
             'cycle_id': cycle_id,
             'rows': rows,
             'stats': self._safe('the numbers',
-                                lambda: self._stats(rows), []) or [],
+                                lambda: self._stats(all_rows), []) or [],
+            'step_counts': self._safe('the steps',
+                                      lambda: self._step_counts(all_rows),
+                                      {}) or {},
             'bar': self._safe('the status bar',
                               lambda: self._bar(rows), []) or [],
             'facets': self._safe('the filters',
@@ -181,7 +194,13 @@ class PbGoals(models.AbstractModel):
         if cycle_id:
             domain.append(('cycle_id', '=', int(cycle_id)))
         if filters.get('state'):
-            domain.append(('state', '=', filters['state']))
+            state = filters['state']
+            # A list is one numbered step that holds more than one state
+            # ("Being written" = draft + sent back).
+            if isinstance(state, (list, tuple)):
+                domain.append(('state', 'in', list(state)))
+            else:
+                domain.append(('state', '=', state))
         if filters.get('department_id'):
             domain.append(('department_id', '=',
                            int(filters['department_id'])))
@@ -253,6 +272,17 @@ class PbGoals(models.AbstractModel):
             {'key': 'overdue', 'label': _('Past their date'), 'value': overdue,
              'icon': 'alert', 'tone': 'bad' if overdue else ''},
         ]
+
+    @api.model
+    def _step_counts(self, rows):
+        """How many sheets sit in each state, plus how many of the ones
+        still being written are past their date."""
+        out = {key: 0 for key, _label in SET_STATES}
+        for row in rows:
+            if row['state'] in out:
+                out[row['state']] += 1
+        out['overdue'] = len([r for r in rows if r['overdue']])
+        return out
 
     @api.model
     def _bar(self, rows):

@@ -147,53 +147,20 @@
         </button>
       </div>
 
-      <!-- KPIs -->
-      <div class="pbim-stats tnx-stats">
-        <div class="pbim-stat">
-          <span class="pbim-stat-ic"><t t-out="ic('building',18)"/></span>
-          <span class="pbim-stat-tx"><span class="n" t-esc="state.data.kpis.live"/><span class="l">Live tenants</span></span>
-        </div>
-        <div class="pbim-stat">
-          <span class="pbim-stat-ic blue"><t t-out="ic('clock',18)"/></span>
-          <span class="pbim-stat-tx"><span class="n" t-esc="state.data.kpis.provisioning"/><span class="l">In progress</span></span>
-        </div>
-        <div class="pbim-stat">
-          <span class="pbim-stat-ic teal"><t t-out="ic('database',18)"/></span>
-          <span class="pbim-stat-tx"><span class="n" t-esc="state.data.kpis.storage"/><span class="l">Fleet storage</span></span>
-        </div>
-        <!-- FLEET P3 — THE CAPACITY GAUGE. Not "how much memory is used", which
-             nobody can act on, but "how many more customers this machine can
-             safely hold", which is the only question the number is ever asked.
-             The per-customer cost behind it was WEIGHED on this box, not
-             guessed, and it is a setting so it can be weighed again. -->
-        <div t-attf-class="pbim-stat tnx-cap {{ capacity.level }}" t-att-title="capacity.reason">
-          <span t-attf-class="pbim-stat-ic {{ capacity.level === 'full' ? 'rose' : (capacity.level === 'warn' ? 'amber' : 'green') }}">
-            <t t-out="ic('gauge',18)"/>
+      <!-- The numbers: one quiet line (QUIET_BOARD_ROLLOUT). The kit's
+           QuietGlance markup, inlined only so each figure can carry its
+           tooltip (the capacity figure's reason). Rose / amber only when the
+           machine is full or nearly, or backups need a look.
+           FLEET P3: capacity is "how many more customers this machine can
+           safely hold", the only question the number is ever asked. -->
+      <div class="pbim-glance" role="group" aria-label="Numbers at a glance">
+        <t t-foreach="glance" t-as="gl" t-key="gl.key">
+          <span class="pbim-gl flat" t-att-class="(gl.n ? '' : 'zero ') + (gl.tone ? 'is-' + gl.tone : '')" t-att-title="gl.title or undefined">
+            <span t-if="gl.tone" class="pbim-gl-dot"/>
+            <span class="pbim-gl-n" t-esc="gl.n"/>
+            <span class="pbim-gl-l" t-esc="gl.label"/>
           </span>
-          <span class="pbim-stat-tx">
-            <span class="n">
-              <t t-if="capacity.level === 'full'">Full</t>
-              <t t-else=""><t t-esc="capacity.headroom"/></t>
-            </span>
-            <span class="l">
-              <t t-if="capacity.level === 'full'">No room for another customer</t>
-              <t t-elif="capacity.headroom === 1">Room for 1 more customer</t>
-              <t t-else="">Room for more customers</t>
-            </span>
-            <span class="tnx-capbar"><i t-attf-style="width:{{ capacityBar.pct }}%"/></span>
-          </span>
-        </div>
-        <div class="pbim-stat">
-          <span class="pbim-stat-ic amber"><t t-out="ic('hardDrive',18)"/></span>
-          <span class="pbim-stat-tx"><span class="n"><t t-esc="state.data.kpis.disk_free"/> <small class="tnx-pct">(<t t-esc="state.data.kpis.disk_free_pct"/>%)</small></span><span class="l">Disk free</span></span>
-        </div>
-        <div class="pbim-stat">
-          <span t-attf-class="pbim-stat-ic {{ state.data.kpis.backup_ok ? 'green' : 'rose' }}"><t t-out="ic('shieldCheck',18)"/></span>
-          <span class="pbim-stat-tx">
-            <span class="n" t-esc="state.data.kpis.backup_ok ? 'Protected' : 'Check'"/>
-            <span class="l">Backups <t t-if="state.data.kpis.last_backup">· <t t-esc="state.data.kpis.last_backup"/></t></span>
-          </span>
-        </div>
+        </t>
       </div>
 
       <!-- tenant grid -->
@@ -2114,18 +2081,11 @@
 
         <!-- overview -->
         <div t-if="state.det.tab === 'overview'">
-          <div class="pbim-stats tnx-stats">
-            <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('users',18)"/></span>
-              <span class="pbim-stat-tx"><span class="n" t-esc="d.users"/><span class="l">Internal users</span></span></div>
-            <div class="pbim-stat"><span class="pbim-stat-ic blue"><t t-out="ic('briefcase',18)"/></span>
-              <span class="pbim-stat-tx"><span class="n" t-esc="d.employees"/><span class="l">Employees</span></span></div>
-            <div class="pbim-stat"><span class="pbim-stat-ic teal"><t t-out="ic('database',18)"/></span>
-              <span class="pbim-stat-tx"><span class="n" t-esc="d.db_size_only_h"/><span class="l">Database</span></span></div>
-            <div class="pbim-stat"><span class="pbim-stat-ic amber"><t t-out="ic('hardDrive',18)"/></span>
-              <span class="pbim-stat-tx"><span class="n" t-esc="d.filestore_size_h"/><span class="l">Filestore</span></span></div>
-            <div class="pbim-stat"><span t-attf-class="pbim-stat-ic {{ d.health === 'ok' ? 'green' : (d.health === 'down' ? 'rose' : 'amber') }}"><t t-out="ic('activity',18)"/></span>
-              <span class="pbim-stat-tx"><span class="n"><t t-if="d.ping_ms >= 0"><t t-esc="d.ping_ms"/> ms</t><t t-else="">—</t></span><span class="l">Response</span></span></div>
-          </div>
+          <!-- one quiet line (QUIET_BOARD_ROLLOUT) -->
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="detailGlance(d)"/>
+            <t t-set="qGlanceOn" t-value="''"/>
+          </t>
           <div class="pbim-card tnx-info">
             <div class="tnx-rev-row"><span>Created</span><b t-esc="d.created || '—'"/></div>
             <div class="tnx-rev-row"><span>Administrator</span><b t-esc="d.admin_email || '—'"/></div>

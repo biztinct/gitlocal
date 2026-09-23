@@ -95,20 +95,6 @@
     .pbtn-head-id { flex: 1 1 320px; min-width: 0; }
     .pbtn-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    // The kit's `.pbim-stats` is a grid with NO COLUMNS on purpose — each
-    // cockpit knows how many numbers it has (R32). Six here, so three rows
-    // of two on a phone and a clean six across a desktop.
-    .pbtn-kpis {
-        grid-template-columns: repeat(6, 1fr);
-        margin-bottom: 16px;
-    }
-    @media (max-width: 1380px) { .pbtn-kpis { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 700px)  { .pbtn-kpis { grid-template-columns: repeat(2, 1fr); } }
-
-    .pbtn-of {
-        font-size: 12px; font-weight: 600; margin-left: 5px;
-        color: var(--pbim-muted, #64748B);
-    }
 
     // ----------------------------------------------------- the search row
     .pbtn-filters {
@@ -402,8 +388,6 @@
         color: #FFFFFF; background: var(--pbim-danger, #DC2626);
     }
 
-    .pbtn-kpis--4 { grid-template-columns: repeat(4, 1fr); }
-    @media (max-width: 980px) { .pbtn-kpis--4 { grid-template-columns: repeat(2, 1fr); } }
 
     // ------------------------------------------------------------ facets
     .pbtn-facets {

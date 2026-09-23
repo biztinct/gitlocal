@@ -56,15 +56,6 @@
 
     .pbw-note { font-size: 12.5px; color: #41507e; background: var(--pbim-soft); border-radius: 9px; padding: 10px 12px; margin-top: 10px; }
 
-    // preview / result stats
-    .pbw-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-    .pbw-stat { background: #fff; border: 1px solid var(--pbim-line); border-radius: 13px; padding: 13px 16px; display: flex; flex-direction: column; gap: 3px; }
-    .pbw-stat .n { font-size: 22px; font-weight: 800; }
-    .pbw-stat .l { font-size: 11px; color: var(--pbim-muted); font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
-    .pbw-stat.ok { background: var(--pbim-green-soft); border-color: #A7E0C8; } .pbw-stat.ok .n { color: var(--pbim-green); }
-    .pbw-stat.new { background: var(--pbim-soft); border-color: var(--pbim-primary); } .pbw-stat.new .n { color: var(--pbim-primary-strong); }
-    .pbw-stat.err { background: var(--pbim-rose-soft); border-color: #F5B5B5; } .pbw-stat.err .n { color: var(--pbim-rose); }
-
     .pbw-result { text-align: center; padding: 14px 0; }
     .pbw-result-ic { width: 60px; height: 60px; border-radius: 50%; background: var(--pbim-green-soft); color: var(--pbim-green); display: grid; place-items: center; margin: 0 auto 12px; }
     .pbw-result h3 { font-size: 19px; font-weight: 800; }

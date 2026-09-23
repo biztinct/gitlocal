@@ -88,43 +88,25 @@
             </div>
           </div>
 
-          <!-- ====================== the numbers ====================== -->
-          <div class="pbim-stats ctl-kpis">
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('calendar',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.ending or 0"/>
-                <div class="l">Ending within <t t-esc="state.leadDays"/> days</div>
-              </div>
-            </div>
-            <div class="pbim-stat" t-att-class="{ err: state.kpis.undecided }">
-              <div class="pbim-stat-ic rose"><t t-out="ic('alert',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.undecided or 0"/>
-                <div class="l">Nobody has decided</div>
-              </div>
-            </div>
-            <div class="pbim-stat" t-att-class="{ warn: state.kpis.waiting }">
-              <div class="pbim-stat-ic amber"><t t-out="ic('clock',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.waiting or 0"/>
-                <div class="l">Waiting to be agreed</div>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('users',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.running or 0"/>
-                <div class="l">Being evaluated</div>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('award',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.converted or 0"/>
-                <div class="l">Made permanent this year</div>
-              </div>
-            </div>
+          <!-- ====================== the numbers ======================
+               Quiet by default: one slim line, grey at zero, a colour only
+               when somebody has to act. Every figure on this board filters. -->
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="state.focus"/>
+          </t>
+
+          <!-- ====================== the four steps ======================
+               A contract is at exactly ONE step (stepOf reads its decision
+               state), so the counts add up. -->
+          <t t-call="pb_import_kit.QuietSteps">
+            <t t-set="qSteps" t-value="steps"/>
+            <t t-set="qStepsLabel" t-value="'Where every contract is'"/>
+            <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
+          </t>
+          <div class="pbim-showing">
+            <span t-esc="showingLine.text"/>
+            <button t-if="!showingLine.all" type="button" class="pbim-showall" t-on-click="clearFilters">Show all</button>
           </div>
 
           <!-- ======================== filters ======================== -->
@@ -237,6 +219,11 @@
                   <div t-attf-class="ctl-when-w ctl-when-w--{{ countdownCls(row) }}"
                        t-esc="row.when"/>
                 </div>
+              </div>
+
+              <div class="pbim-where">
+                <span class="pbim-where-marks"><i t-foreach="stepMeta(row).marks" t-as="mk" t-key="mk_index" t-att-class="mk"/></span>
+                <span><t t-esc="stepMeta(row).label"/> · <b t-esc="stepMeta(row).title"/></span>
               </div>
 
               <div class="ctl-facts">

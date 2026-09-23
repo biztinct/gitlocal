@@ -34,17 +34,7 @@
     }
     .pbyw-hero__title { font-size: 1.5rem; font-weight: 800; margin: 0; }
     .pbyw-hero__sub { color: var(--pbyw-muted); margin: 2px 0 0; }
-    .pbyw-hero__kpis { display: flex; gap: 12px; flex-wrap: wrap; }
-    .pbyw-kpi {
-        display: flex; flex-direction: column; align-items: center;
-        min-width: 96px; padding: 10px 16px; border-radius: 12px;
-        background: var(--pbyw-primary-soft);
-    }
-    .pbyw-kpi__v { font-size: 1.5rem; font-weight: 800; color: var(--pbyw-primary); line-height: 1.1; }
-    .pbyw-kpi__v--ok { color: var(--pbyw-ok); }
-    .pbyw-kpi__v--amber { color: var(--pbyw-amber); }
-    .pbyw-kpi__v--rose { color: var(--pbyw-rose); }
-    .pbyw-kpi__l { font-size: .68rem; color: var(--pbyw-muted); text-transform: uppercase; letter-spacing: .04em; text-align: center; margin-top: 2px; }
+    .pbyw-hero__glance .pbim-glance { margin-bottom: 0; }
 
     // ---- layout ----
     .pbyw-loading { padding: 40px 26px; color: var(--pbyw-muted); }

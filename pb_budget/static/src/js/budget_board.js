@@ -283,6 +283,25 @@ export class PbBudgetBoard extends Component {
         };
     }
 
+    /**
+     * THE QUIET NUMBERS (the Hiring look): the five figures as one slim line
+     * instead of a row of tiles. The period strip below is a calendar, not a
+     * line of steps, so there is no step strip. Rose only where the money
+     * has run out or a function has gone over.
+     */
+    get glance() {
+        const k = this.kpis;
+        const caps = this.caps;
+        const hot = this.hotCount;
+        return [
+            { key: "budget", n: this.short(k.budget), zero: !k.budget, label: caps.budget, tone: "", run: null },
+            { key: "spent", n: this.short(k.spent), zero: !k.spent, label: caps.spent, tone: "", run: null },
+            { key: "left", n: this.leftText(k.left), zero: !k.left, label: caps.left, tone: this.overspent ? "rose" : "", run: null },
+            { key: "ratio", n: this.isScoped ? this.signed(k.variance_pct) : _t("%s vs %s", this.pct(k.burn), this.pct(k.pace)), zero: !k.budget, label: caps.ratio, tone: "", run: null },
+            { key: "hot", n: hot, label: caps.hot, tone: hot ? "rose" : "", run: null },
+        ];
+    }
+
     /** The fifth number: warm-or-worse over a year, over budget in a period. */
     get hotCount() {
         return this.isScoped ? (this.kpis.over || 0) : (this.kpis.hot || 0);

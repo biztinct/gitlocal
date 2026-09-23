@@ -17,16 +17,9 @@
     .psr-sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
     .psr-runsel { border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-size: 13px; font-family: inherit; background: #fff; font-weight: 600; }
 
-    .psr-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
-    .psr-kpi { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 12px 16px; position: relative; overflow: hidden; box-shadow: 0 2px 6px rgba(27,23,51,.05); }
-    .psr-kpi::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--b); }
-    .psr-kpi.g::before { background: #10B981; } .psr-kpi.a::before { background: #B7791F; }
-    .psr-kpi .l { font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
-    .psr-kpi .v { font-size: 21px; font-weight: 800; margin-top: 5px; font-variant-numeric: tabular-nums; }
-
-    .psr-chips { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
-    .psr-chip { border: 1px solid var(--border); background: #fff; color: var(--ink); border-radius: 999px; padding: 6px 13px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
-    .psr-chip.on { background: var(--b); color: #fff; border-color: var(--b); }
+    /* the quiet board (global .pbim-* classes) reads these tokens */
+    --pbim-primary: var(--b); --pbim-primary-strong: #4338CA; --pbim-soft: var(--soft);
+    --pbim-ink: var(--ink); --pbim-muted: var(--muted); --pbim-line: var(--border);
 
     .psr-split { display: grid; grid-template-columns: 380px 1fr; gap: 18px; align-items: start; }
     @media (max-width: 900px) { .psr-split { grid-template-columns: 1fr; } }

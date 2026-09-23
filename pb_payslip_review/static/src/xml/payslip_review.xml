@@ -22,21 +22,47 @@
                 </div>
             </div>
 
-            <!-- KPI strip -->
-            <div class="psr-kpis" data-coach="ps-kpis">
-                <div class="psr-kpi"><div class="l">Payslips</div><div class="v" t-esc="state.totals.count"/></div>
-                <div class="psr-kpi g"><div class="l">Net total</div><div class="v" t-esc="vnd(state.totals.net)"/></div>
-                <div class="psr-kpi"><div class="l">Gross total</div><div class="v" t-esc="vnd(state.totals.gross)"/></div>
-                <div class="psr-kpi"><div class="l">Approved</div><div class="v"><t t-esc="state.totals.done"/>/<t t-esc="state.totals.count"/></div></div>
-                <div class="psr-kpi a"><div class="l">Need review</div><div class="v" t-esc="state.totals.flagged"/></div>
+            <!-- ============ the numbers ============
+                 QUIET BY DEFAULT: one slim line, grey at zero, a colour only
+                 when a person has to act. Same markup and classes as the kit's
+                 pb_import_kit.QuietGlance / QuietSteps (the CSS is global);
+                 copied because this module does not depend on the kit. -->
+            <div class="pbim-glance" role="group" aria-label="Numbers at a glance" data-coach="ps-kpis">
+                <t t-foreach="glance" t-as="gl" t-key="gl.key">
+                    <button type="button" class="pbim-gl" t-att-class="(gl.n ? '' : 'zero ') + (gl.tone ? 'is-' + gl.tone + ' ' : '') + (gl.run and state.filter === gl.key ? 'on ' : '') + (gl.run ? '' : 'flat')" t-att-disabled="!gl.run" t-att-aria-pressed="gl.run ? (state.filter === gl.key ? 'true' : 'false') : undefined" t-on-click="() =&gt; gl.run and gl.run()">
+                        <span t-if="gl.tone" class="pbim-gl-dot"/>
+                        <span class="pbim-gl-n" t-esc="gl.n"/>
+                        <span class="pbim-gl-l" t-esc="gl.label"/>
+                    </button>
+                </t>
             </div>
 
-            <!-- Filters -->
-            <div class="psr-chips" data-coach="ps-chips">
-                <button t-attf-class="psr-chip #{state.filter==='all'?'on':''}" t-on-click="() => this.setFilter('all')">All</button>
-                <button t-attf-class="psr-chip #{state.filter==='flag'?'on':''}" t-on-click="() => this.setFilter('flag')">Need review</button>
-                <button t-attf-class="psr-chip #{state.filter==='verify'?'on':''}" t-on-click="() => this.setFilter('verify')">Waiting for approval</button>
-                <button t-attf-class="psr-chip #{state.filter==='done'?'on':''}" t-on-click="() => this.setFilter('done')">Done</button>
+            <!-- ============ the steps ============
+                 A payslip is at EXACTLY one step (its state; the two old
+                 approval rungs read as "Waiting for approval"), so the counts
+                 add up. A cancelled payslip is at no step. Pressing the lit
+                 step again, or "Show all", shows every payslip. -->
+            <nav class="pbim-steps" t-att-style="'--pbim-steps:' + steps.length" aria-label="Where every payslip is" data-coach="ps-chips">
+                <button t-foreach="steps" t-as="st" t-key="st.key" type="button" class="pbim-st" t-att-class="(st.on ? 'on ' : '') + (st.count ? 'has ' : '') + (st.flag ? 'wait' : '')" t-att-aria-pressed="st.on ? 'true' : 'false'" t-on-click="() =&gt; this.pickStep(st.key)">
+                    <span class="pbim-st-heat"/>
+                    <span class="pbim-st-top">
+                        <span class="pbim-st-n" t-esc="st.n"/>
+                        <span class="pbim-st-t" t-esc="st.title"/>
+                        <span class="pbim-st-c" t-esc="st.countLabel"/>
+                    </span>
+                    <span t-if="st.flag" class="pbim-st-flag">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <t t-esc="st.flag"/>
+                    </span>
+                    <span class="pbim-st-arrow" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </span>
+                </button>
+            </nav>
+            <div class="pbim-showing">
+                <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
+                <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
+                    <button type="button" class="pbim-showall" t-on-click="() =&gt; this.setFilter('all')">Show all</button></t>
             </div>
 
             <!-- Split -->

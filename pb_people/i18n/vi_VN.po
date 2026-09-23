@@ -233,7 +233,7 @@ msgstr "Sẵn sàng theo luật định"
 #. odoo-javascript
 #: code:addons/pb_people/static/src/xml/employee_detail.xml:0
 msgid "Tenure"
-msgstr "nhiệm kỳ"
+msgstr "Thâm niên"
 
 #. module: pb_people
 #. odoo-javascript
@@ -330,3 +330,27 @@ msgstr "Tùy chỉnh"
 #: code:addons/pb_people/static/src/js/people.js:151
 msgid "%(count)s employees moved."
 msgstr "Nhân viên %(count)s đã di chuyển."
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/js/people.js:0
+msgid "Expiring within 30 days"
+msgstr "Hết hạn trong 30 ngày"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/js/employee_detail.js:0
+msgid "Days to contract end"
+msgstr "Số ngày đến hết hợp đồng"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/js/employee_detail.js:0
+msgid "On file"
+msgstr "Đã có"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/js/employee_detail.js:0
+msgid "Missing"
+msgstr "Thiếu"

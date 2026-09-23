@@ -292,6 +292,19 @@ export class PbAccessBoard extends Component {
     get profiles() { return this.board.profiles || []; }
     get delegations() { return this.board.delegations || []; }
     get kpis() { return this.board.kpis || {}; }
+
+    /** The five numbers as one quiet line; pressing one opens its lens. */
+    get glance() {
+        const k = this.kpis;
+        const open = (lens) => () => this.setLens(lens);
+        return [
+            { key: "profiles", n: k.profiles || 0, label: _t("roles written down"), tone: "", run: open("roles") },
+            { key: "people", n: k.people || 0, label: _t("people hold one"), tone: "", run: open("people") },
+            { key: "active", n: k.active || 0, label: _t("hand-overs running now"), tone: "", run: open("handovers") },
+            { key: "mine", n: k.mine || 0, label: _t("you hold yourself"), tone: "", run: null },
+            { key: "entries", n: k.entries || 0, label: _t("entries on the left menu"), tone: "", run: open("screens") },
+        ];
+    }
     get canManage() { return Boolean(this.board.can_manage); }
     get mine() { return this.board.mine || []; }
     get lenses() { return LENS_REGISTRY; }

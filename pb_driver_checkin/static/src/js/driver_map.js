@@ -137,6 +137,17 @@ export class DriverMap extends Component {
 
     // ---- embedding (W17) ----
     /** Map-only body: the compact card on the Today board. */
+    /** The strip's four figures as one quiet line; amber for idle drivers. */
+    get glance() {
+        const k = this.state.kpis || {};
+        return [
+            { key: "active", n: k.active || 0, label: _t("Active now"), tone: "", run: null },
+            { key: "idle", n: k.idle_5m || 0, label: _t("Idle over 5 minutes"), tone: k.idle_5m ? "amber" : "", run: null },
+            { key: "off", n: k.checked_out || 0, label: _t("Off duty"), tone: "", run: null },
+            { key: "avg", n: (k.avg_hours || 0) + "h", label: _t("Average hours"), tone: "", run: null },
+        ];
+    }
+
     get mapOnly() {
         return this.props.embedded && this.props.initialView === "map";
     }

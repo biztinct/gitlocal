@@ -165,46 +165,14 @@
         </div>
 
         <!-- =========================== the numbers =========================== -->
-        <div class="pbim-stats pbva-kpis">
-          <div class="pbim-stat">
-            <div class="pbim-stat-ic"><t t-out="ic('idCard',18)"/></div>
-            <div class="pbim-stat-tx">
-              <div class="n" t-esc="kpis.profiles"/>
-              <div class="l">roles written down</div>
-            </div>
-          </div>
-          <div class="pbim-stat">
-            <div class="pbim-stat-ic blue"><t t-out="ic('users',18)"/></div>
-            <div class="pbim-stat-tx">
-              <div class="n" t-esc="kpis.people"/>
-              <div class="l">people hold one</div>
-            </div>
-          </div>
-          <div t-attf-class="pbim-stat {{ kpis.active ? 'warn' : '' }}">
-            <div class="pbim-stat-ic"><t t-out="ic('arrowLeftRight',18)"/></div>
-            <div class="pbim-stat-tx">
-              <div class="n" t-esc="kpis.active"/>
-              <div class="l">hand-overs running now</div>
-            </div>
-          </div>
-          <div class="pbim-stat">
-            <div class="pbim-stat-ic green"><t t-out="ic('user',18)"/></div>
-            <div class="pbim-stat-tx">
-              <div class="n" t-esc="kpis.mine"/>
-              <div class="l">you hold yourself</div>
-            </div>
-          </div>
-          <!-- The fifth number turns a list of roles into a picture of the
-               product: how many doors there are down the side of the screen
-               for any of this to open. -->
-          <div class="pbim-stat">
-            <div class="pbim-stat-ic"><t t-out="ic('layers',18)"/></div>
-            <div class="pbim-stat-tx">
-              <div class="n" t-esc="kpis.entries"/>
-              <div class="l">entries on the left menu</div>
-            </div>
-          </div>
-        </div>
+        <!-- One quiet line (QUIET_BOARD_ROLLOUT). Each figure that has a
+             lens opens it; "you hold yourself" is read-only. The fifth figure
+             still turns a list of roles into a picture of the product: how
+             many doors there are down the side of the screen. -->
+        <t t-call="pb_import_kit.QuietGlance">
+          <t t-set="qGlance" t-value="glance"/>
+          <t t-set="qGlanceOn" t-value="''"/>
+        </t>
 
         <!-- ============================ the lenses ============================ -->
         <div class="pbva-bar">

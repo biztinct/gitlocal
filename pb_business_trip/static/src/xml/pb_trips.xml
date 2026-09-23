@@ -21,29 +21,28 @@
           <button class="pbtr-btn pbtr-btn--primary" t-on-click="() => this.newTrip()">New trip</button>
         </div>
 
-        <!-- KPI band -->
-        <div class="pbtr-kpis">
-          <div class="pbtr-stat">
-            <span class="n" t-esc="state.kpis.open"/>
-            <span class="l">Open trips</span>
-          </div>
-          <div class="pbtr-stat" t-att-class="{ 'is-hot': state.kpis.awaiting_me > 0 }">
-            <span class="n" t-esc="state.kpis.awaiting_me"/>
-            <span class="l">Awaiting my approval</span>
-          </div>
-          <div class="pbtr-stat">
-            <span class="n" t-esc="state.kpis.days_mtd"/>
-            <span class="l">Days travelled (MTD)</span>
-          </div>
-          <div class="pbtr-stat">
-            <span class="n" t-esc="money(state.kpis.advance_outstanding)"/>
-            <span class="l">Advance outstanding</span>
-          </div>
+        <!-- the quiet numbers: one slim line, grey at zero, amber only
+             for what is waiting on the reader -->
+        <t t-call="pb_import_kit.QuietGlance">
+          <t t-set="qGlance" t-value="glance"/>
+          <t t-set="qGlanceOn" t-value="state.mine ? 'mine' : ''"/>
+        </t>
+
+        <!-- the numbered steps: a trip is at exactly ONE step (its lane);
+             pressing a step shows only that lane, pressing it again all -->
+        <t t-call="pb_import_kit.QuietSteps">
+          <t t-set="qSteps" t-value="steps"/>
+          <t t-set="qStepsLabel" t-value="'Where every trip is'"/>
+          <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
+        </t>
+        <div class="pbim-showing">
+          <span t-esc="showingLine.text"/>
+          <button t-if="!showingLine.all" type="button" class="pbim-showall" t-on-click="showAll">Show all</button>
         </div>
 
         <!-- kanban lanes -->
         <div class="pbtr-board">
-          <t t-foreach="state.lanes" t-as="lane" t-key="lane.key">
+          <t t-foreach="visibleLanes" t-as="lane" t-key="lane.key">
             <div class="pbtr-lane">
               <div class="pbtr-lane__head">
                 <span class="pbtr-lane__name" t-esc="lane.label"/>

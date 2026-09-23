@@ -51,10 +51,10 @@
 
           <!-- STEP 2 -->
           <t t-if="state.step === 2 and !state.loading and state.summary">
-            <div class="pbw-stats" style="grid-template-columns:repeat(2,1fr)">
-              <div class="pbw-stat new"><span class="n" t-esc="state.summary.preview.employees"/><span class="l">Employees found</span></div>
-              <div class="pbw-stat"><span class="n" t-esc="state.summary.preview.records"/><span class="l">Total records</span></div>
-            </div>
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="previewGlance"/>
+              <t t-set="qGlanceOn" t-value="''"/>
+            </t>
             <div class="pbw-note" style="margin-top:16px">Confirm to pull this data into the staging store. You can then run a payroll import from it.</div>
           </t>
 

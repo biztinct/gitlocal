@@ -1,5 +1,5 @@
 /** @odoo-module **/
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, useRef, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -10,6 +10,14 @@ const STATUS_CHIPS = [
     { id: "all", label: _t("All") }, { id: "draft", label: _t("Draft") },
     { id: "open", label: _t("Running") }, { id: "expiring", label: _t("Expiring soon") },
     { id: "close", label: _t("Expired") }, { id: "cancel", label: _t("Cancelled") },
+];
+// The contract's journey. A contract sits at exactly one step (stepOf);
+// cancelled contracts are at no step and "Show all" still lists them.
+const STEPS = [
+    { key: "draft", title: _t("Draft"), sub: _t("Being prepared") },
+    { key: "running", title: _t("Running"), sub: _t("In force") },
+    { key: "ending", title: _t("Ending soon"), sub: _t("Ends within 30 days") },
+    { key: "ended", title: _t("Ended"), sub: _t("Past its end date") },
 ];
 const DATE_CHIPS = [
     { id: "all", label: _t("All time") }, { id: "month", label: _t("Started this month") },
@@ -26,9 +34,10 @@ export class PbContracts extends Component {
         this.state = useState({
             loaded: false, currency: "", kpis: {}, structures: [],
             contracts: [], total: 0,
-            search: "", status: "all", structure: "", dateFilter: "all", from: "", to: "",
+            search: "", status: "all", step: "", structure: "", dateFilter: "all", from: "", to: "",
             drawerContractId: null,
         });
+        this.searchRef = useRef("search");
         onWillStart(async () => { await this.load(); });
         // deep link: ?contract=<id>, or an action param, opens the drawer when
         // it is registered — otherwise it is simply ignored and the roster
@@ -78,7 +87,7 @@ export class PbContracts extends Component {
         return cur + Math.round(n);
     }
 
-    setStatus(s) { this.state.status = s; }
+    setStatus(s) { this.state.status = s; this.state.step = ""; }
     setStructure(s) { this.state.structure = this.state.structure === s ? "" : s; }
     setDate(d) { this.state.dateFilter = d; }
     onSearch(ev) { this.state.search = (ev.target.value || "").toLowerCase(); }
@@ -111,11 +120,72 @@ export class PbContracts extends Component {
         return this.state.contracts.filter(c => {
             if (str && c.structure !== str) return false;
             if (!this._matchStatus(c, this.state.status)) return false;
+            if (this.state.step && this.stepOf(c) !== this.state.step) return false;
             if (!this._inDate(c)) return false;
             if (q && !((c.employee || "").toLowerCase().includes(q) || (c.name || "").toLowerCase().includes(q) || (c.structure || "").toLowerCase().includes(q))) return false;
             return true;
         });
     }
+    // ---- the numbers (quiet line) ----
+    get glance() {
+        const k = this.state.kpis || {};
+        const tone = (v, t) => (v ? t : "");
+        const pick = (id) => () => this.setStatus(this.state.status === id ? "all" : id);
+        return [
+            { key: "open", n: k.running || 0, label: _t("Running"), tone: "", run: pick("open") },
+            { key: "expiring", n: k.expiring || 0, label: _t("Expiring within 30 days"), tone: tone(k.expiring, "amber"), run: pick("expiring") },
+            { key: "draft", n: k.draft || 0, label: _t("Draft"), tone: "", run: pick("draft") },
+            { key: "close", n: k.expired || 0, label: _t("Expired"), tone: "", run: pick("close") },
+            { key: "wage", n: this.money(k.total_wage || 0), label: _t("Monthly wage"), tone: "", run: null },
+            { key: "avg", n: this.money(k.avg_wage || 0), label: _t("Average wage"), tone: "", run: null },
+        ];
+    }
+
+    // ---- the steps ----
+    stepOf(c) {
+        if (c.state === "draft") return "draft";
+        if (c.state === "open") {
+            return (c.days_to_expiry !== null && c.days_to_expiry !== undefined && c.days_to_expiry >= 0 && c.days_to_expiry <= 30) ? "ending" : "running";
+        }
+        if (c.state === "close") return "ended";
+        return "";
+    }
+    get steps() {
+        const rows = this.state.contracts;
+        return STEPS.map((st, i) => {
+            const count = rows.filter((c) => this.stepOf(c) === st.key).length;
+            return {
+                ...st, n: String(i + 1).padStart(2, "0"), count,
+                countLabel: count === 1 ? _t("1 contract") : _t("%s contracts", count),
+                flag: "", on: this.state.step === st.key,
+            };
+        });
+    }
+    pickStep(key) {
+        this.state.step = this.state.step === key ? "" : key;
+        this.state.status = "all";
+    }
+    get anyFilter() {
+        const s = this.state;
+        return s.step || s.status !== "all" || s.structure || s.dateFilter !== "all" || s.search;
+    }
+    get showingLine() {
+        const all = this.state.contracts.length;
+        const st = STEPS.find((x) => x.key === this.state.step);
+        if (!this.anyFilter) {
+            return { all: true, text: !all ? _t("no contracts yet") : all === 1 ? _t("all 1 contract") : _t("all %s contracts", all) };
+        }
+        return { all: false, text: _t("%s of %s contracts", this.filtered.length, all), where: st ? st.title : "" };
+    }
+    get listedNote() {
+        const shown = this.state.contracts.length, total = this.state.total || 0;
+        return total > shown ? _t("The newest %s of %s contracts are listed here", shown, total) : "";
+    }
+    showAll() {
+        Object.assign(this.state, { step: "", status: "all", structure: "", dateFilter: "all", from: "", to: "", search: "" });
+        if (this.searchRef.el) this.searchRef.el.value = "";
+    }
+
     countStatus(id) { return this.state.contracts.filter(c => this._matchStatus(c, id)).length; }
 
     openContract(id) {

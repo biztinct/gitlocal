@@ -9365,3 +9365,9 @@ msgstr "Chọn người khác"
 #: code:addons/pb_blueprint/static/src/xml/test.xml:1
 msgid "Keep as a scenario"
 msgstr "Giữ như một kịch bản"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/steps.xml:0
+msgid "Numbers at a glance"
+msgstr "Số liệu nhanh"

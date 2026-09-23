@@ -1,7 +1,7 @@
 // =====================================================================
 //  The Contracts lens — .ctl-*
 //
-//  Everything structural comes from the kit (.pbim-panel, .pbim-stat,
+//  Everything structural comes from the kit (.pbim-panel, the quiet board,
 //  .pbim-fchip, .pbim-badge, .pbim-modal). This file only says what is
 //  SPECIFIC to a board whose row is an agreement with a date on it: the
 //  card, the countdown, the three choices and the decision drawer.
@@ -24,16 +24,6 @@
     &.ctl--embedded .ctl-head { margin-bottom: 12px; }
     .ctl-head-id { flex: 1 1 320px; min-width: 0; }
     .ctl-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
-    // The kit's `.pbim-stats` is a grid with no COLUMNS on purpose — each
-    // cockpit knows how many numbers it has (R32). Five, as the four lenses
-    // beside it on the same hub have, so all five line up.
-    .ctl-kpis {
-        grid-template-columns: repeat(5, 1fr);
-        margin-bottom: 16px;
-    }
-    @media (max-width: 1180px) { .ctl-kpis { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 700px)  { .ctl-kpis { grid-template-columns: repeat(2, 1fr); } }
 
     // ---------------------------------------- the switch, said out loud
     .ctl-notice {

@@ -228,3 +228,165 @@ msgid ""
 msgstr ""
 "Lấy từ hợp đồng, nhưng chương trình lương đang trả cho người này không dùng "
 "khoản đó (%s). Hãy kiểm tra trước khi tính vào."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Being prepared"
+msgstr "Đang chuẩn bị"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Waiting for approval"
+msgstr "Đang chờ phê duyệt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Agreed, not in a run"
+msgstr "Đã đồng ý, chưa vào kỳ lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "In a pay run"
+msgstr "Trong một kỳ lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Paid"
+msgstr "Đã trả"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "1 award"
+msgstr "1 khoản thưởng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "%s awards"
+msgstr "%s khoản thưởng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "1 waiting for a sign-off"
+msgstr "1 đang chờ phê duyệt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "%s waiting for a sign-off"
+msgstr "%s đang chờ phê duyệt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "waiting for a decision"
+msgstr "đang chờ quyết định"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "agreed, not in a run"
+msgstr "đã đồng ý, chưa vào kỳ lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "in a pay run"
+msgstr "trong một kỳ lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "paid this month"
+msgstr "đã trả tháng này"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "not approved"
+msgstr "không được duyệt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Not approved"
+msgstr "Không được duyệt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "no awards yet"
+msgstr "chưa có khoản thưởng nào"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "all 1 award"
+msgstr "cả 1 khoản thưởng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "all %s awards"
+msgstr "cả %s khoản thưởng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "%s of %s awards"
+msgstr "%s trên %s khoản thưởng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "months planned"
+msgstr "tháng đã lên kế hoạch"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "still ahead"
+msgstr "còn phía trước"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "closed"
+msgstr "đã đóng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "reminders sent"
+msgstr "lời nhắc đã gửi"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Showing"
+msgstr "Đang hiển thị"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "· press a step or a number to narrow it"
+msgstr "· nhấn một bước hoặc một con số để thu hẹp"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "at"
+msgstr "tại"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"

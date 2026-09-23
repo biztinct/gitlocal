@@ -29,7 +29,7 @@ om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
     # it: a published revision is FROZEN (requests under way keep the rules
     # they were given), so the migration publishes a new revision instead of
     # writing over the old one. Found live; see the ledger.
-    'version': '19.0.1.5.0',
+    'version': '19.0.1.5.1',
     'category': 'Human Resources/Time Off',
     'license': 'LGPL-3',
     'author': 'Payobook',

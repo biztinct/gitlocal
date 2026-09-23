@@ -6,9 +6,6 @@
 // renders where the token sheet has not loaded must still be readable rather
 // than transparent-on-transparent.
 //
-// R32 — the kit's `.pbim-stats` is a grid with NO columns on purpose (each
-// cockpit knows how many numbers it has). The KPI row below declares its own.
-//
 // R45 — the kit's `.pbim-modal` carries NO padding and IS a column flex box:
 // it is built for the __head / __body / __foot rails, which pad themselves.
 // Every dialog here ships those three rails, so it inherits the right shape.
@@ -121,14 +118,6 @@ $rnr-colors: (
 
     .rnr-locked-ic { color: var(--pbim-muted, #64748B); }
 
-    // ------------------------------------------------------------- the KPIs
-    .rnr-kpis {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-
-        @media (max-width: 1180px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        @media (max-width: 700px) { grid-template-columns: 1fr; }
-    }
-
     // ---------------------------------------------------------- the switches
     .rnr-switches {
         display: flex;
@@ -181,12 +170,6 @@ $rnr-colors: (
             font-size: 13px;
             width: 100%;
         }
-    }
-
-    .rnr-count {
-        margin-left: auto;
-        font-size: 12.5px;
-        color: var(--pbim-muted, #64748B);
     }
 
     // --------------------------------------------------------------- empty

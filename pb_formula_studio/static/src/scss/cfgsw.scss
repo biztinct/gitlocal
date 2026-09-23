@@ -32,10 +32,8 @@
 .pbfs-cfgsw .cs-title > svg { width: 24px; height: 24px; color: var(--i, #5A4BB0); flex: none; }
 .pbfs-cfgsw .cs-title b { font-size: 16px; font-weight: 800; color: var(--ink, #1E1B2E); display: block; }
 .pbfs-cfgsw .cs-title small { font-size: 12px; color: var(--muted, #6B7280); }
-.pbfs-cfgsw .cs-summary { display: flex; gap: 20px; }
-.pbfs-cfgsw .cs-stat { display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
-.pbfs-cfgsw .cs-stat b { font-size: 19px; font-weight: 800; color: var(--ink, #1E1B2E); font-variant-numeric: tabular-nums; }
-.pbfs-cfgsw .cs-stat span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: var(--muted, #6B7280); margin-top: 2px; }
+.pbfs-cfgsw .cs-summary { display: flex; min-width: 0; }
+.pbfs-cfgsw .cs-summary .pbim-glance { margin-bottom: 0; }
 /* The one primary button on this overlay. Solid indigo so it reads as the act
    to take, and it keeps its colour on the white header band. */
 .pbfs .pbfs-cfgsw .cs-new,
@@ -178,10 +176,6 @@
 
 /* ---- loading ---- */
 .pbfs-cfgsw .cs-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 70px 20px; color: var(--muted, #6B7280); font-size: 13px; }
-
-/* header stat emphasis */
-.pbfs-cfgsw .cs-stat.err b { color: #DC2626; }
-.pbfs-cfgsw .cs-stat.warn b { color: #D97706; }
 
 /* ---- empty ---- */
 .pbfs-cfgsw .cs-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 70px 20px; text-align: center; color: var(--muted, #6B7280); }

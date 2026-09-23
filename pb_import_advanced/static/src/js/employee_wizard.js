@@ -28,6 +28,27 @@ export class EmployeeWizard extends Component {
     }
 
     ic(n, s = 16) { return ic(n, s); }
+
+    // The preview and result figures as one quiet line (QUIET_BOARD_ROLLOUT):
+    // grey at zero, rose only for errors / failures, green for people created.
+    get previewGlance() {
+        const p = (this.state.summary && this.state.summary.preview) || {};
+        return [
+            { key: "found", n: p.employees || 0, label: _t("Employees found"), tone: "", run: null },
+            { key: "new", n: p.new || 0, label: _t("New"), tone: "", run: null },
+            { key: "existing", n: p.existing || 0, label: _t("Existing"), tone: "", run: null },
+            { key: "errors", n: p.errors || 0, label: _t("Validation errors"), tone: p.errors ? "rose" : "", run: null },
+        ];
+    }
+    get resultGlance() {
+        const r = (this.state.summary && this.state.summary.results) || {};
+        return [
+            { key: "created", n: r.imported || 0, label: _t("Created"), tone: r.imported ? "green" : "", run: null },
+            { key: "updated", n: r.updated || 0, label: _t("Updated"), tone: "", run: null },
+            { key: "contracts", n: r.contracts || 0, label: _t("Contracts"), tone: "", run: null },
+            { key: "failed", n: r.failed || 0, label: _t("Failed"), tone: r.failed ? "rose" : "", run: null },
+        ];
+    }
     get steps() { return STEPS; }
     onField(f, ev) { this.state.form[f] = ev.target.value; }
     toggle(f) { this.state.form[f] = !this.state.form[f]; }

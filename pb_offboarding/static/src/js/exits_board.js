@@ -67,6 +67,8 @@ export class PbExitsBoard extends Component {
             dept: "all",
             month: "all",
             blockedOnly: false,
+            focus: "",      // the figure on the numbers line now filtering
+            step: "",       // the step now filtering
 
             // the open leaver
             drawer: null,
@@ -131,6 +133,12 @@ export class PbExitsBoard extends Component {
             if (this.state.blockedOnly && !this.isBlocked(r)) {
                 return false;
             }
+            if (this.state.focus && !this.matchesFocus(r, this.state.focus)) {
+                return false;
+            }
+            if (this.state.step && this.stepOf(r) !== this.state.step) {
+                return false;
+            }
             if (!q) { return true; }
             return (r.employee + " " + (r.job || "") + " " + (r.dept || ""))
                 .toLowerCase().includes(q);
@@ -149,14 +157,109 @@ export class PbExitsBoard extends Component {
     get hasFilters() {
         return this.state.q || this.state.country !== "all"
             || this.state.dept !== "all" || this.state.month !== "all"
-            || this.state.blockedOnly;
+            || this.state.blockedOnly || this.state.focus || this.state.step;
     }
 
     clearFilters() {
         Object.assign(this.state, {
             q: "", country: "all", dept: "all", month: "all",
-            blockedOnly: false,
+            blockedOnly: false, focus: "", step: "",
         });
+    }
+
+    // ----------------------------------------------------- the quiet board
+    //
+    // One slim line of numbers instead of a row of tiles, and the four steps
+    // a leaver moves through. A leaver is at EXACTLY ONE step (stepOf), so
+    // the step counts add up to the board. Pressing a lit figure or step
+    // again clears it.
+    matchesFocus(r, key) {
+        const days = r.lwd ? r.days : null;
+        if (key === "leaving") { return days !== null && days >= 0 && days <= 31; }
+        if (key === "gone") { return days !== null && days < 0; }
+        if (key === "blocked") { return !!(r.ff.id && !r.ff.ready && !r.ff.closed); }
+        if (key === "clearances") { return r.clearances.some((c) => c.state === "pending"); }
+        if (key === "assets") { return !!r.assets; }
+        return true;
+    }
+
+    toggleFocus(key) { this.state.focus = this.state.focus === key ? "" : key; }
+
+    get glance() {
+        const k = this.state.kpis || {};
+        const tone = (v, t) => (v ? t : "");
+        return [
+            { key: "leaving", n: k.leaving || 0, label: _t("Leaving this month"), tone: "",
+              run: () => this.toggleFocus("leaving") },
+            { key: "gone", n: k.gone || 0, label: _t("Last day has passed"), tone: "",
+              run: () => this.toggleFocus("gone") },
+            { key: "blocked", n: k.blocked || 0, label: _t("Settlements held up"), tone: tone(k.blocked, "rose"),
+              run: () => this.toggleFocus("blocked") },
+            { key: "clearances", n: k.clearances || 0, label: _t("Clearances still open"), tone: tone(k.clearances, "amber"),
+              run: () => this.toggleFocus("clearances") },
+            { key: "assets", n: k.assets || 0, label: _t("Items not back yet"), tone: tone(k.assets, "amber"),
+              run: () => this.toggleFocus("assets") },
+        ];
+    }
+
+    /** Notice → signing off → ready to settle → settled. */
+    stepOf(r) {
+        if (r.ff.closed) { return "settled"; }
+        if (r.ff.id && r.ff.ready) { return "ready"; }
+        const gone = !!r.lwd && r.days !== null && r.days < 0;
+        return gone ? "signoff" : "notice";
+    }
+
+    get stepDefs() {
+        return [
+            { key: "notice", title: _t("Working their notice"), sub: _t("Last day still ahead") },
+            { key: "signoff", title: _t("Signing off"), sub: _t("Gone, sign-offs or items still open") },
+            { key: "ready", title: _t("Ready to settle"), sub: _t("The last payment can go out") },
+            { key: "settled", title: _t("Settled"), sub: _t("Settlement closed") },
+        ];
+    }
+
+    get steps() {
+        const rows = this.state.rows;
+        return this.stepDefs.map((st, i) => {
+            const at = rows.filter((r) => this.stepOf(r) === st.key);
+            const waiting = at.filter((r) => r.clearances.some((c) => c.state === "pending")).length;
+            return {
+                ...st,
+                n: String(i + 1).padStart(2, "0"),
+                count: at.length,
+                countLabel: at.length === 1 ? _t("1 person") : _t("%s people", at.length),
+                flag: !waiting ? "" : waiting === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", waiting),
+                flagTone: "",
+                on: this.state.step === st.key,
+            };
+        });
+    }
+
+    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
+
+    stepMeta(r) {
+        const defs = this.stepDefs;
+        const index = defs.findIndex((st) => st.key === this.stepOf(r));
+        return {
+            label: _t("Step %s of %s", index + 1, defs.length),
+            title: defs[index].title,
+            marks: defs.map((st, j) => (j < index ? "done" : j === index ? "here" : "")),
+        };
+    }
+
+    get showingLine() {
+        const all = this.state.rows.length;
+        if (!this.hasFilters) {
+            return { all: true, text: !all ? _t("Showing nobody leaving yet")
+                : all === 1 ? _t("Showing all 1 person leaving · press a step or a number to narrow it")
+                    : _t("Showing all %s people leaving · press a step or a number to narrow it", all) };
+        }
+        const shown = this.visibleRows.length;
+        const st = this.stepDefs.find((x) => x.key === this.state.step);
+        return { all: false, text: st
+            ? _t("Showing %s of %s people leaving at %s", shown, all, st.title)
+            : _t("Showing %s of %s people leaving", shown, all) };
     }
 
     onSearch(ev) { this.state.q = ev.target.value; }

@@ -48,7 +48,7 @@ WHAT IT DELIBERATELY DOES NOT DO. Chat apps and text messages are not
 connected — the screens are built ready for them and say so. There is no
 second wall: praise stays where praise lives.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

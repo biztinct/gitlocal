@@ -21,21 +21,14 @@
           </button>
         </div>
 
-        <!-- KPI strip -->
-        <div class="pbr-kpis">
-          <div class="pbr-kpi"><span class="v" t-esc="state.kpis.total"/><span class="l">Pay runs</span></div>
-          <div class="pbr-kpi"><span class="v indigo" t-esc="state.kpis.in_pipeline"/><span class="l">In pipeline</span></div>
-          <div t-attf-class="pbr-kpi {{ state.kpis.my_pending ? 'hot' : '' }}">
-            <span class="v" t-esc="state.kpis.my_pending"/><span class="l">Awaiting your approval</span>
-          </div>
-          <div class="pbr-kpi"><span class="v green" t-esc="state.kpis.done"/><span class="l">Completed</span></div>
-          <div class="pbr-kpi">
-            <span class="v" t-esc="money(state.kpis.period_net)"/>
-            <span class="l">
-              Net paid (done)<t t-if="state.currencyName">, in <t t-esc="state.currencyName"/></t>
-            </span>
-          </div>
-        </div>
+        <!-- ===================== the numbers =====================
+             QUIET BY DEFAULT: one line, grey at zero, a colour only when a
+             person has to act. The figures that narrowed the board still do;
+             pressing the lit one again clears it. -->
+        <t t-call="pb_import_kit.QuietGlance">
+          <t t-set="qGlance" t-value="glance"/>
+          <t t-set="qGlanceOn" t-value="state.focus"/>
+        </t>
 
         <!-- GROUP P3 — two currencies never add up. The total above counts
              this company's own runs; the board still shows the others, each
@@ -62,9 +55,24 @@
                   t-esc="dv.label"/>
         </div>
 
+        <!-- ===================== the steps =====================
+             A run is at EXACTLY one step (its state), so the counts add up
+             to every live run. Rejected runs are at no step (drawer below).
+             Pressing a step shows only that column; again shows them all. -->
+        <t t-call="pb_import_kit.QuietSteps">
+          <t t-set="qSteps" t-value="steps"/>
+          <t t-set="qStepsLabel" t-value="'Where every pay run is'"/>
+          <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
+        </t>
+        <div class="pbim-showing">
+          <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
+          <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
+            <button type="button" class="pbim-showall" t-on-click="showAll">Show all</button></t>
+        </div>
+
         <!-- ===================== pipeline board ===================== -->
         <div class="pbr-board">
-          <div t-foreach="state.columns" t-as="col" t-key="col.key" t-attf-class="pbr-col col-{{ col.key }}">
+          <div t-foreach="shownColumns" t-as="col" t-key="col.key" t-attf-class="pbr-col col-{{ col.key }}">
             <div class="pbr-col-h">
               <span class="dot"/><span class="nm" t-esc="col.label"/><span class="ct" t-esc="col.count"/>
             </div>

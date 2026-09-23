@@ -42,11 +42,6 @@
 //  `auto` in the same query that stacks it.
 // =====================================================================
 
-@keyframes pbcm-rise {
-    from { transform: translateY(8px); opacity: 0; }
-    to   { transform: translateY(0);   opacity: 1; }
-}
-
 @keyframes pbcm-slide {
     from { transform: translateX(26px); opacity: 0; }
     to   { transform: translateX(0);    opacity: 1; }
@@ -121,39 +116,6 @@
         background: #FFF7ED; color: #92400E;
         border: 1px solid #FED7AA;
         font-size: 13px; line-height: 1.55;
-    }
-
-    // ------------------------------------------------------ the numbers
-    .pbcm-kpis {
-        // THE KIT SETS NO COLUMNS (R196) — every consumer says how many
-        // numbers it has.
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        margin-bottom: 16px;
-
-        @media (max-width: 860px) {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-        @media (max-width: 560px) {
-            grid-template-columns: 1fr;
-        }
-    }
-    .pbcm-kpi {
-        @media (prefers-reduced-motion: no-preference) {
-            opacity: 0;
-            animation: pbcm-rise 0.32s ease both;
-        }
-    }
-    .pbcm-kpi-v {
-        font-size: 26px; font-weight: 700; line-height: 1.1;
-        color: var(--pbim-primary-strong, #5A4BB0);
-    }
-    .pbcm-kpi-l {
-        font-size: 13px; font-weight: 600; margin-top: 3px;
-        color: var(--pbim-ink, #0F172A);
-    }
-    .pbcm-kpi-s {
-        font-size: 12px; margin-top: 2px;
-        color: var(--pbim-muted, #64748B);
     }
 
     // ------------------------------------------------------ the filters

@@ -1356,3 +1356,87 @@ msgstr "x_số_tài khoản"
 #: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
 msgid "x_bank_branch"
 msgstr "x_bank_branch"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+msgid "1 request"
+msgstr "1 yêu cầu"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+msgid "%s requests"
+msgstr "%s yêu cầu"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+msgid "1 waiting on you"
+msgstr "1 đang chờ bạn"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+msgid "%s waiting on you"
+msgstr "%s đang chờ bạn"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+msgid "1 waiting for a sign-off"
+msgstr "1 đang chờ phê duyệt"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+msgid "%s waiting for a sign-off"
+msgstr "%s đang chờ phê duyệt"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+msgid "no requests yet"
+msgstr "chưa có yêu cầu nào"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+msgid "all 1 request"
+msgstr "cả 1 yêu cầu"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+msgid "all %s requests"
+msgstr "cả %s yêu cầu"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+msgid "%s of %s requests"
+msgstr "%s trên %s yêu cầu"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Showing"
+msgstr "Đang hiển thị"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "· press a step or a number to narrow it"
+msgstr "· nhấn một bước hoặc một con số để thu hẹp"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "at"
+msgstr "tại"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"

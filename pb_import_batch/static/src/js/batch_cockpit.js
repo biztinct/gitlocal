@@ -70,6 +70,19 @@ export class BatchCockpit extends Component {
     }
     setFilter(f) { this.state.filter = f; }
 
+    // The batch's figures as one quiet line. Rose only for errors.
+    get glance() {
+        const c = this.d.counts || {};
+        const pick = (f) => () => this.setFilter(this.state.filter === f ? "all" : f);
+        return [
+            { key: "all", n: c.total || 0, label: _t("Rows"), tone: "", run: () => this.setFilter("all") },
+            { key: "matched", n: c.matched || 0, label: _t("Matched"), tone: "", run: pick("matched") },
+            { key: "new", n: c.new || 0, label: _t("New employees"), tone: "", run: pick("new") },
+            { key: "errors", n: c.errors || 0, label: _t("Errors"), tone: c.errors ? "rose" : "", run: pick("errors") },
+            { key: "processed", n: c.processed || 0, label: _t("Processed"), tone: "", run: null },
+        ];
+    }
+
     // ---- lifecycle actions ----
     async _run(promise, msg) {
         this.state.busy = true; this.state.busyMsg = msg || "Working…";

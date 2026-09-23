@@ -66,6 +66,7 @@ export class PbAssetsBoard extends Component {
 
             // what the reader is looking at
             segment: "items",       // items | requests
+            reqStep: "",            // the numbered request step being shown
 
             // filters
             q: "",
@@ -185,6 +186,88 @@ export class PbAssetsBoard extends Component {
 
     countFor(bucket, id) {
         return (this.state.facets[bucket] || {})[id] || 0;
+    }
+
+    // ------------------------------------------------------ the quiet board
+    //
+    // The Hiring look: one slim line of numbers instead of a row of tiles
+    // (grey at zero, a colour only when somebody must act), and on the
+    // Requests tab a numbered strip of the steps a request moves through.
+    // The register itself gets no strip: an item goes round and round
+    // between spare, with somebody and in for repair — that is not a line.
+    get glance() {
+        const k = this.state.kpis || {};
+        return [
+            { key: "total", n: k.total || 0, label: _t("Items on the books"), tone: "", run: null },
+            { key: "assigned", n: k.assigned || 0, label: _t("Out with people"), tone: "", run: null },
+            { key: "spare", n: k.spare || 0, label: _t("Spare in the cupboard"), tone: "", run: null },
+            { key: "repair", n: k.repair || 0, label: _t("Under repair"), tone: "",
+              run: () => { this.state.segment = "items"; this.setStatus("repair"); } },
+            { key: "digital", n: k.digital_live || 0, label: _t("Accounts live"), tone: "", run: null },
+            { key: "leavers", n: k.leavers_holding || 0, label: _t("Leavers still holding"), tone: k.leavers_holding ? "rose" : "", run: null },
+        ];
+    }
+
+    get glanceOn() {
+        return this.state.segment === "items" && this.state.status === "repair" ? "repair" : "";
+    }
+
+    /** A request is at EXACTLY one step: "Decided" holds both the approved
+     *  and the turned-down ones, so the four counts add up. */
+    get requestStepDefs() {
+        return [
+            { key: "draft", title: _t("Being written"), states: ["draft"] },
+            { key: "submitted", title: _t("With the manager"), states: ["submitted"] },
+            { key: "manager_approved", title: _t("With the asset team"), states: ["manager_approved"] },
+            { key: "decided", title: _t("Decided"), states: ["approved", "refused"] },
+        ];
+    }
+
+    get requestRows() {
+        return (this.state.requests && this.state.requests.rows) || [];
+    }
+
+    get requestSteps() {
+        const rows = this.requestRows;
+        return this.requestStepDefs.map((st, i) => {
+            const at = rows.filter((r) => st.states.includes(r.state));
+            const approved = at.filter((r) => r.state === "approved");
+            const refused = at.length - approved.length;
+            const toHand = approved.filter((r) => !["delivered", "confirmed"].includes(r.fulfilment)).length;
+            return {
+                key: st.key,
+                title: st.title,
+                n: String(i + 1).padStart(2, "0"),
+                count: at.length,
+                countLabel: at.length === 1 ? _t("1 request") : _t("%s requests", at.length),
+                sub: st.key === "decided" && at.length
+                    ? _t("%s approved · %s turned down", approved.length, refused) : "",
+                flag: st.key === "decided" && toHand
+                    ? (toHand === 1 ? _t("1 approved, still to hand over") : _t("%s approved, still to hand over", toHand))
+                    : "",
+                on: this.state.reqStep === st.key,
+            };
+        });
+    }
+
+    pickRequestStep(key) {
+        this.state.reqStep = this.state.reqStep === key ? "" : key;
+    }
+
+    get visibleRequests() {
+        const st = this.requestStepDefs.find((x) => x.key === this.state.reqStep);
+        return st ? this.requestRows.filter((r) => st.states.includes(r.state)) : this.requestRows;
+    }
+
+    get requestShowing() {
+        const all = this.requestRows.length;
+        const st = this.requestStepDefs.find((x) => x.key === this.state.reqStep);
+        if (!st) {
+            return { all: true, text: !all ? _t("No requests yet")
+                : all === 1 ? _t("Showing the 1 request · press a step to narrow it")
+                : _t("Showing all %s requests · press a step to narrow it", all) };
+        }
+        return { all: false, text: _t("Showing %s of %s requests at %s", this.visibleRequests.length, all, st.title) };
     }
 
     // ------------------------------------------------------------- selection

@@ -163,6 +163,17 @@ export class PbAttendanceFlow extends Component {
     }
 
     // ---------------------------------------------------------- exceptions queue
+    /** The four tiles as one quiet line; amber only where someone must act. */
+    get glance() {
+        const k = (this.state.data && this.state.data.kpis) || {};
+        return [
+            { key: "exc", n: k.open_exceptions || 0, label: _t("open exceptions"), tone: k.open_exceptions ? "amber" : "", run: null },
+            { key: "corr", n: k.pending_corrections || 0, label: _t("pending corrections"), tone: k.pending_corrections ? "amber" : "", run: null },
+            { key: "late", n: (k.late_pct || 0) + "%", label: _t("late this week"), tone: "", run: null },
+            { key: "imports", n: k.imports_month || 0, label: _t("imports this month"), tone: "", run: null },
+        ];
+    }
+
     get kindTabs() {
         const groups = (this.state.data && this.state.data.exception_groups) || [];
         return groups.map((g) => ({

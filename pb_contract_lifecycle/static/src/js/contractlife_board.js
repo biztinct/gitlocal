@@ -84,6 +84,8 @@ export class PbContractLifeBoard extends Component {
             month: "all",
             reviewState: "all",
             attentionOnly: false,
+            focus: "",      // the figure on the numbers line now filtering
+            step: "",       // the step now filtering
 
             // the open contract
             drawer: null,
@@ -155,6 +157,12 @@ export class PbContractLifeBoard extends Component {
             if (this.state.attentionOnly && !this.needsAttention(r)) {
                 return false;
             }
+            if (this.state.focus && !this.matchesFocus(r, this.state.focus)) {
+                return false;
+            }
+            if (this.state.step && this.stepOf(r) !== this.state.step) {
+                return false;
+            }
             if (!q) { return true; }
             return (r.employee + " " + (r.job || "") + " " + (r.dept || "")
                 + " " + (r.contract_name || "")).toLowerCase().includes(q);
@@ -171,14 +179,124 @@ export class PbContractLifeBoard extends Component {
     get hasFilters() {
         return this.state.q || this.state.kind !== "all"
             || this.state.dept !== "all" || this.state.month !== "all"
-            || this.state.reviewState !== "all" || this.state.attentionOnly;
+            || this.state.reviewState !== "all" || this.state.attentionOnly
+            || this.state.focus || this.state.step;
     }
 
     clearFilters() {
         Object.assign(this.state, {
             q: "", kind: "all", dept: "all", month: "all", reviewState: "all",
-            attentionOnly: false,
+            attentionOnly: false, focus: "", step: "",
         });
+    }
+
+    // ----------------------------------------------------- the quiet board
+    //
+    // One slim line of numbers instead of a row of tiles, and the four steps
+    // a contract's decision moves through. A contract is at EXACTLY ONE step
+    // (stepOf reads the decision state), so the counts add up to the board.
+    // Pressing a lit figure or step again clears it.
+    matchesFocus(r, key) {
+        if (key === "ending") { return r.days !== null && r.days >= 0 && r.days <= this.state.leadDays; }
+        if (key === "undecided") { return !!r.needs_decision; }
+        if (key === "waiting") { return r.review_state === "extension"; }
+        if (key === "running") { return r.review_state === "conversion"; }
+        return true;
+    }
+
+    toggleFocus(key) { this.state.focus = this.state.focus === key ? "" : key; }
+
+    get glance() {
+        const k = this.state.kpis || {};
+        const tone = (v, t) => (v ? t : "");
+        return [
+            { key: "ending", n: k.ending || 0, label: _t("Ending within %s days", this.state.leadDays), tone: "",
+              run: () => this.toggleFocus("ending") },
+            { key: "undecided", n: k.undecided || 0, label: _t("Nobody has decided"), tone: tone(k.undecided, "rose"),
+              run: () => this.toggleFocus("undecided") },
+            { key: "waiting", n: k.waiting || 0, label: _t("Waiting to be agreed"), tone: tone(k.waiting, "amber"),
+              run: () => this.toggleFocus("waiting") },
+            { key: "running", n: k.running || 0, label: _t("Being evaluated"), tone: "",
+              run: () => this.toggleFocus("running") },
+            // Counted across the year, not on this board — so it cannot filter it.
+            { key: "converted", n: k.converted || 0, label: _t("Made permanent this year"), tone: tone(k.converted, "green"),
+              run: null },
+        ];
+    }
+
+    /** Not raised / waiting → running; decide → choose; extension or
+     *  conversion → agree; done or lapsed → closed. */
+    stepOf(r) {
+        const st = r.review_state || "";
+        if (st === "decide") { return "choose"; }
+        if (st === "extension" || st === "conversion") { return "agree"; }
+        if (st === "done" || st === "lapsed") { return "closed"; }
+        return "running";
+    }
+
+    get stepDefs() {
+        return [
+            { key: "running", title: _t("Running"), sub: _t("No decision raised yet") },
+            { key: "choose", title: _t("Decision needed"), sub: _t("End it, extend it or make it permanent") },
+            { key: "agree", title: _t("Being agreed"), sub: _t("An extension to agree, or an evaluation running") },
+            { key: "closed", title: _t("Decided"), sub: _t("Decided, or ended with nothing decided") },
+        ];
+    }
+
+    get steps() {
+        const rows = this.state.rows;
+        return this.stepDefs.map((st, i) => {
+            const at = rows.filter((r) => this.stepOf(r) === st.key);
+            const signoff = at.filter((r) => r.review_state === "extension").length;
+            const lapsed = at.filter((r) => r.review_state === "lapsed").length;
+            const undecided = at.filter((r) => r.needs_decision).length;
+            let flag = "";
+            let flagTone = "";
+            if (signoff) {
+                flag = signoff === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", signoff);
+            } else if (lapsed) {
+                flag = lapsed === 1 ? _t("1 ended with nothing decided") : _t("%s ended with nothing decided", lapsed);
+                flagTone = "rose";
+            } else if (undecided) {
+                flag = undecided === 1 ? _t("1 needs a decision") : _t("%s need a decision", undecided);
+                flagTone = "rose";
+            }
+            return {
+                ...st,
+                n: String(i + 1).padStart(2, "0"),
+                count: at.length,
+                countLabel: at.length === 1 ? _t("1 contract") : _t("%s contracts", at.length),
+                flag,
+                flagTone,
+                on: this.state.step === st.key,
+            };
+        });
+    }
+
+    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
+
+    stepMeta(r) {
+        const defs = this.stepDefs;
+        const index = defs.findIndex((st) => st.key === this.stepOf(r));
+        return {
+            label: _t("Step %s of %s", index + 1, defs.length),
+            title: defs[index].title,
+            marks: defs.map((st, j) => (j < index ? "done" : j === index ? "here" : "")),
+        };
+    }
+
+    get showingLine() {
+        const all = this.state.rows.length;
+        if (!this.hasFilters) {
+            return { all: true, text: !all ? _t("Showing no contracts yet")
+                : all === 1 ? _t("Showing all 1 contract · press a step or a number to narrow it")
+                    : _t("Showing all %s contracts · press a step or a number to narrow it", all) };
+        }
+        const shown = this.visibleRows.length;
+        const st = this.stepDefs.find((x) => x.key === this.state.step);
+        return { all: false, text: st
+            ? _t("Showing %s of %s contracts at %s", shown, all, st.title)
+            : _t("Showing %s of %s contracts", shown, all) };
     }
 
     onSearch(ev) { this.state.q = ev.target.value; }

@@ -12,3 +12,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_import_kit
+#. odoo-javascript
+#: code:addons/pb_import_kit/static/src/xml/quiet_board.xml:0
+msgid "Numbers at a glance"
+msgstr "Số liệu nhanh"

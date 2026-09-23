@@ -1,0 +1,137 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-23 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "%s approved · %s turned down"
+msgstr "%s được duyệt · %s bị từ chối"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "%s approved, still to hand over"
+msgstr "%s đã duyệt, chưa bàn giao"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "%s requests"
+msgstr "%s yêu cầu"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "1 approved, still to hand over"
+msgstr "1 đã duyệt, chưa bàn giao"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "1 request"
+msgstr "1 yêu cầu"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "Accounts live"
+msgstr "Tài khoản đang hoạt động"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "Being written"
+msgstr "Đang viết"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "Decided"
+msgstr "Đã quyết định"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "Items on the books"
+msgstr "Tài sản trong sổ"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "Leavers still holding"
+msgstr "Người nghỉ việc vẫn đang giữ"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "No requests yet"
+msgstr "Chưa có yêu cầu nào"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "Out with people"
+msgstr "Đang giao cho nhân viên"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "Showing %s of %s requests at %s"
+msgstr "Đang hiển thị %s trên %s yêu cầu ở bước %s"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "Showing all %s requests · press a step to narrow it"
+msgstr "Đang hiển thị tất cả %s yêu cầu · bấm một bước để thu hẹp"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "Showing the 1 request · press a step to narrow it"
+msgstr "Đang hiển thị 1 yêu cầu · bấm một bước để thu hẹp"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "Spare in the cupboard"
+msgstr "Còn dự phòng trong kho"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "Under repair"
+msgstr "Đang sửa chữa"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "With the asset team"
+msgstr "Ở đội tài sản"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "With the manager"
+msgstr "Ở quản lý"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"

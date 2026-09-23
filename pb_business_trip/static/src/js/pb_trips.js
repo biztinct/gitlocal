@@ -1,7 +1,7 @@
 /** @odoo-module **/
 /**
  * Business Trips cockpit — a kanban pipeline (Draft · Manager · Finance · HR ·
- * Authorized) with KPIs, per-card approve/refuse affordances and a New-trip
+ * Authorized) under a quiet numbers line and a numbered step strip, with per-card approve/refuse affordances and a New-trip
  * composer. RPC facade: pb.trips.get_pipeline_data(); approvals go straight to
  * the pb.business.trip action methods. pbim-tokenized (.pbim.pbtr).
  */
@@ -47,6 +47,9 @@ export class PbTrips extends Component {
             showClosed: false,
             refuseCard: null,
             refuseNote: "",
+            // the quiet board: the step being shown, and "waiting on me"
+            step: "",
+            mine: false,
         });
         onWillStart(async () => { await this.load(); });
     }
@@ -132,6 +135,85 @@ export class PbTrips extends Component {
     }
 
     toggleClosed() { this.state.showClosed = !this.state.showClosed; }
+
+    // ------------------------------------------------------ the quiet board
+    //
+    // The Hiring look: one slim line of numbers instead of the KPI band, and
+    // a numbered strip of the five steps a trip moves through. A trip is at
+    // EXACTLY one step (its lane), so the counts add up to the trips on the
+    // board; refused and cancelled ones stay in the footer below.
+    get stepTitles() {
+        return {
+            draft: _t("Draft"),
+            submitted: _t("With the manager"),
+            manager_approved: _t("With finance"),
+            finance_approved: _t("With HR"),
+            approved: _t("Authorized"),
+        };
+    }
+
+    get steps() {
+        const titles = this.stepTitles;
+        return this.state.lanes.map((lane, i) => {
+            const mine = lane.cards.filter((c) => c.can_act).length;
+            return {
+                key: lane.key,
+                n: String(i + 1).padStart(2, "0"),
+                title: titles[lane.key] || lane.label,
+                count: lane.count,
+                countLabel: lane.count === 1 ? _t("1 trip") : _t("%s trips", lane.count),
+                sub: "",
+                flag: mine ? _t("%s waiting on you", mine) : "",
+                on: this.state.step === lane.key,
+            };
+        });
+    }
+
+    pickStep(key) {
+        this.state.step = this.state.step === key ? "" : key;
+    }
+
+    get glance() {
+        const k = this.state.kpis || {};
+        return [
+            { key: "open", n: k.open || 0, label: _t("Open trips"), tone: "", run: null },
+            { key: "mine", n: k.awaiting_me || 0, label: _t("Awaiting my approval"), tone: k.awaiting_me ? "amber" : "",
+              run: () => { this.state.mine = !this.state.mine; } },
+            { key: "days", n: k.days_mtd || 0, label: _t("Days travelled this month"), tone: "", run: null },
+            { key: "advance", n: k.advance_outstanding ? this.money(k.advance_outstanding) : 0, label: _t("Advance outstanding"), tone: "", run: null },
+        ];
+    }
+
+    /** The lanes on screen: one lane when a step is picked, and only the
+     *  trips waiting on the reader when that number is pressed. */
+    get visibleLanes() {
+        return this.state.lanes
+            .filter((lane) => !this.state.step || lane.key === this.state.step)
+            .map((lane) => {
+                if (!this.state.mine) { return lane; }
+                const cards = lane.cards.filter((c) => c.can_act);
+                return { ...lane, cards, count: cards.length };
+            });
+    }
+
+    get showingLine() {
+        const all = this.state.lanes.reduce((sum, lane) => sum + lane.count, 0);
+        if (!this.state.step && !this.state.mine) {
+            return { all: true, text: !all ? _t("No trips on the board yet")
+                : all === 1 ? _t("Showing the 1 trip · press a step or a number to narrow it")
+                : _t("Showing all %s trips · press a step or a number to narrow it", all) };
+        }
+        const shown = this.visibleLanes.reduce((sum, lane) => sum + lane.cards.length, 0);
+        const where = this.state.step ? (this.stepTitles[this.state.step] || "") : "";
+        return { all: false, text: where
+            ? _t("Showing %s of %s trips at %s", shown, all, where)
+            : _t("Showing %s of %s trips", shown, all) };
+    }
+
+    showAll() {
+        this.state.step = "";
+        this.state.mine = false;
+    }
 }
 
 registry.category("actions").add("pb_trips", PbTrips);

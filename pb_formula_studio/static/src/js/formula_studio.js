@@ -2564,6 +2564,29 @@ export class PbFormulaStudio extends Component {
             cycles: (this.state.graph.cycles || []).length,
         };
     }
+    /** The dependency map's header figures as one quiet line. */
+    get depGlance() {
+        const d = this.depStats;
+        return [
+            { key: "nodes", n: d.nodes, label: _t("components"), tone: "", run: null },
+            { key: "depth", n: d.depth, label: _t("layers deep"), tone: "", run: null },
+            { key: "critical", n: d.critical, label: _t("longest chain"), tone: "", run: null },
+            { key: "cycles", n: d.cycles, label: _t("cycles"), tone: d.cycles ? "rose" : "", run: null },
+        ];
+    }
+    /** The legislation pack's coverage as one quiet line. */
+    get legisGlance() {
+        const c = (this.state.legisCoverage && this.state.legisCoverage.summary) || {};
+        const out = [
+            { key: "drift", n: c.drift || 0, label: _t("need update"), tone: c.drift ? "amber" : "", run: null },
+            { key: "aligned", n: c.aligned || 0, label: _t("aligned"), tone: c.aligned ? "green" : "", run: null },
+            { key: "na", n: c.na || 0, label: _t("n/a"), tone: "", run: null },
+        ];
+        if (c.drift) {
+            out.push({ key: "emp", n: (c.employees_affected || 0).toLocaleString("en-US"), label: _t("employees affected"), tone: "", run: null });
+        }
+        return out;
+    }
     get depGroupsPresent() {
         const seen = new Set(this.state.depNodes.map((n) => n.group));
         return GROUPS.filter((gname) => seen.has(gname));
@@ -4213,6 +4236,17 @@ export class PbFormulaStudio extends Component {
             employees: cfgs.reduce((a, c) => a + (c.employees || 0), 0),
             shown: this.csFiltered.length,
         };
+    }
+    /** The gallery's figures as one quiet line (quiet board). */
+    get csGlance() {
+        const m = this.csSummary;
+        return [
+            { key: "total", n: m.total, label: _t("configs"), tone: "", run: null },
+            { key: "active", n: m.active, label: _t("active"), tone: "", run: () => this.csSetState("active") },
+            { key: "errors", n: m.withErrors, label: _t("with errors"), tone: m.withErrors ? "rose" : "", run: null },
+            { key: "unreleased", n: m.unreleased, label: _t("unreleased"), tone: m.unreleased ? "amber" : "", run: null },
+            { key: "employees", n: m.employees ? m.employees.toLocaleString("en-US") : 0, label: _t("employees"), tone: "", run: null },
+        ];
     }
     async openConfigSettings(id, ev) {
         if (ev) ev.stopPropagation();

@@ -110,10 +110,12 @@
           </div>
 
           <div class="pbsr-cardstats">
-            <div class="pbsr-stat"><b t-esc="state.detail.employees"/><small>employees</small></div>
-            <div class="pbsr-stat"><b t-esc="state.detail.values_matched"/><small>cells matched</small></div>
-            <div class="pbsr-stat"><b t-esc="state.detail.values_total - state.detail.values_matched"/><small>cells off</small></div>
-            <div class="pbsr-stat"><b t-esc="state.detail.clusters.length"/><small>clusters</small></div>
+            <!-- one quiet line beside the confidence ring (the ring is the
+                 figure this page is read for); amber = cells that disagree -->
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="detailGlance"/>
+              <t t-set="qGlanceOn" t-value="''"/>
+            </t>
 
             <div class="pbsr-periods">
               <span class="pbsr-period" t-foreach="state.detail.periods" t-as="p" t-key="p.id">

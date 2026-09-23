@@ -30,39 +30,13 @@
           </button>
         </div>
 
-        <!-- KPIs -->
-        <div class="pbot-kpis">
-          <div class="kpi">
-            <span class="ico" t-out="ic('inbox',18)"/>
-            <span class="n" t-esc="kpis.pending"/>
-            <span class="l">pending approvals</span>
-          </div>
-          <div class="kpi wide">
-            <span class="l tt">month OT by type (h)</span>
-            <div class="stack">
-              <t t-foreach="kpis.by_type or []" t-as="b" t-key="b.type">
-                <div class="seg" t-if="b.hours > 0"
-                     t-attf-style="flex: {{ b.hours }}; background: {{ b.color }};"
-                     t-attf-title="{{ b.label }}: {{ fmt(b.hours) }}h"/>
-              </t>
-            </div>
-            <div class="legend">
-              <t t-foreach="kpis.by_type or []" t-as="b" t-key="b.type">
-                <span class="lg"><span class="sw" t-attf-style="background:{{ b.color }}"/><t t-esc="b.label"/> <b t-esc="fmt(b.hours)"/></span>
-              </t>
-            </div>
-          </div>
-          <div t-attf-class="kpi {{ kpis.over_ceiling > 0 ? 'pulse rose' : '' }}">
-            <span class="ico" t-out="ic('gauge',18)"/>
-            <span class="n" t-esc="kpis.over_ceiling"/>
-            <span class="l">near/over ceiling</span>
-          </div>
-          <div t-if="state.data.can_view_bonus" class="kpi amber">
-            <span class="ico" t-out="ic('coins',18)"/>
-            <span class="n" t-esc="fmt(kpis.bonus_month or 0)"/>
-            <span class="l">bonus hours this month</span>
-          </div>
-        </div>
+        <!-- The numbers: one quiet line (QUIET_BOARD_ROLLOUT). Amber when
+             requests wait on an approver, rose when people are near or over
+             a ceiling. The month's hours per overtime type follow, neutral. -->
+        <t t-call="pb_import_kit.QuietGlance">
+          <t t-set="qGlance" t-value="glance"/>
+          <t t-set="qGlanceOn" t-value="''"/>
+        </t>
 
         <!-- queue -->
         <section class="pbot-panel">

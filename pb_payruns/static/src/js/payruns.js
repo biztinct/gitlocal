@@ -67,6 +67,11 @@ export class PbPayruns extends Component {
             kpis: {},
             divisions: [],
             division: "all",
+            // quiet board: the step pressed ('' = every step) and the figure
+            // pressed in the numbers line ('' = none). Both only narrow what
+            // is drawn; the server's column counts are never touched (W82).
+            step: "",
+            focus: "",
             rejectedCount: 0,
             showRejected: false,
             // the run the hub sent us to (arrival.focus), highlighted once
@@ -117,7 +122,22 @@ export class PbPayruns extends Component {
      */
     columnBatches(key) {
         return this.state.batches.filter(
-            b => b.state === key && this._inDivision(b));
+            b => b.state === key && this._inDivision(b) && this._inFocus(b));
+    }
+    /** The columns drawn: every step, or only the one pressed. */
+    get shownColumns() {
+        const cols = this.state.columns;
+        if (this.state.step) return cols.filter(c => c.key === this.state.step);
+        if (this.state.focus === "pipeline") return cols.filter(c => c.key !== "done");
+        if (this.state.focus === "done") return cols.filter(c => c.key === "done");
+        return cols;
+    }
+    _inFocus(b) {
+        const f = this.state.focus;
+        if (f === "mine") return !!b.awaiting_me;
+        if (f === "pipeline") return b.state === "draft" || b.state === "approval_pending";
+        if (f === "done") return b.state === "done";
+        return true;
     }
     _inDivision(b) {
         const d = this.state.division;
@@ -130,6 +150,94 @@ export class PbPayruns extends Component {
         return [{ key: "all", label: _t("All divisions") }, ...(this.state.divisions || [])];
     }
     setDivision(key) { this.state.division = key; }
+
+    // ================================================ quiet board
+    //
+    // One slim numbers line instead of five tiles, and the three columns
+    // drawn as numbered steps above the board. A run is at EXACTLY one step
+    // (its state), so the step counts add up to every live run; a rejected
+    // run is an outcome, at no step — it stays in the drawer below.
+    _runsLabel(n) { return n === 1 ? _t("1 pay run") : _t("%s pay runs", n); }
+
+    get liveBatches() {
+        return this.state.batches.filter(b => b.state !== "cancel");
+    }
+
+    get steps() {
+        const live = this.liveBatches;
+        return this.state.columns.map((col, i) => {
+            const at = live.filter(b => b.state === col.key);
+            let flag = "";
+            if (col.key === "approval_pending") {
+                const mine = at.filter(b => b.awaiting_me).length;
+                if (mine) {
+                    flag = mine === 1 ? _t("1 waiting on you") : _t("%s waiting on you", mine);
+                } else if (at.length) {
+                    flag = at.length === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", at.length);
+                }
+            } else if (col.key === "draft") {
+                const back = at.filter(b => b.return_note).length;
+                if (back) {
+                    flag = back === 1 ? _t("1 sent back to be fixed") : _t("%s sent back to be fixed", back);
+                }
+            }
+            return {
+                key: col.key,
+                n: String(i + 1).padStart(2, "0"),
+                title: col.label,
+                count: at.length,
+                countLabel: this._runsLabel(at.length),
+                sub: "",
+                flag,
+                flagTone: "",
+                on: this.state.step === col.key,
+            };
+        });
+    }
+
+    pickStep(key) {
+        this.state.focus = "";
+        this.state.step = this.state.step === key ? "" : key;
+    }
+
+    toggleFocus(key) {
+        this.state.step = "";
+        this.state.focus = this.state.focus === key ? "" : key;
+    }
+
+    get glance() {
+        const k = this.state.kpis || {};
+        const tone = (v, t) => (v ? t : "");
+        const net = k.period_net ? this.money(k.period_net) : 0;
+        return [
+            { key: "total", n: k.total || 0, label: _t("Pay runs"), tone: "", run: null },
+            { key: "pipeline", n: k.in_pipeline || 0, label: _t("In pipeline"), tone: "", run: () => this.toggleFocus("pipeline") },
+            { key: "mine", n: k.my_pending || 0, label: _t("Awaiting your approval"), tone: tone(k.my_pending, "amber"), run: () => this.toggleFocus("mine") },
+            { key: "done", n: k.done || 0, label: _t("Completed"), tone: "", run: () => this.toggleFocus("done") },
+            { key: "net", n: net,
+              label: this.state.currencyName
+                  ? _t("Net paid (done), in %s", this.state.currencyName)
+                  : _t("Net paid (done)"),
+              tone: "", run: null },
+        ];
+    }
+
+    get showingLine() {
+        const all = this.liveBatches.length;
+        const narrowed = this.state.step || this.state.focus || this.state.division !== "all";
+        if (!narrowed) {
+            return { all: true, text: !all ? _t("no pay runs yet") : all === 1 ? _t("all 1 pay run") : _t("all %s pay runs", all) };
+        }
+        const shown = this.shownColumns.reduce((n, c) => n + this.columnBatches(c.key).length, 0);
+        const st = this.state.columns.find(c => c.key === this.state.step);
+        return { all: false, text: _t("%s of %s pay runs", shown, all), where: st ? st.label : "" };
+    }
+
+    showAll() {
+        this.state.step = "";
+        this.state.focus = "";
+        this.state.division = "all";
+    }
 
     nextLabel(a) { return NEXT_LABEL[a] || _t("Open"); }
 

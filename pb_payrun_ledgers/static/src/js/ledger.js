@@ -27,6 +27,18 @@ import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
 
+// The unit a step's count pill names, per descriptor `steps.unit`. Whole
+// sentences, one msgid each, so a translator can reorder them.
+const STEP_UNIT = {
+    settlement: (n) => (n === 1 ? _t("1 settlement") : _t("%s settlements", n)),
+};
+const SHOWING_ALL = {
+    settlement: (n) => (!n ? _t("no settlements yet") : n === 1 ? _t("all 1 settlement") : _t("all %s settlements", n)),
+};
+const SHOWING_SOME = {
+    settlement: (a, b) => _t("%s of %s settlements", a, b),
+};
+
 const DATE_CHIPS = [
     { id: "all", label: _t("All time") },
     { id: "month", label: _t("This month") },
@@ -48,6 +60,7 @@ export class LedgerCockpit extends Component {
         this.notif = useService("notification");
         this.state = useState({
             loaded: false, data: {}, search: "", f: {},
+            step: "",              // quiet board: the step pressed ('' = all)
             dateFilter: "all", from: "", to: "",
             // hub mode only
             tab: this.tabs.length ? this.tabs[0].key : "",
@@ -91,6 +104,7 @@ export class LedgerCockpit extends Component {
         const f = {};
         for (const fac of (d.facets || [])) f[fac.key] = "";
         this.state.f = f;
+        this.state.step = "";
         this.state.loaded = true;
     }
 
@@ -171,6 +185,10 @@ export class LedgerCockpit extends Component {
         return true;
     }
     _match(r) {
+        if (this.state.step) {
+            const st = this.stepItems.find((x) => x.key === this.state.step);
+            if (st && !st.states.includes((r._f || {}).state)) return false;
+        }
         for (const [k, v] of Object.entries(this.state.f)) {
             if (v && String((r._f || {})[k]) !== String(v)) return false;
         }
@@ -184,14 +202,75 @@ export class LedgerCockpit extends Component {
         return (this.state.data.rows || []).filter(r => String((r._f || {})[key]) === String(val)).length;
     }
     get dirty() {
-        return !!(this.state.search || this.state.dateFilter !== "all"
+        return !!(this.state.search || this.state.dateFilter !== "all" || this.state.step
             || Object.values(this.state.f).some(v => v));
     }
     clearFilters() {
         const f = {};
         for (const k of Object.keys(this.state.f)) f[k] = "";
         this.state.f = f;
+        this.state.step = "";
         this.state.search = ""; this.state.dateFilter = "all"; this.state.from = ""; this.state.to = "";
+    }
+
+    // ================================================ quiet board
+    //
+    // Counts go into one slim numbers line; the money totals the page exists
+    // to show stay as figures of their own. A descriptor that carries
+    // `steps` (Full & Final: a settlement's approval route) also gets the
+    // numbered step strip; each record is at exactly one step.
+    get quietKpis() { return (this.state.data.kpis || []).filter((k) => !k.money); }
+    get moneyKpis() { return (this.state.data.kpis || []).filter((k) => k.money); }
+
+    get glance() {
+        return this.quietKpis.map((k, i) => {
+            const fac = k.facet;
+            const tone = k.tone === "err" && k.value ? "rose" : "";
+            return {
+                // a real 0 (not the string "0") so the kit greys it
+                key: "k" + i, n: k.value ? this.kpiVal(k) : 0, label: k.label, tone,
+                run: fac ? () => this.setFacet(fac[0], fac[1]) : null,
+                _on: fac ? this.state.f[fac[0]] === fac[1] : false,
+            };
+        });
+    }
+    get glanceOn() {
+        const on = this.glance.find((g) => g._on);
+        return on ? on.key : "";
+    }
+
+    get stepItems() { return ((this.state.data.steps || {}).items) || []; }
+    get stepUnit() { return (this.state.data.steps || {}).unit || ""; }
+    get steps() {
+        const unit = STEP_UNIT[this.stepUnit] || ((n) => String(n));
+        return this.stepItems.map((st, i) => {
+            let flag = "";
+            if (st.mine) {
+                flag = st.mine === 1 ? _t("1 waiting on you") : _t("%s waiting on you", st.mine);
+            } else if (st.waiting) {
+                flag = st.waiting === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", st.waiting);
+            } else if (st.returned) {
+                flag = st.returned === 1 ? _t("1 sent back to be fixed") : _t("%s sent back to be fixed", st.returned);
+            }
+            return {
+                key: st.key, n: String(i + 1).padStart(2, "0"), title: st.title,
+                count: st.count, countLabel: unit(st.count), sub: "",
+                flag, flagTone: "", on: this.state.step === st.key,
+            };
+        });
+    }
+    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
+
+    get showingLine() {
+        const total = this.state.data.total || 0;
+        const all = SHOWING_ALL[this.stepUnit];
+        const some = SHOWING_SOME[this.stepUnit];
+        if (!this.dirty) {
+            return { all: true, text: all ? all(total) : String(total) };
+        }
+        const st = this.stepItems.find((x) => x.key === this.state.step);
+        return { all: false, text: some ? some(this.rows.length, total) : String(this.rows.length),
+                 where: st ? st.title : "" };
     }
 
     // ---- navigation / actions ----

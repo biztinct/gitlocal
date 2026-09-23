@@ -1096,11 +1096,40 @@ export class PbTenants extends Component {
         return this.state.data.capacity || { level: "ok", headroom: 0, reason: "" };
     }
 
-    get capacityBar() {
+    /**
+     * The fleet's numbers as one quiet line. Rose when the machine is full or
+     * a backup needs a look, amber when it is nearly full; otherwise neutral.
+     */
+    get glance() {
+        const k = this.state.data.kpis || {};
         const c = this.capacity;
-        const used = Math.max(0, (c.mem_total_mb || 0) - (c.mem_available_mb || 0));
-        const pct = c.mem_total_mb ? Math.min(100, Math.round((used * 100) / c.mem_total_mb)) : 0;
-        return { pct, cls: c.level };
+        let capLabel = _t("Room for more customers");
+        if (c.level === "full") capLabel = _t("No room for another customer");
+        else if (c.headroom === 1) capLabel = _t("Room for 1 more customer");
+        return [
+            { key: "live", n: k.live || 0, label: _t("Live tenants"), tone: "" },
+            { key: "prov", n: k.provisioning || 0, label: _t("In progress"), tone: "" },
+            { key: "storage", n: k.storage || "—", label: _t("Fleet storage"), tone: "" },
+            { key: "cap", n: c.level === "full" ? _t("Full") : (c.headroom || 0), label: capLabel,
+              tone: c.level === "full" ? "rose" : (c.level === "warn" ? "amber" : ""), title: c.reason || "" },
+            { key: "disk", n: (k.disk_free || "—") + " (" + (k.disk_free_pct || 0) + "%)", label: _t("Disk free"), tone: "" },
+            { key: "backup", n: k.backup_ok ? _t("Protected") : _t("Check"),
+              label: k.last_backup ? _t("Backups · %s", k.last_backup) : _t("Backups"), tone: k.backup_ok ? "" : "rose" },
+        ];
+    }
+
+    /** One customer's overview figures as a quiet line; rose when it is down. */
+    detailGlance(d) {
+        d = d || {};
+        const ping = d.ping_ms >= 0 ? d.ping_ms + " ms" : "—";
+        const tone = d.health === "ok" ? "" : (d.health === "down" ? "rose" : "amber");
+        return [
+            { key: "users", n: d.users || 0, label: _t("Internal users"), tone: "", run: null },
+            { key: "emps", n: d.employees || 0, label: _t("Employees"), tone: "", run: null },
+            { key: "db", n: d.db_size_only_h || "—", label: _t("Database"), tone: "", run: null },
+            { key: "files", n: d.filestore_size_h || "—", label: _t("Filestore"), tone: "", run: null },
+            { key: "ping", n: ping, label: _t("Response"), tone, run: null },
+        ];
     }
 
     // ============================================ WHAT EACH CUSTOMER GETS

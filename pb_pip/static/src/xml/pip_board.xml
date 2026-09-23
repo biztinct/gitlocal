@@ -94,43 +94,28 @@
             </div>
           </div>
 
-          <!-- ====================== the numbers ====================== -->
-          <div class="pbim-stats pip-kpis">
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('sunrise',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.open or 0"/>
-                <div class="l">Open</div>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('smilePlus',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.coaching or 0"/>
-                <div class="l">Still a conversation</div>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('activity',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.running or 0"/>
-                <div class="l">Plans running</div>
-              </div>
-            </div>
-            <div class="pbim-stat" t-att-class="{ warn: state.kpis.deciding }">
-              <div class="pbim-stat-ic amber"><t t-out="ic('checkCircle',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.deciding or 0"/>
-                <div class="l">Waiting on a decision</div>
-              </div>
-            </div>
-            <div class="pbim-stat" t-att-class="{ err: state.kpis.at_risk }">
-              <div class="pbim-stat-ic rose"><t t-out="ic('alert',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.at_risk or 0"/>
-                <div class="l">Drifting or at risk</div>
-              </div>
-            </div>
+          <!-- ====================== the numbers ======================
+               Quiet by default: one slim line, grey at zero, a colour only
+               when somebody has to act. Every figure filters the board. -->
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="state.focus"/>
+          </t>
+
+          <!-- ====================== the four steps ======================
+               The same four stops as the rail on every card. A plan is at
+               exactly ONE step (its state), so the counts add up. Open
+               plans only: a closed plan has left the steps. -->
+          <t t-if="!state.closedView">
+            <t t-call="pb_import_kit.QuietSteps">
+              <t t-set="qSteps" t-value="steps"/>
+              <t t-set="qStepsLabel" t-value="'Where every plan is'"/>
+              <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
+            </t>
+          </t>
+          <div class="pbim-showing">
+            <span t-esc="showingLine.text"/>
+            <button t-if="!showingLine.all" type="button" class="pbim-showall" t-on-click="clearFilters">Show all</button>
           </div>
 
           <!-- ======================== filters ======================== -->

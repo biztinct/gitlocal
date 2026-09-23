@@ -35,11 +35,11 @@
           </div>
         </div>
 
-        <div class="ppl-d-stats" style="grid-template-columns:repeat(3,1fr)">
-          <div class="pbim-stat new"><span class="n" t-esc="d.counts.rules"/><span class="l">Salary rules</span></div>
-          <div class="pbim-stat ok"><span class="n" t-esc="d.counts.employees"/><span class="l">Employees</span></div>
-          <div class="pbim-stat"><span class="n" t-esc="d.counts.categories"/><span class="l">Categories</span></div>
-        </div>
+        <!-- the counts: one quiet line (was three big tiles) -->
+        <t t-call="pb_import_kit.QuietGlance">
+          <t t-set="qGlance" t-value="glance"/>
+          <t t-set="qGlanceOn" t-value="''"/>
+        </t>
 
         <div t-foreach="d.rule_groups" t-as="g" t-key="g.key" class="pbim-panel sal-group">
           <div class="pbim-panel-h"><h2 class="pbim-h2"><t t-esc="g.label"/> <span class="sal-gcount" t-esc="g.rules.length"/></h2></div>

@@ -263,8 +263,12 @@ class PbFullFinal(models.AbstractModel):
             {'icon': 'receipt', 'ic_tone': 'green', 'money': True, 'value': a.get('net_payable') or 0.0, 'label': 'Net payable'},
             {'icon': 'sigma', 'ic_tone': 'blue', 'money': True, 'value': a.get('total_earnings') or 0.0, 'label': 'Earnings'},
             {'icon': 'sigma', 'ic_tone': 'amber', 'money': True, 'value': a.get('total_deductions') or 0.0, 'label': 'Deductions'},
-            {'icon': 'user', 'value': FF.search_count(dom + [('source', '=', 'manual')]), 'label': 'Manual'},
+            # `facet`: pressing this figure narrows the rows the same way the
+            # Source chip does (quiet board — a figure that can filter, does).
+            {'icon': 'user', 'value': FF.search_count(dom + [('source', '=', 'manual')]), 'label': 'Manual',
+             'facet': ['source', 'manual']},
         ]
+        steps = self._fnf_steps(FF, dom)
         src_lbl = dict(FF._fields['source'].selection or [])
         rows = []
         for r in recs:
@@ -280,6 +284,7 @@ class PbFullFinal(models.AbstractModel):
                 'metrics': [{'label': 'Net payable', 'value': r.net_payable, 'money': True, 'strong': True, 'tone': 'ok'}],
                 'action': {'label': 'Download', 'icon': 'download', 'method': 'action_download_full_and_final'},
                 '_f': {'source': r.source or '',
+                       'state': r.state or '',
                        'dept': r.department_id.name if r.department_id else '',
                        'config': r.formula_config_id.name if r.formula_config_id else ''},
                 '_s': ' '.join([x for x in [e.name if e else '', r.employee_code or '',
@@ -295,9 +300,52 @@ class PbFullFinal(models.AbstractModel):
             'title': 'Full & Final', 'subtitle': 'Every settlement, its components and net payable at a glance.',
             'search_ph': 'Search employee, ID, department…', 'empty': 'No settlements match these filters.',
             'currency': cur, 'date': True, 'kpis': kpis, 'facets': facets,
+            'steps': steps,
             'rows': rows, 'total': total,
             'list_action': 'pb_hr_fullandfinal.action_full_and_final_employees',
         }
+
+    # A settlement travels one route: prepared, sent in, approved. Each state
+    # belongs to EXACTLY one step, so the counts add up; "Sent back" is back
+    # with the people preparing it, and "Turned down" is an outcome at no
+    # step. Counted over the whole scope, not only the rows loaded.
+    FNF_STEPS = (
+        ('prepare', ('draft', 'returned')),
+        ('pending', ('pending',)),
+        ('approved', ('approved',)),
+    )
+
+    @api.model
+    def _fnf_steps(self, FF, dom):
+        if 'state' not in FF._fields:
+            return {}
+        try:
+            labels = dict(FF._fields['state']._description_selection(self.env))
+            counts = {}
+            for state, n in FF._read_group(dom, ['state'], ['__count']):
+                counts[state] = n
+            uid = self.env.uid
+            mine = 0
+            if 'seat_user_ids' in FF._fields:
+                mine = FF.search_count(dom + [('state', '=', 'pending'),
+                                              ('seat_user_ids', 'in', [uid])])
+            titles = {'prepare': labels.get('draft', 'Being prepared'),
+                      'pending': labels.get('pending', 'Waiting for approval'),
+                      'approved': labels.get('approved', 'Approved')}
+            items = []
+            for key, states in self.FNF_STEPS:
+                n = sum(counts.get(st, 0) for st in states)
+                items.append({
+                    'key': key, 'title': titles[key], 'states': list(states),
+                    'count': n,
+                    'waiting': n if key == 'pending' else 0,
+                    'mine': mine if key == 'pending' else 0,
+                    'returned': counts.get('returned', 0) if key == 'prepare' else 0,
+                })
+            return {'unit': 'settlement', 'items': items}
+        except Exception as e:
+            _logger.debug("Full & Final steps failed: %s", e)
+            return {}
 
 
 class PbProration(models.AbstractModel):

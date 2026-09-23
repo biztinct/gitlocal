@@ -32,28 +32,12 @@
           </button>
         </div>
 
-        <div class="pbaf-kpis">
-          <div t-attf-class="kpi {{ state.data.kpis.open_exceptions > 20 ? 'pulse rose' : '' }}">
-            <span class="ico" t-out="ic('alertCircle',18)"/>
-            <span class="n" t-esc="state.data.kpis.open_exceptions"/>
-            <span class="l">open exceptions</span>
-          </div>
-          <div class="kpi">
-            <span class="ico" t-out="ic('edit',18)"/>
-            <span class="n" t-esc="state.data.kpis.pending_corrections"/>
-            <span class="l">pending corrections</span>
-          </div>
-          <div class="kpi">
-            <span class="ico" t-out="ic('timer',18)"/>
-            <span class="n"><t t-esc="state.data.kpis.late_pct"/>%</span>
-            <span class="l">late this week</span>
-          </div>
-          <div class="kpi">
-            <span class="ico" t-out="ic('upload',18)"/>
-            <span class="n" t-esc="state.data.kpis.imports_month"/>
-            <span class="l">imports this month</span>
-          </div>
-        </div>
+        <!-- The numbers: one quiet line (QUIET_BOARD_ROLLOUT). Amber when
+             exceptions or corrections are waiting on someone; the rest neutral. -->
+        <t t-call="pb_import_kit.QuietGlance">
+          <t t-set="qGlance" t-value="glance"/>
+          <t t-set="qGlanceOn" t-value="''"/>
+        </t>
 
         <div class="pbaf-cols">
 

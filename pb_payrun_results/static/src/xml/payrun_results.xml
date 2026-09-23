@@ -142,12 +142,13 @@
 
           <!-- scrollable region: KPI + facets + results -->
           <div class="pbp-scroll">
-          <!-- KPI strip -->
-          <div class="pbp-kpis" t-if="state.picker.all.length">
-            <div class="pbp-kpi"><b t-esc="pNum(pSummary.runs)"/><span>payruns</span></div>
-            <div class="pbp-kpi"><b t-esc="pNum(pSummary.employees)"/><span>employees</span></div>
-            <div class="pbp-kpi" t-if="pSummary.net > 0"><b t-esc="pMoneyShort(pSummary.net, pSummary.currency)"/><span>net pay</span></div>
-            <div class="pbp-kpi"><b t-esc="pNum(pSummary.approved)"/><span>approved</span></div>
+          <!-- the numbers: one quiet line (was a row of big figures). The
+               approved count still narrows the list to approved runs. -->
+          <div class="pbp-glance" t-if="state.picker.all.length">
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="pGlance"/>
+              <t t-set="qGlanceOn" t-value="state.picker.f.status === 'done' ? 'approved' : ''"/>
+            </t>
           </div>
 
           <!-- facet chip rows -->

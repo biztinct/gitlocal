@@ -83,11 +83,17 @@
 
           <!-- STEP 2: REVIEW & MATCH -->
           <t t-if="state.step === 2 and !state.loading and state.summary">
-            <div class="iw-stats" data-coach="iw-review">
-              <div class="iw-stat"><span class="n" t-esc="state.summary.total_lines"/><span class="l">Rows loaded</span></div>
-              <div class="iw-stat ok"><span class="n" t-esc="state.summary.matched"/><span class="l">Matched</span></div>
-              <div class="iw-stat new"><span class="n" t-esc="state.summary.new"/><span class="l">New employees</span></div>
-              <div t-attf-class="iw-stat {{ state.summary.errors ? 'err' : '' }}"><span class="n" t-esc="state.summary.errors"/><span class="l">Need attention</span></div>
+            <!-- quiet numbers (QUIET_BOARD_ROLLOUT). This module does not depend on
+                 pb_import_kit, so the kit's QuietGlance markup is copied here with
+                 the same class names; the styles are global. -->
+            <div class="pbim-glance" data-coach="iw-review" role="group" aria-label="Numbers at a glance">
+              <t t-foreach="reviewGlance" t-as="gl" t-key="gl.key">
+                <span class="pbim-gl flat" t-att-class="(gl.n ? '' : 'zero ') + (gl.tone ? 'is-' + gl.tone : '')">
+                  <span t-if="gl.tone" class="pbim-gl-dot"/>
+                  <span class="pbim-gl-n" t-esc="gl.n"/>
+                  <span class="pbim-gl-l" t-esc="gl.label"/>
+                </span>
+              </t>
             </div>
             <div class="iw-tablewrap">
               <table class="iw-table">
@@ -105,9 +111,17 @@
 
           <!-- STEP 3: VALIDATE & FIX -->
           <t t-if="state.step === 3 and !state.loading and state.summary">
-            <div class="iw-stats">
-              <div class="iw-stat ok"><span class="n" t-esc="state.summary.matched"/><span class="l">Valid</span></div>
-              <div t-attf-class="iw-stat {{ state.summary.errors ? 'err' : 'ok' }}"><span class="n" t-esc="state.summary.errors"/><span class="l">Errors</span></div>
+            <!-- quiet numbers (QUIET_BOARD_ROLLOUT). This module does not depend on
+                 pb_import_kit, so the kit's QuietGlance markup is copied here with
+                 the same class names; the styles are global. -->
+            <div class="pbim-glance" role="group" aria-label="Numbers at a glance">
+              <t t-foreach="validateGlance" t-as="gl" t-key="gl.key">
+                <span class="pbim-gl flat" t-att-class="(gl.n ? '' : 'zero ') + (gl.tone ? 'is-' + gl.tone : '')">
+                  <span t-if="gl.tone" class="pbim-gl-dot"/>
+                  <span class="pbim-gl-n" t-esc="gl.n"/>
+                  <span class="pbim-gl-l" t-esc="gl.label"/>
+                </span>
+              </t>
             </div>
             <t t-if="errorLines.length">
               <div class="iw-errhead"><t t-out="ic('alert',15)"/> Resolve these before committing</div>

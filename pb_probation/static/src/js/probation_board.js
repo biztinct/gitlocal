@@ -93,6 +93,8 @@ export class PbProbationBoard extends Component {
             dept: "all",
             reviewState: "all",
             attentionOnly: false,
+            focus: "",      // the figure on the numbers line now filtering
+            step: "",       // the review step now filtering
 
             // the open person
             drawer: null,
@@ -171,6 +173,12 @@ export class PbProbationBoard extends Component {
             if (this.state.attentionOnly && !this.needsAttention(r)) {
                 return false;
             }
+            if (this.state.focus && !this.matchesFocus(r, this.state.focus)) {
+                return false;
+            }
+            if (this.state.step && this.flowStepOf(r) !== this.state.step) {
+                return false;
+            }
             if (!q) { return true; }
             return (r.employee + " " + (r.job || "") + " " + (r.dept || ""))
                 .toLowerCase().includes(q);
@@ -190,14 +198,118 @@ export class PbProbationBoard extends Component {
     get hasFilters() {
         return this.state.q || this.state.country !== "all"
             || this.state.dept !== "all" || this.state.reviewState !== "all"
-            || this.state.attentionOnly;
+            || this.state.attentionOnly || this.state.focus || this.state.step;
     }
 
     clearFilters() {
         Object.assign(this.state, {
             q: "", country: "all", dept: "all", reviewState: "all",
-            attentionOnly: false,
+            attentionOnly: false, focus: "", step: "",
         });
+    }
+
+    // ----------------------------------------------------- the quiet board
+    //
+    // One slim line of numbers instead of a row of tiles, and the five
+    // numbered steps of a review in place of the old explainer strip. A
+    // person is at EXACTLY ONE step (flowStepOf), so the counts add up to
+    // the board. Pressing a lit figure or step again clears it.
+    matchesFocus(r, key) {
+        if (key === "running") { return !!r.review_state && r.review_state !== "closed"; }
+        if (key === "verdicts") { return r.review_state === "verdict"; }
+        if (key === "late") { return !!r.feedback_late; }
+        if (key === "urgent") { return !!r.urgent; }
+        return true;
+    }
+
+    toggleFocus(key) { this.state.focus = this.state.focus === key ? "" : key; }
+
+    get glance() {
+        const k = this.state.kpis || {};
+        const tone = (v, t) => (v ? t : "");
+        return [
+            { key: "all", n: k.in_probation || 0, label: _t("In a trial period"), tone: "", run: null },
+            { key: "running", n: k.running || 0, label: _t("Reviews running"), tone: "",
+              run: () => this.toggleFocus("running") },
+            { key: "verdicts", n: k.verdicts || 0, label: _t("Waiting on a decision"), tone: tone(k.verdicts, "amber"),
+              run: () => this.toggleFocus("verdicts") },
+            { key: "late", n: k.overdue_feedback || 0, label: _t("Answers overdue"), tone: tone(k.overdue_feedback, "rose"),
+              run: () => this.toggleFocus("late") },
+            { key: "urgent", n: k.urgent || 0, label: _t("Ending within a week"), tone: tone(k.urgent, "rose"),
+              run: () => this.toggleFocus("urgent") },
+        ];
+    }
+
+    /** Waiting on the HR lead or the CEO to sign the recommendation off. */
+    atSignOff(r) {
+        return r.review_state === "verdict" && ["hr", "ceo"].includes(r.review_gate);
+    }
+
+    /**
+     * The review step a person is at. Not started / scheduled / choosing
+     * colleagues → peers; answers running → answers; putting the answers
+     * together, the 1:1 and the manager's own recommendation → talk; the
+     * HR lead or CEO sign-off → review; a closed review → outcome.
+     */
+    flowStepOf(r) {
+        const st = r.review_state || "";
+        if (st === "closed" || r.review_gate === "approved") { return "outcome"; }
+        if (this.atSignOff(r)) { return "review"; }
+        if (["consolidation", "one_on_one", "verdict"].includes(st)) { return "talk"; }
+        if (st === "feedback") { return "answers"; }
+        return "peers";
+    }
+
+    get stepDefs() {
+        return [
+            { key: "peers", title: _t("Choose peers"), sub: _t("Not started, or colleagues being chosen") },
+            { key: "answers", title: _t("Gather perspectives"), sub: _t("Colleagues are answering") },
+            { key: "talk", title: _t("Manager conversation"), sub: _t("The 1:1 and the manager's recommendation") },
+            { key: "review", title: _t("HR & leadership review"), sub: _t("The recommendation is being signed off") },
+            { key: "outcome", title: _t("Share the outcome"), sub: _t("Decided and recorded") },
+        ];
+    }
+
+    get steps() {
+        const rows = this.state.rows;
+        return this.stepDefs.map((st, i) => {
+            const at = rows.filter((r) => this.flowStepOf(r) === st.key);
+            const waiting = at.filter((r) => this.atSignOff(r)).length;
+            const late = at.filter((r) => r.feedback_late).length;
+            let flag = "";
+            let flagTone = "";
+            if (waiting) {
+                flag = waiting === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", waiting);
+            } else if (late) {
+                flag = late === 1 ? _t("1 with answers overdue") : _t("%s with answers overdue", late);
+                flagTone = "rose";
+            }
+            return {
+                ...st,
+                n: String(i + 1).padStart(2, "0"),
+                count: at.length,
+                countLabel: at.length === 1 ? _t("1 person") : _t("%s people", at.length),
+                flag,
+                flagTone,
+                on: this.state.step === st.key,
+            };
+        });
+    }
+
+    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
+
+    get showingLine() {
+        const all = this.state.rows.length;
+        if (!this.hasFilters) {
+            return { all: true, text: !all ? _t("Showing nobody in a trial period yet")
+                : all === 1 ? _t("Showing all 1 person in a trial period · press a step or a number to narrow it")
+                    : _t("Showing all %s people in a trial period · press a step or a number to narrow it", all) };
+        }
+        const shown = this.visibleRows.length;
+        const st = this.stepDefs.find((x) => x.key === this.state.step);
+        return { all: false, text: st
+            ? _t("Showing %s of %s people at %s", shown, all, st.title)
+            : _t("Showing %s of %s people in a trial period", shown, all) };
     }
 
     onSearch(ev) { this.state.q = ev.target.value; }

@@ -379,3 +379,15 @@ msgstr "Chế độ demo TẮT."
 #: code:addons/pb_driver_checkin/static/src/js/driver_map.js:196
 msgid "Demo toggle failed."
 msgstr "Chuyển đổi demo không thành công."
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_map.js:0
+msgid "Idle over 5 minutes"
+msgstr "Đứng yên quá 5 phút"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/driver_map.js:0
+msgid "Average hours"
+msgstr "Số giờ trung bình"

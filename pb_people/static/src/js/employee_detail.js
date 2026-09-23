@@ -2,6 +2,7 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.people";
@@ -27,6 +28,20 @@ export class PbEmployeeDetail extends Component {
     money(n) {
         if (!n) return (this.d.currency || "₫") + "0";
         return (this.d.currency || "₫") + Math.round(n).toLocaleString("en-US");
+    }
+
+    // The four facts that used to be big tiles, as one quiet line. Nothing
+    // here filters; rose only where something needs fixing.
+    get glance() {
+        const d = this.d, c = d.contract || {}, st = d.statutory || {};
+        const days = c.days_to_expiry;
+        const hasDays = days !== null && days !== undefined;
+        return [
+            { key: "tenure", n: d.tenure_label || "—", label: _t("Tenure"), tone: "", run: null },
+            { key: "wage", n: this.money(c.wage), label: _t("Monthly wage"), tone: "", run: null },
+            { key: "end", n: hasDays ? days : "—", label: _t("Days to contract end"), tone: hasDays && days <= 30 ? "rose" : "", run: null },
+            { key: "bank", n: st.bank ? _t("On file") : _t("Missing"), label: _t("Bank details"), tone: st.bank ? "" : "rose", run: null },
+        ];
     }
 
     async refresh() {

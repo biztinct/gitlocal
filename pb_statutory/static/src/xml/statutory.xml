@@ -28,13 +28,14 @@
           </div>
         </div>
 
-        <div class="ppl-kpis" data-coach="st-kpis">
-          <div class="pbim-stat"><span class="pbim-stat-ic green"><t t-out="ic('receipt',21)"/></span><div class="pbim-stat-tx"><span class="n money" t-esc="money(state.kpis.contributions)"/><span class="l">Contributions</span></div></div>
-          <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('user',21)"/></span><div class="pbim-stat-tx"><span class="n money" t-esc="money(state.kpis.emp_leg)"/><span class="l">Employee leg</span></div></div>
-          <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('briefcase',21)"/></span><div class="pbim-stat-tx"><span class="n money" t-esc="money(state.kpis.comp_leg)"/><span class="l">Employer leg</span></div></div>
-          <div class="pbim-stat"><span class="pbim-stat-ic blue"><t t-out="ic('checkCircle',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.policies"/><span class="l">Policies</span></div></div>
-          <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('table',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.tax_tables"/><span class="l">Tax tables</span></div></div>
-          <div class="pbim-stat pink"><span class="pbim-stat-ic pink"><t t-out="ic('users',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.dependents"/><span class="l">Dependents</span></div></div>
+        <!-- ==== the numbers ====
+             One quiet line (was six big tiles). This is a settings page, not
+             a workflow, so there is no step strip. -->
+        <div data-coach="st-kpis">
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="''"/>
+          </t>
         </div>
 
         <div class="sta-cols">

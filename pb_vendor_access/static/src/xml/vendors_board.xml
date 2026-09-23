@@ -67,47 +67,10 @@
         </div>
 
         <!-- =========================== the numbers =========================== -->
-        <div class="pbim-stats pbva-kpis">
-          <div class="pbim-stat">
-            <div class="pbim-stat-ic"><t t-out="ic('briefcase',18)"/></div>
-            <div class="pbim-stat-tx">
-              <div class="n" t-esc="kpis.vendors"/>
-              <div class="l">on the register</div>
-            </div>
-          </div>
-          <div t-attf-class="pbim-stat {{ kpis.expiring ? 'warn' : '' }}">
-            <div t-attf-class="pbim-stat-ic {{ kpis.expiring ? '' : 'green' }}">
-              <t t-out="ic('clock',18)"/>
-            </div>
-            <div class="pbim-stat-tx">
-              <div class="n" t-esc="kpis.expiring"/>
-              <div class="l">coming up for renewal</div>
-            </div>
-          </div>
-          <div t-attf-class="pbim-stat {{ kpis.expired ? 'err' : '' }}">
-            <div t-attf-class="pbim-stat-ic {{ kpis.expired ? 'rose' : 'green' }}">
-              <t t-out="ic('alert',18)"/>
-            </div>
-            <div class="pbim-stat-tx">
-              <div class="n" t-esc="kpis.expired"/>
-              <div class="l">already run out</div>
-            </div>
-          </div>
-          <div class="pbim-stat">
-            <div class="pbim-stat-ic blue"><t t-out="ic('fileText',18)"/></div>
-            <div class="pbim-stat-tx">
-              <div class="n" t-esc="kpis.none"/>
-              <div class="l">with nothing recorded</div>
-            </div>
-          </div>
-          <div class="pbim-stat">
-            <div class="pbim-stat-ic"><t t-out="ic('user',18)"/></div>
-            <div class="pbim-stat-tx">
-              <div class="n" t-esc="kpis.mine"/>
-              <div class="l">you look after</div>
-            </div>
-          </div>
-        </div>
+        <t t-call="pb_import_kit.QuietGlance">
+          <t t-set="qGlance" t-value="glance"/>
+          <t t-set="qGlanceOn" t-value="state.agreementState"/>
+        </t>
 
         <!-- =========================== the filters =========================== -->
         <div class="pbva-bar">

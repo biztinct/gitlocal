@@ -158,6 +158,21 @@ export class PbPayrunResults extends Component {
                  currency: (rows[0] && rows[0].currency) || "₫" };
     }
 
+    /** The picker's numbers as one quiet line; "approved" still filters. */
+    get pGlance() {
+        const m = this.pSummary;
+        const out = [
+            { key: "runs", n: m.runs ? this.pNum(m.runs) : 0, label: _t("payruns"), tone: "", run: null },
+            { key: "emp", n: m.employees ? this.pNum(m.employees) : 0, label: _t("employees"), tone: "", run: null },
+        ];
+        if (m.net > 0) {
+            out.push({ key: "net", n: this.pMoneyShort(m.net, m.currency), label: _t("net pay"), tone: "", run: null });
+        }
+        out.push({ key: "approved", n: m.approved ? this.pNum(m.approved) : 0, label: _t("approved"), tone: "",
+                   run: () => this.toggleFacet("status", "done") });
+        return out;
+    }
+
     // ---- picker formatting ----
     pNum(n) { return Number(n || 0).toLocaleString("en-US"); }
     pMoneyShort(n, cur) {

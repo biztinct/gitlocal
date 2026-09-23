@@ -579,3 +579,9 @@ msgstr "đủ 18 sau"
 #: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:70
 msgid "days"
 msgstr "ngày"
+
+#. module: pb_young_worker
+#. odoo-javascript
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+msgid "Violations in the last 30 days"
+msgstr "Vi phạm trong 30 ngày qua"

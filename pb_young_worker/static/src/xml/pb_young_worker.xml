@@ -15,23 +15,14 @@
             <p class="pbyw-hero__sub">Under-18 working-time compliance — Vietnam Labor Code.</p>
           </div>
         </div>
-        <div class="pbyw-hero__kpis" t-if="state.loaded">
-          <div class="pbyw-kpi">
-            <span class="pbyw-kpi__v" t-esc="state.data.kpis.protected || 0"/>
-            <span class="pbyw-kpi__l">Protected</span>
-          </div>
-          <div class="pbyw-kpi">
-            <span class="pbyw-kpi__v pbyw-kpi__v--ok" t-esc="state.data.kpis.compliant || 0"/>
-            <span class="pbyw-kpi__l">Compliant this week</span>
-          </div>
-          <div class="pbyw-kpi">
-            <span t-attf-class="pbyw-kpi__v {{ (state.data.kpis.violations_30d || 0) > 0 ? 'pbyw-kpi__v--rose' : '' }}" t-esc="state.data.kpis.violations_30d || 0"/>
-            <span class="pbyw-kpi__l">Violations (30d)</span>
-          </div>
-          <div class="pbyw-kpi">
-            <span t-attf-class="pbyw-kpi__v {{ (state.data.kpis.missing_birthdays || 0) > 0 ? 'pbyw-kpi__v--amber' : '' }}" t-esc="state.data.kpis.missing_birthdays || 0"/>
-            <span class="pbyw-kpi__l">Missing birthdays</span>
-          </div>
+        <!-- The four figures as one quiet line (QUIET_BOARD_ROLLOUT): rose
+             for violations, amber for missing birthdays, green for
+             compliance; grey at zero. -->
+        <div class="pbyw-hero__glance" t-if="state.loaded">
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="''"/>
+          </t>
         </div>
       </div>
 

@@ -21,14 +21,11 @@
     .pbr-new:hover { background: var(--i600); transform: translateY(-1px); }
     .pbr-new .ic { font-size: 14px; }
 
-    /* KPI strip */
-    .pbr-kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 13px; margin-bottom: 22px; }
-    .pbr-kpi { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 17px; display: flex; flex-direction: column; gap: 3px; }
-    .pbr-kpi .v { font-size: 21px; font-weight: 800; letter-spacing: -.01em; }
-    .pbr-kpi .v.indigo { color: var(--i); } .pbr-kpi .v.green { color: var(--green); }
-    .pbr-kpi .l { font-size: 11.5px; color: var(--muted); font-weight: 600; }
-    .pbr-kpi.hot { background: var(--i-soft); border-color: var(--i-border); border-left: 3px solid var(--i); }
-    .pbr-kpi.hot .v { color: var(--i); } .pbr-kpi.hot .l { color: var(--muted); }
+    /* quiet board (pb_import_kit quiet_board.scss) reads these tokens, so
+       the numbers line and the steps wear this board's violet. */
+    --pbim-primary: var(--i); --pbim-primary-strong: var(--i600); --pbim-soft: var(--i-soft);
+    --pbim-ring: rgba(90,75,176,.18); --pbim-ink: var(--ink); --pbim-muted: var(--muted);
+    --pbim-line: var(--line); --pbim-amber: var(--amber);
 
     /* board */
     .pbr-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; }
@@ -162,7 +159,6 @@
 
     @media (max-width: 1200px) {
         .pbr-board { grid-template-columns: repeat(2, 1fr); }
-        .pbr-kpis { grid-template-columns: repeat(2, 1fr); }
     }
 }
 

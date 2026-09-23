@@ -28,6 +28,20 @@ export class PbContractDetail extends Component {
     // SCHEMECTX: the sign comes from the payload, which asks the scheme that
     // pays this person. No literal fallback — a hardcoded "₫" is exactly how
     // an Indian salary came to be written in dong.
+    // The four facts that used to be big tiles, as one quiet line. Nothing
+    // here filters; rose only when the contract ends within 30 days.
+    get glance() {
+        const d = this.d || {};
+        const days = d.days_to_expiry;
+        const hasDays = days !== null && days !== undefined;
+        return [
+            { key: "wage", n: this.money(d.wage), label: _t("Monthly wage"), tone: "", run: null },
+            { key: "tenure", n: d.tenure_label || "—", label: _t("Tenure"), tone: "", run: null },
+            { key: "end", n: hasDays ? days : "—", label: _t("Days to contract end"), tone: hasDays && days <= 30 ? "rose" : "", run: null },
+            { key: "trial", n: d.trial_end || "—", label: _t("Trial ends"), tone: "", run: null },
+        ];
+    }
+
     money(n) {
         const cur = this.d.currency || "";
         if (!n) return cur + "0";

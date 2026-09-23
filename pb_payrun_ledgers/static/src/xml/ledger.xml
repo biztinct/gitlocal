@@ -34,15 +34,42 @@
           <span class="pbl-tabsub" t-esc="state.data.subtitle"/>
         </div>
 
-        <!-- KPI band -->
-        <div class="ppl-kpis" data-coach="lg-kpis">
-          <t t-foreach="state.data.kpis or []" t-as="k" t-key="k_index">
-            <div t-attf-class="pbim-stat {{ k.tone === 'ok' ? 'ok' : '' }} {{ k.tone === 'err' ? 'err' : '' }}">
-              <span t-attf-class="pbim-stat-ic {{ k.ic_tone or '' }}"><t t-out="ic(k.icon, 21)"/></span>
-              <div class="pbim-stat-tx"><span t-attf-class="n {{ k.money ? 'money' : '' }}" t-esc="kpiVal(k)"/><span class="l" t-esc="k.label"/></div>
-            </div>
+        <!-- ==== the numbers ====
+             Counts are one quiet line (grey at zero; a figure that can
+             filter, does). The money totals this page exists to show stay
+             as figures of their own below it. -->
+        <div data-coach="lg-kpis">
+          <t t-if="glance.length">
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="glance"/>
+              <t t-set="qGlanceOn" t-value="glanceOn"/>
+            </t>
           </t>
+          <div t-if="moneyKpis.length" class="ppl-kpis pbl-money">
+            <t t-foreach="moneyKpis" t-as="k" t-key="k_index">
+              <div t-attf-class="pbim-stat {{ k.tone === 'ok' ? 'ok' : '' }} {{ k.tone === 'err' ? 'err' : '' }}">
+                <span t-attf-class="pbim-stat-ic {{ k.ic_tone or '' }}"><t t-out="ic(k.icon, 21)"/></span>
+                <div class="pbim-stat-tx"><span t-attf-class="n {{ k.money ? 'money' : '' }}" t-esc="kpiVal(k)"/><span class="l" t-esc="k.label"/></div>
+              </div>
+            </t>
+          </div>
         </div>
+
+        <!-- ==== the steps (only where the records travel a route) ====
+             Each record is at exactly one step, counted over the whole
+             scope. Pressing the lit step again shows everything. -->
+        <t t-if="steps.length">
+          <t t-call="pb_import_kit.QuietSteps">
+            <t t-set="qSteps" t-value="steps"/>
+            <t t-set="qStepsLabel" t-value="'Where every settlement is'"/>
+            <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
+          </t>
+          <div class="pbim-showing">
+            <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
+            <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
+              <button type="button" class="pbim-showall" t-on-click="clearFilters">Show all</button></t>
+          </div>
+        </t>
 
         <!-- filters -->
         <div class="pbim-panel ppl-filters">
@@ -123,11 +150,16 @@
         <div t-else="" class="pbim-panel"><div class="pbim-empty" t-esc="state.data.empty or 'Nothing matches these filters.'"/></div>
 
         <!-- The count is honest in both modes; the ESCAPE is standalone-only.
+             With a step strip the showing line above already counts, so the
+             foot keeps only the escape.
              In a hub, "Open full list" leaves the hub for a native list — the
              exact door this cycle exists to close. -->
-        <div class="ppl-foot">
+        <div class="ppl-foot" t-if="!steps.length">
           Showing <t t-esc="rows.length"/> of <t t-esc="state.data.total"/>
           <t t-if="state.data.list_action and !props.embedded"> · <button class="ppl-link" data-coach="lg-openfull" t-on-click="openFullList">Open full list →</button></t>
+        </div>
+        <div class="ppl-foot" t-elif="state.data.list_action and !props.embedded">
+          <button class="ppl-link" data-coach="lg-openfull" t-on-click="openFullList">Open full list →</button>
         </div>
       </div>
 

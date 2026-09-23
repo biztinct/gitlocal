@@ -134,6 +134,21 @@ export class PbHrCommCalendar extends Component {
 
     get weekdays() { return WEEKDAYS; }
 
+    /**
+     * THE QUIET NUMBERS (the Hiring look): one slim line instead of a row of
+     * tiles. A calendar gets no step strip — it is laid out by date. Grey at
+     * zero; amber only for posts somebody still has to finish or sign off.
+     */
+    get glance() {
+        return (this.state.stats || []).map((st) => ({
+            key: st.key,
+            n: st.value || 0,
+            label: st.key === "sent" && st.sub ? `${st.label} · ${st.sub}` : st.label,
+            tone: st.key === "unfinished" && st.value ? "amber" : "",
+            run: null,
+        }));
+    }
+
     get anyFilter() {
         const f = this.state.filters;
         return !!(f.state || f.q || f.responsible_id);

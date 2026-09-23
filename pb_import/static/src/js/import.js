@@ -27,11 +27,16 @@ const TILE_ICON = {
  */
 const DEFAULT_BACK = { label: _t("Import"), tag: "pb_import" };
 const IN_PROGRESS = ["loaded", "matched", "validated", "processing"];
-// pipeline step → which Recent-batches filter it activates
-const PIPE_FILTER = {
-    draft: "draft", loaded: "in_progress", matched: "in_progress",
-    validated: "in_progress", processing: "in_progress", done: "done",
-};
+// The import pipeline, in order. A batch is at exactly one step — its own
+// state — so the counts add up; error / cancelled batches are at none.
+const STEPS = [
+    { key: "draft", title: _t("Draft"), sub: _t("Created, no file read yet") },
+    { key: "loaded", title: _t("Loaded"), sub: _t("File read, people not matched yet") },
+    { key: "matched", title: _t("Matched"), sub: _t("People matched, not checked yet") },
+    { key: "validated", title: _t("Validated"), sub: _t("Checked and ready to commit") },
+    { key: "processing", title: _t("Processing"), sub: _t("Being written in") },
+    { key: "done", title: _t("Done"), sub: _t("Committed") },
+];
 
 export class PbImport extends Component {
     static template = "pb_import.PbImport";
@@ -50,6 +55,7 @@ export class PbImport extends Component {
             hasConnectors: false,
             launches: [],
             filter: "all",
+            step: "",
         });
         onWillStart(async () => { await this.load(); });
     }
@@ -69,14 +75,56 @@ export class PbImport extends Component {
     pipeIcon() { return ic("arrow", 14); }
     ic(n, s = 18) { return ic(n, s); }
 
-    // clicking a pipeline step filters the Recent-batches list to that stage
-    pipeClick(key) { this.setFilter(PIPE_FILTER[key] || "all"); }
+    // ---- the numbers (quiet line) ----
+    get glance() {
+        const k = this.state.kpis || {};
+        const pick = (f) => () => this.setFilter(this.state.filter === f ? "all" : f);
+        return [
+            { key: "all", n: k.total_batches || 0, label: _t("Import batches"), tone: "", run: () => this.showAll() },
+            { key: "done", n: k.done || 0, label: _t("Completed"), tone: "", run: pick("done") },
+            { key: "in_progress", n: k.in_progress || 0, label: _t("In progress"), tone: "", run: pick("in_progress") },
+            { key: "errors", n: k.errors || 0, label: _t("With errors"), tone: k.errors ? "rose" : "", run: pick("errors") },
+        ];
+    }
+
+    // ---- the steps: pressing one narrows Recent batches to that state ----
+    get steps() {
+        const counts = {};
+        for (const p of this.state.pipeline || []) counts[p.key] = p.count || 0;
+        return STEPS.map((st, i) => {
+            const count = counts[st.key] || 0;
+            return {
+                ...st, n: String(i + 1).padStart(2, "0"), count,
+                countLabel: count === 1 ? _t("1 batch") : _t("%s batches", count),
+                flag: "", on: this.state.step === st.key,
+            };
+        });
+    }
+    pickStep(key) {
+        this.state.step = this.state.step === key ? "" : key;
+        this.state.filter = "all";
+    }
+    get showingLine() {
+        const listed = this.state.batches.length;
+        const total = (this.state.kpis || {}).total_batches || listed;
+        const st = STEPS.find((x) => x.key === this.state.step);
+        if (!st && this.state.filter === "all") {
+            let text;
+            if (!listed) text = _t("no import batches yet");
+            else if (total > listed) text = _t("the newest %s of %s batches", listed, total);
+            else text = listed === 1 ? _t("all 1 batch") : _t("all %s batches", listed);
+            return { all: true, text };
+        }
+        return { all: false, text: _t("%s of %s batches", this.filteredBatches.length, listed), where: st ? st.title : "" };
+    }
+    showAll() { this.state.step = ""; this.state.filter = "all"; }
 
     // ---- launches: primary tile becomes the hero CTA; rest stay as tiles ----
     get secondaryLaunches() { return this.state.launches.filter(l => !l.primary); }
 
     // ---- status filter chips ----
     _inFilter(b) {
+        if (this.state.step && b.state !== this.state.step) return false;
         const f = this.state.filter;
         if (f === "all") return true;
         if (f === "in_progress") return IN_PROGRESS.includes(b.state);
@@ -92,7 +140,7 @@ export class PbImport extends Component {
             return b.state === key;
         }).length;
     }
-    setFilter(key) { this.state.filter = key; }
+    setFilter(key) { this.state.filter = key; this.state.step = ""; }
 
     // ---- actions ----
     startWizard() { this.action.doAction("pb_import_wizard.action_pb_import_wizard", { clearBreadcrumbs: true }); }

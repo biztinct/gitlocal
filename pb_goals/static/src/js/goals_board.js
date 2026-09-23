@@ -107,6 +107,7 @@ export class PbGoalsBoard extends Component {
             rows: [],
             stats: [],
             bar: [],
+            stepCounts: {},
             facets: { departments: [], managers: [] },
             states: [],
             remindersOn: true,
@@ -215,7 +216,7 @@ export class PbGoalsBoard extends Component {
         try {
             const f = this.state.filters;
             const payload = { cycle_id: this.state.cycleId };
-            if (f.state) { payload.state = f.state; }
+            if (f.state) { payload.state = this.stateFilterFor(f.state); }
             if (f.department_id) { payload.department_id = f.department_id; }
             if (f.manager_id) { payload.manager_id = f.manager_id; }
             if (f.q) { payload.q = f.q; }
@@ -238,6 +239,7 @@ export class PbGoalsBoard extends Component {
                 rows: d.rows || [],
                 stats: d.stats || [],
                 bar: d.bar || [],
+                stepCounts: d.step_counts || {},
                 facets: d.facets || { departments: [], managers: [] },
                 states: d.states || [],
                 remindersOn: d.reminders_on !== false,
@@ -292,7 +294,7 @@ export class PbGoalsBoard extends Component {
         try {
             const d = await this.orm.call("pb.goals", "get_year", [
                 this.state.cycleId, this.state.tab,
-                { state: this.state.filters.state || "" },
+                { state: this.yearStateFilter },
             ]);
             if (d.allowed === false) {
                 this.state.year = { rows: [], stats: [],
@@ -312,6 +314,108 @@ export class PbGoalsBoard extends Component {
         } finally {
             this.state.yearBusy = false;
         }
+    }
+
+    // =================================================================
+    //  the quiet board (the Hiring look)
+    // =================================================================
+    // One slim line of numbers and a numbered strip of the steps a goal
+    // sheet moves through. A sheet is at EXACTLY one step, so the counts
+    // add up: "Being written" holds the sheets sent back for another go,
+    // "Closed" holds the ones turned down as well as the finished ones.
+    get stepDefs() {
+        return [
+            { key: "writing", title: _t("Being written"), states: ["draft", "returned"] },
+            { key: "submitted", title: _t("With their manager"), states: ["submitted"] },
+            { key: "manager_ok", title: _t("With the HR lead"), states: ["manager_ok"] },
+            { key: "locked", title: _t("Agreed and locked"), states: ["locked"] },
+            { key: "closed", title: _t("Closed"), states: ["closed", "refused"] },
+        ];
+    }
+
+    /** The server takes one state, or a list for a step that holds two. */
+    stateFilterFor(key) {
+        const step = this.stepDefs.find((st) => st.key === key);
+        if (step) { return step.states.length === 1 ? step.states[0] : step.states; }
+        if (key === "waiting") { return ["submitted", "manager_ok"]; }
+        return key;
+    }
+
+    /** The year tabs only ever took a single state, as before. */
+    get yearStateFilter() {
+        const value = this.stateFilterFor(this.state.filters.state || "");
+        return typeof value === "string" ? value : "";
+    }
+
+    get steps() {
+        const c = this.state.stepCounts || {};
+        return this.stepDefs.map((st, i) => {
+            const count = st.states.reduce((sum, key) => sum + (c[key] || 0), 0);
+            let sub = "";
+            if (st.key === "writing" && c.returned) {
+                sub = c.returned === 1 ? _t("1 sent back for another go") : _t("%s sent back for another go", c.returned);
+            } else if (st.key === "closed" && c.refused) {
+                sub = c.refused === 1 ? _t("1 turned down") : _t("%s turned down", c.refused);
+            }
+            return {
+                ...st,
+                n: String(i + 1).padStart(2, "0"),
+                count,
+                countLabel: count === 1 ? _t("1 goal sheet") : _t("%s goal sheets", count),
+                sub,
+                flag: st.key === "writing" && c.overdue
+                    ? (c.overdue === 1 ? _t("1 past its date") : _t("%s past their date", c.overdue))
+                    : "",
+                flagTone: "rose",
+                on: this.state.filters.state === st.key,
+            };
+        });
+    }
+
+    async pickStep(key) {
+        await this.setFilter("state", key);
+    }
+
+    /** The server's numbers as one quiet line; its tones become the kit's. */
+    toneOf(tone, value) {
+        if (!value) { return ""; }
+        return { good: "green", warn: "amber", bad: "rose" }[tone] || "";
+    }
+
+    get glance() {
+        const runs = { locked: "locked", waiting: "waiting", draft: "draft", back: "returned" };
+        return (this.state.stats || []).map((st) => ({
+            key: runs[st.key] || st.key,
+            n: st.value || 0,
+            label: st.label,
+            tone: st.key === "waiting" ? (st.value ? "amber" : "") : this.toneOf(st.tone, st.value),
+            run: runs[st.key] ? () => this.setFilter("state", runs[st.key]) : null,
+        }));
+    }
+
+    get yearGlance() {
+        return (this.state.year.stats || []).map((st) => ({
+            key: st.key, n: st.value || 0, label: st.label,
+            tone: this.toneOf(st.tone, st.value), run: null,
+        }));
+    }
+
+    get showingLine() {
+        const c = this.state.stepCounts || {};
+        const all = this.stepDefs.reduce((sum, st) => sum + st.states.reduce((a, k) => a + (c[k] || 0), 0), 0);
+        const shown = this.state.rows.length;
+        if (!this.anyFilter) {
+            return { all: true, text: !all ? _t("No goal sheets yet")
+                : all === 1 ? _t("Showing the 1 goal sheet · press a step or a number to narrow it")
+                : _t("Showing all %s goal sheets · press a step or a number to narrow it", all) };
+        }
+        const key = this.state.filters.state;
+        const st = this.stepDefs.find((x) => x.key === key);
+        const stat = (this.state.stats || []).find((x) => x.key === key || (key === "returned" && x.key === "back"));
+        const where = st ? st.title : stat ? stat.label : "";
+        return { all: false, text: where
+            ? _t("Showing %s of %s goal sheets at %s", shown, all, where)
+            : _t("Showing %s of %s goal sheets", shown, all) };
     }
 
     /** A chip that is already on is a chip that turns off — otherwise the

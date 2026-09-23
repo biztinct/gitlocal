@@ -24,18 +24,11 @@
 
     .dm-wrap { height: 100%; display: flex; flex-direction: column; min-height: 0; }
 
-    // ---- KPI strip ----
+    // ---- top strip: the quiet numbers line + demo toggle ----
     .dm-kpis {
         display: flex; align-items: center; gap: 14px;
-        padding: 16px 20px; background: #fff; border-bottom: 1px solid var(--pbim-line);
-    }
-    .dm-kpi {
-        min-width: 88px;
-        &__v { font-size: 24px; font-weight: 800; color: var(--pbim-primary, #5A4BB0); line-height: 1; }
-        &__v--warn { color: var(--pbim-amber); }
-        &__v--muted { color: var(--pbim-muted); }
-        &__l { font-size: 11px; text-transform: uppercase; letter-spacing: .5px;
-               color: var(--pbim-muted); margin-top: 5px; }
+        padding: 12px 20px; background: #fff; border-bottom: 1px solid var(--pbim-line);
+        .pbim-glance { margin-bottom: 0; }
     }
     .dm-kpi__spacer { flex: 1; }
     .dm-demo {

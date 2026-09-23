@@ -32,14 +32,6 @@
         flex-wrap: wrap; justify-content: flex-end;
     }
 
-    // ---------------------------------------------------------------- KPIs
-    .ast-kpis {
-        display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;
-        margin-bottom: 14px;
-    }
-    @media (max-width: 1320px) { .ast-kpis { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 700px)  { .ast-kpis { grid-template-columns: repeat(2, 1fr); } }
-
     // ------------------------------------------------------------ segments
     .ast-seg { margin-bottom: 14px; }
     .ast-seg-c {

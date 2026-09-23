@@ -48,32 +48,17 @@
           </div>
         </header>
 
-        <!-- ========================== the stat strip ========================== -->
-        <div class="pbmc-stats">
-          <div class="pbmc-stat pbmc-stat--green">
-            <div class="pbmc-stat__v" t-esc="stats.clean or 0"/>
-            <div class="pbmc-stat__l" t-esc="toleranceLabel"/>
-          </div>
-          <div class="pbmc-stat pbmc-stat--amber">
-            <div class="pbmc-stat__v">
-              <span t-esc="stats.flagged or 0"/>
-              <span class="pbmc-stat__sub" t-if="stats.reviewed">
-                · <t t-esc="stats.reviewed"/> reviewed
-              </span>
-            </div>
-            <div class="pbmc-stat__l">Flagged for review</div>
-          </div>
-          <div class="pbmc-stat pbmc-stat--rose">
-            <div class="pbmc-stat__v" t-esc="stats.missing or 0"/>
-            <div class="pbmc-stat__l">Missing punches</div>
-          </div>
-          <div class="pbmc-stat">
-            <div class="pbmc-stat__v">
-              <span t-esc="stats.days_locked or 0"/>
-              <span class="pbmc-stat__sub">/<t t-esc="stats.days_total or 0"/></span>
-            </div>
-            <div class="pbmc-stat__l">Days locked</div>
-          </div>
+        <!-- ========================== the numbers ==========================
+             One quiet line (grey at zero; amber = flags a person must look
+             at, rose = punches missing). The flagged and reviewed figures
+             narrow the table exactly like the Open / Reviewed chips. The
+             close is days and flags, not records moving through stages, so
+             there is no step strip here. -->
+        <div class="pbmc-glance">
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
+          </t>
         </div>
 
         <!-- ============================== the body ============================== -->

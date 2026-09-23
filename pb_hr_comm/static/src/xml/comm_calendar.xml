@@ -75,15 +75,10 @@
           </div>
 
           <!-- ========================= the numbers ====================== -->
-          <div class="pbim-stats pbcm-kpis">
-            <t t-foreach="state.stats" t-as="st" t-key="st.key">
-              <div class="pbim-stat pbcm-kpi">
-                <div class="pbcm-kpi-v" t-esc="st.value"/>
-                <div class="pbcm-kpi-l" t-esc="st.label"/>
-                <div class="pbcm-kpi-s" t-esc="st.sub"/>
-              </div>
-            </t>
-          </div>
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="''"/>
+          </t>
 
           <!-- ========================= the filters ====================== -->
           <div class="pbcm-filters">

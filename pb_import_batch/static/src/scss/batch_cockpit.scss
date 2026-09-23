@@ -13,8 +13,6 @@
     .pbbc-hero .pbim-badge { font-size: 12px; padding: 5px 12px; }
 
     .pbbc-railpanel { padding: 18px 22px; }
-    .pbbc-stats { grid-template-columns: repeat(5, 1fr); }
-    @media (max-width: 900px) { .pbbc-stats { grid-template-columns: repeat(2, 1fr); } }
 
     // action bar
     .pbbc-actions {

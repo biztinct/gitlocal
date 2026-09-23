@@ -264,13 +264,14 @@
         </div>
       </div>
 
-      <div class="pbbp-tilerow" aria-live="polite">
-        <div class="pbbp-fintile" t-foreach="tiles" t-as="t" t-key="t.key">
-          <span class="pbbp-fintile-ic" t-out="ic(t.icon, 18)"/>
-          <b t-esc="t.shown"/>
-          <span class="pbbp-fintile-l" t-esc="t.label"/>
-          <small t-esc="t.hint"/>
-        </div>
+      <!-- What was built, as one quiet line (QUIET_BOARD_ROLLOUT). The kit's
+           QuietGlance markup, inlined so each figure keeps its explanation as
+           a tooltip. The figures still count up (see _countUp). -->
+      <div class="pbim-glance" role="group" aria-label="Numbers at a glance" aria-live="polite">
+        <span t-foreach="tiles" t-as="t" t-key="t.key" class="pbim-gl flat" t-att-class="t.value ? '' : 'zero'" t-att-title="t.hint">
+          <span class="pbim-gl-n" t-esc="t.shown"/>
+          <span class="pbim-gl-l" t-esc="t.label"/>
+        </span>
       </div>
 
       <!-- ================ identity ================ -->

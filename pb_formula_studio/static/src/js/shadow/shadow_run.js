@@ -97,6 +97,18 @@ export class PbShadowRun extends Component {
     }
     backToList() { this.state.view = "overview"; this.state.detail = null; }
 
+    /** The run's counts as one quiet line (quiet board). */
+    get detailGlance() {
+        const d = this.state.detail || {};
+        const off = (d.values_total || 0) - (d.values_matched || 0);
+        const clusters = (d.clusters || []).length;
+        return [
+            { key: "emp", n: d.employees || 0, label: _t("employees"), tone: "", run: null },
+            { key: "matched", n: d.values_matched || 0, label: _t("cells matched"), tone: "", run: null },
+            { key: "off", n: off, label: _t("cells off"), tone: off ? "amber" : "", run: null },
+            { key: "clusters", n: clusters, label: _t("clusters"), tone: clusters ? "amber" : "", run: null },
+        ];
+    }
     confidencePct(v) { return Math.round((v || 0) * 1000) / 10; }
     ringDash(v) { const c = 2 * Math.PI * 52; return { dash: c, offset: c * (1 - (v || 0)) }; }
     confClass(v) { return v >= 0.999 ? "perfect" : v >= 0.98 ? "good" : v >= 0.9 ? "warn" : "bad"; }

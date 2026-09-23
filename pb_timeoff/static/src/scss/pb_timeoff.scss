@@ -81,21 +81,10 @@
         .ml { font-weight: 700; font-size: 13px; min-width: 120px; text-align: center; } }
 
     // ---------------------------------------------------------- KPIs
-    .pbto-kpis { display: grid; grid-template-columns: 1.7fr 1fr 1.3fr; gap: 14px; margin-bottom: 20px;
-        .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
-            padding: 16px 18px; box-shadow: var(--sh); display: flex; flex-direction: column; gap: 4px;
-            .ico { color: var(--p); } .n { font-size: 26px; font-weight: 800; line-height: 1; }
-            .l { color: var(--muted); font-size: 12px; } .l.tt { font-weight: 600; margin-bottom: 8px; } }
-        .kpi.out { .kh { display: flex; align-items: center; gap: 8px;
-                .l { flex: 1; } .n { font-size: 20px; } }
-            .avstrip { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
-                .av { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; } }
-            .none { color: var(--muted); font-size: 12.5px; margin-top: 4px; } }
-        .kpi.week .wbars { display: flex; align-items: flex-end; gap: 8px; height: 60px;
-            .wb { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; justify-content: flex-end;
-                .bar { width: 60%; min-height: 4px; border-radius: 4px 4px 0 0; background: var(--p); opacity: .8; }
-                .wl { font-size: 10px; color: var(--muted); }
-                &.today .bar { opacity: 1; box-shadow: 0 0 0 2px var(--soft); } } } }
+    .pbto-outtoday { display: flex; align-items: center; gap: 10px; margin: -6px 0 18px;
+        .l { color: var(--muted); font-size: 12px; }
+        .avstrip { display: flex; flex-wrap: wrap; gap: 6px;
+            .av { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; } } }
 
     // ---------------------------------------------------------- columns
     .pbto-cols { display: grid; grid-template-columns: 1fr 1.25fr; gap: 18px; align-items: start; margin-bottom: 20px; }
@@ -212,7 +201,6 @@
         .pbto-wrap { padding: 16px 14px 48px; }
         .pbto-hero { flex-direction: column; align-items: stretch; }
         .pbto-hero .hero-tools { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-        .pbto-kpis { grid-template-columns: 1fr; }
         .q-card { flex-wrap: wrap; .acts { margin-left: auto; } }
     }
 }

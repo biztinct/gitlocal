@@ -109,33 +109,12 @@
             </span>
           </div>
 
-          <!-- ======================= the numbers ======================= -->
-          <div class="pbim-stats pcal-kpis">
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('calendar',18)"/></div>
-              <div class="pbim-stat-tx">
-                <b t-esc="state.kpis.planned || 0"/><span>months planned</span>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('clock',18)"/></div>
-              <div class="pbim-stat-tx">
-                <b t-esc="state.kpis.ahead || 0"/><span>still ahead</span>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('lock',18)"/></div>
-              <div class="pbim-stat-tx">
-                <b t-esc="state.kpis.closed || 0"/><span>closed</span>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('send',18)"/></div>
-              <div class="pbim-stat-tx">
-                <b t-esc="state.kpis.reminders || 0"/><span>reminders sent</span>
-              </div>
-            </div>
-          </div>
+          <!-- ======================= the numbers =======================
+               One quiet line (a calendar is not a workflow, so no steps). -->
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="''"/>
+          </t>
 
           <!-- ======================= the year strip ==================== -->
           <div t-if="!hasMonths" class="pbim-empty pcal-empty">

@@ -181,3 +181,135 @@ msgstr "Có lỗi"
 #: code:addons/pb_import/static/src/xml/import.xml:0
 msgid "map → validate → commit"
 msgstr "bản đồ → xác thực → cam kết"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Showing"
+msgstr "Đang hiển thị"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "· press a step or a number to narrow it"
+msgstr "· nhấn một bước hoặc một con số để thu hẹp"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "at"
+msgstr "tại"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "Loaded"
+msgstr "Đã tải"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "Validated"
+msgstr "Đã kiểm tra"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "Processing"
+msgstr "Đang xử lý"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "Created, no file read yet"
+msgstr "Đã tạo, chưa đọc tệp"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "File read, people not matched yet"
+msgstr "Đã đọc tệp, chưa khớp nhân viên"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "People matched, not checked yet"
+msgstr "Đã khớp nhân viên, chưa kiểm tra"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "Checked and ready to commit"
+msgstr "Đã kiểm tra, sẵn sàng ghi"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "Being written in"
+msgstr "Đang được ghi vào"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "Committed"
+msgstr "Đã ghi"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "1 batch"
+msgstr "1 lô"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "%s batches"
+msgstr "%s lô"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "no import batches yet"
+msgstr "chưa có lô nhập nào"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "the newest %s of %s batches"
+msgstr "%s lô mới nhất trên tổng %s"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "all 1 batch"
+msgstr "cả 1 lô"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "all %s batches"
+msgstr "cả %s lô"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "%s of %s batches"
+msgstr "%s trên %s lô"

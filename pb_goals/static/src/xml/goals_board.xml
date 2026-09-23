@@ -160,43 +160,26 @@
 
             <t t-if="state.tab === 'sheets'">
 
-            <!-- ======================= the tiles =======================
-                 R196/R32 — `.pbim-stats` is `display: grid` and NOTHING
-                 else; every consumer sets its own columns or it opens on a
-                 stack of full-width tiles that looks like a broken grid. -->
-            <div class="pbim-stats pbgl-kpis">
-              <t t-foreach="state.stats" t-as="st" t-key="st.key">
-                <div class="pbim-stat pbgl-kpi"
-                     t-att-class="{ 'pbgl-kpi--bad': st.tone === 'bad',
-                                    'pbgl-kpi--warn': st.tone === 'warn',
-                                    'pbgl-kpi--ok': st.tone === 'good' }">
-                  <div class="pbgl-kpi-ic"><t t-out="ic(st.icon,17)"/></div>
-                  <div class="pbgl-kpi-n" t-esc="st.value"/>
-                  <div class="pbgl-kpi-l" t-esc="st.label"/>
-                </div>
-              </t>
-            </div>
+            <!-- ======================= the numbers =======================
+                 QUIET BY DEFAULT (the Hiring look): one slim line, grey at
+                 zero, a colour only when somebody has to act. -->
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="glance"/>
+              <t t-set="qGlanceOn" t-value="state.filters.state"/>
+            </t>
 
-            <!-- ==================== the segmented bar ====================
-                 THE BANDS KEEP LIFECYCLE ORDER, left to right, because the
-                 bar is read as a journey. A bar that reorders itself as the
-                 numbers change is a bar nobody can read twice. -->
-            <div t-if="state.bar.length" class="pbgl-bar-wrap">
-              <div class="pbgl-bar">
-                <t t-foreach="state.bar" t-as="bd" t-key="bd.key">
-                  <div t-attf-class="pbgl-band pbgl-band--{{bd.key}}"
-                       t-attf-style="width: {{bd.pct}}%"
-                       t-att-title="bd.label + ': ' + bd.count"/>
-                </t>
-              </div>
-              <div class="pbgl-bar-key">
-                <t t-foreach="state.bar" t-as="bd" t-key="bd.key">
-                  <span class="pbgl-bar-k">
-                    <i t-attf-class="pbgl-dot pbgl-dot--{{bd.key}}"/>
-                    <t t-esc="bd.label + ' ' + bd.count"/>
-                  </span>
-                </t>
-              </div>
+            <!-- ======================= the steps =======================
+                 Replaces the old segmented bar and the state chips. A sheet
+                 is at exactly ONE step, so the counts add up; pressing the
+                 lit step again shows every sheet. -->
+            <t t-call="pb_import_kit.QuietSteps">
+              <t t-set="qSteps" t-value="steps"/>
+              <t t-set="qStepsLabel" t-value="'Where every goal sheet is'"/>
+              <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
+            </t>
+            <div class="pbim-showing">
+              <span t-esc="showingLine.text"/>
+              <button t-if="!showingLine.all" type="button" class="pbim-showall" t-on-click="clearFilters">Show all</button>
             </div>
 
             <!-- ======================= the filters ======================= -->
@@ -209,13 +192,6 @@
                       t-on-click="toggleMine">
                 <t t-out="ic('user',13)"/> Only mine
               </button>
-              <t t-foreach="state.states" t-as="st" t-key="st.key">
-                <button class="pbgl-chip"
-                        t-att-class="{ on: state.filters.state === st.key }"
-                        t-on-click="() => this.setFilter('state', st.key)">
-                  <t t-esc="st.label"/>
-                </button>
-              </t>
               <button t-if="anyFilter" class="pbgl-chip pbgl-chip--clear"
                       t-on-click="clearFilters">
                 <t t-out="ic('x',13)"/> Clear

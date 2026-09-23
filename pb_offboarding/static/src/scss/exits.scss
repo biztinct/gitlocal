@@ -20,16 +20,6 @@
     .exb-head-id { flex: 1 1 320px; min-width: 0; }
     .exb-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    // The kit's `.pbim-stats` is a grid with no COLUMNS on purpose — each
-    // cockpit knows how many numbers it has (R32). Five, as the two lenses
-    // beside it on the same hub have, so all three line up.
-    .exb-kpis {
-        grid-template-columns: repeat(5, 1fr);
-        margin-bottom: 16px;
-    }
-    @media (max-width: 1180px) { .exb-kpis { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 700px)  { .exb-kpis { grid-template-columns: repeat(2, 1fr); } }
-
     // --------------------------------------------------------- filters
     .exb-filters { padding: 14px 16px; margin-bottom: 18px; }
     .exb-filter-row {

@@ -491,3 +491,117 @@ msgstr "Tạm ứng"
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
 msgid "Who is paid by what is not switched on for this company."
 msgstr "Chức năng \"Ai được trả theo chương trình nào\" chưa được bật cho công ty này."
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "· press a step or a number to narrow it"
+msgstr "· nhấn một bước hoặc một con số để thu hẹp"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "at"
+msgstr "tại"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "Ending soon"
+msgstr "Sắp kết thúc"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "Ended"
+msgstr "Đã kết thúc"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "Being prepared"
+msgstr "Đang soạn"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "In force"
+msgstr "Đang hiệu lực"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "Ends within 30 days"
+msgstr "Kết thúc trong 30 ngày"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "Past its end date"
+msgstr "Đã qua ngày kết thúc"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "Expiring within 30 days"
+msgstr "Hết hạn trong 30 ngày"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "Average wage"
+msgstr "Lương trung bình"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "1 contract"
+msgstr "1 hợp đồng"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "%s contracts"
+msgstr "%s hợp đồng"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "no contracts yet"
+msgstr "chưa có hợp đồng nào"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "all 1 contract"
+msgstr "cả 1 hợp đồng"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "all %s contracts"
+msgstr "cả %s hợp đồng"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "%s of %s contracts"
+msgstr "%s trên %s hợp đồng"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "The newest %s of %s contracts are listed here"
+msgstr "Đang liệt kê %s hợp đồng mới nhất trên tổng %s"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contract_detail.js:0
+msgid "Days to contract end"
+msgstr "Số ngày đến hết hợp đồng"

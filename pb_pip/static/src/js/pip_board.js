@@ -101,6 +101,8 @@ export class PbPipBoard extends Component {
             stateFilter: "all",
             owner: "all",
             driftingOnly: false,
+            focus: "",      // the figure on the numbers line now filtering
+            step: "",       // the step now filtering
 
             // the open plan
             drawer: null,
@@ -158,6 +160,7 @@ export class PbPipBoard extends Component {
     async toggleClosed() {
         this.state.closedView = !this.state.closedView;
         this.state.drawer = null;
+        this.state.step = "";   // closed plans are at no step
         await this.refresh();
     }
 
@@ -175,6 +178,12 @@ export class PbPipBoard extends Component {
             if (this.state.driftingOnly && !this.needsAttention(r)) {
                 return false;
             }
+            if (this.state.focus && !this.matchesFocus(r, this.state.focus)) {
+                return false;
+            }
+            if (this.state.step && this.stepOf(r) !== this.state.step) {
+                return false;
+            }
             if (!q) { return true; }
             return (r.employee + " " + (r.job || "") + " " + (r.dept || ""))
                 .toLowerCase().includes(q);
@@ -190,13 +199,100 @@ export class PbPipBoard extends Component {
 
     get hasFilters() {
         return this.state.q || this.state.stateFilter !== "all"
-            || this.state.owner !== "all" || this.state.driftingOnly;
+            || this.state.owner !== "all" || this.state.driftingOnly
+            || this.state.focus || this.state.step;
     }
 
     clearFilters() {
         Object.assign(this.state, {
             q: "", stateFilter: "all", owner: "all", driftingOnly: false,
+            focus: "", step: "",
         });
+    }
+
+    // ----------------------------------------------------- the quiet board
+    //
+    // One slim line of numbers instead of a row of tiles, and the same four
+    // stops as the card rail as numbered steps. A plan is at EXACTLY ONE
+    // step (stepOf reads its state), so the counts add up to the open
+    // board. Pressing a lit figure or step again clears it.
+    matchesFocus(r, key) {
+        if (key === "coaching") { return ["requested", "coaching"].includes(r.state); }
+        if (key === "running") { return r.state === "active"; }
+        if (key === "deciding") { return r.state === "evaluation"; }
+        if (key === "risk") { return !!(r.at_risk || r.drifting); }
+        return true;
+    }
+
+    toggleFocus(key) { this.state.focus = this.state.focus === key ? "" : key; }
+
+    get glance() {
+        const k = this.state.kpis || {};
+        const tone = (v, t) => (v ? t : "");
+        return [
+            { key: "open", n: k.open || 0, label: _t("Open"), tone: "", run: null },
+            { key: "coaching", n: k.coaching || 0, label: _t("Still a conversation"), tone: "",
+              run: () => this.toggleFocus("coaching") },
+            { key: "running", n: k.running || 0, label: _t("Plans running"), tone: "",
+              run: () => this.toggleFocus("running") },
+            { key: "deciding", n: k.deciding || 0, label: _t("Waiting on a decision"), tone: tone(k.deciding, "amber"),
+              run: () => this.toggleFocus("deciding") },
+            { key: "risk", n: k.at_risk || 0, label: _t("Drifting or at risk"), tone: tone(k.at_risk, "rose"),
+              run: () => this.toggleFocus("risk") },
+        ];
+    }
+
+    /** requested → asked, coaching → coaching, active → plan,
+     *  evaluation → decided. Closed plans are at no step. */
+    stepOf(r) {
+        return { requested: "asked", coaching: "coaching", active: "plan", evaluation: "decided" }[r.state] || "";
+    }
+
+    get stepDefs() {
+        return [
+            { key: "asked", title: _t("Asked"), sub: _t("A manager asked HR to look") },
+            { key: "coaching", title: _t("Coaching"), sub: _t("Still a conversation") },
+            { key: "plan", title: _t("Plan running"), sub: _t("Objectives and regular check-ins") },
+            { key: "decided", title: _t("Decision"), sub: _t("Being evaluated") },
+        ];
+    }
+
+    get steps() {
+        const rows = this.state.rows;
+        return this.stepDefs.map((st, i) => {
+            const at = rows.filter((r) => this.stepOf(r) === st.key);
+            const risk = at.filter((r) => r.at_risk || r.drifting).length;
+            return {
+                ...st,
+                n: String(i + 1).padStart(2, "0"),
+                count: at.length,
+                countLabel: at.length === 1 ? _t("1 plan") : _t("%s plans", at.length),
+                flag: !risk ? "" : risk === 1 ? _t("1 drifting or at risk") : _t("%s drifting or at risk", risk),
+                flagTone: "rose",
+                on: this.state.step === st.key,
+            };
+        });
+    }
+
+    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
+
+    get showingLine() {
+        const all = this.state.rows.length;
+        const closed = this.state.closedView;
+        if (!this.hasFilters) {
+            if (closed) {
+                return { all: true, text: !all ? _t("Showing no closed plans yet")
+                    : all === 1 ? _t("Showing all 1 closed plan") : _t("Showing all %s closed plans", all) };
+            }
+            return { all: true, text: !all ? _t("Showing no plans yet")
+                : all === 1 ? _t("Showing all 1 plan · press a step or a number to narrow it")
+                    : _t("Showing all %s plans · press a step or a number to narrow it", all) };
+        }
+        const shown = this.visibleRows.length;
+        const st = this.stepDefs.find((x) => x.key === this.state.step);
+        return { all: false, text: st
+            ? _t("Showing %s of %s plans at %s", shown, all, st.title)
+            : _t("Showing %s of %s plans", shown, all) };
     }
 
     onSearch(ev) { this.state.q = ev.target.value; }

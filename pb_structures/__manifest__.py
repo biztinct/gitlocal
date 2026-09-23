@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Salary Structures Cockpit',
     'summary': 'Bespoke periwinkle structures landing + detail cockpit + wizards',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.1.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

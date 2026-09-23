@@ -10,11 +10,8 @@
 .pbfs-dep .dp-title > svg { width: 23px; height: 23px; color: var(--i, #5A4BB0); flex: none; }
 .pbfs-dep .dp-title b { font-size: 16px; font-weight: 800; color: var(--ink, #1E1B2E); display: block; }
 .pbfs-dep .dp-title small { font-size: 12px; color: var(--muted, #6B7280); }
-.pbfs-dep .dp-stats { display: flex; gap: 22px; margin-left: auto; }
-.pbfs-dep .dp-stat { display: flex; flex-direction: column; align-items: center; line-height: 1.05; }
-.pbfs-dep .dp-stat b { font-size: 18px; font-weight: 800; color: var(--ink, #1E1B2E); font-variant-numeric: tabular-nums; }
-.pbfs-dep .dp-stat span { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: var(--muted, #6B7280); margin-top: 2px; }
-.pbfs-dep .dp-stat.err b { color: #DC2626; }
+.pbfs-dep .dp-stats { display: flex; margin-left: auto; min-width: 0; }
+.pbfs-dep .dp-stats .pbim-glance { margin-bottom: 0; }
 .pbfs-dep .hs-x { border: 0; background: none; color: var(--muted, #6B7280); cursor: pointer; padding: 5px; border-radius: 7px; }
 .pbfs-dep .hs-x:hover { background: #F1F5F9; color: var(--ink, #1E1B2E); }
 .pbfs-dep .hs-x svg { width: 18px; height: 18px; }

@@ -86,6 +86,25 @@ export class ImportWizard extends Component {
 
     ic(n, s = 16) { return markup(`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[n] || IC.check}</svg>`); }
     get steps() { return STEPS; }
+
+    // Review / validate figures as one quiet line: grey at zero, rose only
+    // for rows that need attention.
+    get reviewGlance() {
+        const m = this.state.summary || {};
+        return [
+            { key: "rows", n: m.total_lines || 0, label: _t("Rows loaded"), tone: "" },
+            { key: "matched", n: m.matched || 0, label: _t("Matched"), tone: "" },
+            { key: "new", n: m.new || 0, label: _t("New employees"), tone: "" },
+            { key: "errors", n: m.errors || 0, label: _t("Need attention"), tone: m.errors ? "rose" : "" },
+        ];
+    }
+    get validateGlance() {
+        const m = this.state.summary || {};
+        return [
+            { key: "valid", n: m.matched || 0, label: _t("Valid"), tone: m.matched ? "green" : "" },
+            { key: "errors", n: m.errors || 0, label: _t("Errors"), tone: m.errors ? "rose" : "" },
+        ];
+    }
     lineCls(s) { return LINE_CLS[s] || "muted"; }
     lineLabel(l) { return l.is_new ? "New employee" : (LINE_LABEL[l.state] || l.state); }
 

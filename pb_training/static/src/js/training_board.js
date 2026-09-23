@@ -108,6 +108,7 @@ export class PbTrainingBoard extends Component {
             cKpis: {},
             cAllowances: [],
             cStates: [],
+            cStepCounts: {},
             // EVERY COLLECTION IN THE INITIAL STATE IS A COLLECTION, never
             // an empty object. `setTab` writes `state.tab` and OWL re-renders
             // AT ONCE — before the `await` that fetches the payload has
@@ -176,6 +177,35 @@ export class PbTrainingBoard extends Component {
                 : _t("%s have not started", k.not_started));
         }
         return bits.join(" · ");
+    }
+
+    // ------------------------------------------------ the quiet numbers
+    //
+    // One slim line instead of a row of tiles (the Hiring look). Grey at
+    // zero; a colour only when somebody has to act on the figure.
+    get courseGlance() {
+        const k = this.state.kpis || {};
+        const tone = (v, t) => (v ? t : "");
+        const taken = k.taken || 0;
+        return [
+            { key: "courses", n: k.courses || 0, label: _t("Courses"), tone: "", run: null },
+            { key: "members", n: k.members || 0, label: _t("People on a course"), tone: "", run: null },
+            { key: "not_started", n: k.not_started || 0, label: _t("Not started"), tone: tone(k.not_started, "amber"), run: null },
+            { key: "finished", n: k.finished || 0, label: _t("Finished the course"), tone: tone(k.finished, "green"), run: null },
+            { key: "passed", n: k.passed || 0, label: taken === 1 ? _t("passed the test, of 1 who took it") : _t("passed the test, of %s who took it", taken), tone: "", run: null },
+            { key: "rate", n: this.passRate, label: _t("Pass rate"), tone: "", run: null },
+        ];
+    }
+
+    get assignGlance() {
+        const k = this.state.aKpis || {};
+        const tone = (v, t) => (v ? t : "");
+        return [
+            { key: "overdue", n: k.overdue || 0, label: _t("Past its date"), tone: tone(k.overdue, "rose"), run: () => this.setFilter("state", "overdue") },
+            { key: "due_week", n: k.due_week || 0, label: _t("Due in the next week"), tone: "", run: null },
+            { key: "waiting", n: k.waiting || 0, label: _t("Waiting on a manager"), tone: tone(k.waiting, "amber"), run: null },
+            { key: "done_month", n: k.done_month || 0, label: _t("Finished this month"), tone: tone(k.done_month, "green"), run: null },
+        ];
     }
 
     /** A pass rate nobody can answer yet is a dash, never a zero. */
@@ -603,7 +633,10 @@ export class PbTrainingBoard extends Component {
         try {
             const f = this.state.cFilters;
             const filters = {};
-            if (f.state) { filters.state = f.state; }
+            if (f.state) {
+                // The "Decided" step holds both agreed and turned-down claims.
+                filters.state = f.state === "decided" ? ["approved", "refused"] : f.state;
+            }
             if (f.term) { filters.term = f.term; }
             const d = await this.orm.call("pb.training", "get_claims",
                                           [filters]);
@@ -612,6 +645,7 @@ export class PbTrainingBoard extends Component {
                 cKpis: d.kpis || {},
                 cAllowances: d.allowances || [],
                 cStates: d.states || [],
+                cStepCounts: d.step_counts || {},
                 cPack: d.pack || {},
                 cOverAllowed: !!d.over_allowed,
                 cLoaded: true,
@@ -661,6 +695,81 @@ export class PbTrainingBoard extends Component {
         this.state.cFilters.term = ev.target.value;
         clearTimeout(this._cTimer);
         this._cTimer = setTimeout(() => this.loadClaims(), 250);
+    }
+
+    // ------------------------------------------------ claims: quiet board
+    //
+    // A claim is at EXACTLY one step, so the four counts add up to every
+    // claim: "Decided" holds both the agreed and the turned-down ones. The
+    // counts come from `step_counts`, read over every claim, so they do not
+    // shrink when a filter is on.
+    get claimStepDefs() {
+        return [
+            { key: "draft", title: _t("Not sent yet") },
+            { key: "submitted", title: _t("Waiting on the HR lead") },
+            { key: "decided", title: _t("Decided") },
+        ];
+    }
+
+    get claimSteps() {
+        const c = this.state.cStepCounts || {};
+        return this.claimStepDefs.map((st, i) => {
+            const count = st.key === "decided"
+                ? (c.approved || 0) + (c.refused || 0) : (c[st.key] || 0);
+            let sub = "";
+            if (st.key === "decided" && count) {
+                sub = _t("%s agreed · %s turned down", c.approved || 0, c.refused || 0);
+            }
+            return {
+                ...st,
+                n: String(i + 1).padStart(2, "0"),
+                count,
+                countLabel: count === 1 ? _t("1 claim") : _t("%s claims", count),
+                sub,
+                flag: st.key === "decided" && c.unpaid
+                    ? (c.unpaid === 1 ? _t("1 agreed, waiting for a pay run") : _t("%s agreed, waiting for a pay run", c.unpaid))
+                    : "",
+                on: this.state.cFilters.state === st.key,
+            };
+        });
+    }
+
+    get claimGlance() {
+        const k = this.state.cKpis || {};
+        const c = this.state.cStepCounts || {};
+        const tone = (v, t) => (v ? t : "");
+        const all = (c.draft || 0) + (c.submitted || 0) + (c.approved || 0) + (c.refused || 0);
+        return [
+            { key: "submitted", n: c.submitted || 0, label: _t("Waiting on you"), tone: tone(c.submitted, "amber"), run: () => this.setClaimFilter("submitted") },
+            { key: "approved", n: c.approved || 0, label: _t("Agreed"), tone: tone(c.approved, "green"), run: () => this.setClaimFilter("approved") },
+            { key: "unpaid", n: c.unpaid || 0, label: _t("Agreed, not paid yet"), tone: "", run: null },
+            { key: "refused", n: c.refused || 0, label: _t("Turned down"), tone: "", run: () => this.setClaimFilter("refused") },
+            { key: "total", n: all || k.total || 0, label: _t("Claims in all"), tone: "", run: null },
+        ];
+    }
+
+    get claimShowing() {
+        const c = this.state.cStepCounts || {};
+        const all = (c.draft || 0) + (c.submitted || 0) + (c.approved || 0) + (c.refused || 0);
+        const shown = this.state.cRows.length;
+        const f = this.state.cFilters;
+        if (!f.state && !(f.term || "").trim()) {
+            return { all: true, text: !all ? _t("No claims yet")
+                : all === 1 ? _t("Showing the 1 claim · press a step or a number to narrow it")
+                : _t("Showing all %s claims · press a step or a number to narrow it", all) };
+        }
+        const st = this.claimStepDefs.find((x) => x.key === f.state);
+        const word = (this.state.cStates || []).find((x) => x.key === f.state);
+        const where = st ? st.title : word ? word.label : "";
+        return { all: false, text: where
+            ? _t("Showing %s of %s claims at %s", shown, all, where)
+            : _t("Showing %s of %s claims", shown, all) };
+    }
+
+    async showAllClaims() {
+        this.state.cFilters.state = "";
+        this.state.cFilters.term = "";
+        await this.loadClaims();
     }
 
     get cHeadline() {

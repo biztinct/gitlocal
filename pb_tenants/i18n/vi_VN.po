@@ -1876,3 +1876,46 @@ msgstr "Nội dung"
 #: code:addons/pb_tenants/models/billing_rules.py:0
 msgid "What happens"
 msgstr "Điều gì sẽ xảy ra"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:0
+msgid "Room for more customers"
+msgstr "Còn chỗ cho thêm khách hàng"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:0
+msgid "No room for another customer"
+msgstr "Không còn chỗ cho khách hàng mới"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:0
+msgid "Room for 1 more customer"
+msgstr "Còn chỗ cho 1 khách hàng nữa"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:0
+msgid "Full"
+msgstr "Đầy"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:0
+msgid "Protected"
+msgstr "Được bảo vệ"
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/js/tenants.js:0
+msgid "Backups · %s"
+msgstr "Sao lưu · %s"
+
+
+#. module: pb_tenants
+#. odoo-javascript
+#: code:addons/pb_tenants/static/src/xml/tenants.xml:0
+msgid "Numbers at a glance"
+msgstr "Số liệu nhanh"

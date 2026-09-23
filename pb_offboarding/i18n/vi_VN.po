@@ -1,0 +1,170 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-23 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "%s people"
+msgstr "%s người"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "%s waiting for a sign-off"
+msgstr "%s đang chờ phê duyệt"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "1 waiting for a sign-off"
+msgstr "1 đang chờ phê duyệt"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Clearances still open"
+msgstr "Xác nhận bàn giao còn mở"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Gone, sign-offs or items still open"
+msgstr "Đã nghỉ, còn chờ xác nhận hoặc tài sản"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Items not back yet"
+msgstr "Tài sản chưa trả lại"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Last day has passed"
+msgstr "Đã qua ngày làm việc cuối"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Last day still ahead"
+msgstr "Chưa đến ngày làm việc cuối"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Leaving this month"
+msgstr "Nghỉ việc trong tháng này"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Ready to settle"
+msgstr "Sẵn sàng quyết toán"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Settled"
+msgstr "Đã quyết toán"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Settlement closed"
+msgstr "Đã đóng quyết toán"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Settlements held up"
+msgstr "Quyết toán bị vướng"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Showing %s of %s people leaving"
+msgstr "Đang hiển thị %s trên %s người nghỉ việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Showing %s of %s people leaving at %s"
+msgstr "Đang hiển thị %s trên %s người nghỉ việc ở bước %s"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Showing all %s people leaving · press a step or a number to narrow it"
+msgstr "Đang hiển thị tất cả %s người nghỉ việc · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Showing all 1 person leaving · press a step or a number to narrow it"
+msgstr "Đang hiển thị 1 người nghỉ việc · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Showing nobody leaving yet"
+msgstr "Chưa có ai nghỉ việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Signing off"
+msgstr "Đang xác nhận bàn giao"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Step %s of %s"
+msgstr "Bước %s / %s"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "The last payment can go out"
+msgstr "Có thể chi khoản thanh toán cuối"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Working their notice"
+msgstr "Đang trong thời gian báo trước"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+

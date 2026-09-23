@@ -210,3 +210,87 @@ msgstr "Các phiếu lương được phê duyệt cùng nhau, theo kỳ lương
 #. module: pb_payslip_review
 msgid "This payslip is not part of a pay run, so there is nothing to approve here."
 msgstr "Phiếu lương này không thuộc kỳ lương nào nên ở đây không có gì để phê duyệt."
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:0
+msgid "1 payslip"
+msgstr "1 phiếu lương"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:0
+msgid "%s payslips"
+msgstr "%s phiếu lương"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:0
+msgid "1 needs review"
+msgstr "1 cần xem lại"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:0
+msgid "%s need review"
+msgstr "%s cần xem lại"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:0
+msgid "no payslips yet"
+msgstr "chưa có phiếu lương nào"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:0
+msgid "all 1 payslip"
+msgstr "cả 1 phiếu lương"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:0
+msgid "all %s payslips"
+msgstr "cả %s phiếu lương"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:0
+msgid "%s of %s payslips"
+msgstr "%s trên %s phiếu lương"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "Showing"
+msgstr "Đang hiển thị"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "· press a step or a number to narrow it"
+msgstr "· nhấn một bước hoặc một con số để thu hẹp"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "at"
+msgstr "tại"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "Numbers at a glance"
+msgstr "Số liệu nhanh"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "Where every payslip is"
+msgstr "Mỗi phiếu lương đang ở đâu"

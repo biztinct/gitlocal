@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Statutory Cockpit',
     'summary': 'Insurance & tax cockpit (rates, ceilings, brackets, contribution actuals)',
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.3.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -76,6 +76,16 @@ export class PbYoungWorker extends Component {
 
     // ------------------------------------------------------------- icons
     ic(name, size = 16) { return ic(name, size); }
+
+    get glance() {
+        const k = (this.state.data && this.state.data.kpis) || {};
+        return [
+            { key: "protected", n: k.protected || 0, label: _t("Protected"), tone: "", run: null },
+            { key: "compliant", n: k.compliant || 0, label: _t("Compliant this week"), tone: k.compliant ? "green" : "", run: null },
+            { key: "violations", n: k.violations_30d || 0, label: _t("Violations in the last 30 days"), tone: k.violations_30d ? "rose" : "", run: null },
+            { key: "birthdays", n: k.missing_birthdays || 0, label: _t("Missing birthdays"), tone: k.missing_birthdays ? "amber" : "", run: null },
+        ];
+    }
     kindIcon(kind, size = 15) { return ic(KIND_ICON[kind] || "alertCircle", size); }
     kindLabel(kind) {
         return {

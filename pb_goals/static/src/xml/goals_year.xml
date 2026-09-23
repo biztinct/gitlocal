@@ -26,18 +26,12 @@
        ================================================================== -->
   <t t-name="pb_goals.GoalsYearPanel">
 
-    <div t-if="state.year.stats.length" class="pbim-stats pbgl-kpis">
-      <t t-foreach="state.year.stats" t-as="st" t-key="st.key">
-        <div class="pbim-stat pbgl-kpi"
-             t-att-class="{ 'pbgl-kpi--bad': st.tone === 'bad',
-                            'pbgl-kpi--warn': st.tone === 'warn',
-                            'pbgl-kpi--ok': st.tone === 'good' }">
-          <div class="pbgl-kpi-ic"><t t-out="ic(st.icon,17)"/></div>
-          <div class="pbgl-kpi-n" t-esc="st.value"/>
-          <div class="pbgl-kpi-l" t-esc="st.label"/>
-        </div>
+    <t t-if="state.year.stats.length">
+      <t t-call="pb_import_kit.QuietGlance">
+        <t t-set="qGlance" t-value="yearGlance"/>
+        <t t-set="qGlanceOn" t-value="''"/>
       </t>
-    </div>
+    </t>
 
     <p t-if="state.year.headline" class="pbgl-headline"
        t-esc="state.year.headline"/>

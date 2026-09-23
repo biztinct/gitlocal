@@ -2315,3 +2315,15 @@ msgstr "Vượt mức pháp luật cho phép"
 #: code:addons/pb_hr_workforce/models/overtime_request_approval.py:0
 msgid "The overtime"
 msgstr "Giờ tăng ca"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "near or over the ceiling"
+msgstr "gần hoặc vượt mức trần"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "%s this month"
+msgstr "%s tháng này"

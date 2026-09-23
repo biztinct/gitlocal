@@ -110,7 +110,7 @@ export class StepFinish extends Component {
     }
 
     /**
-     * The three tiles run up to their value over 520ms.
+     * The three figures run up to their value over 520ms.
      *
      * `prefers-reduced-motion` is honoured HERE as well as in the stylesheet:
      * a count driven by `requestAnimationFrame` is not a CSS transition and the

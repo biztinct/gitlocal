@@ -12,10 +12,30 @@
             <h1 class="pbbk-hero__title">Bank Verification</h1>
             <p class="pbbk-hero__sub">AI-assisted bank-document validation with human approval.</p>
           </div>
+          <!-- the numbers: one quiet line (amber only for a queue that is
+               waiting on this reader) -->
           <div class="pbbk-hero__kpis">
-            <div class="pbbk-kpi"><span class="pbbk-kpi__v" t-esc="state.data.kpis.mine_open || 0"/><span class="pbbk-kpi__l">My open</span></div>
-            <div class="pbbk-kpi" t-if="state.data.is_hr"><span class="pbbk-kpi__v" t-esc="state.data.kpis.hr_pending || 0"/><span class="pbbk-kpi__l">HR review</span></div>
-            <div class="pbbk-kpi" t-if="state.data.is_finance"><span class="pbbk-kpi__v" t-esc="state.data.kpis.finance_pending || 0"/><span class="pbbk-kpi__l">Finance</span></div>
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="glance"/>
+              <t t-set="qGlanceOn" t-value="glanceOn"/>
+            </t>
+          </div>
+        </div>
+
+        <!-- ==== the route, as numbered steps ====
+             A request is at exactly one step (its state), counted once even
+             when two lanes hold it. Pressing a step swaps the lanes for that
+             step's requests; pressing it again brings the lanes back. -->
+        <div class="pbbk-steps">
+          <t t-call="pb_import_kit.QuietSteps">
+            <t t-set="qSteps" t-value="steps"/>
+            <t t-set="qStepsLabel" t-value="'Where every request is'"/>
+            <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
+          </t>
+          <div class="pbim-showing">
+            <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
+            <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
+              <button type="button" class="pbim-showall" t-on-click="() => this.pickStep('')">Show all</button></t>
           </div>
         </div>
 
@@ -27,10 +47,15 @@
               <div class="pbbk-busy" t-if="state.busy"><span class="pbbk-spin" t-out="ic('loader', 14)"/> Working…</div>
             </div>
 
-            <t t-call="pb_bank_ocr.Lane"><t t-set="title" t-value="'My requests'"/><t t-set="cards" t-value="state.data.queues.mine"/></t>
-            <t t-call="pb_bank_ocr.Lane" t-if="state.data.is_hr"><t t-set="title" t-value="'HR review'"/><t t-set="cards" t-value="state.data.queues.hr"/></t>
-            <t t-call="pb_bank_ocr.Lane" t-if="state.data.is_finance"><t t-set="title" t-value="'Finance review'"/><t t-set="cards" t-value="state.data.queues.finance"/></t>
-            <t t-call="pb_bank_ocr.Lane"><t t-set="title" t-value="'Done'"/><t t-set="cards" t-value="state.data.queues.done"/></t>
+            <t t-if="state.step">
+              <t t-call="pb_bank_ocr.Lane"><t t-set="title" t-value="stepTitle"/><t t-set="cards" t-value="stepCards"/></t>
+            </t>
+            <t t-else="">
+              <t t-call="pb_bank_ocr.Lane"><t t-set="title" t-value="'My requests'"/><t t-set="cards" t-value="state.data.queues.mine"/></t>
+              <t t-call="pb_bank_ocr.Lane" t-if="state.data.is_hr"><t t-set="title" t-value="'HR review'"/><t t-set="cards" t-value="state.data.queues.hr"/></t>
+              <t t-call="pb_bank_ocr.Lane" t-if="state.data.is_finance"><t t-set="title" t-value="'Finance review'"/><t t-set="cards" t-value="state.data.queues.finance"/></t>
+              <t t-call="pb_bank_ocr.Lane"><t t-set="title" t-value="'Done'"/><t t-set="cards" t-value="state.data.queues.done"/></t>
+            </t>
           </div>
 
           <aside class="pbbk-side">

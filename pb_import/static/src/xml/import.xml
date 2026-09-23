@@ -14,12 +14,12 @@
           </div>
         </div>
 
-        <!-- KPI strip -->
-        <div class="pbm-kpis" data-coach="im-kpis">
-          <div class="pbm-kpi"><span class="pbm-kpi-ic"><t t-out="ic('upload',21)"/></span><div class="tx"><span class="v" t-esc="state.kpis.total_batches"/><span class="l">Import batches</span></div></div>
-          <div class="pbm-kpi"><span class="pbm-kpi-ic green"><t t-out="ic('checkCircle',21)"/></span><div class="tx"><span class="v green" t-esc="state.kpis.done"/><span class="l">Completed</span></div></div>
-          <div class="pbm-kpi"><span class="pbm-kpi-ic blue"><t t-out="ic('refresh',21)"/></span><div class="tx"><span class="v indigo" t-esc="state.kpis.in_progress"/><span class="l">In progress</span></div></div>
-          <div class="pbm-kpi"><span class="pbm-kpi-ic rose"><t t-out="ic('alert',21)"/></span><div class="tx"><span t-attf-class="v {{ state.kpis.errors ? 'rose' : '' }}" t-esc="state.kpis.errors"/><span class="l">With errors</span></div></div>
+        <!-- the numbers: one quiet line (QUIET_BOARD_ROLLOUT) -->
+        <div data-coach="im-kpis">
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="state.filter === 'all' ? '' : state.filter"/>
+          </t>
         </div>
 
         <!-- hero CTA: guided import -->
@@ -50,18 +50,19 @@
           </button>
         </div>
 
-        <!-- pipeline -->
-        <div class="pbm-panel">
-          <div class="pbm-panel-h"><h2>Import pipeline</h2><span class="pbm-tag">map → validate → commit</span></div>
-          <div class="pbm-pipe" data-coach="im-pipe">
-            <t t-foreach="state.pipeline" t-as="p" t-key="p.key">
-              <button class="pbm-pipe-step" t-on-click="() => this.pipeClick(p.key)"
-                      t-att-title="'Show ' + p.label + ' batches'">
-                <div t-attf-class="pbm-pipe-num {{ p.count ? 'on' : '' }}" t-esc="p.count"/>
-                <div class="pbm-pipe-lbl" t-esc="p.label"/>
-              </button>
-              <div t-if="!p_last" class="pbm-pipe-arrow">→</div>
-            </t>
+        <!-- where every batch is: the import pipeline as numbered steps.
+             A batch is at exactly ONE step (its state); errored and cancelled
+             batches are at none and "Show all" still lists them. -->
+        <div data-coach="im-pipe">
+          <t t-call="pb_import_kit.QuietSteps">
+            <t t-set="qSteps" t-value="steps"/>
+            <t t-set="qStepsLabel" t-value="'Where every import batch is'"/>
+            <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
+          </t>
+          <div class="pbim-showing">
+            <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
+            <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
+              <button type="button" class="pbim-showall" t-on-click="showAll">Show all</button></t>
           </div>
         </div>
 

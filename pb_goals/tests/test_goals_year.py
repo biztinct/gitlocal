@@ -1269,7 +1269,12 @@ class TestYearGates(YearCase):
             encoding='utf-8').read()
         self.assertIn("'pb_insights_hub'", manifest)
         self.assertIn("'pb_home_hub'", manifest)
-        self.assertIn("19.0.1.1.0", manifest)
+        # at least the version that brought the hubs in (a later patch bump,
+        # e.g. the quiet board's 19.0.1.1.1, must not fail this)
+        import ast
+        version = ast.literal_eval(manifest[manifest.index('{'):])['version']
+        self.assertGreaterEqual(tuple(int(p) for p in version.split('.')),
+                                (19, 0, 1, 1, 0))
 
     def test_the_migration_for_this_version_exists(self):
         """`post_init_hook` fires on INSTALL ONLY and never on `-u` (AM70), so

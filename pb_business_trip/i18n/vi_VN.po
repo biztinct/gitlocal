@@ -1023,3 +1023,85 @@ msgstr "e.g. Đà Nẵng"
 #: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
 msgid "refused / cancelled ("
 msgstr "từ chối/hủy bỏ ("
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "%s trips"
+msgstr "%s chuyến công tác"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "%s waiting on you"
+msgstr "%s đang chờ bạn"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "1 trip"
+msgstr "1 chuyến công tác"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "Days travelled this month"
+msgstr "Số ngày công tác tháng này"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "No trips on the board yet"
+msgstr "Chưa có chuyến công tác nào"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "Showing %s of %s trips at %s"
+msgstr "Đang hiển thị %s trên %s chuyến công tác ở bước %s"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "Showing %s of %s trips"
+msgstr "Đang hiển thị %s trên %s chuyến công tác"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "Showing all %s trips · press a step or a number to narrow it"
+msgstr "Đang hiển thị tất cả %s chuyến công tác · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "Showing the 1 trip · press a step or a number to narrow it"
+msgstr "Đang hiển thị 1 chuyến công tác · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "With HR"
+msgstr "Ở bộ phận nhân sự"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "With finance"
+msgstr "Ở bộ phận tài chính"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "With the manager"
+msgstr "Ở quản lý"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"

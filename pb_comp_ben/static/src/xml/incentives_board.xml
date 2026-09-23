@@ -53,32 +53,28 @@
             </div>
           </div>
 
-          <!-- ======================= the numbers ======================= -->
-          <div class="pbim-stats inc-kpis">
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('clock',18)"/></div>
-              <div class="pbim-stat-tx">
-                <b t-esc="state.kpis.waiting || 0"/><span>waiting for a decision</span>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('award',18)"/></div>
-              <div class="pbim-stat-tx">
-                <b t-esc="state.kpis.to_queue || 0"/><span>agreed, not in a run</span>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('send',18)"/></div>
-              <div class="pbim-stat-tx">
-                <b t-esc="state.kpis.queued || 0"/><span>in a pay run</span>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('banknote',18)"/></div>
-              <div class="pbim-stat-tx">
-                <b t-esc="state.kpis.paid_mtd || 0"/><span>paid this month</span>
-              </div>
-            </div>
+          <!-- ======================= the numbers =======================
+               QUIET BY DEFAULT: one line, grey at zero, a colour only when a
+               person has to act. A figure that narrows the list still does;
+               pressing the lit one again clears it. -->
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
+          </t>
+
+          <!-- ======================= the steps =======================
+               An award is at EXACTLY one step (stepOf), so the counts add up;
+               one that was not approved is at no step (the numbers line
+               reaches it). Pressing the lit step again shows every award. -->
+          <t t-call="pb_import_kit.QuietSteps">
+            <t t-set="qSteps" t-value="steps"/>
+            <t t-set="qStepsLabel" t-value="'Where every award is'"/>
+            <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
+          </t>
+          <div class="pbim-showing">
+            <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
+            <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
+              <button type="button" class="pbim-showall" t-on-click="showAll">Show all</button></t>
           </div>
 
           <!-- ======================= the filters ======================= -->
@@ -90,16 +86,6 @@
             </div>
             <div class="pbim-chips">
               <button class="pbim-fchip"
-                      t-att-class="{ 'is-on': state.stateFilter === 'all' }"
-                      t-on-click="() => this.setStateFilter('all')">Any status</button>
-              <button t-foreach="state.states" t-as="st" t-key="st.key"
-                      class="pbim-fchip"
-                      t-att-class="{ 'is-on': state.stateFilter === st.key }"
-                      t-on-click="() => this.setStateFilter(st.key)"
-                      t-esc="st.label"/>
-            </div>
-            <div class="pbim-chips">
-              <button class="pbim-fchip"
                       t-att-class="{ 'is-on': state.kindFilter === 'all' }"
                       t-on-click="() => this.setKindFilter('all')">Any kind</button>
               <button t-foreach="state.kinds" t-as="kd" t-key="kd.key"
@@ -108,7 +94,6 @@
                       t-on-click="() => this.setKindFilter(kd.key)"
                       t-esc="kd.label"/>
             </div>
-            <span class="inc-count" t-esc="countLine"/>
           </div>
 
           <!-- ======================== the board ======================== -->

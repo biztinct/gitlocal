@@ -1,0 +1,158 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-23 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "%s new joiners"
+msgstr "%s người mới"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "%s with steps overdue"
+msgstr "%s có bước quá hạn"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "1 new joiner"
+msgstr "1 người mới"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "1 with steps overdue"
+msgstr "1 có bước quá hạn"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Already started"
+msgstr "Đã bắt đầu làm việc"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Before their first day"
+msgstr "Trước ngày làm việc đầu tiên"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Checklist done"
+msgstr "Đã xong danh mục"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Everything on the checklist is settled"
+msgstr "Mọi việc trong danh mục đã xong"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Getting ready"
+msgstr "Đang chuẩn bị"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Joining this week"
+msgstr "Vào làm tuần này"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Said they are struggling"
+msgstr "Cho biết đang gặp khó khăn"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Settling in"
+msgstr "Đang hòa nhập"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Showing %s of %s new joiners"
+msgstr "Đang hiển thị %s trên %s người mới"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Showing %s of %s new joiners at %s"
+msgstr "Đang hiển thị %s trên %s người mới ở bước %s"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Showing all %s new joiners · press a step or a number to narrow it"
+msgstr "Đang hiển thị tất cả %s người mới · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Showing all 1 new joiner · press a step or a number to narrow it"
+msgstr "Đang hiển thị 1 người mới · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Showing no new joiners yet"
+msgstr "Chưa có người mới nào"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Started, checklist still open"
+msgstr "Đã vào làm, danh mục vẫn còn việc"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Step %s of %s"
+msgstr "Bước %s / %s"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Steps overdue"
+msgstr "Bước quá hạn"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_board.js:0
+msgid "Still without a buddy"
+msgstr "Chưa có người đồng hành"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+

@@ -3,6 +3,7 @@ import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { _t } from "@web/core/l10n/translation";
 
 export class PbStructureDetail extends Component {
     static template = "pb_structures.PbStructureDetail";
@@ -19,6 +20,16 @@ export class PbStructureDetail extends Component {
 
     ic(n, s = 16) { return ic(n, s); }
     get d() { return this.state.d || {}; }
+
+    /** The structure's counts as one quiet line. */
+    get glance() {
+        const c = this.d.counts || {};
+        return [
+            { key: "rules", n: c.rules || 0, label: _t("Salary rules"), tone: "", run: null },
+            { key: "employees", n: c.employees || 0, label: _t("Employees"), tone: "", run: null },
+            { key: "categories", n: c.categories || 0, label: _t("Categories"), tone: "", run: null },
+        ];
+    }
 
     async refresh() {
         try { this.state.d = await this.orm.call("pb.structures", "get_structure_detail", [this.sid]); }

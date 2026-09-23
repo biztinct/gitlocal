@@ -8,8 +8,9 @@
  * Everything else on the screen keeps praise moving so that the table is worth
  * reading when the quarter ends.
  *
- * FOUR NUMBERS, FOUR PLACES A PIECE OF PRAISE CAN BE: written this month,
- * waiting on a manager, waiting on HR, paid for this quarter.
+ * THE QUIET BOARD: one slim line of numbers (written this month, waiting on a
+ * manager, waiting on HR, not this time, paid for this quarter) and the four
+ * numbered steps a story moves through, each story at exactly one step.
  *
  * EVERY SWITCH SAYS WHICH WAY IT IS SET. A send that is off and does not say so
  * is reported as broken (R54), so the strip under the numbers prints all four
@@ -123,8 +124,8 @@ export class PbRnrBoard extends Component {
     get visibleRows() {
         const q = (this.state.q || "").trim().toLowerCase();
         return this.state.rows.filter((r) => {
-            if (this.state.stateFilter !== "all"
-                && r.state !== this.state.stateFilter) { return false; }
+            const f = this.state.stateFilter;
+            if (f !== "all" && f !== r.state && f !== this.stepOf(r)) { return false; }
             if (this.state.valueFilter
                 && r.value_id !== this.state.valueFilter) { return false; }
             if (!q) { return true; }
@@ -135,19 +136,86 @@ export class PbRnrBoard extends Component {
     }
 
     onSearch(ev) { this.state.q = ev.target.value; }
-    setStateFilter(key) { this.state.stateFilter = key; }
     setValueFilter(id) {
         this.state.valueFilter = this.state.valueFilter === id ? 0 : id;
     }
 
-    /** ONE expression, so the whitespace between the pieces survives (R34). */
-    get countLine() {
+    // ------------------------------------------------ the quiet board
+    //
+    // The Hiring look: one slim line of numbers and a numbered strip of the
+    // steps a story moves through. A story is at EXACTLY one step (stepOf):
+    // "Decided" holds both what was agreed and what was turned down, so the
+    // four counts add up to the whole board.
+    get stepDefs() {
+        return [
+            { key: "draft", title: _t("Being written") },
+            { key: "submitted", title: _t("With their manager") },
+            { key: "manager", title: _t("With HR") },
+            { key: "decided", title: _t("Decided") },
+        ];
+    }
+
+    stepOf(r) {
+        if (r.state === "done" || r.state === "refused") { return "decided"; }
+        return r.state || "draft";
+    }
+
+    get steps() {
+        const rows = this.state.rows;
+        return this.stepDefs.map((st, i) => {
+            const at = rows.filter((r) => this.stepOf(r) === st.key);
+            const refused = st.key === "decided"
+                ? at.filter((r) => r.state === "refused").length : 0;
+            return {
+                ...st,
+                n: String(i + 1).padStart(2, "0"),
+                count: at.length,
+                countLabel: at.length === 1 ? _t("1 story") : _t("%s stories", at.length),
+                sub: refused ? _t("%s not this time", refused) : "",
+                flag: "",
+                on: this.state.stateFilter === st.key,
+            };
+        });
+    }
+
+    pickStep(key) {
+        this.state.stateFilter = this.state.stateFilter === key ? "all" : key;
+    }
+
+    get glance() {
+        const k = this.state.kpis || {};
+        const tone = (v, t) => (v ? t : "");
+        return [
+            { key: "month", n: k.this_month || 0, label: _t("Written this month"), tone: "", run: null },
+            { key: "submitted", n: k.with_manager || 0, label: _t("Waiting on a manager"), tone: tone(k.with_manager, "amber"), run: () => this.pickStep("submitted") },
+            { key: "manager", n: k.with_hr || 0, label: _t("Waiting on HR"), tone: tone(k.with_hr, "amber"), run: () => this.pickStep("manager") },
+            { key: "refused", n: this.state.rows.filter((r) => r.state === "refused").length, label: _t("Not this time"), tone: "", run: () => this.pickStep("refused") },
+            { key: "awarded", n: k.awarded_qtd || 0, label: _t("Given money this quarter"), tone: tone(k.awarded_qtd, "green"), run: null },
+        ];
+    }
+
+    /** ONE expression per sentence, so the whitespace survives (R34). */
+    get showingLine() {
         const shown = this.visibleRows.length;
-        const total = this.state.rows.length;
-        if (shown === total) {
-            return total === 1 ? _t("1 story") : _t("%s stories", total);
+        const all = this.state.rows.length;
+        const f = this.state.stateFilter;
+        const st = this.stepDefs.find((x) => x.key === f);
+        const filtered = f !== "all" || this.state.valueFilter || (this.state.q || "").trim();
+        if (!filtered) {
+            return { all: true, text: !all ? _t("No stories yet")
+                : all === 1 ? _t("Showing the 1 story · press a step or a number to narrow it")
+                : _t("Showing all %s stories · press a step or a number to narrow it", all) };
         }
-        return _t("%s of %s stories", shown, total);
+        const where = st ? st.title : f === "refused" ? _t("Not this time") : "";
+        return { all: false, text: where
+            ? _t("Showing %s of %s stories at %s", shown, all, where)
+            : _t("Showing %s of %s stories", shown, all) };
+    }
+
+    showAll() {
+        this.state.stateFilter = "all";
+        this.state.valueFilter = 0;
+        this.state.q = "";
     }
 
     /** What the switches are, said in words rather than as a row of dots. */

@@ -126,6 +126,23 @@ export class PbVendorsBoard extends Component {
     get facets() { return this.board.facets || {}; }
     get canEdit() { return Boolean(this.board.can_edit); }
 
+    /**
+     * THE QUIET NUMBERS (the Hiring look): one slim line instead of a row of
+     * tiles. A register of suppliers is not a line of steps, so there is no
+     * step strip. Amber only for an agreement somebody has to renew, rose
+     * for one that has already run out; both still filter when pressed.
+     */
+    get glance() {
+        const k = this.kpis;
+        return [
+            { key: "vendors", n: k.vendors || 0, label: _t("On the register"), tone: "", run: null },
+            { key: "expiring", n: k.expiring || 0, label: _t("Coming up for renewal"), tone: k.expiring ? "amber" : "", run: () => this.setState("expiring") },
+            { key: "expired", n: k.expired || 0, label: _t("Already run out"), tone: k.expired ? "rose" : "", run: () => this.setState("expired") },
+            { key: "none", n: k.none || 0, label: _t("With nothing recorded"), tone: "", run: null },
+            { key: "mine", n: k.mine || 0, label: _t("You look after"), tone: "", run: null },
+        ];
+    }
+
     // -------------------------------------------------------------- filters
     async setType(key) {
         this.state.type = this.state.type === key ? "" : key;

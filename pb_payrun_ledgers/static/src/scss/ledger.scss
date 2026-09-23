@@ -17,6 +17,9 @@
 
     .pbl-clear { color: var(--pbim-rose); border-color: #F2D6DE; }
 
+    /* the money totals kept as figures under the quiet numbers line */
+    .pbl-money { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+
     /* row: metric columns (old → new → strong) + optional action button */
     .pbl-code { font-family: ui-monospace, Menlo, monospace; font-size: 10px; font-weight: 700; color: var(--pbim-primary-strong, var(--pbim-primary)); background: var(--pbim-soft); border-radius: 6px; padding: 1px 6px; margin-left: 4px; }
     .pbl-badges { min-width: 108px; }

@@ -70,10 +70,9 @@
     .pbsr-ring-txt { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     .pbsr-ring-txt b { font-size: 30px; font-weight: 800; }
     .pbsr-ring-txt small { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
-    .pbsr-cardstats { flex: 1; display: grid; grid-template-columns: repeat(4, auto); gap: 18px 26px; align-content: start; }
-    .pbsr-stat b { display: block; font-size: 24px; font-weight: 800; }
-    .pbsr-stat small { color: var(--muted); font-size: 11.5px; }
-    .pbsr-periods { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+    .pbsr-cardstats { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; align-self: center; }
+    .pbsr-cardstats .pbim-glance { margin-bottom: 8px; align-self: flex-start; }
+    .pbsr-periods { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
     .pbsr-period { font-size: 12px; background: #F5F6FB; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; color: var(--muted); }
     .pbsr-period b { color: var(--ink); }
     .warn { color: var(--warn); } .bad { color: var(--bad); } .pos { color: var(--ok); } .neg { color: var(--bad); }

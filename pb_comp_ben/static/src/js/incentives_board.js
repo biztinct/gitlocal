@@ -57,7 +57,9 @@ export class PbIncentivesBoard extends Component {
 
             // filters
             q: "",
-            stateFilter: "all",
+            // quiet board: the step pressed ('' = every step), or the one
+            // figure that is not a step ("refused")
+            step: "",
             kindFilter: "all",
 
             // dialogs
@@ -113,8 +115,11 @@ export class PbIncentivesBoard extends Component {
     get visibleRows() {
         const q = (this.state.q || "").trim().toLowerCase();
         return this.state.rows.filter((r) => {
-            if (this.state.stateFilter !== "all"
-                && r.state !== this.state.stateFilter) { return false; }
+            if (this.state.step === "refused") {
+                if (r.state !== "refused") { return false; }
+            } else if (this.state.step && this.stepOf(r) !== this.state.step) {
+                return false;
+            }
             if (this.state.kindFilter !== "all"
                 && r.kind !== this.state.kindFilter) { return false; }
             if (!q) { return true; }
@@ -124,17 +129,91 @@ export class PbIncentivesBoard extends Component {
     }
 
     onSearch(ev) { this.state.q = ev.target.value; }
-    setStateFilter(key) { this.state.stateFilter = key; }
     setKindFilter(key) { this.state.kindFilter = key; }
 
-    /** ONE expression, so the whitespace between the pieces survives (R34). */
-    get countLine() {
-        const shown = this.visibleRows.length;
-        const total = this.state.rows.length;
-        if (shown === total) {
-            return total === 1 ? _t("1 award") : _t("%s awards", total);
+    // ------------------------------------------------------ the quiet board
+    //
+    // Five steps, one per place an award can be. An award is at EXACTLY one
+    // step, so the counts add up to every live award; one that was not
+    // approved is an outcome at no step.
+    stepOf(r) {
+        if (r.state === "draft") { return "draft"; }
+        if (r.state === "submitted") { return "submitted"; }
+        if (r.state === "approved") {
+            if (r.fulfilment === "queued") { return "queued"; }
+            if (r.fulfilment === "paid") { return "paid"; }
+            return "agreed";
         }
-        return _t("%s of %s awards", shown, total);
+        return "";
+    }
+
+    get stepDefs() {
+        return [
+            { key: "draft", title: _t("Being prepared") },
+            { key: "submitted", title: _t("Waiting for approval") },
+            { key: "agreed", title: _t("Agreed, not in a run") },
+            { key: "queued", title: _t("In a pay run") },
+            { key: "paid", title: _t("Paid") },
+        ];
+    }
+
+    _awardsLabel(n) { return n === 1 ? _t("1 award") : _t("%s awards", n); }
+
+    get steps() {
+        const rows = this.state.rows;
+        return this.stepDefs.map((st, i) => {
+            const at = rows.filter((r) => this.stepOf(r) === st.key);
+            let flag = "";
+            if (st.key === "submitted" && at.length) {
+                flag = at.length === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", at.length);
+            }
+            return {
+                ...st,
+                n: String(i + 1).padStart(2, "0"),
+                count: at.length,
+                countLabel: this._awardsLabel(at.length),
+                sub: "", flag, flagTone: "",
+                on: this.state.step === st.key,
+            };
+        });
+    }
+
+    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
+
+    get glance() {
+        const k = this.state.kpis || {};
+        const tone = (v, t) => (v ? t : "");
+        const refused = this.state.rows.filter((r) => r.state === "refused").length;
+        return [
+            { key: "submitted", n: k.waiting || 0, label: _t("waiting for a decision"), tone: tone(k.waiting, "amber"), run: () => this.pickStep("submitted") },
+            { key: "to_queue", n: k.to_queue || 0, label: _t("agreed, not in a run"), tone: tone(k.to_queue, "amber"), run: null },
+            { key: "queued", n: k.queued || 0, label: _t("in a pay run"), tone: "", run: () => this.pickStep("queued") },
+            { key: "paid_mtd", n: k.paid_mtd || 0, label: _t("paid this month"), tone: tone(k.paid_mtd, "green"), run: null },
+            { key: "refused", n: refused, label: _t("not approved"), tone: "", run: () => this.pickStep("refused") },
+        ];
+    }
+
+    get glanceOn() {
+        return ["submitted", "queued", "refused"].includes(this.state.step) ? this.state.step : "";
+    }
+
+    /** ONE expression per sentence, so a translator can reorder it (R34). */
+    get showingLine() {
+        const all = this.state.rows.length;
+        const shown = this.visibleRows.length;
+        const narrowed = this.state.step || this.state.kindFilter !== "all" || (this.state.q || "").trim();
+        if (!narrowed) {
+            return { all: true, text: !all ? _t("no awards yet") : all === 1 ? _t("all 1 award") : _t("all %s awards", all) };
+        }
+        const st = this.stepDefs.find((x) => x.key === this.state.step);
+        const where = st ? st.title : (this.state.step === "refused" ? _t("Not approved") : "");
+        return { all: false, text: _t("%s of %s awards", shown, all), where };
+    }
+
+    showAll() {
+        this.state.step = "";
+        this.state.kindFilter = "all";
+        this.state.q = "";
     }
 
     // -------------------------------------------------------- the new award

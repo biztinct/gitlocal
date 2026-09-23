@@ -72,26 +72,6 @@
         h1 { margin: 4px 0 2px; font-size: 26px; font-weight: 800; color: var(--ink); }
         .sub { color: var(--muted); font-size: 13px; } }
 
-    // ---------------------------------------------------------- KPIs
-    .pbot-kpis { display: grid; grid-template-columns: 1fr 1.8fr 1fr 1fr; gap: 14px; margin-bottom: 20px;
-        .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
-            padding: 16px 18px; box-shadow: var(--sh); display: flex; flex-direction: column; gap: 2px; position: relative;
-            .ico { color: var(--p); margin-bottom: 6px; }
-            .n { font-size: 26px; font-weight: 800; line-height: 1; }
-            .l { color: var(--muted); font-size: 12px; }
-            .l.tt { margin-bottom: 8px; font-weight: 600; }
-            &.amber { .ico, .n { color: var(--amber); } }
-            &.rose { .ico, .n { color: var(--rose); } }
-            &.pulse::after { content: ""; position: absolute; inset: 0; border-radius: var(--r);
-                animation: pbot-pulse 1.8s infinite; pointer-events: none; } }
-        .stack { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: #EEF1F5; margin-bottom: 8px;
-            .seg { min-width: 3px; } }
-        .legend { display: flex; flex-wrap: wrap; gap: 4px 12px;
-            .lg { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted);
-                .sw { width: 9px; height: 9px; border-radius: 3px; } b { color: var(--ink); } } } }
-    @keyframes pbot-pulse { 0% { box-shadow: 0 0 0 0 rgba(220,38,104,.35); }
-        70% { box-shadow: 0 0 0 12px rgba(220,38,104,0); } 100% { box-shadow: 0 0 0 0 rgba(220,38,104,0); } }
-
     // ---------------------------------------------------------- panels
     .pbot-panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
         box-shadow: var(--sh); overflow: hidden; margin-bottom: 20px;
@@ -239,7 +219,6 @@
     @media (max-width: 820px) {
         .pbot-wrap { padding: 16px 14px 60px; }
         .pbot-hero { flex-direction: column; align-items: stretch; }
-        .pbot-kpis { grid-template-columns: 1fr; }
         .pbot-caps { grid-template-columns: repeat(3, 1fr); }
         .pbot-bonus { grid-template-columns: 1fr; }
         .rail { position: static; }

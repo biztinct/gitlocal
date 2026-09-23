@@ -1,0 +1,197 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-23 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "%s agreed · %s turned down"
+msgstr "%s được đồng ý · %s bị từ chối"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "%s agreed, waiting for a pay run"
+msgstr "%s đã đồng ý, đang chờ kỳ trả lương"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "%s claims"
+msgstr "%s yêu cầu hoàn tiền"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "1 agreed, waiting for a pay run"
+msgstr "1 đã đồng ý, đang chờ kỳ trả lương"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "1 claim"
+msgstr "1 yêu cầu hoàn tiền"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Agreed"
+msgstr "Đã đồng ý"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Agreed, not paid yet"
+msgstr "Đã đồng ý, chưa trả"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Claims in all"
+msgstr "Tổng số yêu cầu hoàn tiền"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Courses"
+msgstr "Khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Decided"
+msgstr "Đã quyết định"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Due in the next week"
+msgstr "Đến hạn trong tuần tới"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Finished the course"
+msgstr "Đã hoàn thành khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Finished this month"
+msgstr "Hoàn thành trong tháng này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "No claims yet"
+msgstr "Chưa có yêu cầu hoàn tiền nào"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Not sent yet"
+msgstr "Chưa gửi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Not started"
+msgstr "Chưa bắt đầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Pass rate"
+msgstr "Tỷ lệ đạt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Past its date"
+msgstr "Đã quá hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "People on a course"
+msgstr "Người đang học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Showing %s of %s claims at %s"
+msgstr "Đang hiển thị %s trên %s yêu cầu hoàn tiền ở bước %s"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Showing %s of %s claims"
+msgstr "Đang hiển thị %s trên %s yêu cầu hoàn tiền"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Showing all %s claims · press a step or a number to narrow it"
+msgstr "Đang hiển thị tất cả %s yêu cầu hoàn tiền · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Showing the 1 claim · press a step or a number to narrow it"
+msgstr "Đang hiển thị 1 yêu cầu hoàn tiền · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Turned down"
+msgstr "Bị từ chối"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Waiting on a manager"
+msgstr "Đang chờ quản lý"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Waiting on the HR lead"
+msgstr "Đang chờ trưởng nhân sự"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Waiting on you"
+msgstr "Đang chờ bạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "passed the test, of %s who took it"
+msgstr "đạt bài kiểm tra, trên %s người đã làm"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "passed the test, of 1 who took it"
+msgstr "đạt bài kiểm tra, trên 1 người đã làm"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"

@@ -168,3 +168,142 @@ msgstr "người phê duyệt của nó"
 #: code:addons/pb_lifecycle/models/letter.py:0
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "%s journeys"
+msgstr "%s hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "%s with steps overdue"
+msgstr "%s có bước quá hạn"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "1 journey"
+msgstr "1 hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "1 with steps overdue"
+msgstr "1 có bước quá hạn"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Due in 7 days"
+msgstr "Đến hạn trong 7 ngày"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Every step settled, ready to close"
+msgstr "Mọi bước đã xong, sẵn sàng đóng"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Letters this month"
+msgstr "Thư trong tháng này"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Need attention"
+msgstr "Cần chú ý"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Not started"
+msgstr "Chưa bắt đầu"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Nothing left to do"
+msgstr "Không còn việc gì"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Running now"
+msgstr "Đang chạy"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Set up, not running yet"
+msgstr "Đã thiết lập, chưa chạy"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Showing %s of %s journeys"
+msgstr "Đang hiển thị %s trên %s hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Showing %s of %s journeys at %s"
+msgstr "Đang hiển thị %s trên %s hành trình ở bước %s"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Showing all %s journeys · press a step or a number to narrow it"
+msgstr "Đang hiển thị tất cả %s hành trình · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Showing all 1 journey · press a step or a number to narrow it"
+msgstr "Đang hiển thị 1 hành trình · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Showing no journeys yet"
+msgstr "Chưa có hành trình nào"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Steps overdue"
+msgstr "Bước quá hạn"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Steps still to do"
+msgstr "Còn bước phải làm"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Under way"
+msgstr "Đang tiến hành"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+

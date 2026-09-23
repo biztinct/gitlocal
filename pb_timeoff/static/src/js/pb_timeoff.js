@@ -76,6 +76,24 @@ export class PbTimeoff extends Component {
     // ------------------------------------------------------------- getters
     get d() { return this.state.data || {}; }
     get kpis() { return this.d.kpis || {}; }
+
+    /**
+     * THE QUIET NUMBERS (the Hiring look): one slim line instead of the KPI
+     * cards. Amber only for requests waiting on a sign-off. The week's bars
+     * became one figure — the most people out on any one day this week —
+     * and the faces of who is out today sit in a slim row under the line.
+     * No step strip: the queue holds only requests still waiting.
+     */
+    get glance() {
+        const k = this.kpis;
+        const week = k.week || [];
+        const peak = week.reduce((max, w) => Math.max(max, w.count || 0), 0);
+        return [
+            { key: "out", n: k.out_today_count || 0, label: _t("Out today"), tone: "", run: null },
+            { key: "pending", n: k.pending || 0, label: _t("Waiting for approval"), tone: k.pending ? "amber" : "", run: null },
+            { key: "week", n: peak, label: _t("Most out on one day this week"), tone: "", run: null },
+        ];
+    }
     get queue() { return this.d.queue || []; }
     get heatmap() { return this.d.heatmap || { days: [], rows: [], max: 0 }; }
     get balances() { return this.d.balances || { rows: [], types: [] }; }

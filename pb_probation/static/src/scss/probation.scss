@@ -1,7 +1,7 @@
 // =====================================================================
 //  The Probation lens — .prb-*
 //
-//  Everything structural comes from the kit (.pbim-panel, .pbim-stat,
+//  Everything structural comes from the kit (.pbim-panel, the quiet board,
 //  .pbim-fchip, .pbim-badge, .pbim-modal). This file only says what is
 //  SPECIFIC to a board whose row is a person inside a trial period: the
 //  card, the four-stop stage rail, the candidate picker and the verdict
@@ -20,16 +20,6 @@
     &.prb--embedded .prb-head { margin-bottom: 12px; }
     .prb-head-id { flex: 1 1 320px; min-width: 0; }
     .prb-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
-    // The kit's `.pbim-stats` is a grid with no COLUMNS on purpose — each
-    // cockpit knows how many numbers it has (R32). Five, as the three lenses
-    // beside it on the same hub have, so all four line up.
-    .prb-kpis {
-        grid-template-columns: repeat(5, 1fr);
-        margin-bottom: 16px;
-    }
-    @media (max-width: 1180px) { .prb-kpis { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 700px)  { .prb-kpis { grid-template-columns: repeat(2, 1fr); } }
 
     // ---------------------------------------------- the switch, said out loud
     .prb-notice {
@@ -550,49 +540,6 @@
 .prb-review-gate { background:var(--pbim-soft,#EDEAF8); border:1px solid var(--pbim-line,#e2dfed); border-radius:14px; padding:22px; margin:18px 0; h3 {font-size:20px;letter-spacing:-.025em;color:var(--pbim-ink,#241F52);} p {font-size:13px;line-height:1.7;color:var(--pbim-text,#334155);} }
 .prb-manager-assessment {padding:22px;border:1px solid var(--pbim-line,#e2dfed);border-radius:14px;margin-bottom:24px;h3 {font-size:20px;letter-spacing:-.02em;}p {font-size:12px;color:var(--pbim-muted);}label {display:block;margin:16px 0;}select {width:100%;margin-top:8px;}}
 
-
-// =====================================================================
-//  HOW A REVIEW RUNS — one slim strip under the numbers (2026-09-23)
-//
-//  Replaces the marketing banner that sat above the title and said the
-//  board's name twice. The five steps keep their order and each carries
-//  its own colour, cool at the start and green at the outcome, which is
-//  the same colour-with-a-meaning vocabulary the numbers above it use.
-// =====================================================================
-.prb .prb-flow {
-    display: flex; align-items: center; gap: 14px 22px; flex-wrap: wrap;
-    padding: 12px 18px; margin: 0 0 16px;
-    background: var(--pbim-surface, #fff);
-    border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 14px;
-
-    ol {
-        display: flex; flex-wrap: wrap; gap: 8px 6px; list-style: none;
-        margin: 0; padding: 0; counter-reset: flow;
-    }
-    li {
-        counter-increment: flow; display: flex; align-items: center; gap: 8px;
-        font-size: 12.5px; font-weight: 600; color: var(--pbim-text, #334155);
-        &::before {
-            content: counter(flow); width: 24px; height: 24px; flex: none;
-            display: grid; place-items: center; border-radius: 50%;
-            font-size: 11px; font-weight: 800;
-        }
-        & + li::after { content: none; }
-        &:not(:last-child)::after {
-            content: ""; width: 22px; height: 2px; margin-left: 6px;
-            border-radius: 2px; background: var(--pbim-line, #E2E8F0);
-        }
-    }
-    .prb-flow--1::before { background: var(--pbim-cyan-soft, #CFFAFE); color: var(--pbim-cyan, #0891B2); }
-    .prb-flow--2::before { background: #E0E7FF; color: #4338CA; }
-    .prb-flow--3::before { background: var(--pbim-amber-soft, #FEF3C7); color: var(--pbim-amber, #D97706); }
-    .prb-flow--4::before { background: #FCE7F3; color: #BE185D; }
-    .prb-flow--5::before { background: var(--pbim-green-soft, #D1FAE5); color: var(--pbim-green, #059669); }
-}
-.prb .prb-flow-k {
-    font-size: 10.5px; font-weight: 800; letter-spacing: .1em;
-    text-transform: uppercase; color: var(--pbim-muted, #64748B);
-}
 
 // A review waiting on somebody is amber, not the brand colour.
 .prb-review-gate {

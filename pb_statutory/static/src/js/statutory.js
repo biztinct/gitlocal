@@ -111,6 +111,19 @@ export class PbStatutory extends Component {
     }
     get hasLedgers() { return this.ledgerTabs.length > 0; }
 
+    /** The figures as one quiet line; none of them filters anything. */
+    get glance() {
+        const k = this.state.kpis || {};
+        return [
+            { key: "contrib", n: k.contributions ? this.money(k.contributions) : 0, label: _t("Contributions"), tone: "", run: null },
+            { key: "emp", n: k.emp_leg ? this.money(k.emp_leg) : 0, label: _t("Employee leg"), tone: "", run: null },
+            { key: "comp", n: k.comp_leg ? this.money(k.comp_leg) : 0, label: _t("Employer leg"), tone: "", run: null },
+            { key: "policies", n: k.policies || 0, label: _t("Policies"), tone: "", run: null },
+            { key: "tax", n: k.tax_tables || 0, label: _t("Tax tables"), tone: "", run: null },
+            { key: "deps", n: k.dependents || 0, label: _t("Dependents"), tone: "", run: null },
+        ];
+    }
+
     /** A CLICK handler. Switching to Data loads it the first time only. */
     async setView(v) {
         if (this.state.view === v) { return; }

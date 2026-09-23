@@ -300,6 +300,25 @@ export class PbCloseLens extends Component {
         }
     }
 
+    // ------------------------------------------------------ quiet numbers
+    get glance() {
+        const st = this.stats;
+        const tone = (v, t) => (v ? t : "");
+        return [
+            { key: "clean", n: st.clean || 0, label: this.toleranceLabel, tone: tone(st.clean, "green"), run: null },
+            { key: "flagged", n: st.flagged || 0, label: _t("Flagged for review"), tone: tone(st.flagged, "amber"),
+              run: this.state.busy ? null : () => this.setReviewed("open") },
+            { key: "reviewed", n: st.reviewed || 0, label: _t("reviewed"), tone: "",
+              run: this.state.busy ? null : () => this.setReviewed("done") },
+            { key: "missing", n: st.missing || 0, label: _t("Missing punches"), tone: tone(st.missing, "rose"), run: null },
+            { key: "locked", n: `${st.days_locked || 0}/${st.days_total || 0}`, label: _t("Days locked"), tone: "", run: null },
+        ];
+    }
+    get glanceOn() {
+        const f = this.state.filterReviewed;
+        return f === "open" ? "flagged" : f === "done" ? "reviewed" : "";
+    }
+
     // -------------------------------------------------- table view controls
     // These are WRITES to local view state and reads from the server; they are
     // click handlers like everything else below (W21.1).

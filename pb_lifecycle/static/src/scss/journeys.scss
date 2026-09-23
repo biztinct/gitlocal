@@ -29,14 +29,6 @@
     .lcj-head-id .pbim-sub { max-width: 620px; }
     .lcj-head-actions { display: flex; align-items: center; gap: 8px; flex: none; }
 
-    // ---------------------------------------------------------------- KPIs
-    .lcj-kpis {
-        display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
-        margin-bottom: 14px;
-    }
-    @media (max-width: 1180px) { .lcj-kpis { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 700px)  { .lcj-kpis { grid-template-columns: repeat(2, 1fr); } }
-
     // ------------------------------------------------------------ filters
     .lcj-filters { margin-bottom: 14px; padding: 13px 16px; }
     .lcj-filter-row {

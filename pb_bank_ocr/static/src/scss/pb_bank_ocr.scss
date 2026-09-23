@@ -24,14 +24,18 @@
     }
     .pbbk-hero__title { font-size: 1.5rem; font-weight: 800; margin: 0; }
     .pbbk-hero__sub { color: var(--pbbk-muted); margin: 2px 0 0; }
-    .pbbk-hero__kpis { display: flex; gap: 14px; }
-    .pbbk-kpi {
-        display: flex; flex-direction: column; align-items: center;
-        min-width: 74px; padding: 10px 14px; border-radius: 12px;
-        background: var(--pbbk-primary-soft);
+    .pbbk-hero__kpis { display: flex; }
+    .pbbk-hero__kpis .pbim-glance { margin-bottom: 0; }
+
+    // the quiet board pieces wear this cockpit's violet (scoped to them, so
+    // nothing else on the page that reads the kit tokens changes)
+    .pbbk-hero__kpis, .pbbk-steps {
+        --pbim-primary: var(--pbbk-primary); --pbim-primary-strong: #6d28d9;
+        --pbim-soft: var(--pbbk-primary-soft); --pbim-ring: rgba(124,58,237,.18);
+        --pbim-ink: var(--pbbk-ink); --pbim-muted: var(--pbbk-muted); --pbim-line: var(--pbbk-line);
     }
-    .pbbk-kpi__v { font-size: 1.4rem; font-weight: 800; color: var(--pbbk-primary); }
-    .pbbk-kpi__l { font-size: .72rem; color: var(--pbbk-muted); text-transform: uppercase; letter-spacing: .04em; }
+    .pbbk-steps { padding: 18px 26px 0; }
+    .pbbk-steps + .pbbk-cols { padding-top: 4px; }
 
     // ---- layout ----
     .pbbk-cols { display: flex; gap: 20px; padding: 20px 26px; align-items: flex-start; }
@@ -202,5 +206,6 @@
    pushed to the far right of an empty row. */
 .pbbk.pbbk--embedded {
     .pbbk-hero { padding: 16px 22px 4px; justify-content: flex-start; }
+    .pbbk-steps { padding: 16px 22px 0; }
     .pbbk-cols { padding: 16px 22px; }
 }

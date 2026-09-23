@@ -54,6 +54,7 @@ export class PbBankOcr extends Component {
             refuseOpen: false,
             refuseNote: "",
             history: null,
+            step: "",            // quiet board: the step pressed ('' = the lanes)
         });
         onWillStart(async () => { await this.load(); });
     }
@@ -61,6 +62,80 @@ export class PbBankOcr extends Component {
     async load() {
         this.state.data = await this.orm.call(MODEL, "get_queue_data", []);
         this.state.loaded = true;
+    }
+
+    // ------------------------------------------------------ quiet board
+    //
+    // The KPI tiles are one quiet line; the request's route is numbered
+    // steps. A request is at EXACTLY one step (its state), counted once even
+    // when it sits in two lanes (mine AND the HR queue); a refused one is an
+    // outcome at no step. Counts cover what this board loaded for the reader.
+    get allCards() {
+        const q = this.state.data.queues || {};
+        const seen = new Map();
+        for (const lane of [q.mine, q.hr, q.finance, q.done]) {
+            for (const c of (lane || [])) { if (!seen.has(c.id)) seen.set(c.id, c); }
+        }
+        return [...seen.values()];
+    }
+    get stepDefs() {
+        return [
+            { key: "draft", title: _t("Draft") },
+            { key: "hr_review", title: _t("HR Review") },
+            { key: "finance_review", title: _t("Finance Review") },
+            { key: "approved", title: _t("Approved") },
+        ];
+    }
+    _reqLabel(n) { return n === 1 ? _t("1 request") : _t("%s requests", n); }
+    get steps() {
+        const cards = this.allCards;
+        const d = this.state.data;
+        return this.stepDefs.map((st, i) => {
+            const n = cards.filter((c) => c.state === st.key).length;
+            const mine = (st.key === "hr_review" && d.is_hr) || (st.key === "finance_review" && d.is_finance);
+            let flag = "";
+            if (n && mine) {
+                flag = n === 1 ? _t("1 waiting on you") : _t("%s waiting on you", n);
+            } else if (n && (st.key === "hr_review" || st.key === "finance_review")) {
+                flag = n === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", n);
+            }
+            return {
+                ...st, n: String(i + 1).padStart(2, "0"), count: n,
+                countLabel: this._reqLabel(n), sub: "", flag, flagTone: "",
+                on: this.state.step === st.key,
+            };
+        });
+    }
+    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
+    get stepCards() { return this.allCards.filter((c) => c.state === this.state.step); }
+    get stepTitle() {
+        const st = this.stepDefs.find((x) => x.key === this.state.step);
+        return st ? st.title : "";
+    }
+    get showingLine() {
+        const all = this.allCards.length;
+        if (!this.state.step) {
+            return { all: true, text: !all ? _t("no requests yet") : all === 1 ? _t("all 1 request") : _t("all %s requests", all) };
+        }
+        return { all: false, text: _t("%s of %s requests", this.stepCards.length, all), where: this.stepTitle };
+    }
+    get glance() {
+        const k = this.state.data.kpis || {};
+        const d = this.state.data;
+        const tone = (v) => (v ? "amber" : "");
+        const out = [{ key: "mine", n: k.mine_open || 0, label: _t("My open"), tone: "", run: null }];
+        if (d.is_hr) {
+            out.push({ key: "hr", n: k.hr_pending || 0, label: _t("HR review"), tone: tone(k.hr_pending),
+                       run: () => this.pickStep("hr_review") });
+        }
+        if (d.is_finance) {
+            out.push({ key: "fin", n: k.finance_pending || 0, label: _t("Finance"), tone: tone(k.finance_pending),
+                       run: () => this.pickStep("finance_review") });
+        }
+        return out;
+    }
+    get glanceOn() {
+        return this.state.step === "hr_review" ? "hr" : this.state.step === "finance_review" ? "fin" : "";
     }
 
     // ------------------------------------------------------------- upload

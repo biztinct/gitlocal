@@ -14,22 +14,11 @@
         <!-- KPI strip — suppressed when embedded: the host already draws the
              page's numbers, and duplicating them is the fork W17 forbids. -->
         <div class="dm-kpis" t-if="!props.embedded">
-          <div class="dm-kpi">
-            <div class="dm-kpi__v" t-esc="state.kpis.active or 0"/>
-            <div class="dm-kpi__l">Active now</div>
-          </div>
-          <div class="dm-kpi">
-            <div class="dm-kpi__v dm-kpi__v--warn" t-esc="state.kpis.idle_5m or 0"/>
-            <div class="dm-kpi__l">Idle &gt; 5 min</div>
-          </div>
-          <div class="dm-kpi">
-            <div class="dm-kpi__v dm-kpi__v--muted" t-esc="state.kpis.checked_out or 0"/>
-            <div class="dm-kpi__l">Off duty</div>
-          </div>
-          <div class="dm-kpi">
-            <div class="dm-kpi__v" t-esc="(state.kpis.avg_hours or 0) + 'h'"/>
-            <div class="dm-kpi__l">Avg hours</div>
-          </div>
+          <!-- the numbers: one quiet line (QUIET_BOARD_ROLLOUT) -->
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="''"/>
+          </t>
           <div class="dm-kpi__spacer"/>
           <button t-if="state.isAdmin"
                   t-att-class="'dm-demo ' + (state.demoActive ? 'is-on' : '')"

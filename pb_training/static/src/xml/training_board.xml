@@ -125,52 +125,10 @@
           <t t-if="state.tab === 'courses'">
 
           <!-- ===================== the numbers ===================== -->
-          <div class="pbim-stats pbtn-kpis">
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('bookOpen',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.courses or 0"/>
-                <div class="l">Courses</div>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic blue"><t t-out="ic('users',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.members or 0"/>
-                <div class="l">People on a course</div>
-              </div>
-            </div>
-            <div class="pbim-stat" t-att-class="{ err: state.kpis.not_started }">
-              <div class="pbim-stat-ic amber"><t t-out="ic('clock',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.not_started or 0"/>
-                <div class="l">Not started</div>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic green"><t t-out="ic('checkCircle',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.finished or 0"/>
-                <div class="l">Finished the course</div>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic green"><t t-out="ic('award',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n">
-                  <t t-esc="state.kpis.passed or 0"/><span class="pbtn-of">of <t t-esc="state.kpis.taken or 0"/></span>
-                </div>
-                <div class="l">Passed the test</div>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic teal"><t t-out="ic('target',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="passRate"/>
-                <div class="l">Pass rate</div>
-              </div>
-            </div>
-          </div>
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="courseGlance"/>
+            <t t-set="qGlanceOn" t-value="''"/>
+          </t>
 
           <!-- ===================== the search ===================== -->
           <div t-if="state.courses.length" class="pbtn-filters">
@@ -286,36 +244,10 @@
             </div>
 
             <t t-else="">
-              <div class="pbim-stats pbtn-kpis pbtn-kpis--4">
-                <div class="pbim-stat" t-att-class="{ err: state.aKpis.overdue }">
-                  <div class="pbim-stat-ic red"><t t-out="ic('alert',21)"/></div>
-                  <div class="pbim-stat-tx">
-                    <div class="n" t-esc="state.aKpis.overdue or 0"/>
-                    <div class="l">Past its date</div>
-                  </div>
-                </div>
-                <div class="pbim-stat">
-                  <div class="pbim-stat-ic amber"><t t-out="ic('calendar',21)"/></div>
-                  <div class="pbim-stat-tx">
-                    <div class="n" t-esc="state.aKpis.due_week or 0"/>
-                    <div class="l">Due in the next week</div>
-                  </div>
-                </div>
-                <div class="pbim-stat">
-                  <div class="pbim-stat-ic blue"><t t-out="ic('clock',21)"/></div>
-                  <div class="pbim-stat-tx">
-                    <div class="n" t-esc="state.aKpis.waiting or 0"/>
-                    <div class="l">Waiting on a manager</div>
-                  </div>
-                </div>
-                <div class="pbim-stat">
-                  <div class="pbim-stat-ic green"><t t-out="ic('checkCircle',21)"/></div>
-                  <div class="pbim-stat-tx">
-                    <div class="n" t-esc="state.aKpis.done_month or 0"/>
-                    <div class="l">Finished this month</div>
-                  </div>
-                </div>
-              </div>
+              <t t-call="pb_import_kit.QuietGlance">
+                <t t-set="qGlance" t-value="assignGlance"/>
+                <t t-set="qGlanceOn" t-value="state.aFilters.state"/>
+              </t>
 
               <div class="pbtn-filters">
                 <input class="pbtn-in pbtn-search" type="search"
@@ -641,35 +573,21 @@
                ================================================================= -->
           <t t-elif="state.tab === 'claims'">
 
-            <div class="pbim-stats pbtn-kpis">
-              <div class="pbim-stat">
-                <div class="pbim-stat-ic amber"><t t-out="ic('clock',21)"/></div>
-                <div class="pbim-stat-tx">
-                  <div class="n" t-esc="state.cKpis.waiting or 0"/>
-                  <div class="l">Waiting on you</div>
-                </div>
-              </div>
-              <div class="pbim-stat">
-                <div class="pbim-stat-ic green"><t t-out="ic('checkCheck',21)"/></div>
-                <div class="pbim-stat-tx">
-                  <div class="n" t-esc="state.cKpis.agreed or 0"/>
-                  <div class="l">Agreed this list</div>
-                </div>
-              </div>
-              <div class="pbim-stat">
-                <div class="pbim-stat-ic blue"><t t-out="ic('wallet',21)"/></div>
-                <div class="pbim-stat-tx">
-                  <div class="n" t-esc="state.cKpis.unpaid or 0"/>
-                  <div class="l">Agreed, not paid yet</div>
-                </div>
-              </div>
-              <div class="pbim-stat">
-                <div class="pbim-stat-ic"><t t-out="ic('receipt',21)"/></div>
-                <div class="pbim-stat-tx">
-                  <div class="n" t-esc="state.cKpis.total or 0"/>
-                  <div class="l">Claims in all</div>
-                </div>
-              </div>
+            <!-- The quiet board: one line of numbers, then the three
+                 numbered steps a claim moves through. A claim is at exactly
+                 ONE step; pressing the lit step again shows every claim. -->
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="claimGlance"/>
+              <t t-set="qGlanceOn" t-value="state.cFilters.state"/>
+            </t>
+            <t t-call="pb_import_kit.QuietSteps">
+              <t t-set="qSteps" t-value="claimSteps"/>
+              <t t-set="qStepsLabel" t-value="'Where every claim is'"/>
+              <t t-set="qStepPick" t-value="(k) =&gt; this.setClaimFilter(k)"/>
+            </t>
+            <div class="pbim-showing">
+              <span t-esc="claimShowing.text"/>
+              <button t-if="!claimShowing.all" type="button" class="pbim-showall" t-on-click="showAllClaims">Show all</button>
             </div>
 
             <p t-if="cHeadline" class="pbim-sub pbtn-headline"
@@ -717,13 +635,6 @@
                      placeholder="Find a person or a course…"
                      t-att-value="state.cFilters.term"
                      t-on-input="onClaimTerm"/>
-              <t t-foreach="state.cStates" t-as="cst" t-key="cst.key">
-                <button class="pbtn-chip"
-                        t-att-class="{ on: state.cFilters.state === cst.key }"
-                        t-on-click="() => this.setClaimFilter(cst.key)">
-                  <t t-esc="cst.label"/>
-                </button>
-              </t>
               <button t-if="state.canWrite" class="pbim-btn ghost"
                       t-on-click="() => this.actC('new_claim', {})">
                 <t t-out="ic('plus',14)"/> Type one up

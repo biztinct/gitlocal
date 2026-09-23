@@ -60,43 +60,27 @@
             </div>
           </div>
 
-          <!-- ====================== the numbers ====================== -->
-          <div class="pbim-stats lcj-kpis">
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('activity',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.active or 0"/>
-                <div class="l">Running now</div>
-              </div>
-            </div>
-            <div class="pbim-stat" t-att-class="{ err: state.kpis.overdue }">
-              <div class="pbim-stat-ic rose"><t t-out="ic('clock',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.overdue or 0"/>
-                <div class="l">Steps overdue</div>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic amber"><t t-out="ic('calendar',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.due_week or 0"/>
-                <div class="l">Due in 7 days</div>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic rose"><t t-out="ic('alert',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.red_flags or 0"/>
-                <div class="l">Need attention</div>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic green"><t t-out="ic('fileText',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.letters_month or 0"/>
-                <div class="l">Letters this month</div>
-              </div>
-            </div>
+          <!-- ====================== the numbers ======================
+               Quiet by default: one slim line, grey at zero, a colour only
+               when somebody has to act. "Running now" and "Steps overdue"
+               filter the board; the others count things that are not
+               journeys on it, so they are plain figures. -->
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="state.focus"/>
+          </t>
+
+          <!-- ====================== the three steps ======================
+               A journey is at exactly ONE step (stepOf), so the counts add
+               up to the board. -->
+          <t t-call="pb_import_kit.QuietSteps">
+            <t t-set="qSteps" t-value="steps"/>
+            <t t-set="qStepsLabel" t-value="'Where every journey is'"/>
+            <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
+          </t>
+          <div class="pbim-showing">
+            <span t-esc="showingLine.text"/>
+            <button t-if="!showingLine.all" type="button" class="pbim-showall" t-on-click="clearFilters">Show all</button>
           </div>
 
           <!-- ======================== filters ======================== -->

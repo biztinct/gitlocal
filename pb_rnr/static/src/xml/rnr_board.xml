@@ -60,32 +60,25 @@
             </div>
           </div>
 
-          <!-- ======================= the numbers ======================= -->
-          <div class="pbim-stats rnr-kpis">
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('award',18)"/></div>
-              <div class="pbim-stat-tx">
-                <b t-esc="state.kpis.this_month || 0"/><span>written this month</span>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('user',18)"/></div>
-              <div class="pbim-stat-tx">
-                <b t-esc="state.kpis.with_manager || 0"/><span>waiting on a manager</span>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('clock',18)"/></div>
-              <div class="pbim-stat-tx">
-                <b t-esc="state.kpis.with_hr || 0"/><span>waiting on HR</span>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('banknote',18)"/></div>
-              <div class="pbim-stat-tx">
-                <b t-esc="state.kpis.awarded_qtd || 0"/><span>given money this quarter</span>
-              </div>
-            </div>
+          <!-- ======================= the numbers =======================
+               QUIET BY DEFAULT (the Hiring look): one slim line, grey at
+               zero, a colour only when somebody has to act. -->
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="state.stateFilter"/>
+          </t>
+
+          <!-- ======================= the steps =======================
+               A story is at exactly ONE step (stepOf), so the counts add
+               up. Pressing the lit step again shows everything. -->
+          <t t-call="pb_import_kit.QuietSteps">
+            <t t-set="qSteps" t-value="steps"/>
+            <t t-set="qStepsLabel" t-value="'Where every story is'"/>
+            <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
+          </t>
+          <div class="pbim-showing">
+            <span t-esc="showingLine.text"/>
+            <button t-if="!showingLine.all" type="button" class="pbim-showall" t-on-click="showAll">Show all</button>
           </div>
 
           <!-- ================== what is switched on ==================
@@ -118,23 +111,12 @@
                      t-att-value="state.q" t-on-input="onSearch"/>
             </div>
             <div class="pbim-chips">
-              <button class="pbim-fchip"
-                      t-att-class="{ 'is-on': state.stateFilter === 'all' }"
-                      t-on-click="() => this.setStateFilter('all')">Anywhere</button>
-              <button t-foreach="state.states" t-as="stt" t-key="stt.key"
-                      class="pbim-fchip"
-                      t-att-class="{ 'is-on': state.stateFilter === stt.key }"
-                      t-on-click="() => this.setStateFilter(stt.key)"
-                      t-esc="stt.label"/>
-            </div>
-            <div class="pbim-chips">
               <button t-foreach="state.values" t-as="vl" t-key="vl.id"
                       class="pbim-fchip"
                       t-att-class="{ 'is-on': state.valueFilter === vl.id }"
                       t-on-click="() => this.setValueFilter(vl.id)"
                       t-esc="vl.name"/>
             </div>
-            <span class="rnr-count" t-esc="countLine"/>
           </div>
 
           <!-- ======================== the board ======================== -->

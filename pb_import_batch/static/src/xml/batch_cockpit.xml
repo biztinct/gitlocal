@@ -69,14 +69,12 @@
           </div>
         </div>
 
-        <!-- stat tiles -->
-        <div class="pbim-stats pbbc-stats">
-          <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('table',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="d.counts.total"/><span class="l">Rows</span></div></div>
-          <div class="pbim-stat ok"><span class="pbim-stat-ic green"><t t-out="ic('checkCircle',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="d.counts.matched"/><span class="l">Matched</span></div></div>
-          <div class="pbim-stat new"><span class="pbim-stat-ic blue"><t t-out="ic('user',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="d.counts.new"/><span class="l">New employees</span></div></div>
-          <div t-attf-class="pbim-stat {{ d.counts.errors ? 'err' : '' }}"><span class="pbim-stat-ic rose"><t t-out="ic('alert',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="d.counts.errors"/><span class="l">Errors</span></div></div>
-          <div class="pbim-stat"><span class="pbim-stat-ic teal"><t t-out="ic('check',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="d.counts.processed"/><span class="l">Processed</span></div></div>
-        </div>
+        <!-- the numbers: one quiet line (QUIET_BOARD_ROLLOUT). Rows, Matched,
+             New and Errors filter the line table below, as the chips do. -->
+        <t t-call="pb_import_kit.QuietGlance">
+          <t t-set="qGlance" t-value="glance"/>
+          <t t-set="qGlanceOn" t-value="state.filter === 'all' ? '' : state.filter"/>
+        </t>
 
         <!-- action bar -->
         <div class="pbbc-actions" t-if="(d.next_actions and d.next_actions.length) or (d.state === 'done' and (d.results.created_employees or d.results.created_payslips or d.results.payslip_run_id))">

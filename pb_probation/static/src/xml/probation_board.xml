@@ -82,47 +82,27 @@
             </div>
           </div>
 
-          <!-- ====================== the numbers ====================== -->
-          
-          <div class="pbim-stats prb-kpis">
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('stamp',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.in_probation or 0"/>
-                <div class="l">In a trial period</div>
-              </div>
-            </div>
-            <div class="pbim-stat">
-              <div class="pbim-stat-ic"><t t-out="ic('activity',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.running or 0"/>
-                <div class="l">Reviews running</div>
-              </div>
-            </div>
-            <div class="pbim-stat" t-att-class="{ warn: state.kpis.verdicts }">
-              <div class="pbim-stat-ic amber"><t t-out="ic('checkCircle',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.verdicts or 0"/>
-                <div class="l">Waiting on a decision</div>
-              </div>
-            </div>
-            <div class="pbim-stat" t-att-class="{ err: state.kpis.overdue_feedback }">
-              <div class="pbim-stat-ic rose"><t t-out="ic('clock',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.overdue_feedback or 0"/>
-                <div class="l">Answers overdue</div>
-              </div>
-            </div>
-            <div class="pbim-stat" t-att-class="{ err: state.kpis.urgent }">
-              <div class="pbim-stat-ic rose"><t t-out="ic('alert',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.urgent or 0"/>
-                <div class="l">Ending within a week</div>
-              </div>
-            </div>
-          </div>
+          <!-- ====================== the numbers ======================
+               Quiet by default: one slim line, grey at zero, a colour only
+               when somebody has to act. Every figure filters the board. -->
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="state.focus"/>
+          </t>
 
-          <div class="prb-flow" aria-label="How a probation review runs"><span class="prb-flow-k">How a review runs</span><ol><li class="prb-flow--1">Choose peers</li><li class="prb-flow--2">Gather perspectives</li><li class="prb-flow--3">Manager conversation</li><li class="prb-flow--4">HR &amp; leadership review</li><li class="prb-flow--5">Share the outcome</li></ol></div>
+          <!-- ====================== how a review runs ======================
+               The five steps of a review, numbered, with how many people sit
+               at each. A person is at exactly ONE step (flowStepOf), so the
+               counts add up. Replaces the old unnumbered explainer strip. -->
+          <t t-call="pb_import_kit.QuietSteps">
+            <t t-set="qSteps" t-value="steps"/>
+            <t t-set="qStepsLabel" t-value="'How a probation review runs'"/>
+            <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
+          </t>
+          <div class="pbim-showing">
+            <span t-esc="showingLine.text"/>
+            <button t-if="!showingLine.all" type="button" class="pbim-showall" t-on-click="clearFilters">Show all</button>
+          </div>
 
           <!-- ======================== filters ======================== -->
           <div class="pbim-panel prb-filters" t-if="state.rows.length">

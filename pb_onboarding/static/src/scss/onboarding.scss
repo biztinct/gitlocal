@@ -1,7 +1,7 @@
 // =====================================================================
 //  The New joiners lens — .obb-*
 //
-//  Everything structural comes from the kit (.pbim-panel, .pbim-stat,
+//  Everything structural comes from the kit (.pbim-panel, the quiet board,
 //  .pbim-fchip, .pbim-badge, .pbim-modal). This file only says what is
 //  SPECIFIC to a board whose row is a person: the card, the progress bar,
 //  the three pulse dots and the candidate list.
@@ -19,16 +19,6 @@
     &.obb--embedded .obb-head { margin-bottom: 12px; }
     .obb-head-id { flex: 1 1 320px; min-width: 0; }
     .obb-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
-    // The kit's `.pbim-stats` is a grid with no COLUMNS on purpose — each
-    // cockpit knows how many numbers it has. Five, as the Journeys board
-    // beside it has, so the two lenses of one hub line up.
-    .obb-kpis {
-        grid-template-columns: repeat(5, 1fr);
-        margin-bottom: 16px;
-    }
-    @media (max-width: 1180px) { .obb-kpis { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 700px)  { .obb-kpis { grid-template-columns: repeat(2, 1fr); } }
 
     // --------------------------------------------------------- filters
     .obb-filters { padding: 14px 16px; margin-bottom: 18px; }

@@ -406,3 +406,26 @@ msgstr "Rơi vào tháng lương đang được tính"
 #: code:addons/pb_timeoff/models/hr_leave_approval.py:0
 msgid "The time off"
 msgstr "Kỳ nghỉ"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
+msgid "Most out on one day this week"
+msgstr "Nhiều người nghỉ nhất trong một ngày tuần này"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Out today"
+msgstr "Nghỉ hôm nay"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
+msgid "Waiting for approval"
+msgstr "Đang chờ duyệt"

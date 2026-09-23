@@ -36,33 +36,18 @@
           </div>
         </div>
 
-        <!-- KPI strip -->
-        <div class="pbto-kpis">
-          <div class="kpi out">
-            <div class="kh"><span class="ico" t-out="ic('plane',18)"/><span class="l">out today</span><span class="n" t-esc="kpis.out_today_count"/></div>
-            <div class="avstrip" t-if="(kpis.out_today or []).length">
-              <t t-foreach="kpis.out_today" t-as="p" t-key="p.id">
-                <img class="av" t-att-src="p.avatar_url" t-attf-title="{{ p.name }} · {{ p.type.name }} · back {{ p.return_date }}"
-                     t-attf-style="box-shadow: 0 0 0 2px {{ p.type.color }}"/>
-              </t>
-            </div>
-            <div t-else="" class="none">Everyone's in today.</div>
-          </div>
-          <div class="kpi">
-            <span class="ico" t-out="ic('inbox',18)"/>
-            <span class="n" t-esc="kpis.pending"/>
-            <span class="l">pending approvals</span>
-          </div>
-          <div class="kpi week">
-            <span class="l tt">out this week</span>
-            <div class="wbars">
-              <t t-foreach="kpis.week or []" t-as="w" t-key="w.iso">
-                <div t-attf-class="wb {{ w.is_today ? 'today' : '' }}" t-attf-title="{{ w.label }}: {{ w.count }}">
-                  <span class="bar" t-attf-style="height: {{ w.count ? (12 + Math.min(40, w.count * 6)) : 4 }}px"/>
-                  <span class="wl" t-esc="w.label"/>
-                </div>
-              </t>
-            </div>
+        <!-- the quiet numbers (the Hiring look) -->
+        <t t-call="pb_import_kit.QuietGlance">
+          <t t-set="qGlance" t-value="glance"/>
+          <t t-set="qGlanceOn" t-value="''"/>
+        </t>
+        <div t-if="(kpis.out_today or []).length" class="pbto-outtoday">
+          <span class="l">Out today</span>
+          <div class="avstrip">
+            <t t-foreach="kpis.out_today" t-as="p" t-key="p.id">
+              <img class="av" t-att-src="p.avatar_url" t-attf-title="{{ p.name }} · {{ p.type.name }} · back {{ p.return_date }}"
+                   t-attf-style="box-shadow: 0 0 0 2px {{ p.type.color }}"/>
+            </t>
           </div>
         </div>
 

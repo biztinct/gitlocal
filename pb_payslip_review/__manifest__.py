@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Payslip Review',
     'summary': 'Split-view payslip review cockpit (list + detail + one-click approve)',
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.2.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

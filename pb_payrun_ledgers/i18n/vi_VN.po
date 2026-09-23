@@ -144,3 +144,93 @@ msgstr "Năm nay"
 #: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:34
 msgid "Custom"
 msgstr "Tùy chỉnh"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "1 settlement"
+msgstr "1 quyết toán"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "%s settlements"
+msgstr "%s quyết toán"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "no settlements yet"
+msgstr "chưa có quyết toán nào"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "all 1 settlement"
+msgstr "cả 1 quyết toán"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "all %s settlements"
+msgstr "cả %s quyết toán"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "%s of %s settlements"
+msgstr "%s trên %s quyết toán"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "1 waiting on you"
+msgstr "1 đang chờ bạn"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "%s waiting on you"
+msgstr "%s đang chờ bạn"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "1 waiting for a sign-off"
+msgstr "1 đang chờ phê duyệt"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "%s waiting for a sign-off"
+msgstr "%s đang chờ phê duyệt"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "1 sent back to be fixed"
+msgstr "1 bị trả lại để sửa"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "%s sent back to be fixed"
+msgstr "%s bị trả lại để sửa"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/xml/ledger.xml:0
+msgid "· press a step or a number to narrow it"
+msgstr "· nhấn một bước hoặc một con số để thu hẹp"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/xml/ledger.xml:0
+msgid "at"
+msgstr "tại"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/xml/ledger.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"

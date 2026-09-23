@@ -61,6 +61,56 @@ export class PayslipReview extends Component {
     }
     setFilter(f) { this.state.filter = f; }
 
+    // ================================================ quiet board
+    //
+    // The old tiles are one slim numbers line; the old state chips are the
+    // numbered steps. A payslip is at EXACTLY one step, so the counts add up
+    // to every live payslip; a cancelled one is at no step.
+    stepOf(s) {
+        if (s.state === "draft") return "draft";
+        if (["verify", "level1", "level2"].includes(s.state)) return "verify";
+        if (s.state === "done") return "done";
+        return "";
+    }
+    _slipsLabel(n) { return n === 1 ? _t("1 payslip") : _t("%s payslips", n); }
+
+    get steps() {
+        const slips = this.state.slips;
+        return STATUS_FLOW.map(([key, title], i) => {
+            const at = slips.filter((s) => this.stepOf(s) === key);
+            const flagged = at.filter((s) => s.flag).length;
+            return {
+                key, title,
+                n: String(i + 1).padStart(2, "0"),
+                count: at.length,
+                countLabel: this._slipsLabel(at.length),
+                flag: !flagged ? "" : flagged === 1 ? _t("1 needs review") : _t("%s need review", flagged),
+                on: this.state.filter === key,
+            };
+        });
+    }
+    pickStep(key) { this.setFilter(this.state.filter === key ? "all" : key); }
+
+    get glance() {
+        const t = this.state.totals || {};
+        return [
+            { key: "count", n: t.count || 0, label: _t("Payslips"), tone: "", run: null },
+            { key: "flag", n: t.flagged || 0, label: _t("Need review"), tone: t.flagged ? "amber" : "",
+              run: () => this.setFilter(this.state.filter === "flag" ? "all" : "flag") },
+            { key: "gross", n: t.gross ? this.vnd(t.gross) : 0, label: _t("Gross total"), tone: "", run: null },
+            { key: "net", n: t.net ? this.vnd(t.net) : 0, label: _t("Net total"), tone: "", run: null },
+        ];
+    }
+
+    get showingLine() {
+        const all = this.state.slips.length;
+        if (this.state.filter === "all") {
+            return { all: true, text: !all ? _t("no payslips yet") : all === 1 ? _t("all 1 payslip") : _t("all %s payslips", all) };
+        }
+        const step = STATUS_FLOW.find(([k]) => k === this.state.filter);
+        return { all: false, text: _t("%s of %s payslips", this.filteredSlips.length, all), where: step ? step[1] : "" };
+    }
+
     async select(id) {
         this.state.selId = id;
         this.state.detail = await this.orm.call("pb.payslip.review", "get_slip_detail", [id]);

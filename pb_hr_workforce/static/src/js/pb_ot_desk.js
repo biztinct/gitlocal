@@ -87,6 +87,28 @@ export class PbOtDesk extends Component {
     // -------------------------------------------------------------- queue
     get queue() { return (this.state.data && this.state.data.queue) || []; }
     get kpis() { return (this.state.data && this.state.data.kpis) || {}; }
+
+    /**
+     * The four tiles as one quiet line. The month's hours by overtime type,
+     * which used to be a stacked bar, become one neutral figure per type
+     * that has any hours. Bonus hours opens the bonus review.
+     */
+    get glance() {
+        const k = this.kpis;
+        const rows = [
+            { key: "pending", n: k.pending || 0, label: _t("pending approvals"), tone: k.pending ? "amber" : "", run: null },
+            { key: "ceiling", n: k.over_ceiling || 0, label: _t("near or over the ceiling"), tone: k.over_ceiling > 0 ? "rose" : "", run: null },
+        ];
+        if (this.state.data && this.state.data.can_view_bonus) {
+            rows.push({ key: "bonus", n: this.fmt(k.bonus_month || 0), label: _t("bonus hours this month"), tone: "", run: () => this.openBonus() });
+        }
+        for (const b of k.by_type || []) {
+            if (b.hours > 0) {
+                rows.push({ key: "t-" + b.type, n: this.fmt(b.hours) + "h", label: _t("%s this month", b.label), tone: "", run: null });
+            }
+        }
+        return rows;
+    }
     get selectedIds() {
         return Object.keys(this.state.selected).filter((k) => this.state.selected[k]).map(Number);
     }

@@ -88,6 +88,18 @@ export class PbPaycalBoard extends Component {
         await this.load(year);
     }
 
+    // ------------------------------------------------------- the numbers
+    /** One quiet line; none of these figures filters anything. */
+    get glance() {
+        const k = this.state.kpis || {};
+        return [
+            { key: "planned", n: k.planned || 0, label: _t("months planned"), tone: "", run: null },
+            { key: "ahead", n: k.ahead || 0, label: _t("still ahead"), tone: "", run: null },
+            { key: "closed", n: k.closed || 0, label: _t("closed"), tone: "", run: null },
+            { key: "reminders", n: k.reminders || 0, label: _t("reminders sent"), tone: "", run: null },
+        ];
+    }
+
     // ------------------------------------------------------------- the hero
     /** The countdown sentence, built as ONE expression (R34). */
     get countdown() {

@@ -698,8 +698,10 @@ msgid "Finance approval"
 msgstr "Tài chính phê duyệt"
 
 #. module: pb_payruns
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_payruns/models/hr_payslip_run.py:0
+#: code:addons/pb_payruns/static/src/js/payruns_kanban.js:0
 msgid "Waiting for approval"
 msgstr "Đang chờ phê duyệt"
 
@@ -914,3 +916,111 @@ msgstr "Không ai kiểm"
 #: code:addons/pb_payruns/models/formula_config_guard.py:0
 msgid "In Approval Matrix, the flow is “%(flow)s”. %(why)s"
 msgstr "Trong Ma trận phê duyệt, luồng là “%(flow)s”. %(why)s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 pay run"
+msgstr "1 kỳ lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s pay runs"
+msgstr "%s kỳ lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 waiting on you"
+msgstr "1 đang chờ bạn"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s waiting on you"
+msgstr "%s đang chờ bạn"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 waiting for a sign-off"
+msgstr "1 đang chờ phê duyệt"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s waiting for a sign-off"
+msgstr "%s đang chờ phê duyệt"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 sent back to be fixed"
+msgstr "1 bị trả lại để sửa"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s sent back to be fixed"
+msgstr "%s bị trả lại để sửa"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Net paid (done), in %s"
+msgstr "Thực trả (đã xong), bằng %s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "no pay runs yet"
+msgstr "chưa có kỳ lương nào"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "all 1 pay run"
+msgstr "cả 1 kỳ lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "all %s pay runs"
+msgstr "cả %s kỳ lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s of %s pay runs"
+msgstr "%s trên %s kỳ lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns_kanban.js:0
+msgid "Waiting on you"
+msgstr "Đang chờ bạn"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Showing"
+msgstr "Đang hiển thị"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "· press a step or a number to narrow it"
+msgstr "· nhấn một bước hoặc một con số để thu hẹp"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "at"
+msgstr "tại"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"

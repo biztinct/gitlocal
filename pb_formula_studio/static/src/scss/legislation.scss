@@ -53,13 +53,8 @@
 .pbfs-legis .lg-desc { margin-top: 10px; font-size: 13px; line-height: 1.5; color: #4B5563; max-width: 760px; }
 
 .pbfs-legis .lg-summary { display: flex; align-items: center; gap: 18px; background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 14px; padding: 14px 18px; margin-bottom: 20px; }
-.pbfs-legis .lg-sum-stats { display: flex; gap: 24px; }
-.pbfs-legis .lg-sum { display: flex; flex-direction: column; line-height: 1.1; }
-.pbfs-legis .lg-sum b { font-size: 22px; font-weight: 800; color: var(--ink, #1E1B2E); font-variant-numeric: tabular-nums; }
-.pbfs-legis .lg-sum span { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; color: var(--muted, #6B7280); margin-top: 3px; }
-.pbfs-legis .lg-sum.drift b { color: #D97706; }
-.pbfs-legis .lg-sum.ok b { color: #059669; }
-.pbfs-legis .lg-sum.muted b { color: #94A3B8; }
+.pbfs-legis .lg-sum-stats { display: flex; min-width: 0; }
+.pbfs-legis .lg-sum-stats .pbim-glance { margin-bottom: 0; }
 .pbfs-legis .lg-applyall { margin-left: auto; }
 .pbfs-legis .lg-applyall svg { width: 16px; height: 16px; }
 .pbfs-legis .lg-allgood { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: #059669; }

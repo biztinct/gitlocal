@@ -18,16 +18,6 @@
     .pbm-head h1 { font-size: 24px; font-weight: 800; letter-spacing: -.01em; margin: 0; }
     .pbm-sub { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
 
-    /* KPI strip */
-    .pbm-kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 18px; }
-    .pbm-kpi { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 13px 15px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 3px rgba(16,24,40,.04); }
-    .pbm-kpi-ic { width: 42px; height: 42px; border-radius: 12px; flex: none; display: grid; place-items: center; background: var(--i-soft); color: var(--i); }
-    .pbm-kpi-ic svg { width: 21px; height: 21px; }
-    .pbm-kpi-ic.green { background: #E3F2E9; color: #2E7D4F; } .pbm-kpi-ic.blue { background: #E5EDFD; color: #2563EB; } .pbm-kpi-ic.rose { background: #FCE7EF; color: #DC2668; } .pbm-kpi-ic.teal { background: #D5F5F1; color: #0D9488; }
-    .pbm-kpi .tx { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-    .pbm-kpi .v { font-size: 21px; font-weight: 800; letter-spacing: -.01em; line-height: 1.1; }
-    .pbm-kpi .v.green { color: var(--green); } .pbm-kpi .v.indigo { color: var(--i); } .pbm-kpi .v.rose { color: var(--rose); } .pbm-kpi .v.cyan { color: var(--i); }
-    .pbm-kpi .l { font-size: 11.5px; color: var(--muted); font-weight: 600; }
 
     /* hero CTA — "Start an import" */
     .pbm-cta { display: flex; align-items: center; gap: 18px; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--i); border-radius: 16px; padding: 18px 22px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(16,24,40,.04); }
@@ -64,15 +54,6 @@
     .pbm-fchip .c { font-size: 10px; font-weight: 800; background: var(--bg); border-radius: 999px; padding: 0 6px; color: var(--muted); }
     .pbm-fchip.on .c { background: #fff; color: var(--i); }
 
-    /* pipeline */
-    .pbm-pipe { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .pbm-pipe-step { display: flex; flex-direction: column; align-items: center; gap: 7px; min-width: 78px; background: none; border: none; font-family: inherit; cursor: pointer; padding: 4px 2px; border-radius: 10px; transition: background .14s; }
-    .pbm-pipe-step:hover { background: var(--line-soft); }
-    .pbm-pipe-num { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; background: var(--line-soft); color: var(--slate); transition: .14s; }
-    .pbm-pipe-step:hover .pbm-pipe-num { box-shadow: 0 0 0 3px rgba(90,75,176,.22); }
-    .pbm-pipe-num.on { background: var(--i); color: #fff; }
-    .pbm-pipe-lbl { font-size: 11.5px; font-weight: 700; color: #475569; }
-    .pbm-pipe-arrow { color: var(--i-border); font-weight: 800; font-size: 16px; padding-bottom: 18px; }
 
     /* One column since IA Cycle 3 took the Connectors panel out — kept as a
        grid rather than collapsed to a plain div so a future second column
@@ -114,7 +95,6 @@
     .pbm-empty b { color: var(--i600); }
 
     @media (max-width: 1000px) {
-        .pbm-kpis { grid-template-columns: repeat(2, 1fr); }
         .pbm-cols { grid-template-columns: 1fr; }
         .pbm-cta { flex-wrap: wrap; }
         .pbm-tr { grid-template-columns: 1.4fr 1.1fr .6fr .8fr; }

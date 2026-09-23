@@ -50,6 +50,18 @@ export class PbStructures extends Component {
     }
     stateCls(s) { return STATE_CLS[s] || "muted"; }
 
+    /** The counts as one quiet line; none of them filters anything. */
+    get glance() {
+        const k = this.state.kpis || {};
+        return [
+            { key: "structures", n: k.structures || 0, label: _t("Structures"), tone: "", run: null },
+            { key: "rules", n: k.rules || 0, label: _t("Salary rules"), tone: "", run: null },
+            { key: "categories", n: k.categories || 0, label: _t("Categories"), tone: "", run: null },
+            { key: "employees", n: k.employees || 0, label: _t("Employees covered"), tone: "", run: null },
+            { key: "countries", n: k.countries || 0, label: _t("Countries"), tone: "", run: null },
+        ];
+    }
+
     setStatus(s) { this.state.status = s; }
     setCountry(c) { this.state.country = this.state.country === c ? "" : c; }
     setSchedule(s) { this.state.schedule = this.state.schedule === s ? "" : s; }

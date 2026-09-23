@@ -124,53 +124,15 @@
         </div>
 
         <!-- =========================== the numbers ===========================
+             QUIET BY DEFAULT (the Hiring look): one slim line, not tiles.
              The captions come from ONE getter so the year's words and the
              month's cannot drift apart, and the fifth number counts a
              different thing in each scope: warm-or-worse over a year, over
              budget in a month. -->
-        <div class="pbim-stats bdg-kpis">
-          <div class="pbim-stat">
-            <div class="pbim-stat-ic"><t t-out="ic('landmark',18)"/></div>
-            <div class="pbim-stat-tx">
-              <div class="n" t-esc="short(kpis.budget)"/>
-              <div class="l" t-esc="caps.budget"/>
-            </div>
-          </div>
-          <div class="pbim-stat">
-            <div class="pbim-stat-ic blue"><t t-out="ic('banknote',18)"/></div>
-            <div class="pbim-stat-tx">
-              <div class="n" t-esc="short(kpis.spent)"/>
-              <div class="l" t-esc="caps.spent"/>
-            </div>
-          </div>
-          <div class="pbim-stat">
-            <div t-attf-class="pbim-stat-ic {{ overspent ? 'rose' : 'green' }}">
-              <t t-out="ic(overspent ? 'alert' : 'checkCircle',18)"/>
-            </div>
-            <div class="pbim-stat-tx">
-              <div class="n" t-esc="leftText(kpis.left)"/>
-              <div class="l" t-esc="caps.left"/>
-            </div>
-          </div>
-          <div class="pbim-stat">
-            <div class="pbim-stat-ic"><t t-out="ic('percent',18)"/></div>
-            <div class="pbim-stat-tx">
-              <div t-if="isScoped" class="n" t-esc="signed(kpis.variance_pct)"/>
-              <div t-else="" class="n"
-                   t-esc="pct(kpis.burn) + ' vs ' + pct(kpis.pace)"/>
-              <div class="l" t-esc="caps.ratio"/>
-            </div>
-          </div>
-          <div t-attf-class="pbim-stat {{ hotCount ? 'err' : '' }}">
-            <div t-attf-class="pbim-stat-ic {{ hotCount ? 'rose' : 'green' }}">
-              <t t-out="ic('alert',18)"/>
-            </div>
-            <div class="pbim-stat-tx">
-              <div class="n" t-esc="hotCount"/>
-              <div class="l" t-esc="caps.hot"/>
-            </div>
-          </div>
-        </div>
+        <t t-call="pb_import_kit.QuietGlance">
+          <t t-set="qGlance" t-value="glance"/>
+          <t t-set="qGlanceOn" t-value="''"/>
+        </t>
 
         <!-- ========================= THE PERIOD STRIP =========================
              Thirteen chips that answer before anything is pressed. Each month

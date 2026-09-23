@@ -71,6 +71,8 @@ export class PbJourneys extends Component {
             type: "all",
             lifeState: "all",
             lateOnly: false,
+            focus: "",      // the figure on the numbers line now filtering
+            step: "",       // the step now filtering
 
             // the open journey
             drawer: null,
@@ -131,6 +133,9 @@ export class PbJourneys extends Component {
                 return false;
             }
             if (this.state.lateOnly && !r.late && !r.overdue) { return false; }
+            if (this.state.focus === "active" && r.state !== "active") { return false; }
+            if (this.state.focus === "overdue" && !r.overdue) { return false; }
+            if (this.state.step && this.stepOf(r) !== this.state.step) { return false; }
             if (!q) { return true; }
             return (r.employee + " " + r.type_label + " " + (r.dept || "")
                 + " " + (r.job || "")).toLowerCase().includes(q);
@@ -139,12 +144,85 @@ export class PbJourneys extends Component {
 
     get hasFilters() {
         return this.state.q || this.state.type !== "all"
-            || this.state.lifeState !== "all" || this.state.lateOnly;
+            || this.state.lifeState !== "all" || this.state.lateOnly
+            || this.state.focus || this.state.step;
     }
 
     clearFilters() {
         Object.assign(this.state,
-            { q: "", type: "all", lifeState: "all", lateOnly: false });
+            { q: "", type: "all", lifeState: "all", lateOnly: false,
+              focus: "", step: "" });
+    }
+
+    // ----------------------------------------------------- the quiet board
+    //
+    // One slim line of numbers instead of a row of tiles, and the three steps
+    // a journey moves through. A journey is at EXACTLY ONE step (stepOf), so
+    // the step counts add up to the board. Pressing a lit figure or step
+    // again clears it.
+    toggleFocus(key) { this.state.focus = this.state.focus === key ? "" : key; }
+
+    get glance() {
+        const k = this.state.kpis || {};
+        const tone = (v, t) => (v ? t : "");
+        return [
+            { key: "active", n: k.active || 0, label: _t("Running now"), tone: "",
+              run: () => this.toggleFocus("active") },
+            { key: "overdue", n: k.overdue || 0, label: _t("Steps overdue"), tone: tone(k.overdue, "rose"),
+              run: () => this.toggleFocus("overdue") },
+            { key: "due", n: k.due_week || 0, label: _t("Due in 7 days"), tone: "", run: null },
+            { key: "red", n: k.red_flags || 0, label: _t("Need attention"), tone: tone(k.red_flags, "rose"), run: null },
+            { key: "letters", n: k.letters_month || 0, label: _t("Letters this month"), tone: "", run: null },
+        ];
+    }
+
+    /** Not started (draft) → under way (running or on hold, steps still
+     *  open) → nothing left to do (running, every step settled). */
+    stepOf(r) {
+        if (r.state === "draft") { return "start"; }
+        if (r.state === "active" && !r.open_tasks) { return "wrap"; }
+        return "running";
+    }
+
+    get stepDefs() {
+        return [
+            { key: "start", title: _t("Not started"), sub: _t("Set up, not running yet") },
+            { key: "running", title: _t("Under way"), sub: _t("Steps still to do") },
+            { key: "wrap", title: _t("Nothing left to do"), sub: _t("Every step settled, ready to close") },
+        ];
+    }
+
+    get steps() {
+        const rows = this.state.rows;
+        return this.stepDefs.map((st, i) => {
+            const at = rows.filter((r) => this.stepOf(r) === st.key);
+            const late = at.filter((r) => r.overdue).length;
+            return {
+                ...st,
+                n: String(i + 1).padStart(2, "0"),
+                count: at.length,
+                countLabel: at.length === 1 ? _t("1 journey") : _t("%s journeys", at.length),
+                flag: !late ? "" : late === 1 ? _t("1 with steps overdue") : _t("%s with steps overdue", late),
+                flagTone: "rose",
+                on: this.state.step === st.key,
+            };
+        });
+    }
+
+    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
+
+    get showingLine() {
+        const all = this.state.rows.length;
+        if (!this.hasFilters) {
+            return { all: true, text: !all ? _t("Showing no journeys yet")
+                : all === 1 ? _t("Showing all 1 journey · press a step or a number to narrow it")
+                    : _t("Showing all %s journeys · press a step or a number to narrow it", all) };
+        }
+        const shown = this.visibleRows.length;
+        const st = this.stepDefs.find((x) => x.key === this.state.step);
+        return { all: false, text: st
+            ? _t("Showing %s of %s journeys at %s", shown, all, st.title)
+            : _t("Showing %s of %s journeys", shown, all) };
     }
 
     setType(id) { this.state.type = this.state.type === id ? "all" : id; }

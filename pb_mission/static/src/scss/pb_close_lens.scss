@@ -128,45 +128,12 @@
     }
     .pbmc-chip__ic { display: inline-flex; }
 
-    // ---------------------------------------------------------- stat strip
-    .pbmc-stats {
+    // ------------------------------------------------------- quiet numbers
+    .pbmc-glance {
         flex: none;
-        display: flex;
-        gap: 10px;
         padding: 14px 18px 0;
-        flex-wrap: wrap;
-    }
-    .pbmc-stat {
-        flex: 1 1 150px;
-        min-width: 0;
-        background: var(--pbim-surface, #fff);
-        border: 1px solid var(--pbim-line, #E2E8F0);
-        border-radius: var(--pbim-r, 14px);
-        padding: 11px 14px;
 
-        &--green .pbmc-stat__v { color: var(--pbim-green, #2E7D4F); }
-        &--amber .pbmc-stat__v { color: var(--pbim-amber, #D97706); }
-        &--rose  .pbmc-stat__v { color: var(--pbim-rose, #DC2668); }
-    }
-    .pbmc-stat__v {
-        font-size: 21px;
-        font-weight: 800;
-        font-variant-numeric: tabular-nums;
-        line-height: 1;
-        color: var(--pbim-ink, #1B1733);
-    }
-    .pbmc-stat__sub {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--pbim-muted, #64748B);
-    }
-    .pbmc-stat__l {
-        margin-top: 5px;
-        font-size: 10px;
-        font-weight: 700;
-        color: var(--pbim-muted, #64748B);
-        text-transform: uppercase;
-        letter-spacing: .06em;
+        .pbim-glance { margin-bottom: 0; }
     }
 
     // ---------------------------------------------------------------- body

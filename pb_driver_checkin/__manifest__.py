@@ -12,7 +12,7 @@ attendance mode, and demo route simulators. Check-ins land in hr.attendance
     # check-in app. New `group_pb_field_staff`, which Driver now implies; the
     # map reads the broad group transitively and says who is on leave; the
     # Field lens on Mission Control; /field.
-    'version': '19.0.1.5.0',
+    'version': '19.0.1.5.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

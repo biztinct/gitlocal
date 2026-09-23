@@ -76,12 +76,10 @@
 
           <!-- STEP 2: PREVIEW -->
           <t t-if="state.step === 2 and !state.loading and state.summary">
-            <div class="pbw-stats">
-              <div class="pbw-stat"><span class="n" t-esc="state.summary.preview.employees"/><span class="l">Employees found</span></div>
-              <div class="pbw-stat new"><span class="n" t-esc="state.summary.preview.new"/><span class="l">New</span></div>
-              <div class="pbw-stat ok"><span class="n" t-esc="state.summary.preview.existing"/><span class="l">Existing</span></div>
-              <div t-attf-class="pbw-stat {{ state.summary.preview.errors ? 'err' : '' }}"><span class="n" t-esc="state.summary.preview.errors"/><span class="l">Validation errors</span></div>
-            </div>
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="previewGlance"/>
+              <t t-set="qGlanceOn" t-value="''"/>
+            </t>
             <div class="pbw-note" style="margin-top:16px">Ready to import. New employees<t t-if="state.form.create_contracts"> and their contracts</t> will be created; existing ones <t t-esc="state.form.update_existing ? 'updated' : 'skipped'"/>.</div>
           </t>
 
@@ -92,12 +90,10 @@
               <h3>Employees imported</h3>
               <p><t t-esc="state.summary.results.imported"/> created · <t t-esc="state.summary.results.updated"/> updated · <t t-esc="state.summary.results.contracts"/> contracts</p>
             </div>
-            <div class="pbw-stats" style="margin-top:6px">
-              <div class="pbw-stat ok"><span class="n" t-esc="state.summary.results.imported"/><span class="l">Created</span></div>
-              <div class="pbw-stat new"><span class="n" t-esc="state.summary.results.updated"/><span class="l">Updated</span></div>
-              <div class="pbw-stat"><span class="n" t-esc="state.summary.results.contracts"/><span class="l">Contracts</span></div>
-              <div t-attf-class="pbw-stat {{ state.summary.results.failed ? 'err' : '' }}"><span class="n" t-esc="state.summary.results.failed"/><span class="l">Failed</span></div>
-            </div>
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="resultGlance"/>
+              <t t-set="qGlanceOn" t-value="''"/>
+            </t>
           </t>
         </div>
 

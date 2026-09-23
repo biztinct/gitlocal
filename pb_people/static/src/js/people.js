@@ -87,6 +87,24 @@ export class PbPeople extends Component {
     }
     stateCls(s) { return STATE_CLS[s] || "muted"; }
 
+    // ---- the numbers (quiet line) ----
+    // One slim line instead of six tiles. Headcount, Running and New this
+    // month filter the roster exactly like the status chips below; money and
+    // the readiness share are read-only figures.
+    get glance() {
+        const k = this.state.kpis || {};
+        const tone = (v, t) => (v ? t : "");
+        const pick = (id) => () => this.setStatus(this.state.status === id ? "all" : id);
+        return [
+            { key: "all", n: k.headcount || 0, label: _t("Headcount"), tone: "", run: () => this.setStatus("all") },
+            { key: "running", n: k.running || 0, label: _t("Running contracts"), tone: "", run: pick("running") },
+            { key: "expiring", n: k.expiring_soon || 0, label: _t("Expiring within 30 days"), tone: tone(k.expiring_soon, "amber"), run: pick("expiring") },
+            { key: "new", n: k.new_hires || 0, label: _t("New this month"), tone: tone(k.new_hires, "green"), run: pick("new") },
+            { key: "wage", n: this.money(k.total_wage || 0), label: _t("Monthly wage"), tone: "", run: null },
+            { key: "ready", n: (k.ready_pct || 0) + "%", label: _t("Payroll-ready"), tone: "", run: null },
+        ];
+    }
+
     // ---- filtering ----
     setStatus(s) { this.state.status = s; }
     setDept(d) { this.state.dept = this.state.dept === d ? "" : d; }

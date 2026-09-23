@@ -13,8 +13,8 @@ function fmt(d) {
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
-// Hybrid Pay Runs board: native kanban + KPI hero band + health19-style
-// status tabs and date chips (applied through the native searchModel).
+// Hybrid Pay Runs board: native kanban + quiet numbers line + numbered
+// steps and date chips (applied through the native searchModel).
 export class PbPayrunsKanbanController extends KanbanController {
     static template = "pb_payruns.KanbanView";
 
@@ -64,16 +64,98 @@ export class PbPayrunsKanbanController extends KanbanController {
         }
     }
 
-    // -------- tab / chip definitions --------
+    // -------- quiet board: numbers line + numbered steps --------
+    //
+    // The old status tabs are the steps now. A run is at exactly one step
+    // (its state), so the counts add up to every live run. "Rejected" is an
+    // outcome, not a step: it is a figure in the numbers line instead. Every
+    // step and figure applies the same searchModel filter the tabs applied;
+    // pressing the lit one again goes back to "all".
     get pbStatusTabs() {
-        const c = this.pbState.tabCounts || {};
         return [
             { id: "all", label: _t("All") },
-            { id: "draft", label: _t("Draft"), count: c.draft, tone: "slate" },
-            { id: "pending", label: _t("Pending approval"), count: c.pending, tone: "amber" },
-            { id: "done", label: _t("Done"), count: c.done, tone: "green" },
-            { id: "rejected", label: _t("Rejected"), count: c.rejected, tone: "rose" },
+            { id: "draft", label: _t("Draft") },
+            { id: "pending", label: _t("Waiting for approval") },
+            { id: "done", label: _t("Done") },
+            { id: "rejected", label: _t("Rejected") },
+            { id: "pipeline", label: _t("In pipeline") },
+            { id: "mine", label: _t("Waiting on you") },
         ];
+    }
+    _runsLabel(n) { return n === 1 ? _t("1 pay run") : _t("%s pay runs", n); }
+
+    get pbSteps() {
+        const c = this.pbState.tabCounts || {};
+        const k = this.pbState.kpis || {};
+        const defs = [
+            { key: "draft", title: _t("Draft"), count: c.draft || 0 },
+            { key: "pending", title: _t("Waiting for approval"), count: c.pending || 0 },
+            { key: "done", title: _t("Done"), count: c.done || 0 },
+        ];
+        return defs.map((d, i) => {
+            let flag = "";
+            if (d.key === "pending") {
+                const mine = k.my_pending || 0;
+                if (mine) {
+                    flag = mine === 1 ? _t("1 waiting on you") : _t("%s waiting on you", mine);
+                } else if (d.count) {
+                    flag = d.count === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", d.count);
+                }
+            }
+            return {
+                ...d,
+                n: String(i + 1).padStart(2, "0"),
+                countLabel: this._runsLabel(d.count),
+                sub: "",
+                flag,
+                flagTone: "",
+                on: this.pbState.activeTab === d.key,
+            };
+        });
+    }
+    pickStep(key) { this.setTab(this.pbState.activeTab === key ? "all" : key); }
+
+    get pbGlanceOn() {
+        const t = this.pbState.activeTab;
+        return ["pipeline", "mine", "rejected"].includes(t) ? t : "";
+    }
+    get pbGlance() {
+        const k = this.pbState.kpis || {};
+        const c = this.pbState.tabCounts || {};
+        const tone = (v, t) => (v ? t : "");
+        const flip = (id) => () => this.setTab(this.pbState.activeTab === id ? "all" : id);
+        return [
+            { key: "total", n: k.total || 0, label: _t("Pay runs"), tone: "", run: null },
+            { key: "pipeline", n: k.in_pipeline || 0, label: _t("In pipeline"), tone: "", run: flip("pipeline") },
+            { key: "mine", n: k.my_pending || 0, label: _t("Awaiting your approval"), tone: tone(k.my_pending, "amber"), run: flip("mine") },
+            { key: "rejected", n: c.rejected || 0, label: _t("Rejected"), tone: "", run: flip("rejected") },
+            { key: "net", n: k.period_net ? this.pbMoney(k.period_net) : 0, label: _t("Net paid (done)"), tone: "", run: null },
+        ];
+    }
+
+    /** How many runs the kanban is drawing now (after every filter). */
+    _pbShownCount() {
+        const r = this.model && this.model.root;
+        if (!r) return 0;
+        return (r.isGrouped ? r.recordCount : r.count) || 0;
+    }
+    get pbShowing() {
+        const c = this.pbState.tabCounts || {};
+        const all = (c.draft || 0) + (c.pending || 0) + (c.done || 0);
+        const narrowed = this.pbState.activeTab !== "all"
+            || this.pbState.dateFilter !== "all_dates"
+            || this.pbState.activeDivision !== "all";
+        if (!narrowed) {
+            return { all: true, text: !all ? _t("no pay runs yet") : all === 1 ? _t("all 1 pay run") : _t("all %s pay runs", all) };
+        }
+        const tab = this.pbState.activeTab;
+        const where = tab === "all" ? "" : ((this.pbStatusTabs.find(t => t.id === tab) || {}).label || "");
+        return { all: false, text: _t("%s of %s pay runs", this._pbShownCount(), all), where };
+    }
+    pbShowAll() {
+        this.setTab("all");
+        this.setDateFilter("all_dates");
+        this.setDivision("all");
     }
     get pbDateTabs() {
         return [
@@ -91,6 +173,8 @@ export class PbPayrunsKanbanController extends KanbanController {
             case "pending": return [["state", "=", "approval_pending"]];
             case "done": return [["state", "=", "done"]];
             case "rejected": return [["state", "=", "cancel"]];
+            case "pipeline": return [["state", "in", ["draft", "approval_pending"]]];
+            case "mine": return [["pb_awaiting_me", "=", true]];
             default: return [["state", "!=", "cancel"]];   // all (active)
         }
     }

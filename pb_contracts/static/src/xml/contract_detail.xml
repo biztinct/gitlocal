@@ -37,14 +37,11 @@
           </div>
         </div>
 
-        <!-- stat tiles -->
-        <div class="ppl-d-stats">
-          <div class="pbim-stat"><span class="n money" t-esc="money(d.wage)"/><span class="l">Monthly wage</span></div>
-          <div class="pbim-stat"><span class="n" t-esc="d.tenure_label"/><span class="l">Tenure</span></div>
-          <div t-attf-class="pbim-stat {{ d.days_to_expiry !== null and d.days_to_expiry &lt;= 30 ? 'err' : '' }}">
-            <span class="n" t-esc="d.days_to_expiry !== null ? d.days_to_expiry + 'd' : '—'"/><span class="l">To contract end</span></div>
-          <div class="pbim-stat"><span class="n" t-esc="d.trial_end or '—'"/><span class="l">Trial ends</span></div>
-        </div>
+        <!-- the numbers: one quiet line (QUIET_BOARD_ROLLOUT) -->
+        <t t-call="pb_import_kit.QuietGlance">
+          <t t-set="qGlance" t-value="glance"/>
+          <t t-set="qGlanceOn" t-value="''"/>
+        </t>
 
         <!-- lifecycle rail + actions -->
         <div class="pbim-panel ppl-d-railpanel">

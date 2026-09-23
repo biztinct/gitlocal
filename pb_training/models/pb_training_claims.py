@@ -61,6 +61,10 @@ class PbTrainingClaims(models.AbstractModel):
             'can_admin': self._can_admin(),
             'rows': rows,
             'kpis': self._safe(lambda: self._claim_kpis(rows), default={}),
+            # Per-step counts over EVERY claim (not the filtered rows), so
+            # the numbered step strip adds up whatever filter is on.
+            'step_counts': self._safe(lambda: self._claim_step_counts(),
+                                      default={}),
             'allowances': self._safe(lambda: self._allowance_rows(),
                                      default=[]),
             'states': [{'key': k, 'label': v} for k, v in CLAIM_STATES],
@@ -76,7 +80,12 @@ class PbTrainingClaims(models.AbstractModel):
         cap = number(self.env, P_CLAIM_LIMIT, 200)
         domain = [('company_id', 'in', self.env.companies.ids)]
         if filters.get('state'):
-            domain.append(('state', '=', filters['state']))
+            state = filters['state']
+            # A list is the step strip's "Decided" step (agreed + turned down).
+            if isinstance(state, (list, tuple)):
+                domain.append(('state', 'in', list(state)))
+            else:
+                domain.append(('state', '=', state))
         if filters.get('year'):
             domain.append(('year', '=', int(filters['year'])))
         claims = self.env['pb.training.claim'].sudo().search(domain, limit=cap)
@@ -94,6 +103,21 @@ class PbTrainingClaims(models.AbstractModel):
         return sorted(out, key=lambda r: (rank.get(r['state'], 4),
                                           r['fulfilment'] == 'paid',
                                           -r['id']))
+
+    def _claim_step_counts(self):
+        """How many claims sit at each state, and how many agreed ones are
+        not paid yet — read over every claim the reader's companies hold."""
+        domain = [('company_id', 'in', self.env.companies.ids)]
+        out = {'draft': 0, 'submitted': 0, 'approved': 0, 'refused': 0,
+               'unpaid': 0}
+        groups = self.env['pb.training.claim'].sudo()._read_group(
+            domain, ['state', 'fulfilment'], ['__count'])
+        for state, fulfilment, count in groups:
+            if state in out:
+                out[state] += count
+            if state == 'approved' and fulfilment != 'paid':
+                out['unpaid'] += count
+        return out
 
     def _claim_kpis(self, rows):
         waiting = [r for r in rows if r['state'] == 'submitted']
