@@ -538,6 +538,369 @@ body:has(.rz-login) {
     }
 }
 
+// =============================================================================
+//  EVERY OTHER PUBLIC PAGE (careers, contact, thank-you) — rz_shell frame
+// =============================================================================
+.rz-nav__link.is-active { color: var(--rz-gold-lt); }
+
+@media (max-width: 560px) {
+    .rz-nav__link--wide { display: none; }
+}
+
+.rz-main {
+    flex: 1 0 auto;
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: clamp(1rem, 4vh, 2.6rem) clamp(1.1rem, 5vw, 4rem) clamp(2.5rem, 8vh, 5rem);
+    animation: rzRise .8s cubic-bezier(.2, .7, .3, 1) both;
+}
+
+.rz-gold-text {
+    background: linear-gradient(100deg, var(--rz-gold-lt) 0%, var(--rz-gold-hi) 48%, var(--rz-gold) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+// --- Page heading --------------------------------------------------------------
+.rz-page-head {
+    max-width: 760px;
+    margin-bottom: 2.2rem;
+
+    &__title {
+        margin: 1rem 0 0;
+        font-size: clamp(2.3rem, 6vw, 4rem);
+        line-height: 1.04;
+        letter-spacing: -.03em;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    &__sub {
+        margin: 1.1rem 0 0;
+        font-size: clamp(1rem, 1.4vw, 1.14rem);
+        line-height: 1.65;
+        color: var(--rz-mist);
+    }
+}
+
+.rz-search {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    max-width: 440px;
+    margin-top: 1.6rem;
+    padding: 0 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(250, 238, 211, .2);
+    background: rgba(7, 17, 10, .5);
+    backdrop-filter: blur(9px);
+    color: rgba(250, 238, 211, .55);
+    transition: border-color .18s ease;
+
+    &:focus-within { border-color: var(--rz-gold); }
+
+    svg { width: 18px; height: 18px; flex: none; }
+
+    input {
+        flex: 1;
+        min-width: 0;
+        padding: .72rem 0;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: var(--rz-cream);
+        font: inherit;
+
+        &::placeholder { color: rgba(250, 238, 211, .4); }
+    }
+}
+
+// --- Role cards on /jobs -------------------------------------------------------
+.rz-jobs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1rem;
+}
+
+.rz-job {
+    display: flex;
+    flex-direction: column;
+    gap: .7rem;
+    padding: 1.4rem 1.5rem 1.3rem;
+    border-radius: 18px;
+    border: 1px solid rgba(250, 238, 211, .12);
+    background: rgba(7, 17, 10, .55);
+    backdrop-filter: blur(10px);
+    color: var(--rz-cream);
+    transition: transform .22s ease, border-color .22s ease, background .22s ease;
+
+    &:hover, &:focus-visible {
+        transform: translateY(-3px);
+        border-color: rgba(231, 196, 107, .45);
+        background: rgba(7, 17, 10, .7);
+        color: var(--rz-cream);
+    }
+    &:focus-visible { outline: 2px solid var(--rz-gold-lt); outline-offset: 3px; }
+
+    &__top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .6rem;
+    }
+
+    &__dept {
+        font-size: .76rem;
+        font-weight: 600;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--rz-gold-lt);
+    }
+
+    &__title {
+        font-size: 1.22rem;
+        line-height: 1.3;
+        font-weight: 650;
+        color: #fff;
+    }
+
+    &__go {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        margin-top: auto;
+        padding-top: .5rem;
+        font-size: .9rem;
+        font-weight: 600;
+        color: var(--rz-gold-lt);
+
+        svg { width: 16px; height: 16px; transition: transform .2s ease; }
+    }
+    &:hover &__go svg { transform: translateX(3px); }
+}
+
+.rz-chip {
+    padding: .18rem .6rem;
+    border-radius: 999px;
+    border: 1px solid rgba(250, 238, 211, .25);
+    font-size: .72rem;
+    font-weight: 600;
+    color: rgba(250, 238, 211, .7);
+    white-space: nowrap;
+}
+
+.rz-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem 1.1rem;
+
+    li {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .9rem;
+        color: rgba(250, 238, 211, .7);
+    }
+
+    svg { width: 16px; height: 16px; flex: none; color: rgba(231, 196, 107, .8); }
+}
+
+.rz-pager {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+
+    .pagination { margin: 0; gap: .3rem; }
+    .page-link {
+        border-radius: 999px !important;
+        border: 1px solid rgba(250, 238, 211, .2);
+        background: rgba(7, 17, 10, .55);
+        color: var(--rz-cream);
+    }
+    .page-item.active .page-link {
+        background: var(--rz-gold);
+        border-color: var(--rz-gold);
+        color: #1B1403;
+    }
+    .page-item.disabled .page-link { opacity: .4; }
+}
+
+// --- Short notice pages (and the empty jobs list) ------------------------------
+.rz-notice {
+    max-width: 560px;
+    margin: clamp(1rem, 8vh, 5rem) auto 0;
+    padding: 2.4rem 2rem 2.2rem;
+    border-radius: 22px;
+    border: 1px solid rgba(250, 238, 211, .14);
+    background: rgba(10, 20, 10, .66);
+    backdrop-filter: blur(16px);
+    text-align: center;
+
+    &--inline { margin-top: 0; }
+
+    &__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        background: rgba(204, 153, 0, .14);
+        color: var(--rz-gold-lt);
+
+        svg { width: 26px; height: 26px; }
+    }
+
+    &__title {
+        margin: 1.1rem 0 0;
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 700;
+        letter-spacing: -.02em;
+        color: #fff;
+    }
+
+    &__text {
+        margin: .7rem auto 0;
+        max-width: 30rem;
+        line-height: 1.6;
+        color: var(--rz-mist);
+    }
+
+    &__cta {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: .7rem;
+        margin-top: 1.6rem;
+    }
+}
+
+// --- One role -----------------------------------------------------------------
+.rz-role {
+    max-width: 860px;
+    margin: 0 auto;
+
+    &__head { margin: 1.4rem 0 1.8rem; }
+
+    &__title {
+        margin: 1rem 0 .9rem;
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        line-height: 1.08;
+        letter-spacing: -.03em;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    &__cta { margin-top: 1.6rem; }
+
+    &__foot {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 1.4rem;
+        padding: 1.3rem 1.5rem;
+        border-radius: 18px;
+        border: 1px solid rgba(250, 238, 211, .12);
+        background: rgba(7, 17, 10, .55);
+        backdrop-filter: blur(10px);
+
+        p { color: var(--rz-mist); }
+    }
+}
+
+.rz-back {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--rz-gold-lt);
+
+    svg { width: 16px; height: 16px; }
+    &:hover { color: var(--rz-gold-hi); }
+}
+
+// The advert itself sits on husk-cream paper so long text stays easy to read.
+.rz-paper {
+    padding: clamp(1.4rem, 4vw, 2.6rem);
+    border-radius: 20px;
+    background: var(--rz-cream);
+    color: #22301A;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, .35);
+}
+
+.rz-advert {
+    font-size: 1.02rem;
+    line-height: 1.7;
+
+    h1, h2, h3, h4, h5 { margin: 1.4em 0 .5em; color: var(--rz-paddy); font-weight: 700; line-height: 1.25; }
+    h1, h2 { font-size: 1.45rem; }
+    h3, h4, h5 { font-size: 1.15rem; }
+    > :first-child, > :first-child > :first-child { margin-top: 0; }
+    p { margin: 0 0 .9em; }
+    ul, ol { margin: 0 0 1em; padding-left: 1.3rem; }
+    ul { list-style: disc; }
+    ol { list-style: decimal; }
+    li { margin: .25em 0; }
+    a { color: #7A5A00; text-decoration: underline; }
+    img { max-width: 100%; height: auto; border-radius: 12px; }
+    // Any Bootstrap section an advert was pasted with must not paint its own background.
+    section, .container { padding-left: 0; padding-right: 0; background: transparent !important; }
+
+    &--empty p { margin: 0; color: #4D5F3D; }
+}
+
+// --- The Hiring app's application form, framed in Rize colours ----------------
+// Its own stylesheet (pb_hiring portal_hiring.scss) paints a light page in purple;
+// here the page is the rice field and the form is the cream paper.
+.rz-site .pb-apply {
+    min-height: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--rz-cream);
+
+    .pb-apply-wrap { max-width: 900px; }
+    .pb-apply-back { color: var(--rz-gold-lt); }
+    .pb-apply-heading {
+        padding: 1.6rem 0 1.6rem;
+        h1 { color: #fff; margin: .6rem 0; }
+        p { color: var(--rz-mist); }
+    }
+    .pb-apply-heading .pb-apply-eyebrow { color: var(--rz-gold-lt); }
+
+    .pb-apply-card {
+        background: var(--rz-cream);
+        border-color: transparent;
+        border-radius: 20px;
+        color: #22301A;
+        box-shadow: 0 30px 70px rgba(0, 0, 0, .35);
+
+        .pb-apply-eyebrow { color: #7A5A00; }
+        h2 { color: var(--rz-paddy); }
+        p, small { color: #5B6650; }
+    }
+    .pb-apply-path { border-color: rgba(34, 48, 26, .14); a { color: #7A5A00; } }
+    footer { border-color: rgba(34, 48, 26, .14); }
+    input, select, textarea {
+        border-color: rgba(34, 48, 26, .2);
+        background: #fff;
+        color: #22301A;
+        &:focus { outline: 2px solid rgba(204, 153, 0, .35); border-color: var(--rz-gold); }
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, var(--rz-gold-lt) 0%, var(--rz-gold) 100%);
+        border: 0;
+        border-radius: 999px;
+        color: #1B1403;
+        font-weight: 650;
+        &:hover, &:focus { color: #1B1403; background: linear-gradient(135deg, var(--rz-gold-hi) 0%, var(--rz-gold) 100%); }
+    }
+}
+
 // -----------------------------------------------------------------------------
 //  Motion preferences
 // -----------------------------------------------------------------------------
@@ -546,8 +909,9 @@ body:has(.rz-login) {
     .rz-field__sun,
     .rz-eyebrow__dot,
     .rz-hero__inner,
+    .rz-main,
     .rz-login__card {
         animation: none !important;
     }
-    .rz-btn, .rz-card { transition: none; }
+    .rz-btn, .rz-card, .rz-job { transition: none; }
 }

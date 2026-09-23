@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!--
+    The stock public pages that remain reachable on rize.payobook.com, redrawn
+    inside the Rize frame. They used to show a stock parallax photograph,
+    placeholder contact details and buttons to pages that do not exist.
+
+    Why views and not unpublishing: three of these website.page records are
+    noupdate=False, so the next upgrade of their own module would publish them
+    again. An inherited view survives that.
+
+    Two of these are website.page records defined in XML: their xml id names the
+    PAGE, and the view behind it is `<xmlid>_ir_ui_view` — inherit that one.
+  -->
+
+  <template id="rz_contactus" inherit_id="website.contactus" priority="90" name="Rize contact page">
+    <xpath expr="//div[@id='wrap']" position="replace">
+      <t t-call="rize_website.rz_notice">
+        <t t-set="rz_title">Talk to Rize</t>
+        <t t-set="rz_text">Partnerships, press and general questions go through rize.farm. Applying for a job? Every open role has its own short form.</t>
+        <t t-set="rz_go_label">Visit rize.farm</t>
+        <t t-set="rz_go_url">https://www.rize.farm</t>
+        <t t-set="rz_alt_label">See open roles</t>
+        <t t-set="rz_alt_url">/jobs</t>
+      </t>
+    </xpath>
+  </template>
+
+  <template id="rz_contactus_thanks" inherit_id="website.contactus_thanks_ir_ui_view" priority="90" name="Rize contact thank-you">
+    <xpath expr="//div[@id='wrap']" position="replace">
+      <t t-call="rize_website.rz_notice">
+        <t t-set="rz_icon">check</t>
+        <t t-set="rz_title">Thank you</t>
+        <t t-set="rz_text">Your message is on its way. Somebody from Rize will get back to you.</t>
+        <t t-set="rz_go_label">Back to home</t>
+        <t t-set="rz_go_url">/</t>
+      </t>
+    </xpath>
+  </template>
+
+  <template id="rz_job_thanks" inherit_id="website_hr_recruitment.thankyou_ir_ui_view" priority="90" name="Rize application thank-you">
+    <xpath expr="//div[@id='wrap']" position="replace">
+      <t t-call="rize_website.rz_notice">
+        <t t-set="rz_icon">check</t>
+        <t t-set="rz_title">Thank you for applying</t>
+        <t t-set="rz_text">The recruiter for this role will read your application and be in touch about the next step.</t>
+        <t t-set="rz_go_label">See other roles</t>
+        <t t-set="rz_go_url">/jobs</t>
+        <t t-set="rz_alt_label">Back to home</t>
+        <t t-set="rz_alt_url">/</t>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- This page has no #wrap: its content is the first div under the layout call. -->
+  <template id="rz_task_submitted" inherit_id="website_project.task_submitted" priority="90" name="Rize request thank-you">
+    <xpath expr="//t[@t-call='website.layout']/div[1]" position="replace">
+      <t t-call="rize_website.rz_notice">
+        <t t-set="rz_icon">check</t>
+        <t t-set="rz_title">Thank you</t>
+        <t t-set="rz_text">We have received your request and will follow it up.</t>
+        <t t-set="rz_go_label">Back to home</t>
+        <t t-set="rz_go_url">/</t>
+      </t>
+    </xpath>
+  </template>
+</odoo>

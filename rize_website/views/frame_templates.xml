@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!--
+    The Rize page frame: rice-field backdrop, top bar, footer.
+    Every public page of rize.payobook.com renders inside it, so a visitor never
+    lands on the generic website chrome ("Your Logo", placeholder phone number,
+    stock photographs).
+
+    Usage — the call body is the page content:
+        <t t-call="rize_website.rz_shell">
+            <t t-set="rz_active" t-value="'jobs'"/>   (optional: highlights "Open roles")
+            ...content...
+        </t>
+    The generic header/footer are hidden by the `body:has(#wrap.rz-home)` rule in
+    rize.scss — `no_header` does not survive a website page render (see the
+    module memory note on rize_website).
+  -->
+
+  <template id="rz_nav" name="Rize top bar">
+    <header class="rz-nav">
+      <a href="/" class="rz-nav__brand" aria-label="Rize home">
+        <img src="/rize_website/static/src/img/rize_logo.png" alt="Rize"/>
+      </a>
+      <nav class="rz-nav__right" aria-label="Main">
+        <a t-attf-class="rz-nav__link #{'is-active' if rz_active == 'jobs' else ''}" href="/jobs">Open roles</a>
+        <a class="rz-nav__link rz-nav__link--wide" href="https://www.rize.farm" target="_blank" rel="noopener">rize.farm</a>
+        <a class="rz-btn rz-btn--gold" href="/web/login">Sign in</a>
+      </nav>
+    </header>
+  </template>
+
+  <template id="rz_footer" name="Rize footer">
+    <footer class="rz-foot">
+      <span class="rz-foot__tag">Modernizing the world's most essential crop.</span>
+      <!-- Deliberate platform credit — see login_templates.xml. -->
+      <span class="rz-foot__meta" data-biz-brand="keep">© Rize · Powered by Payobook</span>
+    </footer>
+  </template>
+
+  <template id="rz_shell" name="Rize page frame">
+    <div id="wrap" class="rz-home rz-site">
+      <t t-call="rize_website.rz_field"/>
+      <t t-call="rize_website.rz_nav"/>
+      <div class="rz-main">
+        <t t-out="0"/>
+      </div>
+      <t t-call="rize_website.rz_footer"/>
+    </div>
+  </template>
+
+  <!-- A short full-stop page: one icon, one heading, one line, two buttons.
+       Used for the stock "thank you" and "contact us" pages. Called with no
+       body; set rz_icon ('check' | anything), rz_title, rz_text, rz_go_label,
+       rz_go_url and optionally rz_alt_label / rz_alt_url. -->
+
+  <template id="rz_notice" name="Rize notice page">
+    <t t-call="rize_website.rz_shell">
+      <section class="rz-notice">
+        <span class="rz-notice__icon" aria-hidden="true">
+          <svg t-if="rz_icon == 'check'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+          <svg t-else="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>
+        </span>
+        <h1 class="rz-notice__title" t-esc="rz_title"/>
+        <p class="rz-notice__text" t-esc="rz_text"/>
+        <div class="rz-notice__cta">
+          <a class="rz-btn rz-btn--gold rz-btn--lg" t-att-href="rz_go_url" t-esc="rz_go_label"/>
+          <a t-if="rz_alt_url" class="rz-btn rz-btn--ghost rz-btn--lg" t-att-href="rz_alt_url"
+             t-att-target="'_blank' if rz_alt_url.startswith('http') else None"
+             t-att-rel="'noopener' if rz_alt_url.startswith('http') else None" t-esc="rz_alt_label"/>
+        </div>
+      </section>
+    </t>
+  </template>
+</odoo>

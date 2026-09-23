@@ -19,15 +19,7 @@
         <t t-call="rize_website.rz_field"/>
 
         <!-- ============================ NAV ============================ -->
-        <header class="rz-nav">
-          <a href="/" class="rz-nav__brand" aria-label="Rize home">
-            <img src="/rize_website/static/src/img/rize_logo.png" alt="Rize"/>
-          </a>
-          <div class="rz-nav__right">
-            <a class="rz-nav__link" href="https://www.rize.farm" target="_blank" rel="noopener">rize.farm</a>
-            <a class="rz-btn rz-btn--gold" href="/web/login">Sign in</a>
-          </div>
-        </header>
+        <t t-call="rize_website.rz_nav"/>
 
         <!-- ============================ HERO ============================ -->
         <section class="rz-hero">
@@ -46,6 +38,7 @@
 
             <div class="rz-hero__cta">
               <a class="rz-btn rz-btn--gold rz-btn--lg" href="/web/login">Sign in</a>
+              <a class="rz-btn rz-btn--ghost rz-btn--lg" href="/jobs">See open roles</a>
               <a class="rz-btn rz-btn--ghost rz-btn--lg" href="https://www.rize.farm" target="_blank" rel="noopener">Visit rize.farm</a>
             </div>
 
@@ -98,11 +91,7 @@
         </section>
 
         <!-- =========================== FOOTER =========================== -->
-        <footer class="rz-foot">
-          <span class="rz-foot__tag">Modernizing the world's most essential crop.</span>
-          <!-- Deliberate platform credit — see login_templates.xml. -->
-          <span class="rz-foot__meta" data-biz-brand="keep">© Rize · Powered by Payobook</span>
-        </footer>
+        <t t-call="rize_website.rz_footer"/>
 
       </div>
     </xpath>
