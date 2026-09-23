@@ -696,7 +696,15 @@ def gloss_scan(data):
             src = open(os.path.join(engine, name), encoding='utf-8').read()
             src = re.sub(r'(from\s+")(\./[A-Za-z0-9_./-]+?)(")',
                          lambda m: m.group(1) + m.group(2) + '.mjs' + m.group(3), src)
+            # The web client's translation helper is not on this machine. The
+            # engine only calls it on chrome strings, never on what this scan
+            # checks, so an identity stub is faithful (commit 244284732 added
+            # the import and this scan has not run since).
+            src = src.replace('from "@web/core/l10n/translation"',
+                              'from "./translation_stub.mjs"')
             open(os.path.join(tmp, name[:-3] + '.mjs'), 'w', encoding='utf-8').write(src)
+        open(os.path.join(tmp, 'translation_stub.mjs'), 'w', encoding='utf-8').write(
+            'export const _t = (s) => s;\n')
         scan = os.path.join(tmp, 'scan.mjs')
         open(scan, 'w', encoding='utf-8').write(GLOSS_SCAN)
         payload = os.path.join(tmp, 'input.json')

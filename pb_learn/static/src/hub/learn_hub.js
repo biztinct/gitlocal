@@ -53,6 +53,7 @@ import { _t } from "@web/core/l10n/translation";
 import { HubShell } from "@pb_hub/js/hub_shell";
 
 import { LearnJourney } from "@pb_learn/journey/journey";
+import { LearnSettings } from "@pb_learn/hub/learn_settings";
 
 /** Where a later module bolts a lens onto Learn. */
 export const LEARN_LENSES = "pb_learn_lens";
@@ -77,6 +78,11 @@ export class LearnHub extends Component {
                 { key: "lessons", icon: "bookOpen", label: _t("Lessons"),
                   Component: LearnJourney },
                 ...this.extraLenses(),
+                // LEARN v3 — every learning switch on one card. LAST, and
+                // administrators only: the lens gate hides it, and
+                // learn.settings re-asks on every read and write.
+                { key: "settings", icon: "sliders", label: _t("Settings"),
+                  Component: LearnSettings, groups: ["base.group_system"] },
             ],
         };
     }

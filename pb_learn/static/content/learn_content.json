@@ -1,6 +1,14 @@
 {
   "__generated__": "GENERATED FILE. Do not edit. Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py",
   "chrome": {
+    "askDataInstead": {
+      "en": "Ask about your pay data instead",
+      "vi": "Hỏi về dữ liệu lương của bạn"
+    },
+    "askDataLead": {
+      "en": "The guide has no answer for that. The Ask tab can look at your own pay data.",
+      "vi": "Tài liệu hướng dẫn chưa có câu trả lời cho câu này. Thẻ Hỏi đáp có thể xem dữ liệu lương của chính bạn."
+    },
     "askPlaceholder": {
       "en": "Ask about this screen…",
       "vi": "Hỏi về màn hình này…"
@@ -50,12 +58,12 @@
       "vi": "Trước khi làm thật, luôn kiểm tra"
     },
     "coachName": {
-      "en": "Payobook Coach",
+      "en": "Payobook helper",
       "vi": "Trợ lý Payobook"
     },
     "coachNoScreen": {
-      "en": "I do not have lessons for this screen yet. Here is what I can answer anywhere.",
-      "vi": "Tôi chưa có bài học cho màn hình này. Đây là những gì tôi trả lời được ở mọi nơi."
+      "en": "This screen has no lesson yet. You can still ask me anything in the box below.",
+      "vi": "Màn hình này chưa có bài học. Bạn vẫn có thể hỏi tôi bất cứ điều gì ở ô bên dưới."
     },
     "columnAnswer": {
       "en": "From the column glossary",
@@ -209,6 +217,10 @@
       "en": "%(count)s payslips computed for %(division)s.",
       "vi": "Đã tính %(count)s phiếu lương cho %(division)s."
     },
+    "live.noDecisionYet": {
+      "en": "Nobody has approved a step on this pay run yet.",
+      "vi": "Chưa ai phê duyệt bước nào của kỳ lương này."
+    },
     "live.noDivision": {
       "en": "You do not have a division yet. Open Run Payroll once and you will be given one. Each demo account drives its own division's June run.",
       "vi": "Bạn chưa có bộ phận nào. Hãy mở Chạy bảng lương một lần là bạn sẽ được gán. Mỗi tài khoản demo tự chạy đợt lương tháng 6 của bộ phận mình."
@@ -236,10 +248,6 @@
     "live.notLive": {
       "en": "'%(mission)s' is a practice mission — it has nothing to check on the server.",
       "vi": "'%(mission)s' là nhiệm vụ thực hành — không có gì để kiểm tra trên máy chủ."
-    },
-    "live.noDecisionYet": {
-      "en": "Nobody has approved a step on this pay run yet.",
-      "vi": "Chưa ai phê duyệt bước nào của kỳ lương này."
     },
     "live.notVerified": {
       "en": "Step '%(step)s' is not verified by the server.",
@@ -397,6 +405,10 @@
       "en": "Next",
       "vi": "Tiếp theo"
     },
+    "nextStep": {
+      "en": "Your next step",
+      "vi": "Bước tiếp theo của bạn"
+    },
     "noAnswer": {
       "en": "I do not have an answer for that",
       "vi": "Tôi chưa có câu trả lời cho việc đó"
@@ -421,6 +433,10 @@
       "en": "of",
       "vi": "trên"
     },
+    "onScreen": {
+      "en": "On:",
+      "vi": "Đang ở:"
+    },
     "openFullList": {
       "en": "Open full list →",
       "vi": "Mở danh sách đầy đủ →"
@@ -432,6 +448,14 @@
     "optional": {
       "en": "Optional",
       "vi": "Tuỳ chọn"
+    },
+    "orbHint": {
+      "en": "Help for this screen. Press ? on any screen.",
+      "vi": "Trợ giúp cho màn hình này. Bấm ? ở bất kỳ màn hình nào."
+    },
+    "orbLabel": {
+      "en": "Ask Payobook",
+      "vi": "Hỏi Payobook"
     },
     "outline": {
       "en": "Outline",
@@ -472,6 +496,18 @@
     "practiceOpen": {
       "en": "Open practice mode",
       "vi": "Mở chế độ thực hành"
+    },
+    "practiceTour": {
+      "en": "Take the tour",
+      "vi": "Xem hướng dẫn tổng quan"
+    },
+    "practiceTourLead": {
+      "en": "The whole product in one pass. You watch, nothing is pressed.",
+      "vi": "Toàn bộ sản phẩm trong một lượt. Bạn chỉ xem, không có nút nào bị bấm."
+    },
+    "practiceTry": {
+      "en": "Try it on the practice company",
+      "vi": "Thử trên công ty thực hành"
     },
     "practiceWatermark": {
       "en": "Practice company — nothing here is real.",
@@ -637,6 +673,26 @@
       "en": "Search the journey",
       "vi": "Tìm trong hành trình"
     },
+    "setAdminOnly": {
+      "en": "Only an administrator can change these.",
+      "vi": "Chỉ quản trị viên mới thay đổi được các mục này."
+    },
+    "setFailed": {
+      "en": "That did not save. Nothing was changed.",
+      "vi": "Chưa lưu được. Không có gì thay đổi."
+    },
+    "setLead": {
+      "en": "Every learning switch in one place. Each one says what it turns on and whether anything leaves Payobook.",
+      "vi": "Mọi công tắc học tập ở cùng một chỗ. Mỗi công tắc nói rõ nó bật tính năng gì và có dữ liệu nào rời khỏi Payobook hay không."
+    },
+    "setSaved": {
+      "en": "Saved",
+      "vi": "Đã lưu"
+    },
+    "setTitle": {
+      "en": "Learning settings",
+      "vi": "Cài đặt học tập"
+    },
     "showHint": {
       "en": "Hint",
       "vi": "Gợi ý"
@@ -692,6 +748,90 @@
     "suggested": {
       "en": "Suggested for this screen",
       "vi": "Gợi ý cho màn hình này"
+    },
+    "swCollectBody": {
+      "en": "Keeps questions for 180 days so we can see what the lessons miss. Each person also agrees in the helper. Names and amounts are removed first.",
+      "vi": "Lưu câu hỏi trong 180 ngày để biết bài học còn thiếu gì. Mỗi người cũng phải đồng ý trong trợ lý. Tên riêng và số tiền được loại bỏ trước."
+    },
+    "swCollectTitle": {
+      "en": "Learn from the questions people ask",
+      "vi": "Học hỏi từ câu hỏi của mọi người"
+    },
+    "swComposeBody": {
+      "en": "When no written answer fits a question, your AI service writes one from the lesson text only. These answers are marked so readers can tell.",
+      "vi": "Khi không có câu trả lời viết sẵn, dịch vụ AI của bạn soạn một câu trả lời chỉ từ nội dung bài học. Các câu trả lời này được đánh dấu để người đọc phân biệt."
+    },
+    "swComposeLeaves": {
+      "en": "Sends lesson text to your AI service. Never employee or pay data.",
+      "vi": "Gửi nội dung bài học tới dịch vụ AI của bạn. Không bao giờ gửi dữ liệu nhân viên hay lương."
+    },
+    "swComposeTitle": {
+      "en": "Written answers from the guide",
+      "vi": "Câu trả lời soạn từ tài liệu hướng dẫn"
+    },
+    "swNextBody": {
+      "en": "The helper and the lesson map show one next lesson, with the reason it was picked. Chosen by fixed rules inside Payobook.",
+      "vi": "Trợ lý và bản đồ bài học gợi ý một bài học tiếp theo, kèm lý do chọn bài đó. Lựa chọn dựa trên quy tắc cố định trong Payobook."
+    },
+    "swNextTitle": {
+      "en": "Suggest the next step",
+      "vi": "Gợi ý bước tiếp theo"
+    },
+    "swNoProvider": {
+      "en": "No AI service is set up yet, so this changes nothing until one is.",
+      "vi": "Chưa thiết lập dịch vụ AI nào, nên công tắc này chưa có tác dụng."
+    },
+    "swNoSpeech": {
+      "en": "No speech service is set up yet, so this changes nothing until one is.",
+      "vi": "Chưa thiết lập dịch vụ nhận dạng giọng nói nào, nên công tắc này chưa có tác dụng."
+    },
+    "swOff": {
+      "en": "Off",
+      "vi": "Tắt"
+    },
+    "swOn": {
+      "en": "On",
+      "vi": "Bật"
+    },
+    "swSkillBody": {
+      "en": "Shows days in a row, and bronze, silver or gold on each finished lesson. Gold means the quiz was right the first time.",
+      "vi": "Hiện số ngày học liên tiếp, và mức đồng, bạc hoặc vàng trên mỗi bài đã học xong. Vàng nghĩa là trả lời đúng phần kiểm tra ngay lần đầu."
+    },
+    "swSkillTitle": {
+      "en": "Streaks and badge levels",
+      "vi": "Chuỗi ngày học và cấp huy hiệu"
+    },
+    "swStays": {
+      "en": "Stays inside Payobook",
+      "vi": "Không rời khỏi Payobook"
+    },
+    "swVoiceBody": {
+      "en": "Adds a microphone to the Ask tab. Each person agrees once before anything is recorded. What they say becomes text they check before sending.",
+      "vi": "Thêm micro vào thẻ Hỏi đáp. Mỗi người đồng ý một lần trước khi ghi âm. Lời nói được chuyển thành chữ để người dùng kiểm tra trước khi gửi."
+    },
+    "swVoiceLeaves": {
+      "en": "Sends the recording to a speech service.",
+      "vi": "Gửi bản ghi âm tới dịch vụ nhận dạng giọng nói."
+    },
+    "swVoiceTitle": {
+      "en": "Talk to the helper",
+      "vi": "Nói chuyện với trợ lý"
+    },
+    "tabAsk": {
+      "en": "Ask",
+      "vi": "Hỏi đáp"
+    },
+    "tabGuide": {
+      "en": "Guide me",
+      "vi": "Hướng dẫn"
+    },
+    "tabPractice": {
+      "en": "Practice",
+      "vi": "Thực hành"
+    },
+    "thisScreen": {
+      "en": "This screen",
+      "vi": "Màn hình này"
     },
     "tierBronze": {
       "en": "Finished",
@@ -8622,10 +8762,10 @@
         },
         {
           "act": "observe",
-          "anchor": "payai-pill",
+          "anchor": "helper-orb",
           "body": {
-            "en": "Ask it about a number on the screen you are standing on. That is the tour — everything else you can find from the sidebar.",
-            "vi": "Hãy hỏi nó về một con số trên chính màn hình bạn đang đứng. Vậy là xong một vòng — mọi thứ còn lại bạn tìm được từ thanh bên."
+            "en": "Press this button, or the ? key, on any screen. It explains the screen, answers questions about your numbers, and opens a safe practice copy. That is the tour.",
+            "vi": "Bấm nút này, hoặc phím ?, ở bất kỳ màn hình nào. Nó giải thích màn hình, trả lời câu hỏi về các con số của bạn, và mở một bản thực hành an toàn. Vậy là xong một vòng."
           },
           "guard": false,
           "key": "copilot",
@@ -8638,8 +8778,8 @@
           "timeout": 0,
           "tip": "",
           "title": {
-            "en": "And the copilot is always there",
-            "vi": "Và trợ lý luôn ở đó"
+            "en": "And help is always one press away",
+            "vi": "Và trợ giúp luôn chỉ cách một lần bấm"
           },
           "value": ""
         }
@@ -14067,5 +14207,5 @@
       }
     }
   ],
-  "version": "ef4e598b9576"
+  "version": "bfee0f20ce35"
 }

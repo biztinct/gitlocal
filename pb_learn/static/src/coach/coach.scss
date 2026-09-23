@@ -493,3 +493,209 @@ body.pb-coach-absent .lrn-fab { bottom: 92px; }
     .lrn-welcome { top: auto; bottom: 16px; }
     .lrn-welcome-a button { flex: 1 1 auto; justify-content: center; }
 }
+
+/* =============================================================================
+   LEARN v3 — ONE HELPER
+   The Coach is the only floating control now: PayAI's pill stands down when
+   this module is installed and its chat is the drawer's Ask tab. Declared at
+   the END of the file on purpose: `body.lrn-one-helper .lrn-fab` has the same
+   specificity as the pb-coach-absent rules above and has to come after both
+   the desktop and the phone copies of them to win.
+   ========================================================================== */
+body.lrn-one-helper .lrn-fab {
+    bottom: 24px;
+    height: 52px;
+    padding: 0 8px 0 6px;
+    gap: 10px;
+    border-radius: 26px;
+    background: var(--vuf-primary-deep, #241F52);
+    color: #fff;
+    box-shadow: 0 12px 32px -10px rgba(36, 31, 82, .6);
+
+    .lrn-ic { width: 20px; height: 20px; }
+
+    &.open {
+        width: 52px;
+        min-width: 52px;
+        padding: 0;
+        border-radius: 50%;
+        justify-content: center;
+        .lrn-fabcore { background: transparent; }
+        .lrn-fabcore::after { display: none; }
+    }
+}
+
+.lrn-fabcore {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--vuf-primary, #5A4BB0);
+
+    /* A slow breath on the ring, so the one control in the corner reads as
+       alive without moving anything the eye has to track. */
+    &::after {
+        content: "";
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        border: 2px solid var(--vuf-primary-light, #CBC2EE);
+        opacity: .5;
+        animation: lrn-breathe 2.8s ease-in-out infinite;
+    }
+}
+
+@keyframes lrn-breathe {
+    0%, 100% { transform: scale(.93); opacity: .2; }
+    50%      { transform: scale(1.05); opacity: .65; }
+}
+
+.lrn-fabkey {
+    padding: 2px 6px;
+    margin-right: 4px;
+    border: 0;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, .14);
+    color: #fff;
+    font: 600 10.5px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+    box-shadow: none;
+}
+
+/* The guided import and pay-run wizards keep their action bar in the bottom
+   right. PayAI's pill hid itself there; the helper steps up instead, because
+   a wizard is exactly where people get stuck. */
+body.lrn-one-helper:has(.iw-root) .lrn-fab,
+body.lrn-one-helper:has(.pw-root) .lrn-fab { bottom: 88px; }
+
+/* ----------------------------------------------------------- the drawer */
+body.lrn-one-helper .lrn-drawer {
+    --lrn-dw: min(420px, calc(100vw - 44px));
+    --lrn-dh: min(700px, calc(100vh - 110px));
+    bottom: 88px;
+    border-radius: 18px;
+}
+
+/* The Ask tab draws charts, so it gets more room. Same custom-property route
+   as the base rule: Sass must not see the min(). */
+body.lrn-one-helper .lrn-drawer:has(.lrn-dask-tab) {
+    --lrn-dw: min(480px, calc(100vw - 44px));
+    height: var(--lrn-dh);
+}
+
+.lrn-dtitle { min-width: 0; }
+
+.lrn-dmark {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    flex: 0 0 auto;
+    background: var(--vuf-primary, #5A4BB0);
+    color: #fff;
+
+    .lrn-ic { width: 16px; height: 16px; }
+}
+
+.lrn-dname {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.25;
+
+    small {
+        overflow: hidden;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--vuf-muted, #6B7280);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}
+
+/* Guide me / Ask / Practice — a segmented control, one solid choice. */
+.lrn-dtabs {
+    display: flex;
+    gap: 4px;
+    padding: 10px 12px 2px;
+}
+
+.lrn-dtab {
+    flex: 1 1 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 6px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--vuf-primary-soft, #F6F4FC);
+    color: var(--vuf-ink-soft, #4B4866);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+
+    .lrn-ic { width: 15px; height: 15px; }
+
+    &:hover { background: var(--vuf-primary-soft2, #EDEAF8); }
+    &:focus-visible { outline: 2px solid var(--vuf-primary, #5A4BB0); outline-offset: 2px; }
+
+    &[aria-selected="true"] {
+        background: var(--vuf-primary, #5A4BB0);
+        color: #fff;
+    }
+}
+
+/* The Ask tab hosts PayAI's chat; it owns its own scroll and input. */
+.lrn-dask-tab {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* The next step, with its reason, top of the Guide tab. */
+.lrn-cnext {
+    margin-bottom: 12px;
+    padding: 12px;
+    border: 1px solid var(--vuf-primary-soft2, #EDEAF8);
+    border-left: 4px solid var(--vuf-primary, #5A4BB0);
+    border-radius: 12px;
+    background: var(--vuf-primary-soft, #F6F4FC);
+
+    .lrn-note { margin: 2px 0 8px; }
+}
+
+.lrn-cnext-t {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.lrn-cnext-min {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--vuf-muted, #6B7280);
+
+    .lrn-ic { width: 12px; height: 12px; }
+}
+
+@media (max-width: 640px) {
+    body.lrn-one-helper .lrn-fab { right: 14px; bottom: 16px; width: 52px; min-width: 52px; padding: 0; justify-content: center; }
+    body.lrn-one-helper .lrn-fab .lrn-fabkey { display: none; }
+    body.lrn-one-helper .lrn-drawer { bottom: 78px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-fabcore::after { animation: none; }
+}

@@ -36,6 +36,8 @@
    ========================================================================== */
 import { Component, markup, onMounted, onWillStart, onWillUnmount, useRef, useState } from "@odoo/owl";
 import { useBus, useService } from "@web/core/utils/hooks";
+import { registry } from "@web/core/registry";
+import { user } from "@web/core/user";
 
 import { RT, T, tx, esc, ic } from "../engine/runtime";
 /* The glossary hovercard (LEARNOS Phase 2). Answer blocks are the one
@@ -81,7 +83,39 @@ export const COACH_ACTIONS = new Set([
     // The SUGGESTION is a server computation over this learner's own progress
     // rows; nothing about it reaches a product method or a language model.
     "c-continue",
+    // LEARN v3 — one helper. "c-tab" switches between Guide me, Ask and
+    // Practice inside this drawer; "c-askdata" hands a question the guide
+    // could not answer to the Ask tab. Neither reaches a product method: the
+    // Ask tab is PayAI's own chat, which has its own server-side fences, and
+    // the hand-off only puts the question text into its box and presses its
+    // send — exactly what the learner would do by retyping it.
+    "c-tab", "c-askdata",
 ]);
+
+/* LEARN v3 — ONE HELPER, NOT TWO BUTTONS.
+
+   The Coach and PayAI used to be two floating buttons stacked in the corner,
+   sharing no code and no memory. Now this drawer is the only launcher, and
+   PayAI's chat is drawn INSIDE it as the "Ask" tab.
+
+   Two registries carry that, and the dependency direction is the reason there
+   are two: neither module depends on the other, so neither may import the
+   other.
+
+     pb_helper_host — this module says "the one helper is here". PayAI reads it
+                      at mount time and, when it is set, draws no pill and no
+                      modal of its own (assets are all loaded before the web
+                      client mounts, so the answer is stable by then).
+     pb_helper_tabs — PayAI registers its embedded chat under "ask". Absent
+                      module, absent tab: the drawer shows two tabs and says
+                      nothing about a third. */
+export const HELPER_TABS = "pb_helper_tabs";
+export const HELPER_HOST = "pb_helper_host";
+registry.category(HELPER_HOST).add("orb", { module: "pb_learn" });
+
+/* Which tab the drawer opens on. Guide, always: the person pressed the button
+   because of the screen in front of them. */
+const TAB_ORDER = ["guide", "ask", "practice"];
 
 export class CoachHost extends Component {
     static template = "pb_learn.CoachHost";
@@ -108,13 +142,33 @@ export class CoachHost extends Component {
             // learner has not been asked yet.
             askConsent: false,
             pendingQ: null,      // {q, matched} held until a yes; dropped on a no
+            // LEARN v3 — the tab showing, and a question handed from the
+            // guide to the Ask tab. `handoff.id` changes on every hand-off so
+            // the Ask tab can tell a new question from a re-render.
+            tab: "guide",
+            handoff: null,
+            lastQ: "",
         });
+        // Passed to the Ask tab as a prop. A stable function, made once, so
+        // the tab is not re-rendered by a new identity on every drawer render.
+        this.closeHelper = () => this.close();
 
         this.bundle = null;
         this._onKey = this._onKey.bind(this);
+        // LEARN v3. Whether this person may use the Ask tab, asked once. A tab
+        // whose every question fails on an access rule is a dead end.
+        this.askAllowed = false;
 
         onWillStart(async () => {
             this._restoreLang();
+            try {
+                const reg = registry.category(HELPER_TABS);
+                const groups = reg.contains("ask") ? (reg.get("ask").groups || []) : null;
+                this.askAllowed = groups === null ? false : !groups.length
+                    || (await Promise.all(groups.map((g) => user.hasGroup(g)))).some(Boolean);
+            } catch {
+                this.askAllowed = false;
+            }
             // Fetched once. The drawer must open instantly — a learner who is
             // stuck does not want to watch a spinner. Since Phase 1a the
             // screens, their chips and the chrome come from the static content
@@ -144,6 +198,9 @@ export class CoachHost extends Component {
                     // A DATABASE property, asked of the company the same way a
                     // live capstone asks it — see maybeWelcome.
                     demo_world: !!runtime.demo_world,
+                    // LEARN v3 — for the next-step card's title. The key alone
+                    // is not something a learner can read.
+                    stations: content.stations || [],
                 };
                 // Same fetch, no second round trip: the scenario service reads
                 // the memoised content plane the drawer has just resolved.
@@ -174,6 +231,10 @@ export class CoachHost extends Component {
             // capture ever since. The removal has to match the phase or the
             // listener is never removed at all.
             document.addEventListener("keydown", this._onKey, true);
+            // LEARN v3. The corner holds one button now, so it sits in the
+            // bottom slot. A body class rather than a runtime measurement:
+            // coach.scss places the launcher off it.
+            document.body.classList.add("lrn-one-helper");
             // Two pieces of CHROME the Coach happens to be the right host for,
             // because it is the one component mounted on every screen. Both
             // live in first_login.js; neither can throw, and neither is allowed
@@ -191,6 +252,7 @@ export class CoachHost extends Component {
         });
         onWillUnmount(() => {
             document.removeEventListener("keydown", this._onKey, true);
+            document.body.classList.remove("lrn-one-helper");
             // The card is on document.body, not in this component's tree.
             closeGlossary();
         });
@@ -271,6 +333,63 @@ export class CoachHost extends Component {
         }
     }
 
+    // ------------------------------------------------------------ LEARN v3
+    /** PayAI's embedded chat, when that module is installed. */
+    get askTab() {
+        const reg = registry.category(HELPER_TABS);
+        return this.askAllowed && reg.contains("ask") ? reg.get("ask") : null;
+    }
+
+    /** The tab strip. Reads `state.lang` so a language flip relabels it —
+     *  the strip is in the template, outside `bodyHTML`. */
+    get tabs() {
+        void this.state.lang;
+        const label = { guide: "tabGuide", ask: "tabAsk", practice: "tabPractice" };
+        const icon = { guide: "compass", ask: "message-circle", practice: "flask" };
+        return TAB_ORDER
+            .filter((k) => k !== "ask" || this.askTab)
+            .map((k) => ({ key: k, label: T(label[k]), icon: icon[k] }));
+    }
+
+    setTab(key) {
+        if (!TAB_ORDER.includes(key) || (key === "ask" && !this.askTab)) {
+            return;
+        }
+        this.state.tab = key;
+        this._log("coach_tab", key);
+        if (key === "guide") {
+            setTimeout(() => this.inputRef.el?.focus(), 60);
+        }
+    }
+
+    /** Hand the last question to the Ask tab and send it there. */
+    askData() {
+        const q = (this.state.lastQ || this.state.question || "").trim();
+        if (!this.askTab) {
+            return;
+        }
+        this.state.handoff = q ? { text: q, id: Date.now() } : null;
+        this.state.tab = "ask";
+    }
+
+    /** "On: <screen>" in the header. The content plane's name when it covers
+     *  the screen, the action's own name when it does not — every screen gets
+     *  named, which is the point of saying where the helper thinks you are. */
+    get screenLabel() {
+        void this.state.lang;
+        const s = this.screenInfo;
+        if (s) {
+            return tx(s.name);
+        }
+        const action = this.action.currentController?.action;
+        return (action && action.name) || "";
+    }
+
+    get onScreenText() {
+        void this.state.lang;
+        return T("onScreen");
+    }
+
     close() {
         this.state.open = false;
         // Reopening starts fresh. A stale answer from ten minutes and two
@@ -285,6 +404,10 @@ export class CoachHost extends Component {
         // the person had moved on from.
         this.state.askConsent = false;
         this.state.pendingQ = null;
+        // LEARN v3. Reopening starts on the Guide tab, for the same reason a
+        // stale answer is cleared: the person is asking about NOW.
+        this.state.tab = "guide";
+        this.state.handoff = null;
     }
 
     onInput(ev) {
@@ -307,6 +430,7 @@ export class CoachHost extends Component {
             const answer = await this.orm.call(
                 "learn.intent", "ask", [q, this.state.screen, RT.lang]);
             this.state.answer = answer;
+            this.state.lastQ = q;
             this.state.history.push({ q, answered: !!answer.matched });
             // NEVER the question text. health_learn logs the first 40
             // characters of an unanswered question, which is a good content
@@ -532,10 +656,21 @@ export class CoachHost extends Component {
             return markup(`<p class="lrn-note">${esc(T("noAnswerBody"))}</p>`);
         }
         const parts = [];
+        // LEARN v3 — the Practice tab. Everything on it opens a copy; nothing
+        // on it can reach a real record.
+        if (this.state.tab === "practice") {
+            parts.push(this._practiceHTML());
+            parts.push(this._practiceTryHTML());
+            parts.push(this._tourHTML());
+            return markup(parts.join(""));
+        }
         parts.push(this._groundedHTML());
         if (this.state.answer) {
             parts.push(this._answerHTML(this.state.answer));
         } else {
+            // LEARN v3 — the next step, with its reason, at the very top when
+            // the tenant has that switch on. Draws nothing when it is off.
+            parts.push(this._nextStepHTML());
             // LEARNOS Phase 4 — the "not sure what to ask?" state. FIRST,
             // because it is the offer that needs no vocabulary: somebody who
             // cannot phrase the question can still press one button and be
@@ -548,10 +683,8 @@ export class CoachHost extends Component {
             // none, this draws nothing rather than an empty heading.
             parts.push(this._scenarioHTML());
             parts.push(this._suggestHTML());
-            // LAST. A learner who came to the drawer with a question should
-            // meet the answers first; the sandbox is what they reach for when
-            // none of them was the thing they wanted.
-            parts.push(this._practiceHTML());
+            // The sandbox used to sit LAST here. LEARN v3 gives it a tab of
+            // its own, so a single line points at it instead of a whole card.
         }
         // BELOW the answer, deliberately. The person opened the drawer because
         // they were stuck; the answer is what they came for, and a consent card
@@ -594,7 +727,6 @@ export class CoachHost extends Component {
             <button class="lrn-btn sm pri" data-act="c-explain"
                     title="${esc(T("explainHint"))}"
                 >${ic("info")}${esc(T("explainScreen"))}</button>
-            ${this._continueHTML()}
         </div>`;
     }
 
@@ -629,6 +761,67 @@ export class CoachHost extends Component {
         return `<button class="lrn-btn sm" data-act="c-continue"
                 data-key="${esc(nb.key)}" title="${esc(tx(nb.reason || {}))}"
             >${ic("play")}${esc(T("nbTitle"))}</button>`;
+    }
+
+    /** LEARN v3 — the next step as a card of its own, top of the Guide tab.
+     *
+     *  Same suggestion, same flag, same `c-continue` door as before; what
+     *  changed is that the reason is READ, not hidden in a tooltip. The
+     *  button itself is `_continueHTML`, unchanged. */
+    _nextStepHTML() {
+        const nb = (this.bundle && this.bundle.next_best) || {};
+        if (!nb.reason_key) {
+            return "";
+        }
+        const station = (this.bundle.stations || []).find((s) => s.key === nb.key);
+        const title = station && nb.kind === "station" ? tx(station.name) : "";
+        const mins = station && station.duration_min
+            ? `<span class="lrn-cnext-min">${ic("clock")}${esc(String(station.duration_min))} min</span>` : "";
+        return `<div class="lrn-cnext">
+            <div class="lrn-clabel">${esc(T("nextStep"))}</div>
+            ${title ? `<div class="lrn-cnext-t">${esc(title)}${mins}</div>` : ""}
+            <p class="lrn-note">${esc(tx(nb.reason || {}))}</p>
+            ${title ? this._continueHTML() : ""}
+        </div>`;
+    }
+
+    /** LEARN v3 — Practice tab: this screen's walkthroughs that can be TRIED
+     *  (or done with the engine waiting). Watch-only ones live on the Guide
+     *  tab; repeating them here would be two doors to one room. */
+    _practiceTryHTML() {
+        const rows = this.screenScenarios
+            .filter((sc) => (sc.modes || []).some((m) => m === "try" || m === "do"))
+            .map((sc) => `<div class="lrn-cscen">
+                <div class="lrn-cscentitle">${ic(sc.icon)}${esc(tx(sc.name))}</div>
+                <div class="lrn-cscenmodes">
+                    ${(sc.modes || []).filter((m) => m !== "watch").map((m) => `
+                        <button class="lrn-btn sm ${m === "try" ? "pri" : ""}"
+                                data-act="c-scenario" data-key="${esc(sc.key)}"
+                                data-mode="${esc(m)}"
+                                title="${esc(T(m === "try" ? "scTryHint" : "scDoHint"))}"
+                            >${esc(T(m === "try" ? "scTry" : "scDo"))}</button>`).join("")}
+                </div>
+            </div>`).join("");
+        if (!rows) {
+            return "";
+        }
+        return `<div class="lrn-cscens">
+            <div class="lrn-clabel">${esc(T("practiceTry"))}</div>
+            ${rows}
+        </div>`;
+    }
+
+    /** LEARN v3 — the product tour, reachable from any screen. */
+    _tourHTML() {
+        if (!this._offers("sc_welcome", "watch")) {
+            return "";
+        }
+        return `<div class="lrn-cpractice">
+            <div class="lrn-clabel">${esc(T("practiceTour"))}</div>
+            <p class="lrn-note">${esc(T("practiceTourLead"))}</p>
+            <button class="lrn-btn sm" data-act="c-scenario" data-key="sc_welcome"
+                    data-mode="watch">${ic("play")}${esc(T("scWatch"))}</button>
+        </div>`;
     }
 
     /** Open the Journey on the suggested station. Same door as `openLesson`,
@@ -749,9 +942,18 @@ export class CoachHost extends Component {
 
     _answerHTML(a) {
         if (!a.matched) {
+            // LEARN v3. A miss in the guide is often a question about the
+            // person's own numbers, which the Ask tab can look at. Offered only
+            // when that tab exists.
+            const handoff = this.askTab
+                ? `<p class="lrn-note">${esc(T("askDataLead"))}</p>
+                   <div class="lrn-ctools"><button class="lrn-btn sm pri" data-act="c-askdata"
+                       >${ic("message-circle")}${esc(T("askDataInstead"))}</button></div>`
+                : "";
             return `<div class="lrn-cmiss">
                 <p><b>${esc(T("noAnswer"))}</b></p>
                 <p class="lrn-note">${esc(T("noAnswerBody"))}</p>
+                ${handoff}
             </div>${this._suggestFrom(a.suggest || [])}`;
         }
         const blocks = (a.blocks || []).map((b) => this._blockHTML(b)).join("");
@@ -912,6 +1114,10 @@ export class CoachHost extends Component {
             this.openPractice();
         } else if (act === "c-continue") {
             this.openSuggested(el.dataset.key);
+        } else if (act === "c-tab") {
+            this.setTab(el.dataset.tab);
+        } else if (act === "c-askdata") {
+            this.askData();
         }
     }
 
@@ -1009,10 +1215,12 @@ export class CoachHost extends Component {
        bilingual path as everything else. Hard-coded in the template it stayed
        English while the drawer behind it switched. */
     get launcherLabel() {
-        return T("stuck");
+        void this.state.lang;
+        return T("orbLabel");
     }
 
     get launcherTitle() {
-        return T("stuck") + " (?)";
+        void this.state.lang;
+        return T("orbHint");
     }
 }

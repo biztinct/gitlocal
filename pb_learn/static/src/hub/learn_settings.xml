@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ================================================ Learn, Settings lens
+       LEARN v3. One card, every learning switch, plain words. Section
+       comments use `=` rules, never a doubled hyphen (R35). -->
+  <t t-name="pb_learn.LearnSettings">
+    <div class="lrn-set">
+      <t t-call="pb_learn.IconSprite"/>
+      <t t-if="state.loading">
+        <div class="lrn-set-card lrn-set-loading"/>
+      </t>
+      <t t-elif="!state.allowed">
+        <div class="lrn-set-card">
+          <p class="lrn-set-lead" t-esc="t('setAdminOnly')"/>
+        </div>
+      </t>
+      <t t-else="">
+        <section class="lrn-set-card">
+          <header class="lrn-set-head">
+            <span class="lrn-set-mark">
+              <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-shield-check"/></svg>
+            </span>
+            <div>
+              <h2 t-esc="t('setTitle')"/>
+              <p class="lrn-set-lead" t-esc="t('setLead')"/>
+            </div>
+          </header>
+
+          <ul class="lrn-set-list">
+            <t t-foreach="rows()" t-as="row" t-key="row.key">
+              <li class="lrn-set-row" t-att-class="{ on: row.on }">
+                <span class="lrn-set-ic">
+                  <svg class="lrn-ic" aria-hidden="true"><use t-attf-href="#lrn-i-#{row.icon}"/></svg>
+                </span>
+                <div class="lrn-set-text">
+                  <b t-esc="row.title"/>
+                  <p t-esc="row.body"/>
+                  <span t-att-class="'lrn-set-where ' + (row.leaves ? 'out' : 'in')">
+                    <svg class="lrn-ic" aria-hidden="true">
+                      <use t-attf-href="#lrn-i-#{row.leaves ? 'send' : 'lock'}"/>
+                    </svg>
+                    <t t-esc="row.note"/>
+                  </span>
+                  <span class="lrn-set-warn" t-if="row.warn">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-info"/></svg>
+                    <t t-esc="row.warn"/>
+                  </span>
+                  <span class="lrn-set-warn bad" t-if="state.failed === row.key" t-esc="t('setFailed')"/>
+                </div>
+                <div class="lrn-set-ctl">
+                  <button type="button" role="switch" class="lrn-set-tog"
+                          t-att-id="'lrn-set-' + row.key"
+                          t-att-aria-checked="row.on ? 'true' : 'false'"
+                          t-att-aria-label="row.title"
+                          t-att-disabled="state.busy ? true : false"
+                          t-on-click="() => this.toggle(row)"/>
+                  <span class="lrn-set-state">
+                    <t t-if="state.saved === row.key">
+                      <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-check"/></svg>
+                      <t t-esc="t('setSaved')"/>
+                    </t>
+                    <t t-else="" t-esc="row.on ? t('swOn') : t('swOff')"/>
+                  </span>
+                </div>
+              </li>
+            </t>
+          </ul>
+        </section>
+      </t>
+    </div>
+  </t>
+
+</templates>

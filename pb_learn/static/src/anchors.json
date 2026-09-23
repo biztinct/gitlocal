@@ -634,6 +634,11 @@
       "file": "pb_govt_reports/static/src/xml/govt_reports.xml",
       "desc": "The honest empty state: this country's filings are not built yet. Better than a tile that generates a form nobody can submit.",
       "reserved": true
+    },
+    "helper-orb": {
+      "screen": "dashboard",
+      "file": "pb_learn/static/src/coach/coach.xml",
+      "desc": "The one helper button (LEARN v3), bottom-right on every screen. Opens the Guide / Ask / Practice drawer. Named by scenario sc_welcome's last step; it replaced the PayAI pill, which hides itself when this module is installed."
     }
   },
   "pattern": {},

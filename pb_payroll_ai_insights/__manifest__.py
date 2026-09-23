@@ -11,7 +11,9 @@
     # pre-migrate script and none is needed. The bump is also what makes the
     # change visible to the deploy-time version-diff gate (ledger, Phase 2+3
     # deploy: a code change with no version bump is invisible to it).
-    'version': '19.0.3.3.0',
+    # 19.0.3.4.0 — LEARN v3: the chat is also drawn inside the helper drawer
+    # (Ask tab); the floating pill stands down when that helper is installed.
+    'version': '19.0.3.4.0',
     'category': 'Human Resources/Payroll',
     'summary': 'AI-powered payroll analytics with conversational charts, dashboards, and insights',
     'description': """

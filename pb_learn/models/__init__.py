@@ -18,3 +18,6 @@ from . import learn_runtime
 # LEARNOS Phase 4. The one screen that can switch the composer on; imports
 # COMPOSE_FLAG from learn_intent, so it comes after it.
 from . import learn_companion
+# LEARN v3. Every learning switch on one card; reads the flags the modules
+# above define, so it comes last.
+from . import learn_settings

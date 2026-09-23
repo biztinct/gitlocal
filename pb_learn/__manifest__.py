@@ -15,7 +15,10 @@
     # 19.0.13.3.0 — RIZE W2 E1: the rail opens a Learn HUB whose first lens is
     # the Journey, with a soft lens registry (`pb_learn_lens`) that a later
     # module bolts onto. Data + asset change, so it needs a `-u`.
-    'version': '19.0.13.3.0',
+    # 19.0.14.0.0 — LEARN v3: one helper. The Coach is the only floating
+    # button (PayAI's chat is its Ask tab), and Learn gains a Settings lens
+    # with every learning switch on one card (new model learn.settings).
+    'version': '19.0.14.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',
@@ -161,6 +164,10 @@ never hand-edited here).
             'pb_learn/static/src/journey/journey.xml',
             # RIZE W2 E1 — the Learn mission's shell. AFTER the Journey,
             # because it imports the Journey's component for its first lens.
+            # LEARN v3 — the Settings lens. Before the hub, which imports it.
+            'pb_learn/static/src/hub/learn_settings.scss',
+            'pb_learn/static/src/hub/learn_settings.js',
+            'pb_learn/static/src/hub/learn_settings.xml',
             'pb_learn/static/src/hub/learn_hub.js',
             'pb_learn/static/src/hub/learn_hub.xml',
             # The always-on Coach, mounted in the web client shell so it

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
     <t t-name="pb_payroll_ai_insights.AiInsightChat">
+      <!-- LEARN v3: when the helper is installed this chat lives in its Ask
+           tab, and this floating copy draws nothing. -->
+      <t t-if="!hosted">
         <!-- Floating Pill Button -->
         <div class="payai-floating-pill" data-coach="payai-pill" t-on-click="togglePanel"
              t-att-class="{ 'payai-pill-active': state.isOpen }">
@@ -288,6 +291,162 @@
             <t t-if="state.voiceError">
                 <div class="payai-voice-error" t-esc="state.voiceError"/>
             </t>
+        </div>
+      </t>
+    </t>
+
+    <!-- LEARN v3 — the chat inside the helper drawer ("Ask" tab).
+         Flat, in the drawer's own visual language, Lucide icons from the
+         sprite the drawer already mounts. Same state and methods as above. -->
+    <t t-name="pb_payroll_ai_insights.AiInsightChatEmbedded">
+        <div class="payai-embed">
+            <div class="payai-embed-body" t-ref="chatBody">
+                <t t-if="state.messages.length === 0 and !state.isLoading">
+                    <div class="payai-embed-welcome">
+                        <div class="payai-embed-mark">
+                            <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-bar-chart"/></svg>
+                        </div>
+                        <b t-esc="welcomeTitle"/>
+                        <p t-esc="welcomeLead"/>
+                        <div class="payai-embed-chips">
+                            <t t-foreach="suggestions" t-as="suggestion" t-key="suggestion_index">
+                                <button type="button" class="payai-embed-chip"
+                                        t-on-click="() => this.sendSuggestion(suggestion)">
+                                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-message-circle"/></svg>
+                                    <span t-esc="suggestion"/>
+                                </button>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+
+                <t t-foreach="state.messages" t-as="msg" t-key="msg_index">
+                    <div t-att-class="'payai-embed-msg ' + (msg.role === 'user' ? 'me' : 'ai')">
+                        <div class="payai-embed-text" t-esc="msg.content"/>
+                        <t t-if="msg.chart">
+                            <div class="payai-embed-chart">
+                                <ChartRenderer chartConfig="msg.chart" height="'220px'"
+                                               showToolbar="true"
+                                               drillDownModel="msg.drillDownModel || ''"/>
+                                <button type="button" class="payai-embed-link"
+                                        t-on-click="() => this.pinToDashboard(msg.chart)">
+                                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-plus"/></svg>
+                                    Pin to Dashboard
+                                </button>
+                            </div>
+                        </t>
+                        <t t-if="msg.insights and msg.insights.length">
+                            <ul class="payai-embed-insights">
+                                <t t-foreach="msg.insights" t-as="insight" t-key="insight_index">
+                                    <li t-esc="insight"/>
+                                </t>
+                            </ul>
+                        </t>
+                        <t t-if="msg.action and msg.action.type === 'open_lesson'">
+                            <button type="button" class="payai-embed-action"
+                                    t-on-click="() => this.runAction(msg.action)">
+                                <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-play"/></svg>
+                                <t t-esc="msg.action.label || 'Show me'"/>
+                            </button>
+                        </t>
+                        <t t-if="msg.followUpQuestions and msg.followUpQuestions.length">
+                            <div class="payai-embed-chips">
+                                <t t-foreach="msg.followUpQuestions" t-as="fq" t-key="fq_index">
+                                    <button type="button" class="payai-embed-chip"
+                                            t-on-click="() => this.sendSuggestion(fq)">
+                                        <span t-esc="fq"/>
+                                    </button>
+                                </t>
+                            </div>
+                        </t>
+                        <t t-if="msg.role === 'assistant' and ttsSupported and msg.content">
+                            <button type="button" class="payai-embed-link"
+                                    t-on-click="() => this.speak(msg.content)">
+                                <svg class="lrn-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                                <t t-esc="voiceCopy.listen_label || 'Read answers aloud'"/>
+                            </button>
+                        </t>
+                    </div>
+                </t>
+
+                <t t-if="state.isLoading">
+                    <div class="payai-embed-msg ai">
+                        <div class="payai-typing">
+                            <span class="payai-dot"/><span class="payai-dot"/><span class="payai-dot"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+
+            <t t-if="state.voiceAsking">
+                <div class="payai-embed-consent">
+                    <b t-esc="voiceCopy.consent_title"/>
+                    <p t-esc="voiceCopy.consent_body"/>
+                    <div class="payai-embed-row">
+                        <button type="button" class="payai-embed-btn pri"
+                                t-on-click="() => this.answerVoiceConsent(true)"
+                                t-esc="voiceCopy.consent_yes"/>
+                        <button type="button" class="payai-embed-btn"
+                                t-on-click="() => this.answerVoiceConsent(false)"
+                                t-esc="voiceCopy.consent_no"/>
+                    </div>
+                </div>
+            </t>
+
+            <div class="payai-embed-input">
+                <t t-if="state.isRecording">
+                    <div class="payai-recording-indicator">
+                        <span class="payai-rec-dot"/>
+                        <span class="payai-rec-text">Recording <t t-esc="formatRecordingTime()"/></span>
+                    </div>
+                </t>
+                <t t-else="">
+                    <textarea t-ref="chatInput" rows="1"
+                              t-att-placeholder="placeholder"
+                              t-att-value="state.inputText"
+                              t-on-input="onInputChange"
+                              t-on-keydown="onInputKeydown"/>
+                </t>
+                <t t-if="voiceOffered">
+                    <button type="button"
+                            t-att-class="'payai-embed-icon ' + (state.isRecording ? 'rec' : '')"
+                            t-on-pointerdown="onMicPointerDown"
+                            t-on-pointerup="onMicPointerUp"
+                            t-on-pointerleave="onMicPointerUp"
+                            t-on-pointercancel="onMicPointerUp"
+                            t-on-keydown="onMicKeyDown"
+                            t-on-keyup="onMicKeyUp"
+                            t-att-disabled="state.isLoading || state.voiceBusy"
+                            t-att-title="voiceCopy.hold_hint || 'Hold to speak'">
+                        <svg class="lrn-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg>
+                    </button>
+                </t>
+                <button type="button" class="payai-embed-icon send"
+                        t-on-click="sendMessage"
+                        t-att-disabled="state.isLoading || state.isRecording || !state.inputText.trim()"
+                        aria-label="Send">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-send"/></svg>
+                </button>
+            </div>
+            <t t-if="state.voiceHint">
+                <div class="payai-voice-hint" t-esc="state.voiceHint"/>
+            </t>
+            <t t-if="state.voiceError">
+                <div class="payai-voice-error" t-esc="state.voiceError"/>
+            </t>
+            <div class="payai-embed-foot" t-if="state.messages.length">
+                <t t-if="ttsSupported">
+                    <button type="button" class="payai-embed-link" t-on-click="toggleTts"
+                            t-att-aria-pressed="state.ttsOn ? 'true' : 'false'">
+                        <svg class="lrn-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                        <t t-esc="ttsLabel"/>
+                    </button>
+                </t>
+                <button type="button" class="payai-embed-link" t-on-click="clearHistory">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-rotate-ccw"/></svg>
+                    Clear chat
+                </button>
+            </div>
         </div>
     </t>
 </templates>

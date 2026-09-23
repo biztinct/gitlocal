@@ -1011,3 +1011,224 @@ body:has(.pw-root) .payai-floating-pill { display: none; }
         max-width: 92%;
     }
 }
+
+// =============================================================================
+// LEARN v3 — the chat inside the helper drawer ("Ask" tab).
+// Flat and quiet: no gradient mesh, no glow. It borrows the drawer's tokens so
+// the three tabs read as one surface.
+// =============================================================================
+.payai-embed {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    color: var(--vuf-ink, #1E1B2E);
+
+    .lrn-ic { width: 15px; height: 15px; }
+}
+
+.payai-embed-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.payai-embed-welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 4px 2px;
+
+    b { font-size: 15px; font-weight: 800; }
+    p { margin: 0 0 4px; color: var(--vuf-muted, #6B7280); }
+}
+
+.payai-embed-mark {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--vuf-primary-soft, #EDEAF8);
+    color: var(--vuf-primary, #5A4BB0);
+
+    .lrn-ic { width: 18px; height: 18px; }
+}
+
+.payai-embed-chips {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.payai-embed-chip {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 11px;
+    border: 1px solid var(--vuf-line, #E2E8F0);
+    border-radius: 10px;
+    background: var(--vuf-surface, #fff);
+    color: var(--vuf-ink, #1E1B2E);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+
+    .lrn-ic { margin-top: 1px; color: var(--vuf-primary, #5A4BB0); }
+    &:hover { border-color: var(--vuf-primary-light, #CBC2EE); background: var(--vuf-primary-soft, #F6F4FC); }
+}
+
+.payai-embed-msg {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 100%;
+
+    &.me {
+        align-self: flex-end;
+        max-width: 85%;
+        padding: 8px 12px;
+        border-radius: 14px 14px 4px 14px;
+        background: var(--vuf-primary, #5A4BB0);
+        color: #fff;
+    }
+    &.ai {
+        align-self: stretch;
+        padding: 10px 12px;
+        border: 1px solid var(--vuf-line, #E2E8F0);
+        border-radius: 14px 14px 14px 4px;
+        background: var(--vuf-surface, #fff);
+    }
+}
+
+.payai-embed-text { white-space: pre-wrap; line-height: 1.5; }
+
+.payai-embed-chart {
+    padding: 6px;
+    border: 1px solid var(--vuf-line-soft, #EDEAF8);
+    border-radius: 10px;
+}
+
+.payai-embed-insights {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--vuf-ink-soft, #4B4866);
+    li { margin-bottom: 3px; }
+}
+
+.payai-embed-action {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border: 0;
+    border-radius: 9px;
+    background: var(--vuf-primary, #5A4BB0);
+    color: #fff;
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.payai-embed-link {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 0;
+    border: 0;
+    background: none;
+    color: var(--vuf-primary, #5A4BB0);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+
+    .lrn-ic { width: 13px; height: 13px; }
+    &:hover { text-decoration: underline; }
+}
+
+.payai-embed-consent {
+    margin: 0 12px 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--vuf-primary-light, #CBC2EE);
+    border-radius: 12px;
+    background: var(--vuf-primary-soft, #F6F4FC);
+
+    p { margin: 4px 0 8px; font-size: 12px; color: var(--vuf-ink-soft, #4B4866); }
+}
+
+.payai-embed-row { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.payai-embed-btn {
+    padding: 6px 11px;
+    border: 1px solid var(--vuf-line, #E2E8F0);
+    border-radius: 9px;
+    background: var(--vuf-surface, #fff);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+
+    &.pri { background: var(--vuf-primary, #5A4BB0); border-color: var(--vuf-primary, #5A4BB0); color: #fff; }
+}
+
+.payai-embed-input {
+    display: flex;
+    align-items: flex-end;
+    gap: 7px;
+    padding: 10px 12px;
+    border-top: 1px solid var(--vuf-line, #E2E8F0);
+
+    textarea {
+        flex: 1;
+        min-width: 0;
+        max-height: 120px;
+        padding: 9px 12px;
+        border: 1px solid var(--vuf-line, #E2E8F0);
+        border-radius: 12px;
+        font: inherit;
+        resize: none;
+        outline: none;
+
+        &:focus { border-color: var(--vuf-primary, #5A4BB0); }
+    }
+    .payai-recording-indicator { flex: 1; }
+}
+
+.payai-embed-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    border: 0;
+    border-radius: 12px;
+    background: var(--vuf-primary-soft, #F6F4FC);
+    color: var(--vuf-primary, #5A4BB0);
+    cursor: pointer;
+
+    .lrn-ic { width: 17px; height: 17px; }
+    &.send { background: var(--vuf-primary, #5A4BB0); color: #fff; }
+    &.rec { background: #DC2668; color: #fff; }
+    &:disabled { opacity: .45; cursor: default; }
+}
+
+.payai-embed-foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 12px 10px;
+}

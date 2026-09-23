@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useState, useRef, onMounted, onWillUnmount } from "@odoo/owl";
+import { Component, useState, useRef, onMounted, onWillUnmount, onWillUpdateProps } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { rpc } from "@web/core/network/rpc";
@@ -22,8 +22,17 @@ const TTS_PREF = "payaiReadAloud";
 export class AiInsightChat extends Component {
     static template = "pb_payroll_ai_insights.AiInsightChat";
     static components = { ChartRenderer };
+    // LEARN v3. True only for the copy drawn inside the helper drawer.
+    static embedded = false;
 
     setup() {
+        // LEARN v3 — ONE HELPER. When pb_learn's helper is installed it is the
+        // only floating control, and this chat is its "Ask" tab. The copy
+        // mounted in main_components then draws nothing and fetches nothing.
+        // Read at setup: every module's assets load before the web client
+        // mounts, so the registry is complete by now.
+        this.hosted = !this.constructor.embedded
+            && registry.category("pb_helper_host").contains("orb");
         this.notification = useService("notification");
         this.actionService = useService("action");
         this.chatBodyRef = useRef("chatBody");
@@ -84,7 +93,12 @@ export class AiInsightChat extends Component {
         ].map(String);
 
         onMounted(() => {
-            this._loadHistory();
+            if (this.hosted) {
+                return;
+            }
+            // Kept as a promise so a question handed over from the guide is
+            // sent AFTER the history lands, not overwritten by it.
+            this._historyReady = this._loadHistory();
             this._loadAiIcon();
             this._loadVoiceStatus();
             this._restoreTtsPreference();
@@ -187,7 +201,7 @@ export class AiInsightChat extends Component {
             console.error("PayAI error:", error);
             this.state.messages.push({
                 role: "assistant",
-                content: "I'm sorry, I encountered an error. Please check that PayAI is configured correctly in Settings.",
+                content: _t("That did not work. An administrator can check the AI service under PayAI settings."),
                 chart: null,
                 insights: [],
                 timestamp: new Date().toISOString(),
@@ -652,4 +666,76 @@ export class AiInsightChat extends Component {
 // Register as a systray item (floating pill)
 registry.category("main_components").add("AiInsightChat", {
     Component: AiInsightChat,
+});
+
+/**
+ * LEARN v3 — the same chat, drawn inside the helper drawer as its "Ask" tab.
+ *
+ * Every behaviour is the parent's: sending, charts, pinning, the lesson
+ * button, voice with its consent card, read-aloud. Only the frame differs —
+ * no pill, no backdrop, no centred modal. The drawer sits beside the screen,
+ * so the numbers being asked about stay visible.
+ *
+ * `handoff` is a question the guide could not answer, passed on by the
+ * drawer. It is sent once per `id`, after the history has loaded.
+ */
+export class AiInsightChatEmbedded extends AiInsightChat {
+    static template = "pb_payroll_ai_insights.AiInsightChatEmbedded";
+    static embedded = true;
+    static props = ["close?", "handoff?"];
+
+    setup() {
+        super.setup();
+        this.state.isOpen = true;
+        this._handoffId = null;
+        onMounted(() => {
+            this._takeHandoff(this.props.handoff);
+            setTimeout(() => this.inputRef.el?.focus(), 80);
+        });
+        onWillUpdateProps((next) => this._takeHandoff(next.handoff));
+    }
+
+    async _takeHandoff(handoff) {
+        if (!handoff || !handoff.text || handoff.id === this._handoffId) {
+            return;
+        }
+        this._handoffId = handoff.id;
+        try {
+            await this._historyReady;
+        } catch {
+            // A history that failed to load still leaves an empty chat to
+            // ask in.
+        }
+        await this.sendSuggestion(handoff.text);
+    }
+
+    /** "Show me" opens a lesson, which closes the whole drawer. */
+    closePanel() {
+        if (this.props.close) {
+            this.props.close();
+        }
+    }
+
+    get welcomeTitle() {
+        return _t("Ask about your pay data");
+    }
+
+    get welcomeLead() {
+        return _t("Numbers, people, trends, or how to do something. Charts appear right here.");
+    }
+
+    get placeholder() {
+        return _t("Ask about your payroll…");
+    }
+
+    get ttsLabel() {
+        return this.state.ttsOn ? _t("Read aloud: on") : _t("Read aloud: off");
+    }
+}
+
+registry.category("pb_helper_tabs").add("ask", {
+    Component: AiInsightChatEmbedded,
+    // The helper draws the tab only for people who hold one of these; for
+    // anyone else every question would fail on the conversation's access rule.
+    groups: ["pb_payroll_ai_insights.group_payai_user"],
 });
