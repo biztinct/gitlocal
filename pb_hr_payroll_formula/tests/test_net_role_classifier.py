@@ -943,3 +943,62 @@ class TestNetRoleClassifier(TransactionCase):
         details = {r.code: r.net_role_detail for r in config.rule_ids}
         self.assertEqual(config._net_role_balance_gap(roles, details)[0], 0.0,
                          "9,000 − 900 = 8,100")
+
+    # ------------------------------------------------------------------ 35
+    def test_35_net_pay_named_in_a_sentence_is_still_net_pay(self):
+        """rize's second Vietnam workbook: no Net category on anything, and the
+        take-home is "Số tiền thực nhận VND (Net Payment VND)".
+
+        The finder only knew bare names ("Net pay"), so it found nothing, the
+        classification stopped before writing a single role, and the first run
+        read ₫0 gross against ₫10.7bn of deductions. The same workbook has a
+        "Net Income" step before it and the same figure again in USD — neither
+        of those is what reaches the bank.
+        """
+        config = self.env['hr.formula.config'].create({
+            'name': 'Sentence net', 'code': 'SENTNET', 'country_code': 'VN'})
+        self.assertEqual(config.currency_id.name, 'VND')
+        other = self.env['hr.salary.rule.category'].search(
+            [('code', '=', 'OTH')], limit=1)
+        spec = [
+            ('A', 'SALARYX', 'Lương tháng (Actual gross salary)', 'input', ''),
+            ('B', 'PITX', 'Thuế TNCN (PIT)', 'input', ''),
+            ('C', 'REFUNDX', 'Hoàn thuế TNCN (PIT refund)', 'input', ''),
+            ('D', 'NETINC', 'Thu nhập ròng VND (Net Income VND)', 'formula',
+             '=A5-B5'),
+            ('E', 'NETPAYVND', 'Số tiền thực nhận VND (Net Payment VND)',
+             'formula', '=D5+C5'),
+            ('F', 'NETPAYUSD', 'Số tiền thực nhận USD (Net Payment USD)',
+             'input', ''),
+        ]
+        rules, sequence = {}, 10
+        for letter, code, name, ctype, formula in spec:
+            vals = {'config_id': config.id, 'name': name, 'code': code,
+                    'column_type': ctype, 'sequence': sequence,
+                    'column_letter': letter, 'appears_on_payslip': True,
+                    'category_id': other.id}
+            if formula:
+                vals['excel_formula'] = formula
+            rules[code] = self.env['hr.formula.rule'].create(vals)
+            sequence += 10
+        config.invalidate_recordset()
+
+        summary = config.classify_net_roles()[config.id]
+        self.assertIsNone(summary['error'], summary.get('error'))
+        self.assertEqual(summary['net_code'], 'NETPAYVND')
+        self.assertEqual(rules['SALARYX'].net_role, 'earning')
+        self.assertEqual(rules['PITX'].net_role, 'deduction')
+        self.assertEqual(rules['REFUNDX'].net_role, 'earning')
+        self.assertNotEqual(rules['NETPAYUSD'].net_role, 'net')
+
+        # Two equally good answers are a question for a person, not a coin toss.
+        rules['NETPAYUSD'].name = 'Số tiền thực nhận VND (Net Payment VND) 2'
+        rules['NETPAYUSD'].write({'column_type': 'formula',
+                                  'excel_formula': '=E5'})
+        self.assertFalse(config._net_role_net_by_label(config._net_role_rules()))
+
+        # And a person's own choice is the answer.
+        rules['NETPAYUSD'].write({'net_role': 'net', 'net_role_source': 'user'})
+        self.assertEqual(
+            config._net_role_find_net_rule(config._net_role_rules()),
+            rules['NETPAYUSD'])

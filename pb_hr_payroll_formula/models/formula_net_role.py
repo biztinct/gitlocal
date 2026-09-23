@@ -92,6 +92,13 @@ _SIGN_UNKNOWN_FUNCS = {'ABS', 'SIGN'}
 _NET_NAME_HINTS = ('netpay', 'net pay', 'nettopay', 'thuclanh', 'thuc lanh',
                    'thựclãnh', 'thực lãnh', 'luongthucnhan')
 
+#: Phrases inside a longer label that name the take-home figure, accent-folded
+#: and matched on whole words (`_net_role_net_by_label`). Strong ones say it is
+#: what reaches the bank; weak ones are usually the step before it.
+_NET_LABEL_STRONG = ('net pay', 'net payment', 'net salary', 'net wage',
+                     'take home', 'take home pay', 'thuc nhan', 'thuc lanh')
+_NET_LABEL_WEAK = ('net income', 'net amount', 'thu nhap rong', 'luong rong')
+
 
 # ---------------------------------------------------------------------------
 # A very small Excel expression parser.
@@ -860,7 +867,14 @@ class HrFormulaConfigNetRole(models.Model):
 
         Its own code says which is which, so ask that before falling back to
         position.
+
+        A person's answer comes first: "Net pay" chosen on Component treatment
+        is the net pay, whatever the category says.
         """
+        chosen = [rule for rule in rules
+                  if rule.net_role_source == 'user' and rule.net_role == 'net']
+        if len(chosen) == 1:
+            return chosen[0]
         candidates = [rule for rule in rules
                       if rule.category_id
                       and (rule.category_id.code or '').upper() == 'NET']
@@ -880,7 +894,60 @@ class HrFormulaConfigNetRole(models.Model):
             if squashed in ('netpay', 'netsalary', 'net') or name in _NET_NAME_HINTS \
                     or squashed in _NET_NAME_HINTS:
                 return rule
-        return self.env['hr.formula.rule']
+        return self._net_role_net_by_label(rules)
+
+    def _net_role_net_by_label(self, rules):
+        """The net pay named in a sentence rather than a code — or nothing.
+
+        rize's second Vietnam workbook calls it "Số tiền thực nhận VND (Net
+        Payment VND)", with no Net category on anything. The exact-name test
+        above never matched, the scheme was left with no roles at all, and its
+        first run read ₫0 gross against ₫10.7bn of "deductions".
+
+        Three things decide, in this order, and a tie is NOT broken by position
+        — two equally good answers mean a person has to choose:
+
+        1. The words. "Net payment", "take-home", "thực nhận" say this is what
+           reaches the bank; "net income" / "thu nhập ròng" is usually the step
+           before it (the same workbook has both), so it only counts when
+           nothing better is there.
+        2. The currency. The same workbook repeats net pay in USD. The one in
+           the scheme's own currency is the one paid; one that names another
+           currency is a conversion.
+        3. A calculation beats a typed-in column.
+        """
+        codes = set(self.env['res.currency'].with_context(active_test=False)
+                    .search([]).mapped('name'))
+        own = (self.currency_id.name or '').upper() if 'currency_id' in self._fields \
+            else ''
+        scored = []
+        for rule in rules:
+            padded = ' %s ' % _fold_label(rule.name)
+            if any(' %s ' % p in padded for p in _NET_LABEL_STRONG):
+                strength = 2
+            elif any(' %s ' % p in padded for p in _NET_LABEL_WEAK):
+                strength = 1
+            else:
+                continue
+            words = set(padded.upper().split())
+            if own and own in words:
+                money = 1
+            elif words & (codes - {own}):
+                money = -1
+            else:
+                money = 0
+            scored.append(((strength, money, rule.column_type == 'formula'), rule))
+        if not scored:
+            return self.env['hr.formula.rule']
+        top = max(score for score, _rule in scored)
+        best = [rule for score, rule in scored if score == top]
+        if len(best) != 1:
+            _logger.info(
+                "NETROLE: scheme %s — %s components are equally likely to be "
+                "net pay (%s); leaving it to a person.", self.id, len(best),
+                ', '.join(r.code or '?' for r in best))
+            return self.env['hr.formula.rule']
+        return best[0]
 
     def _net_role_resolvers(self, rules):
         """(code -> rule, letter -> rule, letter_index -> rule)."""
