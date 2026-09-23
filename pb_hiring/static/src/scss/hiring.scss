@@ -960,3 +960,168 @@ textarea.pbhr-in { resize: vertical; line-height: 1.55; }
     color: var(--pbim-muted, #64748B);
     &:hover { background: var(--pbim-line-2, #F1F5F9); color: var(--pbim-ink, #1B1733); }
 }
+
+// =====================================================================
+//  THE QUIET BOARD (2026-09-23, owner-approved prototype, Hiring first)
+//
+//  1. Numbers are one slim line, not ten tiles. Grey at zero; a colour
+//     only when a person has to act (amber waiting, rose problem).
+//  2. Four numbered steps with an arrow to the next. A role is at ONE
+//     step, the count is a pill that says "roles", and a step with
+//     something waiting says so under it.
+//  3. Every card says which step it is at and what happens next, with
+//     the one button that does it.
+// =====================================================================
+.pbhr {
+    // -------------------------------------------------- quiet numbers
+    .pbhr-glance {
+        display: flex; align-items: center; flex-wrap: wrap;
+        padding: 4px 6px; margin-bottom: 16px; border-radius: 12px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+    }
+    .pbhr-gl {
+        position: relative; display: inline-flex; align-items: baseline; gap: 7px;
+        border: 0; background: transparent; padding: 8px 14px; border-radius: 9px;
+        font: inherit; font-size: 12.5px; color: var(--pbim-muted); cursor: pointer;
+
+        & + .pbhr-gl::before {
+            content: ""; position: absolute; left: 0; top: 10px; bottom: 10px;
+            width: 1px; background: var(--pbim-line);
+        }
+        &:hover:not(.flat) { background: var(--pbim-line-2); color: var(--pbim-text); }
+        &.flat { cursor: default; }
+        &:disabled { opacity: 1; }
+        &.on { background: var(--pbim-soft); color: var(--pbim-primary-strong); }
+        &.on .pbhr-gl-n { color: var(--pbim-primary-strong); }
+    }
+    .pbhr-gl-n {
+        font-size: 15px; font-weight: 800; color: var(--pbim-ink);
+        font-variant-numeric: tabular-nums;
+    }
+    .pbhr-gl.zero .pbhr-gl-n { color: var(--pbim-muted); font-weight: 700; }
+    .pbhr-gl-dot { width: 7px; height: 7px; border-radius: 50%; align-self: center; }
+    .pbhr-gl.is-amber { color: var(--pbim-amber); .pbhr-gl-n { color: var(--pbim-amber); } .pbhr-gl-dot { background: var(--pbim-amber); } }
+    .pbhr-gl.is-rose  { color: var(--pbim-rose);  .pbhr-gl-n { color: var(--pbim-rose); }  .pbhr-gl-dot { background: var(--pbim-rose); } }
+    .pbhr-gl.is-green { .pbhr-gl-n { color: var(--pbim-green); } .pbhr-gl-dot { background: var(--pbim-green); } }
+
+    // -------------------------------------------------- the four steps
+    .pbhr-steps4 {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+        margin: 4px 0 10px;
+    }
+    .pbhr-st {
+        position: relative; display: flex; flex-direction: column; gap: 6px;
+        padding: 14px 16px; text-align: left; font: inherit; cursor: pointer;
+        background: var(--pbim-surface); color: var(--pbim-text);
+        border: 1px solid var(--pbim-line); border-radius: 14px;
+        box-shadow: var(--pbim-sh);
+
+        &:hover { border-color: var(--pbim-primary); }
+        &:focus-visible { outline: 3px solid var(--pbim-ring); outline-offset: 2px; }
+        &.on { border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+        &:last-child .pbhr-st-arrow { display: none; }
+    }
+    .pbhr-st-top { display: flex; align-items: center; gap: 10px; }
+    .pbhr-st-n {
+        flex: none; width: 30px; height: 30px; border-radius: 50%;
+        display: grid; place-items: center; font-size: 11.5px; font-weight: 800;
+        background: var(--pbim-slate-soft); color: var(--pbim-muted);
+        font-variant-numeric: tabular-nums;
+    }
+    .pbhr-st-t {
+        flex: 1; min-width: 0; font-size: 13.5px; font-weight: 800;
+        color: var(--pbim-ink);
+    }
+    .pbhr-st-c {
+        flex: none; padding: 3px 9px; border-radius: 999px;
+        font-size: 11.5px; font-weight: 700; font-variant-numeric: tabular-nums;
+        background: var(--pbim-slate-soft); color: var(--pbim-muted);
+    }
+    .pbhr-st.has .pbhr-st-c { background: var(--pbim-soft); color: var(--pbim-primary-strong); }
+    .pbhr-st.on .pbhr-st-n, .pbhr-st.on .pbhr-st-c { background: var(--pbim-primary); color: #fff; }
+    .pbhr-st.on .pbhr-st-t { color: var(--pbim-primary-strong); }
+    .pbhr-st-s { font-size: 12px; color: var(--pbim-muted); padding-left: 40px; }
+    .pbhr-st-flag {
+        display: inline-flex; align-items: center; gap: 5px; padding-left: 40px;
+        font-size: 11.5px; font-weight: 700; color: var(--pbim-amber);
+    }
+    .pbhr-st-heat {
+        position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px;
+        border-radius: 0 3px 3px 0;
+    }
+    .pbhr-st.wait .pbhr-st-heat { background: var(--pbim-amber); }
+    // the arrow to the next step: a small badge floating in the gap
+    .pbhr-st-arrow {
+        position: absolute; right: -20px; top: 50%; transform: translateY(-50%);
+        z-index: 1; width: 26px; height: 26px; border-radius: 50%;
+        display: grid; place-items: center; color: var(--pbim-muted);
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        box-shadow: var(--pbim-sh);
+    }
+    .pbhr-st.on .pbhr-st-arrow { border-color: var(--pbim-primary); color: var(--pbim-primary); }
+    @media (max-width: 1000px) {
+        .pbhr-steps4 { grid-template-columns: 1fr 1fr; gap: 16px; }
+        .pbhr-st:nth-child(2) .pbhr-st-arrow { display: none; }
+    }
+    @media (max-width: 560px) {
+        .pbhr-steps4 { grid-template-columns: 1fr; }
+        .pbhr-st-arrow { display: none; }
+    }
+
+    .pbhr-showing {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        min-height: 26px; margin-bottom: 14px; font-size: 13px;
+        color: var(--pbim-muted);
+        b { color: var(--pbim-ink); }
+    }
+    .pbhr-showall {
+        border: 0; background: transparent; font: inherit; font-weight: 700;
+        color: var(--pbim-primary-strong); padding: 2px 6px; border-radius: 6px;
+        cursor: pointer;
+        &:hover { background: var(--pbim-soft); }
+    }
+
+    // -------------------------------------------------- on each card
+    .pbhr-where {
+        display: flex; align-items: center; gap: 8px; font-size: 12.5px;
+        color: var(--pbim-muted);
+        b { color: var(--pbim-text); font-weight: 700; }
+    }
+    .pbhr-where-marks { display: inline-flex; gap: 3px; }
+    .pbhr-where-marks i {
+        width: 14px; height: 5px; border-radius: 3px; background: var(--pbim-line);
+        &.done { background: var(--pbim-primary); }
+        &.here { background: var(--pbim-primary); box-shadow: 0 0 0 2px var(--pbim-ring); }
+    }
+
+    // the candidate funnel says what its colours are
+    .pbhr-pipe-key {
+        display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: -6px;
+        font-size: 11px; color: var(--pbim-muted);
+        span { display: inline-flex; align-items: center; gap: 5px; }
+        b { color: var(--pbim-text); font-weight: 700; }
+        i { width: 8px; height: 8px; border-radius: 2px; background: var(--pbim-cyan-soft); }
+        span:nth-child(2) i { background: #E0E7FF; }
+        span:nth-child(3) i { background: var(--pbim-amber-soft); }
+        span:nth-child(n+4) i { background: var(--pbim-green-soft); }
+        span:last-child:not(:first-child) i { background: var(--pbim-green); }
+    }
+
+    // what happens next, and the one button that does it
+    .pbhr-next {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 10px; padding: 10px 12px; border-radius: 10px;
+        background: var(--pbim-line-2); font-size: 12.5px;
+        color: var(--pbim-text);
+        b { color: var(--pbim-ink); font-weight: 700; }
+        &.is-wait { background: var(--pbim-amber-soft); b { color: var(--pbim-amber); } }
+        &.is-done { background: var(--pbim-green-soft); b { color: var(--pbim-green); } }
+        &.is-primary { background: var(--pbim-soft); }
+    }
+    .pbhr-next-tx { min-width: 0; }
+    .pbim-btn.pbhr-next-btn { flex: none; padding: 6px 12px; font-size: 12px; border-radius: 8px; }
+    .pbim-btn.ghost.pbhr-next-btn { color: var(--pbim-text); }
+}
+// one row on a normal laptop screen: ten figures, tighter spacing
+.pbhr .pbhr-gl { padding: 7px 10px; gap: 6px; font-size: 12px; }
+.pbhr .pbhr-gl-n { font-size: 14px; }

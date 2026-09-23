@@ -35,6 +35,15 @@ import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 /** The four screening answers, in the order a screener weighs them. */
+/** The four steps a role moves through, in order. A role is at exactly one
+ *  (see `stageOf`), which is what lets the step counts add up. */
+const JOURNEY_STAGES = [
+    { key: "request", title: _t("Request & approve"), sub: _t("Agree the role and budget") },
+    { key: "publish", title: _t("Prepare & publish"), sub: _t("Write the advert and open it") },
+    { key: "recruit", title: _t("Meet your candidates"), sub: _t("Screen, interview and offer") },
+    { key: "joined", title: _t("Welcome aboard"), sub: _t("A smooth first day") },
+];
+
 const SCREEN_ORDER = ["shortlisted", "future_fit", "other_role", "rejected"];
 
 const SCREEN_ICON = {
@@ -266,10 +275,7 @@ export class PbHiringBoard extends Component {
         const q = (this.state.q || "").trim().toLowerCase();
         return this.state.rows.filter((r) => {
             const jf = this.state.journeyFocus;
-            if (jf === "request" && !["draft", "submitted", "manager_ok", "hr_ok"].includes(r.state)) return false;
-            if (jf === "publish" && (r.state !== "open" || r.published)) return false;
-            if (jf === "recruit" && r.state !== "open") return false;
-            if (jf === "joined" && r.state !== "filled") return false;
+            if (jf !== "all" && this.stageOf(r) !== jf) return false;
             if (this.state.dept !== "all"
                 && String(r.department_id) !== String(this.state.dept)) {
                 return false;
@@ -302,6 +308,158 @@ export class PbHiringBoard extends Component {
             return true;
         });
     }
+
+    // ================================================ the four steps
+    //
+    // A ROLE IS AT EXACTLY ONE STEP, so the step counts add up to the number
+    // of live roles and clicking a step never shows a role that another step
+    // also shows. The old strip filtered "open" twice ("open, not
+    // advertised" AND "open"), which put the same role under two steps.
+    //
+    // A role that is open but not advertised is still "meeting candidates"
+    // once somebody has applied or referrals are open: people are already
+    // arriving, so preparing the advert is no longer where it is stuck.
+    // Closed and refused roles are at no step; "Show all" still lists them.
+    stageOf(r) {
+        if (["draft", "submitted", "manager_ok", "hr_ok"].includes(r.state)) return "request";
+        if (r.state === "open") {
+            return (r.published || r.candidates || r.referral_open) ? "recruit" : "publish";
+        }
+        if (r.state === "filled") return "joined";
+        return "";
+    }
+
+    get stages() {
+        const rows = this.state.rows;
+        return JOURNEY_STAGES.map((st, i) => {
+            const at = rows.filter((r) => this.stageOf(r) === st.key);
+            return {
+                ...st,
+                n: String(i + 1).padStart(2, "0"),
+                count: at.length,
+                countLabel: at.length === 1 ? _t("1 role") : _t("%s roles", at.length),
+                waiting: at.filter((r) => r.waiting).length,
+                mine: at.filter((r) => r.waiting_mine).length,
+            };
+        });
+    }
+
+    stageMeta(r) {
+        const key = this.stageOf(r);
+        const index = JOURNEY_STAGES.findIndex((st) => st.key === key);
+        if (index < 0) return null;
+        return {
+            index, total: JOURNEY_STAGES.length,
+            title: JOURNEY_STAGES[index].title,
+            marks: JOURNEY_STAGES.map((st, j) => (j < index ? "done" : j === index ? "here" : "")),
+        };
+    }
+
+    get showingLine() {
+        const shown = this.filtered.length;
+        const all = this.state.rows.length;
+        const st = JOURNEY_STAGES.find((x) => x.key === this.state.journeyFocus);
+        if (!st && !this.anyFilter) {
+            return { all: true, text: all === 1 ? _t("all 1 role") : _t("all %s roles", all) };
+        }
+        return { all: false, text: _t("%s of %s roles", shown, all), where: st ? st.title : "" };
+    }
+
+    showAll() {
+        this.state.journeyFocus = "all";
+        this.clearFilters();
+    }
+
+    // ================================================ quiet numbers
+    //
+    // One slim line instead of a wall of tiles. A number takes a colour only
+    // when a person has to act on it; zero is grey. Every figure is still a
+    // filter, exactly as the tiles were.
+    get glance() {
+        const k = this.state.kpis || {};
+        const tone = (v, t) => (v ? t : "");
+        return [
+            { key: "open", n: k.open || 0, label: _t("Open"), tone: tone(k.open, "green"), run: () => this.toggleFocus("open") },
+            { key: "waiting", n: k.waiting || 0, label: _t("Awaiting sign-off"), tone: tone(k.waiting, "amber"), run: () => this.toggleFocus("waiting") },
+            { key: "mine", n: k.waiting_mine || 0, label: _t("Waiting on you"), tone: tone(k.waiting_mine, "amber"), run: () => this.toggleFocus("mine") },
+            { key: "cand", n: k.candidates || 0, label: _t("Candidates"), tone: "", run: null },
+            { key: "over", n: k.over_budget || 0, label: _t("Over budget"), tone: tone(k.over_budget, "rose"), run: () => this.toggleFocus("over") },
+            { key: "iv", n: k.interviews_week || 0, label: _t("Interviews this week"), tone: "", run: () => { this.setTab("interviews"); this.toggleIvFocus("today"); } },
+            { key: "late", n: k.feedback_late || 0, label: _t("Opinions late"), tone: tone(k.feedback_late, "rose"), run: () => { this.setTab("interviews"); this.toggleIvFocus("late"); } },
+            { key: "offers", n: k.offers_out || 0, label: _t("Offers out"), tone: "", run: null },
+            { key: "ref", n: k.referrals || 0, label: _t("Referrals this month"), tone: "", run: null },
+            { key: "joined", n: k.filled_month || 0, label: _t("Joined this month"), tone: tone(k.filled_month, "green"), run: null },
+        ];
+    }
+
+    pressGlance(item) {
+        if (!item.run) return;
+        this.state.journeyFocus = "all";
+        item.run();
+    }
+
+    // ================================================ what happens next
+    //
+    // One sentence and, where the next move is this reader's, the one
+    // button that makes it. Every button calls an action the role pop-up
+    // already has; nothing here can do what the pop-up could not. Where the
+    // next move belongs to somebody else the box says who, with no button.
+    nextStep(r) {
+        const s = this.state;
+        if (r.waiting_mine) {
+            return { text: _t("It is waiting for your sign-off"), label: _t("Review approval"), tone: "primary",
+                     run: () => this.act("open_requisition", { requisition_id: r.id }, { reload: false }) };
+        }
+        if (r.state === "draft") {
+            return s.canRaise
+                ? { text: _t("Finish the request and send it for approval"), label: _t("Send for approval"), tone: "ghost",
+                    run: () => this.act("submit", { requisition_id: r.id }) }
+                : { text: _t("Still being written") };
+        }
+        if (["submitted", "manager_ok", "hr_ok"].includes(r.state)) {
+            return { text: r.waiting ? _t("Waiting on %s", r.waiting) : _t("Waiting for a sign-off"), tone: "wait" };
+        }
+        if (r.state === "open") {
+            if (!r.recruiter) {
+                return s.canAdmin
+                    ? { text: _t("Nobody is recruiting it yet"), label: _t("Hiring rules"), tone: "ghost",
+                        run: () => this.act("open_rules", {}, { reload: false }) }
+                    : { text: _t("Nobody is recruiting it yet"), tone: "wait" };
+            }
+            if (this.stageOf(r) === "publish") {
+                if (!s.canRecruit) return { text: _t("The advert is being prepared") };
+                return r.jd_state === "approved"
+                    ? { text: _t("The advert is agreed. Put it on the careers page"), label: _t("Advertise it"), tone: "ghost",
+                        run: () => this.act("publish", { requisition_id: r.id }) }
+                    : { text: _t("Write the advert candidates will read"), label: _t("Write the advert"), tone: "ghost",
+                        run: () => this.openAt(r.id, "jd") };
+            }
+            if (!r.candidates) {
+                return (s.canRecruit && !r.referral_open)
+                    ? { text: _t("Nobody has applied yet. Let colleagues refer people"), label: _t("Open to referrals"), tone: "ghost",
+                        run: () => this.act("toggle_referrals", { requisition_id: r.id }) }
+                    : { text: _t("Waiting for the first applicant") };
+            }
+            return { text: r.candidates === 1 ? _t("1 candidate to look at") : _t("%s candidates to look at", r.candidates),
+                     label: _t("Review candidates"), tone: "ghost", run: () => this.openAt(r.id, "candidates") };
+        }
+        if (r.state === "filled") return { text: _t("Filled. Joining carries on under New joiners"), tone: "done" };
+        if (r.state === "refused") return { text: _t("Not approved") };
+        return { text: _t("Closed") };
+    }
+
+    async openAt(id, section) {
+        await this.openDrawer(id);
+        if (this.state.drawer) this.state.drawerSection = section;
+    }
+
+    async runNext(ev, row) {
+        ev.stopPropagation();
+        const step = this.nextStep(row);
+        if (step.run) await step.run();
+    }
+
+    funnelLabel(pl) { return pl.name; }
 
     get anyFilter() {
         return !!(this.state.q || this.state.focus
@@ -407,7 +565,7 @@ export class PbHiringBoard extends Component {
         this.state.raising[kind + "_file"] = data;
         this.state.raising[kind + "_filename"] = file.name;
     }
-    chooseJourney(key) { this.state.journeyFocus = key; this.state.focus = ""; this.state.tab = "roles"; }
+    chooseJourney(key) { this.state.journeyFocus = this.state.journeyFocus === key ? "all" : key; this.state.focus = ""; this.state.tab = "roles"; }
     startStageMove(candidate) { this.state.stageMove = {applicant_id: candidate.id, name: candidate.name, stage_id: "", reason: "", update_date: ""}; }
     async saveStageMove() { const res = await this.act("journey_stage", {...this.state.stageMove}); if (res) this.state.stageMove = null; }
     startMessage(candidate) { this.state.messageForm = {applicant_id: candidate.id, name: candidate.name, key: "phone", values: {}, preview: null, busy: false}; }

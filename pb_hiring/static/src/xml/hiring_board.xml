@@ -79,83 +79,43 @@
           </div>
 
           <!-- ====================== the numbers ======================
-               Every tile is a filter, because a number you cannot click is a
-               number you have to go and look for. -->
-          <div class="pbim-stats pbhr-kpis">
-            <button class="pbim-stat pbhr-stat" t-att-class="{ on: state.focus === 'open' }" t-on-click="() =&gt; this.toggleFocus('open')">
-              <div class="pbim-stat-ic green"><t t-out="ic('briefcase',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.open or 0"/>
-                <div class="l">Open for candidates</div>
-              </div>
-            </button>
-            <button class="pbim-stat pbhr-stat" t-att-class="{ on: state.focus === 'waiting',                                    warn: state.kpis.waiting }" t-on-click="() =&gt; this.toggleFocus('waiting')">
-              <div class="pbim-stat-ic amber"><t t-out="ic('clock',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.waiting or 0"/>
-                <div class="l">Waiting for a sign-off</div>
-              </div>
-            </button>
-            <button class="pbim-stat pbhr-stat" t-att-class="{ on: state.focus === 'mine',                                    ok: state.kpis.waiting_mine }" t-on-click="() =&gt; this.toggleFocus('mine')">
-              <div class="pbim-stat-ic"><t t-out="ic('userCheck',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.waiting_mine or 0"/>
-                <div class="l">Waiting on you</div>
-              </div>
-            </button>
-            <div class="pbim-stat pbhr-stat pbhr-stat--flat">
-              <div class="pbim-stat-ic blue"><t t-out="ic('users',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.candidates or 0"/>
-                <div class="l">Candidates in play</div>
-              </div>
-            </div>
-            <div class="pbim-stat pbhr-stat pbhr-stat--flat">
-              <div class="pbim-stat-ic teal"><t t-out="ic('userPlus',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.referrals or 0"/>
-                <div class="l">Referrals this month</div>
-              </div>
-            </div>
-            <button class="pbim-stat pbhr-stat" t-att-class="{ on: state.focus === 'over',                                    err: state.kpis.over_budget }" t-on-click="() =&gt; this.toggleFocus('over')">
-              <div class="pbim-stat-ic rose"><t t-out="ic('alert',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.over_budget or 0"/>
-                <div class="l">Over budget</div>
-              </div>
-            </button>
-            <button class="pbim-stat pbhr-stat" t-on-click="() =&gt; { this.setTab('interviews'); this.toggleIvFocus('today'); }">
-              <div class="pbim-stat-ic blue"><t t-out="ic('calendar',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.interviews_week or 0"/>
-                <div class="l">Interviews this week</div>
-              </div>
-            </button>
-            <button class="pbim-stat pbhr-stat" t-att-class="{ err: state.kpis.feedback_late }" t-on-click="() =&gt; { this.setTab('interviews'); this.toggleIvFocus('late'); }">
-              <div class="pbim-stat-ic rose"><t t-out="ic('clock',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.feedback_late or 0"/>
-                <div class="l">Opinions overdue</div>
-              </div>
-            </button>
-            <div class="pbim-stat pbhr-stat pbhr-stat--flat">
-              <div class="pbim-stat-ic pink"><t t-out="ic('send',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.offers_out or 0"/>
-                <div class="l">Offers with a candidate</div>
-              </div>
-            </div>
-            <div class="pbim-stat pbhr-stat pbhr-stat--flat">
-              <div class="pbim-stat-ic green"><t t-out="ic('sunrise',21)"/></div>
-              <div class="pbim-stat-tx">
-                <div class="n" t-esc="state.kpis.filled_month or 0"/>
-                <div class="l">Joined this month</div>
-              </div>
-            </div>
+               QUIET BY DEFAULT: one line, small figures, grey at zero. A
+               number takes a colour only when somebody has to act on it.
+               Every figure that filters still filters. -->
+          <div class="pbhr-glance" role="group" aria-label="Numbers at a glance">
+            <t t-foreach="glance" t-as="gl" t-key="gl.key">
+              <button type="button" class="pbhr-gl" t-att-class="(gl.n ? '' : 'zero ') + (gl.tone ? 'is-' + gl.tone + ' ' : '') + (gl.run and state.focus === gl.key ? 'on ' : '') + (gl.run ? '' : 'flat')" t-att-disabled="!gl.run" t-att-title="gl.run ? 'Show only these' : ''" t-on-click="() =&gt; this.pressGlance(gl)">
+                <span t-if="gl.tone" class="pbhr-gl-dot"/>
+                <span class="pbhr-gl-n" t-esc="gl.n"/>
+                <span class="pbhr-gl-l" t-esc="gl.label"/>
+              </button>
+            </t>
           </div>
 
 
-          <nav class="pbhr-journey-nav" aria-label="Hiring journey"><button t-foreach="[{key:'all',n:'01',title:'Overview',sub:'Your hiring workspace'},{key:'request',n:'02',title:'Request &amp; approve',sub:'Agree the role and budget'},{key:'publish',n:'03',title:'Prepare &amp; publish',sub:'Bring the opportunity to life'},{key:'recruit',n:'04',title:'Meet your candidates',sub:'Screen, discuss and offer'},{key:'joined',n:'05',title:'Welcome aboard',sub:'A smooth start'}]" t-as="phase" t-key="phase.key" t-att-class="{on:state.journeyFocus === phase.key}" t-on-click="() =&gt; this.chooseJourney(phase.key)"><span t-esc="phase.n"/><div><b t-esc="phase.title"/><small t-esc="phase.sub"/></div></button></nav><!-- ============ no hiring rule has been written ============
+          <!-- ====================== the four steps ======================
+               A role is at exactly ONE step (stageOf), so the counts add up.
+               The count is a pill that says "roles" so it is never read as
+               the step's number. Pressing a step again shows everything. -->
+          <nav class="pbhr-steps4" aria-label="Where every role is">
+            <button t-foreach="stages" t-as="st" t-key="st.key" type="button" class="pbhr-st" t-att-class="{ on: state.journeyFocus === st.key, has: st.count, wait: st.waiting }" t-att-aria-pressed="state.journeyFocus === st.key ? 'true' : 'false'" t-on-click="() =&gt; this.chooseJourney(st.key)">
+              <span class="pbhr-st-heat"/>
+              <span class="pbhr-st-top">
+                <span class="pbhr-st-n" t-esc="st.n"/>
+                <span class="pbhr-st-t" t-esc="st.title"/>
+                <span class="pbhr-st-c" t-esc="st.countLabel"/>
+              </span>
+              <span class="pbhr-st-s" t-esc="st.sub"/>
+              <span t-if="st.mine" class="pbhr-st-flag is-mine"><t t-out="ic('userCheck',12)"/> <t t-esc="st.mine"/> waiting on you</span>
+              <span t-elif="st.waiting" class="pbhr-st-flag"><t t-out="ic('clock',12)"/> <t t-esc="st.waiting"/> waiting for a sign-off</span>
+              <span class="pbhr-st-arrow" aria-hidden="true"><t t-out="ic('arrowRight',13)"/></span>
+            </button>
+          </nav>
+          <div class="pbhr-showing">
+            <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
+            <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
+              <button type="button" class="pbhr-showall" t-on-click="showAll">Show all</button></t>
+          </div><!-- ============ no hiring rule has been written ============
                A thing that is not set up and does not SAY so is reported as
                broken (R54). This is the one thing an administrator has to do
                for an agreed role to land on a real desk, so it is stated
@@ -290,6 +250,11 @@
                 </div>
               </div>
 
+              <div t-if="stageMeta(row)" class="pbhr-where">
+                <span class="pbhr-where-marks"><i t-foreach="stageMeta(row).marks" t-as="mk" t-key="mk_index" t-att-class="mk"/></span>
+                <span>Step <t t-esc="stageMeta(row).index + 1"/> of <t t-esc="stageMeta(row).total"/> · <b t-esc="stageMeta(row).title"/></span>
+              </div>
+
               <div class="pbhr-chips">
                 <span class="pbim-badge pbhr-state" t-att-class="'pbhr-state--' + row.state">
                   <t t-if="row.waiting">Waiting: <t t-esc="row.waiting"/></t>
@@ -320,9 +285,13 @@
                   <span class="pbhr-pipe-n" t-esc="pl.count"/>
                 </div>
               </div>
-              <div t-else="" class="pbhr-pipe pbhr-pipe--empty">
-                <span t-if="row.state === 'open'">No candidates yet</span>
-                <span t-else="">Not open for candidates yet</span>
+              <div t-if="row.pipeline.length" class="pbhr-pipe-key">
+                <span t-foreach="row.pipeline" t-as="pl" t-key="pl.id"><i/><b t-esc="pl.count"/> <t t-esc="pl.name"/></span>
+              </div>
+
+              <div class="pbhr-next" t-att-class="'is-' + (nextStep(row).tone or 'plain')">
+                <span class="pbhr-next-tx"><t t-if="nextStep(row).label">Next: </t><b t-esc="nextStep(row).text"/></span>
+                <button t-if="nextStep(row).label" type="button" class="pbim-btn pbhr-next-btn" t-att-class="nextStep(row).tone === 'primary' ? 'primary' : 'ghost'" t-on-click="(ev) =&gt; this.runNext(ev, row)" t-esc="nextStep(row).label"/>
               </div>
 
               <div class="pbhr-card-foot">
