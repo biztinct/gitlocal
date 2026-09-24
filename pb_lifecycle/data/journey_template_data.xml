@@ -138,4 +138,307 @@
         <field name="letter_template_id" ref="letter_template_experience"/>
     </record>
 
+    <!-- Checklists for the four journey types that shipped with none, so the
+         "Start a journey" dialog always has one to offer. Company-less for the
+         same reason as the two above; `key_date` counts from the date typed on
+         the journey ("Change takes effect", "Review date", "Key date"). -->
+
+    <!-- ==================== probation ==================== -->
+    <record id="journey_template_probation" model="pb.journey.template">
+        <field name="name">Probation — the review</field>
+        <field name="case_type">probation</field>
+        <field name="sequence">30</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">Everything around the end of someone's trial period, from planning the
+            review three weeks before to telling payroll the day after. The
+            dates all move with the probation end date you put on the journey.</field>
+    </record>
+
+    <record id="journey_step_prob_plan" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_probation"/>
+        <field name="sequence">10</field>
+        <field name="name">Plan the review</field>
+        <field name="description">Book the review meeting and tell the person when it is, so nobody is surprised on the day.</field>
+        <field name="assignee_rule">manager</field>
+        <field name="anchor">probation_end</field>
+        <field name="offset_days">-21</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_prob_feedback" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_probation"/>
+        <field name="sequence">20</field>
+        <field name="name">Gather feedback</field>
+        <field name="description">Ask the people they work with most how the first months have gone. A few honest lines are enough.</field>
+        <field name="assignee_rule">manager</field>
+        <field name="anchor">probation_end</field>
+        <field name="offset_days">-14</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_prob_meeting" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_probation"/>
+        <field name="sequence">30</field>
+        <field name="name">Probation review meeting</field>
+        <field name="description">Talk through what went well, what did not, and what happens next. Note what was agreed.</field>
+        <field name="assignee_rule">manager</field>
+        <field name="anchor">probation_end</field>
+        <field name="offset_days">-7</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_prob_decision" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_probation"/>
+        <field name="sequence">40</field>
+        <field name="name">Decide: pass, extend or end</field>
+        <field name="description">Confirm the outcome. If it is an extension, agree the new end date and what has to change by then.</field>
+        <field name="assignee_rule">manager</field>
+        <field name="anchor">probation_end</field>
+        <field name="offset_days">-3</field>
+        <field name="step_kind">confirmation</field>
+    </record>
+
+    <record id="journey_step_prob_letter" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_probation"/>
+        <field name="sequence">50</field>
+        <field name="name">Confirmation letter</field>
+        <field name="description">Prepare and send the letter that confirms their employment, so they have it in writing.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">probation_end</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">letter</field>
+        <field name="letter_template_id" ref="letter_template_probation_pass"/>
+    </record>
+
+    <record id="journey_step_prob_record" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_probation"/>
+        <field name="sequence">60</field>
+        <field name="name">Update the employee record</field>
+        <field name="description">Mark the probation as finished and check the notice period and any benefits that start after probation.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">probation_end</field>
+        <field name="offset_days">1</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_prob_payroll" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_probation"/>
+        <field name="sequence">70</field>
+        <field name="name">Tell payroll</field>
+        <field name="description">Let payroll know about anything that changes with the next pay run, such as insurance or allowances that start now.</field>
+        <field name="assignee_rule">finance</field>
+        <field name="anchor">probation_end</field>
+        <field name="offset_days">1</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <!-- ==================== pip ==================== -->
+    <record id="journey_template_pip" model="pb.journey.template">
+        <field name="name">Performance plan — standard</field>
+        <field name="case_type">pip</field>
+        <field name="sequence">40</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">A fair, written plan with a clear review date. The steps count from
+            the review date you put on the journey, so the check-ins land at the
+            right time.</field>
+    </record>
+
+    <record id="journey_step_pip_write" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_pip"/>
+        <field name="sequence">10</field>
+        <field name="name">Write the plan</field>
+        <field name="description">What has to improve, how it will be measured, what support is offered, and the review date.</field>
+        <field name="assignee_rule">manager</field>
+        <field name="anchor">case_open</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_pip_check" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_pip"/>
+        <field name="sequence">20</field>
+        <field name="name">Check the plan with HR</field>
+        <field name="description">Make sure the plan is fair, clear and consistent with how others have been treated.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">case_open</field>
+        <field name="offset_days">2</field>
+        <field name="step_kind">confirmation</field>
+    </record>
+
+    <record id="journey_step_pip_share" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_pip"/>
+        <field name="sequence">30</field>
+        <field name="name">Share the plan with the employee</field>
+        <field name="description">Talk it through face to face, give them a copy, and agree how often you will meet.</field>
+        <field name="assignee_rule">manager</field>
+        <field name="anchor">case_open</field>
+        <field name="offset_days">5</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_pip_mid" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_pip"/>
+        <field name="sequence">40</field>
+        <field name="name">Mid-point check-in</field>
+        <field name="description">Review progress against the plan so far. Write down what is on track and what is not.</field>
+        <field name="assignee_rule">manager</field>
+        <field name="anchor">key_date</field>
+        <field name="offset_days">-14</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_pip_final" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_pip"/>
+        <field name="sequence">50</field>
+        <field name="name">Final review meeting</field>
+        <field name="description">Go through the plan point by point and agree whether it has been met.</field>
+        <field name="assignee_rule">manager</field>
+        <field name="anchor">key_date</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_pip_outcome" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_pip"/>
+        <field name="sequence">60</field>
+        <field name="name">Record the outcome</field>
+        <field name="description">Plan met, extended, or next steps agreed. Note it on the employee record.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">key_date</field>
+        <field name="offset_days">2</field>
+        <field name="step_kind">confirmation</field>
+    </record>
+
+    <!-- ==================== conversion ==================== -->
+    <record id="journey_template_conversion" model="pb.journey.template">
+        <field name="name">Conversion — to a permanent contract</field>
+        <field name="case_type">conversion</field>
+        <field name="sequence">50</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">Moving someone onto new terms — from probation or a fixed-term
+            contract to a permanent one. The dates count from the day the
+            change takes effect, so the new contract and pay are ready in time.</field>
+    </record>
+
+    <record id="journey_step_conv_terms" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_conversion"/>
+        <field name="sequence">10</field>
+        <field name="name">Confirm the new terms</field>
+        <field name="description">Agree the contract type, start date, job title and pay, and get them approved.</field>
+        <field name="assignee_rule">manager</field>
+        <field name="anchor">key_date</field>
+        <field name="offset_days">-14</field>
+        <field name="step_kind">confirmation</field>
+    </record>
+
+    <record id="journey_step_conv_contract" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_conversion"/>
+        <field name="sequence">20</field>
+        <field name="name">Prepare the new contract</field>
+        <field name="description">Draft the new contract from the agreed terms and set the old one to end the day before.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">key_date</field>
+        <field name="offset_days">-10</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_conv_pay" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_conversion"/>
+        <field name="sequence">30</field>
+        <field name="name">Update pay and components</field>
+        <field name="description">Set the new salary, allowances and deductions so the next pay run uses them.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">key_date</field>
+        <field name="offset_days">-7</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_conv_sign" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_conversion"/>
+        <field name="sequence">40</field>
+        <field name="name">Sign the new contract</field>
+        <field name="description">Read and sign the new contract. Ask HR if anything is unclear.</field>
+        <field name="assignee_rule">employee</field>
+        <field name="anchor">key_date</field>
+        <field name="offset_days">-3</field>
+        <field name="step_kind">confirmation</field>
+    </record>
+
+    <record id="journey_step_conv_letter" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_conversion"/>
+        <field name="sequence">50</field>
+        <field name="name">Send the confirmation letter</field>
+        <field name="description">Send the letter that confirms the new terms and the date they start.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">key_date</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_conv_access" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_conversion"/>
+        <field name="sequence">60</field>
+        <field name="name">Update system access and benefits</field>
+        <field name="description">Change any access, cards or benefits that depend on the type of contract.</field>
+        <field name="assignee_rule">it</field>
+        <field name="anchor">key_date</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_conv_payroll" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_conversion"/>
+        <field name="sequence">70</field>
+        <field name="name">Tell payroll</field>
+        <field name="description">Confirm the change is live so the next pay run and insurance reports use the new terms.</field>
+        <field name="assignee_rule">finance</field>
+        <field name="anchor">key_date</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <!-- ==================== other ==================== -->
+    <record id="journey_template_other" model="pb.journey.template">
+        <field name="name">General — basic</field>
+        <field name="case_type">other</field>
+        <field name="sequence">60</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">A short starting point for anything that is not a joiner, a leaver,
+            a probation, a performance plan or a conversion. Add the steps your
+            case needs.</field>
+    </record>
+
+    <record id="journey_step_oth_agree" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_other"/>
+        <field name="sequence">10</field>
+        <field name="name">Agree what needs to happen</field>
+        <field name="description">Write down what is changing, who needs to act, and by when.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">case_open</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_oth_record" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_other"/>
+        <field name="sequence">20</field>
+        <field name="name">Update the employee record</field>
+        <field name="description">Make the change on the employee record and file any documents.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">key_date</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">task</field>
+    </record>
+
+    <record id="journey_step_oth_done" model="pb.journey.template.step">
+        <field name="template_id" ref="journey_template_other"/>
+        <field name="sequence">30</field>
+        <field name="name">Confirm it is done</field>
+        <field name="description">Check everything agreed has happened and close the journey.</field>
+        <field name="assignee_rule">manager</field>
+        <field name="anchor">key_date</field>
+        <field name="offset_days">3</field>
+        <field name="step_kind">confirmation</field>
+    </record>
+
 </odoo>

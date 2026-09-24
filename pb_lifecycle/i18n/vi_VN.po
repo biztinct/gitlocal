@@ -307,3 +307,139 @@ msgstr "Hiện tất cả"
 #  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
 # ===================================================================
 
+
+# ===================================================================
+#  Checklists for Probation, Performance plan, Conversion and Other.
+# ===================================================================
+
+#. module: pb_lifecycle
+#: model:pb.journey.template,name:pb_lifecycle.journey_template_probation
+msgid "Probation — the review"
+msgstr "Thử việc — đánh giá"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_plan
+msgid "Plan the review"
+msgstr "Lên lịch buổi đánh giá"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_feedback
+msgid "Gather feedback"
+msgstr "Thu thập nhận xét"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_meeting
+msgid "Probation review meeting"
+msgstr "Họp đánh giá thử việc"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_decision
+msgid "Decide: pass, extend or end"
+msgstr "Quyết định: đạt, gia hạn hay kết thúc"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_letter
+msgid "Confirmation letter"
+msgstr "Thư xác nhận"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_record
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_oth_record
+msgid "Update the employee record"
+msgstr "Cập nhật hồ sơ nhân viên"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_payroll
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_payroll
+msgid "Tell payroll"
+msgstr "Báo cho bộ phận lương"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template,name:pb_lifecycle.journey_template_pip
+msgid "Performance plan — standard"
+msgstr "Kế hoạch cải thiện hiệu suất — tiêu chuẩn"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_write
+msgid "Write the plan"
+msgstr "Soạn kế hoạch"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_check
+msgid "Check the plan with HR"
+msgstr "Rà soát kế hoạch với nhân sự"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_share
+msgid "Share the plan with the employee"
+msgstr "Trao đổi kế hoạch với nhân viên"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_mid
+msgid "Mid-point check-in"
+msgstr "Trao đổi giữa kỳ"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_final
+msgid "Final review meeting"
+msgstr "Họp đánh giá cuối kỳ"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_outcome
+msgid "Record the outcome"
+msgstr "Ghi nhận kết quả"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template,name:pb_lifecycle.journey_template_conversion
+msgid "Conversion — to a permanent contract"
+msgstr "Chuyển đổi — sang hợp đồng không xác định thời hạn"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_terms
+msgid "Confirm the new terms"
+msgstr "Xác nhận điều khoản mới"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_contract
+msgid "Prepare the new contract"
+msgstr "Soạn hợp đồng mới"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_pay
+msgid "Update pay and components"
+msgstr "Cập nhật lương và các khoản"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_sign
+msgid "Sign the new contract"
+msgstr "Ký hợp đồng mới"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_letter
+msgid "Send the confirmation letter"
+msgstr "Gửi thư xác nhận"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_access
+msgid "Update system access and benefits"
+msgstr "Cập nhật quyền truy cập hệ thống và phúc lợi"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template,name:pb_lifecycle.journey_template_other
+msgid "General — basic"
+msgstr "Chung — cơ bản"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_oth_agree
+msgid "Agree what needs to happen"
+msgstr "Thống nhất việc cần làm"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_oth_done
+msgid "Confirm it is done"
+msgstr "Xác nhận đã hoàn tất"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_template_step__anchor__key_date
+msgid "The date on the journey"
+msgstr "Ngày ghi trên hành trình"

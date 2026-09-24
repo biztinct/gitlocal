@@ -23,6 +23,10 @@ ANCHORS = [
     ('doj', 'Joining date'),
     ('lwd', 'Last working day'),
     ('probation_end', 'Probation end'),
+    # The date typed on the journey itself — "Change takes effect" on a
+    # conversion, "Review date" on a performance plan. Falls back to the day
+    # the journey opens when nobody typed one.
+    ('key_date', 'The date on the journey'),
 ]
 
 #: WHO owns a step, as a rule rather than a person. Resolved once, when the

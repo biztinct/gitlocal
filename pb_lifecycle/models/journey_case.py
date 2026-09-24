@@ -181,7 +181,7 @@ class PbJourneyCase(models.Model):
         today = fields.Date.today()
         if anchor == 'doj':
             return self._joining_date()
-        if anchor in ('lwd', 'probation_end'):
+        if anchor in ('lwd', 'probation_end', 'key_date'):
             return self.anchor_date or today
         return today
 
