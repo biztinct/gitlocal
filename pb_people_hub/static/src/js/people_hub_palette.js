@@ -3,13 +3,15 @@
  * The People hub's rows in the global ⌘K palette.
  *
  * The mission row sits at 130 — third in the palette, third on the rail. Its
- * gate is the UNION of the three lens gates, imported from the modules that own
- * them rather than restated, because a palette gate that drifts from the
- * shell's produces one of two silent failures: a row that opens a hub with no
- * lenses in it, or a hub nobody can find.
+ * gate is the UNION of the lens gates, imported from the modules that own them
+ * rather than restated, because a palette gate that drifts from the shell's
+ * produces one of two silent failures: a row that opens a hub with no lenses
+ * in it, or a hub nobody can find.
  *
- * The three lens rows sit in a 1400 block, after the other hubs' lens blocks,
- * in the order the missions were built.
+ * The rows sit in a 1400 block, after the other hubs' lens blocks, in the
+ * order the missions were built. Contracts is no longer a lens (it is a door
+ * inside Employees), so its row opens the board's own action — the one the
+ * Employees button opens, with the way back to Employees in its context.
  *
  * **The door is an XMLID, not a tag** (W98). A bare tag makes the action service
  * synthesise `{type: "ir.actions.client", tag}`, so the `ir.actions.client`
@@ -35,7 +37,7 @@ const HUB_XMLID = "pb_people_hub.action_pb_people_hub";
 const SUB = _t("People");
 
 /** Anyone who can open at least one lens can find the hub. */
-const HUB_GATE = [...new Set([...EMPLOYEE_GATE, ...CONTRACT_GATE, ...PLAN_GATE])];
+const HUB_GATE = [...new Set([...EMPLOYEE_GATE, ...PLAN_GATE])];
 
 palette.add("peoplehub", {
     id: "peoplehub", label: _t("People"), sublabel: _t("Employees & contracts"),
@@ -48,8 +50,8 @@ const LENSES = [
       groups: EMPLOYEE_GATE, requires: HUB_TAG,
       action: { xmlid: HUB_XMLID, lens: "employees" } },
     { id: "peoplehub_contracts", label: _t("Contracts"), icon: "file",
-      groups: CONTRACT_GATE, requires: HUB_TAG,
-      action: { xmlid: HUB_XMLID, lens: "contracts" } },
+      groups: CONTRACT_GATE, requires: "pb_contracts",
+      action: { xmlid: "pb_people_hub.action_pb_people_contracts" } },
     { id: "peoplehub_plan", label: _t("Workforce Planning"), icon: "trendingUp",
       groups: PLAN_GATE, requires: HUB_TAG,
       action: { xmlid: HUB_XMLID, lens: "plan" } },

@@ -24,6 +24,7 @@ msgstr "Chu kỳ bồi thường"
 #. odoo-javascript
 #: code:addons/pb_people_hub/static/src/js/people_hub.js:0
 #: code:addons/pb_people_hub/static/src/js/people_hub_palette.js:0
+#: model:ir.actions.client,name:pb_people_hub.action_pb_people_contracts
 #: code:addons/pb_people_hub/static/src/js/people_hub.js:78
 #: code:addons/pb_people_hub/static/src/js/people_hub_palette.js:50
 msgid "Contracts"

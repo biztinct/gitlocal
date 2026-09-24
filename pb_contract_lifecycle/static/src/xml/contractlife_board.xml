@@ -267,8 +267,12 @@
 
               <div class="ctl-card-act">
                 <button class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.openContractDrawer(row.id)">
+                  <t t-out="ic('fileText',13)"/> Open this contract
+                </button>
+                <button class="pbim-btn ghost pbim-btn-sm"
                         t-on-click="() => this.openContract(row.id)">
-                  Open this contract
+                  <t t-out="ic('scale',13)"/> The decision
                 </button>
                 <button t-if="state.canWrite and !row.review_id and row.date_end"
                         class="pbim-btn primary pbim-btn-sm"
@@ -475,7 +479,7 @@
           <div class="ctl-drawer-act">
             <button class="pbim-btn ghost pbim-btn-sm"
                     t-on-click="() => this.openContractRecord(state.drawer.row)">
-              The contract record
+              <t t-out="ic('fileText',13)"/> The contract record
             </button>
             <button t-if="state.drawer.row.employee_id"
                     class="pbim-btn ghost pbim-btn-sm"
@@ -602,6 +606,15 @@
           </div>
         </div>
       </div>
+
+      <!-- ==================================================================
+           THE CONTRACT ITSELF: the People contract drawer (Terms, Components,
+           History), mounted only when pb_contracts registered it into the
+           soft "pb_contracts_drawer" registry. t-key remounts per contract.
+           ================================================================== -->
+      <t t-if="state.contractId and contractDrawerCmp"
+         t-component="contractDrawerCmp" t-props="contractDrawerProps"
+         t-key="state.contractId"/>
 
     </div>
   </t>

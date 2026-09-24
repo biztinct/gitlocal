@@ -19,6 +19,10 @@
             <p class="pbim-sub">Your people, contract status and payroll readiness at a glance.</p>
           </div>
           <div class="ppl-head-actions">
+            <!-- Contracts: a door inside Employees, not a tab beside it. Only
+                 when the host handed one in and the board would let them in. -->
+            <button t-if="state.canContracts" class="pbim-btn outline" t-on-click="openContracts"
+                    title="Every contract, on its own board"><t t-out="ic('fileText',15)"/> Contracts</button>
             <button t-attf-class="pbim-btn {{ state.selectMode ? 'outline' : 'ghost' }}" t-on-click="toggleSelectMode"><t t-out="ic('list',15)"/> <t t-esc="state.selectMode ? 'Done' : 'Select'"/></button>
             <button class="pbim-btn primary" t-on-click="addEmployee"><t t-out="ic('plus',16)"/> Add employee</button>
           </div>
@@ -109,6 +113,9 @@
               <span t-if="p.ready" class="ok" title="Payroll ready"><t t-out="ic('checkCircle',18)"/></span>
               <span t-else="" class="no" t-att-title="p.bank ? 'No running contract' : 'No bank details'"><t t-out="ic('alert',18)"/></span>
             </div>
+            <button t-if="state.canContracts and p.contract_id and !state.selectMode"
+                    class="pbim-btn ghost pbim-btn-sm ppl-contract" title="Open their contract"
+                    t-on-click.stop="() => this.openContract(p)"><t t-out="ic('fileText',13)"/> Contract</button>
           </div>
         </div>
         <div t-else="" class="pbim-panel"><div class="pbim-empty">No employees match these filters.</div></div>
@@ -123,6 +130,10 @@
            its component into the soft "pb_people_drawer" registry. -->
       <t t-if="state.drawerEmpId and drawerCmp"
          t-component="drawerCmp" t-props="drawerProps" t-key="state.drawerEmpId"/>
+      <!-- One person's contract, in the same drawer the Contracts board opens
+           (soft "pb_contracts_drawer" registry). t-key remounts per contract. -->
+      <t t-if="state.drawerContractId and contractDrawerCmp"
+         t-component="contractDrawerCmp" t-props="contractDrawerProps" t-key="state.drawerContractId"/>
     </div>
   </t>
 

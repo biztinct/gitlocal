@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Contracts Cockpit',
     'summary': 'Bespoke contracts landing + detail cockpit (light-teal People identity)',
-    'version': '19.0.1.8.2',
+    'version': '19.0.1.8.3',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -10,7 +10,10 @@
     'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_import_kit', 'pb_people_advanced',
                 # P7: a contract's terms are money, so a change to them is
                 # a decision.
-                'biz_approval_workflow'],
+                'biz_approval_workflow',
+                # the return door when the Employees lens opens this board as
+                # its own page (hub_nav.js)
+                'pb_hub'],
     'data': [
         'security/ir.model.access.csv',
         'security/contract_approval_rules.xml',

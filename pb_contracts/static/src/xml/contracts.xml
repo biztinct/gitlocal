@@ -12,6 +12,7 @@
                the People hub the command bar already says People > Contracts.
                New contract and every number below are untouched. -->
           <div class="ppl-head-id" t-if="!props.embedded">
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
             <h1 class="pbim-h1">Contracts</h1>
             <p class="pbim-sub">Active, expiring and historical contracts across your workforce.</p>
           </div>

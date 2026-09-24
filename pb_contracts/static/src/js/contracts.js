@@ -4,6 +4,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 
 const STATE_CLS = { open: "ok", close: "warn", draft: "info", cancel: "muted" };
 const STATUS_CHIPS = [
@@ -26,11 +27,16 @@ const DATE_CHIPS = [
 
 export class PbContracts extends Component {
     static template = "pb_contracts.PbContracts";
+    static components = { HubBackChip };
     static props = ["*"];
 
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
+        // The return door (hub_nav.js). The People hub no longer mounts this
+        // board as a lens — the Employees lens opens it as its own page — so
+        // the way back is read ONCE, from props, like every plain cockpit.
+        this.back = hubBack(this.props);
         this.state = useState({
             loaded: false, currency: "", kpis: {}, structures: [],
             contracts: [], total: 0, stepCounts: {}, listedTotal: 0,

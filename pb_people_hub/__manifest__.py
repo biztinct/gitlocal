@@ -6,14 +6,16 @@
     'description': """
 IA redesign Cycle 5 — the People mission.
 
-Three lenses, in the order a person exists in payroll:
+Two lenses, in the order a person exists in payroll:
 
-    employees · contracts · plan
+    employees · plan
 
-`employees` and `contracts` are the EXISTING cockpits mounted with
-`embedded: true` — one component, one facade, two mount points (W17). Neither is
-reimplemented, neither is forked, and both standalone client actions keep
-working.
+`employees` is the EXISTING cockpit mounted with `embedded: true` — one
+component, one facade, two mount points (W17). Contracts is a door INSIDE
+Employees (a contract belongs to a person): a Contracts button opens the
+existing contracts board as its own page with a way back, and each person's
+contract opens in the contract drawer in place. Nothing is reimplemented or
+forked, and both standalone client actions keep working.
 
 **`plan` is a MOUNT POINT.** Whatever planning product is installed renders
 inside it full-bleed; when nothing is, the lens says so in a sentence and
@@ -27,7 +29,7 @@ the worst screen this product can show.
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent (W1/W2/W3).
 """,
-    'version': '19.0.2.0.0',
+    'version': '19.0.2.0.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -35,7 +37,7 @@ one accent (W1/W2/W3).
     'depends': [
         'pb_hub',                       # the shell kit + the global palette
         'pb_settings',                  # the cog, and `pb.settings.resolve_actions`
-        # the two surfaces this hub mounts as lenses
+        # the Employees lens, and the Contracts board it opens as a door
         'pb_people',
         'pb_contracts',
     ],

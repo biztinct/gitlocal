@@ -14,4 +14,18 @@
         <field name="name">People</field>
         <field name="tag">pb_people_hub</field>
     </record>
+
+    <!-- The Contracts board, opened from the Employees lens.
+
+         Contracts used to be this hub's second lens. A contract belongs to a
+         person, so the board is now a door INSIDE Employees rather than a tab
+         beside it, and it opens as its own page. The return door rides in the
+         action's own context (the pb_pay / pb_workseg precedent), so the ⌘K
+         row and the Employees button both land on a board with a way back to
+         Employees. The tag is pb_contracts' own cockpit, unforked. -->
+    <record id="action_pb_people_contracts" model="ir.actions.client">
+        <field name="name">Contracts</field>
+        <field name="tag">pb_contracts</field>
+        <field name="context">{'pb_back': {'label': 'People', 'tag': '', 'xmlid': 'pb_people_hub.action_pb_people_hub', 'lens': 'employees', 'context': {}}}</field>
+    </record>
 </odoo>

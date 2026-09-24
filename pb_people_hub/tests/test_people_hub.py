@@ -93,7 +93,7 @@ class TestPeopleHubGates(TransactionCase):
                 out.add('%s.%s' % (data.module, data.name))
         return out
 
-    def test_the_two_cockpit_lenses_match_their_models_acls_exactly(self):
+    def test_the_employee_lens_and_the_contracts_door_match_their_acls(self):
         for name, model in (('EMPLOYEE_GATE', 'hr.employee'),
                             ('CONTRACT_GATE', 'hr.contract')):
             declared = set(_js_list(self.SRC, name))
@@ -202,12 +202,28 @@ class TestPeopleHubStatic(TransactionCase):
     """The shell contract, and the promises that are absences."""
 
     def test_the_lens_order_matches_the_mockup(self):
+        """Contracts left the rail (owner, 2026-09-24): it is a door inside
+        Employees, because a contract belongs to a person."""
         keys = re.findall(r'key: "(\w+)", icon: "(\w+)", label:',
                           _hub('static', 'src', 'js', 'people_hub.js'))
         self.assertEqual(
             keys,
-            [('employees', 'users'), ('contracts', 'file'),
-             ('plan', 'trendingUp')])
+            [('employees', 'users'), ('plan', 'trendingUp')])
+
+    def test_contracts_is_a_gated_door_inside_employees(self):
+        code = _code(_hub('static', 'src', 'js', 'people_hub.js'))
+        self.assertIn('contractsDoor', code)
+        self.assertIn('groups: CONTRACT_GATE', code)
+        self.assertIn('pb_people_hub.action_pb_people_contracts', code)
+        people = _read(ROOT, 'pb_people', 'static', 'src', 'xml', 'people.xml')
+        self.assertIn('openContracts', people,
+                      'the Employees lens has no Contracts button')
+
+    def test_the_contracts_action_opens_the_board_with_a_way_back(self):
+        act = self.env.ref('pb_people_hub.action_pb_people_contracts')
+        self.assertEqual(act.tag, 'pb_contracts')
+        self.assertIn('pb_people_hub.action_pb_people_hub', act.context or '')
+        self.assertIn("'lens': 'employees'", act.context or '')
 
     def test_the_lens_persistence_key_is_namespaced_per_hub(self):
         self.assertIn('key: "people"', _hub('static', 'src', 'js', 'people_hub.js'))
@@ -223,10 +239,11 @@ class TestPeopleHubStatic(TransactionCase):
             self.env['ir.ui.menu'].search(
                 [('action', '=', 'ir.actions.client,%s' % act.id)]))
 
-    def test_the_hub_mounts_the_real_cockpits_and_forks_neither(self):
+    def test_the_hub_mounts_the_real_cockpit_and_forks_nothing(self):
         src = _hub('static', 'src', 'js', 'people_hub.js')
-        for spec in ('@pb_people/js/people', '@pb_contracts/js/contracts'):
-            self.assertIn('from "%s"' % spec, src)
+        self.assertIn('from "@pb_people/js/people"', src)
+        # The Contracts board is opened by its own action now, never mounted.
+        self.assertNotIn('from "@pb_contracts/js/contracts"', src)
 
     def test_both_cockpits_are_exported_and_still_register(self):
         for module, fname, cls, tag in (
@@ -248,6 +265,8 @@ class TestPeopleHubStatic(TransactionCase):
         pal = _hub('static', 'src', 'js', 'people_hub_palette.js')
         for lens in re.findall(r'lens: "(\w+)"', pal):
             self.assertIn(lens, lenses, 'palette opens unknown lens %r' % lens)
+        # The Contracts row survives the lens: it opens the board's action.
+        self.assertIn('pb_people_hub.action_pb_people_contracts', pal)
         for lens in lenses:
             self.assertIn('lens: "%s"' % lens, pal,
                           'lens %r has no palette entry' % lens)

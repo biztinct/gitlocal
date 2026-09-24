@@ -2,15 +2,23 @@
 /**
  * `pb_people_hub` — the People mission, on Cycle 1's HubShell.
  *
- * Three lenses, in the order a person exists in payroll:
+ * Two lenses, in the order a person exists in payroll:
  *
- *     employees · contracts · plan
+ *     employees · plan
  *
- * Who works here, on what terms, and what we expect the payroll to cost next
- * year. The first two are the EXISTING cockpits mounted with `embedded: true`
- * (W17); the third is a LAUNCHER over the seven Planning screens, which this
- * cycle changes in no way at all (see plan_launcher.js — that is an owner
- * ruling, not a shortcut).
+ * Who works here, and what we expect the payroll to cost next year. The first
+ * is the EXISTING Employees cockpit mounted with `embedded: true` (W17); the
+ * second is a LAUNCHER over the seven Planning screens, which this cycle
+ * changes in no way at all (see plan_launcher.js — that is an owner ruling,
+ * not a shortcut).
+ *
+ * CONTRACTS IS A DOOR INSIDE EMPLOYEES, NOT A LENS BESIDE IT (owner, 2026-09-24:
+ * "it is actually connected to an employee"). The Employees lens is handed a
+ * `contractsDoor` — the gate and the click — and draws a Contracts button in
+ * its header plus a per-person "their contract" control that opens the
+ * contract drawer in place. The board itself opens as its own page through
+ * `pb_people_hub.action_pb_people_contracts`, whose context carries the way
+ * back to Employees.
  *
  * ---------------------------------------------------------------------------
  * The gates (W95: from the ACL of the model behind the door)
@@ -20,6 +28,9 @@
  *   contracts  `hr.contract`  — hr_contract.group_hr_contract_employee_manager |
  *              hr_contract.group_hr_contract_manager |
  *              pb_demo.group_payobook_demo
+ *              (no longer a lens: it gates the Contracts door inside
+ *              Employees, so the button is never offered to someone the
+ *              board would refuse)
  *   plan       any Workforce Planning tier; each CARD then carries its own
  *              model's gate, because the seven planning models do not all grant
  *              read to the same one.
@@ -42,7 +53,6 @@ import { HubShell } from "@pb_hub/js/hub_shell";
 import { openHub } from "@pb_hub/js/hub_nav";
 
 import { PbPeople } from "@pb_people/js/people";
-import { PbContracts } from "@pb_contracts/js/contracts";
 import { PlanLauncher, PLAN_GATE, heroGroups } from "@pb_people_hub/js/plan_launcher";
 
 /** `hr.employee`'s READ access. */
@@ -95,16 +105,21 @@ export class PbPeopleHub extends Component {
             defaultLens: "employees",
             cog: () => this.openSettings(),
             lenses: [
+                // `props` is built HERE, once, so its identity is stable and
+                // the shell's per-lens memo holds (W21). The door is data plus
+                // a bound click; the lens decides nothing about who may pass.
                 { key: "employees", icon: "users", label: _t("Employees"),
-                  Component: PbPeople, groups: EMPLOYEE_GATE },
-                { key: "contracts", icon: "file", label: _t("Contracts"),
-                  Component: PbContracts, groups: CONTRACT_GATE },
-                // Bolted-on lenses sit between the two cockpits and the Plan
-                // launcher — after the records a person IS, before the plan for
-                // the people they will be.
+                  Component: PbPeople, groups: EMPLOYEE_GATE,
+                  props: { contractsDoor: {
+                      groups: CONTRACT_GATE,
+                      open: () => this.openContracts(),
+                  } } },
+                // Bolted-on lenses sit between the Employees cockpit and the
+                // Plan launcher — after the records a person IS, before the
+                // plan for the people they will be.
                 ...this.extraLenses(),
                 // FLEET P4. Headcount planning is sold on its own; Employees
-                // and Contracts never are.
+                // (and the Contracts board inside it) never are.
                 // `wantsArrival` because a deep link can be more specific
                 // than a lens: "open the saved plans" has to reach the planning
                 // product mounted inside this launcher, and the shell only
@@ -137,6 +152,19 @@ export class PbPeopleHub extends Component {
             const props = typeof def.propsFromContext === "function"
                 ? def.propsFromContext(ctx) : (def.props || {});
             return { ...def, props };
+        });
+    }
+
+    /**
+     * The Contracts board, from the Employees lens. A CLICK handler.
+     *
+     * By XMLID, and the XMLID's own context carries the return door to
+     * Employees — the same record the ⌘K row opens, so the two can never
+     * disagree about where "back" goes.
+     */
+    openContracts() {
+        openHub(this.actionService, {
+            xmlid: "pb_people_hub.action_pb_people_contracts",
         });
     }
 

@@ -58,6 +58,7 @@ msgstr "Vòng đời hợp đồng"
 #. module: pb_people
 #. odoo-javascript
 #: code:addons/pb_people/static/src/xml/employee_detail.xml:0
+#: code:addons/pb_people/static/src/xml/people.xml:0
 msgid "Contracts"
 msgstr "Hợp đồng"
 
@@ -354,3 +355,26 @@ msgstr "Đã có"
 #: code:addons/pb_people/static/src/js/employee_detail.js:0
 msgid "Missing"
 msgstr "Thiếu"
+
+# ===================================================================
+#  Contracts door inside Employees (2026-09-24).
+# ===================================================================
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/js/people.js:0
+#: code:addons/pb_people/static/src/xml/people.xml:0
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/xml/people.xml:0
+msgid "Open their contract"
+msgstr "Mở hợp đồng của nhân viên"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/xml/people.xml:0
+msgid "Every contract, on its own board"
+msgstr "Tất cả hợp đồng, trên một bảng riêng"

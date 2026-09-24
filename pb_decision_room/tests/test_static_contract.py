@@ -366,8 +366,8 @@ class TestDecisionRoomStaticContract(TransactionCase):
         hub = _read(HUB, 'static', 'src', 'js', 'people_hub.js')
         self.assertIn('heroGroups', hub)
         keys = re.findall(r'key: "(\w+)", icon: "(\w+)", label:', hub)
-        self.assertEqual(keys, [('employees', 'users'), ('contracts', 'file'),
-                                ('plan', 'trendingUp')])
+        # Contracts left the rail on 2026-09-24: it is a button on Employees.
+        self.assertEqual(keys, [('employees', 'users'), ('plan', 'trendingUp')])
 
         xml = _read(HUB, 'static', 'src', 'xml', 'people_hub.xml')
         self.assertNotIn('Classic planning tools', xml,

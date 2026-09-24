@@ -18,6 +18,15 @@
  * the server, because a second opinion written in JavaScript would only ever
  * disagree with the one that counts.
  *
+ * THE CONTRACT ITSELF OPENS IN THE PEOPLE CONTRACT DRAWER (owner, 2026-09-24:
+ * "it is more descriptive"). Every "open the contract" door on this board —
+ * "Open this contract", "The contract record", "The new contract" — mounts the
+ * same Terms / Components / History drawer the People > Contracts board opens,
+ * found through the SAME soft "pb_contracts_drawer" registry, so this module
+ * gains no dependency and falls back to the plain contract form when the
+ * drawer is absent. The decision panel stays this board's own: the card's
+ * header and "The decision" open it, because deciding is what this lens is for.
+ *
  * NO WAGE ON THIS BOARD, ON PURPOSE. A screen that lists what everybody earns
  * is a screen nobody can leave open. The number appears once, inside the
  * confirm summary, at the moment somebody is about to agree to it.
@@ -90,6 +99,9 @@ export class PbContractLifeBoard extends Component {
             // the open contract
             drawer: null,
             drawerBusy: false,
+
+            // the contract itself, in the People contract drawer
+            contractId: null,
 
             // one dialog at a time, each one plain state
             deciding: null,
@@ -374,6 +386,45 @@ export class PbContractLifeBoard extends Component {
 
     closeDrawer() { this.state.drawer = null; }
 
+    // ------------------------------------------- the People contract drawer
+    // Soft registry, exactly as `pb_contracts/contracts.js` probes it: no
+    // import, so this module still installs and works without pb_contracts.
+    get contractDrawerCmp() {
+        const r = registry.category("pb_contracts_drawer");
+        return r.contains("contract_360") ? r.get("contract_360") : null;
+    }
+
+    get contractDrawerProps() {
+        return { contractId: this.state.contractId,
+                 onClose: () => this.closeContractDrawer() };
+    }
+
+    /**
+     * Open the contract itself. The decision panel sits ABOVE the contract
+     * drawer's layer, so it is folded away first and brought back when the
+     * contract drawer closes — the person lands where they were.
+     */
+    async openContractDrawer(contractId) {
+        if (!contractId) { return; }
+        if (!this.contractDrawerCmp) {
+            const act = await this.call("open_contract_action", [contractId]);
+            if (act) { this.action.doAction(act); }
+            return;
+        }
+        this._reopen = this.state.drawer ? this.state.drawer.row.id : null;
+        this.state.drawer = null;
+        this.state.contractId = Number(contractId);
+    }
+
+    async closeContractDrawer() {
+        this.state.contractId = null;
+        const reopen = this._reopen;
+        this._reopen = null;
+        // Dates and terms can change in that drawer; the countdowns read them.
+        await this.load();
+        if (reopen) { await this.openContract(reopen); }
+    }
+
     async raiseDecision(row) {
         const res = await this.call("raise_decision", [row.id],
             _t("Raised. Their manager and the HR team have been asked to choose."));
@@ -559,15 +610,11 @@ export class PbContractLifeBoard extends Component {
     }
 
     // ------------------------------------------------------------- the doors
-    async openContractRecord(row) {
-        const act = await this.call("open_contract_action", [row.id]);
-        if (act) { this.action.doAction(act); }
-    }
+    // Both open the People contract drawer (see openContractDrawer); the
+    // plain form is only its fallback.
+    openContractRecord(row) { return this.openContractDrawer(row.id); }
 
-    async openNewContract(contractId) {
-        const act = await this.call("open_contract_action", [contractId]);
-        if (act) { this.action.doAction(act); }
-    }
+    openNewContract(contractId) { return this.openContractDrawer(contractId); }
 
     async openEmployee(row) {
         if (!row.employee_id) { return; }
