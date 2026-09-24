@@ -135,6 +135,24 @@ CATALOGUE = [
      'Everything the lifecycle team does, plus writing the checklists and the '
      'letter templates everybody else then uses.', None),
 
+    # --------------------------------------------------------------- hiring
+    # 2026-09-24. The hiring board shipped with three groups and no role, so
+    # "Give a role" had nothing to offer somebody who needed to recruit — the
+    # owner went looking for one and found the list silent.
+    (('hiring-recruiter',), 'lifecycle', 40,
+     'Recruiter',
+     'See every hiring request in the company, screen candidates, and write '
+     'and publish adverts. Does not agree a request or change the hiring '
+     'rules.', None),
+    (('hiring-manager',), 'lifecycle', 50,
+     'Hiring manager',
+     'Everything a recruiter does, plus agreeing a hiring request and an '
+     'advert, closing a role and marking one filled.', None),
+    (('hiring-head',), 'lifecycle', 60,
+     'Head of hiring',
+     'Everything a hiring manager does, plus the hiring rules — who recruits '
+     'for which company and country — and the hiring switches.', None),
+
     # --------------------------------------------------------------- people
     (('equipment-read',), 'people', 10,
      'Company equipment — can look',
@@ -160,6 +178,57 @@ CATALOGUE = [
      'Recognition lead',
      'Run the award cycles, decide what the company values are, and manage the '
      'wall.', None),
+
+    # ---------------------------------------- goals, training, announcements
+    # 2026-09-24, the same hole as hiring: each of these screens gates on its
+    # own groups and no role carried them.
+    (('goals-team',), 'people', 62,
+     'Goals team',
+     'Read every goal sheet in the company, set the goal year up and write '
+     'the goal templates. Managers do NOT need this to see their own team.',
+     None),
+    (('goals-hr-lead',), 'people', 64,
+     'HR lead for goals',
+     'Everything the goals team does, plus agreeing and locking a goal sheet, '
+     'sending one back, setting weights on anybody\'s, and opening goal sheets '
+     'for a whole company at once.', None),
+    (('goals-head',), 'people', 66,
+     'Head of goals',
+     'Everything above, plus the goal switches: whether sheets open for a new '
+     'joiner, whether people are chased, and how long sign-off has.', None),
+    (('training-trainer',), 'people', 67,
+     'Trainer',
+     'Write courses, lessons and tests, and put people on a course.', None),
+    (('training-manager',), 'people', 68,
+     'Training manager',
+     'Everything a trainer does, plus every course and test in the company '
+     'whoever wrote it, and the results behind them.', None),
+    (('training-head',), 'people', 69,
+     'Head of training',
+     'Everything above, plus the training switches: whether the course site '
+     'is open to people who are not staff, and whether a finished course '
+     'sends an email.', None),
+    (('announcements-officer',), 'people', 72,
+     'Announcements officer',
+     'Write announcements, put them on the calendar, and read every '
+     'announcement in the companies you can see.', None),
+    (('announcements-head',), 'people', 74,
+     'Head of announcements',
+     'Everything above, plus changing an announcement in its last two days, '
+     'agreeing one when sign-off is on, and cancelling anybody\'s.', None),
+    (('announcements-admin',), 'people', 76,
+     'Announcements administrator',
+     'Everything above, plus the template library, who announcements reach in '
+     'each company, and whether they are emailed at all.', None),
+    (('where-they-work',), 'people', 90,
+     'Where they work',
+     'Split a person\'s month between companies, join two employee records '
+     'into one person, and choose how a split month is paid.', None),
+    (('field-staff',), 'people', 95,
+     'Field staff',
+     'For people who work away from a desk: check in and out with their '
+     'location and a photo from the Field app on their phone. Nothing else.',
+     None),
 
     # --------------------------------------------------- growth plans (PIP)
     # RESTRICTED. Somebody being coached out of a difficulty is nobody's
@@ -190,6 +259,31 @@ CATALOGUE = [
      'Everything above, plus uploading a year\'s budget, entering what HR and '
      'the office spent, and re-reading the payroll figures.', None),
 
+    (('decision-room',), 'money', 40,
+     'Decision Room',
+     'Open the Decision Room, explore the year ahead and keep your own '
+     'plans.', None),
+    (('decision-room-lead',), 'money', 50,
+     'Decision Room — the numbers',
+     'Everything above, plus changing the assumptions behind the picture and '
+     'removing anybody\'s plan.', None),
+    (('pay-bands-read',), 'money', 60,
+     'Pay bands — can look',
+     'Look at the pay bands, the health cards and the fairness figures, '
+     'without the names behind them.', None),
+    (('pay-bands-manage',), 'money', 70,
+     'Pay bands team',
+     'Write and move pay bands, put jobs in them, import them, and see who is '
+     'paid least for the same work.', None),
+    (('pay-review-finance',), 'money', 80,
+     'Pay review — finance check',
+     'The finance step of a pay review: check what it costs and send it on, '
+     'or send it back.', None),
+    (('pay-review-signoff',), 'money', 90,
+     'Pay review — final sign-off',
+     'The last step of a pay review: approve it so the new pay can be '
+     'applied. This role decides pay rises.', None),
+
     # -------------------------------------------------------------- system
     # "System" here means the administration of THIS product, never the
     # administration of the database. The two groups that do the latter are
@@ -207,6 +301,14 @@ CATALOGUE = [
      'Give people roles and take them away, see every hand-over of access in '
      'the company, and take any of them back. It never includes the system '
      'administrator permission.', None),
+    (('group-setup',), 'system', 40,
+     'Set up the group',
+     'Name the group of companies, choose its companies, its currency and how '
+     'exchange rates are picked, and build its divisions.', None),
+    (('govt-reports',), 'payroll', 95,
+     'Government reports',
+     'Prepare and download the reports that go to the tax office and social '
+     'insurance.', None),
 ]
 
 # =============================================================================
@@ -247,6 +349,30 @@ ROLE_ABILITY_GROUPS = {
     'vendor-owner': ('pb_vendor_access.group_vendor_user',),
     'vendor-team': ('pb_vendor_access.group_vendor_manager',),
     'access-team': ('biz_access.group_access_manager',),
+
+    # 2026-09-24 — the screens that shipped with groups and no role.
+    'hiring-recruiter': ('pb_hiring.group_hiring_user',),
+    'hiring-manager': ('pb_hiring.group_hiring_manager',),
+    'hiring-head': ('pb_hiring.group_hiring_admin',),
+    'goals-team': ('pb_goals.group_goals_user',),
+    'goals-hr-lead': ('pb_goals.group_goals_manager',),
+    'goals-head': ('pb_goals.group_goals_admin',),
+    'training-trainer': ('pb_training.group_training_user',),
+    'training-manager': ('pb_training.group_training_manager',),
+    'training-head': ('pb_training.group_training_admin',),
+    'announcements-officer': ('pb_hr_comm.group_comm_user',),
+    'announcements-head': ('pb_hr_comm.group_comm_manager',),
+    'announcements-admin': ('pb_hr_comm.group_comm_admin',),
+    'where-they-work': ('pb_workseg.group_workseg_manager',),
+    'field-staff': ('pb_driver_checkin.group_pb_field_staff',),
+    'decision-room': ('pb_decision_room.group_decision_user',),
+    'decision-room-lead': ('pb_decision_room.group_decision_manager',),
+    'pay-bands-read': ('pb_pay.group_pay_viewer',),
+    'pay-bands-manage': ('pb_pay.group_pay_manager',),
+    'pay-review-finance': ('pb_pay.group_pay_finance',),
+    'pay-review-signoff': ('pb_pay.group_pay_ceo',),
+    'group-setup': ('pb_group.group_group_admin',),
+    'govt-reports': ('pb_hr_govt.group_pb_hr_govt_user',),
 }
 
 # =============================================================================
