@@ -41,10 +41,8 @@ import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { PEOPLE_LENSES } from "@pb_people_hub/js/people_hub";
 import { INSIGHTS_LENSES } from "@pb_insights_hub/js/insights_hub";
-import { HOME_LENSES } from "@pb_home_hub/js/home_hub";
 import { PbGoalsBoard } from "@pb_goals/js/goals_board";
 import { PbGoalsNumbers } from "@pb_goals/js/goals_numbers";
-import { PbGoalsHome } from "@pb_goals/js/goals_home";
 
 /**
  * THE LENS IS OPEN TO EVERY MEMBER OF STAFF, AND THAT IS THE WHOLE POINT.
@@ -81,6 +79,9 @@ registry.category(PEOPLE_LENSES).add("goals", {
     label: _t("Goals"),
     Component: PbGoalsBoard,
     groups: GOALS_ANYBODY,
+    // Everybody may ASK; the tab shows only when the board has something
+    // for them (a goals group, or a sheet the rules let them read).
+    probe: { model: "pb.goals", method: "can_open" },
 }, { sequence: 70 });
 
 const palette = registry.category("pb_hub_palette");
@@ -153,20 +154,10 @@ registry.category(INSIGHTS_LENSES).add("goals", {
     groups: GOALS_GATE.concat(["base.group_system"]),
 }, { sequence: 50 });
 
-/**
- * THE HOME LENS IS OPEN TO EVERYBODY WITH A LOGIN, for the same reason the
- * People-hub lens is: what is behind it is decided by what the SERVER finds
- * waiting on the person asking, and the worst case is somebody being told
- * nothing is. A card called "waiting on you" that some people cannot open is
- * a card that teaches people it is not for them.
+/*
+ * No Home lens. Goals live on People → Goals (and "My goals" in ⌘K); a second
+ * copy on Home was the same thing twice (owner, 2026-09-24).
  */
-registry.category(HOME_LENSES).add("goals", {
-    key: "goals",
-    icon: "target",
-    label: _t("Goals"),
-    Component: PbGoalsHome,
-    groups: GOALS_ANYBODY,
-}, { sequence: 40 });
 
 palette.add("goals_checkins", {
     id: "goals_checkins",

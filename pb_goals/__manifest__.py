@@ -68,7 +68,7 @@ WHAT THIS MODULE IS
 WHAT IT DELIBERATELY DOES NOT DO. Calibration and bell curves, any link to
 pay, and 360-degree feedback are not here and are not planned in this shape.
 """,
-    'version': '19.0.1.1.1',
+    'version': '19.0.1.1.2',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -653,9 +653,10 @@ class TestDecisionRoomVietnamese(TransactionCase):
         palette = open(os.path.join(
             self.here, 'static', 'src', 'js', 'decision_palette.js'),
             encoding='utf-8').read()
-        self.assertIn('registry.category(HOME_LENSES).add("decide"', palette)
-        self.assertIn('from "@pb_home_hub/js/home_hub"', palette)
-        self.assertIn('feature: "people_plan"', palette)
+        # Owner, 2026-09-24: the room is on People → Plan only; the Home
+        # copy was the same screen twice.
+        self.assertNotIn('registry.category(HOME_LENSES).add("decide"',
+                         palette)
 
         features = open(os.path.join(
             self.root, 'pb_hub', 'static', 'src', 'js', 'hub_features.js'),

@@ -22,8 +22,8 @@
 
           <div class="pbch-head">
             <div class="pbch-head-id">
-              <h1 t-if="!props.embedded" class="pbim-h1">Coming up</h1>
-              <h2 t-else="" class="pbch-h2">Coming up</h2>
+              <h1 t-if="!props.embedded" class="pbim-h1">Announcements</h1>
+              <h2 t-else="" class="pbch-h2">Announcements</h2>
             </div>
             <div class="pbch-head-actions">
               <button class="pbim-btn ghost" t-on-click="() => this.load()"

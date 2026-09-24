@@ -83,6 +83,14 @@ class PbHiring(models.AbstractModel):
                 or self.env['pb.hiring.requisition']._can_raise(user))
 
     @api.model
+    def can_open(self):
+        """The hub's tab asks this before it offers the Hiring lens, so the
+        tab and the board can never disagree: a Lifecycle reader who holds no
+        hiring group (an administrator included) is not shown a door that
+        opens onto "Hiring is looked after by the hiring team"."""
+        return bool(self._can_read())
+
+    @api.model
     def _can_write(self):
         user = self.env.user
         return (user.has_group(GROUP_MANAGER) or user.has_group(GROUP_ADMIN))

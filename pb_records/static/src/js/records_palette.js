@@ -20,15 +20,25 @@
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
-import { EMPLOYEE_GATE, PEOPLE_LENSES } from "@pb_people_hub/js/people_hub";
+import { PEOPLE_LENSES } from "@pb_people_hub/js/people_hub";
 import { PbRecordsDesk } from "@pb_records/js/records_desk";
+
+/** Who the desk lets in — `pb.records.desk._may_read`, restated. */
+const RECORDS_GATE = [
+    "hr.group_hr_user",
+    "pb_hr_payroll_base.group_payroll_base_officer",
+    "base.group_system",
+];
 
 registry.category(PEOPLE_LENSES).add("records", {
     key: "records",
     icon: "database",
     label: _t("Records"),
     Component: PbRecordsDesk,
-    groups: EMPLOYEE_GATE,
+    // The desk's OWN list (`pb.records.desk._may_read`) and not the People
+    // hub's EMPLOYEE_GATE: that one lets the demo login in, and the desk
+    // refuses it — a tab that opens onto "you do not have access".
+    groups: RECORDS_GATE,
     /**
      * The deep link, read once at config time. `records_employee_ids` is what
      * the People roster's Bulk update button sends; the other two are for R3's
@@ -50,7 +60,7 @@ registry.category("pb_hub_palette").add("peoplehub_records", {
     label: _t("Records"),
     sublabel: _t("People"),
     icon: "database",
-    groups: EMPLOYEE_GATE,
+    groups: RECORDS_GATE,
     // The presence probe: the actions registry holding this tag is what says
     // the module shipped its JS.
     requires: "pb_records_desk",

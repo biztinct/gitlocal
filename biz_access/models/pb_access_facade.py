@@ -1513,7 +1513,6 @@ class PbAccess(models.AbstractModel):
         self._require()
         user = self._person(user_id)
         held = set(user.sudo().all_group_ids.ids)
-        is_admin = bool(user.sudo()._is_admin())
         _sections, rail_items = self._rail()
         owners = {}
         for item in (rail_items or self.env['pb.sidebar.item'].browse()).filtered(
@@ -1545,8 +1544,14 @@ class PbAccess(models.AbstractModel):
                 row.get('action'), dict) else {}
             parent = owners.get(str(action.get('xmlid') or ''), '') \
                 or owners.get(str(action.get('tag') or ''), '')
+            # NO ADMINISTRATOR SHORTCUT. The command bar and the hub tabs
+            # ask `user.hasGroup` per row, and that answers for what the
+            # person HOLDS — an administrator without the hiring groups is
+            # not shown Hiring, and the Hiring board refuses them anyway.
+            # Saying "they see it" here over that was the lie the owner
+            # found on 2026-09-24 (Payobook user, Lifecycle → Hiring).
             answer[key] = {'allowed': bool(
-                is_admin or not names or not groups
+                not names or not groups
                 or set(groups.ids) & held),
                 'parent': parent}
         return answer

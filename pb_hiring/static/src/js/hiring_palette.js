@@ -57,6 +57,9 @@ registry.category(LIFECYCLE_LENSES).add("hiring", {
         "pb_hiring.group_hiring_manager",
         "pb_hiring.group_hiring_admin",
     ]),
+    // The board's own question (R-gate): Lifecycle readers who are not on
+    // the hiring team, administrators included, are not offered this tab.
+    probe: { model: "pb.hiring", method: "can_open" },
 }, { sequence: 10 });
 
 /* ------------------------------------------------- the Insights lens ----
@@ -85,6 +88,9 @@ registry.category(INSIGHTS_LENSES).add("hiring", {
         "pb_hiring.group_hiring_admin",
         "base.group_system",
     ],
+    // The board's own question (R-gate): Lifecycle readers who are not on
+    // the hiring team, administrators included, are not offered this tab.
+    probe: { model: "pb.hiring", method: "can_open" },
 }, { sequence: 30 });
 
 const HUB_XMLID = "pb_lifecycle.action_pb_lifecycle_hub";
@@ -93,6 +99,14 @@ const HIRING_GATE = [
     "pb_hiring.group_hiring_manager",
     "pb_hiring.group_hiring_admin",
     "base.group_system",
+];
+// The two doors onto the board itself. No administrator and no Lifecycle
+// group here: `pb.hiring._can_read()` lets neither in, and a ⌘K row that opens
+// onto "looked after by the hiring team" is the same lie as the tab was.
+const HIRING_BOARD_GATE = [
+    "pb_hiring.group_hiring_user",
+    "pb_hiring.group_hiring_manager",
+    "pb_hiring.group_hiring_admin",
 ];
 const HIRING_ADMIN = [
     "pb_hiring.group_hiring_admin",
@@ -143,7 +157,7 @@ palette.add("hiring_board", {
     label: _t("Who we are hiring"),
     sublabel: _t("Lifecycle"),
     icon: "userPlus",
-    groups: HIRING_GATE.concat(LIFECYCLE_GATE),
+    groups: HIRING_BOARD_GATE,
     // The presence probe: the actions registry holding this tag is what says
     // the module shipped its JS.
     requires: "pb_hiring_board",
@@ -228,7 +242,7 @@ palette.add("hiring_analytics", {
     label: _t("Hiring numbers"),
     sublabel: _t("Insights"),
     icon: "barChart",
-    groups: HIRING_GATE,
+    groups: HIRING_BOARD_GATE,
     // The presence probe is the lens's OWN action tag, not the board's: a
     // build that shipped the board and not the numbers must not offer a door
     // into a screen that is not there.

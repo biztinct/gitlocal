@@ -77,6 +77,13 @@ class PbGoals(models.AbstractModel):
             return False
 
     @api.model
+    def can_open(self):
+        """Asked by the People hub before it offers the Goals tab — the same
+        question the board asks, so the tab is never a door onto "Goals are
+        for the people they belong to"."""
+        return bool(self._can_read())
+
+    @api.model
     def _scope_sentence(self):
         """Whose sheets are on this board, said in one line.
 

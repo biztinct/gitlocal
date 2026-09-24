@@ -71,6 +71,8 @@ export class HubShell extends Component {
          *                                         // switched on" page instead
          *   lenses:  [ { key, icon, label,
          *                groups?: [xmlid],        // absent lens if not granted
+         *                probe?: { model, method }, // and absent if this
+         *                                         // @api.model call is falsy
          *                feature?: "bank_ocr",    // absent, or locked, if the
          *                                         // company has not got it
          *                Component?,              // omitted = placeholder lens
@@ -94,6 +96,7 @@ export class HubShell extends Component {
 
     setup() {
         this.actionService = useService("action");
+        this.orm = useService("orm");
         this.palette = useService("pb_hub_palette");
         this.dialogService = useService("dialog");
 
@@ -200,6 +203,22 @@ export class HubShell extends Component {
             allowed[l.key] = !(l.groups || []).length
                 || l.groups.some((g) => flags[g]);
         }
+        // THE SCREEN'S OWN QUESTION, for a lens whose door is not a group.
+        // Hiring lets a department head in and keeps an administrator out;
+        // Goals opens for whoever has a sheet to see. A group list can say
+        // neither, so a lens may name the facade method that decides — and the
+        // tab is then offered to exactly the people the screen will let in,
+        // instead of a padlock panel behind a tab that said "come in".
+        // Fails open, like the groups above: the facade still keeps its own.
+        await Promise.all(lenses.filter((l) => allowed[l.key] && l.probe)
+            .map(async (l) => {
+                try {
+                    allowed[l.key] = !!(await this.orm.call(
+                        l.probe.model, l.probe.method, []));
+                } catch (e) {
+                    console.warn("pb_hub: could not ask", l.probe.model, e);
+                }
+            }));
         this.state.allowed = allowed;
         // Never open on a lens this persona cannot read: a remembered lens or a
         // stale deep link would land them on an error state. A lens the company

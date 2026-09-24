@@ -19,7 +19,7 @@
  *      both of which had to be renamed — so the label is **"Announce"**,
  *      measured live before shipping.
  *
- *   2. **The Home lens "Coming up".** Wall took 20, the Decision Room 30 and
+ *   2. **The Home lens "Announce"** (was "Coming up").** Wall took 20, the Decision Room 30 and
  *      Goals 40, so this takes **50**. Thirty-five was free and would have
  *      put it before Goals; it is deliberately not used. Every sequence in
  *      every hub in this product is a multiple of ten, and the reading order
@@ -96,7 +96,9 @@ registry.category(PEOPLE_LENSES).add("announcements", {
 registry.category(HOME_LENSES).add("coming_up", {
     key: "coming_up",
     icon: "megaphone",
-    label: _t("Coming up"),
+    // "Announce" on the rail for R63's reason above; the page's own heading
+    // says "Announcements" in full (renamed from "Coming up", owner 2026-09-24).
+    label: _t("Announce"),
     Component: PbHrCommHome,
     groups: ["base.group_user"],
 }, { sequence: 50 });

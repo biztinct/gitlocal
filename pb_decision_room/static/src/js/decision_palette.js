@@ -32,7 +32,6 @@
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { PLAN_HERO } from "@pb_people_hub/js/plan_launcher";
-import { HOME_LENSES } from "@pb_home_hub/js/home_hub";
 import { PbDecisionRoom } from "@pb_decision_room/js/decision_room";
 
 /** Who is offered the room. The facade decides who actually gets it. */
@@ -48,22 +47,10 @@ registry.category(PLAN_HERO).add("decision_room", {
     groups: DECISION_GATE,
 }, { sequence: 10 });
 
-/**
- * The Home lens.
- *
- * `feature: "people_plan"` is the same switch that governs the People hub's
- * Plan lens, so a tenant that has planning turned off does not get it back
- * through a second door. The mapping the shell reads for the deep-link form
- * of the same lens lives in `pb_hub/static/src/js/hub_features.js`.
+/*
+ * No Home lens. The room lives on People → Plan; a second copy on Home was
+ * the same screen twice (owner, 2026-09-24).
  */
-registry.category(HOME_LENSES).add("decide", {
-    key: "decide",
-    icon: "target",
-    label: _t("Decision Room"),
-    Component: PbDecisionRoom,
-    groups: DECISION_GATE,
-    feature: "people_plan",
-}, { sequence: 30 });
 
 const HUB_XMLID = "pb_people_hub.action_pb_people_hub";
 
