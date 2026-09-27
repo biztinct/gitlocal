@@ -1582,3 +1582,13 @@
 @media (prefers-reduced-motion: reduce) {
     .lrn-role, .lrn-chbar i { transition: none; }
 }
+
+/* LEARN REFRESH step 1 — "Find it in Pay Run › Payslips" with the door. */
+.lrn-callout.lrn-openscreen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    > span { flex: 1 1 200px; }
+    .lrn-btn { flex: 0 0 auto; }
+}

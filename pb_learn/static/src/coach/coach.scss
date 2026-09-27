@@ -786,3 +786,159 @@ body.lrn-one-helper:has(.pw-root) .lrn-hmoment { bottom: 152px; }
 @media (prefers-reduced-motion: reduce) {
     .lrn-hmoment { animation: none; }
 }
+
+/* =============================================================================
+   LEARN REFRESH step 1 — THE HELPER KNOWS THE TAB.
+
+   The hub page's orientation: the tab line under the grounded block, the
+   "people often come here to" doors, and every tab of the page as a compact
+   vertical list with the current one marked. Each row is ONE button (the
+   whole row is the target, keyboard reachable), and "Take me there" switches
+   the hub's tab with the drawer left open.
+
+   Tab switch → the body and the "On:" line re-mount (t-key) and the mount is
+   a 180 ms cross-fade. None at all under Reduce motion.
+   ========================================================================== */
+@keyframes lrn-xfade {
+    from { opacity: 0; transform: translateY(3px); }
+    to   { opacity: 1; transform: none; }
+}
+.lrn-dbody, .lrn-dplace { animation: lrn-xfade 180ms ease-out both; }
+.lrn-dplace { display: block; }
+
+.lrn-cline {
+    font-weight: 600;
+    color: var(--vuf-ink, #101728);
+}
+.lrn-cground .lrn-hnolesson {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    color: var(--vuf-muted, #6B7280);
+    .lrn-ic { color: var(--vuf-muted, #6B7280); margin-top: 1px; }
+}
+
+.lrn-hoften { margin: 0 0 14px; }
+.lrn-hoftenbtn {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 0 0 6px;
+    padding: 9px 11px;
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-md, 10px);
+    background: var(--vuf-surface, #fff);
+    color: var(--vuf-ink, #101728);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 120ms ease, background 120ms ease;
+
+    &:hover:not(:disabled), &:focus-visible {
+        border-color: var(--vuf-primary, #1565C0);
+        background: var(--vuf-info-bg, #E8F0FB);
+        outline: none;
+    }
+    &:disabled { cursor: default; opacity: .75; }
+}
+.lrn-hoftengo {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex: 0 0 auto;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--vuf-primary, #1565C0);
+    .lrn-ic { width: 13px; height: 13px; }
+}
+
+.lrn-hub { margin: 4px 0 14px; }
+.lrn-hubfold {
+    border-top: 1px solid var(--vuf-line-soft, #F1F0F7);
+    padding-top: 10px;
+    summary { cursor: pointer; list-style: revert; }
+}
+.lrn-htabs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-md, 10px);
+    overflow: hidden;
+}
+.lrn-htab + .lrn-htab { border-top: 1px solid var(--vuf-line-soft, #F1F0F7); }
+.lrn-htabbtn {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 0;
+    background: transparent;
+    color: var(--vuf-ink, #101728);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 120ms ease;
+
+    &:hover:not(:disabled), &:focus-visible {
+        background: var(--vuf-info-bg, #E8F0FB);
+        outline: none;
+    }
+    &:disabled { cursor: default; }
+}
+.lrn-htab.here .lrn-htabbtn {
+    background: var(--vuf-info-bg, #E8F0FB);
+    box-shadow: inset 3px 0 0 var(--vuf-primary, #1565C0);
+}
+.lrn-htabic {
+    display: inline-flex;
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: var(--vuf-line-soft, #F1F0F7);
+    color: var(--vuf-primary, #1565C0);
+}
+.lrn-htabtx {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    gap: 1px;
+    b {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12.5px;
+        .lrn-ic { width: 12px; height: 12px; color: var(--vuf-muted, #6B7280); }
+    }
+    small { font-size: 11.5px; line-height: 1.35; color: var(--vuf-muted, #6B7280); }
+}
+.lrn-htabgo {
+    flex: 0 0 auto;
+    color: var(--vuf-muted, #6B7280);
+    opacity: 0;
+    transition: opacity 120ms ease;
+    .lrn-ic { width: 14px; height: 14px; }
+}
+.lrn-htabbtn:hover .lrn-htabgo, .lrn-htabbtn:focus-visible .lrn-htabgo { opacity: 1; }
+.lrn-htab .lrn-chip { flex: 0 0 auto; }
+
+@media (max-width: 640px) {
+    /* Touch has no hover: the arrow is always there, so the row reads as a door. */
+    .lrn-htabgo { opacity: 1; }
+    .lrn-htabtx small { font-size: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-dbody, .lrn-dplace { animation: none; }
+    .lrn-hoftenbtn, .lrn-htabbtn, .lrn-htabgo { transition: none; }
+}
+.lrn-still .lrn-dbody, .lrn-still .lrn-dplace { animation: none; }

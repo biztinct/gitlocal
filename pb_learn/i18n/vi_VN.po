@@ -1067,3 +1067,15 @@ msgstr "Nhóm"
 #: code:addons/pb_learn/static/src/hub/learn_hub.js:0
 msgid "Settings"
 msgstr "Cài đặt"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Helper switched tab"
+msgstr "Trợ lý đã chuyển tab"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Walkthrough could not open its screen"
+msgstr "Hướng dẫn từng bước không mở được màn hình của nó"

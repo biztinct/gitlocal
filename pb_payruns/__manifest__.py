@@ -10,7 +10,7 @@
     # 2.3.0: the board prices each run in its SCHEME's money (SCHEMECTX P1).
     # Python, JS and QWeb all change, so the version has to move for the
     # deploy-time version-diff gate to see it.
-    'version': '19.0.2.7.1',
+    'version': '19.0.2.8.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

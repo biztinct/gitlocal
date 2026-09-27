@@ -319,7 +319,11 @@ class TestPracticeMode(TransactionCase):
         self.assertIn('data-act="to-practice"', self.journey)
         self.assertIn('ctx.practice', self.journey)
         self.assertIn('data-act="c-practice"', self.coach)
-        self.assertIn('additionalContext: { practice: 1 }', self.coach)
+        # LEARN REFRESH step 1: the Coach opens it inside the Learn hub now,
+        # as the Lessons tab's arrival focus "practice" — which the Journey
+        # turns into the same `ctx.practice` the standalone action carries.
+        self.assertIn('openLearn(this.action, "practice")', self.coach)
+        self.assertIn('f === "practice"', self.journey)
         self.assertIn('"c-practice"', self.coach,
                       "c-practice is not in COACH_ACTIONS, so the drawer's own "
                       "delegation will refuse the button it draws")

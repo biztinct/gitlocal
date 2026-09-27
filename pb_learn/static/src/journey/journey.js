@@ -69,6 +69,12 @@ import { INPUT_ANCHORS } from "../engine/fixture";
 import { looseMatch } from "../engine/input_match";
 import { playableSteps } from "../scenario/scenario_service";
 import { LiveState } from "../live/live_state";
+import { canOpen, openScreen, placeLabel, setReach } from "../engine/places";
+
+/* Arrival payloads already acted on. HubShell hands the Lessons lens ONE
+   arrival object per hub visit, so remembering it by identity is what stops a
+   deep link replaying every time the reader switches back to this tab. */
+const CONSUMED_ARRIVALS = new WeakSet();
 import { morphHTML, calcHTML, pipeHTML, runPipeline } from "../engine/visuals";
 
 const LOCAL_PREFS = "pbLearnPrefs";
@@ -105,6 +111,9 @@ export class LearnJourney extends Component {
         // overlay is mounted in the web client shell and survives the
         // navigation those two modes do.
         this.sc = useService("learn.scenario");
+        // LEARN REFRESH step 1 — a station's "Open" goes to the real screen
+        // where it lives (hub › tab), through engine/places.js.
+        this.action = useService("action");
         this.overlayRef = useRef("overlay");
 
         this.state = useState({
@@ -261,7 +270,10 @@ export class LearnJourney extends Component {
             user: runtime.user || {},
             // LEARN v3 — the learner's path and the month-end date.
             path: runtime.path || {},
+            // LEARN REFRESH step 1 — where each screen lives in the rail.
+            screens: content.screens || [],
         };
+        setReach(runtime.visible_stations);
         RT.tokens = this.bundle.tokens || {};
         RT.chrome = this.bundle.chrome || {};
         // The hovercard's match table and its one delegated listener. Built
@@ -297,6 +309,32 @@ export class LearnJourney extends Component {
     }
 
     // ----------------------------------------------------------------- lookups
+    /** The content screen a station teaches (same key), or null. */
+    screenOf(station) {
+        const list = (this.bundle && this.bundle.screens) || [];
+        return (station && list.find((x) => x.key === station.key)) || null;
+    }
+
+    /** "Pay Run › Payslips" for a station whose screen lives in a hub. */
+    placeOf(station) {
+        const sc = this.screenOf(station);
+        const list = (this.bundle && this.bundle.screens) || [];
+        return sc && (sc.places || []).some((p) => !p.startsWith("detail:"))
+            ? placeLabel(list, sc) : "";
+    }
+
+    /** "Open" on a station: the real screen, where it lives. */
+    openRealScreen(key) {
+        const st = this.station(key);
+        const sc = this.screenOf(st);
+        if (!sc) {
+            return;
+        }
+        openScreen(this.action, this.bundle.screens, sc).catch(() => {
+            // Nothing opened; the map stays where it is.
+        });
+    }
+
     get stations() {
         return this.bundle ? this.bundle.stations : [];
     }
@@ -830,9 +868,11 @@ export class LearnJourney extends Component {
         // naming the door instead of a padlock.
         const gate = (s.missing || !s.visible)
             ? `<span class="lrn-chip warn">${ic("lock")}${esc(T("notVisible"))}</span>`
-            : (s.reach
-                ? `<span class="lrn-chip">${ic("compass")}${esc(T("reachVia"))}${SP}${esc(s.reach)}</span>`
-                : "");
+            : (this.placeOf(s)
+                ? `<span class="lrn-chip">${ic("compass")}${esc(T("findItIn"))}${SP}${esc(this.placeOf(s))}</span>`
+                : (s.reach
+                    ? `<span class="lrn-chip">${ic("compass")}${esc(T("reachVia"))}${SP}${esc(s.reach)}</span>`
+                    : ""));
         // "Start here" is a PULSE, never an auto-play. The demo greeting opens
         // the map and points; the learner presses the card. A spotlight that
         // starts by itself is the thing the retired first-run tour did, and the
@@ -1016,9 +1056,15 @@ export class LearnJourney extends Component {
             ? `<p class="lrn-callout">${ic("info")}${esc(T("outlineNote"))}</p>` : ""}
         ${!s.visible
             ? `<p class="lrn-callout warn">${ic("lock")}${esc(T("notVisibleBody"))}</p>`
-            : (s.reach
-                ? `<p class="lrn-callout">${ic("compass")}<b>${esc(T("reachVia"))}${SP}${esc(s.reach)}.</b>${SP}${esc(T("reachViaBody"))}</p>`
-                : "")}
+            : (this.screenOf(s) && canOpen(this.screenOf(s))
+                ? `<div class="lrn-callout lrn-openscreen">${ic("compass")}<span>${this.placeOf(s)
+                    ? `<b>${esc(T("findItIn"))}${SP}${esc(this.placeOf(s))}.</b>` : ""}</span>
+                    <button class="lrn-btn sm pri" data-act="open-screen" data-screen="${esc(s.key)}"
+                        >${ic("arrow-right")}${esc(T("openScreenIn"))}${this.placeOf(s)
+                            ? `${SP}${esc(this.placeOf(s))}` : ""}</button></div>`
+                : (s.reach
+                    ? `<p class="lrn-callout">${ic("compass")}<b>${esc(T("reachVia"))}${SP}${esc(s.reach)}.</b>${SP}${esc(T("reachViaBody"))}</p>`
+                    : ""))}
         <div class="lrn-obls">
             ${block("help-circle", T("whatIs"), o.what)}
             ${block("target", T("whyMatters"), o.why)}
@@ -1673,6 +1719,7 @@ export class LearnJourney extends Component {
             "s-back": () => this.sBack(),
             "s-exit": () => this.sExit(),
             "to-practice": () => this.openPractice(),
+            "open-screen": () => this.openRealScreen(act.dataset.screen),
             "p-exit": () => this.pExit(),
             // LEARNOS Phase 6. The Continue strip opens whatever the server
             // suggested — a station or the live capstone — through the SAME
@@ -1819,6 +1866,24 @@ export class LearnJourney extends Component {
             ctx = (this.props && this.props.action && this.props.action.context) || {};
         } catch {
             ctx = {};
+        }
+        // LEARN REFRESH step 1 — inside the Learn hub the map is the Lessons
+        // lens and receives the hub's ARRIVAL, not an action context. The
+        // same grammar the ⌘K rows already use, widened by three words:
+        // "lesson:<key>", "suggest:<key>" and "practice". Applied once per
+        // arrival: coming back to this tab later is not a second deep link.
+        const arrival = this.props && this.props.arrival;
+        if (arrival && arrival.focus && !ctx.pb_focus && !CONSUMED_ARRIVALS.has(arrival)) {
+            CONSUMED_ARRIVALS.add(arrival);
+            const f = String(arrival.focus);
+            const lm = /^(lesson|suggest):([A-Za-z0-9_]+)$/.exec(f);
+            if (lm) {
+                ctx = Object.assign({}, ctx, { [lm[1]]: lm[2] });
+            } else if (f === "practice") {
+                ctx = Object.assign({}, ctx, { practice: 1 });
+            } else {
+                ctx = Object.assign({}, ctx, { pb_focus: f });
+            }
         }
         const suggest = typeof ctx.suggest === "string" ? ctx.suggest : "";
         if (suggest && this._stationOfLesson(suggest)) {

@@ -210,6 +210,12 @@ class LearnEvent(models.Model):
             ('first_visit', self.env._('First-visit note shown')),
             ('team_remind', self.env._('Reminder sent by a manager')),
             ('role_set', self.env._('Learning path picked')),
+            # LEARN REFRESH step 1. "Take me there" on the helper's tab list
+            # (the tab key rides in `detail`), and a walkthrough that could not
+            # open its screen for this reader — the row that says which
+            # screens people are sent to and cannot reach.
+            ('coach_goto', self.env._('Helper switched tab')),
+            ('scenario_blocked', self.env._('Walkthrough could not open its screen')),
         ]
 
     # -- append-only ------------------------------------------------------

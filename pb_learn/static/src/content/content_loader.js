@@ -95,10 +95,20 @@ export function composeScreens(content, runtime) {
             next_step: r.next_step === undefined ? s.next_step || "" : r.next_step,
             action_tags: r.action_tags || [],
             action_xmlids: r.action_xmlids || [],
-            models: r.models || [],
+            // A model the CONTENT claims (the native contract form) joins the
+            // leaf's; the leaf's contested ones were already dropped server-side.
+            models: [...(r.models || []), ...(s.models || [])],
             own_tag: r.own_tag || "",
             own_xmlid: r.own_xmlid || "",
             suggest: s.suggest || [],
+            // LEARN REFRESH step 1 — where the screen lives in the rail
+            // ("<hub tag>:<lens>[/<tab>]" or "detail:<panel>"), the action a
+            // screen outside every hub opens with, the scenario xml-ids that
+            // mean this screen, and a hub page's orientation (or null).
+            places: s.places || [],
+            open: s.open || "",
+            navs: s.navs || [],
+            hub: s.hub || null,
         };
     });
 }

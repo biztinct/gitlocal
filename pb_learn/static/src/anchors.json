@@ -56,7 +56,11 @@
     "  emitted · every practice key exists in the replica · every anchor the",
     "  content names is registered · every data-coach in a scanned file is",
     "  declared here or whitelisted as foreign · and the registry never silently",
-    "  claims an anchor another module owns."
+    "  claims an anchor another module owns.",
+    "",
+    "RETIRED (LEARN REFRESH step 1): \"retired\": true marks a product anchor whose control is gone from its template. The registry keeps the name so content that still points at it is FOUND — tools/check_contract.py lists every use as a WARNING — and test_01 checks the opposite direction: a retired anchor that is back in its template must lose the flag. Delete the entry once no content names it.",
+    "",
+    "ALSO (LEARN REFRESH step 1): \"also\": [files] lists further templates that draw the SAME control under the same name — the Pay Run hub's Runs board draws pk-kpis / pk-tabs / pk-card as the retired kanban did. test_01 checks every file named."
   ],
   "product": {
     "pw-rail": {
@@ -132,7 +136,10 @@
     "pk-kpis": {
       "screen": "payruns",
       "file": "pb_payruns/static/src/xml/payruns_kanban.xml",
-      "desc": "The KPI band above the board: total, in pipeline, awaiting YOUR approval, completed, net paid."
+      "desc": "The KPI band above the board: total, in pipeline, awaiting YOUR approval, completed, net paid.",
+      "also": [
+        "pb_payruns/static/src/xml/payruns.xml"
+      ]
     },
     "pk-run": {
       "screen": "payruns",
@@ -143,7 +150,10 @@
     "pk-tabs": {
       "screen": "payruns",
       "file": "pb_payruns/static/src/xml/payruns_kanban.xml",
-      "desc": "Status tabs. They filter the board by approval stage, not by period."
+      "desc": "Status tabs. They filter the board by approval stage, not by period.",
+      "also": [
+        "pb_payruns/static/src/xml/payruns.xml"
+      ]
     },
     "pk-datechips": {
       "screen": "payruns",
@@ -160,7 +170,10 @@
       "screen": "payruns",
       "file": "pb_payruns/views/hr_payslip_run_kanban.xml",
       "repeats": true,
-      "desc": "A pay run card. Emitted once per record, so a point-at lands on the first card on the board — enough to say 'a card looks like this', not enough to say 'that one'."
+      "desc": "A pay run card. Emitted once per record, so a point-at lands on the first card on the board — enough to say 'a card looks like this', not enough to say 'that one'.",
+      "also": [
+        "pb_payruns/static/src/xml/payruns.xml"
+      ]
     },
     "pk-card-actions": {
       "screen": "payruns",
@@ -339,7 +352,9 @@
     "fs-simulate": {
       "screen": "formula",
       "file": "pb_formula_studio/static/src/xml/studio.xml",
-      "desc": "Simulate. Runs the edited configuration against a period that has already been paid — the evidence the one-employee preview is not."
+      "desc": "Simulate. Runs the edited configuration against a period that has already been paid — the evidence the one-employee preview is not.",
+      "retired": true,
+      "retired_note": "LEARN REFRESH step 1: no longer in the product template. Content still names it until step 2 rewrites approvals/formula; check_contract.py warns on every use."
     },
     "st-new": {
       "screen": "statutory",
@@ -457,27 +472,37 @@
     "pa-hero": {
       "screen": "approvals",
       "file": "pb_approval/static/src/xml/approval.xml",
-      "desc": "The approval pipeline header, with the count that is waiting on YOU. Officer review, then HR review, then Finance approval, printed in order."
+      "desc": "The approval pipeline header, with the count that is waiting on YOU. Officer review, then HR review, then Finance approval, printed in order.",
+      "retired": true,
+      "retired_note": "LEARN REFRESH step 1: no longer in the product template. Content still names it until step 2 rewrites approvals/formula; check_contract.py warns on every use."
     },
     "pa-kpis": {
       "screen": "approvals",
       "file": "pb_approval/static/src/xml/approval.xml",
-      "desc": "How many runs sit at each gate, and the net at stake across all of them. A money figure that has not been paid and can still be stopped."
+      "desc": "How many runs sit at each gate, and the net at stake across all of them. A money figure that has not been paid and can still be stopped.",
+      "retired": true,
+      "retired_note": "LEARN REFRESH step 1: no longer in the product template. Content still names it until step 2 rewrites approvals/formula; check_contract.py warns on every use."
     },
     "pa-lanes": {
       "screen": "approvals",
       "file": "pb_approval/static/src/xml/approval.xml",
-      "desc": "The three lanes and the run cards in them. A card offers Approve and Reject only at the gate you hold; everywhere else it names who is holding it up."
+      "desc": "The three lanes and the run cards in them. A card offers Approve and Reject only at the gate you hold; everywhere else it names who is holding it up.",
+      "retired": true,
+      "retired_note": "LEARN REFRESH step 1: no longer in the product template. Content still names it until step 2 rewrites approvals/formula; check_contract.py warns on every use."
     },
     "pa-recent": {
       "screen": "approvals",
       "file": "pb_approval/static/src/xml/approval.xml",
-      "desc": "Recently decided, approvals and rejections together, with the written reason on every rejection. The audit trail as a reading surface."
+      "desc": "Recently decided, approvals and rejections together, with the written reason on every rejection. The audit trail as a reading surface.",
+      "retired": true,
+      "retired_note": "LEARN REFRESH step 1: no longer in the product template. Content still names it until step 2 rewrites approvals/formula; check_contract.py warns on every use."
     },
     "pa-reject": {
       "screen": "approvals",
       "file": "pb_approval/static/src/xml/approval.xml",
-      "desc": "The reject popover. The reason field is required, and the note beneath it says what rejecting does to the payslips in the run."
+      "desc": "The reject popover. The reason field is required, and the note beneath it says what rejecting does to the payslips in the run.",
+      "retired": true,
+      "retired_note": "LEARN REFRESH step 1: no longer in the product template. Content still names it until step 2 rewrites approvals/formula; check_contract.py warns on every use."
     },
     "pe-head": {
       "screen": "employees",
@@ -639,6 +664,30 @@
       "screen": "dashboard",
       "file": "pb_learn/static/src/coach/coach.xml",
       "desc": "The one helper button (LEARN v3), bottom-right on every screen. Opens the Guide / Ask / Practice drawer. Named by scenario sc_welcome's last step; it replaced the PayAI pill, which hides itself when this module is installed."
+    },
+    "pw-scheme": {
+      "screen": "runpayroll",
+      "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "desc": "The pay-scheme cards, shown when the company has more than one scheme. Choosing one chooses who is paid and in which currency.",
+      "reserved": true
+    },
+    "dash-period": {
+      "screen": "dashboard",
+      "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
+      "desc": "The one line that says which payroll month every number on the page describes.",
+      "reserved": true
+    },
+    "ex-trail": {
+      "screen": "explorer",
+      "file": "pb_explorer/static/src/xml/explorer.xml",
+      "desc": "Where you are standing in the group, and what one step down would show. Every crumb is a way back.",
+      "reserved": true
+    },
+    "ex-when": {
+      "screen": "explorer",
+      "file": "pb_explorer/static/src/xml/explorer.xml",
+      "desc": "The period picker: the one choice every number on the Explorer depends on.",
+      "reserved": true
     }
   },
   "pattern": {},
@@ -691,7 +740,8 @@
       "pb_insights/static/src/xml/insights.xml",
       "pb_explorer/static/src/xml/explorer.xml",
       "pb_workforce_insights/static/src/xml/workforce_insights.xml",
-      "pb_govt_reports/static/src/xml/govt_reports.xml"
+      "pb_govt_reports/static/src/xml/govt_reports.xml",
+      "pb_payruns/static/src/xml/payruns.xml"
     ],
     "replica": [
       "pb_learn/static/src/engine/screens.js",

@@ -429,17 +429,26 @@ def anchor_lint(cfg, res, quiet):
     if not spec:
         return
     referenced, present = set(), set()
+    uses = {}
     for rel in spec["contentFiles"]:
         text = read(AUTHOR, rel)
         if text is None:
             res.skip({"id": "anchor-lint"}, "content file not found: %s" % rel)
             return
-        referenced |= set(ANCHOR_RE.findall(text))
+        found = ANCHOR_RE.findall(text)
+        referenced |= set(found)
+        for a in found:
+            uses[a] = uses.get(a, 0) + 1
+    # LEARN REFRESH step 1. A template file that is GONE (pb_approval was
+    # deleted with the approval-engine switch) is not a reason to skip the
+    # whole lint any more: its anchors are simply not present, and the
+    # registry says which of those are RETIRED on purpose.
+    gone = []
     for rel in spec["templateFiles"]:
         text = read(REPO, rel)
         if text is None:
-            res.skip({"id": "anchor-lint"}, "template file not found: %s" % rel)
-            return
+            gone.append(rel)
+            continue
         present |= set(re.findall(r'data-coach="([^"]+)"', text))
     # Practice-only anchors have no product template by definition; they are
     # declared in the registry and drawn by the replica, and the module's own
@@ -448,9 +457,25 @@ def anchor_lint(cfg, res, quiet):
     if registry is None:
         res.skip({"id": "anchor-lint"}, "registry not found: %s" % spec["registry"])
         return
-    present |= set(json.loads(registry)["practice"])
+    reg = json.loads(registry)
+    present |= set(reg["practice"])
+    retired = {k for k, v in reg["product"].items() if v.get("retired")}
 
-    missing = sorted(referenced - present)
+    # A retired anchor still named by content is a WARNING, not a failure:
+    # the control is gone on purpose and the content that points at it is
+    # scheduled for rewrite (LEARN REFRESH step 2). Printed every run, with
+    # the count, so it cannot be forgotten.
+    stale = sorted((referenced & retired) - present)
+    if stale:
+        print("  %s!%s anchor-lint            %s%d content reference(s) to %d RETIRED "
+              "anchor(s) — step 2 must clear: %s%s"
+              % (YELLOW, OFF, DIM, sum(uses[a] for a in stale), len(stale),
+                 ", ".join("%s×%d" % (a, uses[a]) for a in stale), OFF))
+    for rel in gone:
+        print("  %s!%s anchor-lint            %stemplate no longer exists: %s%s"
+              % (YELLOW, OFF, DIM, rel, OFF))
+
+    missing = sorted(referenced - present - retired)
     chk = {"id": "anchor-lint",
            "why": spec["why"],
            "taughtIn": ["every lesson step, mission target and coach point-at"]}

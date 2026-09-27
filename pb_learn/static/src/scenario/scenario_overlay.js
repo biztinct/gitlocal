@@ -184,7 +184,7 @@ export class ScenarioOverlay extends Component {
         if (this._destroyed) {
             return;
         }
-        if (this.state.active && this.state.done) {
+        if (this.state.active && (this.state.done || this.state.blocked)) {
             // The closing card. No target, no timers, no listener — the only
             // control left is the one that tears the overlay down.
             if (this._stepKey !== null) {
@@ -295,8 +295,11 @@ export class ScenarioOverlay extends Component {
      *  degrades to a centred card — a worse explanation, never a broken screen.
      */
     async _navigate(ref) {
+        // Through the service, which opens the screen WHERE IT LIVES (hub ›
+        // tab) and blocks the walkthrough with a plain reason when it cannot
+        // — the same door the entry navigation uses (LEARN REFRESH step 1).
         try {
-            await this.action.doAction(ref, { clearBreadcrumbs: true });
+            await this.sc.navigate(ref);
         } catch {
             // The anchor will not resolve and the card says so instead.
         }
@@ -496,12 +499,18 @@ export class ScenarioOverlay extends Component {
      *  product exactly as it was. The following step then degrades to a centred
      *  card, which is the honest outcome. */
     onNext() {
+        if (this.state.blocked) {
+            return;
+        }
         this._detachClick();
         this._clearTimer();
         this.sc.next();
     }
 
     onBack() {
+        if (this.state.blocked) {
+            return;
+        }
         this._detachClick();
         this._clearTimer();
         this.sc.back();
@@ -546,7 +555,12 @@ export class ScenarioOverlay extends Component {
         }
         ev.preventDefault();
         const act = el.dataset.act;
-        if (act === "s-next" || act === "s-skip") {
+        if (act === "s-practice") {
+            this._detachClick();
+            this._clearTimer();
+            this._clearTyper();
+            this.sc.practiceInstead();
+        } else if (act === "s-next" || act === "s-skip") {
             this.onNext();
         } else if (act === "s-back") {
             this.onBack();
@@ -626,6 +640,17 @@ export class ScenarioOverlay extends Component {
         // walkthrough in the other language until a reload.
         const lang = this.state.lang;
         void lang;
+        if (this.state.blocked) {
+            // LEARN REFRESH step 1 — the screen could not be opened for this
+            // reader. One sentence that names it and says what to do instead;
+            // never step one waiting for an anchor that is not coming.
+            const label = this.state.blocked.label
+                || tx(this.scenario ? this.scenario.name : "");
+            // The header chip already says "You can't open this screen".
+            return `
+            <h3>${esc(tx(this.scenario ? this.scenario.name : ""))}</h3>
+            <div class="lrn-cbody">${esc(T("scNoAccessA"))}${SP}<b>${esc(label)}</b>${esc(T("scNoAccessB"))}</div>`;
+        }
         if (this.state.done) {
             return `
             <div class="lrn-kicker">${esc(T("scDone"))}</div>
@@ -678,6 +703,14 @@ export class ScenarioOverlay extends Component {
     }
 
     _toolsStr() {
+        if (this.state.blocked) {
+            return `<div class="lrn-ctools">
+                <button class="lrn-btn sm pri" data-act="s-practice"
+                    >${ic("flask")}${esc(T("scTryPractice"))}</button>
+                <button class="lrn-btn sm ghost" data-act="s-leave"
+                    >${ic("x")}${esc(T("exit"))}</button>
+            </div>`;
+        }
         if (this.state.done) {
             return `<div class="lrn-ctools">
                 <button class="lrn-btn sm pri" data-act="s-leave"
@@ -712,6 +745,9 @@ export class ScenarioOverlay extends Component {
         const s = this.scenario;
         if (!s) {
             return "";
+        }
+        if (this.state.blocked) {
+            return `<div class="lrn-schead"><span class="lrn-chip">${ic("lock")}${esc(T("scNoAccessT"))}</span></div>`;
         }
         const counter = this.state.done
             ? ""

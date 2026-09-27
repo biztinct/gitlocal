@@ -34,12 +34,12 @@
    was an answer — see `ask()` below, where the Phase A2 ruling is spelled
    out and still holds as the default.
    ========================================================================== */
-import { Component, markup, onMounted, onWillStart, onWillUnmount, useRef, useState } from "@odoo/owl";
+import { Component, markup, onMounted, onWillStart, onWillUnmount, useEffect, useRef, useState } from "@odoo/owl";
 import { useBus, useService } from "@web/core/utils/hooks";
 import { registry } from "@web/core/registry";
 import { user } from "@web/core/user";
 
-import { RT, T, tx, esc, ic, SP } from "../engine/runtime";
+import { RT, T, tx, esc, ic, SP, reduced } from "../engine/runtime";
 /* The glossary hovercard (LEARNOS Phase 2). Answer blocks are the one
    place in the drawer that inserts authored prose RAW, so they are the
    one place `gtx` replaces `tx`. */
@@ -50,6 +50,19 @@ import { flashRing } from "../engine/spotlight";
 import { calcHTML, calcKpiHTML } from "../engine/visuals";
 import { markLauncherStack, maybeGreet, maybeWelcome } from "./first_login";
 import { registerLessonRows } from "../hub/learn_palette";
+/* LEARN REFRESH step 1 — where the learner is, published by the hubs, and the
+   one module that turns a screen into a place (engine/places.js). The rail's
+   own icon set draws the tab list, so each tab looks as it does on the rail. */
+import { hubPlace, placeSub, switchLens } from "@pb_hub/js/hub_place";
+import { ic as railIc } from "@pb_import_kit/js/import_icons";
+import { hubScreenOf, openLearn, screenAtPlace, setReach, tabName } from "../engine/places";
+
+/* The one sentence the drawer needs when the content plane itself failed to
+   load — and so cannot supply it. Mirrors the `helperFailed` chrome key. */
+const LOAD_FAILED = {
+    en: "The guide could not load just now. Your screen is not affected. Close the helper and open it again, or use the Ask tab.",
+    vi: "Phần hướng dẫn chưa tải được lúc này. Màn hình của bạn không bị ảnh hưởng. Hãy đóng trợ lý rồi mở lại, hoặc dùng tab Hỏi đáp.",
+};
 
 /* Shared with the Journey: one language preference for the whole system. */
 const LOCAL_PREFS = "pbLearnPrefs";
@@ -97,6 +110,11 @@ export const COACH_ACTIONS = new Set([
     // screen") or dismisses the card. None reaches a product method; the only
     // writes are this learner's own learning-log rows.
     "c-mgo", "c-mok", "c-fvexplain", "c-fvwatch", "c-mlater", "c-mewatch", "c-meskip",
+    // LEARN REFRESH step 1 — "Take me there" on the hub page's tab list. It
+    // asks the hub on screen to show another of ITS OWN tabs, through the
+    // shell's own lens switch (the same call its rail buttons make); it
+    // reaches no product method and writes nothing.
+    "c-goto",
 ]);
 
 /* LEARN v3 — ONE HELPER, NOT TWO BUTTONS.
@@ -188,7 +206,17 @@ export class CoachHost extends Component {
             lastQ: "",
             // LEARN v3 — the one moment card showing, or null.
             moment: null,
+            // LEARN REFRESH step 1 — the content plane failed to load, and a
+            // "Take me there" that could not move (the tab is not open to
+            // this reader any more).
+            loadFailed: false,
+            gotoFailed: false,
         });
+        // LEARN REFRESH step 1 — WHERE AM I. The hubs publish the hub and tab
+        // on screen (pb_hub/js/hub_place.js); `useState` on that store is the
+        // subscription, and `placeKey` (read by the template root) is what
+        // makes a tab switch re-render this component at all.
+        this.place = useState(hubPlace);
         this._milestoneAt = 0;
         // Passed to the Ask tab as a prop. A stable function, made once, so
         // the tab is not re-rendered by a new identity on every drawer render.
@@ -245,6 +273,9 @@ export class CoachHost extends Component {
                     // LEARN v3 — the month-end date, for the Dashboard nudge.
                     path: runtime.path || {},
                 };
+                // Which stations this reader can reach, for the walkthrough
+                // engine's "you don't have access" answer (engine/places.js).
+                setReach(runtime.visible_stations);
                 // LEARN v3 — lessons in the ⌘K search, from the same content.
                 try {
                     registerLessonRows(content);
@@ -265,10 +296,15 @@ export class CoachHost extends Component {
             } catch {
                 // A Coach that cannot load must not break the screen it sits on.
                 this.state.ready = false;
+                this.state.loadFailed = true;
             }
         });
 
         useBus(this.env.bus, "ACTION_MANAGER:UI-UPDATED", () => this._resolveScreen());
+        // LEARN REFRESH step 1 — and when the TAB changes, which is not an
+        // action change at all. After the patch, so it is a read of the
+        // store and a write of this component's own state only.
+        useEffect(() => { this._resolveScreen(); }, () => [this.placeKey]);
         onMounted(() => {
             this._resolveScreen();
             // CAPTURE PHASE, and it is not a style choice. "document, not
@@ -314,6 +350,16 @@ export class CoachHost extends Component {
         const controller = this.action.currentController;
         const action = controller?.action;
         const screens = this.bundle?.screens || [];
+        // LEARN REFRESH step 1 — PASS −1, THE PLACE. Inside a hub the action
+        // is the HUB (`pb_pay_hub`) whichever tab is showing, so the passes
+        // below can only ever find the hub. The published place says which
+        // tab (and inner tab, and open detail panel) it is; a tab with no
+        // lesson yet grounds on the hub's own page rather than on nothing.
+        const atPlace = screenAtPlace(screens, action && action.tag);
+        if (atPlace) {
+            this._ground(atPlace.key);
+            return;
+        }
         // TWO PASSES, exactly as SidebarHost._resolve does it: exact matches
         // (tag, xml-id) across ALL screens first, and only then the broad model
         // match. One pass with || inside is order-dependent and wrong here —
@@ -334,7 +380,11 @@ export class CoachHost extends Component {
             ? screens.find((s) => (s.models || []).includes(action.res_model))
             : null;
         const found = exact || byModel;
-        const key = found ? found.key : null;
+        this._ground(found ? found.key : null);
+    }
+
+    _ground(key) {
+        this.state.gotoFailed = false;
         if (key !== this.state.screen) {
             this.state.screen = key;
             // LEARN v3. A moment belongs to the screen it was shown on.
@@ -565,6 +615,19 @@ export class CoachHost extends Component {
     get screenLabel() {
         void this.state.lang;
         const s = this.screenInfo;
+        if (this.onHub) {
+            // "Pay Run › Payslips" — the hub and the tab, in the helper's
+            // language, plus the inner tab or open panel when that is what
+            // the lesson is about ("Pay Run › Adjust › Proration").
+            const hs = this.hubScreen;
+            const hub = hs ? tx(hs.name) : this.place.hubLabel;
+            const tab = this.place.lens ? this.tabLabel(this.place.lens) : "";
+            let label = tab ? `${hub}${SP}›${SP}${tab}` : hub;
+            if (s && !s.hub && (placeSub() || this.place.detail)) {
+                label = `${label}${SP}›${SP}${tx(s.name)}`;
+            }
+            return label;
+        }
         if (s) {
             return tx(s.name);
         }
@@ -575,6 +638,62 @@ export class CoachHost extends Component {
     get onScreenText() {
         void this.state.lang;
         return T("onScreen");
+    }
+
+    // ------------------------------------------------ LEARN REFRESH step 1
+    /** Read by the template root: the subscription to tab changes. */
+    get placeKey() {
+        const p = this.place;
+        const sub = p.subs[`${p.tag}:${p.lens}`] || "";
+        return `${p.seq}|${p.tag}|${p.lens}|${sub}|${p.detail}|${p.lenses.length}`;
+    }
+
+    /** True while the action on screen is the hub that published the place. */
+    get onHub() {
+        const a = this.action.currentController?.action;
+        return !!(this.place.tag && a && a.tag === this.place.tag);
+    }
+
+    /** The hub's own page in the content plane (its orientation), or null. */
+    get hubScreen() {
+        return this.onHub ? hubScreenOf(this.bundle?.screens || [], this.place.tag) : null;
+    }
+
+    /** A tab's name in the helper's language; the rail's label when the
+     *  content has no words for it (a tab added after this was written). */
+    tabLabel(lens) {
+        const n = tabName(this.bundle?.screens || [], this.place.tag, lens);
+        if (n) {
+            return n;
+        }
+        const l = this.place.lenses.find((x) => x.key === lens);
+        return l ? l.label : lens;
+    }
+
+    tabLine(lens) {
+        const hs = this.hubScreen;
+        const t = hs && hs.hub.tabs && hs.hub.tabs[lens];
+        return t ? tx(t.line) : "";
+    }
+
+    /** The in-product "Reduce motion" choice as well as the system's. */
+    get isStill() {
+        return reduced();
+    }
+
+    /** Cross-fade key: a new screen OR a new tab re-mounts the body. */
+    get bodyKey() {
+        return `${this.state.screen || ""}|${this.place.lens}|${this.state.tab}`;
+    }
+
+    /** "Take me there": the hub switches its own tab; the drawer stays. */
+    goTab(lens) {
+        const ok = switchLens(lens);
+        this.state.gotoFailed = !ok;
+        if (ok) {
+            this.state.answer = null;
+            this._log("coach_goto", lens);
+        }
     }
 
     close() {
@@ -770,7 +889,8 @@ export class CoachHost extends Component {
     }
 
     openLesson() {
-        this.action.doAction("pb_learn.action_learn_journey");
+        // Inside the Learn hub (rail visible), on the lesson map.
+        openLearn(this.action, "");
         this.close();
     }
 
@@ -840,7 +960,10 @@ export class CoachHost extends Component {
         const lang = this.state.lang;
         void lang;
         if (!this.state.ready) {
-            return markup(`<p class="lrn-note">${esc(T("noAnswerBody"))}</p>`);
+            // The content plane is what failed, so the sentence cannot come
+            // from it: the one string this drawer carries itself.
+            return markup(`<div class="lrn-cground off">${ic("info")}
+                <span>${esc(LOAD_FAILED[RT.lang] || LOAD_FAILED.en)}</span></div>`);
         }
         const parts = [];
         // LEARN v3 — the Practice tab. Everything on it opens a copy; nothing
@@ -852,8 +975,21 @@ export class CoachHost extends Component {
             return markup(parts.join(""));
         }
         parts.push(this._groundedHTML());
+        if (this.state.gotoFailed) {
+            parts.push(`<div class="lrn-cblock warn">${ic("info")}<span>${esc(T("hubTabGone"))}</span></div>`);
+        }
         if (this.state.answer) {
             parts.push(this._answerHTML(this.state.answer));
+        } else if (this.screenInfo && this.screenInfo.hub) {
+            // LEARN REFRESH step 1 — a tab with no lesson yet. Never "no
+            // content": what this tab is for (in the grounded block above),
+            // the few things people come here to do, every tab on the page,
+            // then what can be asked anywhere.
+            parts.push(this._oftenHTML());
+            parts.push(this._tabsHTML(true));
+            parts.push(this._nextStepHTML());
+            parts.push(this._notSureHTML());
+            parts.push(this._suggestHTML());
         } else {
             // LEARN v3 — the next step, with its reason, at the very top when
             // the tenant has that switch on. Draws nothing when it is off.
@@ -872,6 +1008,8 @@ export class CoachHost extends Component {
             parts.push(this._suggestHTML());
             // The sandbox used to sit LAST here. LEARN v3 gives it a tab of
             // its own, so a single line points at it instead of a whole card.
+            // LEARN REFRESH step 1 — on a hub, the rest of the page, folded.
+            parts.push(this._tabsHTML(false));
         }
         // BELOW the answer, deliberately. The person opened the drawer because
         // they were stuck; the answer is what they came for, and a consent card
@@ -1018,9 +1156,7 @@ export class CoachHost extends Component {
         if (!key) {
             return;
         }
-        this.action.doAction("pb_learn.action_learn_journey", {
-            additionalContext: { station: key },
-        });
+        openLearn(this.action, `station:${key}`);
         this.close();
     }
 
@@ -1046,9 +1182,7 @@ export class CoachHost extends Component {
      *  further: the deep link is what the Journey reads, so there is exactly
      *  one place that knows how to build a practice view. */
     openPractice() {
-        this.action.doAction("pb_learn.action_learn_journey", {
-            additionalContext: { practice: 1 },
-        });
+        openLearn(this.action, "practice");
         this.close();
     }
 
@@ -1073,6 +1207,18 @@ export class CoachHost extends Component {
      *  screen with no content yet, it says THAT instead of guessing. */
     _groundedHTML() {
         const s = this.screenInfo;
+        if (s && s.hub) {
+            const line = this.onHub ? this.tabLine(this.place.lens) : "";
+            // The shell may be showing its padlock page: the tab on screen is
+            // not one this reader can open. Say THAT, not "no lesson yet".
+            const closed = this.onHub && this.place.ready
+                && !this.place.lenses.some((l) => l.key === this.place.lens);
+            return `<div class="lrn-cground">${ic("map-pin")}
+                <span><b>${esc(this.screenLabel)}</b></span>
+                ${line ? `<p class="lrn-cline">${esc(line)}</p>` : ""}
+                <p class="lrn-note">${esc(tx(s.blurb))}</p>
+                <p class="lrn-note lrn-hnolesson">${ic(closed ? "lock" : "book-open")}${esc(T(closed ? "hubTabClosed" : "hubNoLesson"))}</p></div>`;
+        }
         if (!s) {
             return `<div class="lrn-cground off">${ic("info")}
                 <span>${esc(T("coachNoScreen"))}</span></div>`;
@@ -1108,6 +1254,65 @@ export class CoachHost extends Component {
         return `<div class="lrn-cscens">
             <div class="lrn-clabel">${esc(T("scenarios"))}</div>
             ${rows}
+        </div>`;
+    }
+
+    /** The hub's tabs as a compact list, the current one marked. Only the
+     *  tabs the SHELL shows this reader (hub_place.js `lenses`), in its
+     *  order: a tab they cannot open is never offered here either. */
+    _tabsHTML(open) {
+        const hs = this.hubScreen;
+        const lenses = this.place.lenses || [];
+        if (!hs || lenses.length < 2) {
+            return "";
+        }
+        const rows = lenses.map((l) => {
+            const here = l.key === this.place.lens;
+            const line = this.tabLine(l.key);
+            const lock = l.locked ? ic("lock") : "";
+            const cls = here ? "lrn-htab here" : "lrn-htab";
+            return `<li class="${cls}">
+                <button type="button" class="lrn-htabbtn" data-act="c-goto" data-lens="${esc(l.key)}"
+                    ${here ? `aria-current="page" disabled` : ""}
+                    title="${esc(here ? T("youAreHere") : T("takeMeThere"))}">
+                    <span class="lrn-htabic">${String(railIc(l.icon || "circle", 15))}</span>
+                    <span class="lrn-htabtx"><b>${esc(this.tabLabel(l.key))}${lock}</b>${line
+                        ? `<small>${esc(line)}</small>` : ""}</span>
+                    ${here ? `<span class="lrn-chip a">${esc(T("youAreHere"))}</span>`
+                        : `<span class="lrn-htabgo">${ic("arrow-right")}</span>`}
+                </button></li>`;
+        }).join("");
+        const list = `<ul class="lrn-htabs">${rows}</ul>`;
+        if (open) {
+            return `<div class="lrn-hub">
+                <div class="lrn-clabel">${esc(T("hubTabs"))}</div>${list}</div>`;
+        }
+        return `<details class="lrn-hub lrn-hubfold">
+            <summary class="lrn-clabel">${esc(T("hubAllTabs"))}${SP}${esc(tx(hs.name))}${SP}(${lenses.length})</summary>${list}</details>`;
+    }
+
+    /** "People often come here to" — at most three, each a tab switch, and
+     *  only for tabs this reader can see. */
+    _oftenHTML() {
+        const hs = this.hubScreen;
+        if (!hs) {
+            return "";
+        }
+        const seen = new Set((this.place.lenses || []).map((l) => l.key));
+        const items = (hs.hub.often || []).filter((o) => seen.has(o.lens));
+        if (!items.length) {
+            return "";
+        }
+        return `<div class="lrn-hoften">
+            <div class="lrn-clabel">${esc(T("hubOften"))}</div>
+            ${items.map((o) => {
+                const here = o.lens === this.place.lens;
+                return `<button type="button" class="lrn-hoftenbtn" data-act="c-goto"
+                    data-lens="${esc(o.lens)}" ${here ? "disabled" : ""}>
+                    <span>${esc(tx(o.text))}</span>
+                    <span class="lrn-hoftengo">${here ? esc(T("youAreHere"))
+                        : `${esc(T("takeMeThere"))}${ic("arrow-right")}`}</span></button>`;
+            }).join("")}
         </div>`;
     }
 
@@ -1305,6 +1510,8 @@ export class CoachHost extends Component {
             this.setTab(el.dataset.tab);
         } else if (act === "c-askdata") {
             this.askData();
+        } else if (act === "c-goto") {
+            this.goTab(el.dataset.lens);
         } else if (["c-mgo", "c-mok", "c-fvexplain", "c-fvwatch", "c-mlater",
                     "c-mewatch", "c-meskip"].includes(act)) {
             this._momentAct(act);

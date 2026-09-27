@@ -42,6 +42,14 @@ import { registry } from "@web/core/registry";
 
 import { RT } from "../engine/runtime";
 import { loadContent } from "../content/content_loader";
+import { navPlace, openLearn, openScreen, placeLabel, reachable, screenForRef, waitForPlace }
+    from "../engine/places";
+import { hubPlace } from "@pb_hub/js/hub_place";
+
+/* How long a navigation may take before the walkthrough stops waiting for it.
+   A screen that has not appeared by then is not going to: the reader gets the
+   plain sentence and a way on, never an overlay stuck on step one. */
+const NAV_TIMEOUT = 8000;
 
 /* The namespace `learn.progress` keys a scenario under. Must match
    models/learn_progress.py SCENARIO_PREFIX, which is what refuses an unknown
@@ -94,9 +102,15 @@ export const scenarioService = {
                instead of leaving it in the other language until a reload.
                Exactly the bug the Phase D deploy round found in the drawer. */
             lang: RT.lang,
+            /* LEARN REFRESH step 1 — the screen this walkthrough needs could
+               not be opened for this reader (no access, or it never came up).
+               `{label}` names it in the reader's words; the overlay then shows
+               one sentence and a way on instead of step one frozen. */
+            blocked: null,
         });
 
         let scenarios = null;      // null = not loaded yet, [] = loaded, empty
+        let screens = [];          // the content plane's screens (places)
         let loading = null;
 
         /** Fetched once, and only when something actually asks. The overlay is
@@ -110,6 +124,7 @@ export const scenarioService = {
             if (!loading) {
                 loading = loadContent().then((content) => {
                     scenarios = content.scenarios || [];
+                    screens = content.screens || [];
                     RT.chrome = content.chrome || RT.chrome;
                     return scenarios;
                 }).catch(() => {
@@ -153,25 +168,107 @@ export const scenarioService = {
         }
 
         // -------------------------------------------------------- navigation
-        /** Open a real-product destination named by xml-id.
+        /** Open a real-product destination named by xml-id — WHERE IT LIVES.
+         *
+         *  LEARN REFRESH step 1: the xml-ids in the content are the old
+         *  standalone cockpits, which open outside the rail. `openScreen`
+         *  turns one into hub › tab (the Pay Run hub on its Payslips tab) and
+         *  only falls back to the xml-id for a screen no hub holds.
+         *
+         *  Resolves true when the screen is up, false when it is not going to
+         *  be: the reader cannot reach it (known before navigating), the hub
+         *  moved them off a tab they cannot open, or nothing appeared within
+         *  NAV_TIMEOUT. On false the walkthrough is BLOCKED with the reason,
+         *  instead of step one waiting for an anchor that never comes.
          *
          *  Awaited, and guarded: `doAction` is a promise, and a synchronous
-         *  try/catch around it catches nothing (ledger, Phase C review). A
-         *  navigation that fails leaves the step's anchor unresolvable, which
-         *  the overlay already degrades to a centred card — so a broken nav is
-         *  a worse explanation, never a broken screen. */
-        async function navigate(ref) {
+         *  try/catch around it catches nothing (ledger, Phase C review). */
+        /* One navigation per destination at a time. `begin` opens the entry
+           screen while the overlay enters step one, whose own `nav` is very
+           often the SAME screen: two doActions racing to one hub leave the
+           first one superseded and never resolving — which read as "could
+           not open" and blocked a walkthrough that had in fact landed. */
+        let inflight = null;
+
+        function navigate(ref) {
             if (!ref) {
-                return;
+                return Promise.resolve(true);
+            }
+            if (inflight && inflight.ref === ref) {
+                return inflight.promise;
+            }
+            const promise = navigateOnce(ref).finally(() => {
+                if (inflight && inflight.promise === promise) {
+                    inflight = null;
+                }
+            });
+            inflight = { ref, promise };
+            return promise;
+        }
+
+        async function navigateOnce(ref) {
+            const screen = screenForRef(screens, ref);
+            if (screen && reachable(screen) === false) {
+                block(screen);
+                return false;
+            }
+            // Already standing on that tab: nothing to open, and re-opening
+            // the hub would only reload the screen under the spotlight.
+            const here = navPlace(screen);
+            const current = action.currentController && action.currentController.action;
+            if (here && current && current.tag === here.tag
+                    && hubPlace.tag === here.tag && hubPlace.lens === here.lens) {
+                return true;
             }
             state.navigating = true;
+            let ok = true;
             try {
-                await action.doAction(ref, { clearBreadcrumbs: true });
+                const res = await Promise.race([
+                    openScreen(action, screens, screen || ref),
+                    new Promise((resolve) => setTimeout(() => resolve(null), NAV_TIMEOUT)),
+                ]);
+                if (!res) {
+                    ok = false;
+                } else if (res.place) {
+                    ok = (await waitForPlace(res.place, res.seq)) === "here";
+                }
             } catch {
-                // The scenario keeps going and says less than it wanted to.
+                ok = false;
             } finally {
                 state.navigating = false;
             }
+            if (!ok) {
+                block(screen);
+            }
+            return ok;
+        }
+
+        function block(screen) {
+            if (!state.active) {
+                return;
+            }
+            state.blocked = {
+                key: screen ? screen.key : "",
+                label: screen ? placeLabel(screens, screen) : "",
+            };
+            log("scenario_blocked", `${state.key}:${screen ? screen.key : ""}`);
+        }
+
+        /** The way on from a blocked walkthrough: its Try over the practice
+         *  company when it has one, otherwise the practice company itself. */
+        async function practiceInstead() {
+            const key = state.key;
+            const sc = get(key);
+            stop();
+            if (sc && (sc.modes || []).includes("try")) {
+                return begin(key, "try");
+            }
+            try {
+                await openLearn(action, "practice");
+            } catch {
+                // The reader is left where they were, with the card closed.
+            }
+            return true;
         }
 
         // ---------------------------------------------------------- lifecycle
@@ -195,10 +292,10 @@ export const scenarioService = {
                 // Try belongs to the Journey, over the replica. The deep link
                 // is the handover, and it is the same mechanism PayAI's "Show
                 // me" already uses — one door into that action, not two.
+                // LEARN REFRESH step 1: inside the Learn hub, so the rail
+                // is still there when the learner looks up from the copy.
                 try {
-                    await action.doAction("pb_learn.action_learn_journey", {
-                        additionalContext: { scenario: key, mode: "try" },
-                    });
+                    await openLearn(action, `scenario:${key}:try`);
                 } catch {
                     return false;
                 }
@@ -208,6 +305,7 @@ export const scenarioService = {
             state.mode = wanted;
             state.index = 0;
             state.done = false;
+            state.blocked = null;
             state.lang = RT.lang;
             state.active = true;
             logStart(key, wanted);
@@ -275,6 +373,7 @@ export const scenarioService = {
             const wasDone = state.done;
             state.active = false;
             state.done = false;
+            state.blocked = null;
             state.key = null;
             state.index = 0;
             // Closing the closing card is not abandoning it. Logging both would
@@ -323,6 +422,7 @@ export const scenarioService = {
             state,
             load, all, get, steps, current, forScreen,
             begin, next, back, goTo, finish, stop,
+            navigate, practiceInstead,
             record, log, logStart, nowServer,
             PROGRESS_PREFIX,
         };

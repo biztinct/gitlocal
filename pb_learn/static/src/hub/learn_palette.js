@@ -17,6 +17,7 @@ import { _t } from "@web/core/l10n/translation";
 
 import { RT, tx, SP } from "../engine/runtime";
 import { loadContent } from "../content/content_loader";
+import { LEARN_HUB_XMLID, LESSONS_LENS } from "../engine/places";
 
 const palette = registry.category("pb_hub_palette");
 const BASE = 5000;
@@ -58,8 +59,10 @@ export function registerLessonRows(content) {
             sublabel: `${s.kind === "lesson" ? _t("Lesson") : _t("Guide")}${SP}·${SP}${s.duration_min}${SP}min${SP}·${SP}${howTo}`,
             icon: "bookOpen",
             group,
-            action: { xmlid: "pb_learn.action_learn_journey", focus: `station:${s.key}` },
-            requires: "learn_journey",
+            // LEARN REFRESH step 1: inside the Learn hub (rail visible),
+            // on the Lessons tab, which reads the same focus.
+            action: { xmlid: LEARN_HUB_XMLID, lens: LESSONS_LENS, focus: `station:${s.key}` },
+            requires: "learn_hub",
         }, { sequence: BASE + (++i) * 10 });
     }
     for (const sc of content.scenarios || []) {
@@ -74,8 +77,8 @@ export function registerLessonRows(content) {
             sublabel: `${_t("Walkthrough")}${SP}·${SP}${howTo}`,
             icon: "play",
             group,
-            action: { xmlid: "pb_learn.action_learn_journey", focus: `scenario:${sc.key}:${mode}` },
-            requires: "learn_journey",
+            action: { xmlid: LEARN_HUB_XMLID, lens: LESSONS_LENS, focus: `scenario:${sc.key}:${mode}` },
+            requires: "learn_hub",
         }, { sequence: BASE + (++i) * 10 });
     }
 }

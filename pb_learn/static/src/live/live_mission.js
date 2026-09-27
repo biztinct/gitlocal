@@ -42,6 +42,7 @@ import { RT, T, tx, esc, ic } from "../engine/runtime";
 import { gtx, setGlossary, installGlossary } from "../engine/glossary";
 import { loadContent, composeScreens } from "../content/content_loader";
 import { LiveState } from "./live_state";
+import { openScreen } from "../engine/places";
 
 const POLL_MS = 10000;
 
@@ -236,7 +237,9 @@ export class LiveHost extends Component {
         LiveState.setMinimised(!this.state.minimised);
     }
 
-    /** Deep-link to the screen a step names, through the composed screen. */
+    /** Deep-link to the screen a step names, WHERE IT LIVES: hub › tab for a
+     *  screen inside a hub (Pay Run › Run for mL1), its own action otherwise.
+     *  One door for every learning surface (engine/places.js). */
     openScreen() {
         const step = this.current;
         if (!step || !step.nav) {
@@ -246,11 +249,9 @@ export class LiveHost extends Component {
         if (!screen) {
             return;
         }
-        if (screen.own_xmlid) {
-            this.action.doAction(screen.own_xmlid);
-        } else if (screen.own_tag) {
-            this.action.doAction({ type: "ir.actions.client", tag: screen.own_tag });
-        }
+        openScreen(this.action, this.screens, screen).catch(() => {
+            // The step's own check still runs; the reader opens it by hand.
+        });
     }
 
     // -------------------------------------------------------------- render

@@ -850,6 +850,8 @@ def content_screens(data, bi, live, intents_by_key):
             name = station['title']
         elif key in sub:
             name = sub[key]['label']
+        elif ctx.get('name'):
+            name = ctx['name']
         else:
             name = {'en': key, 'vi': key}
         live.check('%s next_step' % where, ctx['next'], ctx.get('liveFallback'))
@@ -860,9 +862,25 @@ def content_screens(data, bi, live, intents_by_key):
                 raise SystemExit('screen %s chips an intent that does not exist: %s'
                                  % (key, ckey))
             chips.append({'key': ckey, 'label': hit['label']})
+        places = list(ctx.get('places') or [])
+        bad = [p for p in places if not PLACE_RE.match(p)]
+        if bad:
+            raise SystemExit('screen %s names places that are not "<tag>:<lens>[/<tab>]" '
+                             'or "detail:<name>": %s' % (key, ', '.join(bad)))
+        hub = content_hub(key, ctx.get('hub'), bi) if ctx.get('hub') else None
+        action_tags = SCREEN_ACTION_TAGS.get(key, '') or (hub['tag'] if hub else '')
         out.append({
             'key': key,
             'sequence': (i + 1) * 10,
+            # LEARN REFRESH step 1 — where this screen lives since the rail
+            # cutover, what it claims beyond its sidebar leaf, and (for the
+            # nine hub pages) the orientation the helper shows on a tab with
+            # no lesson yet.
+            'places': places,
+            'models': list(ctx.get('models') or []),
+            'open': ctx.get('open') or '',
+            'navs': sorted(x for x, k in SCENARIO_NAV.items() if k == key),
+            'hub': hub,
             'name': bi.p('%s name' % where, name),
             'blurb': bi.p('%s blurb' % where, ctx['blurb']),
             # health_learn collected next_step for the .po and never wrote the
@@ -870,13 +888,44 @@ def content_screens(data, bi, live, intents_by_key):
             # It is the most-asked question on any screen.
             'next_step': bi.p('%s next_step' % where, ctx['next']),
             'live_fallback': bi.p('%s live_fallback' % where, ctx.get('liveFallback')),
-            'action_tags': SCREEN_ACTION_TAGS.get(key, ''),
+            'action_tags': action_tags,
             'sidebar_key': SIDEBAR_KEYS.get(key, ''),
             'suggest': chips,
         })
     # learn.screen._order = 'sequence, key'
     out.sort(key=lambda s: (s['sequence'], s['key']))
     return out
+
+
+def content_hub(key, hub, bi):
+    """One hub page's orientation: its tabs' names and lines, and what people
+    most often do there. Lens keys are the SHELL's; the helper lists only the
+    tabs the shell shows the reader, in the shell's order, so this is a
+    dictionary of words, never a second copy of who may see what."""
+    where = 'screen %s hub' % key
+    for field in ('tag', 'xmlid'):
+        if not hub.get(field):
+            raise SystemExit('%s has no %s' % (where, field))
+    tabs = {}
+    for lens, pair in (hub.get('tabs') or {}).items():
+        name, line = pair
+        tabs[lens] = {'name': bi.p('%s tab %s name' % (where, lens), name),
+                      'line': bi.p('%s tab %s line' % (where, lens), line)}
+    often = []
+    for lens, text in hub.get('often') or []:
+        if lens not in tabs:
+            raise SystemExit('%s: "often" names a tab it does not describe: %s'
+                             % (where, lens))
+        often.append({'lens': lens, 'text': bi.p('%s often %s' % (where, lens), text)})
+    if not 1 <= len(often) <= 3:
+        raise SystemExit('%s: 1 to 3 "often" items, not %d' % (where, len(often)))
+    return {
+        'tag': hub['tag'],
+        'xmlid': hub['xmlid'],
+        'lens_key': hub.get('lens_key') or 'pb_lens',
+        'tabs': tabs,
+        'often': often,
+    }
 
 
 def content_columns(data, bi):
@@ -937,15 +986,25 @@ WRITING_VERBS = (
 # `ir.actions.*` record in a module pb_learn already depends on or that ships
 # with the product; contract.json::scenario-nav-actions-exist re-reads the
 # declaring files, because this map is a promise about somebody else's module.
+#
+# LEARN REFRESH step 1: a MAP now, xml-id -> the screen that action IS. The
+# engine no longer opens these cockpits on their own (outside the rail): it
+# asks the screen for its hub place and opens hub › tab, falling back to the
+# xml-id only for a screen that lives outside every hub (Formula Studio,
+# Statutory). Membership is still the validation rule below.
 SCENARIO_NAV = {
-    'pb_dashboard.action_pb_dashboard',
-    'pb_payrun_wizard.action_pb_payrun_wizard',
-    'pb_payruns.action_pb_payruns_kanban',
-    'pb_payslip_review.action_pb_payslip_review',
-    'pb_formula_studio.action_pb_formula_studio',
-    'pb_import.action_pb_import',
-    'pb_statutory.action_pb_statutory',
+    'pb_dashboard.action_pb_dashboard': 'dashboard',
+    'pb_payrun_wizard.action_pb_payrun_wizard': 'runpayroll',
+    'pb_payruns.action_pb_payruns_kanban': 'payruns',
+    'pb_payslip_review.action_pb_payslip_review': 'payslips',
+    'pb_formula_studio.action_pb_formula_studio': 'formula',
+    'pb_import.action_pb_import': 'import',
+    'pb_statutory.action_pb_statutory': 'statutory',
 }
+
+# A screen place: "<hub action tag>:<lens key>[/<inner tab>]", or
+# "detail:<panel>" for a panel that is a screen of its own wherever it opens.
+PLACE_RE = re.compile(r'^(detail:[a-z_]+|[a-z_]+:[a-z_]+(/[a-z_]+)?)$')
 
 
 def _anchor_registry_keys(data):

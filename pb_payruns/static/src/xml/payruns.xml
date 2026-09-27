@@ -25,10 +25,16 @@
              QUIET BY DEFAULT: one line, grey at zero, a colour only when a
              person has to act. The figures that narrowed the board still do;
              pressing the lit one again clears it. -->
-        <t t-call="pb_import_kit.QuietGlance">
-          <t t-set="qGlance" t-value="glance"/>
-          <t t-set="qGlanceOn" t-value="state.focus"/>
-        </t>
+        <!-- LEARN REFRESH step 1: the walkthrough anchors this board shares
+             with the retired kanban (pk-kpis / pk-tabs / pk-card), so a
+             walkthrough opened on Pay Run › Runs still points at the numbers,
+             the columns and a card instead of falling back to a centred card. -->
+        <div data-coach="pk-kpis">
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="state.focus"/>
+          </t>
+        </div>
 
         <!-- GROUP P3 — two currencies never add up. The total above counts
              this company's own runs; the board still shows the others, each
@@ -71,13 +77,13 @@
         </div>
 
         <!-- ===================== pipeline board ===================== -->
-        <div class="pbr-board">
+        <div class="pbr-board" data-coach="pk-tabs">
           <div t-foreach="shownColumns" t-as="col" t-key="col.key" t-attf-class="pbr-col col-{{ col.key }}">
             <div class="pbr-col-h">
               <span class="dot"/><span class="nm" t-esc="col.label"/><span class="ct" t-esc="col.count"/>
             </div>
             <div class="pbr-col-body">
-              <div t-foreach="columnBatches(col.key)" t-as="b" t-key="b.id"
+              <div t-foreach="columnBatches(col.key)" t-as="b" t-key="b.id" data-coach="pk-card"
                    t-attf-class="pbr-card {{ state.busy === b.id ? 'busy' : '' }} {{ state.focusId === b.id ? 'focus' : '' }}">
                 <div class="pbr-card-main" t-on-click="() => this.openBatch(b.id)">
                   <div class="pbr-card-top">

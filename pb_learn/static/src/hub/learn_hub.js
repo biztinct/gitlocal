@@ -76,8 +76,12 @@ export class LearnHub extends Component {
                 // wrong for a learning one. The Journey marks a station "not
                 // in your menu" rather than hiding it, and the rail item it
                 // replaces ships no `groups_id` either.
+                // `wantsArrival`: LEARN REFRESH step 1 opens lessons,
+                // walkthroughs and the practice company INSIDE this hub (the
+                // rail stays), so the map reads the arrival focus the way the
+                // standalone action reads its context.
                 { key: "lessons", icon: "bookOpen", label: _t("Lessons"),
-                  Component: LearnJourney },
+                  Component: LearnJourney, wantsArrival: true },
                 ...this.extraLenses(),
                 // LEARN v3 — every learning switch on one card. LAST, and
                 // administrators only: the lens gate hides it, and

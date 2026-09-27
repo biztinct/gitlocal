@@ -112,16 +112,31 @@ class TestAnchorRegistry(TransactionCase):
 
     # -- 1. every registered anchor exists where it says it does ----------
     def test_01_product_anchors_exist_in_templates(self):
-        missing = []
+        """RETIRED anchors are the one exception, and they are checked the
+        other way round: the control is gone on purpose (LEARN REFRESH step
+        1), content that still names it is a contract WARNING until step 2
+        rewrites it — and a retired anchor that is BACK in its template must
+        lose the flag, or the flag becomes an exemption nobody decided on."""
+        missing, revived = [], []
         for key, spec in self.product.items():
             text = _read(spec['file'])
+            if spec.get('retired'):
+                if text is not None and 'data-coach="%s"' % key in text:
+                    revived.append('%s -> back in %s' % (key, spec['file']))
+                continue
             if text is None:
                 missing.append('%s -> file not found: %s' % (key, spec['file']))
             elif 'data-coach="%s"' % key not in text:
                 missing.append('%s -> not in %s' % (key, spec['file']))
+            for extra in spec.get('also') or []:
+                other = _read(extra)
+                if other is None or 'data-coach="%s"' % key not in other:
+                    missing.append('%s -> not in %s (also)' % (key, extra))
         self.assertFalse(missing, "Registered anchors the product template no longer has.\n"
                                   "A control was renamed or removed and the content still "
                                   "points at it:\n  " + "\n  ".join(missing))
+        self.assertFalse(revived, "Anchors marked retired that the template draws again. "
+                                  "Drop the flag:\n  " + "\n  ".join(revived))
 
     def test_01b_shared_anchors_name_every_screen_they_serve(self):
         """pb_payrun_ledgers renders three screens from one template.
