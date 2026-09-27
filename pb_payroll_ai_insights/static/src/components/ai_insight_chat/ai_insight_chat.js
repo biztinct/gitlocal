@@ -6,6 +6,11 @@ import { useService } from "@web/core/utils/hooks";
 import { rpc } from "@web/core/network/rpc";
 import { _t } from "@web/core/l10n/translation";
 import { ChartRenderer } from "../chart_renderer/chart_renderer";
+// LEARN REFRESH step 1 — where the user is, as the hubs publish it, and the
+// hub door the "Show me" hand-off now goes through (both via pb_learn's
+// dependency on pb_hub).
+import { hubPlace } from "@pb_hub/js/hub_place";
+import { openHub } from "@pb_hub/js/hub_nav";
 
 // LEARNOS Phase 6. A ceiling on one held press, and where the read-aloud
 // preference is remembered. Both are browser-side: the recording ceiling is a
@@ -214,11 +219,21 @@ export class AiInsightChat extends Component {
 
     // Current cockpit, sent with each message so the AI can answer "how do I do
     // THIS?" relative to where the user is standing.
+    //
+    // LEARN REFRESH step 1: inside a hub the action is the HUB whichever tab
+    // is showing, so the hub and tab the hub itself published ride along —
+    // plain labels, as the rail shows them ("Pay Run", "Payslips").
     _currentScreen() {
         try {
             const a = this.actionService.currentController && this.actionService.currentController.action;
             if (!a) return null;
-            return { tag: a.tag || "", xml_id: a.xml_id || "", model: a.res_model || "", name: a.name || "" };
+            const screen = { tag: a.tag || "", xml_id: a.xml_id || "", model: a.res_model || "", name: a.name || "" };
+            if (hubPlace.tag && a.tag === hubPlace.tag) {
+                const lens = (hubPlace.lenses || []).find((l) => l.key === hubPlace.lens);
+                screen.hub = hubPlace.hubLabel || "";
+                screen.tab = lens ? lens.label : "";
+            }
+            return screen;
         } catch (e) { return null; }
     }
 
@@ -241,9 +256,14 @@ export class AiInsightChat extends Component {
         // today: PayAI does not declare pb_learn as a dependency until the
         // deploy-time manifest swap, so on a database without it this click
         // would otherwise surface as an unhandled rejection and no feedback.
+        // LEARN REFRESH step 1: the lesson opens inside the Learn hub, on
+        // its Lessons tab, so the rail is still there when it finishes.
+        // Same deep link, carried as the hub's arrival focus.
         Promise.resolve(
-            this.actionService.doAction("pb_learn.action_learn_journey", {
-                additionalContext: { lesson: action.lesson },
+            openHub(this.actionService, {
+                xmlid: "pb_learn.action_learn_hub",
+                lens: "lessons",
+                focus: `lesson:${action.lesson}`,
             })
         ).catch(() => {
             this.notification.add(

@@ -13,7 +13,7 @@
     # deploy: a code change with no version bump is invisible to it).
     # 19.0.3.4.0 — LEARN v3: the chat is also drawn inside the helper drawer
     # (Ask tab); the floating pill stands down when that helper is installed.
-    'version': '19.0.3.4.0',
+    'version': '19.0.3.5.0',
     'category': 'Human Resources/Payroll',
     'summary': 'AI-powered payroll analytics with conversational charts, dashboards, and insights',
     'description': """

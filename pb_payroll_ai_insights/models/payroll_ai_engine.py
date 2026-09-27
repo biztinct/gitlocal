@@ -295,7 +295,8 @@ class PayrollAIEngine(models.Model):
                     provider, message, conversation_history, context, mapping)
             else:
                 return self._process_general_query(
-                    provider, message, conversation_history, mapping)
+                    provider, message, conversation_history, mapping,
+                    context=context)
 
         except UserError:
             raise
@@ -710,12 +711,31 @@ class PayrollAIEngine(models.Model):
         'pb_formula_studio': 'the Formula Studio',
     }
 
+    @staticmethod
+    def _plain_label(value):
+        """A label from the browser, made safe to put in a prompt: a short
+        single line of text, or ''. It arrives from the client, so it is
+        treated as data — never longer than a rail label can be."""
+        if not isinstance(value, str):
+            return ''
+        return ' '.join(value.split())[:40]
+
     def _describe_screen(self, screen):
         if not isinstance(screen, dict):
             return None
         tag = screen.get('tag') or ''
         xid = screen.get('xml_id') or ''
         model = screen.get('model') or ''
+        # LEARN REFRESH step 1. Since the rail cutover almost every screen is
+        # a TAB inside one of nine hub pages, and the action is the hub
+        # whichever tab is showing; the client sends the hub and tab the hub
+        # itself published. "the Payslips tab in Pay Run".
+        hub = self._plain_label(screen.get('hub'))
+        tab = self._plain_label(screen.get('tab'))
+        if hub and tab:
+            return 'the %s tab in %s' % (tab, hub)
+        if hub:
+            return 'the %s page' % hub
         if tag in self._SCREEN_NAMES:
             return self._SCREEN_NAMES[tag]
         if 'formula' in tag or 'formula' in xid:
@@ -729,13 +749,9 @@ class PayrollAIEngine(models.Model):
         """Answer a 'how do I use Payobook' question, optionally launching a tour."""
         messages = [{"role": "system",
                      "content": self._system_prompt(ONBOARDING_SYSTEM_PROMPT)}]
-        screen_desc = self._describe_screen((context or {}).get('screen'))
-        if screen_desc:
-            messages.append({
-                "role": "system",
-                "content": "The user is currently on %s. If they say 'this', 'here' or "
-                           "'this screen', interpret it relative to that." % screen_desc,
-            })
+        screen_note = self._screen_note(context)
+        if screen_note:
+            messages.append(screen_note)
         for msg in conversation_history[-6:]:
             # Same rule as the other three paths — see _process_knowledge_query.
             messages.append({"role": msg.get('role', 'user'),
@@ -756,12 +772,31 @@ class PayrollAIEngine(models.Model):
             'action': self._sanitize_action(result.get('action')),
         }
 
+    def _screen_note(self, context):
+        """The one system line that says where the user is standing, or None.
+
+        Shared by the onboarding and general paths: "what is this page?" is
+        classified either way, and the answer has to name the tab the user
+        is on in both (LEARN REFRESH step 1)."""
+        screen_desc = self._describe_screen((context or {}).get('screen'))
+        if not screen_desc:
+            return None
+        return {
+            "role": "system",
+            "content": "The user is currently on %s. If they say 'this', 'here', "
+                       "'this page' or 'this screen', interpret it relative to that "
+                       "and name it in your answer." % screen_desc,
+        }
+
     def _process_general_query(self, provider, message, conversation_history,
-                               mapping=None):
+                               mapping=None, context=None):
         """Process a general (non-payroll) question."""
         messages = [
             {"role": "system", "content": self._system_prompt(PAYAI_SYSTEM_PROMPT)},
         ]
+        screen_note = self._screen_note(context)
+        if screen_note:
+            messages.append(screen_note)
         for msg in conversation_history[-6:]:
             messages.append({
                 "role": msg.get('role', 'user'),
