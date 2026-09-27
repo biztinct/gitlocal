@@ -51,7 +51,7 @@ caller's own user account and never accepted from the browser, and thirteen
 whitelisted fields on it. `pb.company.profile` is the whole guard; `res.company`
 gains the product's audit mixin so a change is recorded wherever it came from.
 """,
-    'version': '19.0.1.8.0',
+    'version': '19.0.1.9.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

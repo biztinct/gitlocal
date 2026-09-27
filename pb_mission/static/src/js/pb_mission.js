@@ -43,6 +43,7 @@ import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 // would drift from it.
 import { featureGate, featuresState } from "@pb_hub/js/hub_features";
 import { HubFeatureOff } from "@pb_hub/js/hub_feature_off";
+import { publishPlace, clearPlace } from "@pb_hub/js/hub_place";
 import { WfCommandPalette } from "@pb_wf_kit/js/wf_command_palette";
 import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
 import { WfPersonWeek } from "@pb_wf_kit/js/wf_person_week";
@@ -399,6 +400,28 @@ export class PbMission extends Component {
         );
 
         onWillStart(async () => { await this._resolveAccess(); });
+
+        // LEARN REFRESH step 1 — the second shell says where it is too, in the
+        // same store HubShell writes (pb_hub/js/hub_place.js), so the helper
+        // and Ask Payobook read one signal whichever shell is on screen. After
+        // the patch, never during a render; cleared only if still ours.
+        useEffect(
+            () => { this._publishPlace(); },
+            () => [this.state.lens, this.state.allowed],
+        );
+        onWillUnmount(() => clearPlace(this));
+    }
+
+    _publishPlace() {
+        publishPlace(this, {
+            tag: (this.props.action && this.props.action.tag) || "pb_workforce",
+            hubKey: "workforce",
+            hubLabel: _t("Workforce"),
+            lens: this.state.lens,
+            lenses: this.lenses,
+            ready: this.state.allowed !== null,
+            switchTo: (key) => this.setLens(key),
+        });
     }
 
     ic(n, s = 17) { return ic(n, s); }
@@ -548,6 +571,9 @@ export class PbMission extends Component {
         if (!this.allKeys.includes(key) || this.state.lens === key) { return; }
         if (this.state.allowed && !this.state.allowed[key]) { return; }
         this.state.lens = key;
+        // Said from the click (see HubShell.setLens): the patch waits for the
+        // new lens to load, and the helper follows the press, not the data.
+        this._publishPlace();
         try { window.localStorage.setItem(LENS_KEY, key); } catch { /* private mode */ }
     }
 

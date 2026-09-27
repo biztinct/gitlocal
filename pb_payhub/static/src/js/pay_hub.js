@@ -33,6 +33,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { HubShell } from "@pb_hub/js/hub_shell";
 import { openHub } from "@pb_hub/js/hub_nav";
+import { setPlaceSub } from "@pb_hub/js/hub_place";
 
 import { PayrunWizard } from "@pb_payrun_wizard/js/payrun_wizard";
 import { PbPayruns } from "@pb_payruns/js/payruns";
@@ -134,6 +135,9 @@ export class PbPayHub extends Component {
                     // a payroll product without a pay run is not a product.
                     feature: "retro_proration",
                     props: {
+                        // LEARN REFRESH step 1: which of the two is showing,
+                        // so the helper can tell Retro from Proration.
+                        onTab: (tab) => setPlaceSub("pb_pay_hub", "adjust", tab),
                         tabs: [
                             { key: "retro", label: _t("Retro"), icon: "rotate",
                               model: "pb.retro" },
@@ -151,6 +155,7 @@ export class PbPayHub extends Component {
                     // One descriptor, still declared as `tabs`: it is what
                     // routes the model, and the strip renders only past one tab.
                     props: {
+                        onTab: (tab) => setPlaceSub("pb_pay_hub", "settle", tab),
                         tabs: [{ key: "fullfinal", label: _t("Full & Final"),
                                  icon: "file", model: "pb.fullfinal" }],
                     },

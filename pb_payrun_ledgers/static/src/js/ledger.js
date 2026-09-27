@@ -20,7 +20,7 @@
  * Nothing above changes one pixel of the standalone render: every hub-only
  * branch is guarded on `props.embedded`, which is absent there.
  */
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart, onMounted } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -68,6 +68,17 @@ export class LedgerCockpit extends Component {
             drawerLoading: false,
         });
         onWillStart(async () => { await this.load(); });
+        // LEARN REFRESH step 1. A host that wants to know which inner tab is
+        // showing (the Pay Run hub tells the helper "Adjust › Proration")
+        // passes `onTab`. Told after the mount and on every switch; it is the
+        // host's callback, so this cockpit still owns nothing but its tab.
+        onMounted(() => this._tellTab());
+    }
+
+    _tellTab() {
+        if (typeof this.props.onTab === "function" && this.state.tab) {
+            this.props.onTab(this.state.tab);
+        }
     }
 
     // ------------------------------------------------------------- hub shape
@@ -112,6 +123,7 @@ export class LedgerCockpit extends Component {
     async setTab(key) {
         if (this.state.tab === key) { return; }
         this.state.tab = key;
+        this._tellTab();
         this.state.drawer = null;
         this.state.loaded = false;
         this.state.search = "";

@@ -79,7 +79,7 @@ a new navy), Lucide icons through the shared `ic()` registry, flat fills.
     # later module bolts a lens onto this workspace without editing it, exactly
     # as every other hub in the product already allows — with the dependency
     # running the other way, so the guests name the category by its string.
-    'version': '19.0.1.10.1',
+    'version': '19.0.1.11.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -41,7 +41,7 @@ registry, flat fills (W1/W2/W3).
     # 19.0.1.2.0 — IA Cycle 6: restriction parity between the ⌘K palette and
     # the rail. A door the sidebar padlocks is padlocked here too, and answers
     # the same upsell instead of navigating.
-    'version': '19.0.1.9.1',
+    'version': '19.0.1.10.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -59,6 +59,7 @@ registry, flat fills (W1/W2/W3).
             'pb_hub/static/src/scss/hub_shell.scss',
             'pb_hub/static/src/scss/hub_palette.scss',
             'pb_hub/static/src/js/hub_nav.js',
+            'pb_hub/static/src/js/hub_place.js',
             'pb_hub/static/src/js/hub_features.js',
             'pb_hub/static/src/js/hub_feature_off.js',
             'pb_hub/static/src/js/hub_tracker.js',

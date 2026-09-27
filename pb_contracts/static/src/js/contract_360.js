@@ -37,6 +37,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { holdDetail } from "@pb_hub/js/hub_place";
 
 const MODEL = "pb.contracts";
 const TABS = ["terms", "components", "history"];
@@ -474,6 +475,13 @@ export class Contract360Drawer extends Component {
         // One frame after mount, so the panel has a place to slide in FROM.
         onMounted(() => { this.state.shown = true; });
         onWillUnmount(() => clearTimeout(this._previewTimer));
+        // LEARN REFRESH step 1. To a learner an open contract is a screen of
+        // its own, wherever it opened (People › Employees, the Contracts
+        // board, Lifecycle), so the helper is told while it is up.
+        // After the mount, never during a render.
+        let release = () => {};
+        onMounted(() => { release = holdDetail("contract"); });
+        onWillUnmount(() => release());
         // Escape closes, Cmd/Ctrl-Enter saves. Capture phase is the safe
         // pattern for an overlay that does not steal focus from the roster
         // underneath it — and it is exactly why `onKey` has to stand aside for

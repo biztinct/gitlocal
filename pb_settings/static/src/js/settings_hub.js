@@ -38,7 +38,7 @@
  *     from a mount hook, and `_opening` makes a double-click one navigation
  *     rather than two (C1's flag, W21.1's lesson).
  */
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, useEffect, onWillStart, onWillUnmount } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { isMacOS } from "@web/core/browser/feature_detection";
@@ -51,6 +51,7 @@ import { HubBackChip, hubBack, openHub } from "@pb_hub/js/hub_nav";
 // command palette cannot each decide it differently.
 import { featureGate, featuresState } from "@pb_hub/js/hub_features";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
+import { publishPlace, clearPlace } from "@pb_hub/js/hub_place";
 
 /** localStorage: which category was open last. Namespaced and versioned. */
 const STORAGE_KEY = "pbst.cat.v1";
@@ -383,6 +384,32 @@ export class PbSettingsHub extends Component {
         this._opening = false;
 
         onWillStart(async () => { await this._resolve(); });
+
+        // LEARN REFRESH step 1 — Settings is a category page, not lenses, but
+        // a learner reads its categories as its tabs: publish them to the
+        // same "where am I" store the hubs write (pb_hub/js/hub_place.js).
+        // The list is `categories` — exactly what the left column shows this
+        // person — and a switch goes through `setCat`, the column's own click.
+        useEffect(
+            () => { this._publishPlace(); },
+            () => [this.state.cat, this.state.resolved, this.state.allowed,
+                   this.state.present],
+        );
+        onWillUnmount(() => clearPlace(this));
+    }
+
+    _publishPlace() {
+        const current = this.current;
+        publishPlace(this, {
+            tag: (this.props.action && this.props.action.tag) || "pb_settings_hub",
+            hubKey: "settings",
+            hubLabel: _t("Settings"),
+            lens: current ? current.key : "",
+            lenses: this.categories.map((c) => ({
+                key: c.key, label: c.label, icon: c.icon })),
+            ready: this.state.resolved,
+            switchTo: (key) => this.setCat(key),
+        });
     }
 
     ic(n, s = 16) { return ic(n, s); }
@@ -623,6 +650,7 @@ export class PbSettingsHub extends Component {
         }
         if (this.state.cat === key) { return; }
         this.state.cat = key;
+        this._publishPlace();
         try { window.localStorage.setItem(STORAGE_KEY, key); }
         catch { /* private mode */ }
     }

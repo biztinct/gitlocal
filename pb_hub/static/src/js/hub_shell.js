@@ -27,7 +27,7 @@
  * Binding non-goal for Cycle 1: `pb_mission` is NOT refactored onto this. It
  * keeps its own copy of the shape until a later cycle retires it.
  */
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, useEffect, onWillStart, onWillUnmount } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { isMacOS } from "@web/core/browser/feature_detection";
 import { user } from "@web/core/user";
@@ -37,6 +37,7 @@ import { HubBackChip, HUB_LENS_KEY } from "@pb_hub/js/hub_nav";
 import { HubTracker } from "@pb_hub/js/hub_tracker";
 import { featureGate, featuresState } from "@pb_hub/js/hub_features";
 import { HubFeatureOff } from "@pb_hub/js/hub_feature_off";
+import { publishPlace, clearPlace } from "@pb_hub/js/hub_place";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 
 /**
@@ -129,7 +130,40 @@ export class HubShell extends Component {
         this._propsCache = null;
         this._emptyProps = {};
 
+        // The arrival payload a `wantsArrival` lens receives, built ONCE: the
+        // lens props are re-memoised whenever the lens changes, and a fresh
+        // object per mount would make one deep link look like a new one every
+        // time the reader comes back to that tab.
+        this._arrivalProp = { lens: this.arrival.lens || "", focus: this.arrival.focus };
+
         onWillStart(async () => { await this._resolveAccess(); });
+
+        // LEARN REFRESH step 1 — say where we are (hub_place.js). An effect,
+        // so it runs after the patch and never writes during a render; the
+        // deps are exactly what a reader shows: the lens, who may see what,
+        // and which parts of the product are switched on.
+        useEffect(
+            () => { this._publishPlace(); },
+            () => [this.state.lens, this.state.allowed,
+                   this._features ? this._features.features_sig : 0],
+        );
+        onWillUnmount(() => clearPlace(this));
+    }
+
+    _publishPlace() {
+        const tag = (this.props.action && this.props.action.tag) || "";
+        if (!tag) { return; }
+        publishPlace(this, {
+            tag,
+            hubKey: this.config.key || "",
+            hubLabel: this.brand.label,
+            lens: this.state.lens,
+            lenses: this.lenses.map((l) => ({ key: l.key, label: l.label,
+                                              icon: l.icon,
+                                              locked: this.isLocked(l) })),
+            ready: this.state.allowed !== null,
+            switchTo: (key) => this.setLens(key),
+        });
     }
 
     ic(n, s = 17) { return ic(n, s); }
@@ -346,8 +380,7 @@ export class HubShell extends Component {
         if (this._propsFor === def.key) { return this._propsCache; }
         const props = { embedded: true, ...(def.props || {}) };
         if (def.wantsArrival) {
-            props.arrival = { lens: this.arrival.lens || "",
-                              focus: this.arrival.focus };
+            props.arrival = this._arrivalProp;
         }
         this._propsFor = def.key;
         this._propsCache = props;
@@ -366,6 +399,10 @@ export class HubShell extends Component {
         if (this.state.lens === key) { return; }
         if (this.state.allowed && !this.state.allowed[key]) { return; }
         this.state.lens = key;
+        // Said NOW, from the click, not after the patch: OWL does not patch
+        // the shell until the new lens has finished loading, and the helper
+        // must follow the tab the reader pressed, not the data behind it.
+        this._publishPlace();
         const storageKey = hubLensStorageKey(this.config.key);
         if (!storageKey) { return; }
         try {
