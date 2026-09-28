@@ -55,6 +55,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { HubShell } from "@pb_hub/js/hub_shell";
 import { openHub } from "@pb_hub/js/hub_nav";
+import { HUB_LENS_GATES } from "@pb_hub/js/hub_gates";
 
 import { PbGovtReports } from "@pb_govt_reports/js/govt_reports";
 import { PbBankOcr } from "@pb_bank_ocr/js/pb_bank_ocr";
@@ -137,3 +138,12 @@ export class PbComplianceHub extends Component {
 }
 
 registry.category("actions").add("pb_compliance_hub", PbComplianceHub);
+
+// LEARN REFRESH step 4 — the tabs' gates, as the config above declares them,
+// so a lesson can say "not in your company" before anybody opens the hub.
+registry.category(HUB_LENS_GATES).add("pb_compliance_hub", () => [
+    { key: "filings", groups: FILINGS_GATE },
+    { key: "bank", groups: BANK_GATE, feature: "bank_ocr" },
+    { key: "young", groups: YOUNG_GATE, feature: "young_workers" },
+    { key: "audit", groups: AUDIT_GATE },
+].map((l) => ({ ...l, hubFeature: "compliance" })));

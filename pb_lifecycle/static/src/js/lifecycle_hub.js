@@ -43,6 +43,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { HubShell } from "@pb_hub/js/hub_shell";
 import { openHub } from "@pb_hub/js/hub_nav";
+import { HUB_LENS_GATES } from "@pb_hub/js/hub_gates";
 
 import { PbJourneys } from "@pb_lifecycle/js/journeys";
 
@@ -105,3 +106,10 @@ export class PbLifecycleHub extends Component {
 }
 
 registry.category("actions").add("pb_lifecycle_hub", PbLifecycleHub);
+
+// LEARN REFRESH step 4 — the tabs' gates, as the config above declares them,
+// so a lesson can say "not in your company" before anybody opens the hub.
+registry.category(HUB_LENS_GATES).add("pb_lifecycle_hub", () => [
+    { key: "journeys", groups: LIFECYCLE_GATE },
+    ...registry.category(LIFECYCLE_LENSES).getAll(),
+].map((l) => ({ ...l, hubFeature: "lifecycle" })));

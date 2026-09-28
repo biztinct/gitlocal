@@ -29,7 +29,7 @@ the worst screen this product can show.
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent (W1/W2/W3).
 """,
-    'version': '19.0.2.0.1',
+    'version': '19.0.2.0.2',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

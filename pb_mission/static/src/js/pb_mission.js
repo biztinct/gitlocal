@@ -44,6 +44,7 @@ import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 import { featureGate, featuresState } from "@pb_hub/js/hub_features";
 import { HubFeatureOff } from "@pb_hub/js/hub_feature_off";
 import { publishPlace, clearPlace } from "@pb_hub/js/hub_place";
+import { HUB_LENS_GATES } from "@pb_hub/js/hub_gates";
 import { WfCommandPalette } from "@pb_wf_kit/js/wf_command_palette";
 import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
 import { WfPersonWeek } from "@pb_wf_kit/js/wf_person_week";
@@ -812,3 +813,11 @@ export class PbMission extends Component {
 }
 
 registry.category("actions").add("pb_workforce", PbMission);
+
+// LEARN REFRESH step 4 — the tabs' gates, as LENSES and the bolted-on lenses
+// declare them, so a lesson can say "not in your company" before anybody
+// opens Workforce. `features` there is the context-bar map, not a product
+// part, so only the groups are handed over.
+registry.category(HUB_LENS_GATES).add("pb_workforce", () =>
+    [...LENSES, ...registry.category(MISSION_LENSES).getAll()]
+        .map((l) => ({ key: l.key, groups: l.groups || [], hubFeature: "workforce" })));

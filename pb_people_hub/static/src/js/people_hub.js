@@ -51,6 +51,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { HubShell } from "@pb_hub/js/hub_shell";
 import { openHub } from "@pb_hub/js/hub_nav";
+import { HUB_LENS_GATES } from "@pb_hub/js/hub_gates";
 
 import { PbPeople } from "@pb_people/js/people";
 import { PlanLauncher, PLAN_GATE, heroGroups } from "@pb_people_hub/js/plan_launcher";
@@ -182,3 +183,12 @@ export class PbPeopleHub extends Component {
 }
 
 registry.category("actions").add("pb_people_hub", PbPeopleHub);
+
+// LEARN REFRESH step 4 — the tabs' gates, as the config above declares them,
+// so a lesson can say "not in your company" before anybody opens the hub.
+registry.category(HUB_LENS_GATES).add("pb_people_hub", () => [
+    { key: "employees", groups: EMPLOYEE_GATE },
+    ...registry.category(PEOPLE_LENSES).getAll(),
+    { key: "plan", groups: [...new Set([...PLAN_GATE, ...heroGroups()])],
+      feature: "people_plan" },
+]);

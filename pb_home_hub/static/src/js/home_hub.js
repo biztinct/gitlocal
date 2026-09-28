@@ -45,6 +45,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { HubShell } from "@pb_hub/js/hub_shell";
 import { openHub } from "@pb_hub/js/hub_nav";
+import { HUB_LENS_GATES } from "@pb_hub/js/hub_gates";
 
 import { PbDashboard } from "@pb_dashboard/js/pb_dashboard";
 import { PbInbox } from "@pb_approval_config/js/inbox";
@@ -215,3 +216,11 @@ export class PbHomeHub extends Component {
 }
 
 registry.category("actions").add("pb_home_hub", PbHomeHub);
+
+// LEARN REFRESH step 4 — the tabs' gates, as the config above declares them,
+// so a lesson can say "not in your company" before anybody opens the hub.
+registry.category(HUB_LENS_GATES).add("pb_home_hub", () => [
+    { key: "pulse" },
+    { key: "approvals", groups: APPROVAL_GATE },
+    ...registry.category(HOME_LENSES).getAll(),
+]);
