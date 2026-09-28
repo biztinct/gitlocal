@@ -34,6 +34,12 @@ SAME_IN_BOTH = {
     # learner looking for a leaf that says something else. A product name, not
     # a sentence — which is the only thing this set is for.
     "Explorer",
+    # LEARN REFRESH step 5 (ledger LR44). The Pay Run ledgers' number labels
+    # are English on the product screen in BOTH languages (plain Python
+    # strings in ledger_cockpits.py). The column glossary is looked up BY
+    # LABEL, so its label must be the words on the screen.
+    "Settlements", "Manual", "Net payable", "Proration lines", "Total prorated",
+    "Retro lines", "Total delta",
 }
 
 # Subtrees that are FACTS rather than prose, so "same in both languages" is the

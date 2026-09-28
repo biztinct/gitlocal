@@ -16464,55 +16464,6 @@
     {
       "action_tags": "",
       "blurb": {
-        "en": "Pay Run › Adjust: back pay (Retro) and part-month amounts (Proration), filled in when pay data is loaded.",
-        "vi": "Đợt lương › Điều chỉnh: khoản truy lĩnh (Hồi tố) và các khoản theo phần tháng (Phân bổ theo tỷ lệ), được điền khi tải dữ liệu lương."
-      },
-      "hub": null,
-      "key": "adjust",
-      "live_fallback": "",
-      "models": [],
-      "name": {
-        "en": "Adjust: back pay and part months",
-        "vi": "Điều chỉnh: truy lĩnh và lương theo phần tháng"
-      },
-      "navs": [],
-      "next_step": {
-        "en": "Open a row's drawer before answering anyone. The days and the months it covers are there, not on the row.",
-        "vi": "Hãy mở ngăn chi tiết của một dòng trước khi trả lời ai. Số ngày và tháng mà nó bao gồm nằm ở đó, không nằm trên dòng."
-      },
-      "open": "",
-      "places": [
-        "pb_pay_hub:adjust"
-      ],
-      "sequence": 70,
-      "sidebar_key": "",
-      "suggest": [
-        {
-          "key": "retroq",
-          "label": {
-            "en": "Where does back pay come from?",
-            "vi": "Khoản truy lĩnh đến từ đâu?"
-          }
-        },
-        {
-          "key": "prorata",
-          "label": {
-            "en": "How was this part-month salary worked out?",
-            "vi": "Lương tháng lẻ ngày này được tính ra sao?"
-          }
-        },
-        {
-          "key": "whatpage",
-          "label": {
-            "en": "What is this screen for?",
-            "vi": "Màn hình này để làm gì?"
-          }
-        }
-      ]
-    },
-    {
-      "action_tags": "",
-      "blurb": {
         "en": "Every part-month amount: old, new and prorated per person. The drawer holds the basis and the days on each side of a change.",
         "vi": "Mọi khoản theo phần tháng: cũ, mới và đã phân bổ của từng người. Ngăn chi tiết có cách tính và số ngày ở mỗi phía của một thay đổi."
       },
@@ -16521,8 +16472,8 @@
       "live_fallback": "",
       "models": [],
       "name": {
-        "en": "proration",
-        "vi": "proration"
+        "en": "Adjust › Proration",
+        "vi": "Điều chỉnh › Phân bổ theo tỷ lệ"
       },
       "navs": [],
       "next_step": {
@@ -16533,7 +16484,7 @@
       "places": [
         "pb_pay_hub:adjust/proration"
       ],
-      "sequence": 80,
+      "sequence": 70,
       "sidebar_key": "pb_sidebar.item_proration",
       "suggest": [
         {
@@ -16570,8 +16521,8 @@
       "live_fallback": "",
       "models": [],
       "name": {
-        "en": "retro",
-        "vi": "retro"
+        "en": "Adjust › Retro",
+        "vi": "Điều chỉnh › Hồi tố"
       },
       "navs": [],
       "next_step": {
@@ -16582,7 +16533,7 @@
       "places": [
         "pb_pay_hub:adjust/retro"
       ],
-      "sequence": 90,
+      "sequence": 80,
       "sidebar_key": "pb_sidebar.item_retro",
       "suggest": [
         {
@@ -16609,7 +16560,56 @@
       ]
     },
     {
-      "action_tags": "",
+      "action_tags": "pb_retro,pb_proration",
+      "blurb": {
+        "en": "Pay Run › Adjust: back pay (Retro) and part-month amounts (Proration), filled in when pay data is loaded.",
+        "vi": "Đợt lương › Điều chỉnh: khoản truy lĩnh (Hồi tố) và các khoản theo phần tháng (Phân bổ theo tỷ lệ), được điền khi tải dữ liệu lương."
+      },
+      "hub": null,
+      "key": "adjust",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Adjust: back pay and part months",
+        "vi": "Điều chỉnh: truy lĩnh và lương theo phần tháng"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "Open a row's drawer before answering anyone. The days and the months it covers are there, not on the row.",
+        "vi": "Hãy mở ngăn chi tiết của một dòng trước khi trả lời ai. Số ngày và tháng mà nó bao gồm nằm ở đó, không nằm trên dòng."
+      },
+      "open": "",
+      "places": [
+        "pb_pay_hub:adjust"
+      ],
+      "sequence": 90,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "retroq",
+          "label": {
+            "en": "Where does back pay come from?",
+            "vi": "Khoản truy lĩnh đến từ đâu?"
+          }
+        },
+        {
+          "key": "prorata",
+          "label": {
+            "en": "How was this part-month salary worked out?",
+            "vi": "Lương tháng lẻ ngày này được tính ra sao?"
+          }
+        },
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        }
+      ]
+    },
+    {
+      "action_tags": "pb_payrun_results,pb_pay_delivery,pb_comp_ben_paycal,pb_comp_ben_incentives",
       "blurb": {
         "en": "After the run: Results reads it as one grid, Deliver sends the bank file and payslips, Calendar keeps the month's dates, Awards adds one-off money.",
         "vi": "Sau đợt lương: Kết quả đọc nó trong một bảng, Chi trả gửi tệp ngân hàng và phiếu lương, Lịch lương giữ các mốc ngày của tháng, Thưởng thêm các khoản một lần."
@@ -17086,8 +17086,8 @@
         "hr.contract"
       ],
       "name": {
-        "en": "contracts",
-        "vi": "contracts"
+        "en": "Contract",
+        "vi": "Hợp đồng"
       },
       "navs": [],
       "next_step": {
@@ -17288,7 +17288,7 @@
       ]
     },
     {
-      "action_tags": "",
+      "action_tags": "payroll_report_dashboard,pb_budget_board",
       "blurb": {
         "en": "Payroll Report: one run's totals against the run before. Budget: each function's spending against its budget, month by month.",
         "vi": "Báo cáo lương: tổng của một đợt so với đợt trước. Ngân sách: chi tiêu của từng bộ phận so với ngân sách, theo từng tháng."
@@ -26276,7 +26276,7 @@
               },
               "title": {
                 "en": "Terms, Components, History",
-                "vi": "Terms, Components, History"
+                "vi": "Ba tab: Terms, Components, History"
               },
               "visual": "none"
             },
@@ -31612,5 +31612,5 @@
       }
     }
   ],
-  "version": "41a001f37777"
+  "version": "146688c23545"
 }

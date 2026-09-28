@@ -177,6 +177,13 @@ SCREEN_ACTION_TAGS = {
     'wfovertime': 'pb_ot_desk',
     'wfclose': 'pb_workforce',
     'compliancemore': 'pb_bank_ocr,pb_young_worker,pb_audit',
+    # LEARN REFRESH step 5. Hub-tab screens whose standalone boards have their
+    # own client actions. `adjust` is declared AFTER proration/retro in
+    # SCREEN_CTX, so a standalone Retro/Proration board still grounds on its
+    # own screen and adjust is the hub tab's (places win first in the hub).
+    'adjust': 'pb_retro,pb_proration',
+    'afterrun': 'pb_payrun_results,pb_pay_delivery,pb_comp_ben_paycal,pb_comp_ben_incentives',
+    'reports': 'payroll_report_dashboard,pb_budget_board',
 }
 
 

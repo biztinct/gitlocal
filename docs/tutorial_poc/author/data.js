@@ -5453,7 +5453,7 @@ const LESSONS = {
       {
         screen: "employees", anchor: "cd-tabs",
         kicker: B("The drawer", "Ngăn hợp đồng"),
-        title: B("Terms, Components, History", "Terms, Components, History"),
+        title: B("Terms, Components, History", "Ba tab: Terms, Components, History"),
         body: B("The header says when the contract ends and its state. Three tabs hold the rest.",
                 "Phần đầu cho biết khi nào hợp đồng kết thúc và trạng thái của nó. Ba tab chứa phần còn lại: <b>Terms</b> (điều khoản), <b>Components</b> (thành phần), <b>History</b> (lịch sử)."),
         tip: B("The drawer's words are in English on the screen in both languages.",
@@ -6820,15 +6820,8 @@ const SCREEN_CTX = {
             "Kiểm tra rằng mọi người được quyết toán ở đây đã ra khỏi đợt lương tháng thông thường của cùng tháng. Người nằm ở cả hai sẽ được trả hai lần."),
     chips: ["whatpage", "prorata", "whatnext"],
   },
-  adjust: {
-    places: ["pb_pay_hub:adjust"],
-    blurb: B("Pay Run › Adjust: back pay (Retro) and part-month amounts (Proration), filled in when pay data is loaded.",
-             "Đợt lương › Điều chỉnh: khoản truy lĩnh (Hồi tố) và các khoản theo phần tháng (Phân bổ theo tỷ lệ), được điền khi tải dữ liệu lương."),
-    next: B("Open a row's drawer before answering anyone. The days and the months it covers are there, not on the row.",
-            "Hãy mở ngăn chi tiết của một dòng trước khi trả lời ai. Số ngày và tháng mà nó bao gồm nằm ở đó, không nằm trên dòng."),
-    chips: ["retroq", "prorata", "whatpage"],
-  },
   proration: {
+    name: B("Adjust › Proration", "Điều chỉnh › Phân bổ theo tỷ lệ"),
     places: ["pb_pay_hub:adjust/proration"],
     blurb: B("Every part-month amount: old, new and prorated per person. The drawer holds the basis and the days on each side of a change.",
              "Mọi khoản theo phần tháng: cũ, mới và đã phân bổ của từng người. Ngăn chi tiết có cách tính và số ngày ở mỗi phía của một thay đổi."),
@@ -6837,12 +6830,21 @@ const SCREEN_CTX = {
     chips: ["prorata", "whydiff", "whatpage"],
   },
   retro: {
+    name: B("Adjust › Retro", "Điều chỉnh › Hồi tố"),
     places: ["pb_pay_hub:adjust/retro"],
     blurb: B("Back pay: a pay change dated before this month, compared with what was already paid, with the difference added to this month.",
              "Khoản truy lĩnh: một thay đổi lương có hiệu lực trước tháng này, đem so với số đã trả, và phần chênh được cộng vào tháng này."),
     next: B("Check the Retro period on each line. It names the month being made good, which is what keeps that month closed.",
             "Kiểm tra Retro period trên từng dòng. Nó ghi tháng đang được bù, và chính điều đó giữ cho tháng ấy luôn đóng."),
     chips: ["retroq", "fixerror", "whatpage"],
+  },
+  adjust: {
+    places: ["pb_pay_hub:adjust"],
+    blurb: B("Pay Run › Adjust: back pay (Retro) and part-month amounts (Proration), filled in when pay data is loaded.",
+             "Đợt lương › Điều chỉnh: khoản truy lĩnh (Hồi tố) và các khoản theo phần tháng (Phân bổ theo tỷ lệ), được điền khi tải dữ liệu lương."),
+    next: B("Open a row's drawer before answering anyone. The days and the months it covers are there, not on the row.",
+            "Hãy mở ngăn chi tiết của một dòng trước khi trả lời ai. Số ngày và tháng mà nó bao gồm nằm ở đó, không nằm trên dòng."),
+    chips: ["retroq", "prorata", "whatpage"],
   },
   afterrun: {
     places: ["pb_pay_hub:results", "pb_pay_hub:deliver", "pb_pay_hub:paycal", "pb_pay_hub:awards"],
@@ -6912,6 +6914,7 @@ const SCREEN_CTX = {
     chips: ["addperson", "payrollready", "whopays", "whosees", "whatnext"],
   },
   contracts: {
+    name: B("Contract", "Hợp đồng"),
     /* LEARN REFRESH step 1. Contracts is a door INSIDE People › Employees now
        (commit c9e5f2ee4): a board of its own behind a button, and a drawer
        per person. `detail:contract` is the drawer, wherever it opens; the
