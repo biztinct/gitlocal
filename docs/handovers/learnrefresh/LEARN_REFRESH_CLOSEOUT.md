@@ -65,3 +65,33 @@ scroll; console clean.
 6. Explorer-vs-Pulse answers from Ask Payobook are correct in names but generic in reasons.
 7. The streak chip reads "1 days in a row".
 8. pb_formula_studio (39) and pb_hr_payroll_formula (20) have older malformed .po entries.
+
+## Step 6 — the owner's open items (2026-09-28)
+
+| # | Item | Real cause | What changed on screen | Commit |
+|---|---|---|---|---|
+| 1 | Reject asks why | The board's in-card confirm and the form/kanban buttons carried no reason; the field existed. | Reject opens a required **Why?** box (Reject run stays grey until it has words); the run form and kanban open a small Why? window; the reason shows under the name in Rejected pay runs and at the top of the run's page. The server refuses a reject with no reason. | 822e18243 |
+| 2 | Need review flags a big change | Both counters only knew net ≤ 0, each with its own idea of "net". | One shared answer (`hr.payslip.run.pb_review_flags`): take-home at zero or below, or moved more than the threshold (Settings › Payroll defaults, default 30%, 0 = off) against the same person's previous payslip in the same scheme; joiners never. Each flag says why ("Net pay up 62% on May 2026"). Run and Payslips agree (checked: 878/878 and 203/203). One set-based query, ~0.4 s for 900 slips. | 68f8c9ac9 |
+| 3 | Automatic settlements stuck | The monthly load made them in "Being prepared" and nothing submitted them; hand-made ones are submitted by the wizard. Also: since 2026-09-22 the summary crashed on every settlement with figures (LR56), so new automatic ones were never made; and nobody but a seat-holder could see settlements at all (LR68). | "Ready to check" figure and step flag on Settle, row action **Send for approval** (Download only once approved), reason under the name when it could not be worked out; Exits: "Settlements to check" and a Send for approval button. One to-do per payroll officer per load. Rize's two stuck settlements now read Ready to check. | 1f5b38617, c30813731 |
+| 4 | Growth plans for admins | pb_pip deliberately excluded administrators. | System administrators get the head of HR's access by name in every gate (ACL, rule, facade, lens + probe, palette); lifecycle tiers still refused. | 405462818 |
+| 5 | Vietnamese | Labels were plain Python strings / an inline JS template / never extracted; role names stored English; 59 malformed .po entries; selection labels never translated product-wide (LR67). | The six screens and the Access roles read Vietnamese; lessons quote the VI labels; replica too. Row counts per module in commit 63e2454c6. | 63e2454c6, 4abb06f49 |
+| 6 | Demo runs through approval | The demo company's binding pointed at "No approval needed". | Demo pay runs follow Payroll check (Demo User) → HR lead review (DEMO Nguyen Van An) → Finance approval (DEMO Tran Thi Binh); previous holders are backups. Demo route: HR lead company-wide, independence off. No run's state touched. | f0cf3d16d |
+| 7 | Live demo examples | Leavers, trials, growth plans, contracts ending, hiring roles already existed — boards looked empty to a login in company 1 (LR57). Missing: a pay review and a settlement to check. | "DEMO Retail pay review · 2026" (902 scored rows, budget half used, 1 row stops approval); Mai Quốc Hưng's settlement Ready to check. sc_payreview and sc_exits Watch now open the first live review / exit card. | f0cf3d16d, a9b05ed3a |
+| 8 | QA login | No pay-run or formula group; default company 1. | Roles "Payroll officer" + "Pay formulas — can look" via the Access catalogue (audit row); default company 5. Opens Payslips, Formula Engine, Mapping, Records. | (data only, payobook) |
+| 9 | Small things | — | "1 day in a row"; the Practice mode card wraps at ≤ 600px. | a9b05ed3a |
+
+Versions (all four databases): pb_payruns 19.0.2.10.0, pb_payslip_review 19.0.1.3.0, pb_payrun_wizard 19.0.1.30.0,
+pb_hr_fullandfinal 19.0.1.4.1, pb_payrun_ledgers 19.0.1.3.3, pb_offboarding 19.0.1.1.6, pb_pip 19.0.1.2.4, pb_learn
+19.0.19.3.0, pb_payroll_ai_insights 19.0.3.9.1, pb_pay 19.0.3.5.4, pb_contracts 19.0.1.9.2, pb_hr_workforce 19.0.4.19.4,
+pb_import_advanced 19.0.1.15.3, pb_comp_ben 19.0.1.5.3, pb_vendor_access 19.0.1.9.1, pb_formula_studio 19.0.1.201.4,
+pb_hr_payroll_formula 19.0.1.147.1, web_debranding 19.0.1.0.2; pb_demo 19.0.1.12.0 (payobook only). All byte-identical.
+Backups: /odoo/backups/learnrefresh/step6/ (before) and step6b/ (before the translation wave). Clones dropped.
+
+Tests: pb_payruns +3, pb_payslip_review 9, pb_hr_fullandfinal 6, pb_pip 3 — green on a rize clone; pb_payrun_wizard's
+21 errors are pre-existing (same count on the unchanged code). Learn gates clean (replay: only the known voice-copy
+and bridge failures).
+
+Still open for the owner: Lifecycle › Contracts shows zeros (not "no access") to a reader without contract rights;
+the Contracts gate and Filings are not granted to the QA login; weak Vietnamese left elsewhere ("Sân khấu" for the pay
+period stage, "Lương ròng"/"Phương sai" collisions); the step-6 walkthrough anchors show live data only to a reader
+standing in the demo company with access.

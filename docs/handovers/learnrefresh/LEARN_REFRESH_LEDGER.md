@@ -516,3 +516,13 @@ Draft with the reason (NOT "cancels 48 payslips"). Closeout: `docs/handovers/APP
   the administrator fallback; `pb_pip/tests/test_admin_access.py` does.
 - LR65 Hùng's take-home in the practice company is +26.4% on June — UNDER the 30% default — so lessons teach the new
   flag and still keep "the overtime jump a person must spot" (truth over polish).
+- LR66 Corrects LR38/LR44: biz_access (Access screen) has Vietnamese since step 5; since step 6 the six screens LR44
+  listed (Adjust/Settle, contract drawer, Payroll Report, connection screen, Calendar, Awards) and the Access role
+  names (stored jsonb, pb_vendor_access/catalogue_vi.py) are Vietnamese too. What still shows English: Awards row
+  values from server lists, the connection screen's schedule sentence, "Paid: Monthly" in the drawer.
+- LR67 **web_debranding's `get_field_selection` never called super()** and returned the English source of every
+  Selection field, so no selection label in the product was ever translated (step 5 had to SQL-write net_role VI into
+  `ir_model_fields_selection` for that reason). Fixed in step 6 (19.0.1.0.2) — it debrands super()'s answer.
+- LR68 **Settlements were invisible on Pay Run › Settle** to everybody but a seat-holder: the only rule was "the ones
+  I was asked to decide" on base.group_user. Step 6 added payroll-team and exits-team rules (`fnf_team_rules.xml`,
+  `fnf_exits_rules.xml`). Check record rules whenever a board reads "0" for a reader who should see rows.
