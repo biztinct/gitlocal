@@ -10504,11 +10504,11 @@ const SCENARIOS = [
         },
       },
       {
-        key: "countries", anchor: "gr-countries", act: "observe",
+        key: "countries", act: "observe",
         say: {
           title: B("One country at a time", "Mỗi lần một quốc gia"),
-          body: B("\"Coming soon\" means that country's module is not installed here — not that its filings do not exist.",
-                  "\"Sắp có\" nghĩa là mô-đun của quốc gia đó chưa được cài ở đây — không phải các báo cáo không tồn tại."),
+          body: B("When your companies pay in more than one country, chips above the tiles switch country. \"Coming soon\" means that country's module is not installed here — not that its filings do not exist.",
+                  "Khi các công ty của bạn trả lương ở nhiều quốc gia, các nhãn phía trên các ô dùng để chuyển quốc gia. \"Sắp có\" nghĩa là mô-đun của quốc gia đó chưa được cài ở đây — không phải các báo cáo không tồn tại."),
         },
       },
       {

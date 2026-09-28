@@ -15961,10 +15961,10 @@
         },
         {
           "act": "observe",
-          "anchor": "gr-countries",
+          "anchor": "",
           "body": {
-            "en": "\"Coming soon\" means that country's module is not installed here — not that its filings do not exist.",
-            "vi": "\"Sắp có\" nghĩa là mô-đun của quốc gia đó chưa được cài ở đây — không phải các báo cáo không tồn tại."
+            "en": "When your companies pay in more than one country, chips above the tiles switch country. \"Coming soon\" means that country's module is not installed here — not that its filings do not exist.",
+            "vi": "Khi các công ty của bạn trả lương ở nhiều quốc gia, các nhãn phía trên các ô dùng để chuyển quốc gia. \"Sắp có\" nghĩa là mô-đun của quốc gia đó chưa được cài ở đây — không phải các báo cáo không tồn tại."
           },
           "guard": false,
           "key": "countries",
@@ -29027,5 +29027,5 @@
       }
     }
   ],
-  "version": "c7e4ab06265f"
+  "version": "282dacfb1bd5"
 }
