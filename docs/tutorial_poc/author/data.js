@@ -1947,7 +1947,7 @@ const STATIONS = {
       {
         id: "mapping", icon: "git-branch", star: true, mins: 9, after: "integrations",
         roles: ["officer", "owner"],
-        search: B("mapping, where a number comes from, data source, spreadsheet columns", "ánh xạ, con số đến từ đâu, nguồn dữ liệu, cột bảng tính"),
+        search: B("mapping, where a number comes from, where does this number come from, data source, spreadsheet columns", "ánh xạ, con số đến từ đâu, nguồn dữ liệu, cột bảng tính"),
         title: B("Mapping", "Ánh xạ"),
         desc: B("Where every value a pay scheme reads comes from — a file, a connected system or a record — drawn as one journey.",
                 "Mỗi giá trị mà chương trình lương đọc đến từ đâu — một tệp, một hệ thống đã kết nối hay một hồ sơ — vẽ thành một hành trình."),
