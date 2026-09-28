@@ -238,3 +238,84 @@ Draft with the reason (NOT "cancels 48 payslips"). Closeout: `docs/handovers/APP
 - **Pre-existing test failures (not step 2):** pb_learn test_07b (cron on template), pb_payroll_ai_insights
   test_data_access_06, test_egress 04d/04e, pb_approval_config test_u10 (res.users access in outbox)
   and test_z06d (pb_formula_studio has no Phase-7 block).
+
+- LR23 **`ct-` is taken by Contracts** (ct-head, ct-filters, ct-kpis, ct-roster in pb_contracts). The
+  step 3 handover's `ct-` prefix for Component treatment would have re-pointed two contract anchors;
+  treatment anchors are **`tr-*`** (tr-head, tr-filters, tr-table). Check every new prefix against all
+  four registry blocks (product, practice, foreign wildcards, pattern) before laying it.
+- LR24 **Mapping publishes its tab** (`mapping_studio.js _publishPlace`, hubKey "mapping", lens =
+  the mode id, switchTo = setMode). Its lens context key is **`pb_mode`**, so the content declares a
+  `hub_mapping` screen with `hub.lens_key: "pb_mode"` — that is what lets `openScreen` open Mapping ON
+  a tab (Component treatment = place `pb_mapping_studio:treatment`). The three Settings cockpits
+  without tabs (guided setup, Approval Matrix, Group) have no place: they ground by
+  `SCREEN_ACTION_TAGS` and open by the screen's `open` xml-id. A Settings category key is NOT a
+  usable place for them — `openHub` on pb_settings_hub ignores `pb_lens` and would land on the
+  remembered category.
+- LR25 A scenario `nav` / `entry.nav` may now be a **screen key** whose screen has `places` or
+  `open` (generator `nav_screens`); the engine resolves a key before an xml-id. Used by sc_treatment.
+- LR26 Glossary gotchas: the permission-group entry owns the alias **"groups"** (avoid the word in
+  prose); every single-word term/alias needs a BARE_ALIASES reason (added `subtotal`); a 29-word
+  sentence fails the generator — split, don't trim meaning.
+- LR27 **⌘K matches label + sublabel only.** Stations carry a bilingual `search` phrase that the
+  Learn palette rows show in the sublabel ("Lesson · 7 min · currency, exchange rate…"), so a
+  lesson is found by what it is about. Retired walkthroughs are no longer offered in ⌘K.
+- LR28 New lesson moment **`tick`** (`visuals.js runTick`): the replica element named by
+  `moment.from` carries `data-from` / `data-to`, and the number counts between them. Used for the
+  guided setup's take-home figure (Allowances added: +allowance − tax).
+- LR29 Product Vietnamese was machine-grade on the taught setup labels (Pay role "Trả vai trò",
+  Tells the run "Kể về cuộc chạy", Scheme "sơ đồ"/"Lược đồ", Continue to pay rules "Tiếp tục trả quy
+  tắc"…). Fixed the taught ones in pb_formula_studio / pb_blueprint vi_VN.po (JS/template strings:
+  deploy + restart is enough, LR19). **pb_records has no Vietnamese for the Records Desk screen at
+  all** — Vietnamese users see English there; the VI lesson names the buttons in Vietnamese. Owner item.
+- LR30 **Who can see the setup screens on payobook.com.** The demo login opens the guided setup,
+  Mapping, the Records Desk and Group, but NOT Component treatment ("You need payroll officer
+  access…"), the Approval Matrix ("could not be opened") or Insights › Explorer (the hub moves it
+  off the tab). The QA login opens Approval Matrix, Group and Explorer, but not Mapping (no
+  Formula User group: mapping_pickers refuses hr.integration.connector) and not People › Records.
+  Step 3 validated treatment by giving QA the Formula User group for the check and removing it
+  after. A walkthrough over a screen the reader cannot open degrades to centred cards; stations
+  without a sidebar leaf are always "reachable" (learn_runtime `_station_reach`), so nothing
+  warns first — a step-5 item.
+- LR31 The Ask Payobook model omits the "Show me" action for most plain "how do I…" questions (it
+  sent one only when the user wrote "show me"), step 2's included. `_content_handoff` now asks
+  pb_learn's resolver (`learn.intent.resolve` → intent `watch`) and offers that walkthrough,
+  through the same whitelist. Tests test_action_envelope 16/17.
+- LR32 A synthetic Ctrl/Cmd+K keydown does not open the ⌘K palette in Chrome MCP; click the header's
+  "Search surfaces and actions" button. Setting the input value needs the native setter + an
+  `input` event.
+
+## Step 3 facts for later steps
+
+- **Stations (setup line, chapter 3):** blueprint "New configuration", mapping "Mapping", treatment
+  "Component treatment", matrix "Approval Matrix", records "Records Desk", schemes "Schemes and
+  currencies". Each has `roles` (officer/hr/approver/owner — step 5 builds paths from it) and a
+  bilingual `search` phrase. Lessons **L7–L12** in that order.
+- **Replica screens:** blueprint (+ sub blueprint_rules), mapping (+ sub mapping_sheet), treatment,
+  matrix (+ sub matrix_builder), records, schemes (Settings › Group). The explorer replica gained
+  the money switch + Compare schemes panel. MENU: People › Records, Settings › Guided setup /
+  Group / Approvals open replicas; Mapping and treatment live under Integrations (`also`).
+- **Walkthroughs:** sc_blueprint, sc_mapjourney (replaces retired sc_mapping), sc_treatment
+  (`nav: "treatment"` — a screen key), sc_matrix, sc_records, sc_schemes; all Watch + Try.
+- **Intents:** newscheme, wherefrom, notaddup, changeroute, bulkupdate, currency (resolver cases in
+  simulate_resolver.py). whoapproves/stuckwaiting now also cover the matrix screen.
+- **Glossary:** guidedSetup, startingPoint, sampleEmployee, setupCheck, schemeProposal, dataSource,
+  sourcePriority, transformationRule, mappingJourney, componentTreatment, payRole, subtotal,
+  valueType, approvalResponsibility, approvalCover, recordsDesk, ratePolicy, groupCurrency;
+  approvalRoute and mapping (column mapping) definitions updated.
+- **Screens / places:** hub_mapping (tag pb_mapping_studio, lens_key pb_mode); mapping claims every
+  Mapping tab except treatment; records = pb_people_hub:records; blueprint / matrix / schemes open by
+  `open` and ground by SCREEN_ACTION_TAGS.
+- **Anchors (product):** bp-status bp-rail bp-foot bp-pay bp-identity bp-country bp-starters
+  bp-audience (bp-reallife reserved); mp-story mp-modes mp-ramp mp-jbar mp-lanes; tr-head tr-filters
+  tr-table; am-hero am-tabs am-bulk am-table (am-filters, am-foot reserved); rd-head rd-scheme rd-file
+  rd-history rd-review rd-fields (rd-who, rd-empty reserved); gp-head gp-tree gp-rates (gp-divisions
+  reserved); ex-money. Contract checks `setup-lesson-anchors`, `setup-cockpit-action-tags`.
+- **Ask Payobook:** PAYROLL SETUP block in ONBOARDING_SYSTEM_PROMPT; _KNOWN_LESSONS += L7–L12;
+  _KNOWN_WALKTHROUGHS += the six; `_content_handoff` fallback (LR31).
+- **Versions after step 3:** pb_learn 19.0.17.1.0, pb_blueprint 19.0.1.11.6, pb_formula_studio
+  19.0.1.201.2, pb_approval_config 19.0.1.6.1, pb_records 19.0.1.3.2, pb_group 19.0.2.1.1,
+  pb_explorer 19.0.2.5.1, pb_payroll_ai_insights 19.0.3.7.0 — all four databases.
+- **Pre-existing test failures (not step 3):** pb_learn test_07b; pb_payroll_ai_insights
+  test_data_access_06, test_egress 04d/04e; pb_approval_config test_u10, test_z06d;
+  pb_formula_studio test_net_pay_candidates test_01 ("the fixture must have no net pay" — a
+  template-data expectation, untouched by this step).
