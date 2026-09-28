@@ -56,7 +56,7 @@
                  moment somebody asks to the moment the advert goes out.</p>
             </div>
             <div class="pbhr-head-actions">
-              <details class="pbhr-tools"><summary class="pbim-btn ghost">Hiring tools <t t-out="ic('chevronDown',14)"/></summary><div class="pbhr-tools-menu">              <button t-if="state.canAdmin" class="pbim-btn ghost" t-on-click="() =&gt; this.act('open_brand', {}, {reload:false})">Company story</button><button t-if="state.canRecruit" class="pbim-btn ghost" t-on-click="() =&gt; this.act('open_templates', {}, {reload:false})">Email templates</button><button class="pbim-btn ghost" t-on-click="refresh" title="Read the board again">
+              <details class="pbhr-tools" data-coach="hi-tools"><summary class="pbim-btn ghost">Hiring tools <t t-out="ic('chevronDown',14)"/></summary><div class="pbhr-tools-menu">              <button t-if="state.canAdmin" class="pbim-btn ghost" t-on-click="() =&gt; this.act('open_brand', {}, {reload:false})">Company story</button><button t-if="state.canRecruit" class="pbim-btn ghost" t-on-click="() =&gt; this.act('open_templates', {}, {reload:false})">Email templates</button><button class="pbim-btn ghost" t-on-click="refresh" title="Read the board again">
                 <t t-out="ic('refresh',15)"/>
               </button>
               <button t-if="state.canRecruit" class="pbim-btn ghost" t-on-click="() =&gt; this.act('run_automation', {})" title="Chase the adverts nobody has agreed and the roles nobody is recruiting — exactly what the nightly step does">
@@ -72,7 +72,7 @@
                 <t t-out="ic('users',15)"/> Covers
               </button>
 </div></details>
-              <button t-if="state.canRaise" class="pbim-btn primary" t-on-click="startRaise">
+              <button t-if="state.canRaise" class="pbim-btn primary" data-coach="hi-raise" t-on-click="startRaise">
                 <t t-out="ic('plus',15)"/> Raise a hiring request
               </button>
             </div>
@@ -82,7 +82,7 @@
                QUIET BY DEFAULT: one line, small figures, grey at zero. A
                number takes a colour only when somebody has to act on it.
                Every figure that filters still filters. -->
-          <div class="pbhr-glance" role="group" aria-label="Numbers at a glance">
+          <div class="pbhr-glance" data-coach="hi-numbers" role="group" aria-label="Numbers at a glance">
             <t t-foreach="glance" t-as="gl" t-key="gl.key">
               <button type="button" class="pbhr-gl" t-att-class="(gl.n ? '' : 'zero ') + (gl.tone ? 'is-' + gl.tone + ' ' : '') + (gl.run and state.focus === gl.key ? 'on ' : '') + (gl.run ? '' : 'flat')" t-att-disabled="!gl.run" t-att-title="gl.run ? 'Show only these' : ''" t-on-click="() =&gt; this.pressGlance(gl)">
                 <span t-if="gl.tone" class="pbhr-gl-dot"/>
@@ -97,7 +97,7 @@
                A role is at exactly ONE step (stageOf), so the counts add up.
                The count is a pill that says "roles" so it is never read as
                the step's number. Pressing a step again shows everything. -->
-          <nav class="pbhr-steps4" aria-label="Where every role is">
+          <nav class="pbhr-steps4" data-coach="hi-steps" aria-label="Where every role is">
             <button t-foreach="stages" t-as="st" t-key="st.key" type="button" class="pbhr-st" t-att-class="{ on: state.journeyFocus === st.key, has: st.count, wait: st.waiting }" t-att-aria-pressed="state.journeyFocus === st.key ? 'true' : 'false'" t-on-click="() =&gt; this.chooseJourney(st.key)">
               <span class="pbhr-st-heat"/>
               <span class="pbhr-st-top">
@@ -159,7 +159,7 @@
                "Which roles are we trying to fill" and "what is happening
                this week" are not the same question, and a single list that
                tried to answer both would answer neither. -->
-          <div class="pbhr-tabs" role="tablist">
+          <div class="pbhr-tabs" data-coach="hi-tabs" role="tablist">
             <button class="pbhr-tab" role="tab" t-att-class="{ on: state.tab === 'roles' }" t-att-aria-selected="state.tab === 'roles' ? 'true' : 'false'" t-on-click="() =&gt; this.setTab('roles')">
               <t t-out="ic('briefcase',15)"/> Roles
               <span class="pbhr-tab-n" t-esc="state.rows.length"/>
@@ -204,7 +204,7 @@
           <!-- ================== nothing at all yet ==================
                An empty state that TEACHES: it says what the first move is
                and who makes it, and it carries the button. -->
-          <div t-if="!state.rows.length" class="pbim-panel pbhr-empty">
+          <div t-if="!state.rows.length" class="pbim-panel pbhr-empty" data-coach="hi-row">
             <div class="pbhr-empty-ic"><t t-out="ic('userPlus',30)"/></div>
             <h2>No hiring requests yet</h2>
             <p>Whoever runs a part of the business raises the first one. It
@@ -230,7 +230,7 @@
           </div>
 
           <!-- ========================= the rows ========================= -->
-          <div t-else="" class="pbhr-grid">
+          <div t-else="" class="pbhr-grid" data-coach="hi-row">
             <div t-foreach="filtered" t-as="row" t-key="row.id" class="pbim-panel pbhr-card" t-att-class="{ 'is-mine': row.waiting_mine,                                 'is-over': row.budget_status === 'over',                                 'is-open': row.state === 'open' }" t-on-click="() =&gt; this.openDrawer(row.id)">
 
               <div class="pbhr-card-top">
@@ -289,7 +289,7 @@
                 <span t-foreach="row.pipeline" t-as="pl" t-key="pl.id"><i/><b t-esc="pl.count"/> <t t-esc="pl.name"/></span>
               </div>
 
-              <div class="pbhr-next" t-att-class="'is-' + (nextStep(row).tone or 'plain')">
+              <div class="pbhr-next" data-coach="hi-next" t-att-class="'is-' + (nextStep(row).tone or 'plain')">
                 <span class="pbhr-next-tx"><t t-if="nextStep(row).label">Next: </t><b t-esc="nextStep(row).text"/></span>
                 <button t-if="nextStep(row).label" type="button" class="pbim-btn pbhr-next-btn" t-att-class="nextStep(row).tone === 'primary' ? 'primary' : 'ghost'" t-on-click="(ev) =&gt; this.runNext(ev, row)" t-esc="nextStep(row).label"/>
               </div>
@@ -904,7 +904,7 @@
                     </div>
                   </div>
                   <div class="pbhr-list-acts" t-if="state.canRecruit and cd.active">
-                    <button class="pbim-btn ghost pbhr-quiet" t-on-click="() =&gt; this.startStageMove(cd)"><t t-out="ic('layers',13)"/> Move stage</button><button class="pbim-btn ghost pbhr-quiet" t-on-click="() =&gt; this.startMessage(cd)"><t t-out="ic('mail',13)"/> Email candidate</button><span class="pbhr-scr-group"><button t-foreach="screenOrder" t-as="tg" t-key="tg" class="pbim-btn ghost pbhr-scr" t-att-class="'pbhr-scr--' + tg + (cd.screen === tg ? ' on' : '')" t-att-title="screenLabel(tg)" t-on-click="() =&gt; this.screen(cd, tg)">
+                    <button class="pbim-btn ghost pbhr-quiet" data-coach="hi-stage" t-on-click="() =&gt; this.startStageMove(cd)"><t t-out="ic('layers',13)"/> Move stage</button><button class="pbim-btn ghost pbhr-quiet" t-on-click="() =&gt; this.startMessage(cd)"><t t-out="ic('mail',13)"/> Email candidate</button><span class="pbhr-scr-group"><button t-foreach="screenOrder" t-as="tg" t-key="tg" class="pbim-btn ghost pbhr-scr" t-att-class="'pbhr-scr--' + tg + (cd.screen === tg ? ' on' : '')" t-att-title="screenLabel(tg)" t-on-click="() =&gt; this.screen(cd, tg)">
                       <t t-out="ic(screenIcon(tg),14)"/>
                     </button></span>
                   </div>
@@ -1006,7 +1006,7 @@
       <!-- ==================================================================
            RAISE A HIRING REQUEST
            ================================================================== -->
-      <div t-if="state.raising" class="pbim-modal-scrim pbhr-scrim" t-on-click="cancelRaise"><div class="pbim-modal pbhr-dialog pbhr-wizard" role="dialog" aria-modal="true" aria-label="Raise a hiring request" t-on-click.stop="() =&gt; {}">
+      <div t-if="state.raising" class="pbim-modal-scrim pbhr-scrim" t-on-click="cancelRaise"><div class="pbim-modal pbhr-dialog pbhr-wizard" data-coach="hi-wizard" role="dialog" aria-modal="true" aria-label="Raise a hiring request" t-on-click.stop="() =&gt; {}">
 <div class="pbim-modal__head"><div><span class="pbhr-eyebrow">BUILD YOUR TEAM</span><div class="pbhr-drawer-title">Let’s shape your next hire.</div><div class="pbhr-drawer-sub">Requested by <t t-esc="state.journey.requestor"/> · Saved as a draft before approval.</div></div><button class="pbim-btn ghost" t-on-click="cancelRaise" aria-label="Close request" title="Close"><t t-out="ic('x',16)"/></button></div>
 <nav class="pbhr-wizard-steps" aria-label="Request steps"><span t-foreach="['The role','Responsibilities','Interview plan','Budget &amp; review']" t-as="step" t-key="step" t-att-class="{on:state.raising.step === step_index,done:state.raising.step &gt; step_index}"><b t-esc="step_index + 1"/><t t-esc="step"/></span></nav>
 <div class="pbim-modal__body pbhr-form">

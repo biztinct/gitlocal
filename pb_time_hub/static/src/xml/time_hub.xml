@@ -18,7 +18,7 @@
         </div>
 
         <!-- lens tabs -->
-        <div class="pbth-lens" role="tablist">
+        <div class="pbth-lens" role="tablist" data-coach="wf-time">
           <button t-foreach="lenses" t-as="l" t-key="l.key"
                   class="pbth-lens__tab" role="tab"
                   t-att-class="{ 'is-on': state.lens === l.key }"
@@ -55,7 +55,7 @@
 
         <!-- Exceptions — the Attendance Control board + composer, embedded.
              The nonce remounts it when the drawer hands over a seed. -->
-        <div class="pbth-lensbody" t-elif="state.lens === 'exceptions'">
+        <div class="pbth-lensbody" t-elif="state.lens === 'exceptions'" data-coach="wf-exceptions">
           <PbAttendanceFlow t-key="'lens-exc-' + state.excNonce"
                             embedded="true" initialView="'board'"
                             seed="state.seed"

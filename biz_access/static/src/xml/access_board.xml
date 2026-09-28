@@ -45,7 +45,7 @@
       <div t-else="" class="pbim-wrap pbva-wrap">
 
         <!-- ========================== the header ========================== -->
-        <div class="pbva-head">
+        <div class="pbva-head" data-coach="ac-head">
           <div class="pbva-head-id">
             <HubBackChip t-if="back" back="back" tone="'light'"/>
             <h2 t-if="!props.embedded" class="pbva-h">Access</h2>
@@ -62,7 +62,7 @@
                  ABSENT, NOT DISABLED, for anybody who may not look at somebody
                  else's access. The server refuses it as well; this is the
                  courtesy, not the rail. -->
-            <div t-if="canManage" class="pbva-sim">
+            <div t-if="canManage" class="pbva-sim" data-coach="ac-seeas">
               <button t-attf-class="pbva-simchip {{ state.seeing ? 'is-on' : '' }}"
                       t-on-click="toggleSim"
                       t-attf-aria-expanded="{{ state.simOpen ? 'true' : 'false' }}"
@@ -134,12 +134,12 @@
                     title="Add a role, rename one, or change what it says">
               <t t-out="ic('list',15)"/> Edit the list of roles
             </button>
-            <button class="pbim-btn ghost" t-on-click="openDelegate">
+            <button class="pbim-btn ghost" t-on-click="openDelegate" data-coach="ac-handover">
               <t t-out="ic('arrowLeftRight',15)"/> Hand my access over
             </button>
             <!-- ABSENT, NOT DISABLED, for anybody who cannot use it. A greyed
                  button is a promise the screen has no intention of keeping. -->
-            <button t-if="canManage" class="pbim-btn primary"
+            <button t-if="canManage" class="pbim-btn primary" data-coach="ac-newrole"
                     t-on-click="() => this.openComposer(null)">
               <t t-out="ic('plus',15)"/> New role
             </button>
@@ -149,7 +149,7 @@
         <!-- ===================== the spectacles are on =====================
              A MODE NOBODY CAN BE IN BY ACCIDENT. The chip above says who; this
              says what it means and how to stop, in the same breath. -->
-        <div t-if="state.seeing" class="pbva-simbar">
+        <div t-if="state.seeing" class="pbva-simbar" data-coach="ac-banner">
           <img class="pbva-face" t-att-src="state.seeing.avatar"
                t-att-alt="state.seeing.name"/>
           <span class="pbva-simbar-tx">
@@ -176,7 +176,7 @@
 
         <!-- ============================ the lenses ============================ -->
         <div class="pbva-bar">
-          <div class="pbva-tabs" role="tablist">
+          <div class="pbva-tabs" role="tablist" data-coach="ac-tabs">
             <button t-foreach="lenses" t-as="ln" t-key="ln.key"
                     t-attf-class="pbva-tab {{ state.lens === ln.key ? 'is-on' : '' }}"
                     role="tab" t-attf-aria-selected="{{ state.lens === ln.key ? 'true' : 'false' }}"
@@ -216,7 +216,7 @@
             </p>
           </div>
 
-          <div t-else="" class="pbva-roles">
+          <div t-else="" class="pbva-roles" data-coach="ac-rolecard">
             <div t-foreach="profiles" t-as="pf" t-key="pf.id"
                  t-attf-class="pbva-role {{ state.open === pf.id ? 'is-open' : '' }}"
                  t-attf-style="--pbva-i: {{pf_index}}">
@@ -1255,7 +1255,7 @@
       <div t-if="state.composer" class="pbim-modal-scrim"
            t-on-click="closeComposer">
         <div class="pbim-modal pbva-modal pbva-modal--wide" t-on-click.stop=""
-             role="dialog" aria-modal="true" aria-label="New role">
+             role="dialog" aria-modal="true" aria-label="New role" data-coach="ac-builder">
           <div class="pbva-modal-h">
             <div class="pbva-modal-ic"><t t-out="ic('plus',17)"/></div>
             <div class="pbva-modal-t">

@@ -36,7 +36,7 @@
             </button>
           </div>
 
-          <div class="pay-card">
+          <div class="pay-card" data-coach="pp-reviews">
             <div class="pay-card-h">
               <div>
                 <p class="pay-h">Pay reviews</p>
@@ -120,7 +120,7 @@
             </div>
           </div>
 
-          <div class="pay-revmeters">
+          <div class="pay-revmeters" data-coach="pp-meters">
             <div class="pay-revmeter">
               <span class="pay-revmeter-l">Budget</span>
               <span class="pay-revmeter-v" t-esc="card.meter"/>
@@ -142,7 +142,7 @@
             </div>
           </div>
 
-          <div class="pay-steps">
+          <div class="pay-steps" data-coach="pp-stepper">
             <span t-foreach="state.open.steps" t-as="step" t-key="step.state"
                   t-attf-class="pay-step #{card.state === step.state ? 'is-on' : ''}">
               <span class="pay-step-d"/>
@@ -150,7 +150,7 @@
             </span>
           </div>
 
-          <div class="pay-revbar">
+          <div class="pay-revbar" data-coach="pp-review-actions">
             <button class="pbim-btn primary sm" t-if="actions.submit"
                     t-on-click="() => this.act('submit')"
                     t-att-disabled="state.busy">Send for approval</button>
@@ -184,7 +184,7 @@
         </div>
 
         <!-- what stops approval -->
-        <div class="pay-card pay-block" t-if="state.open.blockers.length">
+        <div class="pay-card pay-block" data-coach="pp-stops" t-if="state.open.blockers.length">
           <p class="pay-h">What stops approval</p>
           <div t-foreach="state.open.blockers" t-as="stop" t-key="stop.key"
                class="pay-blockrow">
@@ -195,7 +195,7 @@
         </div>
 
         <!-- the worksheet -->
-        <div class="pay-card">
+        <div class="pay-card" data-coach="pp-worksheet">
           <div class="pay-tools">
             <div class="pay-tools-l">
               <button t-foreach="filterDefs" t-as="f" t-key="f.key"
@@ -207,7 +207,7 @@
                      placeholder="Find a person, a job or a team"
                      t-on-change="(ev) => this.setSearch(ev.target.value)"/>
             </div>
-            <div class="pay-tools-r" t-if="canWrite">
+            <div class="pay-tools-r" data-coach="pp-bulk" t-if="canWrite">
               <span class="pay-selcount" t-esc="selectionLabel"/>
               <input class="pbim-input pay-step-in" type="number" step="0.5"
                      t-att-value="state.nudge"
@@ -332,7 +332,7 @@
       <!-- ================================================= calibration -->
       <t t-if="state.view === 'calibration' and state.calib">
         <t t-set="pic" t-value="plot"/>
-        <div class="pay-card">
+        <div class="pay-card" data-coach="pp-calibration">
           <div class="pay-card-h">
             <div>
               <button class="pbim-btn ghost sm"
@@ -455,7 +455,7 @@
                t-esc="state.calib.flat_note"/>
           </t>
 
-          <div class="pay-outliers" t-if="state.calib.outliers.length">
+          <div class="pay-outliers" data-coach="pp-second-look" t-if="state.calib.outliers.length">
             <p class="pay-h">Worth a second look</p>
             <div t-foreach="state.calib.outliers" t-as="one"
                  t-key="one.line_id" class="pay-outrow">
@@ -757,7 +757,7 @@
       <div class="pbim-busy" t-if="!state.loaded">Opening the pay changes…</div>
 
       <t t-if="state.loaded">
-        <div class="pay-card">
+        <div class="pay-card" data-coach="pp-changes">
           <div class="pay-card-h">
             <div>
               <p class="pay-h">Pay changes</p>

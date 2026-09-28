@@ -23,7 +23,7 @@
       <t t-if="state.data">
 
         <!-- ===================== verb header + day chips ===================== -->
-        <header class="pbmc-head">
+        <header class="pbmc-head" data-coach="wf-close">
           <h1 class="pbmc-title" t-esc="weekTitle"/>
           <span class="pbmc-pill pbmc-pill--amber" t-if="stats.flagged"
                 t-esc="flaggedLabel"/>
@@ -64,7 +64,7 @@
         <!-- ============================== the body ============================== -->
         <div class="pbmc-body">
 
-          <div class="pbmc-table">
+          <div class="pbmc-table" data-coach="wf-close-flags">
 
             <!-- ==== group by KIND, then act on one group ====
                  The counts are the WEEK's, never the page's. Clicking a kind
@@ -257,7 +257,7 @@
           </div>
 
           <!-- ========================= the handoff rail ========================= -->
-          <aside class="pbmc-rail">
+          <aside class="pbmc-rail" data-coach="wf-close-handoff">
             <h6>Payroll handoff</h6>
             <div class="pbmc-tot">
               <span>Regular hours</span><b t-esc="hours(handoff.regular)"/>
@@ -289,7 +289,7 @@
                  to see what they are working towards, and the checklist above
                  it says exactly what is missing. -->
             <t t-if="!state.data.all_locked">
-              <button class="pbmc-cta"
+              <button class="pbmc-cta" data-coach="wf-close-lock"
                       t-att-class="{ 'is-on': state.data.can_lock and state.data.can_manage_locks }"
                       t-att-disabled="!state.data.can_lock or !state.data.can_manage_locks or state.busy"
                       t-on-click="() => this.lockWeek()">
@@ -306,7 +306,7 @@
             </t>
 
             <t t-if="state.data.all_locked">
-              <div class="pbmc-locked">
+              <div class="pbmc-locked" data-coach="wf-close-locked">
                 <span t-out="ic('shieldCheck', 15)"/>
                 <b>Week locked</b>
                 <span>Handed to payroll. Punches, corrections and overtime for

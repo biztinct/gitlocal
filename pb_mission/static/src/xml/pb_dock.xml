@@ -12,7 +12,7 @@
          dock is a flex sibling of the canvas, so a lens's fixed-position modal
          still resolves against the ROOT stacking context (W37). -->
     <aside class="pbms-dock" t-att-class="{ 'is-collapsed': state.collapsed }"
-           aria-label="Approvals waiting for you">
+           aria-label="Approvals waiting for you" data-coach="wf-needs">
 
       <!-- ==================== collapsed: the 44px badge strip ==================== -->
       <t t-if="state.collapsed">
@@ -160,7 +160,7 @@
                locked. Only OVERTIME participates in v1 and the copy says so —
                a button labelled "approve all clean" over a queue that also
                holds trips and leaves would promise something it does not do. -->
-          <div class="pbms-dock__clean" t-if="cleanItems.length">
+          <div class="pbms-dock__clean" t-if="cleanItems.length" data-coach="wf-clean">
             <p class="pbms-dock__cleanp">
               <b><t t-esc="cleanItems.length"/></b> clean overtime —
               hours match the grid, under every ceiling, on an open day.

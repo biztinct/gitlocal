@@ -69,7 +69,7 @@
       <div class="pbms-low">
 
         <!-- ========================= lens rail ========================== -->
-        <nav class="pbms-rail" aria-label="Workforce lenses">
+        <nav class="pbms-rail" aria-label="Workforce lenses" data-coach="wf-tabs">
           <!-- ONE class attribute: a static `class` plus `t-att-class` is the
                documented-safe pair; both t-att-class and t-attf-class compile to
                `class`, so an element carrying both keeps whichever the compiler

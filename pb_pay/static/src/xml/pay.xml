@@ -43,7 +43,7 @@
                         approvals.
                     </p>
                 </div>
-                <div class="pay-head-actions" t-if="state.tab === 'bands'">
+                <div class="pay-head-actions" data-coach="pp-bands-tools" t-if="state.tab === 'bands'">
                     <button class="pbim-btn ghost sm" t-on-click="() => this.recompute()"
                             t-att-disabled="state.busy">
                         <t t-out="ic('refresh', 14)"/> Work it out again
@@ -68,8 +68,9 @@
             </div>
 
             <!-- ============================================== the tabs -->
-            <div class="pay-tabs">
+            <div class="pay-tabs" data-coach="pp-tabs">
                 <button t-foreach="tabs" t-as="tab" t-key="tab.key"
+                        t-attf-data-coach="pp-tab-{{ tab.key }}"
                         t-attf-class="pay-tab {{ state.tab === tab.key ? 'is-on' : '' }}"
                         t-att-disabled="tab.ready ? false : true"
                         t-on-click="() => this.setTab(tab.key)">
@@ -159,7 +160,7 @@
                     </div>
 
                     <!-- the picture -->
-                    <div class="pay-card" t-if="lanes.length">
+                    <div class="pay-card" data-coach="pp-band-picture" t-if="lanes.length">
                         <div class="pay-card-h">
                             <div>
                                 <p class="pay-card-t">The band picture</p>
@@ -495,7 +496,7 @@
                     </div>
 
                     <!-- the health cards -->
-                    <div class="pay-card" t-if="state.board.health.length">
+                    <div class="pay-card" data-coach="pp-health" t-if="state.board.health.length">
                         <div class="pay-card-h">
                             <div>
                                 <p class="pay-card-t">Worth knowing</p>
@@ -560,7 +561,7 @@
                            t-esc="state.fair.money.rate_note"/>
                     </div>
 
-                    <div class="pay-card">
+                    <div class="pay-card" data-coach="pp-fairness">
                         <p class="pay-headline" t-esc="state.fair.headline"/>
                         <p class="pay-card-s" t-esc="state.fair.people_label"/>
 

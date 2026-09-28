@@ -69,7 +69,7 @@
                       title="Who can see what">
                 <t t-out="ic('shield',15)"/> Who sees what
               </button>
-              <button t-if="state.canWrite" class="pbim-btn primary"
+              <button t-if="state.canWrite" class="pbim-btn primary" data-coach="gw-run"
                       t-on-click="runAutomation"
                       title="Flag the conversations that did not happen and the plans that have run past their end date">
                 <t t-out="ic('zap',15)"/> Run today's checks
@@ -97,21 +97,25 @@
           <!-- ====================== the numbers ======================
                Quiet by default: one slim line, grey at zero, a colour only
                when somebody has to act. Every figure filters the board. -->
+          <div data-coach="gw-numbers">
           <t t-call="pb_import_kit.QuietGlance">
             <t t-set="qGlance" t-value="glance"/>
             <t t-set="qGlanceOn" t-value="state.focus"/>
           </t>
+          </div>
 
           <!-- ====================== the four steps ======================
                The same four stops as the rail on every card. A plan is at
                exactly ONE step (its state), so the counts add up. Open
                plans only: a closed plan has left the steps. -->
           <t t-if="!state.closedView">
+            <div data-coach="gw-steps">
             <t t-call="pb_import_kit.QuietSteps">
               <t t-set="qSteps" t-value="steps"/>
               <t t-set="qStepsLabel" t-value="'Where every plan is'"/>
               <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
             </t>
+            </div>
           </t>
           <div class="pbim-showing">
             <span t-esc="showingLine.text"/>
@@ -161,7 +165,7 @@
                AND THAT IS GOOD NEWS, said out loud. An empty improvement-plan
                board is not a screen that has failed to load; it is a company
                where nobody is on one. -->
-          <div t-if="!state.rows.length" class="pbim-panel pip-empty">
+          <div t-if="!state.rows.length" class="pbim-panel pip-empty" data-coach="gw-list">
             <div class="pip-empty-ic"><t t-out="ic('sunrise',30)"/></div>
             <h2 t-esc="state.closedView ? 'Nothing has been closed yet' : 'Nobody is on a growth plan'"/>
             <p t-if="!state.closedView">This starts when a line manager asks HR
@@ -192,7 +196,7 @@
           </div>
 
           <!-- ======================= the plans ======================= -->
-          <div t-else="" class="pip-grid">
+          <div t-else="" class="pip-grid" data-coach="gw-list">
             <div t-foreach="visibleRows" t-as="row" t-key="row.id"
                  class="pbim-panel pip-card"
                  t-att-class="{ 'is-drift': row.drifting, 'is-late': row.overdue }">
@@ -385,7 +389,7 @@
           </button>
 
           <!-- ==== the objectives ==== -->
-          <h3 class="pip-drawer-h3">
+          <h3 class="pip-drawer-h3" data-coach="gw-objectives">
             What has to change
             <button t-if="state.canWrite and ['requested','coaching'].includes(state.drawer.row.state)"
                     class="pip-inline-btn"

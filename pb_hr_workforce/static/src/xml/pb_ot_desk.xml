@@ -10,7 +10,7 @@
       </div>
 
       <!-- ============================= BOARD ============================= -->
-      <div t-elif="state.view === 'board' and state.data" class="pbot-wrap">
+      <div t-elif="state.view === 'board' and state.data" class="pbot-wrap" data-coach="wf-overtime">
 
         <!-- hero -->
         <div class="pbot-hero">
@@ -25,7 +25,7 @@
             <h1>Approve overtime &amp; manage limits</h1>
             <div class="sub">Org-wide queue · ceiling context · bonus-hours overflow</div>
           </div>
-          <button t-if="state.data.can_view_bonus" class="pbot-btn ghost" t-on-click="openBonus">
+          <button t-if="state.data.can_view_bonus" class="pbot-btn ghost" t-on-click="openBonus" data-coach="wf-ot-bonus">
             <span t-out="ic('coins',16)"/><span>Bonus Hours</span>
           </button>
         </div>
@@ -39,7 +39,7 @@
         </t>
 
         <!-- queue -->
-        <section class="pbot-panel">
+        <section class="pbot-panel" data-coach="wf-ot-queue">
           <div class="panel-h">
             <div class="ttl"><span t-out="ic('inbox',18)"/> Approval queue</div>
             <button t-if="queue.length" class="pbot-btn tiny ghost" t-on-click="selectAll">
@@ -104,7 +104,7 @@
         </section>
 
         <!-- config gallery -->
-        <section class="pbot-panel">
+        <section class="pbot-panel" data-coach="wf-ot-rules">
           <div class="panel-h">
             <div class="ttl"><span t-out="ic('sliders',18)"/> Overtime rules &amp; ceilings</div>
           </div>

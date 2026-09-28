@@ -26,7 +26,7 @@ first and only consumer of the bar's `day` segment (§2.3). pbim indigo tokens,
 Lucide icons, flat fills.
 """,
     # 19.0.1.5.0 — RIZE W2 D1: the field check-in chip on a row.
-    'version': '19.0.1.5.0',
+    'version': '19.0.1.5.1',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

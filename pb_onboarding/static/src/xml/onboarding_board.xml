@@ -54,7 +54,7 @@
                       t-on-click="openRules">
                 <t t-out="ic('users',15)"/> HR partner rules
               </button>
-              <button t-if="state.canWrite" class="pbim-btn primary"
+              <button t-if="state.canWrite" class="pbim-btn primary" data-coach="nj-run"
                       t-on-click="runAutomation"
                       title="Send today's automatic steps and checks now">
                 <t t-out="ic('zap',15)"/> Run today's steps
@@ -65,18 +65,22 @@
           <!-- ====================== the numbers ======================
                Quiet by default: one slim line, grey at zero, a colour only
                when somebody has to act. Every figure filters the board. -->
+          <div data-coach="nj-numbers">
           <t t-call="pb_import_kit.QuietGlance">
             <t t-set="qGlance" t-value="glance"/>
             <t t-set="qGlanceOn" t-value="state.focus"/>
           </t>
+          </div>
 
           <!-- ====================== the three steps ======================
                A joiner is at exactly ONE step, so the counts add up. -->
+          <div data-coach="nj-steps">
           <t t-call="pb_import_kit.QuietSteps">
             <t t-set="qSteps" t-value="steps"/>
             <t t-set="qStepsLabel" t-value="'Where every new joiner is'"/>
             <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
           </t>
+          </div>
           <div class="pbim-showing">
             <span t-esc="showingLine.text"/>
             <button t-if="!showingLine.all" type="button" class="pbim-showall" t-on-click="clearFilters">Show all</button>
@@ -130,7 +134,7 @@
           </div>
 
           <!-- ================== nothing here yet ================== -->
-          <div t-if="!state.rows.length" class="pbim-panel obb-empty">
+          <div t-if="!state.rows.length" class="pbim-panel obb-empty" data-coach="nj-list">
             <div class="obb-empty-ic"><t t-out="ic('sunrise',30)"/></div>
             <h2>Nobody is joining just now</h2>
             <p>When a joining checklist opens — because somebody started one, or
@@ -161,7 +165,7 @@
           </div>
 
           <!-- ======================= the people ======================= -->
-          <div t-else="" class="obb-grid">
+          <div t-else="" class="obb-grid" data-coach="nj-list">
             <div t-foreach="visibleRows" t-as="row" t-key="row.id"
                  class="pbim-panel obb-card"
                  t-att-class="{ 'is-red': row.pulse_red, 'is-late': row.overdue }">
@@ -205,7 +209,7 @@
                       <span t-if="row.buddy_temp" class="pbim-badge warn">standing in</span>
                     </span>
                   </t>
-                  <button t-elif="state.canWrite" class="obb-ask"
+                  <button t-elif="state.canWrite" class="obb-ask" data-coach="nj-buddy-pick"
                           t-on-click="() => this.buddyAsk(row)">
                     <t t-out="ic('plus',12)"/> Choose one
                   </button>
@@ -268,7 +272,7 @@
            THE DRAWER: one joiner, whole.
            ================================================================== -->
       <div t-if="state.drawer" class="obb-scrim" t-on-click="closeDrawer">
-        <div class="obb-drawer" t-on-click.stop="">
+        <div class="obb-drawer" data-coach="nj-drawer" t-on-click.stop="">
           <div class="obb-drawer-head">
             <img class="obb-av obb-av--lg" t-att-src="state.drawer.joiner.avatar"
                  t-att-alt="state.drawer.joiner.employee"/>
@@ -288,7 +292,7 @@
             </button>
           </div>
 
-          <div class="obb-drawer-people">
+          <div class="obb-drawer-people" data-coach="nj-buddy">
             <div class="obb-mini" t-if="state.drawer.hrbp_card">
               <span class="obb-mini-l">HR contact</span>
               <b t-esc="state.drawer.hrbp_card.name"/>

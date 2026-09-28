@@ -78,7 +78,7 @@
       <div t-else="" class="dr-wrap">
 
         <!-- ============================================ the page heading -->
-        <div class="dr-head">
+        <div class="dr-head" data-coach="dr-head">
           <div class="dr-head-id">
             <HubBackChip t-if="back" back="back" tone="'light'"/>
             <span class="pbim-eyebrow">DECISION ROOM</span>
@@ -147,14 +147,14 @@
               </button>
             </div>
 
-            <div class="pbim-card dr-panel">
+            <div class="pbim-card dr-panel" data-coach="dr-levers">
               <div class="dr-panel-top">
                 <span class="pbim-eyebrow">SHAPE YOUR PLAN</span>
                 <span class="dr-live"><i/>Live</span>
               </div>
               <h2 class="dr-panel-h">What if we…</h2>
 
-              <div class="dr-presets">
+              <div class="dr-presets" data-coach="dr-presets">
                 <button t-foreach="presets" t-as="p" t-key="p.id"
                         class="dr-preset" t-att-title="p.note"
                         t-on-click="() => this.applyPreset(p)">
@@ -337,7 +337,7 @@
           <div class="dr-story">
 
             <!-- ===================================== the goal compass -->
-            <section class="pbim-card dr-compass">
+            <section class="pbim-card dr-compass" data-coach="dr-goals">
               <div class="dr-compass-h">
                 <div>
                   <span class="pbim-eyebrow">YOUR DEFINITION OF A GOOD YEAR</span>
@@ -651,7 +651,7 @@
             </section>
 
             <!-- ================================== the detail workspace -->
-            <section class="pbim-card dr-work">
+            <section class="pbim-card dr-work" data-coach="dr-results">
               <div class="dr-tabstrip" role="tablist"
                    aria-label="Look closer at this decision"
                    t-on-keydown="(ev) => this.onTabKey(ev)">
@@ -943,7 +943,7 @@
             </section>
 
             <!-- ===================================== the scenario dock -->
-            <section class="pbim-card dr-dock">
+            <section class="pbim-card dr-dock" data-coach="dr-compare">
               <div class="dr-year-h">
                 <div>
                   <span class="pbim-eyebrow">KEEP A GOOD IDEA. TRY ANOTHER.</span>
@@ -1006,7 +1006,7 @@
                           <span class="dr-status"
                                 t-att-class="'dr-status--' + row.status"
                                 t-esc="row.statusLabel"/>
-                          <div class="dr-verbs">
+                          <div class="dr-verbs" data-coach="dr-propose">
                             <button t-if="row.canPropose and row.status !== 'proposed'"
                                     t-on-click="() => this.proposePlan(row)">Propose</button>
                             <button t-if="row.canDecide" class="is-good"
@@ -1041,7 +1041,7 @@
                           <button class="pbim-btn-sm" t-att-disabled="!row.sameMoney"
                                   t-att-title="row.sameMoney ? 'Measure everything against this plan' : 'This plan is in ' + row.currency + ', so it cannot be lined up beside one in ' + (state.scope.currency.code or '')"
                                   t-on-click="() => this.compareWith(row)">Compare</button>
-                          <button class="pbim-btn-sm" t-att-disabled="row.busy"
+                          <button class="pbim-btn-sm" data-coach="dr-exact" t-att-disabled="row.busy"
                                   title="Run this plan's people through their own payroll scheme"
                                   t-on-click="() => this.startExact(row)">
                             <t t-if="row.busy"><t t-esc="state.exactNote"/></t>
@@ -1064,7 +1064,7 @@
                   up to <t t-esc="state.limits.max_plans"/> plans ·
                   nothing here changes payroll.
                 </p>
-                <button class="pbim-btn"
+                <button class="pbim-btn" data-coach="dr-brief"
                         t-att-disabled="state.preview or state.briefBusy"
                         t-att-title="state.preview ? previewNote : 'Opens a printable page in a new tab'"
                         t-on-click="() => this.exportBrief()">

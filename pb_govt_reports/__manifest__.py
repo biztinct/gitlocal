@@ -30,7 +30,7 @@ Two properties of that facade are worth knowing before reading it:
 Coverage is a SERVER answer: a country whose module is not installed here keeps
 the old modal, and the board asks rather than assuming.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.2.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

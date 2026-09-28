@@ -12,7 +12,7 @@
       <div t-else="" class="pbto-wrap">
 
         <!-- hero -->
-        <div class="pbto-hero">
+        <div class="pbto-hero" data-coach="wf-timeoff">
           <!-- W17: the shell's rail already says "TIME OFF" and its command bar
                already carries the identity, so the embedded lens drops the
                title block only — the tools beside it are the month nav and the
@@ -41,7 +41,7 @@
           <t t-set="qGlance" t-value="glance"/>
           <t t-set="qGlanceOn" t-value="''"/>
         </t>
-        <div t-if="(kpis.out_today or []).length" class="pbto-outtoday">
+        <div t-if="(kpis.out_today or []).length" class="pbto-outtoday" data-coach="wf-outtoday">
           <span class="l">Out today</span>
           <div class="avstrip">
             <t t-foreach="kpis.out_today" t-as="p" t-key="p.id">
@@ -54,7 +54,7 @@
         <div class="pbto-cols">
 
           <!-- ================== approval queue ================== -->
-          <section class="pbto-panel queue">
+          <section class="pbto-panel queue" data-coach="wf-leave-queue">
             <div class="panel-h"><div class="ttl"><span t-out="ic('inbox',18)"/> Approval queue</div></div>
 
             <div t-if="!queue.length" class="pbto-empty">

@@ -42,6 +42,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
+import { setPlaceSub } from "@pb_hub/js/hub_place";
 import { PbPayReview, PbPayChanges } from "@pb_pay/js/pay_review";
 import {
     axisSpan, bandAxis, binPeople, busiestBin, dodgeDots,
@@ -254,6 +255,11 @@ export class PbPayScreen extends Component {
         });
 
         onMounted(() => {
+            // Twice: the hub shell publishes its place in an effect that runs
+            // AFTER this child's mount, and a new owner clears every inner
+            // tab. The microtask lands after that flush, so the tab survives.
+            this._publishTab();
+            Promise.resolve().then(() => this._publishTab());
             this._measureTracks();
             if (window.ResizeObserver && this.bandsRef.el) {
                 this._resize = new ResizeObserver(() => this._measureTracks());
@@ -280,6 +286,18 @@ export class PbPayScreen extends Component {
     ic(name, size = 16) { return ic(name, size); }
 
     get tabs() { return tabDefs(); }
+
+    /**
+     * Inside the People hub, say which of the four tabs is showing, so the
+     * learning helper can tell Bands from Review (LEARN REFRESH step 4, the
+     * precedent is the Pay Run hub's Adjust/Settle `onTab`). On its own the
+     * screen is not a hub lens and publishes nothing.
+     */
+    _publishTab() {
+        if (this.props.embedded) {
+            setPlaceSub("pb_people_hub", "pay", this.state.tab);
+        }
+    }
 
     // ================================================================ errors
     /**
@@ -358,6 +376,7 @@ export class PbPayScreen extends Component {
         const tab = this.tabs.find((t) => t.key === key);
         if (!tab || !tab.ready) { return; }
         this.state.tab = key;
+        this._publishTab();
         this.env.config.setDisplayName(tabName(key));
         if (key === "review" || key === "changes") { return; }
         if (!this.state.board) {

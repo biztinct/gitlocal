@@ -7,7 +7,7 @@
     <div class="pbim pbtd" t-att-class="{ 'pbtd--embedded': props.embedded }">
 
       <!-- ================= header: title + shared context bar ============= -->
-      <div class="pbtd-head">
+      <div class="pbtd-head" data-coach="wf-today">
         <!-- W17: `embedded` suppresses ONLY the chrome Mission Control already
              owns — this title row and its context bar. The meta row, the tile
              strip and every door below are untouched. -->

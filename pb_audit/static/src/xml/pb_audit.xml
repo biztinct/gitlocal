@@ -12,7 +12,7 @@
 
       <t t-if="state.loaded">
         <!-- ============================ HERO / KPIs ============================ -->
-        <div class="pbau-hero">
+        <div class="pbau-hero" data-coach="cp-audit">
           <div class="pbau-hero__head">
             <!-- Chrome the Compliance hub's command bar already owns (W17).
                  The two event counters beside it are DATA and render in both
@@ -103,7 +103,7 @@
         </div>
 
         <!-- ============================ FILTER BAR ============================ -->
-        <div class="pbau-filters">
+        <div class="pbau-filters" data-coach="cp-audit-filters">
           <div class="pbau-filters__row">
             <div class="pbau-quick">
               <button class="pbau-chip" t-on-click="() => this.quickToday()"><span t-out="ic('calendar', 13)"/> Today</button>
@@ -138,7 +138,7 @@
         </div>
 
         <!-- ============================ VIEW TABS ============================ -->
-        <div class="pbau-tabs">
+        <div class="pbau-tabs" data-coach="cp-audit-lenses">
           <div class="pbau-tabs__l">
             <button t-attf-class="pbau-tab {{ state.view === 'stream' ? 'pbau-tab--on' : '' }}" t-on-click="() => this.setView('stream')"><span t-out="ic('list', 15)"/> Stream</button>
             <button t-attf-class="pbau-tab {{ state.view === 'salary' ? 'pbau-tab--on' : '' }}" t-on-click="() => this.setView('salary')"><span t-out="ic('banknote', 15)"/> Salary lens</button>

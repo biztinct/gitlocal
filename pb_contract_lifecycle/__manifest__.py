@@ -50,7 +50,7 @@ existing contract's end date or rewrites its wage. The old contract ends on its
 own date and the platform's nightly job closes it; the new one starts the day
 after, as a draft, so a person reads it before it starts.
 """,
-    'version': '19.0.1.1.2',
+    'version': '19.0.1.1.4',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

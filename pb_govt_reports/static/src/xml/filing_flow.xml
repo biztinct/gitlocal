@@ -8,7 +8,7 @@
        compiled, `String(x)` becomes `ctx.String(x)` and the surface dies at
        mount (W96). -->
   <t t-name="pb_govt_reports.PbFilingFlow">
-    <div class="pbim gov pplw-root gfw">
+    <div class="pbim gov pplw-root gfw" data-coach="cp-generate">
       <div class="pplw-card gfw-card">
 
         <!-- ============================= head ============================= -->
@@ -26,7 +26,7 @@
         </div>
 
         <!-- =========================== the stepper =========================== -->
-        <div class="pplw-rail">
+        <div class="pplw-rail" data-coach="cp-gen-steps">
           <t t-foreach="steps" t-as="st" t-key="st.id">
             <div t-attf-class="pplw-step {{ st_index === stepIndex ? 'cur' : '' }} {{ st_index &lt; stepIndex ? 'done' : '' }}">
               <span class="pplw-dot" t-esc="st_index + 1"/>
@@ -150,7 +150,7 @@
           <t t-if="state.step === 'scope'">
             <button class="pbim-btn outline" t-on-click="backToFilings"
                     t-att-disabled="state.busy">Back</button>
-            <button class="pbim-btn primary" t-on-click="generate"
+            <button class="pbim-btn primary" t-on-click="generate" data-coach="cp-gen-go"
                     t-att-disabled="state.busy">
               <t t-out="ic('download',15)"/> Generate
             </button>
