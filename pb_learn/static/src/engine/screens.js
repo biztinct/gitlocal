@@ -693,7 +693,8 @@ export const SCREENS = {
                 <p class="lrn-note">${esc(tx(B(
                     "The rows are the breakdown and the total is their sum, read from the payslips themselves. A figure taken from here without its filters is a figure read out of scope.",
                     "Các dòng là phần tách nhỏ và con số tổng là tổng của chúng, đọc thẳng từ chính các phiếu lương. Lấy một con số ở đây mà bỏ quên bộ lọc là đọc sai phạm vi.")))}</p>
-            </div>`;
+            </div>
+            ${compareHTML()}`;
     },
 
     /* ------------------------------------------------ Workforce Analytics */
@@ -1405,7 +1406,7 @@ export const SCREENS = {
                 <b>−${esc(M(t.v))}</b></div>`).join("");
         const slipFor = CASE.emp.mai.name + DOT + tx(RUN.period) + DOT
             + tx(B("registered base", "mức đóng đã đăng ký")) + SP + M(CASE.emp.mai.base);
-        const effective = tx(B("Effective from", "Hiệu lực từ")) + SP + POLICY.effective;
+        const effective = tx(B("Effective from", "Có hiệu lực từ")) + SP + POLICY.effective;
 
         return `
             <div class="lrn-grid g6" data-coach="st-kpis">
@@ -1525,7 +1526,543 @@ export const SCREENS = {
     retro() {
         return ledgerHTML("retro");
     },
+
+    /* ==================================================================
+       LEARN REFRESH step 3 — PAYROLL SETUP.
+       Nine views over six stations. Anchors that exist in the product carry
+       the product's own names (bp-*, mp-*, ct-*, am-*, rd-*, gp-*, ex-money);
+       what exists only here is rep-* and registered as practice.
+       ================================================================== */
+
+    /* ---------------- Settings › Guided setup › New configuration · Start */
+    blueprint() {
+        const b = PRACTICE.blueprint;
+        const tiles = (list) => list.map((t) => `
+            <span class="lrn-ztile ${t.on ? "on" : ""}">${t.on ? ic("check") : ""}<b>${esc(tx(t.name))}</b></span>`).join("");
+        const starters = b.starters.map((s) => {
+            const badge = s.badge ? `<span class="lrn-chip ok">${esc(tx(B("Certified", "Được chứng nhận")))}</span>` : "";
+            return `<span class="lrn-ztile ${s.on ? "on" : ""}">${s.on ? ic("check") : ic("layers")}<b>${
+                esc(tx(s.name))}</b>${badge}</span>`;
+        }).join("");
+        return `
+            ${bpTop(b)}
+            <div class="lrn-zbp">
+                ${bpRail(0)}
+                <div class="lrn-zbpmain">
+                    <div class="lrn-zeyebrow">${esc(tx(B("01 / Choose your starting point", "01 / Chọn điểm bắt đầu")))}</div>
+                    <div class="lrn-panel" data-coach="bp-identity">
+                        <h3>${ic("user-check")}${esc(tx(B("Identity", "Định danh")))}</h3>
+                        <div class="lrn-kv2"><span>${esc(tx(B("Company", "Công ty")))}</span><b>Hoa Sen Retail Co.</b></div>
+                        <div class="lrn-kv2"><span>${esc(tx(B("Configuration name", "Tên cấu hình")))}</span><b>${esc(b.name)}</b></div>
+                        <div class="lrn-kv2" data-coach="bp-country"><span>${esc(tx(B("Country", "Quốc gia")))}</span>
+                            <b>${esc(tx(b.country))}${SP}<span class="lrn-chip b">${ic("banknote")}${esc(tx(b.money))}</span></b></div>
+                        <div class="lrn-kv2"><span>${esc(tx(B("Pay cycle", "Chu kỳ thanh toán")))}</span><b>${esc(tx(b.cycle))}</b></div>
+                        <div class="lrn-kv2"><span>${esc(tx(B("Effective from", "Có hiệu lực từ")))}</span><b>${esc(b.effective)}</b></div>
+                    </div>
+                    <div class="lrn-panel" data-coach="bp-starters">
+                        <h3>${ic("layers")}${esc(tx(B("How would you like to start?", "Bạn muốn bắt đầu như thế nào?")))}</h3>
+                        <div class="lrn-ztiles">${starters}</div>
+                    </div>
+                    <div class="lrn-grid g2 top">
+                        <div class="lrn-panel" data-coach="bp-audience">
+                            <h3>${ic("users")}${esc(tx(B("Who are you paying?", "Bạn đang trả lương cho ai?")))}</h3>
+                            <div class="lrn-ztiles">${tiles(b.audiences)}</div>
+                        </div>
+                        <div class="lrn-panel" data-coach="bp-reallife">
+                            <h3>${ic("calendar")}${esc(tx(B("Real life belongs in the design", "Đời thực phải có trong thiết kế")))}</h3>
+                            <div class="lrn-ztiles">${tiles(b.reallife)}</div>
+                        </div>
+                    </div>
+                    ${bpFoot(1, B("Continue to pay rules", "Tiếp tục sang Quy tắc lương"), 0)}
+                </div>
+                ${bpPay(b, false)}
+            </div>`;
+    },
+
+    /* ------------------------- New configuration · Pay rules (sub-screen) */
+    blueprint_rules() {
+        const b = PRACTICE.blueprint;
+        const rows = b.rules.map((r) => `
+            <div class="lrn-zrule ${r.added ? "added" : ""}" ${r.added ? ATTR_BP_ADDED : ""}>
+                <span class="lrn-chip ${r.added ? "ok" : ""}">${esc(r.code)}</span>
+                <span class="lrn-zsay">${esc(tx(r.say))}</span>
+                <code>${esc(r.f)}</code>
+            </div>`).join("");
+        const tabs = [B("Components", "Thành phần"), B("Tax & protection", "Thuế & bảo hiểm"),
+                      B("Calendar & payment", "Lịch & chi trả")].map((t, i) =>
+            `<button aria-selected="${i === 0}">${esc(tx(t))}</button>`).join("");
+        return `
+            ${bpTop(b)}
+            <div class="lrn-zbp">
+                ${bpRail(1)}
+                <div class="lrn-zbpmain">
+                    <div class="lrn-zeyebrow">${esc(tx(B("02 / What goes into pay", "02 / Những gì tạo nên tiền lương")))}</div>
+                    <div class="lrn-tabs">${tabs}</div>
+                    <div class="lrn-panel" data-coach="rep-bp-rules">
+                        <h3>${ic("list-checks")}${esc(tx(B("Every component. One clear rule.", "Mỗi thành phần. Một quy tắc rõ ràng.")))}</h3>
+                        ${rows}
+                    </div>
+                    ${bpFoot(2, B("Continue to Tax & protection", "Tiếp tục sang Thuế & bảo hiểm"), b.rules.length)}
+                </div>
+                ${bpPay(b, true)}
+            </div>`;
+    },
+
+    /* ---------------------- Settings › Integrations › Mapping · Journey */
+    mapping() {
+        const m = PRACTICE.mapping;
+        const h = m.header;
+        const headline = N(h.inputs) + SP + tx(B("needs a source", "cần một nguồn")) + DOT
+            + N(h.fed) + SP + tx(B("fed", "đã có nguồn")) + DOT
+            + N(h.unfed) + SP + tx(B("not fed yet", "chưa có nguồn"));
+        const sys = m.systems.map((s) => `
+            <div class="lrn-zcard">
+                <b>${esc(s.name)}</b><span class="lrn-sub2">${esc(tx(s.sub))}</span>
+                ${s.rows.map((r, i) => `<span class="lrn-zfield" ${s.id === "sys" && i === 0 ? ATTR_JNY_FILE : ""}>${
+                    esc(typeof r === "string" ? r : tx(r))}</span>`).join("")}
+            </div>`).join("");
+        const feeds = m.feeds.map((f) => `
+            <div class="lrn-zcard"><b>${esc(tx(f.name))}</b>
+                ${f.rows.map((r, i) => `<span class="lrn-zfield" ${i === 0 ? ATTR_JNY_FEED : ""}>${esc(r)}</span>`).join("")}
+            </div>`).join("");
+        const xf = m.transforms.map((x) => `
+            <div class="lrn-zcard" data-coach="rep-jny-xform"><b>${ic("sigma")}${esc(tx(x.name))}</b>
+                <span class="lrn-sub2">${esc(tx(x.sub))}</span></div>`).join("");
+        const scheme = m.scheme.map((r) => `
+            <span class="lrn-zfield ${r.fed ? "" : "unfed"}" ${r.code === "LCB" ? ATTR_JNY_SCHEME : ""}>${
+                esc(r.code)}${DOT}${esc(tx(r.label))}${r.fed ? "" : DOT + esc(tx(B("not fed", "chưa có nguồn")))}</span>`).join("");
+        const src = m.source.map((g) => `<span class="lrn-zfield">${esc(tx(g))}</span>`).join("");
+        const lane = (icon, label, body) => `
+            <div class="lrn-zlane"><div class="lrn-zlaneh">${ic(icon)}<span>${esc(tx(label))}</span></div>${body}</div>`;
+        return `
+            ${mapTop(m, headline)}
+            <div class="lrn-panel lrn-zjny">
+                <div class="lrn-zjbar" data-coach="mp-jbar"><b>${esc(m.to)}</b><span class="lrn-sub2">${esc(headline)}</span>
+                    <span class="lrn-zq">${ic("search")}${esc(tx(B("Filter the journey…", "Lọc hành trình…")))}</span></div>
+                <div class="lrn-zlanes" data-coach="mp-lanes">
+                    ${lane("database", B("Files & systems", "Tệp & hệ thống"), sys)}
+                    ${lane("database", B("Feeds", "Nguồn cấp dữ liệu"), feeds)}
+                    ${lane("sigma", B("Transformations", "Chuyển đổi"), xf)}
+                    ${lane("calculator", B("Scheme", "Chương trình lương"), `<div class="lrn-zcard"><b>${esc(RUN.config)}</b>${scheme}</div>`)}
+                    ${lane("users", B("Payobook Source", "Nguồn Payobook"), `<div class="lrn-zcard" data-coach="rep-jny-source"><b>${
+                        esc(tx(B("Payobook Source", "Nguồn Payobook")))}</b>${src}<span class="lrn-zact">${ic("arrow-right")}${
+                        esc(tx(B("Open Records Desk", "Mở Records Desk")))}</span></div>`)}
+                </div>
+            </div>
+            <div class="lrn-panel lrn-zslip" data-coach="rep-jny-slip">
+                <h3>${ic("receipt")}${esc(CASE.emp.mai.name)}${DOT}${esc(tx(RUN.period))}</h3>
+                <div class="lrn-cr"><span>${esc(tx(CASE.slip[0].k))}</span><b>${esc(M(CASE.slip[0].v))}</b></div>
+                <p class="lrn-note">${esc(tx(B(
+                    "Her payslip line — the far end of the wire. Drawn here so the whole road fits on one screen.",
+                    "Dòng trên phiếu lương của cô ấy — điểm cuối của sợi dây. Vẽ ở đây để cả chặng đường nằm trên một màn hình.")))}</p>
+            </div>`;
+    },
+
+    /* ------------------------- Mapping · Spreadsheet columns → Scheme */
+    mapping_sheet() {
+        const m = PRACTICE.mapping;
+        const cols = m.sheetColumns.map((c) => `
+            <div class="lrn-row ${c.clash ? "hit" : ""}">
+                <span class="lrn-avatar">${ic("table")}</span>
+                <span><span class="lrn-nm">${esc(tx(c.col))}</span><br>
+                    <span class="lrn-sub2">${esc(tx(B("e.g.", "ví dụ")))}${SP}${esc(c.eg)}</span></span>
+                <span class="lrn-rr">${ic("arrow-right")}<span class="lrn-chip b">${esc(c.to)}</span></span>
+            </div>`).join("");
+        const runv = m.runValues.map((r) => `<div class="lrn-kv2"><span>${esc(tx(r.k))}</span><b>${esc(r.v)}</b></div>`).join("");
+        const lane = tx(B("From this pay run", "Từ đợt lương này")) + DOT + tx(RUN.period);
+        return `
+            ${mapTop(m, "")}
+            <div class="lrn-panel lrn-zdrop" data-coach="mp-ramp">
+                <h3>${ic("table")}${esc(tx(B("Drop this period's spreadsheet here to see its columns",
+                                            "Thả bảng tính của kỳ này vào đây để xem các cột")))}</h3>
+                <p class="lrn-note">${esc(tx(B(
+                    "It reads the headings and one example row. It imports no numbers.",
+                    "Nó chỉ đọc tiêu đề và một dòng ví dụ. Nó không nhập con số nào.")))}</p>
+                <div class="lrn-strip"><button class="lrn-btn sm">${ic("download")}${
+                    esc(tx(B("Download a template built from this scheme", "Tải mẫu dựng từ chương trình lương này")))}</button></div>
+            </div>
+            <div class="lrn-grid g2 top">
+                <div class="lrn-panel">
+                    <h3>${ic("git-merge")}${esc(tx(B("Columns wired to the scheme", "Các cột đã nối vào chương trình lương")))}</h3>
+                    ${cols}
+                </div>
+                <div class="lrn-panel" data-coach="rep-mp-runlane">
+                    <h3>${ic("calendar")}${esc(lane)}</h3>
+                    ${runv}
+                    <p class="lrn-note">${esc(tx(B(
+                        "Values the pay run itself knows. Wire one to a component and nobody has to type it into the file.",
+                        "Những giá trị chính đợt lương đã biết. Nối một giá trị vào thành phần là không ai phải gõ nó vào tệp.")))}</p>
+                </div>
+            </div>
+            <div class="lrn-panel lrn-zdialog" data-coach="rep-mp-conflict">
+                <h3>${ic("alert-triangle")}${esc(tx(B("“PC” will read more than one source", "“PC” sẽ đọc nhiều hơn một nguồn")))}</h3>
+                <p class="lrn-note">${esc(tx(B(
+                    "The HR system already feeds Allowances. Keep both and the system is read first; the spreadsheet only fills the box when the system sent nothing.",
+                    "Hệ thống nhân sự đã cấp Phụ cấp. Giữ cả hai thì hệ thống được đọc trước; bảng tính chỉ điền vào ô khi hệ thống không gửi gì.")))}</p>
+                <div class="lrn-strip">
+                    <button class="lrn-btn sm pri">${esc(tx(B("Add source", "Thêm nguồn")))}</button>
+                    <button class="lrn-btn sm">${esc(tx(B("Use the spreadsheet instead", "Thay vào đó hãy sử dụng bảng tính")))}</button>
+                    <button class="lrn-btn sm ghost">${esc(tx(B("Cancel", "Huỷ")))}</button>
+                </div>
+            </div>`;
+    },
+
+    /* -------------------------------- Mapping · Component treatment */
+    treatment() {
+        const t = PRACTICE.treatment;
+        const c = t.counts;
+        const rows = t.rows.map((r) => `
+            <tr class="${r.clash ? "clash" : ""}${SP}${r.review ? "review" : ""}">
+                <td><b>${esc(tx(r.name))}</b><br><span class="lrn-faint">${esc(r.code)}</span></td>
+                <td><span class="lrn-chip">${esc(tx(r.from))}</span></td>
+                <td>${esc(tx(r.group))}</td>
+                <td>${r.role ? esc(tx(t.roles[r.role])) : `<span class="lrn-chip warn">${esc(tx(B("needs your answer", "cần câu trả lời của bạn")))}</span>`}</td>
+                <td class="c">${r.sub ? ic("check") : ""}</td>
+                <td>${esc(tx(t.types[r.type]))}</td>
+            </tr>`).join("");
+        return `
+            ${mapTop(PRACTICE.mapping, "")}
+            <div class="lrn-panel">
+                <div class="lrn-zhead" data-coach="tr-head">
+                    <h3>${ic("settings")}${esc(tx(B("How each component is treated", "Cách xử lý từng thành phần")))}</h3>
+                    <span class="lrn-push"></span>
+                    <button class="lrn-btn sm">${ic("rotate-ccw")}${esc(tx(B("Re-classify from the formulas", "Phân loại lại từ các công thức")))}</button>
+                    <button class="lrn-btn sm pri" disabled="disabled">${esc(tx(B("Save", "Lưu")))}</button>
+                </div>
+                <div class="lrn-strip" data-coach="tr-filters">
+                    <span class="lrn-chip b">${esc(tx(B("All", "Tất cả")))}${SP}${N(c.all)}</span>
+                    <span class="lrn-chip warn">${esc(tx(B("Needs your answer", "Cần câu trả lời của bạn")))}${SP}${N(c.review)}</span>
+                    <span class="lrn-chip warn">${esc(tx(B("Type says otherwise", "Loại giá trị nói khác")))}${SP}${N(c.clash)}</span>
+                </div>
+                <p class="lrn-callout warn" data-coach="rep-ct-warn">${ic("alert-triangle")}<span>${esc(tx(B(
+                    "1 component is counted in hours, days or percent, yet is set to add to or come off net pay. Hours reach net pay by multiplying an amount, so it should be Information only.",
+                    "1 thành phần được tính bằng giờ, ngày hoặc phần trăm, nhưng lại được đặt để cộng vào hoặc trừ khỏi thực nhận. Giờ đi vào thực nhận bằng cách nhân với một số tiền, nên nó phải là Chỉ để tham khảo.")))}</span></p>
+                <div class="lrn-ztablewrap">
+                <table class="lrn-ztable" data-coach="tr-table">
+                    <thead><tr>
+                        <th>${esc(tx(B("Component", "Thành phần")))}</th><th>${esc(tx(B("Comes from", "Đến từ")))}</th>
+                        <th>${esc(tx(B("Group", "Nhóm")))}</th><th>${esc(tx(B("Pay role", "Vai trò trong lương")))}</th>
+                        <th class="c">${esc(tx(B("Subtotal", "Tổng phụ")))}</th><th>${esc(tx(B("Value type", "Loại giá trị")))}</th>
+                    </tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>
+                </div>
+            </div>`;
+    },
+
+    /* ------------------------------------------ Settings › Approvals */
+    matrix() {
+        const x = PRACTICE.matrix;
+        const route = (labels) => labels.length
+            ? labels.map((l) => esc(tx(l))).join(ARROW)
+            : esc(tx(B("No approval needed", "Không cần phê duyệt")));
+        const body = x.areas.map((a) => `
+            <tr class="lrn-zarea"><td colspan="4">${esc(tx(a.name))}${SP}<span class="lrn-tabn">${N(a.rows.length)}</span></td></tr>
+            ${a.rows.map((r) => `
+            <tr ${r.pay ? ATTR_AM_PAYROW : ""}>
+                <td><b>${esc(tx(r.name))}</b>${r.fast ? `<span class="lrn-chip b">${ic("zap")}${esc(tx(B("no approval needed", "không cần phê duyệt")))}</span>` : ""}
+                    <br><span class="lrn-sub2">${route(r.route)}</span></td>
+                <td>${esc(tx(r.applies))}</td>
+                <td><span class="lrn-chip ${x.statuses[r.status].t}">${esc(tx(x.statuses[r.status].l))}</span></td>
+                <td>${esc(r.v)}</td>
+            </tr>`).join("")}`).join("");
+        const tabs = [B("Matrix", "Ma trận"), B("People & backups", "Con người & người thay thế"), B("History", "Lịch sử")]
+            .map((t, i) => `<button aria-selected="${i === 0}">${esc(tx(t))}</button>`).join("");
+        return `
+            <div class="lrn-zhero" data-coach="am-hero">
+                <div><div class="lrn-zeyebrow">${ic("stamp")}${esc(tx(B("Settings", "Cài đặt")))}</div>
+                    <h3>${esc(tx(B("Approval Matrix", "Ma trận phê duyệt")))}</h3>
+                    <span class="lrn-sub2">${esc(tx(B("Every check, in one place. Decide who signs off what, for each part of the business, in plain words.",
+                        "Mọi bước kiểm tra, ở một nơi. Quyết định ai phê duyệt việc gì, cho từng phần của doanh nghiệp, bằng lời lẽ dễ hiểu.")))}</span></div>
+                <div class="lrn-strip">
+                    <button class="lrn-btn sm ghost">${ic("upload")}${esc(tx(B("Bring in from a spreadsheet", "Nạp từ bảng tính")))}</button>
+                    <button class="lrn-btn sm pri" ${navAttr("matrix_builder")}>${ic("plus")}${esc(tx(B("Create a workflow", "Tạo một luồng phê duyệt")))}</button>
+                </div>
+            </div>
+            <div class="lrn-tabs" data-coach="am-tabs">${tabs}</div>
+            <div class="lrn-strip" data-coach="am-filters">
+                <span class="lrn-chip b">${esc(tx(B("All areas", "Mọi mảng")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Payroll", "Tiền lương")))}</span>
+                <span class="lrn-chip">${esc(tx(B("People", "Nhân sự")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Any status", "Mọi trạng thái")))}</span>
+            </div>
+            <div class="lrn-panel">
+                <div class="lrn-zhead" data-coach="am-bulk">
+                    <b>${esc(tx(B("5 processes", "5 quy trình")))}</b><span class="lrn-push"></span>
+                    <button class="lrn-btn sm">${ic("zap")}${esc(tx(B("No approval needed for all", "Không cần phê duyệt cho tất cả")))}</button>
+                </div>
+                <div class="lrn-ztablewrap">
+                <table class="lrn-ztable" data-coach="am-table">
+                    <thead><tr><th>${esc(tx(B("Process and the route it follows", "Quy trình và lộ trình nó đi theo")))}</th>
+                        <th>${esc(tx(B("Applies to", "Áp dụng cho")))}</th><th>${esc(tx(B("Status", "Trạng thái")))}</th>
+                        <th>${esc(tx(B("Version", "Phiên bản")))}</th></tr></thead>
+                    <tbody>${body}</tbody>
+                </table>
+                </div>
+                <p class="lrn-note" data-coach="am-foot">${esc(tx(B(
+                    "A row is In use only when its route is published and the feature behind it is wired up. Any process may be set to No approval needed; the row says so out loud and every use is still recorded.",
+                    "Một dòng chỉ Đang dùng khi lộ trình của nó đã được ban hành và tính năng đứng sau đã được nối. Quy trình nào cũng có thể đặt Không cần phê duyệt; dòng đó nói rõ điều này và mọi lần dùng vẫn được ghi lại.")))}</p>
+            </div>`;
+    },
+
+    /* ------------------------------------ Approval Matrix · the builder */
+    matrix_builder() {
+        const bd = PRACTICE.matrix.builder;
+        const prog = [B("Purpose", "Mục đích"), B("People", "Nhân sự"), B("Safeguards", "Bảo vệ"),
+                      B("Review", "Xem lại"), B("Publish", "Ban hành")].map((p, i) => `
+            <div class="lrn-wstep ${i < 4 ? "done" : "cur"}"><span class="lrn-wdot">${i < 4 ? ic("check") : i + 1}</span><span>${esc(tx(p))}</span></div>`).join("");
+        const steps = bd.steps.map((s, i) => `
+            <div class="lrn-zstep">
+                <span class="lrn-zstepn">${i + 1}</span>
+                <span><b>${esc(tx(s.title))}</b><br><span class="lrn-sub2">${esc(tx(s.kind))}${DOT}${esc(s.who)}</span>${
+                    s.band ? `<br><span class="lrn-chip warn">${esc(tx(s.band))}</span>` : ""}</span>
+            </div>`).join("");
+        const kinds = bd.kinds.map((k) => `<span class="lrn-chip">${esc(tx(k))}</span>`).join("");
+        const guards = bd.safeguards.map((g) => `<div class="lrn-kv2"><span>${esc(tx(g))}</span><b>${ic("check")}</b></div>`).join("");
+        return `
+            <div class="lrn-strip"><button class="lrn-link" ${navAttr("matrix")}>${ic("chevron-left")}${
+                esc(tx(B("Approval Matrix", "Ma trận phê duyệt")))}</button><b>${esc(tx(B("Pay run", "Đợt lương")))}</b></div>
+            <div class="lrn-rail" data-coach="rep-am-bsteps">${prog}</div>
+            <div class="lrn-grid g2 top">
+                <div class="lrn-panel" data-coach="rep-am-route">
+                    <h3>${ic("git-branch")}${esc(tx(B("The route", "Lộ trình")))}</h3>
+                    ${steps}
+                    <h4>${esc(tx(B("Add a step", "Thêm một bước")))}</h4>
+                    <div class="lrn-strip">${kinds}</div>
+                </div>
+                <div class="lrn-panel" data-coach="rep-am-guards">
+                    <h3>${ic("shield-check")}${esc(tx(B("Safeguards", "Bảo vệ")))}</h3>
+                    ${guards}
+                    <button class="lrn-btn sm ghost">${ic("users")}${esc(tx(B("Try an example", "Thử một ví dụ")))}</button>
+                </div>
+            </div>
+            <div class="lrn-panel" data-coach="rep-am-publish">
+                <h3>${ic("stamp")}${esc(tx(B("Publish", "Ban hành")))}</h3>
+                <div class="lrn-kv2"><span>${esc(tx(B("New requests follow it from", "Yêu cầu mới đi theo nó từ")))}</span><b>${esc(bd.from)}</b></div>
+                <p class="lrn-note">${esc(tx(B(
+                    "Requests already on their way finish on the route they started on. Publishing never moves them.",
+                    "Những yêu cầu đang trên đường sẽ đi hết lộ trình mà chúng đã bắt đầu. Ban hành không bao giờ chuyển chúng sang lộ trình mới.")))}</p>
+                <button class="lrn-btn pri">${ic("stamp")}${esc(tx(B("Publish this route", "Ban hành lộ trình này")))}</button>
+            </div>`;
+    },
+
+    /* ----------------------------------------------- People › Records */
+    records() {
+        const r = PRACTICE.records;
+        const head = r.picked.map((p) => `<th>${esc(tx(p))}</th>`).join("");
+        const rows = r.rows.map((row) => `
+            <tr><td><b>${esc(row.emp.name)}</b><br><span class="lrn-faint">${esc(row.emp.code)}</span></td>
+                ${row.vals.map((v, i) => {
+                    const edited = (row.edit || []).includes(i);
+                    const shown = typeof v === "number" ? M(v) : v;
+                    return `<td class="${edited ? "edited" : ""}">${esc(shown)}</td>`;
+                }).join("")}</tr>`).join("");
+        const changes = r.rows.filter((row) => row.edit).map((row) => {
+            const i = row.edit[0];
+            const was = typeof row.was[0] === "number" ? M(row.was[0]) : row.was[0];
+            const now = typeof row.vals[i] === "number" ? M(row.vals[i]) : row.vals[i];
+            return `<div class="lrn-kv2"><span>${esc(row.emp.name)}${DOT}${esc(tx(r.picked[i]))}</span><b>${esc(was)}${ARROW}${esc(now)}</b></div>`;
+        }).join("");
+        const reviewLabel = tx(B("Review", "Xem lại")) + SP + N(r.changes) + SP + tx(B("changes", "thay đổi"));
+        const fieldsLabel = RUN.scheme + DOT + N(r.fields) + SP + tx(B("fields", "trường"));
+        return `
+            <div class="lrn-zhead" data-coach="rd-head">
+                <span class="lrn-sub2">${esc(tx(B("Update the employee, contract and bank details your pay scheme reads — one person or hundreds at once.",
+                    "Cập nhật thông tin nhân viên, hợp đồng và ngân hàng mà chương trình lương của bạn đọc — một người hay hàng trăm người cùng lúc.")))}</span>
+                <span class="lrn-push"></span>
+                <span class="lrn-chip b" data-coach="rd-scheme">${ic("layers")}${esc(fieldsLabel)}</span>
+                <span class="lrn-strip lrn-zinline" data-coach="rd-file">
+                    <button class="lrn-btn sm ghost">${ic("download")}${esc(tx(B("Export with data", "Xuất kèm dữ liệu")))}</button>
+                    <button class="lrn-btn sm ghost">${ic("upload")}${esc(tx(B("Import a file", "Nhập một tệp")))}</button>
+                </span>
+                <button class="lrn-btn sm ghost" data-coach="rd-history">${ic("clock")}${esc(tx(B("History", "Lịch sử")))}</button>
+                <button class="lrn-btn sm pri" data-coach="rd-review">${ic("check-circle")}${esc(reviewLabel)}</button>
+            </div>
+            <div class="lrn-zdesk">
+                <div class="lrn-panel" data-coach="rd-who">
+                    <h3>${ic("users")}${esc(tx(B("Who", "Ai")))}</h3>
+                    <span class="lrn-chip b">${esc(tx(B("Department", "Phòng ban")))}: ${esc(tx(RUN.division))}</span>
+                    <p class="lrn-note">${esc(N(RUN.employees) + SP + tx(B("people match", "người khớp")))}</p>
+                </div>
+                <div class="lrn-panel">
+                    <div class="lrn-strip" data-coach="rd-fields">
+                        <b>${ic("layers")}${esc(tx(B("Fields", "Trường")))}</b>
+                        ${r.picked.map((p) => `<span class="lrn-chip ok">${esc(tx(p))}</span>`).join("")}
+                    </div>
+                    <div class="lrn-ztablewrap">
+                    <table class="lrn-ztable" data-coach="rep-rd-grid">
+                        <thead><tr><th>${esc(tx(B("Employee", "Nhân viên")))}</th>${head}</tr></thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+            <div class="lrn-panel lrn-zdrawer" data-coach="rep-rd-reviewpanel">
+                <h3>${ic("check-circle")}${esc(tx(B("Review your changes — drawn open", "Xem lại các thay đổi — đang mở sẵn")))}</h3>
+                ${changes}
+                <p class="lrn-note">${esc(tx(B("Applying sends them along the route", "Áp dụng sẽ gửi chúng theo lộ trình")))}${SP}“${
+                    esc(tx(r.route))}”${DOT}${esc(tx(B("Sent for approval —", "Đã gửi phê duyệt —")))}${SP}${esc(r.approver)}</p>
+                <div class="lrn-strip">
+                    <button class="lrn-btn sm pri">${esc(tx(B("Apply", "Áp dụng")))}${SP}${N(r.changes)}${SP}${esc(tx(B("changes", "thay đổi")))}</button>
+                    <button class="lrn-btn sm ghost">${ic("undo")}${esc(tx(B("Undo", "Hoàn tác")))}</button>
+                </div>
+            </div>`;
+    },
+
+    /* ------------------------------------------------ Settings › Group
+       The `schemes` station's own screen: a pay scheme pays in its
+       country's money, and the group is where two monies meet. */
+    schemes() {
+        const g = PRACTICE.group;
+        const months = [B("Jan", "Th1"), B("Feb", "Th2"), B("Mar", "Th3"), B("Apr", "Th4"), B("May", "Th5"),
+                        B("Jun", "Th6"), B("Jul", "Th7"), B("Aug", "Th8"), B("Sep", "Th9"), B("Oct", "Th10"),
+                        B("Nov", "Th11"), B("Dec", "Th12")];
+        const cells = g.strip.map((s, i) => `<span class="lrn-zcell ${s}">${esc(tx(months[i]))}</span>`).join("");
+        const cos = g.companies.map((c) => `
+            <div class="lrn-zco">
+                <span class="lrn-chip">${esc(c.flag)}${DOT}${esc(c.cur)}</span>
+                <b>${esc(c.name)}</b>
+                <span class="lrn-sub2">${esc(N(c.people) + SP + tx(B("people", "người")) + DOT + N(c.schemes) + SP + tx(B("pay schemes", "chương trình lương")))}</span>
+            </div>`).join("");
+        const policies = g.policies.map((p, i) => `<span class="lrn-chip ${i === 0 ? "b" : ""}">${esc(tx(p))}</span>`).join("");
+        return `
+            <div class="lrn-zhead" data-coach="gp-head">
+                <div><h3>${esc(tx(B("Your group", "Tập đoàn của bạn")))}</h3>
+                    <span class="lrn-sub2">${esc(tx(B("The companies, currency and divisions every report and plan will use.",
+                        "Các công ty, đồng tiền và khối mà mọi báo cáo và kế hoạch sẽ dùng.")))}</span></div>
+                <span class="lrn-push"></span>
+                <button class="lrn-btn sm ghost">${ic("clock")}${esc(tx(B("History", "Lịch sử")))}</button>
+                <button class="lrn-btn sm pri">${esc(tx(B("Edit the group", "Sửa tập đoàn")))}</button>
+            </div>
+            <div class="lrn-panel" data-coach="gp-tree">
+                <h3>${ic("landmark")}${esc(g.name)}${SP}<span class="lrn-chip b">${ic("banknote")}${esc(g.currency)}</span></h3>
+                <div class="lrn-zcos">${cos}</div>
+                <p class="lrn-note" data-coach="rep-gp-foot">${esc(tx(B(
+                    "Nothing is stored in the group currency. Every figure keeps the money it was paid in and is converted when you look at it.",
+                    "Không có gì được lưu bằng đồng tiền của tập đoàn. Mọi con số giữ nguyên đồng tiền đã trả và chỉ được quy đổi khi bạn xem.")))}</p>
+            </div>
+            <div class="lrn-panel" data-coach="gp-rates">
+                <h3>${ic("banknote")}${esc(tx(B("Exchange rates", "Tỷ giá")))}</h3>
+                <div class="lrn-kv2"><span>${esc(tx(B("How rates are picked", "Cách chọn tỷ giá")))}</span><b>${esc(tx(g.policy))}</b></div>
+                <div class="lrn-strip">${policies}</div>
+                <div class="lrn-zstrip"><b>SGD${SP}${ic("arrow-left-right")}${SP}VND</b>${cells}</div>
+                <p class="lrn-note">${esc(tx(B(
+                    "Green: a rate from that month. Amber: an older rate is used. Grey: no rate, so the figures stay in their own money. A change to a rate goes through approval.",
+                    "Xanh: có tỷ giá của tháng đó. Vàng: dùng một tỷ giá cũ hơn. Xám: không có tỷ giá, nên số liệu giữ nguyên đồng tiền của nó. Thay đổi tỷ giá phải qua phê duyệt.")))}</p>
+            </div>`;
+    },
 };
+
+/* ------------------------------------------ setup-replica helpers (step 3)
+   Attributes held as constants for the same reason ATTR_IMPMATCH is: a
+   quoted attribute inside an interpolation trips the minifier. */
+const ATTR_BP_ADDED = 'data-coach="rep-bp-added"';
+const ATTR_JNY_FILE = 'data-coach="rep-jny-file"';
+const ATTR_JNY_FEED = 'data-coach="rep-jny-feed"';
+const ATTR_JNY_SCHEME = 'data-coach="rep-jny-scheme"';
+const ATTR_AM_PAYROW = 'data-coach="rep-am-payrow"';
+
+function bpTop(b) {
+    return `<div class="lrn-zhead">
+        <b>${esc(b.name)}</b><code class="lrn-faint">${esc(b.code)}</code>
+        <span class="lrn-push"></span>
+        <span class="lrn-chip ok" data-coach="bp-status">${esc(tx(b.saved))}</span>
+        <button class="lrn-btn sm ghost">${esc(tx(B("Skip to the grid", "Chuyển đến lưới")))}</button>
+        <button class="lrn-btn sm">${esc(tx(B("Save & close", "Lưu và đóng")))}</button>
+    </div>`;
+}
+
+function bpRail(at) {
+    const steps = [
+        [B("Start", "Bắt đầu"), B("Name, starter, who you pay", "Tên, điểm bắt đầu, trả lương cho ai")],
+        [B("Pay rules", "Quy tắc lương"), B("Components, tax, calendar", "Thành phần, thuế, lịch")],
+        [B("Connect", "Kết nối"), B("Sources, payslip, approvals", "Nguồn dữ liệu, phiếu lương, phê duyệt")],
+        [B("Outputs", "Đầu ra"), B("Every formula, one table", "Mọi công thức, một bảng")],
+        [B("Test", "Kiểm thử"), B("Try the days that aren't ordinary", "Thử những ngày không bình thường")],
+        [B("Finish", "Hoàn thành"), B("Review and open", "Xem lại và mở")],
+    ].map(([l, h], i) => `
+        <div class="lrn-zrailrow ${i < at ? "done" : i === at ? "cur" : ""}">
+            <span class="lrn-wdot">${i < at ? ic("check") : i + 1}</span>
+            <span><b>${esc(tx(l))}</b><br><span class="lrn-sub2">${esc(tx(h))}</span></span>
+        </div>`).join("");
+    return `<nav class="lrn-zbprail" data-coach="bp-rail">
+        <span class="lrn-zeyebrow">${esc(tx(B("New configuration", "Cấu hình mới")))}</span>${steps}</nav>`;
+}
+
+function bpFoot(step, label, comps) {
+    const line = tx(B("Step", "Bước")) + SP + N(step) + SP + tx(B("of 6", "trên 6")) + DOT
+        + N(comps) + SP + tx(B("components", "thành phần"));
+    return `<div class="lrn-zhead lrn-zfoot" data-coach="bp-foot">
+        <span class="lrn-sub2">${esc(line)}</span><span class="lrn-push"></span>
+        <button class="lrn-btn sm pri">${esc(tx(label))}${ic("arrow-right")}</button>
+    </div>`;
+}
+
+/* "See it in someone's pay". `ticked` draws the after-state and carries the
+   before/after pair for the lesson's tick moment (engine/visuals.js). */
+function bpPay(b, ticked) {
+    const p = b.pay;
+    const shown = ticked ? p.after : p.before;
+    const delta = ticked
+        ? `<span class="lrn-chip ok">+${esc(M(p.delta))}</span>` : "";
+    const lines = p.lines.map((l) => `<div class="lrn-cr"><span>${esc(tx(l.k))}</span><b>${esc(M(l.v))}</b></div>`).join("");
+    return `<aside class="lrn-panel lrn-zpay" data-coach="bp-pay">
+        <div class="lrn-zeyebrow">${esc(tx(B("See it in someone's pay", "Xem ngay trên lương của một người")))}</div>
+        <b>${esc(p.who)}</b><span class="lrn-sub2">${esc(tx(p.sub))}</span>
+        <span class="lrn-sub2">${esc(tx(B("Estimated take-home pay", "Thực nhận ước tính")))}</span>
+        <div class="lrn-zpaynum"><b data-coach="rep-bp-paynum" data-from="${p.before}" data-to="${p.after}">${esc(M(shown))}</b>${delta}</div>
+        <div class="lrn-calc">${lines}</div>
+        <p class="lrn-note">${esc(tx(B("Calculated by the real payroll engine from this configuration. Sample data only.",
+            "Tính bằng chính bộ máy tính lương từ cấu hình này. Chỉ là dữ liệu mẫu.")))}</p>
+    </aside>`;
+}
+
+/* Insights › Explorer › Compare schemes, with the money switch
+   (explorer.xml `pbex-money`): each scheme in its own money, and the one
+   converted figure the group currency adds — never a sum of two monies. */
+function compareHTML() {
+    const g = PRACTICE.group;
+    const rows = g.compare.map((r) => {
+        const own = r.cur === "VND" ? M(r.own) : N(r.own) + SP + r.cur;
+        const conv = r.group ? `<span class="lrn-sub2">≈${SP}${esc(M(r.group))}${SP}${
+            esc(tx(B("in the group currency", "theo đồng tiền tập đoàn")))}</span>` : "";
+        return `<div class="lrn-cr"><span>${esc(r.name)}</span><b>${esc(own)}</b>${conv}</div>`;
+    }).join("");
+    return `
+            <div class="lrn-panel" data-coach="rep-ex-compare">
+                <h3>${ic("git-merge")}${esc(tx(B("Compare schemes", "So sánh các chương trình lương")))}</h3>
+                <div class="lrn-seg" data-coach="ex-money">
+                    <button aria-pressed="false">${esc(tx(B("Group currency", "Đồng tiền của tập đoàn")))}</button>
+                    <button aria-pressed="true">${esc(tx(B("Each in its own money", "Mỗi bên theo đồng tiền của mình")))}</button>
+                </div>
+                <p class="lrn-note">${esc(tx(B("Two currencies, kept apart: these are different monies. Switch to Group currency to add them up.",
+                    "Hai đồng tiền, để riêng: đây là những đồng tiền khác nhau. Chuyển sang Đồng tiền của tập đoàn để cộng chúng lại.")))}</p>
+                <div class="lrn-calc">${rows}</div>
+            </div>`;
+}
+
+function mapTop(m, headline) {
+    const tabs = [
+        B("System fields → Scheme", "Trường hệ thống → Chương trình lương"), B("Transformations", "Chuyển đổi"),
+        B("Spreadsheet columns → Scheme", "Cột bảng tính → Chương trình lương"), B("Employee & contract ⇆", "Nhân viên & hợp đồng ⇆"),
+        B("Who is paid by what", "Ai được trả lương theo phương án nào"), B("Mid ↔ End cycle", "Giữa ↔ Cuối chu kỳ"),
+        B("Component treatment", "Xử lý thành phần"), B("Journey", "Hành trình"),
+    ];
+    const screenOf = { 2: "mapping_sheet", 6: "treatment", 7: "mapping" };
+    const on = { mapping: 7, mapping_sheet: 2, treatment: 6 }[CURRENT_SCREEN];
+    const pills = tabs.map((t, i) => {
+        const attr = screenOf[i] ? navAttr(screenOf[i]) : quietAttr(tx(B("Mapping", "Ánh xạ")) + " › " + tx(t));
+        return `<button class="lrn-lens ${i === on ? "on" : ""}${SP}${screenOf[i] ? "" : "quiet"}" ${attr}>${esc(tx(t))}</button>`;
+    }).join("");
+    const count = headline ? N(m.header.fed) + SP + tx(B("fed", "đã có nguồn")) : N(m.sheetColumns.length) + SP + tx(B("mapped", "đã nối"));
+    return `
+        <div class="lrn-zstory" data-coach="mp-story">
+            <span class="lrn-zend"><span class="lrn-zeyebrow">${esc(tx(B("From", "Từ")))}</span><b>${ic("database")}${esc(tx(m.from))}</b></span>
+            <span class="lrn-zwire"><span>${esc(count)}</span></span>
+            <span class="lrn-zend to"><span class="lrn-zeyebrow">${esc(tx(B("To", "Đến")))}</span><b>${ic("calculator")}${esc(m.to)}</b></span>
+        </div>
+        <div class="lrn-zmodes" data-coach="mp-modes">${pills}</div>`;
+}
 
 /* ---------------------------------------------------------------------- shell
    LEARN REFRESH step 2. The rail and the tabs of TODAY's product. `visible` is

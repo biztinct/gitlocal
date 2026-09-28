@@ -130,6 +130,24 @@ SIDEBAR_KEYS = {
 # sidebar can never disagree about which screen is on display.
 SCREEN_ACTION_TAGS = {
     'importwizard': 'pb_import_wizard',
+    # LEARN REFRESH step 3 — the setup cockpits a Settings card opens. None of
+    # them has a sidebar leaf (they live behind Settings), so the action tag is
+    # how the helper knows one is on screen. The Records Desk is also a tab
+    # (People › Records, its `places`); its tag covers the standalone door.
+    'blueprint': 'pb_blueprint',
+    'matrix': 'pb_approval_matrix',
+    'records': 'pb_records_desk',
+    'schemes': 'pb_group',
+    # Mapping and its Component treatment tab ground by their PLACE first
+    # (mapping_studio.js publishes the tab); the tag is the fallback while it
+    # loads. The three second views of a station are replica screens, detected
+    # by their owner's tag — declared AFTER the owner in SCREEN_CTX, so the
+    # owner always wins the exact pass (tests/test_coach.py::test_14).
+    'mapping': 'pb_mapping_studio',
+    'mapping_sheet': 'pb_mapping_studio',
+    'treatment': 'pb_mapping_studio',
+    'blueprint_rules': 'pb_blueprint',
+    'matrix_builder': 'pb_approval_matrix',
 }
 
 
@@ -577,6 +595,11 @@ def content_stations(data, bi):
                 'required': bool(st.get('required')),
                 'star': bool(st.get('star')),
                 'after': st.get('after') or '',
+                # LEARN REFRESH step 3 — who the station is for (step 5 builds
+                # the role paths from it), and the plain words the ⌘K search
+                # matches besides its name.
+                'roles': list(st.get('roles') or []),
+                'search': bi.p('%s search' % where, st.get('search')),
                 'outline': {
                     'what': bi.p('%s outline what' % where, outline.get('what')),
                     'why': bi.p('%s outline why' % where, outline.get('why')),
@@ -1002,6 +1025,15 @@ SCENARIO_NAV = {
     'pb_statutory.action_pb_statutory': 'statutory',
     # LEARN REFRESH step 2: the one inbox, which lives in Home › Approvals.
     'pb_approval_config.action_pb_approval_inbox': 'approvals',
+    # LEARN REFRESH step 3: the payroll-setup cockpits. Mapping, the Records
+    # Desk and the Explorer have places (hub › tab); the other three open by
+    # their own action.
+    'pb_blueprint.action_pb_blueprint': 'blueprint',
+    'pb_formula_studio.action_pb_mapping_studio': 'mapping',
+    'pb_approval_config.action_pb_approval_matrix': 'matrix',
+    'pb_records.action_pb_records_desk': 'records',
+    'pb_group.action_pb_group': 'schemes',
+    'pb_explorer.action_pb_explorer': 'explorer',
 }
 
 # A screen place: "<hub action tag>:<lens key>[/<inner tab>]", or
@@ -1093,6 +1125,12 @@ INPUT_KINDS = ('text', 'number')
 def content_scenarios(data, bi):
     scenarios = data.get('scenarios') or []
     screens = set(data['screenCtx'])
+    # LEARN REFRESH step 3 — a `nav` may also name a SCREEN that has a place
+    # (hub › tab) or an action of its own: Component treatment is a tab of
+    # Mapping, and no action xml-id means "Mapping, on that tab". The engine
+    # resolves a screen key before an xml-id (places.js screenForRef).
+    nav_screens = {k for k, c in data['screenCtx'].items()
+                   if c.get('places') or c.get('open')}
     literal, prefixes = _anchor_registry_keys(data)
     input_anchors = data.get('inputAnchors') or {}
     replica = _replica_anchors()
@@ -1149,7 +1187,7 @@ def content_scenarios(data, bi):
         entry = sc.get('entry') or {}
         entry_nav = entry.get('nav') or ''
         entry_screen = entry.get('screen') or ''
-        if entry_nav and entry_nav not in SCENARIO_NAV:
+        if entry_nav and entry_nav not in SCENARIO_NAV and entry_nav not in nav_screens:
             problems.append('%s: entry nav is not in SCENARIO_NAV: %s' % (where, entry_nav))
         if entry_screen and entry_screen not in screens:
             problems.append('%s: entry screen is not a replica screen: %s'
@@ -1221,7 +1259,7 @@ def content_scenarios(data, bi):
                                 % (sw, anchor))
 
             nav = step.get('nav') or ''
-            if nav and nav not in SCENARIO_NAV:
+            if nav and nav not in SCENARIO_NAV and nav not in nav_screens:
                 problems.append('%s: nav is not in SCENARIO_NAV: %s' % (sw, nav))
 
             screen = step.get('screen') or ''

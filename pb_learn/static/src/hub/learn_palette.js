@@ -53,10 +53,15 @@ export function registerLessonRows(content) {
         if (palette.contains(id)) {
             continue;
         }
+        // LEARN REFRESH step 3 — the station's own plain words ("currency,
+        // exchange rate…") ride in the sublabel, because the palette matches
+        // label + sublabel and a lesson must be findable by what it is about,
+        // not only by its title.
+        const words = s.search ? say(s.search) : howTo;
         palette.add(id, {
             id,
             label: say(s.name),
-            sublabel: `${s.kind === "lesson" ? _t("Lesson") : _t("Guide")}${SP}·${SP}${s.duration_min}${SP}min${SP}·${SP}${howTo}`,
+            sublabel: `${s.kind === "lesson" ? _t("Lesson") : _t("Guide")}${SP}·${SP}${s.duration_min}${SP}min${SP}·${SP}${words}`,
             icon: "bookOpen",
             group,
             // LEARN REFRESH step 1: inside the Learn hub (rail visible),
@@ -67,7 +72,9 @@ export function registerLessonRows(content) {
     }
     for (const sc of content.scenarios || []) {
         const id = `learn.scenario.${sc.key}`;
-        if (palette.contains(id) || !(sc.modes || []).length) {
+        // A retired walkthrough is off the map and out of every offer
+        // (LR21); the search must not offer it either.
+        if (palette.contains(id) || sc.retired || !(sc.modes || []).length) {
             continue;
         }
         const mode = (sc.modes || []).includes("watch") ? "watch" : sc.modes[0];

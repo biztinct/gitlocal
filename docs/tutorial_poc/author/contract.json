@@ -206,7 +206,7 @@
       "kind": "contains",
       "why": "PayAI may only offer to open something it can actually open, through this whitelist. Phase C2 re-targeted the envelope from pb_coach tours to pb_learn LESSONS, which is the change that lets this be checked at all: a tour was a registry entry in a module nobody validated against, and a lesson is a record whose key `learn.lesson` either has or has not. Both halves are pinned — the whitelist itself, and the old-tour compatibility map, whose ids are documentation of what each tour BECAME. If a lesson key here stops existing, PayAI's \"Show me\" opens a Journey that lands on the map and the offer was a lie.",
       "expect": [
-        "_KNOWN_LESSONS = ('LW', 'L1', 'L5', 'L3', 'L4', 'LA', 'L2', 'L6')",
+        "_KNOWN_LESSONS = ('LW', 'L1', 'L5', 'L3', 'L4', 'LA', 'L2', 'L6',\n                      # LEARN REFRESH step 3 — payroll setup.\n                      'L7', 'L8', 'L9', 'L10', 'L11', 'L12')",
         "'hero_path': 'LW'",
         "'tour_payrun': 'L1'",
         "'tour_formula': 'L5'",
@@ -894,7 +894,13 @@
           "L4",
           "L5",
           "L6",
-          "LA"
+          "LA",
+          "L7",
+          "L8",
+          "L9",
+          "L10",
+          "L11",
+          "L12"
         ]
       },
       "fixture": [],
@@ -1163,7 +1169,13 @@
         "pb_payslip_review/views/pb_payslip_review_action.xml",
         "pb_formula_studio/views/pb_formula_studio_action.xml",
         "pb_import/views/pb_import_action.xml",
-        "pb_statutory/views/pb_statutory_action.xml"
+        "pb_statutory/views/pb_statutory_action.xml",
+        "pb_blueprint/views/pb_blueprint_action.xml",
+        "pb_formula_studio/views/pb_mapping_studio_action.xml",
+        "pb_approval_config/views/actions.xml",
+        "pb_records/views/pb_records_action.xml",
+        "pb_group/views/pb_group_action.xml",
+        "pb_explorer/views/pb_explorer_action.xml"
       ],
       "expect": [
         "id=\"action_pb_dashboard\"",
@@ -1172,7 +1184,13 @@
         "id=\"action_pb_payslip_review\"",
         "id=\"action_pb_formula_studio\"",
         "id=\"action_pb_import\"",
-        "id=\"action_pb_statutory\""
+        "id=\"action_pb_statutory\"",
+        "id=\"action_pb_blueprint\"",
+        "id=\"action_pb_mapping_studio\"",
+        "id=\"action_pb_approval_matrix\"",
+        "id=\"action_pb_records_desk\"",
+        "id=\"action_pb_group\"",
+        "id=\"action_pb_explorer\""
       ],
       "fixture": [
         "SCENARIO_NAV (gen_learn_data.py)"
@@ -1471,6 +1489,86 @@
       "taughtIn": [
         "pb_learn/tests/test_nextbest.py::test_15",
         "pb_learn/models/learn_content.py::line_order"
+      ]
+    },
+    {
+      "id": "setup-lesson-anchors",
+      "kind": "contains",
+      "why": "LEARN REFRESH step 3 laid data-coach anchors in six modules pb_learn does not own: the guided setup, Mapping and its Journey and Component treatment, the Approval Matrix, the Records Desk and the Group page (plus the Explorer's money switch). Nothing over there reads them, so a tidy-up could delete one without any test in that module noticing — and a walkthrough step would then spotlight nothing.",
+      "files": [
+        "pb_blueprint/static/src/xml/blueprint.xml",
+        "pb_blueprint/static/src/xml/steps.xml",
+        "pb_formula_studio/static/src/xml/mapping_studio.xml",
+        "pb_formula_studio/static/src/xml/journey_board.xml",
+        "pb_formula_studio/static/src/xml/component_treatment.xml",
+        "pb_approval_config/static/src/xml/matrix_room.xml",
+        "pb_records/static/src/xml/records_desk.xml",
+        "pb_group/static/src/xml/group_room.xml",
+        "pb_explorer/static/src/xml/explorer.xml"
+      ],
+      "expect": [
+        "data-coach=\"bp-status\"",
+        "data-coach=\"bp-rail\"",
+        "data-coach=\"bp-foot\"",
+        "data-coach=\"bp-pay\"",
+        "data-coach=\"bp-identity\"",
+        "data-coach=\"bp-country\"",
+        "data-coach=\"bp-starters\"",
+        "data-coach=\"bp-audience\"",
+        "data-coach=\"mp-story\"",
+        "data-coach=\"mp-modes\"",
+        "data-coach=\"mp-ramp\"",
+        "data-coach=\"mp-jbar\"",
+        "data-coach=\"mp-lanes\"",
+        "data-coach=\"tr-head\"",
+        "data-coach=\"tr-filters\"",
+        "data-coach=\"tr-table\"",
+        "data-coach=\"am-hero\"",
+        "data-coach=\"am-tabs\"",
+        "data-coach=\"am-bulk\"",
+        "data-coach=\"am-table\"",
+        "data-coach=\"rd-head\"",
+        "data-coach=\"rd-scheme\"",
+        "data-coach=\"rd-file\"",
+        "data-coach=\"rd-history\"",
+        "data-coach=\"rd-review\"",
+        "data-coach=\"rd-fields\"",
+        "data-coach=\"gp-head\"",
+        "data-coach=\"gp-tree\"",
+        "data-coach=\"gp-rates\"",
+        "data-coach=\"ex-money\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "lessons L7-L12",
+        "scenarios sc_blueprint / sc_mapjourney / sc_treatment / sc_matrix / sc_records / sc_schemes",
+        "intents newscheme / wherefrom / notaddup / changeroute / bulkupdate / currency",
+        "anchors.json product block"
+      ]
+    },
+    {
+      "id": "setup-cockpit-action-tags",
+      "kind": "contains",
+      "why": "The guided setup, the Approval Matrix, the Records Desk and the Group page have no sidebar leaf; the helper knows one is on screen by its client action TAG (gen_learn_data.py SCREEN_ACTION_TAGS), and Mapping by the tab it publishes. Rename a tag and the helper grounds on nothing there.",
+      "files": [
+        "pb_blueprint/static/src/js/blueprint.js",
+        "pb_approval_config/static/src/js/matrix_room.js",
+        "pb_records/static/src/js/records_desk.js",
+        "pb_group/static/src/js/group_room.js",
+        "pb_formula_studio/static/src/js/mapping/mapping_studio.js"
+      ],
+      "expect": [
+        "registry.category(\"actions\").add(\"pb_blueprint\"",
+        "registry.category(\"actions\").add(\"pb_approval_matrix\"",
+        "registry.category(\"actions\").add(\"pb_records_desk\"",
+        "registry.category(\"actions\").add(\"pb_group\"",
+        "registry.category(\"actions\").add(\"pb_mapping_studio\"",
+        "publishPlace(this, {",
+        "hubKey: \"mapping\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "screens blueprint / matrix / records / schemes / mapping / treatment / hub_mapping"
       ]
     }
   ],

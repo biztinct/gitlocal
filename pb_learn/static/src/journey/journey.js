@@ -75,7 +75,7 @@ import { canOpen, openScreen, placeLabel, setReach } from "../engine/places";
    arrival object per hub visit, so remembering it by identity is what stops a
    deep link replaying every time the reader switches back to this tab. */
 const CONSUMED_ARRIVALS = new WeakSet();
-import { morphHTML, calcHTML, pipeHTML, runPipeline } from "../engine/visuals";
+import { morphHTML, calcHTML, pipeHTML, runPipeline, runTick } from "../engine/visuals";
 
 const LOCAL_PREFS = "pbLearnPrefs";
 
@@ -1501,6 +1501,10 @@ export class LearnJourney extends Component {
             setTimeout(() => Trace.run(st.moment_from, st.moment_to), reduced() ? 0 : 420);
         } else if (st.visual === "pipeline" && Spot.card) {
             runPipeline(Spot.card, st.moment_chain);
+        } else if (st.visual === "tick") {
+            // LEARN REFRESH step 3 — the replica's number counts from its
+            // before to its after value (engine/visuals.js runTick).
+            runTick(st.moment_from);
         }
     }
 

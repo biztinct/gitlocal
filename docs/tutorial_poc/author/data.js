@@ -933,8 +933,8 @@ const GLOSSARY = {
   approvalRoute: {
     term: B("Approval route", "Lộ trình phê duyệt"),
     aliases: { en: ["approval routes", "its route", "the route"], vi: ["lộ trình phê duyệt của"] },
-    def: B("The steps a request must pass, in order, and who decides each one. Your company draws it in the Approval Matrix. A pay run's default route is Payroll check, then HR lead review, then Finance approval.",
-           "Các bước một yêu cầu phải đi qua, theo thứ tự, và ai quyết định từng bước. Công ty bạn vẽ nó trong Ma trận phê duyệt. Lộ trình mặc định của một đợt lương là Kiểm tra bảng lương, rồi Trưởng nhân sự soát xét, rồi Tài chính phê duyệt."),
+    def: B("The steps a request must pass, in order, and who decides each one. Your company draws it in the Approval Matrix. A pay run's default route is Payroll check, then HR lead review, then Finance approval. A published change applies to new requests only.",
+           "Các bước một yêu cầu phải đi qua, theo thứ tự, và ai quyết định từng bước. Công ty bạn vẽ nó trong Ma trận phê duyệt. Lộ trình mặc định của một đợt lương là Kiểm tra bảng lương, rồi Trưởng nhân sự soát xét, rồi Tài chính phê duyệt. Thay đổi đã ban hành chỉ áp cho yêu cầu mới."),
   },
   routeStep: {
     term: B("Approval step", "Bước phê duyệt"),
@@ -1109,8 +1109,118 @@ const GLOSSARY = {
   mapping: {
     term: B("Column mapping", "Ánh xạ cột"),
     aliases: { en: ["mapping", "mapped", "mappings", "match the columns"], vi: ["ánh xạ", "khớp cột"] },
-    def: B("Telling Payobook which column of your file is which component. Get it wrong and the numbers arrive perfectly, in the wrong place — which is much harder to spot than a file that failed.",
-           "Việc chỉ cho Payobook biết cột nào trong tệp của bạn ứng với thành phần nào. Làm sai thì các con số vẫn về đầy đủ nhưng nằm sai chỗ — và điều đó khó phát hiện hơn nhiều so với một tệp nhập lỗi."),
+    def: B("Telling Payobook where each value of a pay scheme comes from — which column, which system field, which record. Settings › Integrations › Mapping holds it. Get it wrong and the numbers arrive perfectly, in the wrong place.",
+           "Việc chỉ cho Payobook mỗi giá trị của một chương trình lương đến từ đâu — cột nào, trường nào của hệ thống, hồ sơ nào. Cài đặt › Tích hợp › Ánh xạ lưu điều đó. Làm sai thì các con số vẫn về đầy đủ nhưng nằm sai chỗ."),
+  },
+
+  /* -- payroll setup (LEARN REFRESH step 3) ------------------------------ */
+  guidedSetup: {
+    term: B("Guided setup", "Thiết lập có hướng dẫn"),
+    aliases: { en: ["new configuration", "the guided setup"], vi: ["cấu hình mới"] },
+    def: B("Settings › Guided setup › New configuration: six steps that build one pay scheme, with a sample person's pay shown the whole way. A scheme's own Settings reopens it to edit.",
+           "Cài đặt › Thiết lập có hướng dẫn › Cấu hình mới: sáu bước dựng một chương trình lương, luôn hiện lương của một người mẫu. Phần Cài đặt của một chương trình mở lại nó để sửa."),
+  },
+  startingPoint: {
+    term: B("Starting point", "Điểm bắt đầu"),
+    aliases: { en: ["starting points", "starter library"], vi: ["thư viện dựng sẵn"] },
+    def: B("What a new pay scheme is built from: a ready-made library for the country, your own Excel workbook, or a blank canvas. Certified means the library was checked against the law.",
+           "Thứ mà một chương trình lương mới được dựng từ đó: một thư viện dựng sẵn cho quốc gia, sổ tính Excel của bạn, hoặc một trang trắng. Đã chứng nhận nghĩa là thư viện đã được đối chiếu với luật."),
+  },
+  sampleEmployee: {
+    term: B("Sample employee", "Nhân viên mẫu"),
+    aliases: { en: ["sample person", "sample employees"], vi: ["người mẫu"] },
+    def: B("The person the guided setup computes as you build, so you see real numbers. Only a preview: nobody is paid from it.",
+           "Người mà phần thiết lập có hướng dẫn tính lương ngay khi bạn dựng, để bạn thấy con số thật. Chỉ là bản xem trước: không ai được trả lương từ đó."),
+  },
+  setupCheck: {
+    term: B("Setup check", "Bước kiểm tra thiết lập"),
+    aliases: { en: ["setup checks", "boundary cases", "run the checks"], vi: ["chạy kiểm tra"] },
+    def: B("One awkward case the Test step runs through the real engine — a joiner, a leaver, a tax-band edge. It counts as evidence only once somebody has confirmed it.",
+           "Một trường hợp khó mà bước Kiểm thử chạy qua bộ máy tính lương thật — người mới vào, người nghỉ việc, mức biên của bậc thuế. Nó chỉ được tính là bằng chứng khi đã có người xác nhận."),
+  },
+  schemeProposal: {
+    term: B("Scheme proposal", "Đề xuất thay đổi chương trình lương"),
+    aliases: { en: ["propose for approval", "scheme proposals"], vi: ["đề xuất để phê duyệt"] },
+    def: B("A request to put a scheme live, merge a branch, seal a release, roll one back, or retire it. With an approval route it waits for a yes; without one it happens at once and is recorded.",
+           "Một yêu cầu đưa chương trình vào dùng, gộp một nhánh, chốt một phiên bản, quay lại phiên bản cũ, hoặc ngừng dùng. Có lộ trình phê duyệt thì nó chờ được đồng ý; không có thì diễn ra ngay và được ghi lại."),
+  },
+  dataSource: {
+    term: B("Data source", "Nguồn dữ liệu"),
+    aliases: { en: ["data sources", "its source", "a source"], vi: ["các nguồn dữ liệu"] },
+    def: B("Where a value in a pay scheme comes from: a connected system, a spreadsheet column, or Payobook's own records. Mapping draws them all on the Journey tab.",
+           "Nơi một giá trị trong chương trình lương đến từ: một hệ thống đã kết nối, một cột bảng tính, hoặc chính hồ sơ trong Payobook. Ánh xạ vẽ tất cả trên tab Hành trình."),
+  },
+  sourcePriority: {
+    term: B("Source priority", "Thứ tự ưu tiên nguồn"),
+    aliases: { en: ["higher source", "lower source"], vi: ["nguồn cao hơn", "nguồn thấp hơn"] },
+    def: B("The order a scheme reads its sources in. The higher one wins; a lower source may only fill an empty box, never overwrite one.",
+           "Thứ tự mà chương trình lương đọc các nguồn. Nguồn cao hơn thắng; nguồn thấp hơn chỉ được điền vào ô trống, không bao giờ ghi đè."),
+  },
+  transformationRule: {
+    term: B("Transformation rule", "Quy tắc chuyển đổi"),
+    aliases: { en: ["transformation rules"], vi: ["phép chuyển đổi"] },
+    def: B("A small rule between a system and a scheme that reshapes a value on the way — text to an amount, two fields into one. Mapping's Transformations tab lists them.",
+           "Một quy tắc nhỏ giữa hệ thống và chương trình lương, sửa hình dạng một giá trị trên đường đi — chữ thành số tiền, hai trường thành một. Tab Chuyển đổi của Ánh xạ liệt kê chúng."),
+  },
+  mappingJourney: {
+    term: B("Mapping Journey", "Hành trình ánh xạ"),
+    aliases: { en: ["the journey tab", "journey board"], vi: ["tab hành trình"] },
+    def: B("Mapping's first tab: five lanes — Files & systems, Feeds, Transformations, the Scheme and Payobook Source — with every wire between them.",
+           "Tab đầu tiên của Ánh xạ: năm làn — Tệp & hệ thống, Nguồn cấp dữ liệu, Chuyển đổi, Chương trình lương và Nguồn Payobook — cùng mọi dây nối giữa chúng."),
+  },
+  componentTreatment: {
+    term: B("Component treatment", "Xử lý thành phần"),
+    aliases: { en: ["treatment board"], vi: ["bảng xử lý thành phần"] },
+    def: B("What a scheme does with each component: its pay role, whether it is a subtotal, and its value type. It belongs to the scheme, so it affects every run.",
+           "Chương trình lương làm gì với từng thành phần: vai trò trong lương, có phải tổng phụ không, và loại giá trị. Nó thuộc về chương trình, nên ảnh hưởng mọi đợt lương."),
+  },
+  payRole: {
+    term: B("Pay role", "Vai trò trong lương"),
+    aliases: { en: ["pay roles"], vi: ["vai trò lương"] },
+    def: B("What net pay does with a component: adds it, takes it off, is it, counts it as employer cost, or ignores it. Every gross, deductions and net figure is counted from it.",
+           "Thực nhận làm gì với một thành phần: cộng vào, trừ đi, chính là nó, tính là chi phí doanh nghiệp, hay bỏ qua. Mọi con số tổng thu nhập, khấu trừ và thực nhận đều đếm từ đây."),
+  },
+  subtotal: {
+    term: B("Subtotal", "Tổng phụ"),
+    aliases: { en: ["subtotal lines"], vi: ["dòng tổng phụ"] },
+    def: B("A line whose parts are already counted elsewhere, like gross income. Ticking it stops the totals counting the same money twice.",
+           "Một dòng mà các phần của nó đã được tính ở nơi khác, như tổng thu nhập. Đánh dấu nó giúp các tổng không tính cùng một khoản tiền hai lần."),
+  },
+  valueType: {
+    term: B("Value type", "Loại giá trị"),
+    aliases: { en: ["value types"], vi: ["kiểu giá trị"] },
+    def: B("What a value is: an amount, a quantity such as hours or days, a percentage, text, a date or yes/no. Only an amount can be added to or taken off net pay.",
+           "Một giá trị là gì: số tiền, số lượng như giờ hoặc ngày, phần trăm, chữ, ngày tháng hay có/không. Chỉ số tiền mới được cộng vào hoặc trừ khỏi thực nhận."),
+  },
+  approvalResponsibility: {
+    term: B("Approval responsibility", "Trách nhiệm phê duyệt"),
+    aliases: { en: ["a responsibility", "each responsibility"], vi: ["trách nhiệm phê duyệt của"] },
+    def: B("A seat on an approval route, like HR lead, filled by whoever holds it. Naming the responsibility instead of a person keeps the route working when people change.",
+           "Một vị trí trên lộ trình phê duyệt, như Trưởng nhân sự, do người đang giữ vị trí đó đảm nhận. Ghi trách nhiệm thay vì một người giúp lộ trình vẫn chạy khi người thay đổi."),
+  },
+  approvalCover: {
+    term: B("Approval cover", "Người trực thay phê duyệt"),
+    aliases: { en: ["arrange cover"], vi: ["sắp xếp người trực thay", "người trực thay"] },
+    def: B("Someone who decides for a person while they are away. Set in the Approval Matrix under People & backups; the route itself does not change.",
+           "Người quyết định thay cho một người trong lúc họ vắng mặt. Đặt trong Ma trận phê duyệt ở mục Con người & người thay thế; bản thân lộ trình không thay đổi."),
+  },
+  recordsDesk: {
+    term: B("Records Desk", "Bàn cập nhật hồ sơ (Records Desk)"),
+    aliases: { en: ["the records desk"], vi: ["bàn records desk"] },
+    def: B("People › Records: change the employee, contract and bank fields a pay scheme reads, for many people at once, with Review before anything is saved and Undo after.",
+           "Con người › Hồ sơ: sửa các trường nhân viên, hợp đồng và ngân hàng mà chương trình lương đọc, cho nhiều người cùng lúc, có Xem lại trước khi lưu và Hoàn tác sau đó."),
+  },
+  ratePolicy: {
+    term: B("Exchange rate policy", "Cách chọn tỷ giá"),
+    aliases: { en: ["how rates are picked", "exchange rates"], vi: ["tỷ giá"] },
+    def: B("Which exchange rate the group uses for a month: the last rate of the month, the rate on the day the pay run ends, or the month's average. Changing it needs approval.",
+           "Tỷ giá mà tập đoàn dùng cho một tháng: tỷ giá cuối cùng của tháng, tỷ giá vào ngày đợt lương kết thúc, hoặc tỷ giá bình quân của tháng. Thay đổi nó cần phê duyệt."),
+  },
+  groupCurrency: {
+    term: B("Group currency", "Đồng tiền của tập đoàn"),
+    aliases: { en: ["the group's currency"], vi: ["đồng tiền tập đoàn"] },
+    def: B("The money the group board reads in. Nothing is stored in it: every figure keeps the money it was paid in and is converted only when you look.",
+           "Đồng tiền mà bảng số liệu tập đoàn dùng để đọc. Không có gì được lưu bằng nó: mỗi con số giữ nguyên đồng tiền đã trả và chỉ quy đổi khi bạn xem."),
   },
   attendance: {
     term: B("Attendance", "Chấm công"),
@@ -1602,6 +1712,171 @@ const STATIONS = {
               "Để một lần đồng bộ lỗi trôi qua cho tới tuần tính lương. Số bản ghi ở vùng chờ là dấu hiệu: những dòng nằm lại đó là cả một tháng chấm công không bao giờ thành dữ liệu đầu vào."),
             B("Assuming a connector that says \"connected\" is also up to date. Connected describes the login. The last sync time describes the data.",
               "Cho rằng một đầu nối ghi \"đã kết nối\" thì cũng đang cập nhật. Đã kết nối nói về thông tin đăng nhập. Thời điểm đồng bộ gần nhất mới nói về dữ liệu."),
+          ],
+        },
+      },
+
+      /* -----------------------------------------------------------------------
+         LEARN REFRESH step 3 — PAYROLL SETUP. Six stations for the screens
+         that shipped after the content was written: the guided setup, Mapping,
+         Component treatment, the Approval Matrix, the Records Desk, and pay
+         schemes in more than one currency. `roles` is who each is for (step 5
+         builds the paths from it); `search` is the plain words the ⌘K search
+         matches, in both languages.
+         -------------------------------------------------------------------- */
+      {
+        id: "blueprint", icon: "sparkles", star: true, mins: 8, after: "formula",
+        roles: ["owner", "officer"],
+        search: B("new pay scheme, set up payroll, guided setup", "chương trình lương mới, thiết lập lương, thiết lập có hướng dẫn"),
+        title: B("New configuration", "Cấu hình mới"),
+        desc: B("Set up a new pay scheme step by step, and watch one person's pay change as you build it.",
+                "Thiết lập một chương trình lương mới theo từng bước, và xem lương của một người thay đổi ngay khi bạn dựng nó."),
+        outline: {
+          what: B("Settings › Guided setup › New configuration. Six steps — Start, Pay rules, Connect, Outputs, Test, Finish — with a panel that shows a sample person's pay the whole way through.",
+                  "Cài đặt › Thiết lập có hướng dẫn › Cấu hình mới. Sáu bước — Bắt đầu, Quy tắc lương, Kết nối, Đầu ra, Kiểm thử, Hoàn thành — kèm một khung luôn hiện lương của một người mẫu."),
+          why: B("A pay scheme is the rulebook every payslip in it is computed by. Building it in one guided place means nothing is forgotten, and every choice can be explained later.",
+                 "Chương trình lương là bộ quy tắc tính mọi phiếu lương trong đó. Dựng nó ở một nơi có hướng dẫn thì không bỏ sót gì, và mọi lựa chọn đều giải thích được về sau."),
+          when: B("When you pay a new group of people by different rules, open a new country, or rebuild an old scheme. A scheme's own Settings reopens the same journey to edit it.",
+                  "Khi bạn trả lương cho một nhóm người mới theo quy tắc khác, mở thêm một quốc gia, hoặc dựng lại một chương trình cũ. Phần Cài đặt của một chương trình mở lại đúng hành trình này để sửa."),
+          prereq: B("A formula manager role, the company the scheme is for, and a sample employee to test it on.",
+                    "Vai trò quản lý công thức, công ty mà chương trình lương dành cho, và một nhân viên mẫu để thử."),
+          mistakes: [
+            B("Thinking Finish switches the scheme on. Finish means the setup is complete and checked. Putting it live is a separate step, and it may need approval.",
+              "Nghĩ rằng Hoàn thành là bật chương trình lên. Hoàn thành nghĩa là việc thiết lập đã xong và đã kiểm tra. Đưa vào dùng là một bước riêng, và có thể cần phê duyệt."),
+            B("Skipping the Test step because the sample looks right. One ordinary person is one month. The checks try a joiner, a leaver and a tax-band edge.",
+              "Bỏ qua bước Kiểm thử vì người mẫu trông đúng. Một người bình thường chỉ là một tháng. Các bước kiểm tra thử cả người mới vào, người nghỉ việc và mức biên của bậc thuế."),
+            B("Picking the wrong country. The country decides the money the scheme pays in and its insurance and tax rules, and it locks once payslips exist.",
+              "Chọn nhầm quốc gia. Quốc gia quyết định đồng tiền trả lương và các quy tắc bảo hiểm, thuế, và nó bị khoá khi đã có phiếu lương."),
+          ],
+        },
+      },
+      {
+        id: "mapping", icon: "git-branch", star: true, mins: 9, after: "integrations",
+        roles: ["officer", "owner"],
+        search: B("mapping, where a number comes from, data source, spreadsheet columns", "ánh xạ, con số đến từ đâu, nguồn dữ liệu, cột bảng tính"),
+        title: B("Mapping", "Ánh xạ"),
+        desc: B("Where every value a pay scheme reads comes from — a file, a connected system or a record — drawn as one journey.",
+                "Mỗi giá trị mà chương trình lương đọc đến từ đâu — một tệp, một hệ thống đã kết nối hay một hồ sơ — vẽ thành một hành trình."),
+        outline: {
+          what: B("Settings › Integrations › Mapping. A header reads FROM a source TO a scheme, and tabs show each kind of wire. The Journey tab draws the whole road, lane by lane.",
+                  "Cài đặt › Tích hợp › Ánh xạ. Phần đầu đọc TỪ một nguồn ĐẾN một chương trình lương, và các tab cho thấy từng loại dây nối. Tab Hành trình vẽ cả chặng đường, từng làn một."),
+          why: B("A payslip can only be as right as the values fed into it. When a number looks wrong, this is where you see which source it came from.",
+                 "Một phiếu lương chỉ đúng được tới mức các giá trị đưa vào nó đúng. Khi một con số trông sai, đây là nơi bạn thấy nó đến từ nguồn nào."),
+          when: B("When a scheme is new, when a source system changes its fields, and whenever someone asks where a number came from.",
+                  "Khi chương trình lương còn mới, khi hệ thống nguồn đổi trường dữ liệu, và bất cứ khi nào có người hỏi một con số đến từ đâu."),
+          prereq: B("Access to Settings › Integrations, a pay scheme, and at least one source: a connected system, a spreadsheet, or Payobook's own records.",
+                    "Quyền vào Cài đặt › Tích hợp, một chương trình lương, và ít nhất một nguồn: một hệ thống đã kết nối, một bảng tính, hoặc chính hồ sơ trong Payobook."),
+          mistakes: [
+            B("Wiring the same component to two sources and expecting both to count. Sources are read in order, and a lower one only fills a box the higher one left empty.",
+              "Nối cùng một thành phần vào hai nguồn và nghĩ rằng cả hai đều được tính. Các nguồn được đọc theo thứ tự, và nguồn thấp hơn chỉ điền vào ô mà nguồn cao hơn để trống."),
+            B("Dropping this month's file on the spreadsheet tab and thinking the numbers are in. That tab reads headings and one example row. It imports nothing.",
+              "Thả tệp của tháng này vào tab bảng tính và nghĩ rằng số liệu đã vào. Tab đó chỉ đọc tiêu đề và một dòng ví dụ. Nó không nhập gì cả."),
+            B("Leaving a component marked not fed. The run will compute it as empty, and the payslip will be short by that much.",
+              "Để một thành phần ở trạng thái chưa có nguồn. Đợt lương sẽ tính nó là trống, và phiếu lương sẽ thiếu đúng khoản đó."),
+          ],
+        },
+      },
+      {
+        id: "treatment", icon: "settings", mins: 6, after: "mapping",
+        roles: ["officer", "owner"],
+        search: B("component treatment, figures do not add up, pay role, net pay", "xử lý thành phần, số liệu không khớp, vai trò trong lương, thực nhận"),
+        title: B("Component treatment", "Xử lý thành phần"),
+        desc: B("What a scheme does with each component: add it to net pay, take it off, or keep it for information only.",
+                "Chương trình lương làm gì với từng thành phần: cộng vào thực nhận, trừ khỏi thực nhận, hay chỉ để tham khảo."),
+        outline: {
+          what: B("Mapping › Component treatment. One row per component, with its pay role, whether it is a subtotal, and its value type.",
+                  "Ánh xạ › Xử lý thành phần. Mỗi thành phần một dòng, với vai trò trong lương, có phải tổng phụ hay không, và loại giá trị của nó."),
+          why: B("The pay role decides the arithmetic from gross to net. A role set wrong makes deductions bigger than gross, and every report counts the wrong thing.",
+                 "Vai trò trong lương quyết định phép tính từ tổng thu nhập xuống thực nhận. Đặt sai vai trò là khấu trừ lớn hơn cả tổng thu nhập, và mọi báo cáo đều đếm sai."),
+          when: B("Before a scheme's first pay run, after a workbook import, and whenever a run says \"These figures do not add up\".",
+                  "Trước đợt lương đầu tiên của một chương trình, sau khi nhập một sổ tính, và bất cứ khi nào một đợt lương báo \"Các số liệu này không khớp\"."),
+          prereq: B("Access to Settings › Integrations › Mapping, and the pay scheme you want to check.",
+                    "Quyền vào Cài đặt › Tích hợp › Ánh xạ, và chương trình lương bạn muốn kiểm tra."),
+          mistakes: [
+            B("Setting hours or days to add to net pay. Hours reach net pay by multiplying an amount; on their own they are information only.",
+              "Đặt giờ hoặc ngày công để cộng vào thực nhận. Giờ đi vào thực nhận bằng cách nhân với một số tiền; riêng chúng chỉ để tham khảo."),
+            B("Leaving gross as a normal line. Its parts are already added, so without Subtotal ticked the totals count them twice.",
+              "Để tổng thu nhập như một dòng thường. Các phần của nó đã được cộng rồi, nên nếu không đánh dấu Tổng phụ thì các tổng sẽ tính chúng hai lần."),
+            B("Saving and expecting the old payslips to change. Saving never rewrites a payslip; recompute the run to see the new treatment.",
+              "Lưu rồi chờ các phiếu lương cũ tự thay đổi. Lưu không bao giờ viết lại phiếu lương; hãy tính lại đợt lương để thấy cách xử lý mới."),
+          ],
+        },
+      },
+      {
+        id: "matrix", icon: "clipboard-check", star: true, mins: 8, after: null,
+        roles: ["owner", "approver"],
+        search: B("approval route, who approves, change an approval, sign-off", "lộ trình phê duyệt, ai phê duyệt, đổi phê duyệt, ký duyệt"),
+        title: B("Approval Matrix", "Ma trận phê duyệt"),
+        desc: B("Who signs off what, in which order: every approval route in the company, read and changed in one place.",
+                "Ai phê duyệt việc gì, theo thứ tự nào: mọi lộ trình phê duyệt trong công ty, đọc và sửa ở cùng một nơi."),
+        outline: {
+          what: B("Settings › Approvals › Approval Matrix. One row per process — pay run, overtime, a bulk records change — with the route it follows and whether it is in use.",
+                  "Cài đặt › Phê duyệt › Ma trận phê duyệt. Mỗi quy trình một dòng — đợt lương, tăng ca, thay đổi hồ sơ hàng loạt — kèm lộ trình nó đi theo và nó có đang được dùng hay không."),
+          why: B("Every request in the Approvals inbox travels a route drawn here. When nobody seems to decide, the reason is almost always on this screen.",
+                 "Mọi yêu cầu trong hộp Phê duyệt đều đi theo một lộ trình vẽ ở đây. Khi không ai quyết định, lý do hầu như luôn nằm trên màn hình này."),
+          when: B("When a person leaves or goes on holiday, when a new process needs a check, and when the company decides a check is no longer needed.",
+                  "Khi có người nghỉ việc hoặc đi nghỉ, khi một quy trình mới cần kiểm tra, và khi công ty quyết định một bước kiểm tra không còn cần nữa."),
+          prereq: B("The approval administrator role. Anyone can read a route from the request it is on.",
+                    "Vai trò quản trị phê duyệt. Ai cũng có thể đọc lộ trình ngay trên yêu cầu đang đi theo nó."),
+          mistakes: [
+            B("Expecting a published change to move requests already on their way. Publishing affects new requests only; the rest finish the route they started.",
+              "Chờ một thay đổi vừa ban hành chuyển luôn những yêu cầu đang đi. Ban hành chỉ áp cho yêu cầu mới; số còn lại đi hết lộ trình chúng đã bắt đầu."),
+            B("Naming a person instead of a responsibility. When that person leaves, the route stops. Name the responsibility, and arrange cover for holidays.",
+              "Ghi tên một người thay vì một trách nhiệm. Khi người đó nghỉ, lộ trình dừng lại. Hãy ghi trách nhiệm, và sắp xếp người trực thay cho kỳ nghỉ."),
+            B("Reading No approval needed as \"nothing is recorded\". It happens at once, and every use still shows in History.",
+              "Hiểu Không cần phê duyệt là \"không có gì được ghi lại\". Việc đó diễn ra ngay, và mỗi lần dùng vẫn hiện trong Lịch sử."),
+          ],
+        },
+      },
+      {
+        id: "records", icon: "database", mins: 7, after: "mapping",
+        roles: ["hr", "officer"],
+        search: B("bulk update, change many employees at once, records desk, export and import", "cập nhật hàng loạt, sửa nhiều nhân viên cùng lúc, records desk, xuất và nhập"),
+        title: B("Records Desk", "Bàn cập nhật hồ sơ (Records Desk)"),
+        desc: B("Change the employee, contract and bank details a pay scheme reads, for one person or hundreds, and review before anything is saved.",
+                "Sửa thông tin nhân viên, hợp đồng và ngân hàng mà một chương trình lương đọc, cho một người hay hàng trăm người, và xem lại trước khi lưu."),
+        outline: {
+          what: B("People › Records. A grid of people and the fields their pay scheme reads, with a file round trip: export, edit, import, review.",
+                  "Con người › Hồ sơ. Một lưới gồm mọi người và các trường mà chương trình lương của họ đọc, kèm một vòng qua tệp: xuất, sửa, nhập, xem lại."),
+          why: B("A raise for forty people typed one form at a time is forty chances to slip. Here every change is listed before it is saved, and can be undone.",
+                 "Tăng lương cho bốn mươi người mà gõ từng biểu mẫu là bốn mươi lần có thể nhầm. Ở đây mọi thay đổi được liệt kê trước khi lưu, và có thể hoàn tác."),
+          when: B("A yearly pay review, a new allowance for a whole team, a bank change for many people, or cleaning data before a first pay run.",
+                  "Một đợt xét lương hằng năm, một khoản phụ cấp mới cho cả nhóm, đổi ngân hàng cho nhiều người, hoặc làm sạch dữ liệu trước đợt lương đầu tiên."),
+          prereq: B("A pay scheme whose Mapping reads employee, contract or bank fields. If it reads none, the desk says so and offers Open Mapping.",
+                    "Một chương trình lương có phần Ánh xạ đọc các trường nhân viên, hợp đồng hoặc ngân hàng. Nếu không đọc trường nào, bàn làm việc sẽ nói vậy và gợi ý Mở Ánh xạ."),
+          mistakes: [
+            B("Editing an exported file for days, then importing it. A value changed on screen in the meantime makes that row sent back for a look.",
+              "Sửa tệp đã xuất trong nhiều ngày rồi mới nhập. Giá trị nào bị sửa trên màn hình trong lúc đó sẽ khiến dòng ấy bị trả lại để xem."),
+            B("Skipping Review because the grid looks right. Review is the only place that lists who changes, from what to what, before it is sent.",
+              "Bỏ qua Xem lại vì lưới trông đúng. Xem lại là nơi duy nhất liệt kê ai thay đổi, từ gì sang gì, trước khi gửi đi."),
+            B("Thinking Apply saved it when the company has a route for bulk changes. Then it says Sent for approval, and nothing changes until it is approved.",
+              "Nghĩ rằng Áp dụng đã lưu trong khi công ty có lộ trình cho thay đổi hàng loạt. Khi đó nó báo Đã gửi phê duyệt, và chưa có gì thay đổi cho tới khi được duyệt."),
+          ],
+        },
+      },
+      {
+        id: "schemes", icon: "globe", mins: 7, after: "blueprint",
+        roles: ["owner", "officer"],
+        search: B("currency, pay people in another currency, exchange rate, group, several schemes", "tiền tệ, trả lương bằng đồng tiền khác, tỷ giá, tập đoàn, nhiều chương trình lương"),
+        title: B("Schemes and currencies", "Chương trình lương và tiền tệ"),
+        desc: B("A pay scheme pays in its own country's money. Many schemes, many currencies — and totals that never add two monies together.",
+                "Một chương trình lương trả bằng đồng tiền của quốc gia nó. Nhiều chương trình, nhiều đồng tiền — và các con số tổng không bao giờ cộng hai đồng tiền với nhau."),
+        outline: {
+          what: B("Where currency lives: on the pay scheme, set by its country. Settings › Group says how the companies are read together and how exchange rates are picked.",
+                  "Đồng tiền nằm ở đâu: trên chương trình lương, do quốc gia của nó quyết định. Cài đặt › Tập đoàn cho biết các công ty được đọc chung ra sao và tỷ giá được chọn thế nào."),
+          why: B("Adding đồng to Singapore dollars gives a number that means nothing. Payobook keeps each figure in the money it was paid in, and converts only when you ask.",
+                 "Cộng đồng với đô la Singapore cho ra một con số vô nghĩa. Payobook giữ mỗi con số bằng đồng tiền đã trả, và chỉ quy đổi khi bạn yêu cầu."),
+          when: B("When you pay people in a second country, when two schemes run in one month, and when someone asks for the group's total.",
+                  "Khi bạn trả lương ở quốc gia thứ hai, khi hai chương trình chạy trong cùng một tháng, và khi có người hỏi tổng của cả tập đoàn."),
+          prereq: B("A pay scheme per country you pay in. For group totals, a group with its currency and exchange rates set.",
+                    "Mỗi quốc gia bạn trả lương có một chương trình lương. Để có tổng tập đoàn, cần một tập đoàn đã đặt đồng tiền và tỷ giá."),
+          mistakes: [
+            B("Running one pay run for two schemes. A pay run is always one scheme; two schemes in one month are two pay runs.",
+              "Chạy một đợt lương cho hai chương trình. Một đợt lương luôn là một chương trình; hai chương trình trong một tháng là hai đợt lương."),
+            B("Quoting a converted total as if it was paid. Nothing is stored in the group currency; the figure changes with the rate policy.",
+              "Trích một con số đã quy đổi như thể đó là số đã chi. Không có gì được lưu bằng đồng tiền tập đoàn; con số thay đổi theo cách chọn tỷ giá."),
+            B("Leaving a month without a rate. Figures for that month stay in their own money and are left out of the converted total, with the reason shown.",
+              "Để một tháng không có tỷ giá. Số liệu của tháng đó giữ nguyên đồng tiền của nó và bị để ra ngoài tổng đã quy đổi, kèm lý do."),
           ],
         },
       },
@@ -2768,6 +3043,554 @@ const LESSONS = {
     },
   },
 
+  /* ===========================================================================
+     LEARN REFRESH step 3 — PAYROLL SETUP. Six lessons over the setup replicas
+     (engine/screens.js). Two hero moments: the guided setup's pay panel ticks
+     when a component is added (`tick`), and Mai's base salary travels the
+     Mapping Journey lane by lane into her payslip line (four `trace` steps).
+     Numbers on the replicas are derived in practice-data.js; the prose names
+     no money figure it would have to keep in step with them.
+     ======================================================================== */
+  L7: {
+    id: "L7", station: "blueprint", mins: 8,
+    title: B("Build a pay scheme, step by step", "Dựng một chương trình lương, từng bước một"),
+    goal: B("Set up a new pay scheme in the guided setup, know what each of the six steps decides, and know what Finish does and does not do.",
+            "Thiết lập một chương trình lương mới trong phần thiết lập có hướng dẫn, biết mỗi bước trong sáu bước quyết định điều gì, và biết Hoàn thành làm gì và không làm gì."),
+    steps: [
+      {
+        screen: "blueprint", anchor: "bp-rail",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("Six steps, one pay scheme", "Sáu bước, một chương trình lương"),
+        body: B("Settings › Guided setup › New configuration. <b>Start</b>, <b>Pay rules</b>, <b>Connect</b>, <b>Outputs</b>, <b>Test</b>, <b>Finish</b>. A step you have finished gets a tick. You can go back to any of them.",
+                "Cài đặt › Thiết lập có hướng dẫn › Cấu hình mới. <b>Bắt đầu</b>, <b>Quy tắc lương</b>, <b>Kết nối</b>, <b>Đầu ra</b>, <b>Kiểm thử</b>, <b>Hoàn thành</b>. Bước nào xong sẽ có dấu tích. Bạn có thể quay lại bất kỳ bước nào."),
+        tip: B("A scheme's own Settings opens this same journey to edit it. The rail then says Editing.",
+               "Phần Cài đặt của một chương trình lương mở lại đúng hành trình này để sửa. Khi đó thanh bước ghi Đang sửa."),
+      },
+      {
+        screen: "blueprint", anchor: "bp-identity",
+        kicker: B("Start", "Bắt đầu"),
+        title: B("Name it so people can find it", "Đặt tên để mọi người tìm được"),
+        body: B("Pick the <b>company</b> and give the configuration a <b>name</b> that says where and who it pays. Then choose the <b>pay cycle</b>: Regular payroll, Mid-month advance, End-month payroll, or Full and final. <b>Effective from</b> is the first pay period it is meant for.",
+                "Chọn <b>công ty</b>, đặt <b>tên</b> cấu hình nói rõ trả lương ở đâu và cho ai, rồi chọn <b>chu kỳ thanh toán</b>: Kỳ lương thường, Tạm ứng giữa tháng, Kỳ lương cuối tháng, hoặc Thanh toán nghỉ việc. <b>Có hiệu lực từ</b> là kỳ lương đầu tiên nó dành cho."),
+      },
+      {
+        screen: "blueprint", anchor: "bp-country",
+        kicker: B("Start", "Bắt đầu"),
+        title: B("The country decides the money", "Quốc gia quyết định đồng tiền"),
+        body: B("As you choose the country, a chip says what the scheme pays in — <b>Pays in ₫ VND</b> here. The country also decides the insurance and tax rules. An amber line appears when that money has no exchange rate yet.",
+                "Khi bạn chọn quốc gia, một nhãn cho biết chương trình trả lương bằng gì — ở đây là <b>Trả bằng ₫ VND</b>. Quốc gia còn quyết định các quy tắc bảo hiểm và thuế. Một dòng màu vàng hiện ra khi đồng tiền đó chưa có tỷ giá."),
+        consequence: B("Affects every payslip the scheme will ever make. Reversible: only until it has components or payslips — then the country locks. Verify first: the country is where these people are paid, not where head office is.",
+                       "Ảnh hưởng: mọi phiếu lương mà chương trình sẽ tạo ra. Hoàn tác: chỉ khi nó chưa có thành phần hay phiếu lương — sau đó quốc gia bị khoá. Kiểm tra trước: quốc gia là nơi những người này được trả lương, không phải nơi đặt trụ sở."),
+      },
+      {
+        screen: "blueprint", anchor: "bp-starters",
+        kicker: B("Start", "Bắt đầu"),
+        title: B("Start from something, not from nothing", "Bắt đầu từ một thứ có sẵn, không phải từ con số không"),
+        body: B("<b>How would you like to start?</b> A ready-made library for the country (Complete or Essentials), your own Excel workbook, or a blank canvas. <b>Certified</b> means Payobook has checked that library against the law; <b>Draft</b> means not yet.",
+                "<b>Bạn muốn bắt đầu như thế nào?</b> Một thư viện dựng sẵn cho quốc gia (Đầy đủ hoặc Cơ bản), sổ tính Excel của chính bạn, hoặc một trang trắng. <b>Được chứng nhận</b> nghĩa là Payobook đã đối chiếu thư viện đó với luật; <b>Nháp</b> là chưa."),
+      },
+      {
+        screen: "blueprint", anchor: "bp-audience",
+        kicker: B("Start", "Bắt đầu"),
+        title: B("Who you pay, and the months that are not ordinary", "Bạn trả lương cho ai, và những tháng không bình thường"),
+        body: B("<b>Who are you paying?</b> decides which components and which sample people the next steps offer. <b>Real life belongs in the design</b> asks about joiners and leavers, yearly bonuses, mid-month raises and corrections — so they come up now, not on payday.",
+                "<b>Bạn đang trả lương cho ai?</b> quyết định các bước sau gợi ý thành phần nào và người mẫu nào. <b>Đời thực phải có trong thiết kế</b> hỏi về người mới vào và người nghỉ, thưởng hằng năm, tăng lương giữa tháng và các khoản điều chỉnh — để chúng được tính tới ngay bây giờ, không phải vào ngày trả lương."),
+      },
+      {
+        screen: "blueprint", anchor: "bp-status",
+        kicker: B("Saving", "Lưu"),
+        title: B("Nothing exists until you continue", "Chưa có gì cho tới khi bạn bấm tiếp tục"),
+        body: B("Before the first <b>Continue to pay rules</b> the pill says <b>Not saved yet</b>. That press creates the draft, and from then on it saves as you go: <b>Draft · saved 2 min ago</b>. <b>Save &amp; close</b> keeps it; <b>Discard this draft</b> removes it.",
+                "Trước lần bấm <b>Tiếp tục sang Quy tắc lương</b> đầu tiên, nhãn trạng thái ghi <b>Chưa lưu</b>. Lần bấm đó tạo bản nháp, và từ đó mọi thứ tự lưu khi bạn làm: <b>Bản nháp · đã lưu 2 phút trước</b>. <b>Lưu và đóng</b> giữ lại; <b>Bỏ bản nháp này</b> xoá nó đi."),
+      },
+      {
+        screen: "blueprint_rules", anchor: "rep-bp-added",
+        moment: { kind: "tick", from: "rep-bp-paynum" },
+        kicker: B("Pay rules · the moment", "Quy tắc lương · khoảnh khắc"),
+        title: B("Add a component, watch the pay move", "Thêm một thành phần, xem tiền lương thay đổi"),
+        body: B("Each component is a sentence anyone can read, with its formula under it. Add <b>Allowances</b> and look at the panel: take-home pay rises by the allowance, less the income tax on it.",
+                "Mỗi thành phần là một câu ai cũng đọc được, kèm công thức bên dưới. Thêm <b>Phụ cấp</b> rồi nhìn sang khung bên phải: tiền thực nhận tăng đúng bằng khoản phụ cấp, trừ đi phần thuế thu nhập trên nó."),
+        tip: B("That is the real payroll engine working on one sample person. If a number surprises you here, it would have surprised a whole payroll.",
+               "Đó là chính bộ máy tính lương đang tính cho một người mẫu. Nếu một con số làm bạn bất ngờ ở đây, nó đã có thể làm cả bảng lương bất ngờ."),
+      },
+      {
+        screen: "blueprint_rules", anchor: "bp-pay",
+        kicker: B("See it in someone's pay", "Xem ngay trên lương của một người"),
+        title: B("One person, read the whole way through", "Một người, đọc từ đầu đến cuối"),
+        body: B("The panel shows <b>Estimated take-home pay</b>, then cash earnings, employee deductions, income tax and employer cost. <b>Try a different situation</b> switches the sample person; <b>Adjust sample inputs</b> changes their figures. It is sample data only — nobody is paid from it.",
+                "Khung này hiện <b>Thực nhận ước tính</b>, rồi thu nhập bằng tiền, các khoản trừ của nhân viên, thuế thu nhập và chi phí doanh nghiệp. <b>Thử một tình huống khác</b> đổi người mẫu; <b>Điều chỉnh đầu vào mẫu</b> đổi số liệu của họ. Đây chỉ là dữ liệu mẫu — không ai được trả lương từ nó."),
+      },
+      {
+        screen: "blueprint_rules", anchor: "bp-foot",
+        kicker: B("Connect · Outputs · Test · Finish", "Kết nối · Đầu ra · Kiểm thử · Hoàn thành"),
+        title: B("Finish is not the same as switching it on", "Hoàn thành không phải là bật lên"),
+        body: B("<b>Connect</b> says where values come from and who approves. <b>Outputs</b> lists every formula. <b>Test</b> runs the awkward cases. <b>Finish</b> means the setup is complete and checked. Putting the scheme live is a separate proposal, and it may need approval.",
+                "<b>Kết nối</b> cho biết giá trị đến từ đâu và ai phê duyệt. <b>Đầu ra</b> liệt kê mọi công thức. <b>Kiểm thử</b> chạy các trường hợp khó. <b>Hoàn thành</b> nghĩa là việc thiết lập đã xong và đã kiểm tra. Đưa chương trình vào dùng là một đề xuất riêng, và có thể cần phê duyệt."),
+        tip: B("Finish refuses while a calculation is broken or the checks have not been run since your last change. It says which.",
+               "Hoàn thành sẽ từ chối khi còn một phép tính bị lỗi hoặc các bước kiểm tra chưa chạy lại từ lần sửa cuối. Nó nói rõ là cái nào."),
+      },
+    ],
+    quiz: {
+      question: B("You pressed Finish and the page says \"This setup is complete\". Is the scheme paying people now?",
+                  "Bạn đã bấm Hoàn thành và trang ghi \"Thiết lập này đã hoàn tất\". Chương trình lương này đã trả lương cho mọi người chưa?"),
+      options: [
+        {
+          text: B("Yes — Finish is the last step, so it is live", "Rồi — Hoàn thành là bước cuối nên nó đã chạy"),
+          correct: false,
+          explanation: B("Let's rethink that. Finish says the setup is complete and checked. Putting it live is a separate proposal — and when your company has a route for it, somebody has to approve it first.",
+                         "Hãy nghĩ lại một chút. Hoàn thành nói rằng việc thiết lập đã xong và đã kiểm tra. Đưa vào dùng là một đề xuất riêng — và khi công ty bạn có lộ trình cho việc đó, phải có người phê duyệt trước."),
+        },
+        {
+          text: B("Not yet — putting it live is a separate step, which may need approval", "Chưa — đưa vào dùng là một bước riêng, có thể cần phê duyệt"),
+          correct: true,
+          explanation: B("Yes. Finish means ready. Going live is its own decision, recorded — and approved first when a route covers it.",
+                         "Đúng vậy. Hoàn thành nghĩa là sẵn sàng. Đưa vào dùng là một quyết định riêng, được ghi lại — và được phê duyệt trước khi có lộ trình áp cho nó."),
+        },
+        {
+          text: B("Only for the sample employee", "Chỉ cho nhân viên mẫu"),
+          correct: false,
+          explanation: B("Let's rethink that. The sample person is never paid — the panel is a preview. Nobody is paid from this scheme until it is put live.",
+                         "Hãy nghĩ lại một chút. Người mẫu không bao giờ được trả lương — khung đó chỉ là bản xem trước. Chưa ai được trả lương từ chương trình này cho tới khi nó được đưa vào dùng."),
+        },
+      ],
+    },
+  },
+
+  L8: {
+    id: "L8", station: "mapping", mins: 9,
+    title: B("Follow a number to its source", "Lần theo một con số về tận nguồn"),
+    goal: B("Read the Mapping Journey from a source to a payslip line. Know which source wins when there are two, and what the spreadsheet tab does.",
+            "Đọc Hành trình ánh xạ từ một nguồn tới một dòng phiếu lương, biết nguồn nào thắng khi có hai nguồn, và biết tab bảng tính làm gì và không làm gì."),
+    steps: [
+      {
+        screen: "mapping", anchor: "mp-story",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("FROM a source, TO a scheme", "TỪ một nguồn, ĐẾN một chương trình lương"),
+        body: B("Settings › Integrations › Mapping. The header reads as a sentence: <b>FROM</b> a source <b>TO</b> a pay scheme, with how many values are fed between them. Both ends are pickers. The tabs below show each kind of wire; it opens on <b>Journey</b>.",
+                "Cài đặt › Tích hợp › Ánh xạ. Phần đầu đọc như một câu: <b>TỪ</b> một nguồn <b>ĐẾN</b> một chương trình lương, kèm số giá trị đã được cấp giữa chúng. Cả hai đầu đều chọn được. Các tab bên dưới cho thấy từng loại dây nối; màn hình mở ở tab <b>Hành trình</b>."),
+      },
+      {
+        screen: "mapping", anchor: "mp-lanes",
+        kicker: B("The Journey", "Hành trình"),
+        title: B("Five lanes, left to right", "Năm làn, từ trái sang phải"),
+        body: B("<b>Files &amp; systems</b>, <b>Feeds</b>, <b>Transformations</b>, the <b>Scheme</b>, and <b>Payobook Source</b>. The line above counts what needs a source, what is fed and what is not fed yet. Press a card to open its fields.",
+                "<b>Tệp &amp; hệ thống</b>, <b>Nguồn cấp dữ liệu</b>, <b>Chuyển đổi</b>, <b>Chương trình lương</b>, và <b>Nguồn Payobook</b>. Dòng phía trên đếm những gì cần một nguồn, đã có nguồn và chưa có nguồn. Bấm một thẻ để mở các trường của nó."),
+      },
+      {
+        screen: "mapping", anchor: "rep-jny-feed",
+        moment: { kind: "trace", from: "rep-jny-file", to: "rep-jny-feed" },
+        kicker: B("Follow one value · 1", "Lần theo một giá trị · 1"),
+        title: B("Mai's base salary leaves the HR system", "Lương cơ bản của Mai rời hệ thống nhân sự"),
+        body: B("The connected HR system sends <b>basic_salary</b>. It arrives through a feed — one of the requests Payobook makes to that system.",
+                "Hệ thống nhân sự đã kết nối gửi <b>basic_salary</b>. Nó đi vào qua một nguồn cấp dữ liệu — một trong các yêu cầu Payobook gửi tới hệ thống đó."),
+      },
+      {
+        screen: "mapping", anchor: "rep-jny-xform",
+        moment: { kind: "trace", from: "rep-jny-feed", to: "rep-jny-xform" },
+        kicker: B("Follow one value · 2", "Lần theo một giá trị · 2"),
+        title: B("A transformation makes it an amount", "Một phép chuyển đổi biến nó thành số tiền"),
+        body: B("The system sends the salary as text. A <b>transformation</b> rule turns \"12.000.000\" into a number the formulas can use.",
+                "Hệ thống gửi lương dưới dạng chữ. Một <b>quy tắc chuyển đổi</b> biến \"12.000.000\" thành một con số mà các công thức dùng được."),
+      },
+      {
+        screen: "mapping", anchor: "rep-jny-scheme",
+        moment: { kind: "trace", from: "rep-jny-xform", to: "rep-jny-scheme" },
+        kicker: B("Follow one value · 3", "Lần theo một giá trị · 3"),
+        title: B("It feeds a component of the scheme", "Nó cấp cho một thành phần của chương trình lương"),
+        body: B("The amount lands on <b>LCB</b>, the base salary component. That card is now fed. A component marked <b>not fed</b> will be computed as empty.",
+                "Số tiền đi vào <b>LCB</b>, thành phần lương cơ bản. Thẻ đó giờ đã có nguồn. Thành phần nào ghi <b>chưa có nguồn</b> sẽ được tính là trống."),
+      },
+      {
+        screen: "mapping", anchor: "rep-jny-slip",
+        moment: { kind: "trace", from: "rep-jny-scheme", to: "rep-jny-slip" },
+        kicker: B("Follow one value · 4", "Lần theo một giá trị · 4"),
+        title: B("…and ends on her payslip", "…và kết thúc trên phiếu lương của cô ấy"),
+        body: B("When the run computes, LCB becomes the <b>Base salary</b> line on Mai's payslip. That is the whole road. When a number on a payslip looks wrong, walk it backwards, lane by lane.",
+                "Khi đợt lương được tính, LCB trở thành dòng <b>Lương cơ bản</b> trên phiếu lương của Mai. Đó là cả chặng đường. Khi một con số trên phiếu lương trông sai, hãy đi ngược lại, từng làn một."),
+      },
+      {
+        screen: "mapping", anchor: "rep-jny-source",
+        kicker: B("Payobook Source", "Nguồn Payobook"),
+        title: B("Values that come from Payobook itself", "Những giá trị đến từ chính Payobook"),
+        body: B("Some values are already in Payobook: the employee, the contract, the bank account, contract pay components, and the pay run itself. <b>Open Records Desk</b> changes them for many people at once. <b>Who is paid by what</b> says which scheme pays each team.",
+                "Một số giá trị đã có sẵn trong Payobook: nhân viên, hợp đồng, tài khoản ngân hàng, thành phần lương theo hợp đồng, và chính đợt lương. <b>Mở Records Desk</b> để sửa chúng cho nhiều người cùng lúc. <b>Ai được trả lương theo phương án nào</b> cho biết chương trình nào trả lương cho từng nhóm."),
+      },
+      {
+        screen: "mapping_sheet", anchor: "mp-ramp",
+        kicker: B("Spreadsheet columns → Scheme", "Cột bảng tính → Chương trình lương"),
+        title: B("The file shows its columns. It imports nothing.", "Tệp cho thấy các cột của nó. Nó không nhập gì cả."),
+        body: B("Drop this period's spreadsheet and the tab reads its <b>headings and one example row</b>, so you can wire columns to components. Numbers come in later, through the pay run's Pay data step. A group called <b>From this pay run</b> offers values the run already knows, like standard working days.",
+                "Thả bảng tính của kỳ này và tab sẽ đọc <b>tiêu đề và một dòng ví dụ</b>, để bạn nối cột vào thành phần. Số liệu vào sau, qua bước Dữ liệu lương của đợt lương. Một nhóm tên <b>Từ đợt lương này</b> đưa ra các giá trị đợt lương đã biết, như ngày công chuẩn."),
+        tip: B("No file in the right shape? Download a template built from this scheme.",
+               "Chưa có tệp đúng mẫu? Hãy tải mẫu dựng từ chương trình lương này."),
+      },
+      {
+        screen: "mapping_sheet", anchor: "rep-mp-conflict",
+        kicker: B("Two sources, one component", "Hai nguồn, một thành phần"),
+        title: B("A lower source only fills an empty box", "Nguồn thấp hơn chỉ điền vào ô trống"),
+        body: B("Wire a column to a component the system already feeds, and Payobook asks first. <b>Add source</b> keeps both, in order: the higher source wins and the lower one only fills a box left empty. Or use one source instead of the other.",
+                "Nối một cột vào thành phần mà hệ thống đã cấp, Payobook sẽ hỏi trước. <b>Thêm nguồn</b> giữ cả hai, theo thứ tự: nguồn cao hơn thắng và nguồn thấp hơn chỉ điền vào ô còn trống. Hoặc dùng một nguồn thay cho nguồn kia."),
+        consequence: B("Affects every future pay run of this scheme. Reversible: yes — change the wires or the order. Verify first: which source should win when both have a value.",
+                       "Ảnh hưởng: mọi đợt lương sau này của chương trình. Hoàn tác: có — đổi dây nối hoặc thứ tự. Kiểm tra trước: nguồn nào nên thắng khi cả hai cùng có giá trị."),
+      },
+    ],
+    quiz: {
+      question: B("Allowances are fed by the HR system and by a spreadsheet column, in that order. This month the system sent a value and the file has a different one. Which reaches the payslip?",
+                  "Phụ cấp được cấp bởi hệ thống nhân sự và bởi một cột bảng tính, theo thứ tự đó. Tháng này hệ thống gửi một giá trị và tệp có giá trị khác. Giá trị nào vào phiếu lương?"),
+      options: [
+        {
+          text: B("The system's value — the spreadsheet only fills an empty box", "Giá trị của hệ thống — bảng tính chỉ điền vào ô trống"),
+          correct: true,
+          explanation: B("Yes. The higher source wins. The spreadsheet is used only for people the system sent nothing for.",
+                         "Đúng vậy. Nguồn cao hơn thắng. Bảng tính chỉ được dùng cho những người mà hệ thống không gửi gì."),
+        },
+        {
+          text: B("The two are added together", "Hai giá trị được cộng lại"),
+          correct: false,
+          explanation: B("Let's rethink that. Two sources never add up. One value reaches the component, and the order decides which.",
+                         "Hãy nghĩ lại một chút. Hai nguồn không bao giờ được cộng lại. Chỉ một giá trị đi vào thành phần, và thứ tự quyết định giá trị nào."),
+        },
+        {
+          text: B("Whichever arrived last", "Giá trị nào đến sau cùng"),
+          correct: false,
+          explanation: B("Let's rethink that. Timing does not decide it. The order of the sources does, and it is the same every month.",
+                         "Hãy nghĩ lại một chút. Thời điểm không quyết định điều này. Thứ tự các nguồn mới quyết định, và nó giống nhau mọi tháng."),
+        },
+      ],
+    },
+  },
+
+  L9: {
+    id: "L9", station: "treatment", mins: 6,
+    title: B("Tell the scheme what each component is", "Cho chương trình lương biết mỗi thành phần là gì"),
+    goal: B("Read the Component treatment board, set a pay role, a subtotal and a value type correctly, and know why a run says its figures do not add up.",
+            "Đọc bảng Xử lý thành phần, đặt đúng vai trò trong lương, tổng phụ và loại giá trị, và biết vì sao một đợt lương báo số liệu không khớp."),
+    steps: [
+      {
+        screen: "treatment", anchor: "tr-head",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("One board per scheme, for every run", "Mỗi chương trình một bảng, cho mọi đợt lương"),
+        body: B("Mapping › <b>Component treatment</b>. Set once per component, it holds however the value arrives. It belongs to the scheme, so a change affects every run of it. <b>Re-classify from the formulas</b> works the answers out again and leaves rows you set yourself alone.",
+                "Ánh xạ › <b>Xử lý thành phần</b>. Đặt một lần cho mỗi thành phần, và giữ nguyên dù giá trị đến bằng đường nào. Nó thuộc về chương trình lương, nên một thay đổi ảnh hưởng mọi đợt lương của chương trình đó. <b>Phân loại lại từ các công thức</b> tính lại các câu trả lời và để nguyên những dòng bạn tự đặt."),
+      },
+      {
+        screen: "treatment", anchor: "tr-table",
+        kicker: B("Pay role", "Vai trò trong lương"),
+        title: B("The pay role decides the arithmetic", "Vai trò trong lương quyết định phép tính"),
+        body: B("<b>Added to net pay</b>, <b>Taken off net pay</b>, <b>Net pay itself</b>, <b>Employer cost</b>, <b>Information only</b>, or <b>Both added and taken off</b>. Gross, deductions and net on every report are counted from this column.",
+                "<b>Cộng vào thực nhận</b>, <b>Trừ khỏi thực nhận</b>, <b>Chính là thực nhận</b>, <b>Chi phí doanh nghiệp</b>, <b>Chỉ để tham khảo</b>, hoặc <b>Vừa cộng vừa trừ</b>. Tổng thu nhập, khấu trừ và thực nhận trên mọi báo cáo đều được đếm từ cột này."),
+      },
+      {
+        screen: "treatment", anchor: "tr-table",
+        kicker: B("Subtotal", "Tổng phụ"),
+        title: B("A subtotal is already inside another line", "Tổng phụ đã nằm sẵn trong một dòng khác"),
+        body: B("Gross income is base salary plus allowances plus overtime. Those are already added, so gross carries a tick under <b>Subtotal</b>. Without it, the totals would count the same money twice.",
+                "Tổng thu nhập là lương cơ bản cộng phụ cấp cộng tăng ca. Những khoản đó đã được cộng rồi, nên tổng thu nhập có dấu tích ở cột <b>Tổng phụ</b>. Không có dấu đó, các tổng sẽ tính cùng một khoản tiền hai lần."),
+      },
+      {
+        screen: "treatment", anchor: "rep-ct-warn",
+        kicker: B("Value type", "Loại giá trị"),
+        title: B("Hours are not money", "Giờ không phải là tiền"),
+        body: B("A <b>value type</b> says what a value is: an amount, a quantity like hours or days, a percentage, text or a date. Only an amount can be added to or taken off net pay. When a quantity is set to add to net pay, the board warns you and offers <b>Set all of them to Information only</b>.",
+                "<b>Loại giá trị</b> cho biết một giá trị là gì: số tiền, số lượng như giờ hoặc ngày, phần trăm, chữ hay ngày tháng. Chỉ số tiền mới được cộng vào hoặc trừ khỏi thực nhận. Khi một số lượng được đặt để cộng vào thực nhận, bảng sẽ cảnh báo và đề nghị <b>Đặt tất cả thành Chỉ để tham khảo</b>."),
+      },
+      {
+        screen: "treatment", anchor: "tr-filters",
+        kicker: B("What needs you", "Những gì cần bạn"),
+        title: B("Needs your answer, and Type says otherwise", "Cần câu trả lời của bạn, và Loại giá trị nói khác"),
+        body: B("The chips count what to look at. <b>Needs your answer</b> is a component with no pay role yet — a new column from a spreadsheet, say. <b>Type says otherwise</b> is a pay role the value type disagrees with.",
+                "Các nhãn đếm những gì cần xem. <b>Cần câu trả lời của bạn</b> là thành phần chưa có vai trò trong lương — chẳng hạn một cột mới từ bảng tính. <b>Loại giá trị nói khác</b> là một vai trò mà loại giá trị không khớp."),
+        tip: B("After an Excel workbook is imported, the same questions come up in a review window before the scheme is used.",
+               "Sau khi nhập một sổ tính Excel, cũng những câu hỏi này hiện ra trong một cửa sổ xem lại trước khi chương trình được dùng."),
+      },
+      {
+        screen: "treatment", anchor: "tr-head",
+        kicker: B("The run's warning", "Cảnh báo của đợt lương"),
+        title: B("\"These figures do not add up\" sends you here", "\"Các số liệu này không khớp\" đưa bạn tới đây"),
+        body: B("When gross less deductions is not take-home pay, the pay run shows that line with the gap. Almost always a component is treated wrongly. Fix it here, save, then <b>recompute the run</b>.",
+                "Khi tổng thu nhập trừ khấu trừ không bằng thực nhận, đợt lương hiện dòng đó kèm khoản chênh. Gần như luôn là một thành phần bị xử lý sai. Hãy sửa ở đây, lưu, rồi <b>tính lại đợt lương</b>."),
+        consequence: B("Affects every run of this scheme, past and future, once recomputed. Reversible: yes — change the row back. Verify first: saving never rewrites a payslip; only a recompute does.",
+                       "Ảnh hưởng: mọi đợt lương của chương trình, cũ và mới, khi được tính lại. Hoàn tác: có — đổi dòng đó lại. Kiểm tra trước: lưu không bao giờ viết lại phiếu lương; chỉ tính lại mới làm vậy."),
+      },
+    ],
+    quiz: {
+      question: B("Overtime hours come from a spreadsheet and are set to Added to net pay. What happens?",
+                  "Giờ tăng ca lấy từ bảng tính và được đặt là Cộng vào thực nhận. Điều gì xảy ra?"),
+      options: [
+        {
+          text: B("The hours are added to take-home pay as if they were money — the board warns you", "Số giờ bị cộng vào thực nhận như thể là tiền — bảng sẽ cảnh báo bạn"),
+          correct: true,
+          explanation: B("Yes. Twelve hours would be twelve đồng added to net. Hours reach pay through the overtime formula, so the hours themselves are Information only.",
+                         "Đúng vậy. Mười hai giờ sẽ thành mười hai đồng cộng vào thực nhận. Giờ đi vào lương qua công thức tăng ca, nên bản thân số giờ chỉ để tham khảo."),
+        },
+        {
+          text: B("Nothing — Payobook knows they are hours", "Không có gì — Payobook biết đó là giờ"),
+          correct: false,
+          explanation: B("Let's rethink that. The pay role is what the arithmetic follows. Payobook flags the clash with \"Type says otherwise\", but you have to fix it.",
+                         "Hãy nghĩ lại một chút. Phép tính đi theo vai trò trong lương. Payobook báo sự lệch bằng \"Loại giá trị nói khác\", nhưng bạn phải là người sửa."),
+        },
+        {
+          text: B("The overtime pay is doubled", "Tiền tăng ca bị nhân đôi"),
+          correct: false,
+          explanation: B("Let's rethink that. The overtime pay line is a separate component. The problem is the hours themselves being counted as money.",
+                         "Hãy nghĩ lại một chút. Dòng tiền tăng ca là một thành phần riêng. Vấn đề là chính số giờ bị tính như tiền."),
+        },
+      ],
+    },
+  },
+
+  L10: {
+    id: "L10", station: "matrix", mins: 8,
+    title: B("Decide who signs off what", "Quyết định ai phê duyệt việc gì"),
+    goal: B("Read any approval route in the Approval Matrix, change one safely in the builder, and know what No approval needed and Publish really do.",
+            "Đọc bất kỳ lộ trình phê duyệt nào trong Ma trận phê duyệt, sửa một lộ trình an toàn trong phần dựng lộ trình, và biết Không cần phê duyệt và Ban hành thật sự làm gì."),
+    steps: [
+      {
+        screen: "matrix", anchor: "am-hero",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("Every check, in one place", "Mọi bước kiểm tra, ở một nơi"),
+        body: B("Settings › Approvals › <b>Approval Matrix</b>. Every request in the Approvals inbox follows a route drawn here. <b>Create a workflow</b> starts a new one; <b>Bring in from a spreadsheet</b> reads a sheet named \"Approval Matrix\" as draft routes.",
+                "Cài đặt › Phê duyệt › <b>Ma trận phê duyệt</b>. Mọi yêu cầu trong hộp Phê duyệt đều đi theo một lộ trình vẽ ở đây. <b>Tạo một luồng phê duyệt</b> bắt đầu một lộ trình mới; <b>Nạp từ bảng tính</b> đọc trang tính tên \"Approval Matrix\" thành các lộ trình nháp."),
+      },
+      {
+        screen: "matrix", anchor: "am-table",
+        kicker: B("Read a route", "Đọc một lộ trình"),
+        title: B("Process, route, where it applies, status", "Quy trình, lộ trình, nơi áp dụng, trạng thái"),
+        body: B("Each row is one process with the route it follows. The pay run reads <b>Payroll check → HR lead review → Finance approval</b>. Status says <b>In use</b>, <b>Draft</b>, <b>Needs people</b> or <b>Not connected yet</b>.",
+                "Mỗi dòng là một quy trình kèm lộ trình nó đi theo. Đợt lương ghi <b>Kiểm tra bảng lương → Trưởng nhân sự soát xét → Tài chính phê duyệt</b>. Trạng thái ghi <b>Đang dùng</b>, <b>Nháp</b>, <b>Cần bổ sung người</b> hoặc <b>Chưa kết nối</b>."),
+        tip: B("Needs people means a step reaches a part of the business where nobody is named. Requests from there stop until somebody is.",
+               "Cần bổ sung người nghĩa là có một bước đi tới một phần của doanh nghiệp mà chưa có ai được ghi tên. Yêu cầu từ đó sẽ dừng cho tới khi có người."),
+      },
+      {
+        screen: "matrix", anchor: "am-bulk",
+        kicker: B("No approval needed", "Không cần phê duyệt"),
+        title: B("Switching a check off is still recorded", "Tắt một bước kiểm tra vẫn được ghi lại"),
+        body: B("Any process can be set to <b>No approval needed</b>, one row or many at once. It then happens straight away — and every use still shows in History. <b>Undo</b> is offered straight after.",
+                "Quy trình nào cũng có thể đặt <b>Không cần phê duyệt</b>, từng dòng hoặc nhiều dòng cùng lúc. Khi đó việc diễn ra ngay — và mỗi lần dùng vẫn hiện trong Lịch sử. <b>Hoàn tác</b> được đề nghị ngay sau đó."),
+      },
+      {
+        screen: "matrix_builder", anchor: "rep-am-bsteps",
+        kicker: B("The builder", "Dựng lộ trình"),
+        title: B("Purpose · People · Safeguards · Review · Publish", "Mục đích · Nhân sự · Bảo vệ · Xem lại · Ban hành"),
+        body: B("Open a row, or create a workflow, and the builder walks five steps. Nothing is live until the last one.",
+                "Mở một dòng, hoặc tạo một luồng phê duyệt, phần dựng lộ trình sẽ đi qua năm bước. Chưa có gì được dùng cho tới bước cuối."),
+      },
+      {
+        screen: "matrix_builder", anchor: "rep-am-route",
+        kicker: B("People", "Nhân sự"),
+        title: B("Kinds of step", "Các loại bước"),
+        body: B("<b>Review</b>, <b>Final approval</b>, <b>Joint approval</b>, <b>Any one of a team</b>, and <b>Only when…</b> for a step above an amount. <b>Tell somebody</b> is never counted as a check. Name a responsibility, not a person, so the route survives a leaver.",
+                "<b>Xem lại</b>, <b>Phê duyệt cuối</b>, <b>Cùng phê duyệt</b>, <b>Một người bất kỳ trong nhóm</b>, <b>Chỉ khi…</b> cho bước chỉ áp dụng trên một mức tiền, và <b>Báo cho ai đó</b>, không bao giờ được tính là một bước kiểm tra. Hãy ghi trách nhiệm, không ghi một người, để lộ trình vẫn chạy khi có người nghỉ."),
+      },
+      {
+        screen: "matrix_builder", anchor: "rep-am-guards",
+        kicker: B("Safeguards", "Bảo vệ"),
+        title: B("The rules around the route", "Những quy tắc bao quanh lộ trình"),
+        body: B("<b>Who may not decide?</b> <b>What must be attached?</b> <b>When is it due?</b> <b>And if it is late?</b> Then <b>Try an example</b> shows who, by name, would decide a real request.",
+                "<b>Ai không được quyết định?</b> <b>Cần đính kèm gì?</b> <b>Khi nào đến hạn?</b> <b>Nếu trễ hạn thì sao?</b> Rồi <b>Thử một ví dụ</b> cho thấy ai, cụ thể tên, sẽ quyết định một yêu cầu thật."),
+      },
+      {
+        screen: "matrix_builder", anchor: "rep-am-publish",
+        kicker: B("Publish", "Ban hành"),
+        title: B("New requests only", "Chỉ áp cho yêu cầu mới"),
+        body: B("<b>Publish this route</b> and new requests follow it from the date shown. Requests already on their way finish the route they started on.",
+                "<b>Ban hành lộ trình này</b> và các yêu cầu mới đi theo nó từ ngày được ghi. Những yêu cầu đang trên đường sẽ đi hết lộ trình chúng đã bắt đầu."),
+        consequence: B("Affects every new request of this process. Reversible: yes — publish again. Verify first: Try an example names a real person for every step.",
+                       "Ảnh hưởng: mọi yêu cầu mới của quy trình này. Hoàn tác: có — ban hành lại. Kiểm tra trước: Thử một ví dụ ra đúng tên một người thật cho mọi bước."),
+      },
+      {
+        screen: "matrix", anchor: "am-tabs",
+        kicker: B("People & backups", "Con người & người thay thế"),
+        title: B("Cover for holidays, and a choice per scheme", "Người trực thay khi nghỉ, và lựa chọn cho từng chương trình lương"),
+        body: B("<b>People &amp; backups</b> shows who holds each responsibility; <b>Arrange cover</b> hands it to someone while they are away. A pay scheme can also <b>Use the company flow</b>, use a different flow, or need no approval — chosen in its Connect step.",
+                "<b>Con người &amp; người thay thế</b> cho biết ai giữ từng trách nhiệm; <b>Sắp xếp người trực thay</b> giao nó cho người khác khi họ vắng. Một chương trình lương cũng có thể <b>Dùng luồng của công ty</b>, dùng một luồng khác, hoặc không cần phê duyệt — chọn ở bước Kết nối của nó."),
+      },
+    ],
+    quiz: {
+      question: B("You add Finance approval to the pay run route and publish it. June's run is already waiting at HR lead review. What route does June's run follow?",
+                  "Bạn thêm bước Tài chính phê duyệt vào lộ trình đợt lương rồi ban hành. Đợt lương tháng 6 đang chờ ở bước Trưởng nhân sự soát xét. Đợt tháng 6 đi theo lộ trình nào?"),
+      options: [
+        {
+          text: B("The old one — publishing affects new requests only", "Lộ trình cũ — ban hành chỉ áp cho yêu cầu mới"),
+          correct: true,
+          explanation: B("Yes. June finishes the route it started on. July's run, sent in after you published, gets the new step.",
+                         "Đúng vậy. Tháng 6 đi hết lộ trình nó đã bắt đầu. Đợt tháng 7, gửi đi sau khi bạn ban hành, sẽ có bước mới."),
+        },
+        {
+          text: B("The new one, starting again from the first step", "Lộ trình mới, bắt đầu lại từ bước đầu"),
+          correct: false,
+          explanation: B("Let's rethink that. A published route never moves a request already on its way. Nobody's approval is thrown away.",
+                         "Hãy nghĩ lại một chút. Một lộ trình vừa ban hành không bao giờ chuyển yêu cầu đang đi. Không phê duyệt nào của ai bị bỏ đi."),
+        },
+        {
+          text: B("The new one, from where it is now", "Lộ trình mới, từ vị trí hiện tại"),
+          correct: false,
+          explanation: B("Let's rethink that. Requests keep the route they were sent in on. To get Finance to look at June, ask them — or send it back and in again.",
+                         "Hãy nghĩ lại một chút. Yêu cầu giữ lộ trình mà nó được gửi đi. Muốn Tài chính xem tháng 6, hãy nhờ họ — hoặc trả lại rồi gửi lại."),
+        },
+      ],
+    },
+  },
+
+  L11: {
+    id: "L11", station: "records", mins: 7,
+    title: B("Change many people at once, safely", "Sửa nhiều người cùng lúc, an toàn"),
+    goal: B("Update employee, contract and bank fields for many people in the Records Desk, through the grid or a file, and know what Apply and Undo do.",
+            "Cập nhật các trường nhân viên, hợp đồng và ngân hàng cho nhiều người trong Records Desk, qua lưới hoặc qua tệp, và biết Áp dụng và Hoàn tác làm gì."),
+    steps: [
+      {
+        screen: "records", anchor: "rd-head",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("One desk for every bulk change", "Một bàn cho mọi thay đổi hàng loạt"),
+        body: B("People › <b>Records</b>. The same desk opens from <b>Bulk update</b> on the employee list, from <b>Open Records Desk</b> in a pay run, and from Mapping's Payobook Source card.",
+                "Con người › <b>Hồ sơ</b>. Cùng bàn làm việc này mở từ <b>Cập nhật hàng loạt</b> trên danh sách nhân viên, từ <b>Mở Records Desk</b> trong một đợt lương, và từ thẻ Nguồn Payobook trong Ánh xạ."),
+      },
+      {
+        screen: "records", anchor: "rd-scheme",
+        kicker: B("Only mapped fields", "Chỉ các trường đã ánh xạ"),
+        title: B("It offers what your pay scheme reads", "Nó đưa ra những gì chương trình lương của bạn đọc"),
+        body: B("Pick the pay scheme; the pill says how many fields it maps. The desk offers only those — a field no scheme reads cannot change anyone's pay, so it is not here. A scheme that maps nothing gets <b>Open Mapping</b> instead.",
+                "Chọn chương trình lương; nhãn cho biết nó ánh xạ bao nhiêu trường. Bàn chỉ đưa ra những trường đó — trường nào không chương trình nào đọc thì không đổi được lương của ai, nên không có ở đây. Chương trình không ánh xạ gì sẽ thấy <b>Mở Ánh xạ</b>."),
+      },
+      {
+        screen: "records", anchor: "rep-rd-grid",
+        kicker: B("On screen", "Trên màn hình"),
+        title: B("Pick who, pick what, type", "Chọn ai, chọn gì, rồi gõ"),
+        body: B("Filter <b>Who</b> on the left, choose <b>Fields</b> across the top, then type into the grid. A changed cell is marked. Nothing is saved yet.",
+                "Lọc <b>Ai</b> ở bên trái, chọn <b>Trường</b> ở phía trên, rồi gõ vào lưới. Ô nào đã sửa sẽ được đánh dấu. Chưa có gì được lưu."),
+      },
+      {
+        screen: "records", anchor: "rd-file",
+        kicker: B("Through a file", "Qua một tệp"),
+        title: B("Export, edit, import", "Xuất, sửa, nhập"),
+        body: B("<b>Export with data</b> gives you the people and fields on screen; <b>Export blank template</b> gives headings only. <b>Import a file</b> matches rows by employee code, work email or name, and shows Changes, Unmatched rows and Ignored columns before anything happens.",
+                "<b>Xuất kèm dữ liệu</b> cho bạn những người và trường đang hiện; <b>Xuất mẫu trống</b> chỉ có tiêu đề. <b>Nhập một tệp</b> khớp dòng theo mã nhân viên, email công việc hoặc tên, và hiện Thay đổi, Dòng không khớp và Cột bị bỏ qua trước khi có gì xảy ra."),
+      },
+      {
+        screen: "records", anchor: "rep-rd-reviewpanel",
+        kicker: B("Review", "Xem lại"),
+        title: B("Every change, from what to what", "Mọi thay đổi, từ gì sang gì"),
+        body: B("<b>Review</b> lists each change with who, what it was and what it becomes. <b>Apply</b> then either writes at once, or — when your company has a route for bulk changes — says <b>Sent for approval</b> and names who has it.",
+                "<b>Xem lại</b> liệt kê từng thay đổi: ai, giá trị cũ và giá trị mới. <b>Áp dụng</b> khi đó hoặc ghi ngay, hoặc — khi công ty bạn có lộ trình cho thay đổi hàng loạt — báo <b>Đã gửi phê duyệt</b> và ghi tên người đang giữ."),
+        consequence: B("Affects every person listed, from the next pay run. Reversible: yes — Undo, from History. Verify first: the count of people matches what you meant to change.",
+                       "Ảnh hưởng: mọi người trong danh sách, từ đợt lương kế tiếp. Hoàn tác: có — Hoàn tác trong Lịch sử. Kiểm tra trước: số người khớp với số bạn định sửa."),
+      },
+      {
+        screen: "records", anchor: "rd-history",
+        kicker: B("History", "Lịch sử"),
+        title: B("Undo never expires", "Hoàn tác không bao giờ hết hạn"),
+        body: B("Every apply is listed in <b>History</b> with an <b>Undo</b>. Undo skips any value somebody has changed since, rather than overwrite their work. If a value moved while a change waited for approval, the whole change is sent back to look at.",
+                "Mỗi lần áp dụng đều có trong <b>Lịch sử</b> kèm nút <b>Hoàn tác</b>. Hoàn tác bỏ qua giá trị nào đã có người sửa sau đó, thay vì ghi đè lên việc của họ. Nếu một giá trị bị đổi trong lúc thay đổi đang chờ phê duyệt, cả thay đổi sẽ bị trả lại để xem."),
+      },
+    ],
+    quiz: {
+      question: B("You applied a raise for 40 people and the desk says \"Sent for approval — Đặng Thu Hà\". Will today's pay run pay the new salaries?",
+                  "Bạn áp dụng tăng lương cho 40 người và bàn làm việc báo \"Đã gửi phê duyệt — Đặng Thu Hà\". Đợt lương hôm nay có trả mức lương mới không?"),
+      options: [
+        {
+          text: B("Not yet — nothing changes until it is approved", "Chưa — chưa có gì thay đổi cho tới khi được duyệt"),
+          correct: true,
+          explanation: B("Yes. Sent for approval means the records still hold the old values. Once approved, the next computed run reads the new ones.",
+                         "Đúng vậy. Đã gửi phê duyệt nghĩa là hồ sơ vẫn giữ giá trị cũ. Khi được duyệt, đợt lương được tính tiếp theo sẽ đọc giá trị mới."),
+        },
+        {
+          text: B("Yes — Apply saved them", "Có — Áp dụng đã lưu chúng"),
+          correct: false,
+          explanation: B("Let's rethink that. Where a route covers bulk changes, Apply sends them for approval. The screen says which happened.",
+                         "Hãy nghĩ lại một chút. Khi có lộ trình áp cho thay đổi hàng loạt, Áp dụng gửi chúng đi phê duyệt. Màn hình nói rõ điều nào đã xảy ra."),
+        },
+        {
+          text: B("Only for the people Đặng Thu Hà manages", "Chỉ với những người Đặng Thu Hà quản lý"),
+          correct: false,
+          explanation: B("Let's rethink that. The change goes and comes back as one piece. It is approved for all 40, or for none.",
+                         "Hãy nghĩ lại một chút. Thay đổi đi và về như một khối. Nó được duyệt cho cả 40 người, hoặc không ai cả."),
+        },
+      ],
+    },
+  },
+
+  L12: {
+    id: "L12", station: "schemes", mins: 7,
+    title: B("Pay in more than one currency", "Trả lương bằng nhiều đồng tiền"),
+    goal: B("Know where a pay scheme's currency comes from, why a pay run is always one scheme, and how the group reads two currencies without adding them together.",
+            "Biết đồng tiền của một chương trình lương đến từ đâu, vì sao một đợt lương luôn là một chương trình, và tập đoàn đọc hai đồng tiền ra sao mà không cộng chúng lại."),
+    steps: [
+      {
+        screen: "blueprint", anchor: "bp-country",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("A pay scheme pays in its country's money", "Chương trình lương trả bằng đồng tiền của quốc gia nó"),
+        body: B("The currency is not a setting of its own. It follows the scheme's country, and the guided setup says it as you choose: <b>Pays in ₫ VND</b>. Everywhere a scheme's money is shown, it is read from here first.",
+                "Đồng tiền không phải là một cài đặt riêng. Nó đi theo quốc gia của chương trình lương, và phần thiết lập có hướng dẫn nói rõ ngay khi bạn chọn: <b>Trả bằng ₫ VND</b>. Ở đâu hiện tiền của một chương trình, nó đều được đọc từ đây trước."),
+      },
+      {
+        screen: "runpayroll", anchor: "pw-scheme",
+        kicker: B("One run, one scheme", "Một đợt, một chương trình"),
+        title: B("Two schemes in one month are two pay runs", "Hai chương trình trong một tháng là hai đợt lương"),
+        body: B("Pay Run › Run starts with the scheme. A run is always one scheme, so it is always one currency. A company with two schemes this month runs two payrolls, each approved on its own.",
+                "Đợt lương › Chạy lương bắt đầu bằng chương trình lương. Một đợt luôn là một chương trình, nên luôn chỉ có một đồng tiền. Công ty có hai chương trình trong tháng này sẽ chạy hai bảng lương, mỗi bảng được phê duyệt riêng."),
+      },
+      {
+        screen: "schemes", anchor: "gp-tree",
+        kicker: B("Settings › Group", "Cài đặt › Tập đoàn"),
+        title: B("The companies, read as one business", "Các công ty, đọc như một doanh nghiệp"),
+        body: B("<b>Your group</b> lists each company with its own currency and how many pay schemes it has. The group has a currency too — the money the group board reads in.",
+                "<b>Tập đoàn của bạn</b> liệt kê từng công ty với đồng tiền riêng và số chương trình lương của nó. Tập đoàn cũng có một đồng tiền — đồng tiền mà bảng số liệu tập đoàn dùng để đọc."),
+      },
+      {
+        screen: "schemes", anchor: "rep-gp-foot",
+        kicker: B("The rule", "Nguyên tắc"),
+        title: B("Nothing is stored converted", "Không có gì được lưu ở dạng đã quy đổi"),
+        body: B("Every figure keeps the money it was paid in. The group currency is only a way of reading — converted when you look, never saved.",
+                "Mỗi con số giữ nguyên đồng tiền đã trả. Đồng tiền tập đoàn chỉ là một cách đọc — quy đổi khi bạn xem, không bao giờ được lưu."),
+      },
+      {
+        screen: "schemes", anchor: "gp-rates",
+        kicker: B("Exchange rates", "Tỷ giá"),
+        title: B("Which rate, for which month", "Tỷ giá nào, cho tháng nào"),
+        body: B("<b>How rates are picked</b>: the last rate of the month, the rate on the day the pay run ends, or the average for the month. The strip shows which months have a rate. A rate change goes through approval.",
+                "<b>Cách chọn tỷ giá</b>: tỷ giá cuối cùng của tháng, tỷ giá vào ngày đợt lương kết thúc, hoặc tỷ giá bình quân của tháng. Dải tháng cho biết tháng nào đã có tỷ giá. Thay đổi tỷ giá phải qua phê duyệt."),
+      },
+      {
+        screen: "explorer", anchor: "ex-money",
+        kicker: B("Insights › Explorer", "Phân tích › Khám phá dữ liệu"),
+        title: B("Each in its own money, or the group's", "Mỗi bên theo đồng tiền của mình, hay theo tập đoàn"),
+        body: B("<b>Compare schemes</b> lists every scheme side by side. <b>Each in its own money</b> keeps đồng and dollars apart and says so. <b>Group currency</b> converts them, so they can be added.",
+                "<b>So sánh các chương trình lương</b> đặt mọi chương trình cạnh nhau. <b>Mỗi bên theo đồng tiền của mình</b> để đồng và đô la riêng rẽ và nói rõ điều đó. <b>Đồng tiền của tập đoàn</b> quy đổi chúng, để có thể cộng lại."),
+      },
+      {
+        screen: "explorer", anchor: "rep-ex-compare",
+        kicker: B("When there is no rate", "Khi không có tỷ giá"),
+        title: B("Left out, and said so", "Để ra ngoài, và nói rõ"),
+        body: B("A figure with no rate for its month is shown as <b>Not converted</b>, with the reason, and left out of the group total. Nothing is guessed. Turn on <b>Per person</b> to compare schemes of different sizes.",
+                "Con số nào chưa có tỷ giá cho tháng của nó sẽ hiện là <b>Chưa quy đổi</b>, kèm lý do, và bị để ra ngoài tổng tập đoàn. Không có gì được đoán. Bật <b>Trên mỗi người</b> để so sánh các chương trình có quy mô khác nhau."),
+      },
+    ],
+    quiz: {
+      question: B("Your Vietnam scheme paid in đồng and your Singapore scheme in dollars this month. How do you show one total for both?",
+                  "Tháng này chương trình Việt Nam trả bằng đồng và chương trình Singapore trả bằng đô la. Làm sao để có một con số tổng cho cả hai?"),
+      options: [
+        {
+          text: B("Switch the Explorer to Group currency — they are converted at the group's rate for that month", "Chuyển Khám phá dữ liệu sang Đồng tiền của tập đoàn — chúng được quy đổi theo tỷ giá của tập đoàn cho tháng đó"),
+          correct: true,
+          explanation: B("Yes. The total is a reading, converted when you look, and it says which rate it used.",
+                         "Đúng vậy. Con số tổng là một cách đọc, quy đổi khi bạn xem, và nó cho biết đã dùng tỷ giá nào."),
+        },
+        {
+          text: B("Add the two totals together", "Cộng hai con số tổng lại"),
+          correct: false,
+          explanation: B("Let's rethink that. Đồng plus dollars is not a number anybody can use. Payobook never adds two currencies.",
+                         "Hãy nghĩ lại một chút. Đồng cộng đô la không phải là một con số ai dùng được. Payobook không bao giờ cộng hai đồng tiền."),
+        },
+        {
+          text: B("Run both schemes in one pay run", "Chạy cả hai chương trình trong một đợt lương"),
+          correct: false,
+          explanation: B("Let's rethink that. A pay run is always one scheme. The total belongs in Insights, not in the payroll.",
+                         "Hãy nghĩ lại một chút. Một đợt lương luôn là một chương trình. Con số tổng thuộc về phần Phân tích, không thuộc về bảng lương."),
+        },
+      ],
+    },
+  },
+
 };
 
 /* =============================================================================
@@ -3556,6 +4379,86 @@ const SCREEN_CTX = {
     chips: ["whichfilings", "whatpage", "whatnext"],
   },
 
+  /* -- Payroll setup (LEARN REFRESH step 3) --------------------------------
+     The guided setup, the Approval Matrix and the Group page are cockpits of
+     their own, opened from a Settings card: they ground by their action tag
+     (the generator's SCREEN_ACTION_TAGS) and open by their action (`open`).
+     Mapping publishes its tab to the "where am I" store, so Component
+     treatment is a place of its own; the Records Desk is People › Records.
+     The three `_rules` / `_sheet` / `_builder` entries are the second view of
+     a station in the practice company — replica screens, not destinations. */
+  blueprint: {
+    open: "pb_blueprint.action_pb_blueprint",
+    blurb: B("The guided setup: six steps that build one pay scheme, with a sample person's pay beside you the whole way.",
+             "Phần thiết lập có hướng dẫn: sáu bước dựng một chương trình lương, luôn có lương của một người mẫu bên cạnh."),
+    next: B("Work down the steps on the left. Continue always says where it goes next. Nothing is created until the first Continue, and Finish does not put the scheme live.",
+            "Đi lần lượt các bước bên trái. Nút Tiếp tục luôn nói nó sẽ đi tới đâu. Chưa có gì được tạo cho tới lần Tiếp tục đầu tiên, và Hoàn thành không đưa chương trình vào dùng."),
+    chips: ["newscheme", "currency", "whatpage", "whatnext"],
+  },
+  blueprint_rules: {
+    blurb: B("The guided setup's Pay rules step: each component written as a sentence, with its formula underneath.",
+             "Bước Quy tắc lương của phần thiết lập có hướng dẫn: mỗi thành phần viết thành một câu, kèm công thức bên dưới."),
+    next: B("Add or change a component, then watch the take-home figure on the right. Continue walks the three tabs before it moves on.",
+            "Thêm hoặc sửa một thành phần, rồi nhìn con số thực nhận bên phải. Nút Tiếp tục đi qua ba tab trước khi chuyển bước."),
+    chips: ["newscheme", "whatnext"],
+  },
+  mapping: {
+    places: ["pb_mapping_studio:journey", "pb_mapping_studio:api", "pb_mapping_studio:transform",
+             "pb_mapping_studio:import", "pb_mapping_studio:employee", "pb_mapping_studio:scheme",
+             "pb_mapping_studio:cycle"],
+    blurb: B("Where every value a pay scheme reads comes from: FROM a source, TO a scheme, drawn as one journey.",
+             "Mỗi giá trị mà chương trình lương đọc đến từ đâu: TỪ một nguồn, ĐẾN một chương trình lương, vẽ thành một hành trình."),
+    next: B("Read the line above the lanes first: anything not fed will be computed as empty. Open a card to see its fields; the arrow in its corner opens the tab that edits it.",
+            "Hãy đọc dòng phía trên các làn trước: thứ gì chưa có nguồn sẽ được tính là trống. Mở một thẻ để xem các trường; mũi tên ở góc thẻ mở tab để sửa nó."),
+    chips: ["wherefrom", "notaddup", "bulkupdate", "whatpage"],
+  },
+  mapping_sheet: {
+    blurb: B("Mapping's spreadsheet tab: this period's file shows its columns, and you wire them to the scheme.",
+             "Tab bảng tính của Ánh xạ: tệp của kỳ này cho thấy các cột, và bạn nối chúng vào chương trình lương."),
+    next: B("Drop the file to read its headings — no numbers are imported here. When a column meets a component another source already feeds, choose the order.",
+            "Thả tệp để đọc tiêu đề — ở đây không nhập con số nào. Khi một cột gặp thành phần đã có nguồn khác cấp, hãy chọn thứ tự."),
+    chips: ["wherefrom", "whatnext"],
+  },
+  treatment: {
+    places: ["pb_mapping_studio:treatment"],
+    blurb: B("What the scheme does with each component: its pay role, whether it is a subtotal, and its value type.",
+             "Chương trình lương làm gì với từng thành phần: vai trò trong lương, có phải tổng phụ không, và loại giá trị."),
+    next: B("Clear the chips first: Needs your answer, then Type says otherwise. After saving, recompute the pay run — saving never rewrites a payslip.",
+            "Hãy xử lý các nhãn trước: Cần câu trả lời của bạn, rồi Loại giá trị nói khác. Sau khi lưu, hãy tính lại đợt lương — lưu không bao giờ viết lại phiếu lương."),
+    chips: ["notaddup", "wherefrom", "whatnext"],
+  },
+  matrix: {
+    open: "pb_approval_config.action_pb_approval_matrix",
+    blurb: B("The Approval Matrix: every process that needs a sign-off, the route it follows, and whether it is in use.",
+             "Ma trận phê duyệt: mọi quy trình cần phê duyệt, lộ trình nó đi theo, và nó có đang được dùng hay không."),
+    next: B("Look for Needs people first: those routes stop requests until somebody is named. A change you publish applies to new requests only.",
+            "Hãy tìm Cần bổ sung người trước: những lộ trình đó làm dừng yêu cầu cho tới khi có người được ghi tên. Thay đổi bạn ban hành chỉ áp cho yêu cầu mới."),
+    chips: ["changeroute", "whoapproves", "stuckwaiting", "whatpage"],
+  },
+  matrix_builder: {
+    blurb: B("The route builder: Purpose, People, Safeguards, Review, Publish.",
+             "Phần dựng lộ trình: Mục đích, Nhân sự, Bảo vệ, Xem lại, Ban hành."),
+    next: B("Try an example before you publish: it names who would really decide. Publishing affects new requests only.",
+            "Hãy Thử một ví dụ trước khi ban hành: nó ghi đúng tên người sẽ quyết định. Ban hành chỉ áp cho yêu cầu mới."),
+    chips: ["changeroute", "whatnext"],
+  },
+  records: {
+    places: ["pb_people_hub:records"],
+    blurb: B("The Records Desk: change the employee, contract and bank fields your pay scheme reads, for one person or hundreds.",
+             "Records Desk: sửa các trường nhân viên, hợp đồng và ngân hàng mà chương trình lương của bạn đọc, cho một người hay hàng trăm người."),
+    next: B("Pick the scheme, then who and which fields. Type or import a file, open Review, then Apply. Every apply can be undone from History.",
+            "Chọn chương trình lương, rồi chọn ai và trường nào. Gõ hoặc nhập một tệp, mở Xem lại, rồi Áp dụng. Mỗi lần áp dụng đều hoàn tác được trong Lịch sử."),
+    chips: ["bulkupdate", "wherefrom", "whatpage"],
+  },
+  schemes: {
+    open: "pb_group.action_pb_group",
+    blurb: B("Your group: the companies you own, the money the group reads in, and how exchange rates are picked.",
+             "Tập đoàn của bạn: các công ty bạn sở hữu, đồng tiền tập đoàn dùng để đọc, và cách chọn tỷ giá."),
+    next: B("Check that every month you report on has a rate. A month without one keeps its own money and is left out of converted totals.",
+            "Hãy kiểm tra mọi tháng bạn báo cáo đều có tỷ giá. Tháng nào không có sẽ giữ đồng tiền của nó và bị để ra ngoài các tổng đã quy đổi."),
+    chips: ["currency", "whatpage", "whatnext"],
+  },
+
   /* -- The nine hubs (LEARN REFRESH step 1) --------------------------------
      Since the rail cutover every working screen is a TAB inside one of nine
      pages. These are not lessons: they are what the helper says on a tab that
@@ -3946,6 +4849,53 @@ const SCREEN_CTX = {
     next: B("Pick the area on the left. Most changes here affect the next pay run, so check them before month-end rather than during it.",
             "Hãy chọn một mục ở bên trái. Phần lớn thay đổi ở đây ảnh hưởng tới đợt lương kế tiếp, nên hãy kiểm tra trước kỳ cuối tháng chứ đừng làm giữa chừng."),
     chips: ["whatpage", "whatnext"],
+  },
+  /* LEARN REFRESH step 3 — Mapping is not a hub on the rail, but it is a page
+     of tabs that says which tab is on screen (mapping_studio.js publishes
+     it), and its lens context key is `pb_mode`. Declaring it here is what
+     lets a lesson open Mapping ON a tab — Component treatment — and lets the
+     helper name the tab it cannot teach yet. */
+  hub_mapping: {
+    name: B("Mapping", "Ánh xạ"),
+    hub: {
+      tag: "pb_mapping_studio", xmlid: "pb_formula_studio.action_pb_mapping_studio", lens_key: "pb_mode",
+      tabs: {
+        api: [B("System fields → Scheme", "Trường hệ thống → Chương trình lương"),
+              B("Wire the fields a connected system sends onto the scheme's inputs.",
+                "Nối các trường mà hệ thống đã kết nối gửi về vào đầu vào của chương trình lương.")],
+        transform: [B("Transformations", "Chuyển đổi"),
+                    B("What each transformation rule reads, works out, and which components take its answer.",
+                      "Mỗi quy tắc chuyển đổi đọc gì, tính ra gì, và những thành phần nào nhận kết quả của nó.")],
+        import: [B("Spreadsheet columns → Scheme", "Cột bảng tính → Chương trình lương"),
+                 B("Wire the columns of this period's file onto the scheme's inputs.",
+                   "Nối các cột của tệp kỳ này vào đầu vào của chương trình lương.")],
+        employee: [B("Employee & contract ⇆", "Nhân viên & hợp đồng ⇆"),
+                   B("Values kept on employee and contract records, read back when a file or feed has nothing.",
+                     "Giá trị giữ trên hồ sơ nhân viên và hợp đồng, được đọc lại khi tệp hoặc nguồn cấp dữ liệu không có gì.")],
+        scheme: [B("Who is paid by what", "Ai được trả lương theo phương án nào"),
+                 B("Which pay scheme pays each part of the workforce.",
+                   "Chương trình lương nào trả lương cho từng bộ phận nhân sự.")],
+        cycle: [B("Mid ↔ End cycle", "Giữa ↔ Cuối chu kỳ"),
+                B("Carry a mid-month advance into the end-of-month run.",
+                  "Chuyển khoản tạm ứng giữa tháng sang đợt lương cuối tháng.")],
+        treatment: [B("Component treatment", "Xử lý thành phần"),
+                    B("What the scheme does with each component: its pay role, subtotal and value type.",
+                      "Chương trình lương làm gì với từng thành phần: vai trò trong lương, tổng phụ và loại giá trị.")],
+        journey: [B("Journey", "Hành trình"),
+                  B("The whole picture: every file, system and record that feeds this scheme.",
+                    "Toàn cảnh: mọi tệp, hệ thống và hồ sơ cấp dữ liệu cho chương trình lương này.")],
+      },
+      often: [
+        ["journey", B("See where each value comes from", "Xem mỗi giá trị đến từ đâu")],
+        ["treatment", B("Fix figures that do not add up", "Sửa số liệu không khớp")],
+        ["import", B("Wire this month's spreadsheet", "Nối bảng tính của tháng này")],
+      ],
+    },
+    blurb: B("Mapping: where each value a pay scheme reads comes from, and what the scheme does with it.",
+             "Ánh xạ: mỗi giá trị mà chương trình lương đọc đến từ đâu, và chương trình làm gì với nó."),
+    next: B("Start on Journey to see the whole road. The scheme picker on the right of the header decides which scheme every tab shows.",
+            "Hãy bắt đầu ở Hành trình để thấy cả chặng đường. Ô chọn chương trình lương ở bên phải phần đầu quyết định mọi tab hiện chương trình nào."),
+    chips: ["wherefrom", "notaddup", "whatpage"],
   },
 };
 
@@ -4894,7 +5844,7 @@ const QA = [
      LEARN REFRESH step 2 — the approval questions the new inbox raises.
      ======================================================================== */
   {
-    id: "whoapproves", screens: ["payruns", "approvals", "runpayroll", "dashboard"],
+    id: "whoapproves", screens: ["payruns", "approvals", "runpayroll", "dashboard", "matrix"],
     label: B("Who approves this pay run?", "Ai phê duyệt đợt lương này?"),
     match: ["who approves my pay run", "who approves this run", "who signs off payroll", "approval route",
             "ai duyet dot luong", "ai phê duyệt đợt lương", "lo trinh phe duyet"],
@@ -4912,7 +5862,7 @@ const QA = [
     ],
   },
   {
-    id: "stuckwaiting", screens: ["payruns", "approvals"],
+    id: "stuckwaiting", screens: ["payruns", "approvals", "matrix"],
     label: B("Why is my run stuck waiting?", "Vì sao đợt lương của tôi cứ nằm chờ?"),
     match: ["why is my run stuck", "run stuck waiting", "nobody is approving", "approver is away",
             "dot luong bi tac", "vì sao đợt lương cứ chờ", "nguoi duyet vang mat"],
@@ -4961,6 +5911,144 @@ const QA = [
                       "Một khoản thưởng một lần hoặc một lần sửa: Chỉ đợt này. Một khoản phụ cấp mới mà mọi người sẽ tiếp tục nhận: Cập nhật Payobook.") },
       { k: "src", v: B("The Pay data step of Pay Run › Run, and the import batch.",
                        "Bước Dữ liệu lương của Đợt lương › Chạy lương, và đợt nhập liệu.") },
+    ],
+  },
+
+  /* -- Payroll setup (LEARN REFRESH step 3) -------------------------------- */
+  {
+    id: "newscheme", screens: ["blueprint", "blueprint_rules", "formula", "hub_settings", "schemes"],
+    label: B("How do I set up a new pay scheme?", "Làm sao để thiết lập một chương trình lương mới?"),
+    match: ["set up a new pay scheme", "new pay scheme", "create a pay scheme", "new configuration", "guided setup",
+            "thiet lap chuong trinh luong", "tạo chương trình lương mới", "cau hinh moi"],
+    showMe: ["bp-rail", "bp-country"],
+    watch: "sc_blueprint",
+    try: "sc_blueprint",
+    blocks: [
+      { k: "p", v: B("Settings › Guided setup › <b>New configuration</b>. Six steps build one scheme, with a sample person's pay beside you the whole way.",
+                     "Cài đặt › Thiết lập có hướng dẫn › <b>Cấu hình mới</b>. Sáu bước dựng một chương trình lương, luôn có lương của một người mẫu bên cạnh.") },
+      { k: "steps", v: [
+        { t: B("Start: name it, pick the country (it decides the money) and a starting point", "Bắt đầu: đặt tên, chọn quốc gia (nó quyết định đồng tiền) và một điểm bắt đầu"), a: "bp-identity" },
+        { t: B("Pay rules: each component as a sentence — watch the take-home figure move", "Quy tắc lương: mỗi thành phần là một câu — xem con số thực nhận thay đổi"), a: "bp-pay" },
+        { t: B("Connect, Outputs and Test: sources, every formula, and the awkward cases", "Kết nối, Đầu ra và Kiểm thử: nguồn dữ liệu, mọi công thức, và các trường hợp khó") },
+        { t: B("Finish: the setup is complete — putting it live is a separate step", "Hoàn thành: việc thiết lập đã xong — đưa vào dùng là một bước riêng"), a: "bp-foot" },
+      ] },
+      { k: "warn", v: B("Nothing is created until the first Continue. Finish does not put the scheme live; that is a proposal of its own, and may need approval.",
+                        "Chưa có gì được tạo cho tới lần Tiếp tục đầu tiên. Hoàn thành không đưa chương trình vào dùng; đó là một đề xuất riêng, và có thể cần phê duyệt.") },
+      { k: "src", v: B("The guided setup (Settings › Guided setup › New configuration).",
+                       "Phần thiết lập có hướng dẫn (Cài đặt › Thiết lập có hướng dẫn › Cấu hình mới).") },
+    ],
+  },
+  {
+    id: "wherefrom", screens: ["mapping", "mapping_sheet", "treatment", "payslips", "records", "formula", "hub_mapping"],
+    label: B("Where does this number come from?", "Con số này đến từ đâu?"),
+    match: ["where does this number come from", "where does the value come from", "which source", "not fed",
+            "con so nay den tu dau", "giá trị lấy từ đâu", "nguon du lieu"],
+    showMe: ["mp-lanes", "mp-story"],
+    watch: "sc_mapjourney",
+    try: "sc_mapjourney",
+    blocks: [
+      { k: "p", v: B("From one of the scheme's sources: a connected system, a spreadsheet column, or Payobook's own records. Settings › Integrations › <b>Mapping</b> draws them on the <b>Journey</b> tab, lane by lane, into the scheme.",
+                     "Từ một trong các nguồn của chương trình lương: một hệ thống đã kết nối, một cột bảng tính, hoặc chính hồ sơ trong Payobook. Cài đặt › Tích hợp › <b>Ánh xạ</b> vẽ chúng trên tab <b>Hành trình</b>, từng làn một, vào chương trình lương.") },
+      { k: "steps", v: [
+        { t: B("Check the header: FROM which source, TO which scheme", "Xem phần đầu: TỪ nguồn nào, ĐẾN chương trình lương nào"), a: "mp-story" },
+        { t: B("Find the component in the Scheme lane and follow its wire back", "Tìm thành phần ở làn Chương trình lương và lần theo dây nối ngược về"), a: "mp-lanes" },
+        { t: B("A component marked not fed is computed as empty", "Thành phần ghi chưa có nguồn sẽ được tính là trống") },
+      ] },
+      { k: "ok", v: B("Two sources on one component? They are read in order, and a lower one only fills a box the higher one left empty.",
+                      "Hai nguồn trên cùng một thành phần? Chúng được đọc theo thứ tự, và nguồn thấp hơn chỉ điền vào ô mà nguồn cao hơn để trống.") },
+      { k: "src", v: B("Mapping, Journey tab, for the scheme in the header.",
+                       "Ánh xạ, tab Hành trình, của chương trình lương ghi ở phần đầu.") },
+    ],
+  },
+  {
+    id: "notaddup", screens: ["treatment", "mapping", "payruns", "payslips", "hub_mapping"],
+    label: B("Why don't my figures add up?", "Vì sao số liệu của tôi không khớp?"),
+    match: ["figures do not add up", "these figures do not add up", "deductions bigger than gross", "net does not match",
+            "so lieu khong khop", "số liệu không khớp", "khau tru lon hon tong thu nhap"],
+    showMe: ["tr-table", "tr-filters"],
+    watch: "sc_treatment",
+    try: "sc_treatment",
+    blocks: [
+      { k: "p", v: B("Almost always a component is treated as the wrong thing: a working figure counted as pay, or a total counted twice. The pay run says so in a line across its top, with the gap.",
+                     "Gần như luôn là một thành phần bị xử lý sai: một con số trung gian bị tính như lương, hoặc một khoản tổng bị tính hai lần. Đợt lương báo điều đó bằng một dòng ở phía trên, kèm khoản chênh.") },
+      { k: "steps", v: [
+        { t: B("Open Mapping › Component treatment for that scheme", "Mở Ánh xạ › Xử lý thành phần của chương trình đó"), a: "tr-head" },
+        { t: B("Clear Needs your answer and Type says otherwise first", "Xử lý Cần câu trả lời của bạn và Loại giá trị nói khác trước"), a: "tr-filters" },
+        { t: B("Check each pay role; tick Subtotal on a line whose parts are already added", "Kiểm tra từng vai trò trong lương; đánh dấu Tổng phụ cho dòng mà các phần của nó đã được cộng"), a: "tr-table" },
+        { t: B("Save, then recompute the pay run", "Lưu, rồi tính lại đợt lương") },
+      ] },
+      { k: "warn", v: B("Saving never rewrites a payslip. Until the run is recomputed, it still shows the old figures.",
+                        "Lưu không bao giờ viết lại phiếu lương. Cho tới khi đợt lương được tính lại, nó vẫn hiện số liệu cũ.") },
+      { k: "src", v: B("The pay run's balance check, and the scheme's Component treatment board.",
+                       "Phép kiểm tra cân đối của đợt lương, và bảng Xử lý thành phần của chương trình lương.") },
+    ],
+  },
+  {
+    id: "changeroute", screens: ["matrix", "matrix_builder", "approvals", "payruns", "hub_settings"],
+    label: B("How do I change who approves something?", "Làm sao để đổi người phê duyệt một việc?"),
+    match: ["change an approval route", "change who approves", "add an approver", "remove an approval step", "no approval needed",
+            "doi lo trinh phe duyet", "đổi người phê duyệt", "them nguoi phe duyet"],
+    showMe: ["am-table", "am-hero"],
+    watch: "sc_matrix",
+    try: "sc_matrix",
+    blocks: [
+      { k: "p", v: B("In Settings › Approvals › <b>Approval Matrix</b>. Each process has one route. Open its row, change the steps in the builder, and publish.",
+                     "Ở Cài đặt › Phê duyệt › <b>Ma trận phê duyệt</b>. Mỗi quy trình có một lộ trình. Mở dòng của nó, sửa các bước trong phần dựng lộ trình, rồi ban hành.") },
+      { k: "steps", v: [
+        { t: B("Find the process in the table and open it", "Tìm quy trình trong bảng và mở nó"), a: "am-table" },
+        { t: B("Change the steps: Review, Final approval, Joint approval, Only when… an amount", "Sửa các bước: Xem lại, Phê duyệt cuối, Cùng phê duyệt, Chỉ khi… trên một mức tiền") },
+        { t: B("Try an example, then Publish this route", "Thử một ví dụ, rồi Ban hành lộ trình này") },
+      ] },
+      { k: "warn", v: B("Publishing affects new requests only. Requests already on their way finish the route they started on.",
+                        "Ban hành chỉ áp cho yêu cầu mới. Những yêu cầu đang trên đường sẽ đi hết lộ trình chúng đã bắt đầu.") },
+      { k: "ok", v: B("Someone away? Use People & backups › Arrange cover instead of editing the route.",
+                      "Có người vắng mặt? Hãy dùng Con người & người thay thế › Sắp xếp người trực thay thay vì sửa lộ trình.") },
+      { k: "src", v: B("The Approval Matrix and its route builder.",
+                       "Ma trận phê duyệt và phần dựng lộ trình.") },
+    ],
+  },
+  {
+    id: "bulkupdate", screens: ["records", "employees", "mapping", "hub_people"],
+    label: B("How do I change many employees at once?", "Làm sao để sửa nhiều nhân viên cùng lúc?"),
+    match: ["change many employees at once", "bulk update", "update many records", "raise for everyone", "change bank details for many",
+            "cap nhat hang loat", "sửa nhiều nhân viên cùng lúc", "records desk"],
+    showMe: ["rd-review", "rd-file"],
+    watch: "sc_records",
+    try: "sc_records",
+    blocks: [
+      { k: "p", v: B("People › <b>Records</b> — the Records Desk. It offers the employee, contract and bank fields your pay scheme reads, for one person or hundreds.",
+                     "Con người › <b>Hồ sơ</b> — Records Desk. Nó đưa ra các trường nhân viên, hợp đồng và ngân hàng mà chương trình lương của bạn đọc, cho một người hay hàng trăm người.") },
+      { k: "steps", v: [
+        { t: B("Pick the scheme, then who and which fields", "Chọn chương trình lương, rồi chọn ai và trường nào"), a: "rd-scheme" },
+        { t: B("Type into the grid, or Export with data, edit, and Import a file", "Gõ vào lưới, hoặc Xuất kèm dữ liệu, sửa, rồi Nhập một tệp"), a: "rd-file" },
+        { t: B("Open Review, read every change, then Apply", "Mở Xem lại, đọc từng thay đổi, rồi Áp dụng"), a: "rd-review" },
+      ] },
+      { k: "warn", v: B("When your company has a route for bulk changes, Apply says Sent for approval and nothing changes until it is approved.",
+                        "Khi công ty bạn có lộ trình cho thay đổi hàng loạt, Áp dụng sẽ báo Đã gửi phê duyệt và chưa có gì thay đổi cho tới khi được duyệt.") },
+      { k: "ok", v: B("Every apply can be undone from History.", "Mỗi lần áp dụng đều hoàn tác được trong Lịch sử.") },
+      { k: "src", v: B("The Records Desk (People › Records).", "Records Desk (Con người › Hồ sơ).") },
+    ],
+  },
+  {
+    id: "currency", screens: ["schemes", "blueprint", "runpayroll", "explorer", "hub_settings"],
+    label: B("How do I pay people in another currency?", "Làm sao để trả lương bằng một đồng tiền khác?"),
+    match: ["pay people in another currency", "another currency", "two currencies", "exchange rate", "group currency", "pay in dollars",
+            "tra luong bang ngoai te", "đồng tiền khác", "ty gia"],
+    showMe: ["gp-rates", "ex-money"],
+    watch: "sc_schemes",
+    try: "sc_schemes",
+    blocks: [
+      { k: "p", v: B("Give those people a pay scheme of their own, for their country. A scheme pays in its country's money, and its pay runs stay in that money.",
+                     "Hãy cho những người đó một chương trình lương riêng, theo quốc gia của họ. Một chương trình trả lương bằng đồng tiền của quốc gia nó, và các đợt lương của nó giữ nguyên đồng tiền đó.") },
+      { k: "steps", v: [
+        { t: B("New configuration: pick the country — the chip says what it pays in", "Cấu hình mới: chọn quốc gia — nhãn cho biết trả bằng đồng tiền gì"), a: "bp-country" },
+        { t: B("Run it as its own pay run: one scheme, one currency", "Chạy nó thành một đợt lương riêng: một chương trình, một đồng tiền"), a: "pw-scheme" },
+        { t: B("For group totals, set how exchange rates are picked in Settings › Group", "Để có tổng tập đoàn, đặt cách chọn tỷ giá ở Cài đặt › Tập đoàn"), a: "gp-rates" },
+      ] },
+      { k: "warn", v: B("Nothing is stored converted. A month with no exchange rate keeps its own money and is left out of the group total, with the reason shown.",
+                        "Không có gì được lưu ở dạng đã quy đổi. Tháng nào chưa có tỷ giá sẽ giữ đồng tiền của nó và bị để ra ngoài tổng tập đoàn, kèm lý do.") },
+      { k: "src", v: B("The pay scheme's country, Settings › Group, and Insights › Explorer.",
+                       "Quốc gia của chương trình lương, Cài đặt › Tập đoàn, và Phân tích › Khám phá dữ liệu.") },
     ],
   },
 ];
@@ -5432,6 +6520,28 @@ const PRACTICE_ANCHORS = {
   "rep-newemp-div": "The practice employee form's division picker. A click target, not an input: choosing the division is choosing which formula configuration will pay this person.",
   "rep-newemp-save": "The practice employee form's Save button. It saves nothing — there is no server behind the replica — and the step that presses it is guarded for the same reason the real one would be.",
   "rep-watermark": "The practice-mode watermark. Says on every free-roam screen that none of this is real. Drawn unconditionally by the practice view builder; no product screen has one.",
+  /* LEARN REFRESH step 3 — the payroll-setup replicas' own controls. */
+  "rep-bp-rules": "The guided setup's Pay rules list on the practice company, each component as a sentence with its formula.",
+  "rep-bp-added": "The component being added in the Pay rules replica (Allowances). The lesson's tick moment happens beside it.",
+  "rep-bp-paynum": "The practice pay panel's take-home figure. Carries data-from / data-to so the tick moment can count from the before to the after value; the product shows the same number without the count.",
+  "rep-jny-file": "The HR system's basic_salary field on the practice Journey — where Mai's base salary starts.",
+  "rep-jny-feed": "The feed row that carries basic_salary on the practice Journey.",
+  "rep-jny-xform": "The practice Journey's transformation card (text to amount).",
+  "rep-jny-scheme": "LCB on the practice Journey's Scheme lane — where the value is fed.",
+  "rep-jny-slip": "Mai's Base salary payslip line, drawn beside the practice Journey so the whole road fits on one screen. The product shows the payslip elsewhere.",
+  "rep-jny-source": "The practice Journey's Payobook Source card, with Open Records Desk.",
+  "rep-mp-runlane": "The From this pay run group on the practice spreadsheet tab.",
+  "rep-mp-conflict": "The source-conflict question on the practice spreadsheet tab, drawn open. In the product it is a dialog that appears when a second source is wired.",
+  "rep-ct-warn": "The Type says otherwise warning line on the practice Component treatment board.",
+  "rep-am-payrow": "The pay run row of the practice Approval Matrix.",
+  "rep-am-bsteps": "The practice route builder's five steps: Purpose, People, Safeguards, Review, Publish.",
+  "rep-am-route": "The practice route builder's steps and the kinds of step it offers.",
+  "rep-am-guards": "The practice route builder's safeguards and Try an example.",
+  "rep-am-publish": "The practice route builder's Publish panel, with the date new requests follow it from.",
+  "rep-rd-grid": "The practice Records Desk grid, with three edited cells.",
+  "rep-rd-reviewpanel": "The practice Records Desk review drawer, drawn open beside the grid.",
+  "rep-gp-foot": "The practice Group page's line that nothing is stored in the group currency.",
+  "rep-ex-compare": "The practice Explorer's Compare schemes panel, each scheme in its own money.",
   "rep-slipline": "The worked example's statutory deductions, drawn on the STATUTORY replica beside the rates that produced them. It is the far end of L6's trace and it exists only here: the product's statutory cockpit shows rates, and a payslip shows đồng, and no single product screen shows both at once. Naming it rep- is the honest consequence — the Coach must never claim to point at this on a live screen.",
 };
 
@@ -6215,6 +7325,468 @@ const SCENARIOS = [
                   "Hãy sinh ra các đề xuất và đọc chúng. Rồi chấp nhận một lượt những cặp có độ tin cậy cao, hoặc duyệt từng cặp một. Máy làm giúp lượt rà soát nhàm chán đầu tiên. Phần phán đoán vẫn là của bạn."),
           tip: B("A component left unmapped is not an error. It is a component that exists in one cycle and not the other, and that happens.",
                  "Một thành phần chưa được ánh xạ không phải là lỗi. Đó là thành phần chỉ có ở một chu kỳ mà không có ở chu kỳ kia, và chuyện đó vẫn xảy ra."),
+        },
+      },
+    ],
+  },
+
+  /* ==========================================================================
+     LEARN REFRESH step 3 — PAYROLL SETUP WALKTHROUGHS.
+     Watch walks the real screens and presses NOTHING that writes: every step
+     is an observe. Try walks the practice replicas of the same screens. The
+     Mapping walkthrough replaces the retired sc_mapping under a new key, so
+     old progress rows keep their meaning.
+     ======================================================================== */
+
+  /* ---------------------------------------------------------- sc_blueprint */
+  {
+    key: "sc_blueprint",
+    icon: "sparkles",
+    line: "setup",
+    modes: ["watch", "try"],
+    screens: ["blueprint", "blueprint_rules"],
+    name: B("Set up a new pay scheme", "Thiết lập một chương trình lương mới"),
+    tagline: B("The guided setup's six steps, and the pay panel that answers as you build.",
+               "Sáu bước của phần thiết lập có hướng dẫn, và khung lương trả lời ngay khi bạn dựng."),
+    entry: { nav: "pb_blueprint.action_pb_blueprint", screen: "blueprint" },
+    steps: [
+      {
+        key: "rail", anchor: "bp-rail", nav: "pb_blueprint.action_pb_blueprint",
+        screen: "blueprint", act: "observe",
+        say: {
+          kicker: B("Settings › Guided setup", "Cài đặt › Thiết lập có hướng dẫn"),
+          title: B("Six steps, one pay scheme", "Sáu bước, một chương trình lương"),
+          body: B("Start, Pay rules, Connect, Outputs, Test, Finish. The steps after Start open once the draft exists.",
+                  "Bắt đầu, Quy tắc lương, Kết nối, Đầu ra, Kiểm thử, Hoàn thành. Các bước sau Bắt đầu mở ra khi bản nháp đã có."),
+          tip: B("I only read in this walkthrough. Nothing is created.", "Trong lượt hướng dẫn này tôi chỉ đọc. Không có gì được tạo ra."),
+        },
+      },
+      {
+        key: "identity", anchor: "bp-identity", screen: "blueprint", act: "observe",
+        say: {
+          kicker: B("Start", "Bắt đầu"),
+          title: B("Name, company and pay cycle", "Tên, công ty và chu kỳ lương"),
+          body: B("Give it a name that says where and who it pays. The pay cycle is the shape of the run it drives.",
+                  "Đặt một cái tên nói rõ trả lương ở đâu và cho ai. Chu kỳ lương là hình dạng của đợt lương mà nó điều khiển."),
+        },
+      },
+      {
+        key: "country", anchor: "bp-country", screen: "blueprint", act: "observe",
+        say: {
+          kicker: B("Start", "Bắt đầu"),
+          title: B("The country decides the money", "Quốc gia quyết định đồng tiền"),
+          body: B("Pick a country and a chip says what the scheme pays in. It also brings that country's insurance and tax rules.",
+                  "Chọn một quốc gia và một nhãn cho biết chương trình trả lương bằng gì. Nó cũng mang theo các quy tắc bảo hiểm và thuế của quốc gia đó."),
+        },
+      },
+      {
+        key: "starters", anchor: "bp-starters", screen: "blueprint", act: "observe",
+        say: {
+          kicker: B("Start", "Bắt đầu"),
+          title: B("A starting point", "Một điểm bắt đầu"),
+          body: B("A ready-made library for the country, your own Excel workbook, or a blank canvas. Certified libraries were checked against the law.",
+                  "Một thư viện dựng sẵn cho quốc gia, sổ tính Excel của bạn, hoặc một trang trắng. Thư viện được chứng nhận đã được đối chiếu với luật."),
+        },
+      },
+      {
+        key: "audience", anchor: "bp-audience", screen: "blueprint", act: "observe",
+        say: {
+          kicker: B("Start", "Bắt đầu"),
+          title: B("Who you pay", "Bạn trả lương cho ai"),
+          body: B("Local, international, short-term, guaranteed take-home. Your answer decides which components and sample people come next.",
+                  "Trong nước, nước ngoài, ngắn hạn, lương thực nhận cố định. Câu trả lời của bạn quyết định các thành phần và người mẫu ở bước sau."),
+        },
+      },
+      {
+        key: "pay", anchor: "bp-pay", screen: "blueprint", act: "observe",
+        say: {
+          kicker: B("See it in someone's pay", "Xem ngay trên lương của một người"),
+          title: B("The panel that answers as you build", "Khung trả lời ngay khi bạn dựng"),
+          body: B("Once the draft exists, a sample person's take-home pay appears here and moves each time a rule changes. Sample data only.",
+                  "Khi bản nháp đã có, tiền thực nhận của một người mẫu hiện ở đây và thay đổi mỗi khi một quy tắc thay đổi. Chỉ là dữ liệu mẫu."),
+        },
+      },
+      {
+        key: "tick", anchor: "rep-bp-added", screen: "blueprint_rules", act: "observe", modes: ["try"],
+        say: {
+          kicker: B("Pay rules", "Quy tắc lương"),
+          title: B("A component was just added", "Một thành phần vừa được thêm"),
+          body: B("Allowances joined the rules. Look right: take-home pay rose by the allowance, less the income tax on it.",
+                  "Phụ cấp vừa vào danh sách quy tắc. Nhìn sang phải: tiền thực nhận tăng đúng bằng khoản phụ cấp, trừ đi phần thuế thu nhập trên nó."),
+        },
+      },
+      {
+        key: "continue", anchor: "bp-foot", screen: "blueprint", act: "observe",
+        say: {
+          kicker: B("The press", "Lần bấm"),
+          title: B("Continue creates the draft", "Tiếp tục sẽ tạo bản nháp"),
+          body: B("Continue to pay rules is the first press that saves anything. I will not press it. After that, the setup saves as you go.",
+                  "Tiếp tục sang Quy tắc lương là lần bấm đầu tiên lưu bất cứ thứ gì. Tôi sẽ không bấm nó. Sau đó, phần thiết lập tự lưu khi bạn làm."),
+        },
+      },
+      {
+        key: "finish", act: "observe",
+        say: {
+          title: B("Finish is not switching it on", "Hoàn thành không phải là bật lên"),
+          body: B("Finish means complete and checked. Putting the scheme live is a separate proposal — approved first when your company has a route for it.",
+                  "Hoàn thành nghĩa là đã xong và đã kiểm tra. Đưa chương trình vào dùng là một đề xuất riêng — được phê duyệt trước khi công ty bạn có lộ trình cho việc đó."),
+        },
+      },
+    ],
+  },
+
+  /* -------------------------------------------------------- sc_mapjourney
+     Replaces sc_mapping (retired in step 2). The Journey tab of the real
+     Mapping screen, and the practice company's Journey with the one value the
+     lesson follows. */
+  {
+    key: "sc_mapjourney",
+    icon: "git-branch",
+    line: "setup",
+    modes: ["watch", "try"],
+    screens: ["mapping", "mapping_sheet"],
+    name: B("Follow a number through Mapping", "Lần theo một con số qua Ánh xạ"),
+    tagline: B("FROM a source, TO a scheme — lane by lane, and which source wins when there are two.",
+               "TỪ một nguồn, ĐẾN một chương trình lương — từng làn một, và nguồn nào thắng khi có hai."),
+    entry: { nav: "pb_formula_studio.action_pb_mapping_studio", screen: "mapping" },
+    steps: [
+      {
+        key: "story", anchor: "mp-story", nav: "pb_formula_studio.action_pb_mapping_studio",
+        screen: "mapping", act: "observe",
+        say: {
+          kicker: B("Settings › Integrations › Mapping", "Cài đặt › Tích hợp › Ánh xạ"),
+          title: B("FROM a source, TO a scheme", "TỪ một nguồn, ĐẾN một chương trình lương"),
+          body: B("The header is a sentence. Both ends are pickers: change the scheme on the right and every tab follows it.",
+                  "Phần đầu là một câu. Cả hai đầu đều chọn được: đổi chương trình lương bên phải thì mọi tab đi theo nó."),
+        },
+      },
+      {
+        key: "modes", anchor: "mp-modes", screen: "mapping", act: "observe",
+        say: {
+          title: B("One tab per kind of wire", "Mỗi loại dây nối một tab"),
+          body: B("System fields, Transformations, Spreadsheet columns, Employee & contract, Who is paid by what, Mid and End cycle, Component treatment — and the Journey, which draws them all.",
+                  "Trường hệ thống, Chuyển đổi, Cột bảng tính, Nhân viên & hợp đồng, Ai được trả lương theo phương án nào, Giữa và Cuối chu kỳ, Xử lý thành phần — và Hành trình, nơi vẽ tất cả."),
+        },
+      },
+      {
+        key: "headline", anchor: "mp-jbar", screen: "mapping", act: "observe",
+        say: {
+          title: B("Read the counts first", "Hãy đọc các con số trước"),
+          body: B("What needs a source, what is fed, what is not fed yet. Anything not fed is computed as empty.",
+                  "Những gì cần một nguồn, đã có nguồn, chưa có nguồn. Thứ gì chưa có nguồn sẽ được tính là trống."),
+        },
+      },
+      {
+        key: "lanes", anchor: "mp-lanes", screen: "mapping", act: "observe",
+        say: {
+          title: B("Left to right is the road", "Từ trái sang phải là chặng đường"),
+          body: B("Files & systems, Feeds, Transformations, the Scheme, Payobook Source. Open a card to see its fields; the corner arrow opens the tab that edits it.",
+                  "Tệp & hệ thống, Nguồn cấp dữ liệu, Chuyển đổi, Chương trình lương, Nguồn Payobook. Mở một thẻ để xem các trường; mũi tên ở góc mở tab để sửa nó."),
+        },
+      },
+      {
+        key: "follow", anchor: "rep-jny-scheme", screen: "mapping", act: "observe", modes: ["try"],
+        say: {
+          kicker: B("One value", "Một giá trị"),
+          title: B("Mai's base salary, fed", "Lương cơ bản của Mai, đã có nguồn"),
+          body: B("It left the HR system, was turned from text into an amount, and feeds LCB. On payday it is her Base salary line.",
+                  "Nó rời hệ thống nhân sự, được chuyển từ chữ thành số tiền, và cấp cho LCB. Vào ngày trả lương, nó là dòng Lương cơ bản của cô ấy."),
+        },
+      },
+      {
+        key: "sheet", anchor: "mp-ramp", screen: "mapping_sheet", act: "observe", modes: ["try"],
+        say: {
+          kicker: B("Spreadsheet columns → Scheme", "Cột bảng tính → Chương trình lương"),
+          title: B("Headings, not numbers", "Tiêu đề, không phải con số"),
+          body: B("Drop this period's file to see its columns and one example row. Nothing is imported here.",
+                  "Thả tệp của kỳ này để xem các cột và một dòng ví dụ. Ở đây không nhập gì cả."),
+        },
+      },
+      {
+        key: "conflict", anchor: "rep-mp-conflict", screen: "mapping_sheet", act: "observe", modes: ["try"],
+        say: {
+          title: B("Two sources, one component", "Hai nguồn, một thành phần"),
+          body: B("Payobook asks before a second source is added. Keep both and the higher one wins; the lower one only fills an empty box.",
+                  "Payobook hỏi trước khi thêm nguồn thứ hai. Giữ cả hai thì nguồn cao hơn thắng; nguồn thấp hơn chỉ điền vào ô trống."),
+        },
+      },
+      {
+        key: "rule", act: "observe", modes: ["watch"],
+        say: {
+          title: B("When two sources feed one component", "Khi hai nguồn cùng cấp một thành phần"),
+          body: B("Wiring a second source asks first. Keep both and they are read in order: the higher one wins, the lower one only fills an empty box.",
+                  "Nối thêm nguồn thứ hai sẽ được hỏi trước. Giữ cả hai thì chúng được đọc theo thứ tự: nguồn cao hơn thắng, nguồn thấp hơn chỉ điền vào ô trống."),
+        },
+      },
+    ],
+  },
+
+  /* --------------------------------------------------------- sc_treatment
+     Opens Mapping ON its Component treatment tab: the screen has a place
+     (pb_mapping_studio:treatment), so `nav` names the screen and the helper's
+     hub page for Mapping says which context key carries the tab. */
+  {
+    key: "sc_treatment",
+    icon: "settings",
+    line: "setup",
+    modes: ["watch", "try"],
+    screens: ["treatment", "mapping"],
+    name: B("Fix figures that do not add up", "Sửa số liệu không khớp"),
+    tagline: B("Pay role, subtotal and value type — the three answers that decide net pay.",
+               "Vai trò trong lương, tổng phụ và loại giá trị — ba câu trả lời quyết định thực nhận."),
+    entry: { nav: "treatment", screen: "treatment" },
+    steps: [
+      {
+        key: "head", anchor: "tr-head", nav: "treatment", screen: "treatment", act: "observe",
+        say: {
+          kicker: B("Mapping › Component treatment", "Ánh xạ › Xử lý thành phần"),
+          title: B("One board per scheme", "Mỗi chương trình lương một bảng"),
+          body: B("It belongs to the scheme, so a change affects every run. Re-classify from the formulas works the answers out again and keeps the rows you set.",
+                  "Nó thuộc về chương trình lương, nên một thay đổi ảnh hưởng mọi đợt lương. Phân loại lại từ các công thức tính lại các câu trả lời và giữ nguyên những dòng bạn tự đặt."),
+          tip: B("I only read here. Saving is yours to press.", "Ở đây tôi chỉ đọc. Nút Lưu là để bạn bấm."),
+        },
+      },
+      {
+        key: "filters", anchor: "tr-filters", screen: "treatment", act: "observe",
+        say: {
+          title: B("What needs you", "Những gì cần bạn"),
+          body: B("Needs your answer: no pay role yet. Type says otherwise: a pay role the value type disagrees with. Clear these first.",
+                  "Cần câu trả lời của bạn: chưa có vai trò trong lương. Loại giá trị nói khác: vai trò mà loại giá trị không khớp. Hãy xử lý những dòng này trước."),
+        },
+      },
+      {
+        key: "table", anchor: "tr-table", screen: "treatment", act: "observe",
+        say: {
+          title: B("Pay role, subtotal, value type", "Vai trò trong lương, tổng phụ, loại giá trị"),
+          body: B("The pay role decides the arithmetic from gross to net. Subtotal stops a total being counted twice. Only an amount can touch net pay.",
+                  "Vai trò trong lương quyết định phép tính từ tổng thu nhập xuống thực nhận. Tổng phụ giúp một khoản tổng không bị tính hai lần. Chỉ số tiền mới được chạm tới thực nhận."),
+        },
+      },
+      {
+        key: "warn", anchor: "rep-ct-warn", screen: "treatment", act: "observe", modes: ["try"],
+        say: {
+          title: B("Hours set to add to net pay", "Giờ được đặt để cộng vào thực nhận"),
+          body: B("The board warns you and offers to set them all to Information only. Hours reach pay through the overtime formula, not by themselves.",
+                  "Bảng sẽ cảnh báo và đề nghị đặt tất cả thành Chỉ để tham khảo. Giờ đi vào lương qua công thức tăng ca, không tự đi vào."),
+        },
+      },
+      {
+        key: "recompute", act: "observe",
+        say: {
+          title: B("Save, then recompute", "Lưu, rồi tính lại"),
+          body: B("Saving never rewrites a payslip. Recompute the pay run, and the \"These figures do not add up\" line goes away when the treatment is right.",
+                  "Lưu không bao giờ viết lại phiếu lương. Hãy tính lại đợt lương, và dòng \"Các số liệu này không khớp\" sẽ biến mất khi cách xử lý đã đúng."),
+        },
+      },
+    ],
+  },
+
+  /* ------------------------------------------------------------ sc_matrix */
+  {
+    key: "sc_matrix",
+    icon: "clipboard-check",
+    line: "setup",
+    modes: ["watch", "try"],
+    screens: ["matrix", "matrix_builder"],
+    name: B("Change an approval route", "Đổi một lộ trình phê duyệt"),
+    tagline: B("Read who signs off what, and what publishing a change really does.",
+               "Đọc ai phê duyệt việc gì, và việc ban hành một thay đổi thật sự làm gì."),
+    entry: { nav: "pb_approval_config.action_pb_approval_matrix", screen: "matrix" },
+    steps: [
+      {
+        key: "hero", anchor: "am-hero", nav: "pb_approval_config.action_pb_approval_matrix",
+        screen: "matrix", act: "observe",
+        say: {
+          kicker: B("Settings › Approvals", "Cài đặt › Phê duyệt"),
+          title: B("Every check, in one place", "Mọi bước kiểm tra, ở một nơi"),
+          body: B("Every request in the Approvals inbox follows a route drawn here.",
+                  "Mọi yêu cầu trong hộp Phê duyệt đều đi theo một lộ trình vẽ ở đây."),
+          tip: B("I only read. Nothing here is published by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không ban hành gì."),
+        },
+      },
+      {
+        key: "tabs", anchor: "am-tabs", screen: "matrix", act: "observe",
+        say: {
+          title: B("Matrix, People & backups, History", "Ma trận, Con người & người thay thế, Lịch sử"),
+          body: B("The routes; who holds each responsibility and their cover; and every change ever made.",
+                  "Các lộ trình; ai giữ từng trách nhiệm và người trực thay; và mọi thay đổi từng được thực hiện."),
+        },
+      },
+      {
+        key: "table", anchor: "am-table", screen: "matrix", act: "observe",
+        say: {
+          title: B("Read a route", "Đọc một lộ trình"),
+          body: B("Each row is a process, the route it follows, where it applies, and whether it is In use, a Draft, or Needs people.",
+                  "Mỗi dòng là một quy trình, lộ trình nó đi theo, nơi áp dụng, và nó Đang dùng, là Nháp, hay Cần bổ sung người."),
+        },
+      },
+      {
+        key: "bulk", anchor: "am-bulk", screen: "matrix", act: "observe",
+        say: {
+          title: B("No approval needed — still recorded", "Không cần phê duyệt — vẫn được ghi lại"),
+          body: B("A check can be switched off for one row or many. It then happens at once, and every use still shows in History.",
+                  "Một bước kiểm tra có thể tắt cho một dòng hoặc nhiều dòng. Khi đó việc diễn ra ngay, và mỗi lần dùng vẫn hiện trong Lịch sử."),
+        },
+      },
+      {
+        key: "builder", anchor: "rep-am-bsteps", screen: "matrix_builder", act: "observe", modes: ["try"],
+        say: {
+          kicker: B("The builder", "Dựng lộ trình"),
+          title: B("Purpose · People · Safeguards · Review · Publish", "Mục đích · Nhân sự · Bảo vệ · Xem lại · Ban hành"),
+          body: B("Opening a row walks these five steps. Nothing changes until Publish.",
+                  "Mở một dòng sẽ đi qua năm bước này. Chưa có gì thay đổi cho tới Ban hành."),
+        },
+      },
+      {
+        key: "publish", anchor: "rep-am-publish", screen: "matrix_builder", act: "observe", modes: ["try"],
+        say: {
+          title: B("New requests only", "Chỉ áp cho yêu cầu mới"),
+          body: B("New requests follow a published route from the date shown. Requests already on their way finish the route they started on.",
+                  "Yêu cầu mới đi theo lộ trình đã ban hành từ ngày được ghi. Những yêu cầu đang trên đường sẽ đi hết lộ trình chúng đã bắt đầu."),
+        },
+      },
+      {
+        key: "open", act: "observe", modes: ["watch"],
+        say: {
+          title: B("To change one, open its row", "Muốn sửa, hãy mở dòng đó"),
+          body: B("The builder walks Purpose, People, Safeguards, Review and Publish. Publishing affects new requests only.",
+                  "Phần dựng lộ trình đi qua Mục đích, Nhân sự, Bảo vệ, Xem lại và Ban hành. Ban hành chỉ áp cho yêu cầu mới."),
+        },
+      },
+    ],
+  },
+
+  /* ----------------------------------------------------------- sc_records */
+  {
+    key: "sc_records",
+    icon: "database",
+    line: "setup",
+    modes: ["watch", "try"],
+    screens: ["records"],
+    name: B("Bulk update employee records", "Cập nhật hàng loạt hồ sơ nhân viên"),
+    tagline: B("Pick who and what, change it on screen or in a file, review, apply — and undo.",
+               "Chọn ai và gì, sửa trên màn hình hoặc trong tệp, xem lại, áp dụng — và hoàn tác."),
+    entry: { nav: "pb_records.action_pb_records_desk", screen: "records" },
+    steps: [
+      {
+        key: "head", anchor: "rd-head", nav: "pb_records.action_pb_records_desk",
+        screen: "records", act: "observe",
+        say: {
+          kicker: B("People › Records", "Con người › Hồ sơ"),
+          title: B("The Records Desk", "Bàn cập nhật hồ sơ (Records Desk)"),
+          body: B("Employee, contract and bank details your pay scheme reads — for one person or hundreds at once.",
+                  "Thông tin nhân viên, hợp đồng và ngân hàng mà chương trình lương của bạn đọc — cho một người hay hàng trăm người cùng lúc."),
+          tip: B("I only read. Nothing is applied by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không áp dụng gì."),
+        },
+      },
+      {
+        key: "scheme", anchor: "rd-scheme", screen: "records", act: "observe",
+        say: {
+          title: B("Only what the scheme reads", "Chỉ những gì chương trình lương đọc"),
+          body: B("The pill names the scheme and how many fields it maps. The desk offers only those.",
+                  "Nhãn ghi tên chương trình và số trường nó ánh xạ. Bàn làm việc chỉ đưa ra những trường đó."),
+        },
+      },
+      {
+        key: "fields", anchor: "rd-fields", screen: "records", act: "observe", modes: ["try"],
+        say: {
+          title: B("Pick the fields", "Chọn các trường"),
+          body: B("Choose the columns you want on the grid, and filter who on the left.",
+                  "Chọn các cột bạn muốn trên lưới, và lọc ai ở bên trái."),
+        },
+      },
+      {
+        key: "fieldswatch", act: "observe", modes: ["watch"],
+        say: {
+          title: B("Pick who, and which fields", "Chọn ai, và trường nào"),
+          body: B("Filter who on the left and choose the columns for the grid. A scheme that maps no fields yet shows Open Mapping here instead — wire a column first.",
+                  "Lọc ai ở bên trái và chọn các cột cho lưới. Chương trình lương chưa ánh xạ trường nào sẽ hiện Mở Ánh xạ ở đây — hãy nối một cột trước."),
+        },
+      },
+      {
+        key: "file", anchor: "rd-file", screen: "records", act: "observe",
+        say: {
+          title: B("Or go through a file", "Hoặc đi qua một tệp"),
+          body: B("Export with data, edit it, then Import a file. Rows are matched by employee code, work email or name.",
+                  "Xuất kèm dữ liệu, sửa, rồi Nhập một tệp. Các dòng được khớp theo mã nhân viên, email công việc hoặc tên."),
+        },
+      },
+      {
+        key: "review", anchor: "rd-review", screen: "records", act: "observe",
+        say: {
+          title: B("Review before Apply", "Xem lại trước khi Áp dụng"),
+          body: B("Review lists every change from what to what. Apply then writes it — or sends it for approval when your company has a route for bulk changes.",
+                  "Xem lại liệt kê mọi thay đổi từ gì sang gì. Áp dụng khi đó sẽ ghi — hoặc gửi đi phê duyệt khi công ty bạn có lộ trình cho thay đổi hàng loạt."),
+        },
+      },
+      {
+        key: "history", anchor: "rd-history", screen: "records", act: "observe",
+        say: {
+          title: B("Undo never expires", "Hoàn tác không bao giờ hết hạn"),
+          body: B("Every apply is in History with an Undo. It skips any value somebody has changed since.",
+                  "Mỗi lần áp dụng đều có trong Lịch sử kèm Hoàn tác. Nó bỏ qua giá trị nào đã có người sửa sau đó."),
+        },
+      },
+    ],
+  },
+
+  /* ----------------------------------------------------------- sc_schemes */
+  {
+    key: "sc_schemes",
+    icon: "globe",
+    line: "setup",
+    modes: ["watch", "try"],
+    screens: ["schemes", "runpayroll", "explorer"],
+    name: B("Pay people in another currency", "Trả lương bằng một đồng tiền khác"),
+    tagline: B("A scheme pays in its country's money; the group reads two monies without adding them.",
+               "Chương trình lương trả bằng đồng tiền của quốc gia nó; tập đoàn đọc hai đồng tiền mà không cộng chúng."),
+    entry: { nav: "pb_group.action_pb_group", screen: "schemes" },
+    steps: [
+      {
+        key: "head", anchor: "gp-head", nav: "pb_group.action_pb_group",
+        screen: "schemes", act: "observe",
+        say: {
+          kicker: B("Settings › Group", "Cài đặt › Tập đoàn"),
+          title: B("Your group", "Tập đoàn của bạn"),
+          body: B("The companies you own, the money the group reads in, and how exchange rates are picked.",
+                  "Các công ty bạn sở hữu, đồng tiền tập đoàn dùng để đọc, và cách chọn tỷ giá."),
+          tip: B("I only read. Nothing here is changed.", "Tôi chỉ đọc. Không có gì ở đây bị thay đổi."),
+        },
+      },
+      {
+        key: "tree", anchor: "gp-tree", screen: "schemes", act: "observe",
+        say: {
+          title: B("Each company keeps its own money", "Mỗi công ty giữ đồng tiền của mình"),
+          body: B("Every company shows its currency and its pay schemes. Nothing is stored in the group currency.",
+                  "Mỗi công ty hiện đồng tiền và các chương trình lương của nó. Không có gì được lưu bằng đồng tiền tập đoàn."),
+        },
+      },
+      {
+        key: "rates", anchor: "gp-rates", screen: "schemes", act: "observe",
+        say: {
+          title: B("How rates are picked", "Cách chọn tỷ giá"),
+          body: B("The last rate of the month, the rate on the day the pay run ends, or the month's average. The strip shows which months have a rate.",
+                  "Tỷ giá cuối cùng của tháng, tỷ giá vào ngày đợt lương kết thúc, hoặc tỷ giá bình quân của tháng. Dải tháng cho biết tháng nào đã có tỷ giá."),
+        },
+      },
+      {
+        key: "run", anchor: "pw-scheme", nav: "pb_payrun_wizard.action_pb_payrun_wizard",
+        screen: "runpayroll", act: "observe",
+        say: {
+          kicker: B("Pay Run › Run", "Đợt lương › Chạy lương"),
+          title: B("One run, one scheme, one currency", "Một đợt, một chương trình, một đồng tiền"),
+          body: B("A pay run starts with its scheme, so it pays in one money. Two schemes this month are two pay runs.",
+                  "Một đợt lương bắt đầu từ chương trình lương, nên nó trả bằng một đồng tiền. Hai chương trình trong tháng này là hai đợt lương."),
+        },
+      },
+      {
+        key: "money", anchor: "ex-money", nav: "pb_explorer.action_pb_explorer",
+        screen: "explorer", act: "observe",
+        say: {
+          kicker: B("Insights › Explorer", "Phân tích › Khám phá dữ liệu"),
+          title: B("Each in its own money, or the group's", "Mỗi bên theo đồng tiền của mình, hay theo tập đoàn"),
+          body: B("With more than one currency on screen, this switch appears. Each in its own money keeps them apart; Group currency converts them so they can be added.",
+                  "Khi có nhiều hơn một đồng tiền trên màn hình, công tắc này hiện ra. Mỗi bên theo đồng tiền của mình để chúng riêng rẽ; Đồng tiền của tập đoàn quy đổi chúng để có thể cộng lại."),
         },
       },
     ],

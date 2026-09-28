@@ -727,6 +727,192 @@
       "screen": "formula",
       "file": "pb_formula_studio/static/src/xml/studio.xml",
       "desc": "Tools — the Command Center (Ctrl/Cmd K); Simulate is under Analyze."
+    },
+    "bp-status": {
+      "screen": "blueprint",
+      "file": "pb_blueprint/static/src/xml/blueprint.xml",
+      "desc": "The guided setup status pill: Not saved yet / Saving… / Draft · saved … / Setup complete / Could not save — retry."
+    },
+    "bp-rail": {
+      "screen": "blueprint",
+      "file": "pb_blueprint/static/src/xml/blueprint.xml",
+      "desc": "The six-step rail: Start, Pay rules, Connect, Outputs, Test, Finish."
+    },
+    "bp-foot": {
+      "screen": "blueprint",
+      "file": "pb_blueprint/static/src/xml/blueprint.xml",
+      "desc": "The footer: Step N of 6 · N components, Back, and Continue naming where it goes. The first Continue creates the draft."
+    },
+    "bp-pay": {
+      "screen": "blueprint",
+      "file": "pb_blueprint/static/src/xml/blueprint.xml",
+      "desc": "\"See it in someone's pay\": the sample person's estimated take-home pay and its lines (the Scoreboard on the Test step)."
+    },
+    "bp-identity": {
+      "screen": "blueprint",
+      "file": "pb_blueprint/static/src/xml/steps.xml",
+      "desc": "Start step, Identity card: company, configuration name, country, pay cycle, effective from."
+    },
+    "bp-country": {
+      "screen": "blueprint",
+      "file": "pb_blueprint/static/src/xml/steps.xml",
+      "desc": "Start step, the Country field and its \"Pays in …\" money chip."
+    },
+    "bp-starters": {
+      "screen": "blueprint",
+      "file": "pb_blueprint/static/src/xml/steps.xml",
+      "desc": "Start step, \"How would you like to start?\" starting points."
+    },
+    "bp-audience": {
+      "screen": "blueprint",
+      "file": "pb_blueprint/static/src/xml/steps.xml",
+      "desc": "Start step, \"Who are you paying?\" tiles."
+    },
+    "bp-reallife": {
+      "screen": "blueprint",
+      "file": "pb_blueprint/static/src/xml/steps.xml",
+      "desc": "Start step, \"Real life belongs in the design\" checks.",
+      "reserved": true
+    },
+    "mp-story": {
+      "screen": "mapping",
+      "file": "pb_formula_studio/static/src/xml/mapping_studio.xml",
+      "desc": "Mapping header sentence: FROM a source ══ N ══▶ TO a scheme; both ends are pickers."
+    },
+    "mp-modes": {
+      "screen": "mapping",
+      "file": "pb_formula_studio/static/src/xml/mapping_studio.xml",
+      "desc": "Mapping tabs, one per kind of wire; Journey is the cold-start tab."
+    },
+    "mp-ramp": {
+      "screen": "mapping",
+      "file": "pb_formula_studio/static/src/xml/mapping_studio.xml",
+      "desc": "Spreadsheet tab, the Excel on-ramp: reads headings and one example row; imports nothing."
+    },
+    "mp-jbar": {
+      "screen": "mapping",
+      "file": "pb_formula_studio/static/src/xml/journey_board.xml",
+      "desc": "Journey bar: the scheme name and \"N need a source · N fed · N not fed yet\"."
+    },
+    "mp-lanes": {
+      "screen": "mapping",
+      "file": "pb_formula_studio/static/src/xml/journey_board.xml",
+      "desc": "Journey lanes: Files & systems, Feeds, Transformations, Scheme, Payobook Source."
+    },
+    "am-hero": {
+      "screen": "matrix",
+      "file": "pb_approval_config/static/src/xml/matrix_room.xml",
+      "desc": "Approval Matrix hero: Bring in from a spreadsheet, Create a workflow."
+    },
+    "am-tabs": {
+      "screen": "matrix",
+      "file": "pb_approval_config/static/src/xml/matrix_room.xml",
+      "desc": "Approval Matrix tabs: Matrix, People & backups, History."
+    },
+    "am-filters": {
+      "screen": "matrix",
+      "file": "pb_approval_config/static/src/xml/matrix_room.xml",
+      "desc": "Approval Matrix search and area / status chips.",
+      "reserved": true
+    },
+    "am-bulk": {
+      "screen": "matrix",
+      "file": "pb_approval_config/static/src/xml/matrix_room.xml",
+      "desc": "Approval Matrix bulk bar: No approval needed for all (N)."
+    },
+    "am-table": {
+      "screen": "matrix",
+      "file": "pb_approval_config/static/src/xml/matrix_room.xml",
+      "desc": "Approval Matrix table: Process and the route it follows, Applies to, Status, Version."
+    },
+    "am-foot": {
+      "screen": "matrix",
+      "file": "pb_approval_config/static/src/xml/matrix_room.xml",
+      "desc": "Approval Matrix footnote: In use only when published and wired; No approval needed is still recorded.",
+      "reserved": true
+    },
+    "rd-head": {
+      "screen": "records",
+      "file": "pb_records/static/src/xml/records_desk.xml",
+      "desc": "Records Desk header: subtitle, scheme pill, File, History, Review N changes."
+    },
+    "rd-scheme": {
+      "screen": "records",
+      "file": "pb_records/static/src/xml/records_desk.xml",
+      "desc": "Records Desk scheme pill: the scheme and how many fields it maps."
+    },
+    "rd-file": {
+      "screen": "records",
+      "file": "pb_records/static/src/xml/records_desk.xml",
+      "desc": "Records Desk file doors: Export with data, Export blank template, Import a file."
+    },
+    "rd-history": {
+      "screen": "records",
+      "file": "pb_records/static/src/xml/records_desk.xml",
+      "desc": "Records Desk History: every apply, with an Undo."
+    },
+    "rd-review": {
+      "screen": "records",
+      "file": "pb_records/static/src/xml/records_desk.xml",
+      "desc": "Records Desk Review N changes button."
+    },
+    "rd-who": {
+      "screen": "records",
+      "file": "pb_records/static/src/xml/records_desk.xml",
+      "desc": "Records Desk Who rail: search and facets.",
+      "reserved": true
+    },
+    "rd-fields": {
+      "screen": "records",
+      "file": "pb_records/static/src/xml/records_desk.xml",
+      "desc": "Records Desk Fields strip: the columns on the grid."
+    },
+    "rd-empty": {
+      "screen": "records",
+      "file": "pb_records/static/src/xml/records_desk.xml",
+      "desc": "Records Desk empty state when the scheme maps no fields: Open Mapping.",
+      "reserved": true
+    },
+    "gp-head": {
+      "screen": "schemes",
+      "file": "pb_group/static/src/xml/group_room.xml",
+      "desc": "Group page header: Your group, History, Edit the group."
+    },
+    "gp-tree": {
+      "screen": "schemes",
+      "file": "pb_group/static/src/xml/group_room.xml",
+      "desc": "Group tree: the group, its currency and rate policy, and each company with its currency and pay schemes."
+    },
+    "gp-rates": {
+      "screen": "schemes",
+      "file": "pb_group/static/src/xml/group_room.xml",
+      "desc": "Exchange rates card: How rates are picked and the 12-month coverage strip."
+    },
+    "gp-divisions": {
+      "screen": "schemes",
+      "file": "pb_group/static/src/xml/group_room.xml",
+      "desc": "Divisions card: parts of the business across companies.",
+      "reserved": true
+    },
+    "ex-money": {
+      "screen": "explorer",
+      "file": "pb_explorer/static/src/xml/explorer.xml",
+      "desc": "Explorer money switch: the shown currency, and Group currency / Each in its own money."
+    },
+    "tr-head": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment header: Re-classify from the formulas, Save N change(s)."
+    },
+    "tr-filters": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment chips: All, Needs your answer, Stored differently, Type says otherwise."
+    },
+    "tr-table": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment table: Component, Comes from, Group, Pay role, Subtotal, Tells the run, Value type."
     }
   },
   "pattern": {},
@@ -745,6 +931,27 @@
     "rep-newemp-div": "The practice employee form's division picker. A click target, not an input: choosing the division is choosing which formula configuration will pay this person.",
     "rep-newemp-save": "The practice employee form's Save button. It saves nothing — there is no server behind the replica — and the step that presses it is guarded for the same reason the real one would be.",
     "rep-watermark": "The practice-mode watermark. Says on every free-roam screen that none of this is real. Drawn unconditionally by the practice view builder; no product screen has one.",
+    "rep-bp-rules": "The guided setup's Pay rules list on the practice company, each component as a sentence with its formula.",
+    "rep-bp-added": "The component being added in the Pay rules replica (Allowances). The lesson's tick moment happens beside it.",
+    "rep-bp-paynum": "The practice pay panel's take-home figure. Carries data-from / data-to so the tick moment can count from the before to the after value; the product shows the same number without the count.",
+    "rep-jny-file": "The HR system's basic_salary field on the practice Journey — where Mai's base salary starts.",
+    "rep-jny-feed": "The feed row that carries basic_salary on the practice Journey.",
+    "rep-jny-xform": "The practice Journey's transformation card (text to amount).",
+    "rep-jny-scheme": "LCB on the practice Journey's Scheme lane — where the value is fed.",
+    "rep-jny-slip": "Mai's Base salary payslip line, drawn beside the practice Journey so the whole road fits on one screen. The product shows the payslip elsewhere.",
+    "rep-jny-source": "The practice Journey's Payobook Source card, with Open Records Desk.",
+    "rep-mp-runlane": "The From this pay run group on the practice spreadsheet tab.",
+    "rep-mp-conflict": "The source-conflict question on the practice spreadsheet tab, drawn open. In the product it is a dialog that appears when a second source is wired.",
+    "rep-ct-warn": "The Type says otherwise warning line on the practice Component treatment board.",
+    "rep-am-payrow": "The pay run row of the practice Approval Matrix.",
+    "rep-am-bsteps": "The practice route builder's five steps: Purpose, People, Safeguards, Review, Publish.",
+    "rep-am-route": "The practice route builder's steps and the kinds of step it offers.",
+    "rep-am-guards": "The practice route builder's safeguards and Try an example.",
+    "rep-am-publish": "The practice route builder's Publish panel, with the date new requests follow it from.",
+    "rep-rd-grid": "The practice Records Desk grid, with three edited cells.",
+    "rep-rd-reviewpanel": "The practice Records Desk review drawer, drawn open beside the grid.",
+    "rep-gp-foot": "The practice Group page's line that nothing is stored in the group currency.",
+    "rep-ex-compare": "The practice Explorer's Compare schemes panel, each scheme in its own money.",
     "rep-slipline": "The worked example's statutory deductions, drawn on the STATUTORY replica beside the rates that produced them. It is the far end of L6's trace and it exists only here: the product's statutory cockpit shows rates, and a payslip shows đồng, and no single product screen shows both at once. Naming it rep- is the honest consequence — the Coach must never claim to point at this on a live screen."
   },
   "foreign": {
@@ -783,7 +990,15 @@
       "pb_workforce_insights/static/src/xml/workforce_insights.xml",
       "pb_govt_reports/static/src/xml/govt_reports.xml",
       "pb_payruns/static/src/xml/payruns.xml",
-      "pb_approval_config/static/src/xml/inbox.xml"
+      "pb_approval_config/static/src/xml/inbox.xml",
+      "pb_blueprint/static/src/xml/blueprint.xml",
+      "pb_blueprint/static/src/xml/steps.xml",
+      "pb_formula_studio/static/src/xml/mapping_studio.xml",
+      "pb_formula_studio/static/src/xml/journey_board.xml",
+      "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "pb_approval_config/static/src/xml/matrix_room.xml",
+      "pb_records/static/src/xml/records_desk.xml",
+      "pb_group/static/src/xml/group_room.xml"
     ],
     "replica": [
       "pb_learn/static/src/engine/screens.js",

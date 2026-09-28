@@ -142,3 +142,44 @@ export function morphHTML(step, shownSide) {
         </div>
     </div>`;
 }
+
+/* ------------------------------------------------------------------- tick
+   LEARN REFRESH step 3 — a number that CHANGES because of what the step
+   just did: the guided setup's "Estimated take-home pay" as a component is
+   added. The replica draws the figure with its before and after values
+   (`data-from`, `data-to`); this counts it from one to the other, so the
+   learner sees the pay panel react rather than being told that it would.
+   Instant under reduced motion — the lesson is the new number, not the
+   counting. */
+export function runTick(anchorKey) {
+    const el = anchorKey ? $(`[data-coach="${anchorKey}"]`) : null;
+    if (!el) {
+        return;
+    }
+    const from = Number(el.getAttribute("data-from"));
+    const to = Number(el.getAttribute("data-to"));
+    if (!Number.isFinite(from) || !Number.isFinite(to)) {
+        return;
+    }
+    if (reduced()) {
+        el.textContent = M(to);
+        return;
+    }
+    el.textContent = M(from);
+    let t0 = null;
+    const step = (ts) => {
+        if (!document.body.contains(el)) {
+            return;
+        }
+        if (t0 === null) {
+            t0 = ts;
+        }
+        const k = Math.min(1, (ts - t0) / 1400);
+        const eased = 1 - Math.pow(1 - k, 3);
+        el.textContent = M(Math.round(from + (to - from) * eased));
+        if (k < 1) {
+            requestAnimationFrame(step);
+        }
+    };
+    setTimeout(() => requestAnimationFrame(step), 500);
+}

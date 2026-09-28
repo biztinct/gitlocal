@@ -353,6 +353,17 @@ SCREENLESS_MUST_HIT = [
     ("let me practise this safely on the fake company", 'practice'),
     ("what should i do next", 'whatnext'),
     ("sửa lỗi", 'fixerror'),
+    # LEARN REFRESH step 3 — the six payroll-setup questions, asked the way
+    # somebody asks them with no screen behind the helper.
+    ("how do i set up a new pay scheme", 'newscheme'),
+    ("where does this number come from", 'wherefrom'),
+    ("why don't my figures add up", 'notaddup'),
+    ("how do i change who approves something", 'changeroute'),
+    ("how do i change many employees at once", 'bulkupdate'),
+    ("how do i pay people in another currency", 'currency'),
+    ("thiet lap chuong trinh luong", 'newscheme'),
+    ("số liệu không khớp", 'notaddup'),
+    ("cap nhat hang loat", 'bulkupdate'),
 ]
 
 # Questions that must reach the advice refusal, from the Phase D review.

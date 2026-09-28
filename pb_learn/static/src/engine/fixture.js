@@ -1104,6 +1104,265 @@ const PRACTICE = {
       };
     },
   },
+
+  /* ==========================================================================
+     LEARN REFRESH step 3 — PAYROLL SETUP. Six replicas: the guided setup
+     (Start + Pay rules + the live pay panel), Mapping's Journey and its
+     spreadsheet tab, Component treatment, the Approval Matrix and its builder,
+     the Records Desk, and the Group page. Same discipline as everything above:
+     every money figure is DERIVED (payslip(), POLICY, TAX), never typed.
+     ======================================================================= */
+
+  /* ------------------------------------ Settings › Guided setup › New config
+     pb_blueprint. The practice company is setting up its Retail scheme. The
+     pay panel is "See it in someone's pay" on the sample employee (Mai) —
+     `before` is the scheme without the allowances component, `after` is with
+     it: the number a learner watches tick when a component is added. */
+  blueprint: {
+    name: RUN.scheme,
+    code: "HOASEN_RETAIL_END",
+    saved: B("Draft · saved 2 min ago", "Bản nháp · đã lưu 2 phút trước"),
+    country: B("Vietnam", "Việt Nam"),
+    money: B("Pays in ₫ VND", "Trả bằng ₫ VND"),
+    cycle: B("End-month payroll", "Kỳ lương cuối tháng"),
+    effective: "01/08/2026",
+    starters: [
+      { name: B("Vietnam · Complete", "Việt Nam · Đầy đủ"), badge: "certified", on: true },
+      { name: B("Vietnam · Essentials", "Việt Nam · Cơ bản"), badge: "certified" },
+      { name: B("Import Excel workbook", "Nhập sổ tính Excel") },
+      { name: B("Blank canvas", "Trang trắng") },
+    ],
+    audiences: [
+      { name: B("Local employees", "Nhân viên trong nước"), on: true },
+      { name: B("International employees", "Nhân viên nước ngoài") },
+      { name: B("Short-term workers", "Lao động ngắn hạn") },
+      { name: B("Guaranteed take-home", "Lương thực nhận cố định") },
+    ],
+    reallife: [
+      { name: B("Joiners & leavers", "Vào làm & nghỉ việc"), on: true },
+      { name: B("Annual & event-based pay", "Khoản trả hằng năm & theo sự kiện"), on: true },
+      { name: B("Salary changes within a month", "Thay đổi lương giữa tháng") },
+      { name: B("Corrections & arrears", "Điều chỉnh & truy lĩnh") },
+    ],
+    /* The Pay rules step: each component a sentence, with its formula. The
+       last one is the component being ADDED in the lesson. */
+    rules: [
+      { code: "LCB", say: B("Base salary comes from the person's contract.",
+                            "Lương cơ bản lấy từ hợp đồng của người đó."), f: "LCB" },
+      { code: "TANGCA", say: B("Overtime is the hours worked over the standard, paid at the overtime rate.",
+                               "Tăng ca là số giờ làm vượt giờ chuẩn, trả theo đơn giá tăng ca."), f: "LCB ÷ 22 ÷ 8 × 1.5 × OTH" },
+      { code: "BHXH", say: B("Social insurance takes 8% of the base, up to the ceiling.",
+                             "BHXH trừ 8% trên lương cơ bản, tối đa tới mức trần."), f: "−MIN(LCB, CAP) × EESI" },
+      { code: "TNCN", say: B("Income tax is worked out on what is left after insurance and relief.",
+                             "Thuế TNCN tính trên phần còn lại sau bảo hiểm và giảm trừ."), f: "5% × TNCT" },
+      { code: "PC", say: B("Allowances are paid every month, as written on the contract.",
+                           "Phụ cấp được trả hằng tháng, theo hợp đồng."), f: "PC", added: true },
+    ],
+    get pay() {
+      const mai = EMP_INPUT.mai;
+      const before = payslip({ base: mai.base, allowance: 0 });
+      const after = payslip({ base: mai.base, allowance: mai.allowance });
+      const employer = Math.round(mai.base * POLICY.totalEmployer / 100);
+      return {
+        who: mai.name,
+        sub: B("Retail — Hà Nội · sample employee", "Bán lẻ — Hà Nội · nhân viên mẫu"),
+        before: before.net, after: after.net, delta: after.net - before.net,
+        lines: [
+          { k: B("Cash earnings", "Thu nhập bằng tiền"), v: after.gross },
+          { k: B("Employee deductions", "Các khoản trừ của nhân viên"), v: after.insurance },
+          { k: B("Income tax", "Thuế thu nhập cá nhân"), v: after.pit },
+          { k: B("Employer cost", "Chi phí của người sử dụng lao động"), v: employer },
+        ],
+      };
+    },
+  },
+
+  /* -------------------------------------------- Settings › Integrations › Mapping
+     The Journey board for the Retail scheme, and the ONE value the lesson
+     follows along it: Mai's base salary, sent by the HR system as text,
+     turned into an amount by a transformation, fed to LCB, printed on her
+     payslip. `fed`/`unfed`/`inputs` are counted from the lists below. */
+  mapping: {
+    from: B("Hoa Sen HR · Employees & pay", "Hoa Sen HR · Nhân viên & lương"),
+    to: RUN.scheme,
+    systems: [
+      { id: "sys", name: "Hoa Sen HR", sub: B("Connected system", "Hệ thống đã kết nối"),
+        rows: ["basic_salary", "allowance_monthly", "bank_account"] },
+      { id: "sheet", name: "retail_july_2026.xlsx", sub: B("Spreadsheet", "Bảng tính"),
+        rows: [B("Overtime hours", "Giờ tăng ca"), B("Days worked", "Ngày công")] },
+    ],
+    feeds: [{ name: B("Employees & pay", "Nhân viên & lương"), rows: ["basic_salary", "allowance_monthly"] }],
+    transforms: [{ name: B("Text to amount", "Chữ thành số tiền"),
+                   sub: B("\"12.000.000\" → 12000000", "\"12.000.000\" → 12000000") }],
+    scheme: [
+      { code: "LCB", label: B("Base salary", "Lương cơ bản"), fed: true },
+      { code: "PC", label: B("Allowances", "Phụ cấp"), fed: true },
+      { code: "OTH", label: B("Overtime hours", "Giờ tăng ca"), fed: true },
+      { code: "NGAYCONG", label: B("Days worked", "Ngày công"), fed: true },
+      { code: "KPIBONUS", label: B("KPI bonus", "Thưởng KPI"), fed: false },
+    ],
+    source: [B("Employee", "Nhân viên"), B("Contract", "Hợp đồng"), B("Bank", "Ngân hàng"),
+             B("Contract pay components", "Thành phần lương theo hợp đồng"), B("Pay run", "Đợt lương")],
+    get header() {
+      const fed = this.scheme.filter((r) => r.fed).length;
+      return { inputs: this.scheme.length - fed, fed, unfed: this.scheme.length - fed };
+    },
+    /* The run-provided values the Spreadsheet tab lists as "From this pay
+       run · <Month>" (pb_formula_studio.py:9578), with July's values. */
+    runValues: [
+      { k: B("Pay month", "Tháng lương"), v: "7" },
+      { k: B("Pay year", "Năm lương"), v: "2026" },
+      { k: B("Days in the period", "Số ngày trong kỳ"), v: "31" },
+      { k: B("Standard working days", "Ngày công chuẩn"), v: "22" },
+    ],
+    sheetColumns: [
+      { col: B("Overtime hours", "Giờ tăng ca"), eg: "12", to: "OTH" },
+      { col: B("Days worked", "Ngày công"), eg: "22", to: "NGAYCONG" },
+      { col: B("Allowances", "Phụ cấp"), eg: "780000", to: "PC", clash: true },
+    ],
+  },
+
+  /* ---------------------------------------- Mapping › Component treatment
+     The Retail scheme's components as the treatment board lists them. Two
+     rows carry the board's own warnings: OTH is counted in hours yet set to
+     add to net pay ("Type says otherwise"), and KPI bonus has no pay role yet
+     ("Needs your answer"). GROSS is a subtotal — its parts are already added. */
+  treatment: {
+    rows: [
+      { code: "LCB", name: B("Base salary", "Lương cơ bản"), from: B("Contract component", "Thành phần hợp đồng"),
+        group: B("Earnings", "Thu nhập"), role: "add", sub: false, type: "amount" },
+      { code: "PC", name: B("Allowances", "Phụ cấp"), from: B("Connected system", "Hệ thống đã kết nối"),
+        group: B("Earnings", "Thu nhập"), role: "add", sub: false, type: "amount" },
+      { code: "OTH", name: B("Overtime hours", "Giờ tăng ca"), from: B("Spreadsheet", "Bảng tính"),
+        group: B("Time", "Thời gian"), role: "add", sub: false, type: "qty", clash: true },
+      { code: "KPIBONUS", name: B("KPI bonus", "Thưởng KPI"), from: B("Spreadsheet", "Bảng tính"),
+        group: B("Earnings", "Thu nhập"), role: "", sub: false, type: "amount", review: true },
+      { code: "GROSS", name: B("Gross income", "Tổng thu nhập"), from: B("Calculated", "Được tính"),
+        group: B("Totals", "Tổng"), role: "add", sub: true, type: "amount" },
+      { code: "BHXH", name: B("Social insurance", "Bảo hiểm xã hội"), from: B("Calculated", "Được tính"),
+        group: B("Deductions", "Khấu trừ"), role: "off", sub: false, type: "amount" },
+      { code: "TNCN", name: B("Personal income tax", "Thuế TNCN"), from: B("Calculated", "Được tính"),
+        group: B("Deductions", "Khấu trừ"), role: "off", sub: false, type: "amount" },
+      { code: "ERSI", name: B("Employer social insurance", "BHXH phần doanh nghiệp"), from: B("Calculated", "Được tính"),
+        group: B("Employer", "Doanh nghiệp"), role: "employer", sub: false, type: "amount" },
+      { code: "THUCNHAN", name: B("Net pay", "Thực nhận"), from: B("Calculated", "Được tính"),
+        group: B("Totals", "Tổng"), role: "net", sub: false, type: "amount" },
+    ],
+    roles: {
+      add: B("Added to net pay", "Cộng vào thực nhận"),
+      off: B("Taken off net pay", "Trừ khỏi thực nhận"),
+      net: B("Net pay itself", "Chính là thực nhận"),
+      employer: B("Employer cost", "Chi phí doanh nghiệp"),
+      info: B("Information only", "Chỉ để tham khảo"),
+      both: B("Both added and taken off", "Vừa cộng vừa trừ"),
+    },
+    types: {
+      amount: B("Amount (currency)", "Số tiền"),
+      qty: B("Quantity (hours, days)", "Số lượng (giờ, ngày)"),
+      pct: B("Percentage / rate", "Phần trăm / tỷ lệ"),
+      text: B("Text", "Văn bản"),
+    },
+    get counts() {
+      return {
+        all: this.rows.length,
+        review: this.rows.filter((r) => r.review).length,
+        clash: this.rows.filter((r) => r.clash).length,
+      };
+    },
+  },
+
+  /* ------------------------------------------------ Settings › Approvals
+     The Approval Matrix, grouped by area as the product groups it. The pay
+     run row IS the route every other lesson teaches (ROUTE above). Trips are
+     set to "No approval needed" — still recorded. */
+  matrix: {
+    areas: [
+      { name: B("Payroll", "Tiền lương"), rows: [
+        { name: B("Pay run", "Đợt lương"), route: ROUTE.steps.map((s) => s.title),
+          applies: B("Every pay scheme", "Mọi chương trình lương"), status: "live", v: "v3", pay: true },
+        { name: B("Scheme change", "Thay đổi chương trình lương"), route: [B("Payroll check", "Kiểm tra bảng lương"), B("Finance approval", "Tài chính phê duyệt")],
+          applies: B("Hoa Sen Retail Co.", "Hoa Sen Retail Co."), status: "needs", v: "v1" },
+      ] },
+      { name: B("People", "Nhân sự"), rows: [
+        { name: B("Records Desk bulk changes", "Thay đổi hàng loạt ở Records Desk"), route: [B("HR lead review", "Trưởng nhân sự soát xét")],
+          applies: B("Hoa Sen Retail Co.", "Hoa Sen Retail Co."), status: "live", v: "v1" },
+        { name: B("Overtime", "Tăng ca"), route: [B("Line manager", "Quản lý trực tiếp"), B("HR lead review", "Trưởng nhân sự soát xét")],
+          applies: B("Every team", "Mọi nhóm"), status: "live", v: "v2" },
+        { name: B("Business trip", "Công tác"), route: [], fast: true,
+          applies: B("Every team", "Mọi nhóm"), status: "live", v: "v2" },
+      ] },
+    ],
+    statuses: {
+      live: { l: B("In use", "Đang dùng"), t: "ok" },
+      draft: { l: B("Draft", "Nháp"), t: "" },
+      needs: { l: B("Needs people", "Cần bổ sung người"), t: "warn" },
+      soon: { l: B("Not connected yet", "Chưa kết nối"), t: "b" },
+    },
+    /* The builder, open on the pay run route. `kind` is the step kind the
+       builder's "Add a step" menu offers (builder.js:224-240). */
+    builder: {
+      steps: [
+        { title: ROUTE.steps[0].title, kind: B("Review", "Xem lại"), who: ROUTE.steps[0].who },
+        { title: ROUTE.steps[1].title, kind: B("Review", "Xem lại"), who: ROUTE.steps[1].who },
+        { title: ROUTE.steps[2].title, kind: B("Final approval", "Phê duyệt cuối"), who: ROUTE.steps[2].who,
+          band: B("Only when the run is over ₫500,000,000", "Chỉ khi đợt lương trên ₫500.000.000") },
+      ],
+      kinds: [B("Review", "Xem lại"), B("Final approval", "Phê duyệt cuối"), B("Joint approval", "Cùng phê duyệt"),
+              B("Any one of a team", "Một người bất kỳ trong nhóm"), B("Only when…", "Chỉ khi…"),
+              B("Tell somebody", "Báo cho ai đó"), B("No approval needed", "Không cần phê duyệt")],
+      safeguards: [B("Who may not decide?", "Ai không được quyết định?"), B("What must be attached?", "Cần đính kèm gì?"),
+                   B("When is it due?", "Khi nào đến hạn?"), B("And if it is late?", "Nếu trễ hạn thì sao?")],
+      from: "01/08/2026",
+    },
+  },
+
+  /* ----------------------------------------------------- People › Records
+     The Records Desk on the Retail scheme, with three edits typed into the
+     grid and waiting for Review. Only fields the scheme maps are offered. */
+  records: {
+    fields: 9,
+    picked: [B("Base salary", "Lương cơ bản"), B("Allowances", "Phụ cấp"), B("Bank account", "Tài khoản ngân hàng")],
+    rows: [
+      { emp: EMP.mai, vals: [EMP.mai.base, EMP.mai.allowance, "0451000123456"] },
+      { emp: EMP.hung, vals: [EMP.hung.base, EMP.hung.allowance, "0451000987654"], edit: [2], was: ["0451000111222"] },
+      { emp: EMP.trang, vals: [15800000, EMP.trang.allowance, "0451000555777"], edit: [0], was: [EMP.trang.base] },
+      { emp: EMP.duc, vals: [EMP.duc.base, 450000, "0451000333444"], edit: [1], was: [EMP.duc.allowance] },
+    ],
+    route: B("Records Desk bulk changes", "Thay đổi hàng loạt ở Records Desk"),
+    approver: ROUTE.steps[1].who,
+    get changes() { return this.rows.filter((r) => r.edit).length; },
+  },
+
+  /* ----------------------------------------------------- Settings › Group
+     The practice group: two companies, two currencies. The Singapore
+     company's pay run is in SGD and STAYS in SGD; the rate below is only
+     used when somebody asks to see the group added up in VND. A practice
+     rate, not a market one. */
+  group: {
+    name: "Hoa Sen Group",
+    currency: "VND",
+    policy: B("The last rate of the month", "Tỷ giá cuối cùng của tháng"),
+    policies: [B("The last rate of the month", "Tỷ giá cuối cùng của tháng"),
+               B("The rate on the day the pay run ends", "Tỷ giá vào ngày đợt lương kết thúc"),
+               B("The average rate for the month", "Tỷ giá bình quân của tháng")],
+    companies: [
+      { name: "Hoa Sen Retail Co.", flag: "VN", cur: "VND", people: RUN.employees + FNB.employees + 1, schemes: 3 },
+      { name: "Hoa Sen Singapore Pte. Ltd.", flag: "SG", cur: "SGD", people: 6, schemes: 1 },
+    ],
+    rate: 19650,
+    /* Months with a rate: ok = a rate from that month, old = an older rate is
+       used, none = no rate, so figures stay in their own money. */
+    strip: ["ok", "ok", "ok", "ok", "ok", "ok", "old", "none", "none", "none", "none", "none"],
+    sgScheme: { name: "Hoa Sen Singapore — Monthly Payroll", net: 31200, people: 6 },
+    get compare() {
+      return [
+        { name: RUN.scheme, cur: "VND", own: RUN.totalNet },
+        { name: FNB.scheme, cur: "VND", own: FNB.totalNet },
+        { name: this.sgScheme.name, cur: "SGD", own: this.sgScheme.net,
+          group: this.sgScheme.net * this.rate },
+      ];
+    },
+  },
 };
 
 /* =============================================================================
@@ -1160,7 +1419,7 @@ const MENU = [
     lenses: [
       { key: "employees", label: B("Employees", "Nhân viên"), screen: "employees",
         also: ["contracts"] },
-      { key: "records", label: B("Records", "Hồ sơ") },
+      { key: "records", label: B("Records", "Hồ sơ"), screen: "records" },
       { key: "pay", label: B("Pay", "Lương") },
       { key: "where", label: B("Where they work", "Nơi họ làm việc") },
       { key: "assets", label: B("Assets", "Tài sản") },
@@ -1241,17 +1500,21 @@ const MENU = [
       { key: "structures", label: B("Salary Structures", "Cấu trúc lương"), screen: "structures" },
       { key: "statutory", label: B("Statutory", "Bảo hiểm & Thuế"), screen: "statutory",
         card: B("Insurance & Tax", "Bảo hiểm & Thuế") },
-      { key: "integrations", label: B("Integrations", "Tích hợp"), screen: "integrations" },
+      /* Integrations has two cards: its connectors and Mapping (whose tabs
+         include Component treatment). Both replicas live under it. */
+      { key: "integrations", label: B("Integrations", "Tích hợp"), screen: "integrations",
+        also: ["mapping", "treatment"] },
       { key: "payroll", label: B("Payroll defaults", "Mặc định tính lương") },
       { key: "org", label: B("Companies & Tenants", "Công ty & Đơn vị thuê bao") },
       { key: "nav", label: B("Navigation", "Điều hướng") },
       { key: "company", label: B("Your company", "Công ty của bạn") },
       { key: "vendors", label: B("Vendors", "Nhà cung cấp") },
       { key: "guided_setup", label: B("Guided setup", "Thiết lập có hướng dẫn"),
-        card: B("New configuration", "Cấu hình mới") },
-      { key: "group", label: B("Group", "Tập đoàn") },
+        card: B("New configuration", "Cấu hình mới"), screen: "blueprint" },
+      { key: "group", label: B("Group", "Tập đoàn"), screen: "schemes" },
       { key: "access", label: B("Access & delegation", "Quyền truy cập & uỷ quyền") },
-      { key: "approvals", label: B("Approvals", "Phê duyệt") },
+      { key: "approvals", label: B("Approvals", "Phê duyệt"), screen: "matrix",
+        card: B("Approval Matrix", "Ma trận phê duyệt") },
       { key: "hiring", label: B("Hiring", "Tuyển dụng") },
       { key: "about", label: B("About Payobook", "Về Payobook") },
       { key: "announcements", label: B("Announcements", "Thông báo") },
@@ -1302,6 +1565,21 @@ const SUB_SCREENS = {
   importwizard: {
     owner: "import",
     label: B("Import — guided flow", "Nhập dữ liệu — luồng có hướng dẫn"),
+  },
+  /* LEARN REFRESH step 3 — the second view of three setup stations: the
+     guided setup's Pay rules step, Mapping's spreadsheet tab, and the
+     Approval Matrix's route builder. Each borrows its owner's place. */
+  blueprint_rules: {
+    owner: "blueprint",
+    label: B("New configuration — Pay rules", "Cấu hình mới — Quy tắc lương"),
+  },
+  mapping_sheet: {
+    owner: "mapping",
+    label: B("Mapping — Spreadsheet columns → Scheme", "Ánh xạ — Cột bảng tính → Chương trình lương"),
+  },
+  matrix_builder: {
+    owner: "matrix",
+    label: B("Approval Matrix — route builder", "Ma trận phê duyệt — dựng lộ trình"),
   },
 };
 

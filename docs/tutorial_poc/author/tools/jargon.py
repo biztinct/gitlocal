@@ -250,6 +250,8 @@ BARE_ALIASES = {
 
     # -- English payroll nouns with no everyday collision in this corpus.
     'payslip': 'a payroll noun; no other sense exists',
+    # LEARN REFRESH step 3
+    'subtotal': 'the Component treatment column; no other sense in this corpus',
     'payslips': 'plural of the above',
     'slip': 'used only of a payslip in this corpus',
     'slips': 'plural of the above',
