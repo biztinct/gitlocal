@@ -16,7 +16,7 @@
             <h1>Pay Runs</h1>
             <p class="pbr-sub">Every batch from draft to paid — approve, report and export without leaving the board.</p>
           </div>
-          <button class="pbr-new" t-on-click="newRun">
+          <button class="pbr-new" data-coach="pk-run" t-on-click="newRun">
             <span class="ic" t-out="ic('zap', 15)"/> Run payroll
           </button>
         </div>
@@ -53,7 +53,7 @@
              Parity with the kanban, which has filtered on this since it was
              built. The COLUMN COUNTS are not touched: a filter is a way of
              looking at the board, never a change to what the board is (W82). -->
-        <div class="pbr-divs" t-if="state.divisions.length">
+        <div class="pbr-divs" data-coach="pk-divchips" t-if="state.divisions.length">
           <button t-foreach="divisionChips" t-as="dv" t-key="dv.key"
                   class="pbr-divchip"
                   t-att-class="{ 'is-on': state.division === dv.key }"
@@ -65,11 +65,13 @@
              A run is at EXACTLY one step (its state), so the counts add up
              to every live run. Rejected runs are at no step (drawer below).
              Pressing a step shows only that column; again shows them all. -->
+        <div data-coach="pk-steps">
         <t t-call="pb_import_kit.QuietSteps">
           <t t-set="qSteps" t-value="steps"/>
           <t t-set="qStepsLabel" t-value="'Where every pay run is'"/>
           <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
         </t>
+        </div>
         <div class="pbim-showing">
           <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
           <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
@@ -105,7 +107,7 @@
                   <!-- Which route this run is on, and who it is with. Named
                        people rather than a stage, because a stage is no longer
                        who decides it. -->
-                  <div class="pbr-route" t-if="b.approval and b.approval.step">
+                  <div class="pbr-route" data-coach="pk-route" t-if="b.approval and b.approval.step">
                     <span class="hd" t-esc="b.approval.step"/>
                     <span class="who" t-if="b.approval.with">With <t t-esc="b.approval.with"/></span>
                     <span class="why" t-if="b.approval.blocked" t-esc="b.approval.blocked"/>
@@ -130,7 +132,7 @@
                   </div>
                 </div>
 
-                <div t-else="" class="pbr-card-foot">
+                <div t-else="" class="pbr-card-foot" data-coach="pk-card-actions">
                   <!-- context-aware primary action -->
                   <t t-if="b.next_action and b.can_act">
                     <button class="pbr-btn primary" t-on-click="() => this.advance(b)" t-esc="nextLabel(b.next_action)"/>
@@ -156,7 +158,7 @@
         </div>
 
         <!-- ===================== rejected drawer ===================== -->
-        <div t-if="state.rejectedCount" class="pbr-rejected">
+        <div t-if="state.rejectedCount" class="pbr-rejected" data-coach="pk-rejected">
           <button class="pbr-rejected-h" t-on-click="toggleRejected">
             <span t-attf-class="chev {{ state.showRejected ? 'open' : '' }}" t-out="ic('chevron', 13)"/>
             Rejected pay runs <span class="ct" t-esc="state.rejectedCount"/>

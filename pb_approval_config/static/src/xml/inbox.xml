@@ -25,7 +25,7 @@
             <h1 class="pbim-h1">Waiting for a decision</h1>
             <p class="pbim-sub">Everything from every part of the product, in one place — whoever you are.</p>
           </div>
-          <div class="pbam-hero-actions">
+          <div data-coach="ai-head" class="pbam-hero-actions">
             <button class="pbim-btn ghost" t-on-click="() => this.openAsk()">
               <t t-out="ic('plus',15)"/> <span>Ask for a sign-off</span>
             </button>
@@ -36,7 +36,7 @@
           </div>
         </div>
 
-        <div t-else="" class="pbam-embedded-actions">
+        <div data-coach="ai-head" t-else="" class="pbam-embedded-actions">
           <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.openAsk()">
             <t t-out="ic('plus',14)"/> <span>Ask for a sign-off</span>
           </button>
@@ -74,7 +74,7 @@
           </div>
 
           <!-- ==== whose queue: mine, my team's, everyone's ==== -->
-          <div t-if="scopes.length" class="pbam-scopes">
+          <div data-coach="ai-scope" t-if="scopes.length" class="pbam-scopes">
             <button t-foreach="scopes" t-as="sc" t-key="sc.key"
                     class="pbam-scope" t-att-class="{ 'is-on': state.scope === sc.key }"
                     t-on-click="() => this.setScope(sc.key)">
@@ -86,7 +86,7 @@
             </span>
           </div>
 
-          <div class="pbam-tabs">
+          <div data-coach="ai-tabs" class="pbam-tabs">
             <button t-foreach="tabs" t-as="tb" t-key="tb.key"
                     class="pbam-tab" t-att-class="{ 'is-on': state.tab === tb.key }"
                     t-on-click="() => this.setTab(tb.key)">
@@ -132,7 +132,7 @@
           </div>
 
           <div t-else="" class="pbam-reqs">
-            <div t-foreach="cards" t-as="cd" t-key="cd.id"
+            <div data-coach="ai-card" t-foreach="cards" t-as="cd" t-key="cd.id"
                  class="pbam-req"
                  t-att-class="{ 'is-mine': cd.mine, 'is-dim': cd.state === 'applied' or cd.state === 'approved' }"
                  t-on-click="() => this.open(cd)">
@@ -172,7 +172,7 @@
                     <span>Waiting for <b t-esc="cd.waiting_for"/></span>
                   </span>
                 </div>
-                <div class="pbam-rt">
+                <div data-coach="ai-route" class="pbam-rt">
                   <t t-foreach="cd.route" t-as="st" t-key="st_index">
                     <span t-if="st_index" class="pbam-rline"/>
                     <span class="pbam-rdot" t-att-class="'pbam-rdot-' + st.status">
@@ -272,7 +272,7 @@
   <!-- ==================================================================== -->
 
   <t t-name="pb_approval_config.RequestDrawer">
-    <aside class="pbam-drawer pbam-drawer-wide">
+    <aside data-coach="ai-drawer" class="pbam-drawer pbam-drawer-wide">
 
       <div t-if="state.loading" class="pbim-busy">
         <div class="pbim-spin"/><span>Opening it…</span>
@@ -342,7 +342,7 @@
             </div>
           </div>
 
-          <div t-if="request.facts.length">
+          <div data-coach="ai-facts" t-if="request.facts.length">
             <div class="pbam-k">The facts, as they were when it was sent in</div>
             <div class="pbam-factgrid">
               <div t-foreach="request.facts" t-as="ft" t-key="ft.key" class="pbam-fact">
@@ -468,7 +468,7 @@
           <p class="pbim-sub" t-esc="request.submitted_note"/>
         </div>
 
-        <div class="pbam-df">
+        <div data-coach="ai-decide" class="pbam-df">
           <t t-if="request.can_repair">
             <button class="pbim-btn primary" t-att-disabled="state.busy"
                     t-on-click="() => this.repair()">
@@ -481,18 +481,18 @@
                  for existing has gone (the scheme is already live, the file
                  has been sent again) can only be left there, forever, unless
                  the person who sent it in can put it down. -->
-            <button t-if="request.can_cancel" class="pbim-btn ghost"
+            <button data-coach="ai-withdraw" t-if="request.can_cancel" class="pbim-btn ghost"
                     t-att-disabled="state.busy"
                     t-on-click="() => this.cancel()">Withdraw it</button>
           </t>
           <t t-elif="canApprove">
-            <button class="pbim-btn danger" t-on-click="() => this.openModal('reject')">
+            <button data-coach="ai-turndown" class="pbim-btn danger" t-on-click="() => this.openModal('reject')">
               Turn it down
             </button>
-            <button class="pbim-btn ghost" t-on-click="() => this.openModal('sendback')">
+            <button data-coach="ai-sendback" class="pbim-btn ghost" t-on-click="() => this.openModal('sendback')">
               <t t-out="ic('undo',14)"/> <span>Send it back</span>
             </button>
-            <button t-if="mustUseException" class="pbim-btn primary"
+            <button data-coach="ai-approve" t-if="mustUseException" class="pbim-btn primary"
                     t-on-click="() => this.openModal('exception')">
               <t t-out="ic('flag',14)"/> <span>Approve with an exception</span>
             </button>
@@ -500,11 +500,11 @@
                     t-att-title="conflict.note">
               <t t-out="ic('ban',14)"/> <span>You cannot approve this one</span>
             </button>
-            <button t-else="" class="pbim-btn primary" t-att-disabled="state.busy"
+            <button data-coach="ai-approve" t-else="" class="pbim-btn primary" t-att-disabled="state.busy"
                     t-on-click="() => this.approve()">
               <t t-out="ic('check',14)"/> <span>Approve</span>
             </button>
-            <button t-if="canMoveIt" class="pbim-btn ghost"
+            <button data-coach="ai-move" t-if="canMoveIt" class="pbim-btn ghost"
                     t-att-disabled="state.busy"
                     t-on-click="() => this.openModal('moveit')">
               <t t-out="ic('userCheck',14)"/> <span>Move it to somebody else</span>
@@ -514,7 +514,7 @@
                  or send it back to yourself — and where the independence rule
                  leaves "Approve" disabled, there is otherwise no way out at
                  all. Withdraw only ever shows to the person who sent it. -->
-            <button t-if="request.can_cancel" class="pbim-btn ghost"
+            <button data-coach="ai-withdraw" t-if="request.can_cancel" class="pbim-btn ghost"
                     t-att-disabled="state.busy"
                     t-on-click="() => this.cancel()">Withdraw it</button>
           </t>
@@ -525,13 +525,13 @@
               </t>
               <t t-else="">This one is finished.</t>
             </span>
-            <button t-if="request.can_cancel" class="pbim-btn ghost"
+            <button data-coach="ai-withdraw" t-if="request.can_cancel" class="pbim-btn ghost"
                     t-att-disabled="state.busy" t-on-click="() => this.cancel()">Withdraw it</button>
             <!-- THE LAST WAY OUT OF A STUCK SEAT. The engine has had
                  `reassign` since Phase 1 and no door: the only way to mend a
                  request whose one seat belongs to the person who sent it in
                  was a shell. -->
-            <button t-if="canMoveIt" class="pbim-btn ghost"
+            <button data-coach="ai-move" t-if="canMoveIt" class="pbim-btn ghost"
                     t-att-disabled="state.busy"
                     t-on-click="() => this.openModal('moveit')">
               <t t-out="ic('userCheck',14)"/> <span>Move it to somebody else</span>
