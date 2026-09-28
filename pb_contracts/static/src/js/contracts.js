@@ -211,10 +211,10 @@ export class PbContracts extends Component {
     openContract(id) {
         if (!id) return;
         if (this.drawerCmp) { this.state.drawerContractId = Number(id); return; }
-        this.action.doAction({ type: "ir.actions.client", tag: "pb_contract_detail", name: "Contract", params: { contract_id: id } });
+        this.action.doAction({ type: "ir.actions.client", tag: "pb_contract_detail", name: _t("Contract"), params: { contract_id: id } });
     }
     newContract() {
-        this.action.doAction({ type: "ir.actions.client", tag: "pb_contract_wizard", name: "New contract" });
+        this.action.doAction({ type: "ir.actions.client", tag: "pb_contract_wizard", name: _t("New contract") });
     }
     openAll() { this.action.doAction("pb_hr_payroll_base.action_hr_contract_payroll", { clearBreadcrumbs: true }); }
 }

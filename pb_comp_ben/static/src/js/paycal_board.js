@@ -26,6 +26,15 @@ export class PbPaycalBoard extends Component {
     static template = "pb_comp_ben.PbPaycalBoard";
     static props = ["*"];
 
+    // Words the template picks between in an expression; a literal there is
+    // never extracted for translation (LEARN REFRESH step 6).
+    get L() {
+        return {
+            switchOff: _t("Switch off"), switchOn: _t("Switch on"),
+            closed: _t("Closed"), open: _t("Open"),
+        };
+    }
+
     setup() {
         this.orm = useService("orm");
         this.notif = useService("notification");

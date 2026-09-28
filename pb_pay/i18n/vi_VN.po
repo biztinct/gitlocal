@@ -5979,3 +5979,9 @@ msgstr "Vị trí đó thôi được trả lương theo dải này"
 #: code:addons/pb_pay/tests/test_pay_review.py:0
 msgid "What"
 msgstr "Nội dung"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "1 row stops approval"
+msgstr "1 dòng chặn duyệt"

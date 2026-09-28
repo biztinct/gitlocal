@@ -7,20 +7,24 @@ from urllib.parse import urljoin, urlparse
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, ValidationError
+from odoo.tools.translate import LazyTranslate
 
 _logger = logging.getLogger(__name__)
+# Module-level words are lazy and read through `env._()` at call time
+# (LEARN REFRESH step 6); product names stay as they are.
+_lt = LazyTranslate(__name__)
 
 TYPE_LABEL = {
-    'zoho': 'Zoho People', 'excel': 'Excel File', 'sap': 'SAP SuccessFactors',
-    'workday': 'Workday', 'oracle': 'Oracle HCM', 'darwin': 'DarwinHR', 'demo': 'Demo / Stub',
+    'zoho': 'Zoho People', 'excel': _lt('Excel File'), 'sap': 'SAP SuccessFactors',
+    'workday': 'Workday', 'oracle': 'Oracle HCM', 'darwin': 'DarwinHR', 'demo': _lt('Demo / Stub'),
 }
 TYPE_ICON = {
     'zoho': 'cloud', 'excel': 'table', 'sap': 'server',
     'workday': 'briefcase', 'oracle': 'database', 'darwin': 'zap', 'demo': 'beaker',
 }
 STATUS_LABEL = {
-    'disconnected': 'Disconnected', 'connecting': 'Connecting',
-    'connected': 'Connected', 'error': 'Error',
+    'disconnected': _lt('Disconnected'), 'connecting': _lt('Connecting'),
+    'connected': _lt('Connected'), 'error': _lt('Error'),
 }
 LIFECYCLE = {
     'action_test_connection', 'action_pull_data', 'action_fetch_available_fields',
@@ -66,13 +70,13 @@ PERIOD_SCOPED = {
 # panel made an ordinary URL impossible to review after saving it.
 CRED_SETS = {
     'oauth2': [
-        ('client_id', 'Client ID', True),
-        ('client_secret', 'Client Secret', True),
-        ('refresh_token', 'Refresh Token', True),
+        ('client_id', _lt('Client ID'), True),
+        ('client_secret', _lt('Client Secret'), True),
+        ('refresh_token', _lt('Refresh Token'), True),
     ],
-    'api_key': [('api_key', 'API Key', True)],
-    'basic': [('username', 'Username', True), ('password', 'Password', True)],
-    'bearer': [('access_token', 'Access Token', True)],
+    'api_key': [('api_key', _lt('API Key'), True)],
+    'basic': [('username', _lt('Username'), True), ('password', _lt('Password'), True)],
+    'bearer': [('access_token', _lt('Access Token'), True)],
 }
 
 # Everything `save_credentials` will write, and the ONLY things it will write.
@@ -89,6 +93,10 @@ class PbConnectorCockpit(models.AbstractModel):
     we DISCARD, then re-read the connector state."""
     _name = 'pb.import.connector.cockpit'
     _description = 'Payobook connector cockpit'
+
+    def _tl(self, label):
+        """A label that may be lazy (`_lt`) or a plain product name."""
+        return self.env._(label) if not isinstance(label, str) else label
 
     @api.model
     def _safe(self, fn, default=None):
@@ -110,9 +118,9 @@ class PbConnectorCockpit(models.AbstractModel):
         return {
             'id': c.id, 'name': c.name or '—',
             'type': c.connector_type or '', 'icon': TYPE_ICON.get(c.connector_type, 'plug'),
-            'type_label': TYPE_LABEL.get(c.connector_type, c.connector_type or '—'),
+            'type_label': self._tl(TYPE_LABEL.get(c.connector_type, c.connector_type or '—')),
             'status': c.connection_status or 'disconnected',
-            'status_label': STATUS_LABEL.get(c.connection_status, c.connection_status or 'Disconnected'),
+            'status_label': self._tl(STATUS_LABEL.get(c.connection_status, c.connection_status or _lt('Disconnected'))),
             # The same derived truth the detail header uses (C7 WP-5): a list
             # and a detail that disagree about one connector is the same defect
             # one screen further out.
@@ -123,7 +131,7 @@ class PbConnectorCockpit(models.AbstractModel):
     def get_connector_detail(self, connector_id):
         c = self.env['hr.integration.connector'].browse(int(connector_id))
         if not c.exists():
-            return {'error': 'Connector not found'}
+            return {'error': _('Connector not found')}
         mappings = [{
             'id': m.id,
             'source': m.source_field or '',
@@ -139,9 +147,9 @@ class PbConnectorCockpit(models.AbstractModel):
         return {
             'id': c.id, 'name': c.name or '—',
             'type': c.connector_type or '', 'icon': TYPE_ICON.get(c.connector_type, 'plug'),
-            'type_label': TYPE_LABEL.get(c.connector_type, c.connector_type or '—'),
+            'type_label': self._tl(TYPE_LABEL.get(c.connector_type, c.connector_type or '—')),
             'status': c.connection_status or 'disconnected',
-            'status_label': STATUS_LABEL.get(c.connection_status, c.connection_status or 'Disconnected'),
+            'status_label': self._tl(STATUS_LABEL.get(c.connection_status, c.connection_status or _lt('Disconnected'))),
             # C7 WP-5 — kept for any caller that still reads it, but the header
             # renders `sync_truth`, which is derived from the feeds the reader
             # can see rather than from a field nothing on the screen
@@ -327,8 +335,8 @@ class PbConnectorCockpit(models.AbstractModel):
         if c.last_sync:
             return {
                 'kind': 'pull', 'when': str(c.last_sync)[:16],
-                'note': "This connector recorded a pull before it kept "
-                        "per-feed history, so no feed below shows it.",
+                'note': _("This connector recorded a pull before it kept "
+                          "per-feed history, so no feed below shows it."),
             }
         return {'kind': 'never', 'when': '', 'note': ''}
 
@@ -402,12 +410,12 @@ class PbConnectorCockpit(models.AbstractModel):
         issues = []
         effective_base = c.api_endpoint or DEFAULT_API_BASE.get(c.connector_type, '')
         if c.connector_type != 'excel' and not effective_base:
-            issues.append('Add the API base URL.')
+            issues.append(_('Add the API base URL.'))
         secret_state = c.sudo()
         if c.auth_type == 'oauth2' and not (
                 secret_state.refresh_token or
                 (secret_state.access_token and secret_state.token_expiry)):
-            issues.append('Complete OAuth or add a refresh token.')
+            issues.append(_('Complete OAuth or add a refresh token.'))
         incomplete = sum(
             1 for row in endpoints
             if row['active'] and row['operation'] != 'catalog_only'
@@ -475,14 +483,14 @@ class PbConnectorCockpit(models.AbstractModel):
         editable = self.env.user.has_group('base.group_system')
         auth = c.auth_type or 'oauth2'
         out = {'auth_type': auth,
-               'auth_label': dict(
-                   c._fields['auth_type'].selection).get(auth, auth),
+               'auth_label': dict(c._fields['auth_type']._description_selection(
+                   self.env)).get(auth, auth),
                'editable': editable, 'fields': []}
         if not editable:
             return out
         for key, label, secret in CRED_SETS.get(auth, []):
             out['fields'].append({
-                'key': key, 'label': label, 'secret': secret,
+                'key': key, 'label': self.env._(label), 'secret': secret,
                 # A BOOLEAN. Never the value, never a prefix, never a length.
                 'is_set': bool(c[key]),
             })
@@ -505,15 +513,15 @@ class PbConnectorCockpit(models.AbstractModel):
         acts = []
         connected = c.connection_status == 'connected'
         is_excel = c.connector_type == 'excel'
-        acts.append({'method': 'action_test_connection', 'label': 'Test connection',
+        acts.append({'method': 'action_test_connection', 'label': _('Test connection'),
                      'icon': 'zap', 'kind': 'primary' if not connected else 'outline'})
         if connected and not is_excel:
-            acts.append({'method': 'action_pull_data', 'label': 'Pull data',
+            acts.append({'method': 'action_pull_data', 'label': _('Pull data'),
                          'icon': 'download', 'kind': 'primary'})
-            acts.append({'method': 'action_fetch_available_fields', 'label': 'Fetch fields',
+            acts.append({'method': 'action_fetch_available_fields', 'label': _('Fetch fields'),
                          'icon': 'refresh', 'kind': 'ghost'})
         if connected:
-            acts.append({'method': 'action_disconnect', 'label': 'Disconnect',
+            acts.append({'method': 'action_disconnect', 'label': _('Disconnect'),
                          'icon': 'x', 'kind': 'danger'})
         return acts
 
@@ -522,7 +530,7 @@ class PbConnectorCockpit(models.AbstractModel):
                              period_from=None, period_to=None):
         if method not in LIFECYCLE:
             d = self.get_connector_detail(connector_id)
-            d['error'] = 'Action not permitted'
+            d['error'] = _('Action not permitted')
             return d
         c = self.env['hr.integration.connector'].browse(int(connector_id))
         start, end = self._period(period_from, period_to)
@@ -535,7 +543,7 @@ class PbConnectorCockpit(models.AbstractModel):
             else:
                 getattr(c, method)()      # discard notification/reload return
         except Exception as e:
-            err = str(getattr(e, 'name', None) or e) or 'Action failed'
+            err = str(getattr(e, 'name', None) or e) or _('Action failed')
             _logger.warning("Connector action %s failed: %s", method, e)
         detail = self.get_connector_detail(connector_id)
         detail['error'] = err
@@ -624,16 +632,16 @@ class PbConnectorCockpit(models.AbstractModel):
         """
         c = self.env['hr.integration.connector'].browse(int(connector_id))
         if not c.exists():
-            return {'error': 'Connector not found'}
+            return {'error': _('Connector not found')}
         ep = c.endpoint_ids.filtered(lambda e: e.id == int(endpoint_id))
         if not ep:
-            return {'error': 'That feed is not on this connector.'}
+            return {'error': _('That feed is not on this connector.')}
         start, end = self._period(period_from, period_to)
         err = None
         try:
             c.action_pull_endpoint(ep.id, period_from=start, period_to=end)
         except Exception as e:
-            err = str(getattr(e, 'name', None) or e) or 'Pull failed'
+            err = str(getattr(e, 'name', None) or e) or _('Pull failed')
             _logger.warning("Endpoint sync failed for %s/%s: %s",
                             c.name, ep.code, e)
         ep.invalidate_recordset()
@@ -654,13 +662,13 @@ class PbConnectorCockpit(models.AbstractModel):
         """
         c = self.env['hr.integration.connector'].browse(int(connector_id))
         if not c.exists():
-            return {'error': 'Connector not found'}
+            return {'error': _('Connector not found')}
         err = None
         res = {'created': 0, 'skipped': 0}
         try:
             res = c.action_sync_endpoint_catalog()
         except Exception as e:
-            err = str(getattr(e, 'name', None) or e) or 'Could not detect feeds'
+            err = str(getattr(e, 'name', None) or e) or _('Could not detect feeds')
             _logger.warning("Catalogue sync failed for %s: %s", c.name, e)
         detail = self.get_connector_detail(connector_id)
         detail['error'] = err
@@ -691,7 +699,7 @@ class PbConnectorCockpit(models.AbstractModel):
         """
         c = self.env['hr.integration.connector'].browse(int(connector_id or 0))
         if not c.exists():
-            return {'error': 'Connector not found'}
+            return {'error': _('Connector not found')}
         if not c.has_access('write'):
             raise AccessError(_('You cannot configure this connector.'))
 
@@ -813,21 +821,21 @@ class PbConnectorCockpit(models.AbstractModel):
             raise AccessError(_('You cannot configure this connector.'))
         Endpoint = self.env['hr.integration.endpoint']
         if not Endpoint._schema_ready():
-            return {'error': 'Upgrade this database before restoring feeds.'}
+            return {'error': _('Upgrade this database before restoring feeds.')}
         endpoint = Endpoint.with_context(
             active_test=False).search([
                 ('connector_id', '=', c.id),
                 ('id', '=', int(endpoint_id or 0)),
             ], limit=1)
         if not endpoint:
-            return {'error': 'Feed not found'}
+            return {'error': _('Feed not found')}
         template = self.env['hr.integration.endpoint.template'].with_context(
             active_test=False).search([
                 ('connector_type', '=', c.connector_type),
                 ('code', '=', endpoint.code),
             ], limit=1)
         if not template:
-            return {'error': 'This custom feed has no vendor template.'}
+            return {'error': _('This custom feed has no vendor template.')}
         endpoint.write({
             'name': template.name, 'data_type': template.data_type,
             'operation': template.operation or 'catalog_only',
@@ -862,12 +870,12 @@ class PbConnectorCockpit(models.AbstractModel):
         """
         c = self.env['hr.integration.connector'].browse(int(connector_id or 0))
         if not c.exists():
-            return {'error': 'Connector not found'}
+            return {'error': _('Connector not found')}
         ep = c.endpoint_ids.filtered(lambda e: e.id == int(endpoint_id or 0))
         if not ep:
-            return {'error': 'That feed is not on this connector.'}
+            return {'error': _('That feed is not on this connector.')}
         if not c.has_access('write'):
-            return {'error': 'You cannot change this connector.'}
+            return {'error': _('You cannot change this connector.')}
         res = c.action_fetch_endpoint_fields(ep.id)
         ep.invalidate_recordset()
         return {'endpoint': self._endpoint_row(ep),
@@ -904,7 +912,7 @@ class PbConnectorCockpit(models.AbstractModel):
                 "credentials."))
         c = self.env['hr.integration.connector'].browse(int(connector_id))
         if not c.exists():
-            return {'error': 'Connector not found'}
+            return {'error': _('Connector not found')}
 
         write_vals = {}
         for key, value in (vals or {}).items():

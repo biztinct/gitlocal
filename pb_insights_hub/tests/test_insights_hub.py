@@ -375,7 +375,14 @@ class TestPayrollReportReskin(TransactionCase):
     WF = os.path.join(ROOT, 'pb_hr_workforce')
 
     def _wf(self, *parts):
-        return _read(self.WF, *parts)
+        src = _read(self.WF, *parts)
+        # LEARN REFRESH step 6: the report's template moved out of an inline
+        # xml`` literal (never extracted for translation) into its own file.
+        # The component is still the pair, so the gates read both.
+        if parts == ('static', 'src', 'js', 'payroll_report.js'):
+            src += '\n' + _read(self.WF, 'static', 'src', 'xml',
+                                'payroll_report.xml')
+        return src
 
     def test_not_one_font_awesome_class_survives(self):
         """The needle is the CLASS ATTRIBUTE of the CODE, not of the file.

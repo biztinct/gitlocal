@@ -72,7 +72,9 @@ const KIND_ICON = { component: "banknote", field: "fileText", retro: "history" }
 // Contract state → the chip tone the shared kit already paints.
 const STATE_TONE = { open: "ok", close: "warn", draft: "info", cancel: "muted" };
 
-const MONTHS = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+// Read at call time, not module load: `_t` needs the session's language.
+const MONTHS = () => ["", _t("Jan"), _t("Feb"), _t("Mar"), _t("Apr"), _t("May"), _t("Jun"),
+    _t("Jul"), _t("Aug"), _t("Sep"), _t("Oct"), _t("Nov"), _t("Dec")];
 
 // The three lifecycle steps the server will actually run
 // (`pb_contracts.LIFECYCLE`). "Renew" is offered by the same payload and is
@@ -647,7 +649,7 @@ export class Contract360Drawer extends Component {
     }
     openFullScreen() {
         this.action.doAction({
-            type: "ir.actions.client", tag: "pb_contract_detail", name: "Contract",
+            type: "ir.actions.client", tag: "pb_contract_detail", name: _t("Contract"),
             params: { contract_id: Number(this.props.contractId) },
         });
     }
@@ -1402,11 +1404,14 @@ export class Contract360Drawer extends Component {
     }
     _monthLabel(m) {
         const parts = m.split("-");
-        return (MONTHS[parseInt(parts[1], 10)] || "") + " " + parts[0];
+        return (MONTHS()[parseInt(parts[1], 10)] || "") + " " + parts[0];
     }
     hasDelta(row) { return Boolean(row.from || row.to); }
+    get maskedTitle() { return _t("Visible to payroll managers only"); }
     historyCountLabel() {
-        return "Showing " + (this.history.shown || 0) + " of " + (this.history.total || 0);
+        return _t("Showing %(shown)s of %(total)s", {
+            shown: this.history.shown || 0, total: this.history.total || 0,
+        });
     }
 }
 

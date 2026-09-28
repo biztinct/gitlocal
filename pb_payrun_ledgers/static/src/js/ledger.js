@@ -89,6 +89,11 @@ export class LedgerCockpit extends Component {
      * with no tab strip, and a tab strip of one is a control that does nothing.
      */
     get embedded() { return !!this.props.embedded; }
+    // Template string literals are never extracted for translation, so the
+    // step strip's heading lives here as a real msgid (LEARN REFRESH step 6).
+    get stepsLabel() { return _t("Where every settlement is"); }
+    get searchPh() { return this.state.data.search_ph || _t("Search…"); }
+    get emptyText() { return this.state.data.empty || _t("Nothing matches these filters."); }
     get tabs() { return this.props.tabs || []; }
     get tabDef() {
         return this.tabs.find((t) => t.key === this.state.tab) || this.tabs[0] || null;

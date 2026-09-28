@@ -2,11 +2,15 @@
 import logging
 from datetime import date
 
-from odoo import api, models
+from odoo import _, api, models
+from odoo.tools.translate import LazyTranslate
 
 _logger = logging.getLogger(__name__)
+# Lazy module-level words, read through `env._()` (LEARN REFRESH step 6).
+_lt = LazyTranslate(__name__)
 
-STATE_LABEL = {'draft': 'Draft', 'open': 'Running', 'close': 'Expired', 'cancel': 'Cancelled'}
+STATE_LABEL = {'draft': _lt('Draft'), 'open': _lt('Running'), 'close': _lt('Expired'),
+               'cancel': _lt('Cancelled')}
 ROSTER_LIMIT = 240
 # state -> contextual next actions (label, icon, kind)
 NEXT = {
@@ -18,6 +22,18 @@ NEXT = {
     'cancel': [('set_running', 'Re-activate', 'play', 'ghost')],
 }
 LIFECYCLE = {'set_running', 'terminate', 'cancel'}
+
+
+def next_label(env, label):
+    """A NEXT button's words in the reader's language: one `env._()` literal per
+    label (a label inside a tuple is data and is never extracted)."""
+    return {
+        'Set running': env._("Set running"),
+        'Cancel': env._("Cancel"),
+        'Renew': env._("Renew"),
+        'Terminate': env._("Terminate"),
+        'Re-activate': env._("Re-activate"),
+    }.get(label, label)
 
 
 def _initials(name):
@@ -101,7 +117,7 @@ class PbContracts(models.AbstractModel):
                     'employee': c.employee_id.name if c.employee_id else '—',
                     'employee_id': c.employee_id.id if c.employee_id else False,
                     'avatar': ('/web/image/hr.employee/%s/avatar_128' % c.employee_id.id) if c.employee_id else '',
-                    'state': c.state, 'state_label': STATE_LABEL.get(c.state, c.state),
+                    'state': c.state, 'state_label': self.env._(STATE_LABEL[c.state]) if c.state in STATE_LABEL else c.state,
                     'kanban_state': c.kanban_state,
                     'wage': c.wage or 0.0,
                     'date_start': str(c.date_start) if c.date_start else '',
@@ -134,7 +150,7 @@ class PbContracts(models.AbstractModel):
     def get_contract_detail(self, contract_id):
         c = self.env['hr.contract'].browse(int(contract_id))
         if not c.exists():
-            return {'error': 'Contract not found'}
+            return {'error': _('Contract not found')}
         # SCHEMECTX: the same sign the drawer writes — the scheme that pays
         # the person, not whatever the company is filed under. This screen and
         # the drawer show one contract each, so they must agree to the letter.
@@ -157,10 +173,11 @@ class PbContracts(models.AbstractModel):
                       'cancel': 'expired'}.get(c.state, 'draft')
         order = ['draft', 'running', 'expired']
         ci = order.index(rail_state)
-        pipeline = [{'key': s, 'label': s.capitalize(), 'done': i < ci, 'current': i == ci}
+        rail_lbl = {'draft': _('Draft'), 'running': _('Running'), 'expired': _('Expired')}
+        pipeline = [{'key': s, 'label': rail_lbl[s], 'done': i < ci, 'current': i == ci}
                     for i, s in enumerate(order)]
 
-        acts = [{'method': m, 'label': l, 'icon': i, 'kind': k} for (m, l, i, k) in NEXT.get(c.state, [])]
+        acts = [{'method': m, 'label': next_label(self.env, l), 'icon': i, 'kind': k} for (m, l, i, k) in NEXT.get(c.state, [])]
 
         return {
             'id': c.id, 'name': c.name or '—',
@@ -172,7 +189,7 @@ class PbContracts(models.AbstractModel):
             'structure': (c.struct_id.name if getattr(c, 'struct_id', False) else
                           (c.structure_type_id.name if c.structure_type_id else '')),
             'currency': symbol,
-            'state': c.state, 'state_label': STATE_LABEL.get(c.state, c.state),
+            'state': c.state, 'state_label': self.env._(STATE_LABEL[c.state]) if c.state in STATE_LABEL else c.state,
             'kanban_state': c.kanban_state,
             'wage': c.wage or 0.0,
             'date_start': str(c.date_start) if c.date_start else '',

@@ -51,3 +51,13 @@ msgstr "Bạn phụ trách"
 #: code:addons/pb_vendor_access/static/src/js/vendor_palette.js:0
 msgid "Vendors"
 msgstr "Nhà cung cấp"
+
+#. module: pb_vendor_access
+#: model:pb.role.profile,name:pb_vendor_access.role_tenant_administrator
+msgid "Tenant administrator"
+msgstr "Quản trị viên đơn vị"
+
+#. module: pb_vendor_access
+#: model:pb.role.profile,description:pb_vendor_access.role_tenant_administrator
+msgid "Runs this whole application: pay, people, joining and leaving, budgets, reporting, the connected systems, the calculation rules, and who here can do what. It does not include the system administrator permission, so it cannot switch developer mode on, open the raw permission table, or reach anything belonging to the platform this runs on. Growth plans are deliberately not part of it — give those to your head of HR separately."
+msgstr "Điều hành toàn bộ ứng dụng này: lương, nhân sự, vào làm và nghỉ việc, ngân sách, báo cáo, các hệ thống được kết nối, quy tắc tính toán và ai ở đây được làm gì. Không bao gồm quyền quản trị hệ thống, nên không bật được chế độ nhà phát triển, không mở được bảng phân quyền gốc và không đụng đến nền tảng mà hệ thống chạy trên đó. Kế hoạch phát triển được cố ý để riêng — hãy giao phần đó cho trưởng phòng nhân sự."

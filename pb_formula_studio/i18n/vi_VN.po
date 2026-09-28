@@ -13836,7 +13836,7 @@ msgstr "Tên khách hàng (liên kết này dành cho ai?)"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
 msgid "No release to sign off"
-msgstr "Không có bản phát hành để đăng xuất"
+msgstr "Không có bản phát hành nào cần ký xác nhận"
 
 #. module: pb_formula_studio
 #. odoo-javascript
@@ -14785,132 +14785,82 @@ msgid "Feeds these components"
 msgstr "Cung cấp các thành phần này"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_config_view_inherit.xml:1
-msgid "formula_config_list"
-msgstr "công thức_config_list"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_config_view_inherit.xml:1
-msgid "formula_config_kanban"
-msgstr "công thức_config_kanban"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
-msgid "Payroll review ·"
-msgstr "Đánh giá tiền lương ·"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
-msgid "Payo"
-msgstr "Payo"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
-msgid "book"
-msgstr "sách"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
-msgid "Read-only review"
-msgstr "Đánh giá chỉ đọc"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "Payroll configuration review"
 msgstr "Đánh giá cấu hình tiền lương"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "Prepared by"
 msgstr "Chuẩn bị bởi"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "Thank you — your sign-off has been recorded."
-msgstr "Cảm ơn bạn - việc đăng xuất của bạn đã được ghi lại."
+msgstr "Cảm ơn bạn — xác nhận phê duyệt của bạn đã được ghi lại."
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "Your comment has been posted."
 msgstr "Bình luận của bạn đã được đăng."
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
-msgid "Health score"
-msgstr "Điểm sức khỏe"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "Sample payslip"
 msgstr "Phiếu lương mẫu"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "A representative payslip computed live through the engine"
 msgstr "Phiếu lương đại diện được tính toán trực tiếp thông qua công cụ"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "Earnings"
 msgstr "Thu nhập"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "Deductions"
 msgstr "Khấu trừ"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "No sample data available for a preview yet."
 msgstr "Chưa có dữ liệu mẫu nào để xem trước."
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "Release for your approval"
 msgstr "Phát hành để bạn chấp thuận"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "changed · sealed by"
 msgstr "đã thay đổi · được niêm phong bởi"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "Your name"
 msgstr "Tên của bạn"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
-msgid "Approve & sign off"
-msgstr "Phê duyệt và đăng xuất"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "Salary components"
 msgstr "Thành phần tiền lương"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "Every component in this configuration, exactly as it computes."
 msgstr "Mọi thành phần trong cấu hình này đều chính xác như tính toán của nó."
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "Formula / value"
 msgstr "Công thức/giá trị"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
-msgid "from input"
-msgstr "từ đầu vào"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
-msgid "Questions & comments"
-msgstr "Câu hỏi và nhận xét"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid ""
 "Anything unclear or off? Leave a note and the payroll team will follow up."
 msgstr ""
@@ -14918,67 +14868,27 @@ msgstr ""
 "theo dõi."
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "No comments yet."
 msgstr "Chưa có bình luận nào"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "Write a comment…"
 msgstr "Viết bình luận…"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "Post comment"
 msgstr "Đăng bình luận"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
-msgid "Shared securely by"
-msgstr "Được chia sẻ an toàn bởi"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
-msgid "Payobook"
-msgstr "Payobook"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
-msgid "· this link is private to you and can be revoked at any time."
-msgstr ""
-"· Liên kết này là riêng tư đối với bạn và có thể bị thu hồi bất cứ lúc nào."
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
-msgid "Link unavailable"
-msgstr "Liên kết không có sẵn"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
-msgid ""
-"body{margin:0;background:#14102E;color:#fff;font-family:-apple-"
-"system,BlinkMacSystemFont,\"Segoe UI\",system-ui,sans-"
-"serif;display:flex;min-height:100vh;align-items:center;justify-"
-"content:center;text-align:center} .box{max-width:420px;padding:32px} .box "
-"b{font-weight:800;font-size:1.05rem} .box b span{color:#B9AEEF} .box "
-"h1{font-size:1.5rem;font-weight:800;margin:20px 0 10px} .box "
-"p{color:#C9C4E4;line-height:1.55}"
-msgstr ""
-"body{margin:0;background:#14102E;color:#fff;font-family:-apple-"
-"system,BlinkMacSystemFont,\"Segoe UI\",system-ui,sans-"
-"serif;display:flex;min-height:100vh;align-items:center;justify-"
-"content:center;text-align:center} .box{max-width:420px;padding:32px} .box "
-"b{font-weight:800;font-size:1.05rem} .box b span{color:#B9AEEF} .box "
-"h1{font-size:1.5rem;font-weight:800;margin:20px 0 10px} .box "
-"p{color:#C9C4E4;line-height:1.55}"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_invalid
 msgid "This review link is no longer available"
 msgstr "Liên kết đánh giá này không còn tồn tại"
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/formula_review_templates.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_invalid
 msgid ""
 "It may have expired or been revoked. Please ask your payroll contact for a "
 "fresh link."
@@ -14987,20 +14897,9 @@ msgstr ""
 "lương của bạn để có một liên kết mới."
 
 #. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/hr_payslip_calculation_view.xml:1
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.view_hr_payslip_form_show_calculation
 msgid "Show the calculation"
 msgstr "Hiển thị phép tính"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/multisheet_wizard_view_inherit.xml:1
-#: code:addons/pb_formula_studio/views/sample_wizard_view_inherit.xml:1
-msgid "pbfs-iw"
-msgstr "pbfs-iw"
-
-#. module: pb_formula_studio
-#: code:addons/pb_formula_studio/views/sample_wizard_view_inherit.xml:1
-msgid "action_generate_and_close"
-msgstr "hành động_generate_and_close"
 
 #. module: pb_formula_studio
 #. odoo-python
@@ -15268,3 +15167,33 @@ msgstr "Chính là thực nhận"
 #: code:addons/pb_formula_studio/static/src/js/component_treatment.js:0
 msgid "Both added and taken off"
 msgstr "Vừa cộng vừa trừ"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
+msgid "<span class=\"frv-mark\">Payo<span>book</span></span>\n          <span class=\"frv-ro\">Read-only review</span>"
+msgstr "<span class=\"frv-mark\">Payo<span>book</span></span>\n          <span class=\"frv-ro\">Bản xem lại chỉ đọc</span>"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
+msgid "<span>Health score</span>"
+msgstr "<span>Điểm sức khỏe</span>"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
+msgid "Approve &amp; sign off"
+msgstr "Phê duyệt và ký xác nhận"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
+msgid "<span class=\"frv-type\">from input</span>"
+msgstr "<span class=\"frv-type\">từ dữ liệu đầu vào</span>"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
+msgid "Questions &amp; comments"
+msgstr "Câu hỏi và nhận xét"
+
+#. module: pb_formula_studio
+#: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
+msgid "Shared securely by <b>Payobook</b> · this link is private to you and can be revoked at any time."
+msgstr "Được chia sẻ an toàn bởi <b>Payobook</b> · liên kết này chỉ dành riêng cho bạn và có thể bị thu hồi bất cứ lúc nào."

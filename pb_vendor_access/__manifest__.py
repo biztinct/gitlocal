@@ -56,7 +56,7 @@ touched, referenced or imported.
 pbim tokens only, `.pbva-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills, one accent. No emoji.
 """,
-    'version': '19.0.1.9.0',
+    'version': '19.0.1.9.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

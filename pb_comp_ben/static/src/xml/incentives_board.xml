@@ -69,7 +69,7 @@
           <div data-coach="aw-steps">
           <t t-call="pb_import_kit.QuietSteps">
             <t t-set="qSteps" t-value="steps"/>
-            <t t-set="qStepsLabel" t-value="'Where every award is'"/>
+            <t t-set="qStepsLabel" t-value="stepsLabel"/>
             <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
           </t>
           </div>

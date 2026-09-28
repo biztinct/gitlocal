@@ -26,13 +26,14 @@ import logging
 from datetime import date, datetime
 
 from odoo import _, api, fields, models
+from odoo.tools.translate import LazyTranslate
 from odoo.exceptions import UserError
 
 from .contract_approval import (
     CONTRACT_WRITE, MONEY_TERMS,
 )
 
-from .pb_contracts import NEXT, STATE_LABEL, _initials
+from .pb_contracts import NEXT, STATE_LABEL, _initials, next_label
 
 _logger = logging.getLogger(__name__)
 
@@ -43,6 +44,11 @@ _CONTRACT_MGR_GROUP = 'hr_contract.group_hr_contract_manager'
 # wage visibility mirrors the employee drawer exactly
 # (`pb_employee_vault/models/pb_people_360.py:38`)
 _PAYROLL_MGR_GROUP = 'om_hr_payroll.group_hr_payroll_manager'
+
+# Module-level words are lazy (`_lt`) and read through `self.env._()` at
+# call time, so a Vietnamese reader gets them in Vietnamese (LEARN REFRESH
+# step 6).
+_lt = LazyTranslate(__name__)
 
 _HISTORY_CAP = 120
 _MASKED = '••••••'
@@ -61,63 +67,56 @@ _TERM_GROUPS = [
     ('rules', "Payroll rules"),
 ]
 
+
+def term_group_label(env, key):
+    """A Terms heading in the reader's language (one literal per heading)."""
+    return {
+        'money': env._("The money"),
+        'dates': env._("Dates"),
+        'place': env._("Where they sit"),
+        'rules': env._("Payroll rules"),
+    }.get(key, key)
+
 # The terms table, in payload order. `optional` means the field arrives with a
 # module that may not be installed (safety rail 8) — it is skipped, not guessed.
 _TERMS = [
-    ('money', 'wage', "Monthly wage", 'money',
-     "Gross, before deductions.", False),
-    ('money', 'struct_id', "Salary structure", 'm2o', False, False),
-    ('money', 'type_id', "Employee category", 'm2o', False, False),
-    ('money', 'schedule_pay', "Paid", 'select', False, False),
+    ('money', 'wage', _lt("Monthly wage"), 'money',
+     _lt("Gross, before deductions."), False),
+    ('money', 'struct_id', _lt("Salary structure"), 'm2o', False, False),
+    ('money', 'type_id', _lt("Employee category"), 'm2o', False, False),
+    ('money', 'schedule_pay', _lt("Paid"), 'select', False, False),
     # GROUP P6a. The band and the position come from `pb.pay.position`,
     # which `pb_pay` rebuilds whenever a wage OR a band moves; the old stored
     # `grade_id`/`compa_ratio` pair only ever recomputed on the wage, so it
     # drifted the moment a grade's midpoint changed and nothing said so.
-    ('money', 'pb_band_id', "Pay band", 'm2o', False, True),
-    ('money', 'pb_position_pct', "Where the pay sits in the band", 'readonly',
-     "0 is the bottom of the band and 100 the top.", True),
-    ('money', 'journal_id', "Salary journal", 'm2o', False, True),
+    ('money', 'pb_band_id', _lt("Pay band"), 'm2o', False, True),
+    ('money', 'pb_position_pct', _lt("Where the pay sits in the band"), 'readonly',
+     _lt("0 is the bottom of the band and 100 the top."), True),
+    ('money', 'journal_id', _lt("Salary journal"), 'm2o', False, True),
 
-    ('dates', 'date_start', "Contract starts", 'date', False, False),
-    ('dates', 'date_end', "Contract ends", 'date',
-     "Leave empty for an open-ended contract.", False),
-    ('dates', 'trial_date_end', "Trial ends", 'date', False, False),
-    ('dates', 'resource_calendar_id', "Working schedule", 'm2o', False, False),
+    ('dates', 'date_start', _lt("Contract starts"), 'date', False, False),
+    ('dates', 'date_end', _lt("Contract ends"), 'date',
+     _lt("Leave empty for an open-ended contract."), False),
+    ('dates', 'trial_date_end', _lt("Trial ends"), 'date', False, False),
+    ('dates', 'resource_calendar_id', _lt("Working schedule"), 'm2o', False, False),
 
-    ('place', 'department_id', "Department", 'm2o', False, False),
-    ('place', 'job_id', "Job position", 'm2o', False, False),
-    ('place', 'location', "Location", 'text', False, False),
-    ('place', 'costcenter', "Cost centre", 'text', False, False),
-    ('place', 'hr_responsible_id', "HR responsible", 'm2o', False, False),
+    ('place', 'department_id', _lt("Department"), 'm2o', False, False),
+    ('place', 'job_id', _lt("Job position"), 'm2o', False, False),
+    ('place', 'location', _lt("Location"), 'text', False, False),
+    ('place', 'costcenter', _lt("Cost centre"), 'text', False, False),
+    ('place', 'hr_responsible_id', _lt("HR responsible"), 'm2o', False, False),
 
-    ('rules', 'hirestatus', "Employment status", 'select', False, False),
-    ('rules', 'tupart', "Union participation", 'toggle', False, False),
-    ('rules', 'shuipart', "Social insurance participation", 'toggle', False,
+    ('rules', 'hirestatus', _lt("Employment status"), 'select', False, False),
+    ('rules', 'tupart', _lt("Union participation"), 'toggle', False, False),
+    ('rules', 'shuipart', _lt("Social insurance participation"), 'toggle', False,
      False),
-    ('rules', 'dependents', "Dependants", 'integer', False, False),
-    ('rules', 'tax_identification_number', "Tax number", 'text', False, False),
+    ('rules', 'dependents', _lt("Dependants"), 'integer', False, False),
+    ('rules', 'tax_identification_number', _lt("Tax number"), 'text', False, False),
 ]
 
-# A required term emptied on purpose gets a sentence that names the thing on
-# the screen, not the field.
-_REQUIRED_SENTENCE = {
-    'resource_calendar_id': "A contract must always have a working schedule — "
-                            "pick one before saving.",
-    'type_id': "A contract must always have an employee category — pick one "
-               "before saving.",
-    'date_start': "A contract must always have a start date — pick one before "
-                  "saving.",
-    'wage': "A contract must always have a monthly wage — type one before "
-            "saving.",
-}
-
-# `change_source` → the sentence a payroll administrator reads.
-_SOURCE_SENTENCE = {
-    'manual': "Typed in Payobook",
-    'import': "From a pay data file",
-    'import_default': "Filled from the component's default",
-}
-_FEED_SENTENCE = "From the connected system"
+# The required-term, change-source and feed sentences are written out as
+# `_()` literals where they are used (`_cd_required_sentence`,
+# `_cd_change_sentence`) so each one is a msgid (LEARN REFRESH step 6).
 
 # --- CD-2 §2.1 — where a component's value actually comes from -------------
 #
@@ -581,7 +580,9 @@ class PbContracts(models.AbstractModel):
                       'cancel': 'expired'}.get(contract.state, 'draft')
         order = ['draft', 'running', 'expired']
         current = order.index(rail_state)
-        pipeline = [{'key': step, 'label': step.capitalize(),
+        rail_lbl = {'draft': _("Draft"), 'running': _("Running"),
+                    'expired': _("Expired")}
+        pipeline = [{'key': step, 'label': rail_lbl[step],
                      'done': index < current, 'current': index == current}
                     for index, step in enumerate(order)]
 
@@ -599,13 +600,14 @@ class PbContracts(models.AbstractModel):
                           else '')),
             'dept': department.name if department else '',
             'state': contract.state,
-            'state_label': STATE_LABEL.get(contract.state, contract.state),
+            'state_label': (self.env._(STATE_LABEL[contract.state])
+                            if contract.state in STATE_LABEL else contract.state),
             'wage': (contract.wage or 0.0) if unmask else False,
             'wage_masked': not unmask,
             'ends_label': ends_label,
             'ends_tone': ends_tone,
             'pipeline': pipeline,
-            'next_actions': [{'method': m, 'label': l, 'icon': i, 'kind': k}
+            'next_actions': [{'method': m, 'label': next_label(self.env, l), 'icon': i, 'kind': k}
                              for (m, l, i, k) in NEXT.get(contract.state, [])],
         }
 
@@ -639,14 +641,16 @@ class PbContracts(models.AbstractModel):
             if name == 'pb_position_pct' and not getattr(
                     contract, 'pb_band_id', False):
                 continue
-            entry = self._cd_field_entry(contract, field, name, label, kind,
-                                         hint, symbol, can_write, unmask)
+            entry = self._cd_field_entry(
+                contract, field, name, self.env._(label), kind,
+                self.env._(hint) if hint else hint, symbol, can_write, unmask)
             if entry:
                 if name == 'pb_position_pct':
                     entry = self._cd_band_position(contract, entry)
                 buckets[group].append(entry)
-        return [{'key': key, 'label': label, 'fields': buckets[key]}
-                for key, label in _TERM_GROUPS]
+        return [{'key': key, 'label': term_group_label(self.env, key),
+                 'fields': buckets[key]}
+                for key, _label in _TERM_GROUPS]
 
     @api.model
     def _cd_band_position(self, contract, entry):
@@ -804,7 +808,7 @@ class PbContracts(models.AbstractModel):
         upper = line.advantage_upper_bound or 0.0
         bounded = not (lower == 0 and upper == 0)
         rule = rules.get(code)
-        fill = fills.get(code) or (('none',) + _FILLS['none'])
+        fill = fills.get(code) or ('none', fills_label('none'), _FILLS['none'][1])
         if value_type == 'text':
             text_value = (line.text_value or '') if typed else ''
             display = text_value or '—'
@@ -859,7 +863,7 @@ class PbContracts(models.AbstractModel):
             lower = upper = 0.0
             template_id = False
         bounded = not (lower == 0 and upper == 0)
-        fill = fills.get(code) or (('none',) + _FILLS['none'])
+        fill = fills.get(code) or ('none', fills_label('none'), _FILLS['none'][1])
         return {
             'id': False,
             'virtual': True,
@@ -1052,6 +1056,20 @@ class PbContracts(models.AbstractModel):
         return out
 
     @api.model
+    def _cd_required_sentence(self, name):
+        """`_REQUIRED_SENTENCE`, translated: one literal per case."""
+        return {
+            'resource_calendar_id': _("A contract must always have a working "
+                                      "schedule — pick one before saving."),
+            'type_id': _("A contract must always have an employee category — "
+                         "pick one before saving."),
+            'date_start': _("A contract must always have a start date — pick "
+                            "one before saving."),
+            'wage': _("A contract must always have a monthly wage — type one "
+                      "before saving."),
+        }.get(name)
+
+    @api.model
     def _cd_change_sentence(self, change):
         source = change.change_source or 'import'
         if source == 'import':
@@ -1060,8 +1078,13 @@ class PbContracts(models.AbstractModel):
             # from the connected system rather than a dropped file
             # (`payroll_import_batch.py:920`).
             if batch and getattr(batch, 'source_type', '') == 'api_data_store':
-                return _FEED_SENTENCE
-        return _SOURCE_SENTENCE.get(source, _SOURCE_SENTENCE['import'])
+                return _("From the connected system")
+        # One literal per case so each is a msgid (LEARN REFRESH step 6):
+        # the module-level dict above is data and never reaches a translator.
+        return {
+            'manual': _("Typed in Payobook"),
+            'import_default': _("Filled from the component's default"),
+        }.get(source) or _("From a pay data file")
 
     @api.model
     def _cd_history_fields(self, contract, unmask, symbol=''):
@@ -1073,7 +1096,8 @@ class PbContracts(models.AbstractModel):
         # server-side (rail 6), and the row is titled with the drawer's own
         # word for the field rather than the model's.
         money_fields = {'wage'}
-        labels = {name: label for _g, name, label, _k, _h, _o in _TERMS}
+        labels = {name: self.env._(label)
+                  for _g, name, label, _k, _h, _o in _TERMS}
         out = []
         for entry in Entry.sudo().search(
                 [('model_name', '=', 'hr.contract'),
@@ -1205,7 +1229,7 @@ class PbContracts(models.AbstractModel):
 
         if empty:
             if entry['required']:
-                return None, _REQUIRED_SENTENCE.get(name) or _(
+                return None, self._cd_required_sentence(name) or _(
                     "%s cannot be left empty — fill it in before saving."
                 ) % entry['label']
             if kind in ('money', 'number'):

@@ -718,7 +718,9 @@ msgstr "Nguồn cấp dữ liệu"
 
 #. module: pb_import_advanced
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
 msgid "Fetch fields"
 msgstr "Tìm nạp các trường"
 
@@ -1244,7 +1246,9 @@ msgstr "sản xuất"
 
 #. module: pb_import_advanced
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_import_advanced/static/src/xml/sync_wizard.xml:0
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
 msgid "Pull data"
 msgstr "Kéo dữ liệu"
 
@@ -1255,7 +1259,9 @@ msgid "Pull data from connector"
 msgstr "Kéo dữ liệu từ trình kết nối"
 
 #. module: pb_import_advanced
+#. odoo-javascript
 #: model:ir.actions.client,name:pb_import_advanced.action_pb_sync_wizard
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
 msgid "Pull from Connector"
 msgstr "Kéo từ đầu nối"
 
@@ -1522,7 +1528,9 @@ msgstr "Mẫu chưa được khôi phục."
 
 #. module: pb_import_advanced
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_import_advanced/static/src/xml/employee_wizard.xml:0
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
 msgid "Test connection"
 msgstr "Kiểm tra kết nối"
 
@@ -2019,3 +2027,477 @@ msgstr "Tải lên"
 #: code:addons/pb_import_advanced/static/src/js/multisheet_wizard.js:9
 msgid "Sheets"
 msgstr "Trang tính"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Excel File"
+msgstr "Tệp Excel"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Demo / Stub"
+msgstr "Demo / Thử nghiệm"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Disconnected"
+msgstr "Chưa kết nối"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Connecting"
+msgstr "Đang kết nối"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Connected"
+msgstr "Đã kết nối"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Error"
+msgstr "Lỗi"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Client ID"
+msgstr "Client ID"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Client Secret"
+msgstr "Client Secret"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Refresh Token"
+msgstr "Refresh Token"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "API Key"
+msgstr "API Key"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Username"
+msgstr "Tên đăng nhập"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Password"
+msgstr "Mật khẩu"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Access Token"
+msgstr "Access Token"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Connector not found"
+msgstr "Không tìm thấy kết nối"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "%s time"
+msgstr "Giờ %s"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "UTC"
+msgstr "UTC"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "That connection no longer exists."
+msgstr "Kết nối này không còn nữa."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "You cannot change this connection."
+msgstr "Bạn không thể thay đổi kết nối này."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "This connector recorded a pull before it kept per-feed history, so no feed below shows it."
+msgstr "Kết nối này đã ghi nhận một lần lấy dữ liệu trước khi lưu lịch sử theo từng nguồn dữ liệu, nên không nguồn nào bên dưới hiển thị lần đó."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Add the API base URL."
+msgstr "Hãy thêm địa chỉ API gốc."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Complete OAuth or add a refresh token."
+msgstr "Hãy hoàn tất OAuth hoặc thêm refresh token."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Disconnect"
+msgstr "Ngắt kết nối"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Action not permitted"
+msgstr "Không được phép thực hiện thao tác này"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Action failed"
+msgstr "Thao tác không thành công"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "That feed is not on this connector."
+msgstr "Nguồn dữ liệu đó không thuộc kết nối này."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Pull failed"
+msgstr "Lấy dữ liệu không thành công"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Could not detect feeds"
+msgstr "Không phát hiện được nguồn dữ liệu"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Upgrade this database before restoring feeds."
+msgstr "Hãy nâng cấp cơ sở dữ liệu này trước khi khôi phục nguồn dữ liệu."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "Feed not found"
+msgstr "Không tìm thấy nguồn dữ liệu"
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "This custom feed has no vendor template."
+msgstr "Nguồn dữ liệu tùy chỉnh này không có mẫu của nhà cung cấp."
+
+#. module: pb_import_advanced
+#. odoo-python
+#: code:addons/pb_import_advanced/models/connector_cockpit.py:0
+msgid "You cannot change this connector."
+msgstr "Bạn không thể thay đổi kết nối này."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Automatic fetch"
+msgstr "Tự động lấy dữ liệu"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Next run"
+msgstr "Lần chạy tiếp theo"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Pay runs for"
+msgstr "Đợt lương của"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "don't read\n                  this system — switched off in the scheme's sources settings."
+msgstr "không đọc\n                  hệ thống này — đã tắt trong phần cài đặt nguồn của chương trình lương."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Fetch this system's data automatically"
+msgstr "Tự động lấy dữ liệu từ hệ thống này"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "On the schedule below, so a pay run never waits for a\n                    sync."
+msgstr "Theo lịch bên dưới, để đợt lương không bao giờ phải chờ\n                    đồng bộ."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "How often"
+msgstr "Tần suất"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Which day"
+msgstr "Ngày nào"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "On day"
+msgstr "Vào ngày"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "At"
+msgstr "Lúc"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Also update employee and contract records"
+msgstr "Cập nhật luôn hồ sơ nhân viên và hợp đồng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Write the mapped values onto Employee, Contract and Bank\n                    records after each fetch."
+msgstr "Ghi các giá trị đã ánh xạ vào hồ sơ Nhân viên, Hợp đồng và Ngân hàng\n                    sau mỗi lần lấy dữ liệu."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "This system is now the source of truth for every mapped field.\n                  A value corrected in Payobook will be replaced at the next\n                  fetch unless you unmap that field."
+msgstr "Hệ thống này giờ là nguồn chuẩn cho mọi trường đã ánh xạ.\n                  Một giá trị sửa trong Payobook sẽ bị thay thế ở lần lấy\n                  dữ liệu tiếp theo, trừ khi bạn bỏ ánh xạ trường đó."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Run the fetch now"
+msgstr "Lấy dữ liệu ngay"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Update records now"
+msgstr "Cập nhật hồ sơ ngay"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/xml/connector_cockpit.xml:0
+msgid "Off — every pay run will fetch this system's data while you wait."
+msgstr "Tắt — mỗi đợt lương sẽ lấy dữ liệu từ hệ thống này trong lúc bạn chờ."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Your Payobook URL"
+msgstr "Địa chỉ Payobook của bạn"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Pull only this feed"
+msgstr "Chỉ lấy nguồn dữ liệu này"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Catalogue-only feed. Use Configure to choose an executable operation before syncing."
+msgstr "Nguồn dữ liệu chỉ có trong danh mục. Hãy dùng Cấu hình để chọn một thao tác chạy được trước khi đồng bộ."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Read the field list for this feed from the source system"
+msgstr "Đọc danh sách trường của nguồn dữ liệu này từ hệ thống nguồn"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Edit"
+msgstr "Sửa"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Set"
+msgstr "Đã đặt"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Not set"
+msgstr "Chưa đặt"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Base URL set"
+msgstr "Đã có địa chỉ gốc"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Base URL needed"
+msgstr "Cần địa chỉ gốc"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Ready to authorize with Zoho"
+msgstr "Sẵn sàng cấp quyền với Zoho"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Client credentials needed"
+msgstr "Cần thông tin ứng dụng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Could not load this connector."
+msgstr "Không tải được kết nối này."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Working…"
+msgstr "Đang xử lý…"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "That could not be changed."
+msgstr "Không thể thay đổi mục đó."
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Daily"
+msgstr "Hằng ngày"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Weekly"
+msgstr "Hằng tuần"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Monthly"
+msgstr "Hằng tháng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Last day of month"
+msgstr "Ngày cuối tháng"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Mon"
+msgstr "T2"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Tue"
+msgstr "T3"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Wed"
+msgstr "T4"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Thu"
+msgstr "T5"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Fri"
+msgstr "T6"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Sat"
+msgstr "T7"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Sun"
+msgstr "CN"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Testing connection…"
+msgstr "Đang kiểm tra kết nối…"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Pulling data…"
+msgstr "Đang lấy dữ liệu…"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Fetching fields…"
+msgstr "Đang lấy danh sách trường…"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Disconnecting…"
+msgstr "Đang ngắt kết nối…"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Fetching last month…"
+msgstr "Đang lấy dữ liệu tháng trước…"
+
+#. module: pb_import_advanced
+#. odoo-javascript
+#: code:addons/pb_import_advanced/static/src/js/connector_cockpit.js:0
+msgid "Updating records…"
+msgstr "Đang cập nhật hồ sơ…"

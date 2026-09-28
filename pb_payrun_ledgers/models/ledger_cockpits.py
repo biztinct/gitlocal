@@ -22,10 +22,20 @@ def _emp_avatar(emp):
     return ('/web/image/hr.employee/%s/avatar_128' % emp.id) if emp else ''
 
 
+def _sel(Model, field):
+    """A Selection field's labels in the reader's language (LEARN REFRESH
+    step 6): `.selection` is the English source; `_description_selection`
+    is what the field's own list and form show."""
+    try:
+        return dict(Model._fields[field]._description_selection(Model.env))
+    except Exception:       # noqa: BLE001 — a label is never worth a screen
+        return dict(Model._fields[field].selection or [])
+
+
 def _sel_facet(Model, key, label, field):
     """Facet from a Selection field — chips keyed by the technical value; matched
     against the row's technical value in `_f[key]`."""
-    sel = dict(Model._fields[field].selection or [])
+    sel = _sel(Model, field)
     return {'key': key, 'label': label, 'kind': 'chips',
             'chips': [{'id': k, 'label': v} for k, v in sel.items()]}
 
@@ -200,54 +210,54 @@ class PbFullFinal(models.AbstractModel):
     _detail_model = 'hr.full.final.settlement'
 
     def _build_detail(self, r):
-        src = dict(self.env[self._detail_model]._fields['source'].selection or {})
+        src = _sel(self.env[self._detail_model], 'source')
         e = r.employee_id
         return {
             'title': (e.name if e else r.name) or '—',
             'subtitle': r.name or '',
             'sections': [s for s in [
-                self._section('Who', [
-                    {'label': 'Employee', 'value': e.name if e else ''},
-                    {'label': 'Employee ID', 'value': r.employee_code or ''},
-                    {'label': 'Department', 'value': _m2o(r.department_id)},
-                    {'label': 'Job position', 'value': _m2o(r.job_id)},
-                    {'label': 'Contract', 'value': _m2o(r.contract_id)},
+                self._section(_('Who'), [
+                    {'label': _('Employee'), 'value': e.name if e else ''},
+                    {'label': _('Employee ID'), 'value': r.employee_code or ''},
+                    {'label': _('Department'), 'value': _m2o(r.department_id)},
+                    {'label': _('Job position'), 'value': _m2o(r.job_id)},
+                    {'label': _('Contract'), 'value': _m2o(r.contract_id)},
                 ]),
-                self._section('Settlement', [
-                    {'label': 'Settlement date', 'value': _d(r.settlement_date)},
-                    {'label': 'Month', 'value': r.settlement_month or ''},
-                    {'label': 'Period', 'value': ' → '.join(
+                self._section(_('Settlement'), [
+                    {'label': _('Settlement date'), 'value': _d(r.settlement_date)},
+                    {'label': _('Month'), 'value': r.settlement_month or ''},
+                    {'label': _('Period'), 'value': ' → '.join(
                         [x for x in [_d(r.date_from), _d(r.date_to)] if x])},
-                    {'label': 'Source', 'value': src.get(r.source, r.source or '')},
+                    {'label': _('Source'), 'value': src.get(r.source, r.source or '')},
                 ]),
-                self._section('Money', [
-                    {'label': 'Earnings', 'value': r.total_earnings, 'money': True},
-                    {'label': 'Deductions', 'value': r.total_deductions, 'money': True},
-                    {'label': 'Net payable', 'value': r.net_payable, 'money': True,
+                self._section(_('Money'), [
+                    {'label': _('Earnings'), 'value': r.total_earnings, 'money': True},
+                    {'label': _('Deductions'), 'value': r.total_deductions, 'money': True},
+                    {'label': _('Net payable'), 'value': r.net_payable, 'money': True,
                      'strong': True, 'tone': 'ok'},
                 ]),
-                self._section('Breakdown', [
-                    {'label': 'Basic salary', 'value': r.c_basic, 'money': True},
-                    {'label': 'Allowances', 'value': r.c_allow, 'money': True},
-                    {'label': 'Overtime', 'value': r.c_ot, 'money': True},
-                    {'label': 'Bonus', 'value': r.c_bonus, 'money': True},
-                    {'label': 'Unused leave', 'value': r.c_leave, 'money': True},
-                    {'label': 'Other earnings', 'value': r.c_other_earn, 'money': True},
-                    {'label': 'Personal income tax', 'value': r.c_pit, 'money': True},
-                    {'label': 'Social insurance', 'value': r.c_si, 'money': True},
-                    {'label': 'Health insurance', 'value': r.c_hi, 'money': True},
-                    {'label': 'Unemployment insurance', 'value': r.c_ui, 'money': True},
-                    {'label': 'Loan / advance', 'value': r.c_loan, 'money': True},
-                    {'label': 'Other deductions', 'value': r.c_other_ded, 'money': True},
+                self._section(_('Breakdown'), [
+                    {'label': _('Basic salary'), 'value': r.c_basic, 'money': True},
+                    {'label': _('Allowances'), 'value': r.c_allow, 'money': True},
+                    {'label': _('Overtime'), 'value': r.c_ot, 'money': True},
+                    {'label': _('Bonus'), 'value': r.c_bonus, 'money': True},
+                    {'label': _('Unused leave'), 'value': r.c_leave, 'money': True},
+                    {'label': _('Other earnings'), 'value': r.c_other_earn, 'money': True},
+                    {'label': _('Personal income tax'), 'value': r.c_pit, 'money': True},
+                    {'label': _('Social insurance'), 'value': r.c_si, 'money': True},
+                    {'label': _('Health insurance'), 'value': r.c_hi, 'money': True},
+                    {'label': _('Unemployment insurance'), 'value': r.c_ui, 'money': True},
+                    {'label': _('Loan / advance'), 'value': r.c_loan, 'money': True},
+                    {'label': _('Other deductions'), 'value': r.c_other_ded, 'money': True},
                 ]),
                 self._section(_('Why it could not be worked out'), [
                     {'label': _('Reason'), 'value': r.pb_compute_issue or ''
                      if 'pb_compute_issue' in r._fields else ''},
                 ]),
-                self._section('Trace', [
-                    {'label': 'Salary structure', 'value': _m2o(r.formula_config_id)},
-                    {'label': 'Payroll batch', 'value': _m2o(r.import_batch_id)},
-                    {'label': 'Company', 'value': _m2o(r.company_id)},
+                self._section(_('Trace'), [
+                    {'label': _('Salary structure'), 'value': _m2o(r.formula_config_id)},
+                    {'label': _('Payroll batch'), 'value': _m2o(r.import_batch_id)},
+                    {'label': _('Company'), 'value': _m2o(r.company_id)},
                 ]),
             ] if s],
         }
@@ -263,13 +273,13 @@ class PbFullFinal(models.AbstractModel):
         agg = FF.read_group(dom, ['net_payable:sum', 'total_earnings:sum', 'total_deductions:sum'], [])
         a = agg[0] if agg else {}
         kpis = [
-            {'icon': 'fileText', 'value': total, 'label': 'Settlements'},
-            {'icon': 'receipt', 'ic_tone': 'green', 'money': True, 'value': a.get('net_payable') or 0.0, 'label': 'Net payable'},
-            {'icon': 'sigma', 'ic_tone': 'blue', 'money': True, 'value': a.get('total_earnings') or 0.0, 'label': 'Earnings'},
-            {'icon': 'sigma', 'ic_tone': 'amber', 'money': True, 'value': a.get('total_deductions') or 0.0, 'label': 'Deductions'},
+            {'icon': 'fileText', 'value': total, 'label': _('Settlements')},
+            {'icon': 'receipt', 'ic_tone': 'green', 'money': True, 'value': a.get('net_payable') or 0.0, 'label': _('Net payable')},
+            {'icon': 'sigma', 'ic_tone': 'blue', 'money': True, 'value': a.get('total_earnings') or 0.0, 'label': _('Earnings')},
+            {'icon': 'sigma', 'ic_tone': 'amber', 'money': True, 'value': a.get('total_deductions') or 0.0, 'label': _('Deductions')},
             # `facet`: pressing this figure narrows the rows the same way the
             # Source chip does (quiet board — a figure that can filter, does).
-            {'icon': 'user', 'value': FF.search_count(dom + [('source', '=', 'manual')]), 'label': 'Manual',
+            {'icon': 'user', 'value': FF.search_count(dom + [('source', '=', 'manual')]), 'label': _('Manual'),
              'facet': ['source', 'manual']},
         ]
         # LEARN REFRESH step 6 — settlements the monthly load made are worked
@@ -288,7 +298,7 @@ class PbFullFinal(models.AbstractModel):
                                 'label': _('Could not be worked out'),
                                 'tone': 'err', 'facet': ['check', 'issue']})
         steps = self._fnf_steps(FF, dom)
-        src_lbl = dict(FF._fields['source'].selection or [])
+        src_lbl = _sel(FF, 'source')
         rows = []
         for r in recs:
             e = r.employee_id
@@ -321,7 +331,7 @@ class PbFullFinal(models.AbstractModel):
                 'title': (e.name if e else r.name) or '—', 'subtitle': sub,
                 'badges': badges,
                 'note': issue or '',
-                'metrics': [{'label': 'Net payable', 'value': r.net_payable, 'money': True, 'strong': True, 'tone': 'ok'}],
+                'metrics': [{'label': _('Net payable'), 'value': r.net_payable, 'money': True, 'strong': True, 'tone': 'ok'}],
                 'action': action,
                 '_f': {'source': r.source or '',
                        'check': check,
@@ -333,13 +343,13 @@ class PbFullFinal(models.AbstractModel):
                 '_d': str(r.settlement_date) if r.settlement_date else '',
             })
         facets = [
-            _sel_facet(FF, 'source', 'Source', 'source'),
-            _rows_facet(rows, 'dept', 'Department'),
-            _rows_facet(rows, 'config', 'Salary structure'),
+            _sel_facet(FF, 'source', _('Source'), 'source'),
+            _rows_facet(rows, 'dept', _('Department')),
+            _rows_facet(rows, 'config', _('Salary structure')),
         ]
         return {
-            'title': 'Full & Final', 'subtitle': 'Every settlement, its components and net payable at a glance.',
-            'search_ph': 'Search employee, ID, department…', 'empty': 'No settlements match these filters.',
+            'title': _('Full & Final'), 'subtitle': _('Every settlement, its components and net payable at a glance.'),
+            'search_ph': _('Search employee, ID, department…'), 'empty': _('No settlements match these filters.'),
             'currency': cur, 'date': True, 'kpis': kpis, 'facets': facets,
             'steps': steps,
             'rows': rows, 'total': total,
@@ -361,7 +371,6 @@ class PbFullFinal(models.AbstractModel):
         if 'state' not in FF._fields:
             return {}
         try:
-            labels = dict(FF._fields['state']._description_selection(self.env))
             counts = {}
             for state, n in FF._read_group(dom, ['state'], ['__count']):
                 counts[state] = n
@@ -370,9 +379,12 @@ class PbFullFinal(models.AbstractModel):
             if 'seat_user_ids' in FF._fields:
                 mine = FF.search_count(dom + [('state', '=', 'pending'),
                                               ('seat_user_ids', 'in', [uid])])
-            titles = {'prepare': labels.get('draft', 'Being prepared'),
-                      'pending': labels.get('pending', 'Waiting for approval'),
-                      'approved': labels.get('approved', 'Approved')}
+            # Our own words, not the state field's labels: the step titles
+            # are this screen's, and the words are the same in English
+            # (LEARN REFRESH step 6 — they now reach Vietnamese).
+            titles = {'prepare': _('Being prepared'),
+                      'pending': _('Waiting for approval'),
+                      'approved': _('Approved')}
             ready = (FF.search_count(dom + [('pb_to_check', '=', True)])
                      if 'pb_to_check' in FF._fields else 0)
             items = []
@@ -399,44 +411,44 @@ class PbProration(models.AbstractModel):
     _detail_model = 'hr.payroll.proration.line'
 
     def _build_detail(self, r):
-        F = self.env[self._detail_model]._fields
-        basis = dict(F['proration_basis'].selection or {})
-        state = dict(F['state'].selection or {})
+        PLM = self.env[self._detail_model]
+        basis = _sel(PLM, 'proration_basis')
+        state = _sel(PLM, 'state')
         e = r.employee_id
         return {
             'title': e.name if e else '—',
             'subtitle': r.component_id.name if r.component_id else '',
             'sections': [s for s in [
-                self._section('Who', [
-                    {'label': 'Employee', 'value': e.name if e else ''},
-                    {'label': 'Contract', 'value': _m2o(r.contract_id)},
-                    {'label': 'Status', 'value': state.get(r.state, r.state or '')},
+                self._section(_('Who'), [
+                    {'label': _('Employee'), 'value': e.name if e else ''},
+                    {'label': _('Contract'), 'value': _m2o(r.contract_id)},
+                    {'label': _('Status'), 'value': state.get(r.state, r.state or '')},
                 ]),
-                self._section('Component', [
-                    {'label': 'Component', 'value': _m2o(r.component_id)},
-                    {'label': 'Code', 'value': r.component_code or ''},
-                    {'label': 'Configuration', 'value': _m2o(r.formula_config_id)},
+                self._section(_('Component'), [
+                    {'label': _('Component'), 'value': _m2o(r.component_id)},
+                    {'label': _('Code'), 'value': r.component_code or ''},
+                    {'label': _('Configuration'), 'value': _m2o(r.formula_config_id)},
                 ]),
-                self._section('Period', [
-                    {'label': 'Effective date', 'value': _d(r.effective_date)},
-                    {'label': 'Period', 'value': ' → '.join(
+                self._section(_('Period'), [
+                    {'label': _('Effective date'), 'value': _d(r.effective_date)},
+                    {'label': _('Period'), 'value': ' → '.join(
                         [x for x in [_d(r.date_from), _d(r.date_to)] if x])},
-                    {'label': 'Basis', 'value': basis.get(r.proration_basis,
+                    {'label': _('Basis'), 'value': basis.get(r.proration_basis,
                                                           r.proration_basis or '')},
-                    {'label': 'Period days', 'value': r.period_days},
-                    {'label': 'Old days', 'value': r.old_days},
-                    {'label': 'New days', 'value': r.new_days},
+                    {'label': _('Period days'), 'value': r.period_days},
+                    {'label': _('Old days'), 'value': r.old_days},
+                    {'label': _('New days'), 'value': r.new_days},
                 ]),
-                self._section('Money', [
-                    {'label': 'Old amount', 'value': r.old_amount, 'money': True},
-                    {'label': 'New amount', 'value': r.new_amount, 'money': True},
-                    {'label': 'Prorated', 'value': r.prorated_amount, 'money': True,
+                self._section(_('Money'), [
+                    {'label': _('Old amount'), 'value': r.old_amount, 'money': True},
+                    {'label': _('New amount'), 'value': r.new_amount, 'money': True},
+                    {'label': _('Prorated'), 'value': r.prorated_amount, 'money': True,
                      'strong': True, 'tone': 'ok'},
                 ]),
-                self._section('Trace', [
-                    {'label': 'Import batch', 'value': _m2o(r.import_batch_id)},
-                    {'label': 'Change reference', 'value': _m2o(r.advantage_change_id)},
-                    {'label': 'Segments', 'value': r.segment_summary or '', 'wrap': True},
+                self._section(_('Trace'), [
+                    {'label': _('Import batch'), 'value': _m2o(r.import_batch_id)},
+                    {'label': _('Change reference'), 'value': _m2o(r.advantage_change_id)},
+                    {'label': _('Segments'), 'value': r.segment_summary or '', 'wrap': True},
                 ]),
             ] if s],
         }
@@ -451,11 +463,12 @@ class PbProration(models.AbstractModel):
         agg = PL.read_group(dom, ['prorated_amount:sum'], [])
         pro = (agg[0].get('prorated_amount') if agg else 0.0) or 0.0
         kpis = [
-            {'icon': 'sigma', 'value': total, 'label': 'Proration lines'},
-            {'icon': 'users', 'ic_tone': 'blue', 'value': self._distinct(PL, dom, 'employee_id'), 'label': 'Employees'},
-            {'icon': 'receipt', 'ic_tone': 'green', 'money': True, 'value': pro, 'label': 'Total prorated'},
-            {'icon': 'layers', 'ic_tone': 'amber', 'value': self._distinct(PL, dom, 'import_batch_id'), 'label': 'Batches'},
+            {'icon': 'sigma', 'value': total, 'label': _('Proration lines')},
+            {'icon': 'users', 'ic_tone': 'blue', 'value': self._distinct(PL, dom, 'employee_id'), 'label': _('Employees')},
+            {'icon': 'receipt', 'ic_tone': 'green', 'money': True, 'value': pro, 'label': _('Total prorated')},
+            {'icon': 'layers', 'ic_tone': 'amber', 'value': self._distinct(PL, dom, 'import_batch_id'), 'label': _('Batches')},
         ]
+        st_lbl = _sel(PL, 'state')
         rows = []
         for r in recs:
             e = r.employee_id
@@ -465,11 +478,11 @@ class PbProration(models.AbstractModel):
                 'title': e.name if e else '—',
                 'subtitle': r.component_id.name if r.component_id else '—',
                 'code': r.component_code or (r.component_id.code if r.component_id else ''),
-                'badges': [{'label': (r.state or '').title(), 'tone': 'ok' if r.state == 'posted' else 'muted'}],
+                'badges': [{'label': st_lbl.get(r.state) or (r.state or '').title(), 'tone': 'ok' if r.state == 'posted' else 'muted'}],
                 'metrics': [
-                    {'label': 'Old', 'value': r.old_amount, 'money': True},
-                    {'label': 'New', 'value': r.new_amount, 'money': True},
-                    {'label': 'Prorated', 'value': r.prorated_amount, 'money': True, 'strong': True, 'tone': 'ok'},
+                    {'label': _('Old'), 'value': r.old_amount, 'money': True},
+                    {'label': _('New'), 'value': r.new_amount, 'money': True},
+                    {'label': _('Prorated'), 'value': r.prorated_amount, 'money': True, 'strong': True, 'tone': 'ok'},
                 ],
                 '_f': {'state': r.state or '',
                        'component': r.component_id.name if r.component_id else '',
@@ -480,14 +493,14 @@ class PbProration(models.AbstractModel):
                 '_d': str(r.effective_date) if r.effective_date else '',
             })
         facets = [
-            _sel_facet(PL, 'state', 'Status', 'state'),
-            _rows_facet(rows, 'component', 'Component'),
-            _rows_facet(rows, 'config', 'Configuration'),
-            _rows_facet(rows, 'batch', 'Batch'),
+            _sel_facet(PL, 'state', _('Status'), 'state'),
+            _rows_facet(rows, 'component', _('Component')),
+            _rows_facet(rows, 'config', _('Configuration')),
+            _rows_facet(rows, 'batch', _('Batch')),
         ]
         return {
-            'title': 'Proration Audit', 'subtitle': 'Every prorated component, old → new → prorated, per employee.',
-            'search_ph': 'Search employee or component…', 'empty': 'No proration lines match these filters.',
+            'title': _('Proration Audit'), 'subtitle': _('Every prorated component, old → new → prorated, per employee.'),
+            'search_ph': _('Search employee or component…'), 'empty': _('No proration lines match these filters.'),
             'currency': cur, 'date': True, 'kpis': kpis, 'facets': facets,
             'rows': rows, 'total': total,
             'list_action': 'pb_hr_payroll_formula.action_payroll_proration_line',
@@ -501,39 +514,39 @@ class PbRetro(models.AbstractModel):
     _detail_model = 'hr.payroll.retro.adjustment'
 
     def _build_detail(self, r):
-        state = dict(self.env[self._detail_model]._fields['state'].selection or {})
+        state = _sel(self.env[self._detail_model], 'state')
         e = r.employee_id
         delta = r.delta_amount or 0.0
         return {
             'title': e.name if e else '—',
             'subtitle': r.component_id.name if r.component_id else '',
             'sections': [s for s in [
-                self._section('Who', [
-                    {'label': 'Employee', 'value': e.name if e else ''},
-                    {'label': 'Contract', 'value': _m2o(r.contract_id)},
-                    {'label': 'Status', 'value': state.get(r.state, r.state or '')},
+                self._section(_('Who'), [
+                    {'label': _('Employee'), 'value': e.name if e else ''},
+                    {'label': _('Contract'), 'value': _m2o(r.contract_id)},
+                    {'label': _('Status'), 'value': state.get(r.state, r.state or '')},
                 ]),
-                self._section('Component', [
-                    {'label': 'Component', 'value': _m2o(r.component_id)},
-                    {'label': 'Code', 'value': r.component_code or ''},
-                    {'label': 'Configuration', 'value': _m2o(r.formula_config_id)},
+                self._section(_('Component'), [
+                    {'label': _('Component'), 'value': _m2o(r.component_id)},
+                    {'label': _('Code'), 'value': r.component_code or ''},
+                    {'label': _('Configuration'), 'value': _m2o(r.formula_config_id)},
                 ]),
-                self._section('Period', [
-                    {'label': 'Retro period', 'value': ' → '.join(
+                self._section(_('Period'), [
+                    {'label': _('Retro period'), 'value': ' → '.join(
                         [x for x in [_d(r.period_from), _d(r.period_to)] if x])},
-                    {'label': 'Change effective', 'value': _d(r.change_effective_date)},
+                    {'label': _('Change effective'), 'value': _d(r.change_effective_date)},
                 ]),
-                self._section('Money', [
-                    {'label': 'Old amount', 'value': r.old_amount, 'money': True},
-                    {'label': 'New amount', 'value': r.new_amount, 'money': True},
-                    {'label': 'Delta', 'value': delta, 'money': True, 'strong': True,
+                self._section(_('Money'), [
+                    {'label': _('Old amount'), 'value': r.old_amount, 'money': True},
+                    {'label': _('New amount'), 'value': r.new_amount, 'money': True},
+                    {'label': _('Delta'), 'value': delta, 'money': True, 'strong': True,
                      'tone': 'ok' if delta >= 0 else 'warn'},
                 ]),
-                self._section('Trace', [
-                    {'label': 'Applied in batch', 'value': _m2o(r.applied_in_batch_id)},
-                    {'label': 'Applied in payslip', 'value': _m2o(r.applied_in_payslip_id)},
-                    {'label': 'Original payslip', 'value': _m2o(r.original_payslip_id)},
-                    {'label': 'Change reference', 'value': _m2o(r.advantage_change_id)},
+                self._section(_('Trace'), [
+                    {'label': _('Applied in batch'), 'value': _m2o(r.applied_in_batch_id)},
+                    {'label': _('Applied in payslip'), 'value': _m2o(r.applied_in_payslip_id)},
+                    {'label': _('Original payslip'), 'value': _m2o(r.original_payslip_id)},
+                    {'label': _('Change reference'), 'value': _m2o(r.advantage_change_id)},
                 ]),
             ] if s],
         }
@@ -548,11 +561,12 @@ class PbRetro(models.AbstractModel):
         agg = RA.read_group(dom, ['delta_amount:sum'], [])
         delta = (agg[0].get('delta_amount') if agg else 0.0) or 0.0
         kpis = [
-            {'icon': 'sigma', 'value': total, 'label': 'Retro lines'},
-            {'icon': 'users', 'ic_tone': 'blue', 'value': self._distinct(RA, dom, 'employee_id'), 'label': 'Employees'},
-            {'icon': 'receipt', 'ic_tone': 'green' if delta >= 0 else 'amber', 'money': True, 'value': delta, 'label': 'Total delta'},
-            {'icon': 'layers', 'ic_tone': 'amber', 'value': self._distinct(RA, dom, 'applied_in_batch_id'), 'label': 'Batches'},
+            {'icon': 'sigma', 'value': total, 'label': _('Retro lines')},
+            {'icon': 'users', 'ic_tone': 'blue', 'value': self._distinct(RA, dom, 'employee_id'), 'label': _('Employees')},
+            {'icon': 'receipt', 'ic_tone': 'green' if delta >= 0 else 'amber', 'money': True, 'value': delta, 'label': _('Total delta')},
+            {'icon': 'layers', 'ic_tone': 'amber', 'value': self._distinct(RA, dom, 'applied_in_batch_id'), 'label': _('Batches')},
         ]
+        st_lbl = _sel(RA, 'state')
         rows = []
         for r in recs:
             e = r.employee_id
@@ -562,12 +576,12 @@ class PbRetro(models.AbstractModel):
                 'title': e.name if e else '—',
                 'subtitle': r.component_id.name if r.component_id else '—',
                 'code': r.component_code or (r.component_id.code if r.component_id else ''),
-                'badges': [{'label': (r.state or '').title(),
+                'badges': [{'label': st_lbl.get(r.state) or (r.state or '').title(),
                             'tone': 'ok' if r.state == 'posted' else ('warn' if r.state == 'cancelled' else 'muted')}],
                 'metrics': [
-                    {'label': 'Old', 'value': r.old_amount, 'money': True},
-                    {'label': 'New', 'value': r.new_amount, 'money': True},
-                    {'label': 'Delta', 'value': r.delta_amount, 'money': True, 'strong': True,
+                    {'label': _('Old'), 'value': r.old_amount, 'money': True},
+                    {'label': _('New'), 'value': r.new_amount, 'money': True},
+                    {'label': _('Delta'), 'value': r.delta_amount, 'money': True, 'strong': True,
                      'tone': 'ok' if (r.delta_amount or 0) >= 0 else 'warn'},
                 ],
                 '_f': {'state': r.state or '',
@@ -579,14 +593,14 @@ class PbRetro(models.AbstractModel):
                 '_d': str(r.period_from) if r.period_from else '',
             })
         facets = [
-            _sel_facet(RA, 'state', 'Status', 'state'),
-            _rows_facet(rows, 'component', 'Component'),
-            _rows_facet(rows, 'config', 'Configuration'),
-            _rows_facet(rows, 'batch', 'Applied batch'),
+            _sel_facet(RA, 'state', _('Status'), 'state'),
+            _rows_facet(rows, 'component', _('Component')),
+            _rows_facet(rows, 'config', _('Configuration')),
+            _rows_facet(rows, 'batch', _('Applied batch')),
         ]
         return {
-            'title': 'Retro Adjustments', 'subtitle': 'Retroactive deltas, old → new → delta, per employee.',
-            'search_ph': 'Search employee or component…', 'empty': 'No retro adjustments match these filters.',
+            'title': _('Retro Adjustments'), 'subtitle': _('Retroactive deltas, old → new → delta, per employee.'),
+            'search_ph': _('Search employee or component…'), 'empty': _('No retro adjustments match these filters.'),
             'currency': cur, 'date': True, 'kpis': kpis, 'facets': facets,
             'rows': rows, 'total': total,
             'list_action': 'pb_hr_payroll_formula.action_payroll_retro_adjustment',

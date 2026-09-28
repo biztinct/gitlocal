@@ -34,6 +34,9 @@ export class PbIncentivesBoard extends Component {
     static template = "pb_comp_ben.PbIncentivesBoard";
     static props = ["*"];
 
+    // A literal in a template expression is never extracted (step 6).
+    get stepsLabel() { return _t("Where every award is"); }
+
     setup() {
         this.orm = useService("orm");
         this.notif = useService("notification");

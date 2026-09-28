@@ -62,7 +62,7 @@
           <div data-coach="lg-steps">
           <t t-call="pb_import_kit.QuietSteps">
             <t t-set="qSteps" t-value="steps"/>
-            <t t-set="qStepsLabel" t-value="'Where every settlement is'"/>
+            <t t-set="qStepsLabel" t-value="stepsLabel"/>
             <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
           </t>
           </div>
@@ -101,7 +101,7 @@
             </div>
             <div class="ppl-search">
               <span class="ic"><t t-out="ic('search', 15)"/></span>
-              <input t-att-placeholder="state.data.search_ph or 'Search…'" t-on-input="onSearch"/>
+              <input t-att-placeholder="searchPh" t-on-input="onSearch"/>
             </div>
           </div>
 
@@ -150,7 +150,7 @@
             </div>
           </div>
         </div>
-        <div t-else="" class="pbim-panel"><div class="pbim-empty" t-esc="state.data.empty or 'Nothing matches these filters.'"/></div>
+        <div t-else="" class="pbim-panel"><div class="pbim-empty" t-esc="emptyText"/></div>
 
         <!-- The count is honest in both modes; the ESCAPE is standalone-only.
              With a step strip the showing line above already counts, so the

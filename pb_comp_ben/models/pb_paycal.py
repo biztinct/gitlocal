@@ -113,13 +113,13 @@ class PbPaycal(models.AbstractModel):
         left = (cal.cutoff_date - today).days if cal.cutoff_date else None
         return {
             'id': cal.id,
-            'label': cal.name or '',
-            'short': cal.month.strftime('%b') if cal.month else '',
+            'label': _month_label(self.env, cal.month) or cal.name or '',
+            'short': _month_short(self.env, cal.month.month) if cal.month else '',
             'month': cal.month and cal.month.isoformat() or '',
             'cutoff': cal.cutoff_date and cal.cutoff_date.isoformat() or '',
-            'cutoff_label': _friendly(cal.cutoff_date),
+            'cutoff_label': _friendly(self.env, cal.cutoff_date),
             'pay': cal.pay_date and cal.pay_date.isoformat() or '',
-            'pay_label': _friendly(cal.pay_date),
+            'pay_label': _friendly(self.env, cal.pay_date),
             'state': cal.state or 'upcoming',
             'days_left': left,
             'is_past': bool(left is not None and left < 0),
@@ -185,12 +185,37 @@ class PbPaycal(models.AbstractModel):
         return bool(enabled)
 
 
-def _friendly(day):
-    """"25 September" — the date on a page, not the one in the database."""
+def _friendly(env, day):
+    """"25 September" — the date on a page, not the one in the database.
+
+    Called from the board's model methods, so `env._()` reads the caller's
+    language (LEARN REFRESH step 6). Every placeholder is offered to every
+    sentence, so a translation may write the month as a name or a number."""
     if not day:
         return ''
-    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
-              'August', 'September', 'October', 'November', 'December']
-    same_year = day.year == date.today().year
-    return '%s %s%s' % (day.day, months[day.month - 1],
-                        '' if same_year else ' %s' % day.year)
+    args = {'day': day.day, 'month': _month_name(env, day.month),
+            'num': day.month, 'year': day.year}
+    if day.year == date.today().year:
+        return env._("%(day)s %(month)s", **args)
+    return env._("%(day)s %(month)s %(year)s", **args)
+
+
+def _month_name(env, month):
+    return [env._("January"), env._("February"), env._("March"), env._("April"), env._("May"),
+            env._("June"), env._("July"), env._("August"), env._("September"), env._("October"),
+            env._("November"), env._("December")][month - 1]
+
+
+def _month_short(env, month):
+    return [env._("Jan"), env._("Feb"), env._("Mar"), env._("Apr"), env._("May"), env._("Jun"),
+            env._("Jul"), env._("Aug"), env._("Sep"), env._("Oct"), env._("Nov"),
+            env._("Dec")][month - 1]
+
+
+def _month_label(env, month):
+    """"September 2026" — the stored `name` is English for ever (it is
+    computed once, in whatever language the write ran in)."""
+    if not month:
+        return ''
+    return env._("%(month)s %(year)s", month=_month_name(env, month.month),
+             num=month.month, year=month.year)

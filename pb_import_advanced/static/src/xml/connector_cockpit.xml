@@ -304,7 +304,7 @@
               <div class="pbcc-feed__acts">
                 <button t-if="canWrite" class="pbim-btn outline pbim-btn-sm"
                         t-att-disabled="(state.syncing or !ep.runnable) ? 'disabled' : false"
-                        t-att-title="ep.runnable ? 'Pull only this feed' : 'Catalogue-only feed. Use Configure to choose an executable operation before syncing.'"
+                        t-att-title="ep.runnable ? L.pullFeed : L.catalogueOnly"
                         t-on-click="() => this.syncEndpoint(ep)">
                   <t t-if="state.syncing === ep.id"><span class="pbim-spin pbcc-feed__spin"/> Syncing…</t>
                   <t t-else=""><t t-out="ic('refresh',14)"/> Sync</t>
@@ -326,7 +326,7 @@
                 <button t-if="canWrite and d.field_fetch and d.field_fetch.mode"
                         class="pbim-btn ghost pbim-btn-sm"
                         t-att-disabled="(state.fetching or !d.field_fetch.ready) ? 'disabled' : false"
-                        t-att-title="d.field_fetch.ready ? 'Read the field list for this feed from the source system' : d.field_fetch.reason"
+                        t-att-title="d.field_fetch.ready ? L.readFields : d.field_fetch.reason"
                         t-on-click="() => this.fetchFields(ep)">
                   <t t-if="state.fetching === ep.id"><span class="pbim-spin pbcc-feed__spin"/> Fetching…</t>
                   <t t-else=""><t t-out="ic('download',14)"/> Fetch fields</t>
@@ -357,7 +357,7 @@
             <h2 class="pbim-h2"><t t-out="ic('lock',15)"/> Credentials
               <span class="pbcc-count" t-esc="credentials.auth_label"/></h2>
             <button class="pbim-btn ghost pbim-btn-sm" t-on-click="toggleCredentials">
-              <t t-esc="state.credOpen ? 'Close' : 'Edit'"/>
+              <t t-esc="state.credOpen ? L.close : L.edit"/>
             </button>
           </div>
 
@@ -374,7 +374,7 @@
               <label class="pbcc-credrow__l">
                 <span class="n" t-esc="f.label"/>
                 <span t-attf-class="pbcc-credstate {{ f.is_set ? 'is-set' : '' }}"
-                      t-esc="f.is_set ? 'Set' : 'Not set'"/>
+                      t-esc="f.is_set ? L.set : L.notSet"/>
               </label>
               <input class="pbcc-credrow__i" t-att-type="f.secret ? 'password' : 'text'"
                      autocomplete="off" placeholder="unchanged"
@@ -440,7 +440,7 @@
               <div t-if="d.rules.length" class="pbcc-rules">
                 <div t-foreach="d.rules" t-as="r" t-key="r.id" class="pbcc-rule">
                   <span class="nm" t-esc="r.name"/>
-                  <span t-attf-class="pbim-badge {{ r.active ? 'ok' : 'muted' }}"><t t-esc="r.active ? 'Active' : 'Off'"/></span>
+                  <span t-attf-class="pbim-badge {{ r.active ? 'ok' : 'muted' }}"><t t-esc="r.active ? L.active : L.off"/></span>
                 </div>
               </div>
               <div t-else="" class="pbim-empty">No transformation rules.</div>
@@ -480,7 +480,7 @@
           <div class="pbcc-studio__summary">
             <div class="pbcc-studio__metric">
               <span class="ic"><t t-out="ic('link',17)"/></span>
-              <div><strong t-esc="state.config.api_endpoint ? 'Base URL set' : 'Base URL needed'"/>
+              <div><strong t-esc="state.config.api_endpoint ? L.baseSet : L.baseNeeded"/>
                 <small>All relative feed paths inherit this URL</small></div>
             </div>
             <div class="pbcc-studio__metric">
@@ -612,7 +612,7 @@
                 <label class="pbcc-config-field wide"><span>Redirect URI override</span><input type="url" t-att-placeholder="state.config.effective_redirect_uri" t-att-value="state.config.oauth_redirect_uri or ''" t-on-input="(ev) => this.onConfigInput('oauth_redirect_uri', ev)"/><small>Leave blank to use the Payobook callback below.</small></label>
                 <div class="pbcc-callback wide"><div><span>Effective callback URI</span><code t-esc="state.config.oauth_redirect_uri or state.config.effective_redirect_uri"/></div><button class="pbim-btn outline pbim-btn-sm" t-on-click="() => this.copyText(state.config.oauth_redirect_uri or state.config.effective_redirect_uri)"><t t-out="ic('copy',13)"/> Copy</button></div>
                 <div class="pbcc-oauth-connect wide">
-                  <div><strong t-esc="state.config.oauth_client_ready ? 'Ready to authorize with Zoho' : 'Client credentials needed'"/><span t-if="state.config.oauth_client_ready">Uses a one-time, 10-minute state check. Tokens remain server-side and are never returned to this screen.</span><span t-else="">Add the Client ID and Client Secret Zoho gave you; saved values are never shown again.</span></div>
+                  <div><strong t-esc="state.config.oauth_client_ready ? L.zohoReady : L.clientNeeded"/><span t-if="state.config.oauth_client_ready">Uses a one-time, 10-minute state check. Tokens remain server-side and are never returned to this screen.</span><span t-else="">Add the Client ID and Client Secret Zoho gave you; saved values are never shown again.</span></div>
                   <button t-if="canAdmin and state.config.oauth_client_ready" class="pbim-btn primary" t-on-click="beginOAuth"><t t-out="ic('plug',14)"/> Save &amp; connect Zoho</button>
                   <button t-elif="canAdmin" class="pbim-btn outline" t-on-click="openCredentialSetup"><t t-out="ic('lock',14)"/> Add Client ID &amp; secret</button>
                   <span t-else="" class="pbcc-studio__issue">System administrator required</span>

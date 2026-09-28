@@ -1,7 +1,7 @@
 {
     'name': 'Workforce Management',
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.4.19.3',
+    'version': '19.0.4.19.4',
     'category': 'Human Resources/Attendance',
     'summary': 'Deputy-style shift roster, live attendance, payroll reports, timecards, and visual dashboards',
     'description': """
@@ -57,6 +57,7 @@ Workforce Management — Deputy & Rippling-Style HR Tools
             # into nothing (W76).
             'pb_hr_workforce/static/src/scss/payroll_report.scss',
             'pb_hr_workforce/static/src/js/payroll_report.js',
+            'pb_hr_workforce/static/src/xml/payroll_report.xml',
             'pb_hr_workforce/static/src/scss/attendance_weekgrid.scss',
             'pb_hr_workforce/static/src/js/attendance_weekgrid.js',
             'pb_hr_workforce/static/src/xml/attendance_weekgrid.xml',

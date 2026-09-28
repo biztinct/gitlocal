@@ -139,6 +139,22 @@ export class ConnectorCockpit extends Component {
     get d() { return this.state.detail || {}; }
     get feedOperations() { return FEED_OPERATIONS; }
     get feedDataTypes() { return FEED_DATA_TYPES; }
+    // Words the template picks between in an expression. A string literal in
+    // a template expression is never extracted, so each is a real msgid here
+    // (LEARN REFRESH step 6).
+    get L() {
+        return {
+            pullFeed: _t("Pull only this feed"),
+            catalogueOnly: _t("Catalogue-only feed. Use Configure to choose an executable operation before syncing."),
+            readFields: _t("Read the field list for this feed from the source system"),
+            close: _t("Close"), edit: _t("Edit"),
+            set: _t("Set"), notSet: _t("Not set"),
+            active: _t("Active"), off: _t("Off"),
+            baseSet: _t("Base URL set"), baseNeeded: _t("Base URL needed"),
+            zohoReady: _t("Ready to authorize with Zoho"),
+            clientNeeded: _t("Client credentials needed"),
+        };
+    }
     get feedMethods() { return [["get", "GET"], ["post", "POST"]]; }
     initials() { return (this.d.name || "?").trim().slice(0, 2).toUpperCase(); }
 
@@ -148,14 +164,14 @@ export class ConnectorCockpit extends Component {
             const p = (this.state.detail || {}).pull_period;
             if (p && !this.state.periodTouched) { this.state.period = { ...p }; }
         } catch (e) {
-            this.state.detail = { error: "Could not load this connector." };
+            this.state.detail = { error: _t("Could not load this connector.") };
         } finally {
             this.state.loaded = true;
         }
     }
 
     async _run(promise, msg) {
-        this.state.busy = true; this.state.busyMsg = msg || "Working…";
+        this.state.busy = true; this.state.busyMsg = msg || _t("Working…");
         try {
             const res = await promise;
             if (res && typeof res === "object") {
@@ -187,7 +203,7 @@ export class ConnectorCockpit extends Component {
             }
         } catch (e) {
             console.warn("connector cockpit: schedule change failed", e);
-            this.notif.add("That could not be changed.", { type: "warning" });
+            this.notif.add(_t("That could not be changed."), { type: "warning" });
         } finally {
             this.state.schedBusy = false;
         }
@@ -228,10 +244,10 @@ export class ConnectorCockpit extends Component {
     }
 
     runAction(method) {
-        const msg = { action_test_connection: "Testing connection…", action_pull_data: "Pulling data…",
-                      action_fetch_available_fields: "Fetching fields…", action_disconnect: "Disconnecting…",
-                      action_fetch_last_month_now: "Fetching last month…",
-                      action_refresh_records_now: "Updating records…" }[method] || "Working…";
+        const msg = { action_test_connection: _t("Testing connection…"), action_pull_data: _t("Pulling data…"),
+                      action_fetch_available_fields: _t("Fetching fields…"), action_disconnect: _t("Disconnecting…"),
+                      action_fetch_last_month_now: _t("Fetching last month…"),
+                      action_refresh_records_now: _t("Updating records…") }[method] || _t("Working…");
         const args = [this.connectorId, method];
         if (method === "action_pull_data") {
             // Only the pull reads a window; the other three take none and must
@@ -349,7 +365,7 @@ export class ConnectorCockpit extends Component {
     openSync() {
         this.action.doAction({
             type: "ir.actions.client", tag: "pb_import_sync_wizard",
-            name: "Pull from Connector", params: { connector_id: this.connectorId },
+            name: _t("Pull from Connector"), params: { connector_id: this.connectorId },
         });
     }
     // ===================================================================== feeds

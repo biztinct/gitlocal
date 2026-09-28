@@ -53,7 +53,7 @@ class PayrollReport(models.TransientModel):
         """
         batch = self.env['hr.payslip.run'].browse(batch_id)
         if not batch.exists():
-            return {'error': 'Batch not found'}
+            return {'error': _('Batch not found')}
 
         # Find previous batch (same structure/company, earlier date)
         prev_batch = self.env['hr.payslip.run'].search([
@@ -106,12 +106,15 @@ class PayrollReport(models.TransientModel):
             if gross != prev_gross and prev_gross:
                 diff = gross - prev_gross
                 if abs(diff) > 0:
-                    direction = 'increased' if diff > 0 else 'decreased'
-                    events.append(f"Gross pay {direction} by {abs(diff):,.0f}")
+                    amount = '{:,.0f}'.format(abs(diff))
+                    events.append(_("Gross pay increased by %s", amount)
+                                  if diff > 0 else
+                                  _("Gross pay decreased by %s", amount))
             if basic != prev_basic and prev_basic:
                 diff = basic - prev_basic
                 if abs(diff) > 0:
-                    events.append(f"Basic salary changed by {diff:+,.0f}")
+                    events.append(_("Basic salary changed by %s",
+                                    '{:+,.0f}'.format(diff)))
 
             # Earnings and deductions breakdowns. Both list exactly the lines
             # the figures above are made of — a breakdown that does not add up
@@ -123,7 +126,7 @@ class PayrollReport(models.TransientModel):
             deduction_lines = self._breakdown(
                 lines.pb_lines_in_band('deductions'), prev_line_ids)
 
-            dept = emp.department_id.name if emp.department_id else 'Unassigned'
+            dept = emp.department_id.name if emp.department_id else _('Unassigned')
             dept_totals.setdefault(dept, {'gross': 0, 'net': 0, 'deductions': 0, 'count': 0})
             dept_totals[dept]['gross'] += gross
             dept_totals[dept]['net'] += net

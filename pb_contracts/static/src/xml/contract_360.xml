@@ -217,7 +217,7 @@
               <div class="pbc-wage">
                 <span class="l">Monthly wage</span>
                 <span class="v" t-att-class="{ 'masked': header.wage_masked, 'staged': wageStaged }"
-                      t-att-title="header.wage_masked ? 'Visible to payroll managers only' : ''"
+                      t-att-title="header.wage_masked ? maskedTitle : ''"
                       t-esc="wageDisplay || '—'"/>
               </div>
               <button class="pbc-x" title="Close" t-on-click="close"><t t-out="ic('x',18)"/></button>

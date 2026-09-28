@@ -82,7 +82,8 @@
                 <p class="pay-revcard-x" t-esc="rev.next_step"/>
                 <p class="pay-revcard-b" t-if="rev.blocked">
                   <t t-out="ic('alert', 14)"/>
-                  <t t-esc="rev.blocked"/> rows stop approval
+                  <t t-if="rev.blocked === 1">1 row stops approval</t>
+                  <t t-else=""><t t-esc="rev.blocked"/> rows stop approval</t>
                 </p>
               </div>
             </div>

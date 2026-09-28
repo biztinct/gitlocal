@@ -11,7 +11,7 @@
     "name": "Backend debranding",
     # 19.0.1.0.1 -- local Odoo 19 compatibility patch, see models/ir_http.py.
     # Keep this bump when merging an upstream update, or re-apply the patch.
-    "version": "19.0.1.0.1",
+    "version": "19.0.1.0.2",
     "author": "IT-Projects LLC, Ivan Yelizariev",
     "license": "OPL-1",
     "category": "Debranding",

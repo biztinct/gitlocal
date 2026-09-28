@@ -1386,9 +1386,11 @@ msgid "Overtime this month"
 msgstr "Làm thêm giờ trong tháng này"
 
 #. module: pb_hr_workforce
+#. odoo-javascript
 #: model:ir.actions.client,name:pb_hr_workforce.action_payroll_report_dashboard
 #: model:ir.ui.menu,name:pb_hr_workforce.menu_payroll_report
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_hr_payslip_run_form_inherit_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
 msgid "Payroll Report"
 msgstr "Báo cáo lương"
 
@@ -2327,3 +2329,195 @@ msgstr "gần hoặc vượt mức trần"
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
 msgid "%s this month"
 msgstr "%s tháng này"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Batch not found"
+msgstr "Không tìm thấy đợt lương"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Gross pay increased by %s"
+msgstr "Tổng thu nhập tăng %s"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Gross pay decreased by %s"
+msgstr "Tổng thu nhập giảm %s"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Basic salary changed by %s"
+msgstr "Lương cơ bản thay đổi %s"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Unassigned"
+msgstr "Chưa có phòng ban"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Pay run"
+msgstr "Đợt lương"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Select Pay Run…"
+msgstr "Chọn đợt lương…"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Search employee..."
+msgstr "Tìm nhân viên..."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Earnings"
+msgstr "Thu nhập"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Deductions"
+msgstr "Khấu trừ"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Dept Summary"
+msgstr "Tổng hợp theo phòng ban"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Employees"
+msgstr "Nhân viên"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Total Gross"
+msgstr "Tổng thu nhập"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Total Deductions"
+msgstr "Tổng khấu trừ"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Total Net Pay"
+msgstr "Tổng thực lĩnh"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Changes"
+msgstr "Thay đổi"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "vs."
+msgstr "so với"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Basic"
+msgstr "Lương cơ bản"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Gross Pay"
+msgstr "Tổng thu nhập"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Previous"
+msgstr "Kỳ trước"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Variance"
+msgstr "Chênh lệch"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Related Events"
+msgstr "Sự kiện liên quan"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Earnings Breakdown"
+msgstr "Chi tiết thu nhập"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Component"
+msgstr "Thành phần"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Current"
+msgstr "Kỳ này"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Change"
+msgstr "Thay đổi"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "No payroll data"
+msgstr "Không có dữ liệu lương"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Select a pay run batch to view the report."
+msgstr "Chọn một đợt lương để xem báo cáo."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Net Pay"
+msgstr "Thực lĩnh"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Previous Net"
+msgstr "Thực lĩnh kỳ trước"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Loading payroll data…"
+msgstr "Đang tải dữ liệu lương…"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:0
+msgid "%(name)s (%(count)s slips)"
+msgstr "%(name)s (%(count)s phiếu lương)"

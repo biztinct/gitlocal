@@ -2100,7 +2100,7 @@ msgstr "Phương pháp tính"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__proration_basis__calendar
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_proration_line__proration_basis__calendar
 msgid "Calendar Days"
-msgstr "Lịch Ngày"
+msgstr "Ngày lịch"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__country_code__kh
@@ -14776,16 +14776,14 @@ msgstr "Dữ liệu lương “chỉ kỳ này”"
 # ===================================================================
 
 #. module: pb_hr_payroll_formula
-msgid "%(what)s · %(who)s"
-msgstr "%(what)s · %(who)s"
-
-#. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/demo_approval.py:0
 msgid "A demo database"
 msgstr "Là cơ sở dữ liệu minh hoạ"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "A legislation pack is published with the Publish button, so that somebody agrees to it first."
 msgstr "Gói quy định được công bố bằng nút Công bố, để có người đồng ý trước."
 
@@ -14802,26 +14800,10 @@ msgid "Fetch schedule · %s"
 msgstr "Lịch lấy dữ liệu · %s"
 
 #. module: pb_hr_payroll_formula
-msgid "Finance approver"
-msgstr "Người duyệt tài chính"
-
-#. module: pb_hr_payroll_formula
-msgid "Finance controller"
-msgstr "Kiểm soát tài chính"
-
-#. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/security/import_approval_rules.xml:0
 msgid "HR lead"
 msgstr "Trưởng nhân sự"
-
-#. module: pb_hr_payroll_formula
-msgid "HR lifecycle team"
-msgstr "Nhóm vòng đời nhân sự"
-
-#. module: pb_hr_payroll_formula
-msgid "Head of pay"
-msgstr "Trưởng bộ phận lương thưởng"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -14858,10 +14840,6 @@ msgstr "Số người"
 #: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
 msgid "People moved"
 msgstr "Số người chuyển"
-
-#. module: pb_hr_payroll_formula
-msgid "Platform owner"
-msgstr "Chủ sở hữu nền tảng"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -14910,14 +14888,6 @@ msgstr "Lịch đã thay đổi"
 #: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
 msgid "Schemes involved"
 msgstr "Số phương án liên quan"
-
-#. module: pb_hr_payroll_formula
-msgid "Sent for approval — %s"
-msgstr "Đã gửi phê duyệt — %s"
-
-#. module: pb_hr_payroll_formula
-msgid "Sent for approval."
-msgstr "Đã gửi phê duyệt."
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -15016,31 +14986,23 @@ msgid "The rate table could not be saved."
 msgstr "Không lưu được bảng tỷ lệ."
 
 #. module: pb_hr_payroll_formula
-msgid "Their manager"
-msgstr "Quản lý của họ"
-
-#. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "This pack is already published."
 msgstr "Gói này đã được công bố."
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
 msgid "This part of the payroll is not installed on this database any more, so the change cannot be carried out."
 msgstr "Phần này của hệ thống lương không còn được cài trên cơ sở dữ liệu này, nên không thực hiện được thay đổi."
 
 #. module: pb_hr_payroll_formula
-msgid "Whole company"
-msgstr "Toàn công ty"
-
-#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/statutory_approval.py:0
+#: code:addons/pb_hr_payroll_formula/models/scheme_proposal.py:0
 msgid "Yes"
 msgstr "Có"
-
-#. module: pb_hr_payroll_formula
-msgid "your approver"
-msgstr "người phê duyệt của bạn"
-
 
 # ===================================================================
 #  Approval Matrix phase 7 — what the browser walk found.
@@ -15083,6 +15045,8 @@ msgid "Bands in the table now"
 msgstr "Số bậc hiện có trong bảng"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/demo_approval.py:0
 msgid "Demo people, contracts and payslips are written into this database"
 msgstr "Nhân sự, hợp đồng và phiếu lương minh hoạ sẽ được ghi vào cơ sở dữ liệu này"
 
@@ -15093,6 +15057,8 @@ msgid "Demo world"
 msgstr "Bộ dữ liệu minh hoạ"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "Each one that resolves to a value starts feeding the payslip"
 msgstr "Mỗi ánh xạ cho ra giá trị sẽ bắt đầu cấp dữ liệu cho phiếu lương"
 
@@ -15157,10 +15123,6 @@ msgid "Rate table"
 msgstr "Bảng tỷ lệ"
 
 #. module: pb_hr_payroll_formula
-msgid "See the request"
-msgstr "Xem yêu cầu"
-
-#. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "Severed mappings to mend"
@@ -15179,10 +15141,14 @@ msgid "Team or division"
 msgstr "Nhóm hoặc bộ phận"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "The mapping is pointed at the component whose name matches"
 msgstr "Ánh xạ được trỏ tới thành phần có tên trùng khớp"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/mapping_approval.py:0
 msgid "The source system is asked what fields it has, and a mapping row is made for each new one"
 msgstr "Hệ thống nguồn được hỏi có những trường nào, và mỗi trường mới sẽ có một dòng ánh xạ"
 
@@ -15229,6 +15195,8 @@ msgid "Wiring to remove"
 msgstr "Liên kết cần gỡ"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
 msgid "any"
 msgstr "bất kỳ"
 
@@ -15422,3 +15390,8 @@ msgstr "Lấy giá trị của thành phần này từ chính đợt trả lươ
 #: code:addons/pb_hr_payroll_formula/models/api_transformation_rule.py:0
 msgid "These records carry no pay period yet, so this is working to the current month — %s standard working days, counted Monday to Friday. A real pull will use the period its records arrive with."
 msgstr "Các bản ghi này chưa mang kỳ lương nào, nên đang tính theo tháng hiện tại — %s ngày công chuẩn, đếm từ Thứ Hai đến Thứ Sáu. Một lần kéo dữ liệu thật sẽ dùng kỳ đi kèm với bản ghi của nó."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_proration_line__proration_basis__segment
+msgid "Days Worked Here"
+msgstr "Số ngày làm việc tại đây"

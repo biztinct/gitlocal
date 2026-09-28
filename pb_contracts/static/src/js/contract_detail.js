@@ -51,14 +51,14 @@ export class PbContractDetail extends Component {
 
     async refresh() {
         try { this.state.d = await this.orm.call(MODEL, "get_contract_detail", [this.cid]); }
-        catch (e) { this.state.d = { error: "Could not load this contract." }; }
+        catch (e) { this.state.d = { error: _t("Could not load this contract.") }; }
         finally { this.state.loaded = true; }
     }
 
     async runAction(method) {
         if (method === "renew") return this.renew();
         this.state.busy = true;
-        this.state.busyMsg = { set_running: "Activating…", terminate: "Terminating…", cancel: "Cancelling…" }[method] || "Working…";
+        this.state.busyMsg = { set_running: _t("Activating…"), terminate: _t("Terminating…"), cancel: _t("Cancelling…") }[method] || _t("Working…");
         try {
             const res = await this.orm.call(MODEL, "run_contract_action", [this.cid, method]);
             this.state.d = res;
@@ -69,11 +69,11 @@ export class PbContractDetail extends Component {
         } finally { this.state.busy = false; }
     }
     renew() {
-        this.action.doAction({ type: "ir.actions.client", tag: "pb_contract_wizard", name: "Renew contract",
+        this.action.doAction({ type: "ir.actions.client", tag: "pb_contract_wizard", name: _t("Renew contract"),
                                params: { employee_id: this.d.employee_id, renew_from: this.cid } });
     }
     openEmployee() {
-        if (this.d.employee_id) this.action.doAction({ type: "ir.actions.client", tag: "pb_employee_detail", name: "Employee", params: { emp_id: this.d.employee_id } });
+        if (this.d.employee_id) this.action.doAction({ type: "ir.actions.client", tag: "pb_employee_detail", name: _t("Employee"), params: { emp_id: this.d.employee_id } });
     }
     openAdvancedForm() {
         this.action.doAction({ type: "ir.actions.act_window", res_model: "hr.contract", res_id: this.cid, views: [[false, "form"]], target: "current" });

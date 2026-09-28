@@ -914,6 +914,15 @@ def ensure_catalogue(env):
     # nothing is left with an empty bundle. That sweep is the generic module's
     # — it is a fact about the model rather than about this catalogue.
     linked += ensure_bundles(env)
+    # The rows' Vietnamese. The catalogue is Python data a .po never reaches,
+    # so the stored jsonb carries it (LEARN REFRESH step 6); a role seeded
+    # today gets it the same moment.
+    from .catalogue_vi import apply_catalogue_vi
+    try:
+        apply_catalogue_vi(env)
+    except Exception:                           # noqa: BLE001
+        _logger.warning('pb_vendor_access: role catalogue Vietnamese not '
+                        'written', exc_info=True)
     _logger.info(
         'pb_vendor_access: role catalogue — %s created, %s already there, '
         '%s given their abilities, %s not offered (their module is not '

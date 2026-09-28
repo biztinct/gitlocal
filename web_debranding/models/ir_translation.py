@@ -102,16 +102,15 @@ class IrModelFields(models.Model):
     @api.model
     @tools.ormcache("self.env.context.get('lang')", "model_name", "field_name")
     def get_field_selection(self, model_name, field_name):
-        # Odoo 19: Get selection directly from field definition
-        try:
-            field = self.env[model_name]._fields.get(field_name)
-            if field and hasattr(field, 'selection'):
-                if callable(field.selection):
-                    selection = field.selection(self.env[model_name])
-                else:
-                    selection = field.selection or []
-            else:
-                selection = []
-        except Exception:
-            selection = []
-        return [(value, debrand(self.env, name)) for value, name in selection]
+        # LEARN REFRESH step 6. This used to read `field.selection` straight
+        # off the field definition — the English SOURCE — and never called
+        # super(), so the stored translations of every selection label
+        # (`ir_model_fields_selection.name`, jsonb) never reached a screen:
+        # a Vietnamese reader saw "Draft"/"Posted" on every Selection field in
+        # the product, however complete the .po. The base method returns the
+        # labels in the context language (only the options that are stored;
+        # `_description_selection` falls back to the source label for the
+        # rest), so debrand THAT.
+        selection = super().get_field_selection(model_name, field_name)
+        return [(value, debrand(self.env, name) if isinstance(name, str) else name)
+                for value, name in selection]

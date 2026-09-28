@@ -104,7 +104,7 @@
                       t-att-disabled="state.busy">Run it now</button>
               <button class="pbim-btn-sm" t-on-click="toggleReminders"
                       t-att-disabled="state.busy">
-                <t t-esc="state.remindersOn ? 'Switch off' : 'Switch on'"/>
+                <t t-esc="state.remindersOn ? L.switchOff : L.switchOn"/>
               </button>
             </span>
           </div>
@@ -151,7 +151,7 @@
                   <span class="pbim-badge"
                         t-att-class="{ 'ok': mo.state === 'upcoming',
                                        'muted': mo.state === 'closed' }">
-                    <t t-esc="mo.state === 'closed' ? 'Closed' : 'Open'"/>
+                    <t t-esc="mo.state === 'closed' ? L.closed : L.open"/>
                   </span>
                   <span class="pcal-card-rem" t-if="mo.reminders">
                     <t t-out="ic('send',12)"/><t t-esc="mo.reminders"/>
