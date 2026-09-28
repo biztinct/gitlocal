@@ -124,11 +124,17 @@
                 <!-- The reject confirm lives IN the card. A window.confirm is a
                      native dialog on a surface that owns a design system, and it
                      blocks the whole tab while it is up. -->
-                <div t-if="state.confirming === b.id" class="pbr-confirm">
+                <div t-if="state.confirming === b.id" class="pbr-confirm" data-coach="pk-reject-why">
                   <div class="q">Reject “<t t-esc="b.name"/>”? Every payslip in this batch is cancelled.</div>
+                  <label class="pbr-why-l" t-att-for="'pbr-why-' + b.id">Why? <span class="req">(required)</span></label>
+                  <textarea class="pbr-why" t-att-id="'pbr-why-' + b.id" rows="2"
+                            t-model="state.rejectNote" t-ref="rejectWhy"
+                            placeholder="For example: made twice by mistake"
+                            t-on-keydown="(ev) => this.onRejectKey(ev, b)"/>
                   <div class="a">
                     <button class="pbr-btn ghost" t-on-click="cancelReject">Keep it</button>
-                    <button class="pbr-btn danger" t-on-click="() => this.confirmReject(b)">Reject run</button>
+                    <button class="pbr-btn danger" t-att-disabled="!rejectNoteOk"
+                            t-on-click="() => this.confirmReject(b)">Reject run</button>
                   </div>
                 </div>
 
@@ -168,6 +174,10 @@
               <span class="nm" t-esc="b.name"/>
               <span class="pd" t-esc="b.period"/>
               <span class="em"><t t-esc="b.employees"/> emp</span>
+              <span class="why" t-if="b.reject_note">
+                <span class="hd">Why<t t-if="b.reject_by"> (<t t-esc="b.reject_by"/>)</t>:</span>
+                <t t-esc="b.reject_note"/>
+              </span>
             </div>
           </div>
         </div>

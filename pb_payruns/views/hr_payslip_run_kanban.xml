@@ -28,6 +28,7 @@
                 <field name="pb_is_pending"/>
                 <field name="pb_is_done"/>
                 <field name="pb_return_note"/>
+                <field name="pb_reject_note"/>
                 <field name="approval_state"/>
                 <templates>
                     <t t-name="card">
@@ -52,14 +53,17 @@
                                 <span class="hd">Sent back</span>
                                 <span class="why"><field name="pb_return_note"/></span>
                             </div>
+                            <div class="pbk-sentback pbk-rejected" t-if="record.pb_reject_note.raw_value">
+                                <span class="hd">Rejected</span>
+                                <span class="why"><field name="pb_reject_note"/></span>
+                            </div>
                             <div class="pbk-foot" data-coach="pk-card-actions">
                                 <button t-if="record.pb_can_submit.raw_value" type="object" name="action_approval_submit" class="pbk-btn primary">Submit for approval</button>
                                 <!-- A decision is made where the request is, in
                                      Approvals — never from a board button that
                                      would have to guess which step it answers. -->
                                 <span t-if="record.pb_is_pending.raw_value" class="pbk-await">Waiting for approval</span>
-                                <button t-if="record.pb_can_reject.raw_value" type="object" name="action_payslip_run_cancel" class="pbk-btn ghost danger"
-                                        confirm="Reject this pay run? All payslips in it will be cancelled.">Reject</button>
+                                <button t-if="record.pb_can_reject.raw_value" type="object" name="action_pb_ask_reject" class="pbk-btn ghost danger">Reject</button>
                                 <button t-if="record.pb_is_done.raw_value" type="object" name="action_open_payroll_report" class="pbk-btn primary">Report</button>
                                 <button t-if="record.pb_is_done.raw_value" type="object" name="action_download_payslip_xlsx" class="pbk-btn ghost">Excel</button>
                                 <button t-if="record.pb_is_done.raw_value" type="object" name="action_send_email_all" class="pbk-btn ghost">Email</button>

@@ -30,8 +30,11 @@
                         string="Submit for approval" class="oe_highlight"
                         invisible="state != 'draft'"/>
             </xpath>
-            <xpath expr="//header/button[@name='action_payslip_run_cancel']" position="attributes">
-                <attribute name="invisible">state not in ('draft', 'approval_pending')</attribute>
+            <!-- LEARN REFRESH step 6: Reject asks "Why?" first (a small
+                 window), so every rejected run carries its reason. -->
+            <xpath expr="//header/button[@name='action_payslip_run_cancel']" position="replace">
+                <button name="action_pb_ask_reject" type="object" string="Reject"
+                        invisible="state not in ('draft', 'approval_pending')"/>
             </xpath>
 
             <!-- hide the cramped native statusbar; render the workflow as a
@@ -73,6 +76,17 @@
                      back and cleared the moment it is sent in again, so it
                      always reads as "this is what has to be fixed", never as
                      history. -->
+                <!-- Why this run was rejected: kept for good, because a
+                     rejected run never comes back and this is its last word. -->
+                <div class="alert alert-danger pb-payrun-rejected" role="alert"
+                     invisible="state != 'cancel' or not pb_reject_note">
+                    <div>
+                    <b>Rejected<span invisible="not pb_reject_uid"> by
+                        <field name="pb_reject_uid" nolabel="1" readonly="1" class="pb-sb-who"/></span><span invisible="not pb_reject_date">
+                        on <field name="pb_reject_date" nolabel="1" readonly="1" class="pb-sb-when"/></span>:</b>
+                    <span class="ms-1"/><field name="pb_reject_note" nolabel="1" readonly="1" class="pb-sb-why d-inline ms-1"/>
+                    </div>
+                </div>
                 <div class="alert alert-warning pb-payrun-sentback" role="alert"
                      invisible="not pb_return_note">
                     <b>Sent back by

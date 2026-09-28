@@ -10,7 +10,7 @@
     # 2.3.0: the board prices each run in its SCHEME's money (SCHEMECTX P1).
     # Python, JS and QWeb all change, so the version has to move for the
     # deploy-time version-diff gate to see it.
-    'version': '19.0.2.9.0',
+    'version': '19.0.2.10.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -35,6 +35,7 @@
         'views/pb_payruns_action.xml',
         'views/hr_payslip_run_kanban.xml',
         'views/hr_payslip_run_form_enhance.xml',
+        'views/pb_payrun_reject_views.xml',
     ],
     'post_init_hook': 'post_init_hook',
     'assets': {

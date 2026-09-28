@@ -639,6 +639,39 @@ class PayrunApprovalCase(TransactionCase):
         self.assertEqual(run.pb_reject_note, 'Wrong month')
         self.assertEqual(request.state, 'cancelled')
 
+    # ---- LEARN REFRESH step 6: Reject always says why ----------------------
+    def test_reject_without_a_reason_is_refused(self):
+        run = self._run()
+        self._slip(run, self.emp_a)
+        with self.assertRaises(UserError):
+            run.action_payslip_run_cancel()
+        with self.assertRaises(UserError):
+            run.with_context(pb_reject_note='   ').action_payslip_run_cancel()
+        self.assertEqual(run.state, 'draft', 'nothing happened to the run')
+
+    def test_reject_window_records_the_reason(self):
+        run = self._run()
+        self._slip(run, self.emp_a)
+        action = run.action_pb_ask_reject()
+        self.assertEqual(action['res_model'], 'pb.payrun.reject')
+        wiz = self.env['pb.payrun.reject'].with_context(
+            action['context']).create({'reason': '  Made twice by mistake '})
+        self.assertEqual(wiz.run_id, run)
+        wiz.action_confirm()
+        run.invalidate_recordset()
+        self.assertEqual(run.state, 'cancel')
+        self.assertEqual(run.pb_reject_note, 'Made twice by mistake')
+        self.assertEqual(run.pb_reject_uid, self.env.user)
+
+    def test_board_shows_why_a_run_was_rejected(self):
+        run = self._run()
+        self._slip(run, self.emp_a)
+        run.with_context(pb_reject_note='Wrong month').action_payslip_run_cancel()
+        data = self.env['pb.payruns'].get_board_data()
+        card = next(b for b in data['batches'] if b['id'] == run.id)
+        self.assertEqual(card['reject_note'], 'Wrong month')
+        self.assertEqual(card['reject_by'], self.env.user.name)
+
     def test_turning_it_down_in_the_inbox_rejects_the_run(self):
         """LEARN REFRESH fix D. "Turn it down" used to leave the run reading
         Waiting for approval for ever, its payslips frozen."""

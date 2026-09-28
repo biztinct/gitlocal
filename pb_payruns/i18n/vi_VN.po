@@ -1024,3 +1024,84 @@ msgstr "tại"
 #: code:addons/pb_payruns/static/src/xml/payruns.xml:0
 msgid "Show all"
 msgstr "Hiện tất cả"
+
+#. module: pb_payruns
+#: model:ir.model,name:pb_payruns.model_pb_payrun_reject
+msgid "Reject a pay run"
+msgstr "Từ chối một đợt lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: model:ir.model.fields,field_description:pb_payruns.field_pb_payrun_reject__reason
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Why?"
+msgstr "Lý do?"
+
+#. module: pb_payruns
+#: model:ir.model.fields,field_description:pb_payruns.field_pb_payrun_reject__run_name
+msgid "Run"
+msgstr "Đợt lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_payruns.hr_payslip_run_form_pb_enhance
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "by"
+msgstr "bởi"
+
+#. module: pb_payruns
+#: model_terms:ir.ui.view,arch_db:pb_payruns.hr_payslip_run_form_pb_enhance
+msgid "on"
+msgstr "lúc"
+
+#. module: pb_payruns
+#: model_terms:ir.ui.view,arch_db:pb_payruns.view_hr_payslip_run_kanban_pb
+msgid "<span class=\"hd\">Rejected</span>"
+msgstr "<span class=\"hd\">Bị từ chối</span>"
+
+#. module: pb_payruns
+#: model_terms:ir.ui.view,arch_db:pb_payruns.view_pb_payrun_reject_form
+msgid "Every payslip in it is cancelled and the run does not come\n                        back — a new run has to be made. To have something fixed\n                        instead, send it back from Approvals."
+msgstr "Mọi phiếu lương trong đợt sẽ bị hủy và đợt lương không quay lại được — phải tạo một đợt mới. Nếu chỉ cần sửa, hãy trả lại nó từ mục Phê duyệt."
+
+#. module: pb_payruns
+#: model_terms:ir.ui.view,arch_db:pb_payruns.view_pb_payrun_reject_form
+msgid "For example: made twice by mistake, or the wrong month"
+msgstr "Ví dụ: tạo trùng do nhầm, hoặc sai tháng"
+
+#. module: pb_payruns
+#. odoo-python
+#: model_terms:ir.ui.view,arch_db:pb_payruns.view_pb_payrun_reject_form
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "Reject this pay run"
+msgstr "Từ chối đợt lương này"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payrun_reject.py:0
+msgid "Say why the pay run is rejected."
+msgstr "Hãy nêu lý do từ chối đợt lương."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "Say why the pay run is rejected — the reason is kept on the run for everyone who opens it later."
+msgstr "Hãy nêu lý do từ chối đợt lương — lý do được lưu trên đợt lương cho mọi người mở nó về sau."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "(required)"
+msgstr "(bắt buộc)"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "For example: made twice by mistake"
+msgstr "Ví dụ: tạo trùng do nhầm"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Why"
+msgstr "Lý do"

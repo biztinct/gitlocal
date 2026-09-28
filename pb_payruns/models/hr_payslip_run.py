@@ -1160,6 +1160,14 @@ class HrPayslipRun(models.Model):
                     "rejected.", name=run.name or '',
                     state=_(PB_STAGE_NAME.get(run.state or '', run.state or ''))))
             run.check_access('write')
+        # LEARN REFRESH step 6: a rejection always says why. Every door (the
+        # board's in-card confirm, the run form, the kanban) now asks; a call
+        # that does not carry a reason is refused rather than recorded blank,
+        # so "Rejected — why?" always has an answer on the card and the form.
+        if not note:
+            raise UserError(_(
+                "Say why the pay run is rejected — the reason is kept on the "
+                "run for everyone who opens it later."))
         for run in self:
             request = run.approval_request_id
             if request and request.state in ('pending', 'blocked'):
@@ -1178,6 +1186,20 @@ class HrPayslipRun(models.Model):
                     'pb_reject_uid': self.env.uid,
                     'pb_reject_date': fields.Datetime.now()})
         return res
+
+    def action_pb_ask_reject(self):
+        """The run form's and the kanban's Reject: open the small "Why?"
+        window. The board asks in the card itself and calls
+        `action_payslip_run_cancel` with the reason directly."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Reject this pay run'),
+            'res_model': 'pb.payrun.reject',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_run_id': self.id},
+        }
 
     # ------------------------------------------------------------------
     # The old ladder's three entry points, closed

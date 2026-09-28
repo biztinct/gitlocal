@@ -23,7 +23,7 @@
  * The standalone client action still exists and still works — this is one
  * component with two mount points, not a fork (W6/W17).
  */
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, useRef, useEffect, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -54,10 +54,16 @@ export class PbPayruns extends Component {
         this.orm = useService("orm");
         this.action = useService("action");
         this.notification = useService("notification");
+        this.rejectWhy = useRef("rejectWhy");
+        // the reason box takes the keyboard the moment the confirm opens
+        useEffect((open) => {
+            if (open && this.rejectWhy.el) { this.rejectWhy.el.focus(); }
+        }, () => [this.state.confirming]);
         this.state = useState({
             loaded: false,
             busy: 0,
             confirming: 0,          // run id whose Reject is awaiting confirmation
+            rejectNote: "",         // the "Why?" typed in that confirm
             currency: "",
             currencyName: "",
             manyCurrencies: false,
@@ -328,11 +334,28 @@ export class PbPayruns extends Component {
     }
 
     // ---- reject: an in-card confirm, never a native dialog ----
-    askReject(b) { this.state.confirming = b.id; }
-    cancelReject() { this.state.confirming = 0; }
+    // LEARN REFRESH step 6: the confirm asks "Why?" and will not reject
+    // without an answer; the reason rides the context (pb_reject_note) and is
+    // kept on the run, shown in the Rejected list and on the run form.
+    askReject(b) {
+        this.state.rejectNote = "";
+        this.state.confirming = b.id;
+    }
+    cancelReject() { this.state.confirming = 0; this.state.rejectNote = ""; }
+    get rejectNoteOk() { return !!(this.state.rejectNote || "").trim(); }
+    onRejectKey(ev, b) {
+        if (ev.key === "Escape") { ev.preventDefault(); this.cancelReject(); }
+        else if (ev.key === "Enter" && (ev.metaKey || ev.ctrlKey)) {
+            ev.preventDefault(); this.confirmReject(b);
+        }
+    }
     confirmReject(b) {
+        const note = (this.state.rejectNote || "").trim();
+        if (!note) { this.rejectWhy.el && this.rejectWhy.el.focus(); return; }
         this.state.confirming = 0;
-        this._run("action_payslip_run_cancel", b.id, _t("Pay run rejected"));
+        this.state.rejectNote = "";
+        this._run("action_payslip_run_cancel", b.id, _t("Pay run rejected"),
+                  { pb_reject_note: note });
     }
 
     report(b) { this._run("action_open_payroll_report", b.id); }

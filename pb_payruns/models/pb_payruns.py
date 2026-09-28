@@ -112,6 +112,9 @@ class PbPayruns(models.AbstractModel):
                 # why this run came back, if an approver sent it back
                 'return_note': run.pb_return_note or '',
                 'return_by': run.pb_return_uid.name or '',
+                # why this run was rejected (kept for good once it is)
+                'reject_note': run.pb_reject_note or '',
+                'reject_by': run.pb_reject_uid.name or '',
                 # The division key the board's chips filter on. It has always
                 # been sent as the CHIP LIST ('divisions' below) with nothing on
                 # the cards to match it against, so the board could offer a
