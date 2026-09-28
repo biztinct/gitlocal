@@ -190,3 +190,51 @@ Draft with the reason (NOT "cancels 48 payslips"). Closeout: `docs/handovers/APP
 - LR15 The QA login now HAS pay-run access (Your Company). A no-access walkthrough could not be
   reproduced with it; step 1 verified the blocked card by forcing the reach answer. A real
   no-pay-run user is needed for future no-access checks.
+
+- LR16 **Replica CSS classes collide with the helper's.** `.lrn-drawer` (coach.scss, position:fixed)
+  and `.lrn-tl` (journey.scss:743) were already taken; a replica drawn with them floated over the
+  page. New replica classes are `lrn-a*` (`lrn-adrawer`, `lrn-atl`). Grep every new class name
+  across pb_learn/static/src before using it.
+- LR17 **The demo world's pay-run route is "No approval needed"** (payobook, Payobook Vietnam JSC):
+  a submitted demo run goes straight to Done. Company "Payobook" (id 2) has "Pay run approval" but
+  its seats resolve to nobody (request goes `blocked`). Live approval checks need a temporary
+  one-step route inside a rolled-back shell transaction (step 2 did this; zero residue).
+- LR18 **The QA login cannot open pay runs** (`hr.payslip.run` access refused) despite LR15; the demo
+  login (`pb_demo.group_payobook_demo`) can read them but cannot CREATE a run (account.journal
+  read refused). Server-side checks go through `odoo-bin shell` (stop nothing; exit cleanly).
+- LR19 **JS/template translations are served straight from the .po files** — deploy + restart is
+  enough, no `-u` needed. Only a STORED label (pb.sidebar.item name) needs `-u` (filled when the
+  lang key is missing) or `--i18n-overwrite`.
+- LR20 `web.assets.version` is a 14-digit timestamp on these DBs — bump it as `bigint`, and never put
+  the purge DELETE and the bump in one `psql -c` (one failure rolls back both).
+- LR21 A walkthrough can be RETIRED (`retired: true` in data.js): the generator emits the flag, the
+  map (journey.js), the Coach offers (scenario_service `forScreen`) and the server
+  (`explain_scenario_offer`) skip it; progress rows keep their meaning. sc_mapping is retired.
+- LR22 Ask Payobook's classifier sent "who approves my pay run?" to the generic knowledge prompt;
+  the onboarding category now names this app's approval questions explicitly.
+
+## Step 2 facts for later steps
+
+- **Station keys unchanged** (progress survives); titles renamed to tab names: dashboard → "Pulse",
+  approvals → "Approvals", runpayroll → "Run", payruns → "Runs", import → "Import".
+- **New intents:** `whoapproves`, `stuckwaiting`, `sentbackvsturneddown`, `thisrunonly`. `confidence`
+  is now "What do the import counts mean?" (there is no score on the pay-data import).
+- **Glossary:** retired gate, tier, approvalChain, payrollOfficer; added approvalRoute, routeStep,
+  inbox, sentBack, turnedDown, payScheme, payData, thisRunOnly, hub ("Rail"), tab.
+- **Anchors added (product):** inbox.xml `ai-head ai-scope ai-tabs ai-card ai-route ai-drawer ai-facts
+  ai-decide ai-turndown ai-sendback ai-approve ai-move ai-withdraw`; payruns.xml `pk-run pk-divchips
+  pk-steps pk-route pk-card-actions pk-rejected`; promoted `fs-views fs-command`.
+  **Practice:** `rep-tabs rep-fs-stage rep-fs-tools rep-settings`. **Retired/removed:** `pa-*`,
+  `fs-simulate`, `rep-dash-runs`. `pw-division`, `pk-datechips`, `pk-tabs`, `in-trend` are reserved.
+- **Replica:** `MENU` is the 9-hub rail with each hub's lenses (`screen` = replica screen; none =
+  quiet tab). New screen `hub_settings`. Fixture exports `FNB`, `ROUTE`, `LATER`. Status keys:
+  payrun draft/approval_pending/done/cancel; payslip draft/verify/done/cancel; chains payrun
+  (two `branches`), route, formula.
+- **Tenant slots** `hrTierName` / `gmTierName` are declared but unused (kept for existing overrides).
+- **PayAI** envelope: `open_lesson` or `open_walkthrough` (whitelist `_KNOWN_WALKTHROUGHS`); the chat
+  opens a walkthrough as Learn focus `scenario:<key>:watch`.
+- **Product fixes shipped:** `_approval_reject` on hr.payslip.run; engine `_approval_withdraw` hook
+  (default no-op, called from `engine.cancel`) + pay-run impl (back to Draft).
+- **Pre-existing test failures (not step 2):** pb_learn test_07b (cron on template), pb_payroll_ai_insights
+  test_data_access_06, test_egress 04d/04e, pb_approval_config test_u10 (res.users access in outbox)
+  and test_z06d (pb_formula_studio has no Phase-7 block).

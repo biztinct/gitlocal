@@ -108,6 +108,19 @@ E. **Ask Payobook's product knowledge** (`pb_payroll_ai_insights/models/payroll_
    `ai_insight_chat.js` (~:86-93): refresh to questions this step can answer well.
    Must never say "Odoo". VI .po entries for any new visible strings.
 
+F. **Added after the step 1 report:**
+   - Vietnamese hub tab labels are wrong in the product (LR11): Run and Runs both
+     "Chạy", Deliver "Giao hàng", Statutory "Biên chế". Fix every hub lens label's VI
+     in each owning module's i18n/vi_VN.po (+ the stored value if the label is stored —
+     LOOK L24: a translation fix can be TWO fixes). Audit all 9 hubs' tab labels in VI
+     and list before/after in the report. Helper orientation must use the same words.
+   - Clear all 13 retired-anchor uses (the checker warning must reach 0).
+   - sc_payrun: `pw-division` is gone for scheme-based companies (use `pw-scheme`);
+     `pw-pills` / `pw-result` exist only after Compute — Watch must not point at them
+     before Compute (explain the result with a centred card that says so, or reorder).
+   - QA login now has pay-run access (LR15) — for the no-access check use a probe user
+     you create and archive afterwards, or simulate as step 1 did.
+
 ## Non-goals
 
 No new stations beyond renames (step 3/4). No role-path/chapter changes (step 5).
