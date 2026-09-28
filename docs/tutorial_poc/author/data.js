@@ -302,6 +302,7 @@ const I18N = {
     // Lower case: it is rendered after the number ("3 days in a row"), so a
     // capital here puts one in the middle of a phrase.
     streakTitle: "days in a row",
+    streakTitleOne: "day in a row",
     streakHint: "Days in a row with at least one lesson opened. Miss a day and it starts again.",
     /* -- the first-run welcome (LEARNOS Phase 3) --------------------------
        ONE CARD, ONCE, ON A REAL TENANT. Shown to somebody who has just
@@ -672,6 +673,7 @@ const I18N = {
     tierGold: "Đúng ngay lần đầu",
     tierHint: "Vàng nghĩa là bạn trả lời đúng phần Kiểm tra hiểu bài ngay lần đầu.",
     streakTitle: "ngày liên tiếp",
+    streakTitleOne: "ngày liên tiếp",
     streakHint: "Số ngày liên tiếp bạn mở ít nhất một bài học. Nghỉ một ngày thì đếm lại từ đầu.",
     /* -- the first-run welcome (LEARNOS Phase 3) ------------------------- */
     welcomeTitle: "Chào mừng bạn đến với Payobook",
@@ -1632,8 +1634,8 @@ const STATIONS = {
               "Chọn nhầm chương trình lương. Cuối tháng là quyết toán cả tháng; Tạm ứng giữa tháng là trả trước một phần. Đó không phải hai cách nhìn của cùng một thứ."),
             B("Choosing Update Payobook for a one-off amount. That saves the value onto the person's records for every month after. A one-off bonus belongs in This run only.",
               "Chọn Cập nhật Payobook cho một khoản chỉ có một lần. Làm vậy là lưu giá trị đó vào hồ sơ của người đó cho mọi tháng sau. Một khoản thưởng một lần thuộc về Chỉ đợt này."),
-            B("Reading \"Need review\" as \"nothing else to check\". It counts people Payobook could not pay and payslips at zero. It does not flag a big jump on last month — that one is yours to spot.",
-              "Hiểu \"Cần xem xét\" thành \"không còn gì để kiểm tra\". Nó đếm những người Payobook không trả lương được và các phiếu bằng không. Nó không đánh dấu một mức tăng lớn so với tháng trước — việc đó là của bạn."),
+            B("Reading \"Need review\" as \"nothing else to check\". It flags take-home pay that moved more than 30% on the person's last payslip — not a single line that jumped. Hùng's overtime nearly quadrupled and his take-home rose 26%, under the line.",
+              "Hiểu \"Cần xem xét\" thành \"không còn gì để kiểm tra\". Nó đánh dấu thực nhận thay đổi hơn 30% so với phiếu trước của người đó — không phải một dòng lương tăng vọt. Tăng ca của Hùng gần gấp bốn nhưng thực nhận chỉ tăng 26%, dưới ngưỡng."),
           ],
         },
       },
@@ -1680,8 +1682,8 @@ const STATIONS = {
               "Gõ đè lên số thực nhận thay vì sửa dữ liệu đầu vào. Phiếu lương sẽ lệch với dữ liệu phía sau, và lần tính lại kế tiếp âm thầm xoá sửa đổi của bạn."),
             B("Expecting insurance to move when overtime does. BHXH, BHYT and BHTN are charged on the insurance base, and overtime does not change that figure.",
               "Trông đợi bảo hiểm thay đổi theo tăng ca. BHXH, BHYT và BHTN tính trên mức lương đóng bảo hiểm, mà tăng ca không làm thay đổi con số đó."),
-            B("Taking \"Need review: 0\" as \"all checked\". On this screen it only counts payslips whose take-home pay came out at zero or below.",
-              "Hiểu \"Cần xem xét: 0\" thành \"đã kiểm tra hết\". Trên màn hình này nó chỉ đếm những phiếu có thực nhận bằng không hoặc âm."),
+            B("Taking \"Need review: 0\" as \"all checked\". It counts take-home pay at zero or below and take-home that moved more than 30% on the person's last payslip. A line can jump inside a steady take-home.",
+              "Hiểu \"Cần xem xét: 0\" thành \"đã kiểm tra hết\". Nó đếm phiếu có thực nhận bằng không hoặc âm và phiếu có thực nhận thay đổi hơn 30% so với phiếu trước của người đó. Một dòng lương vẫn có thể tăng vọt trong khi thực nhận ổn định."),
           ],
         },
       },
@@ -1724,8 +1726,8 @@ const STATIONS = {
                  "Đây là khoản tiền cuối cùng một người nhận từ bạn, và nó có thời hạn pháp lý. Hai lần phê duyệt, trưởng nhân sự rồi Tài chính, đứng giữa phần tính toán và việc chi trả."),
           when: B("As soon as a leaving date is confirmed. And again once the four desks on Lifecycle › Exits have signed off.",
                   "Ngay khi ngày nghỉ việc được xác nhận. Và một lần nữa khi bốn bộ phận ở Vòng đời nhân sự › Nghỉ việc đã xác nhận xong."),
-          prereq: B("A leaving date on the employee and the month's pay data. A settlement that arrives by itself starts at Being prepared.",
-                    "Ngày nghỉ việc trên hồ sơ nhân viên và dữ liệu lương của tháng. Một khoản quyết toán tự xuất hiện sẽ bắt đầu ở Being prepared."),
+          prereq: B("A leaving date on the employee and the month's pay data. A settlement that arrives by itself starts at Being prepared, ready to check, and waits for a person to send it in.",
+                    "Ngày nghỉ việc trên hồ sơ nhân viên và dữ liệu lương của tháng. Một khoản quyết toán tự xuất hiện sẽ bắt đầu ở Being prepared, chờ kiểm tra, và đợi một người gửi duyệt."),
           mistakes: [
             B("Leaving the person in the normal monthly run as well. They are then paid twice, and money paid to someone who has left is hard to get back.",
               "Vẫn để người đó trong đợt lương tháng bình thường. Họ sẽ được trả hai lần, và tiền đã trả cho người đã nghỉ thì rất khó đòi lại."),
@@ -2887,17 +2889,17 @@ const LESSONS = {
         screen: "runpayroll", anchor: "pw-missing",
         kicker: B("Reading results", "Đọc kết quả"),
         title: B("Need review: 2 — and what the 2 are", "Cần xem xét: 2 — và 2 đó là gì"),
-        body: B("Need review adds up three things. Payslips that came out at zero or below. People Payobook could not make a payslip for. And people in the file who are not in Payobook yet. Here, <b>Lý Thị Hồng</b> is in the file and not in Payobook — listed, not paid. Nobody is created from a pay data file: <b>Add these people</b>, and her pay comes through on the next run.",
-                "Cần xem xét cộng ba thứ: phiếu lương có thực nhận bằng không hoặc âm, những người Payobook không tạo được phiếu lương, và những người có trong tệp mà chưa có trong Payobook. Ở đây, <b>Lý Thị Hồng</b> có trong tệp mà chưa có trong Payobook — được liệt kê, không được trả lương. Không ai được tạo ra từ tệp dữ liệu lương: hãy bấm <b>Thêm những người này</b>, lương của cô ấy sẽ có ở đợt kế tiếp."),
+        body: B("Need review adds up four things. Payslips that came out at zero or below. Payslips whose take-home pay moved more than 30% on the same person's last payslip in this scheme — each says why, like \"Net pay up 42% on June 2026\". People Payobook could not make a payslip for. And people in the file who are not in Payobook yet. Here, <b>Lý Thị Hồng</b> is in the file and not in Payobook — listed, not paid. Nobody is created from a pay data file: <b>Add these people</b>, and her pay comes through on the next run.",
+                "Cần xem xét cộng bốn thứ: phiếu lương có thực nhận bằng không hoặc âm; phiếu có thực nhận thay đổi hơn 30% so với phiếu trước của cùng người trong chương trình này — mỗi phiếu ghi rõ lý do, như \"Thực nhận tăng 42% so với tháng 6 2026\"; những người Payobook không tạo được phiếu lương; và những người có trong tệp mà chưa có trong Payobook. Ở đây, <b>Lý Thị Hồng</b> có trong tệp mà chưa có trong Payobook — được liệt kê, không được trả lương. Không ai được tạo ra từ tệp dữ liệu lương: hãy bấm <b>Thêm những người này</b>, lương của cô ấy sẽ có ở đợt kế tiếp."),
       },
       {
         screen: "runpayroll", anchor: "pw-exceptions",
         kicker: B("The judgement", "Phần cần phán đoán"),
-        title: B("One exception that is fine, and one thing nothing flagged", "Một ngoại lệ hoàn toàn ổn, và một điều không gì đánh dấu"),
-        body: B("<b>Hoàng Văn Nam</b>: \"Not employed yet in this period — contract starts 2026-08-01.\" That is correct — nothing to fix. Now the part Payobook does <b>not</b> do: Trần Văn Hùng's overtime is 4,200,000 ₫ against 1,100,000 ₫ in June — 382%. No list here mentions it. It may be a real peak week, or 4.6 hours typed as 46. Only you can tell, by checking the timesheet.",
-                "<b>Hoàng Văn Nam</b>: \"Chưa làm việc trong kỳ này — hợp đồng bắt đầu ngày 2026-08-01.\" Điều đó đúng — không có gì để sửa. Giờ tới phần Payobook <b>không</b> làm: tăng ca của Trần Văn Hùng là 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6 — bằng 382%. Không danh sách nào ở đây nhắc tới nó. Có thể đó là một tuần cao điểm thật, cũng có thể là 4,6 giờ bị gõ thành 46. Chỉ bạn mới phân biệt được, bằng cách đối chiếu bảng chấm công."),
-        tip: B("Payobook flags what it could not pay. A big jump on last month is yours to notice.",
-               "Payobook đánh dấu những gì nó không trả được. Một mức tăng lớn so với tháng trước là việc của bạn phải nhận ra."),
+        title: B("One exception that is fine, and one jump under the line", "Một ngoại lệ hoàn toàn ổn, và một mức tăng nằm dưới ngưỡng"),
+        body: B("<b>Hoàng Văn Nam</b>: \"Not employed yet in this period — contract starts 2026-08-01.\" That is correct — nothing to fix. Now the part the flag cannot see: Trần Văn Hùng's overtime is 4,200,000 ₫ against 1,100,000 ₫ in June — 382%. His take-home pay rose 26%, under the 30% line, so he is not flagged. It may be a real peak week, or 4.6 hours typed as 46. Only you can tell, by checking the timesheet.",
+                "<b>Hoàng Văn Nam</b>: \"Chưa làm việc trong kỳ này — hợp đồng bắt đầu ngày 2026-08-01.\" Điều đó đúng — không có gì để sửa. Giờ tới phần cờ không nhìn thấy: tăng ca của Trần Văn Hùng là 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6 — bằng 382%. Thực nhận của anh ấy tăng 26%, dưới ngưỡng 30%, nên không bị gắn cờ. Có thể đó là một tuần cao điểm thật, cũng có thể là 4,6 giờ bị gõ thành 46. Chỉ bạn mới phân biệt được, bằng cách đối chiếu bảng chấm công."),
+        tip: B("The flag reads take-home pay against last payslip. The line is Settings › Payroll defaults (30% here). A jump inside one line is yours to notice.",
+               "Cờ so thực nhận với phiếu trước. Ngưỡng nằm ở Cài đặt › Mặc định tính lương (ở đây là 30%). Một dòng lương tăng vọt là việc của bạn phải nhận ra."),
       },
       {
         screen: "payruns", anchor: "rep-pipeline",
@@ -2989,8 +2991,8 @@ const LESSONS = {
         screen: "payruns", anchor: "pk-rejected",
         kicker: B("The hard part", "Phần khó"),
         title: B("Reject is final for that run", "Từ chối là dứt điểm với đợt đó"),
-        body: B("Reject asks once, on the card — \"Every payslip in this batch is cancelled.\" — <b>Keep it</b> or <b>Reject run</b>. The run and all its payslips are cancelled, its open approval is withdrawn, and it moves to the folded <b>Rejected pay runs</b> list. It does not come back: you start a new run. Use it for a run that should not exist, like the one here made twice by mistake.",
-                "Nút Từ chối hỏi lại một lần, ngay trên thẻ — \"Mọi phiếu lương trong đợt này sẽ bị huỷ.\" — <b>Giữ lại</b> hoặc <b>Từ chối đợt lương</b>. Đợt lương và mọi phiếu lương của nó bị huỷ, yêu cầu phê duyệt đang mở được rút lại, và nó chuyển xuống danh sách thu gọn <b>Đợt lương bị từ chối</b>. Nó không quay lại: bạn bắt đầu một đợt mới. Hãy dùng nó cho một đợt không nên tồn tại, như đợt ở đây bị tạo trùng."),
+        body: B("Reject asks on the card — \"Every payslip in this batch is cancelled.\" — and wants a reason: <b>Why? (required)</b>. <b>Reject run</b> stays greyed out until you write one; <b>Keep it</b> backs out. The run and all its payslips are cancelled and its open approval is withdrawn. It moves to the folded <b>Rejected pay runs</b> list, with your reason under its name. It does not come back: you start a new run. Use it for a run that should not exist, like the one here made twice by mistake.",
+                "Nút Từ chối hỏi ngay trên thẻ — \"Mọi phiếu lương trong đợt này sẽ bị huỷ.\" — và cần một lý do: <b>Lý do? (bắt buộc)</b>. <b>Từ chối đợt lương</b> bị mờ cho tới khi bạn viết lý do; <b>Giữ lại</b> để quay ra. Đợt lương và mọi phiếu lương của nó bị huỷ, yêu cầu phê duyệt đang mở được rút lại, và nó chuyển xuống danh sách thu gọn <b>Đợt lương bị từ chối</b> kèm lý do của bạn dưới tên đợt. Nó không quay lại: bạn bắt đầu một đợt mới. Hãy dùng nó cho một đợt không nên tồn tại, như đợt ở đây bị tạo trùng."),
         consequence: B("Affects the whole run and every payslip in it, which are cancelled together. Reversible: <b>no</b> — a rejected run stays rejected; the way on is a new run. Nothing was paid. Verify first: that the run should not exist at all. If it only needs fixing, ask the person whose turn it is to send it back instead.",
                        "Ảnh hưởng cả đợt lương và mọi phiếu lương trong đó, cùng bị huỷ một lượt. Hoàn tác: <b>không</b> — đợt đã bị từ chối thì giữ nguyên như vậy; muốn đi tiếp thì tạo đợt mới. Chưa có gì được chi. Kiểm tra trước: đợt này thực sự không nên tồn tại. Nếu nó chỉ cần sửa, hãy nhờ người đến lượt duyệt trả lại nó."),
       },
@@ -3051,9 +3053,9 @@ const LESSONS = {
       {
         screen: "payslips", anchor: "ps-kpis",
         kicker: B("The numbers", "Các con số"),
-        title: B("Need review means take-home pay at zero or below", "Cần xem xét nghĩa là thực nhận bằng không hoặc âm"),
-        body: B("<b>Payslips</b> 48, <b>Need review</b>, <b>Gross total</b>, <b>Net total</b>. Say Need review plainly: it counts payslips whose take-home pay came out at <b>zero or below</b>. Here it is 0 — which means nobody is paid nothing, not that the run has been checked. Choose what to read yourself.",
-                "<b>Phiếu lương</b> 48, <b>Cần xem xét</b>, <b>Tổng thu nhập</b>, <b>Tổng thực nhận</b>. Hãy nói rõ Cần xem xét: nó đếm những phiếu lương có thực nhận bằng <b>không hoặc âm</b>. Ở đây là 0 — nghĩa là không ai bị trả bằng không, chứ không có nghĩa đợt lương đã được kiểm tra. Hãy tự chọn những phiếu cần đọc."),
+        title: B("Need review: take-home at zero, or a big change", "Cần xem xét: thực nhận bằng không, hoặc thay đổi lớn"),
+        body: B("<b>Payslips</b> 48, <b>Need review</b>, <b>Gross total</b>, <b>Net total</b>. Say Need review plainly: take-home pay at <b>zero or below</b>, or take-home that moved <b>more than 30%</b> on the person's last payslip. It is the same list the Run tab counted, each row saying why. Here it is 0: nobody is paid nothing and nobody's take-home swung past the line. That is not the same as checked.",
+                "<b>Phiếu lương</b> 48, <b>Cần xem xét</b>, <b>Tổng thu nhập</b>, <b>Tổng thực nhận</b>. Hãy nói rõ Cần xem xét: thực nhận bằng <b>không hoặc âm</b>, hoặc thực nhận thay đổi <b>hơn 30%</b> so với phiếu trước của người đó — cùng danh sách mà tab Chạy lương đã đếm, mỗi dòng ghi rõ lý do. Ở đây là 0: không ai bị trả bằng không và không ai có thực nhận vượt ngưỡng. Như vậy chưa có nghĩa là đã kiểm tra."),
       },
       {
         screen: "payslips", anchor: "ps-chips",
@@ -3575,8 +3577,8 @@ const LESSONS = {
         screen: "payslips", anchor: "ps-list",
         kicker: B("The strategy", "Cách làm"),
         title: B("Nobody reads forty-eight payslips, and nobody should", "Không ai đọc hết bốn mươi tám phiếu lương, và cũng không nên"),
-        body: B("\"Contains overtime: Yes\" and +2.7% are your leads. Open the payslips with the most overtime first, then sample two or three ordinary ones. Payobook will not flag a big jump on last month for you — reading for it is the part of the signature that is yours.",
-                "\"Có làm thêm giờ: Có\" và +2,7% là manh mối của bạn. Hãy mở những phiếu có nhiều tăng ca nhất trước, rồi lấy mẫu hai ba phiếu bình thường. Payobook sẽ không đánh dấu hộ bạn một mức tăng lớn so với tháng trước — đọc ra điều đó là phần chữ ký thuộc về bạn."),
+        body: B("\"Contains overtime: Yes\" and +2.7% are your leads. Open the payslips with the most overtime first, then sample two or three ordinary ones. Need review catches take-home that swung more than 30%. A jump inside one line, under that, is yours to find — that reading is the part of the signature that is yours.",
+                "\"Có làm thêm giờ: Có\" và +2,7% là manh mối của bạn. Hãy mở những phiếu có nhiều tăng ca nhất trước, rồi lấy mẫu hai ba phiếu bình thường. Cần xem xét bắt được thực nhận biến động hơn 30%; một dòng lương tăng vọt dưới ngưỡng đó là việc bạn phải tìm — đọc ra điều đó là phần chữ ký thuộc về bạn."),
       },
       {
         screen: "payslips", anchor: "ps-breakdown",
@@ -4639,8 +4641,8 @@ const LESSONS = {
         screen: "exits", anchor: "ex2-numbers",
         kicker: B("What & why", "Là gì & vì sao"),
         title: B("Everyone on their way out", "Những người sắp rời công ty"),
-        body: B("Lifecycle › <b>Exits</b>. <b>Leaving this month</b>, <b>Last day has passed</b>, <b>Settlements held up</b>, <b>Clearances still open</b> and <b>Items not back yet</b>.",
-                "Vòng đời nhân sự › <b>Nghỉ việc</b>. <b>Nghỉ việc trong tháng này</b>, <b>Đã qua ngày làm việc cuối</b>, <b>Quyết toán bị vướng</b>, <b>Xác nhận bàn giao còn mở</b> và <b>Tài sản chưa trả lại</b>."),
+        body: B("Lifecycle › <b>Exits</b>. <b>Leaving this month</b>, <b>Last day has passed</b>, <b>Settlements held up</b>, <b>Clearances still open</b>, <b>Items not back yet</b> and <b>Settlements to check</b>.",
+                "Vòng đời nhân sự › <b>Nghỉ việc</b>. <b>Nghỉ việc trong tháng này</b>, <b>Đã qua ngày làm việc cuối</b>, <b>Quyết toán bị vướng</b>, <b>Xác nhận bàn giao còn mở</b>, <b>Tài sản chưa trả lại</b> và <b>Quyết toán cần kiểm tra</b>."),
       },
       {
         screen: "exits", anchor: "ex2-steps",
@@ -4668,8 +4670,8 @@ const LESSONS = {
         screen: "exits", anchor: "ex2-settle",
         kicker: B("The settlement", "Quyết toán"),
         title: B("The final settlement waits for all four", "Quyết toán cuối cùng chờ đủ cả bốn"),
-        body: B("<b>Close settlement</b> stays unavailable until every desk has signed. <b>Open the settlement</b> shows the last salary, unused leave and what is still owed.",
-                "<b>Chốt quyết toán</b> chưa bấm được cho tới khi mọi phòng ban đã ký. <b>Mở quyết toán</b> cho thấy lương cuối, phép chưa dùng và những khoản còn nợ."),
+        body: B("Two things happen side by side. The figures: while the settlement is ready to check, the card offers <b>Send for approval</b>. The payment: <b>Close settlement</b> waits until every desk has signed. <b>Open the settlement</b> shows the last salary, unused leave and what is still owed.",
+                "Hai việc diễn ra song song. Con số: khi quyết toán đang chờ kiểm tra, thẻ có nút <b>Gửi duyệt</b>. Khoản chi: <b>Chốt quyết toán</b> chờ cho tới khi mọi phòng ban đã ký. <b>Mở quyết toán</b> cho thấy lương cuối, phép chưa dùng và những khoản còn nợ."),
         consequence: B("Affects the leaver's last payment, which has a legal deadline. Reversible: not once it is paid. Verify first: all four desks signed, and the leaver is not also in the monthly run.",
                        "Ảnh hưởng: khoản chi cuối của người nghỉ, vốn có thời hạn pháp lý. Hoàn tác: không, một khi đã chi. Kiểm tra trước: đủ bốn phòng ban đã ký, và người nghỉ không còn nằm trong đợt lương tháng."),
       },
@@ -6010,8 +6012,8 @@ const LESSONS = {
         screen: "fullfinal", anchor: "lg-kpis",
         kicker: B("What & why", "Là gì & vì sao"),
         title: B("Every settlement, and what it pays", "Mọi khoản quyết toán, và số tiền phải trả"),
-        body: B("Pay Run › <b>Settle</b>. <b>Settlements</b> and <b>Manual</b> count them. <b>Net payable</b>, <b>Earnings</b> and <b>Deductions</b> add them up.",
-                "Đợt lương › <b>Quyết toán</b>. <b>Settlements</b> và <b>Manual</b> đếm số khoản. <b>Net payable</b> (thực trả), <b>Earnings</b> (thu nhập) và <b>Deductions</b> (khấu trừ) cộng tổng của chúng."),
+        body: B("Pay Run › <b>Settle</b>. <b>Settlements</b>, <b>Ready to check</b> and <b>Manual</b> count them; press Ready to check to see only those. <b>Net payable</b>, <b>Earnings</b> and <b>Deductions</b> add them up.",
+                "Đợt lương › <b>Quyết toán</b>. <b>Settlements</b>, <b>Ready to check</b> (cần kiểm tra) và <b>Manual</b> đếm số khoản; bấm Ready to check để chỉ xem những khoản đó. <b>Net payable</b> (thực trả), <b>Earnings</b> (thu nhập) và <b>Deductions</b> (khấu trừ) cộng tổng của chúng."),
         tip: B("These labels are in English on the screen in both languages.",
                "Các nhãn này hiện bằng tiếng Anh trên màn hình ở cả hai ngôn ngữ."),
       },
@@ -6019,22 +6021,22 @@ const LESSONS = {
         screen: "fullfinal", anchor: "lg-steps",
         kicker: B("Three steps", "Ba bước"),
         title: B("Being prepared → Waiting for approval → Approved", "Ba bước: Being prepared → Waiting for approval → Approved"),
-        body: B("The HR lead approves first, then Finance. A flag on a step says when one is waiting on you or was sent back to be fixed.",
-                "Trưởng nhân sự duyệt trước, rồi tới Tài chính. Một dấu trên bước cho biết khi có khoản đang chờ bạn hoặc bị trả lại để sửa."),
+        body: B("The HR lead approves first, then Finance. A flag on a step says when one is waiting on you, is ready to check, or was sent back to be fixed.",
+                "Trưởng nhân sự duyệt trước, rồi tới Tài chính. Một dấu trên bước cho biết khi có khoản đang chờ bạn, đang chờ kiểm tra, hoặc bị trả lại để sửa."),
       },
       {
         screen: "fullfinal", anchor: "lg-facets",
         kicker: B("Where it came from", "Nó đến từ đâu"),
         title: B("Auto or Manual", "Auto hay Manual"),
-        body: B("<b>Auto</b> settlements appear by themselves when a month's pay data finishes loading, for everyone whose leaving date falls in it. <b>Manual</b> ones were made by hand.",
-                "Khoản <b>Auto</b> (tự động) tự xuất hiện khi dữ liệu lương của một tháng tải xong, cho mọi người có ngày nghỉ rơi vào tháng đó. Khoản <b>Manual</b> (thủ công) do người làm tay."),
+        body: B("<b>Auto</b> settlements appear when a month's pay data finishes loading, for everyone whose leaving date falls in it. They are worked out but never sent in by themselves: payroll gets one to-do naming how many are ready to check. <b>Manual</b> ones were made by hand and go for approval at once.",
+                "Khoản <b>Auto</b> (tự động) xuất hiện khi dữ liệu lương của một tháng tải xong, cho mọi người có ngày nghỉ rơi vào tháng đó. Chúng được tính sẵn nhưng không bao giờ tự gửi duyệt: bộ phận lương nhận một việc cần làm ghi rõ có bao nhiêu khoản cần kiểm tra. Khoản <b>Manual</b> (thủ công) do người làm tay và được gửi duyệt ngay."),
       },
       {
         screen: "fullfinal", anchor: "lg-rows",
         kicker: B("One row each", "Mỗi người một dòng"),
         title: B("Net payable, person by person", "Số thực trả, từng người một"),
-        body: B("Hạnh left on 31 July. Her settlement is still Being prepared: on Lifecycle › Exits, Finance has not signed off yet.",
-                "Hạnh nghỉ ngày 31/7. Khoản quyết toán của chị vẫn ở Being prepared: ở Vòng đời nhân sự › Nghỉ việc, Tài chính chưa xác nhận xong."),
+        body: B("Hạnh left on 31 July. July's load made her settlement: it is Being prepared and marked <b>Ready to check</b>. A settlement that could not be worked out says why under the name instead.",
+                "Hạnh nghỉ ngày 31/7. Lần tải dữ liệu tháng 7 đã tạo khoản quyết toán của chị: nó ở Being prepared và được đánh dấu <b>Ready to check</b> (cần kiểm tra). Khoản nào không tính được sẽ ghi lý do ngay dưới tên."),
       },
       {
         screen: "fullfinal", anchor: "lg-drawer",
@@ -6045,10 +6047,10 @@ const LESSONS = {
       },
       {
         screen: "fullfinal", anchor: "lg-rowact",
-        kicker: B("Once approved", "Khi đã được duyệt"),
-        title: B("Download the settlement", "Tải văn bản quyết toán"),
-        body: B("Only an approved settlement offers <b>Download</b>, the document the person signs. Lan's is approved; Hạnh's is not.",
-                "Chỉ khoản quyết toán đã được duyệt mới có nút <b>Download</b>, văn bản người đó ký nhận. Của Lan đã được duyệt; của Hạnh thì chưa."),
+        kicker: B("One press each", "Mỗi dòng một thao tác"),
+        title: B("Send for approval, then Download", "Gửi duyệt, rồi tải xuống"),
+        body: B("A row offers what its state allows. Hạnh's is ready to check: read the drawer, then <b>Send for approval</b>. Only an approved one offers <b>Download</b>, the document the person signs — Lan's.",
+                "Mỗi dòng chỉ có thao tác mà trạng thái của nó cho phép. Của Hạnh đang chờ kiểm tra: đọc ngăn chi tiết, rồi bấm <b>Send for approval</b> (gửi duyệt). Chỉ khoản đã được duyệt mới có <b>Download</b>, văn bản người đó ký nhận — của Lan."),
       },
     ],
     quiz: {
@@ -6194,8 +6196,8 @@ const MISSIONS = [
     screen: "runpayroll",
     conf: { key: "run", gain: 25 },
     title: B("Run the July pay run", "Chạy đợt lương tháng 7"),
-    desc: B("Compute Retail's July pay run, catch what Payobook does not flag, submit it for approval — then take it back.",
-            "Tính đợt lương tháng 7 của Bán lẻ, bắt được điều Payobook không đánh dấu, gửi phê duyệt — rồi thu hồi lại."),
+    desc: B("Compute Retail's July pay run, catch the jump that stays under the flag, submit it for approval — then take it back.",
+            "Tính đợt lương tháng 7 của Bán lẻ, bắt được mức tăng nằm dưới ngưỡng gắn cờ, gửi phê duyệt — rồi thu hồi lại."),
     consequence: {
       title: B("You are about to compute 48 payslips", "Bạn sắp tính 48 phiếu lương"),
       scope: B("July 2026 for the people Hoa Sen Retail — End-Month Payroll pays. 48 draft payslips are created; no other scheme and no other month is touched.",
@@ -6207,8 +6209,8 @@ const MISSIONS = [
     },
     anomaly: {
       title: B("The 4.6 that was typed as 46", "Con số 4,6 bị gõ thành 46"),
-      body: B("Trần Văn Hùng's overtime came through at 4,200,000 ₫ against 1,100,000 ₫ in June — 382%. Nothing on the screen flags it: Need review counts people Payobook could not pay, not big jumps. It reads like a peak week, and a decimal point dropped in a timesheet reads exactly the same. Only you can tell them apart, by opening the timesheet.",
-             "Tăng ca của Trần Văn Hùng vào hệ thống ở mức 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6 — bằng 382%. Không gì trên màn hình đánh dấu nó: Cần xem xét đếm những người Payobook không trả được, không đếm các mức tăng lớn. Nó trông như một tuần cao điểm, và một dấu thập phân bị mất trong bảng chấm công trông y hệt như vậy. Chỉ bạn phân biệt được, bằng cách mở bảng chấm công."),
+      body: B("Trần Văn Hùng's overtime came through at 4,200,000 ₫ against 1,100,000 ₫ in June — 382%. Need review does not flag it: it looks at take-home pay, and his rose 26% on June — under the 30% line. It reads like a peak week, and a decimal point dropped in a timesheet reads exactly the same. Only you can tell them apart, by opening the timesheet.",
+             "Tăng ca của Trần Văn Hùng vào hệ thống ở mức 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6 — bằng 382%. Cần xem xét không gắn cờ nó: cờ nhìn vào thực nhận, và thực nhận của anh ấy chỉ tăng 26% so với tháng 6 — dưới ngưỡng 30%. Nó trông như một tuần cao điểm, và một dấu thập phân bị mất trong bảng chấm công trông y hệt như vậy. Chỉ bạn phân biệt được, bằng cách mở bảng chấm công."),
     },
     debrief: {
       did: [
@@ -6216,16 +6218,16 @@ const MISSIONS = [
           "Chọn chương trình lương, và cùng với nó là bộ quy tắc mà mọi phiếu lương trong đợt được tính theo."),
         B("Read the consequence card before computing, so you knew the scope and the way back before you acted.",
           "Đọc thẻ hậu quả trước khi tính, để biết phạm vi và lối quay lại trước khi thao tác."),
-        B("Read Need review for what it counts, and spotted the one jump nothing flagged.",
-          "Đọc Cần xem xét đúng với thứ nó đếm, và nhận ra mức tăng mà không gì đánh dấu."),
+        B("Read Need review for what it counts, and spotted the one jump that stayed under the line.",
+          "Đọc Cần xem xét đúng với thứ nó đếm, và nhận ra mức tăng nằm dưới ngưỡng."),
         B("Submitted the run, then withdrew it — and saw it come back to Draft, unchanged.",
           "Gửi đợt lương đi phê duyệt, rồi thu hồi — và thấy nó quay về Nháp, giữ nguyên."),
       ],
       checklist: [
         B("The pay scheme and the month are the ones you meant.",
           "Chương trình lương và tháng đúng là cái bạn định chạy."),
-        B("Everyone Need review lists is understood: people not in Payobook yet, and anyone Payobook could not pay.",
-          "Mọi người trong danh sách Cần xem xét đều đã được hiểu: người chưa có trong Payobook, và bất kỳ ai Payobook không trả được."),
+        B("Everyone Need review lists is understood: big take-home changes, people not in Payobook yet, and anyone Payobook could not pay.",
+          "Mọi người trong danh sách Cần xem xét đều đã được hiểu: thực nhận thay đổi lớn, người chưa có trong Payobook, và bất kỳ ai Payobook không trả được."),
         B("Total net against last month — and you can explain the change in one sentence.",
           "Tổng thực nhận so với tháng trước — và bạn giải thích được biến động trong một câu."),
         B("The statutory lines are present on a sample slip: BHXH, BHYT, BHTN, thuế TNCN.",
@@ -6479,12 +6481,12 @@ const MISSION_STEPS = {
                 "Không gì trên màn hình đánh dấu nó, và đợt lương sắp tới hạn."),
       options: [
         { id: "check", correct: true, label: B("Check the timesheet before submitting, and fix the input if it is wrong", "Kiểm tra bảng chấm công trước khi gửi, và sửa dữ liệu đầu vào nếu sai") },
-        { id: "accept", label: B("Accept it — nothing flagged it, so it must be fine", "Chấp nhận — không gì đánh dấu nên chắc là ổn") },
+        { id: "accept", label: B("Accept it — Need review did not flag it, so it must be fine", "Chấp nhận — Cần xem xét không gắn cờ nên chắc là ổn") },
         { id: "zero", label: B("Set the overtime to zero on the payslip", "Đặt tăng ca về 0 trên phiếu lương") },
       ],
       recovery: {
-        accept: B("Let's rethink that. Payobook flags people it could not pay, not unusual amounts. \"Nothing flagged it\" says nothing about whether 46 hours was really 4.6.",
-                  "Hãy nghĩ lại một chút. Payobook đánh dấu những người nó không trả được, không đánh dấu các số tiền bất thường. \"Không gì đánh dấu\" không nói lên việc 46 giờ có thực ra là 4,6 hay không."),
+        accept: B("Let's rethink that. The flag compares take-home pay with last payslip, and Hùng's moved 26% — under the 30% line. \"Not flagged\" says nothing about whether 46 hours was really 4.6.",
+                  "Hãy nghĩ lại một chút. Cờ so thực nhận với phiếu trước, và thực nhận của Hùng chỉ đổi 26% — dưới ngưỡng 30%. \"Không bị gắn cờ\" không nói lên việc 46 giờ có thực ra là 4,6 hay không."),
         zero: B("Let's rethink that. That fixes the result and leaves the input untouched, so the next compute brings it straight back. And if the overtime was real, you have just underpaid somebody.",
                 "Hãy nghĩ lại một chút. Cách đó sửa kết quả và để nguyên đầu vào, nên lần tính kế tiếp mang nó quay lại ngay. Và nếu tăng ca là thật, bạn vừa trả thiếu cho một người."),
       },
@@ -6556,8 +6558,8 @@ const MISSION_STEPS = {
     {
       id: "undo", target: "pk-rejected", undo: true,
       instruction: B("Clear away the run made by mistake: Reject it", "Dọn đợt lương tạo nhầm: Từ chối nó"),
-      detail: B("\"Retail — July 2026 (made twice)\" should never have existed. Reject asks once — Keep it, or Reject run — then cancels it and every payslip in it, and it moves to the folded Rejected pay runs list. Use Reject for a run that should not exist, never for one that only needs fixing.",
-                "\"Bán lẻ — Tháng 7/2026 (tạo trùng)\" lẽ ra không nên tồn tại. Từ chối hỏi lại một lần — Giữ lại, hoặc Từ chối đợt lương — rồi huỷ nó cùng mọi phiếu lương trong đó, và nó chuyển xuống danh sách thu gọn Đợt lương bị từ chối. Hãy dùng Từ chối cho đợt không nên tồn tại, không bao giờ cho đợt chỉ cần sửa."),
+      detail: B("\"Retail — July 2026 (made twice)\" should never have existed. Reject asks why, and the reason is required. Reject run then cancels it and every payslip in it, and it moves to the folded Rejected pay runs list with the reason under its name. Use Reject for a run that should not exist, never for one that only needs fixing.",
+                "\"Bán lẻ — Tháng 7/2026 (tạo trùng)\" lẽ ra không nên tồn tại. Từ chối hỏi lý do (bắt buộc) — Giữ lại, hoặc Từ chối đợt lương — rồi huỷ nó cùng mọi phiếu lương trong đó, và nó chuyển xuống danh sách thu gọn Đợt lương bị từ chối kèm lý do dưới tên đợt. Hãy dùng Từ chối cho đợt không nên tồn tại, không bao giờ cho đợt chỉ cần sửa."),
     },
   ],
 
@@ -6716,8 +6718,8 @@ const MISSION_STEPS = {
     {
       id: "review", nav: "payslips", ack: true,
       instruction: B("Open the payslips and read what is flagged", "Mở phiếu lương và đọc những gì bị gắn cờ"),
-      detail: B("In Pay Run › Payslips, pick your run. Need review there counts payslips at zero or below. Anything else unusual is yours to find: sample the ones with the most overtime, and a few ordinary ones.",
-                "Ở Đợt lương › Phiếu lương, hãy chọn đợt của bạn. Cần xem xét ở đó đếm những phiếu có thực nhận bằng không hoặc âm — mọi điều bất thường khác là bạn phải tự tìm, nên hãy lấy mẫu những phiếu nhiều tăng ca nhất và vài phiếu bình thường."),
+      detail: B("In Pay Run › Payslips, pick your run. Need review there lists take-home at zero or below and take-home that moved more than 30%, each row saying why. Anything under that line is yours to find: sample the ones with the most overtime, and a few ordinary ones.",
+                "Ở Đợt lương › Phiếu lương, hãy chọn đợt của bạn. Cần xem xét ở đó liệt kê phiếu có thực nhận bằng không hoặc âm và phiếu có thực nhận thay đổi hơn 30%, mỗi dòng ghi rõ lý do. Điều bất thường dưới ngưỡng đó là bạn phải tự tìm, nên hãy lấy mẫu những phiếu nhiều tăng ca nhất và vài phiếu bình thường."),
       hint: B("Open the breakdown on one slip and follow it from base to net. If you can say where each line came from, you are ready to submit.",
               "Hãy mở bảng chi tiết của một phiếu và đi từ lương cơ bản tới thực nhận. Nếu bạn nói được mỗi dòng đến từ đâu thì bạn đã sẵn sàng để trình đợt lương lên duyệt."),
     },
@@ -6790,8 +6792,8 @@ const SCREEN_CTX = {
     places: ["pb_pay_hub:payslips"],
     blurb: B("Every payslip in one run, and one opened beside the list with its salary breakdown.",
              "Mọi phiếu lương trong một đợt, và một phiếu được mở bên cạnh danh sách kèm chi tiết lương."),
-    next: B("Pick the run at the top. Need review here means take-home pay at zero or below — beyond that, open the payslips with the biggest changes and sample a few ordinary ones.",
-            "Chọn đợt lương ở trên cùng. Cần xem xét ở đây nghĩa là thực nhận bằng không hoặc âm — ngoài ra, hãy mở những phiếu thay đổi nhiều nhất và lấy mẫu vài phiếu bình thường."),
+    next: B("Pick the run at the top. Need review here means take-home at zero or below, or moved more than 30% on last payslip — then sample a few ordinary ones.",
+            "Chọn đợt lương ở trên cùng. Cần xem xét ở đây nghĩa là thực nhận bằng không hoặc âm, hoặc thay đổi hơn 30% so với phiếu trước — rồi lấy mẫu vài phiếu bình thường."),
     chips: ["whydiff", "needreview", "bhxh", "howmanyslips", "fixerror"],
   },
 
@@ -7701,12 +7703,12 @@ const QA = [
     match: ["why is this flagged", "what does the flag mean", "needs review", "sao bi gan co", "phiếu này bị gắn cờ", "what does need review count"],
     showMe: ["pw-pills", "ps-kpis"],
     blocks: [
-      { k: "p", v: B("On Pay Run › Run it adds up three things. Payslips whose take-home pay came out at zero or below. People Payobook could not make a payslip for, such as someone with no running contract in the period. And people in the pay data file who are not in Payobook yet — listed, not paid.",
-                     "Ở Đợt lương › Chạy lương, nó cộng ba thứ: phiếu lương có thực nhận bằng không hoặc âm, những người Payobook không tạo được phiếu lương (ví dụ không có hợp đồng hiệu lực trong kỳ), và những người có trong tệp dữ liệu lương mà chưa có trong Payobook — được liệt kê, không được trả lương.") },
-      { k: "p", v: B("On Pay Run › Payslips it is narrower: only payslips whose take-home pay is zero or below.",
-                     "Ở Đợt lương › Phiếu lương thì hẹp hơn: chỉ những phiếu có thực nhận bằng không hoặc âm.") },
-      { k: "warn", v: B("It does not flag a big jump on last month. Trần Văn Hùng's overtime at 382% of June appears in no list — spotting that is the reviewer's job.",
-                        "Nó không đánh dấu một mức tăng lớn so với tháng trước. Tăng ca của Trần Văn Hùng bằng 382% tháng 6 không nằm trong danh sách nào — nhận ra điều đó là việc của người soát xét.") },
+      { k: "p", v: B("On Pay Run › Run it adds up four things. Payslips whose take-home pay came out at zero or below. Payslips whose take-home pay moved more than 30% on the same person's last payslip in the same scheme. A new joiner has no last payslip, so is never flagged for it. People Payobook could not make a payslip for, such as someone with no running contract in the period. And people in the pay data file who are not in Payobook yet — listed, not paid.",
+                     "Ở Đợt lương › Chạy lương, nó cộng bốn thứ: phiếu lương có thực nhận bằng không hoặc âm; phiếu có thực nhận thay đổi hơn 30% so với phiếu trước của cùng người trong cùng chương trình — người mới vào chưa có phiếu trước nên không bao giờ bị gắn cờ vì điều này; những người Payobook không tạo được phiếu lương (ví dụ không có hợp đồng hiệu lực trong kỳ); và những người có trong tệp dữ liệu lương mà chưa có trong Payobook — được liệt kê, không được trả lương.") },
+      { k: "p", v: B("On Pay Run › Payslips it counts the same payslips, and each flagged row says why, like \"Net pay up 42% on June 2026\". The line is 30% unless changed in Settings › Payroll defaults.",
+                     "Ở Đợt lương › Phiếu lương nó đếm đúng những phiếu đó — thực nhận bằng không hoặc âm, hoặc thay đổi vượt ngưỡng — và mỗi dòng bị gắn cờ ghi rõ lý do, như \"Thực nhận tăng 42% so với tháng 6 2026\". Ngưỡng là 30% trừ khi được đổi ở Cài đặt › Mặc định tính lương.") },
+      { k: "warn", v: B("It reads take-home pay, not each line. Trần Văn Hùng's overtime at 382% of June moved his take-home only 26% — under the line, in no list. Spotting that is the reviewer's job.",
+                        "Nó đọc thực nhận, không đọc từng dòng. Tăng ca của Trần Văn Hùng bằng 382% tháng 6 chỉ làm thực nhận tăng 26% — dưới ngưỡng, không nằm trong danh sách nào. Nhận ra điều đó là việc của người soát xét.") },
       { k: "src", v: B("The Run tab's result and review steps, and the Payslips tab's numbers.",
                        "Bước kết quả và bước soát xét của tab Chạy lương, và các con số của tab Phiếu lương.") },
     ],
@@ -7804,8 +7806,8 @@ const QA = [
     blocks: [
       { k: "p", v: B("The run is <b>cancelled</b>: its state becomes Rejected and every payslip in it is cancelled with it, all together. It moves to the folded Rejected pay runs list and does not come back — the way on is a new run.",
                      "Đợt lương bị <b>huỷ</b>: trạng thái chuyển thành Đã từ chối và mọi phiếu lương trong đó cùng bị huỷ, tất cả một lượt. Nó chuyển xuống danh sách thu gọn Đợt lương bị từ chối và không quay lại — muốn đi tiếp thì tạo đợt mới.") },
-      { k: "p", v: B("Two doors lead there. <b>Reject</b> on the Runs board, for a run that should not exist — it asks once and needs no reason. <b>Turn it down</b> in the inbox, by the person whose step it is — it asks \"Why? (required)\" and keeps the reason on the run.",
-                     "Có hai lối dẫn tới đó. <b>Từ chối</b> trên bảng Các đợt lương, cho một đợt không nên tồn tại — nó hỏi lại một lần và không cần lý do. <b>Từ chối</b> trong hộp phê duyệt, do người đến lượt duyệt thực hiện — nó hỏi \"Lý do? (bắt buộc)\" và lưu lý do trên đợt lương.") },
+      { k: "p", v: B("Two doors lead there. <b>Reject</b> on the Runs board, for a run that should not exist — it asks \"Why? (required)\" too. <b>Turn it down</b> in the inbox, by the person whose step it is — it asks the same. Either way the reason is kept on the run: under its name in the Rejected pay runs list and at the top of the run's page.",
+                     "Có hai lối dẫn tới đó. <b>Từ chối</b> trên bảng Các đợt lương, cho một đợt không nên tồn tại — nó cũng hỏi \"Lý do? (bắt buộc)\". <b>Từ chối</b> trong hộp phê duyệt, do người đến lượt duyệt thực hiện — nó cũng hỏi như vậy. Dù đi lối nào, lý do đều được lưu trên đợt lương: dưới tên đợt trong danh sách Đợt lương bị từ chối và ở đầu trang của đợt.") },
       { k: "warn", v: B("If the run only needs fixing, neither is right: Send it back returns it to Draft with a note.",
                         "Nếu đợt lương chỉ cần sửa thì cả hai đều không đúng: Trả lại sẽ đưa nó về Nháp kèm ghi chú.") },
       { k: "src", v: B("The run's Rejected state and its rejection fields: reason, who and when.",
@@ -8249,8 +8251,8 @@ const QA = [
     simpler: B("Not all of them. Start with the ones that changed most since last month. Then pick two or three ordinary ones at random.",
                "Không phải tất cả. Hãy bắt đầu với những phiếu thay đổi nhiều nhất so với tháng trước. Rồi chọn ngẫu nhiên hai ba phiếu bình thường."),
     blocks: [
-      { k: "p", v: B("Not forty-eight. Payobook does not mark unusual payslips for you — Need review on Payslips only catches take-home pay at zero or below — so the reading is yours to aim.",
-                     "Không phải bốn mươi tám phiếu. Payobook không đánh dấu hộ bạn các phiếu bất thường — Cần xem xét ở Phiếu lương chỉ bắt thực nhận bằng không hoặc âm — nên việc chọn đọc gì là của bạn.") },
+      { k: "p", v: B("Not forty-eight. Start with Need review — take-home at zero or below, or moved more than 30% on last payslip. Under that line, the reading is yours to aim.",
+                     "Không phải bốn mươi tám phiếu. Hãy bắt đầu với Cần xem xét — thực nhận bằng không hoặc âm, hoặc thay đổi hơn 30% so với phiếu trước. Dưới ngưỡng đó, việc chọn đọc gì là của bạn.") },
       { k: "steps", v: [
         { t: B("Read the request's facts: Change against the last run, Contains overtime", "Đọc các dữ kiện của yêu cầu: Thay đổi so với kỳ trước, Có làm thêm giờ"), a: "ai-facts" },
         { t: B("Open the payslips with the most overtime or the biggest change", "Mở những phiếu nhiều tăng ca nhất hoặc thay đổi nhiều nhất"), a: "ps-list" },
@@ -9061,8 +9063,8 @@ const COLUMNS = {
        "Trong số phiếu đó, bao nhiêu phiếu được cấu hình công thức tính trọn vẹn. Một phiếu có tồn tại nhưng chưa tính xong thì không có số thực nhận.")],
     ["need_review",
      B("Need review", "Cần xem xét"),
-     B("Payslips at zero or below, plus people Payobook could not make a payslip for, plus people in the pay data file who are not in Payobook yet. It does not flag a big change on last month — that one is yours to spot.",
-       "Các phiếu bằng không hoặc âm, cộng những người Payobook không tạo được phiếu lương, cộng những người có trong tệp dữ liệu lương mà chưa có trong Payobook. Nó không đánh dấu một thay đổi lớn so với tháng trước — việc đó là của bạn.")],
+     B("Payslips at zero or below, plus payslips whose take-home moved more than 30% on the person's last payslip in this scheme. Plus people Payobook could not make a payslip for, and people in the pay data file who are not in Payobook yet.",
+       "Các phiếu bằng không hoặc âm, cộng các phiếu có thực nhận thay đổi hơn 30% so với phiếu trước của người đó trong chương trình này, cộng những người Payobook không tạo được phiếu lương, cộng những người có trong tệp dữ liệu lương mà chưa có trong Payobook.")],
     ["exceptions",
      B("Exceptions", "Ngoại lệ"),
      B("The people the run could not pay, one line each with the reason — for example \"Not employed yet in this period\". A correct reason is not a thing to fix.",
@@ -9101,8 +9103,8 @@ const COLUMNS = {
        "Số phiếu lương mà đợt này chứa — mỗi người được trả lương một phiếu. Nếu nó không đúng sĩ số bạn kỳ vọng thì vấn đề nằm ở đợt lương, không phải ở màn hình này.")],
     ["need_review",
      B("Need review", "Cần xem xét"),
-     B("Payslips whose take-home pay came out at zero or below. Nothing else — a big change on last month is not counted here.",
-       "Các phiếu có thực nhận bằng không hoặc âm. Không gì khác — một thay đổi lớn so với tháng trước không được đếm ở đây.")],
+     B("Payslips whose take-home pay came out at zero or below, or moved more than 30% on the person's last payslip in the same scheme. Each flagged row says why.",
+       "Các phiếu có thực nhận bằng không hoặc âm, hoặc thay đổi hơn 30% so với phiếu trước của người đó trong cùng chương trình. Mỗi dòng bị gắn cờ ghi rõ lý do.")],
     ["gross_total",
      B("Gross total", "Tổng thu nhập"),
      B("The sum of earnings before any deduction across the run.",
@@ -9768,8 +9770,8 @@ const SCENARIOS = [
         say: {
           kicker: B("Reading results", "Đọc kết quả"),
           title: B("Payslips, Computed, Need review", "Phiếu lương, Đã tính, Cần xem xét"),
-          body: B("Need review adds up payslips at zero or below, people Payobook could not pay, and people in the file who are not in Payobook yet. It does not flag a big jump on last month — that is yours to spot.",
-                  "Cần xem xét cộng các phiếu bằng không hoặc âm, những người Payobook không trả được, và những người có trong tệp mà chưa có trong Payobook. Nó không đánh dấu mức tăng lớn so với tháng trước — việc đó là của bạn."),
+          body: B("Need review adds up four things. Payslips at zero or below, and take-home that moved more than 30% on last payslip. People Payobook could not pay, and people in the file who are not in Payobook yet.",
+                  "Cần xem xét cộng các phiếu bằng không hoặc âm, thực nhận thay đổi hơn 30% so với phiếu trước, những người Payobook không trả được, và những người có trong tệp mà chưa có trong Payobook."),
         },
       },
       {
@@ -9847,9 +9849,9 @@ const SCENARIOS = [
       {
         key: "pskpis", anchor: "ps-kpis", screen: "payslips", act: "observe",
         say: {
-          title: B("Need review means take-home pay at zero or below", "Cần xem xét nghĩa là thực nhận bằng không hoặc âm"),
-          body: B("Payslips, Need review, Gross total, Net total. Need review here only catches a payslip that pays nothing; what else to open is your choice.",
-                  "Phiếu lương, Cần xem xét, Tổng thu nhập, Tổng thực nhận. Cần xem xét ở đây chỉ bắt phiếu không trả đồng nào; mở thêm phiếu nào là do bạn chọn."),
+          title: B("Need review: take-home at zero, or a big change", "Cần xem xét: thực nhận bằng không, hoặc thay đổi lớn"),
+          body: B("Payslips, Need review, Gross total, Net total. Need review catches take-home at zero or below, and take-home that moved more than 30% on last payslip; each flagged row says why.",
+                  "Phiếu lương, Cần xem xét, Tổng thu nhập, Tổng thực nhận. Cần xem xét bắt thực nhận bằng không hoặc âm, và thực nhận thay đổi hơn 30% so với phiếu trước; mỗi dòng bị gắn cờ ghi rõ lý do."),
         },
       },
       {
@@ -10889,7 +10891,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "stepper", anchor: "pp-stepper", screen: "payreview", act: "observe", modes: ["try"],
+        key: "stepper", anchor: "pp-stepper", screen: "payreview", act: "observe", timeout: 4000,
         say: {
           title: B("Who signs it", "Ai phê duyệt"),
           body: B("Being written, With HR, With finance, With the CEO, Approved, Applied. Any step can send it back with a reason.",
@@ -10897,11 +10899,11 @@ const SCENARIOS = [
         },
       },
       {
-        key: "openone", anchor: "pp-reviews", act: "observe", modes: ["watch"],
+        key: "openone", anchor: "pp-review-row", act: "click", guard: false, modes: ["watch"], timeout: 4000,
         say: {
           title: B("Open a review", "Mở một đợt xét lương"),
-          body: B("An open review shows its stepper — HR, finance, the CEO — a worksheet with a row per person, the budget meter and Calibration. Approved is not paid: Apply writes the new pay. Try it in the practice company to see one open.",
-                  "Một đợt xét lương đang mở hiện thanh các bước — nhân sự, tài chính, tổng giám đốc — một bảng tính mỗi người một dòng, thước đo ngân sách và Cân chỉnh. Đã duyệt chưa phải là đã trả: Áp dụng mới ghi lương mới. Hãy thử trong công ty thực hành để xem một đợt đang mở."),
+          body: B("I open the review at the top. Opening one only changes what you are looking at. With no review yet, start one with New review.",
+                  "Tôi mở đợt xét lương trên cùng. Mở một đợt chỉ đổi thứ bạn đang xem. Nếu chưa có đợt nào, hãy bắt đầu bằng Đợt xét lương mới."),
         },
       },
       {
@@ -10913,7 +10915,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "worksheet", anchor: "pp-worksheet", screen: "payreview", act: "observe", modes: ["try"],
+        key: "worksheet", anchor: "pp-worksheet", screen: "payreview", act: "observe", timeout: 4000,
         say: {
           title: B("A row per person", "Mỗi người một dòng"),
           body: B("Score, in the band, paid now, guidance, rise, new pay and a year's cost. The filters find who is not scored or paid below the band.",
@@ -10921,7 +10923,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "meters", anchor: "pp-meters", screen: "payreview", act: "observe", modes: ["try"],
+        key: "meters", anchor: "pp-meters", screen: "payreview", act: "observe", timeout: 4000,
         say: {
           title: B("Budget, Fairness, Scores", "Ngân sách, Công bằng, Điểm đánh giá"),
           body: B("The budget meter fills as rises go in. Over budget, the review cannot be sent for approval.",
@@ -10937,7 +10939,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "actions", anchor: "pp-review-actions", screen: "payreview", act: "observe", modes: ["try"],
+        key: "actions", anchor: "pp-review-actions", screen: "payreview", act: "observe", timeout: 4000,
         say: {
           title: B("Send for approval, then Apply", "Gửi duyệt, rồi Áp dụng"),
           body: B("Approved is the last signature. Apply writes the new pay onto the records, and the next pay run reads it.",
@@ -11165,7 +11167,7 @@ const SCENARIOS = [
         },
       },
       {
-        key: "clearance", anchor: "ex2-clearance", screen: "exits", act: "observe", modes: ["try"],
+        key: "clearance", anchor: "ex2-clearance", screen: "exits", act: "observe", timeout: 4000,
         say: {
           title: B("Signed off by IT, HR, Finance, Admin", "Được ký tắt bởi IT, Nhân sự, Tài chính, Quản trị viên"),
           body: B("One light per desk. A dark one is the desk still waiting for something back.",
@@ -11173,11 +11175,19 @@ const SCENARIOS = [
         },
       },
       {
-        key: "settle", anchor: "ex2-settle", screen: "exits", act: "observe", modes: ["try"],
+        key: "cardlive", anchor: "ex2-card", act: "click", guard: false, modes: ["watch"], timeout: 4000,
+        say: {
+          title: B("Open the first card", "Mở thẻ đầu tiên"),
+          body: B("I open the first leaver's card: their exit, whole — the money at the top. Opening it changes nothing.",
+                  "Tôi mở thẻ của người nghỉ đầu tiên: toàn bộ quá trình nghỉ việc của họ — khoản tiền ở trên cùng. Mở thẻ không thay đổi gì."),
+        },
+      },
+      {
+        key: "settle", anchor: "ex2-settle", screen: "exits", act: "observe", timeout: 4000,
         say: {
           title: B("The final settlement waits for all four", "Quyết toán cuối cùng chờ đủ cả bốn"),
-          body: B("Close settlement becomes available when every desk has signed. The payment itself is made from Pay Run › Settle.",
-                  "Chốt quyết toán bấm được khi mọi phòng ban đã ký. Bản thân khoản chi được thực hiện từ Đợt lương › Quyết toán."),
+          body: B("Close settlement becomes available when every desk has signed. A settlement still ready to check offers Send for approval here first. The payment itself is made from Pay Run › Settle.",
+                  "Chốt quyết toán bấm được khi mọi phòng ban đã ký. Khoản quyết toán còn chờ kiểm tra sẽ có nút Gửi duyệt ở đây trước. Bản thân khoản chi được thực hiện từ Đợt lương › Quyết toán."),
         },
       },
     ],

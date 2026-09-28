@@ -181,6 +181,12 @@
       "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
       "desc": "Payslips, net total, gross total, approved and need-review for this run."
     },
+    "ps-why": {
+      "screen": "payslips",
+      "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
+      "desc": "Why a payslip is under Need review, under its name (only on a flagged payslip).",
+      "reserved": true
+    },
     "ps-chips": {
       "screen": "payslips",
       "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
@@ -629,6 +635,12 @@
       "file": "pb_payruns/static/src/xml/payruns.xml",
       "desc": "The folded Rejected pay runs list under the board."
     },
+    "pk-reject-why": {
+      "screen": "payruns",
+      "file": "pb_payruns/static/src/xml/payruns.xml",
+      "desc": "The in-card Reject confirm with its required Why? box (drawn only while Reject is pressed).",
+      "reserved": true
+    },
     "ai-head": {
       "screen": "approvals",
       "file": "pb_approval_config/static/src/xml/inbox.xml",
@@ -928,6 +940,11 @@
       "file": "pb_pay/static/src/xml/pay_review.xml",
       "desc": "Pay reviews card: Set up guidance, New review."
     },
+    "pp-review-row": {
+      "screen": "payreview",
+      "file": "pb_pay/static/src/xml/pay_review.xml",
+      "desc": "One review in the Pay reviews list; pressing it opens the review. On every row; a walkthrough takes the first."
+    },
     "pp-meters": {
       "screen": "payreview",
       "file": "pb_pay/static/src/xml/pay_review.xml",
@@ -1140,6 +1157,17 @@
       "screen": "exits",
       "file": "pb_offboarding/static/src/xml/exits_board.xml",
       "desc": "The settlement block: Close settlement, Open the settlement."
+    },
+    "ex2-card": {
+      "screen": "exits",
+      "file": "pb_offboarding/static/src/xml/exits_board.xml",
+      "desc": "The top of a leaver's card (name, last day); pressing it opens their exit in the drawer. On every card; a walkthrough takes the first."
+    },
+    "ex2-send": {
+      "screen": "exits",
+      "file": "pb_offboarding/static/src/xml/exits_board.xml",
+      "desc": "Send for approval on a leaver's card, shown while their final settlement is ready to check.",
+      "reserved": true
     },
     "ex2-handover": {
       "screen": "exits",

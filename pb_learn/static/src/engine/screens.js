@@ -249,7 +249,14 @@ function ledgerHTML(key) {
         const metrics = d.metrics.map((m, i) => `<span class="lrn-lgm"><b class="lrn-money">${
             esc(M(vals[i]))}</b><i>${esc(tx(m))}</i></span>`).join("");
         let act = "";
-        if (r.download) {
+        let flagChip = "";
+        if (r.check) {
+            // LEARN REFRESH step 6 — worked out by the load, waiting for a person
+            flagChip = `<span class="lrn-chip a">${esc(tx(EN_READY_CHECK))}</span>`;
+            act = `<span class="lrn-lgact" ${actDone ? "" : ATTR_LG_ROWACT}><button class="lrn-btn sm ghost">${
+                ic("send")}${esc(tx(EN_SEND_APPROVAL))}</button></span>`;
+            actDone = true;
+        } else if (r.download) {
             act = `<span class="lrn-lgact" ${actDone ? "" : ATTR_LG_ROWACT}><button class="lrn-btn sm ghost">${
                 ic("download")}${esc(tx(EN_DOWNLOAD))}</button></span>`;
             actDone = true;
@@ -259,7 +266,7 @@ function ledgerHTML(key) {
                 <span class="lrn-avatar">${esc(initial(r.title))}</span>
                 <span><span class="lrn-nm">${esc(r.title)}${SP}<span class="lrn-faint">${esc(r.code)}</span></span><br>
                     <span class="lrn-sub2">${esc(tx(r.sub))}</span></span>
-                <span class="lrn-rr"><span class="lrn-chip">${esc(tx(r.badge))}</span>${metrics}${act}</span>
+                <span class="lrn-rr"><span class="lrn-chip">${esc(tx(r.badge))}</span>${flagChip}${metrics}${act}</span>
             </div>`;
     }).join("");
     const drawer = d.drawer.sections.map((sec) => `
@@ -290,6 +297,8 @@ function ledgerHTML(key) {
         </div>`;
 }
 const EN_DOWNLOAD = B("Download", "Download");
+const EN_READY_CHECK = B("Ready to check", "Ready to check");
+const EN_SEND_APPROVAL = B("Send for approval", "Send for approval");
 
 /* -------------------------------------------- the practice employee form
    DRAWN INLINE, UNDER THE ROSTER, AND SAID SO ON THE CARD.

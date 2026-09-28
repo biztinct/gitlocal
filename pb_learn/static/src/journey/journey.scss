@@ -1411,6 +1411,18 @@ body.lrn-docked .lrn-screen { padding-bottom: 55vh; }
     border-radius: var(--vuf-r-md, 12px);
 
     .lrn-btn { margin-left: auto; flex: 0 0 auto; }
+    .lrn-cardmain { flex: 1 1 auto; min-width: 0; }
+
+    /* LEARN REFRESH step 6 — on a phone the button took the row and squeezed
+       the words into a column a few letters wide. At ≤ 600px the icon and the
+       words share the first line, and the button gets a full-width line of
+       its own underneath. */
+    @media (max-width: 600px) {
+        flex-wrap: wrap;
+        align-items: flex-start;
+        .lrn-cardmain { flex: 1 1 calc(100% - 60px); }
+        .lrn-btn { margin-left: 0; flex: 1 1 100%; justify-content: center; }
+    }
 }
 
 .lrn-watermark {

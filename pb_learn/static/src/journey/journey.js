@@ -865,7 +865,7 @@ export class LearnJourney extends Component {
         }
         return `<span class="lrn-chip streak" title="${esc(T("streakHint"))}"
             >${ic("flame")}${esc(streak.display || String(streak.days))}${SP}${
-            esc(T("streakTitle"))}</span>`;
+            esc(T(streak.days === 1 ? "streakTitleOne" : "streakTitle"))}</span>`;
     }
 
     /* ---------------------------------------------- LEARN REFRESH step 4

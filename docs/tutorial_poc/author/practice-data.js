@@ -315,12 +315,15 @@ const RUN = {
      own name, the same in every language (a record's name is data). */
   scheme: "Hoa Sen Retail — End-Month Payroll",
   from: "01/07/2026", to: "31/07/2026",
-  /* WHAT "NEED REVIEW" COUNTS, and it is less than the old content claimed.
-     The Run lens adds three things (pb_payrun_wizard payrun_wizard.js:338-342):
-     payslips that came out at zero or below, people it could not make a
-     payslip for (no running contract, a compute error), and people in the pay
-     data file who are not in Payobook yet. It does NOT flag a big change on
-     last month — Hùng's overtime is a thing a person has to notice. */
+  /* WHAT "NEED REVIEW" COUNTS (LEARN REFRESH step 6). The Run lens adds
+     (pb_payrun_wizard payrun_wizard.js `needReview`): payslips flagged by the
+     run's shared answer (pb_payslip_review review_flags.py — take-home at zero
+     or below, OR take-home that moved more than the Payroll defaults threshold,
+     30%, on the same person's previous payslip in the same scheme), people it
+     could not make a payslip for, and people in the pay data file who are not
+     in Payobook yet. Hùng's take-home is up 26.4% on June (EMP.hung netJun →
+     netJul), UNDER 30%, so `flagged` stays 0 — his overtime jump is still a
+     thing a person has to notice. */
   flagged: 0,
   exceptions: 1,
   notInPayobook: 1,
@@ -565,10 +568,11 @@ const PRACTICE = {
   /* -------------------------------------------------- Pay Run › Payslips
      The run is WAITING, so its payslips are "Waiting for approval" — the
      product freezes them there while the route decides
-     (hr_payslip_run.py:920-932). "Need review" on this screen is narrower
-     than the Run lens's: a payslip whose take-home pay is zero or below
-     (pb_payslip_review.py:127). Nobody here is — so it reads 0, and that is
-     not the same as "nothing to check". */
+     (hr_payslip_run.py:920-932). "Need review" on this screen is the same
+     flagged list the Run lens counts (review_flags.py): take-home at zero or
+     below, or moved more than 30% on the last payslip. Nobody here is — Mai
+     +7%, Hùng +26%, Trang +2%, Đức 0% — so it reads 0, and that is not the
+     same as "nothing to check". */
   slips: [
     { emp: EMP.mai, net: EMP.mai.netJul, state: "verify", sel: true },
     { emp: EMP.hung, net: EMP.hung.netJul, state: "verify" },
@@ -660,18 +664,22 @@ const PRACTICE = {
   ledgers: {
     fullfinal: {
       subtitle: EN("Every settlement, its components and net payable at a glance."),
-      /* Hạnh is the leaver on Lifecycle › Exits (same person, same last day),
-         held up there by Finance's desk — so her settlement is still Being
-         prepared. Lan's was made by hand and is Approved, the only state that
-         offers Download. */
+      /* Hạnh is the leaver on Lifecycle › Exits (same person, same last day).
+         Her settlement was made by July's pay data load: worked out, NOT sent
+         in (LEARN REFRESH step 6 — a person checks it first), so it sits at
+         Being prepared as "Ready to check" with Send for approval on the row.
+         Lan's was made by hand and is Approved, the only state that offers
+         Download. */
       rows: [
         { title: "Bùi Thị Hạnh", code: "NV0044", sub: EN("Retail — Hà Nội · Cashier"), step: 0,
-          badge: EN("Auto"), earnings: 8500000 + 980769, deductions: 680000 + 127500 + 85000 },
+          badge: EN("Auto"), check: true,
+          earnings: 8500000 + 980769, deductions: 680000 + 127500 + 85000 },
         { title: "Đỗ Thị Lan", code: "NV0021", sub: EN("Retail — Hà Nội · Store supervisor"), step: 2,
           badge: EN("Manual"), earnings: 16100000, deductions: 1370000, download: true },
       ],
       get counts() {
         return [[EN("Settlements"), this.rows.length],
+                [EN("Ready to check"), this.rows.filter((r) => r.check).length],
                 [EN("Manual"), this.rows.filter((r) => r.badge.en === "Manual").length]];
       },
       get money() {
@@ -698,7 +706,7 @@ const PRACTICE = {
         title: "Bùi Thị Hạnh", sub: EN("Settlement · 31/07/2026"),
         sections: [
           { label: EN("Settlement"), fields: [[EN("Settlement date"), "31/07/2026"],
-                                              [EN("State"), EN("Being prepared")],
+                                              [EN("State"), EN("Being prepared · Ready to check")],
                                               [EN("Source"), EN("Auto")]] },
           { label: EN("Breakdown"), fields: [[EN("Basic salary"), 8500000],
                                              [EN("Unused leave"), 980769],
@@ -1734,7 +1742,7 @@ const PRACTICE = {
   exits: {
     numbers: [[B("Leaving this month", "Nghỉ việc trong tháng này"), 2], [B("Last day has passed", "Đã qua ngày làm việc cuối"), 1],
               [B("Settlements held up", "Quyết toán bị vướng"), 1], [B("Clearances still open", "Xác nhận bàn giao còn mở"), 1],
-              [B("Items not back yet", "Tài sản chưa trả lại"), 1]],
+              [B("Items not back yet", "Tài sản chưa trả lại"), 1], [B("Settlements to check", "Quyết toán cần kiểm tra"), 1]],
     steps: [[B("Working their notice", "Đang trong thời gian báo trước"), 1], [B("Signing off", "Đang xác nhận bàn giao"), 1],
             [B("Ready to settle", "Sẵn sàng quyết toán"), 0], [B("Settled", "Đã quyết toán"), 3]],
     leaver: { name: "Bùi Thị Hạnh", code: "NV0044", last: "31/07/2026", role: B("Cashier — Hà Nội", "Thu ngân — Hà Nội") },
