@@ -267,3 +267,20 @@ class TestActionEnvelope(TransactionCase):
             self.skipTest("pb_learn is not installed on this database")
         for noise in ('write me a poem', '', None, 42):
             self.assertIsNone(self.engine._content_handoff(noise), noise)
+
+    # -- LEARN REFRESH step 4: the wider app's top questions -----------------
+    def test_18_a_wider_app_question_gets_its_walkthrough(self):
+        """The top question of each wider-app area resolves, through the
+        helper's own resolver, to that area's walkthrough — and only to one
+        on the whitelist."""
+        if 'learn.intent' not in self.env:
+            self.skipTest("pb_learn is not installed on this database")
+        for question, walk in (
+                ("How do I raise a hiring request?", 'sc_hiring'),
+                ("Who has to sign a pay review?", 'sc_payreview'),
+                ("How do I lock the week?", 'sc_wfclose'),
+                ("How do I give someone my access while I'm away?", 'sc_access'),
+                ("How do I file the monthly insurance report?", 'sc_filings')):
+            self.assertEqual(self.engine._content_handoff(question),
+                             {'type': 'open_walkthrough', 'walkthrough': walk,
+                              'label': 'Show me'}, question)

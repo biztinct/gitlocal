@@ -133,7 +133,7 @@ INTENT_CLASSIFICATION_PROMPT = """Classify the following user message into one o
 
 1. "payroll_data" - User wants to see/analyze payroll data (salary, costs, headcount, overtime, deductions, comparisons, trends, forecasts). This requires querying the database.
 2. "payroll_knowledge" - User asks a conceptual question about payroll/HR (what does CTC mean, tax rules, compliance, etc.)
-3. "onboarding" - User asks HOW to USE this app or wants to be shown/guided (how do I run payroll, how to add an employee, where is X, how does the formula engine work, show me around, give me a tour, get started), or asks how THIS app's approvals work (who approves my pay run, why is my run stuck waiting, sent back vs turned down), or how to SET UP payroll in this app (set up a new pay scheme, where does this number come from, why don't my figures add up, change who approves something, change many employees at once, pay people in another currency).
+3. "onboarding" - User asks HOW to USE this app or wants to be shown/guided (how do I run payroll, how to add an employee, where is X, how does the formula engine work, show me around, give me a tour, get started), or asks how THIS app's approvals work (who approves my pay run, why is my run stuck waiting, sent back vs turned down), or how to SET UP payroll in this app (set up a new pay scheme, where does this number come from, why don't my figures add up, change who approves something, change many employees at once, pay people in another currency), or how to use the rest of THIS app (pay bands, a pay review, the Decision Room, hiring requests, new joiners, probation, someone leaving, approving overtime, locking the week, giving someone access while away, government filings).
 4. "general" - Any other question (write an email, explain something, general help)
 
 User message: "{message}"
@@ -187,6 +187,19 @@ PAYROLL SETUP:
 - Change many employees at once: People › Records (the Records Desk). Only fields the pay scheme maps. Edit on screen or Export with data / Import a file, then Review and Apply. With a route for bulk changes, Apply says "Sent for approval". Every apply can be undone from History.
 - Pay in another currency: give those people their own pay scheme for their country; a scheme pays in its country's money and a pay run is always one scheme (two schemes in a month are two pay runs). Settings › Group sets the group currency and how exchange rates are picked; nothing is stored converted. Insights › Explorer › Compare schemes shows "Each in its own money" or "Group currency".
 
+THE WIDER APP (tabs a person sees only when their access and company include them):
+- Pay bands: People › Pay › Bands. Each band drawn as a range with a dot per person; "Worth knowing" lists Paid below the band, Paid above the band, Newer people paid more, A manager paid less, How wide each band has become. Tools: Work it out again, Export, Import, Place a new hire. Nothing on Bands or Fairness changes anybody's pay. Fairness (pay gap by gender, by level, by team, same job) is worked out when opened and never stored; Print the statement to keep one.
+- Pay review: People › Pay › Review. A worksheet (Score, In the band, Paid now, Guidance, Rise, New pay, A year) inside a budget meter; Use the guidance, Add 1%%, Take off 1%%, Share out what is left; Calibration marks rises in line / stands out / breaks a limit. Stepper: Being written → With HR → With finance → With the CEO → Approved → Applied; Send for approval, Send back. "What stops approval" must be clear first. Approved is not paid: Apply writes the new pay onto records (Take it back within 24 hours). Single changes: Changes › New pay change (reason: promotion, putting a mistake right, keeping up with the market).
+- Decision Room: People › Plan. Presets Grow thoughtfully, Invest in people, Ease overtime; levers (people and start month, a rise and when, overtime per person, leavers); result tabs Work & shifts, Why profit changed, People & pay, Room to hire. Exact cost runs a saved plan through the real pay scheme and says how far the estimate was off. Propose → Approve / Send back. Nothing there changes payroll.
+- Hiring: Lifecycle › Hiring. Raise a hiring request (wizard: The role, Responsibilities, Interview plan, Budget & review); signed off by the manager and the HR lead, and Finance only if over budget. Every role walks Request & approve → Prepare & publish → Meet your candidates → Welcome aboard; each card says "Step X of 4" and a "Next:" line; candidates go through stages with Move stage.
+- New joiners: Lifecycle › New joiners. Getting ready → Settling in → Checklist done; each joiner has a buddy (the board counts "Still without a buddy"); the drawer lists Still to do, Done, Conversations. The bank account must be on file before the first pay run.
+- Probation: Lifecycle › Probation. Choose peers → Gather perspectives → Manager conversation → HR & leadership review → Share the outcome; decisions Confirm them, Extend the trial, Do not confirm. Decide before "Ending within a week" runs out.
+- Growth plans (only for people with a growth-plan role): Asked → Coaching → Plan running → Decision. Contracts ending: Lifecycle › Contracts, sixty days ahead; Raise the decision, then Make it permanent, Extend it or Let it end.
+- Someone leaving: Lifecycle › Exits. Working their notice → Signing off → Ready to settle → Settled; IT, HR, Finance and Admin each sign off ("Signed off by"); the final settlement waits for all four, then is paid from Pay Run › Settle. Take the leaver out of the monthly run or they are paid twice.
+- Workforce: Today (On shift, Late, Not started, Checked out, On leave) and the Needs you panel beside every Workforce tab, whose "Approve all N clean" approves only overtime that matches the grid, is under every limit and falls on an open day. Time (Timeline, Week Grid, Exceptions, Import), Time Off (approval queue, Apply on behalf), Overtime (approval queue, rules and monthly/yearly limits). Close: the week's flags (Fix, Approve as-is, Review all), Payroll handoff (Regular hours, Overtime, Bonus hours, Est. gross), then "Lock week & send to payroll" — grey until every flag is answered, attendance or payroll managers only; Reopen… asks for a reason.
+- Access: Settings › Access & delegation (its screens are in English). Tabs Roles, People, Screens, Hand-overs. "Hand my access over": who, what, until when — taken back automatically the morning after the end date. "See it as" shows the app as someone else sees it; you keep exactly your own access. Giving roles and See it as need an access manager. Never share a password instead.
+- Government filings: Compliance › Filings — tiles per filing, grouped by the office that reads them; a country with no module installed shows "coming soon". Generate opens "Generate a filing": Choose the filing → Scope → Generate. Generate makes files to download; nothing is sent anywhere. Generate only after every pay run of the month is done. Compliance also has Bank (a bank change goes Draft → HR Review → Finance Review → Approved), Young workers (hour limits under 18) and Audit (who changed what).
+
 DEMO NOTE: in the shared demo, payslips you generate are temporary and may be reset by another demo user.
 
 You can OFFER TO SHOW the user something via an optional "action". Two kinds:
@@ -205,6 +218,18 @@ A lesson (a short lesson in a practice company):
 - "L10": Approval Matrix — decide who signs off what
 - "L11": Records Desk — change many people at once
 - "L12": Schemes and currencies — pay in more than one currency
+- "L13": Pay bands and fairness
+- "L14": Pay review — a review inside its budget, and who signs it
+- "L15": Decision Room — try next year before committing
+- "L16": Hiring — raise a hiring request
+- "L17": New joiners — get ready for someone starting
+- "L18": Exits — someone leaving, to the final settlement
+- "L19": Probation — end a trial with a decision
+- "L20": A day in Workforce — Today and the Needs you panel
+- "L21": Time, time off and overtime
+- "L22": Close the week for payroll
+- "L23": Access and handing it over while away
+- "L24": Government filings
 A walkthrough of the real screens:
 - "sc_welcome": the tour — Pulse, a pay run, the Approvals inbox, the Formula Engine
 - "sc_payrun": run a pay run, step by step
@@ -217,6 +242,18 @@ A walkthrough of the real screens:
 - "sc_matrix": change an approval route
 - "sc_records": bulk update employee records
 - "sc_schemes": pay people in another currency
+- "sc_paybands": read the pay bands
+- "sc_payreview": run a pay review
+- "sc_decisionroom": try next year in the Decision Room
+- "sc_hiring": raise a hiring request
+- "sc_joiners": get ready for a new joiner
+- "sc_exits": see someone out and settle them
+- "sc_probation": end a trial with a decision
+- "sc_wftoday": a day in Workforce
+- "sc_wftime": time, leave and overtime
+- "sc_wfclose": close the week
+- "sc_access": access, and handing it over
+- "sc_filings": file the month's government reports
 
 ALWAYS respond with a SINGLE valid JSON object (no markdown fences):
 {
@@ -226,7 +263,7 @@ ALWAYS respond with a SINGLE valid JSON object (no markdown fences):
   "action": { "type": "open_lesson", "lesson": "<one lesson key above>", "label": "Show me" }
 }
 For a walkthrough use instead: "action": { "type": "open_walkthrough", "walkthrough": "<one walkthrough key above>", "label": "Show me" }. Prefer a walkthrough for "show me around" / "where is" questions and a lesson for "how does it work" questions.
-Include "action" ONLY when a listed lesson or walkthrough clearly matches the request; otherwise omit it or set it to null. A "how do I…" question about one of the PAYROLL SETUP areas above clearly matches its lesson or walkthrough (new pay scheme: L7 / sc_blueprint; where a number comes from: L8 / sc_mapjourney; figures that do not add up: L9 / sc_treatment; who approves what: L10 / sc_matrix; many employees at once: L11 / sc_records; another currency: L12 / sc_schemes), so offer it. Never invent pages, tabs, buttons, lesson keys or walkthrough keys that are not listed above.""" + IDENTITY_RULES
+Include "action" ONLY when a listed lesson or walkthrough clearly matches the request; otherwise omit it or set it to null. A "how do I…" question about one of the PAYROLL SETUP areas above clearly matches its lesson or walkthrough (new pay scheme: L7 / sc_blueprint; where a number comes from: L8 / sc_mapjourney; figures that do not add up: L9 / sc_treatment; who approves what: L10 / sc_matrix; many employees at once: L11 / sc_records; another currency: L12 / sc_schemes), and so does one about THE WIDER APP (pay bands: L13 / sc_paybands; pay review: L14 / sc_payreview; next year's plan: L15 / sc_decisionroom; hiring request: L16 / sc_hiring; new joiner: L17 / sc_joiners; someone leaving: L18 / sc_exits; probation: L19 / sc_probation; Workforce today or approving overtime: L20 / sc_wftoday, L21 / sc_wftime; locking the week: L22 / sc_wfclose; access while away: L23 / sc_access; government filings: L24 / sc_filings), so offer it. Never invent pages, tabs, buttons, lesson keys or walkthrough keys that are not listed above.""" + IDENTITY_RULES
 
 
 def data_query_prompt(message, payload_json):
@@ -655,7 +692,10 @@ class PayrollAIEngine(models.Model):
     # through, because a button that opens nothing is worse than no button.
     _KNOWN_LESSONS = ('LW', 'L1', 'L5', 'L3', 'L4', 'LA', 'L2', 'L6',
                       # LEARN REFRESH step 3 — payroll setup.
-                      'L7', 'L8', 'L9', 'L10', 'L11', 'L12')
+                      'L7', 'L8', 'L9', 'L10', 'L11', 'L12',
+                      # LEARN REFRESH step 4 — the wider app.
+                      'L13', 'L14', 'L15', 'L16', 'L17', 'L18', 'L19',
+                      'L20', 'L21', 'L22', 'L23', 'L24')
 
     # LEARN REFRESH step 2: a WALKTHROUGH is the second thing "Show me" may
     # open — the real screens, narrated, in Watch mode. Same rule as lessons:
@@ -665,7 +705,12 @@ class PayrollAIEngine(models.Model):
                            'sc_formula', 'sc_import',
                            # LEARN REFRESH step 3 — payroll setup.
                            'sc_blueprint', 'sc_mapjourney', 'sc_treatment',
-                           'sc_matrix', 'sc_records', 'sc_schemes')
+                           'sc_matrix', 'sc_records', 'sc_schemes',
+                           # LEARN REFRESH step 4 — the wider app.
+                           'sc_paybands', 'sc_payreview', 'sc_decisionroom',
+                           'sc_hiring', 'sc_joiners', 'sc_exits',
+                           'sc_probation', 'sc_wftoday', 'sc_wftime',
+                           'sc_wfclose', 'sc_access', 'sc_filings')
 
     # The old tour ids, and the lesson each became. Kept because the SYSTEM
     # PROMPT and the model behind it may lag a deploy — a cached conversation,
