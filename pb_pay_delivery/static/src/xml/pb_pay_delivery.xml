@@ -111,7 +111,7 @@
             </div>
 
             <!-- ================ card 1 · the bank file ================ -->
-            <div class="pbpd-card">
+            <div class="pbpd-card" data-coach="dl-bank">
               <div class="card-h">
                 <span class="ico" t-out="ic('fileText',18)"/>
                 <div class="ttl">Bank file</div>
@@ -206,7 +206,7 @@
             </div>
 
             <!-- ================ card 2 · the release ================ -->
-            <div class="pbpd-card">
+            <div class="pbpd-card" data-coach="dl-release">
               <div class="card-h">
                 <span class="ico" t-out="ic('banknote',18)"/>
                 <div class="ttl">Payment release</div>
@@ -260,7 +260,7 @@
           </section>
 
           <!-- ===================== LANE 2 · PAYSLIPS OUT ================= -->
-          <section class="pbpd-lane deliver">
+          <section class="pbpd-lane deliver" data-coach="dl-slips">
             <div class="lane-h">
               <span class="ico" t-out="ic('mail',20)"/>
               <div>

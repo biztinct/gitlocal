@@ -42,7 +42,7 @@
                       t-on-click="openAll">
                 <t t-out="ic('list',15)"/> All awards
               </button>
-              <button t-if="state.canApprove" class="pbim-btn ghost"
+              <button t-if="state.canApprove" class="pbim-btn ghost" data-coach="aw-put"
                       t-on-click="openQueue">
                 <t t-out="ic('send',15)"/> Put into a pay run
               </button>
@@ -66,11 +66,13 @@
                An award is at EXACTLY one step (stepOf), so the counts add up;
                one that was not approved is at no step (the numbers line
                reaches it). Pressing the lit step again shows every award. -->
+          <div data-coach="aw-steps">
           <t t-call="pb_import_kit.QuietSteps">
             <t t-set="qSteps" t-value="steps"/>
             <t t-set="qStepsLabel" t-value="'Where every award is'"/>
             <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
           </t>
+          </div>
           <div class="pbim-showing">
             <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
             <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
@@ -110,7 +112,7 @@
                     class="pbim-btn" t-on-click="openCreate">New award</button>
           </div>
 
-          <div t-else="" class="pbim-tablewrap inc-tablewrap">
+          <div t-else="" class="pbim-tablewrap inc-tablewrap" data-coach="aw-table">
             <table class="pbim-table inc-table">
               <thead>
                 <tr>

@@ -2383,3 +2383,43 @@ body.lrn-docked .lrn-screen { padding-bottom: 55vh; }
     .lrn-ywf .lrn-rr { margin-left: 0; }
     .lrn-ynums { gap: 4px 12px; }
 }
+
+/* =============================================================================
+   LEARN REFRESH step 5 — replica pieces for the Pay Run ledgers and the four
+   after-the-run tabs (Results, Deliver, Calendar, Awards).
+   ========================================================================== */
+.lrn-lgtabs { align-items: center; }
+.lrn-lgtabs > .lrn-sub2 { margin-left: 8px; }
+.lrn-lgfilters { display: grid; gap: 8px; }
+.lrn-lgfilters .lrn-flabel { margin: 0 2px 0 6px; font-size: 11.5px; font-weight: 700; color: var(--vuf-muted, #6B7280); }
+.lrn-lgm {
+    display: inline-grid;
+    justify-items: end;
+    min-width: 92px;
+    b { font-size: 13px; }
+    i { font-style: normal; font-size: 10.5px; color: var(--vuf-muted, #6B7280); }
+}
+.lrn-lgact { display: inline-flex; }
+.lrn-rtwrap { overflow-x: auto; }
+.lrn-rtable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    th, td { padding: 6px 8px; border-bottom: 1px solid var(--vuf-line, #E2E8F0); text-align: right; white-space: nowrap; }
+    thead th { font-size: 11px; color: var(--vuf-muted, #6B7280); vertical-align: bottom; }
+    thead th span, thead th i { display: block; }
+    th i { font-style: normal; font-size: 10px; color: var(--vuf-muted, #6B7280); }
+    tbody th { text-align: left; font-weight: 700; }
+    tbody th i { display: block; font-weight: 500; }
+    th:first-child, td:first-child { text-align: left; }
+    em { display: block; font-style: normal; font-size: 10.5px; }
+    em.up { color: #15803D; }
+    em.down { color: #B91C1C; }
+}
+.lrn-pcard {
+    display: grid;
+    gap: 4px;
+    &.closed { opacity: .6; }
+    &.next { border-color: var(--vuf-primary, #5A4BB0); box-shadow: 0 0 0 2px var(--vuf-primary-soft, #EDEAF8); }
+}

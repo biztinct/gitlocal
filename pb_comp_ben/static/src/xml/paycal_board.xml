@@ -67,7 +67,7 @@
           </div>
 
           <!-- ================= the countdown hero ================= -->
-          <div class="pcal-hero" t-att-class="{ 'is-idle': !state.next }">
+          <div class="pcal-hero" data-coach="pc-hero" t-att-class="{ 'is-idle': !state.next }">
             <div class="pcal-hero-ic"><t t-out="ic('clock',26)"/></div>
             <div class="pcal-hero-tx">
               <div class="pcal-hero-n" t-if="state.next">
@@ -117,7 +117,7 @@
           </t>
 
           <!-- ======================= the year strip ==================== -->
-          <div t-if="!hasMonths" class="pbim-empty pcal-empty">
+          <div t-if="!hasMonths" class="pbim-empty pcal-empty" data-coach="pc-months">
             <div class="pcal-empty-ic"><t t-out="ic('calendar',30)"/></div>
             <h3>The year is not planned yet</h3>
             <p>Say which day of the month changes stop being accepted and which day
@@ -127,7 +127,7 @@
             </button>
           </div>
 
-          <div t-else="" class="pcal-strip">
+          <div t-else="" class="pcal-strip" data-coach="pc-months">
             <t t-foreach="state.months" t-as="mo" t-key="mo.id">
               <div class="pcal-card"
                    t-att-class="{

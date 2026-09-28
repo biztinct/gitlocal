@@ -1557,7 +1557,7 @@ def gen_fixture():
     # and they are checked by running this file, not by rendering it. Exporting
     # a name no screen imports would put a second, unread copy of the rate
     # change in the engine's contract.
-    exports = ('\nexport { B, PRACTICE_META, CASE, EMP, RUN, FNB, ROUTE, LATER, PRACTICE,'
+    exports = ('\nexport { B, EN, PRACTICE_META, CASE, EMP, RUN, FNB, ROUTE, LATER, PRACTICE,'
                ' MENU, SUB_SCREENS, INPUT_ANCHORS, STATUS_LABELS, CHAINS, POLICY,'
                ' TAX };\n')
     return header + src.rstrip() + '\n' + exports

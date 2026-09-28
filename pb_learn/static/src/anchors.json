@@ -272,8 +272,7 @@
       ],
       "shared": true,
       "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
-      "desc": "The ledger KPI band. ONE template serves Full & Final, Proration Audit and Retro Adjustments, so this key means a different set of numbers on each — the screen key decides which.",
-      "reserved": true
+      "desc": "The ledger KPI band. ONE template serves Full & Final, Proration Audit and Retro Adjustments, so this key means a different set of numbers on each — the screen key decides which."
     },
     "lg-facets": {
       "screen": [
@@ -283,8 +282,7 @@
       ],
       "shared": true,
       "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
-      "desc": "The facet chips and the date row. Same control, different facets per ledger.",
-      "reserved": true
+      "desc": "The facet chips and the date row. Same control, different facets per ledger."
     },
     "lg-rows": {
       "screen": [
@@ -1476,6 +1474,93 @@
       "file": "pb_audit/static/src/xml/pb_audit.xml",
       "desc": "Stream / Salary lens / Login lens.",
       "reserved": true
+    },
+    "lg-tabs": {
+      "screen": [
+        "proration",
+        "retro"
+      ],
+      "shared": true,
+      "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
+      "desc": "The Adjust tab strip: Retro and Proration over one ledger. Settle has one tab and draws no strip."
+    },
+    "lg-steps": {
+      "screen": "fullfinal",
+      "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
+      "desc": "Where every settlement is: Being prepared, Waiting for approval, Approved (Settle only)."
+    },
+    "lg-rowact": {
+      "screen": "fullfinal",
+      "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
+      "desc": "A row's own button — Download on an approved settlement."
+    },
+    "lg-drawer": {
+      "screen": [
+        "fullfinal",
+        "proration",
+        "retro"
+      ],
+      "shared": true,
+      "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
+      "desc": "The drawer a row opens in the hub: a row's whole story (Period, Money, Breakdown, Trace)."
+    },
+    "rs-head": {
+      "screen": "results",
+      "file": "pb_payrun_results/static/src/xml/payrun_results.xml",
+      "desc": "Pay Run › Results toolbar: Payruns (pick another run) and Export to Excel."
+    },
+    "rs-compare": {
+      "screen": "results",
+      "file": "pb_payrun_results/static/src/xml/payrun_results.xml",
+      "desc": "The \"vs previous run\" chip: each figure against the person's previous payslip on the same scheme."
+    },
+    "rs-grid": {
+      "screen": "results",
+      "file": "pb_payrun_results/static/src/xml/payrun_results.xml",
+      "desc": "The results grid: one row per person, one column per component, read only."
+    },
+    "dl-bank": {
+      "screen": "deliver",
+      "file": "pb_pay_delivery/static/src/xml/pb_pay_delivery.xml",
+      "desc": "Deliver › Money out › Bank file card: payslips ready, left out, debit account, Prepare bank file for approval."
+    },
+    "dl-release": {
+      "screen": "deliver",
+      "file": "pb_pay_delivery/static/src/xml/pb_pay_delivery.xml",
+      "desc": "Deliver › Money out › Payment release card: waits for the approved bank file, then goes through its own approval."
+    },
+    "dl-slips": {
+      "screen": "deliver",
+      "file": "pb_pay_delivery/static/src/xml/pb_pay_delivery.xml",
+      "desc": "Deliver › Payslips out lane: password-protected PDFs, Send payslips (for approval), Resend failures."
+    },
+    "pc-hero": {
+      "screen": "paycal",
+      "file": "pb_comp_ben/static/src/xml/paycal_board.xml",
+      "desc": "Pay Run › Calendar countdown: days until changes close, and when people are paid."
+    },
+    "pc-months": {
+      "screen": "paycal",
+      "file": "pb_comp_ben/static/src/xml/paycal_board.xml",
+      "desc": "The year strip of month cards (Closes / Paid), or the \"not planned yet\" card when there are none.",
+      "reserved": true
+    },
+    "aw-put": {
+      "screen": "awards",
+      "file": "pb_comp_ben/static/src/xml/incentives_board.xml",
+      "desc": "Put into a pay run (approvers only): adds approved awards to a draft run and recomputes its payslips."
+    },
+    "aw-steps": {
+      "screen": "awards",
+      "file": "pb_comp_ben/static/src/xml/incentives_board.xml",
+      "desc": "Where every award is: Being prepared → Waiting for approval → Agreed, not in a run → In a pay run → Paid.",
+      "reserved": true
+    },
+    "aw-table": {
+      "screen": "awards",
+      "file": "pb_comp_ben/static/src/xml/incentives_board.xml",
+      "desc": "The awards table: Who, Kind, Amount, Paid in, Approval, Where it has got to, Pay run.",
+      "reserved": true
     }
   },
   "pattern": {
@@ -1611,7 +1696,11 @@
       "pb_time_hub/static/src/xml/time_hub.xml",
       "pb_timeoff/static/src/xml/pb_timeoff.xml",
       "pb_today/static/src/xml/pb_today.xml",
-      "pb_young_worker/static/src/xml/pb_young_worker.xml"
+      "pb_young_worker/static/src/xml/pb_young_worker.xml",
+      "pb_payrun_results/static/src/xml/payrun_results.xml",
+      "pb_pay_delivery/static/src/xml/pb_pay_delivery.xml",
+      "pb_comp_ben/static/src/xml/paycal_board.xml",
+      "pb_comp_ben/static/src/xml/incentives_board.xml"
     ],
     "replica": [
       "pb_learn/static/src/engine/screens.js",

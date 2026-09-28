@@ -14,7 +14,7 @@
             <small t-if="state.data.run">Every employee's computed components · <t t-esc="state.data.run.config_name"/></small>
           </div>
         </div>
-        <div class="pbr-head-actions">
+        <div class="pbr-head-actions" data-coach="rs-head">
           <button class="pbr-btn" t-on-click="openPicker" title="Browse all pay runs">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
             Payruns
@@ -35,7 +35,7 @@
             <option t-att-value="d.id" t-att-selected="d.id == state.filters.department_id" t-esc="d.name"/>
           </t>
         </select>
-        <button t-attf-class="pbr-chip {{ state.filters.with_variance ? 'on' : '' }}" t-on-click="toggleVariance">
+        <button t-attf-class="pbr-chip {{ state.filters.with_variance ? 'on' : '' }}" data-coach="rs-compare" t-on-click="toggleVariance">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M21 7v6h-6"/></svg>
           vs previous run
         </button>
@@ -49,7 +49,7 @@
       </div>
 
       <!-- grid -->
-      <div t-if="state.data.columns and state.data.columns.length" class="pbr-gridwrap">
+      <div t-if="state.data.columns and state.data.columns.length" class="pbr-gridwrap" data-coach="rs-grid">
         <table class="pbr-table">
           <thead>
             <tr>

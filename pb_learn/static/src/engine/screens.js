@@ -22,7 +22,7 @@
    hand a translator wording they do not own, and the two would diverge at the
    first product rename.
    ========================================================================== */
-import { B, CASE, EMP, FNB, INPUT_ANCHORS, LATER, MENU, POLICY, PRACTICE, ROUTE, RUN, STATUS_LABELS,
+import { B, CASE, EMP, EN, FNB, INPUT_ANCHORS, LATER, MENU, POLICY, PRACTICE, ROUTE, RUN, STATUS_LABELS,
          SUB_SCREENS, TAX } from "./fixture";
 import { esc, ic, initial, tx, T, N, M, P, SP} from "./runtime";
 import { calcHTML, pipeHTML } from "./visuals";
@@ -201,44 +201,95 @@ function routeDots(steps, at) {
     }).join("");
 }
 
+/* LEARN REFRESH step 5 — the ledger as pb_payrun_ledgers draws it inside the
+   Pay Run hub (ledger.xml): the tab strip (Adjust only — Settle has one tab
+   and the product never draws a strip of one), a quiet counts line with the
+   money figures beside it, the step strip (Full & Final), the filters, the
+   rows with their metrics, and the drawer a row opens — drawn open beside the
+   rows, because a lesson reads it. Every anchor is the product's own. */
+const LEDGER_TABS = [
+    { key: "retro", icon: "rotate-ccw", label: B("Retro", "Hồi tố") },
+    { key: "proration", icon: "calculator", label: B("Proration", "Phân bổ theo tỷ lệ") },
+];
+const ATTR_LG_ROWACT = 'data-coach="lg-rowact"';
+
+function ledgerVal(v) {
+    if (typeof v === "number") {
+        return v < 0 ? "−" + M(-v) : M(v);
+    }
+    return tx(v);
+}
+
 function ledgerHTML(key) {
     const d = PRACTICE.ledgers[key];
     if (!d) {
         return "";
     }
-    // A money value arrives as a NUMBER and is formatted here, in the one place
-    // that formats money — so it follows the reader's language like every other
-    // figure on the screen. Pre-formatted strings in the fixture printed
-    // "8,420,000 ₫" to a Vietnamese reader who groups thousands with a dot.
-    const kpis = d.kpis.map((k) => `
-        <div class="lrn-kpi">
-            <div class="lrn-kt">${ic("calculator")}<span>${esc(tx(k.label))}</span></div>
-            <div class="lrn-kv ${k.money ? "lrn-money" : ""}">${
-                esc(typeof k.v === "number" ? M(k.v) : k.v)}</div>
-        </div>`).join("");
-    const facets = d.facets.map((f, i) =>
-        `<button class="lrn-chip ${i === 0 ? "b" : ""}">${esc(tx(f))}</button>`).join("");
-    const rows = d.rows.map((r) => `
-        <div class="lrn-row">
-            <span class="lrn-avatar">${esc(initial(r.title))}</span>
-            <span><span class="lrn-nm">${esc(r.title)}
-                    <span class="lrn-faint">${esc(r.code)}</span></span><br>
-                <span class="lrn-sub2">${esc(tx(r.sub))}</span></span>
-            <span class="lrn-rr"><span class="lrn-chip">${esc(tx(r.badge))}</span>
-                <b class="lrn-money">${esc(M(r.v))}</b></span>
-        </div>`).join("");
+    const tabs = d.tab
+        ? `<div class="lrn-tabs lrn-lgtabs" data-coach="lg-tabs">${LEDGER_TABS.map((t) => `
+            <button aria-selected="${t.key === d.tab}" ${t.key === d.tab ? "" : navAttr(t.key)}
+                >${ic(t.icon)}${esc(tx(t.label))}</button>`).join("")}
+            <span class="lrn-sub2">${esc(tx(d.subtitle))}</span></div>`
+        : "";
+    const money = d.money.map((k) => kpiTile(k.icon, "", M(k.v), k.label)).join("");
+    const steps = d.steps
+        ? `<div data-coach="lg-steps"><div class="lrn-steps">${stepButtons(
+            d.steps.map((x) => ({ label: x.label, count: x.count })), B("", ""))}</div>
+            <p class="lrn-note">${esc(tx(B("Showing all settlements · press a step or a number to narrow it",
+                "Đang hiển thị cả quyết toán · nhấn một bước hoặc một con số để thu hẹp")))}</p></div>`
+        : "";
+    const facets = d.facets.map((f) => `<span class="lrn-flabel">${esc(tx(f.label))}</span>${
+        f.chips.map((c) => `<button class="lrn-chip">${esc(tx(c))}</button>`).join("")}`).join("");
+    const dates = [B("All time", "Mọi lúc"), B("This month", "Tháng này"), B("This year", "Năm nay"),
+                   B("Custom", "Tùy chỉnh")].map((x, i) =>
+        `<button class="lrn-chip ${i === 0 ? "b" : ""}">${ic("calendar")}${esc(tx(x))}</button>`).join("");
+    let actDone = false;
+    const rows = d.rows.map((r) => {
+        const vals = d.metrics.length === 1 ? [r.earnings - r.deductions] : [r.old, r.new, r.v];
+        const metrics = d.metrics.map((m, i) => `<span class="lrn-lgm"><b class="lrn-money">${
+            esc(M(vals[i]))}</b><i>${esc(tx(m))}</i></span>`).join("");
+        let act = "";
+        if (r.download) {
+            act = `<span class="lrn-lgact" ${actDone ? "" : ATTR_LG_ROWACT}><button class="lrn-btn sm ghost">${
+                ic("download")}${esc(tx(EN_DOWNLOAD))}</button></span>`;
+            actDone = true;
+        }
+        return `
+            <div class="lrn-row">
+                <span class="lrn-avatar">${esc(initial(r.title))}</span>
+                <span><span class="lrn-nm">${esc(r.title)}${SP}<span class="lrn-faint">${esc(r.code)}</span></span><br>
+                    <span class="lrn-sub2">${esc(tx(r.sub))}</span></span>
+                <span class="lrn-rr"><span class="lrn-chip">${esc(tx(r.badge))}</span>${metrics}${act}</span>
+            </div>`;
+    }).join("");
+    const drawer = d.drawer.sections.map((sec) => `
+        <span class="lrn-clabel">${esc(tx(sec.label))}</span>
+        ${sec.fields.map(([k, v]) => `<div class="lrn-kv2"><span>${esc(tx(k))}</span><b>${esc(ledgerVal(v))}</b></div>`).join("")}`).join("");
+    const foot = d.steps ? "" : `<div class="lrn-foot2"><span class="lrn-sub2">${esc(tx(B("Showing", "Đang hiển thị")))}${
+        SP}${N(d.rows.length)}${SP}/${SP}${N(d.rows.length)}</span></div>`;
 
     return `
-        <div class="lrn-grid g3" data-coach="lg-kpis">${kpis}</div>
-        <div class="lrn-tabs" data-coach="lg-facets">${facets}</div>
-        <div class="lrn-panel">
-            <h3>${ic("list-checks")}${esc(tx(d.subtitle))}</h3>
-            <div class="lrn-rows" data-coach="lg-rows">${rows}</div>
-            <div class="lrn-foot2">
-                <button class="lrn-link" data-coach="lg-openfull">${esc(T("openFullList"))}</button>
+        ${tabs}
+        <div data-coach="lg-kpis">${quietNums(d.counts, "")}
+            <div class="lrn-grid g3">${money}</div></div>
+        ${steps}
+        <div class="lrn-panel lrn-lgfilters">
+            <div class="lrn-strip" data-coach="lg-facets">${facets}</div>
+            <div class="lrn-strip">${dates}</div>
+        </div>
+        <div class="lrn-ywf">
+            <div class="lrn-ywfmain">
+                <div class="lrn-rows" data-coach="lg-rows">${rows}</div>
+                ${foot}
             </div>
+            <aside class="lrn-panel lrn-ydock" data-coach="lg-drawer">
+                <h3>${esc(d.drawer.title)}</h3>
+                <span class="lrn-sub2">${esc(tx(d.drawer.sub))}</span>
+                ${drawer}
+            </aside>
         </div>`;
 }
+const EN_DOWNLOAD = B("Download", "Download");
 
 /* -------------------------------------------- the practice employee form
    DRAWN INLINE, UNDER THE ROSTER, AND SAID SO ON THE CARD.
@@ -2516,6 +2567,106 @@ export const SCREENS = {
                     </div>
                     <div class="lrn-kv2" data-coach="ex2-handover"><span>${esc(tx(B("Handover", "Bàn giao công việc")))}</span><b>${esc(tx(B("2 of 3 done", "2/3 đã xong")))}</b></div>
                 </aside>
+            </div>`;
+    },
+
+    /* ==================================================================
+       LEARN REFRESH step 5 — AFTER THE RUN. Pay Run › Results, Deliver,
+       Calendar, Awards, each drawn as its own template draws it inside the
+       hub, with the product's anchors (rs-*, dl-*, pc-*, aw-*).
+       ================================================================== */
+    results() {
+        const r = PRACTICE.afterrun.results;
+        const head = r.cols.map((c) => `<th><span>${esc(tx(c[1]))}</span><i>${esc(c[0])}</i></th>`).join("");
+        const rows = r.rows.map((row) => `<tr><th>${esc(row.name)}<i>${esc(row.code)}</i></th>${
+            row.vals.map((v, i) => `<td>${esc(N(v))}${i === row.vals.length - 1
+                ? `<em class="${row.delta >= 0 ? "up" : "down"}">${row.delta >= 0 ? "▲" : "▼"}${SP}${esc(N(Math.abs(row.delta)))}</em>` : ""}</td>`).join("")}</tr>`).join("");
+        return `
+            <div class="lrn-zhead"><span class="lrn-chip">${ic("grid")}${esc(tx(RUN.name))}</span><span class="lrn-push"></span>
+                <span class="lrn-strip" data-coach="rs-head">
+                    <button class="lrn-btn sm">${ic("grid")}${esc(tx(B("Pay runs", "Các đợt lương")))}</button>
+                    <button class="lrn-btn sm pri">${ic("download")}${esc(tx(B("Export to Excel", "Xuất ra Excel")))}</button>
+                </span></div>
+            <div class="lrn-strip">
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search employee…", "Tìm kiếm nhân viên…")))}</span>
+                <span class="lrn-chip">${esc(tx(B("All departments", "Tất cả phòng ban")))}</span>
+                <button class="lrn-chip b" data-coach="rs-compare">${ic("trending-up")}${esc(tx(B("vs previous run", "so với đợt trước")))}</button>
+                <span class="lrn-sub2"><b>${N(RUN.employees)}</b>${SP}${esc(T("employees"))}</span>
+            </div>
+            <div class="lrn-panel lrn-rtwrap" data-coach="rs-grid">
+                <table class="lrn-rtable"><thead><tr><th>${esc(tx(B("Employee", "Nhân viên")))}</th>${head}</tr></thead>
+                <tbody>${rows}</tbody></table>
+                <p class="lrn-note">${esc(tx(B(
+                    "Four of the run's forty-eight rows. Read only: a row opens that person's payslip, and nothing here can be changed.",
+                    "Bốn trong bốn mươi tám dòng của đợt. Chỉ để đọc: một dòng mở phiếu lương của người đó, và không gì ở đây sửa được.")))}</p>
+            </div>`;
+    },
+
+    deliver() {
+        const d = PRACTICE.afterrun.deliver;
+        return `
+            <div class="lrn-zhead"><span class="lrn-chip">${esc(tx(RUN.name))}</span><span class="lrn-push"></span>
+                <span class="lrn-sub2">${esc(tx(B("Total net", "Tổng thực nhận")))}${SP}<b class="lrn-money">${esc(M(RUN.totalNet))}</b></span></div>
+            <div class="lrn-grid g2 top">
+                <section class="lrn-panel">
+                    <h3>${ic("landmark")}${esc(tx(B("Money out", "Chi tiền")))}</h3>
+                    <p class="lrn-note">${esc(tx(EN("The file the bank pays from, and the go-ahead to send it")))}</p>
+                    <div class="lrn-panel" data-coach="dl-bank">
+                        <b>${ic("file-text")}${esc(tx(B("Bank file", "Tệp ngân hàng")))}</b>
+                        <div class="lrn-strip"><span class="lrn-chip ok"><b>${N(d.ready)}</b>${SP}${esc(tx(B("payslips ready", "phiếu lương đã sẵn sàng")))}</span>
+                            <span class="lrn-chip"><b>${N(d.leftOut)}</b>${SP}${esc(tx(EN("left out")))}</span></div>
+                        <div class="lrn-kv2"><span>${esc(tx(B("Company debit account", "Tài khoản ghi nợ của công ty")))}</span><b>${esc(d.bank)}${SP}·${SP}${esc(d.account)}</b></div>
+                        <button class="lrn-btn sm pri">${esc(tx(B("Prepare bank file for approval", "Tạo tệp ngân hàng để duyệt")))}</button>
+                    </div>
+                    <div class="lrn-panel" data-coach="dl-release">
+                        <b>${ic("banknote")}${esc(tx(B("Payment release", "Lệnh chuyển tiền")))}</b>
+                        <p class="lrn-note">${esc(tx(EN("Waiting for the bank file")))}</p>
+                        <button class="lrn-btn sm" disabled="disabled">${esc(tx(B("Send the release for approval", "Gửi lệnh chuyển tiền đi duyệt")))}</button>
+                    </div>
+                </section>
+                <section class="lrn-panel" data-coach="dl-slips">
+                    <h3>${ic("mail")}${esc(tx(B("Payslips out", "Phiếu lương ra")))}</h3>
+                    <p class="lrn-note">${esc(tx(B("Password-protected PDFs by email", "Tệp PDF được bảo vệ bằng mật khẩu qua email")))}</p>
+                    <span class="lrn-chip"><b>${N(RUN.employees)}</b>${SP}${esc(tx(B("recipients", "người nhận")))}</span>
+                    <p class="lrn-note">${esc(tx(B("Each PDF is locked with a per-employee password", "Mỗi tệp PDF được khóa bằng mật khẩu cho mỗi nhân viên")))}</p>
+                    <button class="lrn-btn sm pri">${ic("send")}${esc(tx(B("Send payslips for approval", "Gửi phiếu lương đi duyệt")))}</button>
+                </section>
+            </div>`;
+    },
+
+    paycal() {
+        const c = PRACTICE.afterrun.paycal;
+        const cards = c.months.map((m) => `<div class="lrn-panel lrn-pcard ${m.closed ? "closed" : ""}${SP}${m.next ? "next" : ""}">
+            <b>${esc(tx(m.m))}</b><span class="lrn-chip ${m.closed ? "" : "ok"}">${esc(tx(m.closed ? EN("Closed") : EN("Open")))}</span>
+            <span class="lrn-sub2">${esc(tx(EN("Closes")))}${SP}${esc(m.closes)}</span>
+            <span class="lrn-sub2">${esc(tx(B("Paid", "Đã trả")))}${SP}${esc(m.paid)}</span></div>`).join("");
+        const until = tx(EN("days until changes close for")) + SP + tx(c.month);
+        return `
+            <div class="lrn-herocta" data-coach="pc-hero">
+                ${ic("clock")}
+                <span><b>${N(c.days)}${SP}${esc(tx(EN("days")))}</b><br>
+                    <span class="lrn-sub2">${esc(until)}</span><br>
+                    <span class="lrn-sub2">${esc(tx(EN("Changes close")))}${SP}${esc(c.closes)}${SP}·${SP}${esc(tx(EN("people are paid")))}${SP}${esc(c.paid)}</span></span>
+            </div>
+            ${quietNums(c.counts, "")}
+            <div class="lrn-grid g4" data-coach="pc-months">${cards}</div>`;
+    },
+
+    awards() {
+        const a = PRACTICE.afterrun.awards;
+        const rows = a.rows.map((r) => `<tr><th>${esc(r.who)}</th><td>${esc(tx(r.kind))}</td><td>${esc(M(r.amount))}</td>
+            <td>${esc(tx(r.paidIn))}</td><td>${esc(tx(r.approval))}</td><td>${esc(tx(r.where))}</td><td>${esc(tx(r.run))}</td></tr>`).join("");
+        const cols = ["Who", "Kind", "Amount", "Paid in", "Approval", "Where it has got to", "Pay run"]
+            .map((c) => `<th>${esc(c)}</th>`).join("");
+        return `
+            <div class="lrn-zhead"><span class="lrn-push"></span>
+                <button class="lrn-btn sm ghost">${ic("list-checks")}${esc(tx(EN("All awards")))}</button>
+                <button class="lrn-btn sm ghost" data-coach="aw-put">${ic("send")}${esc(tx(EN("Put into a pay run")))}</button>
+                <button class="lrn-btn sm pri">${ic("plus")}${esc(tx(EN("New award")))}</button></div>
+            ${quietNums(a.counts, "")}
+            <div data-coach="aw-steps"><div class="lrn-steps">${stepButtons(a.steps.map(([l, n]) => ({ label: l, count: n })), B("", ""))}</div></div>
+            <div class="lrn-panel lrn-rtwrap" data-coach="aw-table">
+                <table class="lrn-rtable"><thead><tr>${cols}</tr></thead><tbody>${rows}</tbody></table>
             </div>`;
     },
 };

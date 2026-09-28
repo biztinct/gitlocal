@@ -252,6 +252,9 @@ BARE_ALIASES = {
     'payslip': 'a payroll noun; no other sense exists',
     # LEARN REFRESH step 3
     'subtotal': 'the Component treatment column; no other sense in this corpus',
+    # LEARN REFRESH step 5
+    'award': 'Pay Run › Awards; the corpus uses it for nothing else',
+    'awards': 'the Pay Run tab of that name',
     # LEARN REFRESH step 4
     'calibration': 'the pay review step; no other sense in this corpus',
     'calibrate': 'the verb of the above',

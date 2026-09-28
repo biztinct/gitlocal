@@ -43,6 +43,10 @@
    ========================================================================== */
 
 const B = (en, vi) => ({ en, vi });
+/* LEARN REFRESH step 5. A label the PRODUCT shows in English in both
+   languages (no translation exists for it on that screen). The replica says
+   the same words the reader will meet, in either language. */
+const EN = (s) => ({ en: s, vi: s });
 
 /* Bump the minor when you add records; bump the major when a shape changes,
    because `check_contract.py` pins to it. */
@@ -649,76 +653,199 @@ const PRACTICE = {
     outcome: { employees: 0, payslips: 48 },
   },
 
-  /* The three ledgers share one shape, because the product shares one
-     template. Keyed by screen so one renderer serves all three. */
+  /* LEARN REFRESH step 5 — the three ledgers as pb_payrun_ledgers draws them
+     today (ledger.xml, ledger_cockpits.py): Pay Run › Adjust carries two tabs
+     (Retro, Proration) over ONE template; Pay Run › Settle carries one
+     (Full & Final, whose single tab the product never draws). Counts are one
+     quiet line, the money totals stand beside it, and a row opens a drawer in
+     place. THE DESCRIPTOR WORDS ARE ENGLISH IN BOTH LANGUAGES because the
+     product's are: KPI labels, facets, metrics and drawer labels are plain
+     Python strings with no translation (owner item, ledger LR44). Every money
+     figure is derived from the rows. */
   ledgers: {
     fullfinal: {
-      title: B("Full & Final", "Quyết toán thôi việc"),
-      subtitle: B("Departing employees and what they are still owed.",
-                  "Nhân viên thôi việc và những khoản còn phải trả."),
-      /* Both leavers are in THIS period — Lan on the 8th, Huy on the 15th — so
-         "Leavers this period: 2" is a count of the two rows below it and not a
-         number that has to be taken on trust. Settled is Lan's amount, because
-         Lan is the one that has been settled; Huy's is still pending. */
-      kpis: [
-        { label: B("Leavers this period", "Thôi việc kỳ này"), v: "2" },
-        { label: B("Pending settlement", "Chờ quyết toán"), v: 8420000, money: true },
-        { label: B("Settled", "Đã chốt"), v: 14730000, money: true },
-      ],
-      facets: [B("All", "Tất cả"), B("Pending", "Đang chờ"), B("Settled", "Đã chốt")],
+      subtitle: EN("Every settlement, its components and net payable at a glance."),
+      /* Hạnh is the leaver on Lifecycle › Exits (same person, same last day),
+         held up there by Finance's desk — so her settlement is still Being
+         prepared. Lan's was made by hand and is Approved, the only state that
+         offers Download. */
       rows: [
-        { title: "Võ Quang Huy", code: "NV0044",
-          sub: B("Last day 15/07/2026", "Ngày cuối 15/07/2026"), v: 8420000,
-          badge: B("Pending", "Đang chờ") },
-        { title: "Đỗ Thị Lan", code: "NV0021",
-          sub: B("Last day 08/07/2026", "Ngày cuối 08/07/2026"), v: 14730000,
-          badge: B("Settled", "Đã chốt") },
+        { title: "Bùi Thị Hạnh", code: "NV0044", sub: EN("Retail — Hà Nội · Cashier"), step: 0,
+          badge: EN("Auto"), earnings: 8500000 + 980769, deductions: 680000 + 127500 + 85000 },
+        { title: "Đỗ Thị Lan", code: "NV0021", sub: EN("Retail — Hà Nội · Store supervisor"), step: 2,
+          badge: EN("Manual"), earnings: 16100000, deductions: 1370000, download: true },
       ],
+      get counts() {
+        return [[EN("Settlements"), this.rows.length],
+                [EN("Manual"), this.rows.filter((r) => r.badge.en === "Manual").length]];
+      },
+      get money() {
+        const e = this.rows.reduce((t, r) => t + r.earnings, 0);
+        const d = this.rows.reduce((t, r) => t + r.deductions, 0);
+        return [{ label: EN("Net payable"), v: e - d, icon: "wallet" },
+                { label: EN("Earnings"), v: e, icon: "trending-up" },
+                { label: EN("Deductions"), v: d, icon: "trending-down" }];
+      },
+      /* The three steps a settlement travels (fnf_approval.py: draft/returned →
+         pending → approved), with no Vietnamese in the product either. */
+      get steps() {
+        const at = (i) => this.rows.filter((r) => r.step === i).length;
+        return [{ label: EN("Being prepared"), count: at(0) },
+                { label: EN("Waiting for approval"), count: at(1) },
+                { label: EN("Approved"), count: at(2) }];
+      },
+      facets: [
+        { label: EN("Source"), chips: [EN("Auto"), EN("Manual")] },
+        { label: EN("Department"), chips: [EN("Retail — Hà Nội"), EN("F&B — Hà Nội")] },
+      ],
+      metrics: [EN("Net payable")],
+      drawer: {
+        title: "Bùi Thị Hạnh", sub: EN("Settlement · 31/07/2026"),
+        sections: [
+          { label: EN("Settlement"), fields: [[EN("Settlement date"), "31/07/2026"],
+                                              [EN("State"), EN("Being prepared")],
+                                              [EN("Source"), EN("Auto")]] },
+          { label: EN("Breakdown"), fields: [[EN("Basic salary"), 8500000],
+                                             [EN("Unused leave"), 980769],
+                                             [EN("Social insurance"), -680000],
+                                             [EN("Health insurance"), -127500],
+                                             [EN("Unemployment insurance"), -85000]] },
+          { label: EN("Trace"), fields: [[EN("Import batch"), EN("July 2026 pay data")]] },
+        ],
+      },
     },
+    /* Pay Run › Adjust › Proration. Two kinds of row, both real: a contract
+       whose pay changed mid-month (the pay data import splits the month at the
+       change) and a person who was here for part of it (pb_workseg writes old =
+       new = the monthly amount, and the days do the work). The DAYS are only in
+       the drawer, never on the row, and there is no "factor" on this screen. */
     proration: {
-      title: B("Proration Audit", "Soát xét ngày công (pro-rata)"),
-      subtitle: B("Why a part-month amount is the amount it is.",
-                  "Vì sao một khoản lương tính theo ngày công lại ra con số đó."),
-      kpis: [
-        { label: B("Prorated payslips", "Phiếu tính theo ngày công"), v: "2" },
-        { label: B("Standard working days", "Ngày công chuẩn"), v: "22" },
-        { label: B("From the division config", "Theo cấu hình bộ phận"), v: RUN.config },
-      ],
-      facets: [B("All", "Tất cả"), B("Joiners", "Vào mới"), B("Leavers", "Thôi việc")],
-      /* The factor is shown to FOUR decimal places and the money is the base
-         times that factor, rounded to the đồng — 10,000,000 × 9/22 is
-         4,090,909.09, and printing 4,090,000 beside "0.41" invited a learner to
-         multiply it out and find the tutorial wrong. Huy's 11/22 is exactly
-         0.5000, which is why one row looks tidy and the other does not: that is
-         what real proration looks like. */
+      tab: "proration",
+      subtitle: EN("Every prorated component, old → new → prorated, per employee."),
       rows: [
-        { title: "Võ Quang Huy", code: "NV0044",
-          sub: B("11 / 22 days · factor 0.5000", "11 / 22 ngày · hệ số 0,5000"),
-          v: Math.round(10500000 * 11 / 22),
-          badge: B("Leaver", "Thôi việc") },
-        { title: "Bùi Anh Tuấn", code: "NV0052",
-          sub: B("9 / 22 days · factor 0.4091", "9 / 22 ngày · hệ số 0,4091"),
-          v: Math.round(10000000 * 9 / 22),
-          badge: B("Joiner", "Vào mới") },
+        { title: "Vũ Thị Hoa", code: "NV0026", sub: EN("Basic salary"), badge: EN("Posted"), kind: "change",
+          old: 9500000, new: 11000000, v: Math.round(9500000 * 15 / 31 + 11000000 * 16 / 31) },
+        { title: "Bùi Anh Tuấn", code: "NV0052", sub: EN("Basic salary"), badge: EN("Posted"), kind: "joiner",
+          old: 10000000, new: 10000000, v: Math.round(10000000 * 10 / 31) },
+      ],
+      get counts() {
+        return [[EN("Proration lines"), this.rows.length], [EN("Employees"), this.rows.length],
+                [EN("Batches"), 1]];
+      },
+      get money() {
+        return [{ label: EN("Total prorated"), v: this.rows.reduce((t, r) => t + r.v, 0), icon: "calculator" }];
+      },
+      facets: [
+        { label: EN("Status"), chips: [EN("Draft"), EN("Posted")] },
+        { label: EN("Component"), chips: [EN("Basic salary"), EN("Night-shift allowance")] },
+        { label: EN("Batch"), chips: [EN("July 2026 pay data"), EN("June 2026 pay data")] },
+      ],
+      metrics: [EN("Old"), EN("New"), EN("Prorated")],
+      drawer: {
+        title: "Vũ Thị Hoa", sub: EN("Basic salary · promoted on 16/07/2026"),
+        sections: [
+          { label: EN("Period"), fields: [[EN("Effective date"), "16/07/2026"], [EN("Period"), EN("July 2026")],
+                                          [EN("Basis"), EN("Calendar Days")], [EN("Period days"), "31"],
+                                          [EN("Old days"), "15"], [EN("New days"), "16"]] },
+          { label: EN("Money"), fields: [[EN("Old amount"), 9500000], [EN("New amount"), 11000000],
+                                         [EN("Prorated"), Math.round(9500000 * 15 / 31 + 11000000 * 16 / 31)]] },
+          { label: EN("Trace"), fields: [[EN("Import batch"), EN("July 2026 pay data")]] },
+        ],
+      },
+    },
+    /* Pay Run › Adjust › Retro. Back pay the pay data import worked out by
+       itself: a pay change dated BEFORE this period, compared with payslips
+       already paid for it; the difference for the days it covers is added to
+       this month. Khoa's raise was backdated to 1 June; Đức's night-shift
+       allowance started on 16 June (15 of June's 30 days). */
+    retro: {
+      tab: "retro",
+      subtitle: EN("Retroactive deltas, old → new → delta, per employee."),
+      rows: [
+        { title: "Vũ Minh Khoa", code: "NV0038", sub: EN("Basic salary"), badge: EN("Posted"),
+          old: 11000000, new: 11800000, v: 800000 },
+        { title: EMP.duc.name, code: EMP.duc.code, sub: EN("Night-shift allowance"), badge: EN("Posted"),
+          old: 0, new: 300000, v: Math.round(300000 * 15 / 30) },
+      ],
+      get counts() {
+        return [[EN("Retro lines"), this.rows.length], [EN("Employees"), this.rows.length], [EN("Batches"), 1]];
+      },
+      get money() {
+        return [{ label: EN("Total delta"), v: this.rows.reduce((t, r) => t + r.v, 0), icon: "trending-up" }];
+      },
+      facets: [
+        { label: EN("Status"), chips: [EN("Posted"), EN("Cancelled")] },
+        { label: EN("Component"), chips: [EN("Basic salary"), EN("Night-shift allowance")] },
+        { label: EN("Applied batch"), chips: [EN("July 2026 pay data")] },
+      ],
+      metrics: [EN("Old"), EN("New"), EN("Delta")],
+      drawer: {
+        title: "Vũ Minh Khoa", sub: EN("Basic salary · BASIC"),
+        sections: [
+          { label: EN("Period"), fields: [[EN("Retro period"), "01/06/2026 – 30/06/2026"],
+                                          [EN("Change effective"), "01/06/2026"]] },
+          { label: EN("Money"), fields: [[EN("Old amount"), 11000000], [EN("New amount"), 11800000],
+                                         [EN("Delta"), 800000]] },
+          { label: EN("Trace"), fields: [[EN("Applied in batch"), EN("July 2026 pay data")],
+                                         [EN("Applied in payslip"), EN("Vũ Minh Khoa — July 2026")],
+                                         [EN("Original payslip"), EN("Vũ Minh Khoa — June 2026")]] },
+        ],
+      },
+    },
+  },
+
+  /* LEARN REFRESH step 5 — AFTER THE RUN: the four Pay Run tabs a run is
+     finished through. Results is the whole run as one grid; Deliver sends the
+     money file and the payslips, each through its own approval; Calendar says
+     when changes close and when people are paid; Awards puts one-off money
+     into a draft run. Words are the product's, Vietnamese where the product
+     has it (the rest stays English, as on the screen — ledger LR44). */
+  afterrun: {
+    /* Results reads the same four people the Payslips replica shows, from the
+       same derived EMP figures, with June beside July. */
+    get results() {
+      const cols = [["BASIC", EN("Basic salary"), "base"], ["ALW", EN("Allowances"), "allowance"],
+                    ["OT", EN("Overtime"), "otJul"], ["GROSS", EN("Gross"), "grossJul"],
+                    ["BHXH", EN("Social insurance"), "bhxh"], ["PIT", EN("Income tax"), "pitJul"],
+                    ["NET", EN("Net pay"), "netJul"]];
+      return {
+        cols,
+        rows: [EMP.mai, EMP.hung, EMP.trang, EMP.duc].map((e) => ({
+          name: e.name, code: e.code, vals: cols.map((c) => e[c[2]]),
+          delta: e.netJul - e.netJun,
+        })),
+      };
+    },
+    deliver: {
+      ready: RUN.employees, leftOut: 0,
+      bank: "Vietcombank", account: "0011 0045 6789",
+    },
+    paycal: {
+      days: 6, month: B("August 2026", "Tháng 8/2026"), closes: "25/08/2026", paid: "01/09/2026",
+      counts: [[B("months planned", "tháng đã lên kế hoạch"), 12], [B("still ahead", "còn phía trước"), 5],
+               [B("closed", "đã đóng"), 7], [B("reminders sent", "lời nhắc đã gửi"), 21]],
+      months: [
+        { m: B("Jul", "Th7"), closes: "25/07", paid: "01/08", closed: true },
+        { m: B("Aug", "Th8"), closes: "25/08", paid: "01/09", next: true },
+        { m: B("Sep", "Th9"), closes: "25/09", paid: "01/10" },
+        { m: B("Oct", "Th10"), closes: "26/10", paid: "01/11" },
       ],
     },
-    retro: {
-      title: B("Retro Adjustments", "Điều chỉnh hồi tố"),
-      subtitle: B("Corrections for a closed month, paid in this one.",
-                  "Hiệu chỉnh cho kỳ đã đóng, chi trong kỳ này."),
-      kpis: [
-        { label: B("Retro lines", "Dòng hồi tố"), v: "2" },
-        { label: B("Total adjustment", "Tổng điều chỉnh"), v: 2400000 + 380000, money: true },
-        { label: B("Oldest source period", "Kỳ gốc xa nhất"), v: "04/2026" },
-      ],
-      facets: [B("All", "Tất cả"), B("Pay increase", "Tăng lương"), B("Missed allowance", "Sót phụ cấp")],
+    awards: {
+      counts: [[B("waiting for a decision", "đang chờ quyết định"), 1],
+               [B("agreed, not in a run", "đã đồng ý, chưa vào kỳ lương"), 1],
+               [B("in a pay run", "trong một kỳ lương"), 1], [B("paid this month", "đã trả tháng này"), 2],
+               [B("not approved", "không được duyệt"), 0]],
+      steps: [[B("Being prepared", "Đang chuẩn bị"), 0], [B("Waiting for approval", "Đang chờ phê duyệt"), 1],
+              [B("Agreed, not in a run", "Đã đồng ý, chưa vào kỳ lương"), 1],
+              [B("In a pay run", "Trong một kỳ lương"), 1], [B("Paid", "Đã trả"), 2]],
       rows: [
-        { title: EMP.trang.name, code: EMP.trang.code,
-          sub: B("Backdated raise · source 04–06/2026", "Tăng lương lùi ngày · kỳ gốc 04–06/2026"),
-          v: 2400000, badge: B("Pay increase", "Tăng lương") },
-        { title: EMP.duc.name, code: EMP.duc.code,
-          sub: B("Missed night-shift allowance · source 06/2026", "Sót phụ cấp ca đêm · kỳ gốc 06/2026"),
-          v: 380000, badge: B("Missed allowance", "Sót phụ cấp") },
+        { who: EMP.mai.name, kind: EN("Spot award"), amount: 500000, paidIn: EN("July 2026"),
+          approval: EN("Approved"), where: EN("In the next pay run"), run: RUN.name },
+        { who: EMP.trang.name, kind: EN("Incentive"), amount: 1500000, paidIn: EN("July 2026"),
+          approval: EN("Approved"), where: EN("Approved"), run: EN("—") },
+        { who: EMP.hung.name, kind: EN("Bonus"), amount: 2000000, paidIn: EN("August 2026"),
+          approval: EN("Waiting for approval"), where: EN("—"), run: EN("—") },
       ],
     },
   },
@@ -1028,7 +1155,7 @@ const PRACTICE = {
                     on Insights, which reads this block instead of holding a
                     second copy. */
     const joiners = this.ledgers.proration.rows.filter(
-      (r) => r.badge.en === "Joiner").length;
+      (r) => r.kind === "joiner").length;
     const leavers = this.ledgers.fullfinal.rows.length;
     const exceptions = [
       { label: B("Missing clock-out", "Thiếu chấm công ra"), v: 4 },
@@ -1658,16 +1785,17 @@ const MENU = [
       { key: "run", label: B("Run", "Chạy lương"), screen: "runpayroll" },
       { key: "runs", label: B("Runs", "Các đợt lương"), screen: "payruns" },
       { key: "payslips", label: B("Payslips", "Phiếu lương"), screen: "payslips" },
-      { key: "results", label: B("Results", "Kết quả") },
+      { key: "results", label: B("Results", "Kết quả"), screen: "results" },
       { key: "import", label: B("Import", "Nhập"), screen: "import" },
-      { key: "deliver", label: B("Deliver", "Chi trả") },
+      { key: "deliver", label: B("Deliver", "Chi trả"), screen: "deliver" },
       { key: "adjust", label: B("Adjust", "Điều chỉnh"), screen: "retro",
         sub: [{ key: "retro", label: B("Retro", "Hồi tố"), screen: "retro" },
               { key: "proration", label: B("Proration", "Phân bổ theo tỷ lệ"), screen: "proration" }] },
-      { key: "settle", label: B("Settle", "Quyết toán"), screen: "fullfinal",
-        sub: [{ key: "fullfinal", label: B("Full & Final", "Quyết toán thôi việc"), screen: "fullfinal" }] },
-      { key: "paycal", label: B("Calendar", "Lịch lương") },
-      { key: "awards", label: B("Awards", "Thưởng") },
+      /* Settle has ONE tab (Full & Final), and the product never draws a strip
+         of one (ledger.xml: `tabs.length > 1`), so neither does the replica. */
+      { key: "settle", label: B("Settle", "Quyết toán"), screen: "fullfinal" },
+      { key: "paycal", label: B("Calendar", "Lịch lương"), screen: "paycal" },
+      { key: "awards", label: B("Awards", "Thưởng"), screen: "awards" },
     ],
   },
   {
@@ -1973,4 +2101,4 @@ const CHAINS = {
   },
 };
 
-export { B, PRACTICE_META, CASE, EMP, RUN, FNB, ROUTE, LATER, PRACTICE, MENU, SUB_SCREENS, INPUT_ANCHORS, STATUS_LABELS, CHAINS, POLICY, TAX };
+export { B, EN, PRACTICE_META, CASE, EMP, RUN, FNB, ROUTE, LATER, PRACTICE, MENU, SUB_SCREENS, INPUT_ANCHORS, STATUS_LABELS, CHAINS, POLICY, TAX };

@@ -22,7 +22,7 @@
              Rendered only past one tab: a strip of one is a control that does
              nothing, and the single-descriptor lens (Settle) still routes its
              model through tabs[0]. -->
-        <div class="pbl-tabs" t-if="tabs.length > 1">
+        <div class="pbl-tabs" t-if="tabs.length > 1" data-coach="lg-tabs">
           <button t-foreach="tabs" t-as="t" t-key="t.key"
                   class="pbl-tab"
                   t-att-class="{ 'is-on': state.tab === t.key }"
@@ -59,11 +59,13 @@
              Each record is at exactly one step, counted over the whole
              scope. Pressing the lit step again shows everything. -->
         <t t-if="steps.length">
+          <div data-coach="lg-steps">
           <t t-call="pb_import_kit.QuietSteps">
             <t t-set="qSteps" t-value="steps"/>
             <t t-set="qStepsLabel" t-value="'Where every settlement is'"/>
             <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
           </t>
+          </div>
           <div class="pbim-showing">
             <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
             <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
@@ -140,7 +142,7 @@
                 </div>
               </t>
             </div>
-            <div t-if="r.action" class="pbl-rowact">
+            <div t-if="r.action" class="pbl-rowact" data-coach="lg-rowact">
               <button class="pbim-btn outline pbim-btn-sm" t-on-click="(ev) => this.rowAction(r, ev)">
                 <t t-out="ic(r.action.icon or 'download', 14)"/> <t t-esc="r.action.label"/>
               </button>
@@ -169,7 +171,7 @@
            it must never cover the hub's command bar or its lens rail. -->
       <WfDrawer t-if="state.drawer" title="state.drawer.title"
                 subtitle="state.drawer.subtitle" onClose="() => this.closeDrawer()">
-        <div class="pbl-dr">
+        <div class="pbl-dr" data-coach="lg-drawer">
           <div t-if="state.drawerLoading and !state.drawer.sections.length" class="pbl-dr__load">
             <span t-out="ic('loader', 20)"/><span>Loading…</span>
           </div>

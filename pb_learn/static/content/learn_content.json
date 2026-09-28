@@ -1583,39 +1583,39 @@
     },
     {
       "body": {
-        "en": "Employees whose contract ends inside this period. Each one needs settling here AND excluding from the normal monthly run. Somebody in both is paid twice, and getting that back is a legal conversation rather than a payroll one.",
-        "vi": "Những nhân viên có hợp đồng kết thúc trong kỳ này. Mỗi người vừa cần được quyết toán ở đây VÀ cần bị loại khỏi đợt lương tháng thông thường. Người nằm ở cả hai chỗ sẽ được trả hai lần, và đòi lại khoản đó là chuyện pháp lý chứ không còn là chuyện tính lương."
+        "en": "Every final settlement in scope, whatever its step. Each one is somebody who must ALSO be out of the normal monthly run, or they are paid twice.",
+        "vi": "Mọi khoản quyết toán trong phạm vi, ở bất kỳ bước nào. Mỗi khoản là một người CŨNG phải được đưa ra khỏi đợt lương tháng thông thường, nếu không họ được trả hai lần."
       },
-      "key": "leavers_this_period",
+      "key": "settlements",
       "label": {
-        "en": "Leavers this period",
-        "vi": "Thôi việc kỳ này"
+        "en": "Settlements",
+        "vi": "Settlements"
       },
       "screen": "fullfinal",
       "sequence": 10
     },
     {
       "body": {
-        "en": "Leavers whose final amount has been worked out but not yet paid. Settlements have legal deadlines, so this count is a clock rather than a queue.",
-        "vi": "Những người thôi việc đã tính xong khoản cuối nhưng chưa được chi. Quyết toán có thời hạn pháp lý, nên con số này là một chiếc đồng hồ chứ không phải một hàng đợi."
+        "en": "Settlements made by hand rather than created when a month's pay data finished loading. Pressing it narrows the list to them.",
+        "vi": "Các khoản quyết toán làm bằng tay thay vì được tạo khi dữ liệu lương của một tháng tải xong. Bấm vào để chỉ xem những khoản đó."
       },
-      "key": "pending_settlement",
+      "key": "manual",
       "label": {
-        "en": "Pending settlement",
-        "vi": "Chờ quyết toán"
+        "en": "Manual",
+        "vi": "Manual"
       },
       "screen": "fullfinal",
       "sequence": 20
     },
     {
       "body": {
-        "en": "The total already paid out as final settlements in this period. It sits outside the monthly run's net total, which is why the two numbers never add up to what left the bank.",
-        "vi": "Tổng số đã chi cho các khoản quyết toán trong kỳ này. Nó nằm ngoài tổng thực nhận của đợt lương tháng, và đó là lý do hai con số không bao giờ cộng lại bằng số tiền đã rời tài khoản."
+        "en": "Earnings less deductions, added up over the settlements in scope. It sits outside the monthly run's net, so the two never add up to one bank total.",
+        "vi": "Thu nhập trừ khấu trừ, cộng trên các khoản quyết toán trong phạm vi. Nó nằm ngoài số thực nhận của đợt lương tháng, nên hai con số không bao giờ cộng thành một tổng chuyển khoản."
       },
-      "key": "settled",
+      "key": "net_payable",
       "label": {
-        "en": "Settled",
-        "vi": "Đã chốt"
+        "en": "Net payable",
+        "vi": "Net payable"
       },
       "screen": "fullfinal",
       "sequence": 30
@@ -2012,68 +2012,55 @@
     },
     {
       "body": {
-        "en": "Payslips in this run paid for part of a month rather than all of it — joiners, leavers and unpaid leave. Every one of them is a likely question from the employee, and this screen is the answer written down before it is asked.",
-        "vi": "Các phiếu trong đợt này được trả cho một phần của tháng thay vì cả tháng — người mới vào, người thôi việc và nghỉ không lương. Mỗi phiếu như vậy đều có khả năng thành một câu hỏi từ nhân viên, và màn hình này là câu trả lời đã viết sẵn trước khi ai đó hỏi."
+        "en": "One line per part-month amount: a pay change in the middle of the month, or someone here for only part of it. Each is a question an employee is likely to ask.",
+        "vi": "Mỗi khoản theo phần tháng một dòng: một thay đổi lương giữa tháng, hoặc một người chỉ có mặt một phần tháng. Mỗi dòng là một câu hỏi nhân viên nhiều khả năng sẽ hỏi."
       },
-      "key": "prorated_payslips",
+      "key": "proration_lines",
       "label": {
-        "en": "Prorated payslips",
-        "vi": "Phiếu tính theo ngày công"
+        "en": "Proration lines",
+        "vi": "Proration lines"
       },
       "screen": "proration",
       "sequence": 10
     },
     {
       "body": {
-        "en": "The divisor every proration factor is built from, taken from the division's configuration. It is working days and not calendar days, and reading it as calendar days is the mistake that turns an explanation into an argument.",
-        "vi": "Mẫu số mà mọi hệ số tính theo ngày công dựa vào, lấy từ cấu hình của bộ phận. Đó là ngày công chứ không phải ngày dương lịch, và hiểu nhầm thành ngày dương lịch là sai sót biến một lời giải thích thành một cuộc tranh cãi."
+        "en": "The part-month amounts added up. The days behind each one are in the row's drawer, under Period.",
+        "vi": "Tổng các khoản theo phần tháng. Số ngày đứng sau từng khoản nằm trong ngăn chi tiết của dòng, mục Period."
       },
-      "key": "standard_working_days",
+      "key": "total_prorated",
       "label": {
-        "en": "Standard working days",
-        "vi": "Ngày công chuẩn"
+        "en": "Total prorated",
+        "vi": "Total prorated"
       },
       "screen": "proration",
       "sequence": 20
     },
     {
       "body": {
-        "en": "Corrections belonging to a period that is already closed, paid in the current run. Each is a deliberate decision not to reopen an approved month, which is what keeps everything already reported from that month true.",
-        "vi": "Các hiệu chỉnh thuộc về một kỳ đã đóng, được chi trong đợt hiện tại. Mỗi dòng là một quyết định có chủ ý không mở lại một tháng đã duyệt, và chính điều đó giữ cho mọi báo cáo đã xuất từ tháng đó vẫn đúng."
+        "en": "Back-pay lines the pay data load worked out: a pay change dated before this month, compared with what was already paid. Each keeps that month closed.",
+        "vi": "Các dòng truy lĩnh mà lần tải dữ liệu lương đã tính: một thay đổi lương có hiệu lực trước tháng này, đem so với số đã trả. Mỗi dòng giữ cho tháng đó luôn đóng."
       },
       "key": "retro_lines",
       "label": {
         "en": "Retro lines",
-        "vi": "Dòng hồi tố"
+        "vi": "Retro lines"
       },
       "screen": "retro",
       "sequence": 10
     },
     {
       "body": {
-        "en": "The sum of the retro lines in this run. It is added on top of the month's own earnings. The run's net total will be higher than the same headcount normally produces, so say that out loud before somebody asks about the variance.",
-        "vi": "Tổng của các dòng hồi tố trong đợt này. Nó được cộng thêm trên phần thu nhập của chính tháng đó. Tổng thực nhận của đợt sẽ cao hơn mức mà cùng sĩ số thường tạo ra, nên hãy nói điều đó ra trước khi có người hỏi về biến động."
+        "en": "The back pay added to this month. The run's net will be higher than the same people usually cost, so say so before somebody asks about the jump.",
+        "vi": "Khoản truy lĩnh cộng vào tháng này. Thực nhận của đợt sẽ cao hơn mức những người đó thường tốn, nên hãy nói trước khi có người hỏi về mức tăng."
       },
-      "key": "total_adjustment",
+      "key": "total_delta",
       "label": {
-        "en": "Total adjustment",
-        "vi": "Tổng điều chỉnh"
+        "en": "Total delta",
+        "vi": "Total delta"
       },
       "screen": "retro",
       "sequence": 20
-    },
-    {
-      "body": {
-        "en": "The furthest-back month any line here is correcting. The older it is, the more reporting has already been done on the original figure. That is exactly why the correction is a retro line and never an edit to that month.",
-        "vi": "Tháng xa nhất mà một dòng ở đây đang hiệu chỉnh. Càng lâu thì càng nhiều báo cáo đã được lập trên con số gốc. Đó chính là lý do việc sửa phải là một dòng hồi tố chứ không bao giờ là sửa vào tháng đó."
-      },
-      "key": "oldest_source_period",
-      "label": {
-        "en": "Oldest source period",
-        "vi": "Kỳ gốc xa nhất"
-      },
-      "screen": "retro",
-      "sequence": 30
     },
     {
       "body": {
@@ -2928,8 +2915,8 @@
     },
     {
       "definition": {
-        "en": "Paying part of a month: days worked divided by the division's standard working days. It is a factor, not a discount — when an amount looks wrong, the factor is the thing to read first.",
-        "vi": "Trả lương cho một phần của tháng: số ngày công thực tế chia cho ngày công chuẩn của bộ phận. Đây là một hệ số, không phải khoản giảm trừ — khi một con số trông sai, hệ số là thứ cần đọc trước tiên."
+        "en": "Paying part of a month: the monthly amount times the days that count, over the days in the period. Pay Run › Adjust › Proration keeps one line per amount, with the days in its drawer.",
+        "vi": "Trả lương cho một phần của tháng: mức lương tháng nhân với số ngày được tính, chia cho số ngày của kỳ. Đợt lương › Điều chỉnh › Phân bổ theo tỷ lệ giữ mỗi khoản một dòng, với số ngày trong ngăn chi tiết."
       },
       "key": "proration",
       "match": {
@@ -2943,6 +2930,7 @@
         "vi": [
           "tính theo ngày công (pro-rata)",
           "tính theo tỷ lệ ngày công",
+          "lương theo phần tháng",
           "theo ngày công"
         ]
       },
@@ -3024,8 +3012,8 @@
     },
     {
       "definition": {
-        "en": "Money owed for a month that is already closed, paid in the current run with the old month named on the line. It is how a closed month stays closed — you pay the difference instead of reopening a month somebody has already reported.",
-        "vi": "Khoản tiền còn nợ của một tháng đã đóng, được chi trong đợt hiện tại và ghi rõ tháng gốc trên dòng đó. Đây là cách giữ cho một kỳ đã đóng vẫn luôn đóng — bạn trả phần chênh thay vì mở lại một tháng người khác đã báo cáo."
+        "en": "Money owed for a month that is already paid, added to the current month with the old month named on the line. The pay data import works it out when the scheme's Back-pay switch is on.",
+        "vi": "Khoản tiền còn nợ của một tháng đã trả, được cộng vào tháng hiện tại và ghi rõ tháng gốc trên dòng. Lần tải dữ liệu lương tự tính khoản này khi công tắc Truy lĩnh của chương trình lương đang bật."
       },
       "key": "retro",
       "match": {
@@ -3033,6 +3021,8 @@
           "retro adjustment",
           "retro line",
           "backdated",
+          "back pay",
+          "back-pay",
           "retro"
         ],
         "vi": [
@@ -4771,6 +4761,75 @@
       "term": {
         "en": "See it as",
         "vi": "Xem dưới góc nhìn"
+      }
+    },
+    {
+      "definition": {
+        "en": "The go-ahead to send the money, on Pay Run › Deliver. It waits for the bank file to be approved, and then goes through its own approval.",
+        "vi": "Sự cho phép gửi tiền đi, ở Đợt lương › Chi trả. Nó chờ tệp ngân hàng được duyệt, rồi đi qua phê duyệt riêng của nó."
+      },
+      "key": "paymentRelease",
+      "match": {
+        "en": [
+          "release the money",
+          "payment release",
+          "money release"
+        ],
+        "vi": [
+          "lệnh chuyển tiền",
+          "chuyển tiền đi"
+        ]
+      },
+      "term": {
+        "en": "Payment release",
+        "vi": "Lệnh chuyển tiền"
+      }
+    },
+    {
+      "definition": {
+        "en": "The month's two dates on Pay Run › Calendar: the day changes close and the day people are paid. Reopening a closed month needs a reason.",
+        "vi": "Hai mốc ngày của tháng ở Đợt lương › Lịch lương: ngày chốt thay đổi và ngày trả lương. Mở lại một tháng đã chốt cần nêu lý do."
+      },
+      "key": "payCalendar",
+      "match": {
+        "en": [
+          "changes close",
+          "cut-off date",
+          "pay calendar",
+          "cutoff date"
+        ],
+        "vi": [
+          "ngày chốt thay đổi",
+          "ngày chốt lương",
+          "lịch lương"
+        ]
+      },
+      "term": {
+        "en": "Pay calendar",
+        "vi": "Lịch lương"
+      }
+    },
+    {
+      "definition": {
+        "en": "A one-off bonus, incentive or spot award on Pay Run › Awards. It is approved first, then put into a draft pay run, which adds it to the payslip and recomputes it.",
+        "vi": "Một khoản thưởng, khuyến khích hoặc thưởng đột xuất ở Đợt lương › Thưởng. Nó được duyệt trước, rồi được đưa vào một đợt lương nháp, cộng vào phiếu lương và tính lại."
+      },
+      "key": "award",
+      "match": {
+        "en": [
+          "spot award",
+          "awards",
+          "award"
+        ],
+        "vi": [
+          "thưởng đột xuất",
+          "khoản thưởng",
+          "tiền thưởng"
+        ]
+      },
+      "term": {
+        "en": "Award",
+        "vi": "Khoản thưởng"
       }
     },
     {
@@ -6810,8 +6869,8 @@
       "blocks": [
         {
           "body": {
-            "en": "Not from the approval itself. Once a run is Done its card offers <b>Pay &amp; Deliver</b>, which makes {{bankFileFormat}} and sends the payslips — also Pay Run › Deliver.",
-            "vi": "Không phải từ chính việc phê duyệt. Khi đợt lương Hoàn tất, thẻ của nó có <b>Chi trả &amp; gửi phiếu</b>, dùng để lập {{bankFileFormat}} và gửi phiếu lương — cũng có ở Đợt lương › Chi trả."
+            "en": "Not from the approval itself. Once a run is Done its card offers <b>Pay &amp; Deliver</b>. That opens Deliver for the run: the bank file ({{bankFileFormat}}), then the payment release, each approved on its own, and the payslips.",
+            "vi": "Không phải từ chính việc phê duyệt. Khi đợt lương Hoàn tất, thẻ của nó có <b>Chi trả &amp; gửi phiếu</b>. Nút đó mở Chi trả cho đợt: tệp ngân hàng ({{bankFileFormat}}), rồi lệnh chuyển tiền, mỗi thứ được duyệt riêng, và phiếu lương."
           },
           "capability": "any",
           "kind": "p",
@@ -6868,7 +6927,7 @@
         "Tiền thực sự tới tay mọi người bằng cách nào?"
       ],
       "practice_key": "",
-      "screens": "payruns,payslips",
+      "screens": "payruns,payslips,afterrun",
       "show_me": [
         "pk-card-actions"
       ],
@@ -7935,8 +7994,8 @@
       "blocks": [
         {
           "body": {
-            "en": "Days worked over the division's standard working days, and the base multiplied by the factor that produces. For someone who left on the 15th: 11 days out of 22 gives a factor of 0.50, so a 10,500,000 ₫ base becomes 5,250,000 ₫.",
-            "vi": "Số ngày công thực tế chia cho ngày công chuẩn của bộ phận, rồi lấy lương cơ bản nhân với hệ số đó. Với người nghỉ ngày 15: 11 ngày trên 22 cho hệ số 0,50, nên lương cơ bản 10.500.000 ₫ thành 5.250.000 ₫."
+            "en": "The monthly amount times the days that count, over the days in the period. For someone who started on the 22nd of a 31-day month: 10 days out of 31, so a 10,000,000 ₫ salary becomes 3,225,806 ₫.",
+            "vi": "Mức lương tháng nhân với số ngày được tính, chia cho số ngày của kỳ. Với người bắt đầu ngày 22 của một tháng 31 ngày: 10 trên 31 ngày, nên mức lương 10.000.000 ₫ thành 3.225.806 ₫."
           },
           "capability": "any",
           "kind": "p",
@@ -7945,8 +8004,18 @@
         },
         {
           "body": {
-            "en": "The standard is {{standardWorkingDays}} working days, from the division's configuration — not calendar days. Reading it as calendar days is the mistake that turns an explanation into an argument.",
-            "vi": "Chuẩn là {{standardWorkingDays}} ngày công theo cấu hình của bộ phận — không phải ngày dương lịch. Hiểu nhầm thành ngày dương lịch là sai sót biến một lời giải thích thành một cuộc tranh cãi."
+            "en": "Pay Run › Adjust › Proration keeps one line per amount. The row shows old, new and prorated; its drawer holds the basis and the days on each side of the change.",
+            "vi": "Đợt lương › Điều chỉnh › Phân bổ theo tỷ lệ giữ mỗi khoản một dòng. Dòng hiện mức cũ, mức mới và số đã phân bổ; ngăn chi tiết có cách tính và số ngày ở mỗi phía của thay đổi."
+          },
+          "capability": "any",
+          "kind": "p",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "Read the days before the money. If the days are right and the amount still looks wrong, the problem is further back, in the contract or the pay data.",
+            "vi": "Hãy đọc số ngày trước khi đọc tiền. Nếu số ngày đúng mà số tiền vẫn có vẻ sai thì vấn đề nằm ở phía trước, trong hợp đồng hoặc dữ liệu lương."
           },
           "capability": "any",
           "kind": "warn",
@@ -7955,18 +8024,8 @@
         },
         {
           "body": {
-            "en": "Read the factor before the money. If the factor is right and the amount still looks wrong, the problem is upstream — in the contract base or in the attendance that was imported.",
-            "vi": "Hãy đọc hệ số trước khi đọc số tiền. Nếu hệ số đúng mà số tiền vẫn có vẻ sai thì vấn đề nằm ở phía trên — ở lương cơ bản trên hợp đồng hoặc ở dữ liệu chấm công đã nhập."
-          },
-          "capability": "any",
-          "kind": "p",
-          "live_fallback": "",
-          "steps": []
-        },
-        {
-          "body": {
-            "en": "The proration audit rows for this run, and the division's standard working days.",
-            "vi": "Các dòng soát xét ngày công của đợt lương này, và ngày công chuẩn của bộ phận."
+            "en": "The Proration tab of Pay Run › Adjust, and the scheme's Part-month pay setting.",
+            "vi": "Tab Phân bổ theo tỷ lệ của Đợt lương › Điều chỉnh, và thiết lập Lương theo phần tháng của chương trình lương."
           },
           "capability": "any",
           "kind": "source",
@@ -7991,7 +8050,7 @@
         "Lương tháng lẻ ngày này được tính ra sao?"
       ],
       "practice_key": "",
-      "screens": "proration,payslips,fullfinal,contracts",
+      "screens": "proration,adjust,payslips,fullfinal,contracts",
       "show_me": [
         "lg-rows"
       ],
@@ -8231,8 +8290,8 @@
       "blocks": [
         {
           "body": {
-            "en": "When the run the correction belongs to is already done. A retro line pays the difference in the current run and records which period it came from, so the closed month stays closed and still reports correctly.",
-            "vi": "Khi đợt lương mà phần sửa thuộc về đã Hoàn tất. Một dòng hồi tố chi phần chênh trong kỳ hiện tại và ghi rõ nó đến từ kỳ nào, để kỳ đã đóng vẫn luôn đóng mà báo cáo vẫn đúng."
+            "en": "From the pay data load. A pay change may be dated before this month. With the scheme's Back-pay switch on, the load compares it with what was paid and adds the difference to this month.",
+            "vi": "Từ lần tải dữ liệu lương. Một thay đổi lương có thể có hiệu lực trước tháng này. Khi công tắc Truy lĩnh của chương trình lương bật, lần tải so nó với số đã trả và cộng phần chênh vào tháng này."
           },
           "capability": "any",
           "kind": "p",
@@ -8241,8 +8300,8 @@
         },
         {
           "body": {
-            "en": "If the run is still in draft, do not use retro at all — fix the input and recompute. Retro is for the past you cannot reopen, not for the present you have not finished.",
-            "vi": "Nếu đợt còn ở trạng thái Nháp thì đừng dùng hồi tố — hãy sửa đầu vào và tính lại. Hồi tố dành cho quá khứ bạn không mở lại được, không dành cho hiện tại bạn chưa làm xong."
+            "en": "Each line is on Pay Run › Adjust › Retro with the old amount, the new one and the delta, and its drawer names the month being made good.",
+            "vi": "Mỗi dòng nằm ở Đợt lương › Điều chỉnh › Hồi tố với mức cũ, mức mới và phần chênh, và ngăn chi tiết ghi tháng đang được bù."
           },
           "capability": "any",
           "kind": "p",
@@ -8251,8 +8310,8 @@
         },
         {
           "body": {
-            "en": "Editing an approved payslip instead of writing a retro line changes a number somebody has already filed. That is not a payroll correction, it is a reporting problem.",
-            "vi": "Sửa một phiếu lương đã duyệt thay vì viết một dòng hồi tố là thay đổi một con số mà người khác đã nộp đi. Đó không phải hiệu chỉnh lương, đó là một vấn đề báo cáo."
+            "en": "Do not reopen a paid month to fix it. That month has been paid and reported; back pay settles the difference in the current month instead.",
+            "vi": "Đừng mở lại một tháng đã trả để sửa. Tháng đó đã được trả và báo cáo; khoản truy lĩnh bù phần chênh trong tháng hiện tại."
           },
           "capability": "any",
           "kind": "warn",
@@ -8261,8 +8320,8 @@
         },
         {
           "body": {
-            "en": "The retro adjustment ledger, with the source period recorded on each line.",
-            "vi": "Sổ điều chỉnh hồi tố, mỗi dòng có ghi kỳ gốc."
+            "en": "The Retro tab of Pay Run › Adjust, and the scheme's Back-pay setting.",
+            "vi": "Tab Hồi tố của Đợt lương › Điều chỉnh, và thiết lập Truy lĩnh của chương trình lương."
           },
           "capability": "any",
           "kind": "source",
@@ -8273,21 +8332,23 @@
       "dynamic": "none",
       "key": "retroq",
       "label": {
-        "en": "When do I use a retro adjustment?",
-        "vi": "Khi nào tôi dùng điều chỉnh hồi tố?"
+        "en": "Where does back pay come from?",
+        "vi": "Khoản truy lĩnh đến từ đâu?"
       },
       "offer": true,
       "phrases": [
         "retro",
         "backdated",
+        "back pay",
         "hồi tố",
+        "truy linh",
         "tang luong lui ngay",
         "correct a closed month",
-        "When do I use a retro adjustment?",
-        "Khi nào tôi dùng điều chỉnh hồi tố?"
+        "Where does back pay come from?",
+        "Khoản truy lĩnh đến từ đâu?"
       ],
       "practice_key": "",
-      "screens": "retro,payruns",
+      "screens": "retro,adjust,payruns",
       "show_me": [
         "lg-rows"
       ],
@@ -16326,21 +16387,21 @@
     {
       "action_tags": "",
       "blurb": {
-        "en": "Final settlement for departing employees: last salary, unused leave and deductions, in one place.",
-        "vi": "Quyết toán cho nhân viên thôi việc: lương cuối, phép chưa dùng và các khoản khấu trừ, ở cùng một nơi."
+        "en": "Pay Run › Settle: every final settlement, its net payable, and where it is on the way to approval.",
+        "vi": "Đợt lương › Quyết toán: mọi khoản quyết toán thôi việc, số tiền phải trả, và mỗi khoản đang ở đâu trên đường phê duyệt."
       },
       "hub": null,
       "key": "fullfinal",
       "live_fallback": "",
       "models": [],
       "name": {
-        "en": "Full & Final",
+        "en": "Final settlements",
         "vi": "Quyết toán thôi việc"
       },
       "navs": [],
       "next_step": {
-        "en": "Check that everyone settled here is excluded from the normal monthly run for the same period. A leaver in both is paid twice.",
-        "vi": "Kiểm tra rằng mọi người được quyết toán ở đây đã bị loại khỏi đợt lương tháng thông thường của cùng kỳ. Người vừa quyết toán vừa nằm trong đợt tháng sẽ được trả hai lần."
+        "en": "Check that everyone settled here is out of the normal monthly run for the same month. Someone in both is paid twice.",
+        "vi": "Kiểm tra rằng mọi người được quyết toán ở đây đã ra khỏi đợt lương tháng thông thường của cùng tháng. Người nằm ở cả hai sẽ được trả hai lần."
       },
       "open": "",
       "places": [
@@ -16376,27 +16437,76 @@
     {
       "action_tags": "",
       "blurb": {
-        "en": "The audit trail behind every part-month amount: days worked, standard days, and the factor between them.",
-        "vi": "Nhật ký kiểm toán phía sau mọi khoản lương tháng lẻ ngày: ngày công thực tế, ngày công chuẩn, và hệ số giữa hai con số."
+        "en": "Pay Run › Adjust: back pay (Retro) and part-month amounts (Proration), filled in when pay data is loaded.",
+        "vi": "Đợt lương › Điều chỉnh: khoản truy lĩnh (Hồi tố) và các khoản theo phần tháng (Phân bổ theo tỷ lệ), được điền khi tải dữ liệu lương."
+      },
+      "hub": null,
+      "key": "adjust",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Adjust: back pay and part months",
+        "vi": "Điều chỉnh: truy lĩnh và lương theo phần tháng"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "Open a row's drawer before answering anyone. The days and the months it covers are there, not on the row.",
+        "vi": "Hãy mở ngăn chi tiết của một dòng trước khi trả lời ai. Số ngày và tháng mà nó bao gồm nằm ở đó, không nằm trên dòng."
+      },
+      "open": "",
+      "places": [
+        "pb_pay_hub:adjust"
+      ],
+      "sequence": 70,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "retroq",
+          "label": {
+            "en": "Where does back pay come from?",
+            "vi": "Khoản truy lĩnh đến từ đâu?"
+          }
+        },
+        {
+          "key": "prorata",
+          "label": {
+            "en": "How was this part-month salary worked out?",
+            "vi": "Lương tháng lẻ ngày này được tính ra sao?"
+          }
+        },
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        }
+      ]
+    },
+    {
+      "action_tags": "",
+      "blurb": {
+        "en": "Every part-month amount: old, new and prorated per person. The drawer holds the basis and the days on each side of a change.",
+        "vi": "Mọi khoản theo phần tháng: cũ, mới và đã phân bổ của từng người. Ngăn chi tiết có cách tính và số ngày ở mỗi phía của một thay đổi."
       },
       "hub": null,
       "key": "proration",
       "live_fallback": "",
       "models": [],
       "name": {
-        "en": "Proration Audit",
-        "vi": "Soát xét ngày công (pro-rata)"
+        "en": "proration",
+        "vi": "proration"
       },
       "navs": [],
       "next_step": {
-        "en": "Read the factor, not the money. If the factor is right and the amount still looks wrong, the problem is further back: the contract, or the import.",
-        "vi": "Hãy đọc hệ số chứ không phải số tiền. Nếu hệ số đúng mà số tiền vẫn có vẻ sai thì vấn đề nằm ở phía trước đó: hợp đồng, hoặc đợt nhập liệu."
+        "en": "Read the days in the drawer before the money. If the days are right and the amount still looks wrong, the problem is further back: the contract, or the pay data.",
+        "vi": "Hãy đọc số ngày trong ngăn chi tiết trước khi đọc tiền. Nếu số ngày đúng mà số tiền vẫn có vẻ sai thì vấn đề nằm ở phía trước: hợp đồng, hoặc dữ liệu lương."
       },
       "open": "",
       "places": [
         "pb_pay_hub:adjust/proration"
       ],
-      "sequence": 70,
+      "sequence": 80,
       "sidebar_key": "pb_sidebar.item_proration",
       "suggest": [
         {
@@ -16425,34 +16535,34 @@
     {
       "action_tags": "",
       "blurb": {
-        "en": "Money owed for a month that is already closed. It is paid in the current month, and every line names the month it came from.",
-        "vi": "Khoản tiền còn nợ của một tháng đã đóng. Nó được chi trong tháng hiện tại, và mỗi dòng đều nêu rõ tháng gốc."
+        "en": "Back pay: a pay change dated before this month, compared with what was already paid, with the difference added to this month.",
+        "vi": "Khoản truy lĩnh: một thay đổi lương có hiệu lực trước tháng này, đem so với số đã trả, và phần chênh được cộng vào tháng này."
       },
       "hub": null,
       "key": "retro",
       "live_fallback": "",
       "models": [],
       "name": {
-        "en": "Retro Adjustments",
-        "vi": "Điều chỉnh hồi tố"
+        "en": "retro",
+        "vi": "retro"
       },
       "navs": [],
       "next_step": {
-        "en": "Check the source period on each line. That field is what lets a closed month stay closed and still be reported correctly later.",
-        "vi": "Kiểm tra kỳ gốc trên từng dòng. Chính trường đó giúp một kỳ đã đóng vẫn luôn đóng mà sau này vẫn báo cáo đúng."
+        "en": "Check the Retro period on each line. It names the month being made good, which is what keeps that month closed.",
+        "vi": "Kiểm tra Retro period trên từng dòng. Nó ghi tháng đang được bù, và chính điều đó giữ cho tháng ấy luôn đóng."
       },
       "open": "",
       "places": [
         "pb_pay_hub:adjust/retro"
       ],
-      "sequence": 80,
+      "sequence": 90,
       "sidebar_key": "pb_sidebar.item_retro",
       "suggest": [
         {
           "key": "retroq",
           "label": {
-            "en": "When do I use a retro adjustment?",
-            "vi": "Khi nào tôi dùng điều chỉnh hồi tố?"
+            "en": "Where does back pay come from?",
+            "vi": "Khoản truy lĩnh đến từ đâu?"
           }
         },
         {
@@ -16467,6 +16577,58 @@
           "label": {
             "en": "What is this screen for?",
             "vi": "Màn hình này để làm gì?"
+          }
+        }
+      ]
+    },
+    {
+      "action_tags": "",
+      "blurb": {
+        "en": "After the run: Results reads it as one grid, Deliver sends the bank file and payslips, Calendar keeps the month's dates, Awards adds one-off money.",
+        "vi": "Sau đợt lương: Kết quả đọc nó trong một bảng, Chi trả gửi tệp ngân hàng và phiếu lương, Lịch lương giữ các mốc ngày của tháng, Thưởng thêm các khoản một lần."
+      },
+      "hub": null,
+      "key": "afterrun",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "After the run: results, payments, calendar, awards",
+        "vi": "Sau đợt lương: kết quả, chi trả, lịch lương, thưởng"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "On an approved run, prepare the bank file first. The payment release waits for it, and payslips are best sent once the money is released.",
+        "vi": "Trên một đợt đã duyệt, hãy lập tệp ngân hàng trước. Lệnh chuyển tiền chờ tệp đó, và phiếu lương nên gửi khi tiền đã được chuyển."
+      },
+      "open": "",
+      "places": [
+        "pb_pay_hub:results",
+        "pb_pay_hub:deliver",
+        "pb_pay_hub:paycal",
+        "pb_pay_hub:awards"
+      ],
+      "sequence": 100,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "getpaid",
+          "label": {
+            "en": "How does the money actually reach people?",
+            "vi": "Tiền thực sự tới tay mọi người bằng cách nào?"
+          }
+        },
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        },
+        {
+          "key": "whatnext",
+          "label": {
+            "en": "What should I do next here?",
+            "vi": "Tôi nên làm gì tiếp theo ở đây?"
           }
         }
       ]
@@ -16494,7 +16656,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 90,
+      "sequence": 110,
       "sidebar_key": "pb_sidebar.item_formula",
       "suggest": [
         {
@@ -16555,7 +16717,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 100,
+      "sequence": 120,
       "sidebar_key": "pb_sidebar.item_structures",
       "suggest": [
         {
@@ -16604,7 +16766,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 110,
+      "sequence": 130,
       "sidebar_key": "pb_sidebar.item_statutory",
       "suggest": [
         {
@@ -16665,7 +16827,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 120,
+      "sequence": 140,
       "sidebar_key": "pb_sidebar.item_integrations",
       "suggest": [
         {
@@ -16716,7 +16878,7 @@
       "places": [
         "pb_home_hub:pulse"
       ],
-      "sequence": 130,
+      "sequence": 150,
       "sidebar_key": "pb_sidebar.item_dashboard",
       "suggest": [
         {
@@ -16781,7 +16943,7 @@
       "places": [
         "pb_home_hub:approvals"
       ],
-      "sequence": 140,
+      "sequence": 160,
       "sidebar_key": "pb_sidebar.item_approvals",
       "suggest": [
         {
@@ -16844,7 +17006,7 @@
       "places": [
         "pb_people_hub:employees"
       ],
-      "sequence": 150,
+      "sequence": 170,
       "sidebar_key": "pb_sidebar.item_employees",
       "suggest": [
         {
@@ -16909,7 +17071,7 @@
       "places": [
         "detail:contract"
       ],
-      "sequence": 160,
+      "sequence": 180,
       "sidebar_key": "pb_sidebar.item_contracts",
       "suggest": [
         {
@@ -16965,7 +17127,7 @@
       "places": [
         "pb_insights_hub:pulse"
       ],
-      "sequence": 170,
+      "sequence": 190,
       "sidebar_key": "pb_sidebar.item_analytics",
       "suggest": [
         {
@@ -17023,7 +17185,7 @@
       "places": [
         "pb_insights_hub:explorer"
       ],
-      "sequence": 180,
+      "sequence": 200,
       "sidebar_key": "pb_sidebar.item_explorer",
       "suggest": [
         {
@@ -17072,7 +17234,7 @@
       "places": [
         "pb_insights_hub:workforce"
       ],
-      "sequence": 190,
+      "sequence": 210,
       "sidebar_key": "pb_sidebar.item_workforce_insights",
       "suggest": [
         {
@@ -17121,7 +17283,7 @@
       "places": [
         "pb_compliance_hub:filings"
       ],
-      "sequence": 200,
+      "sequence": 220,
       "sidebar_key": "pb_sidebar.item_govt_reports",
       "suggest": [
         {
@@ -17170,7 +17332,7 @@
       },
       "open": "pb_blueprint.action_pb_blueprint",
       "places": [],
-      "sequence": 210,
+      "sequence": 230,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17224,7 +17386,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 220,
+      "sequence": 240,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17274,7 +17436,7 @@
         "pb_mapping_studio:scheme",
         "pb_mapping_studio:cycle"
       ],
-      "sequence": 230,
+      "sequence": 250,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17328,7 +17490,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 240,
+      "sequence": 260,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17370,7 +17532,7 @@
       "places": [
         "pb_mapping_studio:treatment"
       ],
-      "sequence": 250,
+      "sequence": 270,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17419,7 +17581,7 @@
       },
       "open": "pb_approval_config.action_pb_approval_matrix",
       "places": [],
-      "sequence": 260,
+      "sequence": 280,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17473,7 +17635,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 270,
+      "sequence": 290,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17517,7 +17679,7 @@
       "places": [
         "pb_people_hub:records"
       ],
-      "sequence": 280,
+      "sequence": 300,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17566,7 +17728,7 @@
       },
       "open": "pb_group.action_pb_group",
       "places": [],
-      "sequence": 290,
+      "sequence": 310,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17617,7 +17779,7 @@
         "pb_people_hub:pay/fairness",
         "pb_people_hub:pay"
       ],
-      "sequence": 300,
+      "sequence": 320,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17667,7 +17829,7 @@
         "pb_people_hub:pay/review",
         "pb_people_hub:pay/changes"
       ],
-      "sequence": 310,
+      "sequence": 330,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17716,7 +17878,7 @@
       "places": [
         "pb_people_hub:plan"
       ],
-      "sequence": 320,
+      "sequence": 340,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17771,7 +17933,7 @@
         "pb_people_hub:goals",
         "pb_people_hub:announcements"
       ],
-      "sequence": 330,
+      "sequence": 350,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17813,7 +17975,7 @@
       "places": [
         "pb_lifecycle_hub:hiring"
       ],
-      "sequence": 340,
+      "sequence": 360,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17860,7 +18022,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 350,
+      "sequence": 370,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17902,7 +18064,7 @@
       "places": [
         "pb_lifecycle_hub:newjoiners"
       ],
-      "sequence": 360,
+      "sequence": 380,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17951,7 +18113,7 @@
       "places": [
         "pb_lifecycle_hub:probation"
       ],
-      "sequence": 370,
+      "sequence": 390,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18000,7 +18162,7 @@
       "places": [
         "pb_lifecycle_hub:pip"
       ],
-      "sequence": 380,
+      "sequence": 400,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18042,7 +18204,7 @@
       "places": [
         "pb_lifecycle_hub:contracts"
       ],
-      "sequence": 390,
+      "sequence": 410,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18091,7 +18253,7 @@
       "places": [
         "pb_lifecycle_hub:exits"
       ],
-      "sequence": 400,
+      "sequence": 420,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18140,7 +18302,7 @@
       "places": [
         "pb_workforce:today"
       ],
-      "sequence": 410,
+      "sequence": 430,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18189,7 +18351,7 @@
       "places": [
         "pb_workforce:time"
       ],
-      "sequence": 420,
+      "sequence": 440,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18231,7 +18393,7 @@
       "places": [
         "pb_workforce:timeoff"
       ],
-      "sequence": 430,
+      "sequence": 450,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18273,7 +18435,7 @@
       "places": [
         "pb_workforce:overtime"
       ],
-      "sequence": 440,
+      "sequence": 460,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18315,7 +18477,7 @@
       "places": [
         "pb_workforce:close"
       ],
-      "sequence": 450,
+      "sequence": 470,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18355,7 +18517,7 @@
       },
       "open": "biz_access.action_pb_access_board",
       "places": [],
-      "sequence": 460,
+      "sequence": 480,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18395,7 +18557,7 @@
       },
       "open": "pb_govt_reports.action_pb_filing_flow",
       "places": [],
-      "sequence": 470,
+      "sequence": 490,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18439,7 +18601,7 @@
         "pb_compliance_hub:young",
         "pb_compliance_hub:audit"
       ],
-      "sequence": 480,
+      "sequence": 500,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18541,7 +18703,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 490,
+      "sequence": 510,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18628,8 +18790,8 @@
           },
           "deliver": {
             "line": {
-              "en": "Make the bank payment file and send payslips to employees as password-protected PDFs.",
-              "vi": "Tạo tệp chi lương cho ngân hàng và gửi phiếu lương cho nhân viên dưới dạng PDF có mật khẩu."
+              "en": "The bank file and the payment release, each with its own approval, and payslips as password-protected PDFs.",
+              "vi": "Tệp ngân hàng và lệnh chuyển tiền, mỗi thứ có phê duyệt riêng, và phiếu lương dạng PDF có mật khẩu."
             },
             "name": {
               "en": "Deliver",
@@ -18668,8 +18830,8 @@
           },
           "results": {
             "line": {
-              "en": "A run's results as one spreadsheet grid, with the change from last month and an Excel download.",
-              "vi": "Kết quả của một đợt dưới dạng một bảng tính, kèm mức thay đổi so với tháng trước và tải xuống Excel."
+              "en": "A run's results as one grid, each figure against the person's previous run, with an Excel download.",
+              "vi": "Kết quả của một đợt trong một bảng, mỗi con số so với đợt trước của người đó, kèm tải xuống Excel."
             },
             "name": {
               "en": "Results",
@@ -18724,7 +18886,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 500,
+      "sequence": 520,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18897,7 +19059,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 510,
+      "sequence": 530,
       "sidebar_key": "",
       "suggest": [
         {
@@ -19043,7 +19205,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 520,
+      "sequence": 540,
       "sidebar_key": "",
       "suggest": [
         {
@@ -19212,7 +19374,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 530,
+      "sequence": 550,
       "sidebar_key": "",
       "suggest": [
         {
@@ -19361,7 +19523,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 540,
+      "sequence": 560,
       "sidebar_key": "",
       "suggest": [
         {
@@ -19463,7 +19625,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 550,
+      "sequence": 570,
       "sidebar_key": "",
       "suggest": [
         {
@@ -19565,7 +19727,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 560,
+      "sequence": 580,
       "sidebar_key": "",
       "suggest": [
         {
@@ -19811,7 +19973,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 570,
+      "sequence": 590,
       "sidebar_key": "",
       "suggest": [
         {
@@ -19960,7 +20122,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 580,
+      "sequence": 600,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24047,158 +24209,868 @@
     },
     {
       "after": "payruns",
-      "duration_min": 4,
+      "duration_min": 6,
       "icon": "file-text",
       "key": "fullfinal",
-      "kind": "outline",
-      "lessons": [],
+      "kind": "lesson",
+      "lessons": [
+        {
+          "duration_min": 6,
+          "goal": {
+            "en": "Read a settlement from its steps to its breakdown, and know when it can be downloaded.",
+            "vi": "Đọc một khoản quyết toán từ các bước tới phần chi tiết, và biết khi nào tải xuống được."
+          },
+          "key": "L31",
+          "name": {
+            "en": "Settle someone who is leaving",
+            "vi": "Quyết toán cho người nghỉ việc"
+          },
+          "quizzes": [
+            {
+              "kind": "choice",
+              "options": [
+                {
+                  "correct": true,
+                  "feedback": {
+                    "en": "Yes. Check the run before you submit it; money paid to someone who has left is hard to get back.",
+                    "vi": "Đúng vậy. Hãy kiểm tra đợt lương trước khi gửi duyệt; tiền đã trả cho người đã nghỉ thì rất khó đòi lại."
+                  },
+                  "label": {
+                    "en": "She is paid twice: once in the run, once in her settlement",
+                    "vi": "Chị được trả hai lần: một lần trong đợt lương, một lần trong quyết toán"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. Nothing takes her out of the run for you.",
+                    "vi": "Hãy nghĩ lại một chút. Không có gì tự đưa chị ra khỏi đợt lương thay bạn."
+                  },
+                  "label": {
+                    "en": "Nothing — the settlement takes her out of the run",
+                    "vi": "Không sao — khoản quyết toán sẽ tự đưa chị ra khỏi đợt lương"
+                  }
+                }
+              ],
+              "prompt": {
+                "en": "Hạnh leaves on 31 July and is also in July's Retail pay run. What goes wrong if nothing changes?",
+                "vi": "Hạnh nghỉ ngày 31/7 và cũng có tên trong đợt lương tháng 7 của Bán lẻ. Nếu không thay đổi gì thì sai ở đâu?"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "anchor": "lg-kpis",
+              "body": {
+                "en": "Pay Run › <b>Settle</b>. <b>Settlements</b> and <b>Manual</b> count them. <b>Net payable</b>, <b>Earnings</b> and <b>Deductions</b> add them up.",
+                "vi": "Đợt lương › <b>Quyết toán</b>. <b>Settlements</b> và <b>Manual</b> đếm số khoản. <b>Net payable</b> (thực trả), <b>Earnings</b> (thu nhập) và <b>Deductions</b> (khấu trừ) cộng tổng của chúng."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "What & why",
+                "vi": "Là gì & vì sao"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "fullfinal",
+              "tip": {
+                "en": "These labels are in English on the screen in both languages.",
+                "vi": "Các nhãn này hiện bằng tiếng Anh trên màn hình ở cả hai ngôn ngữ."
+              },
+              "title": {
+                "en": "Every settlement, and what it pays",
+                "vi": "Mọi khoản quyết toán, và số tiền phải trả"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "lg-steps",
+              "body": {
+                "en": "The HR lead approves first, then Finance. A flag on a step says when one is waiting on you or was sent back to be fixed.",
+                "vi": "Trưởng nhân sự duyệt trước, rồi tới Tài chính. Một dấu trên bước cho biết khi có khoản đang chờ bạn hoặc bị trả lại để sửa."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Three steps",
+                "vi": "Ba bước"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "fullfinal",
+              "tip": "",
+              "title": {
+                "en": "Being prepared → Waiting for approval → Approved",
+                "vi": "Being prepared → Waiting for approval → Approved"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "lg-facets",
+              "body": {
+                "en": "<b>Auto</b> settlements appear by themselves when a month's pay data finishes loading, for everyone whose leaving date falls in it. <b>Manual</b> ones were made by hand.",
+                "vi": "Khoản <b>Auto</b> (tự động) tự xuất hiện khi dữ liệu lương của một tháng tải xong, cho mọi người có ngày nghỉ rơi vào tháng đó. Khoản <b>Manual</b> (thủ công) do người làm tay."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Where it came from",
+                "vi": "Nó đến từ đâu"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "fullfinal",
+              "tip": "",
+              "title": {
+                "en": "Auto or Manual",
+                "vi": "Auto hay Manual"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "lg-rows",
+              "body": {
+                "en": "Hạnh left on 31 July. Her settlement is still Being prepared: on Lifecycle › Exits, Finance has not signed off yet.",
+                "vi": "Hạnh nghỉ ngày 31/7. Khoản quyết toán của chị vẫn ở Being prepared: ở Vòng đời nhân sự › Nghỉ việc, Tài chính chưa xác nhận xong."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "One row each",
+                "vi": "Mỗi người một dòng"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "fullfinal",
+              "tip": "",
+              "title": {
+                "en": "Net payable, person by person",
+                "vi": "Số thực trả, từng người một"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "lg-drawer",
+              "body": {
+                "en": "A row opens its drawer: basic salary, <b>Unused leave</b> paid out, then social, health and unemployment insurance. Net payable is earnings minus deductions.",
+                "vi": "Một dòng mở ra ngăn chi tiết: lương cơ bản, <b>Unused leave</b> (phép chưa dùng) được trả, rồi bảo hiểm xã hội, y tế và thất nghiệp. Thực trả là thu nhập trừ khấu trừ."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "The breakdown",
+                "vi": "Phần chi tiết"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "fullfinal",
+              "tip": "",
+              "title": {
+                "en": "Earnings less deductions",
+                "vi": "Thu nhập trừ khấu trừ"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "lg-rowact",
+              "body": {
+                "en": "Only an approved settlement offers <b>Download</b>, the document the person signs. Lan's is approved; Hạnh's is not.",
+                "vi": "Chỉ khoản quyết toán đã được duyệt mới có nút <b>Download</b>, văn bản người đó ký nhận. Của Lan đã được duyệt; của Hạnh thì chưa."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Once approved",
+                "vi": "Khi đã được duyệt"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "fullfinal",
+              "tip": "",
+              "title": {
+                "en": "Download the settlement",
+                "vi": "Tải văn bản quyết toán"
+              },
+              "visual": "none"
+            }
+          ]
+        }
+      ],
       "line": "payrun",
       "name": {
-        "en": "Full & Final",
+        "en": "Final settlements",
         "vi": "Quyết toán thôi việc"
       },
       "outline": {
         "mistakes": [
           {
-            "en": "Leaving the person in the normal monthly run as well. They are then paid twice. Getting an overpayment back from somebody who has left is a legal problem, not a payroll one.",
-            "vi": "Vẫn để người đó trong đợt lương tháng bình thường. Họ sẽ được trả hai lần. Đòi lại khoản trả thừa từ người đã nghỉ là chuyện pháp lý, không còn là chuyện tính lương."
+            "en": "Leaving the person in the normal monthly run as well. They are then paid twice, and money paid to someone who has left is hard to get back.",
+            "vi": "Vẫn để người đó trong đợt lương tháng bình thường. Họ sẽ được trả hai lần, và tiền đã trả cho người đã nghỉ thì rất khó đòi lại."
           },
           {
-            "en": "Settling before the last month's attendance is in. The final salary is a prorated month, so it needs the same inputs as any other month.",
-            "vi": "Quyết toán khi chấm công tháng cuối chưa về. Lương cuối là một tháng tính theo ngày công, nên cần đúng những dữ liệu như mọi tháng khác."
+            "en": "Looking for Download on a settlement that is not approved yet. The settlement document can be downloaded only once it is Approved.",
+            "vi": "Tìm nút Download trên một khoản quyết toán chưa được duyệt. Chỉ khi đã Approved thì mới tải được văn bản quyết toán."
+          },
+          {
+            "en": "Settling before the last month's attendance is in. The settlement reads the same pay data as any other month.",
+            "vi": "Quyết toán khi chấm công tháng cuối chưa về. Khoản quyết toán đọc cùng dữ liệu lương như mọi tháng khác."
           }
         ],
         "prereq": {
-          "en": "A contract end date on the record, and an up-to-date leave balance for that person.",
-          "vi": "Ngày kết thúc hợp đồng đã ghi trên hồ sơ, và số dư phép cập nhật của người đó."
+          "en": "A leaving date on the employee and the month's pay data. A settlement that arrives by itself starts at Being prepared.",
+          "vi": "Ngày nghỉ việc trên hồ sơ nhân viên và dữ liệu lương của tháng. Một khoản quyết toán tự xuất hiện sẽ bắt đầu ở Being prepared."
         },
         "what": {
-          "en": "The workspace for people who are leaving. It lists what each of them is still owed, and whether it has been paid.",
-          "vi": "Không gian làm việc dành cho người sắp nghỉ. Nó liệt kê từng người còn được nhận gì, và đã chi hay chưa."
+          "en": "Pay Run › Settle. One row per settlement with its net payable, and three steps: Being prepared, Waiting for approval, Approved. A row opens its breakdown.",
+          "vi": "Đợt lương › Quyết toán. Mỗi khoản quyết toán một dòng kèm số tiền phải trả, và ba bước: Being prepared, Waiting for approval, Approved. Một dòng mở ra phần chi tiết của nó."
         },
         "when": {
-          "en": "As soon as the leaving date is confirmed. Not on the day you run payroll, which is usually too late.",
-          "vi": "Ngay khi ngày nghỉ được xác nhận. Không phải vào ngày bạn chạy lương, lúc đó thường đã muộn."
+          "en": "As soon as a leaving date is confirmed. And again once the four desks on Lifecycle › Exits have signed off.",
+          "vi": "Ngay khi ngày nghỉ việc được xác nhận. Và một lần nữa khi bốn bộ phận ở Vòng đời nhân sự › Nghỉ việc đã xác nhận xong."
         },
         "why": {
-          "en": "This payment has a legal deadline and one chance to be right. It is also the payment most likely to be argued about, because it is the last one.",
-          "vi": "Khoản chi này có thời hạn pháp lý và chỉ có một lần làm đúng. Đây cũng là khoản dễ bị tranh cãi nhất, vì là khoản cuối cùng."
+          "en": "It is the last money a person gets from you, and it has a legal deadline. Two approvals, the HR lead and then Finance, stand between the working and the payment.",
+          "vi": "Đây là khoản tiền cuối cùng một người nhận từ bạn, và nó có thời hạn pháp lý. Hai lần phê duyệt, trưởng nhân sự rồi Tài chính, đứng giữa phần tính toán và việc chi trả."
         }
       },
       "required": false,
-      "roles": [],
-      "search": "",
+      "roles": [
+        "officer",
+        "hr"
+      ],
+      "search": {
+        "en": "final settlement, leaver, last pay, unused leave, full and final",
+        "vi": "quyết toán thôi việc, người nghỉ việc, lương cuối, phép chưa dùng"
+      },
       "section": "payroll",
       "sequence": 50,
       "sidebar_key": "pb_sidebar.item_full_final",
       "star": false,
       "summary": {
-        "en": "Settle somebody who is leaving: last salary, unused leave, anything owed. One closing statement.",
-        "vi": "Quyết toán cho người thôi việc: lương cuối, phép chưa dùng, mọi khoản còn nợ. Một bảng chốt duy nhất."
-      }
-    },
-    {
-      "after": "payslips",
-      "duration_min": 4,
-      "icon": "calculator",
-      "key": "proration",
-      "kind": "outline",
-      "lessons": [],
-      "line": "payrun",
-      "name": {
-        "en": "Proration Audit",
-        "vi": "Soát xét ngày công (pro-rata)"
-      },
-      "outline": {
-        "mistakes": [
-          {
-            "en": "Assuming calendar days when the division's rulebook uses standard working days. Twenty-two is not thirty, and the difference is somebody's salary.",
-            "vi": "Cho rằng đó là ngày dương lịch trong khi bộ quy tắc của bộ phận dùng ngày công chuẩn. 22 không phải 30, và phần chênh là lương của một người."
-          },
-          {
-            "en": "Reading the money before the factor. If the factor is right and the amount still looks wrong, the problem is further back: the contract, or the import.",
-            "vi": "Đọc số tiền trước khi đọc hệ số. Nếu hệ số đúng mà số tiền vẫn có vẻ sai thì vấn đề nằm ở phía trước đó: hợp đồng, hoặc đợt nhập liệu."
-          }
-        ],
-        "prereq": {
-          "en": "A run that has been computed, with at least one joiner, leaver or unpaid-leave case in it.",
-          "vi": "Một đợt đã tính, trong đó có ít nhất một trường hợp mới vào, thôi việc hoặc nghỉ không lương."
-        },
-        "what": {
-          "en": "A record of every prorated amount in a run — joiners, leavers and unpaid leave. Each row shows days worked, standard days, and the factor between them.",
-          "vi": "Bản ghi mọi khoản tính theo ngày công trong một đợt — người mới vào, người thôi việc và nghỉ không lương. Mỗi dòng hiện ngày công thực tế, ngày công chuẩn, và hệ số giữa hai con số đó."
-        },
-        "when": {
-          "en": "When a payslip looks too small and you need to show why. And as a spot check on any run with people joining or leaving mid-month.",
-          "vi": "Khi một phiếu lương trông thiếu và bạn cần chứng minh vì sao. Và như một bước kiểm tra ngẫu nhiên cho mọi đợt có người vào hoặc nghỉ giữa tháng."
-        },
-        "why": {
-          "en": "Proration is what employees ask about most, and it is the hardest thing to answer from memory. This screen is the evidence, written down before anybody asks for it.",
-          "vi": "Tính theo ngày công là thứ nhân viên hỏi nhiều nhất, và cũng là thứ khó trả lời nhất nếu chỉ dựa vào trí nhớ. Màn hình này là bằng chứng, đã ghi sẵn trước khi có ai hỏi tới."
-        }
-      },
-      "required": false,
-      "roles": [],
-      "search": "",
-      "section": "payroll",
-      "sequence": 60,
-      "sidebar_key": "pb_sidebar.item_proration",
-      "star": false,
-      "summary": {
-        "en": "See exactly how a part-month salary was worked out. Day by day, with no black box.",
-        "vi": "Xem chính xác lương tháng lẻ ngày được tính ra sao. Từng ngày một, không có hộp đen nào."
+        "en": "Everyone who is leaving, what they are still owed, and how far each settlement is on its way to approval.",
+        "vi": "Mọi người sắp nghỉ việc, những khoản họ còn được nhận, và mỗi khoản quyết toán đã đi tới đâu trên đường phê duyệt."
       }
     },
     {
       "after": "payruns",
-      "duration_min": 4,
-      "icon": "trending-up",
-      "key": "retro",
-      "kind": "outline",
-      "lessons": [],
+      "duration_min": 8,
+      "icon": "send",
+      "key": "afterrun",
+      "kind": "lesson",
+      "lessons": [
+        {
+          "duration_min": 8,
+          "goal": {
+            "en": "Read a run as one grid, know the three things that must happen before people are paid, and where the month's dates and one-off awards live.",
+            "vi": "Đọc một đợt lương trong một bảng, biết ba việc phải xảy ra trước khi mọi người nhận tiền, và biết ngày chốt của tháng cùng các khoản thưởng một lần nằm ở đâu."
+          },
+          "key": "L32",
+          "name": {
+            "en": "After the run: results, payments, calendar, awards",
+            "vi": "Sau đợt lương: kết quả, chi trả, lịch lương, thưởng"
+          },
+          "quizzes": [
+            {
+              "kind": "choice",
+              "options": [
+                {
+                  "correct": true,
+                  "feedback": {
+                    "en": "Yes. Done means the run is approved. The money moves only after the release.",
+                    "vi": "Đúng vậy. Hoàn tất nghĩa là đợt lương đã được duyệt. Tiền chỉ đi sau lệnh chuyển tiền."
+                  },
+                  "label": {
+                    "en": "Deliver — whether the bank file and the payment release are approved",
+                    "vi": "Chi trả — tệp ngân hàng và lệnh chuyển tiền đã được duyệt chưa"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. A Done run can still be waiting for its bank file.",
+                    "vi": "Hãy nghĩ lại một chút. Một đợt Hoàn tất vẫn có thể đang chờ tệp ngân hàng."
+                  },
+                  "label": {
+                    "en": "Nowhere — Done means paid",
+                    "vi": "Không cần — Hoàn tất là đã trả"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. Results shows what was computed, not what was sent.",
+                    "vi": "Hãy nghĩ lại một chút. Kết quả cho thấy số đã tính, không phải số đã gửi."
+                  },
+                  "label": {
+                    "en": "Results — the net column",
+                    "vi": "Kết quả — cột thực nhận"
+                  }
+                }
+              ],
+              "prompt": {
+                "en": "July's run is Done. A manager asks whether the staff have been paid. Where do you look?",
+                "vi": "Đợt lương tháng 7 đã Hoàn tất. Một quản lý hỏi nhân viên đã nhận lương chưa. Bạn xem ở đâu?"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "anchor": "rs-grid",
+              "body": {
+                "en": "Pay Run › <b>Results</b>: one row per person, one column per component. It is read only; a row opens that person's payslip.",
+                "vi": "Đợt lương › <b>Kết quả</b>: mỗi người một dòng, mỗi thành phần một cột. Chỉ để đọc; một dòng mở phiếu lương của người đó."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Results",
+                "vi": "Kết quả"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "results",
+              "tip": "",
+              "title": {
+                "en": "The whole run as one grid",
+                "vi": "Cả đợt lương trong một bảng"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "rs-compare",
+              "body": {
+                "en": "Press <b>vs previous run</b> and each figure shows its move against that person's last payslip on the same scheme. A big arrow is the one to open.",
+                "vi": "Bấm <b>so với đợt trước</b> và mỗi con số hiện mức thay đổi so với phiếu lương gần nhất của người đó trong cùng chương trình lương. Mũi tên lớn là cái cần mở ra xem."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Compare",
+                "vi": "So sánh"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "results",
+              "tip": "",
+              "title": {
+                "en": "Against the previous run",
+                "vi": "So với đợt trước"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "rs-head",
+              "body": {
+                "en": "<b>Export to Excel</b> hands the grid to finance as a spreadsheet. <b>Pay runs</b> picks another run.",
+                "vi": "<b>Xuất ra Excel</b> gửi bảng cho bộ phận tài chính dưới dạng bảng tính. <b>Các đợt lương</b> chọn một đợt khác."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Take it away",
+                "vi": "Mang đi"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "results",
+              "tip": "",
+              "title": {
+                "en": "Export to Excel",
+                "vi": "Xuất ra Excel"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "dl-bank",
+              "body": {
+                "en": "Pay Run › <b>Deliver</b>, on an approved run. <b>Prepare bank file for approval</b> makes the file the bank pays from and sends it for approval.",
+                "vi": "Đợt lương › <b>Chi trả</b>, trên một đợt đã duyệt. <b>Tạo tệp ngân hàng để duyệt</b> lập tệp mà ngân hàng dùng để chi và gửi nó đi duyệt."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Deliver",
+                "vi": "Chi trả"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "deliver",
+              "tip": {
+                "en": "When your company's route needs no approval, the button says so and approves on the spot.",
+                "vi": "Khi lộ trình của công ty bạn không cần phê duyệt, nút sẽ ghi rõ và duyệt ngay lập tức."
+              },
+              "title": {
+                "en": "The bank file has its own approval",
+                "vi": "Tệp ngân hàng có phê duyệt riêng"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "dl-release",
+              "body": {
+                "en": "Once the bank file is approved, the <b>Payment release</b> is the go-ahead to send the money, through approval again. Until then it waits for the bank file.",
+                "vi": "Khi tệp ngân hàng đã được duyệt, <b>Lệnh chuyển tiền</b> là sự cho phép gửi tiền đi, lại qua phê duyệt. Trước đó nó chờ tệp ngân hàng."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Money out",
+                "vi": "Chi tiền"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "deliver",
+              "tip": "",
+              "title": {
+                "en": "Then the payment release",
+                "vi": "Rồi tới lệnh chuyển tiền"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "dl-slips",
+              "body": {
+                "en": "Each PDF is locked with its employee's own password. <b>Send payslips for approval</b> sends them on, and <b>Resend failures</b> retries the ones that did not arrive.",
+                "vi": "Mỗi tệp PDF được khoá bằng mật khẩu riêng của nhân viên. <b>Gửi phiếu lương đi duyệt</b> đưa chúng đi, còn <b>Gửi lại thất bại</b> gửi lại những phiếu chưa tới nơi."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Payslips out",
+                "vi": "Phiếu lương ra"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "deliver",
+              "tip": "",
+              "title": {
+                "en": "Payslips by email, each with a password",
+                "vi": "Phiếu lương qua email, mỗi phiếu một mật khẩu"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "pc-hero",
+              "body": {
+                "en": "Pay Run › <b>Calendar</b> counts down to the day changes close for the month, and says when people are paid. Reopening a closed month needs a reason.",
+                "vi": "Đợt lương › <b>Lịch lương</b> đếm ngược tới ngày chốt thay đổi của tháng, và cho biết ngày trả lương. Mở lại một tháng đã chốt cần nêu lý do."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Calendar",
+                "vi": "Lịch lương"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "paycal",
+              "tip": "",
+              "title": {
+                "en": "When changes close",
+                "vi": "Khi nào chốt thay đổi"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "aw-put",
+              "body": {
+                "en": "Pay Run › <b>Awards</b>. A bonus or spot award is approved, then <b>Put into a pay run</b> adds it to a draft run's payslips and recomputes them.",
+                "vi": "Đợt lương › <b>Thưởng</b>. Một khoản thưởng được duyệt trước, rồi <b>Put into a pay run</b> (đưa vào đợt lương) cộng nó vào phiếu lương của một đợt nháp và tính lại."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Awards",
+                "vi": "Thưởng"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "awards",
+              "tip": "",
+              "title": {
+                "en": "One-off money, approved first",
+                "vi": "Khoản một lần, duyệt trước"
+              },
+              "visual": "none"
+            }
+          ]
+        }
+      ],
       "line": "payrun",
       "name": {
-        "en": "Retro Adjustments",
-        "vi": "Điều chỉnh hồi tố"
+        "en": "After the run: results, payments, calendar, awards",
+        "vi": "Sau đợt lương: kết quả, chi trả, lịch lương, thưởng"
       },
       "outline": {
         "mistakes": [
           {
-            "en": "Editing the old approved payslip instead of writing a retro line. That month has already been reported, so you are changing a number somebody else has filed.",
-            "vi": "Sửa phiếu lương cũ đã duyệt thay vì viết một dòng hồi tố. Tháng đó đã được báo cáo, nên bạn đang sửa một con số người khác đã nộp đi."
+            "en": "Reading Done as paid. A run can be Done while its bank file still waits for approval and no money has moved.",
+            "vi": "Hiểu Hoàn tất là đã chi. Một đợt có thể đã Hoàn tất trong khi tệp ngân hàng vẫn chờ duyệt và chưa có đồng nào được chuyển."
           },
           {
-            "en": "Leaving the source month blank. Without it the line is money paid for no stated reason, which is the first thing an audit asks about.",
-            "vi": "Bỏ trống tháng gốc. Không có nó, dòng này là khoản chi không nêu lý do, và đó là thứ kiểm toán hỏi đầu tiên."
+            "en": "Sending payslips before the money is released. People read a payslip as a promise that the money is on its way.",
+            "vi": "Gửi phiếu lương trước khi tiền được chuyển. Mọi người đọc phiếu lương như một lời hứa rằng tiền đang tới."
+          },
+          {
+            "en": "Typing a bonus onto a payslip. Awards puts it into a draft run after approval, with a record; a typed amount has neither.",
+            "vi": "Gõ một khoản thưởng thẳng vào phiếu lương. Thưởng đưa nó vào một đợt nháp sau khi được duyệt, có lưu vết; một con số gõ tay thì không có cả hai."
           }
         ],
         "prereq": {
-          "en": "The original run is done, and the correction has a document behind it. A retro line with no reason is a payment nobody can explain.",
-          "vi": "Đợt gốc đã Hoàn tất, và hiệu chỉnh có chứng từ đi kèm. Một dòng hồi tố không có lý do là khoản chi không ai giải thích được."
+          "en": "An approved run for Deliver. Calendar and Awards show only to people with pay calendar or awards access.",
+          "vi": "Một đợt đã được duyệt để dùng Chi trả. Lịch lương và Thưởng chỉ hiện với người có quyền về lịch lương hoặc thưởng."
         },
         "what": {
-          "en": "A ledger of money still owed from months that are already closed. It is paid in the current run, and every line names the month it came from.",
-          "vi": "Sổ ghi những khoản tiền còn nợ từ các tháng đã đóng. Chúng được chi trong đợt hiện tại, và mỗi dòng đều nêu rõ tháng gốc."
+          "en": "Four Pay Run tabs. Results shows every person's figures in one grid. Deliver sends the bank file, the payment release and the payslips. Calendar says when changes close. Awards holds bonuses on their way into a run.",
+          "vi": "Bốn tab của Đợt lương. Kết quả hiện số liệu của mọi người trong một bảng. Chi trả gửi tệp ngân hàng, lệnh chuyển tiền và phiếu lương. Lịch lương cho biết khi nào chốt thay đổi. Thưởng giữ các khoản thưởng đang trên đường vào đợt lương."
         },
         "when": {
-          "en": "Backdated raises. Allowances missed in an earlier month. And any correction you find after the run it belongs to was approved.",
-          "vi": "Tăng lương lùi ngày. Phụ cấp bị sót ở tháng trước. Và mọi hiệu chỉnh bạn phát hiện sau khi đợt gốc đã được phê duyệt."
+          "en": "Results before and after approval. Deliver once a run is approved. Calendar at the start of each month. Awards whenever one is agreed.",
+          "vi": "Kết quả trước và sau khi phê duyệt. Chi trả khi một đợt đã được duyệt. Lịch lương vào đầu mỗi tháng. Thưởng bất cứ khi nào có một khoản được đồng ý."
         },
         "why": {
-          "en": "It keeps closed months closed. Reopening an approved run to fix the past breaks every report already made from it. A retro line pays the difference without doing that.",
-          "vi": "Nó giữ cho các tháng đã đóng luôn đóng. Mở lại một đợt đã duyệt để sửa quá khứ làm hỏng mọi báo cáo đã lập từ đợt đó. Dòng hồi tố trả phần chênh mà không phải làm vậy."
+          "en": "Approval is not payment. The bank file and the payment release each go through their own approval, and payslips go out only when someone sends them.",
+          "vi": "Phê duyệt chưa phải là chi trả. Tệp ngân hàng và lệnh chuyển tiền mỗi thứ đi qua phê duyệt riêng, và phiếu lương chỉ được gửi khi có người gửi."
         }
       },
       "required": false,
-      "roles": [],
-      "search": "",
+      "roles": [
+        "officer"
+      ],
+      "search": {
+        "en": "results grid, bank file, payment release, send payslips, pay calendar, changes close, bonus, award",
+        "vi": "bảng kết quả, tệp ngân hàng, lệnh chuyển tiền, gửi phiếu lương, lịch lương, chốt thay đổi, thưởng"
+      },
       "section": "payroll",
-      "sequence": 70,
-      "sidebar_key": "pb_sidebar.item_retro",
+      "sequence": 60,
+      "sidebar_key": "",
       "star": false,
       "summary": {
-        "en": "Backdated raises and corrections, paid cleanly in a later run, with a full trail.",
-        "vi": "Tăng lương lùi ngày và các hiệu chỉnh, trả gọn trong một đợt sau, có vết lưu đầy đủ."
+        "en": "Read the whole run as one grid, send the money and the payslips, know when changes close, and put one-off awards into a run.",
+        "vi": "Đọc cả đợt lương trong một bảng, gửi tiền và phiếu lương, biết khi nào chốt thay đổi, và đưa các khoản thưởng một lần vào đợt lương."
+      }
+    },
+    {
+      "after": "payslips",
+      "duration_min": 7,
+      "icon": "rotate-ccw",
+      "key": "adjust",
+      "kind": "lesson",
+      "lessons": [
+        {
+          "duration_min": 7,
+          "goal": {
+            "en": "Read a back-pay line and a part-month line, find the days behind them, and know that nobody types either.",
+            "vi": "Đọc một dòng truy lĩnh và một dòng theo phần tháng, tìm số ngày đứng sau chúng, và biết rằng không ai gõ tay dòng nào."
+          },
+          "key": "L30",
+          "name": {
+            "en": "Back pay and part months",
+            "vi": "Truy lĩnh và lương theo phần tháng"
+          },
+          "quizzes": [
+            {
+              "kind": "choice",
+              "options": [
+                {
+                  "correct": true,
+                  "feedback": {
+                    "en": "Yes, when the scheme's Back-pay switch is on. The line names June and shows old, new and the difference.",
+                    "vi": "Đúng vậy, khi công tắc Truy lĩnh của chương trình lương đang bật. Dòng đó ghi tháng 6 và hiện mức cũ, mức mới và phần chênh."
+                  },
+                  "label": {
+                    "en": "Load July's pay data as usual — Retro adds June's difference to July",
+                    "vi": "Tải dữ liệu lương tháng 7 như thường lệ — Hồi tố cộng phần chênh của tháng 6 vào tháng 7"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. June has been paid and reported. The difference is paid in July, with June named on the line.",
+                    "vi": "Hãy nghĩ lại một chút. Tháng 6 đã được trả và báo cáo. Phần chênh được trả trong tháng 7, kèm tên tháng 6 trên dòng."
+                  },
+                  "label": {
+                    "en": "Reopen June's pay run and compute it again",
+                    "vi": "Mở lại đợt lương tháng 6 và tính lại"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. A typed amount has no trail, and the next recompute removes it.",
+                    "vi": "Hãy nghĩ lại một chút. Một con số gõ tay không có dấu vết, và lần tính lại kế tiếp sẽ xoá nó."
+                  },
+                  "label": {
+                    "en": "Type the difference onto Khoa's July payslip",
+                    "vi": "Gõ phần chênh vào phiếu lương tháng 7 của Khoa"
+                  }
+                }
+              ],
+              "prompt": {
+                "en": "Khoa's raise was agreed today but dated back to 1 June. June is already paid. What do you do?",
+                "vi": "Lần tăng lương của Khoa được đồng ý hôm nay nhưng có hiệu lực từ 1/6. Tháng 6 đã trả. Bạn làm gì?"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "anchor": "lg-tabs",
+              "body": {
+                "en": "Pay Run › <b>Adjust</b> has two tabs: <b>Retro</b> for back pay and <b>Proration</b> for part months. Nothing here is typed in. Loading a month's pay data fills both.",
+                "vi": "Đợt lương › <b>Điều chỉnh</b> có hai tab: <b>Hồi tố</b> cho khoản truy lĩnh và <b>Phân bổ theo tỷ lệ</b> cho lương theo phần tháng. Không có gì ở đây được gõ tay. Tải dữ liệu lương của một tháng sẽ điền cả hai."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "What & why",
+                "vi": "Là gì & vì sao"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "retro",
+              "tip": "",
+              "title": {
+                "en": "Two ledgers, one tab",
+                "vi": "Hai sổ, một tab"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "lg-kpis",
+              "body": {
+                "en": "<b>Retro lines</b> counts every back-pay line and <b>Batches</b> the pay data loads that made them. <b>Total delta</b> is what they add to this month.",
+                "vi": "<b>Retro lines</b> (số dòng truy lĩnh) đếm mọi dòng truy lĩnh, còn <b>Batches</b> (số lần tải) là các lần tải dữ liệu lương đã tạo ra chúng. <b>Total delta</b> (tổng chênh lệch) là phần chúng cộng thêm vào tháng này."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "The numbers",
+                "vi": "Các con số"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "retro",
+              "tip": {
+                "en": "These labels are in English on the screen in both languages.",
+                "vi": "Các nhãn này hiện bằng tiếng Anh trên màn hình ở cả hai ngôn ngữ."
+              },
+              "title": {
+                "en": "Lines, people, loads — and the total",
+                "vi": "Số dòng, số người, số lần tải — và tổng"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "lg-rows",
+              "body": {
+                "en": "Khoa's raise was dated 1 June, after June was paid. So June's difference, <b>800,000 ₫</b>, is added to July.",
+                "vi": "Lần tăng lương của Khoa có hiệu lực từ 1/6, sau khi tháng 6 đã trả. Nên phần chênh của tháng 6, <b>800.000 ₫</b>, được cộng vào tháng 7."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Old, new, delta",
+                "vi": "Cũ, mới, chênh lệch"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "retro",
+              "tip": "",
+              "title": {
+                "en": "One person, one component",
+                "vi": "Một người, một thành phần"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "lg-drawer",
+              "body": {
+                "en": "A row opens its drawer. <b>Retro period</b> names the month being made good, <b>Applied in payslip</b> the payslip that pays it, and <b>Original payslip</b> the one that was short.",
+                "vi": "Một dòng mở ra ngăn chi tiết. <b>Retro period</b> là tháng được bù, <b>Applied in payslip</b> là phiếu lương trả khoản đó, và <b>Original payslip</b> là phiếu đã bị thiếu."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "The trail",
+                "vi": "Dấu vết"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "retro",
+              "tip": "",
+              "title": {
+                "en": "Where the money came from and went",
+                "vi": "Tiền đến từ đâu và đi về đâu"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "lg-rows",
+              "body": {
+                "en": "Two kinds of row. Hoa was promoted on 16 July, so July is split at the change. Tuấn started on 22 July, so he is paid for the days he was here.",
+                "vi": "Có hai loại dòng. Hoa được thăng chức ngày 16/7, nên tháng 7 được chia tại thời điểm thay đổi. Tuấn bắt đầu làm ngày 22/7, nên anh được trả cho những ngày có mặt."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Proration",
+                "vi": "Phân bổ theo tỷ lệ"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "proration",
+              "tip": "",
+              "title": {
+                "en": "Paid for part of the month",
+                "vi": "Trả cho một phần tháng"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "lg-drawer",
+              "body": {
+                "en": "The row shows money only. The drawer's <b>Period</b> section holds the <b>Basis</b> and the days on each side of the change: 15 days at the old pay, 16 at the new.",
+                "vi": "Dòng chỉ hiện tiền. Phần <b>Period</b> trong ngăn chi tiết có <b>Basis</b> (cách tính) và số ngày ở mỗi phía của thay đổi: 15 ngày theo mức cũ, 16 ngày theo mức mới."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "The days",
+                "vi": "Số ngày"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "proration",
+              "tip": {
+                "en": "Read the days before the money. If the days are right and the amount still looks wrong, look at the contract or the pay data.",
+                "vi": "Hãy đọc số ngày trước khi đọc tiền. Nếu số ngày đúng mà số tiền vẫn có vẻ sai, hãy xem hợp đồng hoặc dữ liệu lương."
+              },
+              "title": {
+                "en": "The days are in the drawer",
+                "vi": "Số ngày nằm trong ngăn chi tiết"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "lg-facets",
+              "body": {
+                "en": "Pick a <b>Component</b> or a <b>Batch</b>, then search the name. That is one employee's answer, ready before they ask.",
+                "vi": "Chọn một <b>Component</b> (thành phần) hoặc một <b>Batch</b> (lần tải), rồi tìm theo tên. Đó là câu trả lời cho một nhân viên, sẵn sàng trước khi họ hỏi."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Answer one person",
+                "vi": "Trả lời một người"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "proration",
+              "tip": "",
+              "title": {
+                "en": "Filter to the question",
+                "vi": "Lọc đúng câu hỏi"
+              },
+              "visual": "none"
+            }
+          ]
+        }
+      ],
+      "line": "payrun",
+      "name": {
+        "en": "Adjust: back pay and part months",
+        "vi": "Điều chỉnh: truy lĩnh và lương theo phần tháng"
+      },
+      "outline": {
+        "mistakes": [
+          {
+            "en": "Reopening a paid month to fix a backdated raise. The next pay data load works out the difference and pays it this month, with the old month named on the line.",
+            "vi": "Mở lại một tháng đã trả để sửa một lần tăng lương lùi ngày. Lần tải dữ liệu lương kế tiếp tự tính phần chênh và trả trong tháng này, kèm tên tháng gốc trên dòng."
+          },
+          {
+            "en": "Looking for the days on the row. The row shows money only. The drawer's Period section holds the basis and the days on each side of the change.",
+            "vi": "Tìm số ngày ngay trên dòng. Dòng chỉ hiện tiền. Phần Period trong ngăn chi tiết mới có cách tính và số ngày ở mỗi phía của thay đổi."
+          },
+          {
+            "en": "Expecting back pay with Back-pay switched off. The new amount then applies from this month on, and the earlier months' difference is never paid.",
+            "vi": "Chờ khoản truy lĩnh trong khi Truy lĩnh đang tắt. Khi đó mức mới chỉ áp dụng từ tháng này, và phần chênh của các tháng trước không bao giờ được trả."
+          }
+        ],
+        "prereq": {
+          "en": "A pay scheme with Part-month pay or Back-pay switched on in its Settings, under Pay rules, and a month of pay data loaded.",
+          "vi": "Một chương trình lương đã bật Lương theo phần tháng hoặc Truy lĩnh trong phần Cài đặt, mục Quy tắc lương, và dữ liệu lương của một tháng đã được tải."
+        },
+        "what": {
+          "en": "Pay Run › Adjust. Two tabs over one ledger. Retro lists back pay as old, new and delta per person. Proration lists every part-month amount as old, new and prorated.",
+          "vi": "Đợt lương › Điều chỉnh. Hai tab trên cùng một sổ. Hồi tố liệt kê khoản truy lĩnh theo cũ, mới và chênh lệch của từng người. Phân bổ theo tỷ lệ liệt kê mọi khoản trả cho một phần tháng theo cũ, mới và đã phân bổ."
+        },
+        "when": {
+          "en": "After a month's pay data is loaded with backdated changes, joiners or leavers in it. And whenever someone asks how one of those amounts was worked out.",
+          "vi": "Sau khi dữ liệu lương của một tháng có thay đổi lùi ngày, người mới vào hoặc người nghỉ việc được tải lên. Và bất cứ khi nào có người hỏi một khoản như vậy được tính ra sao."
+        },
+        "why": {
+          "en": "Nobody types these lines. They are the working behind two questions people ask most: why did I get extra this month, and why is my first payslip smaller.",
+          "vi": "Không ai gõ các dòng này. Chúng là phần tính toán đứng sau hai câu hỏi hay gặp nhất: vì sao tháng này tôi được thêm tiền, và vì sao phiếu lương đầu tiên của tôi nhỏ hơn."
+        }
+      },
+      "required": false,
+      "roles": [
+        "officer"
+      ],
+      "search": {
+        "en": "retro, back pay, backdated raise, proration, part month, mid-month change, joiner",
+        "vi": "hồi tố, truy lĩnh, tăng lương lùi ngày, phân bổ theo tỷ lệ, lương theo phần tháng, thay đổi giữa tháng, người mới vào"
+      },
+      "section": "payroll",
+      "sequence": 70,
+      "sidebar_key": "",
+      "star": false,
+      "summary": {
+        "en": "Two ledgers that fill themselves when pay data is loaded: back pay for a change dated before this month, and every amount paid for part of a month.",
+        "vi": "Hai sổ tự điền khi dữ liệu lương được tải: truy lĩnh cho một thay đổi có hiệu lực trước tháng này, và mọi khoản trả cho một phần tháng."
       }
     },
     {
@@ -29027,5 +29899,5 @@
       }
     }
   ],
-  "version": "282dacfb1bd5"
+  "version": "1a5c8122b2d2"
 }
