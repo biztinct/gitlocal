@@ -58,28 +58,60 @@
       "vi": "Mở lại thẻ"
     },
     "ch1Lead": {
-      "en": "Where things live and who signs what.",
-      "vi": "Mọi thứ nằm ở đâu và ai ký duyệt việc gì."
+      "en": "Where things live, what is waiting, and who signs what.",
+      "vi": "Mọi thứ nằm ở đâu, việc gì đang chờ, và ai ký duyệt việc gì."
     },
     "ch1Title": {
       "en": "Get around",
       "vi": "Làm quen"
     },
     "ch2Lead": {
-      "en": "From people, time and pay data to money out.",
-      "vi": "Từ nhân sự, giờ công và dữ liệu lương đến lúc chi trả."
+      "en": "One month of pay, from the first compute to money out.",
+      "vi": "Một tháng lương, từ lần tính đầu tiên tới lúc chi tiền."
     },
     "ch2Title": {
       "en": "Run pay",
       "vi": "Chạy lương"
     },
     "ch3Lead": {
-      "en": "Reports, rules and rates.",
-      "vi": "Báo cáo, quy tắc và tỷ lệ."
+      "en": "The rules, the sources and the approvals a pay scheme runs on.",
+      "vi": "Các quy tắc, nguồn dữ liệu và phê duyệt mà một chương trình lương dựa vào."
     },
     "ch3Title": {
-      "en": "Keep it right",
-      "vi": "Giữ cho đúng"
+      "en": "Set up pay",
+      "vi": "Thiết lập lương"
+    },
+    "ch4Lead": {
+      "en": "Everyone you employ, their pay, and their road from hiring to leaving.",
+      "vi": "Mọi người bạn đang thuê, lương của họ, và chặng đường từ tuyển dụng tới nghỉ việc."
+    },
+    "ch4Title": {
+      "en": "People and their journeys",
+      "vi": "Con người và hành trình của họ"
+    },
+    "ch5Lead": {
+      "en": "The team's day, their time, and closing the week.",
+      "vi": "Một ngày của nhóm, giờ công của họ, và chốt tuần."
+    },
+    "ch5Title": {
+      "en": "Workforce",
+      "vi": "Lực lượng lao động"
+    },
+    "ch6Lead": {
+      "en": "What the numbers say, and what the law asks of you.",
+      "vi": "Các con số nói gì, và pháp luật yêu cầu bạn điều gì."
+    },
+    "ch6Title": {
+      "en": "Understand and comply",
+      "vi": "Hiểu số liệu và tuân thủ"
+    },
+    "chMins": {
+      "en": "min on your path",
+      "vi": "phút trên lộ trình của bạn"
+    },
+    "chOff": {
+      "en": "Not on your path",
+      "vi": "Không thuộc lộ trình của bạn"
     },
     "check": {
       "en": "Understanding check",
@@ -784,6 +816,10 @@
     "roleLabel": {
       "en": "I am the",
       "vi": "Tôi là"
+    },
+    "roleManager": {
+      "en": "People manager",
+      "vi": "Quản lý nhóm"
     },
     "roleNeeds": {
       "en": "Required for you:",
@@ -10114,12 +10150,12 @@
   "line_order": [
     "overview",
     "payrun",
+    "setup",
     "people",
     "lifecycle",
     "workforce",
     "insights",
-    "compliance",
-    "setup"
+    "compliance"
   ],
   "missions": [
     {
@@ -31588,5 +31624,5 @@
       }
     }
   ],
-  "version": "9d1d953054ae"
+  "version": "f332a09e5892"
 }

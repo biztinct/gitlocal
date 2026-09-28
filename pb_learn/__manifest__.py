@@ -21,7 +21,7 @@
     # 19.0.15.0.0 — LEARN v3 part 2: role paths (new res.users.learn_role),
     # three chapters + month-end card on the map, Team lens, moment cards on
     # real screens, ⌘K lesson rows, and the walkthrough player controls.
-    'version': '19.0.18.0.0',
+    'version': '19.0.19.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',

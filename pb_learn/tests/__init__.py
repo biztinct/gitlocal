@@ -27,3 +27,5 @@ from . import test_nextbest
 from . import test_reachability
 # RIZE W2 E1 — the Learn mission became a hub with a soft lens registry.
 from . import test_learn_hub
+# LEARN REFRESH step 5 — final station set, role paths, folded keys.
+from . import test_refresh_paths

@@ -29,16 +29,15 @@ export class AiInsightChatFull extends Component {
             showSuggestions: true,
         });
 
+        // LEARN REFRESH step 5 — no emoji (design system), and translatable.
         this.suggestions = [
-            "📊 Show salary distribution by department",
-            "👥 What is our total headcount breakdown?",
-            "⏰ Overtime costs for the last 3 months",
-            "💰 Total payroll cost trend",
-            "📈 Compare department payroll costs",
-            "🏦 Show deduction breakdown this month",
-            "❓ What does CTC stand for?",
-            "📧 Draft an email about salary review",
-        ];
+            _t("Show me salary distribution by department"),
+            _t("What is the total headcount?"),
+            _t("Overtime costs for the last 3 months"),
+            _t("Total payroll cost trend"),
+            _t("Compare department payroll costs"),
+            _t("Show deduction breakdown this month"),
+        ].map(String);
 
         onMounted(() => {
             this._loadHistory();

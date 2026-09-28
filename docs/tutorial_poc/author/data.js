@@ -373,16 +373,26 @@ const I18N = {
        Scene 2 turns the map into three chapters with a path per role; scene
        4 brings short notes onto the real screens; the Team lens is for
        payroll managers and shows progress only. */
+    /* LEARN REFRESH step 5 — six chapters over the final station set. */
     ch1Title: "Get around",
-    ch1Lead: "Where things live and who signs what.",
+    ch1Lead: "Where things live, what is waiting, and who signs what.",
     ch2Title: "Run pay",
-    ch2Lead: "From people, time and pay data to money out.",
-    ch3Title: "Keep it right",
-    ch3Lead: "Reports, rules and rates.",
+    ch2Lead: "One month of pay, from the first compute to money out.",
+    ch3Title: "Set up pay",
+    ch3Lead: "The rules, the sources and the approvals a pay scheme runs on.",
+    ch4Title: "People and their journeys",
+    ch4Lead: "Everyone you employ, their pay, and their road from hiring to leaving.",
+    ch5Title: "Workforce",
+    ch5Lead: "The team's day, their time, and closing the week.",
+    ch6Title: "Understand and comply",
+    ch6Lead: "What the numbers say, and what the law asks of you.",
+    chOff: "Not on your path",
+    chMins: "min on your path",
     roleLabel: "I am the",
     roleOfficer: "Payroll officer",
     roleApprover: "Approver",
     roleHr: "HR admin",
+    roleManager: "People manager",
     roleOwner: "Owner",
     roleGuess: "Picked from your access. Change it any time.",
     roleNeeds: "Required for you:",
@@ -712,15 +722,24 @@ const I18N = {
     practiceTourLead: "Toàn bộ sản phẩm trong một lượt. Bạn chỉ xem, không có nút nào bị bấm.",
     /* -- LEARN v3: the path, month-end, moments, team ------------------- */
     ch1Title: "Làm quen",
-    ch1Lead: "Mọi thứ nằm ở đâu và ai ký duyệt việc gì.",
+    ch1Lead: "Mọi thứ nằm ở đâu, việc gì đang chờ, và ai ký duyệt việc gì.",
     ch2Title: "Chạy lương",
-    ch2Lead: "Từ nhân sự, giờ công và dữ liệu lương đến lúc chi trả.",
-    ch3Title: "Giữ cho đúng",
-    ch3Lead: "Báo cáo, quy tắc và tỷ lệ.",
+    ch2Lead: "Một tháng lương, từ lần tính đầu tiên tới lúc chi tiền.",
+    ch3Title: "Thiết lập lương",
+    ch3Lead: "Các quy tắc, nguồn dữ liệu và phê duyệt mà một chương trình lương dựa vào.",
+    ch4Title: "Con người và hành trình của họ",
+    ch4Lead: "Mọi người bạn đang thuê, lương của họ, và chặng đường từ tuyển dụng tới nghỉ việc.",
+    ch5Title: "Lực lượng lao động",
+    ch5Lead: "Một ngày của nhóm, giờ công của họ, và chốt tuần.",
+    ch6Title: "Hiểu số liệu và tuân thủ",
+    ch6Lead: "Các con số nói gì, và pháp luật yêu cầu bạn điều gì.",
+    chOff: "Không thuộc lộ trình của bạn",
+    chMins: "phút trên lộ trình của bạn",
     roleLabel: "Tôi là",
     roleOfficer: "Chuyên viên tính lương",
     roleApprover: "Người phê duyệt",
     roleHr: "Quản trị nhân sự",
+    roleManager: "Quản lý nhóm",
     roleOwner: "Chủ doanh nghiệp",
     roleGuess: "Chọn theo quyền truy cập của bạn. Bạn đổi lúc nào cũng được.",
     roleNeeds: "Bắt buộc với bạn:",
@@ -1589,7 +1608,7 @@ const GLOSSARY = {
    bookmarked ⌘K row, an old chat's "Show me" — lands on the new station. */
 const STATION_ALIASES = { contracts: "employees", proration: "adjust", retro: "adjust" };
 
-const LINE_ORDER = ["overview", "payrun", "people", "lifecycle", "workforce", "insights", "compliance", "setup"];
+const LINE_ORDER = ["overview", "payrun", "setup", "people", "lifecycle", "workforce", "insights", "compliance"];
 
 const STATIONS = {
   payrun: {

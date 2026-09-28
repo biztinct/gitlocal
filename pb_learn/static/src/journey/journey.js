@@ -55,7 +55,7 @@ const MISSION_HOME = {
  * A line missing from this list is still drawn, after the ones that are here.
  * That is deliberate: a new section must never be able to disappear from the
  * map because somebody forgot a second file. */
-const LINE_ORDER = ["overview", "payrun", "people", "lifecycle", "workforce", "insights", "compliance", "setup"];
+const LINE_ORDER = ["overview", "payrun", "setup", "people", "lifecycle", "workforce", "insights", "compliance"];
 const LINE_ICON = {
     overview: "grid",
     payrun: "zap",
@@ -82,20 +82,28 @@ const CONSUMED_ARRIVALS = new WeakSet();
 import { morphHTML, calcHTML, pipeHTML, runMeter, runPipeline, runTick } from "../engine/visuals";
 
 const LOCAL_PREFS = "pbLearnPrefs";
+/* Held as a constant: a quoted separator inside an interpolation trips the
+   minifier (LR2). */
+const DOT = " · ";
 
-/* LEARN v3 — THREE CHAPTERS. The six lines, grouped the way a person meets
-   the work: find your way around, run a month of pay, keep it right. The
-   lines keep their own order inside a chapter (lineOrder), so the map and
-   `next_best` still agree about what comes next. A line in no chapter is
-   drawn in the last one rather than disappearing. */
+/* LEARN REFRESH step 5 — SIX CHAPTERS over the final station set, in the
+   order the lines are read (LINE_ORDER): find your way around, run a month,
+   set up the rules, the people and their journeys, the team's week, and
+   understanding and compliance. A line in no chapter is drawn in the last
+   one rather than disappearing. */
 const CHAPTERS = [
     { key: "ch1", lines: ["overview"] },
-    { key: "ch2", lines: ["payrun", "people", "lifecycle", "workforce"] },
-    { key: "ch3", lines: ["insights", "compliance", "setup"] },
+    { key: "ch2", lines: ["payrun"] },
+    { key: "ch3", lines: ["setup"] },
+    { key: "ch4", lines: ["people", "lifecycle"] },
+    { key: "ch5", lines: ["workforce"] },
+    { key: "ch6", lines: ["insights", "compliance"] },
 ];
-const ROLE_ORDER = ["officer", "approver", "hr", "owner"];
-const ROLE_LABEL = { officer: "roleOfficer", approver: "roleApprover", hr: "roleHr", owner: "roleOwner" };
-const ROLE_ICON = { officer: "calculator", approver: "clipboard-check", hr: "users", owner: "trending-up" };
+const ROLE_ORDER = ["officer", "approver", "hr", "manager", "owner"];
+const ROLE_LABEL = { officer: "roleOfficer", approver: "roleApprover", hr: "roleHr",
+                     manager: "roleManager", owner: "roleOwner" };
+const ROLE_ICON = { officer: "calculator", approver: "clipboard-check", hr: "users",
+                    manager: "user-check", owner: "trending-up" };
 /* LEARN REFRESH step 4 — the Lifecycle line's road, in the order one person
    lives it, and where the walker stood on the last visit (per browser). */
 const LIFE_TRAIL = ["hiring", "joiners", "probation", "exits"];
@@ -172,6 +180,9 @@ export class LearnJourney extends Component {
             // LEARN v3 — the path. `role` is the learner's pick, or the guess.
             role: "",
             roleChosen: false,
+            // LEARN REFRESH step 5 — bumped on each role pick so the chapters
+            // replay their redraw (the hero moment).
+            pathTick: 0,
             monthEndSkipped: false,
             lang: "en",
             motion: "auto",
@@ -289,6 +300,8 @@ export class LearnJourney extends Component {
             path: runtime.path || {},
             // LEARN REFRESH step 1 — where each screen lives in the rail.
             screens: content.screens || [],
+            // LEARN REFRESH step 5 — retired station keys → their new home.
+            stationAliases: content.station_aliases || {},
         };
         setReach(runtime.visible_stations);
         // LEARN REFRESH step 4 — a station whose hub TAB this reader cannot
@@ -372,7 +385,11 @@ export class LearnJourney extends Component {
     }
 
     station(key) {
-        return this.stations.find((s) => s.key === key) || null;
+        // LEARN REFRESH step 5 — a retired key (contracts, proration, retro)
+        // lands on the station it folded into.
+        const aliases = (this.bundle && this.bundle.stationAliases) || {};
+        const k = aliases[key] || key;
+        return this.stations.find((s) => s.key === k) || null;
     }
 
     get current() {
@@ -473,10 +490,13 @@ export class LearnJourney extends Component {
             this.bundle.path = extra || this.bundle.path;
             // The suggestion comes from the path, so it changes with it.
             this.bundle.nextBest = await this.orm.call("learn.runtime", "next_best", []) || {};
-            this.render(true);
         } catch {
             // The pick still drives this page; the server re-syncs next load.
         }
+        // The redraw plays once the path AND the next suggestion are both in,
+        // so the continue card and the chapters change together.
+        this.state.pathTick = (this.state.pathTick || 0) + 1;
+        this.render(true);
     }
 
     skipMonthEnd() {
@@ -669,7 +689,17 @@ export class LearnJourney extends Component {
                 (s) => own.includes(s.line) && this.onPath(s));
             const done = onPath.filter((s) => this.stateOf(s.key) === "done").length;
             const pct = onPath.length ? Math.round(done / onPath.length * 100) : 100;
-            return `<section class="lrn-chapter">
+            // LEARN REFRESH step 5 — THE HERO. A chapter with nothing on this
+            // learner's path steps back (quiet, still open); one with path
+            // lessons lights and says how many minutes of it are left. The
+            // class flips on a role pick, and the CSS animates the change.
+            const lit = !!onPath.length;
+            const left = onPath.filter((s) => this.stateOf(s.key) !== "done")
+                .reduce((n, s) => n + (s.duration_min || 0), 0);
+            const meta = lit
+                ? `<span class="lrn-chcount">${done}${SP}/ ${onPath.length}${left ? `${DOT}${left}${SP}${esc(T("chMins"))}` : ""}</span>`
+                : `<span class="lrn-chcount">${esc(T("chOff"))}</span>`;
+            return `<section class="lrn-chapter ${lit ? "lit" : "off"}" data-chapter="${ch.key}" style="--i:${i}">
                 <header class="lrn-chhead">
                     <span class="lrn-chno">${i + 1}</span>
                     <span class="lrn-chmain">
@@ -677,8 +707,8 @@ export class LearnJourney extends Component {
                         <span class="lrn-note">${esc(T(ch.key + "Lead"))}</span>
                     </span>
                     <span class="lrn-chprog" title="${done}${SP}/ ${onPath.length}">
-                        <span class="lrn-chbar"><i style="width:${pct}%"></i></span>
-                        <span class="lrn-chcount">${done}${SP}/ ${onPath.length}</span>
+                        ${lit ? `<span class="lrn-chbar"><i style="width:${pct}%"></i></span>` : ""}
+                        ${meta}
                     </span>
                 </header>
                 ${inner}
@@ -718,7 +748,9 @@ export class LearnJourney extends Component {
             </label>
         </div>
         ${this._practiceCardHTML()}
-        ${lineHTML || `<p class="lrn-note">${esc(T("noAnswer"))}</p>`}`;
+        <div class="lrn-chapters" data-path="${esc(this.state.role)}">
+        ${lineHTML || `<p class="lrn-note">${esc(T("noAnswer"))}</p>`}
+        </div>`;
     }
 
     /* ------------------------------------------------- LEARNOS Phase 6 views
@@ -815,7 +847,7 @@ export class LearnJourney extends Component {
             <span class="lrn-cardmain">
                 <span class="lrn-clabel">${esc(T("nbTitle"))}</span>
                 <span class="lrn-cardtitle">${esc(tx(target.name))}</span>
-                <span class="lrn-carddesc">${esc(reason)}</span>
+                <span class="lrn-carddesc">${target.duration_min ? `${esc(String(target.duration_min))}${SP}${esc(T("min"))}${DOT}` : ""}${esc(reason)}</span>
             </span>
             <button class="lrn-btn pri" data-act="nb-go"
                     data-key="${esc(nb.key)}" data-kind="${esc(nb.kind)}"
@@ -1568,6 +1600,16 @@ export class LearnJourney extends Component {
 
     // ---------------------------------------------------------- post-render fx
     _afterPaint() {
+        // LEARN REFRESH step 5 — the hero: replay the chapters' redraw ONCE
+        // per role pick. The class lives only on this render's DOM, so a later
+        // re-render (a search keystroke) does not replay it.
+        if ((this.state.pathTick || 0) !== (this._animatedTick || 0)) {
+            this._animatedTick = this.state.pathTick || 0;
+            const box = document.querySelector(".lrn-chapters");
+            if (box && !reduced()) {
+                box.classList.add("anim");
+            }
+        }
         if (this.state.view === "map") {
             this._walkLifeTrail();
         }
@@ -2079,7 +2121,7 @@ export class LearnJourney extends Component {
         const focus = typeof ctx.pb_focus === "string" ? ctx.pb_focus : "";
         const fm = /^(station|scenario):([a-z0-9_]+)(?::([a-z]+))?$/.exec(focus);
         if (fm && fm[1] === "station" && this.station(fm[2])) {
-            this.openStation(fm[2]);
+            this.openStation(this.station(fm[2]).key);
             return;
         }
         if (fm && fm[1] === "scenario" && this.scenarios.some((x) => x.key === fm[2])) {
@@ -2088,7 +2130,7 @@ export class LearnJourney extends Component {
         }
         const stKey = typeof ctx.station === "string" ? ctx.station : "";
         if (stKey && this.station(stKey)) {
-            this.openStation(stKey);
+            this.openStation(this.station(stKey).key);
             return;
         }
         const scKey = typeof ctx.scenario === "string" ? ctx.scenario : "";

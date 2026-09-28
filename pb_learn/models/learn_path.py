@@ -9,7 +9,7 @@ progress rows `learn.progress` already writes.
 
 ROLE PATHS
 ----------
-Nineteen stations is the whole product. An approver needs five of them. The
+Thirty-nine stations is the whole product. An approver needs seven of them. The
 role a learner picks decides which stations are REQUIRED for them — the map
 dims the rest and `next_best` suggests only from the path — and nothing else:
 every station stays open to everybody. A learner who never picks gets a role
@@ -33,24 +33,50 @@ _logger = logging.getLogger(__name__)
 
 # Which stations are REQUIRED for each role. Reading order is the map's own
 # (line_order), so these are sets, not sequences.
+#
+# LEARN REFRESH step 5 — rebuilt over the final station set (39 stations).
+# Each path is what that person does in a normal month, not everything they
+# may open. Notes on the choices:
+#   officer  — the whole month (run → deliver → adjust / settle) plus the
+#              setup screens an officer is the first to be asked about.
+#   approver — what they read before saying yes: the run, a payslip, the
+#              report, and the two other things they are asked to sign.
+#   hr       — people from hiring to leaving, their records and time. NOT
+#              `access`: handing out access is an administrator's job
+#              (biz_access grants need the access-manager group), and an HR
+#              manager does not hold it by default.
+#   manager  — the team's week in Workforce plus the people decisions a
+#              line manager is part of. Guessed from the attendance groups
+#              the Workforce tabs are gated on (pb_mission.js).
+#   owner    — the numbers, the plan, the filings and who signs what.
 ROLE_PATHS = {
-    'officer': ('dashboard', 'approvals', 'employees', 'contracts', 'import',
-                'runpayroll', 'payruns', 'payslips', 'statutory', 'formula'),
-    'approver': ('dashboard', 'approvals', 'payruns', 'payslips', 'insights'),
-    'hr': ('dashboard', 'employees', 'contracts', 'import', 'statutory'),
-    'owner': ('dashboard', 'approvals', 'insights', 'govreports'),
+    'officer': ('dashboard', 'approvals', 'runpayroll', 'payruns', 'payslips',
+                'import', 'afterrun', 'adjust', 'fullfinal', 'records',
+                'schemes', 'treatment', 'statutory', 'formula', 'blueprint',
+                'mapping'),
+    'approver': ('dashboard', 'approvals', 'payruns', 'payslips', 'insights',
+                 'reports', 'payreview'),
+    'hr': ('dashboard', 'employees', 'records', 'hiring', 'joiners',
+           'probation', 'exits', 'contractends', 'wftime', 'paybands'),
+    'manager': ('approvals', 'wftoday', 'wftime', 'wfclose', 'hiring',
+                'probation', 'growth'),
+    'owner': ('dashboard', 'approvals', 'insights', 'explorer', 'reports',
+              'decisionroom', 'paybands', 'govreports', 'matrix', 'access'),
 }
 ROLES = tuple(ROLE_PATHS)
 
 # The groups a role is guessed from, tried in this order. The first role
 # with a group the user holds wins; nothing held means "officer", the role
-# the lessons were written for.
+# the lessons were written for. `manager` comes after hr so an HR user who
+# also holds attendance rights stays hr.
 ROLE_GUESS = (
     ('officer', ('pb_hr_payroll_base.group_payroll_base_officer',
                  'pb_hr_payroll_base.group_payroll_base_manager',
                  'pb_hr_payroll_base.group_payroll_super_admin')),
     ('approver', ('pb_hr_payroll_base.group_payroll_final_approver',)),
     ('hr', ('hr.group_hr_manager', 'hr.group_hr_user')),
+    ('manager', ('hr_attendance.group_hr_attendance_manager',
+                 'hr_attendance.group_hr_attendance_officer')),
     ('owner', ('base.group_system',)),
 )
 
@@ -61,12 +87,12 @@ TEAM_GROUPS = ('pb_hr_payroll_base.group_payroll_base_manager',
 
 # Who is counted as "the team": anyone whose role guess comes from a group,
 # plus anyone who picked a role themselves.
-TEAM_MEMBER_GROUPS = tuple(g for _role, gs in ROLE_GUESS[:3] for g in gs)
+TEAM_MEMBER_GROUPS = tuple(g for role, gs in ROLE_GUESS if role != 'owner' for g in gs)
 
 # Milestones, in the order a company reaches them. Each is (key, station the
 # note points at). Counts are company-wide: "your company's first pay run".
 MILESTONES = (
-    ('m_employee', 'contracts'),
+    ('m_employee', 'employees'),
     ('m_run', 'payslips'),
     ('m_submitted', 'approvals'),
     ('m_done', 'govreports'),
@@ -81,7 +107,7 @@ class ResUsers(models.Model):
 
     learn_role = fields.Selection(
         [('officer', 'Payroll officer'), ('approver', 'Approver'),
-         ('hr', 'HR admin'), ('owner', 'Owner')],
+         ('hr', 'HR admin'), ('manager', 'People manager'), ('owner', 'Owner')],
         string='Learning path', copy=False,
         help="The learning path this person picked in Learn. Empty means "
              "the path is guessed from their access groups.")

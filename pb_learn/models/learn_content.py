@@ -57,6 +57,8 @@ _EMPTY = {
     'line_order': [],
     # LEARNOS Phase 1b. One authored walkthrough, three ways to take it.
     'scenarios': [],
+    # LEARN REFRESH step 5 — retired station keys and where they folded.
+    'station_aliases': {},
 }
 
 
@@ -163,7 +165,18 @@ class LearnContent(models.AbstractModel):
 
     # -- lookups ----------------------------------------------------------
     @api.model
+    def station_aliases(self):
+        return _load().get('station_aliases') or {}
+
+    @api.model
+    def canonical_station_key(self, key):
+        """A retired station key (LEARN REFRESH step 5: contracts, proration,
+        retro) → the station it folded into; any other key unchanged."""
+        return self.station_aliases().get(key, key)
+
+    @api.model
     def station(self, key):
+        key = self.canonical_station_key(key)
         return next((s for s in self.stations() if s['key'] == key), None)
 
     @api.model

@@ -200,6 +200,17 @@ THE WIDER APP (tabs a person sees only when their access and company include the
 - Access: Settings › Access & delegation (its screens are in English). Tabs Roles, People, Screens, Hand-overs. "Hand my access over": who, what, until when — taken back automatically the morning after the end date. "See it as" shows the app as someone else sees it; you keep exactly your own access. Giving roles and See it as need an access manager. Never share a password instead.
 - Government filings: Compliance › Filings — tiles per filing, grouped by the office that reads them; a country with no module installed shows "coming soon". Generate opens "Generate a filing": Choose the filing → Scope → Generate. Generate makes files to download; nothing is sent anywhere. Generate only after every pay run of the month is done. Compliance also has Bank (a bank change goes Draft → HR Review → Finance Review → Approved), Young workers (hour limits under 18) and Audit (who changed what).
 
+AFTER THE RUN, PEOPLE AND NUMBERS:
+- Results: Pay Run › Results — the whole run as one read-only grid, one row per person; "vs previous run" shows each figure's move; Export to Excel.
+- Paying out: Pay Run › Deliver, on an approved run. The Bank file is prepared and approved first; then the Payment release (the go-ahead to send the money) goes through its own approval; payslips go out as password-protected PDFs (Send payslips, Resend failures). A Done run is approved, not yet paid.
+- Calendar: Pay Run › Calendar counts down to the day changes close and says when people are paid; reopening a closed month needs a reason. Awards: Pay Run › Awards — a bonus or spot award is approved, then "Put into a pay run" adds it to a draft run and recomputes.
+- Back pay and part months: Pay Run › Adjust has two tabs, Retro and Proration, filled by the pay data load (nobody types them). Retro: a pay change dated before this month, compared with what was paid, the difference added to this month (needs the scheme's Back-pay switch). Proration: amounts for part of a month; the row shows old, new and prorated, the drawer shows the days. Never reopen a paid month.
+- Final settlements: Pay Run › Settle — Being prepared → Waiting for approval → Approved (HR lead, then Finance); Download only once approved.
+- Employees: People › Employees. A row is ready only with a running contract AND bank details (the Payroll-ready number counts bank details only). The Contract button on a row opens the contract drawer: Terms, Components (each amount says where it comes from), History; nothing is saved until Save.
+- Salary structures: Settings › Salary Structures. A contract that names a structure is computed by it; a contract with none is paid by its pay scheme.
+- Integrations: Settings › Integrations — read the last sync, not the Connected badge; a connection's own screen has Test connection, Pull data and its Automatic fetch schedule. "Arrivals" (search bar) lists what the connected system sent.
+- Insights › Pulse: the newest run's net payroll in any state (read its state chip); compare per head, not totals. Insights › Explorer: Measure, By, When, Where (Main runs only is on by default); quote the tags with the number. Insights › Workforce: people PAID, not employed. Insights › Payroll Report (one run against the one before) and Budget (money gone against year gone: On pace, Running warm, Behind the year).
+
 DEMO NOTE: in the shared demo, payslips you generate are temporary and may be reset by another demo user.
 
 You can OFFER TO SHOW the user something via an optional "action". Two kinds:
@@ -230,6 +241,20 @@ A lesson (a short lesson in a practice company):
 - "L22": Close the week for payroll
 - "L23": Access and handing it over while away
 - "L24": Government filings
+- "L25": Growth plans
+- "L26": Contracts that end soon
+- "L27": Bank checks, young workers and audit
+- "L28": The rest of People and Home
+- "L29": Employees and their contracts
+- "L30": Back pay and part months — Pay Run › Adjust
+- "L31": Settle someone who is leaving — Pay Run › Settle
+- "L32": After the run — results, payments, calendar, awards
+- "L33": Salary structures, and when you need one
+- "L34": Integrations — connections, fetch schedule, arrivals
+- "L35": Read Insights › Pulse
+- "L36": Ask Explorer a question
+- "L37": People paid, month by month — Insights › Workforce
+- "L38": Payroll Report and Budget
 A walkthrough of the real screens:
 - "sc_welcome": the tour — Pulse, a pay run, the Approvals inbox, the Formula Engine
 - "sc_payrun": run a pay run, step by step
@@ -263,7 +288,7 @@ ALWAYS respond with a SINGLE valid JSON object (no markdown fences):
   "action": { "type": "open_lesson", "lesson": "<one lesson key above>", "label": "Show me" }
 }
 For a walkthrough use instead: "action": { "type": "open_walkthrough", "walkthrough": "<one walkthrough key above>", "label": "Show me" }. Prefer a walkthrough for "show me around" / "where is" questions and a lesson for "how does it work" questions.
-Include "action" ONLY when a listed lesson or walkthrough clearly matches the request; otherwise omit it or set it to null. A "how do I…" question about one of the PAYROLL SETUP areas above clearly matches its lesson or walkthrough (new pay scheme: L7 / sc_blueprint; where a number comes from: L8 / sc_mapjourney; figures that do not add up: L9 / sc_treatment; who approves what: L10 / sc_matrix; many employees at once: L11 / sc_records; another currency: L12 / sc_schemes), and so does one about THE WIDER APP (pay bands: L13 / sc_paybands; pay review: L14 / sc_payreview; next year's plan: L15 / sc_decisionroom; hiring request: L16 / sc_hiring; new joiner: L17 / sc_joiners; someone leaving: L18 / sc_exits; probation: L19 / sc_probation; Workforce today or approving overtime: L20 / sc_wftoday, L21 / sc_wftime; locking the week: L22 / sc_wfclose; access while away: L23 / sc_access; government filings: L24 / sc_filings), so offer it. Never invent pages, tabs, buttons, lesson keys or walkthrough keys that are not listed above.""" + IDENTITY_RULES
+Include "action" ONLY when a listed lesson or walkthrough clearly matches the request; otherwise omit it or set it to null. A "how do I…" question about one of the PAYROLL SETUP areas above clearly matches its lesson or walkthrough (new pay scheme: L7 / sc_blueprint; where a number comes from: L8 / sc_mapjourney; figures that do not add up: L9 / sc_treatment; who approves what: L10 / sc_matrix; many employees at once: L11 / sc_records; another currency: L12 / sc_schemes), and so does one about THE WIDER APP (pay bands: L13 / sc_paybands; pay review: L14 / sc_payreview; next year's plan: L15 / sc_decisionroom; hiring request: L16 / sc_hiring; new joiner: L17 / sc_joiners; someone leaving: L18 / sc_exits; probation: L19 / sc_probation; Workforce today or approving overtime: L20 / sc_wftoday, L21 / sc_wftime; locking the week: L22 / sc_wfclose; access while away: L23 / sc_access; government filings: L24 / sc_filings), and so does one about AFTER THE RUN, PEOPLE AND NUMBERS (paying out, the bank file, calendar or awards: L32; back pay or part months: L30; a final settlement: L31; an employee's contract or payroll-ready: L29; salary structures: L33; connections or sync: L34; Pulse: L35; Explorer: L36; people paid: L37; payroll report or budget: L38), so offer it. Never invent pages, tabs, buttons, lesson keys or walkthrough keys that are not listed above.""" + IDENTITY_RULES
 
 
 def data_query_prompt(message, payload_json):
@@ -695,7 +720,10 @@ class PayrollAIEngine(models.Model):
                       'L7', 'L8', 'L9', 'L10', 'L11', 'L12',
                       # LEARN REFRESH step 4 — the wider app.
                       'L13', 'L14', 'L15', 'L16', 'L17', 'L18', 'L19',
-                      'L20', 'L21', 'L22', 'L23', 'L24')
+                      'L20', 'L21', 'L22', 'L23', 'L24',
+                      # LEARN REFRESH step 5 — every remaining lesson.
+                      'L25', 'L26', 'L27', 'L28', 'L29', 'L30', 'L31',
+                      'L32', 'L33', 'L34', 'L35', 'L36', 'L37', 'L38')
 
     # LEARN REFRESH step 2: a WALKTHROUGH is the second thing "Show me" may
     # open — the real screens, narrated, in Watch mode. Same rule as lessons:

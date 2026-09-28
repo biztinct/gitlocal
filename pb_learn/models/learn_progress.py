@@ -121,6 +121,10 @@ class LearnProgress(models.Model):
         """
         if not station_key or not self._declared(station_key):
             return False
+        # A stale tab may still write a retired station key; it lands on the
+        # station that key folded into (the stored rows were migrated).
+        if not station_key.startswith((MISSION_PREFIX, SCENARIO_PREFIX)):
+            station_key = self.env['learn.content'].canonical_station_key(station_key)
         allowed = {'state', 'step_index', 'attempts', 'first_try_correct',
                    'completed_at', 'lang'}
         vals = {k: v for k, v in (values or {}).items() if k in allowed}
@@ -238,8 +242,10 @@ class LearnEvent(models.Model):
         valid = {k for k, _label in self._selection_kind()}
         if kind not in valid:
             return False
-        known = bool(station_key) and bool(
-            self.env['learn.content'].station(station_key))
+        Content = self.env['learn.content']
+        if station_key:
+            station_key = Content.canonical_station_key(station_key)
+        known = bool(station_key) and bool(Content.station(station_key))
         self.create({
             'kind': kind,
             'station_key': station_key if known else False,

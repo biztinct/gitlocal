@@ -2423,3 +2423,45 @@ body.lrn-docked .lrn-screen { padding-bottom: 55vh; }
     &.closed { opacity: .6; }
     &.next { border-color: var(--vuf-primary, #5A4BB0); box-shadow: 0 0 0 2px var(--vuf-primary-soft, #EDEAF8); }
 }
+
+/* =============================================================================
+   LEARN REFRESH step 5 — THE HERO: "Your path" redraws when a role is picked.
+   Chapters on the path light (ink bar on the left, full strength); the rest
+   step back (quiet, smaller heading, still open). On each pick the chapters
+   replay a short staggered rise so the change is SEEN.
+   ========================================================================== */
+.lrn-chapter {
+    position: relative;
+    transition: opacity .35s ease, transform .35s ease, filter .35s ease;
+}
+.lrn-chapter.lit::before {
+    content: "";
+    position: absolute;
+    left: -12px;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--vuf-primary, #5A4BB0);
+}
+.lrn-chapter.off {
+    opacity: .55;
+    .lrn-chno { background: var(--vuf-line, #E2E8F0); color: var(--vuf-muted, #6B7280); }
+    .lrn-chhead b { font-size: 14.5px; }
+    &:hover, &:focus-within { opacity: 1; }
+}
+.lrn-chapters.anim .lrn-chapter {
+    animation: lrn-chrise .5s cubic-bezier(.2, .8, .2, 1) both;
+    animation-delay: calc(var(--i, 0) * 60ms);
+}
+@keyframes lrn-chrise {
+    from { opacity: 0; transform: translateY(8px); }
+}
+@media (max-width: 640px) {
+    .lrn-chapter.lit::before { left: -8px; }
+    .lrn-chprog { flex-wrap: wrap; justify-content: flex-end; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .lrn-chapter { transition: none; }
+    .lrn-chapters .lrn-chapter { animation: none !important; }
+}

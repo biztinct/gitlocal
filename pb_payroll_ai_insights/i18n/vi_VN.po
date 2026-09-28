@@ -1595,12 +1595,14 @@ msgstr "Dẫn tôi đi một vòng Payobook"
 #. module: pb_payroll_ai_insights
 #. odoo-javascript
 #: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.js:0
 msgid "Show me salary distribution by department"
 msgstr "Cho tôi xem phân bổ lương theo bộ phận"
 
 #. module: pb_payroll_ai_insights
 #. odoo-javascript
 #: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.js:0
 msgid "What is the total headcount?"
 msgstr "Tổng số nhân sự là bao nhiêu?"
 
@@ -1609,3 +1611,45 @@ msgstr "Tổng số nhân sự là bao nhiêu?"
 #: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
 msgid "The guided lessons are not installed on this database."
 msgstr "Các bài học có hướng dẫn chưa được cài trên cơ sở dữ liệu này."
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+msgid "How do I send the bank file and payslips?"
+msgstr "Làm sao để gửi tệp ngân hàng và phiếu lương?"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+msgid "Why is a first payslip smaller?"
+msgstr "Vì sao phiếu lương đầu tiên lại nhỏ hơn?"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+msgid "How do I settle someone who is leaving?"
+msgstr "Làm sao để quyết toán cho người nghỉ việc?"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.js:0
+msgid "Overtime costs for the last 3 months"
+msgstr "Chi phí tăng ca trong 3 tháng qua"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.js:0
+msgid "Total payroll cost trend"
+msgstr "Xu hướng tổng chi phí lương"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.js:0
+msgid "Compare department payroll costs"
+msgstr "So sánh chi phí lương giữa các phòng ban"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.js:0
+msgid "Show deduction breakdown this month"
+msgstr "Cho tôi xem cơ cấu khấu trừ tháng này"

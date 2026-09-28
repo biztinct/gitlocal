@@ -206,7 +206,7 @@
       "kind": "contains",
       "why": "PayAI may only offer to open something it can actually open, through this whitelist. Phase C2 re-targeted the envelope from pb_coach tours to pb_learn LESSONS, which is the change that lets this be checked at all: a tour was a registry entry in a module nobody validated against, and a lesson is a record whose key `learn.lesson` either has or has not. Both halves are pinned — the whitelist itself, and the old-tour compatibility map, whose ids are documentation of what each tour BECAME. If a lesson key here stops existing, PayAI's \"Show me\" opens a Journey that lands on the map and the offer was a lie.",
       "expect": [
-        "_KNOWN_LESSONS = ('LW', 'L1', 'L5', 'L3', 'L4', 'LA', 'L2', 'L6',\n                      # LEARN REFRESH step 3 — payroll setup.\n                      'L7', 'L8', 'L9', 'L10', 'L11', 'L12',\n                      # LEARN REFRESH step 4 — the wider app.\n                      'L13', 'L14', 'L15', 'L16', 'L17', 'L18', 'L19',\n                      'L20', 'L21', 'L22', 'L23', 'L24')",
+        "_KNOWN_LESSONS = ('LW', 'L1', 'L5', 'L3', 'L4', 'LA', 'L2', 'L6',\n                      # LEARN REFRESH step 3 — payroll setup.\n                      'L7', 'L8', 'L9', 'L10', 'L11', 'L12',\n                      # LEARN REFRESH step 4 — the wider app.\n                      'L13', 'L14', 'L15', 'L16', 'L17', 'L18', 'L19',\n                      'L20', 'L21', 'L22', 'L23', 'L24',\n                      # LEARN REFRESH step 5 — every remaining lesson.\n                      'L25', 'L26', 'L27', 'L28', 'L29', 'L30', 'L31',\n                      'L32', 'L33', 'L34', 'L35', 'L36', 'L37', 'L38')",
         "'hero_path': 'LW'",
         "'tour_payrun': 'L1'",
         "'tour_formula': 'L5'",
@@ -1497,7 +1497,7 @@
         "docs/tutorial_poc/author/tools/dump_content.js"
       ],
       "expect": [
-        "const LINE_ORDER = [\"overview\", \"payrun\", \"people\", \"lifecycle\", \"workforce\", \"insights\", \"compliance\", \"setup\"];",
+        "const LINE_ORDER = [\"overview\", \"payrun\", \"setup\", \"people\", \"lifecycle\", \"workforce\", \"insights\", \"compliance\"];",
         "'line_order': list(data.get('lineOrder') or [])",
         "lineOrder: grab(\"LINE_ORDER\")"
       ],

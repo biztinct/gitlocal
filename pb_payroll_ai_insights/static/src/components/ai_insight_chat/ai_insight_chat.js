@@ -88,13 +88,15 @@ export class AiInsightChat extends Component {
         // one — offering a Rize employee a tour of a product they have never
         // heard of. `_t` is both fixes; `String(...)` keeps them primitives so
         // the template and the send path treat them as ordinary text.
+        // LEARN REFRESH step 5 — refreshed across the app: running, signing,
+        // paying out, a part-month payslip, a leaver, and the tour.
         this.suggestions = [
             _t("How do I run payroll?"),
             _t("Who approves my pay run?"),
-            _t("Where is the formula engine?"),
+            _t("How do I send the bank file and payslips?"),
+            _t("Why is a first payslip smaller?"),
+            _t("How do I settle someone who is leaving?"),
             _t("Show me around Payobook"),
-            _t("Show me salary distribution by department"),
-            _t("What is the total headcount?"),
         ].map(String);
 
         onMounted(() => {
