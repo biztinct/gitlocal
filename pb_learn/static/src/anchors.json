@@ -499,32 +499,27 @@
     "in-trend": {
       "screen": "insights",
       "file": "pb_insights/static/src/xml/insights.xml",
-      "desc": "The cost story over three, six or twelve months. A trend answers a different question from a total, and the window chip decides which.",
-      "reserved": true
+      "desc": "The cost story over three, six or twelve months. A trend answers a different question from a total, and the window chip decides which."
     },
     "in-duo": {
       "screen": "insights",
       "file": "pb_insights/static/src/xml/insights.xml",
-      "desc": "Department leaderboard and the statutory split, side by side: where the cost sits, and how much of it is the law rather than salary.",
-      "reserved": true
+      "desc": "Department leaderboard and the statutory split, side by side: where the cost sits, and how much of it is the law rather than salary."
     },
     "in-pulse": {
       "screen": "insights",
       "file": "pb_insights/static/src/xml/insights.xml",
-      "desc": "Workforce pulse — attendance exceptions and headcount movement for this week and month to date.",
-      "reserved": true
+      "desc": "Workforce pulse — attendance exceptions and headcount movement for this week and month to date."
     },
     "in-explore": {
       "screen": "insights",
       "file": "pb_insights/static/src/xml/insights.xml",
-      "desc": "Ask something else. The way out of a board that has answered every question it anticipated, into the Explorer.",
-      "reserved": true
+      "desc": "Ask something else. The way out of a board that has answered every question it anticipated, into the Explorer."
     },
     "ex-head": {
       "screen": "explorer",
       "file": "pb_explorer/static/src/xml/explorer.xml",
-      "desc": "The Explorer header. A question builder rather than a report: pick a measure, break it down, filter it.",
-      "reserved": true
+      "desc": "The Explorer header. A question builder rather than a report: pick a measure, break it down, filter it."
     },
     "ex-rail": {
       "screen": "explorer",
@@ -534,14 +529,12 @@
     "ex-filters": {
       "screen": "explorer",
       "file": "pb_explorer/static/src/xml/explorer.xml",
-      "desc": "The Where group — every active filter as a removable tag. A figure read without checking this is a figure read out of scope.",
-      "reserved": true
+      "desc": "The Where group — every active filter as a removable tag. A figure read without checking this is a figure read out of scope."
     },
     "ex-headline": {
       "screen": "explorer",
       "file": "pb_explorer/static/src/xml/explorer.xml",
-      "desc": "The result headline: the measure, the dimension it is broken down by, and the total the table sums to.",
-      "reserved": true
+      "desc": "The result headline: the measure, the dimension it is broken down by, and the total the table sums to."
     },
     "ex-table": {
       "screen": "explorer",
@@ -552,32 +545,27 @@
     "wa-head": {
       "screen": "workforcean",
       "file": "pb_workforce_insights/static/src/xml/workforce_insights.xml",
-      "desc": "The Workforce Insights header. Attendance, overtime, leave and cost per head, read off payroll rather than off a separate HR system.",
-      "reserved": true
+      "desc": "The Workforce Insights header. Attendance, overtime, leave and cost per head, read off payroll rather than off a separate HR system."
     },
     "wa-filters": {
       "screen": "workforcean",
       "file": "pb_workforce_insights/static/src/xml/workforce_insights.xml",
-      "desc": "Division and period pickers. They scope every panel below, which is why an alarming number is worth re-reading with these in view.",
-      "reserved": true
+      "desc": "Division and period pickers. They scope every panel below, which is why an alarming number is worth re-reading with these in view."
     },
     "wa-kpis": {
       "screen": "workforcean",
       "file": "pb_workforce_insights/static/src/xml/workforce_insights.xml",
-      "desc": "Employees paid, joiners and leavers, and the cost per head. Employees PAID, not employed — the difference is the point.",
-      "reserved": true
+      "desc": "Employees paid, joiners and leavers, and the cost per head. Employees PAID, not employed — the difference is the point."
     },
     "wa-chart": {
       "screen": "workforcean",
       "file": "pb_workforce_insights/static/src/xml/workforce_insights.xml",
-      "desc": "Headcount paid, month by month. A step in this line is a joiner wave, a leaver wave, or a run that did not include everybody.",
-      "reserved": true
+      "desc": "Headcount paid, month by month. A step in this line is a joiner wave, a leaver wave, or a run that did not include everybody."
     },
     "wa-duo": {
       "screen": "workforcean",
       "file": "pb_workforce_insights/static/src/xml/workforce_insights.xml",
-      "desc": "Attendance exceptions beside overtime. Two panels because the second is usually the consequence of the first.",
-      "reserved": true
+      "desc": "Attendance exceptions beside overtime. Two panels because the second is usually the consequence of the first."
     },
     "gr-head": {
       "screen": "govreports",
@@ -624,8 +612,7 @@
     "ex-when": {
       "screen": "explorer",
       "file": "pb_explorer/static/src/xml/explorer.xml",
-      "desc": "The period picker: the one choice every number on the Explorer depends on.",
-      "reserved": true
+      "desc": "The period picker: the one choice every number on the Explorer depends on."
     },
     "pk-steps": {
       "screen": "payruns",
@@ -1593,6 +1580,31 @@
       "screen": "integrations",
       "file": "pb_import_advanced/static/src/xml/connector_cockpit.xml",
       "desc": "The Automatic fetch panel: the per-connection schedule (how often, next run, last run)."
+    },
+    "rp-pick": {
+      "screen": "reports",
+      "file": "pb_hr_workforce/static/src/js/payroll_report.js",
+      "desc": "Payroll Report run picker (opens on the newest non-cancelled run)."
+    },
+    "rp-kpis": {
+      "screen": "reports",
+      "file": "pb_hr_workforce/static/src/js/payroll_report.js",
+      "desc": "Payroll Report totals: Employees, Total Gross, Total Deductions, Total Net Pay, Changes."
+    },
+    "rp-tabs": {
+      "screen": "reports",
+      "file": "pb_hr_workforce/static/src/js/payroll_report.js",
+      "desc": "Payroll Report tabs: Earnings, Deductions, Dept Summary."
+    },
+    "bg-months": {
+      "screen": "reports",
+      "file": "pb_budget/static/src/xml/budget_board.xml",
+      "desc": "Budget month strip: Whole year, then months to press, shift-press or drag."
+    },
+    "bg-heat": {
+      "screen": "reports",
+      "file": "pb_budget/static/src/xml/budget_board.xml",
+      "desc": "Budget heat view: each function's tile with its reading (On pace, Running warm…)."
     }
   },
   "pattern": {
@@ -1738,7 +1750,9 @@
       "pb_comp_ben/static/src/xml/paycal_board.xml",
       "pb_comp_ben/static/src/xml/incentives_board.xml",
       "pb_contracts/static/src/xml/contract_360.xml",
-      "pb_import_advanced/static/src/xml/connector_cockpit.xml"
+      "pb_import_advanced/static/src/xml/connector_cockpit.xml",
+      "pb_hr_workforce/static/src/js/payroll_report.js",
+      "pb_budget/static/src/xml/budget_board.xml"
     ],
     "replica": [
       "pb_learn/static/src/engine/screens.js",

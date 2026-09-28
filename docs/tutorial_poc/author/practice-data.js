@@ -1141,6 +1141,9 @@ const PRACTICE = {
       headline: RUN.totalNet,
       headlineScope: RUN.name,
       headlineState: (this.board.find((r) => r.name === RUN.name) || {}).col,
+      /* "avg cost / employee" = (gross + employer contributions) ÷ people paid,
+         pb_insights.py; here over the July Retail run. */
+      costPerEmployee: Math.round((RUN.totalGross + s.employerLeg) / RUN.employees),
       /* The month-on-month move, computed rather than restated. It is the same
          2.7% m2's anomaly card discusses, and it comes out of the same two
          numbers. */
@@ -1231,6 +1234,27 @@ const PRACTICE = {
         { emp: EMP.mai, v: EMP.mai.otJul },
         { emp: EMP.trang, v: EMP.trang.otJul },
       ],
+    };
+  },
+
+  /* LEARN REFRESH step 5 — Insights › Payroll Report and Insights › Budget.
+     The report's totals are the July run's own (RUN); the budget's "People"
+     spend is the three months of net the other screens already show. The
+     report's words have no Vietnamese in the product. */
+  get reports() {
+    const spent = this.recentRuns.reduce((t, r) => t + r.net, 0);
+    return {
+      report: { employees: RUN.employees, gross: RUN.totalGross, net: RUN.totalNet,
+                deductions: RUN.totalGross - RUN.totalNet, changes: 6 },
+      budget: {
+        year: 2026,
+        functions: [
+          { name: B("People", "Con người"), budget: 3100000000, spent, reading: B("On pace", "Đúng nhịp"), tone: "ok" },
+          { name: B("HR operations", "Vận hành nhân sự"), budget: 360000000, spent: 250000000, reading: B("Running warm", "Đang nóng lên"), tone: "warn" },
+          { name: B("Admin", "Hành chính"), budget: 240000000, spent: 88000000, reading: B("Behind the year", "Chậm hơn năm"), tone: "" },
+        ],
+        months: [B("May", "Th5"), B("Jun", "Th6"), B("Jul", "Th7"), B("Aug", "Th8")],
+      },
     };
   },
 
@@ -1895,8 +1919,8 @@ const MENU = [
       { key: "pulse", label: B("Pulse", "Tổng quan"), screen: "insights" },
       { key: "explorer", label: B("Explorer", "Khám phá dữ liệu"), screen: "explorer" },
       { key: "workforce", label: B("Workforce", "Lực lượng lao động"), screen: "workforcean" },
-      { key: "payroll", label: B("Payroll Report", "Báo cáo lương") },
-      { key: "budget", label: B("Budget", "Ngân sách") },
+      { key: "payroll", label: B("Payroll Report", "Báo cáo lương"), screen: "reports" },
+      { key: "budget", label: B("Budget", "Ngân sách"), screen: "reports" },
       { key: "hiring", label: B("Hiring", "Tuyển dụng") },
       { key: "training", label: B("Training", "Đào tạo") },
       { key: "goals", label: B("Goals", "Mục tiêu") },

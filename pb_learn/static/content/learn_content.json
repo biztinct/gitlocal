@@ -9538,7 +9538,7 @@
         "Phân tích hay Explorer — cái nào trả lời được?"
       ],
       "practice_key": "",
-      "screens": "insights,explorer,workforcean",
+      "screens": "insights,explorer,workforcean,reports",
       "show_me": [
         "in-hero",
         "ex-rail"
@@ -17107,16 +17107,16 @@
     {
       "action_tags": "",
       "blurb": {
-        "en": "A board of analytics built from the stored per-run roll-ups. The cost story, the department leaderboard, the statutory split and the snapshots.",
-        "vi": "Bảng phân tích dựng từ các số tổng đã lưu theo từng đợt. Diễn biến chi phí, xếp hạng bộ phận, cơ cấu đóng bắt buộc và các ảnh chụp số liệu."
+        "en": "Insights › Pulse: the newest run's net payroll with its state, the cost story, the department leaderboard, the statutory split and the workforce pulse.",
+        "vi": "Phân tích › Tổng quan: lương thực chi của đợt mới nhất kèm trạng thái, diễn biến chi phí, xếp hạng phòng ban, cơ cấu khoản đóng bắt buộc và nhịp nhân sự."
       },
       "hub": null,
       "key": "insights",
       "live_fallback": "",
       "models": [],
       "name": {
-        "en": "Insights",
-        "vi": "Phân tích"
+        "en": "Insights › Pulse",
+        "vi": "Phân tích › Tổng quan"
       },
       "navs": [],
       "next_step": {
@@ -17172,7 +17172,7 @@
       "models": [],
       "name": {
         "en": "Explorer",
-        "vi": "Explorer"
+        "vi": "Khám phá dữ liệu"
       },
       "navs": [
         "pb_explorer.action_pb_explorer"
@@ -17222,8 +17222,8 @@
       "live_fallback": "",
       "models": [],
       "name": {
-        "en": "Workforce Analytics",
-        "vi": "Phân tích nhân sự"
+        "en": "Insights › Workforce",
+        "vi": "Phân tích › Lực lượng lao động"
       },
       "navs": [],
       "next_step": {
@@ -17236,6 +17236,56 @@
       ],
       "sequence": 210,
       "sidebar_key": "pb_sidebar.item_workforce_insights",
+      "suggest": [
+        {
+          "key": "whichtool",
+          "label": {
+            "en": "Insights or Explorer — which one answers this?",
+            "vi": "Phân tích hay Explorer — cái nào trả lời được?"
+          }
+        },
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        },
+        {
+          "key": "whatnext",
+          "label": {
+            "en": "What should I do next here?",
+            "vi": "Tôi nên làm gì tiếp theo ở đây?"
+          }
+        }
+      ]
+    },
+    {
+      "action_tags": "",
+      "blurb": {
+        "en": "Payroll Report: one run's totals against the run before. Budget: each function's spending against its budget, month by month.",
+        "vi": "Báo cáo lương: tổng của một đợt so với đợt trước. Ngân sách: chi tiêu của từng bộ phận so với ngân sách, theo từng tháng."
+      },
+      "hub": null,
+      "key": "reports",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Payroll Report and Budget",
+        "vi": "Báo cáo lương và Ngân sách"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "On the report, open the people under Changes first. On Budget, read the reading on each function: money gone against year gone.",
+        "vi": "Trên báo cáo, hãy mở những người trong Changes trước. Trên Ngân sách, hãy đọc nhận định của từng bộ phận: tiền đã đi so với năm đã trôi."
+      },
+      "open": "",
+      "places": [
+        "pb_insights_hub:payroll",
+        "pb_insights_hub:budget"
+      ],
+      "sequence": 220,
+      "sidebar_key": "",
       "suggest": [
         {
           "key": "whichtool",
@@ -17283,7 +17333,7 @@
       "places": [
         "pb_compliance_hub:filings"
       ],
-      "sequence": 220,
+      "sequence": 230,
       "sidebar_key": "pb_sidebar.item_govt_reports",
       "suggest": [
         {
@@ -17332,7 +17382,7 @@
       },
       "open": "pb_blueprint.action_pb_blueprint",
       "places": [],
-      "sequence": 230,
+      "sequence": 240,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17386,7 +17436,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 240,
+      "sequence": 250,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17436,7 +17486,7 @@
         "pb_mapping_studio:scheme",
         "pb_mapping_studio:cycle"
       ],
-      "sequence": 250,
+      "sequence": 260,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17490,7 +17540,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 260,
+      "sequence": 270,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17532,7 +17582,7 @@
       "places": [
         "pb_mapping_studio:treatment"
       ],
-      "sequence": 270,
+      "sequence": 280,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17581,7 +17631,7 @@
       },
       "open": "pb_approval_config.action_pb_approval_matrix",
       "places": [],
-      "sequence": 280,
+      "sequence": 290,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17635,7 +17685,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 290,
+      "sequence": 300,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17679,7 +17729,7 @@
       "places": [
         "pb_people_hub:records"
       ],
-      "sequence": 300,
+      "sequence": 310,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17728,7 +17778,7 @@
       },
       "open": "pb_group.action_pb_group",
       "places": [],
-      "sequence": 310,
+      "sequence": 320,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17779,7 +17829,7 @@
         "pb_people_hub:pay/fairness",
         "pb_people_hub:pay"
       ],
-      "sequence": 320,
+      "sequence": 330,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17829,7 +17879,7 @@
         "pb_people_hub:pay/review",
         "pb_people_hub:pay/changes"
       ],
-      "sequence": 330,
+      "sequence": 340,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17878,7 +17928,7 @@
       "places": [
         "pb_people_hub:plan"
       ],
-      "sequence": 340,
+      "sequence": 350,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17933,7 +17983,7 @@
         "pb_people_hub:goals",
         "pb_people_hub:announcements"
       ],
-      "sequence": 350,
+      "sequence": 360,
       "sidebar_key": "",
       "suggest": [
         {
@@ -17975,7 +18025,7 @@
       "places": [
         "pb_lifecycle_hub:hiring"
       ],
-      "sequence": 360,
+      "sequence": 370,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18022,7 +18072,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 370,
+      "sequence": 380,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18064,7 +18114,7 @@
       "places": [
         "pb_lifecycle_hub:newjoiners"
       ],
-      "sequence": 380,
+      "sequence": 390,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18113,7 +18163,7 @@
       "places": [
         "pb_lifecycle_hub:probation"
       ],
-      "sequence": 390,
+      "sequence": 400,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18162,7 +18212,7 @@
       "places": [
         "pb_lifecycle_hub:pip"
       ],
-      "sequence": 400,
+      "sequence": 410,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18204,7 +18254,7 @@
       "places": [
         "pb_lifecycle_hub:contracts"
       ],
-      "sequence": 410,
+      "sequence": 420,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18253,7 +18303,7 @@
       "places": [
         "pb_lifecycle_hub:exits"
       ],
-      "sequence": 420,
+      "sequence": 430,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18302,7 +18352,7 @@
       "places": [
         "pb_workforce:today"
       ],
-      "sequence": 430,
+      "sequence": 440,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18351,7 +18401,7 @@
       "places": [
         "pb_workforce:time"
       ],
-      "sequence": 440,
+      "sequence": 450,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18393,7 +18443,7 @@
       "places": [
         "pb_workforce:timeoff"
       ],
-      "sequence": 450,
+      "sequence": 460,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18435,7 +18485,7 @@
       "places": [
         "pb_workforce:overtime"
       ],
-      "sequence": 460,
+      "sequence": 470,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18477,7 +18527,7 @@
       "places": [
         "pb_workforce:close"
       ],
-      "sequence": 470,
+      "sequence": 480,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18517,7 +18567,7 @@
       },
       "open": "biz_access.action_pb_access_board",
       "places": [],
-      "sequence": 480,
+      "sequence": 490,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18557,7 +18607,7 @@
       },
       "open": "pb_govt_reports.action_pb_filing_flow",
       "places": [],
-      "sequence": 490,
+      "sequence": 500,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18601,7 +18651,7 @@
         "pb_compliance_hub:young",
         "pb_compliance_hub:audit"
       ],
-      "sequence": 500,
+      "sequence": 510,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18703,7 +18753,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 510,
+      "sequence": 520,
       "sidebar_key": "",
       "suggest": [
         {
@@ -18886,7 +18936,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 520,
+      "sequence": 530,
       "sidebar_key": "",
       "suggest": [
         {
@@ -19059,7 +19109,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 530,
+      "sequence": 540,
       "sidebar_key": "",
       "suggest": [
         {
@@ -19205,7 +19255,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 540,
+      "sequence": 550,
       "sidebar_key": "",
       "suggest": [
         {
@@ -19374,7 +19424,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 550,
+      "sequence": 560,
       "sidebar_key": "",
       "suggest": [
         {
@@ -19523,7 +19573,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 560,
+      "sequence": 570,
       "sidebar_key": "",
       "suggest": [
         {
@@ -19625,7 +19675,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 570,
+      "sequence": 580,
       "sidebar_key": "",
       "suggest": [
         {
@@ -19727,7 +19777,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 580,
+      "sequence": 590,
       "sidebar_key": "",
       "suggest": [
         {
@@ -19973,7 +20023,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 590,
+      "sequence": 600,
       "sidebar_key": "",
       "suggest": [
         {
@@ -20122,7 +20172,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 600,
+      "sequence": 610,
       "sidebar_key": "",
       "suggest": [
         {
@@ -20412,7 +20462,7 @@
         "vi": "báo cáo nộp cơ quan, nộp báo cáo bảo hiểm hằng tháng, tạo hồ sơ, bảo hiểm xã hội"
       },
       "section": "payroll",
-      "sequence": 290,
+      "sequence": 300,
       "sidebar_key": "pb_sidebar.item_govt_reports",
       "star": true,
       "summary": {
@@ -20589,7 +20639,7 @@
         "vi": "xác minh ngân hàng, yêu cầu đổi ngân hàng, lao động chưa thành niên, nhật ký kiểm toán, ai đã sửa gì"
       },
       "section": "payroll",
-      "sequence": 300,
+      "sequence": 310,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -20599,162 +20649,965 @@
     },
     {
       "after": "",
-      "duration_min": 5,
+      "duration_min": 6,
       "icon": "trending-up",
       "key": "insights",
-      "kind": "outline",
-      "lessons": [],
+      "kind": "lesson",
+      "lessons": [
+        {
+          "duration_min": 6,
+          "goal": {
+            "en": "Quote the headline with its state, compare months fairly, and know where each figure opens.",
+            "vi": "Trích con số nổi bật kèm trạng thái, so các tháng cho công bằng, và biết mỗi con số mở ra đâu."
+          },
+          "key": "L35",
+          "name": {
+            "en": "Read Insights › Pulse",
+            "vi": "Đọc Phân tích › Tổng quan"
+          },
+          "quizzes": [
+            {
+              "kind": "choice",
+              "options": [
+                {
+                  "correct": true,
+                  "feedback": {
+                    "en": "Yes. Name the run and its state; it may still change.",
+                    "vi": "Đúng vậy. Hãy nêu tên đợt và trạng thái của nó; nó vẫn có thể thay đổi."
+                  },
+                  "label": {
+                    "en": "That is Retail's July run, not yet approved",
+                    "vi": "Đó là đợt tháng 7 của Bán lẻ, chưa được duyệt"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. The chip says it is not approved, and it is one division's run.",
+                    "vi": "Hãy nghĩ lại một chút. Chip cho biết nó chưa được duyệt, và đó là đợt của một bộ phận."
+                  },
+                  "label": {
+                    "en": "₫612 million, final",
+                    "vi": "612 triệu ₫, đã chốt"
+                  }
+                }
+              ],
+              "prompt": {
+                "en": "The headline shows ₫612 million with a Waiting for approval chip. Your CFO asks what July cost. What do you say?",
+                "vi": "Con số nổi bật là 612 triệu ₫ kèm chip Chờ phê duyệt. Giám đốc tài chính hỏi tháng 7 tốn bao nhiêu. Bạn trả lời thế nào?"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "anchor": "in-hero",
+              "body": {
+                "en": "Insights › <b>Pulse</b>. The big figure is the <b>net payroll</b> of the newest run, even a draft. The chip beside it says which state it is in.",
+                "vi": "Phân tích › <b>Tổng quan</b>. Con số lớn là <b>lương thực chi</b> của đợt mới nhất, kể cả đợt còn nháp. Chip bên cạnh cho biết nó đang ở trạng thái nào."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "What & why",
+                "vi": "Là gì & vì sao"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "insights",
+              "tip": "",
+              "title": {
+                "en": "The latest run, whatever its state",
+                "vi": "Đợt gần nhất, dù ở trạng thái nào"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "in-hero",
+              "body": {
+                "en": "The line under it compares every run in that month with the month before. A second division's run arriving moves it too.",
+                "vi": "Dòng bên dưới so mọi đợt trong tháng đó với tháng trước. Khi đợt của một bộ phận khác về, dòng này cũng thay đổi."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "The move",
+                "vi": "Mức thay đổi"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "insights",
+              "tip": "",
+              "title": {
+                "en": "Month against month",
+                "vi": "Tháng so với tháng"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "in-trend",
+              "body": {
+                "en": "<b>3M</b>, <b>6M</b> or <b>12M</b>. Say which one you used whenever you quote the trend.",
+                "vi": "<b>3M</b>, <b>6M</b> hoặc <b>12M</b>. Hãy nói rõ bạn dùng khoảng nào mỗi khi trích xu hướng."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Cost story",
+                "vi": "Diễn biến chi phí"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "insights",
+              "tip": "",
+              "title": {
+                "en": "Pick the window first",
+                "vi": "Chọn khoảng thời gian trước"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "in-duo",
+              "body": {
+                "en": "On the <b>Department leaderboard</b>, press <b>Per head</b>. One extra person explains most of what looks like a rise in a total. The <b>Statutory split</b> beside it shows what the law adds.",
+                "vi": "Trên <b>Xếp hạng phòng ban</b>, bấm <b>Bình quân đầu người</b>. Thêm một người là đủ giải thích phần lớn cái vẻ tăng của một con số tổng. <b>Cơ cấu khoản đóng bắt buộc</b> bên cạnh cho thấy phần luật định cộng thêm."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Compare fairly",
+                "vi": "So sánh công bằng"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "insights",
+              "tip": "",
+              "title": {
+                "en": "Per head, not total",
+                "vi": "Theo đầu người, không theo tổng"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "in-pulse",
+              "body": {
+                "en": "Attendance exceptions, time off and overtime this month. Each exception left open becomes a question on next month's payslips.",
+                "vi": "Bất thường chấm công, nghỉ phép và tăng ca tháng này. Mỗi bất thường còn để mở sẽ thành một câu hỏi trên phiếu lương tháng sau."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "People",
+                "vi": "Con người"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "insights",
+              "tip": "",
+              "title": {
+                "en": "Workforce pulse",
+                "vi": "Nhịp nhân sự"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "in-explore",
+              "body": {
+                "en": "Press the big figure or any number and Explorer opens on it. <b>Ask something else</b> is there for the question this board did not expect.",
+                "vi": "Bấm con số lớn hoặc bất kỳ con số nào, Explorer sẽ mở ra đúng nó. <b>Hỏi cái gì khác</b> dành cho câu hỏi bảng này không lường trước."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Go deeper",
+                "vi": "Đi sâu hơn"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "insights",
+              "tip": "",
+              "title": {
+                "en": "Every figure opens Explorer",
+                "vi": "Mọi con số đều mở Explorer"
+              },
+              "visual": "none"
+            }
+          ]
+        }
+      ],
       "line": "insights",
       "name": {
-        "en": "Insights",
-        "vi": "Phân tích"
+        "en": "Insights › Pulse",
+        "vi": "Phân tích › Tổng quan"
       },
       "outline": {
         "mistakes": [
           {
-            "en": "Comparing one total against another total. Headcount moves between months, so the honest comparison is cost per head. One extra employee explains most of what looks like a rise.",
-            "vi": "Đem một con số tổng so với một con số tổng khác. Sĩ số thay đổi giữa các tháng, nên phép so trung thực là chi phí bình quân đầu người. Thêm một nhân viên là đủ giải thích phần lớn cái vẻ \"tăng\" đó."
+            "en": "Quoting the headline without its state chip. A draft computed an hour ago shows here too.",
+            "vi": "Trích con số nổi bật mà bỏ qua chip trạng thái. Một đợt nháp vừa tính một giờ trước cũng hiện ở đây."
           },
           {
-            "en": "Reading a board figure without its window. Three months and twelve months tell different stories about the same company, and the chip that decides which is easy to leave where the last person left it.",
-            "vi": "Đọc một con số trên bảng mà quên khoảng thời gian của nó. Ba tháng và mười hai tháng kể hai câu chuyện khác nhau về cùng một công ty, và cái chip quyết định điều đó rất dễ bị để nguyên như người trước đã chọn."
+            "en": "Comparing totals instead of per head. Headcount moves between months.",
+            "vi": "So các con số tổng thay vì theo đầu người. Số người thay đổi giữa các tháng."
           },
           {
-            "en": "Quoting the headline without its state chip. The headline is the LATEST run in any state. A draft nobody has reviewed appears here the moment it is computed. It reads exactly like a paid month unless you look at the chip.",
-            "vi": "Trích con số nổi bật mà bỏ qua chip trạng thái. Phần đầu lấy đợt GẦN NHẤT ở bất kỳ trạng thái nào. Một đợt còn Nháp chưa ai soát vẫn xuất hiện ở đây ngay khi vừa tính xong. Nhìn vào không khác gì một tháng đã chi, trừ khi bạn nhìn cái chip."
+            "en": "Quoting the cost story without its window. 3M and 12M tell different stories.",
+            "vi": "Trích diễn biến chi phí mà không nói khoảng thời gian. 3M và 12M kể hai câu chuyện khác nhau."
           }
         ],
         "prereq": {
-          "en": "An analytics group, and at least two completed runs. A trend needs a second point before it is a trend.",
-          "vi": "Nhóm quyền phân tích, và ít nhất hai đợt lương đã hoàn tất. Một xu hướng cần điểm thứ hai mới thành xu hướng."
+          "en": "An analytics role, and at least two runs for a trend.",
+          "vi": "Vai trò phân tích, và ít nhất hai đợt lương để có xu hướng."
         },
         "what": {
-          "en": "A board of analytics over the runs this company has. The headline net comes from the LATEST run, whatever state it is in. Below that: the cost story over three, six or twelve months, and a department leaderboard read from the latest run that is DONE. Then the statutory split, a workforce pulse and the snapshots panel.",
-          "vi": "Bảng phân tích trên các đợt lương của công ty. Con số thực chi nổi bật lấy từ đợt GẦN NHẤT, bất kể nó đang ở trạng thái nào. Bên dưới là diễn biến chi phí theo ba, sáu hay mười hai tháng, và bảng xếp hạng bộ phận đọc từ đợt ĐÃ HOÀN TẤT gần nhất. Rồi tới cơ cấu các khoản đóng bắt buộc, nhịp nhân sự và bảng ảnh chụp số liệu."
+          "en": "Insights › Pulse. At the top, the newest run's net payroll with its state. Below it: the cost story over 3, 6 or 12 months, the department leaderboard, the statutory split and the workforce pulse.",
+          "vi": "Phân tích › Tổng quan. Trên cùng là lương thực chi của đợt mới nhất kèm trạng thái. Bên dưới: diễn biến chi phí theo 3, 6 hoặc 12 tháng, xếp hạng phòng ban, cơ cấu khoản đóng bắt buộc và nhịp nhân sự."
         },
         "when": {
-          "en": "After a run reaches done. At month end. And any time somebody senior asks a question that starts with \"why is payroll\".",
-          "vi": "Sau khi một đợt lương đạt Hoàn tất. Vào cuối tháng. Và bất cứ khi nào có lãnh đạo hỏi một câu bắt đầu bằng \"vì sao chi phí lương\"."
+          "en": "After a run is computed, at month end, and whenever someone asks why payroll moved.",
+          "vi": "Sau khi một đợt được tính, vào cuối tháng, và bất cứ khi nào có người hỏi vì sao chi phí lương thay đổi."
         },
         "why": {
-          "en": "It answers the questions a payroll month asks every time, and it is fast because it reads the stored roll-ups instead of adding payslip lines again. One thing to know: the headline and the leaderboard do not have the same scope. The headline shows the latest run and prints its state beside it. The leaderboard waits for a run to be done. Read the state chip before you quote the number.",
-          "vi": "Nó trả lời những câu hỏi mà tháng lương nào cũng đặt ra, và nó nhanh vì đọc các số tổng đã lưu thay vì cộng lại từng dòng phiếu lương. Có một điều cần biết: phần đầu và bảng xếp hạng không cùng phạm vi. Phần đầu hiển thị đợt gần nhất và in kèm trạng thái của chính nó. Bảng xếp hạng thì chờ tới khi có đợt đã hoàn tất. Hãy đọc chip trạng thái trước khi trích con số."
+          "en": "It answers the usual questions fast, and every figure opens Explorer to show what it is made of.",
+          "vi": "Nó trả lời nhanh những câu hỏi quen thuộc, và mọi con số đều mở Explorer để cho thấy nó được tạo từ đâu."
         }
       },
       "required": true,
-      "roles": [],
-      "search": "",
+      "roles": [
+        "owner",
+        "approver",
+        "officer"
+      ],
+      "search": {
+        "en": "insights, pulse, cost story, net payroll, per head, statutory split",
+        "vi": "phân tích, tổng quan, diễn biến chi phí, lương thực chi, bình quân đầu người"
+      },
       "section": "payroll",
       "sequence": 260,
       "sidebar_key": "pb_sidebar.item_analytics",
       "star": false,
       "summary": {
-        "en": "The board that answers the questions a payroll month asks every time.",
-        "vi": "Bảng phân tích trả lời những câu hỏi mà tháng lương nào cũng đặt ra."
+        "en": "The board that answers the questions every pay month asks, and opens Explorer on any figure.",
+        "vi": "Bảng trả lời những câu hỏi tháng lương nào cũng đặt ra, và mở Explorer trên bất kỳ con số nào."
       }
     },
     {
       "after": "insights",
-      "duration_min": 5,
+      "duration_min": 7,
       "icon": "compass",
       "key": "explorer",
-      "kind": "outline",
-      "lessons": [],
+      "kind": "lesson",
+      "lessons": [
+        {
+          "duration_min": 7,
+          "goal": {
+            "en": "Build a question from a measure, a split, a time and filters, and quote the answer with its scope.",
+            "vi": "Dựng một câu hỏi từ chỉ tiêu, cách chia, thời gian và bộ lọc, rồi trích câu trả lời kèm phạm vi của nó."
+          },
+          "key": "L36",
+          "name": {
+            "en": "Ask Explorer a question",
+            "vi": "Đặt câu hỏi cho Explorer"
+          },
+          "quizzes": [
+            {
+              "kind": "choice",
+              "options": [
+                {
+                  "correct": true,
+                  "feedback": {
+                    "en": "Yes. Same measure, wider scope — so quote the tags with the number.",
+                    "vi": "Đúng vậy. Cùng chỉ tiêu, phạm vi rộng hơn — nên hãy trích kèm các thẻ."
+                  },
+                  "label": {
+                    "en": "Mid-month advances are now counted too",
+                    "vi": "Giờ các khoản tạm ứng giữa tháng cũng được tính"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. Explorer only reads; it never changes a payslip.",
+                    "vi": "Hãy nghĩ lại một chút. Explorer chỉ đọc; nó không bao giờ thay đổi phiếu lương."
+                  },
+                  "label": {
+                    "en": "Explorer recomputed the payslips",
+                    "vi": "Explorer đã tính lại phiếu lương"
+                  }
+                }
+              ],
+              "prompt": {
+                "en": "You remove the Main runs only tag and net pay goes up. Why?",
+                "vi": "Bạn gỡ thẻ Chỉ các kỳ lương chính và lương thực nhận tăng lên. Vì sao?"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "anchor": "ex-head",
+              "body": {
+                "en": "Insights › <b>Explorer</b>. <b>Starting points</b> are ready-made questions. <b>Compare schemes</b> puts every pay scheme side by side, month by month.",
+                "vi": "Phân tích › <b>Khám phá dữ liệu</b>. <b>Điểm xuất phát</b> là các câu hỏi dựng sẵn. <b>So sánh các phương án lương</b> đặt mọi chương trình lương cạnh nhau, theo từng tháng."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "What & why",
+                "vi": "Là gì & vì sao"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "explorer",
+              "tip": "",
+              "title": {
+                "en": "Start from a starting point",
+                "vi": "Bắt đầu từ một điểm xuất phát"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "ex-rail",
+              "body": {
+                "en": "Choose what to count, like Net pay, then how to split it, like Division. Most wrong answers are the right filter on the wrong measure.",
+                "vi": "Chọn thứ cần đếm, như Lương thực nhận, rồi cách chia, như Khối. Phần lớn câu trả lời sai là lọc đúng mà chọn nhầm chỉ tiêu."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "The question",
+                "vi": "Câu hỏi"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "explorer",
+              "tip": "",
+              "title": {
+                "en": "Measure first, then By",
+                "vi": "Chỉ tiêu trước, rồi Theo"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "ex-when",
+              "body": {
+                "en": "Pick This month, Last month, This year, or drag across the month strip.",
+                "vi": "Chọn Tháng này, Tháng trước, Năm nay, hoặc kéo qua dải các tháng."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "When",
+                "vi": "Khi nào"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "explorer",
+              "tip": "",
+              "title": {
+                "en": "The time is part of the question",
+                "vi": "Thời gian là một phần câu hỏi"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "ex-filters",
+              "body": {
+                "en": "<b>Main runs only</b> is on by default, so mid-month advances are left out. Remove a tag and the figure changes.",
+                "vi": "<b>Chỉ các kỳ lương chính</b> bật sẵn, nên các đợt tạm ứng giữa tháng không được tính. Gỡ một thẻ là con số thay đổi."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Where",
+                "vi": "Ở đâu"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "explorer",
+              "tip": "",
+              "title": {
+                "en": "Every filter is a tag",
+                "vi": "Mỗi bộ lọc là một thẻ"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "ex-headline",
+              "body": {
+                "en": "The headline names the measure, the split and the total. <b>Explain</b> says what moved it; <b>Per person</b> divides it by the people in it.",
+                "vi": "Dòng đầu ghi chỉ tiêu, cách chia và tổng. <b>Giải thích</b> cho biết điều gì làm nó thay đổi; <b>Trên mỗi người</b> chia nó cho số người trong đó."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "The answer",
+                "vi": "Câu trả lời"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "explorer",
+              "tip": "",
+              "title": {
+                "en": "Quote it with its tags",
+                "vi": "Trích nó kèm các thẻ"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "rep-ex-compare",
+              "body": {
+                "en": "One row per pay scheme, each in its own money. Explorer never adds two currencies together.",
+                "vi": "Mỗi chương trình lương một dòng, mỗi dòng theo đồng tiền riêng. Explorer không bao giờ cộng hai loại tiền với nhau."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Two schemes",
+                "vi": "Hai chương trình"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "explorer",
+              "tip": "",
+              "title": {
+                "en": "Compare schemes",
+                "vi": "So sánh các phương án lương"
+              },
+              "visual": "none"
+            }
+          ]
+        }
+      ],
       "line": "insights",
       "name": {
         "en": "Explorer",
-        "vi": "Explorer"
+        "vi": "Khám phá dữ liệu"
       },
       "outline": {
         "mistakes": [
           {
-            "en": "Quoting a figure without its filters. The tags above the result are part of the answer. The same measure with one tag removed is a different number, and it looks identical pasted into an email.",
-            "vi": "Trích một con số mà bỏ quên bộ lọc của nó. Các thẻ phía trên kết quả là một phần của câu trả lời. Cùng chỉ tiêu đó, gỡ một thẻ đi là một con số khác, mà dán vào email thì trông y hệt nhau."
+            "en": "Quoting a figure without its tags. Remove one and it is a different number.",
+            "vi": "Trích một con số mà bỏ các thẻ. Gỡ một thẻ là ra con số khác."
           },
           {
-            "en": "Stopping at the table. The answer is usually in the waterfall and the drill. The table tells you a division moved; those two tell you which component moved and which employees carried it.",
-            "vi": "Dừng lại ở cái bảng. Câu trả lời thường nằm ở biểu đồ phân rã và ở bước đi sâu. Cái bảng chỉ cho biết một bộ phận có biến động; hai thứ kia mới cho biết thành phần nào biến động và những nhân viên nào gánh phần đó."
+            "en": "Forgetting Main runs only. Mid-month advances are left out until you remove it.",
+            "vi": "Quên thẻ Chỉ các kỳ lương chính. Các đợt tạm ứng giữa tháng bị loại cho tới khi bạn gỡ nó."
           }
         ],
         "prereq": {
-          "en": "An analytics group and a computed run. Knowing which measure you actually want helps more than any filter.",
-          "vi": "Nhóm quyền phân tích và một đợt lương đã tính. Biết rõ mình thật sự cần chỉ tiêu nào còn hữu ích hơn mọi bộ lọc."
+          "en": "An analytics role and a computed run. Know which measure you want before you filter.",
+          "vi": "Vai trò phân tích và một đợt đã tính. Hãy biết mình cần chỉ tiêu nào trước khi lọc."
         },
         "what": {
-          "en": "A question builder over the same payroll facts. You pick one measure, one breakdown and one comparison. Filters appear as tags above the result, and you can pull any of them off.",
-          "vi": "Công cụ đặt câu hỏi trên cùng dữ liệu lương. Bạn chọn một chỉ tiêu, một chiều tách và một chiều so sánh. Các bộ lọc hiện thành thẻ phía trên kết quả, và bạn gỡ thẻ nào cũng được."
+          "en": "Insights › Explorer. Starting points, then Measure, By and Over, then When and Where. The headline gives the total, with Per person and Explain beside it.",
+          "vi": "Phân tích › Khám phá dữ liệu. Điểm xuất phát, rồi Chỉ tiêu, Theo và Chia theo thời gian, rồi Khi nào và Ở đâu. Dòng đầu cho tổng, kèm Trên mỗi người và Giải thích."
         },
         "when": {
-          "en": "When the board has answered everything it can and the question is still open. Or when somebody needs a figure broken down a way nobody built a screen for.",
-          "vi": "Khi bảng phân tích đã trả lời hết những gì nó có thể mà câu hỏi vẫn còn đó. Hoặc khi ai đó cần một con số tách theo cách chưa có màn hình nào dựng sẵn."
+          "en": "When Pulse has said all it can, or someone needs a figure split a way no screen shows.",
+          "vi": "Khi Tổng quan đã nói hết những gì nó có thể, hoặc ai đó cần một con số chia theo cách chưa màn hình nào có."
         },
         "why": {
-          "en": "Boards answer the questions somebody expected, and real questions are rarely expected. This is where \"net pay by division, only the divisions that ran mid-cycle\" gets answered without anybody exporting a spreadsheet. It also reconciles with the payslips, which a spreadsheet stops doing the moment it is saved. And it is the only analytics screen that explains a MOVEMENT rather than reporting one.",
-          "vi": "Bảng phân tích trả lời những câu hỏi có người đã lường trước, còn câu hỏi thật thì hiếm khi được lường trước. Đây là nơi \"thực nhận theo bộ phận, chỉ các bộ phận chạy giữa kỳ\" được trả lời mà không ai phải xuất bảng tính. Nó cũng luôn khớp với phiếu lương, điều mà một bảng tính hết làm được ngay khi vừa lưu. Và đây là màn hình phân tích duy nhất giải thích được một BIẾN ĐỘNG chứ không chỉ báo cáo nó."
+          "en": "Real questions are rarely the ones a board expected. Explorer answers them from the payslips themselves, and never adds two currencies together.",
+          "vi": "Câu hỏi thật hiếm khi là câu bảng tổng quan đã lường trước. Explorer trả lời chúng từ chính phiếu lương, và không bao giờ cộng hai loại tiền với nhau."
         }
       },
       "required": false,
-      "roles": [],
-      "search": "",
+      "roles": [
+        "owner",
+        "officer"
+      ],
+      "search": {
+        "en": "explorer, measure, break down, compare schemes, filter, explain a movement",
+        "vi": "khám phá dữ liệu, chỉ tiêu, chia theo, so sánh chương trình lương, bộ lọc, giải thích biến động"
+      },
       "section": "payroll",
       "sequence": 270,
       "sidebar_key": "pb_sidebar.item_explorer",
       "star": false,
       "summary": {
-        "en": "For the question the board did not anticipate: pick a measure, break it down, filter it.",
-        "vi": "Dành cho câu hỏi mà bảng phân tích không lường trước: chọn chỉ tiêu, tách theo chiều, rồi lọc."
+        "en": "For the question the board did not expect: pick a measure, split it, set the time and the filters.",
+        "vi": "Dành cho câu hỏi bảng tổng quan không lường trước: chọn chỉ tiêu, cách chia, thời gian và bộ lọc."
       }
     },
     {
       "after": "insights",
-      "duration_min": 4,
+      "duration_min": 5,
       "icon": "bar-chart",
       "key": "workforcean",
-      "kind": "outline",
-      "lessons": [],
+      "kind": "lesson",
+      "lessons": [
+        {
+          "duration_min": 5,
+          "goal": {
+            "en": "Read headcount as people paid, and spot a month that left somebody out.",
+            "vi": "Đọc số lượng là số người được trả lương, và nhận ra tháng nào đã bỏ sót ai đó."
+          },
+          "key": "L37",
+          "name": {
+            "en": "People paid, month by month",
+            "vi": "Số người được trả lương, theo từng tháng"
+          },
+          "quizzes": [
+            {
+              "kind": "choice",
+              "options": [
+                {
+                  "correct": true,
+                  "feedback": {
+                    "en": "Yes. Often someone starting next month — or someone missed.",
+                    "vi": "Đúng vậy. Thường là người bắt đầu từ tháng sau — hoặc một người bị sót."
+                  },
+                  "label": {
+                    "en": "Who is employed but had no July payslip",
+                    "vi": "Ai đang làm việc mà không có phiếu lương tháng 7"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. The gap is exactly where a missing payslip hides.",
+                    "vi": "Hãy nghĩ lại một chút. Khoảng chênh chính là chỗ một phiếu lương bị thiếu đang ẩn."
+                  },
+                  "label": {
+                    "en": "Nothing — the two always differ",
+                    "vi": "Không gì cả — hai con số luôn khác nhau"
+                  }
+                }
+              ],
+              "prompt": {
+                "en": "People › Employees says 70, but employees paid in July says 69. What should you check?",
+                "vi": "Con người › Nhân viên ghi 70, nhưng số nhân viên được trả lương tháng 7 là 69. Bạn nên kiểm tra gì?"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "anchor": "wa-head",
+              "body": {
+                "en": "Insights › <b>Workforce</b>. Pick the window: 1, 3, 6 or 12 months.",
+                "vi": "Phân tích › <b>Lực lượng lao động</b>. Chọn khoảng thời gian: 1, 3, 6 hoặc 12 tháng."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "What & why",
+                "vi": "Là gì & vì sao"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "workforcean",
+              "tip": "",
+              "title": {
+                "en": "The same months, read as people",
+                "vi": "Vẫn những tháng đó, đọc theo con người"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "wa-kpis",
+              "body": {
+                "en": "<b>employees paid</b> counts payslips, not people employed. Cost per head is the fair way to compare two months.",
+                "vi": "<b>nhân viên được trả lương</b> đếm phiếu lương, không đếm người đang làm. Chi phí bình quân đầu người là cách so hai tháng cho công bằng."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "The numbers",
+                "vi": "Các con số"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "workforcean",
+              "tip": "",
+              "title": {
+                "en": "Paid, joined, left, cost per head",
+                "vi": "Được trả, vào làm, đã nghỉ, chi phí bình quân"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "wa-chart",
+              "body": {
+                "en": "A step is a wave of joiners or leavers — or a run that left somebody out. Compare it with People › Employees before you explain it.",
+                "vi": "Một bậc nhảy là một đợt người vào hoặc người nghỉ — hoặc một đợt lương đã bỏ sót ai đó. Hãy so với Con người › Nhân viên trước khi giải thích."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Read the line",
+                "vi": "Đọc đường biểu đồ"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "workforcean",
+              "tip": "",
+              "title": {
+                "en": "A step down is worth a look",
+                "vi": "Một bậc tụt xuống đáng xem"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "wa-duo",
+              "body": {
+                "en": "Attendance exceptions and who carries the overtime. Hùng carries the most this month.",
+                "vi": "Bất thường chấm công và ai đang gánh phần tăng ca. Tháng này Hùng gánh nhiều nhất."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Time",
+                "vi": "Thời gian"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "workforcean",
+              "tip": "",
+              "title": {
+                "en": "Exceptions and overtime",
+                "vi": "Bất thường và tăng ca"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "wa-filters",
+              "body": {
+                "en": "Pick a division or department to see only its people. <b>Clear filters</b> brings the whole company back.",
+                "vi": "Chọn một bộ phận hoặc phòng ban để chỉ xem người của nó. <b>Bỏ bộ lọc</b> đưa cả công ty trở lại."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Narrow it",
+                "vi": "Thu hẹp"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "workforcean",
+              "tip": "",
+              "title": {
+                "en": "One division at a time",
+                "vi": "Mỗi lần một bộ phận"
+              },
+              "visual": "none"
+            }
+          ]
+        }
+      ],
       "line": "insights",
       "name": {
-        "en": "Workforce Analytics",
-        "vi": "Phân tích nhân sự"
+        "en": "Insights › Workforce",
+        "vi": "Phân tích › Lực lượng lao động"
       },
       "outline": {
         "mistakes": [
           {
-            "en": "Reading the headcount line as a hiring chart. It counts people who were PAID, so a step in it can just as easily be a run that left somebody out.",
-            "vi": "Đọc đường sĩ số như biểu đồ tuyển dụng. Nó đếm những người ĐÃ ĐƯỢC TRẢ LƯƠNG, nên một bậc nhảy trên đó cũng có thể là một đợt lương đã bỏ sót ai đó."
+            "en": "Reading the headcount line as a hiring chart. A step can be a run that left somebody out.",
+            "vi": "Đọc đường số người như biểu đồ tuyển dụng. Một bậc nhảy có thể là một đợt đã bỏ sót ai đó."
           },
           {
-            "en": "Treating attendance exceptions as somebody else's problem. Each one becomes an input, and the ones nobody resolved are the flags on next month's payslips.",
-            "vi": "Coi ngoại lệ chấm công là chuyện của người khác. Mỗi ngoại lệ đều thành một dữ liệu đầu vào, và những ngoại lệ không ai xử lý chính là các cờ cảnh báo trên phiếu lương tháng sau."
+            "en": "Leaving attendance exceptions for later. Each one becomes a question on next month's payslips.",
+            "vi": "Để bất thường chấm công lại sau. Mỗi cái sẽ thành một câu hỏi trên phiếu lương tháng sau."
           }
         ],
         "prereq": {
-          "en": "An analytics group, and at least two runs to compare.",
-          "vi": "Nhóm quyền phân tích, và ít nhất hai đợt lương để so sánh."
+          "en": "An analytics role, and at least two runs.",
+          "vi": "Vai trò phân tích, và ít nhất hai đợt lương."
         },
         "what": {
-          "en": "How many people were paid each month, who joined, who left, cost per head, attendance exceptions and overtime. All of it is read off the payroll that actually ran.",
-          "vi": "Mỗi tháng có bao nhiêu người được trả lương, ai vào, ai nghỉ, chi phí bình quân đầu người, ngoại lệ chấm công và tăng ca. Tất cả đọc từ chính các đợt lương đã chạy."
+          "en": "Insights › Workforce. Employees paid, joined, left and cost per head; the headcount-paid line; attendance exceptions, overtime load and time off.",
+          "vi": "Phân tích › Lực lượng lao động. Số nhân viên được trả lương, vào làm, đã nghỉ và chi phí bình quân đầu người; đường số người được trả; bất thường chấm công, khối lượng tăng ca và nghỉ phép."
         },
         "when": {
-          "en": "At month end, beside Insights. And whenever a run's headcount does not match what you expected.",
-          "vi": "Vào cuối tháng, đọc cùng với Phân tích. Và bất cứ khi nào sĩ số của một đợt lương không khớp với điều bạn chờ đợi."
+          "en": "At month end, beside Pulse, and when a run's headcount is not what you expected.",
+          "vi": "Vào cuối tháng, cùng với Tổng quan, và khi số người của một đợt không như bạn nghĩ."
         },
         "why": {
-          "en": "\"People paid\" is not \"people employed\", and the gap between those two numbers is where a missing payslip lives. A month with flat headcount and a jump in cost per head is a different problem from one where both move.",
-          "vi": "\"Được trả lương\" không đồng nghĩa với \"đang làm việc\", và khoảng chênh giữa hai con số ấy chính là chỗ một phiếu lương bị thiếu đang nằm. Một tháng sĩ số đứng yên mà chi phí bình quân nhảy vọt là vấn đề khác hẳn tháng cả hai cùng thay đổi."
+          "en": "People paid is not people employed. The gap between the two is where a missing payslip hides.",
+          "vi": "Được trả lương không đồng nghĩa với đang làm việc. Khoảng chênh giữa hai con số là chỗ một phiếu lương bị thiếu đang ẩn."
         }
       },
       "required": false,
-      "roles": [],
-      "search": "",
+      "roles": [
+        "owner",
+        "hr"
+      ],
+      "search": {
+        "en": "workforce insights, employees paid, joiners, leavers, cost per head",
+        "vi": "phân tích lực lượng lao động, nhân viên được trả lương, người vào, người nghỉ, chi phí bình quân"
+      },
       "section": "payroll",
       "sequence": 280,
       "sidebar_key": "pb_sidebar.item_workforce_insights",
       "star": false,
       "summary": {
-        "en": "The same months read as people rather than as money: who was paid, who joined, who left.",
-        "vi": "Vẫn những tháng đó nhưng đọc theo con người thay vì theo tiền: ai được trả lương, ai vào, ai nghỉ."
+        "en": "The same months read as people: who was paid, who joined, who left, and the cost per head.",
+        "vi": "Vẫn những tháng đó đọc theo con người: ai được trả lương, ai vào, ai nghỉ, và chi phí bình quân đầu người."
+      }
+    },
+    {
+      "after": "insights",
+      "duration_min": 6,
+      "icon": "landmark",
+      "key": "reports",
+      "kind": "lesson",
+      "lessons": [
+        {
+          "duration_min": 6,
+          "goal": {
+            "en": "Read one run's report against the run before, and see whether spending is on pace for the year.",
+            "vi": "Đọc báo cáo của một đợt so với đợt trước, và xem chi tiêu có đúng nhịp cả năm không."
+          },
+          "key": "L38",
+          "name": {
+            "en": "Payroll Report and Budget",
+            "vi": "Báo cáo lương và Ngân sách"
+          },
+          "quizzes": [
+            {
+              "kind": "choice",
+              "options": [
+                {
+                  "correct": true,
+                  "feedback": {
+                    "en": "Yes. About 58% of the year has gone, so it reads Running warm.",
+                    "vi": "Đúng vậy. Khoảng 58% của năm đã trôi, nên nó hiện Đang nóng lên."
+                  },
+                  "label": {
+                    "en": "Worth a look — money is going faster than the year",
+                    "vi": "Đáng xem — tiền đi nhanh hơn năm"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. Budget compares money gone with time gone, not with the total.",
+                    "vi": "Hãy nghĩ lại một chút. Ngân sách so tiền đã đi với thời gian đã trôi, không so với tổng."
+                  },
+                  "label": {
+                    "en": "No — anything under 100% is fine",
+                    "vi": "Không — dưới 100% là ổn"
+                  }
+                }
+              ],
+              "prompt": {
+                "en": "By the end of July, HR operations has spent 69% of its year. Is that a problem?",
+                "vi": "Tới cuối tháng 7, Vận hành nhân sự đã chi 69% ngân sách cả năm. Có vấn đề không?"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "anchor": "rp-pick",
+              "body": {
+                "en": "Insights › <b>Payroll Report</b> opens on the newest run. Pick another from the list.",
+                "vi": "Phân tích › <b>Báo cáo lương</b> mở trên đợt mới nhất. Chọn đợt khác trong danh sách."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Payroll Report",
+                "vi": "Báo cáo lương"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "reports",
+              "tip": {
+                "en": "This report is in English on the screen in both languages.",
+                "vi": "Báo cáo này hiện bằng tiếng Anh trên màn hình ở cả hai ngôn ngữ."
+              },
+              "title": {
+                "en": "One run, against the one before",
+                "vi": "Một đợt, so với đợt trước"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "rp-kpis",
+              "body": {
+                "en": "<b>Changes</b> counts the people whose pay moved against the previous run. Open those first.",
+                "vi": "<b>Changes</b> (thay đổi) đếm số người có lương thay đổi so với đợt trước. Hãy mở những người đó trước."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "The totals",
+                "vi": "Các tổng"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "reports",
+              "tip": "",
+              "title": {
+                "en": "Gross, deductions, net — and changes",
+                "vi": "Tổng thu nhập, khấu trừ, thực nhận — và thay đổi"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "rp-tabs",
+              "body": {
+                "en": "Each row expands to its breakdown. Dept Summary adds the run up by department.",
+                "vi": "Mỗi dòng mở ra phần chi tiết. Dept Summary cộng đợt lương theo phòng ban."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Three views",
+                "vi": "Ba cách xem"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "reports",
+              "tip": "",
+              "title": {
+                "en": "Earnings, Deductions, Dept Summary",
+                "vi": "Thu nhập, Khấu trừ, Tổng theo phòng ban"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "bg-months",
+              "body": {
+                "en": "Insights › <b>Budget</b>. <b>Whole year</b>, or press a month, shift-press another, or drag across them.",
+                "vi": "Phân tích › <b>Ngân sách</b>. <b>Cả năm</b>, hoặc bấm một tháng, giữ Shift bấm tháng khác, hoặc kéo qua các tháng."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Budget",
+                "vi": "Ngân sách"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "reports",
+              "tip": "",
+              "title": {
+                "en": "The whole year, or a stretch of it",
+                "vi": "Cả năm, hoặc một khoảng trong năm"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "bg-heat",
+              "body": {
+                "en": "Each function compares money gone with year gone. People is <b>On pace</b>; HR operations is <b>Running warm</b>.",
+                "vi": "Mỗi bộ phận so tiền đã đi với năm đã trôi. Con người đang <b>Đúng nhịp</b>; Vận hành nhân sự <b>Đang nóng lên</b>."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "The reading",
+                "vi": "Nhận định"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "reports",
+              "tip": {
+                "en": "The pay figures fill in by themselves every night; nobody types them.",
+                "vi": "Các con số lương tự điền mỗi đêm; không ai phải gõ."
+              },
+              "title": {
+                "en": "On pace, running warm, behind",
+                "vi": "Đúng nhịp, đang nóng lên, chậm hơn năm"
+              },
+              "visual": "none"
+            }
+          ]
+        }
+      ],
+      "line": "insights",
+      "name": {
+        "en": "Payroll Report and Budget",
+        "vi": "Báo cáo lương và Ngân sách"
+      },
+      "outline": {
+        "mistakes": [
+          {
+            "en": "Reading under 100% as fine. Budget compares money gone with year gone.",
+            "vi": "Hiểu dưới 100% là ổn. Ngân sách so tiền đã đi với năm đã trôi."
+          },
+          {
+            "en": "Signing off without opening the Changes. They are the people whose pay moved.",
+            "vi": "Duyệt mà không mở phần Changes. Đó là những người có lương thay đổi."
+          }
+        ],
+        "prereq": {
+          "en": "Pay run access for the report; a budget role for Budget.",
+          "vi": "Quyền vào đợt lương để xem báo cáo; vai trò ngân sách để xem Ngân sách."
+        },
+        "what": {
+          "en": "Insights › Payroll Report: one run's totals, earnings, deductions and department summary, with changes against the run before. Insights › Budget: each function's spending against its budget, for the year or any stretch of months.",
+          "vi": "Phân tích › Báo cáo lương: tổng, thu nhập, khấu trừ và tổng theo phòng ban của một đợt, kèm thay đổi so với đợt trước. Phân tích › Ngân sách: chi tiêu của từng bộ phận so với ngân sách, cho cả năm hoặc bất kỳ khoảng tháng nào."
+        },
+        "when": {
+          "en": "The report before approving a run. Budget at each month end.",
+          "vi": "Báo cáo trước khi duyệt một đợt. Ngân sách vào mỗi cuối tháng."
+        },
+        "why": {
+          "en": "The report is what finance reads before sign-off. Budget warns early, while money is going faster than the year.",
+          "vi": "Báo cáo là thứ bộ phận tài chính đọc trước khi duyệt. Ngân sách cảnh báo sớm, khi tiền đang đi nhanh hơn năm."
+        }
+      },
+      "required": false,
+      "roles": [
+        "owner",
+        "approver"
+      ],
+      "search": {
+        "en": "payroll report, budget, on pace, running warm, spent against budget",
+        "vi": "báo cáo lương, ngân sách, đúng nhịp, đang nóng lên, đã chi so với ngân sách"
+      },
+      "section": "payroll",
+      "sequence": 290,
+      "sidebar_key": "",
+      "star": false,
+      "summary": {
+        "en": "One run's report against the run before, and whether each function's spending is on pace for the year.",
+        "vi": "Báo cáo của một đợt so với đợt trước, và chi tiêu của từng bộ phận có đúng nhịp cả năm không."
       }
     },
     {
@@ -21040,7 +21893,7 @@
         "vi": "tuyển dụng, đề xuất tuyển dụng, vị trí mới, ứng viên, phỏng vấn"
       },
       "section": "payroll",
-      "sequence": 310,
+      "sequence": 320,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -21303,7 +22156,7 @@
         "vi": "nhân viên mới, ngày đầu tiên, người đồng hành, nhận việc, sắp vào làm"
       },
       "section": "payroll",
-      "sequence": 320,
+      "sequence": 330,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -21542,7 +22395,7 @@
         "vi": "thử việc, hết thử việc, xác nhận chính thức, kéo dài thử việc"
       },
       "section": "payroll",
-      "sequence": 330,
+      "sequence": 340,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -21718,7 +22571,7 @@
         "vi": "kế hoạch phát triển, kèm cặp, kế hoạch cải thiện, mục tiêu có rủi ro"
       },
       "section": "payroll",
-      "sequence": 340,
+      "sequence": 350,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -21892,7 +22745,7 @@
         "vi": "hợp đồng sắp hết hạn, gia hạn hợp đồng, chuyển chính thức"
       },
       "section": "payroll",
-      "sequence": 350,
+      "sequence": 360,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -22159,7 +23012,7 @@
         "vi": "nghỉ việc, thôi việc, đơn nghỉ việc, bàn giao, quyết toán, ngày làm cuối"
       },
       "section": "payroll",
-      "sequence": 360,
+      "sequence": 370,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -29985,7 +30838,7 @@
         "vi": "hôm nay, ai có mặt, ai đi trễ, cần bạn, duyệt tăng ca sạch"
       },
       "section": "payroll",
-      "sequence": 370,
+      "sequence": 380,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -30246,7 +31099,7 @@
         "vi": "chấm công, ngoại lệ chấm công, nghỉ phép, đơn nghỉ phép, duyệt tăng ca"
       },
       "section": "payroll",
-      "sequence": 380,
+      "sequence": 390,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -30510,7 +31363,7 @@
         "vi": "chốt tuần, khoá tuần, gửi vào bảng lương, cờ chấm công"
       },
       "section": "payroll",
-      "sequence": 390,
+      "sequence": 400,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -30519,5 +31372,5 @@
       }
     }
   ],
-  "version": "a25ae1a9cbf3"
+  "version": "d1847433b73b"
 }

@@ -59,7 +59,7 @@ export class PayrollReport extends Component {
                     <span class="prd-title-ic" t-out="ic('barChart', 19)"/>
                     <span>Payroll Report</span>
                 </div>
-                <select class="prd-select" t-on-change="onBatchChange" aria-label="Pay run">
+                <select class="prd-select" data-coach="rp-pick" t-on-change="onBatchChange" aria-label="Pay run">
                     <option value="">Select Pay Run…</option>
                     <t t-foreach="state.batches" t-as="b" t-key="b.id">
                         <option t-att-value="b.id" t-att-selected="state.batchId === b.id">
@@ -73,7 +73,7 @@ export class PayrollReport extends Component {
                 </div>
             </div>
             <div class="prd-toolbar-right">
-                <div class="prd-tab-bar">
+                <div class="prd-tab-bar" data-coach="rp-tabs">
                     <button class="prd-tab" t-att-class="{ 'is-on': state.activeTab === 'earnings' }"
                             t-att-aria-current="state.activeTab === 'earnings' ? 'true' : false"
                             t-on-click="() => this.setTab('earnings')">
@@ -94,7 +94,7 @@ export class PayrollReport extends Component {
         </div>
 
         <!-- ============================ summary KPIs ============================ -->
-        <div class="prd-kpis" t-if="state.summary.total_employees > 0">
+        <div class="prd-kpis" data-coach="rp-kpis" t-if="state.summary.total_employees > 0">
             <div class="prd-kpi">
                 <div class="prd-kpi-num" t-esc="state.summary.total_employees"/>
                 <div class="prd-kpi-label">Employees</div>

@@ -656,7 +656,11 @@ export const SCREENS = {
             </div>`;
     },
 
-    /* ---------------------------------------------------------- Insights */
+    /* ---------------------------------------------------------- Insights
+       LEARN REFRESH step 5: Insights › Pulse as insights.xml draws it inside
+       the hub — the hero (the LATEST run in any state, month against month),
+       three figures that open Explorer, Cost story with its window chips,
+       the leaderboard and the statutory split, the workforce pulse. */
     insights() {
         const d = PRACTICE.insights;
         const months = d.months.map((m) => `
@@ -676,43 +680,36 @@ export const SCREENS = {
                 <b>${esc(M(x.v))}</b></div>`).join("");
         const pulse = d.pulse.map((x) => `
             <span class="lrn-statpill"><b>${N(x.v)}</b>${esc(tx(x.label))}</span>`).join("");
-        // THE HERO IS ONE RUN, and it says so. pb_insights takes the LATEST run
-        // whatever state it is in and prints its name and state chip beside the
-        // figure; the leaderboard below spans every division in the period. A
-        // hero labelled just "Net" above a table that sums two divisions reads
-        // as a board that does not add up.
-        const heroSub = tx(B("Latest run", "Đợt gần nhất")) + DOT + tx(d.headlineScope)
-            + DOT + P(d.deltaPct) + SP + tx(B("against last month", "so với tháng trước"));
+        const heroSub = tx(d.headlineScope) + DOT + P(d.deltaPct) + SP
+            + tx(B("vs June 2026", "so với Tháng 6/2026"));
+        const figs = [[B("active headcount", "nhân sự đang làm việc"), N(PRACTICE.people.kpis.headcount)],
+                      [B("avg cost / employee", "chi phí bình quân / nhân viên"), M(d.costPerEmployee)],
+                      [B("employer contributions", "đóng góp của doanh nghiệp"), M(PRACTICE.statutory.employerLeg)]]
+            .map(([l, v]) => `<button class="lrn-kpi"><div class="lrn-kv">${esc(v)}</div><div class="lrn-kt"><span>${esc(tx(l))}</span></div></button>`).join("");
+        const windows = ["3M", "6M", "12M"].map((w, i) => `<button class="lrn-chip ${i === 0 ? "b" : ""}">${w}</button>`).join("");
 
         return `
             <div class="lrn-herocta" data-coach="in-hero">
                 ${ic("trending-up")}
-                <span><b>${esc(M(d.headline))}</b><br>
+                <span><b>${esc(M(d.headline))}</b>${SP}<span class="lrn-sub2">${esc(tx(B("net payroll", "lương thực chi")))}</span><br>
                     <span class="lrn-sub2">${esc(heroSub)}</span></span>
                 ${statusChip("payrun", d.headlineState)}
-                <span class="lrn-chip b">${esc(tx(B("Net payroll", "Lương thực chi")))}</span>
             </div>
+            <div class="lrn-grid g3">${figs}</div>
             <div class="lrn-panel" data-coach="in-trend">
-                <h3>${ic("bar-chart")}${esc(tx(B("Cost story", "Diễn biến chi phí")))}</h3>
+                <h3>${ic("bar-chart")}${esc(tx(B("Cost story", "Diễn biến chi phí")))}<span class="lrn-push"></span>${windows}</h3>
                 <div class="lrn-calc">${months}</div>
-                <p class="lrn-note">${esc(tx(B(
-                    "Three months, in the order they were paid. A trend answers a different question from a total, and the window you choose decides which.",
-                    "Ba tháng, theo đúng thứ tự đã chi. Một xu hướng trả lời câu hỏi khác với một con số tổng, và khoảng thời gian bạn chọn quyết định đó là câu hỏi nào.")))}</p>
             </div>
             <div class="lrn-grid g2 top" data-coach="in-duo">
                 <div class="lrn-panel">
-                    <h3>${ic("layers")}${esc(tx(B("Department leaderboard", "Xếp hạng bộ phận")))}</h3>
+                    <h3>${ic("layers")}${esc(tx(B("Department leaderboard", "Xếp hạng phòng ban")))}</h3>
+                    <div class="lrn-strip"><button class="lrn-chip b">${esc(tx(B("Total", "Tổng")))}</button>
+                        <button class="lrn-chip">${esc(tx(B("Per head", "Bình quân đầu người")))}</button></div>
                     <div class="lrn-rows">${depts}</div>
-                    <p class="lrn-note">${esc(tx(B(
-                        "Every division in the period — which is a wider scope than the headline above, and the reason the two do not add up to each other.",
-                        "Mọi bộ phận trong kỳ — phạm vi rộng hơn con số nổi bật ở trên, và đó là lý do hai bên không cộng lại bằng nhau.")))}</p>
                 </div>
                 <div class="lrn-panel">
-                    <h3>${ic("shield-check")}${esc(tx(B("Statutory split", "Cơ cấu đóng bắt buộc")))}</h3>
+                    <h3>${ic("shield-check")}${esc(tx(B("Statutory split", "Cơ cấu khoản đóng bắt buộc")))}</h3>
                     <div class="lrn-calc">${stat}</div>
-                    <p class="lrn-note">${esc(tx(B(
-                        "The employer leg never appears in anybody's net, which is why it is invisible in every conversation about pay unless somebody puts it on the table.",
-                        "Phần doanh nghiệp không bao giờ xuất hiện trong thực nhận của ai, nên nó vô hình trong mọi cuộc trao đổi về lương trừ khi có người chủ động nêu ra.")))}</p>
                 </div>
             </div>
             <div class="lrn-panel">
@@ -721,56 +718,52 @@ export const SCREENS = {
             </div>
             <div class="lrn-herocta" data-coach="in-explore">
                 ${ic("sparkles")}
-                <span><b>${esc(tx(B("Ask something else", "Hỏi điều khác")))}</b><br>
-                    <span class="lrn-sub2">${esc(tx(B(
-                        "Every figure above opens where it came from. When the question is one this board did not anticipate, the Explorer is the way in.",
-                        "Mọi con số ở trên đều mở ra đúng nơi nó sinh ra. Khi câu hỏi vượt ra ngoài những gì bảng này lường trước, Explorer là lối đi tiếp.")))}</span></span>
-                <button class="lrn-btn">${esc(tx(B("Open Explorer", "Mở Explorer")))}</button>
+                <span><b>${esc(tx(B("Ask something else", "Hỏi cái gì khác")))}</b></span>
             </div>`;
     },
 
-    /* ---------------------------------------------------------- Explorer */
+    /* ---------------------------------------------------------- Explorer
+       LEARN REFRESH step 5: explorer.xml's own order — Starting points
+       (Compare schemes among them), the rail (Measure / By / Over), When,
+       Where (with the default "Main runs only" tag), then the headline with
+       Per person and Explain. */
     explorer() {
         const x = PRACTICE.explorer;
-        const filters = x.filters.map((f) => `
-            <span class="lrn-chip b">${esc(tx(f.k))}: ${esc(tx(f.v))}${ic("x")}</span>`).join("");
         const rows = x.rows.map((r) => `
             <div class="lrn-cr"><span>${esc(tx(r.label))}</span>
                 <b>${esc(M(r.v))}</b></div>`).join("");
         const headline = tx(x.measure) + SP + tx(B("by", "theo")) + SP + tx(x.dimension);
-
+        const starts = [EN("Cost Explorer"), B("Compare schemes", "So sánh các phương án lương"), EN("Across the group")]
+            .map((c) => `<span class="lrn-chip">${ic("compass")}${esc(tx(c))}</span>`).join("");
+        const when = [B("This month", "Tháng này"), B("Last month", "Tháng trước"), B("This year", "Năm nay")]
+            .map((w, i) => `<button class="lrn-chip ${i === 1 ? "b" : ""}">${esc(tx(w))}</button>`).join("");
         return `
             <div class="lrn-strip" data-coach="ex-head">
-                <span class="lrn-chip">${ic("compass")}${esc(tx(B("Explorer", "Explorer")))}</span>
-                <span class="lrn-sub2">${esc(tx(B(
-                    "Pick a measure, break it down, filter it.",
-                    "Chọn một chỉ tiêu, tách theo chiều nào đó, rồi lọc.")))}</span>
+                <span class="lrn-sub2">${esc(tx(B("Starting points", "Điểm xuất phát")))}</span>${starts}
             </div>
             <div class="lrn-panel" data-coach="ex-rail">
-                <h3>${ic("crosshair")}${esc(tx(B("The question", "Câu hỏi")))}</h3>
-                <div class="lrn-strip">
-                    <span class="lrn-chip b">${esc(tx(B("Measure", "Chỉ tiêu")))}: ${
-                        esc(tx(x.measure))}</span>
-                    <span class="lrn-chip b">${esc(tx(B("Break down by", "Tách theo")))}: ${
-                        esc(tx(x.dimension))}</span>
-                </div>
-                <div class="lrn-strip" data-coach="ex-filters">
-                    <span class="lrn-sub2">${esc(tx(B("Where", "Điều kiện")))}</span>${filters}
-                </div>
+                <div class="lrn-kv2"><span>${esc(tx(B("Measure", "Chỉ tiêu")))}</span><b>${esc(tx(x.measure))}</b></div>
+                <div class="lrn-kv2"><span>${esc(tx(B("By", "Theo")))}</span><b>${esc(tx(x.dimension))}</b></div>
+                <div class="lrn-kv2"><span>${esc(tx(B("Over", "Chia theo thời gian")))}</span><b>${esc(tx(B("No split", "Không chia")))}</b></div>
+            </div>
+            <div class="lrn-strip" data-coach="ex-when"><span class="lrn-sub2">${esc(tx(B("When", "Khi nào")))}</span>${when}</div>
+            <div class="lrn-strip" data-coach="ex-filters">
+                <span class="lrn-sub2">${esc(tx(B("Where", "Ở đâu")))}</span>
+                <span class="lrn-chip b">${esc(tx(B("Main runs only", "Chỉ các kỳ lương chính")))}${ic("x")}</span>
+                <button class="lrn-chip">${ic("plus")}${esc(tx(B("Add filter", "Thêm bộ lọc")))}</button>
             </div>
             <div class="lrn-panel">
                 <div class="lrn-kv2" data-coach="ex-headline">
                     <span>${esc(headline)}</span><b class="lrn-money">${esc(M(x.total))}</b>
                 </div>
+                <div class="lrn-strip"><button class="lrn-btn sm ghost">${esc(tx(B("Per person", "Trên mỗi người")))}</button>
+                    <button class="lrn-btn sm ghost">${ic("sparkles")}${esc(tx(B("Explain", "Giải thích")))}</button></div>
                 <div class="lrn-calc" data-coach="ex-table">${rows}</div>
-                <p class="lrn-note">${esc(tx(B(
-                    "The rows are the breakdown and the total is their sum, read from the payslips themselves. A figure taken from here without its filters is a figure read out of scope.",
-                    "Các dòng là phần tách nhỏ và con số tổng là tổng của chúng, đọc thẳng từ chính các phiếu lương. Lấy một con số ở đây mà bỏ quên bộ lọc là đọc sai phạm vi.")))}</p>
             </div>
             ${compareHTML()}`;
     },
 
-    /* ------------------------------------------------ Workforce Analytics */
+    /* ------------------------------------------------ Insights › Workforce */
     workforcean() {
         const w = PRACTICE.workforce;
         const k = w.kpis;
@@ -782,47 +775,67 @@ export const SCREENS = {
         const ot = w.overtime.map((o) => `
             <div class="lrn-row">
                 <span class="lrn-avatar">${esc(initial(o.emp.name))}</span>
-                <span><span class="lrn-nm">${esc(o.emp.name)}</span><br>
-                    <span class="lrn-sub2">${esc(o.emp.code)}</span></span>
+                <span><span class="lrn-nm">${esc(o.emp.name)}</span></span>
                 <span class="lrn-rr"><b class="lrn-money">${esc(M(o.v))}</b></span>
             </div>`).join("");
-
+        const nums = [[B("employees paid", "nhân viên được trả lương"), N(k.paid)], [B("joined", "đã vào làm"), N(k.joiners)],
+                      [B("left", "đã nghỉ"), N(k.leavers)], [B("cost per head", "chi phí bình quân đầu người"), M(k.perHead)]]
+            .map(([l, v]) => `<span><b>${esc(v)}</b>${SP}${esc(tx(l))}</span>`).join("");
         return `
             <div class="lrn-strip" data-coach="wa-head">
-                <span class="lrn-chip">${ic("users")}${esc(tx(B(
-                    "Workforce Insights", "Phân tích nhân sự")))}</span>
-                <span class="lrn-sub2">${esc(tx(B(
-                    "Attendance, overtime and cost per head — read off payroll, not off a separate system.",
-                    "Chấm công, tăng ca và chi phí bình quân đầu người — đọc từ chính dữ liệu lương, không từ một hệ thống riêng.")))}</span>
+                ${["1M", "3M", "6M", "12M"].map((x, i) => `<button class="lrn-chip ${i === 1 ? "b" : ""}">${x}</button>`).join("")}
             </div>
             <div class="lrn-tabs" data-coach="wa-filters">
-                ${[B("All divisions", "Tất cả bộ phận"), RUN.division,
-                   B("This month", "Tháng này")].map(
+                ${[B("All divisions", "Tất cả các bộ phận"), B("All departments", "Tất cả phòng ban")].map(
                     (f, i) => `<button aria-selected="${i === 0}">${esc(tx(f))}</button>`).join("")}
             </div>
-            <div class="lrn-grid g4" data-coach="wa-kpis">
-                ${kpiTile("users", "", N(k.paid), B("Employees paid", "Nhân viên được trả lương"))}
-                ${kpiTile("user-plus", "pos", N(k.joiners), B("Joiners", "Vào mới"))}
-                ${kpiTile("arrow-right", "warn", N(k.leavers), B("Leavers", "Thôi việc"))}
-                ${kpiTile("calculator", "", M(k.perHead), B("Cost per head", "Chi phí bình quân"))}
-            </div>
+            <div class="lrn-ynums" data-coach="wa-kpis">${nums}</div>
             <div class="lrn-panel" data-coach="wa-chart">
                 <h3>${ic("bar-chart")}${esc(tx(B("Headcount paid", "Số người được trả lương")))}</h3>
                 <div class="lrn-calc">${chart}</div>
-                <p class="lrn-note">${esc(tx(B(
-                    "Paid, not employed. A step in this line is a joiner wave, a leaver wave — or a run that did not include everybody.",
-                    "Là được TRẢ LƯƠNG, không phải đang làm việc. Một bậc nhảy trên đường này là một nhóm người mới vào, một nhóm người nghỉ việc — hoặc một kỳ lương đã bỏ sót ai đó.")))}</p>
             </div>
             <div class="lrn-grid g2 top" data-coach="wa-duo">
                 <div class="lrn-panel">
-                    <h3>${ic("alert-triangle")}${esc(tx(B(
-                        "Attendance exceptions", "Ngoại lệ chấm công")))}</h3>
+                    <h3>${ic("alert-triangle")}${esc(tx(B("Attendance exceptions", "Bất thường chấm công")))}</h3>
                     <div class="lrn-calc">${exceptions}</div>
                 </div>
                 <div class="lrn-panel">
-                    <h3>${ic("clock")}${esc(tx(B("Overtime this month", "Tăng ca tháng này")))}</h3>
+                    <h3>${ic("clock")}${esc(tx(B("Overtime load", "Khối lượng tăng ca")))}</h3>
                     <div class="lrn-rows">${ot}</div>
                 </div>
+            </div>`;
+    },
+
+    /* --------------------------- Insights › Payroll Report and Budget
+       LEARN REFRESH step 5: one replica, two tabs. The report's words are
+       English in the product (an inline template); Budget's are translated. */
+    reports() {
+        const r = PRACTICE.reports.report;
+        const bg = PRACTICE.reports.budget;
+        const kpis = [[EN("Employees"), N(r.employees)], [EN("Total Gross"), M(r.gross)],
+                      [EN("Total Deductions"), M(r.deductions)], [EN("Total Net Pay"), M(r.net)], [EN("Changes"), N(r.changes)]]
+            .map(([l, v]) => `<div class="lrn-kpi"><div class="lrn-kv">${esc(v)}</div><div class="lrn-kt"><span>${esc(tx(l))}</span></div></div>`).join("");
+        const tiles = bg.functions.map((f) => `<div class="lrn-panel lrn-pcard"><b>${esc(tx(f.name))}</b>
+            <span class="lrn-sub2">${esc(M(f.spent))}${SP}/${SP}${esc(M(f.budget))}</span>
+            <span class="lrn-chip ${f.tone}">${esc(tx(f.reading))}</span></div>`).join("");
+        const months = [B("Whole year", "Cả năm")].concat(bg.months).map((m, i) =>
+            `<button class="lrn-chip ${i === 0 ? "b" : ""}">${esc(tx(m))}</button>`).join("");
+        return `
+            <div class="lrn-panel">
+                <h3>${ic("bar-chart")}${esc(tx(B("Payroll Report", "Báo cáo lương")))}</h3>
+                <div class="lrn-strip">
+                    <span class="lrn-chip" data-coach="rp-pick">${esc(tx(RUN.name))}${SP}(${N(RUN.employees)}${SP}slips)</span>
+                    <span class="lrn-strip" data-coach="rp-tabs">${[EN("Earnings"), EN("Deductions"), EN("Dept Summary")].map(
+                        (t, i) => `<button class="lrn-chip ${i === 0 ? "b" : ""}">${esc(tx(t))}</button>`).join("")}</span>
+                </div>
+                <div class="lrn-grid g5" data-coach="rp-kpis">${kpis}</div>
+            </div>
+            <div class="lrn-panel">
+                <h3>${ic("landmark")}${esc(tx(B("Budget", "Ngân sách")))}${SP}${bg.year}</h3>
+                <div class="lrn-strip" data-coach="bg-months">${months}</div>
+                <div class="lrn-grid g3" data-coach="bg-heat">${tiles}</div>
+                <p class="lrn-note">${esc(tx(B("Press a month, shift-press another, or drag across them.",
+                    "Bấm một tháng, giữ Shift và bấm tháng khác, hoặc kéo qua các tháng.")))}</p>
             </div>`;
     },
 

@@ -166,7 +166,7 @@
           </div>
         </div>
 
-        <div class="bdg-striprow" t-ref="strip" t-on-keydown="onStripKey"
+        <div class="bdg-striprow" data-coach="bg-months" t-ref="strip" t-on-keydown="onStripKey"
              t-on-pointermove="onStripMove"
              role="group" aria-label="Pick a month, a stretch of months, or the whole year">
           <button t-attf-class="bdg-mchip bdg-mchip--all {{ state.period ? '' : 'is-on' }}"
@@ -212,7 +212,7 @@
         </div>
 
         <!-- ============================ the heat ============================ -->
-        <div t-if="state.view === 'heat'" class="bdg-body">
+        <div t-if="state.view === 'heat'" class="bdg-body" data-coach="bg-heat">
 
           <div t-if="!functions.length" class="pbim-empty bdg-empty">
             <div class="bdg-empty-ic"><t t-out="ic('landmark',30)"/></div>
