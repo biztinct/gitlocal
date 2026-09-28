@@ -677,9 +677,9 @@ const PRACTICE = {
       get money() {
         const e = this.rows.reduce((t, r) => t + r.earnings, 0);
         const d = this.rows.reduce((t, r) => t + r.deductions, 0);
-        return [{ label: EN("Net payable"), v: e - d, icon: "wallet" },
+        return [{ label: EN("Net payable"), v: e - d, icon: "banknote" },
                 { label: EN("Earnings"), v: e, icon: "trending-up" },
-                { label: EN("Deductions"), v: d, icon: "trending-down" }];
+                { label: EN("Deductions"), v: d, icon: "receipt" }];
       },
       /* The three steps a settlement travels (fnf_approval.py: draft/returned →
          pending → approved), with no Vietnamese in the product either. */
@@ -1811,6 +1811,8 @@ const PRACTICE = {
   more: {
     praise: { from: EMP.trang.name, to: EMP.mai.name, value: B("Customers first", "Khách hàng là trên hết"),
               text: B("Stayed late to help a customer find the right size.", "Ở lại muộn để giúp khách tìm đúng cỡ.") },
+    announce: { title: B("New store opens in Hải Phòng", "Cửa hàng mới khai trương ở Hải Phòng"),
+                when: B("From HR · 01/08/2026", "Từ Nhân sự · 01/08/2026") },
     tiles: [
       [B("Where they work", "Nơi họ làm việc"), B("People who work for more than one company", "Người làm cho nhiều công ty")],
       [B("Assets", "Tài sản"), B("Laptops, phones and cards, and who holds them", "Máy tính, điện thoại, thẻ, và ai đang giữ")],

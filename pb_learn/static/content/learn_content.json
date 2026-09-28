@@ -20472,21 +20472,21 @@
     },
     {
       "after": "govreports",
-      "duration_min": 4,
+      "duration_min": 5,
       "icon": "shield-check",
       "key": "compliancemore",
       "kind": "lesson",
       "lessons": [
         {
-          "duration_min": 4,
+          "duration_min": 5,
           "goal": {
             "en": "Know how a bank change is checked twice, what Young workers guards, and where to see who changed what.",
             "vi": "Biết một thay đổi ngân hàng được kiểm tra hai lần thế nào, Lao động chưa thành niên bảo vệ điều gì, và xem ai đã sửa gì ở đâu."
           },
           "key": "L27",
           "name": {
-            "en": "Bank checks, young workers and audit, briefly",
-            "vi": "Kiểm tra ngân hàng, lao động trẻ và kiểm toán, tóm tắt"
+            "en": "Bank checks, young workers and audit",
+            "vi": "Kiểm tra ngân hàng, lao động trẻ và kiểm toán"
           },
           "quizzes": [
             {
@@ -20550,6 +20550,30 @@
               "visual": "none"
             },
             {
+              "anchor": "cp-bank-new",
+              "body": {
+                "en": "Drop the bank's confirmation letter, statement or passbook. Without a document there is nothing for HR and Finance to check against.",
+                "vi": "Thả thư xác nhận của ngân hàng, sao kê hoặc sổ tiết kiệm. Không có chứng từ thì Nhân sự và Tài chính không có gì để đối chiếu."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Start one",
+                "vi": "Bắt đầu một yêu cầu"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "compliancemore",
+              "tip": "",
+              "title": {
+                "en": "The letter is the evidence",
+                "vi": "Thư ngân hàng là bằng chứng"
+              },
+              "visual": "none"
+            },
+            {
               "anchor": "cp-young",
               "body": {
                 "en": "<b>Protected</b>, <b>Compliant this week</b>, <b>Violations in the last 30 days</b> and <b>Missing birthdays</b> — a missing birthday means the guard cannot tell who to protect.",
@@ -20594,6 +20618,30 @@
               "title": {
                 "en": "Who changed what, and when",
                 "vi": "Ai đã sửa gì, và khi nào"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "cp-audit-filters",
+              "body": {
+                "en": "Pick the filter that matches the question. Nothing here can be edited, which is why it can be trusted.",
+                "vi": "Chọn bộ lọc đúng với câu hỏi. Không gì ở đây sửa được, và đó là lý do nó đáng tin."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Narrow it",
+                "vi": "Thu hẹp"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "compliancemore",
+              "tip": "",
+              "title": {
+                "en": "Today, This week, By me, Salary only, Logins",
+                "vi": "Hôm nay, Tuần này, Do tôi, Chỉ có lương, Đăng nhập"
               },
               "visual": "none"
             }
@@ -22405,21 +22453,21 @@
     },
     {
       "after": "probation",
-      "duration_min": 4,
+      "duration_min": 5,
       "icon": "sprout",
       "key": "growth",
       "kind": "lesson",
       "lessons": [
         {
-          "duration_min": 4,
+          "duration_min": 5,
           "goal": {
             "en": "Know the four steps of a growth plan and read its objectives.",
             "vi": "Biết bốn bước của một kế hoạch phát triển và đọc các mục tiêu của nó."
           },
           "key": "L25",
           "name": {
-            "en": "Growth plans, briefly",
-            "vi": "Kế hoạch phát triển, tóm tắt"
+            "en": "Growth plans",
+            "vi": "Kế hoạch phát triển"
           },
           "quizzes": [
             {
@@ -22507,6 +22555,30 @@
               "visual": "none"
             },
             {
+              "anchor": "gw-list",
+              "body": {
+                "en": "Each card names the person, the step and how many objectives are on track. Press a step above to see only its cards.",
+                "vi": "Mỗi thẻ ghi tên người, bước hiện tại và bao nhiêu mục tiêu đang đúng hướng. Bấm một bước ở trên để chỉ xem các thẻ của bước đó."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "One card each",
+                "vi": "Mỗi người một thẻ"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "growth",
+              "tip": "",
+              "title": {
+                "en": "Where each plan has got to",
+                "vi": "Mỗi kế hoạch đã tới đâu"
+              },
+              "visual": "none"
+            },
+            {
               "anchor": "gw-objectives",
               "body": {
                 "en": "Each objective is marked as it goes. One at risk is the moment to talk, not the end of the plan.",
@@ -22527,6 +22599,30 @@
               "title": {
                 "en": "On track, at risk, met, not met",
                 "vi": "Đúng hướng, có rủi ro, đạt, không đạt"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "gw-steps",
+              "body": {
+                "en": "<b>Waiting on a decision</b> counts plans whose time is up. Nobody should sit there for long: the person is waiting to hear.",
+                "vi": "<b>Đang chờ quyết định</b> đếm các kế hoạch đã hết thời hạn. Không ai nên nằm ở đó lâu: người đó đang chờ nghe kết quả."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "The end",
+                "vi": "Kết thúc"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "growth",
+              "tip": "",
+              "title": {
+                "en": "Every plan ends in a decision",
+                "vi": "Mọi kế hoạch đều kết thúc bằng một quyết định"
               },
               "visual": "none"
             }
@@ -22581,21 +22677,21 @@
     },
     {
       "after": "",
-      "duration_min": 4,
+      "duration_min": 5,
       "icon": "file-signature",
       "key": "contractends",
       "kind": "lesson",
       "lessons": [
         {
-          "duration_min": 4,
+          "duration_min": 5,
           "goal": {
             "en": "Know how the Contracts board counts down, and the three decisions it asks for.",
             "vi": "Biết bảng Hợp đồng đếm ngược thế nào, và ba quyết định nó yêu cầu."
           },
           "key": "L26",
           "name": {
-            "en": "Contracts that end soon, briefly",
-            "vi": "Hợp đồng sắp hết hạn, tóm tắt"
+            "en": "Contracts that end soon",
+            "vi": "Hợp đồng sắp hết hạn"
           },
           "quizzes": [
             {
@@ -22652,6 +22748,54 @@
               "title": {
                 "en": "Sixty days ahead",
                 "vi": "Trước sáu mươi ngày"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "cl-steps",
+              "body": {
+                "en": "Every contract is at one step. <b>Decision needed</b> is the one to empty first.",
+                "vi": "Mỗi hợp đồng nằm ở một bước. <b>Cần quyết định</b> là bước cần dọn trước tiên."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Four steps",
+                "vi": "Bốn bước"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "contractends",
+              "tip": "",
+              "title": {
+                "en": "Running → Decision needed → Being agreed → Decided",
+                "vi": "Đang hiệu lực → Cần quyết định → Đang chờ đồng ý → Đã quyết định"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "cl-list",
+              "body": {
+                "en": "Đức's fixed term ends on 30 September and nobody has decided yet.",
+                "vi": "Hợp đồng xác định thời hạn của Đức kết thúc ngày 30/9 và chưa ai quyết định."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Who",
+                "vi": "Ai"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "contractends",
+              "tip": "",
+              "title": {
+                "en": "The contracts at that step",
+                "vi": "Các hợp đồng ở bước đó"
               },
               "visual": "none"
             },
@@ -27152,21 +27296,21 @@
     },
     {
       "after": "employees",
-      "duration_min": 4,
+      "duration_min": 5,
       "icon": "heart",
       "key": "peoplemore",
       "kind": "lesson",
       "lessons": [
         {
-          "duration_min": 4,
+          "duration_min": 5,
           "goal": {
             "en": "Know what the Wall, Announce and the smaller People tabs are for.",
             "vi": "Biết Bảng vinh danh, Thông báo và các tab nhỏ của Con người dùng để làm gì."
           },
           "key": "L28",
           "name": {
-            "en": "The rest of People and Home, briefly",
-            "vi": "Phần còn lại của Con người và Trang chủ, tóm tắt"
+            "en": "The rest of People and Home",
+            "vi": "Phần còn lại của Con người và Trang chủ"
           },
           "quizzes": [
             {
@@ -27223,6 +27367,54 @@
               "title": {
                 "en": "What people said about each other",
                 "vi": "Mọi người nói gì về nhau"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "rep-pm-announce",
+              "body": {
+                "en": "Everyone can open it: the messages sent to the whole company, newest first.",
+                "vi": "Ai cũng mở được: các thông báo gửi tới cả công ty, mới nhất ở trên."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Home › Announce",
+                "vi": "Trang chủ › Thông báo"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "peoplemore",
+              "tip": "",
+              "title": {
+                "en": "What the company told everyone",
+                "vi": "Điều công ty đã thông báo tới mọi người"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "rep-pm-plan",
+              "body": {
+                "en": "The people who send messages plan the month on one calendar here. Most people only ever see Home › Announce.",
+                "vi": "Những người gửi thông báo lên kế hoạch cho cả tháng trên một lịch ở đây. Phần lớn mọi người chỉ thấy Trang chủ › Thông báo."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "People › Announce",
+                "vi": "Con người › Thông báo"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "peoplemore",
+              "tip": "",
+              "title": {
+                "en": "Where messages are planned",
+                "vi": "Nơi lên kế hoạch thông báo"
               },
               "visual": "none"
             },
@@ -31372,5 +31564,5 @@
       }
     }
   ],
-  "version": "d1847433b73b"
+  "version": "99c4933a0e5b"
 }

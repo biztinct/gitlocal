@@ -1214,8 +1214,7 @@
     "gw-list": {
       "screen": "growth",
       "file": "pb_pip/static/src/xml/pip_board.xml",
-      "desc": "The plan cards — or, when the board has nobody on it, its empty-board message (both carry the anchor; one renders at a time).",
-      "reserved": true
+      "desc": "The plan cards — or, when the board has nobody on it, its empty-board message (both carry the anchor; one renders at a time)."
     },
     "gw-objectives": {
       "screen": "growth",
@@ -1236,14 +1235,12 @@
     "cl-steps": {
       "screen": "contractends",
       "file": "pb_contract_lifecycle/static/src/xml/contractlife_board.xml",
-      "desc": "Running → Decision needed → Being agreed → Decided.",
-      "reserved": true
+      "desc": "Running → Decision needed → Being agreed → Decided."
     },
     "cl-list": {
       "screen": "contractends",
       "file": "pb_contract_lifecycle/static/src/xml/contractlife_board.xml",
-      "desc": "The contract cards — or, when the board has nobody on it, its empty-board message (both carry the anchor; one renders at a time).",
-      "reserved": true
+      "desc": "The contract cards — or, when the board has nobody on it, its empty-board message (both carry the anchor; one renders at a time)."
     },
     "cl-drawer": {
       "screen": "contractends",
@@ -1432,8 +1429,7 @@
     "cp-bank-new": {
       "screen": "compliancemore",
       "file": "pb_bank_ocr/static/src/xml/pb_bank_ocr.xml",
-      "desc": "New bank-change request drop zone.",
-      "reserved": true
+      "desc": "New bank-change request drop zone."
     },
     "cp-young": {
       "screen": "compliancemore",
@@ -1448,8 +1444,7 @@
     "cp-audit-filters": {
       "screen": "compliancemore",
       "file": "pb_audit/static/src/xml/pb_audit.xml",
-      "desc": "Audit filters: Today, This week, By me, Salary only, Logins.",
-      "reserved": true
+      "desc": "Audit filters: Today, This week, By me, Salary only, Logins."
     },
     "cp-audit-lenses": {
       "screen": "compliancemore",
@@ -1619,6 +1614,8 @@
     }
   },
   "practice": {
+    "rep-pm-announce": "The practice Home › Announce card: one message sent to everyone.",
+    "rep-pm-plan": "The practice People › Announce note: where the people who send messages plan the month.",
     "rep-ig-arrivals": "Arrivals from the connected system, drawn under the Integrations roster. In the product it is its own list, found through the search bar.",
     "rep-cd-terms": "The contract drawer's Terms, drawn beside Components and History so a lesson can walk all three. The product shows one tab at a time.",
     "rep-cd-comps": "The contract drawer's Components with Paid by and each amount's source chip.",

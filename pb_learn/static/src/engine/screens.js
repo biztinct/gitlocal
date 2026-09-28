@@ -2254,7 +2254,10 @@ export const SCREENS = {
                 <div class="lrn-panel" data-coach="cp-young"><h3>${ic("shield-check")}${esc(tx(B("Young workers", "Lao động chưa thành niên")))}</h3>
                     <div class="lrn-grid g4">${young}</div></div>
                 <div class="lrn-panel" data-coach="cp-audit"><h3>${ic("eye")}${esc(tx(B("Audit", "Nhật ký kiểm toán")))}</h3>
-                    <div class="lrn-grid g4">${audit}</div></div>
+                    <div class="lrn-grid g4">${audit}</div>
+                    <div class="lrn-strip" data-coach="cp-audit-filters">${[B("Today", "Hôm nay"), B("This week", "Tuần này"),
+                        B("By me", "Do tôi"), B("Salary only", "Chỉ có lương"), B("Logins", "Đăng nhập")].map((f, i) =>
+                        `<button class="lrn-chip ${i === 3 ? "b" : ""}">${esc(tx(f))}</button>`).join("")}</div></div>
             </div>`;
     },
 
@@ -2271,6 +2274,17 @@ export const SCREENS = {
                     <span class="lrn-chip ok">${esc(tx(m.praise.value))}</span>
                 </div>
                 <button class="lrn-btn sm pri">${ic("heart")}${esc(tx(B("Say thank you", "Nói lời cảm ơn")))}</button>
+            </div>
+            <div class="lrn-grid g2 top">
+                <div class="lrn-panel" data-coach="rep-pm-announce">
+                    <h3>${ic("message-circle")}${esc(tx(B("Home › Announce", "Trang chủ › Thông báo")))}</h3>
+                    <div class="lrn-yrole"><b>${esc(tx(m.announce.title))}</b><span class="lrn-sub2">${esc(tx(m.announce.when))}</span></div>
+                </div>
+                <div class="lrn-panel" data-coach="rep-pm-plan">
+                    <h3>${ic("calendar")}${esc(tx(B("People › Announce", "Con người › Thông báo")))}</h3>
+                    <span class="lrn-sub2">${esc(tx(B("The month's messages on one calendar, planned by the people who send them.",
+                        "Các thông báo của tháng trên một lịch, do những người gửi lên kế hoạch.")))}</span>
+                </div>
             </div>
             <div class="lrn-ztiles" data-coach="rep-pm-tiles">${tiles}</div>`;
     },

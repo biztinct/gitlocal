@@ -2275,7 +2275,7 @@ const STATIONS = {
         },
       },
       {
-        id: "peoplemore", icon: "heart", mins: 4, after: "employees",
+        id: "peoplemore", icon: "heart", mins: 5, after: "employees",
         roles: ["hr"],
         search: B("wall, praise, say thank you, announcements, assets, goals, where they work", "bảng vinh danh, khen ngợi, cảm ơn, thông báo, tài sản, mục tiêu, nơi làm việc"),
         title: B("The rest of People and Home", "Phần còn lại của Con người và Trang chủ"),
@@ -2454,7 +2454,7 @@ const STATIONS = {
       },
       /* LEARN REFRESH step 4 — the other three Compliance tabs, short. */
       {
-        id: "compliancemore", icon: "shield-check", mins: 4, after: "govreports",
+        id: "compliancemore", icon: "shield-check", mins: 5, after: "govreports",
         roles: ["officer", "owner"],
         search: B("bank verification, bank-change request, young workers, audit trail, who changed what", "xác minh ngân hàng, yêu cầu đổi ngân hàng, lao động chưa thành niên, nhật ký kiểm toán, ai đã sửa gì"),
         title: B("Bank checks, young workers, audit", "Kiểm tra ngân hàng, lao động trẻ, kiểm toán"),
@@ -2562,7 +2562,7 @@ const STATIONS = {
         },
       },
       {
-        id: "growth", icon: "sprout", mins: 4, after: "probation",
+        id: "growth", icon: "sprout", mins: 5, after: "probation",
         roles: ["hr"],
         search: B("growth plan, coaching, improvement plan, objectives at risk", "kế hoạch phát triển, kèm cặp, kế hoạch cải thiện, mục tiêu có rủi ro"),
         title: B("Growth plans", "Kế hoạch phát triển"),
@@ -2584,7 +2584,7 @@ const STATIONS = {
         },
       },
       {
-        id: "contractends", icon: "file-signature", mins: 4, after: null,
+        id: "contractends", icon: "file-signature", mins: 5, after: null,
         roles: ["hr", "officer"],
         search: B("contract ending, renew a contract, extend a contract, make permanent", "hợp đồng sắp hết hạn, gia hạn hợp đồng, chuyển chính thức"),
         title: B("Contracts ending", "Hợp đồng sắp hết hạn"),
@@ -5129,10 +5129,10 @@ const LESSONS = {
     },
   },
 
-  /* -------------------------------------------------- the four short ones */
+  /* ------------- the four short ones (five steps each since step 5) -------------- */
   L25: {
-    id: "L25", station: "growth", mins: 4,
-    title: B("Growth plans, briefly", "Kế hoạch phát triển, tóm tắt"),
+    id: "L25", station: "growth", mins: 5,
+    title: B("Growth plans", "Kế hoạch phát triển"),
     goal: B("Know the four steps of a growth plan and read its objectives.",
             "Biết bốn bước của một kế hoạch phát triển và đọc các mục tiêu của nó."),
     steps: [
@@ -5153,11 +5153,25 @@ const LESSONS = {
                 "Nó bắt đầu bằng trao đổi và kèm cặp. Chỉ khi chưa đủ mới thành kế hoạch bằng văn bản, và mọi kế hoạch đều kết thúc bằng một quyết định."),
       },
       {
+        screen: "growth", anchor: "gw-list",
+        kicker: B("One card each", "Mỗi người một thẻ"),
+        title: B("Where each plan has got to", "Mỗi kế hoạch đã tới đâu"),
+        body: B("Each card names the person, the step and how many objectives are on track. Press a step above to see only its cards.",
+                "Mỗi thẻ ghi tên người, bước hiện tại và bao nhiêu mục tiêu đang đúng hướng. Bấm một bước ở trên để chỉ xem các thẻ của bước đó."),
+      },
+      {
         screen: "growth", anchor: "gw-objectives",
         kicker: B("Objectives", "Mục tiêu"),
         title: B("On track, at risk, met, not met", "Đúng hướng, có rủi ro, đạt, không đạt"),
         body: B("Each objective is marked as it goes. One at risk is the moment to talk, not the end of the plan.",
                 "Mỗi mục tiêu được đánh dấu theo tiến độ. Một mục tiêu có rủi ro là lúc cần trao đổi, không phải lúc kết thúc kế hoạch."),
+      },
+      {
+        screen: "growth", anchor: "gw-steps",
+        kicker: B("The end", "Kết thúc"),
+        title: B("Every plan ends in a decision", "Mọi kế hoạch đều kết thúc bằng một quyết định"),
+        body: B("<b>Waiting on a decision</b> counts plans whose time is up. Nobody should sit there for long: the person is waiting to hear.",
+                "<b>Đang chờ quyết định</b> đếm các kế hoạch đã hết thời hạn. Không ai nên nằm ở đó lâu: người đó đang chờ nghe kết quả."),
       },
     ],
     quiz: {
@@ -5181,8 +5195,8 @@ const LESSONS = {
   },
 
   L26: {
-    id: "L26", station: "contractends", mins: 4,
-    title: B("Contracts that end soon, briefly", "Hợp đồng sắp hết hạn, tóm tắt"),
+    id: "L26", station: "contractends", mins: 5,
+    title: B("Contracts that end soon", "Hợp đồng sắp hết hạn"),
     goal: B("Know how the Contracts board counts down, and the three decisions it asks for.",
             "Biết bảng Hợp đồng đếm ngược thế nào, và ba quyết định nó yêu cầu."),
     steps: [
@@ -5192,6 +5206,20 @@ const LESSONS = {
         title: B("Sixty days ahead", "Trước sáu mươi ngày"),
         body: B("Lifecycle › <b>Contracts</b>. <b>Ending within 60 days</b>, <b>Nobody has decided</b>, <b>Waiting to be agreed</b>, <b>Being evaluated</b>, <b>Made permanent this year</b>.",
                 "Vòng đời nhân sự › <b>Hợp đồng</b>. <b>Kết thúc trong vòng 60 ngày</b>, <b>Chưa ai quyết định</b>, <b>Đang chờ đồng ý</b>, <b>Đang được đánh giá</b>, <b>Chuyển chính thức trong năm nay</b>."),
+      },
+      {
+        screen: "contractends", anchor: "cl-steps",
+        kicker: B("Four steps", "Bốn bước"),
+        title: B("Running → Decision needed → Being agreed → Decided", "Đang hiệu lực → Cần quyết định → Đang chờ đồng ý → Đã quyết định"),
+        body: B("Every contract is at one step. <b>Decision needed</b> is the one to empty first.",
+                "Mỗi hợp đồng nằm ở một bước. <b>Cần quyết định</b> là bước cần dọn trước tiên."),
+      },
+      {
+        screen: "contractends", anchor: "cl-list",
+        kicker: B("Who", "Ai"),
+        title: B("The contracts at that step", "Các hợp đồng ở bước đó"),
+        body: B("Đức's fixed term ends on 30 September and nobody has decided yet.",
+                "Hợp đồng xác định thời hạn của Đức kết thúc ngày 30/9 và chưa ai quyết định."),
       },
       {
         screen: "contractends", anchor: "cl-raise",
@@ -5229,8 +5257,8 @@ const LESSONS = {
   },
 
   L27: {
-    id: "L27", station: "compliancemore", mins: 4,
-    title: B("Bank checks, young workers and audit, briefly", "Kiểm tra ngân hàng, lao động trẻ và kiểm toán, tóm tắt"),
+    id: "L27", station: "compliancemore", mins: 5,
+    title: B("Bank checks, young workers and audit", "Kiểm tra ngân hàng, lao động trẻ và kiểm toán"),
     goal: B("Know how a bank change is checked twice, what Young workers guards, and where to see who changed what.",
             "Biết một thay đổi ngân hàng được kiểm tra hai lần thế nào, Lao động chưa thành niên bảo vệ điều gì, và xem ai đã sửa gì ở đâu."),
     steps: [
@@ -5242,6 +5270,13 @@ const LESSONS = {
                 "Thả thư của ngân hàng vào <b>Yêu cầu thay đổi ngân hàng mới</b>. Nhân sự kiểm tra, rồi Tài chính, và chỉ khi đó tài khoản ngân hàng của nhân viên mới thay đổi."),
         tip: B("An account already used by someone else is flagged before anyone approves it.",
                "Tài khoản đã được người khác dùng sẽ bị đánh dấu trước khi có ai duyệt."),
+      },
+      {
+        screen: "compliancemore", anchor: "cp-bank-new",
+        kicker: B("Start one", "Bắt đầu một yêu cầu"),
+        title: B("The letter is the evidence", "Thư ngân hàng là bằng chứng"),
+        body: B("Drop the bank's confirmation letter, statement or passbook. Without a document there is nothing for HR and Finance to check against.",
+                "Thả thư xác nhận của ngân hàng, sao kê hoặc sổ tiết kiệm. Không có chứng từ thì Nhân sự và Tài chính không có gì để đối chiếu."),
       },
       {
         screen: "compliancemore", anchor: "cp-young",
@@ -5256,6 +5291,13 @@ const LESSONS = {
         title: B("Who changed what, and when", "Ai đã sửa gì, và khi nào"),
         body: B("A read-only record of changes. Filter to <b>Salary only</b> to answer \"who changed this salary\"; the login view shows who signed in.",
                 "Nhật ký chỉ đọc về các thay đổi. Lọc <b>Chỉ có lương</b> để trả lời \"ai đã sửa mức lương này\"; chế độ đăng nhập cho biết ai đã đăng nhập."),
+      },
+      {
+        screen: "compliancemore", anchor: "cp-audit-filters",
+        kicker: B("Narrow it", "Thu hẹp"),
+        title: B("Today, This week, By me, Salary only, Logins", "Hôm nay, Tuần này, Do tôi, Chỉ có lương, Đăng nhập"),
+        body: B("Pick the filter that matches the question. Nothing here can be edited, which is why it can be trusted.",
+                "Chọn bộ lọc đúng với câu hỏi. Không gì ở đây sửa được, và đó là lý do nó đáng tin."),
       },
     ],
     quiz: {
@@ -5279,8 +5321,8 @@ const LESSONS = {
   },
 
   L28: {
-    id: "L28", station: "peoplemore", mins: 4,
-    title: B("The rest of People and Home, briefly", "Phần còn lại của Con người và Trang chủ, tóm tắt"),
+    id: "L28", station: "peoplemore", mins: 5,
+    title: B("The rest of People and Home", "Phần còn lại của Con người và Trang chủ"),
     goal: B("Know what the Wall, Announce and the smaller People tabs are for.",
             "Biết Bảng vinh danh, Thông báo và các tab nhỏ của Con người dùng để làm gì."),
     steps: [
@@ -5290,6 +5332,20 @@ const LESSONS = {
         title: B("What people said about each other", "Mọi người nói gì về nhau"),
         body: B("<b>Say thank you</b> puts praise on the Wall, tied to one of the company's values. Everyone can read it.",
                 "<b>Nói lời cảm ơn</b> đưa lời khen lên Bảng vinh danh, gắn với một giá trị của công ty. Ai cũng đọc được."),
+      },
+      {
+        screen: "peoplemore", anchor: "rep-pm-announce",
+        kicker: B("Home › Announce", "Trang chủ › Thông báo"),
+        title: B("What the company told everyone", "Điều công ty đã thông báo tới mọi người"),
+        body: B("Everyone can open it: the messages sent to the whole company, newest first.",
+                "Ai cũng mở được: các thông báo gửi tới cả công ty, mới nhất ở trên."),
+      },
+      {
+        screen: "peoplemore", anchor: "rep-pm-plan",
+        kicker: B("People › Announce", "Con người › Thông báo"),
+        title: B("Where messages are planned", "Nơi lên kế hoạch thông báo"),
+        body: B("The people who send messages plan the month on one calendar here. Most people only ever see Home › Announce.",
+                "Những người gửi thông báo lên kế hoạch cho cả tháng trên một lịch ở đây. Phần lớn mọi người chỉ thấy Trang chủ › Thông báo."),
       },
       {
         screen: "peoplemore", anchor: "rep-pm-tiles",
@@ -9384,6 +9440,8 @@ const COLUMNS = {
    describe real templates in other modules and are curated by hand.
    ========================================================================== */
 const PRACTICE_ANCHORS = {
+  "rep-pm-announce": "The practice Home › Announce card: one message sent to everyone.",
+  "rep-pm-plan": "The practice People › Announce note: where the people who send messages plan the month.",
   "rep-ig-arrivals": "Arrivals from the connected system, drawn under the Integrations roster. In the product it is its own list, found through the search bar.",
   /* LEARN REFRESH step 5 — the contract drawer's three tabs, drawn at once in
      the replica (the product shows one at a time inside cd-body). */
