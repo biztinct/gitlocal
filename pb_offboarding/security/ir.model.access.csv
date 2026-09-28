@@ -19,3 +19,5 @@ access_pb_kt_item_user,Handover item read,model_pb_kt_item,pb_lifecycle.group_li
 access_pb_kt_item_manager,Handover item manager,model_pb_kt_item,pb_lifecycle.group_lifecycle_manager,1,1,1,1
 access_pb_kt_item_admin,Handover item admin,model_pb_kt_item,pb_lifecycle.group_lifecycle_admin,1,1,1,1
 access_pb_kt_item_system,Handover item system,model_pb_kt_item,base.group_system,1,1,1,1
+access_fnf_lifecycle_manager,Final settlement for the HR exits team (close it; send it for approval),pb_hr_fullandfinal.model_hr_full_final_settlement,pb_lifecycle.group_lifecycle_manager,1,1,0,0
+access_fnf_lifecycle_admin,Final settlement for the HR exits administrators,pb_hr_fullandfinal.model_hr_full_final_settlement,pb_lifecycle.group_lifecycle_admin,1,1,0,0

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payroll Full and Final',
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.4.1',
     'category': 'Human Resources',
     'summary': 'Full and final settlement list and report',
     'description': """
@@ -19,10 +19,13 @@ allows downloading a full and final settlement PDF.
         'pb_hr_payroll_formula',
         # P7: a final settlement is agreed before it is printed.
         'biz_approval_workflow',
+        # step 6: the payroll officer group is named in a rule and an ACL
+        'pb_hr_payroll_base',
     ],
     'data': [
         'security/ir.model.access.csv',
         'security/fnf_approval_rules.xml',
+        'security/fnf_team_rules.xml',
         'views/full_and_final_views.xml',
         'views/full_and_final_wizard_views.xml',
         'report/full_and_final_report.xml',

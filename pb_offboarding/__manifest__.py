@@ -60,7 +60,7 @@ Nothing here modifies `pb_lifecycle`, `pb_zoho_bridge`, `pb_assets`,
 declared inside this module, so a plain install is the whole deployment.
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.1.1.5',
+    'version': '19.0.1.1.6',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -87,6 +87,7 @@ declared inside this module, so a plain install is the whole deployment.
     'data': [
         'security/pb_offboarding_security.xml',
         'security/ir.model.access.csv',
+        'security/fnf_exits_rules.xml',
         'data/offboarding_params.xml',
         'data/notice_policy_data.xml',
         'data/letter_template_data.xml',

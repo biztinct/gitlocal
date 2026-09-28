@@ -136,3 +136,13 @@ class TestReadyToCheck(TransactionCase):
         self.assertGreaterEqual(kpi['value'], 1)
         row = next(r for r in data['rows'] if r['title'] == 'RC Leaver')
         self.assertEqual(row['action']['method'], 'action_pb_send_for_approval')
+
+    def test_06_the_payroll_team_sees_every_settlement(self):
+        """Pay Run > Settle showed 0 of 86 on the demo world: the only rule was
+        "the ones I was asked to decide"."""
+        rec = self.FF.create({
+            'name': 'RC team', 'employee_id': self.emp.id,
+            'settlement_date': date(2026, 7, 24), 'formula_config_id': self.config.id,
+            'computed_values_json': json.dumps(self.FIGS)})
+        found = self.FF.with_user(self.officer).search([('id', '=', rec.id)])
+        self.assertEqual(found, rec)
