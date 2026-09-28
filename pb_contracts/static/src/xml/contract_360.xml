@@ -225,7 +225,7 @@
           </div>
 
           <!-- ==================== tabs ==================== -->
-          <div class="pbc-tabs">
+          <div class="pbc-tabs" data-coach="cd-tabs">
             <button class="pbc-tab" t-att-class="{ 'on': state.tab === 'terms' }" t-on-click="() => this.setTab('terms')">
               <t t-out="ic('fileText',15)"/> Terms
             </button>
@@ -240,7 +240,7 @@
             <span class="pbc-tab-ink" t-att-style="inkStyle"/>
           </div>
 
-          <div class="pbc-body">
+          <div class="pbc-body" data-coach="cd-body">
 
             <!-- ==================== TERMS ==================== -->
             <t t-if="state.tab === 'terms'">
@@ -490,7 +490,7 @@
               </button>
             </div>
 
-            <div class="pbc-savebar" t-att-class="saveBarClass" t-att-aria-hidden="saveBarHidden">
+            <div class="pbc-savebar" data-coach="cd-save" t-att-class="saveBarClass" t-att-aria-hidden="saveBarHidden">
               <button class="pbc-link" t-on-click="openFullForm">Full form</button>
               <span class="pbc-grow"/>
               <button class="pbim-btn ghost" t-on-click="discard" t-esc="discardLabel"/>

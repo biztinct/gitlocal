@@ -1583,6 +1583,12 @@ const GLOSSARY = {
    That is deliberate: a section must never be able to vanish from the map
    because somebody forgot a second file.
    ========================================================================== */
+/* LEARN REFRESH step 5 — station keys that were RETIRED by folding them into
+   another station. The progress rows were migrated (pb_learn migration
+   19.0.19.0.0); anything that still names an old key — a deep link, a
+   bookmarked ⌘K row, an old chat's "Show me" — lands on the new station. */
+const STATION_ALIASES = { contracts: "employees", proration: "adjust", retro: "adjust" };
+
 const LINE_ORDER = ["overview", "payrun", "people", "lifecycle", "workforce", "insights", "compliance", "setup"];
 
 const STATIONS = {
@@ -2147,48 +2153,33 @@ const STATIONS = {
   people: {
     stations: [
       {
-        id: "employees", icon: "users", required: true, mins: 5, after: null,
-        title: B("Employees", "Nhân viên"),
-        desc: B("Everyone payroll can pay — with the two facts that decide whether they will actually be paid.",
-                "Toàn bộ những người hệ thống lương có thể trả — kèm hai dữ kiện quyết định họ có thực sự được trả hay không."),
+        /* LEARN REFRESH step 5. Contracts is a door INSIDE People › Employees
+           now (a button, and a per-row "Contract" drawer), so the old
+           `contracts` station folds into this one; its key redirects here
+           (STATION_ALIASES) and its progress rows were migrated. */
+        id: "employees", icon: "users", required: true, mins: 8, after: null,
+        roles: ["hr", "officer"],
+        search: B("employees, contracts, contract drawer, payroll ready, bank details, monthly wage",
+                  "nhân viên, hợp đồng, ngăn hợp đồng, sẵn sàng trả lương, thông tin ngân hàng, lương tháng"),
+        title: B("Employees and contracts", "Nhân viên và hợp đồng"),
+        desc: B("Everyone the company employs, whether each of them can be paid, and each person's contract in a drawer beside the list.",
+                "Mọi người công ty đang thuê, từng người có trả lương được không, và hợp đồng của mỗi người trong một ngăn ngay cạnh danh sách."),
         outline: {
-          what: B("The people roster. Headcount, running contracts, contracts expiring within thirty days, new hires, the monthly wage bill, and a payroll-ready mark on each person.",
-                  "Danh sách nhân sự. Sĩ số, hợp đồng đang hiệu lực, hợp đồng hết hạn trong ba mươi ngày, người mới vào, quỹ lương tháng, và dấu sẵn sàng tính lương trên từng người."),
-          why: B("Payroll-ready is the whole point of this screen. Somebody with no bank account computes perfectly and receives nothing. You find that out here in a minute, or on {{payDay}} from the person themselves.",
-                 "Dấu sẵn sàng tính lương mới là ý nghĩa của màn hình này. Một người chưa có tài khoản ngân hàng vẫn được tính lương hoàn hảo mà không nhận được đồng nào. Bạn biết điều đó ở đây trong một phút, hoặc vào {{payDay}} do chính họ báo."),
-          when: B("Before a run rather than after it. And whenever somebody joins, leaves or moves department.",
-                  "Trước khi chạy một đợt lương chứ không phải sau. Và mỗi khi có người vào, người nghỉ hoặc người chuyển bộ phận."),
-          prereq: B("The Payroll Officer group or above. This screen is gated, because a list of what everybody earns is not something a whole company should be able to read.",
-                    "Nhóm quyền Chuyên viên tính lương trở lên. Màn hình này bị chặn quyền, vì danh sách ai lương bao nhiêu không phải thứ cả công ty nên đọc được."),
+          what: B("People › Employees. A line of numbers, status chips, and one row per person with a Contract button. The button opens their contract in a drawer: Terms, Components and History.",
+                  "Con người › Nhân viên. Một dòng con số, các chip trạng thái, và mỗi người một dòng có nút Hợp đồng. Nút đó mở hợp đồng của họ trong một ngăn: Terms, Components và History."),
+          why: B("Payroll pays from the contract, not from the person. Someone on the list with no running contract or no bank details computes perfectly and is still not paid.",
+                 "Hệ thống lương trả theo hợp đồng, không theo con người. Một người có trong danh sách mà không có hợp đồng đang hiệu lực hoặc chưa có thông tin ngân hàng vẫn được tính đúng mà vẫn không nhận được tiền."),
+          when: B("Before every run. And whenever someone joins, changes job or pay, or asks what their contract says.",
+                  "Trước mỗi đợt lương. Và mỗi khi có người vào làm, đổi công việc hay mức lương, hoặc hỏi hợp đồng của họ ghi gì."),
+          prereq: B("People access for the list, and contract access for the Contract button and the Contracts board. Changing a contract needs an HR manager.",
+                    "Quyền vào Con người để xem danh sách, và quyền về hợp đồng để dùng nút Hợp đồng và bảng Hợp đồng. Muốn sửa hợp đồng cần quản lý nhân sự."),
           mistakes: [
-            B("Reading the wage column as take-home pay. It is the insurance base written into the contract, and nobody is paid exactly that in any month with overtime in it.",
-              "Đọc cột lương như thể đó là số thực nhận. Đó là mức lương đóng bảo hiểm ghi trong hợp đồng, và không ai nhận đúng con số đó trong bất kỳ tháng nào có tăng ca."),
-            B("Fixing a person's pay here. This screen holds who they are and what they were hired on. What they were paid last month is a payslip, and the two are corrected in different places.",
-              "Sửa lương của một người ở đây. Màn hình này lưu họ là ai và được tuyển với mức nào. Còn số họ được trả tháng trước nằm trên phiếu lương, và hai thứ đó sửa ở hai nơi khác nhau."),
-            B("Using bulk mode without reading the count. It is the one control here that changes many records at once, and \"12 selected\" is all that stands between a helpful edit and twelve wrong ones.",
-              "Dùng chế độ chọn nhiều mà không đọc con số. Đây là nút duy nhất ở đây thay đổi nhiều bản ghi cùng lúc, và dòng \"đã chọn 12\" là tất cả những gì ngăn giữa một chỉnh sửa hữu ích và mười hai chỉnh sửa sai."),
-          ],
-        },
-      },
-      {
-        id: "contracts", icon: "file-text", mins: 5, after: "employees",
-        title: B("Contracts", "Hợp đồng"),
-        desc: B("The agreements payroll is actually paid from — and the expiry dates that quietly end them.",
-                "Những thoả thuận mà hệ thống lương thực sự dựa vào để trả — và các ngày hết hạn âm thầm kết thúc chúng."),
-        outline: {
-          what: B("Every contract with its type, its dates and its wage: running, expiring within thirty days, draft, and expired. You also get the wage bill and the average wage across them.",
-                  "Từng hợp đồng kèm loại, thời hạn và mức lương: đang hiệu lực, sắp hết hạn trong ba mươi ngày, nháp, và đã hết hạn. Bạn cũng có quỹ lương và mức lương bình quân trên toàn bộ."),
-          why: B("A person is not a contract. Payroll computes from the contract, so a contract still in draft pays nothing — however complete the employee record is. And a contract that ends mid-month is a proration nobody asked for.",
-                 "Con người không phải là hợp đồng. Hệ thống lương tính theo hợp đồng, nên hợp đồng còn ở trạng thái Nháp thì không trả gì cả — dù hồ sơ nhân viên đầy đủ đến đâu. Và một hợp đồng kết thúc giữa tháng là một lần tính theo ngày công mà không ai yêu cầu."),
-          when: B("In the week before a run, using the expiring filter. And whenever somebody is promoted, moved or renewed.",
-                  "Trong tuần trước khi chạy lương, với bộ lọc sắp hết hạn. Và mỗi khi có người được thăng chức, luân chuyển hoặc gia hạn."),
-          prereq: B("The Payroll Officer group or above, and the signed paperwork. This screen records an agreement that was made somewhere else.",
-                    "Nhóm quyền Chuyên viên tính lương trở lên, và giấy tờ đã ký. Màn hình này ghi lại một thoả thuận đã được lập ở nơi khác."),
-          mistakes: [
-            B("Leaving a renewal in draft over the run date. The person is on the roster, their contract is not running, and the run simply computes without them.",
-              "Để một hợp đồng gia hạn ở trạng thái Nháp vắt qua ngày chạy lương. Người đó vẫn có trong danh sách, hợp đồng thì chưa hiệu lực, và đợt lương đơn giản là tính mà không có họ."),
-            B("Editing a running contract's wage to fix one month. That changes the insurance base from now on and corrects nothing already paid. The past is a retro line.",
-              "Sửa mức lương trên hợp đồng đang hiệu lực để chỉnh cho một tháng. Việc đó thay đổi mức lương đóng bảo hiểm từ nay về sau và không sửa được gì đã trả. Quá khứ phải xử lý bằng một dòng hồi tố."),
+            B("Reading Payroll-ready as everyone ready. That number counts bank details only; the tick on each row also needs a running contract.",
+              "Hiểu Sẵn sàng trả lương là mọi người đã sẵn sàng. Con số đó chỉ đếm thông tin ngân hàng; dấu tích trên từng dòng còn cần hợp đồng đang hiệu lực."),
+            B("Expecting Components to show this month's amounts. Many arrive with each pay run, so the contract can rightly read 0.",
+              "Chờ Components hiện số tiền của tháng này. Nhiều khoản đến theo từng đợt lương, nên hợp đồng có thể hiện 0 là đúng."),
+            B("Editing a contract and walking away. Nothing is saved until Save, and a change may go for approval first.",
+              "Sửa hợp đồng rồi bỏ đi. Không có gì được lưu cho tới khi bấm Save, và một thay đổi có thể phải qua phê duyệt trước."),
           ],
         },
       },
@@ -5299,6 +5290,100 @@ const LESSONS = {
      paycal_board.xml and incentives_board.xml (FACTS_STEP5). Where the
      screen has no Vietnamese, the VI lesson names the English label and
      glosses it. */
+  L29: {
+    id: "L29", station: "employees", mins: 8,
+    title: B("Employees and their contracts", "Nhân viên và hợp đồng của họ"),
+    goal: B("Find who cannot be paid before a run, and read one person's contract from the drawer beside the list.",
+            "Tìm ra ai không thể trả lương trước một đợt, và đọc hợp đồng của một người từ ngăn ngay cạnh danh sách."),
+    steps: [
+      {
+        screen: "employees", anchor: "pe-kpis",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("The numbers line", "Dòng con số"),
+        body: B("People › <b>Employees</b>. <b>Headcount</b>, <b>Running contracts</b>, <b>Expiring within 30 days</b>, <b>New this month</b>, <b>Monthly wage</b> and <b>Payroll-ready</b>. A number that can narrow the list does.",
+                "Con người › <b>Nhân viên</b>. <b>Số lượng nhân sự</b>, <b>Hợp đồng đang hiệu lực</b>, <b>Hết hạn trong 30 ngày</b>, <b>Mới trong tháng này</b>, <b>Lương hàng tháng</b> và <b>Sẵn sàng trả lương</b>. Con số nào lọc được danh sách thì bấm vào là lọc."),
+        tip: B("Running contracts counts contracts, not people. Payroll-ready counts bank details only.",
+               "Hợp đồng đang hiệu lực đếm hợp đồng, không đếm người. Sẵn sàng trả lương chỉ đếm thông tin ngân hàng."),
+      },
+      {
+        screen: "employees", anchor: "pe-filters",
+        kicker: B("Before a run", "Trước đợt lương"),
+        title: B("Press No contract", "Bấm Không có hợp đồng"),
+        body: B("<b>All</b>, <b>Running</b>, <b>Expiring soon</b>, <b>New this month</b>, <b>No contract</b>. Everyone under No contract will be left out of the run.",
+                "<b>Tất cả</b>, <b>Đang hiệu lực</b>, <b>Sắp hết hạn</b>, <b>Mới trong tháng này</b>, <b>Không có hợp đồng</b>. Mọi người trong Không có hợp đồng sẽ bị bỏ ra khỏi đợt lương."),
+      },
+      {
+        screen: "employees", anchor: "pe-roster",
+        kicker: B("One row each", "Mỗi người một dòng"),
+        title: B("The tick means two things", "Dấu tích nghĩa là hai điều"),
+        body: B("A row is ready only with a running contract <b>and</b> bank details. Hover the warning and it names what is missing. Đức has no bank details, so he computes and is not paid.",
+                "Một dòng chỉ sẵn sàng khi có hợp đồng đang hiệu lực <b>và</b> thông tin ngân hàng. Rê chuột lên dấu cảnh báo, nó ghi rõ thiếu gì. Đức chưa có thông tin ngân hàng, nên vẫn được tính lương mà không nhận được tiền."),
+      },
+      {
+        screen: "employees", anchor: "pe-rowcontract",
+        kicker: B("The door", "Lối vào"),
+        title: B("Contract, on the row", "Hợp đồng, ngay trên dòng"),
+        body: B("<b>Contract</b> opens that person's contract in a drawer, without leaving the list. The <b>Contracts</b> button at the top opens every contract on its own board.",
+                "<b>Hợp đồng</b> mở hợp đồng của người đó trong một ngăn, không rời danh sách. Nút <b>Hợp đồng</b> ở trên cùng mở mọi hợp đồng trên một bảng riêng."),
+      },
+      {
+        screen: "employees", anchor: "cd-tabs",
+        kicker: B("The drawer", "Ngăn hợp đồng"),
+        title: B("Terms, Components, History", "Terms, Components, History"),
+        body: B("The header says when the contract ends and its state. Three tabs hold the rest.",
+                "Phần đầu cho biết khi nào hợp đồng kết thúc và trạng thái của nó. Ba tab chứa phần còn lại: <b>Terms</b> (điều khoản), <b>Components</b> (thành phần), <b>History</b> (lịch sử)."),
+        tip: B("The drawer's words are in English on the screen in both languages.",
+               "Các chữ trong ngăn này hiện bằng tiếng Anh trên màn hình ở cả hai ngôn ngữ."),
+      },
+      {
+        screen: "employees", anchor: "rep-cd-terms",
+        kicker: B("Terms", "Điều khoản"),
+        title: B("The money and the dates", "Tiền và ngày tháng"),
+        body: B("A pencil marks what you can change; only an HR manager can. <b>Salary structure</b> left empty means a pay scheme pays this person.",
+                "Biểu tượng bút chì đánh dấu chỗ sửa được; chỉ quản lý nhân sự mới sửa được. <b>Salary structure</b> (cấu trúc lương) để trống nghĩa là một chương trình lương trả cho người này."),
+      },
+      {
+        screen: "employees", anchor: "rep-cd-comps",
+        kicker: B("Components", "Thành phần"),
+        title: B("Every amount says where it comes from", "Mỗi khoản đều ghi nó đến từ đâu"),
+        body: B("<b>Paid by</b> names the scheme. Each amount is <b>Held on this contract</b>, <b>From a pay data file</b> or worked out by a formula. One fed each month can rightly read 0 here.",
+                "<b>Paid by</b> ghi chương trình lương. Mỗi khoản là <b>Lưu trên hợp đồng này</b>, <b>Từ tệp dữ liệu lương</b> hoặc do công thức tính ra. Khoản được cấp mỗi tháng có thể hiện 0 ở đây là đúng."),
+      },
+      {
+        screen: "employees", anchor: "rep-cd-history",
+        kicker: B("History", "Lịch sử"),
+        title: B("Every change, from and to", "Mọi thay đổi, từ đâu tới đâu"),
+        body: B("Each line says what changed, from what to what, when, and where it came from. Mai's wage went from 11,000,000 ₫ to 12,000,000 ₫ in January.",
+                "Mỗi dòng cho biết cái gì thay đổi, từ bao nhiêu thành bao nhiêu, khi nào, và đến từ đâu. Lương của Mai từ 11.000.000 ₫ lên 12.000.000 ₫ vào tháng 1."),
+      },
+      {
+        screen: "employees", anchor: "cd-save",
+        kicker: B("Saving", "Lưu"),
+        title: B("Nothing is saved until Save", "Chưa bấm Save thì chưa lưu gì"),
+        body: B("Once you change something, a bar slides up: <b>Discard</b> or <b>Save 1 change</b>. A change that needs approval says Sent for approval instead.",
+                "Khi bạn thay đổi gì đó, một thanh trượt lên: <b>Discard</b> (bỏ) hoặc <b>Save 1 change</b> (lưu 1 thay đổi). Thay đổi nào cần phê duyệt sẽ ghi Sent for approval (đã gửi đi duyệt)."),
+      },
+    ],
+    quiz: {
+      question: B("Payroll-ready reads 98%. Đức's row shows a warning: No bank details. Will Đức be paid this month?",
+                  "Sẵn sàng trả lương hiện 98%. Dòng của Đức có cảnh báo: chưa có thông tin ngân hàng. Tháng này Đức có nhận được lương không?"),
+      options: [
+        {
+          text: B("No — a row is ready only with a running contract and bank details", "Không — một dòng chỉ sẵn sàng khi có hợp đồng đang hiệu lực và thông tin ngân hàng"),
+          correct: true,
+          explanation: B("Yes. Get his bank details in before the run; he computes either way.",
+                         "Đúng vậy. Hãy bổ sung thông tin ngân hàng của anh trước đợt lương; đằng nào anh cũng được tính."),
+        },
+        {
+          text: B("Yes — 98% means nearly everyone is fine", "Có — 98% nghĩa là gần như ai cũng ổn"),
+          correct: false,
+          explanation: B("Let's rethink that. The row decides, not the number; his warning names what is missing.",
+                         "Hãy nghĩ lại một chút. Dòng mới quyết định, không phải con số; cảnh báo của anh ghi rõ thiếu gì."),
+        },
+      ],
+    },
+  },
+
   L30: {
     id: "L30", station: "adjust", mins: 7,
     title: B("Back pay and part months", "Truy lĩnh và lương theo phần tháng"),
@@ -6290,10 +6375,10 @@ const SCREEN_CTX = {
 
   employees: {
     places: ["pb_people_hub:employees"],
-    blurb: B("The people roster. Contract status, the monthly wage bill, and whether each person can actually be paid.",
-             "Danh sách nhân sự. Tình trạng hợp đồng, quỹ lương tháng, và liệu từng người có thực sự nhận được lương hay không."),
-    next: B("Filter to the people who are not payroll-ready. Clear them before the run, not after it. Somebody with no bank account computes perfectly and is still not paid.",
-            "Hãy lọc ra những người chưa sẵn sàng tính lương. Xử lý họ trước khi chạy đợt lương, đừng để sau. Người chưa có tài khoản ngân hàng vẫn được tính lương hoàn hảo mà vẫn không nhận được tiền."),
+    blurb: B("People › Employees: everyone the company employs, whether each can be paid, and a Contract button on every row.",
+             "Con người › Nhân viên: mọi người công ty đang thuê, từng người có trả lương được không, và nút Hợp đồng trên mỗi dòng."),
+    next: B("Press No contract, then read the warnings. A row is ready only with a running contract and bank details; anyone else computes and is not paid.",
+            "Hãy bấm Không có hợp đồng, rồi đọc các cảnh báo. Một dòng chỉ sẵn sàng khi có hợp đồng đang hiệu lực và thông tin ngân hàng; người khác vẫn được tính mà không nhận được tiền."),
     chips: ["addperson", "payrollready", "whopays", "whosees", "whatnext"],
   },
   contracts: {
@@ -6306,10 +6391,10 @@ const SCREEN_CTX = {
     places: ["detail:contract"],
     models: ["hr.contract"],
     open: "pb_people_hub.action_pb_people_contracts",
-    blurb: B("Every contract with its type, its dates and its wage. These are the agreements payroll actually computes from.",
-             "Từng hợp đồng kèm loại, thời hạn và mức lương. Đây chính là những thoả thuận mà hệ thống lương dựa vào để tính."),
-    next: B("Read the expiring filter before the run. A contract that ends mid-month is a proration nobody asked for. One still in draft pays nothing at all.",
-            "Hãy xem bộ lọc sắp hết hạn trước khi chạy lương. Hợp đồng kết thúc giữa tháng là một lần tính theo ngày công mà không ai yêu cầu. Hợp đồng còn ở Nháp thì không trả gì cả."),
+    blurb: B("A contract: its terms, the components it carries and where each comes from, and every change made to it.",
+             "Một hợp đồng: các điều khoản, các thành phần nó mang và mỗi thành phần đến từ đâu, cùng mọi thay đổi đã làm trên nó."),
+    next: B("Read Components before answering a pay question: each amount says where it comes from. A draft contract pays nothing; a contract ending mid-month pays part of it.",
+            "Hãy đọc Components trước khi trả lời một câu hỏi về lương: mỗi khoản ghi rõ nó đến từ đâu. Hợp đồng nháp không trả gì; hợp đồng kết thúc giữa tháng chỉ trả một phần tháng."),
     chips: ["expirysoon", "whopays", "prorata", "whatpage"],
   },
   insights: {
@@ -8719,48 +8804,48 @@ const COLUMNS = {
 
   employees: [
     ["headcount",
-     B("Headcount", "Sĩ số"),
-     B("Everybody on the roster within the filters currently active — on the practice company, all 48. It counts people the company EMPLOYS. That is not the same as people the last run PAID, a count that lives on Workforce Analytics. The gap between the two is where a missing payslip hides.",
-       "Toàn bộ những người trong danh sách theo bộ lọc đang chọn — trên công ty thực hành là đủ 48 người. Nó đếm số người công ty ĐANG THUÊ. Con số đó khác với số người mà đợt lương gần nhất ĐÃ TRẢ, và số đó nằm ở Phân tích nhân sự. Khoảng chênh giữa hai bên chính là chỗ một phiếu lương bị thiếu đang ẩn.")],
+     B("Headcount", "Số lượng nhân sự"),
+     B("Everybody the company employs, active today. It counts people EMPLOYED, not people the last run PAID; that count lives on Insights › Workforce, and the gap is where a missing payslip hides.",
+       "Mọi người công ty đang thuê, còn làm việc hôm nay. Nó đếm số người ĐANG THUÊ, không phải số người đợt lương gần nhất ĐÃ TRẢ; số đó nằm ở Phân tích › Lực lượng lao động, và khoảng chênh là chỗ một phiếu lương bị thiếu đang ẩn.")],
     ["running_contracts",
      B("Running contracts", "Hợp đồng đang hiệu lực"),
-     B("Contracts in force today. Payroll computes from the contract. Somebody on the roster whose contract is still in draft appears on this screen and will not be in the run. That is why this number is worth comparing with headcount.",
-       "Số hợp đồng đang có hiệu lực hôm nay. Hệ thống lương tính theo hợp đồng. Người có trong danh sách mà hợp đồng còn ở Nháp thì vẫn hiện trên màn hình này nhưng sẽ không có trong đợt lương. Vì thế con số này rất đáng đem so với sĩ số.")],
+     B("Contracts in force today. It counts CONTRACTS, not people, so compare it with headcount: someone whose contract is still a draft is on the list and will not be in the run.",
+       "Các hợp đồng đang có hiệu lực hôm nay. Nó đếm HỢP ĐỒNG, không đếm người, nên hãy so với số lượng nhân sự: người có hợp đồng còn ở Nháp vẫn có trong danh sách mà sẽ không có trong đợt lương.")],
     ["expiring_30",
-     B("Expiring in 30 days", "Hết hạn trong 30 ngày"),
-     B("Contracts that end within the next month. Each one is either a renewal somebody has to sign, or a leaver somebody has to settle. Both are cheaper to handle now than as a surprise proration on a payslip.",
-       "Các hợp đồng sẽ kết thúc trong vòng một tháng tới. Mỗi hợp đồng như vậy hoặc là một lần gia hạn cần người ký, hoặc là một trường hợp thôi việc cần quyết toán. Cả hai đều rẻ hơn nếu xử lý ngay bây giờ, thay vì để thành một khoản tính theo ngày công bất ngờ trên phiếu lương.")],
+     B("Expiring within 30 days", "Hết hạn trong 30 ngày"),
+     B("Running contracts that end in the next thirty days. Each is a renewal somebody has to agree, or a leaver somebody has to settle — Lifecycle › Contracts raises the decision.",
+       "Các hợp đồng đang hiệu lực sẽ kết thúc trong ba mươi ngày tới. Mỗi hợp đồng là một lần gia hạn cần người đồng ý, hoặc một người nghỉ cần quyết toán — Vòng đời nhân sự › Hợp đồng nêu quyết định đó.")],
     ["new_this_month",
-     B("New this month", "Vào mới tháng này"),
-     B("People who joined inside the current period. They are the rows most likely to be prorated, and the most likely to have bank details missing. Read them one by one rather than as a count.",
-       "Những người vào làm trong kỳ hiện tại. Đây là nhóm dễ bị tính theo ngày công nhất, và cũng dễ thiếu thông tin ngân hàng nhất. Hãy đọc từng người thay vì chỉ đọc con số tổng.")],
-    ["monthly_wage_bill",
-     B("Monthly wage bill", "Quỹ lương tháng"),
-     B("The registered contract bases added together — what the company has agreed to pay, before overtime, allowances or deductions. It is also the base insurance is charged on, which is why it moves when a contract is renewed rather than when a month is busy.",
-       "Tổng các mức lương cơ bản đã đăng ký theo hợp đồng — mức công ty đã cam kết trả, chưa tính tăng ca, phụ cấp hay khấu trừ. Đây cũng là mức dùng để tính bảo hiểm, nên nó thay đổi khi có hợp đồng được gia hạn chứ không phải khi tháng đó bận rộn.")],
+     B("New this month", "Mới trong tháng này"),
+     B("People who joined since the first of this month. They are the rows most likely to be paid for part of the month, and the most likely to have bank details missing.",
+       "Những người vào làm từ ngày đầu tháng này. Đây là những dòng dễ được trả theo phần tháng nhất, và cũng dễ thiếu thông tin ngân hàng nhất.")],
+    ["monthly_wage",
+     B("Monthly wage", "Lương hàng tháng"),
+     B("The monthly wages on running contracts, added up: what the company has agreed to pay before overtime, allowances or deductions.",
+       "Tổng lương tháng trên các hợp đồng đang hiệu lực: mức công ty đã cam kết trả, chưa tính tăng ca, phụ cấp hay khấu trừ.")],
     ["payroll_ready",
-     B("Payroll-ready", "Sẵn sàng tính lương"),
-     B("The share of people with BANK DETAILS on file — that one fact, over headcount, and nothing else. The tick on each row is stricter than the tile above it. A row is ready only with a running contract AND bank details. So the percentage can read 100% while somebody on a draft contract still will not be paid. Read the rows for the answer, and the tile for the trend.",
-       "Tỷ lệ những người ĐÃ CÓ THÔNG TIN NGÂN HÀNG trong hồ sơ — đúng một dữ kiện đó, chia cho sĩ số, không tính gì thêm. Dấu tích trên từng dòng chặt hơn ô chỉ số phía trên. Một dòng chỉ được coi là sẵn sàng khi vừa có hợp đồng đang hiệu lực VỪA có thông tin ngân hàng. Nên tỷ lệ vẫn có thể hiện 100% trong khi một người đang ở hợp đồng nháp thì không được trả lương. Hãy đọc các dòng để có câu trả lời, còn ô chỉ số thì để nhìn xu hướng.")],
+     B("Payroll-ready", "Sẵn sàng trả lương"),
+     B("The share of people with BANK DETAILS on file, over headcount, and nothing else. The tick on each row is stricter: a running contract AND bank details. Read the rows for the answer.",
+       "Tỷ lệ những người ĐÃ CÓ THÔNG TIN NGÂN HÀNG, chia cho số lượng nhân sự, không tính gì khác. Dấu tích trên từng dòng chặt hơn: hợp đồng đang hiệu lực VÀ thông tin ngân hàng. Hãy đọc các dòng để có câu trả lời.")],
   ],
 
   contracts: [
     ["running",
      B("Running", "Đang hiệu lực"),
-     B("Contracts in force today, which is the set payroll will compute from. A contract that starts next week is not here yet and a person on it is not in this month's run either.",
-       "Các hợp đồng đang có hiệu lực hôm nay, tức là tập hợp mà hệ thống lương sẽ dựa vào để tính. Một hợp đồng bắt đầu từ tuần sau thì chưa nằm ở đây, và người thuộc hợp đồng đó cũng chưa có trong đợt lương tháng này.")],
+     B("Contracts in force today: the set payroll computes from. A contract that starts next week is not here yet, and neither is its person in this month's run.",
+       "Các hợp đồng đang có hiệu lực hôm nay: tập hợp hệ thống lương dựa vào để tính. Hợp đồng bắt đầu từ tuần sau thì chưa ở đây, và người của hợp đồng đó cũng chưa có trong đợt lương tháng này.")],
     ["draft",
      B("Draft", "Nháp"),
-     B("Contracts that have been prepared and not put in force. A draft pays nothing at all. It is the state to hunt for in the week before a run: the person is on every other screen and simply absent from the payslips.",
-       "Các hợp đồng đã soạn nhưng chưa được đưa vào hiệu lực. Hợp đồng nháp thì không trả gì cả. Đây là trạng thái cần lùng cho ra trong tuần trước khi chạy lương: người đó vẫn hiện trên mọi màn hình khác mà đơn giản là vắng mặt trong danh sách phiếu lương.")],
+     B("Contracts prepared and not put in force. A draft pays nothing: the person is on every other screen and simply absent from the payslips.",
+       "Các hợp đồng đã soạn mà chưa đưa vào hiệu lực. Hợp đồng nháp không trả gì: người đó có trên mọi màn hình khác mà vắng mặt trong danh sách phiếu lương.")],
     ["expired",
      B("Expired", "Đã hết hạn"),
-     B("Contracts whose end date has passed. Each is either a leaver who still needs settling in Full & Final, or a renewal that was never signed. The second one is paid up to the end date and then stops.",
-       "Các hợp đồng đã qua ngày kết thúc. Mỗi hợp đồng như vậy hoặc là một người thôi việc còn phải quyết toán ở Quyết toán thôi việc, hoặc là một lần gia hạn chưa ai ký. Trường hợp thứ hai được trả tới đúng ngày kết thúc rồi dừng.")],
+     B("Contracts past their end date. Each is a leaver who still needs settling on Pay Run › Settle, or a renewal that was never agreed.",
+       "Các hợp đồng đã qua ngày kết thúc. Mỗi hợp đồng là một người nghỉ còn cần quyết toán ở Đợt lương › Quyết toán, hoặc một lần gia hạn chưa ai đồng ý.")],
     ["average_wage",
-     B("Average wage", "Lương bình quân"),
-     B("The wage bill divided by the number of contracts in the current filters. It is a scoped average, so it moves when you change a chip without anything having changed in the database — useful for comparing divisions, misleading as a headline.",
-       "Quỹ lương chia cho số hợp đồng trong phạm vi bộ lọc hiện tại. Đây là số bình quân theo phạm vi, nên nó thay đổi khi bạn đổi chip lọc dù dữ liệu không hề đổi — hữu ích để so sánh giữa các bộ phận, nhưng dễ gây hiểu nhầm nếu lấy làm con số tiêu đề.")],
+     B("Average wage", "Lương trung bình"),
+     B("The monthly wages on running contracts, divided by how many there are. A company-wide average; the chips do not change it.",
+       "Tổng lương tháng trên các hợp đồng đang hiệu lực, chia cho số hợp đồng đó. Là số trung bình toàn công ty; các chip lọc không làm nó thay đổi.")],
   ],
 
   insights: [
@@ -8841,6 +8926,11 @@ const COLUMNS = {
    describe real templates in other modules and are curated by hand.
    ========================================================================== */
 const PRACTICE_ANCHORS = {
+  /* LEARN REFRESH step 5 — the contract drawer's three tabs, drawn at once in
+     the replica (the product shows one at a time inside cd-body). */
+  "rep-cd-terms": "The contract drawer's Terms, drawn beside Components and History so a lesson can walk all three. The product shows one tab at a time.",
+  "rep-cd-comps": "The contract drawer's Components with Paid by and each amount's source chip.",
+  "rep-cd-history": "The contract drawer's History: every change, from and to, with its source.",
   "rep-nav": "The replica's own sidebar. Mirrors pb_sidebar; nothing on it navigates the real app.",
   "rep-banner": "The practice banner. Says, on every screen, that none of this is your company.",
   /* The Dashboard replica's KPI row is NO LONGER practice-only. Phase C1 made

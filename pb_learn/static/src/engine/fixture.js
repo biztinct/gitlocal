@@ -1037,6 +1037,33 @@ const PRACTICE = {
       { emp: EMP.duc, job: B("Stock keeper", "Nhân viên kho"), ready: false,
         blocker: B("No bank account on file", "Chưa có tài khoản ngân hàng") },
     ],
+    /* LEARN REFRESH step 5 — the per-row "Contract" drawer (pb_contracts
+       contract_360), opened on Mai. The drawer's words have no Vietnamese in
+       the product (ledger LR44) except the source chips, so the replica shows
+       them as the screen does. Mai's contract names NO salary structure — so
+       the pay scheme pays her, which is the Salary Structures lesson's point
+       seen from the other side. */
+    drawer: {
+      name: EMP.mai.name, ref: "HĐ-2023-0312", ends: EN("Open-ended"), state: EN("Running"),
+      terms: [
+        [EN("The money"), [[EN("Monthly wage"), EMP.mai.base], [EN("Salary structure"), EN("—")],
+                           [EN("Paid"), EN("Monthly")]]],
+        [EN("Dates"), [[EN("Contract starts"), "01/03/2023"], [EN("Contract ends"), EN("—")]]],
+      ],
+      scheme: RUN.scheme,
+      comps: [
+        { code: "BASIC", name: EN("Basic salary"), v: EMP.mai.base,
+          src: B("Held on this contract", "Lưu trên hợp đồng này"), tone: "b" },
+        { code: "ALW", name: EN("Lunch allowance"), v: EMP.mai.allowance,
+          src: B("Held on this contract", "Lưu trên hợp đồng này"), tone: "b" },
+        { code: "OT", name: EN("Overtime"), v: 0,
+          src: B("From a pay data file", "Từ tệp dữ liệu lương"), tone: "ok" },
+      ],
+      history: [
+        { what: EN("Monthly wage"), from: 11000000, to: EMP.mai.base, when: "01/01/2026",
+          src: EN("Changed on the contract") },
+      ],
+    },
   },
 
   /* Contracts. A person is not a contract: the same four people, read as the

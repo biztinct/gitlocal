@@ -1561,6 +1561,33 @@
       "file": "pb_comp_ben/static/src/xml/incentives_board.xml",
       "desc": "The awards table: Who, Kind, Amount, Paid in, Approval, Where it has got to, Pay run.",
       "reserved": true
+    },
+    "pe-contracts": {
+      "screen": "employees",
+      "file": "pb_people/static/src/xml/people.xml",
+      "desc": "The Contracts button in the Employees head: every contract on its own board (a door inside Employees since c9e5f2ee4).",
+      "reserved": true
+    },
+    "pe-rowcontract": {
+      "screen": "employees",
+      "file": "pb_people/static/src/xml/people.xml",
+      "desc": "The per-row Contract button: opens that person's contract drawer without leaving the list."
+    },
+    "cd-tabs": {
+      "screen": "employees",
+      "file": "pb_contracts/static/src/xml/contract_360.xml",
+      "desc": "The contract drawer tabs: Terms, Components, History."
+    },
+    "cd-body": {
+      "screen": "employees",
+      "file": "pb_contracts/static/src/xml/contract_360.xml",
+      "desc": "The contract drawer's open tab.",
+      "reserved": true
+    },
+    "cd-save": {
+      "screen": "employees",
+      "file": "pb_contracts/static/src/xml/contract_360.xml",
+      "desc": "The contract drawer save bar: Discard / Save N changes (slides up once something is staged)."
     }
   },
   "pattern": {
@@ -1575,6 +1602,9 @@
     }
   },
   "practice": {
+    "rep-cd-terms": "The contract drawer's Terms, drawn beside Components and History so a lesson can walk all three. The product shows one tab at a time.",
+    "rep-cd-comps": "The contract drawer's Components with Paid by and each amount's source chip.",
+    "rep-cd-history": "The contract drawer's History: every change, from and to, with its source.",
     "rep-nav": "The replica's own sidebar. Mirrors pb_sidebar; nothing on it navigates the real app.",
     "rep-banner": "The practice banner. Says, on every screen, that none of this is your company.",
     "rep-pipeline": "The pay run's road on the Runs replica: Draft → Waiting for approval → Done, with the two ways off it (sent back, turned down). A teaching view; the product draws this as columns and a route line.",
@@ -1700,7 +1730,8 @@
       "pb_payrun_results/static/src/xml/payrun_results.xml",
       "pb_pay_delivery/static/src/xml/pb_pay_delivery.xml",
       "pb_comp_ben/static/src/xml/paycal_board.xml",
-      "pb_comp_ben/static/src/xml/incentives_board.xml"
+      "pb_comp_ben/static/src/xml/incentives_board.xml",
+      "pb_contracts/static/src/xml/contract_360.xml"
     ],
     "replica": [
       "pb_learn/static/src/engine/screens.js",

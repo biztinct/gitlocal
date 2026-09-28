@@ -49,6 +49,7 @@ const out = {
     i18n: grab("I18N"),
     glossary: grab("GLOSSARY"),
     lineOrder: grab("LINE_ORDER"),
+    stationAliases: grab("STATION_ALIASES"),
     stations: grab("STATIONS"),
     lessons: grab("LESSONS"),
     morphs: grab("MORPHS"),

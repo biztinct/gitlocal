@@ -647,6 +647,19 @@ def content_stations(data, bi):
     return out
 
 
+def content_station_aliases(data):
+    keys = {st['id'] for line in data['stations'].values() for st in line['stations']}
+    aliases = dict(data.get('stationAliases') or {})
+    for old, new in aliases.items():
+        if old in keys:
+            raise SystemExit('station alias %s -> %s: %s is still a station; '
+                             'an alias is for a RETIRED key only' % (old, new, old))
+        if new not in keys:
+            raise SystemExit('station alias %s -> %s: %s is not a station'
+                             % (old, new, new))
+    return aliases
+
+
 def content_missions(data, bi):
     steps_by_mission = data['missionSteps']
     out = []
@@ -1449,6 +1462,11 @@ def gen_content(data, bi, live):
         # draws — one source, two readers. A raw list of keys, not prose.
         'line_order': list(data.get('lineOrder') or []),
         'stations': content_stations(data, bi),
+        # LEARN REFRESH step 5 — retired station keys and the station each
+        # one folded into. Deep links, progress writes and PayAI lessons that
+        # still name an old key land on the new one (the stored progress rows
+        # were migrated by pb_learn/migrations/19.0.19.0.0).
+        'station_aliases': content_station_aliases(data),
         'missions': content_missions(data, bi),
         'scenarios': scenarios,
         'glossary': content_glossary(data, bi),

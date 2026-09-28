@@ -21,7 +21,7 @@
           <div class="ppl-head-actions">
             <!-- Contracts: a door inside Employees, not a tab beside it. Only
                  when the host handed one in and the board would let them in. -->
-            <button t-if="state.canContracts" class="pbim-btn outline" t-on-click="openContracts"
+            <button t-if="state.canContracts" class="pbim-btn outline" data-coach="pe-contracts" t-on-click="openContracts"
                     title="Every contract, on its own board"><t t-out="ic('fileText',15)"/> Contracts</button>
             <button t-attf-class="pbim-btn {{ state.selectMode ? 'outline' : 'ghost' }}" t-on-click="toggleSelectMode"><t t-out="ic('list',15)"/> <t t-esc="state.selectMode ? 'Done' : 'Select'"/></button>
             <button class="pbim-btn primary" t-on-click="addEmployee"><t t-out="ic('plus',16)"/> Add employee</button>
@@ -114,7 +114,7 @@
               <span t-else="" class="no" t-att-title="p.bank ? 'No running contract' : 'No bank details'"><t t-out="ic('alert',18)"/></span>
             </div>
             <button t-if="state.canContracts and p.contract_id and !state.selectMode"
-                    class="pbim-btn ghost pbim-btn-sm ppl-contract" title="Open their contract"
+                    class="pbim-btn ghost pbim-btn-sm ppl-contract" data-coach="pe-rowcontract" title="Open their contract"
                     t-on-click.stop="() => this.openContract(p)"><t t-out="ic('fileText',13)"/> Contract</button>
           </div>
         </div>

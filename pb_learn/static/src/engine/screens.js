@@ -525,62 +525,84 @@ export const SCREENS = {
     },
 
     /* --------------------------------------------------------- Employees */
+    /* LEARN REFRESH step 5 — People › Employees as people.xml draws it in the
+       hub: Contracts / Select / Add employee, the quiet numbers line, the
+       status chips, the roster with each row's own "Contract" button — and
+       that button's drawer (pb_contracts contract_360), drawn open on Mai. */
     employees() {
         const p = PRACTICE.people;
         const k = p.kpis;
-        const ready = tx(B("Payroll-ready", "Sẵn sàng tính lương"));
-        const notReady = tx(B("Not ready", "Chưa sẵn sàng"));
+        const dr = p.drawer;
+        const nums = [[B("Headcount", "Số lượng nhân sự"), N(k.headcount)],
+                      [B("Running contracts", "Hợp đồng đang hiệu lực"), N(k.running)],
+                      [B("Expiring within 30 days", "Hết hạn trong 30 ngày"), N(k.expiring)],
+                      [B("New this month", "Mới trong tháng này"), N(k.newHires)],
+                      [B("Monthly wage", "Lương hàng tháng"), M(k.wageBill)],
+                      [B("Payroll-ready", "Sẵn sàng trả lương"), N(k.readyPct) + "%"]]
+            .map(([l, v]) => `<span><b>${esc(v)}</b>${SP}${esc(tx(l))}</span>`).join("");
+        let rowDoor = false;
         const rows = p.rows.map((r) => {
             const meta = tx(r.job) + DOT + tx(r.emp.dept);
             const expiry = r.expiresIn
-                ? `<span class="lrn-chip warn">${ic("alert-triangle")}${N(r.expiresIn)}${
-                    SP}${esc(tx(B("days", "ngày")))}</span>`
-                : "";
+                ? `<span class="lrn-chip warn">${ic("alert-triangle")}${N(r.expiresIn)}d</span>` : "";
+            const tip = r.ready ? tx(EN("Payroll ready")) : tx(r.blocker || EN("No running contract"));
+            const door = rowDoor ? "" : ATTR_PE_ROWCONTRACT;
+            rowDoor = true;
             return `
             <div class="lrn-row ${r.ready ? "" : "hit"}">
                 <span class="lrn-avatar">${esc(initial(r.emp.name))}</span>
-                <span><span class="lrn-nm">${esc(r.emp.name)}
-                        <span class="lrn-faint">${esc(r.emp.code)}</span></span><br>
-                    <span class="lrn-sub2">${esc(meta)}${
-                        r.blocker ? DOT + esc(tx(r.blocker)) : ""}</span></span>
-                <span class="lrn-rr">${expiry}
-                    <span class="lrn-chip ${r.ready ? "ok" : "danger"}">${
-                        esc(r.ready ? ready : notReady)}</span>
-                    <b class="lrn-money">${esc(M(r.emp.base))}</b></span>
+                <span><span class="lrn-nm">${esc(r.emp.name)}</span><br>
+                    <span class="lrn-sub2">${esc(meta)}</span></span>
+                <span class="lrn-rr"><span class="lrn-chip">${esc(tx(EN("Running")))}</span>${expiry}
+                    <b class="lrn-money">${esc(M(r.emp.base))}</b>
+                    <span class="lrn-chip ${r.ready ? "ok" : "danger"}" title="${esc(tip)}">${ic(r.ready ? "check-circle" : "alert-triangle")}</span>
+                    <button class="lrn-btn sm ghost" ${door}>${ic("file-text")}${esc(tx(B("Contract", "Hợp đồng")))}</button></span>
             </div>`;
         }).join("");
+        const terms = dr.terms.map(([g, fields]) => `<span class="lrn-clabel">${esc(tx(g))}</span>${
+            fields.map(([l, v]) => `<div class="lrn-kv2"><span>${esc(tx(l))}</span><b>${
+                esc(typeof v === "number" ? M(v) : tx(v))}</b></div>`).join("")}`).join("");
+        const comps = dr.comps.map((c) => `<div class="lrn-kv2"><span><b>${esc(c.code)}</b>${SP}${esc(tx(c.name))}<br>
+            <span class="lrn-chip ${c.tone}">${esc(tx(c.src))}</span></span><b>${esc(M(c.v))}</b></div>`).join("");
+        const hist = dr.history.map((h) => `<div class="lrn-kv2"><span>${esc(tx(h.what))}<br><span class="lrn-sub2">${
+            esc(h.when)}${DOT}${esc(tx(h.src))}</span></span><b>${esc(M(h.from))}${ARROW}${esc(M(h.to))}</b></div>`).join("");
 
         return `
-            <div class="lrn-strip" data-coach="pe-head">
-                <button class="lrn-btn" data-coach="pe-bulk">${ic("list-checks")}${
-                    esc(tx(B("Select", "Chọn nhiều")))}</button>
-                <button class="lrn-btn" ${ATTR_CONTRACTS}>${ic("file-text")}${
-                    esc(tx(B("Contracts", "Hợp đồng")))}</button>
-                <button class="lrn-btn pri" data-coach="rep-newemp-open">${ic("plus")}${
-                    esc(tx(B("Add employee", "Thêm nhân viên")))}</button>
+            <div class="lrn-zhead" data-coach="pe-head"><span class="lrn-push"></span>
+                <button class="lrn-btn sm" data-coach="pe-contracts" ${ATTR_CONTRACTS}>${ic("file-text")}${esc(tx(B("Contracts", "Hợp đồng")))}</button>
+                <button class="lrn-btn sm ghost" data-coach="pe-bulk">${ic("list-checks")}${esc(tx(EN("Select")))}</button>
+                <button class="lrn-btn sm pri" data-coach="rep-newemp-open">${ic("plus")}${esc(tx(B("Add employee", "Thêm nhân viên")))}</button>
             </div>
-            <div class="lrn-grid g6" data-coach="pe-kpis">
-                ${kpiTile("users", "", N(k.headcount), B("Headcount", "Sĩ số"))}
-                ${kpiTile("check-circle", "pos", N(k.running), B("Running contracts", "Hợp đồng đang hiệu lực"))}
-                ${kpiTile("alert-triangle", "warn", N(k.expiring), B("Expiring in 30 days", "Hết hạn trong 30 ngày"))}
-                ${kpiTile("user-plus", "", N(k.newHires), B("New this month", "Vào mới tháng này"))}
-                ${kpiTile("receipt", "", M(k.wageBill), B("Monthly wage bill", "Quỹ lương tháng"))}
-                ${kpiTile("check", "pos", P(k.readyPct), B("Payroll-ready", "Sẵn sàng tính lương"))}
-                <!-- The tile is bank-details-over-headcount; the per-row tick
-                     below also requires a running contract. Two different
-                     tests, one word — see the payroll_ready column. -->
-            </div>
+            <div class="lrn-ynums" data-coach="pe-kpis">${nums}</div>
             <div class="lrn-tabs" data-coach="pe-filters">
-                ${[B("All", "Tất cả"), B("Running", "Đang hiệu lực"),
-                   B("Expiring", "Sắp hết hạn"), B("Not payroll-ready", "Chưa sẵn sàng")].map(
+                ${[B("All", "Tất cả"), B("Running", "Đang hiệu lực"), B("Expiring soon", "Sắp hết hạn"),
+                   B("New this month", "Mới trong tháng này"), B("No contract", "Không có hợp đồng")].map(
                     (f, i) => `<button aria-selected="${i === 0}">${esc(tx(f))}</button>`).join("")}
             </div>
-            <div class="lrn-panel">
-                <h3>${ic("users")}${esc(tx(B("Employees", "Nhân viên")))}</h3>
-                <div class="lrn-rows" data-coach="pe-roster">${rows}</div>
-                <p class="lrn-note">${esc(tx(B(
-                    "Headcount counts everybody this practice company employs — all 48 — while the four rows below are a sample you can read. The wage shown is the registered contract base, the figure insurance is charged on, not what the person will be paid this month.",
-                    "Sĩ số đếm toàn bộ nhân sự của công ty thực hành này — đủ 48 người — còn bốn dòng bên dưới là một mẫu đủ nhỏ để đọc. Mức lương hiển thị là lương cơ bản đã đăng ký theo hợp đồng, tức mức dùng để tính bảo hiểm, không phải số người đó thực nhận trong tháng.")))}</p>
+            <div class="lrn-ywf">
+                <div class="lrn-ywfmain">
+                    <div class="lrn-rows" data-coach="pe-roster">${rows}</div>
+                    <p class="lrn-note">${esc(tx(B(
+                        "Headcount counts everybody the practice company employs; the four rows are a sample. The wage is the contract's monthly wage.",
+                        "Số lượng nhân sự đếm mọi người công ty thực hành đang thuê; bốn dòng là một mẫu. Mức lương là lương tháng trên hợp đồng.")))}</p>
+                </div>
+                <aside class="lrn-panel lrn-ydock">
+                    <h3>${esc(dr.name)}</h3>
+                    <span class="lrn-sub2">${esc(dr.ref)}</span>
+                    <div class="lrn-strip"><span class="lrn-chip">${esc(tx(dr.ends))}</span><span class="lrn-chip ok">${esc(tx(dr.state))}</span></div>
+                    <div class="lrn-tabs" data-coach="cd-tabs">${[EN("Terms"), EN("Components"), EN("History")].map(
+                        (t, i) => `<button aria-selected="${i === 0}">${esc(tx(t))}</button>`).join("")}</div>
+                    <div data-coach="cd-body">
+                        <div class="lrn-panel" data-coach="rep-cd-terms">${terms}</div>
+                        <div class="lrn-panel" data-coach="rep-cd-comps">
+                            <span class="lrn-sub2">${esc(tx(EN("Paid by")))}${SP}<b>${esc(dr.scheme)}</b></span>${comps}</div>
+                        <div class="lrn-panel" data-coach="rep-cd-history">${hist}</div>
+                    </div>
+                    <div class="lrn-strip lrn-cdsave" data-coach="cd-save">
+                        <button class="lrn-btn sm ghost">${esc(tx(EN("Discard")))}</button>
+                        <button class="lrn-btn sm pri">${ic("check")}${esc(tx(EN("Save 1 change")))}</button>
+                    </div>
+                </aside>
             </div>
             ${newEmployeeHTML()}`;
     },
@@ -612,17 +634,17 @@ export const SCREENS = {
                 <button class="lrn-btn pri">${ic("plus")}${
                     esc(tx(B("New contract", "Hợp đồng mới")))}</button>
             </div>
-            <div class="lrn-grid g6" data-coach="ct-kpis">
-                ${kpiTile("check-circle", "pos", N(k.running), B("Running", "Đang hiệu lực"))}
-                ${kpiTile("alert-triangle", "warn", N(k.expiring), B("Expiring in 30 days", "Hết hạn trong 30 ngày"))}
-                ${kpiTile("file-text", "", N(k.draft), B("Draft", "Nháp"))}
-                ${kpiTile("clock", "", N(k.expired), B("Expired", "Đã hết hạn"))}
-                ${kpiTile("receipt", "", M(k.wageBill), B("Monthly wage bill", "Quỹ lương tháng"))}
-                ${kpiTile("calculator", "", M(k.avgWage), B("Average wage", "Lương bình quân"))}
-            </div>
+            <div class="lrn-ynums" data-coach="ct-kpis">${[
+                    [B("Running", "Đang hiệu lực"), N(k.running)],
+                    [EN("Expiring within 30 days"), N(k.expiring)],
+                    [B("Draft", "Nháp"), N(k.draft)],
+                    [B("Expired", "Đã hết hạn"), N(k.expired)],
+                    [EN("Monthly wage"), M(k.wageBill)],
+                    [B("Average wage", "Lương trung bình"), M(k.avgWage)]].map(
+                    ([l, v]) => `<span><b>${esc(v)}</b>${SP}${esc(tx(l))}</span>`).join("")}</div>
             <div class="lrn-tabs" data-coach="ct-filters">
-                ${[B("All", "Tất cả"), B("Running", "Đang hiệu lực"),
-                   B("Expiring", "Sắp hết hạn"), B("Draft", "Nháp")].map(
+                ${[B("All", "Tất cả"), B("Draft", "Nháp"), B("Running", "Đang hiệu lực"),
+                   B("Expiring soon", "Sắp hết hạn"), B("Expired", "Đã hết hạn"), B("Cancelled", "Đã hủy")].map(
                     (f, i) => `<button aria-selected="${i === 0}">${esc(tx(f))}</button>`).join("")}
             </div>
             <div class="lrn-panel">
@@ -2693,6 +2715,8 @@ const ATTR_CL_NUMS = 'data-coach="cl-numbers"';
 const ATTR_EX_NUMS = 'data-coach="ex2-numbers"';
 const ATTR_EX_CARD = 'data-coach="rep-ex-card"';
 const ATTR_EX_OPEN = 'data-coach="rep-ex-open"';
+/* LEARN REFRESH step 5 */
+const ATTR_PE_ROWCONTRACT = 'data-coach="pe-rowcontract"';
 
 /* The quiet numbers row every Lifecycle board opens with: small, grey, one
    line — a count and its words, never a tile. `attr` is the board's own
