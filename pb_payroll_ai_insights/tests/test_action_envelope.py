@@ -247,3 +247,23 @@ class TestActionEnvelope(TransactionCase):
         for key in self.engine._KNOWN_WALKTHROUGHS:
             self.assertIn('"%s"' % key, ONBOARDING_SYSTEM_PROMPT)
         self.assertNotIn('Odoo', ONBOARDING_SYSTEM_PROMPT)
+
+    # -- LEARN REFRESH step 3: the content's own hand-off --------------------
+    def test_16_a_setup_question_gets_its_walkthrough_from_the_content(self):
+        """The model often answers correctly and offers no button; the
+        helper's resolver knows which walkthrough a question is about."""
+        if 'learn.intent' not in self.env:
+            self.skipTest("pb_learn is not installed on this database")
+        for question, walk in (
+                ("How do I change many employees at once?", 'sc_records'),
+                ("How do I pay people in another currency?", 'sc_schemes'),
+                ("How do I set up a new pay scheme?", 'sc_blueprint')):
+            self.assertEqual(self.engine._content_handoff(question),
+                             {'type': 'open_walkthrough', 'walkthrough': walk,
+                              'label': 'Show me'}, question)
+
+    def test_17_the_content_handoff_never_invents(self):
+        if 'learn.intent' not in self.env:
+            self.skipTest("pb_learn is not installed on this database")
+        for noise in ('write me a poem', '', None, 42):
+            self.assertIsNone(self.engine._content_handoff(noise), noise)

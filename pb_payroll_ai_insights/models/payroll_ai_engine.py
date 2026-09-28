@@ -133,7 +133,7 @@ INTENT_CLASSIFICATION_PROMPT = """Classify the following user message into one o
 
 1. "payroll_data" - User wants to see/analyze payroll data (salary, costs, headcount, overtime, deductions, comparisons, trends, forecasts). This requires querying the database.
 2. "payroll_knowledge" - User asks a conceptual question about payroll/HR (what does CTC mean, tax rules, compliance, etc.)
-3. "onboarding" - User asks HOW to USE this app or wants to be shown/guided (how do I run payroll, how to add an employee, where is X, how does the formula engine work, show me around, give me a tour, get started), or asks how THIS app's approvals work (who approves my pay run, why is my run stuck waiting, sent back vs turned down).
+3. "onboarding" - User asks HOW to USE this app or wants to be shown/guided (how do I run payroll, how to add an employee, where is X, how does the formula engine work, show me around, give me a tour, get started), or asks how THIS app's approvals work (who approves my pay run, why is my run stuck waiting, sent back vs turned down), or how to SET UP payroll in this app (set up a new pay scheme, where does this number come from, why don't my figures add up, change who approves something, change many employees at once, pay people in another currency).
 4. "general" - Any other question (write an email, explain something, general help)
 
 User message: "{message}"
@@ -179,6 +179,14 @@ FORMULA ENGINE: Settings › Formula Engine opens Formula Studio: components (in
 
 PAYSLIPS: Pay Run › Payslips — pick a run; numbers Payslips, Need review (take-home pay at zero or below), Gross total, Net total; each payslip's salary breakdown line by line.
 
+PAYROLL SETUP:
+- New pay scheme: Settings › Guided setup › New configuration. Six steps: Start (company, name, country — the country decides the money, shown as "Pays in …" — pay cycle, a starting point, who you pay), Pay rules (each component as a sentence; a sample person's take-home pay updates beside you), Connect (sources, payslip layout, approvals), Outputs, Test (run the checks), Finish. Nothing is created until the first Continue. Finish means complete and checked; putting the scheme live is a separate proposal that may need approval. A scheme's own Settings reopens this journey to edit it.
+- Where a number comes from: Settings › Integrations › Mapping. Header "FROM <source> TO <scheme>"; tabs System fields → Scheme, Transformations, Spreadsheet columns → Scheme, Employee & contract, Who is paid by what, Mid ↔ End cycle, Component treatment, Journey. The Journey tab draws lanes Files & systems → Feeds → Transformations → Scheme, plus %(brand)s Source. Sources are read in order: a lower source only fills an empty box, never overwrites one. The spreadsheet tab reads a file's headings and one example row; it imports no numbers.
+- Figures that do not add up: Mapping › Component treatment. Each component has a pay role (Added to net pay, Taken off net pay, Net pay itself, Employer cost, Information only), a Subtotal tick (already inside another total) and a value type (only an amount can touch net pay). It belongs to the scheme; saving never rewrites payslips — recompute the run.
+- Who approves what: Settings › Approvals › Approval Matrix. One route per process; statuses In use, Draft, Needs people, Not connected yet. Change a route in the builder (Purpose, People, Safeguards, Review, Publish); publishing affects new requests only. "No approval needed" happens at once and is still recorded. People & backups › Arrange cover for someone away.
+- Change many employees at once: People › Records (the Records Desk). Only fields the pay scheme maps. Edit on screen or Export with data / Import a file, then Review and Apply. With a route for bulk changes, Apply says "Sent for approval". Every apply can be undone from History.
+- Pay in another currency: give those people their own pay scheme for their country; a scheme pays in its country's money and a pay run is always one scheme (two schemes in a month are two pay runs). Settings › Group sets the group currency and how exchange rates are picked; nothing is stored converted. Insights › Explorer › Compare schemes shows "Each in its own money" or "Group currency".
+
 DEMO NOTE: in the shared demo, payslips you generate are temporary and may be reset by another demo user.
 
 You can OFFER TO SHOW the user something via an optional "action". Two kinds:
@@ -191,12 +199,24 @@ A lesson (a short lesson in a practice company):
 - "L5": The formula is the payslip — Formula Studio, going live safely
 - "LA": Approve like it is your signature — the Approvals inbox and the route
 - "L6": Statutory — insurance rates, the tax table, applying a rate change
+- "L7": New configuration — build a pay scheme step by step
+- "L8": Mapping — follow a number to its source
+- "L9": Component treatment — why figures do not add up
+- "L10": Approval Matrix — decide who signs off what
+- "L11": Records Desk — change many people at once
+- "L12": Schemes and currencies — pay in more than one currency
 A walkthrough of the real screens:
 - "sc_welcome": the tour — Pulse, a pay run, the Approvals inbox, the Formula Engine
 - "sc_payrun": run a pay run, step by step
 - "sc_payslips": read a pay run and its payslips
 - "sc_formula": explore the formula engine
 - "sc_import": load a month's pay data
+- "sc_blueprint": set up a new pay scheme
+- "sc_mapjourney": follow a number through Mapping
+- "sc_treatment": fix figures that do not add up
+- "sc_matrix": change an approval route
+- "sc_records": bulk update employee records
+- "sc_schemes": pay people in another currency
 
 ALWAYS respond with a SINGLE valid JSON object (no markdown fences):
 {
@@ -206,7 +226,7 @@ ALWAYS respond with a SINGLE valid JSON object (no markdown fences):
   "action": { "type": "open_lesson", "lesson": "<one lesson key above>", "label": "Show me" }
 }
 For a walkthrough use instead: "action": { "type": "open_walkthrough", "walkthrough": "<one walkthrough key above>", "label": "Show me" }. Prefer a walkthrough for "show me around" / "where is" questions and a lesson for "how does it work" questions.
-Include "action" ONLY when a listed lesson or walkthrough clearly matches the request; otherwise omit it or set it to null. Never invent pages, tabs, buttons, lesson keys or walkthrough keys that are not listed above.""" + IDENTITY_RULES
+Include "action" ONLY when a listed lesson or walkthrough clearly matches the request; otherwise omit it or set it to null. A "how do I…" question about one of the PAYROLL SETUP areas above clearly matches its lesson or walkthrough (new pay scheme: L7 / sc_blueprint; where a number comes from: L8 / sc_mapjourney; figures that do not add up: L9 / sc_treatment; who approves what: L10 / sc_matrix; many employees at once: L11 / sc_records; another currency: L12 / sc_schemes), so offer it. Never invent pages, tabs, buttons, lesson keys or walkthrough keys that are not listed above.""" + IDENTITY_RULES
 
 
 def data_query_prompt(message, payload_json):
@@ -633,14 +653,19 @@ class PayrollAIEngine(models.Model):
     # `_KNOWN_LESSONS` is a whitelist and nothing else: the LLM chooses from it,
     # it never authors a key. An unknown key is dropped rather than passed
     # through, because a button that opens nothing is worse than no button.
-    _KNOWN_LESSONS = ('LW', 'L1', 'L5', 'L3', 'L4', 'LA', 'L2', 'L6')
+    _KNOWN_LESSONS = ('LW', 'L1', 'L5', 'L3', 'L4', 'LA', 'L2', 'L6',
+                      # LEARN REFRESH step 3 — payroll setup.
+                      'L7', 'L8', 'L9', 'L10', 'L11', 'L12')
 
     # LEARN REFRESH step 2: a WALKTHROUGH is the second thing "Show me" may
     # open — the real screens, narrated, in Watch mode. Same rule as lessons:
     # a whitelist the model chooses from and never authors. Only walkthroughs
     # that are on the lesson map and have a Watch mode are here.
     _KNOWN_WALKTHROUGHS = ('sc_welcome', 'sc_payrun', 'sc_payslips',
-                           'sc_formula', 'sc_import')
+                           'sc_formula', 'sc_import',
+                           # LEARN REFRESH step 3 — payroll setup.
+                           'sc_blueprint', 'sc_mapjourney', 'sc_treatment',
+                           'sc_matrix', 'sc_records', 'sc_schemes')
 
     # The old tour ids, and the lesson each became. Kept because the SYSTEM
     # PROMPT and the model behind it may lag a deploy — a cached conversation,
@@ -805,8 +830,33 @@ class PayrollAIEngine(models.Model):
             'insights': result.get('insights', []),
             'follow_up_questions': result.get('follow_up_questions', []),
             'intent': 'onboarding',
-            'action': self._sanitize_action(result.get('action')),
+            'action': (self._sanitize_action(result.get('action'))
+                       or self._content_handoff(message)),
         }
+
+    def _content_handoff(self, message):
+        """LEARN REFRESH step 3 — the "Show me" the model left out.
+
+        The model offers an action only when it is sure, and in practice it
+        is rarely sure: "how do I change many employees at once?" came back
+        with a correct answer and no button. The helper's own resolver
+        (pb_learn `learn.intent.resolve`) already knows which questions a
+        walkthrough answers — an intent's `watch` — so the same question is
+        asked of it, and a walkthrough is offered only when that resolver
+        names one AND the whitelist below knows it. Soft: without pb_learn,
+        or on any error, there is simply no button.
+        """
+        if 'learn.intent' not in self.env or not isinstance(message, str):
+            return None
+        try:
+            Intent = self.env['learn.intent'].sudo()
+            key = Intent.resolve(message[:400])
+            intent = key and self.env['learn.content'].sudo().intent(key)
+            walk = (intent or {}).get('watch') or ''
+        except Exception:       # noqa: BLE001 — a hint must never break an answer
+            return None
+        return self._sanitize_action(
+            {'type': 'open_walkthrough', 'walkthrough': walk, 'label': 'Show me'})
 
     def _screen_note(self, context):
         """The one system line that says where the user is standing, or None.
