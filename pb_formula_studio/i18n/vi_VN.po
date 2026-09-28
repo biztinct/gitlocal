@@ -2100,13 +2100,13 @@ msgstr "Nguồn cấp dữ liệu & tập tin"
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:59
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:122
 msgid "Transformations"
-msgstr "chuyển đổi"
+msgstr "Chuyển đổi"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:60
 msgid "Scheme"
-msgstr "sơ đồ"
+msgstr "Chương trình lương"
 
 #. module: pb_formula_studio
 #. odoo-javascript
@@ -2783,7 +2783,7 @@ msgstr "Toàn cảnh: hệ thống, nguồn cấp dữ liệu và tệp nào đ�
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:113
 msgid "System fields → Scheme"
-msgstr "Trường hệ thống → Lược đồ"
+msgstr "Trường hệ thống → Chương trình lương"
 
 #. module: pb_formula_studio
 #. odoo-javascript
@@ -2803,7 +2803,7 @@ msgstr "Xem mỗi quy tắc chuyển đổi đọc gì, nó tính toán những 
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:125
 msgid "Spreadsheet columns → Scheme"
-msgstr "Cột bảng tính → Lược đồ"
+msgstr "Cột bảng tính → Chương trình lương"
 
 #. module: pb_formula_studio
 #. odoo-javascript
@@ -6755,7 +6755,7 @@ msgstr "Các trường được ánh xạ %s"
 #. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:7627
 msgid "Open Records Desk"
-msgstr "Bàn ghi hồ sơ mở"
+msgstr "Mở Records Desk"
 
 #. module: pb_formula_studio
 #. odoo-python
@@ -7404,7 +7404,7 @@ msgstr "Được lưu trữ khác nhau"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
 msgid "Type says otherwise"
-msgstr "Loại nói khác"
+msgstr "Loại giá trị nói khác"
 
 #. module: pb_formula_studio
 #. odoo-javascript
@@ -7423,7 +7423,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
 msgid "Information only"
-msgstr "Chỉ thông tin"
+msgstr "Chỉ để tham khảo"
 
 #. module: pb_formula_studio
 #. odoo-javascript
@@ -7435,7 +7435,7 @@ msgstr "Đang thay đổi…"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
 msgid "Set all of them to Information only"
-msgstr "Đặt tất cả chúng thành Chỉ thông tin"
+msgstr "Đặt tất cả thành Chỉ để tham khảo"
 
 #. module: pb_formula_studio
 #. odoo-javascript
@@ -7478,7 +7478,7 @@ msgstr "là những gì bạn nhìn thấy trên lưới."
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
 msgid "Pay role"
-msgstr "Trả vai trò"
+msgstr "Vai trò trong lương"
 
 #. module: pb_formula_studio
 #. odoo-javascript
@@ -7491,7 +7491,7 @@ msgstr "đó là điều mà mọi báo cáo đều coi là như vậy."
 #: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
 msgid "Subtotal"
-msgstr "Thành tiền"
+msgstr "Tổng phụ"
 
 #. module: pb_formula_studio
 #. odoo-javascript
@@ -7540,7 +7540,7 @@ msgstr "Đến từ"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
 msgid "Tells the run"
-msgstr "Kể về cuộc chạy"
+msgstr "Báo cho đợt lương"
 
 #. module: pb_formula_studio
 #. odoo-javascript

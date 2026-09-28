@@ -491,7 +491,7 @@ msgstr "Bắt đầu"
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:31
 msgid "Name, starter, who you pay"
-msgstr "Tên, người bắt đầu, người bạn trả tiền"
+msgstr "Tên, điểm bắt đầu, trả lương cho ai"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -689,31 +689,31 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:104
 msgid "Continue to pay rules"
-msgstr "Tiếp tục trả quy tắc"
+msgstr "Tiếp tục sang Quy tắc lương"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:105
 msgid "Continue to connect"
-msgstr "Tiếp tục kết nối"
+msgstr "Tiếp tục sang Kết nối"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:106
 msgid "Continue to outputs"
-msgstr "Tiếp tục xuất ra"
+msgstr "Tiếp tục sang Đầu ra"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:107
 msgid "Continue to test"
-msgstr "Tiếp tục thử nghiệm"
+msgstr "Tiếp tục sang Kiểm thử"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:108
 msgid "Continue to finish"
-msgstr "Tiếp tục kết thúc"
+msgstr "Tiếp tục sang Hoàn thành"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -727,7 +727,7 @@ msgstr "Hoàn tất và mở"
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/js/blueprint_steps.js:152
 msgid "Continue to %s"
-msgstr "Tiếp tục đến %s"
+msgstr "Tiếp tục sang %s"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -8072,13 +8072,13 @@ msgstr "Giữ của tôi"
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/xml/pay_preview.xml:1
 msgid "Estimated take-home pay"
-msgstr "Ước tính tiền mang về nhà"
+msgstr "Thực nhận ước tính"
 
 #. module: pb_blueprint
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/xml/pay_preview.xml:1
 msgid "See it in someone's pay"
-msgstr "Xem nó trong tiền lương của ai đó"
+msgstr "Xem ngay trên lương của một người"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -8562,7 +8562,7 @@ msgstr "Nháp"
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/xml/steps.xml:1
 msgid "Who are you paying?"
-msgstr "Bạn đang trả tiền cho ai?"
+msgstr "Bạn đang trả lương cho ai?"
 
 #. module: pb_blueprint
 #. odoo-javascript
@@ -8578,7 +8578,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_blueprint/static/src/xml/steps.xml:1
 msgid "Real life belongs in the design"
-msgstr "Cuộc sống thực thuộc về thiết kế"
+msgstr "Đời thực phải có trong thiết kế"
 
 #. module: pb_blueprint
 #. odoo-javascript
