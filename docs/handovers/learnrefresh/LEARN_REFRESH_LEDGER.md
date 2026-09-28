@@ -421,3 +421,61 @@ Draft with the reason (NOT "cancels 48 payslips"). Closeout: `docs/handovers/APP
   all Python/data logic, none touched by an attribute.
 - **Validation logins:** the QA login sees every step-4 tab except Filings (no filing group) and Praise/Goals/
   People-Announce; the demo login is refused every step-4 tab, and every walkthrough ends on the no-access card.
+
+- LR44 **Some taught screens have no Vietnamese in the product at all** and the replica says so rather than
+  inventing it: the Pay Run ledgers (Adjust/Settle descriptor words — KPI labels, facets, metrics, drawer — are
+  plain Python strings in `ledger_cockpits.py`, never wrapped in `_()`), the contract drawer (pb_contracts has no
+  entries for Terms/Components/History/save bar), Payroll Report (inline JS template, nothing extracted), the
+  connection screen (connector_cockpit + Python action labels), most of Calendar and Awards. The fixture helper
+  `EN("…")` (practice-data.js) marks such a label: same words in both languages; the VI lesson names the English
+  label and glosses it. Owner item: wrap/translate them in the product.
+- LR45 **Pay Run › Settle draws no tab strip** (ledger.xml renders `pbl-tabs` only past one tab), so `lg-tabs` exists
+  on Adjust only. **There is no "factor" on the Proration screen**: the row shows Old / New / Prorated money; the
+  days (Basis, Period days, Old days, New days) live in the row's drawer. Old content taught "read the factor".
+- LR46 **Folding a station = alias + migration, never a silent delete.** `STATION_ALIASES` in data.js (contracts →
+  employees, proration/retro → adjust) is emitted as `station_aliases` (generator refuses an alias whose old key is
+  still a station or whose target is not); `learn.content.station()`, `learn.progress.record`, `learn.event.log`
+  and the Journey's deep links resolve it. Migration 19.0.19.0.0 re-keys/merges progress rows and re-keys event
+  history; a retired "done" arrives as "in_progress" (the new lessons are full lessons nobody has taken).
+- LR47 **A .po entry copied from another module is dead weight when its code never emits the string.** pb_probation
+  carried 19 approval-engine strings with only `#. module:` (no odoo-* marker, no occurrence) — the reader dropped
+  them, and pb_approval_config already translates them. Removed. Check with a marker/occurrence scan, not by eye.
+- LR48 **Replica icons must exist in `journey/icons.xml`** (`replay_tests test_02` fails otherwise): there is no
+  `megaphone`, `wallet`, `trending-down` or `list` — use message-circle, banknote, receipt, list-checks.
+- LR49 macOS has no `timeout`; wrap remote calls in `gtimeout` (MacPorts) on this workstation.
+- LR50 **Hiring's "Open" count shared the button's msgid** (global JS translations are keyed by msgid only), so it
+  read "Mở". The count is `_t("Open roles")` now; "Step X of 4" is one `_t("Step %(n)s of %(total)s")` sentence
+  ("Bước X/4"); the request wizard's tab names moved from a template array literal (never extracted) to a `_t` getter.
+- LR51 **A hub-tab screen needs a matcher of its own for the Coach** (`test_coach::test_14`): give it the
+  standalone boards' action tags in `SCREEN_ACTION_TAGS` (adjust → pb_retro/pb_proration, declared AFTER the
+  proration/retro screens so a standalone board still grounds on its own screen). A screen that lost its station
+  needs its own `name` in SCREEN_CTX, or the generator names it by its key (bundle test_06). Settings screens
+  whose sidebar leaf retired need `open:` (Salary Structures, Integrations) or "Open" goes nowhere.
+- LR52 **Ask Payobook left every step-5 question without a button, and sent "where is the budget" to the data
+  path.** The classifier now names these areas and says "where do I see / where is / how do I" and app-behaviour
+  "why / do I need" questions are about using the app; `_lesson_handoff` offers the lesson whose station `search`
+  phrases appear in the question (whole phrase, name weighs less), on the onboarding AND knowledge paths. The
+  station `search` words are therefore also PayAI's routing table — keep them phrased as people ask.
+- LR53 **Browser automation over the map writes real progress** (every started lesson is a row). Clean the QA
+  login's rows written that day afterwards (`learn_event` is append-only — leave it).
+
+## Step 5 facts (final state, 2026-09-28)
+
+- **40 stations, every one a full lesson (5–9 steps).** New: afterrun L32, adjust L30, reports L38. Rewritten
+  from outline: employees L29 (+ contract drawer), fullfinal L31, structures L33, integrations L34, insights L35,
+  explorer L36, workforcean L37. Deepened to 5 steps: L20, L25–L28. Retired keys (aliases): contracts →
+  employees, proration/retro → adjust. Lesson keys run LW, LA, L1–L38.
+- **Lines/chapters:** LINE_ORDER overview, payrun, setup, people, lifecycle, workforce, insights, compliance;
+  CHAPTERS ch1 Get around (overview) · ch2 Run pay (payrun) · ch3 Set up pay (setup) · ch4 People and their
+  journeys (people, lifecycle) · ch5 Workforce · ch6 Understand and comply (insights, compliance).
+- **Paths (learn_path.py):** officer 16, approver 7, hr 10, manager 7 (new; guessed from hr_attendance
+  officer/manager, after hr), owner 10. MILESTONES m_employee → employees.
+- **Anchors added:** lg-tabs/-steps/-rowact/-drawer, rs-head/-compare/-grid, dl-bank/-release/-slips,
+  pc-hero/-months, aw-put/-steps/-table, pe-contracts/-rowcontract, cd-tabs/-body/-save, ic-actions/-fetch,
+  rp-pick/-kpis/-tabs, bg-months/-heat. Practice: rep-cd-*, rep-ig-arrivals, rep-pm-announce/-plan.
+- **Versions (all four databases):** pb_learn 19.0.19.0.0, pb_payroll_ai_insights 19.0.3.9.0, biz_access
+  19.0.1.4.4, pb_records 19.0.1.3.3, pb_hiring 19.0.1.3.5, pb_formula_studio 19.0.1.201.3 and patch bumps on
+  pb_payrun_ledgers, pb_payrun_results, pb_pay_delivery, pb_comp_ben, pb_people, pb_contracts,
+  pb_import_advanced, pb_hr_workforce, pb_budget, pb_mission, pb_today, pb_audit, pb_workforce_insights,
+  pb_explorer, pb_probation. pb_hr_payroll_formula: Python + .po only (no bump; net_role selection VI written
+  to `ir_model_fields_selection` by SQL on each DB).

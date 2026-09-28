@@ -55,6 +55,23 @@ C. **Final sweep (gates — all must be true, prove each):**
 D. **Owner-facing close-out**: write `docs/handovers/learnrefresh/LEARN_REFRESH_CLOSEOUT.md`
    (engineering record: what changed per step, commits, versions, open items).
 
+E. **Added after the step 4 report — Vietnamese on the screens the lessons teach**
+   (product .po fixes, + stored values where applicable — LOOK L24; list before/after):
+   - Access & delegation (biz_access) has NO Vietnamese — translate its visible strings,
+     then switch its lesson from English button names to the VI ones in VI.
+   - Records Desk (pb_records) has no Vietnamese; pay-role choices in Component
+     treatment ("Added to net pay" …) have none.
+   - Workforce: "Ban" (Board), "Đăng xuất" for Checked out, "Ước tính. thô thiển" for
+     Est. gross; Audit: "Truyền phát" (Stream), "Ống kính đăng nhập" (Login lens).
+   - Probation's vi_VN.po has 19 entries that never load — find why (PO loading rules)
+     and fix.
+   - Hiring: "Open" count vs "Open" button share one msgid (split with context or
+     reword), "Step 1 of 4" → "Bước 1/4", request-form tab names untranslatable (fix).
+   - Treatment note in a pay run says "Settings → Integrations → Mappings" — the screen
+     is "Mapping".
+   - Gate 6 (Ask Payobook) must ask the LIVE AI the step 3 + step 4 questions, not only
+     check the hand-off mapping.
+
 ## Non-goals
 No product behaviour changes except the progress-key migration and anchors.
 
