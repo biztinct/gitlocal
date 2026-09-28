@@ -76,7 +76,8 @@
     "pw-division": {
       "screen": "runpayroll",
       "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
-      "desc": "The division / formula configuration. Choosing it chooses the rulebook every payslip in this run is computed by."
+      "desc": "The division / formula configuration. Choosing it chooses the rulebook every payslip in this run is computed by.",
+      "reserved": true
     },
     "pw-summary": {
       "screen": "runpayroll",
@@ -112,20 +113,17 @@
     "pw-paymode": {
       "screen": "runpayroll",
       "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
-      "desc": "What should these values do — replace this month only, or update the record?",
-      "reserved": true
+      "desc": "What should these values do — replace this month only, or update the record?"
     },
     "pw-coverage": {
       "screen": "runpayroll",
       "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
-      "desc": "Coverage. How many of the people in this run the spreadsheet actually covers.",
-      "reserved": true
+      "desc": "Coverage. How many of the people in this run the spreadsheet actually covers."
     },
     "pw-missing": {
       "screen": "runpayroll",
       "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
-      "desc": "The people the spreadsheet does not cover, named, with the door that adds them.",
-      "reserved": true
+      "desc": "The people the spreadsheet does not cover, named, with the door that adds them."
     },
     "pw-skipsheet": {
       "screen": "runpayroll",
@@ -135,51 +133,43 @@
     },
     "pk-kpis": {
       "screen": "payruns",
-      "file": "pb_payruns/static/src/xml/payruns_kanban.xml",
-      "desc": "The KPI band above the board: total, in pipeline, awaiting YOUR approval, completed, net paid.",
-      "also": [
-        "pb_payruns/static/src/xml/payruns.xml"
-      ]
+      "file": "pb_payruns/static/src/xml/payruns.xml",
+      "desc": "The numbers row: Pay runs, In pipeline, Awaiting your approval, Completed, Net paid (done) in the company's currency."
     },
     "pk-run": {
       "screen": "payruns",
-      "file": "pb_payruns/static/src/xml/payruns_kanban.xml",
-      "desc": "Run payroll. The same wizard the Run Payroll leaf opens, reached from the board.",
+      "file": "pb_payruns/static/src/xml/payruns.xml",
+      "desc": "Run payroll — opens Pay Run › Run.",
       "reserved": true
     },
     "pk-tabs": {
       "screen": "payruns",
-      "file": "pb_payruns/static/src/xml/payruns_kanban.xml",
-      "desc": "Status tabs. They filter the board by approval stage, not by period.",
-      "also": [
-        "pb_payruns/static/src/xml/payruns.xml"
-      ]
+      "file": "pb_payruns/static/src/xml/payruns.xml",
+      "desc": "The board itself: three columns, Draft · Waiting for approval · Done.",
+      "reserved": true
     },
     "pk-datechips": {
       "screen": "payruns",
       "file": "pb_payruns/static/src/xml/payruns_kanban.xml",
-      "desc": "Date chips. Every count above is scoped by whichever one is active."
+      "desc": "Date chips on the kanban fallback board (not on the Pay Run hub's Runs tab).",
+      "reserved": true
     },
     "pk-divchips": {
       "screen": "payruns",
-      "file": "pb_payruns/static/src/xml/payruns_kanban.xml",
-      "desc": "Division chips. Shown only when this company runs payroll per division.",
-      "reserved": true
+      "file": "pb_payruns/static/src/xml/payruns.xml",
+      "desc": "The division chips above the board. They narrow the cards; the numbers row still counts the whole board."
     },
     "pk-card": {
       "screen": "payruns",
-      "file": "pb_payruns/views/hr_payslip_run_kanban.xml",
+      "file": "pb_payruns/static/src/xml/payruns.xml",
       "repeats": true,
-      "desc": "A pay run card. Emitted once per record, so a point-at lands on the first card on the board — enough to say 'a card looks like this', not enough to say 'that one'.",
-      "also": [
-        "pb_payruns/static/src/xml/payruns.xml"
-      ]
+      "desc": "A pay run card. Emitted once per record, so a point-at lands on the first card on the board — enough to say 'a card looks like this', not enough to say 'that one'."
     },
     "pk-card-actions": {
       "screen": "payruns",
-      "file": "pb_payruns/views/hr_payslip_run_kanban.xml",
+      "file": "pb_payruns/static/src/xml/payruns.xml",
       "repeats": true,
-      "desc": "The card's action footer. Which buttons appear is decided by the record's own gate fields, never by the card."
+      "desc": "A run card's action footer: Submit for approval / Reject on a draft, Open the approval when it is your turn, Pay & Deliver / Report / Excel / Journals / Payments when Done."
     },
     "ps-runsel": {
       "screen": "payslips",
@@ -241,14 +231,12 @@
     "im-batches": {
       "screen": "import",
       "file": "pb_import/static/src/xml/import.xml",
-      "desc": "Recent batches and their state. Where you go back to a file that stalled.",
-      "reserved": true
+      "desc": "Recent batches and their state. Where you go back to a file that stalled."
     },
     "iw-steps": {
       "screen": "importwizard",
       "file": "pb_import_wizard/static/src/xml/import_wizard.xml",
-      "desc": "The wizard's stepper: source, review & match, validate & fix, commit.",
-      "reserved": true
+      "desc": "The wizard's stepper: source, review & match, validate & fix, commit."
     },
     "iw-source": {
       "screen": "importwizard",
@@ -348,13 +336,6 @@
       "screen": "formula",
       "file": "pb_formula_studio/static/src/xml/studio.xml",
       "desc": "The live preview: the whole configuration evaluated against one sample employee, line by line."
-    },
-    "fs-simulate": {
-      "screen": "formula",
-      "file": "pb_formula_studio/static/src/xml/studio.xml",
-      "desc": "Simulate. Runs the edited configuration against a period that has already been paid — the evidence the one-employee preview is not.",
-      "retired": true,
-      "retired_note": "LEARN REFRESH step 1: no longer in the product template. Content still names it until step 2 rewrites approvals/formula; check_contract.py warns on every use."
     },
     "st-new": {
       "screen": "statutory",
@@ -469,41 +450,6 @@
       "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
       "desc": "The formula engine card. Payobook computes pay from readable configurations rather than fixed structures, and this is where the dashboard says so."
     },
-    "pa-hero": {
-      "screen": "approvals",
-      "file": "pb_approval/static/src/xml/approval.xml",
-      "desc": "The approval pipeline header, with the count that is waiting on YOU. Officer review, then HR review, then Finance approval, printed in order.",
-      "retired": true,
-      "retired_note": "LEARN REFRESH step 1: no longer in the product template. Content still names it until step 2 rewrites approvals/formula; check_contract.py warns on every use."
-    },
-    "pa-kpis": {
-      "screen": "approvals",
-      "file": "pb_approval/static/src/xml/approval.xml",
-      "desc": "How many runs sit at each gate, and the net at stake across all of them. A money figure that has not been paid and can still be stopped.",
-      "retired": true,
-      "retired_note": "LEARN REFRESH step 1: no longer in the product template. Content still names it until step 2 rewrites approvals/formula; check_contract.py warns on every use."
-    },
-    "pa-lanes": {
-      "screen": "approvals",
-      "file": "pb_approval/static/src/xml/approval.xml",
-      "desc": "The three lanes and the run cards in them. A card offers Approve and Reject only at the gate you hold; everywhere else it names who is holding it up.",
-      "retired": true,
-      "retired_note": "LEARN REFRESH step 1: no longer in the product template. Content still names it until step 2 rewrites approvals/formula; check_contract.py warns on every use."
-    },
-    "pa-recent": {
-      "screen": "approvals",
-      "file": "pb_approval/static/src/xml/approval.xml",
-      "desc": "Recently decided, approvals and rejections together, with the written reason on every rejection. The audit trail as a reading surface.",
-      "retired": true,
-      "retired_note": "LEARN REFRESH step 1: no longer in the product template. Content still names it until step 2 rewrites approvals/formula; check_contract.py warns on every use."
-    },
-    "pa-reject": {
-      "screen": "approvals",
-      "file": "pb_approval/static/src/xml/approval.xml",
-      "desc": "The reject popover. The reason field is required, and the note beneath it says what rejecting does to the payslips in the run.",
-      "retired": true,
-      "retired_note": "LEARN REFRESH step 1: no longer in the product template. Content still names it until step 2 rewrites approvals/formula; check_contract.py warns on every use."
-    },
     "pe-head": {
       "screen": "employees",
       "file": "pb_people/static/src/xml/people.xml",
@@ -560,7 +506,8 @@
     "in-trend": {
       "screen": "insights",
       "file": "pb_insights/static/src/xml/insights.xml",
-      "desc": "The cost story over three, six or twelve months. A trend answers a different question from a total, and the window chip decides which."
+      "desc": "The cost story over three, six or twelve months. A trend answers a different question from a total, and the window chip decides which.",
+      "reserved": true
     },
     "in-duo": {
       "screen": "insights",
@@ -668,14 +615,12 @@
     "pw-scheme": {
       "screen": "runpayroll",
       "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
-      "desc": "The pay-scheme cards, shown when the company has more than one scheme. Choosing one chooses who is paid and in which currency.",
-      "reserved": true
+      "desc": "The pay-scheme cards, shown when the company has more than one scheme. Choosing one chooses who is paid and in which currency."
     },
     "dash-period": {
       "screen": "dashboard",
       "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
-      "desc": "The one line that says which payroll month every number on the page describes.",
-      "reserved": true
+      "desc": "The one line that says which payroll month every number on the page describes."
     },
     "ex-trail": {
       "screen": "explorer",
@@ -688,14 +633,111 @@
       "file": "pb_explorer/static/src/xml/explorer.xml",
       "desc": "The period picker: the one choice every number on the Explorer depends on.",
       "reserved": true
+    },
+    "pk-steps": {
+      "screen": "payruns",
+      "file": "pb_payruns/static/src/xml/payruns.xml",
+      "desc": "The numbered steps 01 Draft · 02 Waiting for approval · 03 Done, with their counts and flags (sent back, waiting on you)."
+    },
+    "pk-route": {
+      "screen": "payruns",
+      "file": "pb_payruns/static/src/xml/payruns.xml",
+      "desc": "On a waiting run's card: the step it is at and who it is with."
+    },
+    "pk-rejected": {
+      "screen": "payruns",
+      "file": "pb_payruns/static/src/xml/payruns.xml",
+      "desc": "The folded Rejected pay runs list under the board."
+    },
+    "ai-head": {
+      "screen": "approvals",
+      "file": "pb_approval_config/static/src/xml/inbox.xml",
+      "desc": "The inbox's action strip: Ask for a sign-off, Workflows, Refresh.",
+      "reserved": true
+    },
+    "ai-scope": {
+      "screen": "approvals",
+      "file": "pb_approval_config/static/src/xml/inbox.xml",
+      "desc": "Mine / My team / Everyone — what you can SEE, not what you may decide. Drawn only when there is more than one option.",
+      "reserved": true
+    },
+    "ai-tabs": {
+      "screen": "approvals",
+      "file": "pb_approval_config/static/src/xml/inbox.xml",
+      "desc": "The four tabs: My turn · All I can see · Sent back · Finished."
+    },
+    "ai-card": {
+      "screen": "approvals",
+      "file": "pb_approval_config/static/src/xml/inbox.xml",
+      "desc": "One request card: title, badge, who sent it in, Waiting for …, route dots, amount, count, due."
+    },
+    "ai-route": {
+      "screen": "approvals",
+      "file": "pb_approval_config/static/src/xml/inbox.xml",
+      "desc": "A request's route dots: done · current · next."
+    },
+    "ai-drawer": {
+      "screen": "approvals",
+      "file": "pb_approval_config/static/src/xml/inbox.xml",
+      "desc": "The open request's drawer.",
+      "reserved": true
+    },
+    "ai-facts": {
+      "screen": "approvals",
+      "file": "pb_approval_config/static/src/xml/inbox.xml",
+      "desc": "The facts frozen when the request was sent in (for a pay run: net, gross, payslips, employees, change against the last run, contains overtime)."
+    },
+    "ai-decide": {
+      "screen": "approvals",
+      "file": "pb_approval_config/static/src/xml/inbox.xml",
+      "desc": "The drawer's decision buttons.",
+      "reserved": true
+    },
+    "ai-turndown": {
+      "screen": "approvals",
+      "file": "pb_approval_config/static/src/xml/inbox.xml",
+      "desc": "Turn it down — ends the request; a pay run is Rejected."
+    },
+    "ai-sendback": {
+      "screen": "approvals",
+      "file": "pb_approval_config/static/src/xml/inbox.xml",
+      "desc": "Send it back — returns it for changes; a pay run is a draft again with the note."
+    },
+    "ai-approve": {
+      "screen": "approvals",
+      "file": "pb_approval_config/static/src/xml/inbox.xml",
+      "desc": "Approve (or Approve with an exception)."
+    },
+    "ai-move": {
+      "screen": "approvals",
+      "file": "pb_approval_config/static/src/xml/inbox.xml",
+      "desc": "Move it to somebody else — for whoever looks after the workflow."
+    },
+    "ai-withdraw": {
+      "screen": "approvals",
+      "file": "pb_approval_config/static/src/xml/inbox.xml",
+      "desc": "Withdraw it — for the person who sent it in; a pay run returns to Draft."
+    },
+    "fs-views": {
+      "screen": "formula",
+      "file": "pb_formula_studio/static/src/xml/studio.xml",
+      "desc": "The six views: Cards · Grid · Test · Compare · Health · Settings."
+    },
+    "fs-command": {
+      "screen": "formula",
+      "file": "pb_formula_studio/static/src/xml/studio.xml",
+      "desc": "Tools — the Command Center (Ctrl/Cmd K); Simulate is under Analyze."
     }
   },
   "pattern": {},
   "practice": {
     "rep-nav": "The replica's own sidebar. Mirrors pb_sidebar; nothing on it navigates the real app.",
     "rep-banner": "The practice banner. Says, on every screen, that none of this is your company.",
-    "rep-dash-runs": "The replica Dashboard's three-month run list. The product draws ONE latest-run card here; three months is a teaching view, so it keeps a rep- name and the Coach must never claim to point at it on a live screen.",
-    "rep-pipeline": "The lifecycle stepper: draft → level0 → level1 → level2 → done, with the rejection branch. A teaching view; the product draws this as columns, not as a stepper.",
+    "rep-pipeline": "The pay run's road on the Runs replica: Draft → Waiting for approval → Done, with the two ways off it (sent back, turned down). A teaching view; the product draws this as columns and a route line.",
+    "rep-tabs": "The replica's tab strip for the page being shown. Mirrors the product's hub tabs, in their order and words; tabs with no practice screen are drawn quiet and say so.",
+    "rep-fs-stage": "The practice Formula Studio's stage badge and the Draft → Testing → Validated → Active chain drawn beside it. The product has the badge; the drawn chain is a teaching view.",
+    "rep-fs-tools": "The practice panel that stands for Tools → Analyze → Simulate. In the product it is the Command Center overlay (fs-command opens it); here it is drawn open so a lesson can point at Simulate.",
+    "rep-settings": "The practice company's Settings page of categories. The product draws the same categories; only the four with practice screens open anything here.",
     "rep-impfix": "The import wizard's one repairable cell — the overtime amount on the row whose figure could not be read. A real input; the value a learner types is checked loosely against the step's own value, thousands marks and all.",
     "rep-impmatch": "The Match button on that same row. Practice-only because the product's importer offers its fixes differently; here it is what 'accept this row' looks like.",
     "rep-newemp-open": "The Add employee button on the Employees replica. In the product it opens a form view; here it is the step that takes the learner down to the practice form.",
@@ -714,7 +756,7 @@
     "palette": "pb_formula_studio command layer",
     "shortcuts": "pb_formula_studio",
     "snippets": "pb_formula_studio",
-    "fs-*": "pb_formula_studio — the Formula Studio anchor family, laid in studio.xml by that module. SEVEN are PROMOTED into `product` above (fs-config, fs-components, fs-formula, fs-namesletters, fs-deps, fs-preview, fs-simulate) because L5 names them and an anchor a lesson points at has to be one a test can check; they are listed in PROMOTED_FROM_WILDCARD in tests/test_anchor_registry.py, which is what stops the wildcard reading them as somebody else's. Everything else matching fs-* is still pb_formula_studio's alone — sc_formula points at fs-arrows, fs-card, fs-add, fs-views, fs-view-grid, fs-flow, fs-editai and fs-payai without claiming any of them, which is exactly what this wildcard is for.",
+    "fs-*": "pb_formula_studio — the Formula Studio anchor family, laid in studio.xml by that module. EIGHT are PROMOTED into `product` above (fs-config, fs-components, fs-formula, fs-namesletters, fs-deps, fs-preview, fs-views, fs-command) because L5 names them and an anchor a lesson points at has to be one a test can check; they are listed in PROMOTED_FROM_WILDCARD in tests/test_anchor_registry.py, which is what stops the wildcard reading them as somebody else's. Everything else matching fs-* is still pb_formula_studio's alone — sc_formula points at fs-arrows, fs-card, fs-add, fs-views, fs-view-grid, fs-flow, fs-editai and fs-payai without claiming any of them, which is exactly what this wildcard is for.",
     "grid-*": "pb_formula_studio — the spreadsheet grid. sc_formula points at grid-canvas, grid-fbar and grid-hint; the names belong to that module.",
     "imp-*": "pb_hr_payroll_formula — the multi-sheet import wizard. sc_import points at imp-confidence and imp-actions.",
     "map-*": "pb_hr_payroll_formula — the component-mapping wizard. sc_mapping points at map-intro and map-actions."
@@ -734,14 +776,14 @@
       "pb_integrations/static/src/xml/integrations.xml",
       "pb_statutory/static/src/xml/statutory_wizards.xml",
       "pb_dashboard/static/src/xml/pb_dashboard.xml",
-      "pb_approval/static/src/xml/approval.xml",
       "pb_people/static/src/xml/people.xml",
       "pb_contracts/static/src/xml/contracts.xml",
       "pb_insights/static/src/xml/insights.xml",
       "pb_explorer/static/src/xml/explorer.xml",
       "pb_workforce_insights/static/src/xml/workforce_insights.xml",
       "pb_govt_reports/static/src/xml/govt_reports.xml",
-      "pb_payruns/static/src/xml/payruns.xml"
+      "pb_payruns/static/src/xml/payruns.xml",
+      "pb_approval_config/static/src/xml/inbox.xml"
     ],
     "replica": [
       "pb_learn/static/src/engine/screens.js",

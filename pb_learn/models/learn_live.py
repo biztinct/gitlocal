@@ -166,7 +166,7 @@ def _my_june_run(env):
 
 _STATE_KEY = {
     'draft': 'stateDraft', 'approval_pending': 'statePending',
-    'done': 'stateDone',
+    'done': 'stateDone', 'cancel': 'stateRejected',
 }
 
 

@@ -17,65 +17,66 @@
     {
       "id": "payrun-state-chain",
       "kind": "contains",
-      "why": "The five stages ARE the lesson. If level0 is removed, renamed or re-ordered, L2's pipeline visual, the replica's board columns and every answer about 'whose gate is it at' teach a chain the product no longer has.",
+      "why": "The three states and one outcome ARE the pay-run lessons. A run is Draft, Waiting for approval or Done, and Rejected is an outcome off the board. If a state is renamed or a column added, L1/L2's road, the replica's board columns and every answer about where a run is teach a chain the product no longer has.",
       "file": "pb_payruns/models/hr_payslip_run.py",
       "expect": [
-        "('level0', 'Payroll Officer pending')",
-        "('level1',)",
-        "['draft', 'level0', 'level1', 'level2', 'done']"
+        "('draft', 'Draft')",
+        "('approval_pending', 'Waiting for approval')",
+        "('done', 'Done')",
+        "('cancel', 'Rejected')",
+        "PB_BOARD_STATES = ('draft', 'approval_pending', 'done')"
       ],
       "fixture": [
         "STATUS_LABELS.payrun",
         "CHAINS.payrun"
       ],
       "taughtIn": [
-        "L1 step 8 (pipeline)",
-        "L2 steps 1-7",
-        "intent approve",
+        "L1 last step (the road)",
+        "L2 steps 2, 6, 7",
+        "glossary payrun",
         "intent reject",
-        "mission m1 undo step",
-        "mission m2"
+        "missions m1, m2"
       ]
     },
     {
       "id": "payslip-state-chain",
       "kind": "contains",
-      "why": "A PAYSLIP's chain is four stages and has no level0 — that gate belongs to the run. Drawing the run's five on a payslip stepper would send a learner looking for an Officer tier that does not exist there.",
+      "why": "A payslip moves with its run: Draft, Waiting for approval, Done, with no button of its own. Drawing anything else on the payslip stepper would send a learner looking for a per-payslip approval that does not exist.",
       "file": "pb_payslip_review/static/src/js/payslip_review.js",
       "expect": [
-        "const STATUS_FLOW = [[\"draft\", \"Draft\"], [\"level1\", \"HR Manager pending\"], [\"level2\", \"GM pending\"], [\"done\", \"Done\"]]"
+        "const STATUS_FLOW = [[\"draft\", _t(\"Draft\")], [\"verify\", _t(\"Waiting for approval\")], [\"done\", _t(\"Done\")]];"
       ],
       "fixture": [
         "STATUS_LABELS.payslip"
       ],
       "taughtIn": [
-        "L3 step 3 (the approval stepper)",
+        "L3 steps 3-4",
         "the payslips replica in engine/screens.js"
       ]
     },
     {
-      "id": "payrun-pipeline-labels",
+      "id": "payrun-decisions-reach-the-run",
       "kind": "contains",
-      "why": "The tenant slots {{hrTierName}} and {{gmTierName}} DEFAULT to what this widget prints on the real board. A default that disagrees with the screen it names is worse than no slot at all: the tenant who never sets one reads a word in the lesson that is nowhere on their board. Pinning all five also pins the ORDER, which is what the pipeline visual draws.",
-      "file": "pb_payruns/static/src/js/pipeline_field.js",
+      "why": "LA, L2, m1, m2 and three intents teach what each inbox decision does to a PAY RUN: sent back returns it to Draft with the note, turned down makes it Rejected with every payslip cancelled, withdrawn returns it to Draft. Each is a hook on the run the approval engine calls; lose one and the run is left reading \"Waiting for approval\" while the lesson says otherwise (LEARN REFRESH step 2, fix D and the withdraw fix).",
+      "files": [
+        "pb_payruns/models/hr_payslip_run.py",
+        "biz_approval_workflow/models/engine.py"
+      ],
       "expect": [
-        "{ key: \"draft\", label: \"Draft\" }",
-        "{ key: \"level0\", label: \"Officer review\" }",
-        "{ key: \"level1\", label: \"HR review\" }",
-        "{ key: \"level2\", label: \"Finance approval\" }",
-        "{ key: \"done\", label: \"Done\" }"
+        "def _approval_return(self, request, reason):",
+        "def _approval_reject(self, request, reason):",
+        "def _approval_withdraw(self, request, reason):",
+        "record._approval_reject(request, reason or '')",
+        "record._approval_withdraw(request, reason or '')"
       ],
       "fixture": [
-        "TENANT_DEFAULTS.hrTierName",
-        "TENANT_DEFAULTS.gmTierName",
-        "STATUS_LABELS.payrun"
+        "CHAINS.payrun"
       ],
       "taughtIn": [
-        "glossary payrun (the chain, tokenised)",
-        "L1 step 8",
-        "L2 steps 3-7",
-        "intent approve",
-        "mission m2"
+        "LA steps 7-9",
+        "L2 steps 4 and 6",
+        "missions m1 undo, m2",
+        "intents reject, sentbackvsturneddown, stuckwaiting"
       ]
     },
     {
@@ -228,22 +229,22 @@
     {
       "id": "scenario-payrun-anchors",
       "kind": "contains",
-      "why": "pw-division and pw-compute are the two controls a pay run turns on, and three surfaces name them: the wizard template that lays them, the L1 lesson and m1 mission that point at them on the replica, and — since LEARNOS Phase 1b — the sc_payrun scenario, which points at them on the REAL screen in Watch and waits on the compute in Do. This check used to read pb_coach's tour_payrun.js as the second claimant; that module was deleted in 1b and its tours became these scenarios, so the check is retargeted to the authoring source rather than dropped. A control renamed in the template with the scenario still pointing at it is a Do step that waits forever for a press that can never be observed.",
+      "why": "pw-scheme and pw-compute are the two controls a pay run turns on today: the scheme picked under \"Pay run for\", and the press that computes. The wizard template lays them, L1 and m1 point at them on the replica, and sc_payrun points at them on the REAL screen in Watch and waits on the compute in Do.",
       "files": [
         "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
         "docs/tutorial_poc/author/data.js"
       ],
       "expect": [
-        "data-coach=\"pw-division\"",
+        "data-coach=\"pw-scheme\"",
         "data-coach=\"pw-compute\"",
-        "anchor: \"pw-division\"",
+        "anchor: \"pw-scheme\"",
         "anchor: \"pw-compute\""
       ],
       "fixture": [],
       "taughtIn": [
-        "L1 step 2 and step 5",
-        "mission m1 division and consequence steps",
-        "scenario sc_payrun steps division and compute",
+        "L1 steps 2 and 7",
+        "mission m1",
+        "scenario sc_payrun",
         "anchors.json product block"
       ]
     },
@@ -349,7 +350,7 @@
       "expect": {
         "bilingual": {
           "Stuck?": "Cần trợ giúp?",
-          "Run Payroll": "Chạy bảng lương",
+          "Run": "Chạy lương",
           "Payslips": "Phiếu lương"
         }
       },
@@ -510,7 +511,7 @@
     {
       "id": "formula-studio-anchors",
       "kind": "contains",
-      "why": "pb_learn adds NOTHING to studio.xml — L5 points at seven attributes that were already there, and the registry has now promoted them out of the fs-* foreign wildcard into `product`. That promotion is a claim about somebody else's template, so it is checked at authoring time as well as by the module's own registry test.",
+      "why": "pb_learn adds NOTHING to studio.xml — L5 and sc_formula point at attributes the Studio already has, and the registry promotes them into `product`. Step 2 swapped fs-simulate (gone from the Studio) for fs-views and fs-command: Simulate lives in Tools → Analyze now.",
       "file": "pb_formula_studio/static/src/xml/studio.xml",
       "expect": [
         "data-coach=\"fs-config\"",
@@ -519,12 +520,13 @@
         "data-coach=\"fs-namesletters\"",
         "data-coach=\"fs-deps\"",
         "data-coach=\"fs-preview\"",
-        "data-coach=\"fs-simulate\""
+        "data-coach=\"fs-views\"",
+        "data-coach=\"fs-command\""
       ],
       "fixture": [],
       "taughtIn": [
-        "L5 steps 1-7",
-        "the formula replica in engine/screens.js",
+        "L5",
+        "sc_formula",
         "anchors.json product block"
       ]
     },
@@ -730,7 +732,7 @@
       "why": "Six of the eight new leaves carry an action TAG and an EMPTY action_xmlid, so the tag is the only thing that identifies the screen; Dashboard and Government Reports carry both. Rename one and a whole screen's content goes silently unreachable — LW and LA included, because a lesson renders over the replica but the Coach still has to know which live screen a learner is standing on.",
       "files": [
         "pb_dashboard/static/src/js/pb_dashboard.js",
-        "pb_approval/static/src/js/approval.js",
+        "pb_approval_config/static/src/js/inbox.js",
         "pb_people/static/src/js/people.js",
         "pb_contracts/static/src/js/contracts.js",
         "pb_insights/static/src/js/insights.js",
@@ -740,7 +742,7 @@
       ],
       "expect": [
         "\"pb_dashboard\"",
-        "\"pb_approval\"",
+        "\"pb_approval_inbox\"",
         "\"pb_people\"",
         "\"pb_contracts\"",
         "\"pb_insights\"",
@@ -778,7 +780,7 @@
       "kind": "contains",
       "why": "The 33 anchors pb_learn added to the seven Phase C1 cockpits are additive attributes in modules this one does not own. Nothing over there reads them, so a tidy-up would delete them without any test in those modules noticing — and the Coach's Show-me would then scroll to nothing. pb_people, pb_contracts and pb_govt_reports share the ppl-* CLASS vocabulary, which is exactly why the anchor KEYS are namespaced per screen.",
       "files": [
-        "pb_approval/static/src/xml/approval.xml",
+        "pb_approval_config/static/src/xml/inbox.xml",
         "pb_people/static/src/xml/people.xml",
         "pb_contracts/static/src/xml/contracts.xml",
         "pb_insights/static/src/xml/insights.xml",
@@ -787,11 +789,6 @@
         "pb_govt_reports/static/src/xml/govt_reports.xml"
       ],
       "expect": [
-        "data-coach=\"pa-hero\"",
-        "data-coach=\"pa-kpis\"",
-        "data-coach=\"pa-lanes\"",
-        "data-coach=\"pa-recent\"",
-        "data-coach=\"pa-reject\"",
         "data-coach=\"pe-head\"",
         "data-coach=\"pe-bulk\"",
         "data-coach=\"pe-kpis\"",
@@ -819,7 +816,20 @@
         "data-coach=\"gr-head\"",
         "data-coach=\"gr-countries\"",
         "data-coach=\"gr-grid\"",
-        "data-coach=\"gr-empty\""
+        "data-coach=\"gr-empty\"",
+        "data-coach=\"ai-head\"",
+        "data-coach=\"ai-scope\"",
+        "data-coach=\"ai-tabs\"",
+        "data-coach=\"ai-card\"",
+        "data-coach=\"ai-route\"",
+        "data-coach=\"ai-drawer\"",
+        "data-coach=\"ai-facts\"",
+        "data-coach=\"ai-decide\"",
+        "data-coach=\"ai-turndown\"",
+        "data-coach=\"ai-sendback\"",
+        "data-coach=\"ai-approve\"",
+        "data-coach=\"ai-move\"",
+        "data-coach=\"ai-withdraw\""
       ],
       "fixture": [],
       "taughtIn": [
@@ -831,21 +841,19 @@
     {
       "id": "approvals-reject-testimony",
       "kind": "contains",
-      "why": "LA step 6 and the rejectright answer both teach that the reject popover REQUIRES a written reason and that rejecting cancels every payslip in the run. That is a promise about this cockpit's own behaviour, not about the model's fields — the fields are pinned separately by payrun-reject-testimony — so it is checked where the learner meets it.",
+      "why": "LA and sentbackvsturneddown teach that Turn it down REQUIRES a reason and Send it back asks what should change. That is a promise about the inbox's own drawer, so it is checked where the learner meets it.",
       "files": [
-        "pb_approval/static/src/xml/approval.xml",
-        "pb_approval/static/src/js/approval.js"
+        "pb_approval_config/static/src/js/request_drawer.js"
       ],
       "expect": [
-        "Reason (required)",
-        "All payslips in this run will be cancelled.",
-        "reject_note"
+        "label: _t(\"Why? (required)\")",
+        "confirm: _t(\"Turn it down\")",
+        "_t(\"What should change?\")"
       ],
       "fixture": [],
       "taughtIn": [
-        "LA step 6 (a rejection is testimony)",
-        "intent rejectright",
-        "the approvals replica in engine/screens.js"
+        "LA steps 7-8",
+        "intents sentbackvsturneddown, rejectright"
       ]
     },
     {
@@ -919,20 +927,17 @@
     {
       "id": "rejection-cancels-the-run",
       "kind": "contains",
-      "why": "THE FACT PHASES A AND B GOT WRONG IN NINE PLACES. Rejecting does not send a run back to draft: `action_payslip_run_cancel` cascades `action_payslip_cancel` over every slip and writes the RUN to 'cancel', whose own selection label is 'Rejected' — so the board says rejected while the record says cancelled, and nothing hands the batch back to the officer. Returning it to a workable draft is `draft_payslip_run`, a DIFFERENT method gated to the Finance/GM tier. The false version taught a self-service undo that does not exist, and it taught it in the consequence cards of the two lessons about signing for money. If the product ever does wire rejection to draft, every site listed below needs re-reading, because they would then be teaching a gap that had closed.",
+      "why": "A rejected pay run is CANCELLED with every payslip in it, and it does not come back: from the board's Reject (action_payslip_run_cancel) or from Turn it down in the inbox (_approval_reject calls the same legacy body). If the product ever returns a rejected run to draft, every site listed needs re-reading.",
       "files": [
         "om_hr_payroll/models/hr_payslip.py",
-        "pb_payruns/models/hr_payslip_run.py",
-        "pb_approval/models/pb_approval.py"
+        "pb_payruns/models/hr_payslip_run.py"
       ],
       "expect": [
         "('cancel', 'Rejected')",
         "def action_payslip_run_cancel",
         "line.action_payslip_cancel()",
         "return self.write({'state': 'cancel'})",
-        "def draft_payslip_run",
-        "Only the Finance / GM tier can reset an approved pay run to",
-        "'action_payslip_run_cancel'"
+        "super(HrPayslipRun, run).action_payslip_run_cancel()"
       ],
       "fixture": [
         "STATUS_LABELS.payrun",
@@ -940,29 +945,21 @@
         "CHAINS.payrun"
       ],
       "taughtIn": [
-        "glossary payrun (the chain)",
-        "L1 step 8",
-        "L2 step 5 + its consequence card",
-        "L2 quiz option 3",
-        "L5 quiz option 1",
-        "LA step 6 + step 7 consequence",
-        "LA quiz option 3",
-        "mission m1 undo step",
-        "mission m2 consequence, debrief and undo step",
-        "mission mL1 consequence and submit step",
-        "intents approve / reject / affectrun / rejectright",
-        "stations payruns and approvals (mistakes)",
-        "the pipeline visual's branch caption in CHAINS.payrun"
+        "glossary rejection, payrun",
+        "L2 step 7",
+        "LA step 8",
+        "intent reject",
+        "mission m2 undo"
       ]
     },
     {
       "id": "dashboard-pending-counts-payslips",
       "kind": "contains",
-      "why": "LW's understanding check turns on this tile, and Phase C1 described it as 'every sign-off the company is waiting on, at every gate' — which is wrong three ways. It counts payroll.analytics rows in state 'ready', falling back to hr.payslip at level1/level2: PAYSLIPS not runs, HR and Finance only, never the Officer gate. A learner taught the false version reads 48 — one ordinary batch — as forty-eight runs, and a normal Tuesday as a crisis. The two lines are pinned together because the fallback is what actually renders on a database with no analytics rows, which is most of them.",
+      "why": "LW and the Pulse column teach that Pending approval counts PAYSLIPS waiting for approval, company-wide — not runs, not only yours. It counts payroll.analytics rows in 'ready', falling back to payslips in 'verify' (the state a run freezes its payslips in while its route decides). Pinned together because the fallback is what renders on most databases.",
       "file": "pb_dashboard/models/pb_dashboard.py",
       "expect": [
         "pending = safe(lambda: env['payroll.analytics'].search_count([('state', '=', 'ready')]))",
-        "pending = safe(lambda: env['hr.payslip'].search_count([('state', 'in', ['level1', 'level2'])]))"
+        "pending = safe(lambda: env['hr.payslip'].search_count([('state', '=', 'verify')]))"
       ],
       "fixture": [],
       "taughtIn": [
@@ -1065,8 +1062,8 @@
       "expect": [
         "<record id=\"item_employees\" model=\"pb.sidebar.item\">",
         "<record id=\"item_contracts\" model=\"pb.sidebar.item\">",
-        "user_groups = user.all_group_ids",
-        "item.groups_id & user_groups",
+        "return user.has_group('base.group_system'), user.all_group_ids",
+        "bool(item.groups_id & user_groups)",
         "<record id=\"group_payroll_analytics_manager\" model=\"res.groups\">",
         "(4, ref('group_payroll_analytics_user')), (4, ref('group_payroll_base_manager'))",
         "<record id=\"group_payroll_final_approver\" model=\"res.groups\">",
@@ -1497,13 +1494,14 @@
       "pb_integrations/static/src/xml/integrations.xml",
       "pb_statutory/static/src/xml/statutory_wizards.xml",
       "pb_dashboard/static/src/xml/pb_dashboard.xml",
-      "pb_approval/static/src/xml/approval.xml",
       "pb_people/static/src/xml/people.xml",
       "pb_contracts/static/src/xml/contracts.xml",
       "pb_insights/static/src/xml/insights.xml",
       "pb_explorer/static/src/xml/explorer.xml",
       "pb_workforce_insights/static/src/xml/workforce_insights.xml",
-      "pb_govt_reports/static/src/xml/govt_reports.xml"
+      "pb_govt_reports/static/src/xml/govt_reports.xml",
+      "pb_approval_config/static/src/xml/inbox.xml",
+      "pb_payruns/static/src/xml/payruns.xml"
     ]
   },
   "tokenLint": {

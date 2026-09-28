@@ -328,7 +328,9 @@ msgid "Last Updated on"
 msgstr "Cập nhật lần cuối vào"
 
 #. module: pb_learn
+#. odoo-javascript
 #: model:pb.sidebar.item,name:pb_learn.item_learn_journey
+#: code:addons/pb_learn/static/src/hub/learn_hub.js:0
 msgid "Learn"
 msgstr "Học cùng Payobook"
 
@@ -1079,3 +1081,9 @@ msgstr "Trợ lý đã chuyển tab"
 #: code:addons/pb_learn/models/learn_progress.py:0
 msgid "Walkthrough could not open its screen"
 msgstr "Hướng dẫn từng bước không mở được màn hình của nó"
+
+#. module: pb_learn
+#. odoo-javascript
+#: code:addons/pb_learn/static/src/hub/learn_hub.js:0
+msgid "Lessons"
+msgstr "Bài học"

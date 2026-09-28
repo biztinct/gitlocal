@@ -156,6 +156,11 @@ export class LearnJourney extends Component {
             // replica the learner is standing on and survives a trip back to
             // the map, so re-opening the sandbox resumes where they left it.
             pScreen: "dashboard",
+            // LEARN REFRESH step 2 — what the replica says after a press on
+            // its rail or tabs that does not open a screen: a tab the practice
+            // company does not have, or any tab during a lesson (where the
+            // lesson moves the screen). Never a dead click.
+            shellNote: "",
             // LEARN v3 — the path. `role` is the learner's pick, or the guess.
             role: "",
             roleChosen: false,
@@ -593,7 +598,9 @@ export class LearnJourney extends Component {
         // second list somewhere else. A line whose stations are all filtered
         // out by the search still shows its scenarios if they match.
         const screnLines = {};
-        for (const sc of this.scenarios) {
+        // LEARN REFRESH step 2: a RETIRED walkthrough stays in the content
+        // (its progress rows keep meaning something) and leaves the map.
+        for (const sc of this.scenarios.filter((s) => !s.retired)) {
             (screnLines[sc.line] = screnLines[sc.line] || []).push(sc);
         }
         const screnMatch = (sc) =>
@@ -843,7 +850,7 @@ export class LearnJourney extends Component {
        `practiceShellHTML`, unconditionally, so that no state this component
        holds can produce a sandbox without one. */
     _practiceBody() {
-        const shell = practiceShellHTML(this.state.pScreen, this.visible);
+        const shell = practiceShellHTML(this.state.pScreen, this.visible, this.state.shellNote);
         return `${shell}
         <div class="lrn-playbar" role="group">
             <span class="lrn-stepno">${esc(T("practiceHint"))}</span>
@@ -967,7 +974,7 @@ export class LearnJourney extends Component {
             return "";
         }
         const shell = shellHTML(this._scenarioScreen(step),
-                                { guided: true, visible: this.visible });
+                                { guided: true, visible: this.visible, note: this.state.shellNote });
         const pct = Math.round((this.state.sStep + 1) / this.sSteps.length * 100);
         return `${shell}
         <div class="lrn-playbar" role="group">
@@ -1089,7 +1096,8 @@ export class LearnJourney extends Component {
             return this._quizBody();
         }
         const st = steps[this.state.step];
-        const shell = shellHTML(st.screen, { guided: true, visible: this.visible });
+        const shell = shellHTML(st.screen, { guided: true, visible: this.visible,
+                                             note: this.state.shellNote });
         const pctDone = Math.round((this.state.step + 1) / steps.length * 100);
         return `${shell}
         <div class="lrn-playbar" role="group" aria-label="${esc(T("step"))}">
@@ -1272,7 +1280,8 @@ export class LearnJourney extends Component {
             return "";
         }
         const screen = this._missionScreen(step);
-        const shell = shellHTML(screen, { guided: true, visible: this.visible });
+        const shell = shellHTML(screen, { guided: true, visible: this.visible,
+                                          note: this.state.shellNote });
         const pct = Math.round((this.state.mStep + 1) / this.mSteps.length * 100);
         return `${shell}
         <div class="lrn-playbar" role="group">
@@ -1644,12 +1653,47 @@ export class LearnJourney extends Component {
         if (this.state.view !== "practice") {
             return false;
         }
+        const quiet = ev.target.closest("[data-quiet]");
+        if (quiet) {
+            // A tab the practice company does not have. It is really there in
+            // Payobook, so the replica draws it — and says where it lives
+            // rather than doing nothing.
+            this._shellNote(T("replicaQuiet") + SP + quiet.getAttribute("data-quiet") + ".");
+            return true;
+        }
         const nav = ev.target.closest("[data-nav]");
         if (!nav) {
             return false;
         }
         this.pNav(nav.getAttribute("data-nav"));
         return true;
+    }
+
+    /** The replica's rail and tabs during a LESSON, a mission or a Try
+     *  walkthrough: the lesson moves the screen, so a press there says so —
+     *  or, on a tab the practice company does not have, where it lives. */
+    _guidedRailClick(ev) {
+        if (!["lesson", "mission", "scenario"].includes(this.state.view)) {
+            return false;
+        }
+        const hit = ev.target.closest("[data-quiet], .lrn-sb [data-nav], .lrn-lensbar [data-nav], .lrn-subtabs [data-nav], .lrn-crumb [data-nav]");
+        if (!hit) {
+            return false;
+        }
+        const place = hit.getAttribute("data-quiet");
+        this._shellNote(place
+            ? T("replicaQuiet") + SP + place + "."
+            : T("replicaGuided"));
+        return true;
+    }
+
+    /** Show one line under the replica's tab strip for a few seconds. */
+    _shellNote(text) {
+        this.state.shellNote = text;
+        clearTimeout(this._noteTimer);
+        this._noteTimer = setTimeout(() => {
+            this.state.shellNote = "";
+        }, 4500);
     }
 
     // -------------------------------------------------------------- behaviour
@@ -1661,6 +1705,13 @@ export class LearnJourney extends Component {
         if (scenarioBtn) {
             ev.preventDefault();
             this.openScenario(scenarioBtn.dataset.scenario, scenarioBtn.dataset.mode);
+            return;
+        }
+        // The replica's rail and tab strip BEFORE the Try bridge: a press on
+        // them is never the control a step asks for, and answering it with a
+        // nudge ("that is not the one") would not say what it actually is.
+        if (this._guidedRailClick(ev)) {
+            ev.preventDefault();
             return;
         }
         if (this._scenarioClick(ev)) {
@@ -2281,6 +2332,7 @@ export class LearnJourney extends Component {
             return;
         }
         this.state.pScreen = key;
+        this.state.shellNote = "";
         this._log("practice_nav", key);
     }
 

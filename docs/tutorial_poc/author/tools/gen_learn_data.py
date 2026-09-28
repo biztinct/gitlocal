@@ -1000,6 +1000,8 @@ SCENARIO_NAV = {
     'pb_formula_studio.action_pb_formula_studio': 'formula',
     'pb_import.action_pb_import': 'import',
     'pb_statutory.action_pb_statutory': 'statutory',
+    # LEARN REFRESH step 2: the one inbox, which lives in Home › Approvals.
+    'pb_approval_config.action_pb_approval_inbox': 'approvals',
 }
 
 # A screen place: "<hub action tag>:<lens key>[/<inner tab>]", or
@@ -1171,6 +1173,9 @@ def content_scenarios(data, bi):
             'name': bi.p('%s name' % where, sc['name']),
             'tagline': bi.p('%s tagline' % where, sc.get('tagline')),
             'entry': {'nav': entry_nav, 'screen': entry_screen},
+            # LEARN REFRESH step 2: kept in the content, off the map and out
+            # of every offer. Progress rows for it keep their meaning.
+            'retired': bool(sc.get('retired')),
             'steps': [],
         }
 
@@ -1481,8 +1486,8 @@ def gen_fixture():
     # and they are checked by running this file, not by rendering it. Exporting
     # a name no screen imports would put a second, unread copy of the rate
     # change in the engine's contract.
-    exports = ('\nexport { B, PRACTICE_META, CASE, EMP, RUN, PRACTICE, MENU,'
-               ' SUB_SCREENS, INPUT_ANCHORS, STATUS_LABELS, CHAINS, POLICY,'
+    exports = ('\nexport { B, PRACTICE_META, CASE, EMP, RUN, FNB, ROUTE, LATER, PRACTICE,'
+               ' MENU, SUB_SCREENS, INPUT_ANCHORS, STATUS_LABELS, CHAINS, POLICY,'
                ' TAX };\n')
     return header + src.rstrip() + '\n' + exports
 

@@ -164,7 +164,7 @@ export const scenarioService = {
             if (!screenKey) {
                 return [];
             }
-            return all().filter((s) => (s.screens || []).includes(screenKey));
+            return all().filter((s) => !s.retired && (s.screens || []).includes(screenKey));
         }
 
         // -------------------------------------------------------- navigation

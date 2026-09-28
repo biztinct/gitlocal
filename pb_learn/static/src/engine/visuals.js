@@ -33,9 +33,13 @@ export function pipeHTML(chain, active) {
         <span class="lrn-pn ${i === active ? "on" : i < active ? "past" : ""}" data-pn="${i}">
             ${i < active ? ic("check") : ""}${esc(stageLabel(chain, n))}</span>${
         i < c.nodes.length - 1 ? '<span class="lrn-pa"></span>' : ""}`).join("");
+    // LEARN REFRESH step 2: a chain may leave the road in more than one
+    // way (a pay run can be SENT BACK to Draft, or TURNED DOWN and
+    // cancelled), and the two are different enough to draw apart.
+    const branches = (c.branches || (c.branch ? [c.branch] : [])).map((b) => `
+        <span class="lrn-pn branch">${ic("git-branch")}${esc(tx(b))}</span>`).join("");
     return `<div class="lrn-pipe" data-chain="${esc(chain)}">${parts}
-        <span class="lrn-pa"></span>
-        <span class="lrn-pn branch">${ic("git-branch")}${esc(tx(c.branch))}</span></div>`;
+        <div class="lrn-pbranches">${branches}</div></div>`;
 }
 
 /** Advance a chain one node at a time. Instant under reduced motion — the

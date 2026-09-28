@@ -87,11 +87,13 @@ const PRACTICE_META = {
 const TENANT_DEFAULTS = {
   companyDisplayName: B("your company", "công ty bạn"),
   payDay: B("the 5th of the month", "ngày 5 hằng tháng"),
-  /* These two default to what the PRODUCT calls those gates
-     (pb_payruns/static/src/js/pipeline_field.js:8-12). A slot whose default
-     disagrees with the screen it names is worse than no slot: the tenant who
-     never sets it reads one word in the lesson and a different one on the
-     board. contract.json::payrun-pipeline-labels pins the five. */
+  /* LEARN REFRESH step 2: NO CONTENT USES THESE TWO ANY MORE. They named the
+     fixed approval tiers of the retired pay-run ladder; a pay run now follows
+     whatever route the company drew in the Approval Matrix, so a lesson names
+     the practice company's own route (ROUTE below) and says that a real
+     company's route is its own. The slots stay DECLARED because a tenant may
+     already hold an override row for them, and deleting a declared slot would
+     orphan that row. token-lint lists them as unused, which is the truth. */
   hrTierName: B("HR review", "HR soát xét"),
   gmTierName: B("Finance approval", "Tài chính phê duyệt"),
   importCutoff: B("the 28th", "ngày 28"),
@@ -309,7 +311,60 @@ const RUN = {
   period: B("July 2026", "Tháng 7/2026"),
   employees: 48, totalNet: 612480000, totalGross: 691200000,
   config: "HOASEN_RETAIL_END", configVersion: "v12",
-  flagged: 1,
+  /* LEARN REFRESH step 2. The run is picked by its PAY SCHEME now — the
+     "Pay run for" cards in Pay Run › Run — and a scheme's name is a record's
+     own name, the same in every language (a record's name is data). */
+  scheme: "Hoa Sen Retail — End-Month Payroll",
+  from: "01/07/2026", to: "31/07/2026",
+  /* WHAT "NEED REVIEW" COUNTS, and it is less than the old content claimed.
+     The Run lens adds three things (pb_payrun_wizard payrun_wizard.js:338-342):
+     payslips that came out at zero or below, people it could not make a
+     payslip for (no running contract, a compute error), and people in the pay
+     data file who are not in Payobook yet. It does NOT flag a big change on
+     last month — Hùng's overtime is a thing a person has to notice. */
+  flagged: 0,
+  exceptions: 1,
+  notInPayobook: 1,
+  get needReview() { return this.flagged + this.exceptions + this.notInPayobook; },
+};
+
+/* The one person the July run could NOT make a payslip for — and correctly:
+   Nam signed in July to start on 1 August, so the Run lens lists him with the
+   product's own words (pb_payrun_wizard.py `_no_contract_reason`) and pays
+   him nothing. He IS an employee (Pulse's headcount counts him) and he is not
+   PAID in July (the month strip does not). That gap is a lesson, not a bug. */
+const LATER = {
+  name: "Hoàng Văn Nam", code: "NV0061", base: 9000000,
+  why: B("Not employed yet in this period — contract starts 2026-08-01.",
+         "Chưa làm việc trong kỳ này — hợp đồng bắt đầu ngày 2026-08-01."),
+};
+
+/* The other division in the practice company. F&B's July run exists and was
+   SENT BACK — which is the state m2 works on, and the reason a second July run
+   for it cannot simply be started (the Run lens would say "Payroll already
+   exists"). */
+const FNB = {
+  name: B("F&B — July 2026", "F&B — Tháng 7/2026"),
+  scheme: "Hoa Sen F&B — End-Month Payroll",
+  employees: 21, totalNet: 214300000, totalGross: 241050000,
+  insuranceBase: 190000000,
+};
+
+/* THE APPROVAL ROUTE. Nobody's pay run follows fixed tiers any more: it
+   follows the route the company drew in the Approval Matrix. This is the
+   practice company's, and it is the SAME shape Payobook seeds for every new
+   company ("Pay run approval": Payroll check → HR lead review → Finance
+   approval, pb_payruns/models/approval_seed.py:53-55) — so a learner who
+   reads this reads the default they will meet. The names are the practice
+   company's people. `you` marks the seat the approval lessons sit in. */
+const ROUTE = {
+  name: "Pay run approval",
+  steps: [
+    { key: "s1", title: B("Payroll check", "Kiểm tra bảng lương"), who: "Vũ Thị Lan Anh" },
+    { key: "s2", title: B("HR lead review", "Trưởng nhân sự soát xét"), who: "Đặng Thu Hà", you: true },
+    { key: "s3", title: B("Finance approval", "Tài chính phê duyệt"), who: "Trịnh Quốc Bảo" },
+  ],
+  preparer: "Phan Minh Tú",
 };
 
 /* The two visuals in visuals.js read CASE and nothing else, so a lesson step
@@ -385,90 +440,206 @@ const RATE_CHANGE = {
    2. THE REPLICA'S OWN ROWS — what each practice screen draws.
    ========================================================================== */
 const PRACTICE = {
-  /* Overview */
-  kpis: { headcount: 48, monthlyNet: 612480000, waiting: 1, configs: 2 },
+  /* ------------------------------------------------------ Home › Pulse
+     LEARN REFRESH step 2. Every figure is the SAME query the product runs
+     (pb_dashboard/models/pb_dashboard.py), applied to this fixture:
+       Headcount        every employee in the company, not month-scoped (:247)
+                        — Retail's 48 and F&B's 21 — subtitle "N active
+                        contracts" (running contracts, :248)
+       Monthly payroll  gross on the chosen month's END-OF-MONTH payslips, in
+                        any state (:184-215) — both July runs
+       Pending approval payslips in "Waiting" (the fallback at :278-280) —
+                        the Retail run's 48, frozen while it is with its route
+       Active configs   formula configurations in Active, subtitle the sum of
+                        their rules (:338-343) */
+  get pulse() {
+    const b = this.board;
+    const waiting = b.filter((r) => r.col === "approval_pending");
+    const configs = this.configs;
+    return {
+      user: "Minh Tú",
+      month: RUN.period,
+      /* The month strip: one chip per payroll month, bar = people paid. */
+      months: [
+        { m: B("May", "Th5"), y: "2026", people: 47 },
+        { m: B("Jun", "Th6"), y: "2026", people: 47 },
+        { m: B("Jul", "Th7"), y: "2026", people: RUN.employees + FNB.employees, latest: true },
+      ],
+      kpis: {
+        headcount: RUN.employees + FNB.employees + 1,
+        contracts: RUN.employees + FNB.employees + 1,
+        payroll: RUN.totalGross + FNB.totalGross,
+        pending: waiting.reduce((t, r) => t + r.employees, 0),
+        configs: configs.length,
+        rules: configs.reduce((t, c) => t + c.rules, 0),
+      },
+      /* "Latest pay run" is the NEWEST RUN BY ID (pb_dashboard.py:257-275):
+         Retail July, whose 48 payslips are all waiting. */
+      latest: { name: RUN.name, slips: RUN.employees, done: 0,
+                pending: waiting.reduce((t, r) => t + r.employees, 0) },
+    };
+  },
+  /* The practice company's three pay schemes — the "Pay run for" cards, and
+     the Active configs tile. Grouped by kind of run, in the order the Run lens
+     draws the groups (pb_formula_studio: End of month, Regular payroll,
+     Mid-month advance, Final settlement). */
+  configs: [
+    { name: RUN.scheme, code: "HOASEN_RETAIL_END", kind: "end_cycle", covered: 48,
+      last: B("Retail — June 2026", "Bán lẻ — Tháng 6/2026"), rules: 13 },
+    { name: FNB.scheme, code: "HOASEN_FNB_END", kind: "end_cycle", covered: 21,
+      last: B("F&B — July 2026", "F&B — Tháng 7/2026"), rules: 12 },
+    { name: "Hoa Sen Retail — Mid-Month Advance", code: "HOASEN_RETAIL_MID", kind: "mid_cycle",
+      covered: 48, last: B("Retail — mid-July 2026", "Bán lẻ — giữa tháng 7/2026"), rules: 9 },
+  ],
+  schemeGroups: [
+    { kind: "end_cycle", label: B("End of month", "Cuối tháng") },
+    { kind: "regular", label: B("Regular payroll", "Kỳ lương thường") },
+    { kind: "mid_cycle", label: B("Mid-month advance", "Tạm ứng giữa tháng") },
+    { kind: "full_final", label: B("Final settlement", "Quyết toán thôi việc") },
+  ],
   recentRuns: [
-    { period: B("July 2026", "Tháng 7/2026"), employees: 48, net: 612480000, state: "level0" },
+    { period: B("July 2026", "Tháng 7/2026"), employees: 48, net: 612480000, state: "approval_pending" },
     { period: B("June 2026", "Tháng 6/2026"), employees: 47, net: 596110000, state: "done" },
     { period: B("May 2026", "Tháng 5/2026"), employees: 47, net: 590870000, state: "done" },
   ],
 
-  /* Run Payroll — the wizard's own result table. Hùng carries the anomaly. */
-  computed: [
-    { emp: EMP.mai, ot: EMP.mai.otJul, net: EMP.mai.netJul },
-    { emp: EMP.hung, ot: EMP.hung.otJul, net: EMP.hung.netJul, flag: true,
-      why: B("Overtime is 382% of June", "Tăng ca bằng 382% tháng 6") },
-    { emp: EMP.trang, ot: EMP.trang.otJul, net: EMP.trang.netJul },
-  ],
+  /* The Run lens's exceptions list: the one person it could not pay. */
+  exception: LATER,
 
-  /* Pay Runs — the board. `col` is a REAL state key from
-     pb_payruns/models/hr_payslip_run.py, never a display label. */
+  /* -------------------------------------------------------- Pay Run › Run
+     The pay data step. Retail's scheme reads three components from a
+     spreadsheet, so the rail has four steps; the file has one row for a
+     person who is not in Payobook yet — listed, never paid. */
+  payData: {
+    file: "retail_july_2026.xlsx",
+    columns: 6,
+    fed: [B("Overtime", "Tăng ca"), B("Allowances", "Phụ cấp"), B("Days worked", "Ngày công")],
+    missing: ["Lý Thị Hồng"],
+  },
+
+  /* ------------------------------------------------------- Pay Run › Runs
+     `col` is a REAL state key (pb_payruns/models/hr_payslip_run.py:51-56):
+     draft · approval_pending · done, and cancel for the Rejected list. */
   board: [
-    /* The July Retail run is at level0 — computed, submitted, and sitting with
-       the Officer. It is at level0 on the Dashboard, on this board and in every
-       lesson that mentions it: one run cannot be in two states, and a learner
-       who sees it in two learns that the board is decorative. */
-    { name: RUN.name, employees: 48, net: 612480000, col: "level0", cur: true },
-    /* F&B is still in DRAFT, and that is the same fact m1's division decision
-       turns on: its July attendance has not been committed, so nobody has
-       submitted it. */
-    { name: B("F&B — July 2026", "F&B — Tháng 7/2026"), employees: 21, net: 214300000, col: "draft",
-      cur: true },
-    { name: B("Retail — June 2026", "Bán lẻ — Tháng 6/2026"), employees: 47, net: 596110000, col: "done" },
-    { name: B("Retail — May 2026", "Bán lẻ — Tháng 5/2026"), employees: 47, net: 590870000, col: "done" },
+    /* The July Retail run is WAITING FOR APPROVAL, at its second step. It is
+       that on Pulse, on this board, in the inbox and in every lesson: one run
+       cannot be in two states, and a learner who sees it in two learns that
+       the screens are decorative. */
+    { name: RUN.name, employees: 48, gross: 691200000, net: 612480000,
+      col: "approval_pending", cur: true, division: RUN.division,
+      step: 1 },
+    /* F&B's July run was SENT BACK by the HR lead and is a draft again, with
+       the note on it. m2 works on exactly this card. */
+    { name: FNB.name, employees: FNB.employees, gross: FNB.totalGross, net: FNB.totalNet,
+      col: "draft", cur: true, division: B("F&B", "F&B"),
+      sentBack: { by: "Đặng Thu Hà",
+                  note: B("NV0203 — overtime reads 46 hours for the week; the timesheet says 4.6. Please correct and send it in again.",
+                          "NV0203 — tăng ca ghi 46 giờ trong tuần; bảng chấm công ghi 4,6. Vui lòng sửa rồi gửi lại.") } },
+    { name: B("Retail — June 2026", "Bán lẻ — Tháng 6/2026"), employees: 47, gross: 672500000,
+      net: 596110000, col: "done", division: RUN.division },
+    { name: B("Retail — May 2026", "Bán lẻ — Tháng 5/2026"), employees: 47, gross: 666300000,
+      net: 590870000, col: "done", division: RUN.division },
+    /* A run that should never have existed, rejected from the board. It sits
+       in the collapsed "Rejected pay runs" list, not in a column: a rejected
+       run is an outcome, not a stage. */
+    { name: B("Retail — July 2026 (made twice)", "Bán lẻ — Tháng 7/2026 (tạo trùng)"),
+      employees: 48, gross: 691200000, net: 612480000, col: "cancel", division: RUN.division,
+      reason: B("Made by mistake — a second copy of the July run.",
+                "Tạo nhầm — bản thứ hai của đợt tháng 7.") },
   ],
-  /* Every count here is DERIVED from `board` above. Typing them by hand is how
-     a KPI band and the columns under it end up disagreeing — which is the exact
-     misreading the "In pipeline" column entry warns about. */
+  /* Every count here is DERIVED from `board` above, the way the board's own
+     numbers row counts them (pb_payruns/models/pb_payruns.py:172-179). */
   get boardKpis() {
     const b = this.board;
-    const pipeline = b.filter((r) => r.col !== "draft" && r.col !== "done");
+    const pipeline = b.filter((r) => r.col === "draft" || r.col === "approval_pending");
     const done = b.filter((r) => r.col === "done");
     return {
       total: b.length,
       inPipeline: pipeline.length,
-      myPending: pipeline.length,
+      myPending: b.filter((r) => r.col === "approval_pending"
+                         && ROUTE.steps[r.step] && ROUTE.steps[r.step].you).length,
       done: done.length,
       net: done.reduce((t, r) => t + r.net, 0),
     };
   },
 
-  /* Payslips */
-  /* The run is at level0, so its payslips are still DRAFT. level0 is a gate on
-     the RUN and a payslip's own chain does not have it (STATUS_LABELS.payslip),
-     so a slip cannot have moved further than the batch it belongs to. */
+  /* -------------------------------------------------- Pay Run › Payslips
+     The run is WAITING, so its payslips are "Waiting for approval" — the
+     product freezes them there while the route decides
+     (hr_payslip_run.py:920-932). "Need review" on this screen is narrower
+     than the Run lens's: a payslip whose take-home pay is zero or below
+     (pb_payslip_review.py:127). Nobody here is — so it reads 0, and that is
+     not the same as "nothing to check". */
   slips: [
-    { emp: EMP.mai, net: EMP.mai.netJul, state: "draft", sel: true },
-    { emp: EMP.hung, net: EMP.hung.netJul, state: "draft", flag: true },
-    { emp: EMP.trang, net: EMP.trang.netJul, state: "draft" },
-    { emp: EMP.duc, net: EMP.duc.netJul, state: "draft" },
+    { emp: EMP.mai, net: EMP.mai.netJul, state: "verify", sel: true },
+    { emp: EMP.hung, net: EMP.hung.netJul, state: "verify" },
+    { emp: EMP.trang, net: EMP.trang.netJul, state: "verify" },
+    { emp: EMP.duc, net: EMP.duc.netJul, state: "verify" },
   ],
-  slipTotals: { count: 48, net: 612480000, gross: 691200000, done: 0, flagged: 1 },
+  slipTotals: { count: 48, net: 612480000, gross: 691200000, flagged: 0 },
 
-  /* Import + its wizard */
-  importKpis: { batches: 6, done: 4, inProgress: 1, errors: 1, connectors: 2 },
+  /* ------------------------------------------------------ Home › Approvals
+     THE ONE INBOX. A pay run is one kind of request among many — leave,
+     overtime, hiring — and the practice inbox shows that: one request is the
+     July run (your turn, at HR lead review), one is somebody else's. */
+  get inbox() {
+    const run = this.board[0];
+    const totals = { net: run.net, gross: run.gross };
+    return {
+      /* The facts the product FREEZES on a pay-run request when it is sent in
+         (pb_payruns/models/hr_payslip_run.py:743-796), in its order. */
+      facts: [
+        { k: B("Amount", "Số tiền"), v: totals.net, money: true },
+        { k: B("Total net pay", "Tổng thực nhận"), v: totals.net, money: true },
+        { k: B("Total gross pay", "Tổng lương gộp"), v: totals.gross, money: true },
+        { k: B("Payslips", "Phiếu lương"), v: String(run.employees) },
+        { k: B("Employees", "Nhân viên"), v: String(run.employees) },
+        /* Against the previous DONE run on the same scheme — June. */
+        { k: B("Change against the last run", "Thay đổi so với kỳ trước"),
+          v: (() => { const pct = Math.round((run.net - 596110000) / 596110000 * 1000) / 10;
+                      return B("+" + pct + "%", "+" + String(pct).replace(".", ",") + "%"); })() },
+        { k: B("Contains overtime", "Có làm thêm giờ"), v: B("Yes", "Có") },
+      ],
+      requests: [
+        { title: RUN.name, mine: true, process: B("Pay run", "Đợt lương"),
+          scope: RUN.scheme + " · " + "Retail — Hà Nội",
+          sentBy: ROUTE.preparer, when: B("yesterday", "hôm qua"),
+          at: 1, amount: run.net, count: run.employees,
+          kind: B("End of month", "Cuối tháng"), due: B("Due tomorrow", "Hạn ngày mai") },
+        { title: B("Overtime — Trần Văn Hùng, week 29", "Tăng ca — Trần Văn Hùng, tuần 29"),
+          mine: false, process: B("Overtime", "Tăng ca"),
+          scope: "Retail — Hà Nội", sentBy: "Trần Văn Hùng", when: B("3 days ago", "3 ngày trước"),
+          route: [B("Line manager", "Quản lý trực tiếp"), B("HR lead review", "Trưởng nhân sự soát xét")],
+          at: 0, waiting: "Nguyễn Hữu Phước", amount: 0, count: 0,
+          kind: B("Overtime", "Tăng ca"), due: B("Due today", "Hạn hôm nay") },
+      ],
+      tabs: { mine: 1, all: 2, back: 1, done: 4 },
+    };
+  },
+
+  /* ------------------------------------------------------ Pay Run › Import
+     The numbers row, the pipeline and the recent batches, as the Import lens
+     draws them (pb_import/static/src/xml/import.xml). THERE IS NO CONFIDENCE
+     SCORE on this screen or in its wizard; the old content taught one. */
+  importKpis: { batches: 6, done: 4, inProgress: 1, errors: 1 },
   importPipe: [
-    { key: "map", label: B("Map", "Ánh xạ"), count: 1 },
-    { key: "validate", label: B("Validate", "Kiểm tra"), count: 1 },
-    { key: "commit", label: B("Commit", "Ghi nhận"), count: 4 },
+    { key: "draft", label: B("Draft", "Nháp"), count: 0 },
+    { key: "loaded", label: B("Loaded", "Đã tải"), count: 0 },
+    { key: "matched", label: B("Matched", "Đã khớp"), count: 1 },
+    { key: "validated", label: B("Validated", "Đã kiểm tra"), count: 0 },
+    { key: "processing", label: B("Processing", "Đang ghi"), count: 0 },
+    { key: "done", label: B("Done", "Hoàn tất"), count: 4 },
   ],
   importBatches: [
-    { name: B("July attendance & OT", "Chấm công & tăng ca tháng 7"), rows: 48, state: "validate" },
+    { name: B("July attendance & OT", "Chấm công & tăng ca tháng 7"), rows: 48, state: "matched" },
     { name: B("June attendance & OT", "Chấm công & tăng ca tháng 6"), rows: 47, state: "done" },
   ],
-  /* 46 of 48 rows read without ambiguity = 95.8%. The score is DERIVED, because
-     a hand-typed percentage that does not match the counts under it is the one
-     thing this screen must never do — the whole lesson is that the count
-     matters more than the percentage. */
+  /* The guided flow's four steps, and the counts its review step prints:
+     Rows loaded · Matched · New employees · Need attention. One of the two
+     problem rows can be repaired by typing (the cell that could not be read);
+     the other is a duplicate, which no amount of typing fixes. */
   wizard: {
     rows: 48, matched: 46, newEmployees: 0, errors: 2,
-    get score() { return Math.round(this.matched / this.rows * 1000) / 10; },
-    /* `fix: true` marks the ONE row the practice importer lets you repair by
-       typing. It is the row whose overtime cell could not be read — which is
-       the failure the import lesson is about, because a cell that cannot be
-       read does not stop the import, it quietly becomes zero. The value the
-       learner types is not stored here: it belongs to the scenario STEP, so
-       the expected answer has one owner (see INPUT_ANCHORS below). */
     errorRows: [
       { name: "Bùi Anh Tuấn", code: "NV0052", fix: true,
         why: B("Overtime cell is not a number", "Ô tăng ca không phải là số") },
@@ -696,53 +867,19 @@ const PRACTICE = {
     };
   },
 
-  /* --------------------------------------------------- Overview (Phase C1)
-     NOT A SECOND SET OF NUMBERS. Everything below reads `board`, `recentRuns`,
-     `statutory`, `ledgers` and the four employees above, because the Overview,
-     People and Insights screens are the SAME payroll seen from further back. A
-     Dashboard that disagreed with the Pay Runs board underneath it would teach
-     a learner that the top of the product is decorative, which is the one thing
-     a command centre cannot be.
-
-     THE APPROVAL LANES ARE DERIVED FROM `board`, and that is the whole design.
-     The July Retail run is at level0 on the Dashboard, on the Pay Runs board
-     and here; the two lanes to its right are EMPTY, and drawing them empty is
-     honest — the product renders "No runs here." for exactly this state, and a
-     quiet Tuesday is most of what a payroll month looks like. */
-  get approvals() {
-    const lane = (col) => this.board.filter((r) => r.col === col);
-    const lanes = [
-      { key: "level0", runs: lane("level0") },
-      { key: "level1", runs: lane("level1") },
-      { key: "level2", runs: lane("level2") },
-    ];
-    return {
-      lanes,
-      /* Decided, not waiting: the two runs that have already passed every gate.
-         Both are `done` on the board above, and their nets are the board's. */
-      recent: this.board.filter((r) => r.col === "done"),
-      /* `net at stake` is money that has NOT been paid and can still be
-         stopped. Summed from the lanes, so it cannot disagree with them. */
-      get kpis() {
-        const at = (k) => (lanes.find((l) => l.key === k) || { runs: [] }).runs;
-        return {
-          officer: at("level0").length,
-          hr: at("level1").length,
-          finance: at("level2").length,
-          net: lanes.reduce(
-            (t, l) => t + l.runs.reduce((s, r) => s + r.net, 0), 0),
-        };
-      },
-    };
-  },
-
   /* ------------------------------------------------------ People (Phase C1)
      A wage here is the REGISTERED CONTRACT BASE, which is also the insurance
-     base — one number, one meaning, wherever it is printed. The company-wide
-     wage bill is `statutory.insuranceBase`: the sum of the registered bases is
-     exactly what both that band and this one are describing. */
+     base — one number, one meaning, wherever it is printed.
+
+     LEARN REFRESH step 2: the band counts the WHOLE COMPANY — Retail's 48 and
+     F&B's 21 — because that is what the product's headcount counts (Home ›
+     Pulse reads every employee, pb_dashboard.py:247), and a People band that
+     said 48 beside a Pulse that said 69 would be two screens disagreeing about
+     one company. The roster below is still a four-person sample. Đức's
+     probation contract is RUNNING: a draft contract would have kept him out of
+     the July run, and he is in it. */
   people: {
-    draftContracts: 1,
+    draftContracts: 0,
     expiring: 1,
     newHires: 1,
     /* Đức has no bank account on file. Everything else about him is ready and
@@ -750,13 +887,15 @@ const PRACTICE = {
        column rather than a footnote on the wage. */
     notReady: 1,
     get kpis() {
-      const head = RUN.employees;
+      /* +1 is Nam (LATER): hired, contract running from August, not paid in
+         July. The band counts people the company EMPLOYS. */
+      const head = RUN.employees + FNB.employees + 1;
       return {
         headcount: head,
         running: head - this.draftContracts,
         expiring: this.expiring,
         newHires: this.newHires,
-        wageBill: PRACTICE.statutory.insuranceBase,
+        wageBill: PRACTICE.statutory.insuranceBase + FNB.insuranceBase + LATER.base,
         readyPct: Math.round((head - this.notReady) / head * 100),
       };
     },
@@ -778,14 +917,15 @@ const PRACTICE = {
   contracts: {
     get kpis() {
       const p = PRACTICE.people;
-      const head = RUN.employees;
+      const head = RUN.employees + FNB.employees + 1;
+      const bill = p.kpis.wageBill;
       return {
         running: head - p.draftContracts,
         expiring: p.expiring,
         draft: p.draftContracts,
         expired: 0,
-        wageBill: PRACTICE.statutory.insuranceBase,
-        avgWage: Math.round(PRACTICE.statutory.insuranceBase / head),
+        wageBill: bill,
+        avgWage: Math.round(bill / head),
       };
     },
     rows: [
@@ -800,7 +940,7 @@ const PRACTICE = {
         badge: B("Running", "Đang hiệu lực") },
       { emp: EMP.duc, kind: B("Probation", "Thử việc"),
         period: B("From 01/07/2026", "Từ 01/07/2026"),
-        badge: B("Draft", "Nháp") },
+        badge: B("Running", "Đang hiệu lực") },
     ],
   },
 
@@ -844,7 +984,7 @@ const PRACTICE = {
       ],
       pulse: [
         { label: B("Attendance exceptions", "Ngoại lệ chấm công"), v: w.exceptionTotal },
-        { label: B("Payslips flagged", "Phiếu bị gắn cờ"), v: RUN.flagged },
+        { label: B("Payslips at zero or below", "Phiếu thực nhận bằng 0 hoặc âm"), v: RUN.flagged },
         { label: B("Joiners this month", "Vào mới tháng này"), v: w.kpis.joiners },
         { label: B("Leavers this month", "Thôi việc tháng này"), v: w.kpis.leavers },
       ],
@@ -967,59 +1107,155 @@ const PRACTICE = {
 };
 
 /* =============================================================================
-   3. THE MENU — mirrors pb_sidebar/data/pb_sidebar_data.xml.
+   3. THE RAIL — mirrors the product's left rail and each hub's tabs.
    -----------------------------------------------------------------------------
-   `scope: true` marks the section Phase A teaches. Everything else is drawn so
-   the replica looks like the product, and greyed while out of scope: a learner
-   who is shown a menu that is not the menu learns the wrong menu.
-   ========================================================================== */
+   LEARN REFRESH step 2. The practice company used to draw the old six-section
+   sidebar, which no longer exists: since the rail cutover the product has
+   nine pages on its rail (pb_*_hub modules, in rail order) and every working
+   screen is a TAB inside one of them. The replica draws the same rail and, on
+   the page being shown, the same tabs in the same order with the same words —
+   the Vietnamese included, as the product's own .po files now say it.
+
+   `screen` names the replica screen a tab opens. A tab with NO screen is drawn
+   present-but-quiet ("Not in the practice company"): it is really there in
+   the product, and a replica that hid it would teach a different page; a
+   replica that pretended to open it would be a dead click. `sub` is a tab's
+   own inner tabs (Pay Run › Adjust has Retro and Proration).
+
+   Settings is not a row of tabs but a page of categories (pb_settings
+   settings_hub.js:132-241): its screens open FROM that page, so the replica
+   draws it as the `hub_settings` screen and names the category a screen
+   came from in the breadcrumb. */
 const MENU = [
   {
-    key: "overview", label: B("Overview", "Tổng quan"), scope: true, items: [
-      { id: "dashboard", icon: "grid", label: B("Dashboard", "Bảng điều khiển") },
-      { id: "approvals", icon: "clipboard-check", label: B("Approvals", "Phê duyệt") },
+    key: "home", icon: "home", label: B("Home", "Trang chủ"), section: null,
+    lenses: [
+      { key: "pulse", label: B("Pulse", "Tổng quan"), screen: "dashboard" },
+      { key: "approvals", label: B("Approvals", "Phê duyệt"), screen: "approvals" },
+      { key: "wall", label: B("Wall", "Bảng vinh danh") },
+      { key: "coming_up", label: B("Announce", "Thông báo") },
     ],
   },
   {
-    key: "payrun", label: B("Pay Run", "Chạy lương"), scope: true, items: [
-      { id: "runpayroll", icon: "zap", label: B("Run Payroll", "Chạy bảng lương") },
-      { id: "payruns", icon: "calendar", label: B("Pay Runs", "Đợt tính lương") },
-      { id: "payslips", icon: "receipt", label: B("Payslips", "Phiếu lương") },
-      { id: "import", icon: "database", label: B("Import Data", "Nhập dữ liệu") },
-      { id: "fullfinal", icon: "file-text", label: B("Full & Final", "Quyết toán thôi việc") },
-      { id: "proration", icon: "calculator", label: B("Proration Audit", "Soát xét ngày công (pro-rata)") },
-      { id: "retro", icon: "trending-up", label: B("Retro Adjustments", "Điều chỉnh hồi tố") },
+    key: "pay", icon: "zap", label: B("Pay Run", "Đợt lương"),
+    section: B("Operate", "Vận hành"),
+    lenses: [
+      { key: "run", label: B("Run", "Chạy lương"), screen: "runpayroll" },
+      { key: "runs", label: B("Runs", "Các đợt lương"), screen: "payruns" },
+      { key: "payslips", label: B("Payslips", "Phiếu lương"), screen: "payslips" },
+      { key: "results", label: B("Results", "Kết quả") },
+      { key: "import", label: B("Import", "Nhập"), screen: "import" },
+      { key: "deliver", label: B("Deliver", "Chi trả") },
+      { key: "adjust", label: B("Adjust", "Điều chỉnh"), screen: "retro",
+        sub: [{ key: "retro", label: B("Retro", "Hồi tố"), screen: "retro" },
+              { key: "proration", label: B("Proration", "Phân bổ theo tỷ lệ"), screen: "proration" }] },
+      { key: "settle", label: B("Settle", "Quyết toán"), screen: "fullfinal",
+        sub: [{ key: "fullfinal", label: B("Full & Final", "Quyết toán thôi việc"), screen: "fullfinal" }] },
+      { key: "paycal", label: B("Calendar", "Lịch lương") },
+      { key: "awards", label: B("Awards", "Thưởng") },
     ],
   },
   {
-    key: "setup", label: B("Setup", "Thiết lập"), scope: true, items: [
-      { id: "formula", icon: "calculator", label: B("Formula Engine", "Công thức lương") },
-      { id: "structures", icon: "layers", label: B("Salary Structures", "Cấu trúc lương") },
-      { id: "statutory", icon: "shield-check", label: B("Statutory (Insurance & Tax)", "Bảo hiểm & Thuế") },
-      { id: "integrations", icon: "database", label: B("Integrations", "Tích hợp") },
-    ],
-  },
-  /* Phase C1. The order below is the order pb_sidebar draws these sections
-     (People 30, Insights 40, Compliance 45) — Workforce and Planning sit
-     between them in the product and are deliberately NOT taught yet, so they
-     are not drawn here either: a replica menu that shows a section with no
-     station behind it is a promise the map does not keep. */
-  {
-    key: "people", label: B("People", "Nhân sự"), scope: true, items: [
-      { id: "employees", icon: "users", label: B("Employees", "Nhân viên") },
-      { id: "contracts", icon: "file-text", label: B("Contracts", "Hợp đồng") },
+    key: "people", icon: "users", label: B("People", "Con người"), section: null,
+    lenses: [
+      { key: "employees", label: B("Employees", "Nhân viên"), screen: "employees",
+        also: ["contracts"] },
+      { key: "records", label: B("Records", "Hồ sơ") },
+      { key: "pay", label: B("Pay", "Lương") },
+      { key: "where", label: B("Where they work", "Nơi họ làm việc") },
+      { key: "assets", label: B("Assets", "Tài sản") },
+      { key: "praise", label: B("Praise", "Khen ngợi") },
+      { key: "goals", label: B("Goals", "Mục tiêu") },
+      { key: "announcements", label: B("Announce", "Thông báo") },
+      { key: "plan", label: B("Plan", "Kế hoạch") },
     ],
   },
   {
-    key: "insights", label: B("Insights", "Phân tích"), scope: true, items: [
-      { id: "insights", icon: "trending-up", label: B("Insights", "Phân tích") },
-      { id: "explorer", icon: "compass", label: B("Explorer", "Explorer") },
-      { id: "workforcean", icon: "bar-chart", label: B("Workforce Analytics", "Phân tích nhân sự") },
+    key: "lifecycle", icon: "git-branch", label: B("Lifecycle", "Vòng đời nhân sự"), section: null,
+    lenses: [
+      { key: "journeys", label: B("Journeys", "Hành trình") },
+      { key: "hiring", label: B("Hiring", "Tuyển dụng") },
+      { key: "newjoiners", label: B("New joiners", "Nhân viên mới") },
+      { key: "exits", label: B("Exits", "Nghỉ việc") },
+      { key: "probation", label: B("Probation", "Thử việc") },
+      { key: "pip", label: B("Growth plans", "Kế hoạch phát triển") },
+      { key: "contracts", label: B("Contracts", "Hợp đồng") },
     ],
   },
   {
-    key: "compliance", label: B("Compliance", "Tuân thủ"), scope: true, items: [
-      { id: "govreports", icon: "file-text", label: B("Government Reports", "Báo cáo cơ quan nhà nước") },
+    key: "workforce", icon: "compass", label: B("Workforce", "Lực lượng lao động"), section: null,
+    lenses: [
+      { key: "today", label: B("Today", "Hôm nay") },
+      { key: "schedule", label: B("Schedule", "Lịch ca") },
+      { key: "time", label: B("Time", "Chấm công") },
+      { key: "timeoff", label: B("Time Off", "Nghỉ phép") },
+      { key: "overtime", label: B("Overtime", "Tăng ca") },
+      { key: "trips", label: B("Trips", "Công tác") },
+      { key: "approvals", label: B("Approvals", "Phê duyệt") },
+      { key: "close", label: B("Close", "Chốt kỳ") },
+      { key: "holidays", label: B("Holidays", "Ngày lễ") },
+      { key: "field", label: B("Field", "Hiện trường") },
+    ],
+  },
+  {
+    key: "insights", icon: "trending-up", label: B("Insights", "Phân tích"),
+    section: B("Understand", "Hiểu"),
+    lenses: [
+      { key: "pulse", label: B("Pulse", "Tổng quan"), screen: "insights" },
+      { key: "explorer", label: B("Explorer", "Khám phá dữ liệu"), screen: "explorer" },
+      { key: "workforce", label: B("Workforce", "Lực lượng lao động"), screen: "workforcean" },
+      { key: "payroll", label: B("Payroll Report", "Báo cáo lương") },
+      { key: "budget", label: B("Budget", "Ngân sách") },
+      { key: "hiring", label: B("Hiring", "Tuyển dụng") },
+      { key: "training", label: B("Training", "Đào tạo") },
+      { key: "goals", label: B("Goals", "Mục tiêu") },
+    ],
+  },
+  {
+    key: "compliance", icon: "shield-check", label: B("Compliance", "Tuân thủ"), section: null,
+    lenses: [
+      { key: "filings", label: B("Filings", "Tờ khai"), screen: "govreports" },
+      { key: "bank", label: B("Bank", "Ngân hàng") },
+      { key: "young", label: B("Young workers", "Lao động chưa thành niên") },
+      { key: "audit", label: B("Audit", "Nhật ký kiểm toán") },
+    ],
+  },
+  {
+    key: "learn", icon: "book-open", label: B("Learn", "Học cùng Payobook"),
+    section: B("Grow", "Phát triển"),
+    lenses: [
+      { key: "lessons", label: B("Lessons", "Bài học") },
+      { key: "training", label: B("Training", "Đào tạo") },
+      { key: "team", label: B("Team", "Nhóm") },
+      { key: "settings", label: B("Settings", "Cài đặt") },
+    ],
+  },
+  {
+    key: "settings", icon: "settings", label: B("Settings", "Cài đặt"), section: null, page: true,
+    screen: "hub_settings",
+    /* The category page, in the product's order. `screen` opens a replica;
+       the rest are drawn quiet. */
+    lenses: [
+      { key: "formula", label: B("Formula Engine", "Bộ máy công thức"), screen: "formula",
+        card: B("Formula Studio", "Xưởng công thức") },
+      { key: "structures", label: B("Salary Structures", "Cấu trúc lương"), screen: "structures" },
+      { key: "statutory", label: B("Statutory", "Bảo hiểm & Thuế"), screen: "statutory",
+        card: B("Insurance & Tax", "Bảo hiểm & Thuế") },
+      { key: "integrations", label: B("Integrations", "Tích hợp"), screen: "integrations" },
+      { key: "payroll", label: B("Payroll defaults", "Mặc định tính lương") },
+      { key: "org", label: B("Companies & Tenants", "Công ty & Đơn vị thuê bao") },
+      { key: "nav", label: B("Navigation", "Điều hướng") },
+      { key: "company", label: B("Your company", "Công ty của bạn") },
+      { key: "vendors", label: B("Vendors", "Nhà cung cấp") },
+      { key: "guided_setup", label: B("Guided setup", "Thiết lập có hướng dẫn"),
+        card: B("New configuration", "Cấu hình mới") },
+      { key: "group", label: B("Group", "Tập đoàn") },
+      { key: "access", label: B("Access & delegation", "Quyền truy cập & uỷ quyền") },
+      { key: "approvals", label: B("Approvals", "Phê duyệt") },
+      { key: "hiring", label: B("Hiring", "Tuyển dụng") },
+      { key: "about", label: B("About Payobook", "Về Payobook") },
+      { key: "announcements", label: B("Announcements", "Thông báo") },
+      { key: "demo_data", label: B("Demo data", "Dữ liệu mẫu") },
     ],
   },
 ];
@@ -1070,58 +1306,85 @@ const SUB_SCREENS = {
 };
 
 /* Real selection keys, with what the product actually calls them. The keys are
-   from pb_payruns/models/hr_payslip_run.py and check_contract.py pins them —
-   a lesson that teaches a renamed state is a lesson that teaches a lie. */
+   from pb_payruns/models/hr_payslip_run.py (PB_STATES, :51-56) and
+   check_contract.py pins them — a lesson that teaches a renamed state is a
+   lesson that teaches a lie. */
 const STATUS_LABELS = {
-  /* THE PAY RUN's chain — five stages, including level0. */
+  /* THE PAY RUN. Three stages and one outcome. The fixed approval tiers are
+     GONE: while a run is waiting, WHO it waits for is its route, not its
+     state (ROUTE above). */
   payrun: {
     draft: { l: B("Draft", "Nháp"), t: "" },
-    level0: { l: B("Payroll Officer pending", "Chờ Chuyên viên tính lương"), t: "b" },
-    level1: { l: B("HR review", "HR soát xét"), t: "warn" },
-    level2: { l: B("Finance approval", "Tài chính phê duyệt"), t: "warn" },
+    approval_pending: { l: B("Waiting for approval", "Chờ phê duyệt"), t: "warn" },
     done: { l: B("Done", "Hoàn tất"), t: "ok" },
-    /* Where a rejection actually lands. The product's own label for this
-       selection value is "Rejected", not "Cancelled" — which is why the board
-       reads as a rejection while the record reads as a cancellation, and why
-       the content has to say both. */
+    /* A rejected run is an outcome, not a column: the board lists it under
+       "Rejected pay runs". Reached by the board's Reject, or by "Turn it down"
+       in the inbox — both cancel every payslip in it. */
     cancel: { l: B("Rejected", "Đã từ chối"), t: "danger" },
   },
-  /* A PAYSLIP's chain is FOUR stages, not five: it has no level0. Drawing the
-     run's five on a payslip stepper would teach a gate that does not exist
-     there, and a learner would go looking for an Officer tier on a slip. The
-     two are separate on purpose, and check_contract.py pins both. */
+  /* A PAYSLIP follows its run and never moves on its own
+     (pb_payslip_review STATUS_FLOW: Draft → Waiting for approval → Done). */
   payslip: {
     draft: { l: B("Draft", "Nháp"), t: "" },
-    level1: { l: B("HR Manager pending", "Chờ Trưởng phòng Nhân sự"), t: "warn" },
-    level2: { l: B("GM pending", "Chờ Tổng Giám đốc"), t: "warn" },
+    verify: { l: B("Waiting for approval", "Chờ phê duyệt"), t: "warn" },
     done: { l: B("Done", "Hoàn tất"), t: "ok" },
-    /* A rejected RUN cancels every slip in it, so a payslip has this state
-       too — reached by the batch, never by itself. */
     cancel: { l: B("Rejected", "Đã từ chối"), t: "danger" },
   },
+  /* The practice company's route, for the `pipeline` visual on the approval
+     lessons: the request travels the steps in order. */
+  route: {
+    s1: { l: ROUTE.steps[0].title, t: "" },
+    s2: { l: ROUTE.steps[1].title, t: "" },
+    s3: { l: ROUTE.steps[2].title, t: "" },
+    applied: { l: B("Done — the run is finished", "Hoàn tất — đợt lương đã xong"), t: "ok" },
+  },
+  /* A formula configuration's stages (pb_hr_payroll_formula
+     formula_config.py:529-535). */
+  formula: {
+    draft: { l: B("Draft", "Nháp"), t: "" },
+    testing: { l: B("Testing", "Đang thử nghiệm"), t: "b" },
+    validated: { l: B("Validated", "Đã xác thực"), t: "warn" },
+    active: { l: B("Active", "Đang hoạt động"), t: "ok" },
+    archived: { l: B("Archived", "Đã lưu trữ"), t: "" },
+  },
   importbatch: {
-    map: { l: B("Mapping", "Đang ánh xạ"), t: "" },
-    validate: { l: B("Validating", "Đang kiểm tra"), t: "warn" },
-    done: { l: B("Committed", "Đã ghi nhận"), t: "ok" },
+    matched: { l: B("Matched", "Đã khớp"), t: "warn" },
+    done: { l: B("Done", "Hoàn tất"), t: "ok" },
   },
 };
 
-/* The pay run's real lifecycle, for the `pipeline` visual. Same keys as
-   STATUS_LABELS.payrun, in the order the product moves through them. */
+/* The lifecycles the `pipeline` visual draws. Same keys as STATUS_LABELS. */
 const CHAINS = {
   payrun: {
-    nodes: ["draft", "level0", "level1", "level2", "done"],
-    /* THE BRANCH IS A DEAD END, not a loop back to the start, and the caption
-       said the opposite for the whole of Phases A and B. `action_payslip_run_
-       cancel` cascades `action_payslip_cancel` over every slip and writes the
-       RUN to 'cancel' — whose own selection label is "Rejected"
-       (om_hr_payroll/models/hr_payslip.py:975). Getting a workable draft back
-       is `draft_payslip_run`, a different method gated to the Finance/GM tier
-       (pb_payruns/models/hr_payslip_run.py:283-298). Pinned by
-       contract.json::rejection-cancels-the-run. */
-    branch: B("Rejected — the whole run is cancelled, with a written reason",
-              "Đã từ chối — cả đợt lương bị huỷ, kèm lý do bằng văn bản"),
+    nodes: ["draft", "approval_pending", "done"],
+    /* TWO WAYS OFF THE ROAD, and they are not the same. Sent back returns the
+       run to Draft with the note on it (hr_payslip_run.py `_approval_return`);
+       turned down in the inbox, or rejected from the board, cancels the run
+       and every payslip in it (`_approval_reject` / `action_payslip_run_
+       cancel`). Pinned by contract.json::payrun-state-chain and
+       ::rejection-cancels-the-run. */
+    branches: [
+      B("Sent back — back to Draft, with a note saying what to change",
+        "Trả lại — về Nháp, kèm ghi chú cần sửa gì"),
+      B("Turned down or rejected — the whole run is cancelled, reason kept",
+        "Bị từ chối — cả đợt lương bị huỷ, lý do được lưu lại"),
+    ],
+  },
+  /* Start testing → Validate → Activate, the Studio's one main button
+     (pb_formula_studio formula_studio.js:1604). */
+  formula: {
+    nodes: ["draft", "testing", "validated", "active"],
+    branches: [
+      B("Put it back to draft, or retire it — or propose retiring it when retiring needs a sign-off",
+        "Đưa về bản nháp, hoặc ngừng sử dụng — hoặc đề xuất ngừng sử dụng khi việc đó cần được phê duyệt"),
+    ],
+  },
+  route: {
+    nodes: ["s1", "s2", "s3", "applied"],
+    branches: [
+      B("Any step can send it back, or turn it down", "Bước nào cũng có thể trả lại, hoặc từ chối"),
+    ],
   },
 };
 
-export { B, PRACTICE_META, CASE, EMP, RUN, PRACTICE, MENU, SUB_SCREENS, INPUT_ANCHORS, STATUS_LABELS, CHAINS, POLICY, TAX };
+export { B, PRACTICE_META, CASE, EMP, RUN, FNB, ROUTE, LATER, PRACTICE, MENU, SUB_SCREENS, INPUT_ANCHORS, STATUS_LABELS, CHAINS, POLICY, TAX };

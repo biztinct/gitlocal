@@ -22,7 +22,7 @@
    hand a translator wording they do not own, and the two would diverge at the
    first product rename.
    ========================================================================== */
-import { B, CASE, INPUT_ANCHORS, MENU, POLICY, PRACTICE, RUN, STATUS_LABELS,
+import { B, CASE, FNB, INPUT_ANCHORS, MENU, POLICY, PRACTICE, ROUTE, RUN, STATUS_LABELS,
          SUB_SCREENS, TAX } from "./fixture";
 import { esc, ic, initial, tx, T, N, M, P, SP} from "./runtime";
 import { calcHTML, pipeHTML } from "./visuals";
@@ -61,8 +61,21 @@ const KIND_LABEL = {
    test_assets::test_01c enforces — so a conditional attribute is built here and
    interpolated as a bare identifier. */
 const ATTR_IMPMATCH = 'data-coach="rep-impmatch"';
+/* People › Employees has a Contracts button that opens every contract
+   (commit c9e5f2ee4); in the sandbox it opens the Contracts replica. */
+const ATTR_CONTRACTS = 'data-nav="contracts"';
+
+/* A formula configuration's stages (pb_hr_payroll_formula formula_config.py
+   :529-535), in the order the Studio's main button moves it. */
+const STAGE = {
+    draft: B("Draft", "Nháp"),
+    testing: B("Testing", "Đang thử nghiệm"),
+    validated: B("Validated", "Đã xác thực"),
+    active: B("Active", "Đang hoạt động"),
+};
 
 /* ------------------------------------------------------------------- helpers */
+
 /** A real <input>, drawn ONLY at an anchor the fixture declares.
  *
  *  The guard is not politeness: `INPUT_ANCHORS` is the table the generator
@@ -98,33 +111,6 @@ export function statusChip(kind, key) {
         : `<span class="lrn-chip">${esc(key)}</span>`;
 }
 
-export function screenTitle(id) {
-    for (const sec of MENU) {
-        for (const it of sec.items) {
-            if (it.id === id) {
-                return tx(it.label);
-            }
-        }
-    }
-    const sub = SUB_SCREENS[id];
-    return sub ? tx(sub.label) : "";
-}
-
-/** Which sidebar section owns this screen — the section that is IN SCOPE while
- *  it is on display, and every other one greyed. A sub-screen (the import
- *  wizard) borrows its owner leaf's section, so the wizard does not read as
- *  having escaped the menu. */
-function ownerSection(screen) {
-    const sub = SUB_SCREENS[screen];
-    const id = sub ? sub.owner : screen;
-    return MENU.find((sec) => sec.items.some((it) => it.id === id)) || MENU[0];
-}
-
-/** The leaf that is highlighted while `screen` is showing. */
-function ownerLeaf(screen) {
-    const sub = SUB_SCREENS[screen];
-    return sub ? sub.owner : screen;
-}
 
 /* --------------------------------------------------------------- row renderers
    These read PRACTICE and CASE, never their own literals — which is what makes
@@ -136,21 +122,83 @@ function kpiTile(icon, tone, value, label) {
     </div>`;
 }
 
+/* A KPI tile with the product's second line under the figure (Home › Pulse
+   prints "48 active contracts", "personnel cost in July 2026" …). */
+function kpiTile2(icon, tone, value, label, sub) {
+    return `<div class="lrn-kpi ${tone}">
+        <div class="lrn-kt">${ic(icon)}<span>${esc(tx(label))}</span></div>
+        <div class="lrn-kv">${esc(value)}</div>
+        <div class="lrn-ksub">${esc(sub)}</div>
+    </div>`;
+}
+
+/* The numbered step buttons the Runs, Payslips and Import lenses share
+   (pb_import_kit's "numbered steps"): 01 Draft · 02 Waiting for approval …,
+   each with its count and an optional amber flag. */
+function stepButtons(steps, noun) {
+    return steps.map((s, i) => {
+        const num = String(i + 1).padStart(2, "0");
+        const count = N(s.count) + SP + tx(noun);
+        return `<button class="lrn-stepbtn ${s.on ? "on" : ""}" aria-pressed="${!!s.on}">
+            <span class="lrn-stepnum">${num}</span>
+            <span class="lrn-steplab">${esc(tx(s.label))}</span>
+            <span class="lrn-stepcount">${esc(count)}</span>
+            ${s.flag ? `<span class="lrn-stepflag">${ic("alert-triangle")}${esc(tx(s.flag))}</span>` : ""}
+        </button>`;
+    }).join("");
+}
+
+/* One pay run on the Runs board, drawn as payruns.xml draws it
+   (pb_payruns/static/src/xml/payruns.xml:86-151): name, stats, division, the
+   route line while it waits, the sent-back note when it came back, and ONLY the
+   actions its state offers. */
 function runCard(row) {
+    const stats = [
+        [B("Employees", "Nhân viên"), N(row.employees)],
+        [B("Gross", "Tổng thu nhập"), M(row.gross)],
+        [B("Net", "Thực nhận"), M(row.net)],
+    ].map(([k, v]) => `<span><i>${esc(tx(k))}</i><b>${esc(v)}</b></span>`).join("");
+    const step = row.col === "approval_pending" ? ROUTE.steps[row.step] : null;
+    const route = step
+        ? `<div class="lrn-kroute" data-coach="pk-route">${ic("git-branch")}<span><b>${
+            esc(tx(step.title))}</b>${SP}·${SP}${esc(tx(B("With", "Đang ở")))}${SP}${esc(step.who)}</span></div>`
+        : "";
+    const back = row.sentBack
+        ? `<div class="lrn-kback">${ic("undo")}<span><b>${esc(tx(B("Sent back by", "Trả lại bởi")))}${
+            SP}${esc(row.sentBack.by)}</b>${SP}— ${esc(tx(row.sentBack.note))}</span></div>`
+        : "";
+    let acts = "";
+    if (row.col === "done") {
+        acts = [B("Pay & Deliver", "Chi trả & gửi phiếu"), B("Report", "Báo cáo"), B("Excel", "Excel"),
+                B("Journals", "Bút toán"), B("Payments", "Thanh toán")]
+            .map((a) => `<button class="lrn-btn sm ghost">${esc(tx(a))}</button>`).join("");
+    } else if (row.col === "draft") {
+        acts = `<button class="lrn-btn sm pri">${ic("send")}${esc(T("submitReview"))}</button>
+                <button class="lrn-btn sm ghost danger">${esc(T("reject"))}</button>`;
+    } else if (step && step.you) {
+        acts = `<button class="lrn-btn sm pri">${ic("inbox")}${esc(tx(B("Open the approval", "Mở phê duyệt")))}</button>
+                <button class="lrn-btn sm ghost danger">${esc(T("reject"))}</button>`;
+    }
     return `<div class="lrn-kcard" data-coach="pk-card">
         <b>${esc(tx(row.name))}</b>
-        <div class="lrn-kmeta">
-            <span>${N(row.employees)}${SP}${esc(T("employees"))}</span>
-            <span class="lrn-money">${esc(M(row.net))}</span>
-        </div>
-        <div class="lrn-kacts" data-coach="pk-card-actions">
-            ${row.col === "done"
-                ? `<button class="lrn-btn sm ghost">${esc(T("bankFile"))}</button>
-                   <button class="lrn-btn sm ghost">${esc(T("journals"))}</button>`
-                : `<button class="lrn-btn sm pri">${esc(T("submitReview"))}</button>
-                   <button class="lrn-btn sm ghost danger">${esc(T("reject"))}</button>`}
-        </div>
+        <div class="lrn-kstats">${stats}</div>
+        <span class="lrn-chip">${esc(tx(row.division))}</span>
+        ${route}${back}
+        <div class="lrn-kacts" data-coach="pk-card-actions">${acts}</div>
     </div>`;
+}
+
+/* The route dots on a request card, exactly as the inbox draws them: done ·
+   current · next, joined by a line (pb_approval_config inbox.xml:175-181). */
+const RLINE = '<span class="lrn-rline"></span>';
+function routeDots(steps, at) {
+    return steps.map((s, i) => {
+        const cls = i < at ? "done" : i === at ? "current" : "next";
+        const title = tx(s.title || s);
+        const joint = i ? RLINE : "";
+        const tick = i < at ? ic("check") : "";
+        return `${joint}<span class="lrn-rdot ${cls}" title="${esc(title)}">${tick}<span>${esc(title)}</span></span>`;
+    }).join("");
 }
 
 function ledgerHTML(key) {
@@ -242,141 +290,186 @@ function newEmployeeHTML() {
 
 /* -------------------------------------------------------------------- screens */
 export const SCREENS = {
-    /* --------------------------------------------------------- Dashboard
-       The anchors here are the REAL dashboard's — dash-hero, dash-runpayroll,
-       dash-kpis, dash-formula. They have been in pb_dashboard.xml since before
-       this module existed (the retired hero tour pointed at three of them); Phase
-       C1 promoted them out of the registry's `foreign` block into `product`,
-       because LW names them and an anchor a lesson points at has to be one a
-       test can check. pb_learn adds NOTHING to that template.
-
-       `rep-dash-runs` stays practice-only and honest: the product's card here
-       is one "Latest pay run" summary, and the replica draws three months
-       because a lesson about the monthly loop needs to show a loop. */
+    /* ------------------------------------------------------ Home › Pulse
+       LEARN REFRESH step 2. Drawn as pb_dashboard.xml draws it INSIDE the Home
+       hub (embedded: no company line): the greeting and the live run, "Figures
+       for {month}" over the month strip, the four tiles with their own second
+       lines, and the three cards. The anchors are the product's own
+       (dash-hero, dash-runpayroll, dash-period, dash-kpis, dash-formula). The
+       first-payroll checklist is not drawn: the product shows it only while a
+       company has NO pay run, and this one has five. */
     dashboard() {
-        const k = PRACTICE.kpis;
-        const rows = PRACTICE.recentRuns.map((r) => `
-            <div class="lrn-row">
-                <span><span class="lrn-nm">${esc(tx(r.period))}</span><br>
-                    <span class="lrn-sub2">${esc(tx(RUN.division))}${SP}· ${N(r.employees)}${SP}${esc(T("employees"))}</span></span>
-                <span class="lrn-rr">${statusChip("payrun", r.state)}
-                    <b class="lrn-money">${esc(M(r.net))}</b></span>
-            </div>`).join("");
-        const heroSub = tx(RUN.name) + DOT + N(RUN.employees) + SP
-            + tx(B("payslips", "phiếu lương")) + DOT + N(PRACTICE.kpis.waiting) + SP
-            + tx(B("awaiting approval", "chờ phê duyệt"));
-        const f = PRACTICE.config;
-        const formulaMeta = N(PRACTICE.kpis.configs) + SP + tx(B("configurations", "cấu hình"))
-            + DOT + N(f.components.length) + SP + tx(B("components", "thành phần"));
-
+        const p = PRACTICE.pulse;
+        const k = p.kpis;
+        const l = p.latest;
+        const heroSub = tx(l.name) + DOT + N(l.done) + SLASH + N(l.slips) + SP
+            + tx(B("payslips done", "phiếu lương đã xong")) + DOT + N(k.pending) + SP
+            + tx(B("awaiting approval", "đang chờ phê duyệt"));
+        const busiest = Math.max(...p.months.map((m) => m.people));
+        const months = p.months.map((m) => {
+            const h = Math.round(m.people / busiest * 100);
+            const people = N(m.people) + SP + tx(B("people", "người"));
+            return `<button class="lrn-mchip ${m.latest ? "on" : ""}" aria-pressed="${!!m.latest}">
+                <span class="lrn-mbar"><i style="height:${h}%"></i></span>
+                <b>${esc(tx(m.m))}</b><span>${esc(m.y)}</span>
+                <span class="lrn-mcount">${esc(people)}</span>
+            </button>`;
+        }).join("");
+        const f = PRACTICE.configs;
+        const figure = (label, value) => `<div class="lrn-kv2"><span>${esc(tx(label))}</span><b>${esc(value)}</b></div>`;
         return `
             <div class="lrn-herocta" data-coach="dash-hero">
                 ${ic("zap")}
-                <span><b>${esc(tx(B("Good afternoon", "Chào buổi chiều")))}${SP}·
-                        Hoa Sen Retail Co.</b><br>
+                <span><b>${esc(tx(B("Good afternoon", "Chào buổi chiều")))},${SP}${esc(p.user)}</b><br>
                     <span class="lrn-sub2">${esc(heroSub)}</span></span>
                 <button class="lrn-btn pri" data-coach="dash-runpayroll">${ic("zap")}${
-                    esc(T("runPayroll"))}</button>
+                    esc(tx(B("Run Payroll", "Chạy bảng lương")))}</button>
+                <button class="lrn-btn ghost">${ic("bar-chart")}${esc(tx(B("Analytics", "Phân tích")))}</button>
+            </div>
+            <div class="lrn-period" data-coach="dash-period">
+                <div class="lrn-periodline">${ic("calendar")}<b>${esc(tx(B("Figures for", "Số liệu của")))}${
+                    SP}${esc(tx(p.month))}</b>
+                    <span class="lrn-chip">${esc(tx(B("the latest payroll month", "tháng lương gần nhất")))}</span></div>
+                <div class="lrn-months">${months}</div>
+                <p class="lrn-note">${esc(tx(B(
+                    "Press a month to read the figures above for it.",
+                    "Bấm vào một tháng để đọc các số liệu phía trên cho tháng đó.")))}</p>
             </div>
             <div class="lrn-grid g4" data-coach="dash-kpis">
-                ${kpiTile("users", "", N(k.headcount), B("Headcount", "Nhân sự"))}
-                ${kpiTile("trending-up", "pos", M(k.monthlyNet), B("Monthly payroll", "Chi phí lương tháng"))}
-                ${kpiTile("clipboard-check", "warn", N(k.waiting), B("Pending approval", "Chờ phê duyệt"))}
-                ${kpiTile("calculator", "", N(k.configs), B("Active configs", "Cấu hình đang chạy"))}
+                ${kpiTile2("users", "", N(k.headcount), B("Headcount", "Số lượng nhân sự"),
+                    N(k.contracts) + SP + tx(B("active contracts", "hợp đồng đang hiệu lực")))}
+                ${kpiTile2("trending-up", "pos", M(k.payroll), B("Monthly payroll", "Chi phí lương tháng"),
+                    tx(B("personnel cost in", "chi phí nhân sự")) + SP + tx(p.month))}
+                ${kpiTile2("clipboard-check", "warn", N(k.pending), B("Pending approval", "Đang chờ phê duyệt"),
+                    tx(B("awaiting sign-off", "đang chờ phê duyệt")))}
+                ${kpiTile2("calculator", "", N(k.configs), B("Active configs", "Cấu hình đang chạy"),
+                    N(k.rules) + SP + tx(B("rules", "quy tắc")))}
             </div>
-            <div class="lrn-grid g2 top">
-                <div class="lrn-panel" data-coach="rep-dash-runs">
-                    <h3>${ic("calendar")}${esc(tx(B("Recent pay runs", "Các đợt lương gần đây")))}</h3>
-                    <div class="lrn-rows">${rows}</div>
+            <div class="lrn-grid g3 top">
+                <div class="lrn-panel">
+                    <h3>${ic("calendar")}${esc(tx(B("Latest pay run", "Đợt lương mới nhất")))}</h3>
+                    <p class="lrn-note">${esc(tx(l.name))}</p>
+                    ${figure(B("Payslips", "Phiếu lương"), N(l.slips))}
+                    ${figure(B("Approved", "Đã duyệt"), N(l.done))}
+                    ${figure(B("Pending", "Đang chờ"), N(l.pending))}
+                    <button class="lrn-link">${esc(tx(B("Open pay runs →", "Mở các đợt lương →")))}</button>
+                </div>
+                <div class="lrn-panel">
+                    <h3>${ic("layers")}${esc(tx(B("Company overview", "Tổng quan công ty")))}</h3>
+                    <p class="lrn-note">${esc(tx(B("All departments · monthly", "Mọi bộ phận · theo tháng")))}</p>
+                    ${figure(B("Payroll", "Chi phí lương"), M(k.payroll))}
+                    ${figure(B("Avg salary", "Lương bình quân"), M(Math.round(k.payroll / k.headcount)))}
+                    <button class="lrn-link">${esc(tx(B("Open analytics →", "Mở phân tích →")))}</button>
                 </div>
                 <div class="lrn-panel" data-coach="dash-formula">
-                    <h3>${ic("calculator")}${esc(tx(B("Formula engine", "Công thức lương")))}</h3>
-                    <p class="lrn-note">${esc(formulaMeta)}</p>
-                    <div class="lrn-kv2"><span>${esc(tx(B("This division", "Bộ phận này")))}</span>
-                        <b>${esc(f.code)}</b></div>
-                    <p class="lrn-note">${esc(tx(B(
-                        "Pay is computed from readable configurations, not fixed salary structures. This card is the way in.",
-                        "Lương được tính từ các cấu hình đọc được, không phải từ cấu trúc lương cố định. Thẻ này là lối vào đó.")))}</p>
+                    <h3>${ic("calculator")}${esc(tx(B("Formula engine", "Bộ máy công thức")))}</h3>
+                    <p class="lrn-note">${esc(tx(B("Excel-driven configs", "Cấu hình theo kiểu Excel")))}</p>
+                    ${figure(B("Rules", "Quy tắc"), N(k.rules))}
+                    ${figure(B("Configs", "Cấu hình"), N(f.length))}
+                    <button class="lrn-link">${esc(tx(B("Open formula engine →", "Mở bộ máy công thức →")))}</button>
                 </div>
             </div>`;
     },
 
-    /* --------------------------------------------------------- Approvals
-       The LANES ARE THE FIXTURE'S BOARD, filtered by gate. Two of the three are
-       empty today and are drawn empty on purpose: the product renders "No runs
-       here." for exactly this state, and a lane with nothing in it is not a
-       lane that is broken. */
+    /* ------------------------------------------------------ Home › Approvals
+       THE ONE INBOX (pb_approval_config inbox.xml), as it looks inside Home.
+       The ai-* anchors are the ones step 2 added to the product template, so
+       a lesson here and the helper on the live screen point at the same
+       controls. The drawer is drawn OPEN on the July run: in the product it
+       opens when you press a card. */
     approvals() {
-        const a = PRACTICE.approvals;
-        const k = a.kpis;
-        const lanes = a.lanes.map((lane) => {
-            const cards = lane.runs.map((r) => {
-                const meta = N(r.employees) + SP + tx(B("payslips", "phiếu lương"));
-                return `
-                <div class="lrn-kcard" data-coach="pk-card">
-                    <b>${esc(tx(r.name))}</b>
-                    <div class="lrn-kmeta">
-                        <span>${esc(meta)}</span>
-                        <span class="lrn-money">${esc(M(r.net))}</span>
-                    </div>
-                    <div class="lrn-kacts">
-                        <button class="lrn-btn sm pri">${ic("check")}${
-                            esc(tx(B("Approve", "Phê duyệt")))}</button>
-                        <button class="lrn-btn sm ghost danger">${esc(T("reject"))}</button>
-                    </div>
-                </div>`;
-            }).join("");
-            const empty = `<p class="lrn-note">${esc(tx(B(
-                "No runs here.", "Không có đợt nào ở đây.")))}</p>`;
-            return `
-            <div class="lrn-kcol">
-                <div class="lrn-kcolh">${statusChip("payrun", lane.key)}</div>
-                ${cards || empty}
+        const inbox = PRACTICE.inbox;
+        const req = inbox.requests;
+        const mine = req[0];
+        const other = req[1];
+        const tabs = [
+            [B("My turn", "Đến lượt tôi"), inbox.tabs.mine],
+            [B("All I can see", "Tất cả tôi xem được"), inbox.tabs.all],
+            [B("Sent back", "Đã trả lại"), inbox.tabs.back],
+            [B("Finished", "Đã xong"), inbox.tabs.done],
+        ].map(([label, n], i) => `<button aria-selected="${i === 0}">${esc(tx(label))}<span class="lrn-tabn">${N(n)}</span></button>`).join("");
+        const card = (r, anchored) => {
+            const steps = r.mine ? ROUTE.steps : r.route;
+            const who = r.mine ? ROUTE.steps[r.at].who : r.waiting;
+            const badge = r.mine
+                ? `<span class="lrn-chip a">${esc(tx(B("Your turn", "Đến lượt bạn")))}</span>` : "";
+            const sub = tx(r.process) + DOT + r.scope + DOT + tx(B("sent in by", "gửi bởi")) + SP + r.sentBy
+                + "," + SP + tx(r.when);
+            const amount = r.amount ? `<div class="lrn-reqamt">${esc(M(r.amount))}</div>
+                <div class="lrn-sub2">${esc(N(r.count) + SP + tx(B("payslips", "phiếu lương")))}</div>` : "";
+            const cardAnchor = anchored ? 'data-coach="ai-card"' : "";
+            const routeAnchor = anchored ? 'data-coach="ai-route"' : "";
+            return `<div class="lrn-req ${r.mine ? "mine" : ""}" ${cardAnchor}>
+                <div class="lrn-reqmain">
+                    <div class="lrn-reqt"><b>${esc(tx(r.title))}</b>${badge}</div>
+                    <div class="lrn-sub2">${esc(sub)}</div>
+                    <div class="lrn-reqfacts"><span class="lrn-chip">${esc(ROUTE.name)}${SP}· v1</span>
+                        <span class="lrn-sub2">${esc(tx(B("Waiting for", "Đang chờ")))}${SP}${esc(who)}</span></div>
+                    <div class="lrn-rt" ${routeAnchor}>${routeDots(steps, r.at)}</div>
+                </div>
+                <div class="lrn-reqright">${amount}
+                    <div class="lrn-sub2">${esc(tx(r.kind))}</div>
+                    <div class="lrn-reqdue">${esc(tx(r.due))}</div>
+                </div>
             </div>`;
+        };
+        const facts = inbox.facts.map((x) => `<div class="lrn-cr"><span>${esc(tx(x.k))}</span>
+                <b>${esc(x.money ? M(x.v) : tx(x.v))}</b></div>`).join("");
+        const timeline = ROUTE.steps.map((s, i) => {
+            const state = i < mine.at ? B("approved", "đã phê duyệt")
+                : i === mine.at ? B("waiting — your turn", "đang chờ — đến lượt bạn") : B("next", "tiếp theo");
+            return `<div class="lrn-atl ${i < mine.at ? "done" : i === mine.at ? "cur" : ""}">
+                <span class="lrn-atldot"></span><b>${esc(tx(s.title))}</b>
+                <span class="lrn-sub2">${esc(s.who)}${SP}·${SP}${esc(tx(state))}</span></div>`;
         }).join("");
-
-        const recent = a.recent.map((r) => `
-            <div class="lrn-row">
-                <span class="lrn-avatar">${ic("check-circle")}</span>
-                <span><span class="lrn-nm">${esc(tx(r.name))}</span><br>
-                    <span class="lrn-sub2">${esc(tx(B("Approved", "Đã duyệt")))}</span></span>
-                <span class="lrn-rr"><b class="lrn-money">${esc(M(r.net))}</b></span>
-            </div>`).join("");
-
+        const moneyLine = N(inbox.tabs.mine) + SP + tx(B("waiting for you", "đang chờ bạn")) + DOT + M(mine.amount);
         return `
-            <div class="lrn-herocta" data-coach="pa-hero">
-                ${ic("clipboard-check")}
-                <span><b>${esc(tx(B("Approval pipeline", "Quy trình phê duyệt")))}</b><br>
-                    <span class="lrn-sub2">${esc(tx(B(
-                        "Officer review → HR review → Finance approval",
-                        "Chuyên viên soát → HR soát xét → Tài chính phê duyệt")))}</span></span>
-                <span class="lrn-chip warn">${ic("inbox")}${N(k.officer)}${SP}${
-                    esc(tx(B("awaiting you", "đang chờ bạn")))}</span>
+            <div class="lrn-strip" data-coach="ai-head">
+                <button class="lrn-btn">${ic("send")}${esc(tx(B("Ask for a sign-off", "Xin một chữ ký duyệt")))}</button>
+                <button class="lrn-btn ghost">${ic("git-branch")}${esc(tx(B("Workflows", "Luồng phê duyệt")))}</button>
+                <button class="lrn-btn ghost">${ic("rotate-ccw")}${esc(tx(B("Refresh", "Làm mới")))}</button>
             </div>
-            <div class="lrn-grid g4" data-coach="pa-kpis">
-                ${kpiTile("clock", "", N(k.officer), B("At Officer review", "Ở vòng Chuyên viên"))}
-                ${kpiTile("users", "", N(k.hr), B("At HR review", "Ở vòng HR soát xét"))}
-                ${kpiTile("shield-check", "", N(k.finance), B("At Finance approval", "Ở vòng Tài chính"))}
-                ${kpiTile("receipt", "warn", M(k.net), B("Net at stake", "Số tiền đang treo"))}
+            <div class="lrn-seg" data-coach="ai-scope">
+                <button aria-pressed="true">${esc(tx(B("Mine", "Của tôi")))}</button>
+                <button aria-pressed="false">${esc(tx(B("My team", "Nhóm của tôi")))}</button>
+                <button aria-pressed="false">${esc(tx(B("Everyone", "Tất cả mọi người")))}</button>
             </div>
-            <div class="lrn-kanban" data-coach="pa-lanes">${lanes}</div>
-            <div class="lrn-panel" data-coach="pa-reject">
-                <h3>${ic("x")}${esc(tx(B("Reject this run", "Từ chối đợt lương này")))}</h3>
-                <label class="lrn-flabel">${esc(tx(B(
-                    "Reason (required)", "Lý do (bắt buộc)")))}</label>
-                <input class="lrn-in" readonly="readonly" value="${esc(tx(B(
-                    "Payslip NV0031 — overtime is 382% of June. Verify against the timesheet and resubmit.",
-                    "Phiếu NV0031 — tăng ca bằng 382% tháng 6. Đối chiếu bảng chấm công rồi trình lại.")))}"/>
-                <p class="lrn-note">${esc(tx(B(
-                    "All payslips in this run go back to draft together. The reason is recorded with your name and the time, and it is the only thing the officer has to work from.",
-                    "Toàn bộ phiếu lương trong đợt cùng quay về Nháp. Lý do được lưu kèm tên bạn và thời điểm, và đó là thứ duy nhất chuyên viên có để làm việc.")))}</p>
-            </div>
-            <div class="lrn-panel" data-coach="pa-recent">
-                <h3>${ic("list-checks")}${esc(tx(B("Recently decided", "Đã quyết gần đây")))}</h3>
-                <div class="lrn-rows">${recent}</div>
-                <p class="lrn-note">${esc(tx(B(
-                    "Approvals and rejections land here together, and a rejection keeps its written reason. This list is the audit trail as a reading surface.",
-                    "Cả phê duyệt lẫn từ chối đều rơi vào đây, và một lần từ chối vẫn giữ nguyên lý do bằng văn bản. Danh sách này là vết kiểm toán ở dạng đọc được.")))}</p>
+            <div class="lrn-tabs" data-coach="ai-tabs">${tabs}</div>
+            <p class="lrn-note lrn-moneyline"><b>${esc(moneyLine)}</b>${SP}${esc(tx(B(
+                "Amounts are never added across currencies.",
+                "Số tiền không bao giờ được cộng chung giữa các loại tiền.")))}</p>
+            <div class="lrn-grid g2 top">
+                <div>
+                    ${card(mine, true)}
+                    <p class="lrn-note">${esc(tx(B(
+                        "Also on All I can see — somebody else's turn:",
+                        "Cũng có trong Tất cả tôi xem được — đến lượt người khác:")))}</p>
+                    ${card(other, false)}
+                </div>
+                <div class="lrn-panel lrn-adrawer" data-coach="ai-drawer">
+                    <h3>${ic("clipboard-check")}${esc(tx(mine.title))}</h3>
+                    <p class="lrn-note">${esc(tx(mine.process) + DOT + ROUTE.name)}</p>
+                    <h4>${esc(tx(B("The facts, as they were when it was sent in",
+                                  "Các dữ kiện, đúng như lúc được gửi")))}</h4>
+                    <div class="lrn-calc" data-coach="ai-facts">${facts}</div>
+                    <h4>${esc(tx(B("The route", "Lộ trình")))}</h4>
+                    <div class="lrn-atlwrap">${timeline}</div>
+                    <div class="lrn-decide" data-coach="ai-decide">
+                        <button class="lrn-btn ghost danger" data-coach="ai-turndown">${ic("x")}${esc(tx(B("Turn it down", "Từ chối")))}</button>
+                        <button class="lrn-btn ghost" data-coach="ai-sendback">${ic("undo")}${esc(tx(B("Send it back", "Trả lại")))}</button>
+                        <button class="lrn-btn pri" data-coach="ai-approve">${ic("check")}${esc(tx(B("Approve", "Phê duyệt")))}</button>
+                    </div>
+                    <div class="lrn-decide2">
+                        <button class="lrn-btn sm ghost" data-coach="ai-move">${ic("users")}${esc(tx(B("Move it to somebody else", "Chuyển cho người khác")))}</button>
+                        <button class="lrn-btn sm ghost" data-coach="ai-withdraw">${ic("rotate-ccw")}${esc(tx(B("Withdraw it", "Thu hồi")))}</button>
+                    </div>
+                    <p class="lrn-note">${esc(tx(B(
+                        "Move it to somebody else shows only for whoever looks after this workflow, and Withdraw it only for the person who sent it in. They are drawn here so you know they exist.",
+                        "Nút Chuyển cho người khác chỉ hiện với người phụ trách luồng phê duyệt này, còn nút Thu hồi chỉ hiện với người đã gửi. Chúng được vẽ ở đây để bạn biết chúng tồn tại.")))}</p>
+                    <p class="lrn-note">${esc(tx(B(
+                        "Approving records your name, the time, and exactly the facts above as they were when this was sent in.",
+                        "Phê duyệt sẽ ghi lại tên bạn, thời điểm, và đúng các dữ kiện ở trên như lúc yêu cầu được gửi.")))}</p>
+                </div>
             </div>`;
     },
 
@@ -410,6 +503,8 @@ export const SCREENS = {
             <div class="lrn-strip" data-coach="pe-head">
                 <button class="lrn-btn" data-coach="pe-bulk">${ic("list-checks")}${
                     esc(tx(B("Select", "Chọn nhiều")))}</button>
+                <button class="lrn-btn" ${ATTR_CONTRACTS}>${ic("file-text")}${
+                    esc(tx(B("Contracts", "Hợp đồng")))}</button>
                 <button class="lrn-btn pri" data-coach="rep-newemp-open">${ic("plus")}${
                     esc(tx(B("Add employee", "Thêm nhân viên")))}</button>
             </div>
@@ -709,204 +804,301 @@ export const SCREENS = {
             ${body}`;
     },
 
-    /* ------------------------------------------------------- Run Payroll */
+    /* ------------------------------------------------------- Pay Run › Run
+       LEARN REFRESH step 2. The scheme-first run (pb_payrun_wizard). The
+       product shows ONE step at a time; the replica lays all four out in rail
+       order so a lesson can walk them without pretending to compute — every
+       section carries the product's own anchor, and the rail says which step
+       each one belongs to. Retail's scheme reads a spreadsheet, so the rail
+       has four steps; a scheme that does not has three. */
     runpayroll() {
-        const rows = PRACTICE.computed.map((r) => `
-            <div class="lrn-row ${r.flag ? "hit" : ""}">
-                <span class="lrn-avatar">${esc(initial(r.emp.name))}</span>
-                <span><span class="lrn-nm">${esc(r.emp.name)}
-                        <span class="lrn-faint">${esc(r.emp.code)}</span></span><br>
-                    <span class="lrn-sub2">${esc(tx(B("Overtime", "Tăng ca")))}: ${esc(M(r.ot))}</span></span>
-                <span class="lrn-rr">${r.flag
-                    ? `<span class="lrn-chip warn">${ic("alert-triangle")}${esc(tx(r.why))}</span>` : ""}
-                    <b class="lrn-money">${esc(M(r.net))}</b></span>
-            </div>`).join("");
-
+        const pd = PRACTICE.payData;
         const steps = [
-            B("Scope", "Phạm vi"), B("Compute", "Tính lương"),
-            B("Review exceptions", "Soát ngoại lệ"), B("Open payroll", "Mở bảng lương"),
+            B("Select period", "Chọn kỳ lương"), B("Pay data", "Dữ liệu lương"),
+            B("Compute", "Tính lương"), B("Review exceptions", "Soát ngoại lệ"),
         ].map((s, i) => `
-            <div class="lrn-wstep ${i === 1 ? "cur" : i < 1 ? "done" : ""}">
-                <span class="lrn-wdot">${i + 1}</span><span>${esc(tx(s))}</span>
+            <div class="lrn-wstep ${i === 3 ? "cur" : "done"}">
+                <span class="lrn-wdot">${i < 3 ? ic("check") : i + 1}</span><span>${esc(tx(s))}</span>
             </div>`).join("");
-
+        const groups = PRACTICE.schemeGroups.map((g) => {
+            const cards = PRACTICE.configs.filter((c) => c.kind === g.kind).map((c) => {
+                const meta = N(c.covered) + SP + tx(B("people covered", "người được áp dụng")) + DOT
+                    + tx(B("last run", "đợt gần nhất")) + SP + tx(c.last);
+                return `<button class="lrn-scard ${c.name === RUN.scheme ? "on" : ""}"
+                    aria-pressed="${c.name === RUN.scheme}"><b>${esc(c.name)}</b>
+                    <span class="lrn-sub2">${esc(meta)}</span></button>`;
+            }).join("");
+            return cards ? `<div class="lrn-sgroup"><span class="lrn-sglab">${esc(tx(g.label))}</span>
+                <div class="lrn-scards">${cards}</div></div>` : "";
+        }).join("");
+        const fed = pd.fed.map((c) => `<span class="lrn-chip ok">${ic("check")}${esc(tx(c))}</span>`).join("");
+        const coverage = N(pd.fed.length) + SP + tx(B("of", "trên")) + SP + N(pd.fed.length) + SP
+            + tx(B("spreadsheet components are fed by this file", "thành phần bảng tính được lấy từ tệp này"))
+            + SP + "(" + N(pd.columns) + SP + tx(B("columns read", "cột đã đọc")) + ")";
+        const computed = tx(B("Computed", "Đã tính")) + SP + N(RUN.employees) + SP + tx(B("of", "trên")) + SP
+            + N(RUN.employees) + SP + tx(B("payslips", "phiếu lương"));
+        const netLine = tx(RUN.name) + DOT + tx(B("net total", "tổng thực nhận")) + SP + M(RUN.totalNet);
+        const missingHead = N(pd.missing.length) + SP + tx(B(
+            "person in the file is not in Payobook yet — they were listed, not paid",
+            "người trong tệp chưa có trong Payobook — họ được liệt kê, không được trả lương"));
+        const missing = pd.missing.map((n) => `<span class="lrn-chip">${esc(n)}</span>`).join("");
         return `
             <div class="lrn-rail" data-coach="pw-rail">${steps}</div>
-            <div class="lrn-grid g2 top">
-                <div class="lrn-panel" data-coach="pw-scope">
+            <div class="lrn-panel" data-coach="pw-scheme">
+                <h3>${ic("layers")}${esc(tx(B("Pay run for", "Đợt lương cho")))}</h3>
+                ${groups}
+            </div>
+            <div class="lrn-grid g2 top" data-coach="pw-scope">
+                <div class="lrn-panel">
                     <h3>${ic("calendar")}${esc(tx(B("Period", "Kỳ lương")))}</h3>
-                    <label class="lrn-flabel">${esc(tx(B("Configuration", "Cấu hình")))}</label>
-                    <select class="lrn-in" data-coach="pw-division">
-                        <option>${esc(tx(RUN.division))}</option>
-                        <option>${esc(tx(B("IT Services", "Dịch vụ CNTT")))}</option>
-                        <option>F&amp;B</option>
-                    </select>
                     <label class="lrn-flabel">${esc(tx(B("Batch name", "Tên đợt")))}</label>
                     <input class="lrn-in" value="${esc(tx(RUN.name))}" readonly="readonly"/>
+                    <div class="lrn-kv2"><span>${esc(tx(B("From", "Từ")))}</span><b>${esc(RUN.from)}</b></div>
+                    <div class="lrn-kv2"><span>${esc(tx(B("To", "Đến")))}</span><b>${esc(RUN.to)}</b></div>
                 </div>
                 <div class="lrn-panel" data-coach="pw-summary">
                     <h3>${ic("target")}${esc(tx(B("Scope", "Phạm vi")))}</h3>
                     <div class="lrn-kv2"><span>${esc(tx(B("Company", "Công ty")))}</span><b>Hoa Sen Retail Co.</b></div>
-                    <div class="lrn-kv2"><span>${esc(tx(B("Configuration", "Cấu hình")))}</span><b>${esc(RUN.config)}${SP}· ${esc(RUN.configVersion)}</b></div>
-                    <div class="lrn-kv2"><span>${esc(tx(B("Eligible employees", "Nhân viên đủ điều kiện")))}</span><b>${N(RUN.employees)}</b></div>
+                    <div class="lrn-kv2"><span>${esc(tx(B("Currency", "Tiền tệ")))}</span><b>VND${SP}·${SP}₫</b></div>
+                    <div class="lrn-kv2"><span>${esc(tx(B("Payroll scheme", "Chương trình lương")))}</span><b>${esc(RUN.scheme)}</b></div>
                     <p class="lrn-note">${esc(tx(B(
-                        "A draft run will be created and computed — fully reversible. Only the selected division is affected.",
-                        "Một đợt nháp sẽ được tạo và tính — hoàn toàn có thể hoàn tác. Chỉ bộ phận đã chọn bị ảnh hưởng.")))}</p>
-                    <button class="lrn-btn pri" data-coach="pw-compute">${ic("play")}${esc(T("compute"))}</button>
+                        "A draft run will be created and computed — fully reversible. Only the people this scheme pays are affected.",
+                        "Một đợt nháp sẽ được tạo và tính — hoàn toàn có thể hoàn tác. Chỉ những người thuộc chương trình lương này bị ảnh hưởng.")))}</p>
+                    <button class="lrn-btn pri" data-coach="pw-compute">${ic("play")}${
+                        esc(tx(B("Add pay data", "Thêm dữ liệu lương")))}</button>
+                </div>
+            </div>
+            <div class="lrn-grid g2 top">
+                <div class="lrn-panel" data-coach="pw-paydata">
+                    <h3>${ic("upload")}${esc(tx(B("This month's pay data", "Dữ liệu lương tháng này")))}</h3>
+                    <p class="lrn-note">${esc(RUN.scheme)}${SP}${esc(tx(B(
+                        "reads 3 pay components from a spreadsheet. Load the file for this period.",
+                        "đọc 3 thành phần lương từ một bảng tính. Hãy tải tệp của kỳ này.")))}</p>
+                    <div class="lrn-file">${ic("file-text")}<b>${esc(pd.file)}</b></div>
+                    <div data-coach="pw-paymode">
+                        <h4>${esc(tx(B("What should these values do?", "Các giá trị này dùng để làm gì?")))}</h4>
+                        <button class="lrn-choice on" aria-pressed="true"><b>${esc(tx(B("Update Payobook", "Cập nhật Payobook")))}</b>
+                            <span class="lrn-sub2">${esc(tx(B(
+                                "Values are saved to employee and contract records and used from now on.",
+                                "Các giá trị được lưu vào hồ sơ nhân viên và hợp đồng, và được dùng từ nay về sau.")))}</span></button>
+                        <button class="lrn-choice" aria-pressed="false"><b>${esc(tx(B("This run only", "Chỉ đợt này")))}</b>
+                            <span class="lrn-sub2">${esc(tx(B(
+                                "Used just this once. Nothing in Payobook changes — good for a one-off bonus or a correction.",
+                                "Chỉ dùng một lần này. Không có gì trong Payobook thay đổi — hợp với một khoản thưởng một lần hoặc một lần sửa.")))}</span></button>
+                    </div>
+                    <div class="lrn-strip">
+                        <button class="lrn-btn ghost" data-coach="pw-skipsheet">${esc(tx(B("Run without a spreadsheet", "Chạy không cần bảng tính")))}</button>
+                        <button class="lrn-btn pri">${esc(tx(B("Continue with this file", "Tiếp tục với tệp này")))}</button>
+                    </div>
+                </div>
+                <div class="lrn-panel" data-coach="pw-coverage">
+                    <h3>${ic("check-circle")}${esc(tx(B("Coverage", "Mức bao phủ")))}</h3>
+                    <p class="lrn-note">${esc(coverage)}</p>
+                    <div class="lrn-strip">${fed}</div>
                 </div>
             </div>
             <div class="lrn-panel" data-coach="pw-result">
-                <h3>${ic("check-circle")}${esc(tx(RUN.name))}</h3>
+                <h3>${ic("check-circle")}${esc(computed)}</h3>
+                <p class="lrn-note">${esc(netLine)}</p>
                 <div class="lrn-statpills" data-coach="pw-pills">
                     <span class="lrn-statpill"><b>${N(RUN.employees)}</b>${esc(tx(B("Payslips", "Phiếu lương")))}</span>
                     <span class="lrn-statpill"><b>${N(RUN.employees)}</b>${esc(tx(B("Computed", "Đã tính")))}</span>
-                    <span class="lrn-statpill warn"><b>${N(RUN.flagged)}</b>${esc(T("needReview"))}</span>
+                    <span class="lrn-statpill warn"><b>${N(RUN.needReview)}</b>${esc(T("needReview"))}</span>
                 </div>
-                <div class="lrn-rows" data-coach="pw-exceptions">${rows}</div>
+            </div>
+            <div class="lrn-grid g2 top">
+                <div class="lrn-panel lrn-warnpanel" data-coach="pw-missing">
+                    <h3>${ic("user-plus")}${esc(missingHead)}</h3>
+                    <p class="lrn-note">${esc(tx(B(
+                        "Nobody is created from a pay data file. Add them first and their pay will come through on the next run.",
+                        "Không ai được tạo ra từ tệp dữ liệu lương. Hãy thêm họ trước, lương của họ sẽ có ở đợt kế tiếp.")))}</p>
+                    <div class="lrn-strip">${missing}</div>
+                    <div class="lrn-strip">
+                        <button class="lrn-btn sm">${ic("user-plus")}${esc(tx(B("Add these people", "Thêm những người này")))}</button>
+                        <button class="lrn-btn sm ghost">${ic("copy")}${esc(tx(B("Copy names", "Sao chép tên")))}</button>
+                    </div>
+                </div>
+                <div class="lrn-panel" data-coach="pw-exceptions">
+                    <h3>${ic("alert-triangle")}${esc(tx(B("These items need a look before approval:",
+                                                         "Các mục này cần xem trước khi phê duyệt:")))}</h3>
+                    <div class="lrn-row">
+                        <span class="lrn-avatar">${esc(initial(PRACTICE.exception.name))}</span>
+                        <span><span class="lrn-nm">${esc(PRACTICE.exception.name)}</span><br>
+                            <span class="lrn-sub2">${esc(tx(PRACTICE.exception.why))}</span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="lrn-strip">
+                <button class="lrn-btn pri">${esc(tx(B("Open Payroll →", "Mở bảng lương →")))}</button>
             </div>`;
     },
 
-    /* ---------------------------------------------------------- Pay Runs */
+    /* ------------------------------------------------------ Pay Run › Runs
+       The board as the Pay Run hub draws it (PbPayruns, payruns.xml): the
+       numbers row, the division chips, the numbered steps, three columns, and
+       the collapsed Rejected list. */
     payruns() {
         const k = PRACTICE.boardKpis;
-        const cols = ["draft", "level0", "level1", "level2", "done"];
+        const b = PRACTICE.board;
+        const cols = ["draft", "approval_pending", "done"];
+        const count = (c) => b.filter((r) => r.col === c).length;
+        const backs = b.filter((r) => r.col === "draft" && r.sentBack).length;
+        const steps = stepButtons([
+            { label: STATUS_LABELS.payrun.draft.l, count: count("draft"),
+              flag: backs ? B(N(backs) + " sent back to be fixed", N(backs) + " bị trả lại để sửa") : null },
+            { label: STATUS_LABELS.payrun.approval_pending.l, count: count("approval_pending"),
+              flag: k.myPending ? B(N(k.myPending) + " waiting on you", N(k.myPending) + " đang chờ bạn") : null },
+            { label: STATUS_LABELS.payrun.done.l, count: count("done") },
+        ], B("pay runs", "đợt lương"));
         const board = cols.map((col) => `
             <div class="lrn-kcol">
                 <div class="lrn-kcolh">${statusChip("payrun", col)}</div>
-                ${PRACTICE.board.filter((r) => r.col === col).map(runCard).join("")}
+                ${b.filter((r) => r.col === col).map(runCard).join("")}
             </div>`).join("");
-
+        const shown = b.filter((r) => r.col !== "cancel").length;
+        const showing = tx(B("Showing all", "Đang hiện tất cả")) + SP + N(shown) + SP
+            + tx(B("pay runs · press a step or a number to narrow it", "đợt lương · bấm một bước hoặc một con số để thu hẹp"));
+        const rejected = b.filter((r) => r.col === "cancel").map((r) => `
+            <div class="lrn-row">
+                <span class="lrn-avatar">${ic("x")}</span>
+                <span><span class="lrn-nm">${esc(tx(r.name))}</span><br>
+                    <span class="lrn-sub2">${esc(tx(r.reason))}</span></span>
+                <span class="lrn-rr">${statusChip("payrun", "cancel")}</span>
+            </div>`).join("");
+        const netLabel = tx(B("Net paid (done), in", "Đã chi (hoàn tất), bằng")) + SP + "VND";
         return `
-            <div class="lrn-grid g5" data-coach="pk-kpis">
-                ${kpiTile("layers", "", N(k.total), B("Pay runs", "Đợt tính lương"))}
-                ${kpiTile("clock", "", N(k.inPipeline), B("In pipeline", "Đang trong quy trình"))}
-                ${kpiTile("alert-triangle", "warn", N(k.myPending), B("Awaiting your approval", "Chờ bạn phê duyệt"))}
-                ${kpiTile("check-circle", "pos", N(k.done), B("Completed", "Hoàn tất"))}
-                ${kpiTile("receipt", "pos", M(k.net), B("Net paid (done)", "Đã chi (hoàn tất)"))}
-            </div>
             <div class="lrn-strip">
                 <button class="lrn-btn pri" data-coach="pk-run">${ic("zap")}${esc(T("runPayroll"))}</button>
             </div>
-            <div class="lrn-tabs" data-coach="pk-tabs">
-                ${cols.map((c, i) =>
-                    `<button aria-selected="${i === 0}">${esc(tx(STATUS_LABELS.payrun[c].l))}</button>`).join("")}
-            </div>
-            <div class="lrn-tabs" data-coach="pk-datechips">
-                ${[B("This month", "Tháng này"), B("Last month", "Tháng trước"), B("This year", "Năm nay")].map((d, i) =>
-                    `<button aria-selected="${i === 0}">${esc(tx(d))}</button>`).join("")}
+            <div class="lrn-grid g5" data-coach="pk-kpis">
+                ${kpiTile("layers", "", N(k.total), B("Pay runs", "Đợt lương"))}
+                ${kpiTile("clock", "", N(k.inPipeline), B("In pipeline", "Đang xử lý"))}
+                ${kpiTile("alert-triangle", "warn", N(k.myPending), B("Awaiting your approval", "Chờ bạn phê duyệt"))}
+                ${kpiTile("check-circle", "pos", N(k.done), B("Completed", "Hoàn tất"))}
+                ${kpiTile("receipt", "pos", M(k.net), B(netLabel, netLabel))}
             </div>
             <div class="lrn-tabs" data-coach="pk-divchips">
                 ${[B("All divisions", "Tất cả bộ phận"), RUN.division, B("F&B", "F&B")].map((d, i) =>
                     `<button aria-selected="${i === 0}">${esc(tx(d))}</button>`).join("")}
             </div>
-            <div class="lrn-kanban">${board}</div>
+            <div class="lrn-steps" data-coach="pk-steps">${steps}</div>
+            <p class="lrn-note">${esc(showing)}</p>
+            <div class="lrn-kanban" data-coach="pk-tabs">${board}</div>
+            <div class="lrn-panel" data-coach="pk-rejected">
+                <h3>${ic("x")}${esc(tx(B("Rejected pay runs", "Đợt lương bị từ chối")))}<span class="lrn-tabn">${
+                    N(b.filter((r) => r.col === "cancel").length)}</span></h3>
+                <div class="lrn-rows">${rejected}</div>
+            </div>
             <div class="lrn-panel" data-coach="rep-pipeline">
                 <h3>${ic("git-branch")}${esc(tx(B("How a run travels", "Một đợt lương đi thế nào")))}</h3>
-                ${pipeHTML("payrun", 0)}
+                ${pipeHTML("payrun", 1)}
+                <p class="lrn-note">${esc(tx(B(
+                    "Open a run and its own page says the same in one sentence: “Pay run approval — now with Đặng Thu Hà for HR lead review”.",
+                    "Mở một đợt lương và trang của nó nói điều đó trong một câu: “Pay run approval — đang ở Đặng Thu Hà, bước Trưởng nhân sự soát xét”.")))}</p>
             </div>`;
     },
 
-    /* ---------------------------------------------------------- Payslips */
+    /* --------------------------------------------------- Pay Run › Payslips
+       PayslipReview (pb_payslip_review): the run picker, four numbers, the
+       numbered steps, the list, and one payslip open beside it. */
     payslips() {
         const t = PRACTICE.slipTotals;
-        // Built OUTSIDE the template literal on purpose: a quoted string inside
-        // an interpolation makes rjsmin lose track of the enclosing literal and
-        // strip whitespace from the rest of it (see runtime.js).
-        const approved = N(t.done) + " / " + N(t.count);
-        const list = PRACTICE.slips.map((s) => `
+        const slips = PRACTICE.slips;
+        const steps = stepButtons([
+            { label: STATUS_LABELS.payslip.draft.l, count: 0 },
+            { label: STATUS_LABELS.payslip.verify.l, count: t.count },
+            { label: STATUS_LABELS.payslip.done.l, count: 0 },
+        ], B("payslips", "phiếu lương"));
+        const list = slips.map((s) => `
             <div class="lrn-row ${s.sel ? "on" : ""}">
                 <span class="lrn-avatar">${esc(initial(s.emp.name))}</span>
                 <span><span class="lrn-nm">${esc(s.emp.name)}</span><br>
                     <span class="lrn-sub2">${esc(s.emp.code)}</span></span>
-                <span class="lrn-rr">${s.flag
-                    ? `<span class="lrn-chip warn">${esc(T("needReview"))}</span>` : ""}
+                <span class="lrn-rr">${statusChip("payslip", s.state)}
                     <b class="lrn-money">${esc(M(s.net))}</b></span>
             </div>`).join("");
-
-        // A payslip's own chain — FOUR stages. It has no level0; that gate
-        // belongs to the run. Drawing the run's five here would teach a tier
-        // that does not exist on a slip.
-        //
-        // The current stage is read from the SELECTED slip rather than fixed,
-        // so the stepper cannot disagree with the row that is highlighted. The
-        // July run is at level0, which means every slip in it is still draft.
-        const chain = ["draft", "level1", "level2", "done"];
-        const at = Math.max(0, chain.indexOf((PRACTICE.slips.find((x) => x.sel)
-            || PRACTICE.slips[0]).state));
+        // A payslip's own stepper — Draft, Waiting for approval, Done — read
+        // from the SELECTED slip, so it cannot disagree with the row that is
+        // highlighted. There is no button on it: a payslip moves with its run.
+        const chain = ["draft", "verify", "done"];
+        const cur = Math.max(0, chain.indexOf((slips.find((x) => x.sel) || slips[0]).state));
         const flow = chain.map((c, i) => `
-            <div class="lrn-st ${i < at ? "done" : ""}${SP}${i === at ? "cur" : ""}"
+            <div class="lrn-st ${i < cur ? "done" : ""}${SP}${i === cur ? "cur" : ""}"
                 >${esc(tx(STATUS_LABELS.payslip[c].l))}</div>`).join("");
-
+        const showing = tx(B("Showing all", "Đang hiện tất cả")) + SP + N(t.count) + SP
+            + tx(B("payslips · press a step or a number to narrow it", "phiếu lương · bấm một bước hoặc một con số để thu hẹp"));
         return `
             <div class="lrn-strip">
                 <select class="lrn-in" data-coach="ps-runsel">
                     <option>${esc(tx(RUN.name))}</option>
+                    <option>${esc(tx(FNB.name))}</option>
                     <option>${esc(tx(B("Retail — June 2026", "Bán lẻ — Tháng 6/2026")))}</option>
                 </select>
             </div>
-            <div class="lrn-grid g5" data-coach="ps-kpis">
+            <div class="lrn-grid g4" data-coach="ps-kpis">
                 ${kpiTile("receipt", "", N(t.count), B("Payslips", "Phiếu lương"))}
-                ${kpiTile("trending-up", "pos", M(t.net), B("Net total", "Tổng thực nhận"))}
+                ${kpiTile("alert-triangle", "", N(t.flagged), B("Need review", "Cần xem xét"))}
                 ${kpiTile("calculator", "", M(t.gross), B("Gross total", "Tổng thu nhập"))}
-                ${kpiTile("check-circle", "", approved, B("Approved", "Đã duyệt"))}
-                ${kpiTile("alert-triangle", "warn", N(t.flagged), B("Need review", "Cần soát xét"))}
+                ${kpiTile("trending-up", "pos", M(t.net), B("Net total", "Tổng thực nhận"))}
             </div>
-            <div class="lrn-tabs" data-coach="ps-chips">
-                ${[B("All", "Tất cả"), B("Need review", "Cần soát xét"), B("HR pending", "Chờ HR"),
-                   B("GM pending", "Chờ TGĐ"), B("Done", "Hoàn tất")].map((c, i) =>
-                    `<button aria-selected="${i === 0}">${esc(tx(c))}</button>`).join("")}
-            </div>
+            <div class="lrn-steps" data-coach="ps-chips">${steps}</div>
+            <p class="lrn-note">${esc(showing)}</p>
             <div class="lrn-grid g2 top">
                 <div class="lrn-panel">
                     <h3>${ic("users")}${esc(tx(B("Payslips in this run", "Phiếu lương trong đợt này")))}</h3>
                     <div class="lrn-rows" data-coach="ps-list">${list}</div>
                 </div>
                 <div class="lrn-panel" data-coach="ps-detail">
-                    <h3>${ic("receipt")}${esc(CASE.emp.mai.name)}${SP}· ${esc(CASE.emp.mai.code)}</h3>
+                    <h3>${ic("receipt")}${esc(CASE.emp.mai.name)}${SP}·${SP}${esc(CASE.emp.mai.code)}</h3>
+                    <div class="lrn-kv2"><span>${esc(tx(B("Net pay", "Lương thực nhận")))}</span>
+                        <b class="lrn-money">${esc(M(CASE.emp.mai.netJul))}</b></div>
                     <div class="lrn-status" data-coach="ps-status">${flow}</div>
+                    <h4>${esc(tx(B("Salary breakdown", "Chi tiết lương")))}</h4>
                     <div data-coach="ps-breakdown">${calcHTML()}</div>
                 </div>
             </div>`;
     },
 
-    /* ------------------------------------------------------------ Import */
+    /* ----------------------------------------------------- Pay Run › Import
+       The Import lens (pb_import import.xml): the numbers row, "Load this
+       period's pay data", the setup tiles, the six-step pipeline and the
+       recent batches. There is no confidence score here — the old replica
+       drew one the product does not have. */
     import() {
         const k = PRACTICE.importKpis;
-        const pipe = PRACTICE.importPipe.map((p, i) => `
-            <button class="lrn-pipestep ${p.count ? "on" : ""}">
-                <span class="lrn-pipen">${N(p.count)}</span>
-                <span>${esc(tx(p.label))}</span>
-            </button>${i < PRACTICE.importPipe.length - 1 ? '<span class="lrn-pa"></span>' : ""}`).join("");
+        const pipe = stepButtons(PRACTICE.importPipe.map((p) => ({ label: p.label, count: p.count })),
+                                 B("batches", "đợt"));
         const batches = PRACTICE.importBatches.map((b) => `
             <div class="lrn-row">
                 <span><span class="lrn-nm">${esc(tx(b.name))}</span><br>
                     <span class="lrn-sub2">${N(b.rows)}${SP}${esc(tx(B("rows", "dòng")))}</span></span>
                 <span class="lrn-rr">${statusChip("importbatch", b.state)}</span>
             </div>`).join("");
-
+        const tiles = [
+            ["plug", B("Load From Connected System", "Tải từ hệ thống đã kết nối")],
+            ["grid", B("Set up columns from Excel", "Thiết lập cột từ Excel")],
+            ["user-plus", B("Import Employees", "Nhập nhân viên")],
+            ["layers", B("Set up a scheme from a file", "Thiết lập chương trình lương từ tệp")],
+        ].map(([icon, label]) => `<button class="lrn-btn sm">${ic(icon)}${esc(tx(label))}</button>`).join("");
         return `
-            <div class="lrn-grid g5" data-coach="im-kpis">
+            <div class="lrn-grid g4" data-coach="im-kpis">
                 ${kpiTile("database", "", N(k.batches), B("Import batches", "Đợt nhập liệu"))}
                 ${kpiTile("check-circle", "pos", N(k.done), B("Completed", "Hoàn tất"))}
                 ${kpiTile("clock", "", N(k.inProgress), B("In progress", "Đang xử lý"))}
                 ${kpiTile("alert-triangle", "warn", N(k.errors), B("With errors", "Có lỗi"))}
-                ${kpiTile("plug", "", N(k.connectors), B("Connectors", "Đầu nối"))}
             </div>
             <div class="lrn-herocta" data-coach="im-cta">
-                ${ic("send")}
-                <span><b>${esc(tx(B("Start an import", "Bắt đầu nhập liệu")))}</b><br>
+                ${ic("upload")}
+                <span><b>${esc(tx(B("Load this period's pay data", "Tải dữ liệu lương của kỳ này")))}</b><br>
                     <span class="lrn-sub2">${esc(tx(B(
-                        "A guided flow — upload your file, review matches, fix any issues, then commit.",
-                        "Luồng có hướng dẫn — tải tệp lên, soát các dòng khớp, sửa lỗi, rồi ghi nhận.")))}</span></span>
+                        "A guided flow — upload your file, review matches, fix any issues, then commit. The tiles below set a scheme up; this one runs a period.",
+                        "Luồng có hướng dẫn — tải tệp lên, soát các dòng khớp, sửa lỗi, rồi ghi vào hệ thống. Các ô bên dưới dùng để thiết lập chương trình lương; ô này dùng cho một kỳ.")))}</span></span>
                 <button class="lrn-btn pri">${esc(T("startImport"))}</button>
             </div>
-            <div class="lrn-strip" data-coach="im-launches">
-                <button class="lrn-btn sm">${ic("file-text")}${esc(tx(B("Multi-sheet import", "Nhập nhiều bảng")))}</button>
-                <button class="lrn-btn sm">${ic("plug")}${esc(tx(B("Connectors", "Đầu nối")))}</button>
-            </div>
+            <div class="lrn-strip" data-coach="im-launches">${tiles}</div>
             <div class="lrn-panel">
-                <h3>${ic("git-branch")}${esc(tx(B("Import pipeline", "Quy trình nhập liệu")))}</h3>
-                <div class="lrn-pipe2" data-coach="im-pipe">${pipe}</div>
+                <h3>${ic("git-branch")}${esc(tx(B("Where every import batch is", "Mỗi đợt nhập đang ở đâu")))}</h3>
+                <div class="lrn-steps" data-coach="im-pipe">${pipe}</div>
             </div>
             <div class="lrn-panel">
                 <h3>${ic("clock")}${esc(tx(B("Recent batches", "Đợt nhập gần đây")))}</h3>
@@ -914,12 +1106,14 @@ export const SCREENS = {
             </div>`;
     },
 
-    /* ---------------------------------------------- Import wizard (flow) */
+    /* ---------------------------------------------- Import wizard (flow)
+       pb_import_wizard's four steps — Source & file · Review & match ·
+       Validate · Commit — drawn stacked, standing on Validate. */
     importwizard() {
         const w = PRACTICE.wizard;
         const steps = [
-            B("Source", "Nguồn"), B("Review & match", "Soát & khớp"),
-            B("Validate & fix", "Kiểm tra & sửa"), B("Commit", "Ghi nhận"),
+            B("Source & file", "Nguồn & tệp"), B("Review & match", "Soát & khớp"),
+            B("Validate", "Kiểm tra"), B("Commit", "Ghi vào hệ thống"),
         ].map((s, i) => `
             <div class="lrn-wstep ${i === 2 ? "cur" : i < 2 ? "done" : ""}">
                 <span class="lrn-wdot">${i + 1}</span><span>${esc(tx(s))}</span>
@@ -952,17 +1146,27 @@ export const SCREENS = {
 
         return `
             <div class="lrn-rail" data-coach="iw-steps">${steps}</div>
-            <div class="lrn-panel" data-coach="iw-source">
-                <h3>${ic("database")}${esc(tx(B("Source", "Nguồn")))}</h3>
-                <div class="lrn-seg">
-                    <button aria-pressed="true">${esc(tx(B("File upload", "Tải tệp lên")))}</button>
-                    <button aria-pressed="false">${esc(tx(B("Connector", "Đầu nối")))}</button>
+            <div class="lrn-grid g2 top">
+                <div class="lrn-panel" data-coach="iw-source">
+                    <h3>${ic("database")}${esc(tx(B("Source", "Nguồn")))}</h3>
+                    <div class="lrn-seg">
+                        <button aria-pressed="true">${esc(tx(B("File upload", "Tải tệp lên")))}</button>
+                        <button aria-pressed="false">${esc(tx(B("Connector", "Đầu nối")))}</button>
+                    </div>
+                    <label class="lrn-flabel">${esc(tx(B("Formula configuration", "Cấu hình công thức")))}</label>
+                    <select class="lrn-in"><option>${esc(RUN.config)}</option></select>
                 </div>
-                <label class="lrn-flabel">${esc(tx(B("Formula configuration", "Cấu hình công thức")))}</label>
-                <select class="lrn-in"><option>${esc(RUN.config)}</option></select>
+                <div class="lrn-panel">
+                    <h3>${ic("calendar")}${esc(tx(B("Period & file", "Kỳ & tệp")))}</h3>
+                    <div class="lrn-kv2"><span>${esc(tx(B("From", "Từ")))}</span><b>${esc(RUN.from)}</b></div>
+                    <div class="lrn-kv2"><span>${esc(tx(B("To", "Đến")))}</span><b>${esc(RUN.to)}</b></div>
+                    <div class="lrn-kv2"><span>${esc(tx(B("Standard working days", "Ngày công chuẩn")))}</span><b>22</b></div>
+                    <p class="lrn-note">${esc(tx(B(
+                        "Working days a full month is paid against. Drop it for a month with public holidays.",
+                        "Số ngày công mà một tháng đủ được tính lương theo. Giảm xuống cho tháng có ngày nghỉ lễ.")))}</p>
+                </div>
             </div>
             <div class="lrn-statpills" data-coach="iw-review">
-                <span class="lrn-statpill"><b>${P(w.score)}</b>${esc(T("confidenceScore"))}</span>
                 <span class="lrn-statpill"><b>${N(w.rows)}</b>${esc(tx(B("Rows loaded", "Dòng đã nạp")))}</span>
                 <span class="lrn-statpill"><b>${N(w.matched)}</b>${esc(tx(B("Matched", "Đã khớp")))}</span>
                 <span class="lrn-statpill"><b>${N(w.newEmployees)}</b>${esc(tx(B("New employees", "Nhân viên mới")))}</span>
@@ -970,27 +1174,29 @@ export const SCREENS = {
             </div>
             <div class="lrn-panel">
                 <h3>${ic("alert-triangle")}${esc(tx(B(
-                    "Resolve these before committing", "Xử lý các mục này trước khi ghi nhận")))}</h3>
+                    "Resolve these before committing", "Xử lý các mục này trước khi ghi vào hệ thống")))}</h3>
                 <div class="lrn-rows" data-coach="iw-fixrows">${errs}</div>
-            </div>
-            <div class="lrn-statpills" data-coach="iw-outcome">
-                <span class="lrn-statpill"><b>${N(w.outcome.employees)}</b>${esc(tx(B("Employees created", "Nhân viên đã tạo")))}</span>
-                <span class="lrn-statpill"><b>${N(w.outcome.payslips)}</b>${esc(tx(B("Payslips created", "Phiếu lương đã tạo")))}</span>
             </div>
             <div class="lrn-strip">
                 <button class="lrn-btn pri" data-coach="iw-commit">${ic("check")}${esc(T("commitImport"))}</button>
                 <span class="lrn-note">${esc(tx(B(
-                    "Nothing is written until you press this. Fix the rows above, not the payslips afterwards.",
-                    "Chưa gì được ghi cho tới khi bạn bấm nút này. Hãy sửa các dòng ở trên, đừng sửa phiếu lương về sau.")))}</span>
+                    "Nothing is written until you press this. When your company's approval route covers pay data, the same button reads “Send for approval”.",
+                    "Chưa gì được ghi cho tới khi bạn bấm nút này. Khi lộ trình phê duyệt của công ty bạn áp cho dữ liệu lương, chính nút này sẽ hiện “Gửi đi duyệt”.")))}</span>
+            </div>
+            <div class="lrn-statpills" data-coach="iw-outcome">
+                <span class="lrn-statpill"><b>${N(w.outcome.employees)}</b>${esc(tx(B("Employees created", "Nhân viên đã tạo")))}</span>
+                <span class="lrn-statpill"><b>${N(w.outcome.payslips)}</b>${esc(tx(B("Payslips created", "Phiếu lương đã tạo")))}</span>
             </div>`;
     },
 
-    /* --------------------------------------------------- Formula Engine
-       The anchors here are the REAL Formula Studio's — fs-config, fs-components,
-       fs-formula, fs-namesletters, fs-deps, fs-preview, fs-simulate. pb_learn
-       adds NOTHING to studio.xml: those attributes have been in that template
-       since before this module existed, and the registry now owns the seven the
-       content names, so a rename over there breaks a build here. */
+    /* ------------------------------------------ Settings › Formula Engine
+       Formula Studio as it is today (pb_formula_studio studio.xml): the
+       configuration switcher, its stage and the button that moves it on, the
+       six views (Cards · Grid · Test · Compare · Health · Settings) and Tools.
+       Simulate is no longer a header button — it lives in Tools → Analyze,
+       drawn here as the practice panel it opens. The anchors fs-config,
+       fs-views, fs-command, fs-components, fs-formula, fs-namesletters,
+       fs-deps and fs-preview are the Studio's own. */
     formula() {
         const c = PRACTICE.config;
         const cfgName = c.code + DOT + c.version;
@@ -1016,12 +1222,39 @@ export const SCREENS = {
         const previewFor = CASE.emp.mai.name + DOT + tx(RUN.period);
         const dependsOn = c.dependsOn.join(DOT);
         const usedBy = c.usedBy.join(DOT);
+        const views = [B("Cards", "Thẻ"), B("Grid", "Lưới"), B("Test", "Kiểm thử"), B("Compare", "So sánh"),
+                       B("Health", "Sức khoẻ"), B("Settings", "Cài đặt")].map((v, i) =>
+            `<button aria-pressed="${i === 0}">${esc(tx(v))}</button>`).join("");
+        const analyze = [B("Execution replay", "Phát lại lần tính"), B("What-if", "Giả định"),
+                         B("Dependency map", "Bản đồ phụ thuộc"), B("Simulate", "Mô phỏng"),
+                         B("Offer calculator", "Tính thử mức lương đề nghị")].map((a, i) =>
+            `<span class="lrn-chip ${i === 3 ? "b" : ""}">${esc(tx(a))}</span>`).join("");
+        const stages = ["draft", "testing", "validated", "active"].map((s, i) =>
+            `<span class="lrn-chip ${i === 3 ? "ok" : ""}">${esc(tx(STAGE[s]))}</span>`).join(ARROW);
 
         return `
             <div class="lrn-strip">
                 <button class="lrn-btn" data-coach="fs-config">${ic("grid")}${esc(cfgName)}</button>
-                <button class="lrn-btn ghost" data-coach="fs-simulate">${ic("bar-chart")}${
-                    esc(tx(B("Simulate", "Mô phỏng")))}</button>
+                <span class="lrn-chip ok" data-coach="rep-fs-stage">${ic("check-circle")}${esc(tx(STAGE.active))}</span>
+                <div class="lrn-seg" data-coach="fs-views">${views}</div>
+                <button class="lrn-btn ghost" data-coach="fs-command">${ic("search")}${
+                    esc(tx(B("Tools", "Công cụ")))}</button>
+            </div>
+            <div class="lrn-grid g2 top">
+                <div class="lrn-panel">
+                    <h3>${ic("git-branch")}${esc(tx(B("How a configuration goes live", "Một cấu hình đi vào hoạt động thế nào")))}</h3>
+                    <div class="lrn-strip">${stages}</div>
+                    <p class="lrn-note">${esc(tx(B(
+                        "The button beside the name moves it on: Start testing, then Validate, then Activate. The stage badge opens Put it back to draft, and Retire this configuration — or Propose retiring it, when retiring needs a sign-off.",
+                        "Nút bên cạnh tên đưa nó đi tiếp: Bắt đầu thử nghiệm, rồi Xác thực, rồi Kích hoạt. Huy hiệu giai đoạn mở ra Đưa về bản nháp, và Ngừng sử dụng cấu hình này — hoặc Đề xuất ngừng sử dụng, khi việc ngừng cần được phê duyệt.")))}</p>
+                </div>
+                <div class="lrn-panel" data-coach="rep-fs-tools">
+                    <h3>${ic("search")}${esc(tx(B("Tools → Analyze", "Công cụ → Phân tích")))}</h3>
+                    <div class="lrn-strip">${analyze}</div>
+                    <p class="lrn-note">${esc(tx(B(
+                        "Tools opens every tool in one place (Ctrl or Cmd + K). Simulate runs this configuration against last period's real payslips before it goes live.",
+                        "Công cụ mở mọi công cụ ở cùng một chỗ (Ctrl hoặc Cmd + K). Mô phỏng chạy cấu hình này trên phiếu lương thật của kỳ trước, trước khi nó được đưa vào dùng.")))}</p>
+                </div>
             </div>
             <div class="lrn-grid g3 top">
                 <div class="lrn-panel" data-coach="fs-components">
@@ -1050,6 +1283,25 @@ export const SCREENS = {
                     <div class="lrn-calc">${preview}</div>
                 </div>
             </div>`;
+    },
+
+    /* ------------------------------------------------------------ Settings
+       A page of categories, not a row of tabs (pb_settings settings_hub.js).
+       The four this practice company has replicas for open them; the rest
+       are drawn quiet and say why. */
+    hub_settings() {
+        const hub = MENU.find((h) => h.key === "settings");
+        const cards = hub.lenses.map((l) => {
+            const card = l.card ? tx(l.card) : tx(l.label);
+            const attr = l.screen ? navAttr(l.screen) : quietAttr(tx(hub.label) + " › " + tx(l.label));
+            return `<button class="lrn-setcard ${l.screen ? "" : "quiet"}" ${attr}>
+                <b>${esc(tx(l.label))}</b><span class="lrn-sub2">${esc(card)}</span></button>`;
+        }).join("");
+        return `
+            <div class="lrn-setgrid" data-coach="rep-settings">${cards}</div>
+            <p class="lrn-note">${esc(tx(B(
+                "A category with one card opens that card straight away — Formula Engine opens Formula Studio.",
+                "Mục nào chỉ có một thẻ thì mở thẳng thẻ đó — Bộ máy công thức mở Xưởng công thức.")))}</p>`;
     },
 
     /* -------------------------------------------------- Salary Structures */
@@ -1276,39 +1528,114 @@ export const SCREENS = {
 };
 
 /* ---------------------------------------------------------------------- shell
-   `visible` is the set of station keys the LEARNER's own sidebar shows — it
-   comes from the server, which computes it by calling the real sidebar. So the
-   replica's menu is not a guess about the group gate; it is the group gate. */
+   LEARN REFRESH step 2. The rail and the tabs of TODAY's product. `visible` is
+   the set of station keys the LEARNER can reach — it comes from the server,
+   which asks the real hubs — so a greyed tab here is the reader's own access,
+   not a guess about it.
+
+   EVERY CONTROL ON THE RAIL AND THE TAB STRIP DOES SOMETHING OR SAYS WHY NOT.
+   A tab this practice company has a screen for carries `data-nav` (the
+   sandbox switches to it; a lesson says the lesson moves the screen for you);
+   a tab it does not carries `data-quiet` and a tooltip, and pressing it says
+   where it lives in the real app. */
+function navAttr(screen) {
+    return `data-nav="${esc(screen)}"`;
+}
+
+function quietAttr(place) {
+    return `data-quiet="${esc(place)}" title="${esc(T("replicaQuietTip"))}"`;
+}
+
+/** The hub (rail item) and tab a replica screen lives under. A sub-screen
+ *  borrows its owner's place, and Settings screens live under the Settings
+ *  page with the category they came from. */
+function placeOf(screen) {
+    const sub = SUB_SCREENS[screen];
+    const id = sub ? sub.owner : screen;
+    for (const hub of MENU) {
+        if (hub.screen === id) {
+            return { hub, lens: null };
+        }
+        for (const lens of hub.lenses) {
+            if (lens.screen === id || (lens.also || []).includes(id)
+                || (lens.sub || []).some((s) => s.screen === id)) {
+                return { hub, lens };
+            }
+        }
+    }
+    return { hub: MENU[0], lens: null };
+}
+
+/** The first screen a hub opens on, or "" when the practice company has none. */
+function hubEntry(hub) {
+    if (hub.screen) {
+        return hub.screen;
+    }
+    const lens = hub.lenses.find((l) => l.screen);
+    return lens ? lens.screen : "";
+}
+
+export function screenTitle(id) {
+    const sub = SUB_SCREENS[id];
+    if (sub) {
+        return tx(sub.label);
+    }
+    const { hub, lens } = placeOf(id);
+    return lens ? tx(hub.label) + " › " + tx(lens.label) : tx(hub.label);
+}
+
 export function shellHTML(screen, opts) {
     const o = opts || {};
     const visible = o.visible || new Set();
     CURRENT_SCREEN = screen;
 
-    const owner = ownerSection(screen);
-    const leaf = ownerLeaf(screen);
-    const secs = MENU.map((sec) => {
-        const items = sec.items.map((it) => {
-            // `free` is practice mode: every section is in scope, because the
-            // whole point of the sandbox is that a learner opens whatever they
-            // are curious about. A lesson keeps one section lit, so that a step
-            // about the pay-run desk does not read as an invitation to wander.
-            const inScope = !!o.free || sec === owner;
-            const seen = !inScope || visible.has(it.id);
-            // During a guided lesson the full menu stays legible: a learner who
-            // cannot open a screen is exactly the person who needs to read what
-            // it is before asking for access.
-            const off = !inScope || (!seen && !o.guided);
-            const on = it.id === leaf;
-            return `<button class="lrn-item ${on ? "on" : ""}${SP}${off ? "off" : ""}" data-nav="${esc(it.id)}"
-                ${off ? 'tabindex="-1" aria-disabled="true"' : ""}>${ic(it.icon)}
-                <span>${esc(tx(it.label))}</span></button>`;
-        }).join("");
-        return `<div class="lrn-sec">${esc(tx(sec.label))}</div>${items}`;
+    const here = placeOf(screen);
+    let lastSection = null;
+    const rail = MENU.map((hub) => {
+        const entry = hubEntry(hub);
+        const on = hub === here.hub;
+        const section = hub.section && hub.section !== lastSection
+            ? `<div class="lrn-sec">${esc(tx(hub.section))}</div>` : "";
+        if (hub.section) {
+            lastSection = hub.section;
+        }
+        const attr = entry ? navAttr(entry) : quietAttr(tx(hub.label));
+        return `${section}<button class="lrn-item ${on ? "on" : ""}${SP}${entry ? "" : "quiet"}" ${attr}>${
+            ic(hub.icon)}<span>${esc(tx(hub.label))}</span></button>`;
     }).join("");
 
+    // The tab strip of the page being shown — or, on a Settings screen, the
+    // breadcrumb back to the category page, because Settings has no tabs.
+    let strip = "";
+    if (here.hub.page && here.lens) {
+        strip = `<div class="lrn-crumb">
+            <button class="lrn-link" ${navAttr(here.hub.screen)}>${ic("chevron-left")}${esc(tx(here.hub.label))}</button>
+            <span>›</span><b>${esc(tx(here.lens.label))}</b></div>`;
+    } else if (!here.hub.page) {
+        const tabs = here.hub.lenses.map((l) => {
+            const cur = l === here.lens;
+            const seen = !l.screen || !!o.free || !!o.guided || visible.has(l.screen);
+            const attr = l.screen ? navAttr(l.screen) : quietAttr(tx(here.hub.label) + " › " + tx(l.label));
+            const off = seen ? "" : "off";
+            return `<button class="lrn-lens ${cur ? "on" : ""}${SP}${l.screen ? "" : "quiet"}${SP}${off}"
+                role="tab" aria-selected="${cur}" ${attr}>${esc(tx(l.label))}</button>`;
+        }).join("");
+        const subs = here.lens && here.lens.sub
+            ? `<div class="lrn-subtabs">${here.lens.sub.map((s) => `<button class="lrn-lens ${
+                s.screen === screen ? "on" : ""}" ${navAttr(s.screen)}>${esc(tx(s.label))}</button>`).join("")}</div>`
+            : "";
+        strip = `<div class="lrn-lensbar" role="tablist" data-coach="rep-tabs">${tabs}</div>${subs}`;
+    }
+    const note = o.note
+        ? `<div class="lrn-shellnote" role="status">${ic("info")}<span>${esc(o.note)}</span></div>` : "";
+
     const body = SCREENS[screen] ? SCREENS[screen]() : "";
-    const gated = owner.items.find((i) => i.id === leaf);
-    const blocked = gated && !visible.has(leaf) && !o.guided;
+    const blocked = !o.guided && here.lens && !visible.has(screen);
+    // ONE practice banner. The sandbox (`free`) already carries its own
+    // watermark, which says the same thing about the whole surface; a second
+    // banner stacked under it said it twice (owner's screenshot, step 2).
+    const banner = o.free ? ""
+        : `<div class="lrn-pbanner" data-coach="rep-banner">${ic("shield-check")}<span>${esc(T("practiceBanner"))}</span></div>`;
 
     return `
     <div class="lrn-shell">
@@ -1320,15 +1647,16 @@ export function shellHTML(screen, opts) {
                  written down. -->
             <div class="lrn-brand"><span class="lrn-mark">${ic("zap")}</span><span>${esc(tx("Payobook"))}</span></div>
             <div class="lrn-catch"><b>Hoa Sen Retail Co.</b>${esc(tx(B("Vietnam", "Việt Nam")))}</div>
-            ${secs}
+            ${rail}
             <div class="lrn-foot">${esc(tx(B("Practice data · not your company", "Dữ liệu thực hành · không phải công ty của bạn")))}</div>
         </aside>
         <div class="lrn-main">
-            <div class="lrn-pbanner" data-coach="rep-banner">${ic("shield-check")}<span>${esc(T("practiceBanner"))}</span></div>
+            ${banner}
             <div class="lrn-mhead">
-                <h2>${esc(screenTitle(screen))}</h2>
+                <h2>${esc(tx(here.hub.label))}</h2>
                 <span class="lrn-sub">${esc(tx(B("Practice company — demo data", "Công ty thực hành — dữ liệu mô phỏng")))}</span>
             </div>
+            ${strip}${note}
             <div class="lrn-screen">${blocked ? blockedHTML() : body}</div>
         </div>
     </div>`;
@@ -1354,11 +1682,12 @@ function blockedHTML() {
    nothing in this function for a state to reach.
 
    Everything else about the view is deliberately the ordinary shell: the same
-   replica, the same anchors, the same twenty screens a lesson stands on. Only
-   the menu is different (`free`), because a sandbox whose menu is greyed out
-   is a sandbox with one screen in it. */
-export function practiceShellHTML(screen, visible) {
+   replica, the same anchors, the same screens a lesson stands on. Only the
+   menu is different (`free`), because a sandbox whose menu is greyed out is a
+   sandbox with one screen in it. `note` is what the shell says after a press
+   on a tab the practice company does not have. */
+export function practiceShellHTML(screen, visible, note) {
     const mark = `<div class="lrn-watermark" data-coach="rep-watermark">${
         ic("shield-check")}<span>${esc(T("practiceWatermark"))}</span></div>`;
-    return mark + shellHTML(screen, { guided: true, free: true, visible: visible });
+    return mark + shellHTML(screen, { guided: true, free: true, visible: visible, note: note });
 }

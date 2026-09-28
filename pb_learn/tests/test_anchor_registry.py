@@ -62,7 +62,7 @@ XML_COMMENT_RE = re.compile(r'<!--.*?-->', re.S)
 # renamed to mean something it never said.
 PROMOTED_FROM_WILDCARD = {
     'fs-config', 'fs-components', 'fs-formula', 'fs-namesletters', 'fs-deps',
-    'fs-preview', 'fs-simulate',
+    'fs-preview', 'fs-views', 'fs-command',
 }
 
 

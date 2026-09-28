@@ -115,10 +115,12 @@ JARGON = {
     'journal entry': ('glossary', 'journalEntry'),
 
     # -- approval ----------------------------------------------------------
-    'gate': ('glossary', 'gate'),
-    'tier': ('glossary', 'tier'),
-    'approval chain': ('glossary', 'approvalChain'),
-    'payroll officer': ('glossary', 'payrollOfficer'),
+    # LEARN REFRESH step 2: gate / tier / approval chain / Payroll Officer
+    # retired with the fixed approval ladder. A pay run follows a route.
+    'approval route': ('glossary', 'approvalRoute'),
+    'pay scheme': ('glossary', 'payScheme'),
+    'this run only': ('glossary', 'thisRunOnly'),
+    'sent back': ('glossary', 'sentBack'),
     'rejection': ('glossary', 'rejection'),
     'flag': ('glossary', 'flag'),
     'need review': ('glossary', 'flag'),
@@ -329,6 +331,9 @@ BARE_ALIASES = {
     'syncing': 'inflection of the above',
     'contract': 'the payroll object; there is no contract-law sense here',
     'contracts': 'plural of the above',
+    'tab': 'the product\'s name for one screen inside a page (step 2)',
+    'tabs': 'plural of the above',
+    'rail': 'the product\'s left navigation (step 2)',
     'gate': 'the approval object this content names throughout',
     'gates': 'plural of the above',
     'tier': 'the approval level this content names throughout',

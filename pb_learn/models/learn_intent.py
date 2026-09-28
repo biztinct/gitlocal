@@ -605,6 +605,8 @@ def explain_scenario_offer(tree, screen_key):
     `watch` / `try` keys for exactly this shape.
     """
     for scenario in tree.get('scenarios') or []:
+        if scenario.get('retired'):
+            continue
         if screen_key not in (scenario.get('screens') or []):
             continue
         modes = scenario.get('modes') or []

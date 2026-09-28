@@ -471,9 +471,11 @@ class TestScenarioEngine(TransactionCase):
     # counting them (ledger, Run A2 review).
     FLOWS = {
         'sc_import': [
-            ('intro', '', 'observe', False, ['watch']),
-            ('score', 'imp-confidence', 'observe', False, ['watch']),
-            ('fix', 'imp-actions', 'observe', False, ['watch']),
+            # LEARN REFRESH step 2: Watch walks the Pay Run › Import tab (the
+            # month's pay data), not the formula multi-sheet importer.
+            ('intro', 'im-cta', 'observe', False, ['watch']),
+            ('pipe', 'im-pipe', 'observe', False, ['watch']),
+            ('batches', 'im-batches', 'observe', False, ['watch']),
             ('openflow', 'im-cta', 'click', False, ['try']),
             ('readscore', 'iw-review', 'observe', False, ['try']),
             ('fixcell', 'rep-impfix', 'input', False, ['try']),
@@ -493,8 +495,10 @@ class TestScenarioEngine(TransactionCase):
     # sc_formula is pinned by its TRY SCOPE rather than by all eighteen steps:
     # the seven controls the replica draws are the claim Phase 5 makes about
     # it, and the eleven watch-only ones are the pre-existing tour.
+    # LEARN REFRESH step 2: the replica now draws the six views (fs-views)
+    # and Tools (fs-command), where Simulate lives.
     FORMULA_TRY = ['config', 'components', 'formula', 'namesletters', 'deps',
-                   'preview', 'simulate']
+                   'preview', 'simulate', 'views']
 
     def test_18_the_phase5_flows_are_the_tables_they_were_reviewed_as(self):
         by_key = {sc['key']: sc for sc in self.scenarios}
