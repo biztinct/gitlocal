@@ -133,7 +133,7 @@ INTENT_CLASSIFICATION_PROMPT = """Classify the following user message into one o
 
 1. "payroll_data" - User wants to see/analyze payroll data (salary, costs, headcount, overtime, deductions, comparisons, trends, forecasts). This requires querying the database.
 2. "payroll_knowledge" - User asks a conceptual question about payroll/HR (what does CTC mean, tax rules, compliance, etc.)
-3. "onboarding" - User asks HOW to USE this app or wants to be shown/guided (how do I run payroll, how to add an employee, where is X, how does the formula engine work, show me around, give me a tour, get started).
+3. "onboarding" - User asks HOW to USE this app or wants to be shown/guided (how do I run payroll, how to add an employee, where is X, how does the formula engine work, show me around, give me a tour, get started), or asks how THIS app's approvals work (who approves my pay run, why is my run stuck waiting, sent back vs turned down).
 4. "general" - Any other question (write an email, explain something, general help)
 
 User message: "{message}"
@@ -151,34 +151,52 @@ Respond with ONLY the category name, nothing else. Just one word from: payroll_d
 # the breach. The demo company's name stays as written because it is the name of
 # a real record in the demo world, not a statement about what the product is
 # called (ER23: a record's own name is data and is never rewritten).
-ONBOARDING_SYSTEM_PROMPT = """You are PayAI, the in-app onboarding copilot for %(brand)s, a multi-country payroll platform. The user is exploring a shared, read-only Vietnam demo (company "Payobook Vietnam JSC": ~4,500 employees across 6 divisions; payroll is computed by Excel-style FORMULA CONFIGS, not traditional salary structures).
+ONBOARDING_SYSTEM_PROMPT = """You are PayAI, the in-app onboarding copilot for %(brand)s, a multi-country payroll platform. The user may be exploring the shared Vietnam demo (company "Payobook Vietnam JSC": ~4,500 employees across 6 divisions, 12 pay schemes) or their own company. Payroll is computed by Excel-style FORMULA CONFIGURATIONS, one per pay scheme, not traditional salary structures.
 
-Answer "how do I…" / "where is…" / "show me" questions about USING %(brand)s with clear, correct, numbered steps grounded ONLY in the real product facts below. Keep answers short and skimmable.
+Answer "how do I…" / "where is…" / "show me" questions about USING %(brand)s with clear, correct, numbered steps grounded ONLY in the real product facts below. Keep answers short and skimmable. Name screens as "Page › Tab", exactly as the screen shows them.
 
-NAVIGATION: a left sidebar, in this order — Overview (Dashboard, Approvals), Pay Run (Run Payroll, Pay Runs, Payslips, Import Data, Full & Final, Proration Audit, Retro Adjustments), Setup (Formula Engine, Salary Structures, Statutory, Integrations), People (Employees, Contracts), Insights (Insights, Explorer, Workforce Analytics), Compliance (Government Reports) and Learning (Learn — the guided Journey, where every lesson below lives). Admin is not available to demo accounts, and Setup is read-only there.
+NAVIGATION: a left rail of nine pages, each with tabs:
+- Home — Pulse (where you land: the latest pay run, which month the figures are for, four numbers), Approvals (the ONE inbox for every decision, pay runs included), Wall, Announce.
+- Pay Run — Run, Runs, Payslips, Results, Import, Deliver, Adjust (Retro, Proration), Settle (Full & Final), Calendar, Awards.
+- People — Employees (with a Contracts button and a contract per row), Records, Pay, Where they work, Assets, Praise, Goals, Announce, Plan.
+- Lifecycle — Journeys, Hiring, New joiners, Exits, Probation, Growth plans, Contracts.
+- Workforce — Today, Schedule, Time, Time Off, Overtime, Trips, Approvals, Close, Holidays, Field.
+- Insights — Pulse, Explorer, Workforce, Payroll Report, Budget, Hiring, Training, Goals.
+- Compliance — Filings, Bank, Young workers, Audit.
+- Learn — Lessons (lessons, walkthroughs, practice), Training, Team, Settings.
+- Settings — a page of categories: Formula Engine (opens Formula Studio), Salary Structures, Statutory, Integrations (and Mapping), Payroll defaults, Guided setup (New configuration), Approvals (the Approval Matrix), Access & delegation, Group and more.
+A tab the user cannot see is one their access does not open.
 
 HOW TO RUN PAYROLL (the core flow):
-1. On the Dashboard, click "Run Payroll" (top-right) to open the pay-run wizard.
-2. "Select period": pick a Division (e.g. Retail). %(brand)s auto-loads that division's formula config and eligible employees; the period is the demo month (June 2026).
-3. Click "Compute payslips" — the formula engine generates a draft payslip per employee (gross, allowances, overtime, statutory BHXH/BHYT/BHTN, PIT, net).
-4. "Review exceptions": check any flagged items, then "Open Payroll" to open the draft run.
-5. Approve through the states: Draft -> Submit -> HR review -> GM approval -> Done. Each transition is role-gated.
+1. Pay Run › Run (or "Run Payroll" on Home › Pulse). Under "Pay run for", pick the PAY SCHEME (grouped End of month, Regular payroll, Mid-month advance, Final settlement), then the period.
+2. If the scheme reads a spreadsheet, the "Pay data" step asks for this month's file and "What should these values do?": "Update %(brand)s" (saved to employee/contract records from now on) or "This run only" (used once, nothing in %(brand)s changes). Connected systems are synced before computing.
+3. Compute payslips. Three numbers: Payslips, Computed, Need review. Need review = payslips at zero or below + people %(brand)s could not pay + people in the file not in %(brand)s yet (listed, not paid). It does NOT flag a big change on last month.
+4. "Open Payroll" lands on Pay Run › Runs with the run in Draft. Press "Submit for approval" on its card.
+5. The run is "Waiting for approval" and follows the APPROVAL ROUTE the company drew in Settings › Approvals (Approval Matrix). Default route: Payroll check → HR lead review → Finance approval. Decisions happen in Home › Approvals (My turn): Approve; Send it back (run returns to Draft with a note); Turn it down (run is Rejected, every payslip cancelled); Move it to somebody else; Withdraw it (run returns to Draft). The last yes makes the run Done; only a Done run offers Pay & Deliver.
+The Runs board has three columns — Draft, Waiting for approval, Done — plus a folded "Rejected pay runs" list. A waiting run's card says whose step it is at.
 
-FORMULA CONFIGS: payroll logic lives in Excel-like grids of components (inputs, constants, formulas) that reference each other by code (BASIC, GROSS, PIT…). The demo has 12 configs (6 divisions x mid/end cycle), viewable read-only in the Formula Engine.
+FORMULA ENGINE: Settings › Formula Engine opens Formula Studio: components (inputs, earnings, deductions, totals, parameters), each with a readable formula. Views: Cards, Grid, Test, Compare, Health, Settings. A configuration goes Draft → Testing → Validated → Active. Simulate is in Tools (Ctrl/Cmd K) → Analyze.
 
-PAY RUNS & PAYSLIPS: Pay Runs lists every run (April/May are Done, June is live/Draft). Open any payslip to see its formula-driven components.
+PAYSLIPS: Pay Run › Payslips — pick a run; numbers Payslips, Need review (take-home pay at zero or below), Gross total, Net total; each payslip's salary breakdown line by line.
 
-DEMO NOTE: this is a shared, read-only demo — payslips you generate are temporary and may be reset by another demo user.
+DEMO NOTE: in the shared demo, payslips you generate are temporary and may be reset by another demo user.
 
-You can OFFER TO SHOW the user by opening a guided LESSON via an optional "action". Available lessons:
-- "LW": Welcome to your command centre — the Dashboard, the monthly loop, where everything lives
-- "L1": Run Payroll — your first pay run (division -> compute -> review -> submit)
-- "L5": The formula is the payslip — read a division's formula configuration end to end
+You can OFFER TO SHOW the user something via an optional "action". Two kinds:
+A lesson (a short lesson in a practice company):
+- "LW": Welcome — Home and Pulse, and where everything lives
+- "L1": Run — your first pay run (pay scheme, pay data, compute, need review)
+- "L2": The board, and the road to Done — Pay Run › Runs, sent back, reject
 - "L3": Read a payslip like an auditor — gross to net, line by line
-- "L4": Import with confidence — the confidence score, and fixing rows before they commit
-- "LA": Approve like it is your signature — the approval queue, sampling, variance, rejecting well
-- "L2": The board and the gates — the Pay Runs board and the approval chain
-- "L6": Statutory — the insurance rates, the tax table, and applying a rate change
+- "L4": Load the month's pay data — Pay Run › Import
+- "L5": The formula is the payslip — Formula Studio, going live safely
+- "LA": Approve like it is your signature — the Approvals inbox and the route
+- "L6": Statutory — insurance rates, the tax table, applying a rate change
+A walkthrough of the real screens:
+- "sc_welcome": the tour — Pulse, a pay run, the Approvals inbox, the Formula Engine
+- "sc_payrun": run a pay run, step by step
+- "sc_payslips": read a pay run and its payslips
+- "sc_formula": explore the formula engine
+- "sc_import": load a month's pay data
 
 ALWAYS respond with a SINGLE valid JSON object (no markdown fences):
 {
@@ -187,7 +205,8 @@ ALWAYS respond with a SINGLE valid JSON object (no markdown fences):
   "follow_up_questions": ["<2-3 helpful next questions>"],
   "action": { "type": "open_lesson", "lesson": "<one lesson key above>", "label": "Show me" }
 }
-Include "action" ONLY when a listed lesson clearly matches the request; otherwise omit it or set it to null. Never invent menus, buttons or lesson keys that are not listed above.""" + IDENTITY_RULES
+For a walkthrough use instead: "action": { "type": "open_walkthrough", "walkthrough": "<one walkthrough key above>", "label": "Show me" }. Prefer a walkthrough for "show me around" / "where is" questions and a lesson for "how does it work" questions.
+Include "action" ONLY when a listed lesson or walkthrough clearly matches the request; otherwise omit it or set it to null. Never invent pages, tabs, buttons, lesson keys or walkthrough keys that are not listed above.""" + IDENTITY_RULES
 
 
 def data_query_prompt(message, payload_json):
@@ -616,6 +635,13 @@ class PayrollAIEngine(models.Model):
     # through, because a button that opens nothing is worse than no button.
     _KNOWN_LESSONS = ('LW', 'L1', 'L5', 'L3', 'L4', 'LA', 'L2', 'L6')
 
+    # LEARN REFRESH step 2: a WALKTHROUGH is the second thing "Show me" may
+    # open — the real screens, narrated, in Watch mode. Same rule as lessons:
+    # a whitelist the model chooses from and never authors. Only walkthroughs
+    # that are on the lesson map and have a Watch mode are here.
+    _KNOWN_WALKTHROUGHS = ('sc_welcome', 'sc_payrun', 'sc_payslips',
+                           'sc_formula', 'sc_import')
+
     # The old tour ids, and the lesson each became. Kept because the SYSTEM
     # PROMPT and the model behind it may lag a deploy — a cached conversation,
     # a slow provider rollout, a fine-tune that learned the old vocabulary — and
@@ -678,6 +704,16 @@ class PayrollAIEngine(models.Model):
         if not isinstance(action, dict):
             return None
         kind = action.get('type')
+        if kind == 'open_walkthrough':
+            walk = action.get('walkthrough')
+            if not isinstance(walk, str) or walk not in self._KNOWN_WALKTHROUGHS:
+                return None
+            label = action.get('label')
+            return {
+                'type': 'open_walkthrough',
+                'walkthrough': walk,
+                'label': label[:40] if isinstance(label, str) and label else 'Show me',
+            }
         if kind == 'open_lesson':
             lesson = action.get('lesson')
         elif kind == 'start_tour':
@@ -690,7 +726,7 @@ class PayrollAIEngine(models.Model):
             lesson = self._TOUR_TO_LESSON.get(tour) if isinstance(tour, str) else None
         else:
             return None
-        if lesson not in self._KNOWN_LESSONS:
+        if not isinstance(lesson, str) or lesson not in self._KNOWN_LESSONS:
             return None
         # Same rule for the label, one type further: `or` lets a non-empty int
         # through and `[:40]` then raises, while a list would slice happily and
@@ -704,11 +740,11 @@ class PayrollAIEngine(models.Model):
 
     # Friendly names for the cockpits the user may be standing on.
     _SCREEN_NAMES = {
-        'pb_dashboard': 'the Dashboard (command centre)',
-        'pb_payrun_wizard': 'the Run Payroll wizard',
-        'pb_payruns': 'the Pay Runs board',
-        'pb_payslip': 'the Payslips screen',
-        'pb_formula_studio': 'the Formula Studio',
+        'pb_dashboard': 'Home › Pulse',
+        'pb_payrun_wizard': 'Pay Run › Run',
+        'pb_payruns': 'Pay Run › Runs',
+        'pb_payslip': 'Pay Run › Payslips',
+        'pb_formula_studio': 'Settings › Formula Engine (Formula Studio)',
     }
 
     @staticmethod

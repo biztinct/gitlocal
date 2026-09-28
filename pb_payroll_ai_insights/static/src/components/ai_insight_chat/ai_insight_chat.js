@@ -90,11 +90,11 @@ export class AiInsightChat extends Component {
         // the template and the send path treat them as ordinary text.
         this.suggestions = [
             _t("How do I run payroll?"),
-            _t("What is a formula config?"),
+            _t("Who approves my pay run?"),
+            _t("Where is the formula engine?"),
             _t("Show me around Payobook"),
             _t("Show me salary distribution by department"),
             _t("What is the total headcount?"),
-            _t("Compare department payroll costs"),
         ].map(String);
 
         onMounted(() => {
@@ -246,7 +246,26 @@ export class AiInsightChat extends Component {
     // path nothing can reach. The legacy acceptance stays where it can actually
     // be exercised: server-side, where the LLM's output arrives.
     runAction(action) {
-        if (!action || action.type !== "open_lesson" || !action.lesson) {
+        if (!action) {
+            return;
+        }
+        // LEARN REFRESH step 2: a walkthrough of the real screens, in Watch
+        // mode — the second shape the server's whitelist emits.
+        if (action.type === "open_walkthrough" && action.walkthrough) {
+            this.closePanel();
+            Promise.resolve(
+                openHub(this.actionService, {
+                    xmlid: "pb_learn.action_learn_hub",
+                    lens: "lessons",
+                    focus: `scenario:${action.walkthrough}:watch`,
+                })
+            ).catch(() => {
+                this.notification.add(_t("The guided lessons are not installed on this database."),
+                                      { type: "warning" });
+            });
+            return;
+        }
+        if (action.type !== "open_lesson" || !action.lesson) {
             return;
         }
         this.closePanel();
@@ -267,7 +286,7 @@ export class AiInsightChat extends Component {
             })
         ).catch(() => {
             this.notification.add(
-                "The guided lessons are not installed on this database.",
+                _t("The guided lessons are not installed on this database."),
                 { type: "warning" }
             );
         });

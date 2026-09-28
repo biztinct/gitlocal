@@ -141,7 +141,7 @@
                                  One shape only: the server converts a legacy
                                  `start_tour` envelope and always emits
                                  `open_lesson`, so nothing else can arrive. -->
-                            <t t-if="msg.action and msg.action.type === 'open_lesson'">
+                            <t t-if="msg.action and (msg.action.type === 'open_lesson' or msg.action.type === 'open_walkthrough')">
                                 <button class="payai-coach-action"
                                         t-on-click="() => this.runAction(msg.action)">
                                     <i class="fa fa-magic"/> <t t-esc="msg.action.label || 'Show me'"/>
@@ -342,7 +342,7 @@
                                 </t>
                             </ul>
                         </t>
-                        <t t-if="msg.action and msg.action.type === 'open_lesson'">
+                        <t t-if="msg.action and (msg.action.type === 'open_lesson' or msg.action.type === 'open_walkthrough')">
                             <button type="button" class="payai-embed-action"
                                     t-on-click="() => this.runAction(msg.action)">
                                 <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-play"/></svg>

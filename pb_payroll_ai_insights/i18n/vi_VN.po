@@ -1567,3 +1567,45 @@ msgstr "Đọc to: tắt"
 #: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
 msgid "That did not work. An administrator can check the AI service under PayAI settings."
 msgstr "Chưa thực hiện được. Quản trị viên có thể kiểm tra dịch vụ AI trong phần cài đặt PayAI."
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+msgid "How do I run payroll?"
+msgstr "Tôi chạy bảng lương thế nào?"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+msgid "Who approves my pay run?"
+msgstr "Ai phê duyệt đợt lương của tôi?"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+msgid "Where is the formula engine?"
+msgstr "Bộ máy công thức nằm ở đâu?"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+msgid "Show me around Payobook"
+msgstr "Dẫn tôi đi một vòng Payobook"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+msgid "Show me salary distribution by department"
+msgstr "Cho tôi xem phân bổ lương theo bộ phận"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+msgid "What is the total headcount?"
+msgstr "Tổng số nhân sự là bao nhiêu?"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+msgid "The guided lessons are not installed on this database."
+msgstr "Các bài học có hướng dẫn chưa được cài trên cơ sở dữ liệu này."

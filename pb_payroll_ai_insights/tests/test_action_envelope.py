@@ -211,3 +211,39 @@ class TestActionEnvelope(TransactionCase):
         for key in self.engine._KNOWN_LESSONS:
             self.assertIn('"%s"' % key, ONBOARDING_SYSTEM_PROMPT,
                           "lesson %s is whitelisted but the prompt never offers it" % key)
+
+    # -- LEARN REFRESH step 2: a walkthrough is the second kind of "Show me" --
+    def test_12_a_whitelisted_walkthrough_passes_through(self):
+        for key in self.engine._KNOWN_WALKTHROUGHS:
+            out = self.engine._sanitize_action(
+                {'type': 'open_walkthrough', 'walkthrough': key, 'label': 'Show me'})
+            self.assertEqual(out, {'type': 'open_walkthrough', 'walkthrough': key,
+                                   'label': 'Show me'})
+
+    def test_13_an_unknown_or_hostile_walkthrough_is_refused(self):
+        for bad in ('sc_mapping', 'sc_nothing', '', None, ['sc_welcome'],
+                    {'k': 'sc_welcome'}, 7, 'LW'):
+            self.assertIsNone(self.engine._sanitize_action(
+                {'type': 'open_walkthrough', 'walkthrough': bad}), bad)
+
+    def test_14_every_whitelisted_walkthrough_is_real_and_watchable(self):
+        try:
+            Content = self.env['learn.content'].sudo()
+        except KeyError:
+            self.skipTest("pb_learn is not installed on this database")
+        by_key = {s['key']: s for s in Content.scenarios()}
+        if not by_key:
+            self.skipTest("pb_learn ships no scenarios on this database")
+        for key in self.engine._KNOWN_WALKTHROUGHS:
+            self.assertIn(key, by_key, "%s is whitelisted and not written" % key)
+            self.assertIn('watch', by_key[key]['modes'])
+            self.assertFalse(by_key[key].get('retired'), "%s is retired" % key)
+
+    def test_15_the_prompt_offers_every_walkthrough(self):
+        from odoo.addons.pb_payroll_ai_insights.models.payroll_ai_engine import (
+            ONBOARDING_SYSTEM_PROMPT,
+        )
+        self.assertIn('open_walkthrough', ONBOARDING_SYSTEM_PROMPT)
+        for key in self.engine._KNOWN_WALKTHROUGHS:
+            self.assertIn('"%s"' % key, ONBOARDING_SYSTEM_PROMPT)
+        self.assertNotIn('Odoo', ONBOARDING_SYSTEM_PROMPT)
