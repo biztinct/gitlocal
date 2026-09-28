@@ -17,7 +17,8 @@ import { useService } from "@web/core/utils/hooks";
 import { RT, T, tx } from "../engine/runtime";
 import { loadContent } from "../content/content_loader";
 
-const ROLE_LABEL = { officer: "roleOfficer", approver: "roleApprover", hr: "roleHr", owner: "roleOwner" };
+const ROLE_LABEL = { officer: "roleOfficer", approver: "roleApprover", hr: "roleHr",
+                     manager: "roleManager", owner: "roleOwner" };
 const STATUS = {
     ready: { label: "teamReady", cls: "ok" },
     started: { label: "teamStarted", cls: "warn" },
