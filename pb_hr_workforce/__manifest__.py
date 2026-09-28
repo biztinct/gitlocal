@@ -1,7 +1,7 @@
 {
     'name': 'Workforce Management',
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.4.19.2',
+    'version': '19.0.4.19.3',
     'category': 'Human Resources/Attendance',
     'summary': 'Deputy-style shift roster, live attendance, payroll reports, timecards, and visual dashboards',
     'description': """
