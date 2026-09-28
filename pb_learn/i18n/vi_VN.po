@@ -1087,3 +1087,9 @@ msgstr "Hướng dẫn từng bước không mở được màn hình của nó"
 #: code:addons/pb_learn/static/src/hub/learn_hub.js:0
 msgid "Lessons"
 msgstr "Bài học"
+
+#. module: pb_learn
+#. odoo-javascript
+#: code:addons/pb_learn/static/src/hub/learn_palette.js:0
+msgid "%s min"
+msgstr "%s phút"

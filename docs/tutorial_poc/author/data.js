@@ -1712,8 +1712,8 @@ const STATIONS = {
       {
         id: "fullfinal", icon: "file-text", mins: 6, after: "payruns",
         roles: ["officer", "hr"],
-        search: B("final settlement, leaver, last pay, unused leave, full and final",
-                  "quyết toán thôi việc, người nghỉ việc, lương cuối, phép chưa dùng"),
+        search: B("final settlement, settle someone who is leaving, leaver, last pay, unused leave",
+                  "quyết toán thôi việc, quyết toán cho người nghỉ việc, người nghỉ việc, lương cuối, phép chưa dùng"),
         title: B("Final settlements", "Quyết toán thôi việc"),
         desc: B("Everyone who is leaving, what they are still owed, and how far each settlement is on its way to approval.",
                 "Mọi người sắp nghỉ việc, những khoản họ còn được nhận, và mỗi khoản quyết toán đã đi tới đâu trên đường phê duyệt."),
@@ -2188,7 +2188,7 @@ const STATIONS = {
            (STATION_ALIASES) and its progress rows were migrated. */
         id: "employees", icon: "users", required: true, mins: 8, after: null,
         roles: ["hr", "officer"],
-        search: B("employees, contracts, contract drawer, payroll ready, bank details, monthly wage",
+        search: B("employees, person's contract, contract drawer, payroll ready, bank details, monthly wage",
                   "nhân viên, hợp đồng, ngăn hợp đồng, sẵn sàng trả lương, thông tin ngân hàng, lương tháng"),
         title: B("Employees and contracts", "Nhân viên và hợp đồng"),
         desc: B("Everyone the company employs, whether each of them can be paid, and each person's contract in a drawer beside the list.",

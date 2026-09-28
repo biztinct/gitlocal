@@ -25481,8 +25481,8 @@
         "hr"
       ],
       "search": {
-        "en": "final settlement, leaver, last pay, unused leave, full and final",
-        "vi": "quyết toán thôi việc, người nghỉ việc, lương cuối, phép chưa dùng"
+        "en": "final settlement, settle someone who is leaving, leaver, last pay, unused leave",
+        "vi": "quyết toán thôi việc, quyết toán cho người nghỉ việc, người nghỉ việc, lương cuối, phép chưa dùng"
       },
       "section": "payroll",
       "sequence": 50,
@@ -26422,7 +26422,7 @@
         "officer"
       ],
       "search": {
-        "en": "employees, contracts, contract drawer, payroll ready, bank details, monthly wage",
+        "en": "employees, person's contract, contract drawer, payroll ready, bank details, monthly wage",
         "vi": "nhân viên, hợp đồng, ngăn hợp đồng, sẵn sàng trả lương, thông tin ngân hàng, lương tháng"
       },
       "section": "payroll",
@@ -31612,5 +31612,5 @@
       }
     }
   ],
-  "version": "2eabe6873487"
+  "version": "ed8147bf0013"
 }

@@ -61,7 +61,7 @@ export function registerLessonRows(content) {
         palette.add(id, {
             id,
             label: say(s.name),
-            sublabel: `${s.kind === "lesson" ? _t("Lesson") : _t("Guide")}${SP}·${SP}${s.duration_min}${SP}min${SP}·${SP}${words}`,
+            sublabel: `${s.kind === "lesson" ? _t("Lesson") : _t("Guide")}${SP}·${SP}${_t("%s min", s.duration_min)}${SP}·${SP}${words}`,
             icon: "bookOpen",
             group,
             // LEARN REFRESH step 1: inside the Learn hub (rail visible),

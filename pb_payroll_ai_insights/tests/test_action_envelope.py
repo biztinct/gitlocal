@@ -284,3 +284,20 @@ class TestActionEnvelope(TransactionCase):
             self.assertEqual(self.engine._content_handoff(question),
                              {'type': 'open_walkthrough', 'walkthrough': walk,
                               'label': 'Show me'}, question)
+
+    # -- LEARN REFRESH step 5: a lesson when no walkthrough answers ----------
+    def test_19_a_question_with_no_walkthrough_gets_its_lesson(self):
+        """The station's own search words pick a lesson, through the same
+        whitelist, when the resolver names no walkthrough."""
+        if 'learn.content' not in self.env:
+            self.skipTest("pb_learn is not installed on this database")
+        for question, lesson in (
+                ("Where do I see back pay for a raise dated last month?", 'L30'),
+                ("How do I send the bank file and payslips after approval?", 'L32'),
+                ("Where is the month's payroll budget?", 'L38'),
+                ("Do I need a salary structure if I use a pay scheme?", 'L33')):
+            self.assertEqual(self.engine._lesson_handoff(question),
+                             {'type': 'open_lesson', 'lesson': lesson,
+                              'label': 'Show me'}, question)
+        for noise in ('write me a poem', '', None):
+            self.assertIsNone(self.engine._lesson_handoff(noise), noise)

@@ -133,7 +133,7 @@ INTENT_CLASSIFICATION_PROMPT = """Classify the following user message into one o
 
 1. "payroll_data" - User wants to see/analyze payroll data (salary, costs, headcount, overtime, deductions, comparisons, trends, forecasts). This requires querying the database.
 2. "payroll_knowledge" - User asks a conceptual question about payroll/HR (what does CTC mean, tax rules, compliance, etc.)
-3. "onboarding" - User asks HOW to USE this app or wants to be shown/guided (how do I run payroll, how to add an employee, where is X, how does the formula engine work, show me around, give me a tour, get started), or asks how THIS app's approvals work (who approves my pay run, why is my run stuck waiting, sent back vs turned down), or how to SET UP payroll in this app (set up a new pay scheme, where does this number come from, why don't my figures add up, change who approves something, change many employees at once, pay people in another currency), or how to use the rest of THIS app (pay bands, a pay review, the Decision Room, hiring requests, new joiners, probation, someone leaving, approving overtime, locking the week, giving someone access while away, government filings).
+3. "onboarding" - User asks HOW to USE this app or wants to be shown/guided (how do I run payroll, how to add an employee, where is X, how does the formula engine work, show me around, give me a tour, get started), or asks how THIS app's approvals work (who approves my pay run, why is my run stuck waiting, sent back vs turned down), or how to SET UP payroll in this app (set up a new pay scheme, where does this number come from, why don't my figures add up, change who approves something, change many employees at once, pay people in another currency), or how to use the rest of THIS app (pay bands, a pay review, the Decision Room, hiring requests, new joiners, probation, someone leaving, approving overtime, locking the week, giving someone access while away, government filings), or how a pay run is finished and adjusted in THIS app (send the bank file and payslips, back pay for a backdated raise, part-month pay for a joiner, settling someone who leaves, putting a bonus into a run, the pay calendar), or where to see or read something in THIS app (a person's contract, whether a salary structure or a pay scheme pays someone, connections and how often they fetch, the Budget, the Payroll Report, why Explorer and Pulse show different numbers). A question that starts "where do I see", "where is" or "how do I" is about using the app, not a request for data.
 4. "general" - Any other question (write an email, explain something, general help)
 
 User message: "{message}"
@@ -928,8 +928,43 @@ class PayrollAIEngine(models.Model):
             walk = (intent or {}).get('watch') or ''
         except Exception:       # noqa: BLE001 — a hint must never break an answer
             return None
-        return self._sanitize_action(
+        found = self._sanitize_action(
             {'type': 'open_walkthrough', 'walkthrough': walk, 'label': 'Show me'})
+        return found or self._lesson_handoff(message)
+
+    def _lesson_handoff(self, message):
+        """LEARN REFRESH step 5 — when no walkthrough answers the question, a
+        LESSON may: every station carries its own plain `search` words (the
+        ones the ⌘K search matches, both languages). The station whose words
+        appear most often in the question offers its lesson, through the same
+        whitelist. At least one whole search phrase (or the station's whole
+        name) must appear: a button that opens the wrong lesson is worse than
+        no button."""
+        if 'learn.content' not in self.env or not isinstance(message, str):
+            return None
+        try:
+            text = ' %s ' % ' '.join(message.lower().replace('?', ' ').split())
+            best, best_score = None, 0
+            for st in self.env['learn.content'].sudo().stations():
+                if not st.get('lessons'):
+                    continue
+                score = 0
+                for lang in ('en', 'vi'):
+                    for phrase in ((st.get('search') or {}).get(lang) or '').lower().split(','):
+                        phrase = phrase.strip()
+                        if len(phrase) > 3 and phrase in text:
+                            score += 2
+                    name = ((st.get('name') or {}).get(lang) or '').lower()
+                    if name and len(name) > 4 and name in text:
+                        score += 1
+                if score > best_score:
+                    best, best_score = st, score
+            if not best or best_score < 2:
+                return None
+            lesson = best['lessons'][0]['key']
+        except Exception:       # noqa: BLE001 — a hint must never break an answer
+            return None
+        return self._sanitize_action({'type': 'open_lesson', 'lesson': lesson, 'label': 'Show me'})
 
     def _screen_note(self, context):
         """The one system line that says where the user is standing, or None.
