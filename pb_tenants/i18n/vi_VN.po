@@ -1141,7 +1141,7 @@ msgstr "Cảnh báo"
 #. odoo-javascript
 #: code:addons/pb_tenants/static/src/xml/tenants.xml:0
 msgid "Welcome aboard"
-msgstr "Chào mừng lên tàu"
+msgstr "Chào mừng gia nhập"
 
 #. module: pb_tenants
 #. odoo-javascript

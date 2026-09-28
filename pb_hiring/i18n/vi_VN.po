@@ -16,3 +16,171 @@ msgstr ""
 #: code:addons/pb_hiring/static/src/js/hiring_palette.js:0
 msgid "Hiring"
 msgstr "Tuyển dụng"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:1009
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:76
+msgid "Raise a hiring request"
+msgstr "Đề xuất tuyển dụng"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:59
+msgid "Hiring tools"
+msgstr "Công cụ tuyển dụng"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:388
+msgid "Awaiting sign-off"
+msgstr "Chờ phê duyệt"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:389
+msgid "Waiting on you"
+msgstr "Đang chờ bạn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:390
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:878
+msgid "Candidates"
+msgstr "Ứng viên"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:391
+msgid "Over budget"
+msgstr "Vượt ngân sách"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:392
+#: code:addons/pb_hiring/static/src/js/hiring_palette.js:214
+msgid "Interviews this week"
+msgstr "Phỏng vấn tuần này"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:393
+msgid "Opinions late"
+msgstr "Ý kiến đang trễ"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:394
+msgid "Offers out"
+msgstr "Thư mời đã gửi"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:395
+msgid "Referrals this month"
+msgstr "Giới thiệu tháng này"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:396
+msgid "Joined this month"
+msgstr "Đã nhận việc tháng này"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:41
+msgid "Request & approve"
+msgstr "Đề xuất & phê duyệt"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:42
+msgid "Prepare & publish"
+msgstr "Chuẩn bị & đăng tin"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:43
+msgid "Meet your candidates"
+msgstr "Gặp ứng viên"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:44
+msgid "Welcome aboard"
+msgstr "Chào mừng gia nhập"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:164
+msgid "Roles"
+msgstr "Vai trò"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:168
+msgid "Interviews"
+msgstr "Phỏng vấn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:293
+msgid "Next:"
+msgstr "Tiếp theo:"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:907
+msgid "Move stage"
+msgstr "Chuyển giai đoạn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:1010
+msgid "Let’s shape your next hire."
+msgstr "Hãy cùng phác thảo vị trí tuyển dụng tiếp theo."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:1010
+msgid "BUILD YOUR TEAM"
+msgstr "XÂY DỰNG ĐỘI NGŨ"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:59
+msgid "Company story"
+msgstr "Câu chuyện công ty"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:59
+msgid "Email templates"
+msgstr "Mẫu email"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:63
+msgid "Run today's chasing"
+msgstr "Chạy nhắc việc hôm nay"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:430
+#: code:addons/pb_hiring/static/src/js/hiring_palette.js:129
+#: code:addons/pb_hiring/static/src/js/hiring_palette.js:199
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:66
+msgid "Hiring rules"
+msgstr "Quy tắc tuyển dụng"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:69
+msgid "Cover for me"
+msgstr "Trực thay tôi"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:72
+msgid "Covers"
+msgstr "Người trực thay"

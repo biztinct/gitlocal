@@ -173,3 +173,59 @@ msgstr "Hiện tất cả"
 #: code:addons/pb_offboarding/static/src/js/exits_palette.js:0
 msgid "Exits"
 msgstr "Nghỉ việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:62
+msgid "Run today's steps"
+msgstr "Chạy các bước hôm nay"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:196
+msgid "Signed off by"
+msgstr "Được ký tắt bởi"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:263
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:324
+msgid "Close settlement"
+msgstr "Chốt quyết toán"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:328
+msgid "Open the settlement"
+msgstr "Mở quyết toán"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:333
+msgid "Open the resignation"
+msgstr "Mở đơn nghỉ việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:337
+msgid "Open the checklist"
+msgstr "Mở danh mục việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:228
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:362
+msgid "Handover"
+msgstr "Bàn giao công việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:366
+msgid "Add"
+msgstr "Thêm"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:425
+msgid "Change the wording"
+msgstr "Sửa câu chữ"

@@ -215,3 +215,46 @@ msgstr "Hồ sơ hợp đồng"
 #: code:addons/pb_contract_lifecycle/static/src/js/contractlife_palette.js:0
 msgid "Contracts"
 msgstr "Hợp đồng"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:67
+msgid "Run today's steps"
+msgstr "Chạy các bước hôm nay"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:284
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:444
+msgid "Raise the decision"
+msgstr "Nêu quyết định"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:50
+msgid "Make it permanent"
+msgstr "Chuyển chính thức"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:51
+msgid "Extend it"
+msgstr "Gia hạn"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:52
+msgid "Let it end"
+msgstr "Để hết hạn"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:58
+msgid "All decisions"
+msgstr "Mọi quyết định"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:62
+msgid "Extensions"
+msgstr "Gia hạn hợp đồng"

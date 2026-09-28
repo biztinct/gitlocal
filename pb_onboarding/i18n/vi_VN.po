@@ -161,3 +161,54 @@ msgstr "Hiện tất cả"
 #: code:addons/pb_onboarding/static/src/js/onboarding_palette.js:0
 msgid "New joiners"
 msgstr "Nhân viên mới"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:60
+msgid "Run today's steps"
+msgstr "Chạy các bước hôm nay"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:214
+msgid "Choose one"
+msgstr "Chọn một người"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:313
+msgid "Still to do"
+msgstr "Còn phải làm"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:330
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:339
+msgid "Conversations"
+msgstr "Trao đổi"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:220
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:297
+msgid "HR contact"
+msgstr "Liên hệ nhân sự"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:205
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:302
+msgid "Buddy"
+msgstr "Người đồng hành"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:232
+#: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:307
+msgid "Their record"
+msgstr "Hồ sơ của họ"

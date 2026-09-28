@@ -179,3 +179,46 @@ msgstr "Hiện tất cả"
 #: code:addons/pb_pip/static/src/js/pip_palette.js:0
 msgid "Growth plans"
 msgstr "Kế hoạch phát triển"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:75
+msgid "Run today's checks"
+msgstr "Chạy kiểm tra hôm nay"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:392
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:497
+msgid "What has to change"
+msgstr "Điều cần thay đổi"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:65
+msgid "On track"
+msgstr "Đúng hướng"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:66
+msgid "At risk"
+msgstr "Có rủi ro"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:67
+msgid "Met"
+msgstr "Đạt"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:68
+msgid "Not met"
+msgstr "Không đạt"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_request.xml:58
+msgid "Ask HR about someone in your team"
+msgstr "Hỏi nhân sự về một người trong nhóm của bạn"

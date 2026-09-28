@@ -391,3 +391,51 @@ msgstr "Hiện tất cả"
 #: code:addons/pb_probation/static/src/js/probation_palette.js:0
 msgid "Probation"
 msgstr "Thử việc"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:65
+msgid "Run today's steps"
+msgstr "Chạy các bước hôm nay"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:328
+msgid "Colleagues asked"
+msgstr "Đồng nghiệp được hỏi"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:447
+msgid "Send the questions"
+msgstr "Gửi câu hỏi"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:524
+msgid "Confirm them"
+msgstr "Xác nhận chính thức"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:529
+msgid "Extend the trial"
+msgstr "Kéo dài thử việc"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:534
+msgid "Do not confirm"
+msgstr "Không xác nhận"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:258
+msgid "Choose colleagues"
+msgstr "Chọn đồng nghiệp"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:338
+msgid "What everybody said"
+msgstr "Mọi người đã nói gì"
