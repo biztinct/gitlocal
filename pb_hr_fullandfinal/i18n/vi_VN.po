@@ -733,3 +733,107 @@ msgstr "người phê duyệt của nó"
 #. module: pb_hr_fullandfinal
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__pb_compute_issue
+msgid "Why it could not be worked out"
+msgstr "Vì sao không tính được"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,help:pb_hr_fullandfinal.field_hr_full_final_settlement__pb_compute_issue
+msgid "Set when the pay scheme could not work this settlement out. It cannot be sent for approval until it is made again."
+msgstr "Được ghi khi chương trình lương không tính được khoản quyết toán này. Không thể gửi duyệt cho tới khi tạo lại."
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,field_description:pb_hr_fullandfinal.field_hr_full_final_settlement__pb_to_check
+msgid "Ready to check"
+msgstr "Cần kiểm tra"
+
+#. module: pb_hr_fullandfinal
+#: model:ir.model.fields,help:pb_hr_fullandfinal.field_hr_full_final_settlement__pb_to_check
+msgid "Worked out and waiting for somebody to look at it and send it for approval."
+msgstr "Đã tính xong và đang chờ có người xem rồi gửi duyệt."
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
+msgid "This person"
+msgstr "Người này"
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
+msgid "%(who)s's settlement could not be worked out, so there is nothing to approve yet: %(why)s"
+msgstr "Khoản quyết toán của %(who)s không tính được, nên chưa có gì để duyệt: %(why)s"
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/fnf_approval.py:0
+msgid "%(who)s's settlement has already been sent for approval."
+msgstr "Khoản quyết toán của %(who)s đã được gửi duyệt."
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/payroll_import_batch.py:0
+msgid "This month's pay data has no pay scheme, so nothing could be worked out."
+msgstr "Dữ liệu lương tháng này không có chương trình lương, nên không tính được gì."
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/payroll_import_batch.py:0
+msgid "%s has no contract to work the settlement out from."
+msgstr "%s không có hợp đồng để tính khoản quyết toán."
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/payroll_import_batch.py:0
+msgid "The pay scheme gave no figures for this person."
+msgstr "Chương trình lương không cho ra con số nào cho người này."
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/payroll_import_batch.py:0
+msgid "The pay scheme's formulas could not be worked out for this person (%s). Check the pay data and make the settlement again."
+msgstr "Không tính được công thức của chương trình lương cho người này (%s). Hãy kiểm tra dữ liệu lương rồi tạo lại khoản quyết toán."
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/payroll_import_batch.py:0
+msgid "The figures could not be saved. Check the pay data and make the settlement again."
+msgstr "Không lưu được các con số. Hãy kiểm tra dữ liệu lương rồi tạo lại khoản quyết toán."
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/payroll_import_batch.py:0
+msgid "1 final settlement is ready to check"
+msgstr "1 khoản quyết toán cần kiểm tra"
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/payroll_import_batch.py:0
+msgid "%s final settlements are ready to check"
+msgstr "%s khoản quyết toán cần kiểm tra"
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/payroll_import_batch.py:0
+msgid "Ready to check and send for approval: %s."
+msgstr "Cần kiểm tra và gửi duyệt: %s."
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/payroll_import_batch.py:0
+msgid "Could not be worked out: %s — the reason is on each settlement."
+msgstr "Không tính được: %s — lý do ghi trên từng khoản quyết toán."
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/payroll_import_batch.py:0
+msgid "Open Pay Run › Settle to check them."
+msgstr "Mở Đợt lương › Quyết toán để kiểm tra."
+
+#. module: pb_hr_fullandfinal
+#. odoo-python
+#: code:addons/pb_hr_fullandfinal/models/payroll_import_batch.py:0
+msgid "Final settlements could not be worked out"
+msgstr "Không tính được các khoản quyết toán"

@@ -221,11 +221,18 @@ class HrFullFinalSettlement(models.Model):
 
         rules = self.formula_config_id.rule_ids
 
+        # A value the scheme worked out, with the pay role the scheme gave its
+        # component (`hr.formula.rule.net_role`, the same answer stamped on a
+        # payslip line as `pay_role`). LEARN REFRESH step 6: this used to call
+        # `pb_pay_band()` / `_fields` on this plain object, which it does not
+        # have — every settlement with a figure on it failed to compute from
+        # 2026-09-22, and the monthly load's automatic ones were never made.
         class _Line:
-            def __init__(self, code, total, category_id):
+            def __init__(self, code, total, category_id, pay_role=False):
                 self.code = code
                 self.total = total
                 self.category_id = category_id
+                self.pay_role = pay_role or False
 
         def normalize_code(code):
             if not code:
@@ -275,16 +282,20 @@ class HrFullFinalSettlement(models.Model):
         # anything read off the component's name or category: a category named
         # DED also holds insurance and tax bases, which are working figures and
         # not money anybody's settlement is reduced by.
+        # Roles that are not money on a settlement: a working figure (a day
+        # count, an insurance base), a component that is both added and taken
+        # off, and what the COMPANY pays on top. Skipped, like every pay total.
+        not_money = ('info', 'mixed', 'employer_cost')
+
         def is_net_line(line):
-            band = line.pb_pay_band()
-            if band:
-                return band == 'NET'
+            if line.pay_role:
+                return line.pay_role == 'net'
             code = normalize_code(line.code)
             category_code = normalize_code(line.category_id.code if line.category_id else '')
             return code == 'NET' or category_code == 'NET'
 
         def is_deduction_line(line):
-            if 'pay_role' in line._fields and line.pay_role:
+            if line.pay_role:
                 return line.pay_role == 'deduction'
             category_code = normalize_code(line.category_id.code if line.category_id else '')
             if category_code in {'DED', 'DEDUCTION', 'TAX', 'LOAN', 'ADV'}:
@@ -348,8 +359,9 @@ class HrFullFinalSettlement(models.Model):
                 rule.code,
                 amount,
                 rule.category_id or rule.salary_rule_id.category_id,
+                getattr(rule, 'net_role', False),
             )
-            if is_net_line(line):
+            if is_net_line(line) or line.pay_role in not_money:
                 continue
             for key, codes, prefixes in match_specs:
                 if match_line(line, codes, prefixes):
@@ -368,8 +380,10 @@ class HrFullFinalSettlement(models.Model):
                 rule.code,
                 amount,
                 rule.category_id or rule.salary_rule_id.category_id,
+                getattr(rule, 'net_role', False),
             )
-            if is_net_line(line) or rule.code in matched_codes:
+            if (is_net_line(line) or rule.code in matched_codes
+                    or line.pay_role in not_money):
                 continue
             if is_deduction_line(line):
                 components['other_deductions'] += abs(line.total)

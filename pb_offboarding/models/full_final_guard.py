@@ -263,7 +263,8 @@ class HrFullFinalSettlement(models.Model):
         'blockers', 'net'}`.
         """
         out = {'id': 0, 'ready': False, 'closed': False, 'blockers': [],
-               'net': 0.0, 'currency': '', 'date': ''}
+               'net': 0.0, 'currency': '', 'date': '',
+               'state': '', 'to_check': False, 'issue': ''}
         settlement = self.sudo().search(
             [('employee_id', '=', int(employee_id or 0))],
             order='pb_closed desc, settlement_date desc, id desc', limit=1)
@@ -276,6 +277,11 @@ class HrFullFinalSettlement(models.Model):
                            if settlement.currency_id else '')
         out['date'] = (str(settlement.settlement_date)
                        if settlement.settlement_date else '')
+        # LEARN REFRESH step 6 — where it is on its approval route, and
+        # whether it is waiting for somebody to check it and send it in.
+        out['state'] = settlement.state if 'state' in settlement._fields else ''
+        out['to_check'] = bool(getattr(settlement, 'pb_to_check', False))
+        out['issue'] = getattr(settlement, 'pb_compute_issue', '') or ''
         blockers = settlement._pb_blocker_list()
         out['ready'] = not blockers
         out['blockers'] = blockers

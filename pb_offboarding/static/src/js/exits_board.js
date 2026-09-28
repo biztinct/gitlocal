@@ -180,6 +180,7 @@ export class PbExitsBoard extends Component {
         if (key === "blocked") { return !!(r.ff.id && !r.ff.ready && !r.ff.closed); }
         if (key === "clearances") { return r.clearances.some((c) => c.state === "pending"); }
         if (key === "assets") { return !!r.assets; }
+        if (key === "to_check") { return !!r.ff.to_check; }
         return true;
     }
 
@@ -199,6 +200,10 @@ export class PbExitsBoard extends Component {
               run: () => this.toggleFocus("clearances") },
             { key: "assets", n: k.assets || 0, label: _t("Items not back yet"), tone: tone(k.assets, "amber"),
               run: () => this.toggleFocus("assets") },
+            // LEARN REFRESH step 6 — worked out, waiting for a person to check
+            // it and send it for approval
+            { key: "to_check", n: k.to_check || 0, label: _t("Settlements to check"), tone: tone(k.to_check, "amber"),
+              run: () => this.toggleFocus("to_check") },
         ];
     }
 
@@ -286,6 +291,15 @@ export class PbExitsBoard extends Component {
         }
         if (!row.ff.id) {
             return { cls: "muted", text: _t("No settlement yet") };
+        }
+        if (row.ff.issue && ["draft", "returned"].includes(row.ff.state)) {
+            return { cls: "err", text: _t("Settlement could not be worked out") };
+        }
+        if (row.ff.to_check) {
+            return { cls: "warn", text: _t("Settlement ready to check") };
+        }
+        if (row.ff.state === "pending") {
+            return { cls: "info", text: _t("Settlement waiting for approval") };
         }
         if (row.ff.ready) {
             return { cls: "warn", text: _t("Ready to close") };
@@ -497,6 +511,13 @@ export class PbExitsBoard extends Component {
         // a second opinion would only ever disagree with the one that counts.
         if (await this.call("close_settlement", [row.ff.id],
                             _t("Settlement closed."))) {
+            await this.refresh();
+        }
+    }
+
+    async sendSettlement(row) {
+        if (await this.call("send_settlement", [row.ff.id],
+                            _t("Settlement sent for approval."))) {
             await this.refresh();
         }
     }

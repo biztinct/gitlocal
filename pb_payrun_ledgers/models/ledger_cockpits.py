@@ -6,7 +6,7 @@ pb.people roster pattern. Read with the caller's own rights (no sudo): if the
 user can open the underlying list, they can open the cockpit."""
 import logging
 
-from odoo import api, models
+from odoo import _, api, models
 
 _logger = logging.getLogger(__name__)
 
@@ -240,6 +240,10 @@ class PbFullFinal(models.AbstractModel):
                     {'label': 'Loan / advance', 'value': r.c_loan, 'money': True},
                     {'label': 'Other deductions', 'value': r.c_other_ded, 'money': True},
                 ]),
+                self._section(_('Why it could not be worked out'), [
+                    {'label': _('Reason'), 'value': r.pb_compute_issue or ''
+                     if 'pb_compute_issue' in r._fields else ''},
+                ]),
                 self._section('Trace', [
                     {'label': 'Salary structure', 'value': _m2o(r.formula_config_id)},
                     {'label': 'Payroll batch', 'value': _m2o(r.import_batch_id)},
@@ -268,6 +272,21 @@ class PbFullFinal(models.AbstractModel):
             {'icon': 'user', 'value': FF.search_count(dom + [('source', '=', 'manual')]), 'label': 'Manual',
              'facet': ['source', 'manual']},
         ]
+        # LEARN REFRESH step 6 — settlements the monthly load made are worked
+        # out but not sent in: somebody looks first. This is that pile, and
+        # pressing it narrows the rows to it (each offers Send for approval).
+        has_check = 'pb_to_check' in FF._fields
+        if has_check:
+            kpis.insert(1, {'icon': 'checkCheck', 'value': FF.search_count(
+                dom + [('pb_to_check', '=', True)]),
+                'label': _('Ready to check'), 'tone': 'warn',
+                'facet': ['check', 'yes']})
+            issues = FF.search_count(dom + [('pb_compute_issue', '!=', False),
+                                            ('state', 'in', ('draft', 'returned'))])
+            if issues:
+                kpis.insert(2, {'icon': 'alert', 'value': issues,
+                                'label': _('Could not be worked out'),
+                                'tone': 'err', 'facet': ['check', 'issue']})
         steps = self._fnf_steps(FF, dom)
         src_lbl = dict(FF._fields['source'].selection or [])
         rows = []
@@ -275,15 +294,37 @@ class PbFullFinal(models.AbstractModel):
             e = r.employee_id
             sub = ' · '.join([x for x in [r.department_id.name if r.department_id else '',
                                           r.job_id.name if r.job_id else ''] if x]) or '—'
+            issue = r.pb_compute_issue if has_check else ''
+            check = ('issue' if issue and r.state in ('draft', 'returned')
+                     else 'yes' if has_check and r.pb_to_check else 'no')
+            badges = [{'label': src_lbl.get(r.source, r.source or '—'),
+                       'tone': 'info' if r.source == 'auto' else 'muted'}]
+            # What the row can do is what its state allows: a settlement is
+            # printed once approved, sent in once checked, and one that could
+            # not be worked out says so instead of offering a door that refuses.
+            if check == 'issue':
+                badges.append({'label': _('Could not be worked out'), 'tone': 'err'})
+                action = False
+            elif check == 'yes':
+                badges.append({'label': _('Ready to check'), 'tone': 'warn'})
+                action = {'label': _('Send for approval'), 'icon': 'send',
+                          'method': 'action_pb_send_for_approval',
+                          'done': _('Sent for approval')}
+            elif r.state == 'approved' or 'state' not in r._fields:
+                action = {'label': _('Download'), 'icon': 'download',
+                          'method': 'action_download_full_and_final'}
+            else:
+                action = False
             rows.append({
                 'id': r.id, 'res_model': 'hr.full.final.settlement',
                 'avatar': _emp_avatar(e), 'initials': _initials(e.name if e else r.name),
                 'title': (e.name if e else r.name) or '—', 'subtitle': sub,
-                'badges': [{'label': src_lbl.get(r.source, r.source or '—'),
-                            'tone': 'info' if r.source == 'auto' else 'muted'}],
+                'badges': badges,
+                'note': issue or '',
                 'metrics': [{'label': 'Net payable', 'value': r.net_payable, 'money': True, 'strong': True, 'tone': 'ok'}],
-                'action': {'label': 'Download', 'icon': 'download', 'method': 'action_download_full_and_final'},
+                'action': action,
                 '_f': {'source': r.source or '',
+                       'check': check,
                        'state': r.state or '',
                        'dept': r.department_id.name if r.department_id else '',
                        'config': r.formula_config_id.name if r.formula_config_id else ''},
@@ -332,6 +373,8 @@ class PbFullFinal(models.AbstractModel):
             titles = {'prepare': labels.get('draft', 'Being prepared'),
                       'pending': labels.get('pending', 'Waiting for approval'),
                       'approved': labels.get('approved', 'Approved')}
+            ready = (FF.search_count(dom + [('pb_to_check', '=', True)])
+                     if 'pb_to_check' in FF._fields else 0)
             items = []
             for key, states in self.FNF_STEPS:
                 n = sum(counts.get(st, 0) for st in states)
@@ -341,6 +384,7 @@ class PbFullFinal(models.AbstractModel):
                     'waiting': n if key == 'pending' else 0,
                     'mine': mine if key == 'pending' else 0,
                     'returned': counts.get('returned', 0) if key == 'prepare' else 0,
+                    'ready': ready if key == 'prepare' else 0,
                 })
             return {'unit': 'settlement', 'items': items}
         except Exception as e:

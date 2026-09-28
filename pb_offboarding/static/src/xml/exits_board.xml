@@ -257,7 +257,12 @@
                         t-on-click="() => this.openExit(row.id)">
                   Open their exit
                 </button>
-                <button t-if="state.canWrite and row.ff.id and row.ff.ready and !row.ff.closed"
+                <button t-if="state.canWrite and row.ff.to_check"
+                        class="pbim-btn primary pbim-btn-sm" data-coach="ex2-send"
+                        t-on-click="() => this.sendSettlement(row)">
+                  <t t-out="ic('send',13)"/> Send for approval
+                </button>
+                <button t-if="state.canWrite and row.ff.id and row.ff.ready and !row.ff.closed and !row.ff.to_check"
                         class="pbim-btn primary pbim-btn-sm"
                         t-on-click="() => this.closeSettlement(row)">
                   <t t-out="ic('banknote',13)"/> Close settlement
@@ -314,6 +319,12 @@
               <b t-elif="state.drawer.leaver.ff.ready">Nothing is holding the final settlement</b>
               <b t-else="">The final settlement cannot be closed yet</b>
             </div>
+            <p t-if="state.drawer.leaver.ff.issue" class="exb-gate-issue">
+              <b>Could not be worked out:</b> <t t-esc="state.drawer.leaver.ff.issue"/>
+            </p>
+            <p t-elif="state.drawer.leaver.ff.to_check" class="exb-gate-issue exb-gate-issue--check">
+              Its figures are worked out. Check them, then send it for approval.
+            </p>
             <ul t-if="state.drawer.leaver.ff.blockers.length" class="exb-gate-list">
               <li t-foreach="state.drawer.leaver.ff.blockers" t-as="bl"
                   t-key="bl_index" t-esc="bl"/>
@@ -323,6 +334,11 @@
                       class="pbim-btn primary pbim-btn-sm"
                       t-on-click="() => this.closeSettlement(state.drawer.leaver)">
                 Close settlement
+              </button>
+              <button t-if="state.canWrite and state.drawer.leaver.ff.to_check"
+                      class="pbim-btn primary pbim-btn-sm"
+                      t-on-click="() => this.sendSettlement(state.drawer.leaver)">
+                Send for approval
               </button>
               <button class="pbim-btn ghost pbim-btn-sm"
                       t-on-click="() => this.openSettlement(state.drawer.leaver)">

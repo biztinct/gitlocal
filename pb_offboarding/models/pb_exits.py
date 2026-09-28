@@ -111,6 +111,9 @@ class PbExits(models.AbstractModel):
                 len([c for c in r['clearances'] if c['state'] == 'pending'])
                 for r in rows),
             'assets': sum(r['assets'] for r in rows),
+            # LEARN REFRESH step 6: worked out, waiting for a person to check
+            # it and send it for approval
+            'to_check': len([r for r in rows if r['ff'].get('to_check')]),
         }
         return {
             'allowed': True,
@@ -147,7 +150,8 @@ class PbExits(models.AbstractModel):
         ff = self._safe(
             lambda: self.env['hr.full.final.settlement'].pb_gate_for(emp.id),
             default={'id': 0, 'ready': False, 'closed': False, 'blockers': [],
-                     'net': 0.0, 'currency': '', 'date': ''})
+                     'net': 0.0, 'currency': '', 'date': '',
+                     'state': '', 'to_check': False, 'issue': ''})
         kt = self._safe(lambda: case.kt_item_ids,
                         default=self.env['pb.kt.item'].browse())
         farewell = self._safe(
@@ -412,6 +416,16 @@ class PbExits(models.AbstractModel):
                 "There is no final settlement for this person yet. Generate "
                 "one first, then close it."))
         return settlement.action_pb_close()
+
+    @api.model
+    def send_settlement(self, settlement_id):
+        """Send a checked settlement for approval, from the board."""
+        self._require_write()
+        settlement = self.env['hr.full.final.settlement'].browse(
+            int(settlement_id or 0)).exists()
+        if not settlement:
+            raise UserError(_("There is no final settlement for this person yet."))
+        return settlement.action_pb_send_for_approval()
 
     @api.model
     def run_automation(self):

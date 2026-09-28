@@ -234,3 +234,57 @@ msgstr "tại"
 #: code:addons/pb_payrun_ledgers/static/src/xml/ledger.xml:0
 msgid "Show all"
 msgstr "Hiện tất cả"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Why it could not be worked out"
+msgstr "Vì sao không tính được"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Ready to check"
+msgstr "Cần kiểm tra"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Could not be worked out"
+msgstr "Không tính được"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Send for approval"
+msgstr "Gửi duyệt"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Sent for approval"
+msgstr "Đã gửi duyệt"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Download"
+msgstr "Tải xuống"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "1 ready to check"
+msgstr "1 khoản cần kiểm tra"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "%s ready to check"
+msgstr "%s khoản cần kiểm tra"

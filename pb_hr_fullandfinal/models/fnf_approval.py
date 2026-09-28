@@ -51,6 +51,50 @@ class HrFullFinalSettlementApproval(models.Model):
     approved_by = fields.Many2one('res.users', string='Approved by',
                                   readonly=True, copy=False)
 
+    # ---- LEARN REFRESH step 6: ready to check ----------------------------
+    # A settlement the monthly load made by itself used to sit at "Being
+    # prepared" for ever: the hand-made ones are sent in the moment they are
+    # worked out, the automatic ones never were, and no screen offered to.
+    # They are NOT sent in automatically — this is somebody's last money and a
+    # person looks at it first. Once its figures are worked out it is "ready to
+    # check", counted on Pay Run › Settle and Lifecycle › Exits, and one press
+    # (Send for approval) puts it on the same route a hand-made one takes.
+    pb_compute_issue = fields.Char(
+        string='Why it could not be worked out', readonly=True, copy=False,
+        help="Set when the pay scheme could not work this settlement out. "
+             "It cannot be sent for approval until it is made again.")
+    pb_to_check = fields.Boolean(
+        string='Ready to check', compute='_compute_pb_to_check', store=True,
+        index=True,
+        help="Worked out and waiting for somebody to look at it and send it "
+             "for approval.")
+
+    @api.depends('state', 'pb_compute_issue')
+    def _compute_pb_to_check(self):
+        for rec in self:
+            rec.pb_to_check = (rec.state in ('draft', 'returned')
+                               and not rec.pb_compute_issue)
+
+    def action_pb_send_for_approval(self):
+        """Send these settlements for approval — the route a hand-made one
+        takes the moment it is worked out. Refused, in words, for one that
+        could not be worked out or has already gone."""
+        engine = self.env['biz.approval.engine']
+        for rec in self:
+            if rec.pb_compute_issue:
+                raise UserError(_(
+                    "%(who)s's settlement could not be worked out, so there "
+                    "is nothing to approve yet: %(why)s",
+                    who=rec.employee_id.name or _('This person'),
+                    why=rec.pb_compute_issue))
+            if rec.state not in ('draft', 'returned'):
+                raise UserError(_(
+                    "%(who)s's settlement has already been sent for approval.",
+                    who=rec.employee_id.name or _('This person')))
+            rec.check_access('write')
+            engine.submit(rec)
+        return True
+
     #: A seat is also a read (ledger AM60).
     seat_user_ids = fields.Many2many(
         'res.users', 'hr_full_final_settlement_seat_rel', 'settlement_id',

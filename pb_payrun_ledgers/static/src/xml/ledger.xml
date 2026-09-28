@@ -128,6 +128,7 @@
             <div class="ppl-id">
               <div class="nm" t-esc="r.title"/>
               <div class="jb"><t t-esc="r.subtitle"/> <span t-if="r.code" class="pbl-code" t-esc="r.code"/></div>
+              <div t-if="r.note" class="pbl-note" t-esc="r.note"/>
             </div>
             <div class="ppl-meta pbl-badges">
               <t t-foreach="r.badges or []" t-as="b" t-key="b_index">
@@ -143,7 +144,7 @@
               </t>
             </div>
             <div t-if="r.action" class="pbl-rowact" data-coach="lg-rowact">
-              <button class="pbim-btn outline pbim-btn-sm" t-on-click="(ev) => this.rowAction(r, ev)">
+              <button class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.acting === r.id" t-on-click="(ev) => this.rowAction(r, ev)">
                 <t t-out="ic(r.action.icon or 'download', 14)"/> <t t-esc="r.action.label"/>
               </button>
             </div>

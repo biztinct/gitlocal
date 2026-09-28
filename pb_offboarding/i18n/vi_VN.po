@@ -229,3 +229,57 @@ msgstr "Thêm"
 #: code:addons/pb_offboarding/static/src/xml/exits_board.xml:425
 msgid "Change the wording"
 msgstr "Sửa câu chữ"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "There is no final settlement for this person yet."
+msgstr "Người này chưa có khoản quyết toán nào."
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "Send for approval"
+msgstr "Gửi duyệt"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "Could not be worked out:"
+msgstr "Không tính được:"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "Its figures are worked out. Check them, then send it for approval."
+msgstr "Các con số đã được tính. Hãy kiểm tra, rồi gửi duyệt."
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Settlements to check"
+msgstr "Quyết toán cần kiểm tra"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Settlement could not be worked out"
+msgstr "Quyết toán không tính được"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Settlement ready to check"
+msgstr "Quyết toán cần kiểm tra"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Settlement waiting for approval"
+msgstr "Quyết toán đang chờ duyệt"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Settlement sent for approval."
+msgstr "Đã gửi duyệt khoản quyết toán."

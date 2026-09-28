@@ -59,6 +59,7 @@ export class LedgerCockpit extends Component {
         this.action = useService("action");
         this.notif = useService("notification");
         this.state = useState({
+            acting: 0,          // the row whose action is running
             loaded: false, data: {}, search: "", f: {},
             step: "",              // quiet board: the step pressed ('' = all)
             dateFilter: "all", from: "", to: "",
@@ -237,7 +238,7 @@ export class LedgerCockpit extends Component {
     get glance() {
         return this.quietKpis.map((k, i) => {
             const fac = k.facet;
-            const tone = k.tone === "err" && k.value ? "rose" : "";
+            const tone = !k.value ? "" : k.tone === "err" ? "rose" : k.tone === "warn" ? "amber" : "";
             return {
                 // a real 0 (not the string "0") so the kit greys it
                 key: "k" + i, n: k.value ? this.kpiVal(k) : 0, label: k.label, tone,
@@ -261,6 +262,8 @@ export class LedgerCockpit extends Component {
                 flag = st.mine === 1 ? _t("1 waiting on you") : _t("%s waiting on you", st.mine);
             } else if (st.waiting) {
                 flag = st.waiting === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", st.waiting);
+            } else if (st.ready) {
+                flag = st.ready === 1 ? _t("1 ready to check") : _t("%s ready to check", st.ready);
             } else if (st.returned) {
                 flag = st.returned === 1 ? _t("1 sent back to be fixed") : _t("%s sent back to be fixed", st.returned);
             }
@@ -331,12 +334,25 @@ export class LedgerCockpit extends Component {
 
     async rowAction(r, ev) {
         ev.stopPropagation();
-        if (!r.action) return;
+        if (!r.action || this.state.acting) return;
+        this.state.acting = r.id;
         try {
             const act = await this.orm.call(r.res_model, r.action.method, [[r.id]]);
-            if (act) this.action.doAction(act);
+            if (act && typeof act === "object" && act.type) {
+                await this.action.doAction(act);
+            } else if (r.action.done) {
+                // LEARN REFRESH step 6: a row action that CHANGES the record
+                // (Send for approval) says so and re-reads the board, so the
+                // row moves to its new step in front of the reader.
+                this.notif.add(r.action.done, { type: "success" });
+                await this.load();
+            }
         } catch (e) {
-            this.notif.add(_t("Action failed"), { type: "danger" });
+            // the server's own words, never a bare "failed" (W40)
+            const msg = (e && e.data && e.data.message) || (e && e.message);
+            this.notif.add(msg || _t("Action failed"), { type: "danger" });
+        } finally {
+            this.state.acting = 0;
         }
     }
 
