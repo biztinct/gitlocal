@@ -4774,6 +4774,13 @@ const LESSONS = {
                 "Lực lượng lao động › <b>Hôm nay</b>. <b>Theo ca</b>, <b>Trễ</b>, <b>Chưa bắt đầu</b>, <b>Đã về</b> và <b>Đang nghỉ phép</b>, cho các nhóm bạn phụ trách. <b>Bảng</b> hoặc <b>Bản đồ</b> cho thấy cùng những người đó theo hai cách."),
       },
       {
+        screen: "wftoday", anchor: "wf-today",
+        kicker: B("Act early", "Làm sớm"),
+        title: B("Late and Not started are today's calls", "Trễ và Chưa bắt đầu là việc cần gọi hôm nay"),
+        body: B("A shift nobody started is easier to cover this morning than to explain on Friday.",
+                "Một ca chưa ai bắt đầu thì sắp xếp người thay ngay sáng nay dễ hơn là giải thích vào thứ Sáu."),
+      },
+      {
         screen: "wftoday", anchor: "wf-needs",
         kicker: B("Needs you", "Cần bạn"),
         title: B("The panel beside every Workforce tab", "Khung nằm cạnh mọi tab của Lực lượng lao động"),

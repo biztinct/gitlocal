@@ -30911,6 +30911,30 @@
               "visual": "none"
             },
             {
+              "anchor": "wf-today",
+              "body": {
+                "en": "A shift nobody started is easier to cover this morning than to explain on Friday.",
+                "vi": "Một ca chưa ai bắt đầu thì sắp xếp người thay ngay sáng nay dễ hơn là giải thích vào thứ Sáu."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Act early",
+                "vi": "Làm sớm"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "wftoday",
+              "tip": "",
+              "title": {
+                "en": "Late and Not started are today's calls",
+                "vi": "Trễ và Chưa bắt đầu là việc cần gọi hôm nay"
+              },
+              "visual": "none"
+            },
+            {
               "anchor": "wf-needs",
               "body": {
                 "en": "Leave requests, overtime to approve, flags on this week: everything waiting for you, whichever tab you are on. <b>My team</b> or <b>Organisation</b> decides whose.",
@@ -31564,5 +31588,5 @@
       }
     }
   ],
-  "version": "99c4933a0e5b"
+  "version": "9d1d953054ae"
 }
