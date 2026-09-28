@@ -294,3 +294,46 @@ msgstr "Số liệu nhanh"
 #: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
 msgid "Where every payslip is"
 msgstr "Mỗi phiếu lương đang ở đâu"
+
+#. module: pb_payslip_review
+#: model:ir.model.fields,field_description:pb_payslip_review.field_res_config_settings__pb_review_change_pct
+msgid "Flag a change in take-home pay above (%)"
+msgstr "Gắn cờ khi thực nhận thay đổi quá (%)"
+
+#. module: pb_payslip_review
+#: model:ir.model.fields,help:pb_payslip_review.field_res_config_settings__pb_review_change_pct
+msgid "A payslip whose take-home pay moved by more than this, against the same person's previous payslip in the same pay scheme, is counted under Need review. 0 switches it off."
+msgstr "Phiếu lương có thực nhận thay đổi nhiều hơn mức này so với phiếu trước của cùng người trong cùng chương trình lương sẽ được tính vào Cần xem xét. Đặt 0 để tắt."
+
+#. module: pb_payslip_review
+#: model_terms:ir.ui.view,arch_db:pb_payslip_review.res_config_settings_view_form_review
+msgid "Flag a big change in take-home pay"
+msgstr "Gắn cờ khi thực nhận thay đổi lớn"
+
+#. module: pb_payslip_review
+#: model_terms:ir.ui.view,arch_db:pb_payslip_review.res_config_settings_view_form_review
+msgid "Need review counts a payslip whose take-home pay moved by more than this against the same person's previous payslip in the same pay scheme. New joiners are never flagged for it. 0 switches it off."
+msgstr "Cần xem xét đếm phiếu lương có thực nhận thay đổi nhiều hơn mức này so với phiếu trước của cùng người trong cùng chương trình lương. Người mới vào không bao giờ bị gắn cờ vì điều này. Đặt 0 để tắt."
+
+#. module: pb_payslip_review
+#: model_terms:ir.ui.view,arch_db:pb_payslip_review.res_config_settings_view_form_review
+msgid "Pay run review"
+msgstr "Soát xét đợt lương"
+
+#. module: pb_payslip_review
+#. odoo-python
+#: code:addons/pb_payslip_review/models/review_flags.py:0
+msgid "Take-home pay is zero or below"
+msgstr "Thực nhận bằng không hoặc âm"
+
+#. module: pb_payslip_review
+#. odoo-python
+#: code:addons/pb_payslip_review/models/review_flags.py:0
+msgid "Net pay up %(pct)s%% on %(month)s"
+msgstr "Thực nhận tăng %(pct)s%% so với %(month)s"
+
+#. module: pb_payslip_review
+#. odoo-python
+#: code:addons/pb_payslip_review/models/review_flags.py:0
+msgid "Net pay down %(pct)s%% on %(month)s"
+msgstr "Thực nhận giảm %(pct)s%% so với %(month)s"

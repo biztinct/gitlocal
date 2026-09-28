@@ -480,7 +480,7 @@
                                 <div class="pw-li"><span class="pw-flag"><t t-out="ic('alert',13)"/> <t t-esc="e.why"/></span><span t-esc="e.emp"/></div>
                             </t>
                             <t t-foreach="state.summary.rows" t-as="r" t-key="r.id">
-                                <div t-if="r.flag" class="pw-li"><span class="pw-flag"><t t-out="ic('alert',13)"/> Net is zero</span><span t-esc="r.emp"/></div>
+                                <div t-if="r.flag" class="pw-li"><span class="pw-flag"><t t-out="ic('alert',13)"/> <t t-esc="r.why"/></span><span t-esc="r.emp"/></div>
                             </t>
                         </div>
                     </t>

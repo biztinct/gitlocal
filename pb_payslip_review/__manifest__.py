@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Payslip Review',
     'summary': 'Split-view payslip review cockpit (list + detail + one-click approve)',
-    'version': '19.0.1.2.1',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -10,6 +10,7 @@
     'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base'],
     'data': [
         'views/pb_payslip_review_action.xml',
+        'views/res_config_settings_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

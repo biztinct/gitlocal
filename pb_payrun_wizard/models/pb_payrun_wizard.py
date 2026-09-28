@@ -1868,15 +1868,23 @@ class PbPayrunWizard(models.AbstractModel):
             split = {'rows': [], 'count': 0, 'sentence': ''}
         chips = {row['employee_id']: row for row in (split.get('rows') or [])}
 
+        # LEARN REFRESH step 6 — what is flagged is the run's one shared answer
+        # (pb_payslip_review review_flags.py): take-home at zero or below, or a
+        # big change on the same person's previous payslip in this scheme. Pay
+        # Run › Payslips counts the very same list.
+        flags = run.pb_review_flags() if run else {}
         rows, total_net = [], 0.0
         for s in slips:
             net = self._slip_net(s)
             total_net += net
             chip = chips.get(s.employee_id.id)
+            fl = flags.get(s.id) or {}
             rows.append({
                 'id': s.id, 'emp': s.employee_id.name, 'state': s.state,
                 'employee_id': s.employee_id.id,
-                'net': net, 'flag': (net <= 0),
+                'net': net, 'flag': bool(fl.get('flag')),
+                'why': fl.get('reason') or '',
+                'flag_kind': fl.get('kind') or '',
                 'split': bool(chip),
                 'split_why': (chip or {}).get('why', ''),
                 'split_other': (chip or {}).get('other', ''),

@@ -110,10 +110,17 @@ class PbPayslipReview(models.AbstractModel):
         cids = self._active_company_ids()
         slip_recs = run.slip_ids.filtered(lambda s: s.company_id.id in cids)
         totals = self._slip_totals(slip_recs.ids)
+        # LEARN REFRESH step 6 — take-home pay and "Need review" come from the
+        # run's one shared answer (review_flags.py), the same the Run lens
+        # counts, so the two "Need review" numbers can never disagree. It also
+        # reads the scheme's own net line rather than summing the NET category,
+        # which counted FULLPAY and NET together on the demo world.
+        flags = run.sudo().pb_review_flags(slip_recs.ids)
         slips, t_net, t_gross, n_net, n_gross = [], 0.0, 0.0, 0, 0
         for i, s in enumerate(slip_recs):
             tt = totals.get(s.id, {})
-            net, gross = tt.get('net'), tt.get('gross')
+            fl = flags.get(s.id) or {}
+            net, gross = fl.get('net'), tt.get('gross')
             if net is not None:
                 t_net += net
                 n_net += 1
@@ -124,7 +131,8 @@ class PbPayslipReview(models.AbstractModel):
                 'id': s.id, 'emp': s.employee_id.name or '—',
                 'title': s.contract_id.job_id.name if s.contract_id and s.contract_id.job_id else (s.struct_id.name or ''),
                 'net': net, 'gross': gross, 'state': s.state,
-                'flag': (net is not None and net <= 0), 'color': PALETTE[i % len(PALETTE)],
+                'flag': bool(fl.get('flag')), 'why': fl.get('reason') or '',
+                'color': PALETTE[i % len(PALETTE)],
             })
         return {
             'run': {'id': run.id, 'name': run.name, 'state': run.state,

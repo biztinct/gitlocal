@@ -74,12 +74,13 @@
                             <div class="psr-card-main">
                                 <div class="psr-card-nm" t-esc="s.emp"/>
                                 <div class="psr-card-meta" t-esc="s.title"/>
+                                <div t-if="s.flag and s.why" class="psr-card-why" data-coach="ps-why" t-esc="s.why"/>
                             </div>
                             <div class="psr-card-r">
                                 <div class="psr-card-net" t-esc="vnd(s.net)"/>
                                 <span t-attf-class="psr-badge #{cls(s.state)}" t-esc="label(s.state)"/>
                             </div>
-                            <span t-if="s.flag" class="psr-flagdot" title="Needs review">!</span>
+                            <span t-if="s.flag" class="psr-flagdot" t-att-title="s.why">!</span>
                         </div>
                     </t>
                     <t t-if="!filteredSlips.length"><div class="psr-empty">No payslips in this filter.</div></t>

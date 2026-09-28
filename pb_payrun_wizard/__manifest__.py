@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Run Payroll Wizard',
     'summary': 'Guided multi-step Run Payroll cockpit (Select period → Compute → Review → Approve)',
-    'version': '19.0.1.29.0',
+    'version': '19.0.1.30.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -12,7 +12,9 @@
     # is NOT: the pay-data step asks the registry whether the formula engine is
     # present and simply does not appear when it is absent, which keeps this
     # wizard installable on a database that has no schemes at all.
-    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_import_kit'],
+    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_import_kit',
+                # LEARN REFRESH step 6: the shared "Need review" flags
+                'pb_payslip_review'],
     'data': [
         'views/pb_payrun_wizard_action.xml',
     ],
