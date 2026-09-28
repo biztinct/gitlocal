@@ -172,7 +172,8 @@
                  class="pbim-panel exb-card"
                  t-att-class="{ 'is-blocked': isBlocked(row), 'is-done': row.ff.closed }">
 
-              <div class="exb-card-top" t-on-click="() => this.openExit(row.id)">
+              <div class="exb-card-top" data-coach="ex2-card"
+                   t-on-click="() => this.openExit(row.id)">
                 <img class="exb-av" t-att-src="row.avatar" t-att-alt="row.employee"/>
                 <div class="exb-who">
                   <div class="exb-name" t-esc="row.employee"/>

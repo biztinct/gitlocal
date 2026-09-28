@@ -65,6 +65,7 @@
             <div class="pay-revgrid" t-if="reviews.length">
               <div t-foreach="reviews" t-as="rev" t-key="rev.id"
                    class="pay-revcard"
+                   data-coach="pp-review-row"
                    t-on-click="() => this.openReview(rev.id)">
                 <div class="pay-revcard-top">
                   <span class="pay-revcard-n" t-esc="rev.name"/>
