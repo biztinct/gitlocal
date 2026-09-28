@@ -6865,6 +6865,7 @@ const SCREEN_CTX = {
   },
 
   structures: {
+    open: "pb_structures.action_pb_structures",
     blurb: B("Salary structures: sets of salary rules. A contract that names one is computed by it; a contract with none is paid by a pay scheme.",
              "Cấu trúc lương: các bộ quy tắc lương. Hợp đồng ghi một cấu trúc thì được tính theo nó; hợp đồng không có cấu trúc thì được trả theo chương trình lương."),
     next: B("If a payslip ignores the pay scheme, open the person's contract and look at Salary structure. New pay logic belongs in a pay scheme, not here.",
@@ -6879,6 +6880,7 @@ const SCREEN_CTX = {
     chips: ["changerate", "whichpolicy", "ceiling", "pitcalc", "bhxh"],
   },
   integrations: {
+    open: "pb_integrations.action_pb_integrations",
     blurb: B("The systems pay data arrives from: each connection's last sync, feeds and mappings, and its own screen with the Automatic fetch schedule.",
              "Các hệ thống mà dữ liệu lương đến từ đó: lần đồng bộ gần nhất, nguồn cấp và ánh xạ của từng kết nối, và màn hình riêng có lịch Automatic fetch."),
     next: B("Read the last sync on every row, not the badge. A stale feed or a climbing staged count is a connection that stopped; open it and check Automatic fetch.",

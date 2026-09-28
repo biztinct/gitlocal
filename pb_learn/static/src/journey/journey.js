@@ -1235,7 +1235,11 @@ export class LearnJourney extends Component {
         if (this.state.quiz) {
             return this._quizBody();
         }
-        const st = steps[this.state.step];
+        // Clamp: a step index carried over from another lesson (or a stored
+        // resume point from before a lesson was rewritten) must never point
+        // past the end — that blanked the Journey with an owl error
+        // (LEARN REFRESH step 5).
+        const st = steps[this.state.step] || steps[0];
         const shell = shellHTML(st.screen, { guided: true, visible: this.visible,
                                              note: this.state.shellNote });
         const pctDone = Math.round((this.state.step + 1) / steps.length * 100);
@@ -2174,6 +2178,8 @@ export class LearnJourney extends Component {
 
     openStation(key) {
         this.state.stationKey = key;
+        this.state.step = 0;
+        this.state.quiz = false;
         this.state.view = "outline";
         this._log("station_open");
     }

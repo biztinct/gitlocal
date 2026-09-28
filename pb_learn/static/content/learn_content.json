@@ -16742,7 +16742,7 @@
         "en": "If a payslip ignores the pay scheme, open the person's contract and look at Salary structure. New pay logic belongs in a pay scheme, not here.",
         "vi": "Nếu một phiếu lương bỏ qua chương trình lương, hãy mở hợp đồng của người đó và xem Salary structure. Logic lương mới thuộc về chương trình lương, không phải ở đây."
       },
-      "open": "",
+      "open": "pb_structures.action_pb_structures",
       "places": [],
       "sequence": 120,
       "sidebar_key": "pb_sidebar.item_structures",
@@ -16852,7 +16852,7 @@
         "en": "Read the last sync on every row, not the badge. A stale feed or a climbing staged count is a connection that stopped; open it and check Automatic fetch.",
         "vi": "Hãy đọc lần đồng bộ gần nhất trên từng dòng, không phải nhãn. Nguồn cấp cũ hoặc số bản ghi đang chờ tăng dần là một kết nối đã ngừng; hãy mở nó và xem Automatic fetch."
       },
-      "open": "",
+      "open": "pb_integrations.action_pb_integrations",
       "places": [],
       "sequence": 140,
       "sidebar_key": "pb_sidebar.item_integrations",
@@ -31612,5 +31612,5 @@
       }
     }
   ],
-  "version": "146688c23545"
+  "version": "2eabe6873487"
 }

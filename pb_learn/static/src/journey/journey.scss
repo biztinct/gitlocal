@@ -2444,11 +2444,13 @@ body.lrn-docked .lrn-screen { padding-bottom: 55vh; }
     border-radius: 2px;
     background: var(--vuf-primary, #5A4BB0);
 }
+/* Stepping back is done ONCE: the header goes quiet and the cards keep
+   their own off-path dimming. Dimming the section as well multiplied the two
+   and left text below readable contrast. */
 .lrn-chapter.off {
-    opacity: .55;
     .lrn-chno { background: var(--vuf-line, #E2E8F0); color: var(--vuf-muted, #6B7280); }
+    .lrn-chhead { opacity: .7; }
     .lrn-chhead b { font-size: 14.5px; }
-    &:hover, &:focus-within { opacity: 1; }
 }
 .lrn-chapters.anim .lrn-chapter {
     animation: lrn-chrise .5s cubic-bezier(.2, .8, .2, 1) both;
