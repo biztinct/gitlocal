@@ -397,7 +397,12 @@ KINDS = {
 # from Phase B fs (formula studio), st (statutory), sr (salary structures),
 # ig (integrations), and from Phase C1 dash (dashboard), pa (approvals),
 # pe (employees), ct (contracts), in (insights), ex (explorer),
-# wa (workforce analytics), gr (government reports).
+# wa (workforce analytics), gr (government reports); LEARN REFRESH step 2-3
+# ai (approvals inbox), bp (guided setup), mp (mapping), tr (component
+# treatment), am (approval matrix), rd (records desk), gp (group); step 4
+# pp (People › Pay), dr (Decision Room), hi (hiring), nj (new joiners), ex2
+# (exits), pr (probation), gw (growth plans), cl (contracts ending), wf
+# (Workforce), ac (Access & delegation), cp (Compliance).
 #
 # The Phase C1 prefixes are two letters each because the three People-family
 # cockpits share the `ppl-*` CLASS vocabulary in their templates — one prefix
@@ -408,7 +413,9 @@ KINDS = {
 # stops being linted, and the content can then point at a control that does not
 # exist. Adding the prefix is part of adding a screen.
 ANCHOR_RE = re.compile(
-    r'"((?:pw|pk|ps|im|iw|lg|rep|fs|st|sr|ig|dash|pa|pe|ct|in|ex|wa|gr)'
+    r'"((?:pw|pk|ps|im|iw|lg|rep|fs|st|sr|ig|dash|pa|pe|ct|in|ex|wa|gr'
+    # LEARN REFRESH step 3 (setup) and step 4 (the wider app).
+    r'|bp|mp|tr|am|rd|gp|ai|pp|dr|hi|nj|ex2|pr|gw|cl|wf|ac|cp)'
     r'-[a-z0-9][a-z0-9-]*)"')
 
 
@@ -475,7 +482,11 @@ def anchor_lint(cfg, res, quiet):
         print("  %s!%s anchor-lint            %stemplate no longer exists: %s%s"
               % (YELLOW, OFF, DIM, rel, OFF))
 
-    missing = sorted(referenced - present - retired)
+    # A PATTERN anchor is emitted per record (t-attf-data-coach), so there is
+    # no literal to find; the registry's own test checks the emitter.
+    patterns = tuple(k.rstrip('*') for k in (reg.get('pattern') or {}))
+    missing = sorted(a for a in referenced - present - retired
+                     if not (patterns and a.startswith(patterns)))
     chk = {"id": "anchor-lint",
            "why": spec["why"],
            "taughtIn": ["every lesson step, mission target and coach point-at"]}

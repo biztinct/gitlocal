@@ -913,9 +913,582 @@
       "screen": "treatment",
       "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
       "desc": "Component treatment table: Component, Comes from, Group, Pay role, Subtotal, Tells the run, Value type."
+    },
+    "pp-tabs": {
+      "screen": [
+        "paybands",
+        "payreview"
+      ],
+      "file": "pb_pay/static/src/xml/pay.xml",
+      "desc": "People › Pay's own tabs: Bands, Fairness, Review, Changes.",
+      "shared": true
+    },
+    "pp-bands-tools": {
+      "screen": "paybands",
+      "file": "pb_pay/static/src/xml/pay.xml",
+      "desc": "Bands header: Work it out again, Export, Import, Place a new hire."
+    },
+    "pp-band-picture": {
+      "screen": "paybands",
+      "file": "pb_pay/static/src/xml/pay.xml",
+      "desc": "The band picture: each band's range and middle, a dot per person; Dense rows, Fit to this family."
+    },
+    "pp-health": {
+      "screen": "paybands",
+      "file": "pb_pay/static/src/xml/pay.xml",
+      "desc": "Worth knowing: below / above the band, newer people paid more, a manager paid less, band width."
+    },
+    "pp-fairness": {
+      "screen": "paybands",
+      "file": "pb_pay/static/src/xml/pay.xml",
+      "desc": "Fairness: pay gap by gender across everybody, then by level, team and job."
+    },
+    "pp-reviews": {
+      "screen": "payreview",
+      "file": "pb_pay/static/src/xml/pay_review.xml",
+      "desc": "Pay reviews card: Set up guidance, New review."
+    },
+    "pp-meters": {
+      "screen": "payreview",
+      "file": "pb_pay/static/src/xml/pay_review.xml",
+      "desc": "An open review's meters: Budget, Fairness, Scores."
+    },
+    "pp-stepper": {
+      "screen": "payreview",
+      "file": "pb_pay/static/src/xml/pay_review.xml",
+      "desc": "An open review's stepper: Being written → With HR → With finance → With the CEO → Approved → Applied."
+    },
+    "pp-review-actions": {
+      "screen": "payreview",
+      "file": "pb_pay/static/src/xml/pay_review.xml",
+      "desc": "An open review's action bar: Send for approval, Approve for HR/finance, Approve it, Apply, Take it back, Send back."
+    },
+    "pp-stops": {
+      "screen": "payreview",
+      "file": "pb_pay/static/src/xml/pay_review.xml",
+      "desc": "What stops approval (only with a blocker)."
+    },
+    "pp-worksheet": {
+      "screen": "payreview",
+      "file": "pb_pay/static/src/xml/pay_review.xml",
+      "desc": "The worksheet: filters and the Person … A year columns."
+    },
+    "pp-bulk": {
+      "screen": "payreview",
+      "file": "pb_pay/static/src/xml/pay_review.xml",
+      "desc": "Worksheet tools: Use the guidance, Add 1%, Take off 1%, Share out what is left, Paste scores, Calibration."
+    },
+    "pp-calibration": {
+      "screen": "payreview",
+      "file": "pb_pay/static/src/xml/pay_review.xml",
+      "desc": "Calibration marks: in line with the others, stands out, breaks a limit."
+    },
+    "pp-second-look": {
+      "screen": "payreview",
+      "file": "pb_pay/static/src/xml/pay_review.xml",
+      "desc": "Calibration's Worth a second look list.",
+      "reserved": true
+    },
+    "pp-changes": {
+      "screen": "payreview",
+      "file": "pb_pay/static/src/xml/pay_review.xml",
+      "desc": "Changes tab: Pay changes, New pay change.",
+      "reserved": true
+    },
+    "dr-head": {
+      "screen": "decisionroom",
+      "file": "pb_decision_room/static/src/xml/decision_room.xml",
+      "desc": "Decision Room header: See the year before you commit to it; Undo, Reset, Save plan."
+    },
+    "dr-levers": {
+      "screen": "decisionroom",
+      "file": "pb_decision_room/static/src/xml/decision_room.xml",
+      "desc": "Shape your plan: What if we… and the levers."
+    },
+    "dr-presets": {
+      "screen": "decisionroom",
+      "file": "pb_decision_room/static/src/xml/decision_room.xml",
+      "desc": "Presets: Grow thoughtfully, Invest in people, Ease overtime."
+    },
+    "dr-goals": {
+      "screen": "decisionroom",
+      "file": "pb_decision_room/static/src/xml/decision_room.xml",
+      "desc": "Your definition of a good year: the goal compass."
+    },
+    "dr-results": {
+      "screen": "decisionroom",
+      "file": "pb_decision_room/static/src/xml/decision_room.xml",
+      "desc": "Result tabs: Work & shifts, Why profit changed, People & pay, Room to hire."
+    },
+    "dr-compare": {
+      "screen": "decisionroom",
+      "file": "pb_decision_room/static/src/xml/decision_room.xml",
+      "desc": "Compare possibilities, with confidence: the saved plans table."
+    },
+    "dr-propose": {
+      "screen": "decisionroom",
+      "file": "pb_decision_room/static/src/xml/decision_room.xml",
+      "desc": "A saved plan's verbs: Propose, Approve, Send back, Keep editing a copy (first row)."
+    },
+    "dr-exact": {
+      "screen": "decisionroom",
+      "file": "pb_decision_room/static/src/xml/decision_room.xml",
+      "desc": "A saved plan's Exact cost (first row)."
+    },
+    "dr-brief": {
+      "screen": "decisionroom",
+      "file": "pb_decision_room/static/src/xml/decision_room.xml",
+      "desc": "Export the decision brief.",
+      "reserved": true
+    },
+    "hi-tools": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_board.xml",
+      "desc": "Hiring tools menu.",
+      "reserved": true
+    },
+    "hi-raise": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_board.xml",
+      "desc": "Raise a hiring request."
+    },
+    "hi-numbers": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_board.xml",
+      "desc": "Hiring's quiet numbers row."
+    },
+    "hi-steps": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_board.xml",
+      "desc": "The four-step strip: Request & approve … Welcome aboard."
+    },
+    "hi-tabs": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_board.xml",
+      "desc": "Roles / Interviews.",
+      "reserved": true
+    },
+    "hi-row": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_board.xml",
+      "desc": "The role cards, each with Step X of 4 — or, when the board has nobody on it, its empty-board message (both carry the anchor; one renders at a time)."
+    },
+    "hi-next": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_board.xml",
+      "desc": "A role card's Next: line (first card)."
+    },
+    "hi-stage": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_board.xml",
+      "desc": "A candidate's Move stage (role drawer)."
+    },
+    "hi-wizard": {
+      "screen": "hiring_request",
+      "file": "pb_hiring/static/src/xml/hiring_board.xml",
+      "desc": "The request wizard: Let's shape your next hire."
+    },
+    "nj-run": {
+      "screen": "joiners",
+      "file": "pb_onboarding/static/src/xml/onboarding_board.xml",
+      "desc": "Run today's steps."
+    },
+    "nj-numbers": {
+      "screen": "joiners",
+      "file": "pb_onboarding/static/src/xml/onboarding_board.xml",
+      "desc": "New joiners' quiet numbers."
+    },
+    "nj-steps": {
+      "screen": "joiners",
+      "file": "pb_onboarding/static/src/xml/onboarding_board.xml",
+      "desc": "Getting ready → Settling in → Checklist done."
+    },
+    "nj-list": {
+      "screen": "joiners",
+      "file": "pb_onboarding/static/src/xml/onboarding_board.xml",
+      "desc": "The joiner cards — or, when the board has nobody on it, its empty-board message (both carry the anchor; one renders at a time)."
+    },
+    "nj-buddy-pick": {
+      "screen": "joiners",
+      "file": "pb_onboarding/static/src/xml/onboarding_board.xml",
+      "desc": "A card's Choose one (buddy).",
+      "reserved": true
+    },
+    "nj-drawer": {
+      "screen": "joiners",
+      "file": "pb_onboarding/static/src/xml/onboarding_board.xml",
+      "desc": "The joiner drawer: Still to do, Done, Conversations."
+    },
+    "nj-buddy": {
+      "screen": "joiners",
+      "file": "pb_onboarding/static/src/xml/onboarding_board.xml",
+      "desc": "The drawer's people strip: HR contact, Buddy, Their record."
+    },
+    "ex2-run": {
+      "screen": "exits",
+      "file": "pb_offboarding/static/src/xml/exits_board.xml",
+      "desc": "Run today's steps.",
+      "reserved": true
+    },
+    "ex2-numbers": {
+      "screen": "exits",
+      "file": "pb_offboarding/static/src/xml/exits_board.xml",
+      "desc": "Exits' quiet numbers."
+    },
+    "ex2-steps": {
+      "screen": "exits",
+      "file": "pb_offboarding/static/src/xml/exits_board.xml",
+      "desc": "Working their notice → Signing off → Ready to settle → Settled."
+    },
+    "ex2-list": {
+      "screen": "exits",
+      "file": "pb_offboarding/static/src/xml/exits_board.xml",
+      "desc": "The leaver cards — or, when the board has nobody on it, its empty-board message (both carry the anchor; one renders at a time)."
+    },
+    "ex2-clearance": {
+      "screen": "exits",
+      "file": "pb_offboarding/static/src/xml/exits_board.xml",
+      "desc": "A card's Signed off by lights: IT, HR, Finance, Admin (first card)."
+    },
+    "ex2-drawer": {
+      "screen": "exits",
+      "file": "pb_offboarding/static/src/xml/exits_board.xml",
+      "desc": "The leaver drawer.",
+      "reserved": true
+    },
+    "ex2-settle": {
+      "screen": "exits",
+      "file": "pb_offboarding/static/src/xml/exits_board.xml",
+      "desc": "The settlement block: Close settlement, Open the settlement."
+    },
+    "ex2-handover": {
+      "screen": "exits",
+      "file": "pb_offboarding/static/src/xml/exits_board.xml",
+      "desc": "Handover heading and Add."
+    },
+    "ex2-farewell": {
+      "screen": "exits",
+      "file": "pb_offboarding/static/src/xml/exits_board.xml",
+      "desc": "The farewell note.",
+      "reserved": true
+    },
+    "pr-run": {
+      "screen": "probation",
+      "file": "pb_probation/static/src/xml/probation_board.xml",
+      "desc": "Run today's steps.",
+      "reserved": true
+    },
+    "pr-numbers": {
+      "screen": "probation",
+      "file": "pb_probation/static/src/xml/probation_board.xml",
+      "desc": "Probation's quiet numbers."
+    },
+    "pr-steps": {
+      "screen": "probation",
+      "file": "pb_probation/static/src/xml/probation_board.xml",
+      "desc": "Choose peers → … → Share the outcome."
+    },
+    "pr-list": {
+      "screen": "probation",
+      "file": "pb_probation/static/src/xml/probation_board.xml",
+      "desc": "The trial cards — or, when the board has nobody on it, its empty-board message (both carry the anchor; one renders at a time)."
+    },
+    "pr-drawer": {
+      "screen": "probation",
+      "file": "pb_probation/static/src/xml/probation_board.xml",
+      "desc": "The trial drawer.",
+      "reserved": true
+    },
+    "pr-peers": {
+      "screen": "probation",
+      "file": "pb_probation/static/src/xml/probation_board.xml",
+      "desc": "Colleagues asked (drawer)."
+    },
+    "pr-choose-peers": {
+      "screen": "probation",
+      "file": "pb_probation/static/src/xml/probation_board.xml",
+      "desc": "The choose-colleagues dialog.",
+      "reserved": true
+    },
+    "pr-verdict": {
+      "screen": "probation",
+      "file": "pb_probation/static/src/xml/probation_board.xml",
+      "desc": "Confirm them / Extend the trial / Do not confirm (Decide wizard)."
+    },
+    "gw-run": {
+      "screen": "growth",
+      "file": "pb_pip/static/src/xml/pip_board.xml",
+      "desc": "Run today's checks.",
+      "reserved": true
+    },
+    "gw-numbers": {
+      "screen": "growth",
+      "file": "pb_pip/static/src/xml/pip_board.xml",
+      "desc": "Growth plans' quiet numbers."
+    },
+    "gw-steps": {
+      "screen": "growth",
+      "file": "pb_pip/static/src/xml/pip_board.xml",
+      "desc": "Asked → Coaching → Plan running → Decision."
+    },
+    "gw-list": {
+      "screen": "growth",
+      "file": "pb_pip/static/src/xml/pip_board.xml",
+      "desc": "The plan cards — or, when the board has nobody on it, its empty-board message (both carry the anchor; one renders at a time).",
+      "reserved": true
+    },
+    "gw-objectives": {
+      "screen": "growth",
+      "file": "pb_pip/static/src/xml/pip_board.xml",
+      "desc": "What has to change: objectives on track / at risk / met / not met."
+    },
+    "cl-run": {
+      "screen": "contractends",
+      "file": "pb_contract_lifecycle/static/src/xml/contractlife_board.xml",
+      "desc": "Run today's steps.",
+      "reserved": true
+    },
+    "cl-numbers": {
+      "screen": "contractends",
+      "file": "pb_contract_lifecycle/static/src/xml/contractlife_board.xml",
+      "desc": "Contracts' quiet numbers."
+    },
+    "cl-steps": {
+      "screen": "contractends",
+      "file": "pb_contract_lifecycle/static/src/xml/contractlife_board.xml",
+      "desc": "Running → Decision needed → Being agreed → Decided.",
+      "reserved": true
+    },
+    "cl-list": {
+      "screen": "contractends",
+      "file": "pb_contract_lifecycle/static/src/xml/contractlife_board.xml",
+      "desc": "The contract cards — or, when the board has nobody on it, its empty-board message (both carry the anchor; one renders at a time).",
+      "reserved": true
+    },
+    "cl-drawer": {
+      "screen": "contractends",
+      "file": "pb_contract_lifecycle/static/src/xml/contractlife_board.xml",
+      "desc": "The contract drawer.",
+      "reserved": true
+    },
+    "cl-decide": {
+      "screen": "contractends",
+      "file": "pb_contract_lifecycle/static/src/xml/contractlife_board.xml",
+      "desc": "Make it permanent / Extend it / Let it end."
+    },
+    "cl-raise": {
+      "screen": "contractends",
+      "file": "pb_contract_lifecycle/static/src/xml/contractlife_board.xml",
+      "desc": "Raise the decision."
+    },
+    "wf-tabs": {
+      "screen": [
+        "wftoday",
+        "wftime",
+        "wfclose"
+      ],
+      "file": "pb_mission/static/src/xml/pb_mission.xml",
+      "desc": "Workforce's lens rail.",
+      "shared": true
+    },
+    "wf-needs": {
+      "screen": "wftoday",
+      "file": "pb_mission/static/src/xml/pb_dock.xml",
+      "desc": "The Needs you panel (My team / Organisation)."
+    },
+    "wf-clean": {
+      "screen": "wftoday",
+      "file": "pb_mission/static/src/xml/pb_dock.xml",
+      "desc": "Approve all N clean (only with clean overtime)."
+    },
+    "wf-today": {
+      "screen": "wftoday",
+      "file": "pb_today/static/src/xml/pb_today.xml",
+      "desc": "Today's head and tiles."
+    },
+    "wf-time": {
+      "screen": "wftime",
+      "file": "pb_time_hub/static/src/xml/time_hub.xml",
+      "desc": "Time's tabs: Timeline, Week Grid, Exceptions, Import."
+    },
+    "wf-exceptions": {
+      "screen": "wftime",
+      "file": "pb_time_hub/static/src/xml/time_hub.xml",
+      "desc": "The Exceptions tab body.",
+      "reserved": true
+    },
+    "wf-timeoff": {
+      "screen": "wftimeoff",
+      "file": "pb_timeoff/static/src/xml/pb_timeoff.xml",
+      "desc": "Time Off head: month and Apply on behalf."
+    },
+    "wf-outtoday": {
+      "screen": "wftimeoff",
+      "file": "pb_timeoff/static/src/xml/pb_timeoff.xml",
+      "desc": "Out today (only when someone is out).",
+      "reserved": true
+    },
+    "wf-leave-queue": {
+      "screen": "wftimeoff",
+      "file": "pb_timeoff/static/src/xml/pb_timeoff.xml",
+      "desc": "The leave approval queue."
+    },
+    "wf-overtime": {
+      "screen": "wfovertime",
+      "file": "pb_hr_workforce/static/src/xml/pb_ot_desk.xml",
+      "desc": "The Overtime board.",
+      "reserved": true
+    },
+    "wf-ot-bonus": {
+      "screen": "wfovertime",
+      "file": "pb_hr_workforce/static/src/xml/pb_ot_desk.xml",
+      "desc": "Bonus Hours (bonus-view access).",
+      "reserved": true
+    },
+    "wf-ot-queue": {
+      "screen": "wfovertime",
+      "file": "pb_hr_workforce/static/src/xml/pb_ot_desk.xml",
+      "desc": "The overtime approval queue."
+    },
+    "wf-ot-rules": {
+      "screen": "wfovertime",
+      "file": "pb_hr_workforce/static/src/xml/pb_ot_desk.xml",
+      "desc": "Overtime rules & ceilings."
+    },
+    "wf-close": {
+      "screen": "wfclose",
+      "file": "pb_mission/static/src/xml/pb_close_lens.xml",
+      "desc": "Close head: the week and N flagged."
+    },
+    "wf-close-flags": {
+      "screen": "wfclose",
+      "file": "pb_mission/static/src/xml/pb_close_lens.xml",
+      "desc": "The flags table: Fix, Approve as-is, Review all."
+    },
+    "wf-close-handoff": {
+      "screen": "wfclose",
+      "file": "pb_mission/static/src/xml/pb_close_lens.xml",
+      "desc": "Payroll handoff: Regular hours, Overtime, Bonus hours, Est. gross."
+    },
+    "wf-close-lock": {
+      "screen": "wfclose",
+      "file": "pb_mission/static/src/xml/pb_close_lens.xml",
+      "desc": "Lock week & send to payroll."
+    },
+    "wf-close-locked": {
+      "screen": "wfclose",
+      "file": "pb_mission/static/src/xml/pb_close_lens.xml",
+      "desc": "Week locked (only once locked).",
+      "reserved": true
+    },
+    "ac-head": {
+      "screen": "access",
+      "file": "biz_access/static/src/xml/access_board.xml",
+      "desc": "Access header and its buttons."
+    },
+    "ac-seeas": {
+      "screen": "access",
+      "file": "biz_access/static/src/xml/access_board.xml",
+      "desc": "See it as ▾ (access managers)."
+    },
+    "ac-handover": {
+      "screen": "access",
+      "file": "biz_access/static/src/xml/access_board.xml",
+      "desc": "Hand my access over."
+    },
+    "ac-newrole": {
+      "screen": "access",
+      "file": "biz_access/static/src/xml/access_board.xml",
+      "desc": "New role (access managers)."
+    },
+    "ac-banner": {
+      "screen": "access",
+      "file": "biz_access/static/src/xml/access_board.xml",
+      "desc": "The See it as banner.",
+      "reserved": true
+    },
+    "ac-tabs": {
+      "screen": "access",
+      "file": "biz_access/static/src/xml/access_board.xml",
+      "desc": "Roles / People / Screens / Hand-overs."
+    },
+    "ac-rolecard": {
+      "screen": "access",
+      "file": "biz_access/static/src/xml/access_board.xml",
+      "desc": "The role cards."
+    },
+    "ac-builder": {
+      "screen": "access",
+      "file": "biz_access/static/src/xml/access_board.xml",
+      "desc": "The New role dialog.",
+      "reserved": true
+    },
+    "cp-generate": {
+      "screen": "filing_flow",
+      "file": "pb_govt_reports/static/src/xml/filing_flow.xml",
+      "desc": "Generate a filing: the flow page."
+    },
+    "cp-gen-steps": {
+      "screen": "filing_flow",
+      "file": "pb_govt_reports/static/src/xml/filing_flow.xml",
+      "desc": "Choose the filing → Scope → Generate."
+    },
+    "cp-gen-go": {
+      "screen": "filing_flow",
+      "file": "pb_govt_reports/static/src/xml/filing_flow.xml",
+      "desc": "The Scope step's Generate button."
+    },
+    "cp-bank": {
+      "screen": "compliancemore",
+      "file": "pb_bank_ocr/static/src/xml/pb_bank_ocr.xml",
+      "desc": "Bank's numbers.",
+      "reserved": true
+    },
+    "cp-bank-steps": {
+      "screen": "compliancemore",
+      "file": "pb_bank_ocr/static/src/xml/pb_bank_ocr.xml",
+      "desc": "Draft → HR Review → Finance Review → Approved."
+    },
+    "cp-bank-new": {
+      "screen": "compliancemore",
+      "file": "pb_bank_ocr/static/src/xml/pb_bank_ocr.xml",
+      "desc": "New bank-change request drop zone.",
+      "reserved": true
+    },
+    "cp-young": {
+      "screen": "compliancemore",
+      "file": "pb_young_worker/static/src/xml/pb_young_worker.xml",
+      "desc": "Young workers' numbers."
+    },
+    "cp-audit": {
+      "screen": "compliancemore",
+      "file": "pb_audit/static/src/xml/pb_audit.xml",
+      "desc": "Audit's head numbers."
+    },
+    "cp-audit-filters": {
+      "screen": "compliancemore",
+      "file": "pb_audit/static/src/xml/pb_audit.xml",
+      "desc": "Audit filters: Today, This week, By me, Salary only, Logins.",
+      "reserved": true
+    },
+    "cp-audit-lenses": {
+      "screen": "compliancemore",
+      "file": "pb_audit/static/src/xml/pb_audit.xml",
+      "desc": "Stream / Salary lens / Login lens.",
+      "reserved": true
     }
   },
-  "pattern": {},
+  "pattern": {
+    "pp-tab-": {
+      "screen": [
+        "paybands",
+        "payreview"
+      ],
+      "shared": true,
+      "file": "pb_pay/static/src/xml/pay.xml",
+      "desc": "One per People › Pay tab: pp-tab-bands, pp-tab-fairness, pp-tab-review, pp-tab-changes (t-attf-data-coach). A walkthrough presses Review to open that tab — switching a tab reads, it writes nothing."
+    }
+  },
   "practice": {
     "rep-nav": "The replica's own sidebar. Mirrors pb_sidebar; nothing on it navigates the real app.",
     "rep-banner": "The practice banner. Says, on every screen, that none of this is your company.",
@@ -952,7 +1525,26 @@
     "rep-rd-reviewpanel": "The practice Records Desk review drawer, drawn open beside the grid.",
     "rep-gp-foot": "The practice Group page's line that nothing is stored in the group currency.",
     "rep-ex-compare": "The practice Explorer's Compare schemes panel, each scheme in its own money.",
-    "rep-slipline": "The worked example's statutory deductions, drawn on the STATUTORY replica beside the rates that produced them. It is the far end of L6's trace and it exists only here: the product's statutory cockpit shows rates, and a payslip shows đồng, and no single product screen shows both at once. Naming it rep- is the honest consequence — the Coach must never claim to point at this on a live screen."
+    "rep-slipline": "The worked example's statutory deductions, drawn on the STATUTORY replica beside the rates that produced them. It is the far end of L6's trace and it exists only here: the product's statutory cockpit shows rates, and a payslip shows đồng, and no single product screen shows both at once. Naming it rep- is the honest consequence — the Coach must never claim to point at this on a live screen.",
+    "rep-pr-budget": "The practice pay review's Budget meter, carrying its before/after for the `meter` moment: it fills as the rises go in.",
+    "rep-pr-guide": "The practice worksheet's Use the guidance button (a Try target; it changes nothing).",
+    "rep-pr-cal": "The practice worksheet's Calibration button (a Try target).",
+    "rep-pr-send": "The practice review's Send for approval button — guarded in Try, like every control that would write.",
+    "rep-dr-exact": "The practice Decision Room's line comparing the exact cost with the estimate.",
+    "rep-hi-cands": "The practice Hiring board's candidate strip for the first role, with Nam at Discussion 1.",
+    "rep-hi-route": "The practice hiring request's sign-off route: manager, HR lead, Finance only if over budget.",
+    "rep-hi-send": "The practice hiring request's Send for approval — guarded in Try.",
+    "rep-ex-card": "The practice Exits board's leaver card (Bùi Thị Hạnh), a Try target that opens her drawer.",
+    "rep-ex-open": "The practice leaver drawer's Open the settlement button.",
+    "rep-ex-desks": "The practice leaver drawer, drawn open: what each of the four desks checks, and which has not signed.",
+    "rep-wf-exc": "The practice Time panel's line on exceptions becoming flags on Close.",
+    "rep-wf-flag": "The practice Close board's first flag row (Hùng's missing check-out).",
+    "rep-wf-fix": "The Fix button on that flag — the Try step that corrects the day.",
+    "rep-wf-asis": "The Approve as-is button on that flag row.",
+    "rep-wf-locked": "The practice Close board's picture of a locked week, with the Reopen… note. Drawn beside the grey lock so the lesson can show both states.",
+    "rep-ac-handover": "The practice Hand my access over dialog, drawn open: who, what, until, and the automatic take-back.",
+    "rep-pm-wall": "The practice Wall card: one piece of praise tied to a company value, and Say thank you.",
+    "rep-pm-tiles": "The practice tiles for People's smaller tabs: Where they work, Assets, Goals, Announce."
   },
   "foreign": {
     "im-connectors": "pb_import — the \"Manage connectors\" deep link the IA redesign's Cycle 3 left behind when it closed Import's five duplicate connector doors. pb_learn neither laid it nor teaches it; the im-* family in that template is otherwise pb_learn's, which is exactly why it has to be named rather than wildcarded.",
@@ -998,7 +1590,28 @@
       "pb_formula_studio/static/src/xml/component_treatment.xml",
       "pb_approval_config/static/src/xml/matrix_room.xml",
       "pb_records/static/src/xml/records_desk.xml",
-      "pb_group/static/src/xml/group_room.xml"
+      "pb_group/static/src/xml/group_room.xml",
+      "biz_access/static/src/xml/access_board.xml",
+      "pb_audit/static/src/xml/pb_audit.xml",
+      "pb_bank_ocr/static/src/xml/pb_bank_ocr.xml",
+      "pb_contract_lifecycle/static/src/xml/contractlife_board.xml",
+      "pb_decision_room/static/src/xml/decision_room.xml",
+      "pb_govt_reports/static/src/xml/filing_flow.xml",
+      "pb_hiring/static/src/xml/hiring_board.xml",
+      "pb_hr_workforce/static/src/xml/pb_ot_desk.xml",
+      "pb_mission/static/src/xml/pb_close_lens.xml",
+      "pb_mission/static/src/xml/pb_dock.xml",
+      "pb_mission/static/src/xml/pb_mission.xml",
+      "pb_offboarding/static/src/xml/exits_board.xml",
+      "pb_onboarding/static/src/xml/onboarding_board.xml",
+      "pb_pay/static/src/xml/pay.xml",
+      "pb_pay/static/src/xml/pay_review.xml",
+      "pb_pip/static/src/xml/pip_board.xml",
+      "pb_probation/static/src/xml/probation_board.xml",
+      "pb_time_hub/static/src/xml/time_hub.xml",
+      "pb_timeoff/static/src/xml/pb_timeoff.xml",
+      "pb_today/static/src/xml/pb_today.xml",
+      "pb_young_worker/static/src/xml/pb_young_worker.xml"
     ],
     "replica": [
       "pb_learn/static/src/engine/screens.js",

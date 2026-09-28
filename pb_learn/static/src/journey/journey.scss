@@ -915,6 +915,42 @@
     transition: top .22s, left .22s, width .22s, height .22s;
 }
 
+/* LEARN REFRESH step 4 — a narrow screen docks the card as a bottom sheet
+   (spotlight.js DOCK_BELOW) so it never sits on the control it explains. The
+   grip folds it to its title line and back; motion only on the height. */
+.lrn-coachfold { display: none; }
+body.lrn-docked .lrn-screen { padding-bottom: 55vh; }
+.lrn-coach.docked {
+    max-height: 46vh;
+    border-radius: var(--vuf-r-lg, 16px);
+    padding-top: 6px;
+    transition: top .22s;
+
+    .lrn-coachfold {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        padding: 4px 0 8px;
+        border: 0;
+        background: none;
+        cursor: pointer;
+    }
+    .lrn-coachgrip {
+        width: 44px;
+        height: 5px;
+        border-radius: 3px;
+        background: var(--vuf-line-2, #C9CEDA);
+    }
+    &.folded {
+        overflow: hidden;
+        > *:not(.lrn-coachfold):not(h3):not(.lrn-kicker) { display: none; }
+        h3 { margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .lrn-coach.docked { transition: none; }
+}
+
 .lrn-coach {
     position: fixed;
     pointer-events: auto;
@@ -2140,4 +2176,210 @@
 
 @media (prefers-reduced-motion: reduce) {
     .lrn-zlane, .lrn-zrule.added { animation: none; }
+}
+
+/* =============================================================================
+   LEARN REFRESH step 4 — the wider app's replicas (engine/screens.js).
+   Prefix `lrn-y*` (checked free across pb_learn, LR16). Same tokens as the
+   step 3 set; flat fills, no gradients.
+   ========================================================================== */
+.lrn-ywf { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 12px; align-items: start; }
+.lrn-ywfmain { min-width: 0; }
+.lrn-ydock { display: grid; gap: 8px; align-content: start; }
+.lrn-yclean {
+    display: grid;
+    gap: 6px;
+    padding: 10px;
+    border-radius: var(--vuf-r-sm, 10px);
+    background: var(--vuf-line-soft, #F1F0F7);
+    .lrn-note { margin: 0; }
+}
+.lrn-ynums {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    margin: 0 0 10px;
+    font-size: 12px;
+    color: var(--vuf-muted, #6B7280);
+    b { color: var(--vuf-ink, #101728); font-size: 14px; }
+}
+.lrn-yroles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.lrn-yrole {
+    display: grid;
+    gap: 5px;
+    align-content: start;
+    padding: 12px;
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-md, 12px);
+    background: var(--vuf-surface, #fff);
+    font-size: 12.5px;
+    > b { display: flex; align-items: center; gap: 6px; }
+    .lrn-chip { justify-self: start; }
+}
+.lrn-ynext { font-size: 12px; color: var(--vuf-primary, #5A4BB0); }
+.lrn-ystages { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+.lrn-ystage {
+    display: inline-flex;
+    gap: 6px;
+    align-items: baseline;
+    padding: 4px 10px;
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-pill, 999px);
+    background: var(--vuf-surface, #fff);
+    font-size: 12px;
+}
+.lrn-ystage.on { border-color: var(--vuf-primary, #5A4BB0); color: var(--vuf-primary, #5A4BB0); font-weight: 800; }
+.lrn-ystages .lrn-rline { flex: 0 0 14px; }
+.lrn-ytools { display: grid; gap: 6px; }
+.lrn-yrules { display: grid; gap: 2px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--vuf-line, #E5E7EB); }
+.lrn-ylocked {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    padding: 8px 10px;
+    border-radius: var(--vuf-r-sm, 10px);
+    background: var(--vuf-ok-bg, #E7F6EF);
+    color: var(--vuf-ok, #0F7B55);
+    font-size: 12px;
+}
+.lrn-yw { color: var(--vuf-warn, #B45309); }
+
+/* People › Pay: the band picture. */
+.lrn-ybands { display: grid; gap: 12px; }
+.lrn-yband { display: grid; grid-template-columns: 140px minmax(0, 1fr) 70px; gap: 10px; align-items: center; font-size: 12px; }
+.lrn-ytrack {
+    position: relative;
+    height: 22px;
+    border-radius: var(--vuf-r-pill, 999px);
+    background: var(--vuf-line-soft, #F1F0F7);
+    i { position: absolute; top: 0; bottom: 0; display: block; }
+}
+.lrn-yrange { border-radius: var(--vuf-r-pill, 999px); background: rgba(90, 75, 176, .18); }
+.lrn-ymid { width: 2px; background: var(--vuf-primary, #5A4BB0); }
+.lrn-ydot {
+    top: 5px !important;
+    bottom: auto !important;
+    width: 12px;
+    height: 12px;
+    margin-left: -6px;
+    border: 2px solid var(--vuf-surface, #fff);
+    border-radius: 50%;
+    background: var(--vuf-primary, #5A4BB0);
+    &.out { background: var(--vuf-warn, #B45309); }
+}
+
+/* People › Pay › Review: the budget meter the lesson fills. */
+.lrn-ymeter {
+    height: 8px;
+    margin: 6px 0 2px;
+    border-radius: var(--vuf-r-pill, 999px);
+    background: var(--vuf-line, #E5E7EB);
+    overflow: hidden;
+    i { display: block; height: 100%; border-radius: inherit; background: var(--vuf-ok, #10B981); transition: width 1.4s cubic-bezier(.2, .8, .2, 1); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .lrn-ymeter i { transition: none; }
+}
+
+@media (max-width: 900px) {
+    .lrn-ywf { grid-template-columns: 1fr; }
+    .lrn-yband { grid-template-columns: 110px minmax(0, 1fr) 56px; }
+}
+
+/* LEARN REFRESH step 4 — the hero: one person's road on the Lifecycle line. */
+.lrn-ytrail {
+    margin: 0 0 var(--vuf-sp-3, 12px);
+    padding: 14px 16px 30px;
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-lg, 16px);
+    background: var(--vuf-surface, #fff);
+}
+.lrn-ythead {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    align-items: baseline;
+    margin-bottom: 18px;
+    b { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; }
+    .lrn-note { margin: 0; }
+}
+.lrn-ytroad { position: relative; height: 56px; margin: 0 28px; }
+.lrn-ytline, .lrn-ytlit {
+    position: absolute;
+    top: 16px;
+    left: 0;
+    height: 4px;
+    border-radius: 2px;
+    display: block;
+}
+.lrn-ytline { right: 0; background: var(--vuf-line, #E5E7EB); }
+.lrn-ytlit { background: var(--vuf-ok, #10B981); transition: width .9s cubic-bezier(.2, .8, .2, 1); }
+.lrn-ytgap {
+    position: absolute;
+    top: -2px;
+    transform: translateX(-50%);
+    padding: 0 6px;
+    background: var(--vuf-surface, #fff);
+    font-size: 10.5px;
+    font-style: italic;
+    color: var(--vuf-muted, #6B7280);
+}
+.lrn-ytstop {
+    position: absolute;
+    top: 0;
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    width: 96px;
+    margin-left: -48px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+}
+.lrn-ytdot {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--vuf-line, #E5E7EB);
+    border-radius: 50%;
+    background: var(--vuf-surface, #fff);
+    color: var(--vuf-muted, #6B7280);
+    transition: background .4s, border-color .4s, color .4s;
+}
+.lrn-ytstop.lit .lrn-ytdot { border-color: var(--vuf-ok, #10B981); background: var(--vuf-ok, #10B981); color: #fff; }
+.lrn-ytstop:focus-visible .lrn-ytdot { box-shadow: 0 0 0 3px rgba(90, 75, 176, .35); }
+.lrn-ytname { font-size: 11.5px; font-weight: 700; text-align: center; line-height: 1.25; }
+.lrn-yttoken {
+    position: absolute;
+    top: -14px;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    margin-left: -13px;
+    border: 2px solid var(--vuf-surface, #fff);
+    border-radius: 50%;
+    background: var(--vuf-primary, #5A4BB0);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(16, 12, 40, .18);
+    transition: left 1.2s cubic-bezier(.2, .8, .2, 1);
+    pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    .lrn-ytlit, .lrn-ytdot, .lrn-yttoken { transition: none; }
+}
+@media (max-width: 640px) {
+    .lrn-ytroad { margin: 0 20px; }
+    .lrn-ytstop { width: 70px; margin-left: -35px; }
+    .lrn-ytname { font-size: 10.5px; }
+}
+@media (max-width: 640px) {
+    .lrn-ywf .lrn-row, .lrn-yroles .lrn-row { flex-wrap: wrap; }
+    .lrn-ywf .lrn-rr { margin-left: 0; }
+    .lrn-ynums { gap: 4px 12px; }
 }

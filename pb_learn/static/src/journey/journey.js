@@ -55,7 +55,7 @@ const MISSION_HOME = {
  * A line missing from this list is still drawn, after the ones that are here.
  * That is deliberate: a new section must never be able to disappear from the
  * map because somebody forgot a second file. */
-const LINE_ORDER = ["overview", "payrun", "people", "insights", "compliance", "setup"];
+const LINE_ORDER = ["overview", "payrun", "people", "lifecycle", "workforce", "insights", "compliance", "setup"];
 const LINE_ICON = {
     overview: "grid",
     payrun: "zap",
@@ -63,19 +63,23 @@ const LINE_ICON = {
     insights: "trending-up",
     compliance: "shield-check",
     setup: "plug",
+    // LEARN REFRESH step 4
+    lifecycle: "git-branch",
+    workforce: "compass",
 };
 import { SCREENS, practiceShellHTML, shellHTML } from "../engine/screens";
 import { INPUT_ANCHORS } from "../engine/fixture";
 import { looseMatch } from "../engine/input_match";
 import { playableSteps } from "../scenario/scenario_service";
 import { LiveState } from "../live/live_state";
-import { canOpen, openScreen, placeLabel, setReach } from "../engine/places";
+import { canOpen, lensReachable, openScreen, placeLabel, resolveLensReach, setReach }
+    from "../engine/places";
 
 /* Arrival payloads already acted on. HubShell hands the Lessons lens ONE
    arrival object per hub visit, so remembering it by identity is what stops a
    deep link replaying every time the reader switches back to this tab. */
 const CONSUMED_ARRIVALS = new WeakSet();
-import { morphHTML, calcHTML, pipeHTML, runPipeline, runTick } from "../engine/visuals";
+import { morphHTML, calcHTML, pipeHTML, runMeter, runPipeline, runTick } from "../engine/visuals";
 
 const LOCAL_PREFS = "pbLearnPrefs";
 
@@ -86,12 +90,16 @@ const LOCAL_PREFS = "pbLearnPrefs";
    drawn in the last one rather than disappearing. */
 const CHAPTERS = [
     { key: "ch1", lines: ["overview"] },
-    { key: "ch2", lines: ["payrun", "people"] },
+    { key: "ch2", lines: ["payrun", "people", "lifecycle", "workforce"] },
     { key: "ch3", lines: ["insights", "compliance", "setup"] },
 ];
 const ROLE_ORDER = ["officer", "approver", "hr", "owner"];
 const ROLE_LABEL = { officer: "roleOfficer", approver: "roleApprover", hr: "roleHr", owner: "roleOwner" };
 const ROLE_ICON = { officer: "calculator", approver: "clipboard-check", hr: "users", owner: "trending-up" };
+/* LEARN REFRESH step 4 — the Lifecycle line's road, in the order one person
+   lives it, and where the walker stood on the last visit (per browser). */
+const LIFE_TRAIL = ["hiring", "joiners", "probation", "exits"];
+const LIFE_TRAIL_KEY = "pbLearnLifeTrail";
 /* Per-browser "skip this month" for the month-end card. */
 const MONTH_END_SKIP = "pbLearnMonthEndSkip";
 
@@ -185,6 +193,10 @@ export class LearnJourney extends Component {
         });
         onMounted(() => {
             setOverlayRoot(this.overlayRef.el);
+            // A deep link (a Try, a lesson) can land the FIRST render on a
+            // view that needs its spotlight; onPatched does not run for the
+            // first render, so paint it here too (LEARN REFRESH step 4).
+            this._afterPaint();
             // CAPTURE PHASE, and it is not a style choice. "document, not
             // window" was necessary and NOT sufficient: Odoo's hotkey service
             // stops propagation at document-BUBBLE, so a bubble listener here
@@ -279,6 +291,21 @@ export class LearnJourney extends Component {
             screens: content.screens || [],
         };
         setReach(runtime.visible_stations);
+        // LEARN REFRESH step 4 — a station whose hub TAB this reader cannot
+        // open says so on its card, asked of the hub's own gates (the same
+        // groups and probes that hide the tab), never of a copied list.
+        try {
+            await resolveLensReach(this.env, this.orm, this.bundle.screens);
+        } catch {
+            // Unknown stays unknown: the card simply makes no claim.
+        }
+        for (const s of this.bundle.stations) {
+            const sc = this.screenOf(s);
+            if (sc && lensReachable(sc) === false) {
+                s.visible = false;
+                s.gated = true;
+            }
+        }
         RT.tokens = this.bundle.tokens || {};
         RT.chrome = this.bundle.chrome || {};
         // The hovercard's match table and its one delegated listener. Built
@@ -622,6 +649,7 @@ export class LearnJourney extends Component {
                 <h3 class="lrn-linehead">${ic(LINE_ICON[lineKey] || "map-pin")}
                     ${esc(T("lines." + lineKey))}
                     ${this._lineRingHTML(lines[lineKey] || [])}</h3>
+                ${lineKey === "lifecycle" && !q ? this._lifeTrailHTML() : ""}
                 <div class="lrn-cards">${items.map((s) => this._cardHTML(s)).join("")}</div>
                 ${this._scenarioRowHTML(screns)}
             </section>`;
@@ -808,6 +836,84 @@ export class LearnJourney extends Component {
             esc(T("streakTitle"))}</span>`;
     }
 
+    /* ---------------------------------------------- LEARN REFRESH step 4
+       THE HERO: ONE PERSON'S ROAD. The Lifecycle line is drawn as the road
+       Hoàng Văn Nam — the practice company's newest hire — travels: the job
+       asked for, his first weeks, his trial, and (years later) his last day.
+       Each stop lights when its lesson is done, and Nam walks to the
+       furthest lit stop. He starts where he stood last time (per browser) and
+       walks on in `_afterPaint`, so finishing a lesson is SEEN on the map. */
+    _lifeTrail() {
+        return LIFE_TRAIL.map((key) => this.station(key)).filter(Boolean);
+    }
+
+    _lifeTrailHTML() {
+        const stops = this._lifeTrail();
+        if (stops.length < 2) {
+            return "";
+        }
+        let reached = -1;
+        stops.forEach((st, i) => {
+            if (this.stateOf(st.key) === "done") {
+                reached = i;
+            }
+        });
+        const at = (i) => (i < 0 ? 0 : Math.round(i / (stops.length - 1) * 1000) / 10);
+        let from = at(reached);
+        try {
+            const kept = Number(window.localStorage.getItem(LIFE_TRAIL_KEY));
+            if (Number.isFinite(kept) && kept >= 0 && kept <= 100) {
+                from = kept;
+            }
+        } catch {
+            // No memory of the last visit: Nam simply stands where he is.
+        }
+        const later = stops.length - 1;
+        const dots = stops.map((st, i) => {
+            const lit = this.stateOf(st.key) === "done";
+            return `<button class="lrn-ytstop ${lit ? "lit" : ""}${SP}${i === later ? "last" : ""}"
+                style="left:${at(i)}%" data-station="${esc(st.key)}"
+                aria-label="${esc(tx(st.name))}">
+                <span class="lrn-ytdot">${lit ? ic("check") : ic(st.icon)}</span>
+                <span class="lrn-ytname">${esc(tx(st.name))}</span>
+            </button>`;
+        }).join("");
+        return `<div class="lrn-ytrail" role="group" aria-label="${esc(T("lifeTrailTitle"))}">
+            <div class="lrn-ythead"><b>${ic("user-check")}${esc(T("lifeTrailTitle"))}</b>
+                <span class="lrn-note">${esc(T("lifeTrailLead"))}</span></div>
+            <div class="lrn-ytroad">
+                <i class="lrn-ytline"></i>
+                <i class="lrn-ytlit" style="width:${at(reached)}%"></i>
+                <span class="lrn-ytgap" style="left:${(at(later - 1) + at(later)) / 2}%">${esc(T("lifeTrailLater"))}</span>
+                ${dots}
+                <span class="lrn-yttoken" data-life-token="${at(reached)}" style="left:${from}%"
+                    title="${esc(T("lifeTrailHere"))}">${esc("N")}</span>
+            </div>
+        </div>`;
+    }
+
+    /** Nam walks from where he stood to where the learner has taken him. */
+    _walkLifeTrail() {
+        const tok = document.querySelector("[data-life-token]");
+        if (!tok) {
+            return;
+        }
+        const to = tok.getAttribute("data-life-token");
+        const go = () => {
+            tok.style.left = `${to}%`;
+        };
+        if (reduced()) {
+            go();
+        } else {
+            requestAnimationFrame(() => requestAnimationFrame(go));
+        }
+        try {
+            window.localStorage.setItem(LIFE_TRAIL_KEY, to);
+        } catch {
+            // The walk is decoration; losing its memory costs nothing.
+        }
+    }
+
     /** A ring per section heading. Same conic-gradient idiom as the hero
      *  ring above it and as pb_dashboard's — one dial shape in the product,
      *  flat two-stop, no gradient. */
@@ -873,7 +979,9 @@ export class LearnJourney extends Component {
         // saying "not in your menu" about it was the wrong word in the
         // direction that makes a reader stop looking, so it gets a plain chip
         // naming the door instead of a padlock.
-        const gate = (s.missing || !s.visible)
+        const gate = s.gated
+            ? `<span class="lrn-chip warn" title="${esc(T("gatedBody"))}">${ic("lock")}${esc(T("gatedChip"))}</span>`
+            : (s.missing || !s.visible)
             ? `<span class="lrn-chip warn">${ic("lock")}${esc(T("notVisible"))}</span>`
             : (this.placeOf(s)
                 ? `<span class="lrn-chip">${ic("compass")}${esc(T("findItIn"))}${SP}${esc(this.placeOf(s))}</span>`
@@ -1062,7 +1170,7 @@ export class LearnJourney extends Component {
         ${s.kind !== "lesson"
             ? `<p class="lrn-callout">${ic("info")}${esc(T("outlineNote"))}</p>` : ""}
         ${!s.visible
-            ? `<p class="lrn-callout warn">${ic("lock")}${esc(T("notVisibleBody"))}</p>`
+            ? `<p class="lrn-callout warn">${ic("lock")}${esc(T(s.gated ? "gatedBody" : "notVisibleBody"))}</p>`
             : (this.screenOf(s) && canOpen(this.screenOf(s))
                 ? `<div class="lrn-callout lrn-openscreen">${ic("compass")}<span>${this.placeOf(s)
                     ? `<b>${esc(T("findItIn"))}${SP}${esc(this.placeOf(s))}.</b>` : ""}</span>
@@ -1460,6 +1568,9 @@ export class LearnJourney extends Component {
 
     // ---------------------------------------------------------- post-render fx
     _afterPaint() {
+        if (this.state.view === "map") {
+            this._walkLifeTrail();
+        }
         if (this.state.view === "practice") {
             // No spotlight in the sandbox: nothing is being pointed at, and a
             // ring left over from the map would be pointing at the wrong page.
@@ -1505,6 +1616,10 @@ export class LearnJourney extends Component {
             // LEARN REFRESH step 3 — the replica's number counts from its
             // before to its after value (engine/visuals.js runTick).
             runTick(st.moment_from);
+        } else if (st.visual === "meter") {
+            // LEARN REFRESH step 4 — the pay review's budget meter fills as
+            // the rises go in (engine/visuals.js runMeter).
+            runMeter(st.moment_from);
         }
     }
 

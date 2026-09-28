@@ -148,6 +148,35 @@ SCREEN_ACTION_TAGS = {
     'treatment': 'pb_mapping_studio',
     'blueprint_rules': 'pb_blueprint',
     'matrix_builder': 'pb_approval_matrix',
+    # LEARN REFRESH step 4 — the wider app. Every Lifecycle board, People ›
+    # Pay and the Decision Room are hub TABS and ground by their place; the
+    # tags below cover the standalone door each one also has. Access &
+    # delegation and the Generate a filing flow open full-page, so their tag
+    # is how the helper knows they are on screen.
+    'paybands': 'pb_pay',
+    'decisionroom': 'pb_decision_room',
+    'hiring': 'pb_hiring_board',
+    'joiners': 'pb_onboarding_board',
+    'exits': 'pb_exits_board',
+    'probation': 'pb_probation_board',
+    'growth': 'pb_pip_board',
+    'contractends': 'pb_contractlife_board',
+    'access': 'pb_access_board',
+    'filing_flow': 'pb_filing_flow',
+    # Second views and places with a standalone door of their own. The ones
+    # that share a tag with a station declared before them (payreview after
+    # paybands, hiring_request after hiring) never win the exact pass; they
+    # ground by their place. Close has no door outside Workforce, so it claims
+    # the hub's tag — the hub publishes its tab, and the place wins first.
+    'payreview': 'pb_pay',
+    'hiring_request': 'pb_hiring_board',
+    'peoplemore': 'pb_rnr_wall,pb_assignments,pb_assets,pb_hr_comm_calendar,pb_goals_home',
+    'wftoday': 'pb_today',
+    'wftime': 'pb_time_hub,pb_attendance_weekgrid',
+    'wftimeoff': 'pb_timeoff',
+    'wfovertime': 'pb_ot_desk',
+    'wfclose': 'pb_workforce',
+    'compliancemore': 'pb_bank_ocr,pb_young_worker,pb_audit',
 }
 
 
@@ -1065,7 +1094,11 @@ def _anchor_registry_keys(data):
     literal, prefixes = set(data.get('practiceAnchors') or {}), set()
     for block in ('product', 'pattern', 'foreign'):
         for key in reg.get(block) or {}:
-            if key.endswith('*'):
+            # A PATTERN key is a prefix by definition (one anchor per record,
+            # emitted with t-attf-data-coach), with or without a star.
+            if block == 'pattern':
+                prefixes.add(key.rstrip('*'))
+            elif key.endswith('*'):
                 prefixes.add(key[:-1])
             else:
                 literal.add(key)

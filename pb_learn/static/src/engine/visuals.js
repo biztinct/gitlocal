@@ -183,3 +183,51 @@ export function runTick(anchorKey) {
     };
     setTimeout(() => requestAnimationFrame(step), 500);
 }
+
+/* ------------------------------------------------------------------ meter
+   LEARN REFRESH step 4 — the pay review's budget meter FILLS as the rises
+   go in: the figure counts from `data-from` to `data-to` and the bar under
+   it grows to the same share of `data-cap`. The same promise as `tick` —
+   the learner watches the screen react — with the one addition a budget
+   needs: how much of it is left. Instant under reduced motion. */
+export function runMeter(anchorKey) {
+    const host = anchorKey ? $(`[data-coach="${anchorKey}"]`) : null;
+    const num = host && host.querySelector("[data-meternum]");
+    const fill = host && host.querySelector("[data-meterfill]");
+    if (!num || !fill) {
+        return;
+    }
+    const from = Number(num.getAttribute("data-from"));
+    const to = Number(num.getAttribute("data-to"));
+    const cap = Number(num.getAttribute("data-cap"));
+    if (![from, to, cap].every(Number.isFinite) || cap <= 0) {
+        return;
+    }
+    const pct = (v) => `${Math.min(100, Math.round(v / cap * 1000) / 10)}%`;
+    if (reduced()) {
+        num.textContent = M(to);
+        fill.style.width = pct(to);
+        return;
+    }
+    num.textContent = M(from);
+    fill.style.transition = "none";
+    fill.style.width = pct(from);
+    let t0 = null;
+    const step = (ts) => {
+        if (!document.body.contains(num)) {
+            return;
+        }
+        if (t0 === null) {
+            t0 = ts;
+            fill.style.transition = "";
+            fill.style.width = pct(to);
+        }
+        const k = Math.min(1, (ts - t0) / 1400);
+        const eased = 1 - Math.pow(1 - k, 3);
+        num.textContent = M(Math.round(from + (to - from) * eased));
+        if (k < 1) {
+            requestAnimationFrame(step);
+        }
+    };
+    setTimeout(() => requestAnimationFrame(step), 500);
+}

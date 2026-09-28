@@ -1358,6 +1358,262 @@ const PRACTICE = {
       ];
     },
   },
+
+  /* ==========================================================================
+     LEARN REFRESH step 4 — THE WIDER APP. People › Pay and Plan, the
+     Lifecycle boards, Workforce, Access & delegation and the rest of
+     Compliance. Four of these are full replicas a learner can press (Hiring,
+     the pay review worksheet, Exits, Close the week); the rest are compact
+     drawings of the real board so a lesson has something true to stand on.
+     Every money figure is DERIVED from EMP / LATER, never typed.
+
+     THE ONE PERSON THE LIFECYCLE LINE FOLLOWS is Hoàng Văn Nam (LATER): the
+     store-assistant role he was hired into, his first weeks, his trial
+     period — and, years later, his last day. The map lights his road.
+     ======================================================================= */
+
+  /* ------------------------------------------------ People › Pay › Bands
+     One job family (Retail), three levels. The four practice employees and
+     Nam stand in them. Hùng is paid below his band — the one a review should
+     look at first. "In the band" is pay ÷ the band's middle. */
+  paybands: {
+    family: B("Retail", "Bán lẻ"),
+    bands: [
+      { level: B("Store assistant", "Nhân viên bán hàng"), min: 8500000, mid: 10000000, max: 11500000,
+        people: [{ name: LATER.name, pay: LATER.base }, { name: EMP.duc.name, pay: EMP.duc.base }] },
+      { level: B("Senior sales associate", "Chuyên viên bán hàng cao cấp"), min: 10800000, mid: 12500000, max: 14200000,
+        people: [{ name: EMP.hung.name, pay: EMP.hung.base }, { name: EMP.mai.name, pay: EMP.mai.base }] },
+      { level: B("Store supervisor", "Giám sát cửa hàng"), min: 13000000, mid: 15000000, max: 17000000,
+        people: [{ name: EMP.trang.name, pay: EMP.trang.base }] },
+    ],
+    health: [
+      { k: B("Paid below the band", "Được trả dưới khoảng lương"), v: 1, tone: "warn" },
+      { k: B("Paid above the band", "Được trả trên khoảng lương"), v: 0, tone: "ok" },
+      { k: B("Newer people paid more", "Người mới được trả cao hơn"), v: 0, tone: "ok" },
+      { k: B("A manager paid less", "Quản lý được trả thấp hơn"), v: 0, tone: "ok" },
+      { k: B("How wide each band has become", "Mỗi khoảng lương đã rộng ra bao nhiêu"), v: "35%", tone: "ok" },
+    ],
+    fairness: { gap: "3.1%", level: B("By level", "Theo cấp bậc") },
+  },
+
+  /* ------------------------------------------ People › Pay › Review
+     The 2026 review for the four practice employees. Budget = 3.5% of their
+     monthly base; each rise is its score's guidance (a person below the band
+     gets more). The meter FILLS as the rises are added — the lesson's hero. */
+  payreview: {
+    name: B("Annual pay review 2026", "Xét lương năm 2026"),
+    budgetPct: 3.5,
+    stages: [B("Being written", "Đang soạn"), B("With HR", "Đang ở nhân sự"), B("With finance", "Đang ở tài chính"),
+             B("With the CEO", "Đang ở tổng giám đốc"), B("Approved", "Đã duyệt"), B("Applied", "Đã áp dụng")],
+    at: 0,
+    rows: [
+      { emp: EMP.mai, score: 4, pct: 4, mark: "line" },
+      { emp: EMP.hung, score: 3, pct: 5, mark: "line", below: true },
+      { emp: EMP.trang, score: 5, pct: 2, mark: "out" },
+      { emp: EMP.duc, score: 3, pct: 3, mark: "line" },
+    ],
+    get wage() { return this.rows.reduce((t, r) => t + r.emp.base, 0); },
+    get budget() { return Math.round(this.wage * this.budgetPct / 100); },
+    rise(r) { return Math.round(r.emp.base * r.pct / 100); },
+    get used() { return this.rows.reduce((t, r) => t + this.rise(r), 0); },
+  },
+
+  /* ----------------------------------------------- People › Plan
+     The Decision Room on next year for the practice company. The estimate is
+     the room's own arithmetic; Exact cost runs the real pay scheme and lands
+     within half a percent. */
+  decisionroom: {
+    presets: [B("Grow thoughtfully", "Tăng trưởng thận trọng"), B("Invest in people", "Đầu tư vào con người"),
+              B("Ease overtime", "Giảm làm thêm giờ")],
+    levers: [
+      [B("Add people", "Thêm người"), "+4 · " + "03/2027"],
+      [B("Salary increase", "Tăng lương"), "3.5% · 01/2027"],
+      [B("Overtime per person", "Tăng ca mỗi người"), "−2 h"],
+      [B("Leavers", "Người nghỉ việc"), "8%"],
+    ],
+    results: [B("Work & shifts", "Công việc & ca làm"), B("Why profit changed", "Vì sao lợi nhuận thay đổi"),
+              B("People & pay", "Con người & lương"), B("Room to hire", "Dư địa tuyển dụng")],
+    estimate: 7420000000,
+    exact: 7388500000,
+  },
+
+  /* ----------------------------------------------- Lifecycle › Hiring
+     The role Nam was hired into, a year before the practice July. Four steps
+     on every role; "Step 3 of 4" is where candidates are met. */
+  hiring: {
+    numbers: [
+      [B("Open", "Mở"), 3], [B("Awaiting sign-off", "Chờ phê duyệt"), 1], [B("Waiting on you", "Đang chờ bạn"), 1],
+      [B("Candidates", "Ứng viên"), 14], [B("Over budget", "Vượt ngân sách"), 0], [B("Interviews this week", "Phỏng vấn tuần này"), 4],
+    ],
+    steps: [
+      [B("Request & approve", "Đề xuất & phê duyệt"), 1], [B("Prepare & publish", "Chuẩn bị & đăng tin"), 1],
+      [B("Meet your candidates", "Gặp ứng viên"), 1], [B("Welcome aboard", "Chào mừng gia nhập"), 0],
+    ],
+    roles: [
+      { title: B("Store assistant — Hà Nội", "Nhân viên bán hàng — Hà Nội"), step: 3, cands: 6,
+        next: B("Two opinions are late — ask the panel for them.", "Hai ý kiến đánh giá đang trễ — hãy nhắc hội đồng phỏng vấn.") },
+      { title: B("Cashier — Hải Phòng", "Thu ngân — Hải Phòng"), step: 1, cands: 0,
+        next: B("Waiting for the HR lead to sign off.", "Đang chờ trưởng nhân sự phê duyệt.") },
+      { title: B("Stock controller — Hà Nội", "Nhân viên kiểm kho — Hà Nội"), step: 2, cands: 0,
+        next: B("Write the advert, then publish it.", "Viết tin tuyển dụng, rồi đăng tin.") },
+    ],
+    wizard: {
+      title: B("Let's shape your next hire.", "Hãy cùng phác thảo vị trí tuyển dụng tiếp theo."),
+      tabs: [B("The role", "Vị trí"), B("Responsibilities", "Trách nhiệm"), B("Interview plan", "Kế hoạch phỏng vấn"),
+             B("Budget & review", "Ngân sách & xem lại")],
+      route: [B("Manager", "Quản lý"), B("HR lead", "Trưởng nhân sự"), B("Finance — only if over budget", "Tài chính — chỉ khi vượt ngân sách")],
+      salary: LATER.base,
+    },
+    stages: [B("Screening", "Sàng lọc"), B("Panel Review", "Hội đồng xem xét"), B("Recruiter Phone Call", "Gọi điện sơ vấn"),
+             B("Assignment", "Bài tập"), B("Discussion 1", "Trao đổi 1"), B("Offer Stage", "Giai đoạn đề nghị"), B("Joined", "Đã nhận việc")],
+  },
+
+  /* ----------------------------------------------- Lifecycle › New joiners
+     Nam, a week before 1 August, with Mai as his buddy. */
+  joiners: {
+    numbers: [[B("Joining this week", "Vào làm tuần này"), 2], [B("Already started", "Đã bắt đầu làm việc"), 3],
+              [B("Still without a buddy", "Chưa có người đồng hành"), 1], [B("Steps overdue", "Bước quá hạn"), 0],
+              [B("Said they are struggling", "Cho biết đang gặp khó khăn"), 0]],
+    steps: [[B("Getting ready", "Đang chuẩn bị"), 2], [B("Settling in", "Đang hòa nhập"), 3], [B("Checklist done", "Đã xong danh mục"), 4]],
+    rows: [
+      { name: LATER.name, sub: B("Store assistant · starts 01/08/2026", "Nhân viên bán hàng · bắt đầu 01/08/2026"), step: 0,
+        chip: B("Buddy: Nguyễn Thị Mai", "Người đồng hành: Nguyễn Thị Mai") },
+      { name: "Đinh Thị Yến", sub: B("Cashier · starts 03/08/2026", "Thu ngân · bắt đầu 03/08/2026"), step: 0,
+        chip: B("No buddy yet", "Chưa có người đồng hành"), warn: true },
+    ],
+    todo: [B("Laptop and store card ready", "Máy tính và thẻ cửa hàng đã sẵn sàng"), B("Bank account on file", "Đã có tài khoản ngân hàng"),
+           B("First-week rota sent", "Đã gửi lịch ca tuần đầu")],
+    done: [B("Contract signed", "Đã ký hợp đồng"), B("Buddy chosen", "Đã chọn người đồng hành")],
+  },
+
+  /* ----------------------------------------------- Lifecycle › Probation
+     Nam's two-month trial, in its last week. */
+  probation: {
+    numbers: [[B("In a trial period", "Đang thử việc"), 4], [B("Reviews running", "Đánh giá đang chạy"), 2],
+              [B("Waiting on a decision", "Đang chờ quyết định"), 1], [B("Answers overdue", "Câu trả lời quá hạn"), 1],
+              [B("Ending within a week", "Kết thúc trong vòng một tuần"), 1]],
+    steps: [[B("Choose peers", "Chọn đồng nghiệp"), 1], [B("Gather perspectives", "Thu thập ý kiến"), 1],
+            [B("Manager conversation", "Trao đổi với quản lý"), 1], [B("HR & leadership review", "Nhân sự và lãnh đạo xem xét"), 1],
+            [B("Share the outcome", "Thông báo kết quả"), 0]],
+    rows: [
+      { name: LATER.name, sub: B("Trial ends 30/09/2026 · Colleagues asked: 3 of 4 answered", "Thử việc kết thúc 30/09/2026 · Đồng nghiệp được hỏi: 3/4 đã trả lời"), step: 3 },
+      { name: "Đinh Thị Yến", sub: B("Trial ends 02/10/2026", "Thử việc kết thúc 02/10/2026"), step: 1 },
+    ],
+    verdicts: [B("Confirm them", "Xác nhận chính thức"), B("Extend the trial", "Kéo dài thử việc"), B("Do not confirm", "Không xác nhận")],
+  },
+
+  /* ----------------------------------------------- Lifecycle › Growth plans */
+  growth: {
+    numbers: [[B("Open", "Đang mở"), 2], [B("Still a conversation", "Vẫn đang trao đổi"), 1], [B("Plans running", "Kế hoạch đang chạy"), 1],
+              [B("Waiting on a decision", "Đang chờ quyết định"), 0], [B("Drifting or at risk", "Chệch hướng hoặc có rủi ro"), 1]],
+    steps: [[B("Asked", "Đã yêu cầu"), 1], [B("Coaching", "Kèm cặp"), 0], [B("Plan running", "Kế hoạch đang chạy"), 1], [B("Decision", "Quyết định"), 0]],
+    rows: [
+      { name: "Võ Quang Huy", sub: B("Plan running · 2 of 3 objectives on track", "Kế hoạch đang chạy · 2/3 mục tiêu đúng hướng"), step: 2 },
+    ],
+  },
+
+  /* ----------------------------------------------- Lifecycle › Contracts */
+  contractends: {
+    numbers: [[B("Ending within 60 days", "Kết thúc trong vòng 60 ngày"), 3], [B("Nobody has decided", "Chưa ai quyết định"), 1],
+              [B("Waiting to be agreed", "Đang chờ đồng ý"), 1], [B("Being evaluated", "Đang được đánh giá"), 1],
+              [B("Made permanent this year", "Chuyển chính thức trong năm nay"), 6]],
+    steps: [[B("Running", "Đang hiệu lực"), 41], [B("Decision needed", "Cần quyết định"), 1], [B("Being agreed", "Đang chờ đồng ý"), 1], [B("Decided", "Đã quyết định"), 2]],
+    rows: [
+      { name: EMP.duc.name, sub: B("Fixed term ends 30/09/2026", "Hợp đồng xác định thời hạn kết thúc 30/09/2026"), step: 1 },
+    ],
+    choices: [B("Make it permanent", "Chuyển chính thức"), B("Extend it", "Gia hạn"), B("Let it end", "Để hết hạn")],
+  },
+
+  /* ----------------------------------------------- Lifecycle › Exits
+     A leaver whose last day has passed. Three desks have signed; Finance
+     has not, so the settlement is held — and says why. */
+  exits: {
+    numbers: [[B("Leaving this month", "Nghỉ việc trong tháng này"), 2], [B("Last day has passed", "Đã qua ngày làm việc cuối"), 1],
+              [B("Settlements held up", "Quyết toán bị vướng"), 1], [B("Clearances still open", "Xác nhận bàn giao còn mở"), 1],
+              [B("Items not back yet", "Tài sản chưa trả lại"), 1]],
+    steps: [[B("Working their notice", "Đang trong thời gian báo trước"), 1], [B("Signing off", "Đang xác nhận bàn giao"), 1],
+            [B("Ready to settle", "Sẵn sàng quyết toán"), 0], [B("Settled", "Đã quyết toán"), 3]],
+    leaver: { name: "Bùi Thị Hạnh", code: "NV0044", last: "31/07/2026", role: B("Cashier — Hà Nội", "Thu ngân — Hà Nội") },
+    desks: [
+      { k: "IT", done: true, what: B("Laptop returned", "Đã trả máy tính") },
+      { k: B("HR", "Nhân sự"), done: true, what: B("Exit conversation held", "Đã trao đổi trước khi nghỉ") },
+      { k: B("Finance", "Tài chính"), done: false, what: B("Store float not counted back", "Chưa đếm lại quỹ tiền lẻ của quầy") },
+      { k: B("Admin", "Quản trị viên"), done: true, what: B("Store card handed in", "Đã nộp thẻ cửa hàng") },
+    ],
+  },
+
+  /* ----------------------------------------------- Workforce › Today */
+  wftoday: {
+    tiles: [[B("On shift", "Theo ca"), 38], [B("Late", "Trễ"), 3], [B("Not started", "Chưa bắt đầu"), 5],
+            [B("Checked out", "Đăng xuất"), 2], [B("On leave", "Đang nghỉ phép"), 4]],
+    needs: [
+      [B("Leave requests", "Đơn nghỉ phép"), 2],
+      [B("Overtime to approve", "Tăng ca cần duyệt"), 7],
+      [B("Flags on this week", "Cờ cảnh báo tuần này"), 3],
+    ],
+    clean: 5,
+  },
+
+  /* ----------------------------------------------- Workforce › Time / Time Off / Overtime */
+  wftime: {
+    tabs: [B("Timeline", "Dòng thời gian"), B("Week Grid", "Lưới tuần"), B("Exceptions", "Ngoại lệ"), B("Import", "Nhập")],
+    exceptions: 4,
+    leave: [{ name: EMP.mai.name, what: B("Annual leave · 12–14/08 · 3 days", "Nghỉ phép năm · 12–14/08 · 3 ngày") }],
+    ot: [
+      { name: EMP.hung.name, what: B("Thu 30/07 · 3 h", "Th5 30/07 · 3 giờ"), near: true },
+      { name: EMP.trang.name, what: B("Sat 01/08 · 2 h", "Th7 01/08 · 2 giờ") },
+    ],
+    otNumbers: [[B("pending approvals", "chờ duyệt"), 7], [B("near or over the ceiling", "gần hoặc vượt mức trần"), 1],
+                [B("bonus hours this month", "giờ thưởng tháng này"), 12]],
+    caps: [[B("Monthly", "Tháng"), "40 h"], [B("Annual", "Năm"), "200 h"]],
+  },
+
+  /* ----------------------------------------------- Workforce › Close
+     The practice week 27 Jul – 2 Aug with three flags left. The lock stays
+     grey until every flag is fixed or approved as it is. */
+  wfclose: {
+    week: B("Week of 27/07 – 02/08/2026", "Tuần 27/07 – 02/08/2026"),
+    flags: [
+      { name: EMP.hung.name, kind: B("Missing check-out", "Thiếu giờ ra"), day: B("Tue 28/07", "Th3 28/07") },
+      { name: EMP.trang.name, kind: B("Overtime over the plan", "Tăng ca vượt kế hoạch"), day: B("Thu 30/07", "Th5 30/07") },
+      { name: EMP.duc.name, kind: B("Late, no reason given", "Đi trễ, không có lý do"), day: B("Mon 27/07", "Th2 27/07") },
+    ],
+    handoff: [[B("Regular hours", "Giờ thông thường"), "1,824 h"], [B("Overtime", "Tăng ca"), "46 h"],
+              [B("Bonus hours", "Giờ thưởng"), "12 h"]],
+  },
+
+  /* ----------------------------------------------- Settings › Access & delegation
+     biz_access. Roles are what people are given; a hand-over lends yours for
+     a while and comes back by itself. */
+  access: {
+    roles: [
+      { name: B("Payroll officer", "Chuyên viên tính lương"), line: B("Runs the monthly pay run and fixes its data.", "Chạy đợt lương hằng tháng và sửa dữ liệu của nó."), held: 2 },
+      { name: B("HR lead", "Trưởng nhân sự"), line: B("Reviews pay runs and people changes.", "Soát xét đợt lương và thay đổi nhân sự."), held: 1 },
+      { name: B("Line manager", "Quản lý trực tiếp"), line: B("Sees their own team and approves its time.", "Xem nhóm của mình và duyệt giờ công của nhóm."), held: 6 },
+    ],
+    handover: { to: ROUTE.steps[0].who, until: "21/08/2026" },
+  },
+
+  /* ----------------------------------------------- Compliance › Bank / Young workers / Audit */
+  compliance: {
+    bank: [[B("Draft", "Nháp"), 1], [B("HR Review", "Nhân sự xét duyệt"), 1], [B("Finance Review", "Tài chính xét duyệt"), 0],
+           [B("Approved", "Đã duyệt"), 12]],
+    young: [[B("Protected", "Được bảo vệ"), 2], [B("Compliant this week", "Tuân thủ tuần này"), 2],
+            [B("Violations in the last 30 days", "Vi phạm trong 30 ngày qua"), 0], [B("Missing birthdays", "Thiếu ngày sinh"), 1]],
+    audit: [[B("Events today", "Sự kiện hôm nay"), 64], [B("Last 7 days", "7 ngày qua"), 412]],
+  },
+
+  /* ----------------------------------------------- Home › Wall and the rest of People */
+  more: {
+    praise: { from: EMP.trang.name, to: EMP.mai.name, value: B("Customers first", "Khách hàng là trên hết"),
+              text: B("Stayed late to help a customer find the right size.", "Ở lại muộn để giúp khách tìm đúng cỡ.") },
+    tiles: [
+      [B("Where they work", "Nơi họ làm việc"), B("People who work for more than one company", "Người làm cho nhiều công ty")],
+      [B("Assets", "Tài sản"), B("Laptops, phones and cards, and who holds them", "Máy tính, điện thoại, thẻ, và ai đang giữ")],
+      [B("Goals", "Mục tiêu"), B("What each person plans this year", "Điều mỗi người dự định trong năm")],
+      [B("Announce", "Thông báo"), B("Messages to your people, on one calendar", "Thông báo tới mọi người, trên một lịch")],
+    ],
+  },
 };
 
 /* =============================================================================
@@ -1386,7 +1642,7 @@ const MENU = [
     lenses: [
       { key: "pulse", label: B("Pulse", "Tổng quan"), screen: "dashboard" },
       { key: "approvals", label: B("Approvals", "Phê duyệt"), screen: "approvals" },
-      { key: "wall", label: B("Wall", "Bảng vinh danh") },
+      { key: "wall", label: B("Wall", "Bảng vinh danh"), screen: "peoplemore" },
       { key: "coming_up", label: B("Announce", "Thông báo") },
     ],
   },
@@ -1415,38 +1671,38 @@ const MENU = [
       { key: "employees", label: B("Employees", "Nhân viên"), screen: "employees",
         also: ["contracts"] },
       { key: "records", label: B("Records", "Hồ sơ"), screen: "records" },
-      { key: "pay", label: B("Pay", "Lương") },
+      { key: "pay", label: B("Pay", "Lương"), screen: "paybands", also: ["payreview"] },
       { key: "where", label: B("Where they work", "Nơi họ làm việc") },
       { key: "assets", label: B("Assets", "Tài sản") },
       { key: "praise", label: B("Praise", "Khen ngợi") },
       { key: "goals", label: B("Goals", "Mục tiêu") },
       { key: "announcements", label: B("Announce", "Thông báo") },
-      { key: "plan", label: B("Plan", "Kế hoạch") },
+      { key: "plan", label: B("Plan", "Kế hoạch"), screen: "decisionroom" },
     ],
   },
   {
     key: "lifecycle", icon: "git-branch", label: B("Lifecycle", "Vòng đời nhân sự"), section: null,
     lenses: [
       { key: "journeys", label: B("Journeys", "Hành trình") },
-      { key: "hiring", label: B("Hiring", "Tuyển dụng") },
-      { key: "newjoiners", label: B("New joiners", "Nhân viên mới") },
-      { key: "exits", label: B("Exits", "Nghỉ việc") },
-      { key: "probation", label: B("Probation", "Thử việc") },
-      { key: "pip", label: B("Growth plans", "Kế hoạch phát triển") },
-      { key: "contracts", label: B("Contracts", "Hợp đồng") },
+      { key: "hiring", label: B("Hiring", "Tuyển dụng"), screen: "hiring" },
+      { key: "newjoiners", label: B("New joiners", "Nhân viên mới"), screen: "joiners" },
+      { key: "exits", label: B("Exits", "Nghỉ việc"), screen: "exits" },
+      { key: "probation", label: B("Probation", "Thử việc"), screen: "probation" },
+      { key: "pip", label: B("Growth plans", "Kế hoạch phát triển"), screen: "growth" },
+      { key: "contracts", label: B("Contracts", "Hợp đồng"), screen: "contractends" },
     ],
   },
   {
     key: "workforce", icon: "compass", label: B("Workforce", "Lực lượng lao động"), section: null,
     lenses: [
-      { key: "today", label: B("Today", "Hôm nay") },
+      { key: "today", label: B("Today", "Hôm nay"), screen: "wftoday" },
       { key: "schedule", label: B("Schedule", "Lịch ca") },
-      { key: "time", label: B("Time", "Chấm công") },
+      { key: "time", label: B("Time", "Chấm công"), screen: "wftime" },
       { key: "timeoff", label: B("Time Off", "Nghỉ phép") },
       { key: "overtime", label: B("Overtime", "Tăng ca") },
       { key: "trips", label: B("Trips", "Công tác") },
       { key: "approvals", label: B("Approvals", "Phê duyệt") },
-      { key: "close", label: B("Close", "Chốt kỳ") },
+      { key: "close", label: B("Close", "Chốt kỳ"), screen: "wfclose" },
       { key: "holidays", label: B("Holidays", "Ngày lễ") },
       { key: "field", label: B("Field", "Hiện trường") },
     ],
@@ -1469,7 +1725,7 @@ const MENU = [
     key: "compliance", icon: "shield-check", label: B("Compliance", "Tuân thủ"), section: null,
     lenses: [
       { key: "filings", label: B("Filings", "Tờ khai"), screen: "govreports" },
-      { key: "bank", label: B("Bank", "Ngân hàng") },
+      { key: "bank", label: B("Bank", "Ngân hàng"), screen: "compliancemore" },
       { key: "young", label: B("Young workers", "Lao động chưa thành niên") },
       { key: "audit", label: B("Audit", "Nhật ký kiểm toán") },
     ],
@@ -1507,7 +1763,7 @@ const MENU = [
       { key: "guided_setup", label: B("Guided setup", "Thiết lập có hướng dẫn"),
         card: B("New configuration", "Cấu hình mới"), screen: "blueprint" },
       { key: "group", label: B("Group", "Tập đoàn"), screen: "schemes" },
-      { key: "access", label: B("Access & delegation", "Quyền truy cập & uỷ quyền") },
+      { key: "access", label: B("Access & delegation", "Quyền truy cập & uỷ quyền"), screen: "access" },
       { key: "approvals", label: B("Approvals", "Phê duyệt"), screen: "matrix",
         card: B("Approval Matrix", "Ma trận phê duyệt") },
       { key: "hiring", label: B("Hiring", "Tuyển dụng") },
@@ -1576,6 +1832,16 @@ const SUB_SCREENS = {
     owner: "matrix",
     label: B("Approval Matrix — route builder", "Ma trận phê duyệt — dựng lộ trình"),
   },
+  /* LEARN REFRESH step 4 — the hiring request wizard over its board, and
+     the Generate a filing flow a Filings tile opens. */
+  hiring_request: {
+    owner: "hiring",
+    label: B("Hiring — Raise a hiring request", "Tuyển dụng — Đề xuất tuyển dụng"),
+  },
+  filing_flow: {
+    owner: "govreports",
+    label: B("Filings — Generate a filing", "Tờ khai — Tạo hồ sơ"),
+  },
 };
 
 /* Real selection keys, with what the product actually calls them. The keys are
@@ -1624,6 +1890,29 @@ const STATUS_LABELS = {
     matched: { l: B("Matched", "Đã khớp"), t: "warn" },
     done: { l: B("Done", "Hoàn tất"), t: "ok" },
   },
+  /* LEARN REFRESH step 4 — the pay review's stepper (pb_pay pay_review.xml),
+     a role's four hiring steps (pb_hiring) and a leaver's four (pb_offboarding),
+     for the `pipeline` visual. Labels are the screens' own. */
+  review: {
+    draft: { l: B("Being written", "Đang soạn"), t: "" },
+    hr: { l: B("With HR", "Đang ở nhân sự"), t: "warn" },
+    finance: { l: B("With finance", "Đang ở tài chính"), t: "warn" },
+    ceo: { l: B("With the CEO", "Đang ở tổng giám đốc"), t: "warn" },
+    approved: { l: B("Approved", "Đã duyệt"), t: "b" },
+    applied: { l: B("Applied", "Đã áp dụng"), t: "ok" },
+  },
+  hiring: {
+    request: { l: B("Request & approve", "Đề xuất & phê duyệt"), t: "" },
+    publish: { l: B("Prepare & publish", "Chuẩn bị & đăng tin"), t: "b" },
+    meet: { l: B("Meet your candidates", "Gặp ứng viên"), t: "warn" },
+    welcome: { l: B("Welcome aboard", "Chào mừng gia nhập"), t: "ok" },
+  },
+  exit: {
+    notice: { l: B("Working their notice", "Đang trong thời gian báo trước"), t: "" },
+    signing: { l: B("Signing off", "Đang xác nhận bàn giao"), t: "warn" },
+    ready: { l: B("Ready to settle", "Sẵn sàng quyết toán"), t: "b" },
+    settled: { l: B("Settled", "Đã quyết toán"), t: "ok" },
+  },
 };
 
 /* The lifecycles the `pipeline` visual draws. Same keys as STATUS_LABELS. */
@@ -1656,6 +1945,25 @@ const CHAINS = {
     nodes: ["s1", "s2", "s3", "applied"],
     branches: [
       B("Any step can send it back, or turn it down", "Bước nào cũng có thể trả lại, hoặc từ chối"),
+    ],
+  },
+  review: {
+    nodes: ["draft", "hr", "finance", "ceo", "approved", "applied"],
+    branches: [
+      B("Send back — back to Being written, with the reason", "Trả lại — về Đang soạn, kèm lý do"),
+      B("Take it back — within 24 hours of Apply", "Lấy lại — trong vòng 24 giờ sau khi Áp dụng"),
+    ],
+  },
+  hiring: {
+    nodes: ["request", "publish", "meet", "welcome"],
+    branches: [
+      B("Finance signs only when the role is over budget", "Tài chính chỉ duyệt khi vị trí vượt ngân sách"),
+    ],
+  },
+  exit: {
+    nodes: ["notice", "signing", "ready", "settled"],
+    branches: [
+      B("The settlement waits for IT, HR, Finance and Admin", "Quyết toán chờ đủ IT, Nhân sự, Tài chính và Quản trị viên"),
     ],
   },
 };

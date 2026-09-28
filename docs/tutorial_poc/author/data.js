@@ -86,7 +86,20 @@ const I18N = {
     lines: {
       payrun: "Pay Run", setup: "Setup", overview: "Overview",
       people: "People", insights: "Insights", compliance: "Compliance",
+      // LEARN REFRESH step 4 — the rail's own words for the two new lines.
+      lifecycle: "Lifecycle", workforce: "Workforce",
     },
+    /* LEARN REFRESH step 4 — a station whose tab this reader's company has
+       not given them (the hub's own gate says so), the docked lesson card on
+       a narrow screen, and the Lifecycle line's one-person road. */
+    gatedChip: "No access in your company",
+    gatedBody: "You don't have access to this in your company — you can still read the lesson.",
+    cardFold: "Fold the card to see the screen",
+    cardUnfold: "Show the card again",
+    lifeTrailTitle: "One person's road",
+    lifeTrailLead: "Follow Hoàng Văn Nam from the day his job was asked for to his last day. Each lesson you finish lights his next stop.",
+    lifeTrailLater: "years later",
+    lifeTrailHere: "Nam is here",
     /* -- station cards -------------------------------------------------- */
     fullLesson: "Full lesson",
     outline: "Outline",
@@ -363,7 +376,7 @@ const I18N = {
     ch1Title: "Get around",
     ch1Lead: "Where things live and who signs what.",
     ch2Title: "Run pay",
-    ch2Lead: "From people and pay data to money out.",
+    ch2Lead: "From people, time and pay data to money out.",
     ch3Title: "Keep it right",
     ch3Lead: "Reports, rules and rates.",
     roleLabel: "I am the",
@@ -486,7 +499,16 @@ const I18N = {
     lines: {
       payrun: "Chạy lương", setup: "Thiết lập", overview: "Tổng quan",
       people: "Nhân sự", insights: "Phân tích", compliance: "Tuân thủ",
+      lifecycle: "Vòng đời nhân sự", workforce: "Lực lượng lao động",
     },
+    gatedChip: "Công ty bạn chưa cấp quyền",
+    gatedBody: "Bạn chưa có quyền mở màn hình này trong công ty — bạn vẫn đọc được bài học.",
+    cardFold: "Thu gọn thẻ để xem màn hình",
+    cardUnfold: "Mở lại thẻ",
+    lifeTrailTitle: "Hành trình của một người",
+    lifeTrailLead: "Theo chân Hoàng Văn Nam từ ngày vị trí của anh được đề xuất tuyển tới ngày làm việc cuối cùng. Mỗi bài bạn học xong thắp sáng chặng tiếp theo của anh.",
+    lifeTrailLater: "nhiều năm sau",
+    lifeTrailHere: "Nam đang ở đây",
     /* -- station cards -------------------------------------------------- */
     fullLesson: "Bài học đầy đủ",
     outline: "Dàn ý",
@@ -692,7 +714,7 @@ const I18N = {
     ch1Title: "Làm quen",
     ch1Lead: "Mọi thứ nằm ở đâu và ai ký duyệt việc gì.",
     ch2Title: "Chạy lương",
-    ch2Lead: "Từ nhân sự và dữ liệu lương đến lúc chi trả.",
+    ch2Lead: "Từ nhân sự, giờ công và dữ liệu lương đến lúc chi trả.",
     ch3Title: "Giữ cho đúng",
     ch3Lead: "Báo cáo, quy tắc và tỷ lệ.",
     roleLabel: "Tôi là",
@@ -925,8 +947,8 @@ const GLOSSARY = {
   flag: {
     term: B("Flag", "Cờ cảnh báo"),
     aliases: { en: ["flags", "flagged", "need review", "needs review"], vi: ["cần soát xét", "gắn cờ", "bị gắn cờ"] },
-    def: B("A mark the engine puts on a payslip it wants a human to look at. A flag is a question, not an error — something looks unusual, and only you can say whether it was meant.",
-           "Dấu mà hệ thống gắn lên một phiếu lương nó muốn có người xem. Cờ là một câu hỏi, không phải một lỗi — có gì đó trông bất thường, và chỉ bạn mới nói được điều đó có chủ ý hay không."),
+    def: B("A mark Payobook puts on something it wants a person to look at: a payslip in a pay run, or a day on Workforce › Close. A flag is a question, not an error — only you can say whether it was meant.",
+           "Dấu mà Payobook gắn lên thứ nó muốn có người xem: một phiếu lương trong đợt lương, hoặc một ngày ở Lực lượng lao động › Chốt kỳ. Cờ là một câu hỏi, không phải một lỗi — chỉ bạn mới nói được điều đó có chủ ý hay không."),
   },
 
   /* -- who has to say yes (LEARN REFRESH step 2) ------------------------- */
@@ -1102,7 +1124,7 @@ const GLOSSARY = {
   },
   confidenceScore: {
     term: B("Confidence score", "Điểm tin cậy"),
-    aliases: { en: ["confidence", "score"], vi: ["điểm tin cậy của tệp"] },
+    aliases: { en: ["confidence"], vi: ["điểm tin cậy của tệp"] },
     def: B("How cleanly a workbook of salary RULES converted when you set up a scheme from Excel in Formula Studio. The month's pay data import has no score — read its counts instead: Rows loaded, Matched, Need attention.",
            "Mức độ chuyển đổi sạch sẽ của một bảng tính chứa QUY TẮC lương khi bạn thiết lập chương trình lương từ Excel trong Xưởng công thức. Việc nhập dữ liệu lương của tháng không có điểm số — hãy đọc các con số: Dòng đã nạp, Đã khớp, Cần xử lý."),
   },
@@ -1396,11 +1418,114 @@ const GLOSSARY = {
     def: B("The month's payroll divided by the people paid. Comparing two totals hides hiring; comparing cost per head does not, so it is the honest comparison between months.",
            "Chi phí lương của tháng chia cho số người được trả. So hai con số tổng thì che mất chuyện tuyển thêm người; so chi phí bình quân đầu người thì không, nên đây mới là phép so trung thực giữa các tháng."),
   },
+  /* -- the wider app (LEARN REFRESH step 4) ------------------------------ */
+  payBand: {
+    term: B("Pay band", "Khoảng lương"),
+    aliases: { en: ["pay bands", "salary band", "salary range"], vi: ["các khoảng lương", "dải lương"] },
+    def: B("The lowest to highest pay the company means to pay for one kind of job, with its middle marked. Placing people in it shows who is below or above.",
+           "Mức lương thấp nhất tới cao nhất mà công ty định trả cho một loại công việc, có đánh dấu điểm giữa. Đặt mọi người vào đó cho thấy ai thấp hơn hay cao hơn."),
+  },
+  inTheBand: {
+    term: B("In the band", "Trong khoảng lương"),
+    aliases: { en: ["compa position", "compa ratio"], vi: ["vị trí trong khoảng lương"] },
+    def: B("Where someone's pay sits in their band, as a share of its middle: 100% is the middle, under 100% is below it.",
+           "Vị trí lương của một người trong khoảng lương của họ, tính theo điểm giữa: 100% là điểm giữa, dưới 100% là thấp hơn."),
+  },
+  payReview: {
+    term: B("Pay review", "Xét lương"),
+    aliases: { en: ["pay reviews", "annual pay review"], vi: ["đợt xét lương"] },
+    def: B("Deciding next year's pay for many people at once, inside a budget, then signing it off step by step. Apply writes the new pay onto their records.",
+           "Quyết định lương năm sau cho nhiều người cùng lúc, trong một ngân sách, rồi duyệt từng bước. Áp dụng ghi lương mới vào hồ sơ của họ."),
+  },
+  calibration: {
+    term: B("Calibration", "Cân chỉnh"),
+    aliases: { en: ["calibrate"], vi: ["phần cân chỉnh"] },
+    def: B("Comparing rises across people before they are signed off, so similar work and similar scores get similar rises. Anything that stands out is marked for a second look.",
+           "So sánh mức tăng giữa mọi người trước khi duyệt, để công việc và điểm đánh giá giống nhau nhận mức tăng giống nhau. Điều gì nổi bật được đánh dấu để xem lại."),
+  },
+  decisionRoom: {
+    term: B("Decision Room", "Phòng quyết định"),
+    aliases: { en: ["the decision room"], vi: ["phòng quyết định"] },
+    def: B("People › Plan: where you try next year — more people, a rise, less overtime — and see its cost before you commit. Nothing there changes payroll.",
+           "Con người › Kế hoạch: nơi bạn thử trước năm sau — thêm người, tăng lương, bớt tăng ca — và thấy chi phí trước khi cam kết. Không có gì ở đó thay đổi bảng lương."),
+  },
+  exactCost: {
+    term: B("Exact cost", "Chi phí chính xác"),
+    aliases: { en: ["exact costs"], vi: ["chi phí chính xác của"] },
+    def: B("A saved plan run through the real pay scheme, instead of the room's estimate. It shows how far the estimate was off.",
+           "Một kế hoạch đã lưu được chạy qua chương trình lương thật, thay cho con số ước tính của căn phòng. Nó cho biết ước tính lệch bao nhiêu."),
+  },
+  hiringRequest: {
+    term: B("Hiring request", "Đề xuất tuyển dụng"),
+    aliases: { en: ["hiring requests", "raise a hiring request"], vi: ["đề xuất tuyển"] },
+    def: B("Asking for a new person before looking for one: the role, the pay and the budget. A manager and HR sign it off; Finance only when it is over budget.",
+           "Xin tuyển một người trước khi đi tìm: vị trí, mức lương và ngân sách. Quản lý và nhân sự duyệt; Tài chính chỉ duyệt khi vượt ngân sách."),
+  },
+  candidateStage: {
+    term: B("Candidate stage", "Giai đoạn ứng viên"),
+    aliases: { en: ["candidate stages", "move stage"], vi: ["các giai đoạn ứng viên"] },
+    def: B("Where one candidate is on the road from Screening to Joined, or the reason they left it. Move stage is how they go on.",
+           "Vị trí của một ứng viên trên chặng đường từ Sàng lọc tới Đã nhận việc, hoặc lý do họ rời chặng đó. Chuyển giai đoạn là cách đưa họ đi tiếp."),
+  },
+  buddy: {
+    term: B("Buddy", "Người đồng hành"),
+    aliases: { en: ["buddies"], vi: ["người đồng hành của"] },
+    def: B("A colleague a new joiner can ask anything in their first weeks. The New joiners board counts anyone still without one.",
+           "Một đồng nghiệp mà người mới có thể hỏi mọi điều trong những tuần đầu. Bảng Nhân viên mới đếm những ai chưa có."),
+  },
+  probation: {
+    term: B("Probation", "Thử việc"),
+    aliases: { en: ["trial period", "the trial"], vi: ["thời gian thử việc", "đợt thử việc"] },
+    def: B("The trial at the start of a job. It ends with one decision: confirm them, extend the trial, or do not confirm.",
+           "Giai đoạn làm thử khi mới vào làm. Nó kết thúc bằng một quyết định: xác nhận chính thức, kéo dài thử việc, hoặc không xác nhận."),
+  },
+  clearance: {
+    term: B("Clearance", "Xác nhận bàn giao"),
+    aliases: { en: ["clearances", "signed off by"], vi: ["xác nhận bàn giao của"] },
+    def: B("IT, HR, Finance and Admin each saying a leaver has handed back what they held. The final settlement waits for all four.",
+           "IT, Nhân sự, Tài chính và Quản trị viên lần lượt xác nhận người nghỉ đã trả lại những gì họ giữ. Quyết toán cuối cùng chờ đủ cả bốn."),
+  },
+  growthPlan: {
+    term: B("Growth plan", "Kế hoạch phát triển"),
+    aliases: { en: ["growth plans"], vi: ["các kế hoạch phát triển"] },
+    def: B("A written plan to help someone who is struggling: objectives, dates and coaching, ending in a decision.",
+           "Một kế hoạch bằng văn bản để giúp người đang gặp khó khăn: mục tiêu, mốc thời gian và kèm cặp, kết thúc bằng một quyết định."),
+  },
+  needsYou: {
+    term: B("Needs you", "Cần bạn"),
+    aliases: { en: ["needs you panel"], vi: ["khung cần bạn"] },
+    def: B("The panel beside every Workforce tab: what is waiting for you now, with one press for overtime that is clean.",
+           "Khung nằm cạnh mọi tab của Lực lượng lao động: những gì đang chờ bạn, với một lần bấm cho phần tăng ca sạch."),
+  },
+  lockWeek: {
+    term: B("Lock the week", "Khoá tuần"),
+    aliases: { en: ["lock week", "locked week", "week locked"], vi: ["khóa tuần", "tuần bị khóa"] },
+    def: B("Closing a week's time so payroll can use it. The button waits until every flag is fixed or approved as it is.",
+           "Chốt giờ công của một tuần để bảng lương sử dụng. Nút này chờ cho tới khi mọi cờ cảnh báo đã được điều chỉnh hoặc duyệt nguyên trạng."),
+  },
+  accessRole: {
+    term: B("Access role", "Vai trò truy cập"),
+    aliases: { en: ["access roles", "new role"], vi: ["vai trò truy cập của"] },
+    def: B("A named set of things someone may open and do, written as one sentence. On Settings › Access & delegation you give a role, not a list of switches.",
+           "Một nhóm việc có tên mà một người được mở và làm, viết thành một câu. Ở Cài đặt › Quyền truy cập & uỷ quyền, bạn cấp một vai trò, không phải một danh sách công tắc."),
+  },
+  handOver: {
+    term: B("Hand-over", "Bàn giao quyền"),
+    aliases: { en: ["hand-overs", "hand my access over"], vi: ["bàn giao quyền của tôi"] },
+    def: B("Lending your access to someone for a while — who, what and until when. It is taken back automatically the morning after the end date.",
+           "Cho người khác mượn quyền của bạn trong một thời gian — cho ai, quyền nào và đến khi nào. Quyền được tự động thu hồi vào sáng hôm sau ngày kết thúc."),
+  },
+  seeItAs: {
+    term: B("See it as", "Xem dưới góc nhìn"),
+    aliases: { en: ["looking at this as"], vi: ["xem dưới góc nhìn của"] },
+    def: B("Seeing the app as another person sees it, to check their access. You still have exactly your own access while you look.",
+           "Xem ứng dụng như một người khác nhìn thấy, để kiểm tra quyền của họ. Trong lúc xem, bạn vẫn giữ đúng quyền của mình."),
+  },
   filing: {
     term: B("Filing", "Báo cáo bắt buộc"),
     aliases: { en: ["filings", "statutory filing", "statutory filings"], vi: ["hồ sơ nộp", "báo cáo nộp cơ quan"] },
-    def: B("A report the company must send to a government office. The deadline is set by law rather than by your company, and somebody outside the company reads what you send.",
-           "Báo cáo mà doanh nghiệp phải nộp cho cơ quan nhà nước. Thời hạn do pháp luật ấn định chứ không do công ty bạn, và người đọc nó nằm ngoài doanh nghiệp."),
+    def: B("A report the company must send to a government office. The deadline is set by law rather than by your company. Payobook generates the file; you send it.",
+           "Báo cáo mà doanh nghiệp phải nộp cho cơ quan nhà nước. Thời hạn do pháp luật ấn định chứ không do công ty bạn. Payobook tạo tệp; bạn là người nộp."),
   },
 };
 
@@ -1439,7 +1564,7 @@ const GLOSSARY = {
    That is deliberate: a section must never be able to vanish from the map
    because somebody forgot a second file.
    ========================================================================== */
-const LINE_ORDER = ["overview", "payrun", "people", "insights", "compliance", "setup"];
+const LINE_ORDER = ["overview", "payrun", "people", "lifecycle", "workforce", "insights", "compliance", "setup"];
 
 const STATIONS = {
   payrun: {
@@ -1880,6 +2005,31 @@ const STATIONS = {
           ],
         },
       },
+      /* LEARN REFRESH step 4 — who can do what, and lending it while away. */
+      {
+        id: "access", icon: "key", star: true, mins: 8, after: null,
+        roles: ["owner"],
+        search: B("access, delegation, give someone access, hand my access over while I'm away, see it as", "quyền truy cập, uỷ quyền, cấp quyền, bàn giao quyền khi vắng mặt, xem dưới góc nhìn"),
+        title: B("Access and delegation", "Quyền truy cập và uỷ quyền"),
+        desc: B("Who can open which screens, told as roles in plain words — and handing your access to someone while you are away.",
+                "Ai được mở màn hình nào, trình bày thành các vai trò bằng lời dễ hiểu — và bàn giao quyền của bạn cho người khác khi bạn vắng mặt."),
+        outline: {
+          what: B("Settings › Access & delegation. Tabs Roles, People, Screens and Hand-overs; See it as shows the app as someone else sees it.",
+                  "Cài đặt › Quyền truy cập & uỷ quyền. Các tab Roles, People, Screens và Hand-overs; See it as cho thấy ứng dụng như người khác nhìn thấy."),
+          why: B("Pay is private. Giving the right role, and taking it back when it ends, is what keeps it private.",
+                 "Lương là thông tin riêng tư. Cấp đúng vai trò, và thu hồi khi hết hạn, là cách giữ nó riêng tư."),
+          when: B("When someone joins or changes job, before you go on holiday, and when someone asks why they cannot see a screen.",
+                  "Khi có người vào làm hoặc đổi việc, trước khi bạn đi nghỉ, và khi có người hỏi vì sao họ không thấy một màn hình."),
+          prereq: B("Everyone can open it and hand their own access over. Giving roles and See it as need an access manager.",
+                    "Ai cũng mở được và bàn giao được quyền của mình. Cấp vai trò và See it as cần quyền quản lý truy cập."),
+          mistakes: [
+            B("Sharing your password instead of handing access over. A hand-over is recorded and ends by itself; a password does neither.",
+              "Đưa mật khẩu thay vì bàn giao quyền. Bàn giao được ghi lại và tự kết thúc; mật khẩu thì không làm được cả hai."),
+            B("Forgetting that See it as is only a view. You still have exactly your own access, and nothing you press acts as them.",
+              "Quên rằng See it as chỉ là một cách xem. Bạn vẫn giữ đúng quyền của mình, và không nút nào bạn bấm hành động thay họ."),
+          ],
+        },
+      },
     ],
   },
 
@@ -2008,6 +2158,109 @@ const STATIONS = {
           ],
         },
       },
+      /* -----------------------------------------------------------------------
+         LEARN REFRESH step 4 — THE WIDER APP. People › Pay (bands, the pay
+         review), People › Plan (the Decision Room) and a short tour of the
+         rest of People and Home. `roles` and `search` as in step 3.
+         -------------------------------------------------------------------- */
+      {
+        id: "paybands", icon: "bar-chart", mins: 7, after: null,
+        roles: ["hr", "owner"],
+        search: B("pay bands, salary ranges, fairness, pay gap, who is paid below the band", "khoảng lương, dải lương, công bằng, chênh lệch lương, ai được trả dưới khoảng lương"),
+        title: B("Pay bands and fairness", "Khoảng lương và công bằng"),
+        desc: B("The pay range for each kind of job, with every person placed in it, and a plain check on whether pay is fair.",
+                "Khoảng lương cho từng loại công việc, với mỗi người được đặt vào đó, và một phép kiểm tra rõ ràng xem lương có công bằng không."),
+        outline: {
+          what: B("People › Pay, on the Bands and Fairness tabs. Bands draws each range as a picture with a dot per person. Fairness shows the pay gaps.",
+                  "Con người › Lương, ở tab Khoảng lương và Công bằng. Khoảng lương vẽ mỗi khoảng thành một hình, mỗi người là một chấm. Công bằng cho thấy các khoảng chênh lệch lương."),
+          why: B("A band is the company's promise about what a job is worth. Seeing everyone in it shows who has fallen behind before they tell you.",
+                 "Khoảng lương là cam kết của công ty về giá trị của một công việc. Nhìn thấy mọi người trong đó cho biết ai đang bị tụt lại trước khi họ nói ra."),
+          when: B("Before a pay review, when you place a new hire, and whenever someone asks whether their pay is fair.",
+                  "Trước một đợt xét lương, khi xếp lương cho người mới, và bất cứ khi nào có người hỏi lương của mình có công bằng không."),
+          prereq: B("Pay viewer access to read the bands. Only pay managers and group admins can change them.",
+                    "Quyền xem lương để đọc các khoảng lương. Chỉ quản lý lương và quản trị tập đoàn mới sửa được."),
+          mistakes: [
+            B("Reading a band as a pay rise. Nothing on the Bands tab changes anybody's pay; a rise happens in a review or a pay change.",
+              "Hiểu khoảng lương như một lần tăng lương. Không có gì ở tab Khoảng lương thay đổi lương của ai; tăng lương diễn ra trong đợt xét lương hoặc một thay đổi lương."),
+            B("Dragging a band edge without reading the cost. The screen shows what the move would cost before you let go.",
+              "Kéo mép một khoảng lương mà không đọc chi phí. Màn hình cho biết thay đổi đó tốn bao nhiêu trước khi bạn thả tay."),
+            B("Quoting the pay gap as stored. Fairness is worked out each time you open it; print the statement to keep one.",
+              "Trích khoảng chênh lệch lương như một con số đã lưu. Công bằng được tính lại mỗi lần bạn mở; hãy in bản tường trình nếu muốn giữ lại."),
+          ],
+        },
+      },
+      {
+        id: "payreview", icon: "trending-up", star: true, mins: 9, after: "paybands",
+        roles: ["hr", "owner", "approver"],
+        search: B("pay review, pay rise, salary increase, who signs a pay review, pay change", "xét lương, tăng lương, ai ký đợt xét lương, thay đổi lương"),
+        title: B("Pay review and pay changes", "Xét lương và thay đổi lương"),
+        desc: B("A yearly review for everyone at once, inside a budget, signed off step by step — and a single pay change for one person.",
+                "Đợt xét lương hằng năm cho mọi người cùng lúc, trong một ngân sách, được duyệt từng bước — và một thay đổi lương cho riêng một người."),
+        outline: {
+          what: B("People › Pay › Review: a worksheet with a row per person, a budget meter and calibration. Changes holds single pay changes.",
+                  "Con người › Lương › Xét lương: một bảng tính mỗi người một dòng, một thước đo ngân sách và phần cân chỉnh. Thay đổi chứa các thay đổi lương lẻ."),
+          why: B("A review decides next year's pay for everybody. Doing it in one place keeps it inside the budget and fair, with every sign-off recorded.",
+                 "Đợt xét lương quyết định lương năm sau của mọi người. Làm ở một nơi giữ nó trong ngân sách và công bằng, mọi lần duyệt đều được ghi lại."),
+          when: B("Once a year for the review. A pay change for a promotion, a mistake to put right, or keeping up with the market.",
+                  "Mỗi năm một lần cho đợt xét lương. Một thay đổi lương khi thăng chức, khi sửa một sai sót, hoặc để theo kịp thị trường."),
+          prereq: B("Pay manager access to write a review. Each step of its sign-off names who decides.",
+                    "Quyền quản lý lương để soạn đợt xét lương. Mỗi bước duyệt ghi rõ ai quyết định."),
+          mistakes: [
+            B("Sending it for approval with the meter over budget. The review lists what stops approval; clear it first.",
+              "Gửi duyệt khi thước đo đã vượt ngân sách. Đợt xét lương liệt kê điều gì chặn duyệt; hãy xử lý trước."),
+            B("Skipping calibration. A top score with the smallest rise stands out, and somebody will ask why.",
+              "Bỏ qua cân chỉnh. Điểm cao nhất mà mức tăng nhỏ nhất sẽ nổi bật, và sẽ có người hỏi vì sao."),
+            B("Thinking Approved means paid. Apply writes the new pay onto the records; the next pay run reads it.",
+              "Nghĩ rằng Đã duyệt là đã trả. Áp dụng mới ghi lương mới vào hồ sơ; đợt lương kế tiếp sẽ đọc nó."),
+          ],
+        },
+      },
+      {
+        id: "decisionroom", icon: "sliders", mins: 7, after: null,
+        roles: ["owner"],
+        search: B("decision room, plan next year, what if, headcount plan, exact cost", "phòng quyết định, kế hoạch năm sau, nếu như, kế hoạch nhân sự, chi phí chính xác"),
+        title: B("Decision Room", "Phòng quyết định"),
+        desc: B("Try next year before you commit to it: more people, a rise, less overtime — and see what it does to cost and profit.",
+                "Thử trước năm sau trước khi cam kết: thêm người, tăng lương, bớt tăng ca — và xem điều đó ảnh hưởng thế nào tới chi phí và lợi nhuận."),
+        outline: {
+          what: B("People › Plan. Levers on the left, results in tabs, a compare table, and Exact cost, which runs a plan through the real pay scheme.",
+                  "Con người › Kế hoạch. Các cần gạt bên trái, kết quả theo tab, một bảng so sánh, và Chi phí chính xác, chạy kế hoạch qua chương trình lương thật."),
+          why: B("A plan argued from a spreadsheet is argued from someone's guess. Here every lever shows its cost the moment you move it.",
+                 "Một kế hoạch bàn từ bảng tính là bàn từ phỏng đoán của ai đó. Ở đây mỗi cần gạt cho thấy chi phí ngay khi bạn xoay nó."),
+          when: B("Budget season, before a hiring wave, and whenever someone asks what a rise for everyone would really cost.",
+                  "Mùa lập ngân sách, trước một đợt tuyển dụng, và bất cứ khi nào có người hỏi tăng lương cho mọi người thật sự tốn bao nhiêu."),
+          prereq: B("A Decision Room role. Exact cost needs a saved plan and a pay scheme for the people in it.",
+                    "Vai trò Phòng quyết định. Chi phí chính xác cần một kế hoạch đã lưu và chương trình lương cho những người trong đó."),
+          mistakes: [
+            B("Quoting the estimate as the answer. Press Exact cost; it says how far the estimate was off.",
+              "Trích con số ước tính như câu trả lời. Hãy bấm Chi phí chính xác; nó cho biết ước tính lệch bao nhiêu."),
+            B("Expecting a plan to change payroll. Nothing here changes payroll; an approved plan is a decision, not a pay run.",
+              "Chờ một kế hoạch thay đổi bảng lương. Không có gì ở đây thay đổi bảng lương; kế hoạch được duyệt là một quyết định, không phải một đợt lương."),
+          ],
+        },
+      },
+      {
+        id: "peoplemore", icon: "heart", mins: 4, after: "employees",
+        roles: ["hr"],
+        search: B("wall, praise, say thank you, announcements, assets, goals, where they work", "bảng vinh danh, khen ngợi, cảm ơn, thông báo, tài sản, mục tiêu, nơi làm việc"),
+        title: B("The rest of People and Home", "Phần còn lại của Con người và Trang chủ"),
+        desc: B("Praise on the Wall, messages in Announce, and the People tabs for where people work, what they hold and what they aim for.",
+                "Lời khen trên Bảng vinh danh, thông báo ở Thông báo, và các tab của Con người về nơi mọi người làm, họ giữ gì và họ hướng tới điều gì."),
+        outline: {
+          what: B("Home › Wall and Announce; People › Where they work, Assets, Praise and Goals. Each tab shows only when your company uses it.",
+                  "Trang chủ › Bảng vinh danh và Thông báo; Con người › Nơi họ làm việc, Tài sản, Khen ngợi và Mục tiêu. Mỗi tab chỉ hiện khi công ty bạn dùng nó."),
+          why: B("Pay is one part of working here. These tabs hold the rest, next to the records payroll already trusts.",
+                 "Lương chỉ là một phần của việc làm ở đây. Các tab này giữ phần còn lại, ngay cạnh hồ sơ mà bảng lương vẫn tin dùng."),
+          when: B("Whenever you want to thank someone, tell everyone something, hand out a laptop, or check a goal.",
+                  "Bất cứ khi nào bạn muốn cảm ơn ai đó, báo cho mọi người một điều, cấp một máy tính, hoặc xem một mục tiêu."),
+          prereq: B("Everyone can read the Wall and Announce. The People tabs follow their own access.",
+                    "Ai cũng đọc được Bảng vinh danh và Thông báo. Các tab của Con người theo quyền riêng của chúng."),
+          mistakes: [
+            B("Looking for a tab your company has not switched on. A missing tab is not broken; it is not in your company.",
+              "Đi tìm một tab mà công ty bạn chưa bật. Tab không có không phải là bị lỗi; nó không có trong công ty bạn."),
+          ],
+        },
+      },
     ],
   },
 
@@ -2105,24 +2358,285 @@ const STATIONS = {
   compliance: {
     stations: [
       {
-        id: "govreports", icon: "file-text", required: true, mins: 4, after: null,
-        title: B("Government Reports", "Báo cáo cơ quan nhà nước"),
-        desc: B("The statutory filings for this company's country, one month at a time.",
-                "Các báo cáo bắt buộc theo quốc gia của công ty này, mỗi lần một tháng."),
+        id: "govreports", icon: "file-text", required: true, star: true, mins: 7, after: null,
+        roles: ["officer", "owner"],
+        search: B("government filings, file the monthly insurance report, generate a filing, social insurance", "báo cáo nộp cơ quan, nộp báo cáo bảo hiểm hằng tháng, tạo hồ sơ, bảo hiểm xã hội"),
+        title: B("Government filings", "Báo cáo nộp cơ quan nhà nước"),
+        desc: B("The statutory filings for this company's country, one month at a time — chosen, scoped and generated for you to file.",
+                "Các báo cáo bắt buộc theo quốc gia của công ty này, mỗi lần một tháng — được chọn, khoanh phạm vi và tạo sẵn để bạn nộp."),
         outline: {
-          what: B("A front door over the filing wizards. It shows the report tiles this company's country has, grouped by the office that asks for each one, prefilled with your company and the month you picked.",
-                  "Cửa vào các trình lập báo cáo. Nó hiện những biểu mẫu mà quốc gia của công ty này có, nhóm theo cơ quan yêu cầu, và điền sẵn công ty của bạn cùng tháng bạn đã chọn."),
+          what: B("Compliance › Filings shows the filings your country asks for, grouped by the office that reads them. Generate opens a three-step flow: Choose the filing, Scope, Generate.",
+                  "Tuân thủ › Tờ khai hiện các báo cáo mà quốc gia bạn yêu cầu, nhóm theo cơ quan tiếp nhận. Tạo mở một luồng ba bước: Chọn hồ sơ, Phạm vi, Tạo."),
           why: B("A filing has a deadline set by law, not by your company, and somebody outside the company reads it. This screen tells you which filings apply to you without you having to ask around.",
                  "Một báo cáo bắt buộc có thời hạn do pháp luật ấn định chứ không do công ty bạn, và người đọc nó nằm ngoài công ty. Màn hình này cho bạn biết những báo cáo nào áp dụng với mình mà không phải đi hỏi khắp nơi."),
           when: B("After the month's runs are done, and before the office's deadline. A filing built on an unfinished month is a filing you will have to correct.",
                   "Sau khi các đợt lương của tháng đã Hoàn tất, và trước hạn nộp của cơ quan. Báo cáo lập trên một tháng chưa xong là báo cáo bạn sẽ phải đính chính."),
-          prereq: B("Completed runs for the month, and your country's own paperwork rules. Payobook prepares the file. It does not submit it for you.",
-                    "Các đợt lương của tháng đã Hoàn tất, và quy định hồ sơ của chính quốc gia bạn. Payobook lập tệp. Nó không nộp thay bạn."),
+          prereq: B("Government filing access, and completed runs for the month. Payobook prepares the file. It does not submit it for you.",
+                    "Quyền lập báo cáo nộp cơ quan, và các đợt lương của tháng đã Hoàn tất. Payobook lập tệp. Nó không nộp thay bạn."),
           mistakes: [
             B("Generating from a month whose runs are not all done. The tiles read what has been computed, so an unfinished run is a filing short by however many payslips are still moving.",
               "Kết xuất báo cáo khi các đợt lương của tháng chưa hoàn tất hết. Các biểu mẫu đọc phần đã tính, nên một đợt còn dở là một báo cáo thiếu đúng bằng số phiếu lương còn đang đi trong quy trình."),
             B("Reading \"coming soon\" as \"Payobook does not do this country\". It means the country's own payroll module is not installed on this database. Vietnam, Singapore, Thailand, Cambodia and Malaysia all have filings in the catalogue. Each set appears the moment its module is there, so the answer is a conversation with whoever administers the system.",
               "Hiểu dòng \"sắp có\" thành \"Payobook không hỗ trợ quốc gia này\". Nó chỉ có nghĩa là mô-đun tính lương của quốc gia đó chưa được cài trên cơ sở dữ liệu này. Việt Nam, Singapore, Thái Lan, Campuchia và Malaysia đều đã có biểu mẫu trong danh mục. Mỗi bộ xuất hiện ngay khi mô-đun của nó được cài, nên câu trả lời nằm ở cuộc trao đổi với người quản trị hệ thống."),
+            B("Thinking Generate sent it. Generate makes the files for you to download; nothing is sent anywhere.",
+              "Nghĩ rằng Tạo là đã nộp. Tạo chỉ sinh ra các tệp để bạn tải xuống; không có gì được gửi đi đâu cả."),
+          ],
+        },
+      },
+      /* LEARN REFRESH step 4 — the other three Compliance tabs, short. */
+      {
+        id: "compliancemore", icon: "shield-check", mins: 4, after: "govreports",
+        roles: ["officer", "owner"],
+        search: B("bank verification, bank-change request, young workers, audit trail, who changed what", "xác minh ngân hàng, yêu cầu đổi ngân hàng, lao động chưa thành niên, nhật ký kiểm toán, ai đã sửa gì"),
+        title: B("Bank checks, young workers, audit", "Kiểm tra ngân hàng, lao động trẻ, kiểm toán"),
+        desc: B("A bank change checked twice before anyone is paid to it, the hour limits for workers under 18, and who changed what.",
+                "Một thay đổi ngân hàng được kiểm tra hai lần trước khi ai đó được trả vào đó, giới hạn giờ làm cho lao động dưới 18 tuổi, và ai đã sửa gì."),
+        outline: {
+          what: B("Compliance › Bank, Young workers and Audit. Bank takes a bank letter and walks it Draft → HR Review → Finance Review → Approved.",
+                  "Tuân thủ › Ngân hàng, Lao động chưa thành niên và Nhật ký kiểm toán. Ngân hàng nhận một thư của ngân hàng và đưa nó qua Nháp → Nhân sự xét duyệt → Tài chính xét duyệt → Đã duyệt."),
+          why: B("A changed bank account is the most common way pay is stolen. Two people checking it, and a record of who changed what, stop that.",
+                 "Đổi tài khoản ngân hàng là cách phổ biến nhất để lương bị đánh cắp. Hai người kiểm tra, cùng nhật ký ai đã sửa gì, ngăn được điều đó."),
+          when: B("When someone changes bank, when you hire anyone under 18, and when somebody asks who changed a salary.",
+                  "Khi có người đổi ngân hàng, khi bạn tuyển người dưới 18 tuổi, và khi có người hỏi ai đã sửa một mức lương."),
+          prereq: B("Everyone can start a bank change. Young workers needs payroll or attendance access; Audit is for payroll managers.",
+                    "Ai cũng bắt đầu được một thay đổi ngân hàng. Lao động chưa thành niên cần quyền lương hoặc chấm công; Nhật ký kiểm toán dành cho quản lý lương."),
+          mistakes: [
+            B("Changing a bank account straight on the employee record. It skips both checks and leaves no request behind.",
+              "Sửa tài khoản ngân hàng thẳng trên hồ sơ nhân viên. Làm vậy bỏ qua cả hai bước kiểm tra và không để lại yêu cầu nào."),
+          ],
+        },
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------------------------------
+     LEARN REFRESH step 4 — THE LIFECYCLE LINE.
+
+     One person's road through the company, in the order it is lived: the job
+     is asked for, the person joins, their trial ends, their contract comes up
+     for a decision — and, years later, they leave. The map draws it as the
+     road Hoàng Văn Nam walks (journey.js LIFE_TRAIL). Appended, not inserted,
+     for the same numbering reason as the lines above.
+     ------------------------------------------------------------------------ */
+  lifecycle: {
+    stations: [
+      {
+        id: "hiring", icon: "briefcase", star: true, mins: 8, after: null,
+        roles: ["hr", "owner"],
+        search: B("hiring, raise a hiring request, new job, candidates, interview", "tuyển dụng, đề xuất tuyển dụng, vị trí mới, ứng viên, phỏng vấn"),
+        title: B("Hiring", "Tuyển dụng"),
+        desc: B("Ask for a new person, get it signed off, write the advert, meet the candidates — every role on one board, four steps each.",
+                "Đề xuất tuyển một người mới, xin phê duyệt, viết tin tuyển dụng, gặp ứng viên — mọi vị trí trên một bảng, mỗi vị trí bốn bước."),
+        outline: {
+          what: B("Lifecycle › Hiring. Quiet numbers on top, a four-step strip, and a card per role that says its step and what is next.",
+                  "Vòng đời nhân sự › Tuyển dụng. Các con số nhỏ ở trên, một dải bốn bước, và mỗi vị trí một thẻ cho biết bước hiện tại và việc tiếp theo."),
+          why: B("A new hire is a year of salary. Asking first, with the budget in front of the people who sign, stops a role being filled that nobody agreed to.",
+                 "Một người mới là một năm lương. Đề xuất trước, với ngân sách trước mặt người phê duyệt, ngăn việc tuyển một vị trí chưa ai đồng ý."),
+          when: B("As soon as a team needs someone new, or someone is leaving and must be replaced.",
+                  "Ngay khi một nhóm cần thêm người, hoặc có người sắp nghỉ và cần người thay."),
+          prereq: B("Hiring access. The tab shows only to the people the hiring screen itself lets in.",
+                    "Quyền tuyển dụng. Tab chỉ hiện với những người mà chính màn hình tuyển dụng cho phép."),
+          mistakes: [
+            B("Advertising before the request is signed off. The board keeps the role at step 1 until it is.",
+              "Đăng tin trước khi đề xuất được phê duyệt. Bảng giữ vị trí ở bước 1 cho tới khi được duyệt."),
+            B("Leaving interview opinions unwritten. The board counts them as late, and the offer waits.",
+              "Không viết ý kiến sau phỏng vấn. Bảng đếm chúng là trễ, và thư mời làm việc phải chờ."),
+          ],
+        },
+      },
+      {
+        id: "joiners", icon: "user-plus", star: true, mins: 7, after: "hiring",
+        roles: ["hr"],
+        search: B("new joiner, first day, buddy, onboarding, starting soon", "nhân viên mới, ngày đầu tiên, người đồng hành, nhận việc, sắp vào làm"),
+        title: B("New joiners", "Nhân viên mới"),
+        desc: B("Everyone starting soon: their buddy, their first steps, and what is still to prepare before day one.",
+                "Những người sắp vào làm: người đồng hành, những bước đầu tiên, và những gì còn phải chuẩn bị trước ngày đầu."),
+        outline: {
+          what: B("Lifecycle › New joiners. A card per person, three steps — Getting ready, Settling in, Checklist done — and a drawer of what is left.",
+                  "Vòng đời nhân sự › Nhân viên mới. Mỗi người một thẻ, ba bước — Đang chuẩn bị, Đang hòa nhập, Đã xong danh mục — và một ngăn liệt kê việc còn lại."),
+          why: B("The first week decides whether someone stays. It is also when payroll needs their bank account, before the first pay run.",
+                 "Tuần đầu quyết định một người có ở lại hay không. Đó cũng là lúc bảng lương cần tài khoản ngân hàng của họ, trước đợt lương đầu tiên."),
+          when: B("From the day an offer is accepted until the checklist is done.",
+                  "Từ ngày lời mời được nhận lời cho tới khi danh mục việc xong."),
+          prereq: B("Lifecycle access. The person must be in Payobook with a start date.",
+                    "Quyền Vòng đời nhân sự. Người đó phải có trong Payobook với ngày bắt đầu."),
+          mistakes: [
+            B("Starting someone with no buddy. The board counts them as Still without a buddy; choose one.",
+              "Để một người bắt đầu mà chưa có người đồng hành. Bảng đếm họ là Chưa có người đồng hành; hãy chọn một người."),
+            B("Forgetting the bank account. A joiner without one is on the roster and cannot be paid.",
+              "Quên tài khoản ngân hàng. Người mới chưa có tài khoản vẫn có trong danh sách nhưng không được trả lương."),
+          ],
+        },
+      },
+      {
+        id: "probation", icon: "hourglass", mins: 7, after: "joiners",
+        roles: ["hr"],
+        search: B("probation, trial ends, confirm after probation, extend the trial", "thử việc, hết thử việc, xác nhận chính thức, kéo dài thử việc"),
+        title: B("Probation", "Thử việc"),
+        desc: B("Every trial that is running: colleagues asked, the manager's view, and one decision — confirm, extend or do not confirm.",
+                "Mọi đợt thử việc đang chạy: ý kiến đồng nghiệp, nhận xét của quản lý, và một quyết định — xác nhận, kéo dài hoặc không xác nhận."),
+        outline: {
+          what: B("Lifecycle › Probation. Five steps from Choose peers to Share the outcome, and a card per person with their trial's end date.",
+                  "Vòng đời nhân sự › Thử việc. Năm bước từ Chọn đồng nghiệp tới Thông báo kết quả, và mỗi người một thẻ với ngày kết thúc thử việc."),
+          why: B("A trial that ends with no decision becomes a yes by default. The board makes sure somebody decides in time.",
+                 "Một đợt thử việc kết thúc mà không có quyết định sẽ mặc nhiên thành đồng ý. Bảng đảm bảo có người quyết định kịp lúc."),
+          when: B("Two weeks before a trial ends, and whenever colleagues' answers are overdue.",
+                  "Hai tuần trước khi thử việc kết thúc, và bất cứ khi nào câu trả lời của đồng nghiệp bị quá hạn."),
+          prereq: B("Lifecycle access. The manager decides first, then HR and leadership review.",
+                    "Quyền Vòng đời nhân sự. Quản lý quyết định trước, rồi nhân sự và lãnh đạo xem xét."),
+          mistakes: [
+            B("Deciding before colleagues have answered. Their view is part of the record the decision rests on.",
+              "Quyết định trước khi đồng nghiệp trả lời. Ý kiến của họ là một phần của hồ sơ mà quyết định dựa vào."),
+            B("Letting the end date pass. Ending within a week is on the board so that does not happen.",
+              "Để ngày kết thúc trôi qua. Mục Kết thúc trong vòng một tuần có trên bảng để điều đó không xảy ra."),
+          ],
+        },
+      },
+      {
+        id: "growth", icon: "sprout", mins: 4, after: "probation",
+        roles: ["hr"],
+        search: B("growth plan, coaching, improvement plan, objectives at risk", "kế hoạch phát triển, kèm cặp, kế hoạch cải thiện, mục tiêu có rủi ro"),
+        title: B("Growth plans", "Kế hoạch phát triển"),
+        desc: B("When someone is struggling: a conversation first, coaching, then a written plan with objectives and dates.",
+                "Khi một người gặp khó khăn: trao đổi trước, kèm cặp, rồi một kế hoạch bằng văn bản với mục tiêu và mốc thời gian."),
+        outline: {
+          what: B("Lifecycle › Growth plans. Four steps — Asked, Coaching, Plan running, Decision — and each plan's objectives marked on track or at risk.",
+                  "Vòng đời nhân sự › Kế hoạch phát triển. Bốn bước — Đã yêu cầu, Kèm cặp, Kế hoạch đang chạy, Quyết định — và mục tiêu của mỗi kế hoạch được đánh dấu đúng hướng hay có rủi ro."),
+          why: B("Help that is written down is help that can be shown. It is fair to the person and to the company.",
+                 "Sự hỗ trợ được ghi lại là sự hỗ trợ có thể chứng minh. Điều đó công bằng cho cả người lao động lẫn công ty."),
+          when: B("When a manager asks HR about someone in their team.",
+                  "Khi một quản lý hỏi nhân sự về một người trong nhóm của mình."),
+          prereq: B("A growth-plan role. The tab is kept to the few people who hold one.",
+                    "Vai trò kế hoạch phát triển. Tab chỉ dành cho số ít người có vai trò đó."),
+          mistakes: [
+            B("Jumping to a plan before the conversation. The first step is a conversation, and many stop there.",
+              "Nhảy thẳng tới kế hoạch trước khi trao đổi. Bước đầu tiên là một cuộc trao đổi, và nhiều trường hợp dừng ở đó."),
+          ],
+        },
+      },
+      {
+        id: "contractends", icon: "file-signature", mins: 4, after: null,
+        roles: ["hr", "officer"],
+        search: B("contract ending, renew a contract, extend a contract, make permanent", "hợp đồng sắp hết hạn, gia hạn hợp đồng, chuyển chính thức"),
+        title: B("Contracts ending", "Hợp đồng sắp hết hạn"),
+        desc: B("Contracts that end soon, decided in good time: make it permanent, extend it, or let it end.",
+                "Các hợp đồng sắp hết hạn, được quyết định sớm: chuyển chính thức, gia hạn, hoặc để hết hạn."),
+        outline: {
+          what: B("Lifecycle › Contracts. Four steps — Running, Decision needed, Being agreed, Decided — and a card per contract ending soon.",
+                  "Vòng đời nhân sự › Hợp đồng. Bốn bước — Đang hiệu lực, Cần quyết định, Đang chờ đồng ý, Đã quyết định — và mỗi hợp đồng sắp hết hạn một thẻ."),
+          why: B("A contract that ends with nobody deciding stops the person's pay in the middle of a month.",
+                 "Một hợp đồng hết hạn mà không ai quyết định sẽ làm dừng lương của người đó giữa tháng."),
+          when: B("Sixty days before a contract ends, when the board starts counting it.",
+                  "Sáu mươi ngày trước khi hợp đồng hết hạn, lúc bảng bắt đầu đếm nó."),
+          prereq: B("Lifecycle access. Raising the decision needs a contract with an end date.",
+                    "Quyền Vòng đời nhân sự. Muốn nêu quyết định thì hợp đồng phải có ngày kết thúc."),
+          mistakes: [
+            B("Leaving Nobody has decided above zero at month end. That person may drop out of the next pay run.",
+              "Để mục Chưa ai quyết định lớn hơn không vào cuối tháng. Người đó có thể rơi khỏi đợt lương kế tiếp."),
+          ],
+        },
+      },
+      {
+        id: "exits", icon: "log-out", star: true, mins: 8, after: null,
+        roles: ["hr", "officer"],
+        search: B("someone is leaving, exit, resignation, clearance, final settlement, last day", "nghỉ việc, thôi việc, đơn nghỉ việc, bàn giao, quyết toán, ngày làm cuối"),
+        title: B("Exits and final settlement", "Nghỉ việc và quyết toán"),
+        desc: B("From resignation to the last payment: notice, four desks signing off, handover, and the final settlement.",
+                "Từ đơn nghỉ việc tới khoản chi cuối cùng: thời gian báo trước, bốn phòng ban xác nhận bàn giao, bàn giao công việc, và quyết toán."),
+        outline: {
+          what: B("Lifecycle › Exits. Four steps — Working their notice, Signing off, Ready to settle, Settled — and IT, HR, Finance and Admin signing off each leaver.",
+                  "Vòng đời nhân sự › Nghỉ việc. Bốn bước — Đang trong thời gian báo trước, Đang xác nhận bàn giao, Sẵn sàng quyết toán, Đã quyết toán — và IT, Nhân sự, Tài chính, Quản trị viên xác nhận cho mỗi người nghỉ."),
+          why: B("The last payment has a legal deadline and one chance to be right. It waits until everything the company lent has come back.",
+                 "Khoản chi cuối có thời hạn pháp lý và chỉ một lần làm đúng. Nó chờ cho tới khi mọi thứ công ty cho mượn đã được trả lại."),
+          when: B("From the day a resignation is accepted to the day the settlement is closed.",
+                  "Từ ngày đơn nghỉ việc được chấp nhận tới ngày quyết toán được chốt."),
+          prereq: B("Lifecycle access. The settlement itself is paid from Pay Run › Settle.",
+                    "Quyền Vòng đời nhân sự. Bản thân khoản quyết toán được chi từ Đợt lương › Quyết toán."),
+          mistakes: [
+            B("Closing the settlement with a desk still open. The final settlement waits for all four, and says which one.",
+              "Chốt quyết toán khi còn một phòng ban chưa xác nhận. Quyết toán cuối cùng chờ đủ cả bốn, và nói rõ phòng ban nào."),
+            B("Leaving the leaver in the monthly pay run too. They are then paid twice.",
+              "Vẫn để người nghỉ trong đợt lương tháng. Khi đó họ được trả hai lần."),
+          ],
+        },
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------------------------------
+     LEARN REFRESH step 4 — THE WORKFORCE LINE. A manager's week, in order: a
+     day in Workforce, the time and leave behind it, and closing the week so
+     payroll can use it.
+     ------------------------------------------------------------------------ */
+  workforce: {
+    stations: [
+      {
+        id: "wftoday", icon: "sun", mins: 6, after: null,
+        roles: ["officer", "hr"],
+        search: B("today, who is in, who is late, needs you, approve clean overtime", "hôm nay, ai có mặt, ai đi trễ, cần bạn, duyệt tăng ca sạch"),
+        title: B("A day in Workforce", "Một ngày ở Lực lượng lao động"),
+        desc: B("Who is in today, and the Needs you panel: everything waiting for you, and one press for the overtime that is clean.",
+                "Hôm nay ai có mặt, và khung Cần bạn: mọi việc đang chờ bạn, và một lần bấm cho phần tăng ca sạch."),
+        outline: {
+          what: B("Workforce › Today: who is on shift, late, not started, checked out or on leave. The Needs you panel sits beside every Workforce tab.",
+                  "Lực lượng lao động › Hôm nay: ai đang theo ca, trễ, chưa bắt đầu, đã về hoặc đang nghỉ phép. Khung Cần bạn nằm cạnh mọi tab của Lực lượng lao động."),
+          why: B("Time becomes pay. What a manager does not look at today turns into a flag at the end of the week.",
+                 "Giờ công trở thành tiền lương. Điều quản lý không xem hôm nay sẽ thành một cờ cảnh báo vào cuối tuần."),
+          when: B("Every morning, and after lunch for the late starts.",
+                  "Mỗi sáng, và sau giờ trưa cho những người bắt đầu muộn."),
+          prereq: B("Attendance officer access. The panel's Organisation view is for the people who look after the whole company.",
+                    "Quyền cán bộ chấm công. Chế độ Tổ chức của khung dành cho người phụ trách toàn công ty."),
+          mistakes: [
+            B("Approving all overtime at once. Only the clean ones go in one press; the rest need a look.",
+              "Duyệt tất cả tăng ca một lần. Chỉ phần sạch được duyệt trong một lần bấm; phần còn lại cần xem."),
+          ],
+        },
+      },
+      {
+        id: "wftime", icon: "clock", mins: 7, after: "wftoday",
+        roles: ["officer", "hr"],
+        search: B("time, attendance exceptions, time off, leave request, approve overtime", "chấm công, ngoại lệ chấm công, nghỉ phép, đơn nghỉ phép, duyệt tăng ca"),
+        title: B("Time, time off and overtime", "Chấm công, nghỉ phép và tăng ca"),
+        desc: B("Hours worked and their exceptions, leave waiting for a decision, and overtime to approve inside its limits.",
+                "Giờ làm việc và các ngoại lệ, đơn nghỉ phép chờ quyết định, và tăng ca cần duyệt trong giới hạn của nó."),
+        outline: {
+          what: B("Three Workforce tabs. Time shows hours and exceptions; Time Off holds the leave queue; Overtime holds the approval queue and its limits.",
+                  "Ba tab của Lực lượng lao động. Chấm công cho thấy giờ và ngoại lệ; Nghỉ phép giữ hàng chờ nghỉ phép; Tăng ca giữ hàng chờ duyệt và các giới hạn."),
+          why: B("Every hour here reaches a payslip. A leave day approved late, or overtime past the legal limit, costs money and trust.",
+                 "Mỗi giờ ở đây đều đi vào phiếu lương. Một ngày nghỉ duyệt muộn, hay tăng ca vượt giới hạn luật định, tốn cả tiền lẫn lòng tin."),
+          when: B("Through the week, so that closing the week is a check rather than a scramble.",
+                  "Trong suốt tuần, để việc chốt tuần chỉ là một bước kiểm tra chứ không phải chạy nước rút."),
+          prereq: B("Attendance officer access for Time. Leave and overtime approval follow their own access.",
+                    "Quyền cán bộ chấm công cho tab Chấm công. Duyệt nghỉ phép và tăng ca theo quyền riêng."),
+          mistakes: [
+            B("Ignoring the near-the-limit mark on overtime. Vietnam caps monthly and yearly overtime; the mark is the warning.",
+              "Bỏ qua dấu gần giới hạn trên tăng ca. Việt Nam giới hạn tăng ca theo tháng và theo năm; dấu đó là lời cảnh báo."),
+            B("Filing leave for someone without telling them. Apply on behalf is for when they cannot, and it is recorded.",
+              "Đăng ký nghỉ thay một người mà không báo họ. Đăng ký thay dành cho lúc họ không tự làm được, và việc đó được ghi lại."),
+          ],
+        },
+      },
+      {
+        id: "wfclose", icon: "lock", star: true, mins: 7, after: "wftime",
+        roles: ["officer", "hr"],
+        search: B("close the week, lock the week, send to payroll, attendance flags", "chốt tuần, khoá tuần, gửi vào bảng lương, cờ chấm công"),
+        title: B("Close the week", "Chốt tuần"),
+        desc: B("Clear the week's flags, read what goes to payroll, then lock the week and send it on.",
+                "Xử lý các cờ cảnh báo của tuần, đọc những gì chuyển sang bảng lương, rồi khoá tuần và gửi đi."),
+        outline: {
+          what: B("Workforce › Close. The week's flags, each with Fix or Approve as-is, and a payroll handoff with its hours and one lock button.",
+                  "Lực lượng lao động › Chốt kỳ. Các cờ cảnh báo của tuần, mỗi cờ có Điều chỉnh hoặc Phê duyệt nguyên trạng, và phần chuyển giao tiền lương với số giờ và một nút khoá."),
+          why: B("Payroll trusts a locked week. Locking it with a flag unanswered sends a question to payroll as if it were a fact.",
+                 "Bảng lương tin vào một tuần đã khoá. Khoá khi còn cờ chưa trả lời là gửi một câu hỏi sang bảng lương như thể đó là sự thật."),
+          when: B("At the end of every week, before the pay run reads it.",
+                  "Cuối mỗi tuần, trước khi đợt lương đọc dữ liệu."),
+          prereq: B("An attendance or payroll manager locks a week. Others can read the board.",
+                    "Quản lý chấm công hoặc quản lý lương mới khoá được tuần. Người khác chỉ đọc được bảng."),
+          mistakes: [
+            B("Pressing Approve as-is to get the lock to work. Approve only what really happened; fix the rest.",
+              "Bấm Phê duyệt nguyên trạng chỉ để mở khoá nút. Chỉ duyệt những gì thật sự đã diễn ra; hãy điều chỉnh phần còn lại."),
+            B("Reopening a locked week without a reason. Reopen… asks for one, and it stays on the record.",
+              "Mở lại tuần đã khoá mà không có lý do. Mở lại… sẽ hỏi lý do, và lý do đó được lưu lại."),
           ],
         },
       },
@@ -3591,6 +4105,1158 @@ const LESSONS = {
     },
   },
 
+  /* ===========================================================================
+     LEARN REFRESH step 4 — THE WIDER APP. Lessons L13–L28 over the practice
+     company's drawings of People › Pay and Plan, the Lifecycle boards,
+     Workforce, Access & delegation and Compliance. Two hero moments: the pay
+     review's budget meter FILLS as the rises go in (`meter`), and the map's
+     Lifecycle line walks Hoàng Văn Nam from his hiring to his last day
+     (journey.js). Money figures live in practice-data.js; the prose quotes
+     the few the replica prints.
+     ======================================================================== */
+  L13: {
+    id: "L13", station: "paybands", mins: 7,
+    title: B("Pay bands, and whether pay is fair", "Khoảng lương, và lương có công bằng không"),
+    goal: B("Read a band picture, spot who is paid below their band, and know what the Bands and Fairness tabs never change.",
+            "Đọc bức tranh khoảng lương, nhận ra ai đang được trả dưới khoảng lương, và biết tab Khoảng lương và Công bằng không bao giờ thay đổi điều gì."),
+    steps: [
+      {
+        screen: "paybands", anchor: "pp-tabs",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("People › Pay has four tabs", "Con người › Lương có bốn tab"),
+        body: B("<b>Bands</b> and <b>Fairness</b> describe pay as it is. <b>Review</b> and <b>Changes</b> change it. This lesson is the first two; the next one is the other two.",
+                "<b>Khoảng lương</b> và <b>Công bằng</b> mô tả lương như hiện tại. <b>Xét lương</b> và <b>Thay đổi</b> mới thay đổi nó. Bài này học hai tab đầu; bài sau học hai tab còn lại."),
+      },
+      {
+        screen: "paybands", anchor: "pp-band-picture",
+        kicker: B("The picture", "Bức tranh"),
+        title: B("A range per job, a dot per person", "Mỗi công việc một khoảng, mỗi người một chấm"),
+        body: B("The shaded range is the band, the tick is its middle, and every person stands in it as a dot. <b>Trần Văn Hùng</b>'s dot sits left of his band: he is paid below it, and the row says <b>1 below</b>.",
+                "Phần tô màu là khoảng lương, vạch là điểm giữa, và mỗi người là một chấm trong đó. Chấm của <b>Trần Văn Hùng</b> nằm bên trái khoảng lương: anh được trả dưới khoảng, và dòng đó ghi <b>1 dưới</b>."),
+        tip: B("Press a person's dot on the real screen and it names them. Dense rows fit a big family on one page.",
+               "Bấm vào chấm của một người trên màn hình thật để thấy tên. Dòng gọn giúp một nhóm lớn nằm vừa một trang."),
+      },
+      {
+        screen: "paybands", anchor: "pp-bands-tools",
+        kicker: B("The tools", "Công cụ"),
+        title: B("Four buttons, none of them a pay rise", "Bốn nút, không nút nào là tăng lương"),
+        body: B("<b>Work it out again</b> redraws the bands from what you pay today. <b>Export</b> and <b>Import</b> take them through a file. <b>Place a new hire</b> suggests a starting salary inside the band.",
+                "<b>Tính lại</b> vẽ lại các khoảng lương từ mức bạn đang trả. <b>Xuất ra</b> và <b>Nhập vào</b> đưa chúng qua một tệp. <b>Xếp lương người mới</b> gợi ý mức lương khởi điểm nằm trong khoảng."),
+        tip: B("No bands yet? The tab offers a set drawn from what you already pay. Nothing is saved until you press Use these.",
+               "Chưa có khoảng lương? Tab sẽ đưa ra một bộ vẽ từ mức bạn đang trả. Chưa có gì được lưu cho tới khi bạn bấm Dùng các khoảng này."),
+      },
+      {
+        screen: "paybands", anchor: "pp-band-picture",
+        kicker: B("Moving a band", "Dời một khoảng lương"),
+        title: B("Drag an edge, read the cost, then let go", "Kéo mép, đọc chi phí, rồi mới thả tay"),
+        body: B("A pay manager can drag a band's edge. While you hold it, the screen shows what the move would cost; letting go saves it, and <b>Undo</b> takes it back.",
+                "Quản lý lương có thể kéo mép một khoảng lương. Trong lúc giữ, màn hình cho thấy thay đổi đó tốn bao nhiêu; thả tay là lưu, và <b>Hoàn tác</b> lấy lại."),
+        consequence: B("Affects the band only — nobody's pay moves until a review or a pay change. Reversible: yes, with Undo. Verify first: the cost shown while you hold the edge.",
+                       "Ảnh hưởng: chỉ khoảng lương — lương của không ai thay đổi cho tới khi có đợt xét lương hoặc thay đổi lương. Hoàn tác: có, bằng Hoàn tác. Kiểm tra trước: chi phí hiện ra khi bạn giữ mép."),
+      },
+      {
+        screen: "paybands", anchor: "pp-health",
+        kicker: B("Worth knowing", "Đáng biết"),
+        title: B("Five checks, read for you", "Năm phép kiểm tra, đã đọc sẵn cho bạn"),
+        body: B("Paid below the band, paid above it, newer people paid more, a manager paid less, and how wide each band has become. Here one person is below; that is where a review looks first.",
+                "Được trả dưới khoảng lương, trên khoảng lương, người mới được trả cao hơn, quản lý được trả thấp hơn, và mỗi khoảng lương đã rộng ra bao nhiêu. Ở đây có một người ở dưới; đó là chỗ đợt xét lương nhìn vào trước."),
+      },
+      {
+        screen: "paybands", anchor: "pp-fairness",
+        kicker: B("Fairness", "Công bằng"),
+        title: B("Worked out on open, never stored", "Tính khi mở, không bao giờ lưu"),
+        body: B("The <b>Fairness</b> tab shows the pay gap by gender across everybody, then by level, by team and for the same job. Only pay managers and group admins see names.",
+                "Tab <b>Công bằng</b> cho thấy chênh lệch lương theo giới trên toàn bộ nhân sự, rồi theo cấp bậc, theo phòng ban và cho cùng một công việc. Chỉ quản lý lương và quản trị tập đoàn mới thấy tên."),
+        tip: B("A number worked out each time can move tomorrow. Print the statement when you need to keep one.",
+               "Một con số tính lại mỗi lần có thể đổi vào ngày mai. Hãy in bản tường trình khi cần giữ lại."),
+      },
+    ],
+    quiz: {
+      question: B("Hùng's dot sits left of his band. What will raise his pay?",
+                  "Chấm của Hùng nằm bên trái khoảng lương. Điều gì sẽ nâng lương của anh?"),
+      options: [
+        {
+          text: B("A pay review or a pay change for him", "Một đợt xét lương hoặc một thay đổi lương cho anh"),
+          correct: true,
+          explanation: B("Yes. Bands describe pay; only Review and Changes change it, and both are signed off.",
+                         "Đúng vậy. Khoảng lương chỉ mô tả lương; chỉ Xét lương và Thay đổi mới thay đổi nó, và cả hai đều phải được duyệt."),
+        },
+        {
+          text: B("Dragging his band lower so he sits inside it", "Kéo khoảng lương của anh xuống để anh nằm bên trong"),
+          correct: false,
+          explanation: B("Let's rethink that. Moving the band changes the picture, not his pay — he would look fine and still be paid the same.",
+                         "Hãy nghĩ lại một chút. Dời khoảng lương chỉ đổi bức tranh, không đổi lương của anh — trông thì ổn mà anh vẫn nhận như cũ."),
+        },
+        {
+          text: B("Nothing — Payobook raises him on its own", "Không cần gì — Payobook tự tăng cho anh"),
+          correct: false,
+          explanation: B("Let's rethink that. Nothing here changes anybody's pay by itself. It shows you who to look at.",
+                         "Hãy nghĩ lại một chút. Không có gì ở đây tự thay đổi lương của ai. Nó chỉ cho bạn biết cần nhìn vào ai."),
+        },
+      ],
+    },
+  },
+
+  L14: {
+    id: "L14", station: "payreview", mins: 9,
+    title: B("Run a pay review inside its budget", "Xét lương trong phạm vi ngân sách"),
+    goal: B("Fill a pay review's worksheet, watch it against its budget, calibrate it, and know who signs it and what Apply does.",
+            "Điền bảng tính của đợt xét lương, theo dõi nó so với ngân sách, cân chỉnh, và biết ai phê duyệt và Áp dụng làm gì."),
+    steps: [
+      {
+        screen: "payreview", anchor: "pp-reviews",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("One review, everybody's next year", "Một đợt xét lương, năm sau của mọi người"),
+        body: B("People › Pay › <b>Review</b>. A review holds everyone's rise for the year in one worksheet, inside one budget. <b>New review</b> starts one; <b>Set up guidance</b> says what each score should earn.",
+                "Con người › Lương › <b>Xét lương</b>. Một đợt xét lương giữ mức tăng của mọi người trong năm trên một bảng tính, trong một ngân sách. <b>Đợt xét lương mới</b> bắt đầu một đợt; <b>Thiết lập hướng dẫn</b> nói mỗi mức điểm nên được tăng bao nhiêu."),
+      },
+      {
+        screen: "payreview", anchor: "pp-stepper",
+        kicker: B("Who signs", "Ai phê duyệt"),
+        title: B("Being written → HR → finance → the CEO → Applied", "Đang soạn → nhân sự → tài chính → tổng giám đốc → Đã áp dụng"),
+        body: B("The stepper is the review's road. <b>Send for approval</b> hands it to HR, then finance, then the CEO. Each can approve it or <b>Send back</b> with a reason.",
+                "Thanh các bước là chặng đường của đợt xét lương. <b>Gửi duyệt</b> chuyển nó cho nhân sự, rồi tài chính, rồi tổng giám đốc. Mỗi người có thể duyệt hoặc <b>Trả lại</b> kèm lý do."),
+        moment: { kind: "pipeline", chain: "review" },
+      },
+      {
+        screen: "payreview", anchor: "pp-worksheet",
+        kicker: B("The worksheet", "Bảng tính"),
+        title: B("A row per person", "Mỗi người một dòng"),
+        body: B("Score, where they sit <b>in the band</b>, what they are paid now, the guidance, the rise, the new pay and what it costs a year. Filters find who is not scored, who stops approval and who is <b>Paid below the band</b>.",
+                "Điểm đánh giá, vị trí <b>trong khoảng lương</b>, mức đang được trả, hướng dẫn, mức tăng, lương mới và chi phí cả năm. Bộ lọc tìm ai chưa chấm điểm, ai chặn duyệt và ai <b>Được trả dưới khoảng lương</b>."),
+      },
+      {
+        screen: "payreview", anchor: "pp-bulk",
+        kicker: B("Filling it in", "Điền vào"),
+        title: B("Start from the guidance", "Bắt đầu từ hướng dẫn"),
+        body: B("<b>Use the guidance</b> fills every rise from the scores. <b>Add 1%</b> and <b>Take off 1%</b> nudge the people you picked; <b>Share out what is left</b> spreads the rest of the budget.",
+                "<b>Dùng hướng dẫn</b> điền mọi mức tăng theo điểm đánh giá. <b>Thêm 1%</b> và <b>Bớt 1%</b> chỉnh những người bạn chọn; <b>Chia phần còn lại</b> rải phần ngân sách còn dư."),
+      },
+      {
+        screen: "payreview", anchor: "rep-pr-budget",
+        kicker: B("The budget", "Ngân sách"),
+        title: B("Watch the meter fill as the rises go in", "Nhìn thước đo đầy dần khi thêm các mức tăng"),
+        body: B("Four rises go in: Mai 4%, Hùng 5% because he is below his band, Trang 2%, Đức 3%. The meter fills to <b>96%</b> of the budget. Over 100%, the review cannot be sent for approval.",
+                "Bốn mức tăng được thêm vào: Mai 4%, Hùng 5% vì anh đang dưới khoảng lương, Trang 2%, Đức 3%. Thước đo đầy tới <b>96%</b> ngân sách. Vượt 100% thì không gửi duyệt được."),
+        moment: { kind: "meter", from: "rep-pr-budget" },
+      },
+      {
+        screen: "payreview", anchor: "pp-calibration",
+        kicker: B("Calibration", "Cân chỉnh"),
+        title: B("Does anyone stand out?", "Có ai nổi bật không?"),
+        body: B("<b>Calibration</b> marks each rise as in line with the others, standing out, or breaking a limit. Trang has the top score and the smallest rise: <b>Worth a second look</b>.",
+                "<b>Cân chỉnh</b> đánh dấu mỗi mức tăng là ngang với những người khác, nổi bật, hay vượt giới hạn. Trang có điểm cao nhất mà mức tăng nhỏ nhất: <b>Đáng xem lại</b>."),
+        tip: B("Trang is already above her band's middle, so a small rise can be right. Calibration asks the question; you answer it.",
+               "Trang đã ở trên điểm giữa khoảng lương của mình, nên mức tăng nhỏ có thể là đúng. Cân chỉnh đặt câu hỏi; bạn trả lời."),
+      },
+      {
+        screen: "payreview", anchor: "pp-stops",
+        kicker: B("Before you send it", "Trước khi gửi"),
+        title: B("What stops approval", "Điều gì chặn duyệt"),
+        body: B("Over budget, somebody not scored, a limit broken: each is listed here, and each keeps <b>Send for approval</b> from working. Here nothing is listed.",
+                "Vượt ngân sách, có người chưa chấm điểm, vượt một giới hạn: mỗi điều được liệt kê ở đây, và mỗi điều khiến <b>Gửi duyệt</b> không bấm được. Ở đây không có điều nào."),
+      },
+      {
+        screen: "payreview", anchor: "pp-review-actions",
+        kicker: B("The action", "Thao tác chính"),
+        title: B("Approved is not paid — Apply is", "Đã duyệt chưa phải là đã trả — Áp dụng mới là"),
+        body: B("When the last step approves, the review is <b>Approved</b>. <b>Apply</b> shows what it would change, then writes the new pay onto everyone's records. The next pay run reads it.",
+                "Khi bước cuối duyệt, đợt xét lương là <b>Đã duyệt</b>. <b>Áp dụng</b> cho thấy nó sẽ thay đổi gì, rồi ghi lương mới vào hồ sơ của mọi người. Đợt lương kế tiếp sẽ đọc nó."),
+        consequence: B("Affects everyone in the review, from the next pay run. Reversible: Take it back works for 24 hours after Apply. Verify first: the meter, and nothing left under What stops approval.",
+                       "Ảnh hưởng: mọi người trong đợt xét lương, từ đợt lương kế tiếp. Hoàn tác: Lấy lại dùng được trong 24 giờ sau khi Áp dụng. Kiểm tra trước: thước đo, và mục Điều gì chặn duyệt không còn gì."),
+      },
+      {
+        screen: "payreview", anchor: "pp-tabs",
+        kicker: B("One person, one change", "Một người, một thay đổi"),
+        title: B("Changes, for everything between reviews", "Thay đổi, cho mọi việc giữa hai đợt xét lương"),
+        body: B("A promotion, putting a mistake right, keeping up with the market: <b>Changes</b> › <b>New pay change</b> takes one person, a reason and the new pay. It goes up the same ladder of sign-offs.",
+                "Thăng chức, sửa một sai sót, theo kịp thị trường: <b>Thay đổi</b> › <b>Thay đổi lương mới</b> nhận một người, một lý do và mức lương mới. Nó đi qua cùng các bước duyệt như trên."),
+      },
+    ],
+    quiz: {
+      question: B("The review says Approved. Will this month's pay run pay the new salaries?",
+                  "Đợt xét lương báo Đã duyệt. Đợt lương tháng này có trả mức lương mới không?"),
+      options: [
+        {
+          text: B("Only after somebody presses Apply", "Chỉ sau khi có người bấm Áp dụng"),
+          correct: true,
+          explanation: B("Yes. Apply writes the new pay onto the records, and a pay run computed after that reads it.",
+                         "Đúng vậy. Áp dụng ghi lương mới vào hồ sơ, và đợt lương được tính sau đó sẽ đọc nó."),
+        },
+        {
+          text: B("Yes — Approved means paid", "Có — Đã duyệt là đã trả"),
+          correct: false,
+          explanation: B("Let's rethink that. Approved is the last signature. Nothing reaches a record until Apply.",
+                         "Hãy nghĩ lại một chút. Đã duyệt là chữ ký cuối cùng. Chưa có gì vào hồ sơ cho tới khi Áp dụng."),
+        },
+        {
+          text: B("Only for the people the CEO looked at", "Chỉ với những người mà tổng giám đốc đã xem"),
+          correct: false,
+          explanation: B("Let's rethink that. A review is signed off and applied as one piece, for everyone in it.",
+                         "Hãy nghĩ lại một chút. Một đợt xét lương được duyệt và áp dụng như một khối, cho mọi người trong đó."),
+        },
+      ],
+    },
+  },
+
+  L15: {
+    id: "L15", station: "decisionroom", mins: 7,
+    title: B("Try next year before you commit to it", "Thử trước năm sau trước khi cam kết"),
+    goal: B("Move the Decision Room's levers, read what they do to cost and profit, and turn an estimate into an exact cost.",
+            "Xoay các cần gạt của Phòng quyết định, đọc tác động lên chi phí và lợi nhuận, và biến một ước tính thành chi phí chính xác."),
+    steps: [
+      {
+        screen: "decisionroom", anchor: "dr-head",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("See the year before you commit to it", "Nhìn thấy cả năm trước khi cam kết"),
+        body: B("People › <b>Plan</b> opens the Decision Room. <b>Undo</b>, <b>Reset</b> and <b>Save plan</b> sit at the top; everything in between is a question you can ask of next year.",
+                "Con người › <b>Kế hoạch</b> mở Phòng quyết định. <b>Hoàn tác</b>, <b>Đặt lại</b> và <b>Lưu kế hoạch</b> nằm ở trên; mọi thứ ở giữa là một câu hỏi bạn đặt cho năm sau."),
+      },
+      {
+        screen: "decisionroom", anchor: "dr-presets",
+        kicker: B("What if we…", "Nếu chúng ta…"),
+        title: B("Start from a preset, then move the levers", "Bắt đầu từ một phương án có sẵn, rồi xoay các cần gạt"),
+        body: B("<b>Grow thoughtfully</b>, <b>Invest in people</b> or <b>Ease overtime</b> set the levers for you. Then change them: add people and the month they start, a rise and when, overtime per person, leavers.",
+                "<b>Tăng trưởng thận trọng</b>, <b>Đầu tư vào con người</b> hoặc <b>Giảm làm thêm giờ</b> đặt sẵn các cần gạt. Rồi chỉnh chúng: thêm người và tháng bắt đầu, mức tăng lương và thời điểm, tăng ca mỗi người, người nghỉ việc."),
+        tip: B("Explore freely. Nothing here changes payroll.", "Cứ thoải mái khám phá. Không có gì ở đây thay đổi bảng lương."),
+      },
+      {
+        screen: "decisionroom", anchor: "dr-goals",
+        kicker: B("Goals", "Mục tiêu"),
+        title: B("Six goals. The room keeps score.", "Sáu mục tiêu. Căn phòng tự chấm điểm."),
+        body: B("Say what a good year means — profit, overtime, room to hire. Every lever you move is scored against them, so a plan is judged by your goals, not by its size.",
+                "Hãy nói một năm tốt nghĩa là gì — lợi nhuận, tăng ca, dư địa tuyển dụng. Mỗi cần gạt bạn xoay đều được chấm theo đó, nên kế hoạch được đánh giá theo mục tiêu của bạn chứ không theo quy mô."),
+      },
+      {
+        screen: "decisionroom", anchor: "dr-results",
+        kicker: B("The results", "Kết quả"),
+        title: B("Four ways to read one plan", "Bốn cách đọc một kế hoạch"),
+        body: B("<b>Work & shifts</b>, <b>Why profit changed</b>, <b>People & pay</b> and <b>Room to hire</b>. Why profit changed is the one to show a board: it names each lever's share.",
+                "<b>Công việc & ca làm</b>, <b>Vì sao lợi nhuận thay đổi</b>, <b>Con người & lương</b> và <b>Dư địa tuyển dụng</b>. Vì sao lợi nhuận thay đổi là thứ nên trình ban lãnh đạo: nó nêu phần của từng cần gạt."),
+      },
+      {
+        screen: "decisionroom", anchor: "rep-dr-exact",
+        kicker: B("Estimate, then exact", "Ước tính, rồi chính xác"),
+        title: B("Exact cost runs the real pay scheme", "Chi phí chính xác chạy chương trình lương thật"),
+        body: B("The room's own figure is an estimate. <b>Exact cost</b> runs a saved plan through the real pay scheme and says how far the estimate was off — here under half a percent.",
+                "Con số của căn phòng là ước tính. <b>Chi phí chính xác</b> chạy một kế hoạch đã lưu qua chương trình lương thật và cho biết ước tính lệch bao nhiêu — ở đây dưới nửa phần trăm."),
+      },
+      {
+        screen: "decisionroom", anchor: "dr-propose",
+        kicker: B("Deciding", "Quyết định"),
+        title: B("Propose, then approve or send back", "Đề xuất, rồi duyệt hoặc trả lại"),
+        body: B("A saved plan is <b>Propose</b>d; a manager approves it or sends it back. An approved plan is kept as it was — <b>Keep editing a copy</b> starts the next idea.",
+                "Kế hoạch đã lưu được <b>Đề xuất</b>; quản lý duyệt hoặc trả lại. Kế hoạch đã duyệt được giữ nguyên — <b>Chép ra bản mới để sửa tiếp</b> bắt đầu ý tưởng kế tiếp."),
+        tip: B("Export the decision brief turns the plan into a document you can send.",
+               "Xuất bản tóm tắt quyết định biến kế hoạch thành một tài liệu bạn có thể gửi đi."),
+      },
+    ],
+    quiz: {
+      question: B("Your finance director asks what a 3.5% rise for everyone will really cost next year. What do you send?",
+                  "Giám đốc tài chính hỏi tăng lương 3,5% cho mọi người thật sự tốn bao nhiêu vào năm sau. Bạn gửi gì?"),
+      options: [
+        {
+          text: B("The Exact cost of a saved plan, with how far the estimate was off", "Chi phí chính xác của một kế hoạch đã lưu, kèm mức lệch của ước tính"),
+          correct: true,
+          explanation: B("Yes. It runs the real pay scheme, so it includes insurance and tax the way payroll will.",
+                         "Đúng vậy. Nó chạy chương trình lương thật, nên đã gồm bảo hiểm và thuế đúng như bảng lương sẽ tính."),
+        },
+        {
+          text: B("The room's estimate", "Con số ước tính của căn phòng"),
+          correct: false,
+          explanation: B("Let's rethink that. The estimate is quick and close, not exact. For a number somebody will budget from, press Exact cost.",
+                         "Hãy nghĩ lại một chút. Ước tính nhanh và gần đúng, không chính xác. Với con số người khác dùng để lập ngân sách, hãy bấm Chi phí chính xác."),
+        },
+        {
+          text: B("This year's wage bill plus 3.5%", "Quỹ lương năm nay cộng 3,5%"),
+          correct: false,
+          explanation: B("Let's rethink that. It misses the people joining and leaving, and what the rise does to insurance and tax.",
+                         "Hãy nghĩ lại một chút. Cách đó bỏ sót người vào, người nghỉ, và tác động của mức tăng lên bảo hiểm và thuế."),
+        },
+      ],
+    },
+  },
+
+  L16: {
+    id: "L16", station: "hiring", mins: 8,
+    title: B("Raise a hiring request, and follow it to a hire", "Đề xuất tuyển dụng, và theo nó tới khi có người"),
+    goal: B("Read the Hiring board, raise a request with its budget, and know who signs it and what each step of a role means.",
+            "Đọc bảng Tuyển dụng, đề xuất tuyển kèm ngân sách, và biết ai phê duyệt cũng như mỗi bước của một vị trí nghĩa là gì."),
+    steps: [
+      {
+        screen: "hiring", anchor: "hi-numbers",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("Every open role, on one board", "Mọi vị trí đang tuyển, trên một bảng"),
+        body: B("Lifecycle › <b>Hiring</b>. The quiet numbers on top say what needs you: <b>Awaiting sign-off</b>, <b>Waiting on you</b>, <b>Over budget</b>, interviews this week and opinions that are late.",
+                "Vòng đời nhân sự › <b>Tuyển dụng</b>. Các con số nhỏ ở trên cho biết việc gì cần bạn: <b>Chờ phê duyệt</b>, <b>Đang chờ bạn</b>, <b>Vượt ngân sách</b>, số buổi phỏng vấn tuần này và các ý kiến đang trễ."),
+      },
+      {
+        screen: "hiring", anchor: "hi-steps",
+        kicker: B("Four steps", "Bốn bước"),
+        title: B("Every role walks the same four steps", "Mọi vị trí đi qua cùng bốn bước"),
+        body: B("<b>Request & approve</b>, <b>Prepare & publish</b>, <b>Meet your candidates</b>, <b>Welcome aboard</b>. Press a step to see only the roles standing on it.",
+                "<b>Đề xuất & phê duyệt</b>, <b>Chuẩn bị & đăng tin</b>, <b>Gặp ứng viên</b>, <b>Chào mừng gia nhập</b>. Bấm một bước để chỉ xem các vị trí đang ở bước đó."),
+        moment: { kind: "pipeline", chain: "hiring" },
+      },
+      {
+        screen: "hiring", anchor: "hi-next",
+        kicker: B("Each card", "Mỗi thẻ"),
+        title: B("Step X of 4, and what is next", "Bước X của 4, và việc tiếp theo"),
+        body: B("A role's card says its step and one <b>Next</b> line: here two interview opinions are late. The Next line is the board telling you the one thing that moves this role on.",
+                "Thẻ của một vị trí ghi bước hiện tại và một dòng <b>Tiếp theo</b>: ở đây có hai ý kiến phỏng vấn đang trễ. Dòng Tiếp theo là bảng nói cho bạn một việc giúp vị trí này đi tiếp."),
+      },
+      {
+        screen: "hiring", anchor: "hi-raise",
+        kicker: B("Step 1", "Bước 1"),
+        title: B("Raise a hiring request", "Đề xuất tuyển dụng"),
+        body: B("Asking comes before advertising. The button opens a short wizard: <b>Let's shape your next hire.</b>",
+                "Xin phép đi trước đăng tin. Nút này mở một trình hướng dẫn ngắn: <b>Hãy cùng phác thảo vị trí tuyển dụng tiếp theo.</b>"),
+      },
+      {
+        screen: "hiring_request", anchor: "hi-wizard",
+        kicker: B("The wizard", "Trình hướng dẫn"),
+        title: B("The role, what they do, how you will interview, the budget", "Vị trí, công việc, cách phỏng vấn, ngân sách"),
+        body: B("Four tabs: <b>The role</b>, <b>Responsibilities</b>, <b>Interview plan</b>, <b>Budget & review</b>. The last one sets the salary against the budget before anybody is asked to sign.",
+                "Bốn tab: <b>Vị trí</b>, <b>Trách nhiệm</b>, <b>Kế hoạch phỏng vấn</b>, <b>Ngân sách & xem lại</b>. Tab cuối đặt mức lương cạnh ngân sách trước khi ai đó được mời phê duyệt."),
+      },
+      {
+        screen: "hiring_request", anchor: "rep-hi-route",
+        kicker: B("Who signs", "Ai phê duyệt"),
+        title: B("Manager, HR lead — and Finance only if over budget", "Quản lý, trưởng nhân sự — và Tài chính chỉ khi vượt ngân sách"),
+        body: B("Sent for approval, the request goes to the manager, then the HR lead. Finance is asked only when the role is over budget. It all arrives in Home › Approvals.",
+                "Khi gửi phê duyệt, đề xuất đi tới quản lý, rồi trưởng nhân sự. Tài chính chỉ được hỏi khi vị trí vượt ngân sách. Tất cả đều về Trang chủ › Phê duyệt."),
+        consequence: B("Affects this one role. Reversible: yes — it can be sent back or withdrawn while it waits. Verify first: the salary sits inside the budget, or Finance will be asked.",
+                       "Ảnh hưởng: chỉ vị trí này. Hoàn tác: có — có thể trả lại hoặc thu hồi trong lúc chờ. Kiểm tra trước: mức lương nằm trong ngân sách, nếu không Tài chính sẽ được hỏi."),
+      },
+      {
+        screen: "hiring", anchor: "hi-stage",
+        kicker: B("Step 3", "Bước 3"),
+        title: B("Candidates move stage by stage", "Ứng viên đi từng giai đoạn"),
+        body: B("From <b>Screening</b> through interviews and a <b>Reference Check</b> to <b>Offer Stage</b> and <b>Joined</b>. <b>Move stage</b> takes a candidate on — or out, with a reason such as Drop Out.",
+                "Từ <b>Sàng lọc</b> qua các buổi phỏng vấn và <b>Kiểm tra tham chiếu</b> tới <b>Giai đoạn đề nghị</b> và <b>Đã nhận việc</b>. <b>Chuyển giai đoạn</b> đưa ứng viên đi tiếp — hoặc ra ngoài, kèm lý do như Bỏ cuộc."),
+        tip: B("Hoàng Văn Nam is the candidate here. When he joins, he appears on the New joiners board — the next stop on his road.",
+               "Hoàng Văn Nam là ứng viên ở đây. Khi anh nhận việc, anh xuất hiện trên bảng Nhân viên mới — chặng tiếp theo trên hành trình của anh."),
+      },
+    ],
+    quiz: {
+      question: B("A store manager wants a new cashier. The salary they have in mind is above the budget. Who signs the request?",
+                  "Một cửa hàng trưởng muốn tuyển thêm thu ngân. Mức lương họ định trả cao hơn ngân sách. Ai phê duyệt đề xuất?"),
+      options: [
+        {
+          text: B("The manager and the HR lead, then Finance because it is over budget", "Quản lý và trưởng nhân sự, rồi Tài chính vì vượt ngân sách"),
+          correct: true,
+          explanation: B("Yes. Finance is added only when the role costs more than was planned.",
+                         "Đúng vậy. Tài chính chỉ được thêm vào khi vị trí tốn hơn mức đã lên kế hoạch."),
+        },
+        {
+          text: B("Nobody — raise it and advertise straight away", "Không ai cả — đề xuất rồi đăng tin ngay"),
+          correct: false,
+          explanation: B("Let's rethink that. The role stays at step 1, Request & approve, until it is signed off.",
+                         "Hãy nghĩ lại một chút. Vị trí nằm ở bước 1, Đề xuất & phê duyệt, cho tới khi được duyệt."),
+        },
+        {
+          text: B("Only Finance, because money is involved", "Chỉ Tài chính, vì liên quan tới tiền"),
+          correct: false,
+          explanation: B("Let's rethink that. The manager and the HR lead always sign; Finance joins when it is over budget.",
+                         "Hãy nghĩ lại một chút. Quản lý và trưởng nhân sự luôn phê duyệt; Tài chính tham gia khi vượt ngân sách."),
+        },
+      ],
+    },
+  },
+
+  L17: {
+    id: "L17", station: "joiners", mins: 7,
+    title: B("Get ready for someone starting", "Chuẩn bị cho người sắp vào làm"),
+    goal: B("Read the New joiners board, make sure every joiner has a buddy and a finished checklist, and know what payroll needs before day one.",
+            "Đọc bảng Nhân viên mới, đảm bảo mọi người mới đều có người đồng hành và danh mục việc xong, và biết bảng lương cần gì trước ngày đầu."),
+    steps: [
+      {
+        screen: "joiners", anchor: "nj-numbers",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("Everyone starting soon", "Những người sắp vào làm"),
+        body: B("Lifecycle › <b>New joiners</b>. <b>Joining this week</b>, <b>Already started</b>, <b>Still without a buddy</b>, <b>Steps overdue</b>, and people who <b>said they are struggling</b>.",
+                "Vòng đời nhân sự › <b>Nhân viên mới</b>. <b>Vào làm tuần này</b>, <b>Đã bắt đầu làm việc</b>, <b>Chưa có người đồng hành</b>, <b>Bước quá hạn</b>, và những người <b>cho biết đang gặp khó khăn</b>."),
+      },
+      {
+        screen: "joiners", anchor: "nj-steps",
+        kicker: B("Three steps", "Ba bước"),
+        title: B("Getting ready → Settling in → Checklist done", "Đang chuẩn bị → Đang hòa nhập → Đã xong danh mục"),
+        body: B("Before the first day a joiner is <b>Getting ready</b>; from it, <b>Settling in</b>. They leave the board when their <b>Checklist done</b>.",
+                "Trước ngày đầu, người mới <b>Đang chuẩn bị</b>; từ ngày đó, <b>Đang hòa nhập</b>. Họ rời bảng khi <b>Đã xong danh mục</b>."),
+      },
+      {
+        screen: "joiners", anchor: "nj-list",
+        kicker: B("The cards", "Các thẻ"),
+        title: B("Nam starts on 1 August, with Mai as his buddy", "Nam bắt đầu ngày 1/8, với Mai là người đồng hành"),
+        body: B("Each card is one person and their start date. Đinh Thị Yến has no buddy yet: her card offers <b>Choose one</b>, and she is the one counted under Still without a buddy.",
+                "Mỗi thẻ là một người và ngày bắt đầu của họ. Đinh Thị Yến chưa có người đồng hành: thẻ của chị có nút <b>Chọn một người</b>, và chị chính là người được đếm ở mục Chưa có người đồng hành."),
+      },
+      {
+        screen: "joiners", anchor: "nj-drawer",
+        kicker: B("Open a person", "Mở một người"),
+        title: B("Still to do, Done, Conversations", "Còn phải làm, Hoàn tất, Trao đổi"),
+        body: B("Open a card and the drawer lists what is <b>Still to do</b> — laptop, store card, bank account, first-week rota — what is <b>Done</b>, and the <b>Conversations</b> so far.",
+                "Mở một thẻ, ngăn bên cạnh liệt kê việc <b>Còn phải làm</b> — máy tính, thẻ cửa hàng, tài khoản ngân hàng, lịch ca tuần đầu — việc đã <b>Hoàn tất</b>, và các cuộc <b>Trao đổi</b> tới nay."),
+        tip: B("The bank account on that list is payroll's item. Without it Nam is computed in August and paid nothing.",
+               "Tài khoản ngân hàng trong danh sách đó là việc của bảng lương. Thiếu nó, Nam vẫn được tính lương tháng 8 mà không nhận được đồng nào."),
+      },
+      {
+        screen: "joiners", anchor: "nj-buddy",
+        kicker: B("People around them", "Những người bên cạnh"),
+        title: B("HR contact, buddy, their record", "Liên hệ nhân sự, người đồng hành, hồ sơ của họ"),
+        body: B("The drawer names who the joiner can ask: their HR contact and their <b>Buddy</b>, and opens their record in one press.",
+                "Ngăn bên cạnh ghi rõ người mới có thể hỏi ai: liên hệ nhân sự và <b>Người đồng hành</b>, và mở hồ sơ của họ chỉ với một lần bấm."),
+      },
+      {
+        screen: "joiners", anchor: "nj-run",
+        kicker: B("Every morning", "Mỗi sáng"),
+        title: B("Run today's steps", "Chạy các bước hôm nay"),
+        body: B("<b>Run today's steps</b> sends what is due today — welcome messages, reminders to the buddy — instead of waiting for tonight's automatic run.",
+                "<b>Chạy các bước hôm nay</b> gửi những gì đến hạn hôm nay — lời chào mừng, lời nhắc cho người đồng hành — thay vì chờ lần chạy tự động tối nay."),
+      },
+    ],
+    quiz: {
+      question: B("Nam starts on Monday. His card shows a buddy, but the drawer still lists Bank account on file. What happens in August's pay run?",
+                  "Nam bắt đầu vào thứ Hai. Thẻ của anh đã có người đồng hành, nhưng ngăn bên cạnh vẫn ghi Đã có tài khoản ngân hàng ở mục còn phải làm. Điều gì xảy ra ở đợt lương tháng 8?"),
+      options: [
+        {
+          text: B("He is computed, and cannot be paid until the account is on file", "Anh được tính lương, nhưng không trả được cho tới khi có tài khoản"),
+          correct: true,
+          explanation: B("Yes. A payslip does not need a bank account; the payment does. Finish that item before the run.",
+                         "Đúng vậy. Phiếu lương không cần tài khoản ngân hàng; việc chi trả thì cần. Hãy xong việc đó trước đợt lương."),
+        },
+        {
+          text: B("Nothing — the buddy covers it", "Không sao — người đồng hành lo việc đó"),
+          correct: false,
+          explanation: B("Let's rethink that. A buddy helps the person settle in. The bank account is still missing.",
+                         "Hãy nghĩ lại một chút. Người đồng hành giúp người mới hòa nhập. Tài khoản ngân hàng vẫn đang thiếu."),
+        },
+        {
+          text: B("He is left out of the pay run", "Anh bị loại khỏi đợt lương"),
+          correct: false,
+          explanation: B("Let's rethink that. His running contract puts him in the run. The gap shows up when the money is paid.",
+                         "Hãy nghĩ lại một chút. Hợp đồng đang hiệu lực đưa anh vào đợt lương. Chỗ thiếu lộ ra khi chi trả."),
+        },
+      ],
+    },
+  },
+
+  L18: {
+    id: "L18", station: "exits", mins: 8,
+    title: B("Someone is leaving: from notice to final settlement", "Có người nghỉ việc: từ báo trước tới quyết toán"),
+    goal: B("Follow a leaver across the Exits board, read who still has to sign off, and know why the final settlement waits.",
+            "Theo một người nghỉ việc trên bảng Nghỉ việc, đọc ai còn phải xác nhận bàn giao, và biết vì sao quyết toán phải chờ."),
+    steps: [
+      {
+        screen: "exits", anchor: "ex2-numbers",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("Everyone on their way out", "Những người sắp rời công ty"),
+        body: B("Lifecycle › <b>Exits</b>. <b>Leaving this month</b>, <b>Last day has passed</b>, <b>Settlements held up</b>, <b>Clearances still open</b> and <b>Items not back yet</b>.",
+                "Vòng đời nhân sự › <b>Nghỉ việc</b>. <b>Nghỉ việc trong tháng này</b>, <b>Đã qua ngày làm việc cuối</b>, <b>Quyết toán bị vướng</b>, <b>Xác nhận bàn giao còn mở</b> và <b>Tài sản chưa trả lại</b>."),
+      },
+      {
+        screen: "exits", anchor: "ex2-steps",
+        kicker: B("Four steps", "Bốn bước"),
+        title: B("Notice → Signing off → Ready to settle → Settled", "Báo trước → Xác nhận bàn giao → Sẵn sàng quyết toán → Đã quyết toán"),
+        body: B("A leaver works their notice, then the desks sign them off. Only then are they <b>Ready to settle</b>, and <b>Settled</b> when the last payment is closed.",
+                "Người nghỉ làm hết thời gian báo trước, rồi các phòng ban xác nhận bàn giao. Chỉ khi đó họ mới <b>Sẵn sàng quyết toán</b>, và <b>Đã quyết toán</b> khi khoản chi cuối được chốt."),
+        moment: { kind: "pipeline", chain: "exit" },
+      },
+      {
+        screen: "exits", anchor: "ex2-clearance",
+        kicker: B("Signed off by", "Được ký tắt bởi"),
+        title: B("Four desks: IT, HR, Finance, Admin", "Bốn phòng ban: IT, Nhân sự, Tài chính, Quản trị viên"),
+        body: B("Each light is one desk saying the leaver has handed back what they held. Bùi Thị Hạnh's last day has passed; three lights are on and Finance's is not.",
+                "Mỗi đèn là một phòng ban xác nhận người nghỉ đã trả lại những gì họ giữ. Ngày làm cuối của Bùi Thị Hạnh đã qua; ba đèn đã sáng và đèn Tài chính thì chưa."),
+      },
+      {
+        screen: "exits", anchor: "rep-ex-desks",
+        kicker: B("What each desk checks", "Mỗi phòng ban kiểm tra gì"),
+        title: B("Finance is waiting for the store float", "Tài chính đang chờ quỹ tiền lẻ của quầy"),
+        body: B("Open the card: the laptop is back, the exit conversation is held, the store card is handed in. The store float has not been counted back, so Finance has not signed.",
+                "Mở thẻ ra: máy tính đã trả, cuộc trao đổi trước khi nghỉ đã diễn ra, thẻ cửa hàng đã nộp. Quỹ tiền lẻ của quầy chưa được đếm lại, nên Tài chính chưa ký."),
+      },
+      {
+        screen: "exits", anchor: "ex2-settle",
+        kicker: B("The settlement", "Quyết toán"),
+        title: B("The final settlement waits for all four", "Quyết toán cuối cùng chờ đủ cả bốn"),
+        body: B("<b>Close settlement</b> stays unavailable until every desk has signed. <b>Open the settlement</b> shows the last salary, unused leave and what is still owed.",
+                "<b>Chốt quyết toán</b> chưa bấm được cho tới khi mọi phòng ban đã ký. <b>Mở quyết toán</b> cho thấy lương cuối, phép chưa dùng và những khoản còn nợ."),
+        consequence: B("Affects the leaver's last payment, which has a legal deadline. Reversible: not once it is paid. Verify first: all four desks signed, and the leaver is not also in the monthly run.",
+                       "Ảnh hưởng: khoản chi cuối của người nghỉ, vốn có thời hạn pháp lý. Hoàn tác: không, một khi đã chi. Kiểm tra trước: đủ bốn phòng ban đã ký, và người nghỉ không còn nằm trong đợt lương tháng."),
+      },
+      {
+        screen: "exits", anchor: "ex2-handover",
+        kicker: B("Before they go", "Trước khi họ đi"),
+        title: B("Handover, and a farewell note", "Bàn giao công việc, và lời chia tay"),
+        body: B("<b>Handover</b> lists the work passed to colleagues; <b>Add</b> puts another item on it. A farewell note can go to the team, in words you can change.",
+                "<b>Bàn giao công việc</b> liệt kê những việc chuyển cho đồng nghiệp; <b>Thêm</b> đưa một việc nữa vào. Có thể gửi một lời chia tay tới nhóm, với câu chữ bạn sửa được."),
+        tip: B("Years after he was hired, this is where Hoàng Văn Nam's road ends on the map — the last stop of the Lifecycle line.",
+               "Nhiều năm sau khi được tuyển, đây là nơi hành trình của Hoàng Văn Nam kết thúc trên bản đồ — chặng cuối của tuyến Vòng đời nhân sự."),
+      },
+    ],
+    quiz: {
+      question: B("Hạnh's last day has passed. IT, HR and Admin have signed; Finance has not. Can you close her settlement?",
+                  "Ngày làm cuối của Hạnh đã qua. IT, Nhân sự và Quản trị viên đã ký; Tài chính thì chưa. Bạn có chốt quyết toán cho chị được không?"),
+      options: [
+        {
+          text: B("Not yet — the settlement waits for all four desks", "Chưa — quyết toán chờ đủ cả bốn phòng ban"),
+          correct: true,
+          explanation: B("Yes. Ask Finance about the store float; once they sign, Close settlement becomes available.",
+                         "Đúng vậy. Hãy hỏi Tài chính về quỹ tiền lẻ; khi họ ký, Chốt quyết toán sẽ bấm được."),
+        },
+        {
+          text: B("Yes — three out of four is enough", "Được — ba trên bốn là đủ"),
+          correct: false,
+          explanation: B("Let's rethink that. Money she still holds would be lost the moment the last payment goes out.",
+                         "Hãy nghĩ lại một chút. Khoản tiền chị còn giữ sẽ mất ngay khi khoản chi cuối được chuyển đi."),
+        },
+        {
+          text: B("Pay her in the monthly run instead", "Trả cho chị trong đợt lương tháng thay vào đó"),
+          correct: false,
+          explanation: B("Let's rethink that. A leaver is settled once, from Pay Run › Settle. Paying her in the monthly run as well pays her twice.",
+                         "Hãy nghĩ lại một chút. Người nghỉ được quyết toán một lần, từ Đợt lương › Quyết toán. Trả thêm trong đợt lương tháng là trả hai lần."),
+        },
+      ],
+    },
+  },
+
+  L19: {
+    id: "L19", station: "probation", mins: 7,
+    title: B("End a trial with a decision", "Kết thúc thử việc bằng một quyết định"),
+    goal: B("Read the Probation board, gather colleagues' views in time, and make one of the three decisions before the trial ends.",
+            "Đọc bảng Thử việc, thu thập ý kiến đồng nghiệp kịp lúc, và đưa ra một trong ba quyết định trước khi thử việc kết thúc."),
+    steps: [
+      {
+        screen: "probation", anchor: "pr-numbers",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("Every trial that is running", "Mọi đợt thử việc đang chạy"),
+        body: B("Lifecycle › <b>Probation</b>. <b>In a trial period</b>, <b>Reviews running</b>, <b>Waiting on a decision</b>, <b>Answers overdue</b> and <b>Ending within a week</b> — the one that cannot wait.",
+                "Vòng đời nhân sự › <b>Thử việc</b>. <b>Đang thử việc</b>, <b>Đánh giá đang chạy</b>, <b>Đang chờ quyết định</b>, <b>Câu trả lời quá hạn</b> và <b>Kết thúc trong vòng một tuần</b> — mục không thể chờ."),
+      },
+      {
+        screen: "probation", anchor: "pr-steps",
+        kicker: B("Five steps", "Năm bước"),
+        title: B("From choosing peers to sharing the outcome", "Từ chọn đồng nghiệp tới thông báo kết quả"),
+        body: B("<b>Choose peers</b>, <b>Gather perspectives</b>, <b>Manager conversation</b>, <b>HR & leadership review</b>, <b>Share the outcome</b>. Nam's trial is at the fourth.",
+                "<b>Chọn đồng nghiệp</b>, <b>Thu thập ý kiến</b>, <b>Trao đổi với quản lý</b>, <b>Nhân sự và lãnh đạo xem xét</b>, <b>Thông báo kết quả</b>. Đợt thử việc của Nam đang ở bước thứ tư."),
+      },
+      {
+        screen: "probation", anchor: "pr-list",
+        kicker: B("The cards", "Các thẻ"),
+        title: B("A card per person, with its end date", "Mỗi người một thẻ, kèm ngày kết thúc"),
+        body: B("Each card says when the trial ends and how far it has got. Open one to see what everybody said.",
+                "Mỗi thẻ cho biết thử việc kết thúc khi nào và đã đi tới đâu. Mở một thẻ để xem mọi người đã nói gì."),
+      },
+      {
+        screen: "probation", anchor: "pr-peers",
+        kicker: B("Colleagues asked", "Đồng nghiệp được hỏi"),
+        title: B("Three of four have answered", "Ba trên bốn người đã trả lời"),
+        body: B("The colleagues chosen are sent a few short questions. Their answers sit beside the manager's view, so the decision is not one person's impression.",
+                "Những đồng nghiệp được chọn nhận vài câu hỏi ngắn. Câu trả lời của họ nằm cạnh nhận xét của quản lý, để quyết định không chỉ là ấn tượng của một người."),
+      },
+      {
+        screen: "probation", anchor: "pr-verdict",
+        kicker: B("The decision", "Quyết định"),
+        title: B("Confirm them, extend the trial, or do not confirm", "Xác nhận chính thức, kéo dài thử việc, hoặc không xác nhận"),
+        body: B("The manager decides first; HR and leadership review it; then it is shared with the person. A trial that ends with nobody deciding becomes a yes by default.",
+                "Quản lý quyết định trước; nhân sự và lãnh đạo xem xét; rồi kết quả được thông báo cho người đó. Thử việc kết thúc mà không ai quyết định sẽ mặc nhiên thành đồng ý."),
+        consequence: B("Affects this person's job and, if confirmed, their pay from the next pay run. Reversible: not once shared. Verify first: colleagues have answered and the end date has not passed.",
+                       "Ảnh hưởng: công việc của người này và, nếu xác nhận, lương của họ từ đợt lương kế tiếp. Hoàn tác: không, một khi đã thông báo. Kiểm tra trước: đồng nghiệp đã trả lời và ngày kết thúc chưa qua."),
+      },
+    ],
+    quiz: {
+      question: B("Nam's trial ends on Friday. One colleague has not answered and nobody has decided. What do you do today?",
+                  "Thử việc của Nam kết thúc vào thứ Sáu. Một đồng nghiệp chưa trả lời và chưa ai quyết định. Hôm nay bạn làm gì?"),
+      options: [
+        {
+          text: B("Chase the last answer and get the manager to decide before Friday", "Nhắc câu trả lời còn thiếu và đề nghị quản lý quyết định trước thứ Sáu"),
+          correct: true,
+          explanation: B("Yes. Ending within a week is on the board so that nobody finds out on Monday.",
+                         "Đúng vậy. Mục Kết thúc trong vòng một tuần có trên bảng để không ai phát hiện ra vào thứ Hai."),
+        },
+        {
+          text: B("Let it pass — he will be confirmed anyway", "Cứ để qua — đằng nào anh cũng được xác nhận"),
+          correct: false,
+          explanation: B("Let's rethink that. A yes by default is a decision nobody made, and nobody can explain it later.",
+                         "Hãy nghĩ lại một chút. Mặc nhiên đồng ý là một quyết định không ai đưa ra, và sau này không ai giải thích được."),
+        },
+        {
+          text: B("Extend the trial to buy time", "Kéo dài thử việc để có thêm thời gian"),
+          correct: false,
+          explanation: B("Let's rethink that. Extending is a real decision with its own reasons, not a way to put one off.",
+                         "Hãy nghĩ lại một chút. Kéo dài là một quyết định thật với lý do riêng, không phải cách để trì hoãn."),
+        },
+      ],
+    },
+  },
+
+  L20: {
+    id: "L20", station: "wftoday", mins: 6,
+    title: B("A day in Workforce", "Một ngày ở Lực lượng lao động"),
+    goal: B("Read Today at a glance, clear what the Needs you panel is holding, and know what clean overtime means.",
+            "Đọc nhanh tab Hôm nay, xử lý những gì khung Cần bạn đang giữ, và biết tăng ca sạch nghĩa là gì."),
+    steps: [
+      {
+        screen: "wftoday", anchor: "wf-today",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("Who is in, today", "Hôm nay ai có mặt"),
+        body: B("Workforce › <b>Today</b>. <b>On shift</b>, <b>Late</b>, <b>Not started</b>, <b>Checked out</b> and <b>On leave</b>, for the teams you look after. <b>Board</b> or <b>Map</b> shows the same people two ways.",
+                "Lực lượng lao động › <b>Hôm nay</b>. <b>Theo ca</b>, <b>Trễ</b>, <b>Chưa bắt đầu</b>, <b>Đã về</b> và <b>Đang nghỉ phép</b>, cho các nhóm bạn phụ trách. <b>Bảng</b> hoặc <b>Bản đồ</b> cho thấy cùng những người đó theo hai cách."),
+      },
+      {
+        screen: "wftoday", anchor: "wf-needs",
+        kicker: B("Needs you", "Cần bạn"),
+        title: B("The panel beside every Workforce tab", "Khung nằm cạnh mọi tab của Lực lượng lao động"),
+        body: B("Leave requests, overtime to approve, flags on this week: everything waiting for you, whichever tab you are on. <b>My team</b> or <b>Organisation</b> decides whose.",
+                "Đơn nghỉ phép, tăng ca cần duyệt, cờ cảnh báo tuần này: mọi việc đang chờ bạn, dù bạn ở tab nào. <b>Đội của tôi</b> hoặc <b>Tổ chức</b> quyết định là của ai."),
+      },
+      {
+        screen: "wftoday", anchor: "wf-clean",
+        kicker: B("One press", "Một lần bấm"),
+        title: B("Approve all clean overtime", "Duyệt tất cả tăng ca sạch"),
+        body: B("Clean overtime is overtime whose hours match the grid, stay under every limit and fall on a day that is still open. Only those go in one press; the rest wait for your look.",
+                "Tăng ca sạch là tăng ca có giờ khớp với lưới, nằm dưới mọi giới hạn và rơi vào ngày còn mở. Chỉ phần đó được duyệt trong một lần bấm; phần còn lại chờ bạn xem."),
+        consequence: B("Affects the clean requests listed — they reach payroll this week. Reversible: until the week is locked. Verify first: the count on the button is what you expected.",
+                       "Ảnh hưởng: các yêu cầu sạch được liệt kê — chúng vào bảng lương tuần này. Hoàn tác: được, cho tới khi tuần bị khoá. Kiểm tra trước: con số trên nút đúng như bạn nghĩ."),
+      },
+      {
+        screen: "wftoday", anchor: "rep-tabs",
+        kicker: B("The week", "Cả tuần"),
+        title: B("Today, then Time, then Close", "Hôm nay, rồi Chấm công, rồi Chốt kỳ"),
+        body: B("A manager's week runs left to right: Today, Schedule, Time, Time Off, Overtime, Trips, Approvals, and <b>Close</b> at the end, where the week is locked for payroll.",
+                "Một tuần của quản lý đi từ trái sang phải: Hôm nay, Lịch ca, Chấm công, Nghỉ phép, Tăng ca, Công tác, Phê duyệt, và <b>Chốt kỳ</b> ở cuối, nơi tuần được khoá cho bảng lương."),
+        tip: B("A tab you do not see is one your access does not open.", "Tab nào bạn không thấy là tab quyền của bạn không mở được."),
+      },
+    ],
+    quiz: {
+      question: B("The panel offers Approve all 5 clean, and 7 overtime requests are waiting. What happens to the other 2?",
+                  "Khung đề nghị Phê duyệt tất cả 5 sạch, trong khi có 7 yêu cầu tăng ca đang chờ. Hai yêu cầu còn lại thì sao?"),
+      options: [
+        {
+          text: B("They stay waiting — something about them needs a person to look", "Chúng vẫn chờ — có điều gì đó cần một người xem"),
+          correct: true,
+          explanation: B("Yes. Near a limit, not matching the grid, or on a closed day: those are yours to decide one by one.",
+                         "Đúng vậy. Gần giới hạn, không khớp lưới, hoặc rơi vào ngày đã đóng: những yêu cầu đó bạn phải quyết định từng cái."),
+        },
+        {
+          text: B("They are approved too, a moment later", "Chúng cũng được duyệt, ngay sau đó"),
+          correct: false,
+          explanation: B("Let's rethink that. The button approves exactly the number it says.",
+                         "Hãy nghĩ lại một chút. Nút đó duyệt đúng số lượng ghi trên nó."),
+        },
+        {
+          text: B("They are turned down", "Chúng bị từ chối"),
+          correct: false,
+          explanation: B("Let's rethink that. Nothing is turned down for you; they wait.", "Hãy nghĩ lại một chút. Không có gì bị từ chối thay bạn; chúng chờ."),
+        },
+      ],
+    },
+  },
+
+  L21: {
+    id: "L21", station: "wftime", mins: 7,
+    title: B("Time, time off and overtime", "Chấm công, nghỉ phép và tăng ca"),
+    goal: B("Read the Time tab and its exceptions, decide leave requests, and approve overtime inside its limits.",
+            "Đọc tab Chấm công và các ngoại lệ, quyết định đơn nghỉ phép, và duyệt tăng ca trong giới hạn của nó."),
+    steps: [
+      {
+        screen: "wftime", anchor: "wf-time",
+        kicker: B("Time", "Chấm công"),
+        title: B("Four views of the hours worked", "Bốn cách xem giờ làm việc"),
+        body: B("<b>Timeline</b> and <b>Week Grid</b> show the hours; <b>Exceptions</b> lists the days that did not add up; <b>Import</b> brings in a time-clock file.",
+                "<b>Dòng thời gian</b> và <b>Lưới tuần</b> cho thấy số giờ; <b>Ngoại lệ</b> liệt kê những ngày không khớp; <b>Nhập</b> đưa vào tệp của máy chấm công."),
+      },
+      {
+        screen: "wftime", anchor: "rep-wf-exc",
+        kicker: B("Exceptions", "Ngoại lệ"),
+        title: B("Fix them now, or meet them on Close", "Xử lý ngay, hoặc gặp lại ở Chốt kỳ"),
+        body: B("A missing check-out or a late start with no reason is an exception. Left alone, each one becomes a flag at the end of the week.",
+                "Thiếu giờ ra hoặc đi trễ không lý do là một ngoại lệ. Nếu để đó, mỗi ngoại lệ sẽ thành một cờ cảnh báo vào cuối tuần."),
+      },
+      {
+        screen: "wftime", anchor: "wf-leave-queue",
+        kicker: B("Time Off", "Nghỉ phép"),
+        title: B("The approval queue", "Hàng chờ phê duyệt"),
+        body: B("Leave waiting for a decision, oldest first. Mai asks for three days in August; approve it here and the days are counted before the pay run reads them.",
+                "Đơn nghỉ chờ quyết định, đơn cũ nhất lên trước. Mai xin nghỉ ba ngày trong tháng 8; duyệt ở đây và các ngày đó được tính trước khi đợt lương đọc tới."),
+      },
+      {
+        screen: "wftime", anchor: "wf-timeoff",
+        kicker: B("On someone's behalf", "Đăng ký thay"),
+        title: B("Apply on behalf, when they cannot", "Đăng ký thay, khi họ không tự làm được"),
+        body: B("<b>Apply on behalf</b> files leave for somebody who cannot — off sick, no phone. It is recorded as filed by you.",
+                "<b>Đăng ký thay</b> nộp đơn nghỉ cho người không tự làm được — ốm, không có điện thoại. Việc đó được ghi là do bạn nộp."),
+      },
+      {
+        screen: "wftime", anchor: "wf-ot-queue",
+        kicker: B("Overtime", "Tăng ca"),
+        title: B("The overtime approval queue", "Hàng chờ duyệt tăng ca"),
+        body: B("Every request waiting, with its day and hours. Hùng's Thursday is marked near the limit: approve it knowing he has little room left this month.",
+                "Mọi yêu cầu đang chờ, kèm ngày và số giờ. Ngày thứ Năm của Hùng được đánh dấu gần giới hạn: hãy duyệt khi đã biết anh còn ít chỗ trong tháng này."),
+      },
+      {
+        screen: "wftime", anchor: "wf-ot-rules",
+        kicker: B("The limits", "Các giới hạn"),
+        title: B("The monthly and yearly limits", "Giới hạn theo tháng và theo năm"),
+        body: B("The rules panel lists the limits your company works to — here 40 hours a month and 200 a year. A request past one is marked, never quietly approved.",
+                "Khung quy định liệt kê các giới hạn công ty bạn áp dụng — ở đây là 40 giờ một tháng và 200 giờ một năm. Yêu cầu vượt một giới hạn sẽ được đánh dấu, không bao giờ được duyệt âm thầm."),
+      },
+    ],
+    quiz: {
+      question: B("Hùng's overtime is marked near the limit. What does approving it do?",
+                  "Tăng ca của Hùng được đánh dấu gần giới hạn. Duyệt nó thì điều gì xảy ra?"),
+      options: [
+        {
+          text: B("It is paid this week and leaves him less room for the rest of the month", "Nó được trả trong tuần này và anh còn ít chỗ hơn cho phần còn lại của tháng"),
+          correct: true,
+          explanation: B("Yes. The mark is a warning, not a block. It tells you the next request may go past the limit.",
+                         "Đúng vậy. Dấu đó là lời cảnh báo, không phải điều chặn. Nó cho biết yêu cầu tiếp theo có thể vượt giới hạn."),
+        },
+        {
+          text: B("Nothing — marked requests cannot be approved", "Không gì cả — yêu cầu bị đánh dấu không duyệt được"),
+          correct: false,
+          explanation: B("Let's rethink that. Near the limit can still be approved. Past it is what the law forbids.",
+                         "Hãy nghĩ lại một chút. Gần giới hạn vẫn duyệt được. Vượt giới hạn mới là điều luật cấm."),
+        },
+        {
+          text: B("It resets his monthly total", "Nó đặt lại tổng giờ tháng của anh"),
+          correct: false,
+          explanation: B("Let's rethink that. Approving adds to his total; nothing resets until the month ends.",
+                         "Hãy nghĩ lại một chút. Duyệt là cộng thêm vào tổng của anh; không có gì đặt lại cho tới hết tháng."),
+        },
+      ],
+    },
+  },
+
+  L22: {
+    id: "L22", station: "wfclose", mins: 7,
+    title: B("Close the week for payroll", "Chốt tuần cho bảng lương"),
+    goal: B("Clear a week's flags the right way, read the payroll handoff, then lock the week and send it on.",
+            "Xử lý đúng cách các cờ cảnh báo của tuần, đọc phần chuyển giao tiền lương, rồi khoá tuần và gửi đi."),
+    steps: [
+      {
+        screen: "wfclose", anchor: "wf-close",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("One week, and how many flags are left", "Một tuần, và còn bao nhiêu cờ cảnh báo"),
+        body: B("Workforce › <b>Close</b>. The week at the top, and the number still flagged. Payroll trusts a locked week; this is where it is made trustworthy.",
+                "Lực lượng lao động › <b>Chốt kỳ</b>. Tuần ở phía trên, và số cờ cảnh báo còn lại. Bảng lương tin vào một tuần đã khoá; đây là nơi làm cho nó đáng tin."),
+      },
+      {
+        screen: "wfclose", anchor: "wf-close-flags",
+        kicker: B("The flags", "Các cờ cảnh báo"),
+        title: B("Every day that did not add up", "Mỗi ngày không khớp"),
+        body: B("A missing check-out, overtime over the plan, a late start with no reason. <b>Review all</b> walks the flags of one kind together.",
+                "Thiếu giờ ra, tăng ca vượt kế hoạch, đi trễ không lý do. <b>Xem lại tất cả</b> đi qua các cờ cùng một loại một lượt."),
+      },
+      {
+        screen: "wfclose", anchor: "rep-wf-fix",
+        kicker: B("Fix", "Điều chỉnh"),
+        title: B("Fix it when the record is wrong", "Điều chỉnh khi dữ liệu sai"),
+        body: B("Hùng forgot to check out on Tuesday. <b>Fix</b> opens the day so you can put in the time he really left. The flag clears when the day adds up.",
+                "Hùng quên chấm giờ ra vào thứ Ba. <b>Điều chỉnh</b> mở ngày đó để bạn nhập đúng giờ anh thực sự về. Cờ biến mất khi ngày đó khớp."),
+      },
+      {
+        screen: "wfclose", anchor: "rep-wf-asis",
+        kicker: B("Approve as-is", "Phê duyệt nguyên trạng"),
+        title: B("Approve as-is when it really happened", "Phê duyệt nguyên trạng khi điều đó thật sự đã xảy ra"),
+        body: B("Trang's extra hours were a real rush. <b>Approve as-is</b> says so, and the hours go to payroll as they are. It is not a way to make the lock button work.",
+                "Giờ làm thêm của Trang là một đợt cao điểm thật. <b>Phê duyệt nguyên trạng</b> xác nhận điều đó, và số giờ đi vào bảng lương như hiện có. Đó không phải cách để mở khoá nút."),
+      },
+      {
+        screen: "wfclose", anchor: "wf-close-handoff",
+        kicker: B("Payroll handoff", "Chuyển giao tiền lương"),
+        title: B("What payroll will receive", "Những gì bảng lương sẽ nhận"),
+        body: B("<b>Regular hours</b>, <b>Overtime</b>, <b>Bonus hours</b> and an estimated gross. Read them the way payroll will: a number that looks wrong here is wrong on a payslip.",
+                "<b>Giờ thông thường</b>, <b>Tăng ca</b>, <b>Giờ thưởng</b> và tổng thu nhập ước tính. Hãy đọc như bảng lương sẽ đọc: con số trông sai ở đây sẽ sai trên phiếu lương."),
+      },
+      {
+        screen: "wfclose", anchor: "wf-close-lock",
+        kicker: B("The action", "Thao tác chính"),
+        title: B("Lock week & send to payroll", "Khóa tuần và gửi vào bảng lương"),
+        body: B("The button stays grey until every flag is fixed or approved as-is, and only an attendance or payroll manager can press it. Afterwards the week says <b>Week locked</b>.",
+                "Nút này giữ màu xám cho tới khi mọi cờ đã được điều chỉnh hoặc duyệt nguyên trạng, và chỉ quản lý chấm công hoặc quản lý lương mới bấm được. Sau đó tuần ghi <b>Tuần bị khóa</b>."),
+        consequence: B("Affects everyone's time this week — payroll reads it from now on. Reversible: Reopen… asks for a reason, and the reason is kept. Verify first: no flags left, and the handoff numbers make sense.",
+                       "Ảnh hưởng: giờ công của mọi người trong tuần — bảng lương đọc nó từ đây. Hoàn tác: Mở lại… sẽ hỏi lý do, và lý do được lưu lại. Kiểm tra trước: không còn cờ nào, và các con số chuyển giao hợp lý."),
+      },
+    ],
+    quiz: {
+      question: B("One flag is left: a missing check-out you are sure is a mistake. The lock is grey and it is late. What do you do?",
+                  "Còn một cờ: thiếu giờ ra mà bạn chắc chắn là nhầm. Nút khoá đang xám và đã muộn. Bạn làm gì?"),
+      options: [
+        {
+          text: B("Fix the day with the real time, then lock the week", "Điều chỉnh ngày đó với giờ thật, rồi khoá tuần"),
+          correct: true,
+          explanation: B("Yes. Fix corrects the record; the flag clears and the lock becomes available.",
+                         "Đúng vậy. Điều chỉnh sửa lại dữ liệu; cờ biến mất và nút khoá bấm được."),
+        },
+        {
+          text: B("Approve it as-is so the lock works", "Phê duyệt nguyên trạng để nút khoá bấm được"),
+          correct: false,
+          explanation: B("Let's rethink that. As-is sends a wrong day to payroll as if it were true.",
+                         "Hãy nghĩ lại một chút. Duyệt nguyên trạng là gửi một ngày sai sang bảng lương như thể đó là thật."),
+        },
+        {
+          text: B("Leave the week open for payroll to sort out", "Để tuần mở cho bảng lương tự xử lý"),
+          correct: false,
+          explanation: B("Let's rethink that. Payroll cannot see the day behind the number. The person who can is you.",
+                         "Hãy nghĩ lại một chút. Bảng lương không thấy được ngày đằng sau con số. Người thấy được là bạn."),
+        },
+      ],
+    },
+  },
+
+  L23: {
+    id: "L23", station: "access", mins: 8,
+    title: B("Access, and handing it over while you are away", "Quyền truy cập, và bàn giao khi bạn vắng mặt"),
+    goal: B("Read who can do what as roles, check someone's access with See it as, and hand your own access over for a while.",
+            "Đọc ai được làm gì qua các vai trò, kiểm tra quyền của một người bằng See it as, và bàn giao quyền của bạn trong một thời gian."),
+    steps: [
+      {
+        screen: "access", anchor: "ac-head",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("One page for who can do what", "Một trang cho ai được làm gì"),
+        body: B("Settings › <b>Access & delegation</b>. Everyone can open it. Giving roles, <b>See it as</b> and <b>New role</b> are for access managers.",
+                "Cài đặt › <b>Quyền truy cập & uỷ quyền</b>. Ai cũng mở được. Cấp vai trò, <b>See it as</b> và <b>New role</b> dành cho người quản lý truy cập."),
+        tip: B("This screen has no Vietnamese yet, so its buttons are named here in English, as you will see them.",
+               "Màn hình này chưa có tiếng Việt, nên các nút được gọi bằng tiếng Anh ở đây, đúng như bạn sẽ thấy."),
+      },
+      {
+        screen: "access", anchor: "ac-tabs",
+        kicker: B("Four tabs", "Bốn tab"),
+        title: B("Roles, People, Screens, Hand-overs", "Bốn tab: Roles, People, Screens, Hand-overs"),
+        body: B("<b>Roles</b> lists what can be given. <b>People</b> shows what each person holds. <b>Screens</b> shows who opens each screen. <b>Hand-overs</b> lists access lent for a while.",
+                "<b>Roles</b> liệt kê những gì có thể cấp. <b>People</b> cho thấy mỗi người đang có gì. <b>Screens</b> cho thấy ai mở được từng màn hình. <b>Hand-overs</b> liệt kê quyền đang cho mượn tạm thời."),
+      },
+      {
+        screen: "access", anchor: "ac-rolecard",
+        kicker: B("A role", "Một vai trò"),
+        title: B("One sentence, and who holds it", "Một câu, và ai đang có nó"),
+        body: B("Each card says in one sentence what the role lets someone do, and <b>Held by</b> how many. Open it for what it opens on the left menu, and what it lets them do.",
+                "Mỗi thẻ nói trong một câu vai trò đó cho phép làm gì, và <b>Held by</b> bao nhiêu người. Mở thẻ để xem nó mở gì trên thanh bên trái và cho phép làm gì."),
+      },
+      {
+        screen: "access", anchor: "ac-newrole",
+        kicker: B("A new role", "Một vai trò mới"),
+        title: B("Called, belongs, worked out for you", "Tên gọi, thuộc về đâu, phần được tính sẵn"),
+        body: B("<b>New role</b> asks what it is called, then where it belongs, and works out the rest. You give a role to a person with <b>Give a role</b>; <b>Take this role away</b> ends it.",
+                "<b>New role</b> hỏi tên gọi, rồi nó thuộc về đâu, và tự tính phần còn lại. Bạn cấp vai trò cho một người bằng <b>Give a role</b>; <b>Take this role away</b> kết thúc nó."),
+      },
+      {
+        screen: "access", anchor: "ac-seeas",
+        kicker: B("Checking", "Kiểm tra"),
+        title: B("See it as someone else", "Xem như một người khác"),
+        body: B("<b>See it as</b> shows the app as that person sees it. A banner says <b>Looking at this as</b> them, and that you still have exactly your own access. <b>Back to your own view</b> ends it.",
+                "<b>See it as</b> cho thấy ứng dụng như người đó nhìn thấy. Một dải thông báo ghi <b>Looking at this as</b> người đó, và rằng bạn vẫn giữ đúng quyền của mình. <b>Back to your own view</b> kết thúc việc xem."),
+      },
+      {
+        screen: "access", anchor: "rep-ac-handover",
+        kicker: B("Going away", "Khi đi vắng"),
+        title: B("Hand my access over", "Bàn giao quyền của tôi"),
+        body: B("Who, what and until when, then <b>Hand it over</b>. Here Lan Anh covers until 21 August. It is taken back automatically the morning after the end date.",
+                "Cho ai, quyền nào và đến khi nào, rồi <b>Hand it over</b>. Ở đây Lan Anh trực thay tới hết 21/8. Quyền được tự động thu hồi vào sáng hôm sau ngày kết thúc."),
+        consequence: B("Affects what that person can open until the end date. Reversible: yes — Take back what has ended, or end it early. Verify first: the end date, and that you picked only what they need.",
+                       "Ảnh hưởng: những gì người đó mở được cho tới ngày kết thúc. Hoàn tác: có — thu hồi phần đã hết hạn, hoặc kết thúc sớm. Kiểm tra trước: ngày kết thúc, và bạn chỉ chọn những gì họ cần."),
+      },
+    ],
+    quiz: {
+      question: B("You are away for two weeks and Lan Anh must approve pay runs while you are gone. What is the right way?",
+                  "Bạn vắng hai tuần và Lan Anh phải duyệt các đợt lương trong lúc đó. Cách đúng là gì?"),
+      options: [
+        {
+          text: B("Hand my access over to her until the day you are back", "Bàn giao quyền của bạn cho chị tới ngày bạn quay lại"),
+          correct: true,
+          explanation: B("Yes. It is recorded, and it ends by itself the morning after the end date.",
+                         "Đúng vậy. Việc đó được ghi lại, và tự kết thúc vào sáng hôm sau ngày kết thúc."),
+        },
+        {
+          text: B("Give her your password", "Đưa chị mật khẩu của bạn"),
+          correct: false,
+          explanation: B("Let's rethink that. Everything she did would be recorded as you, and nothing would end it.",
+                         "Hãy nghĩ lại một chút. Mọi việc chị làm sẽ được ghi là của bạn, và không gì kết thúc nó."),
+        },
+        {
+          text: B("Use See it as to act for her", "Dùng See it as để làm thay chị"),
+          correct: false,
+          explanation: B("Let's rethink that. See it as is only a view; you keep exactly your own access while you look.",
+                         "Hãy nghĩ lại một chút. See it as chỉ là cách xem; bạn giữ đúng quyền của mình trong lúc xem."),
+        },
+      ],
+    },
+  },
+
+  L24: {
+    id: "L24", station: "govreports", mins: 7,
+    title: B("File the month's government reports", "Nộp các báo cáo nhà nước của tháng"),
+    goal: B("Find the filings your country asks for, generate one for a finished month, and know that Payobook prepares it and you send it.",
+            "Tìm các báo cáo mà quốc gia bạn yêu cầu, tạo một báo cáo cho một tháng đã xong, và biết Payobook chuẩn bị còn bạn là người nộp."),
+    steps: [
+      {
+        screen: "govreports", anchor: "gr-head",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("The filings the law asks of you", "Các báo cáo pháp luật yêu cầu bạn"),
+        body: B("Compliance › <b>Filings</b>. The company and the month at the top, and a tile for every filing this country asks for.",
+                "Tuân thủ › <b>Tờ khai</b>. Công ty và tháng ở trên cùng, và mỗi báo cáo quốc gia này yêu cầu có một ô."),
+      },
+      {
+        screen: "govreports", anchor: "gr-countries",
+        kicker: B("Which country", "Quốc gia nào"),
+        title: B("One country at a time", "Mỗi lần một quốc gia"),
+        body: B("The chips switch country. A country whose payroll module is not installed shows <b>coming soon</b> — the filings exist; this system has not got them yet.",
+                "Các nhãn chuyển quốc gia. Quốc gia nào chưa cài mô-đun tính lương sẽ hiện <b>sắp có</b> — các báo cáo vẫn tồn tại; chỉ là hệ thống này chưa có chúng."),
+      },
+      {
+        screen: "govreports", anchor: "gr-grid",
+        kicker: B("The tiles", "Các ô"),
+        title: B("Grouped by the office that reads them", "Nhóm theo cơ quan tiếp nhận"),
+        body: B("Social insurance filings in one group, labour changes in another. Each tile names the form, and <b>Generate</b> starts it.",
+                "Các báo cáo bảo hiểm xã hội một nhóm, biến động lao động một nhóm. Mỗi ô ghi tên mẫu, và <b>Tạo</b> bắt đầu nó."),
+      },
+      {
+        screen: "filing_flow", anchor: "cp-gen-steps",
+        kicker: B("Generate a filing", "Tạo hồ sơ"),
+        title: B("Choose the filing → Scope → Generate", "Chọn hồ sơ → Phạm vi → Tạo"),
+        body: B("Pressing a tile's Generate lands you on <b>Scope</b> with the filing already chosen. The same flow opens from the search bar: type \"Generate a filing\".",
+                "Bấm Tạo trên một ô đưa bạn thẳng tới <b>Phạm vi</b> với báo cáo đã được chọn. Luồng này cũng mở từ thanh tìm kiếm: gõ \"Tạo hồ sơ\"."),
+      },
+      {
+        screen: "filing_flow", anchor: "cp-generate",
+        kicker: B("Scope", "Phạm vi"),
+        title: B("The company and the month", "Công ty và tháng"),
+        body: B("Check the company and the month before you generate. A month whose pay runs are not all done makes a filing that is short.",
+                "Kiểm tra công ty và tháng trước khi tạo. Một tháng mà các đợt lương chưa hoàn tất hết sẽ cho ra một báo cáo bị thiếu."),
+      },
+      {
+        screen: "filing_flow", anchor: "cp-gen-go",
+        kicker: B("The action", "Thao tác chính"),
+        title: B("Generate makes files — you file them", "Tạo sinh ra tệp — bạn là người nộp"),
+        body: B("<b>Generate</b> makes the files for you to download. Nothing is sent anywhere; you submit them to the office yourself.",
+                "<b>Tạo</b> sinh ra các tệp để bạn tải xuống. Không có gì được gửi đi đâu cả; bạn tự nộp chúng cho cơ quan."),
+      },
+    ],
+    quiz: {
+      question: B("July's F&B pay run is still waiting for approval. Should you generate July's insurance filing today?",
+                  "Đợt lương tháng 7 của F&B vẫn đang chờ phê duyệt. Hôm nay bạn có nên tạo báo cáo bảo hiểm tháng 7 không?"),
+      options: [
+        {
+          text: B("Not yet — wait until every July run is done", "Chưa — chờ tới khi mọi đợt lương tháng 7 hoàn tất"),
+          correct: true,
+          explanation: B("Yes. The filing reads what has been computed; an unfinished run makes it short.",
+                         "Đúng vậy. Báo cáo đọc phần đã tính; một đợt còn dở khiến nó bị thiếu."),
+        },
+        {
+          text: B("Yes — Generate sends it, so the sooner the better", "Có — Tạo là gửi đi, nên càng sớm càng tốt"),
+          correct: false,
+          explanation: B("Let's rethink that. Generate sends nothing, and a filing on an unfinished month has to be corrected later.",
+                         "Hãy nghĩ lại một chút. Tạo không gửi gì cả, và báo cáo lập trên một tháng chưa xong sẽ phải đính chính sau."),
+        },
+        {
+          text: B("Yes — the filing only needs Retail's run", "Có — báo cáo chỉ cần đợt lương Bán lẻ"),
+          correct: false,
+          explanation: B("Let's rethink that. The filing is for the company, and F&B's people are in it too.",
+                         "Hãy nghĩ lại một chút. Báo cáo là của cả công ty, và nhân viên F&B cũng nằm trong đó."),
+        },
+      ],
+    },
+  },
+
+  /* -------------------------------------------------- the four short ones */
+  L25: {
+    id: "L25", station: "growth", mins: 4,
+    title: B("Growth plans, briefly", "Kế hoạch phát triển, tóm tắt"),
+    goal: B("Know the four steps of a growth plan and read its objectives.",
+            "Biết bốn bước của một kế hoạch phát triển và đọc các mục tiêu của nó."),
+    steps: [
+      {
+        screen: "growth", anchor: "gw-numbers",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("Help that is written down", "Sự hỗ trợ được ghi lại"),
+        body: B("Lifecycle › <b>Growth plans</b>. <b>Open</b>, <b>Still a conversation</b>, <b>Plans running</b>, <b>Waiting on a decision</b>, and plans <b>Drifting or at risk</b>.",
+                "Vòng đời nhân sự › <b>Kế hoạch phát triển</b>. <b>Đang mở</b>, <b>Vẫn đang trao đổi</b>, <b>Kế hoạch đang chạy</b>, <b>Đang chờ quyết định</b>, và các kế hoạch <b>Chệch hướng hoặc có rủi ro</b>."),
+        tip: B("Only people with a growth-plan role see this tab. A manager starts from the form Ask HR about someone in your team.",
+               "Chỉ người có vai trò kế hoạch phát triển mới thấy tab này. Quản lý bắt đầu từ biểu mẫu hỏi nhân sự về một người trong nhóm."),
+      },
+      {
+        screen: "growth", anchor: "gw-steps",
+        kicker: B("Four steps", "Bốn bước"),
+        title: B("Asked → Coaching → Plan running → Decision", "Đã yêu cầu → Kèm cặp → Kế hoạch đang chạy → Quyết định"),
+        body: B("It starts as a conversation and coaching. Only if that is not enough does it become a written plan, and every plan ends in a decision.",
+                "Nó bắt đầu bằng trao đổi và kèm cặp. Chỉ khi chưa đủ mới thành kế hoạch bằng văn bản, và mọi kế hoạch đều kết thúc bằng một quyết định."),
+      },
+      {
+        screen: "growth", anchor: "gw-objectives",
+        kicker: B("Objectives", "Mục tiêu"),
+        title: B("On track, at risk, met, not met", "Đúng hướng, có rủi ro, đạt, không đạt"),
+        body: B("Each objective is marked as it goes. One at risk is the moment to talk, not the end of the plan.",
+                "Mỗi mục tiêu được đánh dấu theo tiến độ. Một mục tiêu có rủi ro là lúc cần trao đổi, không phải lúc kết thúc kế hoạch."),
+      },
+    ],
+    quiz: {
+      question: B("A manager says someone in their team is struggling. What comes first?",
+                  "Một quản lý nói có người trong nhóm đang gặp khó khăn. Điều gì đến trước?"),
+      options: [
+        {
+          text: B("A conversation, and coaching", "Một cuộc trao đổi, và kèm cặp"),
+          correct: true,
+          explanation: B("Yes. Many stop there. A written plan comes only if it is needed.",
+                         "Đúng vậy. Nhiều trường hợp dừng ở đó. Kế hoạch bằng văn bản chỉ đến khi cần."),
+        },
+        {
+          text: B("A written plan with dates", "Một kế hoạch bằng văn bản có mốc thời gian"),
+          correct: false,
+          explanation: B("Let's rethink that. The plan is step three, after the conversation and coaching.",
+                         "Hãy nghĩ lại một chút. Kế hoạch là bước ba, sau trao đổi và kèm cặp."),
+        },
+      ],
+    },
+  },
+
+  L26: {
+    id: "L26", station: "contractends", mins: 4,
+    title: B("Contracts that end soon, briefly", "Hợp đồng sắp hết hạn, tóm tắt"),
+    goal: B("Know how the Contracts board counts down, and the three decisions it asks for.",
+            "Biết bảng Hợp đồng đếm ngược thế nào, và ba quyết định nó yêu cầu."),
+    steps: [
+      {
+        screen: "contractends", anchor: "cl-numbers",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("Sixty days ahead", "Trước sáu mươi ngày"),
+        body: B("Lifecycle › <b>Contracts</b>. <b>Ending within 60 days</b>, <b>Nobody has decided</b>, <b>Waiting to be agreed</b>, <b>Being evaluated</b>, <b>Made permanent this year</b>.",
+                "Vòng đời nhân sự › <b>Hợp đồng</b>. <b>Kết thúc trong vòng 60 ngày</b>, <b>Chưa ai quyết định</b>, <b>Đang chờ đồng ý</b>, <b>Đang được đánh giá</b>, <b>Chuyển chính thức trong năm nay</b>."),
+      },
+      {
+        screen: "contractends", anchor: "cl-raise",
+        kicker: B("Raise it", "Nêu ra"),
+        title: B("Raise the decision", "Nêu quyết định"),
+        body: B("A contract with an end date and no decision yet offers <b>Raise the decision</b>. That puts it in front of the people who must agree.",
+                "Hợp đồng có ngày kết thúc mà chưa có quyết định sẽ có nút <b>Nêu quyết định</b>. Nút đó đưa nó tới những người phải đồng ý."),
+      },
+      {
+        screen: "contractends", anchor: "cl-decide",
+        kicker: B("Three choices", "Ba lựa chọn"),
+        title: B("Make it permanent, extend it, or let it end", "Chuyển chính thức, gia hạn, hoặc để hết hạn"),
+        body: B("Whatever is chosen, it is chosen before the end date. A contract that simply runs out stops the person's pay in the middle of a month.",
+                "Dù chọn gì, nó phải được chọn trước ngày kết thúc. Hợp đồng cứ thế hết hạn sẽ làm dừng lương của người đó giữa tháng."),
+      },
+    ],
+    quiz: {
+      question: B("Đức's fixed term ends on 30 September and Nobody has decided. What is the risk?",
+                  "Hợp đồng xác định thời hạn của Đức kết thúc ngày 30/9 và Chưa ai quyết định. Rủi ro là gì?"),
+      options: [
+        {
+          text: B("His contract stops and October's pay run leaves him out", "Hợp đồng của anh dừng và đợt lương tháng 10 bỏ sót anh"),
+          correct: true,
+          explanation: B("Yes. Payroll pays from a running contract. Raise the decision now.",
+                         "Đúng vậy. Bảng lương trả theo hợp đồng đang hiệu lực. Hãy nêu quyết định ngay."),
+        },
+        {
+          text: B("None — contracts renew on their own", "Không có — hợp đồng tự gia hạn"),
+          correct: false,
+          explanation: B("Let's rethink that. Nothing renews by itself; someone has to decide.",
+                         "Hãy nghĩ lại một chút. Không có gì tự gia hạn; phải có người quyết định."),
+        },
+      ],
+    },
+  },
+
+  L27: {
+    id: "L27", station: "compliancemore", mins: 4,
+    title: B("Bank checks, young workers and audit, briefly", "Kiểm tra ngân hàng, lao động trẻ và kiểm toán, tóm tắt"),
+    goal: B("Know how a bank change is checked twice, what Young workers guards, and where to see who changed what.",
+            "Biết một thay đổi ngân hàng được kiểm tra hai lần thế nào, Lao động chưa thành niên bảo vệ điều gì, và xem ai đã sửa gì ở đâu."),
+    steps: [
+      {
+        screen: "compliancemore", anchor: "cp-bank-steps",
+        kicker: B("Bank", "Ngân hàng"),
+        title: B("Draft → HR Review → Finance Review → Approved", "Nháp → Nhân sự xét duyệt → Tài chính xét duyệt → Đã duyệt"),
+        body: B("Drop a bank letter under <b>New bank-change request</b>. HR checks it, then Finance, and only then does the employee's bank account change.",
+                "Thả thư của ngân hàng vào <b>Yêu cầu thay đổi ngân hàng mới</b>. Nhân sự kiểm tra, rồi Tài chính, và chỉ khi đó tài khoản ngân hàng của nhân viên mới thay đổi."),
+        tip: B("An account already used by someone else is flagged before anyone approves it.",
+               "Tài khoản đã được người khác dùng sẽ bị đánh dấu trước khi có ai duyệt."),
+      },
+      {
+        screen: "compliancemore", anchor: "cp-young",
+        kicker: B("Young workers", "Lao động chưa thành niên"),
+        title: B("Hour limits for anyone under 18", "Giới hạn giờ làm cho người dưới 18 tuổi"),
+        body: B("<b>Protected</b>, <b>Compliant this week</b>, <b>Violations in the last 30 days</b> and <b>Missing birthdays</b> — a missing birthday means the guard cannot tell who to protect.",
+                "<b>Được bảo vệ</b>, <b>Tuân thủ tuần này</b>, <b>Vi phạm trong 30 ngày qua</b> và <b>Thiếu ngày sinh</b> — thiếu ngày sinh nghĩa là hệ thống không biết cần bảo vệ ai."),
+      },
+      {
+        screen: "compliancemore", anchor: "cp-audit",
+        kicker: B("Audit", "Nhật ký kiểm toán"),
+        title: B("Who changed what, and when", "Ai đã sửa gì, và khi nào"),
+        body: B("A read-only record of changes. Filter to <b>Salary only</b> to answer \"who changed this salary\"; the login view shows who signed in.",
+                "Nhật ký chỉ đọc về các thay đổi. Lọc <b>Chỉ có lương</b> để trả lời \"ai đã sửa mức lương này\"; chế độ đăng nhập cho biết ai đã đăng nhập."),
+      },
+    ],
+    quiz: {
+      question: B("An employee emails a new bank account number. What is the safe way to change it?",
+                  "Một nhân viên gửi email số tài khoản ngân hàng mới. Cách an toàn để thay đổi là gì?"),
+      options: [
+        {
+          text: B("A bank-change request with the bank's letter, checked by HR and Finance", "Một yêu cầu thay đổi ngân hàng kèm thư của ngân hàng, được Nhân sự và Tài chính kiểm tra"),
+          correct: true,
+          explanation: B("Yes. Two checks and a document stop the most common way pay is stolen.",
+                         "Đúng vậy. Hai lần kiểm tra và một chứng từ ngăn được cách phổ biến nhất khiến lương bị đánh cắp."),
+        },
+        {
+          text: B("Type it straight onto the employee record", "Gõ thẳng vào hồ sơ nhân viên"),
+          correct: false,
+          explanation: B("Let's rethink that. An email can be forged; this skips both checks.",
+                         "Hãy nghĩ lại một chút. Email có thể bị giả mạo; cách này bỏ qua cả hai bước kiểm tra."),
+        },
+      ],
+    },
+  },
+
+  L28: {
+    id: "L28", station: "peoplemore", mins: 4,
+    title: B("The rest of People and Home, briefly", "Phần còn lại của Con người và Trang chủ, tóm tắt"),
+    goal: B("Know what the Wall, Announce and the smaller People tabs are for.",
+            "Biết Bảng vinh danh, Thông báo và các tab nhỏ của Con người dùng để làm gì."),
+    steps: [
+      {
+        screen: "peoplemore", anchor: "rep-pm-wall",
+        kicker: B("Home › Wall", "Trang chủ › Bảng vinh danh"),
+        title: B("What people said about each other", "Mọi người nói gì về nhau"),
+        body: B("<b>Say thank you</b> puts praise on the Wall, tied to one of the company's values. Everyone can read it.",
+                "<b>Nói lời cảm ơn</b> đưa lời khen lên Bảng vinh danh, gắn với một giá trị của công ty. Ai cũng đọc được."),
+      },
+      {
+        screen: "peoplemore", anchor: "rep-pm-tiles",
+        kicker: B("People", "Con người"),
+        title: B("Where they work, Assets, Goals, Announce", "Nơi họ làm việc, Tài sản, Mục tiêu, Thông báo"),
+        body: B("People who work for more than one company; the laptops and cards handed out; this year's goals; messages to your people, on one calendar.",
+                "Người làm cho nhiều công ty; máy tính và thẻ đã cấp; mục tiêu năm nay; thông báo tới mọi người, trên một lịch."),
+      },
+      {
+        screen: "peoplemore", anchor: "rep-tabs",
+        kicker: B("Missing a tab?", "Thiếu một tab?"),
+        title: B("A tab shows only when your company uses it", "Tab chỉ hiện khi công ty bạn dùng nó"),
+        body: B("Goals, Praise and Announce depend on what your company has switched on and on your access. A missing tab is not broken.",
+                "Mục tiêu, Khen ngợi và Thông báo phụ thuộc vào những gì công ty bạn đã bật và quyền của bạn. Tab không có không phải là bị lỗi."),
+      },
+    ],
+    quiz: {
+      question: B("A colleague has no Goals tab under People. What is the likely reason?",
+                  "Một đồng nghiệp không thấy tab Mục tiêu trong Con người. Lý do có thể là gì?"),
+      options: [
+        {
+          text: B("Their company or their access does not include it", "Công ty hoặc quyền của họ không bao gồm nó"),
+          correct: true,
+          explanation: B("Yes. A tab shows only to people the screen itself lets in.",
+                         "Đúng vậy. Tab chỉ hiện với những người mà chính màn hình cho phép."),
+        },
+        {
+          text: B("Payobook is broken", "Payobook bị lỗi"),
+          correct: false,
+          explanation: B("Let's rethink that. Absent means not for them, not broken.",
+                         "Hãy nghĩ lại một chút. Không có nghĩa là không dành cho họ, không phải bị lỗi."),
+        },
+      ],
+    },
+  },
+
 };
 
 /* =============================================================================
@@ -4376,7 +6042,7 @@ const SCREEN_CTX = {
              "Các báo cáo bắt buộc mà quốc gia của công ty này yêu cầu, nhóm theo cơ quan và điền sẵn cho một tháng."),
     next: B("Check that the month's runs have all reached done before you generate anything. The tiles read what has been computed. An unfinished run is a filing that is short.",
             "Hãy kiểm tra mọi đợt lương của tháng đã đạt Hoàn tất trước khi kết xuất bất cứ gì. Các biểu mẫu chỉ đọc phần đã tính. Một đợt còn dở là một báo cáo bị thiếu."),
-    chips: ["whichfilings", "whatpage", "whatnext"],
+    chips: ["fileinsurance", "whichfilings", "whatnext"],
   },
 
   /* -- Payroll setup (LEARN REFRESH step 3) --------------------------------
@@ -4457,6 +6123,172 @@ const SCREEN_CTX = {
     next: B("Check that every month you report on has a rate. A month without one keeps its own money and is left out of converted totals.",
             "Hãy kiểm tra mọi tháng bạn báo cáo đều có tỷ giá. Tháng nào không có sẽ giữ đồng tiền của nó và bị để ra ngoài các tổng đã quy đổi."),
     chips: ["currency", "whatpage", "whatnext"],
+  },
+
+
+  /* -- The wider app (LEARN REFRESH step 4) ------------------------------
+     Every one of these is a TAB of a hub, so each grounds by its place first;
+     People › Pay also says which of its own tabs is showing (pb_pay publishes
+     the inner tab), so Bands/Fairness and Review/Changes find two lessons.
+     Access & delegation and the Generate a filing flow open full-page, so
+     they ground by their action tag (SCREEN_ACTION_TAGS) and open by `open`.
+     `hiring_request` and `filing_flow` are second views in the practice
+     company, like the step 3 ones. */
+  paybands: {
+    places: ["pb_people_hub:pay/bands", "pb_people_hub:pay/fairness", "pb_people_hub:pay"],
+    blurb: B("Pay bands drawn as a picture, with everyone placed in them, and a check on whether pay is fair.",
+             "Các khoảng lương vẽ thành hình, mọi người được đặt vào đó, cùng phép kiểm tra xem lương có công bằng không."),
+    next: B("Read Worth knowing first: it names who is paid below or above their band. Nothing on this tab changes anybody's pay.",
+            "Hãy đọc Đáng biết trước: nó nêu tên ai đang được trả dưới hoặc trên khoảng lương. Không có gì ở tab này thay đổi lương của ai."),
+    chips: ["bandcheck", "whosignsreview", "whatpage"],
+  },
+  payreview: {
+    places: ["pb_people_hub:pay/review", "pb_people_hub:pay/changes"],
+    blurb: B("The yearly pay review: a worksheet inside a budget, calibrated and signed off step by step. Changes holds single pay changes.",
+             "Đợt xét lương hằng năm: một bảng tính trong ngân sách, được cân chỉnh và duyệt từng bước. Thay đổi chứa các thay đổi lương lẻ."),
+    next: B("Use the guidance, watch the budget meter, then open Calibration. Clear What stops approval before Send for approval.",
+            "Dùng hướng dẫn, theo dõi thước đo ngân sách, rồi mở Cân chỉnh. Xử lý Điều gì chặn duyệt trước khi Gửi duyệt."),
+    chips: ["whosignsreview", "bandcheck", "whatnext"],
+  },
+  decisionroom: {
+    places: ["pb_people_hub:plan"],
+    blurb: B("The Decision Room: try next year — people, rises, overtime — and see its cost and profit before you commit.",
+             "Phòng quyết định: thử trước năm sau — con người, tăng lương, tăng ca — và xem chi phí, lợi nhuận trước khi cam kết."),
+    next: B("Pick a preset, move the levers, save the plan, then press Exact cost before you propose it. Nothing here changes payroll.",
+            "Chọn một phương án có sẵn, xoay các cần gạt, lưu kế hoạch, rồi bấm Chi phí chính xác trước khi đề xuất. Không có gì ở đây thay đổi bảng lương."),
+    chips: ["whatif", "whatpage", "whatnext"],
+  },
+  peoplemore: {
+    places: ["pb_home_hub:wall", "pb_home_hub:coming_up", "pb_people_hub:where", "pb_people_hub:assets",
+             "pb_people_hub:praise", "pb_people_hub:goals", "pb_people_hub:announcements"],
+    blurb: B("The Wall and Announce on Home, and People's smaller tabs: where people work, what they hold, their goals.",
+             "Bảng vinh danh và Thông báo ở Trang chủ, cùng các tab nhỏ của Con người: nơi mọi người làm, họ giữ gì, mục tiêu của họ."),
+    next: B("Say thank you on the Wall, or open the tab for what you came to do. A tab you cannot see is not in your company.",
+            "Hãy nói lời cảm ơn trên Bảng vinh danh, hoặc mở tab cho việc bạn cần. Tab bạn không thấy là tab không có trong công ty bạn."),
+    chips: ["whatpage", "whatnext"],
+  },
+  hiring: {
+    places: ["pb_lifecycle_hub:hiring"],
+    blurb: B("Hiring: every open role on one board, four steps each, from the request to the welcome.",
+             "Tuyển dụng: mọi vị trí đang tuyển trên một bảng, mỗi vị trí bốn bước, từ đề xuất tới chào mừng."),
+    next: B("Read each card's Next line — it is the one thing that moves that role on. Raise a hiring request before you advertise.",
+            "Hãy đọc dòng Tiếp theo trên mỗi thẻ — đó là việc giúp vị trí đó đi tiếp. Đề xuất tuyển dụng trước khi đăng tin."),
+    chips: ["raisehire", "whatpage", "whatnext"],
+  },
+  hiring_request: {
+    blurb: B("The hiring request wizard: the role, its responsibilities, the interview plan, and the budget.",
+             "Trình đề xuất tuyển dụng: vị trí, trách nhiệm, kế hoạch phỏng vấn, và ngân sách."),
+    next: B("Set the salary on Budget & review, then send it for approval. Finance is asked only when it is over budget.",
+            "Đặt mức lương ở Ngân sách & xem lại, rồi gửi phê duyệt. Tài chính chỉ được hỏi khi vượt ngân sách."),
+    chips: ["raisehire", "whatnext"],
+  },
+  joiners: {
+    places: ["pb_lifecycle_hub:newjoiners"],
+    blurb: B("New joiners: everyone starting soon, their buddy, and what is still to prepare.",
+             "Nhân viên mới: những người sắp vào làm, người đồng hành của họ, và những gì còn phải chuẩn bị."),
+    next: B("Clear Still without a buddy first, then open each card for what is still to do — the bank account before the first pay run.",
+            "Hãy xử lý Chưa có người đồng hành trước, rồi mở từng thẻ xem còn phải làm gì — tài khoản ngân hàng trước đợt lương đầu tiên."),
+    chips: ["newjoiner", "whatpage", "whatnext"],
+  },
+  probation: {
+    places: ["pb_lifecycle_hub:probation"],
+    blurb: B("Probation: every trial that is running, colleagues' views, and the decision each one needs.",
+             "Thử việc: mọi đợt thử việc đang chạy, ý kiến đồng nghiệp, và quyết định mỗi đợt cần."),
+    next: B("Start with Ending within a week. Chase late answers, then make sure the manager decides before the end date.",
+            "Hãy bắt đầu với Kết thúc trong vòng một tuần. Nhắc các câu trả lời trễ, rồi đảm bảo quản lý quyết định trước ngày kết thúc."),
+    chips: ["endtrial", "whatpage", "whatnext"],
+  },
+  growth: {
+    places: ["pb_lifecycle_hub:pip"],
+    blurb: B("Growth plans: a conversation, coaching, then a written plan with objectives, ending in a decision.",
+             "Kế hoạch phát triển: trao đổi, kèm cặp, rồi một kế hoạch bằng văn bản có mục tiêu, kết thúc bằng một quyết định."),
+    next: B("Look at Drifting or at risk first. An objective at risk is the moment to talk.",
+            "Hãy xem Chệch hướng hoặc có rủi ro trước. Một mục tiêu có rủi ro là lúc cần trao đổi."),
+    chips: ["whatpage", "whatnext"],
+  },
+  contractends: {
+    places: ["pb_lifecycle_hub:contracts"],
+    blurb: B("Contracts ending: everything that ends in the next sixty days, and the decision each one needs.",
+             "Hợp đồng sắp hết hạn: mọi hợp đồng kết thúc trong sáu mươi ngày tới, và quyết định mỗi hợp đồng cần."),
+    next: B("Clear Nobody has decided before month end: raise the decision, then make it permanent, extend it or let it end.",
+            "Hãy xử lý Chưa ai quyết định trước cuối tháng: nêu quyết định, rồi chuyển chính thức, gia hạn hoặc để hết hạn."),
+    chips: ["expirysoon", "whatpage", "whatnext"],
+  },
+  exits: {
+    places: ["pb_lifecycle_hub:exits"],
+    blurb: B("Exits: everyone leaving, the four desks signing them off, and the final settlement that waits for all four.",
+             "Nghỉ việc: những người sắp nghỉ, bốn phòng ban xác nhận bàn giao, và quyết toán chờ đủ cả bốn."),
+    next: B("Open Settlements held up first: each card says which desk has not signed. Chase that desk, then close the settlement.",
+            "Hãy mở Quyết toán bị vướng trước: mỗi thẻ cho biết phòng ban nào chưa ký. Nhắc phòng ban đó, rồi chốt quyết toán."),
+    chips: ["leaver", "whatpage", "whatnext"],
+  },
+  wftoday: {
+    places: ["pb_workforce:today"],
+    blurb: B("Today: who is in, late, out or on leave, with the Needs you panel beside it.",
+             "Hôm nay: ai có mặt, đi trễ, vắng hoặc nghỉ phép, cùng khung Cần bạn bên cạnh."),
+    next: B("Clear the Needs you panel: approve the clean overtime in one press, and open the rest one by one.",
+            "Hãy xử lý khung Cần bạn: duyệt phần tăng ca sạch trong một lần bấm, và mở từng việc còn lại."),
+    chips: ["approveot", "lockweek", "whatpage"],
+  },
+  wftime: {
+    places: ["pb_workforce:time"],
+    blurb: B("Time, Time Off and Overtime: hours worked and their exceptions, leave waiting, and overtime to approve inside its limits.",
+             "Chấm công, Nghỉ phép và Tăng ca: giờ làm và các ngoại lệ, đơn nghỉ đang chờ, và tăng ca cần duyệt trong giới hạn."),
+    next: B("Clear exceptions through the week so Close is a check. Read any near-the-limit mark before you approve overtime.",
+            "Hãy xử lý ngoại lệ trong suốt tuần để Chốt kỳ chỉ là bước kiểm tra. Đọc dấu gần giới hạn trước khi duyệt tăng ca."),
+    chips: ["approveot", "whatnext"],
+  },
+  /* Time Off and Overtime are tabs of their own; the wftime lesson and
+     walkthrough cover all three, so these two are places, not stations. */
+  wftimeoff: {
+    name: B("Time Off", "Nghỉ phép"),
+    places: ["pb_workforce:timeoff"],
+    blurb: B("Time Off: leave waiting for a decision, and who is out today. Apply on behalf files leave for someone who cannot.",
+             "Nghỉ phép: đơn nghỉ đang chờ quyết định, và ai nghỉ hôm nay. Đăng ký thay nộp đơn cho người không tự làm được."),
+    next: B("Decide the oldest request first; the pay run reads approved leave.",
+            "Hãy quyết định đơn cũ nhất trước; đợt lương đọc các ngày nghỉ đã duyệt."),
+    chips: ["approveot", "whatnext"],
+  },
+  wfovertime: {
+    name: B("Overtime", "Tăng ca"),
+    places: ["pb_workforce:overtime"],
+    blurb: B("Overtime: the approval queue, and the monthly and yearly limits it is checked against.",
+             "Tăng ca: hàng chờ duyệt, và các giới hạn theo tháng, theo năm mà nó được đối chiếu."),
+    next: B("Read any near-the-limit mark before you approve. Clean overtime can also be approved from the Needs you panel.",
+            "Hãy đọc dấu gần giới hạn trước khi duyệt. Tăng ca sạch cũng có thể được duyệt từ khung Cần bạn."),
+    chips: ["approveot", "whatnext"],
+  },
+  wfclose: {
+    places: ["pb_workforce:close"],
+    blurb: B("Close: the week's flags, what goes to payroll, and the lock that sends it.",
+             "Chốt kỳ: các cờ cảnh báo của tuần, những gì chuyển sang bảng lương, và nút khoá để gửi đi."),
+    next: B("Fix what is wrong, approve as-is only what really happened, read the handoff, then Lock week & send to payroll.",
+            "Điều chỉnh những gì sai, chỉ duyệt nguyên trạng những gì thật sự đã xảy ra, đọc phần chuyển giao, rồi Khóa tuần và gửi vào bảng lương."),
+    chips: ["lockweek", "whatnext"],
+  },
+  access: {
+    open: "biz_access.action_pb_access_board",
+    blurb: B("Access & delegation: who can do what, as roles, and handing your access over while you are away.",
+             "Quyền truy cập & uỷ quyền: ai được làm gì, theo vai trò, và bàn giao quyền của bạn khi vắng mặt."),
+    next: B("Going away? Hand my access over, with an end date. Wondering what someone sees? See it as them.",
+            "Sắp đi vắng? Hãy bàn giao quyền kèm ngày kết thúc. Muốn biết một người thấy gì? Hãy xem dưới góc nhìn của họ."),
+    chips: ["delegate", "whatpage"],
+  },
+  filing_flow: {
+    open: "pb_govt_reports.action_pb_filing_flow",
+    blurb: B("Generate a filing: choose the filing, set its scope, then generate the files.",
+             "Tạo hồ sơ: chọn báo cáo, đặt phạm vi, rồi tạo các tệp."),
+    next: B("Check the company and the month on Scope. Generate makes files to download; nothing is sent anywhere.",
+            "Kiểm tra công ty và tháng ở Phạm vi. Tạo sinh ra các tệp để tải xuống; không có gì được gửi đi."),
+    chips: ["fileinsurance", "whatnext"],
+  },
+  compliancemore: {
+    places: ["pb_compliance_hub:bank", "pb_compliance_hub:young", "pb_compliance_hub:audit"],
+    blurb: B("Bank changes checked twice, hour limits for workers under 18, and a record of who changed what.",
+             "Thay đổi ngân hàng được kiểm tra hai lần, giới hạn giờ làm cho lao động dưới 18 tuổi, và nhật ký ai đã sửa gì."),
+    next: B("Start a bank change by dropping the bank's letter. For who changed a salary, filter Audit to Salary only.",
+            "Bắt đầu một thay đổi ngân hàng bằng cách thả thư của ngân hàng vào. Muốn biết ai đã sửa lương, lọc Nhật ký kiểm toán theo Chỉ có lương."),
+    chips: ["whatpage", "whatnext"],
   },
 
   /* -- The nine hubs (LEARN REFRESH step 1) --------------------------------
@@ -5561,7 +7393,7 @@ const QA = [
   },
 
   {
-    id: "expirysoon", screens: ["contracts", "employees"],
+    id: "expirysoon", screens: ["contracts", "employees", "contractends"],
     label: B("A contract expires mid-month — what happens?", "Hợp đồng hết hạn giữa tháng thì sao?"),
     match: ["contract expires mid month", "expiring contract", "renewal not signed yet",
             "hop dong het han giua thang", "gia han chua ky", "het han hop dong"],
@@ -6049,6 +7881,222 @@ const QA = [
                         "Không có gì được lưu ở dạng đã quy đổi. Tháng nào chưa có tỷ giá sẽ giữ đồng tiền của nó và bị để ra ngoài tổng tập đoàn, kèm lý do.") },
       { k: "src", v: B("The pay scheme's country, Settings › Group, and Insights › Explorer.",
                        "Quốc gia của chương trình lương, Cài đặt › Tập đoàn, và Phân tích › Khám phá dữ liệu.") },
+    ],
+  },
+
+  /* -- The wider app (LEARN REFRESH step 4): the top question of each area. */
+  {
+    id: "bandcheck", screens: ["paybands", "payreview", "hub_people"],
+    label: B("Is anyone paid outside their pay band?", "Có ai được trả ngoài khoảng lương không?"),
+    match: ["paid below the band", "outside their band", "pay band", "salary range", "compa ratio",
+            "tra duoi khoang luong", "khoảng lương", "ngoai khoang luong"],
+    showMe: ["pp-health", "pp-band-picture"],
+    watch: "sc_paybands",
+    blocks: [
+      { k: "p", v: B("People › Pay › <b>Bands</b>. The band picture puts every person in their band as a dot, and <b>Worth knowing</b> names who is below or above.",
+                     "Con người › Lương › <b>Khoảng lương</b>. Bức tranh khoảng lương đặt mỗi người vào khoảng của họ thành một chấm, và <b>Đáng biết</b> nêu tên ai đang ở dưới hoặc ở trên.") },
+      { k: "steps", v: [
+        { t: B("Read Worth knowing: Paid below the band, Paid above the band", "Đọc Đáng biết: Được trả dưới khoảng lương, Được trả trên khoảng lương"), a: "pp-health" },
+        { t: B("Find their dot on the band picture", "Tìm chấm của họ trên bức tranh khoảng lương"), a: "pp-band-picture" },
+        { t: B("Raise them in the next pay review, or with a pay change", "Nâng lương cho họ trong đợt xét lương tới, hoặc bằng một thay đổi lương") },
+      ] },
+      { k: "warn", v: B("Moving the band changes the picture, never anybody's pay.", "Dời khoảng lương chỉ đổi bức tranh, không bao giờ đổi lương của ai.") },
+      { k: "src", v: B("People › Pay, Bands tab.", "Con người › Lương, tab Khoảng lương.") },
+    ],
+  },
+  {
+    id: "whosignsreview", screens: ["payreview", "paybands", "approvals", "hub_people"],
+    label: B("Who has to sign a pay review?", "Ai phải phê duyệt một đợt xét lương?"),
+    match: ["who signs a pay review", "pay review approval", "approve the pay review", "send the review for approval",
+            "ai duyet xet luong", "phê duyệt đợt xét lương", "duyet dot xet luong"],
+    showMe: ["pp-stepper", "pp-review-actions"],
+    watch: "sc_payreview",
+    try: "sc_payreview",
+    blocks: [
+      { k: "p", v: B("A review goes Being written → With HR → With finance → With the CEO → Approved. Each can approve it or send it back with a reason.",
+                     "Một đợt xét lương đi Đang soạn → Đang ở nhân sự → Đang ở tài chính → Đang ở tổng giám đốc → Đã duyệt. Mỗi người có thể duyệt hoặc trả lại kèm lý do.") },
+      { k: "steps", v: [
+        { t: B("Clear What stops approval", "Xử lý Điều gì chặn duyệt"), a: "pp-stops" },
+        { t: B("Send for approval", "Gửi duyệt"), a: "pp-review-actions" },
+        { t: B("When it is Approved, press Apply", "Khi Đã duyệt, bấm Áp dụng") },
+      ] },
+      { k: "warn", v: B("Approved is not paid. Nothing reaches anyone's record until Apply.", "Đã duyệt chưa phải là đã trả. Chưa có gì vào hồ sơ của ai cho tới khi Áp dụng.") },
+      { k: "src", v: B("People › Pay › Review, the review's stepper.", "Con người › Lương › Xét lương, thanh các bước của đợt xét lương.") },
+    ],
+  },
+  {
+    id: "whatif", screens: ["decisionroom", "hub_people"],
+    label: B("What would next year cost if we hired or gave a rise?", "Năm sau sẽ tốn bao nhiêu nếu tuyển thêm hoặc tăng lương?"),
+    match: ["what would next year cost", "plan next year", "what if we hire", "cost of a rise", "decision room",
+            "ke hoach nam sau", "phòng quyết định", "chi phi tang luong"],
+    showMe: ["dr-levers", "dr-exact"],
+    watch: "sc_decisionroom",
+    blocks: [
+      { k: "p", v: B("People › <b>Plan</b> — the Decision Room. Move the levers and every result follows; nothing there changes payroll.",
+                     "Con người › <b>Kế hoạch</b> — Phòng quyết định. Xoay các cần gạt và mọi kết quả thay đổi theo; không có gì ở đó thay đổi bảng lương.") },
+      { k: "steps", v: [
+        { t: B("Pick a preset, then move the levers", "Chọn một phương án có sẵn, rồi xoay các cần gạt"), a: "dr-presets" },
+        { t: B("Save plan", "Lưu kế hoạch"), a: "dr-head" },
+        { t: B("Press Exact cost to run it through the real pay scheme", "Bấm Chi phí chính xác để chạy qua chương trình lương thật"), a: "dr-exact" },
+      ] },
+      { k: "src", v: B("The Decision Room (People › Plan).", "Phòng quyết định (Con người › Kế hoạch).") },
+    ],
+  },
+  {
+    id: "raisehire", screens: ["hiring", "hiring_request", "hub_lifecycle"],
+    label: B("How do I raise a hiring request?", "Làm sao để đề xuất tuyển dụng?"),
+    match: ["raise a hiring request", "hire someone new", "new job opening", "request a new hire",
+            "de xuat tuyen dung", "tuyển thêm người", "tuyen nguoi moi"],
+    showMe: ["hi-raise", "hi-steps"],
+    watch: "sc_hiring",
+    try: "sc_hiring",
+    blocks: [
+      { k: "p", v: B("Lifecycle › <b>Hiring</b> › <b>Raise a hiring request</b>. A short wizard takes the role, what they will do, the interview plan and the budget.",
+                     "Vòng đời nhân sự › <b>Tuyển dụng</b> › <b>Đề xuất tuyển dụng</b>. Một trình hướng dẫn ngắn nhận vị trí, công việc, kế hoạch phỏng vấn và ngân sách.") },
+      { k: "steps", v: [
+        { t: B("Press Raise a hiring request", "Bấm Đề xuất tuyển dụng"), a: "hi-raise" },
+        { t: B("Fill The role, Responsibilities, Interview plan, Budget & review", "Điền bốn tab: The role, Responsibilities, Interview plan, Budget & review"), a: "hi-wizard" },
+        { t: B("Send it for approval: manager, HR lead — Finance only if over budget", "Gửi phê duyệt: quản lý, trưởng nhân sự — Tài chính chỉ khi vượt ngân sách") },
+      ] },
+      { k: "ok", v: B("The role stays at step 1 until it is signed off, so nothing is advertised early.",
+                      "Vị trí nằm ở bước 1 cho tới khi được duyệt, nên không có gì được đăng tin sớm.") },
+      { k: "src", v: B("Lifecycle › Hiring and its request wizard.", "Vòng đời nhân sự › Tuyển dụng và trình đề xuất tuyển dụng.") },
+    ],
+  },
+  {
+    id: "newjoiner", screens: ["joiners", "hiring", "hub_lifecycle"],
+    label: B("How do I get ready for someone starting?", "Làm sao để chuẩn bị cho người sắp vào làm?"),
+    match: ["someone starting next week", "prepare for a new joiner", "first day checklist", "choose a buddy",
+            "chuan bi nhan vien moi", "người sắp vào làm", "nguoi dong hanh"],
+    showMe: ["nj-list", "nj-drawer"],
+    watch: "sc_joiners",
+    blocks: [
+      { k: "p", v: B("Lifecycle › <b>New joiners</b>. Each person's card, their buddy, and what is still to do before day one.",
+                     "Vòng đời nhân sự › <b>Nhân viên mới</b>. Thẻ của mỗi người, người đồng hành, và những gì còn phải làm trước ngày đầu.") },
+      { k: "steps", v: [
+        { t: B("Give everyone a buddy — clear Still without a buddy", "Chọn người đồng hành cho mọi người — xử lý Chưa có người đồng hành"), a: "nj-numbers" },
+        { t: B("Open their card and finish Still to do", "Mở thẻ của họ và làm xong phần Còn phải làm"), a: "nj-drawer" },
+        { t: B("Make sure the bank account is on file before the pay run", "Đảm bảo đã có tài khoản ngân hàng trước đợt lương") },
+      ] },
+      { k: "src", v: B("Lifecycle › New joiners.", "Vòng đời nhân sự › Nhân viên mới.") },
+    ],
+  },
+  {
+    id: "leaver", screens: ["exits", "fullfinal", "hub_lifecycle"],
+    label: B("Someone is leaving — what do I do?", "Có người nghỉ việc — tôi phải làm gì?"),
+    match: ["someone is leaving", "handle a resignation", "exit checklist", "clearance", "last day",
+            "nhan vien nghi viec", "người nghỉ việc", "ban giao khi nghi"],
+    showMe: ["ex2-clearance", "ex2-settle"],
+    watch: "sc_exits",
+    try: "sc_exits",
+    blocks: [
+      { k: "p", v: B("Lifecycle › <b>Exits</b>. The leaver works their notice, IT, HR, Finance and Admin sign them off, and the final settlement waits for all four.",
+                     "Vòng đời nhân sự › <b>Nghỉ việc</b>. Người nghỉ làm hết thời gian báo trước, IT, Nhân sự, Tài chính và Quản trị viên xác nhận bàn giao, và quyết toán chờ đủ cả bốn.") },
+      { k: "steps", v: [
+        { t: B("Watch Clearances still open", "Theo dõi Xác nhận bàn giao còn mở"), a: "ex2-numbers" },
+        { t: B("Chase the desk that has not signed", "Nhắc phòng ban chưa ký"), a: "ex2-clearance" },
+        { t: B("Close settlement, then pay it from Pay Run › Settle", "Chốt quyết toán, rồi chi từ Đợt lương › Quyết toán"), a: "ex2-settle" },
+      ] },
+      { k: "warn", v: B("Take them out of the monthly pay run for the same month, or they are paid twice.",
+                        "Hãy đưa họ ra khỏi đợt lương tháng của cùng tháng, nếu không họ được trả hai lần.") },
+      { k: "src", v: B("Lifecycle › Exits, and Pay Run › Settle.", "Vòng đời nhân sự › Nghỉ việc, và Đợt lương › Quyết toán.") },
+    ],
+  },
+  {
+    id: "endtrial", screens: ["probation", "hub_lifecycle"],
+    label: B("How do I confirm someone after probation?", "Làm sao để xác nhận chính thức sau thử việc?"),
+    match: ["confirm after probation", "end of probation", "trial ends", "extend probation",
+            "xac nhan sau thu viec", "hết thử việc", "keo dai thu viec"],
+    showMe: ["pr-verdict", "pr-numbers"],
+    watch: "sc_probation",
+    blocks: [
+      { k: "p", v: B("Lifecycle › <b>Probation</b>. Colleagues are asked, the manager decides, HR and leadership review, then the outcome is shared.",
+                     "Vòng đời nhân sự › <b>Thử việc</b>. Đồng nghiệp được hỏi, quản lý quyết định, nhân sự và lãnh đạo xem xét, rồi kết quả được thông báo.") },
+      { k: "steps", v: [
+        { t: B("Check Ending within a week", "Xem Kết thúc trong vòng một tuần"), a: "pr-numbers" },
+        { t: B("Open the card: colleagues asked, and who has answered", "Mở thẻ: đồng nghiệp được hỏi, và ai đã trả lời"), a: "pr-peers" },
+        { t: B("Decide: Confirm them, Extend the trial, or Do not confirm", "Quyết định: Xác nhận chính thức, Kéo dài thử việc, hoặc Không xác nhận"), a: "pr-verdict" },
+      ] },
+      { k: "warn", v: B("A trial that ends with nobody deciding becomes a yes by default.", "Thử việc kết thúc mà không ai quyết định sẽ mặc nhiên thành đồng ý.") },
+      { k: "src", v: B("Lifecycle › Probation.", "Vòng đời nhân sự › Thử việc.") },
+    ],
+  },
+  {
+    id: "approveot", screens: ["wftoday", "wftime", "wftimeoff", "wfovertime", "wfclose", "hub_workforce"],
+    label: B("How do I approve overtime?", "Làm sao để duyệt tăng ca?"),
+    match: ["approve overtime", "overtime waiting", "clean overtime", "overtime limit",
+            "duyet tang ca", "tăng ca chờ duyệt", "gioi han tang ca"],
+    showMe: ["wf-clean", "wf-ot-queue"],
+    watch: "sc_wftime",
+    blocks: [
+      { k: "p", v: B("Two places. The <b>Needs you</b> panel approves all clean overtime in one press. Workforce › <b>Overtime</b> holds the queue for the rest.",
+                     "Hai nơi. Khung <b>Cần bạn</b> duyệt tất cả tăng ca sạch trong một lần bấm. Lực lượng lao động › <b>Tăng ca</b> giữ hàng chờ cho phần còn lại.") },
+      { k: "steps", v: [
+        { t: B("Approve all N clean from the Needs you panel", "Phê duyệt tất cả N sạch từ khung Cần bạn"), a: "wf-clean" },
+        { t: B("Open the rest in Overtime's approval queue", "Mở phần còn lại trong hàng chờ duyệt của tab Tăng ca"), a: "wf-ot-queue" },
+        { t: B("Read any near-the-limit mark before you approve", "Đọc dấu gần giới hạn trước khi duyệt"), a: "wf-ot-rules" },
+      ] },
+      { k: "src", v: B("Workforce › Today's Needs you panel and Workforce › Overtime.", "Khung Cần bạn ở Lực lượng lao động › Hôm nay và Lực lượng lao động › Tăng ca.") },
+    ],
+  },
+  {
+    id: "lockweek", screens: ["wfclose", "wftoday", "hub_workforce"],
+    label: B("How do I lock the week?", "Làm sao để khoá tuần?"),
+    match: ["lock the week", "close the week", "send the week to payroll", "lock week",
+            "khoa tuan", "chốt tuần", "gui tuan vao bang luong"],
+    showMe: ["wf-close-flags", "wf-close-lock"],
+    watch: "sc_wfclose",
+    try: "sc_wfclose",
+    blocks: [
+      { k: "p", v: B("Workforce › <b>Close</b>. Clear every flag, read the payroll handoff, then <b>Lock week & send to payroll</b>.",
+                     "Lực lượng lao động › <b>Chốt kỳ</b>. Xử lý mọi cờ cảnh báo, đọc phần chuyển giao tiền lương, rồi <b>Khóa tuần và gửi vào bảng lương</b>.") },
+      { k: "steps", v: [
+        { t: B("Fix each wrong day, or Approve as-is what really happened", "Điều chỉnh từng ngày sai, hoặc Phê duyệt nguyên trạng những gì thật sự đã xảy ra"), a: "wf-close-flags" },
+        { t: B("Read Regular hours, Overtime, Bonus hours", "Đọc Giờ thông thường, Tăng ca, Giờ thưởng"), a: "wf-close-handoff" },
+        { t: B("Lock week & send to payroll", "Khóa tuần và gửi vào bảng lương"), a: "wf-close-lock" },
+      ] },
+      { k: "warn", v: B("The button stays grey until every flag is answered, and only an attendance or payroll manager can press it.",
+                        "Nút giữ màu xám cho tới khi mọi cờ được trả lời, và chỉ quản lý chấm công hoặc quản lý lương mới bấm được.") },
+      { k: "src", v: B("Workforce › Close.", "Lực lượng lao động › Chốt kỳ.") },
+    ],
+  },
+  {
+    id: "delegate", screens: ["access", "hub_settings"],
+    label: B("How do I give someone my access while I'm away?", "Làm sao để giao quyền của tôi cho người khác khi tôi vắng mặt?"),
+    match: ["give someone access while i'm away", "hand my access over", "delegate my access", "cover for me while away",
+            "uy quyen khi vang mat", "bàn giao quyền", "giao quyen cho nguoi khac"],
+    showMe: ["ac-handover", "ac-tabs"],
+    watch: "sc_access",
+    blocks: [
+      { k: "p", v: B("Settings › <b>Access & delegation</b> › <b>Hand my access over</b>: who, what and until when. It ends by itself the morning after the end date.",
+                     "Cài đặt › <b>Quyền truy cập & uỷ quyền</b> › <b>Hand my access over</b> (bàn giao quyền của tôi): cho ai, quyền nào và đến khi nào. Nó tự kết thúc vào sáng hôm sau ngày kết thúc.") },
+      { k: "steps", v: [
+        { t: B("Press Hand my access over", "Bấm Hand my access over"), a: "ac-handover" },
+        { t: B("Pick who, what and the end date, then Hand it over", "Chọn cho ai, quyền nào và ngày kết thúc, rồi Hand it over") },
+        { t: B("It shows on the Hand-overs tab until it ends", "Nó hiện ở tab Hand-overs cho tới khi kết thúc"), a: "ac-tabs" },
+      ] },
+      { k: "warn", v: B("Never share your password instead: everything would be recorded as you, and nothing would end it.",
+                        "Đừng bao giờ đưa mật khẩu thay vào đó: mọi thứ sẽ được ghi là của bạn, và không gì kết thúc nó.") },
+      { k: "src", v: B("Settings › Access & delegation.", "Cài đặt › Quyền truy cập & uỷ quyền.") },
+    ],
+  },
+  {
+    id: "fileinsurance", screens: ["govreports", "filing_flow", "hub_compliance"],
+    label: B("How do I file the monthly insurance report?", "Làm sao để nộp báo cáo bảo hiểm hằng tháng?"),
+    match: ["file the monthly insurance report", "insurance filing", "generate a filing", "social insurance report",
+            "nop bao cao bao hiem", "báo cáo bảo hiểm hằng tháng", "tao ho so"],
+    showMe: ["gr-grid", "cp-gen-go"],
+    watch: "sc_filings",
+    blocks: [
+      { k: "p", v: B("Compliance › <b>Filings</b>. Find the insurance filing under Social Insurance, press <b>Generate</b>, check the scope, then Generate the files.",
+                     "Tuân thủ › <b>Tờ khai</b>. Tìm báo cáo bảo hiểm trong nhóm Bảo hiểm xã hội, bấm <b>Tạo</b>, kiểm tra phạm vi, rồi Tạo các tệp.") },
+      { k: "steps", v: [
+        { t: B("Make sure every run for the month is done", "Đảm bảo mọi đợt lương của tháng đã hoàn tất") },
+        { t: B("Press Generate on the filing's tile", "Bấm Tạo trên ô của báo cáo"), a: "gr-grid" },
+        { t: B("Check company and month on Scope, then Generate", "Kiểm tra công ty và tháng ở Phạm vi, rồi Tạo"), a: "cp-gen-go" },
+      ] },
+      { k: "warn", v: B("Generate sends nothing. You download the files and submit them yourself.", "Tạo không gửi gì cả. Bạn tải tệp xuống và tự nộp.") },
+      { k: "src", v: B("Compliance › Filings and its Generate a filing flow.", "Tuân thủ › Tờ khai và luồng Tạo hồ sơ.") },
     ],
   },
 ];
@@ -6543,6 +8591,26 @@ const PRACTICE_ANCHORS = {
   "rep-gp-foot": "The practice Group page's line that nothing is stored in the group currency.",
   "rep-ex-compare": "The practice Explorer's Compare schemes panel, each scheme in its own money.",
   "rep-slipline": "The worked example's statutory deductions, drawn on the STATUTORY replica beside the rates that produced them. It is the far end of L6's trace and it exists only here: the product's statutory cockpit shows rates, and a payslip shows đồng, and no single product screen shows both at once. Naming it rep- is the honest consequence — the Coach must never claim to point at this on a live screen.",
+  /* LEARN REFRESH step 4 — the wider app's teaching views. */
+  "rep-pr-budget": "The practice pay review's Budget meter, carrying its before/after for the `meter` moment: it fills as the rises go in.",
+  "rep-pr-guide": "The practice worksheet's Use the guidance button (a Try target; it changes nothing).",
+  "rep-pr-cal": "The practice worksheet's Calibration button (a Try target).",
+  "rep-pr-send": "The practice review's Send for approval button — guarded in Try, like every control that would write.",
+  "rep-dr-exact": "The practice Decision Room's line comparing the exact cost with the estimate.",
+  "rep-hi-cands": "The practice Hiring board's candidate strip for the first role, with Nam at Discussion 1.",
+  "rep-hi-route": "The practice hiring request's sign-off route: manager, HR lead, Finance only if over budget.",
+  "rep-hi-send": "The practice hiring request's Send for approval — guarded in Try.",
+  "rep-ex-card": "The practice Exits board's leaver card (Bùi Thị Hạnh), a Try target that opens her drawer.",
+  "rep-ex-open": "The practice leaver drawer's Open the settlement button.",
+  "rep-ex-desks": "The practice leaver drawer, drawn open: what each of the four desks checks, and which has not signed.",
+  "rep-wf-exc": "The practice Time panel's line on exceptions becoming flags on Close.",
+  "rep-wf-flag": "The practice Close board's first flag row (Hùng's missing check-out).",
+  "rep-wf-fix": "The Fix button on that flag — the Try step that corrects the day.",
+  "rep-wf-asis": "The Approve as-is button on that flag row.",
+  "rep-wf-locked": "The practice Close board's picture of a locked week, with the Reopen… note. Drawn beside the grey lock so the lesson can show both states.",
+  "rep-ac-handover": "The practice Hand my access over dialog, drawn open: who, what, until, and the automatic take-back.",
+  "rep-pm-wall": "The practice Wall card: one piece of praise tied to a company value, and Say thank you.",
+  "rep-pm-tiles": "The practice tiles for People's smaller tabs: Where they work, Assets, Goals, Announce.",
 };
 
 /* =============================================================================
@@ -7787,6 +9855,668 @@ const SCENARIOS = [
           title: B("Each in its own money, or the group's", "Mỗi bên theo đồng tiền của mình, hay theo tập đoàn"),
           body: B("With more than one currency on screen, this switch appears. Each in its own money keeps them apart; Group currency converts them so they can be added.",
                   "Khi có nhiều hơn một đồng tiền trên màn hình, công tắc này hiện ra. Mỗi bên theo đồng tiền của mình để chúng riêng rẽ; Đồng tiền của tập đoàn quy đổi chúng để có thể cộng lại."),
+        },
+      },
+    ],
+  },
+
+  /* ==========================================================================
+     LEARN REFRESH step 4 — THE WIDER APP'S WALKTHROUGHS.
+     One Watch per full station, on the real screens, pressing NOTHING that
+     writes: every step is an observe, except a few that open a card or a
+     drawer (guard: false — opening reads). Hiring, the pay review, Exits and
+     Close the week can also be taken as Try, over the practice company.
+     A reader whose company does not give them the tab gets the no-access
+     ending first (scenario_overlay.js refusalOnScreen + the hubs' own gates).
+     ======================================================================== */
+
+  /* ---------------------------------------------------------- sc_paybands */
+  {
+    key: "sc_paybands",
+    icon: "bar-chart",
+    line: "people",
+    modes: ["watch"],
+    screens: ["paybands"],
+    name: B("Read your pay bands", "Đọc các khoảng lương"),
+    tagline: B("Every person in their band, the five checks worth knowing, and the fairness view.",
+               "Mọi người trong khoảng lương của mình, năm phép kiểm tra đáng biết, và phần công bằng."),
+    entry: { nav: "paybands" },
+    steps: [
+      {
+        key: "tabs", anchor: "pp-tabs", nav: "paybands", act: "observe",
+        say: {
+          kicker: B("People › Pay", "Con người › Lương"),
+          title: B("Four tabs: Bands, Fairness, Review, Changes", "Bốn tab: Khoảng lương, Công bằng, Xét lương, Thay đổi"),
+          body: B("Bands and Fairness describe pay as it is. Review and Changes are where it changes.",
+                  "Khoảng lương và Công bằng mô tả lương như hiện tại. Xét lương và Thay đổi là nơi lương thay đổi."),
+          tip: B("I only read. Nothing here is changed.", "Tôi chỉ đọc. Không có gì ở đây bị thay đổi."),
+        },
+      },
+      {
+        key: "tools", anchor: "pp-bands-tools", act: "observe",
+        say: {
+          title: B("Work it out again, Export, Import, Place a new hire", "Tính lại, Xuất ra, Nhập vào, Xếp lương người mới"),
+          body: B("None of these is a pay rise. Place a new hire suggests a starting salary inside the band.",
+                  "Không nút nào là tăng lương. Xếp lương người mới gợi ý mức lương khởi điểm nằm trong khoảng."),
+        },
+      },
+      {
+        key: "picture", anchor: "pp-band-picture", act: "observe",
+        say: {
+          title: B("A range per job, a dot per person", "Mỗi công việc một khoảng, mỗi người một chấm"),
+          body: B("A dot outside its range is somebody paid below or above their band. Dragging an edge shows the cost before you let go.",
+                  "Chấm nằm ngoài khoảng là người đang được trả dưới hoặc trên khoảng lương. Kéo mép cho thấy chi phí trước khi bạn thả tay."),
+        },
+      },
+      {
+        key: "health", anchor: "pp-health", act: "observe",
+        say: {
+          title: B("Worth knowing", "Đáng biết"),
+          body: B("Five checks read for you: below the band, above it, newer people paid more, a manager paid less, and how wide each band has become.",
+                  "Năm phép kiểm tra đã đọc sẵn: dưới khoảng, trên khoảng, người mới được trả cao hơn, quản lý được trả thấp hơn, và mỗi khoảng lương đã rộng ra bao nhiêu."),
+        },
+      },
+    ],
+  },
+
+  /* --------------------------------------------------------- sc_payreview */
+  {
+    key: "sc_payreview",
+    icon: "trending-up",
+    line: "people",
+    modes: ["watch", "try"],
+    screens: ["payreview"],
+    name: B("Run a pay review", "Thực hiện một đợt xét lương"),
+    tagline: B("Fill the worksheet from the guidance, watch the budget, calibrate — and see who signs.",
+               "Điền bảng tính theo hướng dẫn, theo dõi ngân sách, cân chỉnh — và xem ai phê duyệt."),
+    entry: { nav: "payreview", screen: "payreview" },
+    steps: [
+      {
+        key: "opentab", anchor: "pp-tab-review", nav: "payreview", act: "click", guard: false, modes: ["watch"],
+        say: {
+          kicker: B("People › Pay", "Con người › Lương"),
+          title: B("The Review tab", "Tab Xét lương"),
+          body: B("I open the Review tab. Switching a tab only changes what you are looking at.",
+                  "Tôi mở tab Xét lương. Chuyển tab chỉ đổi thứ bạn đang xem."),
+        },
+      },
+      {
+        key: "list", anchor: "pp-reviews", nav: "payreview", screen: "payreview", act: "observe",
+        say: {
+          kicker: B("People › Pay › Review", "Con người › Lương › Xét lương"),
+          title: B("Pay reviews", "Đợt xét lương"),
+          body: B("Every review, and New review to start one. Set up guidance says what each score should earn.",
+                  "Mọi đợt xét lương, và Đợt xét lương mới để bắt đầu. Thiết lập hướng dẫn nói mỗi mức điểm nên được tăng bao nhiêu."),
+          tip: B("I only read. Nothing is sent or applied by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không gửi hay áp dụng gì."),
+        },
+      },
+      {
+        key: "stepper", anchor: "pp-stepper", screen: "payreview", act: "observe", modes: ["try"],
+        say: {
+          title: B("Who signs it", "Ai phê duyệt"),
+          body: B("Being written, With HR, With finance, With the CEO, Approved, Applied. Any step can send it back with a reason.",
+                  "Đang soạn, Đang ở nhân sự, Đang ở tài chính, Đang ở tổng giám đốc, Đã duyệt, Đã áp dụng. Bước nào cũng có thể trả lại kèm lý do."),
+        },
+      },
+      {
+        key: "openone", anchor: "pp-reviews", act: "observe", modes: ["watch"],
+        say: {
+          title: B("Open a review", "Mở một đợt xét lương"),
+          body: B("An open review shows its stepper — HR, finance, the CEO — a worksheet with a row per person, the budget meter and Calibration. Approved is not paid: Apply writes the new pay. Try it in the practice company to see one open.",
+                  "Một đợt xét lương đang mở hiện thanh các bước — nhân sự, tài chính, tổng giám đốc — một bảng tính mỗi người một dòng, thước đo ngân sách và Cân chỉnh. Đã duyệt chưa phải là đã trả: Áp dụng mới ghi lương mới. Hãy thử trong công ty thực hành để xem một đợt đang mở."),
+        },
+      },
+      {
+        key: "guidance", anchor: "rep-pr-guide", screen: "payreview", act: "click", guard: false, modes: ["try"],
+        say: {
+          title: B("Fill it from the guidance", "Điền theo hướng dẫn"),
+          body: B("Press Use the guidance. Every rise is filled from the scores; a person below their band gets more.",
+                  "Bấm Dùng hướng dẫn. Mọi mức tăng được điền theo điểm đánh giá; người dưới khoảng lương được tăng nhiều hơn."),
+        },
+      },
+      {
+        key: "worksheet", anchor: "pp-worksheet", screen: "payreview", act: "observe", modes: ["try"],
+        say: {
+          title: B("A row per person", "Mỗi người một dòng"),
+          body: B("Score, in the band, paid now, guidance, rise, new pay and a year's cost. The filters find who is not scored or paid below the band.",
+                  "Điểm, trong khoảng lương, đang được trả, hướng dẫn, mức tăng, lương mới và chi phí cả năm. Bộ lọc tìm ai chưa chấm điểm hoặc được trả dưới khoảng lương."),
+        },
+      },
+      {
+        key: "meters", anchor: "pp-meters", screen: "payreview", act: "observe", modes: ["try"],
+        say: {
+          title: B("Budget, Fairness, Scores", "Ngân sách, Công bằng, Điểm đánh giá"),
+          body: B("The budget meter fills as rises go in. Over budget, the review cannot be sent for approval.",
+                  "Thước đo ngân sách đầy dần khi thêm các mức tăng. Vượt ngân sách thì không gửi duyệt được."),
+        },
+      },
+      {
+        key: "calibrate", anchor: "rep-pr-cal", screen: "payreview", act: "click", guard: false, modes: ["try"],
+        say: {
+          title: B("Open Calibration", "Mở Cân chỉnh"),
+          body: B("Press Calibration: each rise is marked in line, standing out, or breaking a limit.",
+                  "Bấm Cân chỉnh: mỗi mức tăng được đánh dấu là ngang với người khác, nổi bật, hay vượt giới hạn."),
+        },
+      },
+      {
+        key: "actions", anchor: "pp-review-actions", screen: "payreview", act: "observe", modes: ["try"],
+        say: {
+          title: B("Send for approval, then Apply", "Gửi duyệt, rồi Áp dụng"),
+          body: B("Approved is the last signature. Apply writes the new pay onto the records, and the next pay run reads it.",
+                  "Đã duyệt là chữ ký cuối. Áp dụng ghi lương mới vào hồ sơ, và đợt lương kế tiếp đọc nó."),
+        },
+      },
+    ],
+  },
+
+  /* ------------------------------------------------------ sc_decisionroom */
+  {
+    key: "sc_decisionroom",
+    icon: "sliders",
+    line: "people",
+    modes: ["watch"],
+    screens: ["decisionroom"],
+    name: B("Try next year in the Decision Room", "Thử trước năm sau ở Phòng quyết định"),
+    tagline: B("Presets, levers, results and the exact cost — nothing here changes payroll.",
+               "Phương án có sẵn, cần gạt, kết quả và chi phí chính xác — không có gì ở đây thay đổi bảng lương."),
+    entry: { nav: "decisionroom" },
+    steps: [
+      {
+        key: "head", anchor: "dr-head", nav: "decisionroom", act: "observe",
+        say: {
+          kicker: B("People › Plan", "Con người › Kế hoạch"),
+          title: B("See the year before you commit to it", "Nhìn thấy cả năm trước khi cam kết"),
+          body: B("Undo, Reset and Save plan at the top. Everything below is a question you can ask of next year.",
+                  "Hoàn tác, Đặt lại và Lưu kế hoạch ở trên. Mọi thứ bên dưới là một câu hỏi bạn đặt cho năm sau."),
+          tip: B("I only read. Nothing is saved or proposed by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không lưu hay đề xuất gì."),
+        },
+      },
+      {
+        key: "levers", anchor: "dr-levers", act: "observe",
+        say: {
+          title: B("What if we…", "Nếu chúng ta…"),
+          body: B("Start from a preset, then move the levers: people, a rise, overtime, leavers. Every result follows at once.",
+                  "Bắt đầu từ một phương án có sẵn, rồi xoay các cần gạt: con người, tăng lương, tăng ca, người nghỉ. Mọi kết quả thay đổi theo ngay."),
+        },
+      },
+      {
+        key: "goals", anchor: "dr-goals", act: "observe",
+        say: {
+          title: B("Your definition of a good year", "Định nghĩa của bạn về một năm tốt"),
+          body: B("Set goals, and the room scores every plan against them.", "Đặt mục tiêu, và căn phòng chấm điểm mọi kế hoạch theo đó."),
+        },
+      },
+      {
+        key: "results", anchor: "dr-results", act: "observe",
+        say: {
+          title: B("Four ways to read a plan", "Bốn cách đọc một kế hoạch"),
+          body: B("Work & shifts, Why profit changed, People & pay, Room to hire.", "Công việc & ca làm, Vì sao lợi nhuận thay đổi, Con người & lương, Dư địa tuyển dụng."),
+        },
+      },
+      {
+        key: "compare", anchor: "dr-compare", act: "observe",
+        say: {
+          title: B("Compare, then press Exact cost", "So sánh, rồi bấm Chi phí chính xác"),
+          body: B("Saved plans sit side by side. Exact cost runs one through the real pay scheme and says how far the estimate was off.",
+                  "Các kế hoạch đã lưu nằm cạnh nhau. Chi phí chính xác chạy một kế hoạch qua chương trình lương thật và cho biết ước tính lệch bao nhiêu."),
+        },
+      },
+    ],
+  },
+
+  /* ------------------------------------------------------------ sc_hiring */
+  {
+    key: "sc_hiring",
+    icon: "briefcase",
+    line: "lifecycle",
+    modes: ["watch", "try"],
+    screens: ["hiring", "hiring_request"],
+    name: B("Raise a hiring request", "Đề xuất tuyển dụng"),
+    tagline: B("The Hiring board, a request with its budget, and who signs it.",
+               "Bảng Tuyển dụng, một đề xuất kèm ngân sách, và ai phê duyệt."),
+    entry: { nav: "hiring", screen: "hiring" },
+    steps: [
+      {
+        key: "numbers", anchor: "hi-numbers", nav: "hiring", screen: "hiring", act: "observe",
+        say: {
+          kicker: B("Lifecycle › Hiring", "Vòng đời nhân sự › Tuyển dụng"),
+          title: B("What needs you", "Việc gì cần bạn"),
+          body: B("Awaiting sign-off, Waiting on you, Over budget, interviews this week, opinions late.",
+                  "Chờ phê duyệt, Đang chờ bạn, Vượt ngân sách, phỏng vấn tuần này, ý kiến đang trễ."),
+          tip: B("I only read. Nothing is raised or sent by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không đề xuất hay gửi gì."),
+        },
+      },
+      {
+        key: "steps", anchor: "hi-steps", screen: "hiring", act: "observe",
+        say: {
+          title: B("Four steps for every role", "Bốn bước cho mọi vị trí"),
+          body: B("Request & approve, Prepare & publish, Meet your candidates, Welcome aboard.",
+                  "Đề xuất & phê duyệt, Chuẩn bị & đăng tin, Gặp ứng viên, Chào mừng gia nhập."),
+        },
+      },
+      {
+        key: "roles", anchor: "hi-row", screen: "hiring", act: "observe",
+        say: {
+          title: B("Step X of 4, and Next", "Bước X của 4, và Tiếp theo"),
+          body: B("Each role's card says its step and the one thing that moves it on. With no request raised yet, this is where the board says so.",
+                  "Thẻ của mỗi vị trí ghi bước hiện tại và một việc giúp nó đi tiếp. Khi chưa có đề xuất nào, bảng nói điều đó ngay tại đây."),
+        },
+      },
+      {
+        key: "raise", anchor: "hi-raise", screen: "hiring", act: "click", guard: false, modes: ["try"],
+        say: {
+          title: B("Press Raise a hiring request", "Bấm Đề xuất tuyển dụng"),
+          body: B("Asking comes before advertising.", "Xin phép đi trước đăng tin."),
+        },
+      },
+      {
+        key: "raisewatch", anchor: "hi-raise", screen: "hiring", act: "observe", modes: ["watch"],
+        say: {
+          title: B("Raise a hiring request", "Đề xuất tuyển dụng"),
+          body: B("This opens a short wizard: the role, responsibilities, the interview plan, and the budget. I will not press it.",
+                  "Nút này mở một trình hướng dẫn ngắn: vị trí, trách nhiệm, kế hoạch phỏng vấn, và ngân sách. Tôi sẽ không bấm."),
+        },
+      },
+      {
+        key: "wizard", anchor: "hi-wizard", screen: "hiring_request", act: "observe", modes: ["try"],
+        say: {
+          title: B("Let's shape your next hire", "Hãy cùng phác thảo vị trí tuyển dụng tiếp theo"),
+          body: B("Four tabs, ending with Budget & review: the salary set against the budget before anybody signs.",
+                  "Bốn tab, cuối cùng là Ngân sách & xem lại: mức lương đặt cạnh ngân sách trước khi ai đó phê duyệt."),
+        },
+      },
+      {
+        key: "route", anchor: "rep-hi-route", screen: "hiring_request", act: "observe", modes: ["try"],
+        say: {
+          title: B("Manager, HR lead — Finance only if over budget", "Quản lý, trưởng nhân sự — Tài chính chỉ khi vượt ngân sách"),
+          body: B("Sent for approval, it arrives in their Home › Approvals.", "Khi gửi phê duyệt, nó đến Trang chủ › Phê duyệt của họ."),
+        },
+      },
+      {
+        key: "send", anchor: "rep-hi-send", screen: "hiring_request", act: "click", guard: true, modes: ["try"],
+        say: {
+          title: B("Send for approval", "Gửi phê duyệt"),
+          body: B("On your own Payobook this sends the request. Here it sends nothing.", "Trên Payobook của bạn, nút này gửi đề xuất đi. Ở đây nó không gửi gì cả."),
+        },
+      },
+    ],
+  },
+
+  /* ----------------------------------------------------------- sc_joiners */
+  {
+    key: "sc_joiners",
+    icon: "user-plus",
+    line: "lifecycle",
+    modes: ["watch"],
+    screens: ["joiners"],
+    name: B("Get ready for a new joiner", "Chuẩn bị cho nhân viên mới"),
+    tagline: B("Who starts soon, who still has no buddy, and what is left before day one.",
+               "Ai sắp vào làm, ai chưa có người đồng hành, và việc gì còn lại trước ngày đầu."),
+    entry: { nav: "joiners" },
+    steps: [
+      {
+        key: "numbers", anchor: "nj-numbers", nav: "joiners", act: "observe",
+        say: {
+          kicker: B("Lifecycle › New joiners", "Vòng đời nhân sự › Nhân viên mới"),
+          title: B("Everyone starting soon", "Những người sắp vào làm"),
+          body: B("Joining this week, Already started, Still without a buddy, Steps overdue, and those who said they are struggling.",
+                  "Vào làm tuần này, Đã bắt đầu làm việc, Chưa có người đồng hành, Bước quá hạn, và những người cho biết đang gặp khó khăn."),
+          tip: B("I only read. Nothing is sent by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không gửi gì."),
+        },
+      },
+      {
+        key: "steps", anchor: "nj-steps", act: "observe",
+        say: {
+          title: B("Getting ready, Settling in, Checklist done", "Đang chuẩn bị, Đang hòa nhập, Đã xong danh mục"),
+          body: B("Press a step to see only the people on it.", "Bấm một bước để chỉ xem những người đang ở đó."),
+        },
+      },
+      {
+        key: "list", anchor: "nj-list", act: "observe",
+        say: {
+          title: B("A card per person", "Mỗi người một thẻ"),
+          body: B("Open a card for what is still to do, what is done, and the conversations so far — and give them a buddy if they have none. With nobody starting soon, the board says so here.",
+                  "Mở một thẻ để xem việc còn phải làm, việc đã xong, và các cuộc trao đổi — và chọn người đồng hành nếu họ chưa có. Khi không ai sắp vào làm, bảng nói điều đó tại đây."),
+        },
+      },
+    ],
+  },
+
+  /* ------------------------------------------------------------- sc_exits */
+  {
+    key: "sc_exits",
+    icon: "log-out",
+    line: "lifecycle",
+    modes: ["watch", "try"],
+    screens: ["exits"],
+    name: B("See someone out, and settle them", "Tiễn một người nghỉ, và quyết toán"),
+    tagline: B("The four desks, the handover, and the final settlement that waits for all of them.",
+               "Bốn phòng ban, phần bàn giao, và quyết toán chờ đủ tất cả."),
+    entry: { nav: "exits", screen: "exits" },
+    steps: [
+      {
+        key: "numbers", anchor: "ex2-numbers", nav: "exits", screen: "exits", act: "observe",
+        say: {
+          kicker: B("Lifecycle › Exits", "Vòng đời nhân sự › Nghỉ việc"),
+          title: B("Everyone on their way out", "Những người sắp rời công ty"),
+          body: B("Leaving this month, Last day has passed, Settlements held up, Clearances still open, Items not back yet.",
+                  "Nghỉ việc trong tháng này, Đã qua ngày làm việc cuối, Quyết toán bị vướng, Xác nhận bàn giao còn mở, Tài sản chưa trả lại."),
+          tip: B("I only read. Nothing is closed by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không chốt gì."),
+        },
+      },
+      {
+        key: "steps", anchor: "ex2-steps", screen: "exits", act: "observe",
+        say: {
+          title: B("Notice, signing off, ready, settled", "Báo trước, xác nhận bàn giao, sẵn sàng, đã quyết toán"),
+          body: B("The four steps every leaver walks.", "Bốn bước mọi người nghỉ việc đều đi qua."),
+        },
+      },
+      {
+        key: "card", anchor: "rep-ex-card", screen: "exits", act: "click", guard: false, modes: ["try"],
+        say: {
+          title: B("Open Hạnh's card", "Mở thẻ của Hạnh"),
+          body: B("Her last day has passed. Press her card to see who has signed her off.", "Ngày làm cuối của chị đã qua. Bấm vào thẻ để xem ai đã xác nhận bàn giao."),
+        },
+      },
+      {
+        key: "cards", anchor: "ex2-list", screen: "exits", act: "observe", modes: ["watch"],
+        say: {
+          title: B("A card per leaver", "Mỗi người nghỉ một thẻ"),
+          body: B("Each card shows Signed off by: IT, HR, Finance and Admin. Open one for the settlement, which waits for all four. With nobody leaving, the board says so here.",
+                  "Mỗi thẻ hiện Được ký tắt bởi: IT, Nhân sự, Tài chính và Quản trị viên. Mở một thẻ để xem quyết toán, vốn chờ đủ cả bốn. Khi không ai nghỉ, bảng nói điều đó tại đây."),
+        },
+      },
+      {
+        key: "clearance", anchor: "ex2-clearance", screen: "exits", act: "observe", modes: ["try"],
+        say: {
+          title: B("Signed off by IT, HR, Finance, Admin", "Được ký tắt bởi IT, Nhân sự, Tài chính, Quản trị viên"),
+          body: B("One light per desk. A dark one is the desk still waiting for something back.",
+                  "Mỗi phòng ban một đèn. Đèn chưa sáng là phòng ban vẫn đang chờ lấy lại một thứ gì đó."),
+        },
+      },
+      {
+        key: "settle", anchor: "ex2-settle", screen: "exits", act: "observe", modes: ["try"],
+        say: {
+          title: B("The final settlement waits for all four", "Quyết toán cuối cùng chờ đủ cả bốn"),
+          body: B("Close settlement becomes available when every desk has signed. The payment itself is made from Pay Run › Settle.",
+                  "Chốt quyết toán bấm được khi mọi phòng ban đã ký. Bản thân khoản chi được thực hiện từ Đợt lương › Quyết toán."),
+        },
+      },
+    ],
+  },
+
+  /* --------------------------------------------------------- sc_probation */
+  {
+    key: "sc_probation",
+    icon: "hourglass",
+    line: "lifecycle",
+    modes: ["watch"],
+    screens: ["probation"],
+    name: B("End a trial with a decision", "Kết thúc thử việc bằng một quyết định"),
+    tagline: B("Every trial running, colleagues' answers, and the decision before the end date.",
+               "Mọi đợt thử việc đang chạy, câu trả lời của đồng nghiệp, và quyết định trước ngày kết thúc."),
+    entry: { nav: "probation" },
+    steps: [
+      {
+        key: "numbers", anchor: "pr-numbers", nav: "probation", act: "observe",
+        say: {
+          kicker: B("Lifecycle › Probation", "Vòng đời nhân sự › Thử việc"),
+          title: B("Ending within a week comes first", "Kết thúc trong vòng một tuần là việc đầu tiên"),
+          body: B("In a trial period, Reviews running, Waiting on a decision, Answers overdue, Ending within a week.",
+                  "Đang thử việc, Đánh giá đang chạy, Đang chờ quyết định, Câu trả lời quá hạn, Kết thúc trong vòng một tuần."),
+          tip: B("I only read. Nothing is decided by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không quyết định gì."),
+        },
+      },
+      {
+        key: "steps", anchor: "pr-steps", act: "observe",
+        say: {
+          title: B("Five steps to an outcome", "Năm bước tới kết quả"),
+          body: B("Choose peers, Gather perspectives, Manager conversation, HR & leadership review, Share the outcome.",
+                  "Chọn đồng nghiệp, Thu thập ý kiến, Trao đổi với quản lý, Nhân sự và lãnh đạo xem xét, Thông báo kết quả."),
+        },
+      },
+      {
+        key: "list", anchor: "pr-list", act: "observe",
+        say: {
+          title: B("Open a card to decide", "Mở một thẻ để quyết định"),
+          body: B("Inside: colleagues asked and who answered, then Confirm them, Extend the trial or Do not confirm. With nobody on a trial, the board says so here.",
+                  "Bên trong: đồng nghiệp được hỏi và ai đã trả lời, rồi Xác nhận chính thức, Kéo dài thử việc hoặc Không xác nhận. Khi không ai đang thử việc, bảng nói điều đó tại đây."),
+        },
+      },
+    ],
+  },
+
+  /* ----------------------------------------------------------- sc_wftoday */
+  {
+    key: "sc_wftoday",
+    icon: "sun",
+    line: "workforce",
+    modes: ["watch"],
+    screens: ["wftoday"],
+    name: B("A day in Workforce", "Một ngày ở Lực lượng lao động"),
+    tagline: B("Who is in today, and everything the Needs you panel is holding for you.",
+               "Hôm nay ai có mặt, và mọi việc khung Cần bạn đang giữ cho bạn."),
+    entry: { nav: "wftoday" },
+    steps: [
+      {
+        key: "today", anchor: "wf-today", nav: "wftoday", act: "observe",
+        say: {
+          kicker: B("Workforce › Today", "Lực lượng lao động › Hôm nay"),
+          title: B("Who is in, today", "Hôm nay ai có mặt"),
+          body: B("On shift, Late, Not started, Checked out, On leave — for the teams you look after.",
+                  "Theo ca, Trễ, Chưa bắt đầu, Đã về, Đang nghỉ phép — cho các nhóm bạn phụ trách."),
+          tip: B("I only read. Nothing is approved by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không duyệt gì."),
+        },
+      },
+      {
+        key: "needs", anchor: "wf-needs", act: "observe",
+        say: {
+          title: B("Needs you", "Cần bạn"),
+          body: B("Everything waiting for you, beside every Workforce tab. My team or Organisation decides whose.",
+                  "Mọi việc đang chờ bạn, nằm cạnh mọi tab của Lực lượng lao động. Đội của tôi hoặc Tổ chức quyết định là của ai."),
+        },
+      },
+      {
+        key: "tabs", anchor: "wf-tabs", act: "observe",
+        say: {
+          title: B("The week, left to right", "Cả tuần, từ trái sang phải"),
+          body: B("Today, Schedule, Time, Time Off, Overtime, Trips, Approvals — and Close, where the week is locked for payroll.",
+                  "Hôm nay, Lịch ca, Chấm công, Nghỉ phép, Tăng ca, Công tác, Phê duyệt — và Chốt kỳ, nơi tuần được khoá cho bảng lương."),
+        },
+      },
+    ],
+  },
+
+  /* ------------------------------------------------------------ sc_wftime */
+  {
+    key: "sc_wftime",
+    icon: "clock",
+    line: "workforce",
+    modes: ["watch"],
+    screens: ["wftime", "wftimeoff", "wfovertime"],
+    name: B("Time, leave and overtime", "Chấm công, nghỉ phép và tăng ca"),
+    tagline: B("Exceptions to fix, leave to decide, overtime to approve inside its limits.",
+               "Ngoại lệ cần xử lý, đơn nghỉ cần quyết định, tăng ca cần duyệt trong giới hạn."),
+    entry: { nav: "wftime" },
+    steps: [
+      {
+        key: "time", anchor: "wf-time", nav: "wftime", act: "observe",
+        say: {
+          kicker: B("Workforce › Time", "Lực lượng lao động › Chấm công"),
+          title: B("Timeline, Week Grid, Exceptions, Import", "Dòng thời gian, Lưới tuần, Ngoại lệ, Nhập"),
+          body: B("Exceptions are the days that did not add up. Left alone, each becomes a flag on Close.",
+                  "Ngoại lệ là những ngày không khớp. Nếu để đó, mỗi ngoại lệ thành một cờ cảnh báo ở Chốt kỳ."),
+          tip: B("I only read. Nothing is approved by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không duyệt gì."),
+        },
+      },
+      {
+        key: "leave", anchor: "wf-leave-queue", nav: "wftimeoff", screen: "wftimeoff", act: "observe",
+        say: {
+          kicker: B("Workforce › Time Off", "Lực lượng lao động › Nghỉ phép"),
+          title: B("The approval queue", "Hàng chờ phê duyệt"),
+          body: B("Leave waiting for a decision. Apply on behalf files leave for someone who cannot.",
+                  "Đơn nghỉ chờ quyết định. Đăng ký thay nộp đơn cho người không tự làm được."),
+        },
+      },
+      {
+        key: "overtime", anchor: "wf-ot-queue", nav: "wfovertime", screen: "wfovertime", act: "observe",
+        say: {
+          kicker: B("Workforce › Overtime", "Lực lượng lao động › Tăng ca"),
+          title: B("Overtime waiting for approval", "Tăng ca chờ duyệt"),
+          body: B("Each request with its day and hours. A near-the-limit mark is a warning, not a block.",
+                  "Mỗi yêu cầu kèm ngày và số giờ. Dấu gần giới hạn là lời cảnh báo, không phải điều chặn."),
+        },
+      },
+      {
+        key: "rules", anchor: "wf-ot-rules", act: "observe",
+        say: {
+          title: B("The limits", "Các giới hạn"),
+          body: B("The monthly and yearly limits your company works to. A request past one is marked, never quietly approved.",
+                  "Giới hạn theo tháng và theo năm công ty bạn áp dụng. Yêu cầu vượt một giới hạn sẽ được đánh dấu, không bao giờ được duyệt âm thầm."),
+        },
+      },
+    ],
+  },
+
+  /* ----------------------------------------------------------- sc_wfclose */
+  {
+    key: "sc_wfclose",
+    icon: "lock",
+    line: "workforce",
+    modes: ["watch", "try"],
+    screens: ["wfclose"],
+    name: B("Close the week", "Chốt tuần"),
+    tagline: B("Fix or approve every flag, read the handoff, then lock the week for payroll.",
+               "Điều chỉnh hoặc duyệt mọi cờ, đọc phần chuyển giao, rồi khoá tuần cho bảng lương."),
+    entry: { nav: "wfclose", screen: "wfclose" },
+    steps: [
+      {
+        key: "head", anchor: "wf-close", nav: "wfclose", screen: "wfclose", act: "observe",
+        say: {
+          kicker: B("Workforce › Close", "Lực lượng lao động › Chốt kỳ"),
+          title: B("The week, and how many flags are left", "Tuần này, và còn bao nhiêu cờ"),
+          body: B("Payroll trusts a locked week. This is where it is made trustworthy.", "Bảng lương tin vào một tuần đã khoá. Đây là nơi làm cho nó đáng tin."),
+          tip: B("I only read. Nothing is locked by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không khoá gì."),
+        },
+      },
+      {
+        key: "flags", anchor: "wf-close-flags", screen: "wfclose", act: "observe",
+        say: {
+          title: B("Every day that did not add up", "Mỗi ngày không khớp"),
+          body: B("Fix a day that is wrong; Approve as-is only what really happened. Review all walks one kind together.",
+                  "Điều chỉnh ngày bị sai; chỉ Phê duyệt nguyên trạng những gì thật sự đã xảy ra. Xem lại tất cả đi qua một loại cờ cùng lúc."),
+        },
+      },
+      {
+        key: "fix", anchor: "rep-wf-fix", screen: "wfclose", act: "click", guard: true, modes: ["try"],
+        say: {
+          title: B("Fix Hùng's Tuesday", "Điều chỉnh ngày thứ Ba của Hùng"),
+          body: B("He forgot to check out. Fix opens the day to put in the real time — on your own Payobook that writes the correction.",
+                  "Anh quên chấm giờ ra. Điều chỉnh mở ngày đó để nhập giờ thật — trên Payobook của bạn, việc đó ghi lại phần sửa."),
+        },
+      },
+      {
+        key: "handoff", anchor: "wf-close-handoff", screen: "wfclose", act: "observe",
+        say: {
+          title: B("Payroll handoff", "Chuyển giao tiền lương"),
+          body: B("Regular hours, Overtime, Bonus hours and an estimated gross: what payroll will receive.",
+                  "Giờ thông thường, Tăng ca, Giờ thưởng và tổng thu nhập ước tính: những gì bảng lương sẽ nhận."),
+        },
+      },
+      {
+        key: "lock", anchor: "wf-close-lock", screen: "wfclose", act: "observe",
+        say: {
+          title: B("Lock week & send to payroll", "Khóa tuần và gửi vào bảng lương"),
+          body: B("Grey until every flag is answered, and only for an attendance or payroll manager. Reopen… asks for a reason.",
+                  "Xám cho tới khi mọi cờ được trả lời, và chỉ dành cho quản lý chấm công hoặc quản lý lương. Mở lại… sẽ hỏi lý do."),
+        },
+      },
+    ],
+  },
+
+  /* ------------------------------------------------------------ sc_access */
+  {
+    key: "sc_access",
+    icon: "key",
+    line: "setup",
+    modes: ["watch"],
+    screens: ["access"],
+    name: B("Access, and handing it over", "Quyền truy cập, và bàn giao"),
+    tagline: B("Roles in plain words, See it as, and lending your access while you are away.",
+               "Vai trò bằng lời dễ hiểu, See it as, và cho mượn quyền khi bạn vắng mặt."),
+    entry: { nav: "access" },
+    steps: [
+      {
+        key: "head", anchor: "ac-head", nav: "access", act: "observe",
+        say: {
+          kicker: B("Settings › Access & delegation", "Cài đặt › Quyền truy cập & uỷ quyền"),
+          title: B("Who can do what", "Ai được làm gì"),
+          body: B("Everyone can open this page. Giving roles and See it as are for access managers.",
+                  "Ai cũng mở được trang này. Cấp vai trò và See it as dành cho người quản lý truy cập."),
+          tip: B("I only read. Nothing is given or handed over by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không cấp hay bàn giao gì."),
+        },
+      },
+      {
+        key: "tabs", anchor: "ac-tabs", act: "observe",
+        say: {
+          title: B("Roles, People, Screens, Hand-overs", "Bốn tab: Roles, People, Screens, Hand-overs"),
+          body: B("What can be given, what each person holds, who opens each screen, and what is lent for a while.",
+                  "Những gì có thể cấp, mỗi người đang có gì, ai mở được từng màn hình, và những gì đang cho mượn tạm thời."),
+        },
+      },
+      {
+        key: "roles", anchor: "ac-rolecard", act: "observe",
+        say: {
+          title: B("A role in one sentence", "Một vai trò trong một câu"),
+          body: B("Each card says what the role lets someone do, and who holds it.", "Mỗi thẻ nói vai trò đó cho phép làm gì, và ai đang có nó."),
+        },
+      },
+      {
+        key: "handover", anchor: "ac-handover", act: "observe",
+        say: {
+          title: B("Hand my access over", "Bàn giao quyền của tôi"),
+          body: B("Who, what and until when. It is taken back automatically the morning after the end date. I will not press it.",
+                  "Cho ai, quyền nào và đến khi nào. Quyền được tự động thu hồi vào sáng hôm sau ngày kết thúc. Tôi sẽ không bấm."),
+        },
+      },
+    ],
+  },
+
+  /* ----------------------------------------------------------- sc_filings */
+  {
+    key: "sc_filings",
+    icon: "file-text",
+    line: "compliance",
+    modes: ["watch"],
+    screens: ["govreports", "filing_flow"],
+    name: B("File the month's government reports", "Nộp các báo cáo nhà nước của tháng"),
+    tagline: B("The filings your country asks for, and the three steps that make one.",
+               "Các báo cáo quốc gia bạn yêu cầu, và ba bước để tạo một báo cáo."),
+    entry: { nav: "govreports" },
+    steps: [
+      {
+        key: "head", anchor: "gr-head", nav: "govreports", act: "observe",
+        say: {
+          kicker: B("Compliance › Filings", "Tuân thủ › Tờ khai"),
+          title: B("The filings the law asks of you", "Các báo cáo pháp luật yêu cầu bạn"),
+          body: B("The company and the month, then a tile per filing.", "Công ty và tháng, rồi mỗi báo cáo một ô."),
+          tip: B("I only read. Nothing is generated by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không tạo gì."),
+        },
+      },
+      {
+        key: "countries", anchor: "gr-countries", act: "observe",
+        say: {
+          title: B("One country at a time", "Mỗi lần một quốc gia"),
+          body: B("\"Coming soon\" means that country's module is not installed here — not that its filings do not exist.",
+                  "\"Sắp có\" nghĩa là mô-đun của quốc gia đó chưa được cài ở đây — không phải các báo cáo không tồn tại."),
+        },
+      },
+      {
+        key: "grid", anchor: "gr-grid", act: "observe",
+        say: {
+          title: B("Grouped by the office that reads them", "Nhóm theo cơ quan tiếp nhận"),
+          body: B("Generate on a tile opens Generate a filing on its Scope step: check the company and the month, then Generate. Nothing is sent anywhere.",
+                  "Tạo trên một ô mở Tạo hồ sơ ở bước Phạm vi: kiểm tra công ty và tháng, rồi Tạo. Không có gì được gửi đi."),
         },
       },
     ],

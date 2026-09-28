@@ -364,6 +364,21 @@ SCREENLESS_MUST_HIT = [
     ("thiet lap chuong trinh luong", 'newscheme'),
     ("số liệu không khớp", 'notaddup'),
     ("cap nhat hang loat", 'bulkupdate'),
+    # LEARN REFRESH step 4 — the top question of each wider-app area.
+    ("how do i raise a hiring request", 'raisehire'),
+    ("who has to sign a pay review", 'whosignsreview'),
+    ("how do i lock the week", 'lockweek'),
+    ("how do i give someone my access while i'm away", 'delegate'),
+    ("how do i file the monthly insurance report", 'fileinsurance'),
+    ("is anyone paid outside their pay band", 'bandcheck'),
+    ("what would next year cost if we hired", 'whatif'),
+    ("someone is leaving what do i do", 'leaver'),
+    ("how do i confirm someone after probation", 'endtrial'),
+    ("how do i approve overtime", 'approveot'),
+    ("how do i get ready for someone starting", 'newjoiner'),
+    ("de xuat tuyen dung", 'raisehire'),
+    ("khoa tuan", 'lockweek'),
+    ("bàn giao quyền", 'delegate'),
 ]
 
 # Questions that must reach the advice refusal, from the Phase D review.

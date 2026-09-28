@@ -252,6 +252,14 @@ BARE_ALIASES = {
     'payslip': 'a payroll noun; no other sense exists',
     # LEARN REFRESH step 3
     'subtotal': 'the Component treatment column; no other sense in this corpus',
+    # LEARN REFRESH step 4
+    'calibration': 'the pay review step; no other sense in this corpus',
+    'calibrate': 'the verb of the above',
+    'buddy': 'only the new joiner\'s buddy in this corpus',
+    'buddies': 'plural of the above',
+    'probation': 'the trial at the start of a job; no other sense here',
+    'clearance': 'a leaver\'s sign-off; no other sense in this corpus',
+    'clearances': 'plural of the above',
     'payslips': 'plural of the above',
     'slip': 'used only of a payslip in this corpus',
     'slips': 'plural of the above',

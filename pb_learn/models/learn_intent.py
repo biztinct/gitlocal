@@ -229,7 +229,12 @@ COMPOSE_FLAG = 'pb_learn.compose_enabled'
 # outgrows even this: a SECTION is dropped whole, with a log line naming it.
 # Never mid-entry — half a glossary definition in a prompt is a definition the
 # model completes for itself.
-_CORPUS_CAP = 36000
+#
+# LEARN REFRESH step 4 raised it to 44,000: sixteen wider-app stations, their
+# glossary terms and eleven intents took the widest corpus to 37,677
+# characters (measured by test_04d), past 36,000. 44,000 restores the same
+# ~15% headroom.
+_CORPUS_CAP = 44000
 _QUESTION_CAP = 400
 _REPLY_CAP = 1500
 
