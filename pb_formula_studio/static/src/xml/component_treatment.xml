@@ -3,7 +3,7 @@
 
   <t t-name="pb_formula_studio.ComponentTreatmentBoard">
     <div t-attf-class="pct {{ props.flow ? 'is-flow' : '' }}">
-      <div class="pct-head">
+      <div class="pct-head" data-coach="tr-head">
         <div>
           <h2>How each component is treated</h2>
         </div>
@@ -39,7 +39,7 @@
       <div t-elif="state.error" class="pct-empty"><p t-esc="state.error"/></div>
 
       <div t-elif="state.board" class="pct-body">
-        <div class="pct-filters">
+        <div class="pct-filters" data-coach="tr-filters">
           <button t-attf-class="pct-fchip {{ !state.filter ? 'on' : '' }}"
                   t-on-click="() => this.setFilter('')">
             All <t t-esc="state.board.rows.length"/>
@@ -99,7 +99,7 @@
           totals count that one instead of this. <b>Value type</b> decides
           whether it is read as a number or kept exactly as it arrived — and a
           value that is not an amount cannot be added to or taken off net pay.</p>
-        <table class="pct-table">
+        <table class="pct-table" data-coach="tr-table">
           <thead>
             <tr>
               <th>Component</th>

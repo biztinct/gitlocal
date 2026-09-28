@@ -161,7 +161,7 @@
        ================================================================= -->
   <t t-name="pb_records.RdFileMenu">
     <t t-if="props.narrow">
-      <div class="rd-filemenu">
+      <div class="rd-filemenu" data-coach="rd-file">
         <button type="button" class="pbim-btn ghost rd-filemenu-btn"
                 t-att-title="'Export or import a file'"
                 t-on-click.stop="toggle">
@@ -190,7 +190,7 @@
       </div>
     </t>
     <t t-else="">
-      <div class="rd-filepair">
+      <div class="rd-filepair" data-coach="rd-file">
       <div class="rd-export">
         <button type="button" class="pbim-btn ghost"
                 t-att-disabled="props.exporting"
@@ -476,13 +476,13 @@
       <t t-else="">
 
         <!-- ================================================= header -->
-        <div class="rd-head-bar">
+        <div class="rd-head-bar" data-coach="rd-head">
           <div class="rd-head-id">
             <h1 class="pbim-h1" t-if="!props.embedded" t-esc="title"/>
             <p class="pbim-sub" t-esc="subtitle"/>
           </div>
           <div class="rd-head-actions">
-            <div class="rd-scheme">
+            <div class="rd-scheme" data-coach="rd-scheme">
               <button type="button" class="rd-scheme-pill"
                       t-on-click.stop="() => this.state.schemeOpen = !this.state.schemeOpen">
                 <t t-out="ic('layers',14)"/>
@@ -506,12 +506,12 @@
                         busy="state.file.busy" busyLabel="state.file.name"
                         countLabel="exportCountLabel"
                         onExport.bind="exportFile" onFile.bind="takeFile"/>
-            <button type="button" class="pbim-btn ghost" t-on-click="openHistory">
+            <button type="button" class="pbim-btn ghost" t-on-click="openHistory" data-coach="rd-history">
               <t t-out="ic('clock',15)"/> History
             </button>
             <button type="button"
                     t-attf-class="pbim-btn primary rd-review-btn {{ state.pulse ? 'pulse' : '' }}"
-                    t-att-disabled="!counts.values" t-on-click="openReview">
+                    t-att-disabled="!counts.values" t-on-click="openReview" data-coach="rd-review">
               <t t-out="ic('checkCircle',15)"/> <t t-esc="reviewLabel"/>
             </button>
           </div>
@@ -522,7 +522,7 @@
         </div>
 
         <!-- =========================================== nothing mapped -->
-        <div t-if="mappedNothing" class="rd-empty big">
+        <div t-if="mappedNothing" class="rd-empty big" data-coach="rd-empty">
           <span class="rd-empty-ic"><t t-out="ic('database',30)"/></span>
           <h3 t-esc="emptyFieldsTitle"/>
           <p t-esc="emptyFieldsBody"/>
@@ -548,7 +548,7 @@
           </div>
 
           <!-- WHO -->
-          <aside t-attf-class="rd-rail {{ state.railOpen ? '' : 'closed' }}">
+          <aside t-attf-class="rd-rail {{ state.railOpen ? '' : 'closed' }}" data-coach="rd-who">
             <button type="button" class="rd-rail-toggle" t-on-click="toggleRail"
                     t-att-title="state.railOpen ? 'Hide the filters' : 'Show the filters'">
               <t t-out="ic(state.railOpen ? 'chevronLeft' : 'chevron', 14)"/>
@@ -601,7 +601,7 @@
           <div class="rd-main">
 
             <!-- WHAT -->
-            <div class="rd-strip-bar">
+            <div class="rd-strip-bar" data-coach="rd-fields">
               <button type="button" class="rd-strip-toggle" t-on-click="toggleStrip">
                 <t t-out="ic('layers',14)"/>
                 <span class="lb">Fields</span>

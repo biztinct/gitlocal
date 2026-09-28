@@ -65,7 +65,7 @@
             </span>
           </nav>
 
-          <div class="pbex-money">
+          <div class="pbex-money" data-coach="ex-money">
             <span class="pbex-cur" t-att-title="currencyTitle">
               <t t-out="ic('coins', 13)"/>
               <b t-esc="shownCurrency ? shownCurrency.name : ''"/>

@@ -25,7 +25,7 @@
              FROM <source> ══ N mapped ══▶ TO <target>. It is a header, not a
              toolbar: it is on screen in every state, it names both ends, and
              both ends are one click from being changed. -->
-        <div class="pbms-story">
+        <div class="pbms-story" data-coach="mp-story">
 
           <div t-attf-class="pbms-end from {{ fromSlot.kind === 'static' ? 'is-static' : '' }}">
             <div class="pbms-end__kicker">FROM</div>
@@ -148,7 +148,7 @@
         </t>
 
         <!-- ==== modes, in plain language ==== -->
-        <div class="pbms-modes">
+        <div class="pbms-modes" data-coach="mp-modes">
           <button t-foreach="modes" t-as="m" t-key="m.id"
                   t-attf-class="pbms-mode {{ state.mode === m.id ? 'on' : '' }}"
                   t-att-title="m.hint"
@@ -217,7 +217,7 @@
              not have a file in the right shape" is the other half of the
              problem. -->
         <t t-if="isImport and state.data and state.data.ok">
-          <div class="pbms-ramp">
+          <div class="pbms-ramp" data-coach="mp-ramp">
             <t t-if="!sample">
               <t t-if="canEdit">
                 <label t-attf-class="pbms-drop {{ state.rampOver ? 'over' : '' }} {{ rampBusy ? 'busy' : '' }}"

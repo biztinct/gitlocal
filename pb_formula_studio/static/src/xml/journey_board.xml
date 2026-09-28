@@ -26,7 +26,7 @@
          tabindex="-1" t-on-keydown="onKeydown">
 
       <!-- ==== the bar over the lanes ==== -->
-      <div class="jny-bar">
+      <div class="jny-bar" data-coach="mp-jbar">
         <div class="jny-bar__say">
           <b t-esc="d.config and d.config.name"/>
           <span class="jny-bar__sub" t-esc="headline"/>
@@ -85,7 +85,7 @@
             </div>
           </div>
 
-          <div t-attf-class="jny-lanes n{{ lanes.length }}"
+          <div t-attf-class="jny-lanes n{{ lanes.length }}" data-coach="mp-lanes"
                t-attf-style="--jny-cols:{{ lanes.length }}">
             <div class="jny-lane" t-foreach="lanes" t-as="lane" t-key="lane.id">
               <div class="jny-lane__h">

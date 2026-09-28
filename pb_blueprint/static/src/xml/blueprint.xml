@@ -40,7 +40,7 @@
 
         <div class="pbbp-top-sp"/>
 
-        <button t-attf-class="pbbp-status {{ statusPill.cls }}"
+        <button t-attf-class="pbbp-status {{ statusPill.cls }}" data-coach="bp-status"
                 t-att-disabled="!statusPill.retry"
                 t-on-click="retrySave">
           <span class="d" t-if="statusPill.cls !== 'busy'"/>
@@ -78,7 +78,7 @@
       <div class="pbbp-body">
 
         <!-- rail: vertical at desk width, a horizontal stepper on a phone -->
-        <nav class="pbbp-rail" aria-label="Setup steps">
+        <nav class="pbbp-rail" aria-label="Setup steps" data-coach="bp-rail">
           <span class="pbbp-rail-eyebrow" t-if="!editing">New configuration</span>
           <span class="pbbp-rail-eyebrow is-editing" t-else="">
             <span>Editing</span>
@@ -238,7 +238,7 @@
           </div>
 
           <!-- footer: where you are, and the one thing to press next -->
-          <footer class="pbbp-foot">
+          <footer class="pbbp-foot" data-coach="bp-foot">
             <span class="pbbp-foot-l" t-esc="footerLine"/>
             <div class="pbbp-foot-sp"/>
             <button class="pbim-btn ghost" t-if="created and state.step !== 'start'"
@@ -258,7 +258,7 @@
         </main>
 
         <!-- the hero -->
-        <aside class="pbbp-side">
+        <aside class="pbbp-side" data-coach="bp-pay">
           <Scoreboard t-if="state.step === 'test' and created"
                       tests="state.tests or false"
                       running="state.testsRunning"

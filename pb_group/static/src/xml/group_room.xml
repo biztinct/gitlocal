@@ -50,7 +50,7 @@
       <div t-else="" class="pbim-wrap grp-wrap">
 
         <!-- ========================== the header ========================== -->
-        <div class="grp-head">
+        <div class="grp-head" data-coach="gp-head">
           <div class="grp-head-id">
             <HubBackChip t-if="back" back="back" tone="'light'"/>
             <h2 class="grp-h">Your group</h2>
@@ -80,7 +80,7 @@
         </div>
 
         <!-- ===================== 1 · the group tree ====================== -->
-        <section class="pbim-card grp-card" id="pbg-group">
+        <section class="pbim-card grp-card" id="pbg-group" data-coach="gp-tree">
 
           <div t-if="!group" class="grp-teach">
             <div class="grp-teach-ic"><t t-out="ic('landmark',34)"/></div>
@@ -163,7 +163,7 @@
         </section>
 
         <!-- ==================== 2 · the exchange rates =================== -->
-        <section class="pbim-card grp-card" id="pbg-rates">
+        <section class="pbim-card grp-card" id="pbg-rates" data-coach="gp-rates">
           <div class="grp-card-h">
             <div class="grp-card-id">
               <span class="grp-card-ic"><t t-out="ic('coins',18)"/></span>
@@ -240,7 +240,7 @@
         </section>
 
         <!-- ======================= 3 · the divisions ===================== -->
-        <section class="pbim-card grp-card" id="pbg-divisions">
+        <section class="pbim-card grp-card" id="pbg-divisions" data-coach="gp-divisions">
           <div class="grp-card-h">
             <div class="grp-card-id">
               <span class="grp-card-ic"><t t-out="ic('layers',18)"/></span>

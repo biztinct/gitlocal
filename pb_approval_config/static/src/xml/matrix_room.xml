@@ -47,7 +47,7 @@
       <div t-else="" class="pbim-wrap pbam-wrap">
 
         <!-- ============================================ the hero -->
-        <div class="pbim-hero pbam-hero">
+        <div class="pbim-hero pbam-hero" data-coach="am-hero">
           <div class="pbim-hero-id">
             <div class="pbim-eyebrow">
               <t t-out="ic('stamp',13)"/> <span>Settings</span>
@@ -67,7 +67,7 @@
         </div>
 
         <!-- ============================================ the tabs -->
-        <div class="pbam-tabs">
+        <div class="pbam-tabs" data-coach="am-tabs">
           <button t-foreach="tabs" t-as="tb" t-key="tb.key"
                   class="pbam-tab"
                   t-att-class="{ 'is-on': state.tab === tb.key }"
@@ -188,7 +188,7 @@
             <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.reviewSetup()">Show me</button>
           </div>
 
-          <div class="pbam-filters">
+          <div class="pbam-filters" data-coach="am-filters">
             <label class="pbam-search">
               <t t-out="ic('search',15)"/>
               <input type="search" placeholder="Search processes, people or routes"
@@ -220,7 +220,7 @@
           </div>
 
           <div t-else="" class="pbam-tablewrap">
-            <div class="pbam-bulkbar">
+            <div class="pbam-bulkbar" data-coach="am-bulk">
               <span class="pbam-bulkbar-n">
                 <b t-esc="bulkShownLine"/>
                 <t t-if="bulkFiltered"> · <t t-esc="bulkScopeLine"/></t>
@@ -233,7 +233,7 @@
                 <span class="pbam-bulkbtn-n" t-esc="bulkCandidates.length"/>
               </button>
             </div>
-            <div class="pbam-tablex">
+            <div class="pbam-tablex" data-coach="am-table">
               <table class="pbam-table">
                 <thead>
                   <tr>
@@ -301,7 +301,7 @@
             </div>
           </div>
 
-          <p class="pbim-note pbam-foot">
+          <p class="pbim-note pbam-foot" data-coach="am-foot">
             A row is <b>In use</b> only when its route is published <i>and</i> the feature behind it is wired up, so nothing here pretends to be protecting something it is not. Any process may be set to <b>No approval needed</b>; the row says so out loud and every use is still recorded. Suggestions such as "2 people" are advice you confirm when you publish, never a lock.
           </p>
         </t>

@@ -55,12 +55,14 @@
  *     dialog, the template save panel) MOVED — it was not copied. `grep` finds
  *     one implementation of each, and it is in this file.
  */
-import { Component, useState, onWillStart, useExternalListener } from "@odoo/owl";
+import { Component, useState, useEffect, onWillStart, onWillUnmount,
+         useExternalListener } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useAutofocus, useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
+import { publishPlace, clearPlace } from "@pb_hub/js/hub_place";
 import { MappingCanvas } from "./mapping_canvas";
 import { TransformFlowBoard } from "./transform_flow_board";
 import { JourneyBoard } from "./journey_board";
@@ -294,6 +296,28 @@ export class MappingStudio extends Component {
             await this.loadPickers();
             await this.load();
             this.state.loaded = true;
+        });
+
+        // LEARN REFRESH step 3 — say which tab is on screen, to the same
+        // "where am I" store the hubs write (pb_hub/js/hub_place.js), so the
+        // helper can tell Component treatment from the Journey. Read-only for
+        // this screen: nothing here changes what the board does.
+        useEffect(
+            () => { this._publishPlace(); },
+            () => [this.state.mode, this.state.loaded, this.state.configId],
+        );
+        onWillUnmount(() => clearPlace(this));
+    }
+
+    _publishPlace() {
+        publishPlace(this, {
+            tag: (this.props.action && this.props.action.tag) || "pb_mapping_studio",
+            hubKey: "mapping",
+            hubLabel: _t("Mapping"),
+            lens: this.state.mode,
+            lenses: this.modes.map((m) => ({ key: m.id, label: m.label, icon: m.icon })),
+            ready: this.state.loaded,
+            switchTo: (key) => this.setMode(key),
         });
     }
 
@@ -905,6 +929,7 @@ export class MappingStudio extends Component {
     async setMode(id) {
         if (this.state.mode === id) { return; }
         this.state.mode = id;
+        this._publishPlace();
         this.state.data = null;
         this.state.extraCols = [];
         this.state.tmplMode = "";
