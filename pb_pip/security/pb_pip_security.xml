@@ -17,9 +17,10 @@
          over.
 
          So: NO implied_ids from any lifecycle group into either of these,
-         in either direction. Access is granted by name, and the facade
-         (pb.pip._can_read) deliberately does not fall back to
-         `_is_admin()` either.
+         in either direction. Access is granted by name. Since LEARN
+         REFRESH step 6 (owner decision) system administrators pass too —
+         by name, in every gate, never through implied_ids (which would put
+         them on the growth-plan email lists).
          ================================================================== -->
 
     <record id="module_category_pip" model="ir.module.category">
@@ -54,6 +55,25 @@
              module is written to prevent. -->
         <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         <field name="comment">Everything above, plus the two visibility switches: whether the person sees their own plan, and whether the manager who asked can see their own request.</field>
+    </record>
+
+    <!-- LEARN REFRESH step 6 (owner decision 2026-09-28): a system
+         administrator sees every growth plan in their companies, like the
+         head of HR. Outside the noupdate block so an upgrade lays it; it is
+         ORed with "the one I asked for", which otherwise was all an
+         administrator could see. The global company rule still applies. -->
+    <record id="rule_pip_case_admin" model="ir.rule">
+        <field name="name">Growth plan: system administrators</field>
+        <field name="model_id" ref="model_pb_pip_case"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_pip_objective_admin" model="ir.rule">
+        <field name="name">Growth plan objective: system administrators</field>
+        <field name="model_id" ref="model_pb_pip_objective"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
     </record>
 
 <data noupdate="1">

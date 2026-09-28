@@ -12,12 +12,11 @@
  *      still being decided about, and then the ones somebody is trying to
  *      keep.
  *
- *      ITS GATE IS THIS MODULE'S OWN TWO GROUPS AND NOTHING ELSE. Not the
- *      lifecycle tiers — deliberately, and it is the whole point of the phase:
- *      a lifecycle administrator who can see every joining checklist has no
- *      business seeing who is on an improvement plan. `base.group_system` is
- *      not on the list either; an administrator who needs this is one row in a
- *      group away, by name. `pb.pip._can_read()` enforces the same thing
+ *      ITS GATE IS THIS MODULE'S OWN TWO GROUPS PLUS SYSTEM ADMINISTRATORS.
+ *      Not the lifecycle tiers — deliberately: a lifecycle administrator who
+ *      can see every joining checklist has no business seeing who is on an
+ *      improvement plan. System administrators were added in LEARN REFRESH
+ *      step 6 (owner decision), like on every other Lifecycle tab. `pb.pip._can_read()` enforces the same thing
  *      independently and answers an EXPLAINED refusal rather than an access
  *      dialog, so this only decides whether the lens is OFFERED.
  *
@@ -41,10 +40,14 @@ import { _t } from "@web/core/l10n/translation";
 import { LIFECYCLE_LENSES } from "@pb_lifecycle/js/lifecycle_hub";
 import { PbPipBoard } from "@pb_pip/js/pip_board";
 
-/** `pb.pip._can_read()`'s tiers, verbatim. Two groups, no admin fallback. */
+/** `pb.pip._can_read()`'s tiers, verbatim: the two growth-plan groups and,
+ *  since LEARN REFRESH step 6 (owner decision), system administrators — the
+ *  same fallback every other Lifecycle tab has. Lifecycle tiers still do not
+ *  pass. */
 export const PIP_GATE = [
     "pb_pip.group_pip_user",
     "pb_pip.group_pip_head",
+    "base.group_system",
 ];
 
 registry.category(LIFECYCLE_LENSES).add("pip", {
@@ -53,6 +56,9 @@ registry.category(LIFECYCLE_LENSES).add("pip", {
     label: _t("Growth plans"),
     Component: PbPipBoard,
     groups: PIP_GATE,
+    // The server's own answer (pb.pip.can_open = _can_read), so the tab is
+    // offered exactly when the board would open.
+    probe: { model: "pb.pip", method: "can_open" },
 }, { sequence: 50 });
 
 const HUB_XMLID = "pb_lifecycle.action_pb_lifecycle_hub";
@@ -101,7 +107,7 @@ palette.add("pip_templates", {
     label: _t("Growth plan templates"),
     sublabel: _t("Growth plans"),
     icon: "layers",
-    groups: ["pb_pip.group_pip_head"],
+    groups: ["pb_pip.group_pip_head", "base.group_system"],
     requires: "pb_pip_board",
     action: { xmlid: "pb_pip.action_pb_pip_template" },
 }, { sequence: 2730 });

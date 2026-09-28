@@ -128,6 +128,18 @@ DEFAULTS = {
 GROUP_USER = 'pb_pip.group_pip_user'
 GROUP_HEAD = 'pb_pip.group_pip_head'
 
+#: LEARN REFRESH step 6 (owner decision 2026-09-28): system administrators get
+#: the same read + act access as the head of HR — the same fallback every other
+#: Lifecycle tab has. NOT through `implied_ids` (that would put every
+#: administrator on the growth-plan email lists, `_hr_addresses`); by name, in
+#: every gate: ACL rows, one record rule, the facade, the lens and the palette.
+GROUP_ADMIN = 'base.group_system'
+
+
+def is_pip_admin(env):
+    """A system administrator acting on a growth plan as the head of HR."""
+    return bool(env.user.has_group(GROUP_ADMIN))
+
 #: Every internal user. The requesting manager's one door.
 GROUP_INTERNAL = 'base.group_user'
 

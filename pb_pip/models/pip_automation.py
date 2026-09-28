@@ -28,7 +28,7 @@ import logging
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError
 
-from .pip_common import GROUP_HEAD, GROUP_USER, PIP_OPEN
+from .pip_common import GROUP_HEAD, GROUP_USER, PIP_OPEN, is_pip_admin
 
 _logger = logging.getLogger(__name__)
 
@@ -123,7 +123,8 @@ class PbJourneyCasePipReminders(models.Model):
         have always been.
         """
         user = self.env.user
-        if not (user.has_group(GROUP_USER) or user.has_group(GROUP_HEAD)):
+        if not (user.has_group(GROUP_USER) or user.has_group(GROUP_HEAD)
+                or is_pip_admin(self.env)):
             raise AccessError(_(
                 "Growth plans are looked after by the HR team."))
         today = fields.Date.today()

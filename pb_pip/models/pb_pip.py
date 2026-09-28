@@ -28,7 +28,7 @@ from odoo import api, models, _
 from odoo.exceptions import AccessError, UserError
 
 from .pip_common import (
-    CHECKIN_FREQ_LABEL, GROUP_HEAD, GROUP_USER, OBJECTIVE_STATE_LABEL,
+    CHECKIN_FREQ_LABEL, GROUP_HEAD, GROUP_USER, is_pip_admin, OBJECTIVE_STATE_LABEL,
     P_EMPLOYEE_VIEW, P_MANAGER_SEES_OWN, PIP_OPEN, PIP_STATE_LABEL,
     VERDICT_LABEL, flag, initials,
 )
@@ -80,20 +80,25 @@ class PbPip(models.AbstractModel):
 
     @api.model
     def _can_read(self):
-        """THE gate. No lifecycle tier, no `_is_admin()` fallback.
+        """THE gate. No lifecycle tier; system administrators pass.
 
-        `_is_admin()` is deliberately absent. Every other facade in this
-        product includes it, because on those screens an administrator seeing
-        everything is convenient and harmless. Here it is neither: "I am a
-        system administrator" is not a reason to know who is on an improvement
-        plan, and the administrator who genuinely needs it is one row in a
-        group away. `env.su` still passes, because that is code acting as the
-        system rather than a person reading a screen.
+        Until LEARN REFRESH step 6 administrators were deliberately left out
+        ("one row in a group away"). The owner decided on 2026-09-28 that a
+        system administrator gets the head of HR's read + act access, like on
+        every other Lifecycle tab. Lifecycle tiers still do NOT pass: knowing
+        who is on an improvement plan is not part of looking after arrivals
+        and departures. `env.su` passes — code acting as the system.
         """
         user = self.env.user
         return bool(self.env.su
                     or user.has_group(GROUP_USER)
-                    or user.has_group(GROUP_HEAD))
+                    or user.has_group(GROUP_HEAD)
+                    or is_pip_admin(self.env))
+
+    @api.model
+    def can_open(self):
+        """The Lifecycle hub's probe: may this person open Growth plans?"""
+        return self._can_read()
 
     @api.model
     def _can_write(self):
@@ -101,7 +106,8 @@ class PbPip(models.AbstractModel):
 
     @api.model
     def _is_head(self):
-        return bool(self.env.su or self.env.user.has_group(GROUP_HEAD))
+        return bool(self.env.su or self.env.user.has_group(GROUP_HEAD)
+                    or is_pip_admin(self.env))
 
     @api.model
     def _require_read(self):

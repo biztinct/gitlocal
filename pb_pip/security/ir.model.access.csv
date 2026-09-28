@@ -17,3 +17,11 @@ access_pb_pip_feedback_head,Evaluation form for improvement plans head,pb_lifecy
 access_pb_pip_letter_user,Plan letter,pb_lifecycle.model_pb_hr_letter,pb_pip.group_pip_user,1,1,1,0
 access_pb_pip_letter_head,Plan letter head,pb_lifecycle.model_pb_hr_letter,pb_pip.group_pip_head,1,1,1,1
 access_pb_pip_letter_template_user,Letter template read,pb_lifecycle.model_pb_letter_template,pb_pip.group_pip_user,1,0,0,0
+access_pb_pip_template_admin,Growth plan template system administrators (as head of HR),model_pb_pip_template,base.group_system,1,1,1,1
+access_pb_pip_template_line_admin,Growth plan focus area system administrators,model_pb_pip_template_line,base.group_system,1,1,1,1
+access_pb_pip_case_admin,Growth plan system administrators (as head of HR),model_pb_pip_case,base.group_system,1,1,1,1
+access_pb_pip_objective_admin,Growth plan objective system administrators,model_pb_pip_objective,base.group_system,1,1,1,1
+access_pb_pip_checkin_admin,Check-in for growth plans system administrators,pb_lifecycle.model_pb_employee_checkin,base.group_system,1,1,1,1
+access_pb_pip_feedback_admin,Evaluation form for growth plans system administrators,pb_lifecycle.model_pb_feedback_request,base.group_system,1,1,1,1
+access_pb_pip_letter_admin,Growth plan letter system administrators,pb_lifecycle.model_pb_hr_letter,base.group_system,1,1,1,1
+access_pb_pip_letter_template_admin,Letter template read system administrators,pb_lifecycle.model_pb_letter_template,base.group_system,1,0,0,0

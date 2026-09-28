@@ -42,7 +42,7 @@ from odoo.addons.pb_probation.models.verdict_approval import (
 
 from .pip_common import (
     CHECKIN_FREQ_DAYS, CHECKIN_FREQS, EVAL_OBJECTIVE_PREFIX, EVAL_QUESTIONS,
-    GROUP_HEAD, GROUP_USER, LETTER_PIP, OBJECTIVE_STATE_LABEL,
+    GROUP_HEAD, GROUP_USER, is_pip_admin, LETTER_PIP, OBJECTIVE_STATE_LABEL,
     P_AUTO_TERMINATE, P_DEFAULT_WEEKS, P_EMPLOYEE_VIEW, P_MISSED_DAYS,
     P_PIP_MAIL, PIP_EMPLOYEE_VISIBLE, PIP_OPEN, PIP_STATE_LABEL, PIP_STATES,
     VERDICT_LABEL, VERDICT_STATE, counted, first_name, flag, joined_sentence,
@@ -306,7 +306,7 @@ class PbPipCase(models.Model):
     def _is_hr(self):
         user = self.env.user
         return bool(self.env.su or user.has_group(GROUP_USER)
-                    or user.has_group(GROUP_HEAD))
+                    or user.has_group(GROUP_HEAD) or is_pip_admin(self.env))
 
     def _require_hr(self):
         """Who may move a plan on. HR, and nobody else — not even the manager.
