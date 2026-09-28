@@ -2176,35 +2176,36 @@ export const SCREENS = {
 
     /* ------------------------------------ Settings › Access & delegation */
     access() {
-        /* biz_access has no Vietnamese yet: the real screen is English for
-           every reader, so the drawing is too (owner item, ledger LR33). */
+        /* LEARN REFRESH step 5: biz_access has Vietnamese now (vi_VN.po), so
+           the drawing speaks the reader's language like the real screen. */
         const a = PRACTICE.access;
-        const tabs = ["Roles", "People", "Screens", "Hand-overs"]
-            .map((x, i) => `<button class="lrn-lens ${i === 0 ? "on" : ""}">${esc(x)}</button>`).join("");
+        const tabs = [B("Roles", "Vai trò"), B("People", "Nhân sự"), B("Screens", "Màn hình"), B("Hand-overs", "Bàn giao")]
+            .map((x, i) => `<button class="lrn-lens ${i === 0 ? "on" : ""}">${esc(tx(x))}</button>`).join("");
         const roles = a.roles.map((r) => `
             <div class="lrn-yrole">
                 <b>${ic("key")}${esc(tx(r.name))}</b>
                 <span class="lrn-sub2">${esc(tx(r.line))}</span>
-                <span class="lrn-chip">${ic("users")}Held by${SP}${esc(N(r.held))}${SP}people</span>
+                <span class="lrn-chip">${ic("users")}${esc(tx(B("Held by", "Đang giữ:")))}${SP}${esc(N(r.held))}</span>
             </div>`).join("");
         return `
             <div class="lrn-zhead" data-coach="ac-head">
-                <h3>${ic("key")}Access</h3>
+                <h3>${ic("key")}${esc(tx(B("Access", "Quyền truy cập")))}</h3>
                 <span class="lrn-push"></span>
-                <button class="lrn-btn sm ghost" data-coach="ac-seeas">${ic("eye")}See it as</button>
-                <button class="lrn-btn sm ghost">Who holds what</button>
-                <button class="lrn-btn sm" data-coach="ac-handover">${ic("repeat")}Hand my access over</button>
-                <button class="lrn-btn sm pri" data-coach="ac-newrole">${ic("plus")}New role</button>
+                <button class="lrn-btn sm ghost" data-coach="ac-seeas">${ic("eye")}${esc(tx(B("See it as", "Xem như")))}</button>
+                <button class="lrn-btn sm ghost">${esc(tx(B("Who holds what", "Ai giữ quyền gì")))}</button>
+                <button class="lrn-btn sm" data-coach="ac-handover">${ic("repeat")}${esc(tx(B("Hand my access over", "Bàn giao quyền của tôi")))}</button>
+                <button class="lrn-btn sm pri" data-coach="ac-newrole">${ic("plus")}${esc(tx(B("New role", "Vai trò mới")))}</button>
             </div>
             <div class="lrn-zmodes" data-coach="ac-tabs">${tabs}</div>
             <div class="lrn-yroles" data-coach="ac-rolecard">${roles}</div>
             <div class="lrn-panel lrn-zdialog" data-coach="rep-ac-handover">
-                <h3>${ic("repeat")}Hand my access over${SP}·${SP}${esc(tx(B("drawn open", "đang mở sẵn")))}</h3>
-                <div class="lrn-kv2"><span>Who</span><b>${esc(a.handover.to)}</b></div>
-                <div class="lrn-kv2"><span>What</span><b>All my roles</b></div>
-                <div class="lrn-kv2"><span>Until</span><b>${esc(a.handover.until)}</b></div>
-                <p class="lrn-note">Taken back automatically the morning after the end date.</p>
-                <button class="lrn-btn sm pri">Hand it over</button>
+                <h3>${ic("repeat")}${esc(tx(B("Hand my access over", "Bàn giao quyền của tôi")))}${SP}·${SP}${esc(tx(B("drawn open", "đang mở sẵn")))}</h3>
+                <div class="lrn-kv2"><span>${esc(tx(B("Who", "Ai")))}</span><b>${esc(a.handover.to)}</b></div>
+                <div class="lrn-kv2"><span>${esc(tx(B("What", "Nội dung")))}</span><b>${esc(tx(B("All my roles", "Tất cả vai trò của tôi")))}</b></div>
+                <div class="lrn-kv2"><span>${esc(tx(B("Until", "Đến ngày")))}</span><b>${esc(a.handover.until)}</b></div>
+                <p class="lrn-note">${esc(tx(B("Taken back automatically the morning after the end date.",
+                    "Tự động thu hồi vào sáng hôm sau ngày kết thúc.")))}</p>
+                <button class="lrn-btn sm pri">${esc(tx(B("Hand it over", "Bàn giao")))}</button>
             </div>`;
     },
 

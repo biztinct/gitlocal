@@ -1362,7 +1362,7 @@ msgstr "Đã thêm thẳng vào %(net)s."
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__net_role__earning
 msgid "Added to net pay"
-msgstr "Đã thêm vào lương ròng"
+msgstr "Cộng vào thực nhận"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -1997,7 +1997,7 @@ msgstr "Thân hình"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__net_role__mixed
 msgid "Both added and taken off"
-msgstr "Vừa cộng vừa khấu trừ"
+msgstr "Vừa cộng vừa trừ"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__boundary_key
@@ -4843,7 +4843,7 @@ msgstr "Tổng số nhân viên"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__net_role__employer_cost
 msgid "Employer cost"
-msgstr "Chi phí của người sử dụng lao động"
+msgstr "Chi phí doanh nghiệp"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__use_auto_retro
@@ -6903,7 +6903,7 @@ msgstr "Thông tin"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__net_role__info
 msgid "Information only"
-msgstr "Chỉ thông tin"
+msgstr "Chỉ để tham khảo"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
@@ -8394,7 +8394,7 @@ msgstr "Lý do Vai trò Lương Ròng"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__net_role__net
 msgid "Net pay itself"
-msgstr "Tự trả tiền ròng"
+msgstr "Chính là thực nhận"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__visibility_rule__never
@@ -11950,7 +11950,7 @@ msgstr "lấy"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__net_role__deduction
 msgid "Taken off net pay"
-msgstr "Khấu trừ khỏi lương thực nhận"
+msgstr "Trừ khỏi thực nhận"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_mapping_test_line__target

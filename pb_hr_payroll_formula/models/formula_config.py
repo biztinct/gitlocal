@@ -2446,9 +2446,11 @@ class HrFormulaConfig(models.Model):
             'options': self._value_kind_options(),
             'pay_roles': [{'value': k, 'label': label,
                            'money': k in value_kind_classifier._PAY_ROLES}
-                          for k, label in role_field.selection],
+                          # translated labels (LEARN REFRESH step 5): the raw
+                          # `.selection` is the English source list
+                          for k, label in role_field._description_selection(self.env)],
             'signals': [{'value': k, 'label': label}
-                        for k, label in signal_field.selection],
+                        for k, label in signal_field._description_selection(self.env)],
             'groups': groups,
             'rows': rows,
             'drift_count': len(drift),

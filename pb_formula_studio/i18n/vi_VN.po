@@ -4233,7 +4233,7 @@ msgstr "Lương ròng trừ đi những khoản này."
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1917
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 msgid "Employer cost"
-msgstr "Chi phí của người sử dụng lao động"
+msgstr "Chi phí doanh nghiệp"
 
 #. module: pb_formula_studio
 #. odoo-python
@@ -15244,3 +15244,27 @@ msgstr "chưa có nguồn"
 #: code:addons/pb_formula_studio/static/src/xml/journey_board.xml:0
 msgid "Filter the journey"
 msgstr "Lọc hành trình"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/component_treatment.js:0
+msgid "Added to net pay"
+msgstr "Cộng vào thực nhận"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/component_treatment.js:0
+msgid "Taken off net pay"
+msgstr "Trừ khỏi thực nhận"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/component_treatment.js:0
+msgid "Net pay itself"
+msgstr "Chính là thực nhận"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/component_treatment.js:0
+msgid "Both added and taken off"
+msgstr "Vừa cộng vừa trừ"
