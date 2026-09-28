@@ -2321,8 +2321,8 @@
     },
     {
       "body": {
-        "en": "People whose last run falls in this period. Each one needs settling in Full & Final AND excluding from the ordinary monthly run. Somebody in both is paid twice, and getting that back is a legal conversation rather than a payroll one.",
-        "vi": "Những người có đợt lương cuối cùng rơi vào kỳ này. Mỗi người vừa cần được quyết toán ở Quyết toán thôi việc VÀ cần bị loại khỏi đợt lương tháng thông thường. Người nằm ở cả hai chỗ sẽ được trả hai lần, và đòi lại khoản đó là chuyện pháp lý chứ không còn là chuyện tính lương."
+        "en": "People whose last run falls in this period. Each one needs settling on Pay Run › Settle AND excluding from the ordinary monthly run. Somebody in both is paid twice, and getting that back is a legal conversation rather than a payroll one.",
+        "vi": "Những người có đợt lương cuối cùng rơi vào kỳ này. Mỗi người vừa cần được quyết toán ở Đợt lương › Quyết toán VÀ cần bị loại khỏi đợt lương tháng thông thường. Người nằm ở cả hai chỗ sẽ được trả hai lần, và đòi lại khoản đó là chuyện pháp lý chứ không còn là chuyện tính lương."
       },
       "key": "leavers",
       "label": {
@@ -9171,7 +9171,7 @@
       "phrases": [
         "where is everything",
         "where do i find",
-        "sidebar sections",
+        "rail sections",
         "what are the sections",
         "tim o dau",
         "menu nam o dau",
@@ -9507,8 +9507,8 @@
         },
         {
           "body": {
-            "en": "<b>Workforce Analytics</b> is the third and it asks a different kind of question: not what payroll cost, but who was in it. Headcount paid, joiners and leavers, attendance exceptions, cost per head.",
-            "vi": "<b>Phân tích nhân sự</b> là công cụ thứ ba và nó đặt một loại câu hỏi khác: không phải chi phí lương là bao nhiêu, mà là những ai nằm trong đó. Số người được trả lương, người vào và người nghỉ, ngoại lệ chấm công, chi phí bình quân đầu người."
+            "en": "<b>Insights › Workforce</b> is the third and it asks a different kind of question: not what payroll cost, but who was in it. Headcount paid, joiners and leavers, attendance exceptions, cost per head.",
+            "vi": "<b>Phân tích › Lực lượng lao động</b> là công cụ thứ ba và nó đặt một loại câu hỏi khác: không phải chi phí lương là bao nhiêu, mà là những ai nằm trong đó. Số người được trả lương, người vào và người nghỉ, ngoại lệ chấm công, chi phí bình quân đầu người."
           },
           "capability": "any",
           "kind": "p",
@@ -9517,8 +9517,8 @@
         },
         {
           "body": {
-            "en": "Knowing WHERE each one reads from is what stops you comparing two numbers that were never the same number. <b>Insights</b> reads the stored per-run roll-ups, plus the analytics snapshots panel. <b>Explorer</b> reads derived fact tables, rebuilt from the payslips and reconciled to them. <b>Workforce Analytics</b> reads the attendance, overtime and leave models. Three lineages, one payroll.",
-            "vi": "Biết mỗi công cụ ĐỌC TỪ ĐÂU là điều giúp bạn không đem so hai con số vốn chưa bao giờ là cùng một con số. <b>Phân tích</b> đọc các số tổng đã lưu theo từng đợt, cộng thêm bảng ảnh chụp phân tích. <b>Explorer</b> đọc các bảng dữ liệu dẫn xuất, được dựng lại từ phiếu lương và đối chiếu khớp với phiếu lương. <b>Phân tích nhân sự</b> đọc dữ liệu chấm công, tăng ca và nghỉ phép. Ba nguồn gốc, một hệ thống lương."
+            "en": "Knowing WHERE each one reads from is what stops you comparing two numbers that were never the same number. <b>Insights</b> reads the stored per-run roll-ups, plus the analytics snapshots panel. <b>Explorer</b> reads derived fact tables, rebuilt from the payslips and reconciled to them. <b>Insights › Workforce</b> reads attendance, overtime and time off. Three sources, one payroll.",
+            "vi": "Biết mỗi công cụ ĐỌC TỪ ĐÂU là điều giúp bạn không đem so hai con số vốn chưa bao giờ là cùng một con số. <b>Phân tích</b> đọc các số tổng đã lưu theo từng đợt, cộng thêm bảng ảnh chụp phân tích. <b>Explorer</b> đọc các bảng dữ liệu dẫn xuất, được dựng lại từ phiếu lương và đối chiếu khớp với phiếu lương. <b>Phân tích › Lực lượng lao động</b> đọc chấm công, tăng ca và nghỉ phép. Ba nguồn, một hệ thống lương."
           },
           "capability": "any",
           "kind": "p",
@@ -9547,8 +9547,8 @@
         },
         {
           "body": {
-            "en": "The stored run roll-ups behind Insights, the derived fact tables behind Explorer, and the attendance models behind Workforce Analytics.",
-            "vi": "Các số tổng đã lưu theo đợt đứng sau Phân tích, các bảng dữ liệu dẫn xuất đứng sau Explorer, và các mô hình chấm công đứng sau Phân tích nhân sự."
+            "en": "The stored run totals behind Pulse, the fact tables behind Explorer, and attendance behind Insights › Workforce.",
+            "vi": "Các số tổng đã lưu theo đợt đứng sau Tổng quan, các bảng dữ liệu đứng sau Explorer, và chấm công đứng sau Phân tích › Lực lượng lao động."
           },
           "capability": "any",
           "kind": "source",
@@ -9710,8 +9710,8 @@
         },
         {
           "body": {
-            "en": "A payroll officer or above can read the contract. Saving a new wage on it usually sits a tier higher again, because it is an HR agreement rather than a payroll setting.",
-            "vi": "Chuyên viên tính lương trở lên có thể đọc hợp đồng. Còn lưu một mức lương mới thường thuộc về một cấp cao hơn nữa, vì đó là thoả thuận nhân sự chứ không phải một thiết lập của bộ phận lương."
+            "en": "People with contract access can open a contract from People › Employees. Changing it needs an HR manager, because it is an HR agreement rather than a payroll setting.",
+            "vi": "Người có quyền về hợp đồng mở được hợp đồng từ Con người › Nhân viên. Muốn sửa nó cần quản lý nhân sự, vì đó là thoả thuận nhân sự chứ không phải một thiết lập của bộ phận lương."
           },
           "capability": "no_access",
           "kind": "who",
@@ -9730,8 +9730,8 @@
         },
         {
           "body": {
-            "en": "Your sidebar, and the groups the People leaves are gated on.",
-            "vi": "Thanh bên của bạn, và các nhóm quyền mà mục Nhân sự bị chặn theo."
+            "en": "The tabs People shows you, and the access the Contract button is gated on.",
+            "vi": "Các tab mà Con người hiện cho bạn, và quyền mà nút Hợp đồng dựa vào."
           },
           "capability": "no_access",
           "kind": "source",
@@ -9740,8 +9740,8 @@
         },
         {
           "body": {
-            "en": "You can open the contract and read it. Whether you can save a new wage on it depends on your groups. At most companies that decision sits a tier above payroll, because a wage is an HR agreement that payroll carries out.",
-            "vi": "Bạn mở được hợp đồng và đọc nó. Còn lưu được mức lương mới hay không thì tuỳ nhóm quyền của bạn. Ở phần lớn công ty, quyết định đó thuộc về một cấp trên bộ phận lương, vì mức lương là thoả thuận nhân sự còn bộ phận lương là bên thực thi."
+            "en": "You can open the contract and read it. Changing a wage on it needs an HR manager, because a wage is an HR agreement that payroll carries out.",
+            "vi": "Bạn mở được hợp đồng và đọc nó. Muốn sửa mức lương trên đó cần quản lý nhân sự, vì mức lương là thoả thuận nhân sự còn bộ phận lương là bên thực thi."
           },
           "capability": "operator",
           "kind": "p",
@@ -9818,8 +9818,8 @@
       "blocks": [
         {
           "body": {
-            "en": "Whoever holds one of the three payroll groups these menu items are gated on: a payroll officer, a payroll manager or a super administrator. Read that as a <b>ladder</b>, not a list. A role carries every group it implies, so a super administrator is also a manager, and a manager is also an officer. Everybody else does not see a greyed-out screen. They do not have the menu item at all.",
-            "vi": "Những ai giữ một trong ba nhóm quyền lương mà các mục này bị chặn theo: chuyên viên tính lương, quản lý lương hoặc quản trị viên cấp cao. Hãy hiểu đó là một <b>bậc thang</b> chứ không phải một danh sách. Một vai trò mang theo mọi nhóm mà nó bao hàm, nên quản trị viên cấp cao cũng là quản lý lương, và quản lý lương cũng là chuyên viên tính lương. Người khác không thấy một màn hình bị làm mờ. Họ không hề có mục đó trong menu."
+            "en": "People › Employees opens for HR users and administrators. Everybody else does not see a greyed-out tab: the tab is not there for them at all.",
+            "vi": "Con người › Nhân viên mở cho người dùng nhân sự và quản trị viên. Người khác không thấy một tab bị làm mờ: tab đó đơn giản là không có với họ."
           },
           "capability": "any",
           "kind": "p",
@@ -9828,8 +9828,8 @@
         },
         {
           "body": {
-            "en": "The ladder has a consequence worth knowing before you rely on it. A <b>final approver</b> is not named on these menu items, and sees the roster anyway. That role implies the analytics manager, which implies the payroll manager. So approving a total and reading everybody's salary are <b>not</b> separated here. Your company may need them separated: a person who signs for the money without seeing the names. That is a change somebody has to make, not a promise the shipped roles already keep.",
-            "vi": "Bậc thang này có một hệ quả nên biết trước khi bạn dựa vào nó. <b>Người phê duyệt cuối</b> không được nêu tên trên các mục này, nhưng vẫn xem được danh sách. Vai trò đó bao hàm quản lý phân tích lương, mà quản lý phân tích lương lại bao hàm quản lý lương. Vậy nên ở đây, việc duyệt một con số tổng và việc đọc lương của từng người <b>không</b> hề được tách ra. Công ty bạn có thể cần tách hai việc đó: một người ký cho khoản tiền mà không nhìn thấy tên ai. Đó là việc phải làm thêm, chứ không phải điều mà bộ vai trò mặc định đã hứa."
+            "en": "The <b>Contract</b> button and the Contracts board show only to people with contract access. Inside a contract, the <b>Monthly wage</b> is hidden unless you are a payroll manager or an administrator.",
+            "vi": "Nút <b>Hợp đồng</b> và bảng Hợp đồng chỉ hiện với người có quyền về hợp đồng. Trong một hợp đồng, <b>Lương tháng</b> bị ẩn trừ khi bạn là quản lý lương hoặc quản trị viên."
           },
           "capability": "any",
           "kind": "p",
@@ -9838,18 +9838,8 @@
         },
         {
           "body": {
-            "en": "Three roles are genuinely outside it. A payroll analytics user implies only the base payroll user, so they get the boards without the names. A payroll base user has their own payslip and nothing else. And anybody whose only payroll group is a country toggle. None of them can open Employees or Contracts from the menu.",
-            "vi": "Có ba vai trò thực sự nằm ngoài. Người dùng phân tích lương chỉ bao hàm người dùng lương cơ bản, nên họ có các bảng số liệu mà không có tên. Người dùng lương cơ bản chỉ có phiếu lương của chính mình. Và bất kỳ ai mà nhóm quyền lương duy nhất là một công tắc bật theo quốc gia. Không ai trong số đó mở được Nhân viên hay Hợp đồng từ menu."
-          },
-          "capability": "any",
-          "kind": "p",
-          "live_fallback": "",
-          "steps": []
-        },
-        {
-          "body": {
-            "en": "That is the right shape for this data. A wage list answers questions nobody asked about colleagues, and hiding the door is a stronger promise than disabling a button on it.",
-            "vi": "Đó là cách làm đúng với loại dữ liệu này. Một danh sách lương trả lời những câu hỏi chẳng ai đặt ra về đồng nghiệp, và giấu hẳn cánh cửa là một cam kết mạnh hơn việc chỉ vô hiệu hoá một cái nút trên đó."
+            "en": "That is the right shape for this data. Hiding the door is a stronger promise than disabling a button on it.",
+            "vi": "Đó là cách làm đúng với loại dữ liệu này. Giấu hẳn cánh cửa là một cam kết mạnh hơn việc chỉ vô hiệu hoá một cái nút trên đó."
           },
           "capability": "any",
           "kind": "ok",
@@ -9858,8 +9848,8 @@
         },
         {
           "body": {
-            "en": "Exporting it moves the data somewhere none of that applies. A spreadsheet of salaries has no groups on it and no way to be taken back.",
-            "vi": "Xuất nó ra là đưa dữ liệu tới nơi mà mọi quy tắc trên không còn áp dụng. Một bảng tính lương thì không mang theo nhóm quyền nào và cũng không có cách nào thu hồi."
+            "en": "Exporting it moves the data somewhere none of that applies. A spreadsheet of salaries has no access rules on it and no way to be taken back.",
+            "vi": "Xuất nó ra là đưa dữ liệu tới nơi mà mọi quy tắc trên không còn áp dụng. Một bảng tính lương không mang theo quy tắc quyền nào và cũng không có cách nào thu hồi."
           },
           "capability": "any",
           "kind": "warn",
@@ -9868,8 +9858,8 @@
         },
         {
           "body": {
-            "en": "The groups on the People sidebar leaves, the chain of implied groups those roles are declared with, and your own group membership.",
-            "vi": "Các nhóm quyền trên những mục Nhân sự ở thanh bên, chuỗi nhóm bao hàm mà các vai trò đó được khai báo, và nhóm quyền của chính bạn."
+            "en": "The access the People tabs, the Contract button and the drawer's wage are gated on, and your own access.",
+            "vi": "Quyền mà các tab Con người, nút Hợp đồng và mức lương trong ngăn hợp đồng dựa vào, cùng quyền của chính bạn."
           },
           "capability": "any",
           "kind": "source",
@@ -16790,7 +16780,7 @@
       "live_fallback": "",
       "models": [],
       "name": {
-        "en": "Statutory (Insurance & Tax)",
+        "en": "Statutory: insurance and tax",
         "vi": "Bảo hiểm & Thuế"
       },
       "navs": [
@@ -25344,7 +25334,7 @@
               "tip": "",
               "title": {
                 "en": "Being prepared → Waiting for approval → Approved",
-                "vi": "Being prepared → Waiting for approval → Approved"
+                "vi": "Ba bước: Being prepared → Waiting for approval → Approved"
               },
               "visual": "none"
             },
@@ -28441,7 +28431,7 @@
       ],
       "line": "setup",
       "name": {
-        "en": "Statutory (Insurance & Tax)",
+        "en": "Statutory: insurance and tax",
         "vi": "Bảo hiểm & Thuế"
       },
       "outline": {
@@ -31624,5 +31614,5 @@
       }
     }
   ],
-  "version": "0a0a8b208030"
+  "version": "018828eefe61"
 }
