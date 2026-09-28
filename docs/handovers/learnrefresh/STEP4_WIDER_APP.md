@@ -58,6 +58,18 @@ review, Decision Room, Exact cost, Hiring request, Candidate stage, Buddy, Clear
 Final settlement, Probation, Growth plan, Needs you, Lock the week, Role, Hand-over,
 See it as, Filing).
 
+**Added after the step 3 report (do these first — they matter more in step 4, where
+most screens are gated):**
+- A Watch walkthrough over a screen the learner is refused (navigation succeeds but
+  the screen/lens refuses or hides its content) currently plays as centred cards. It
+  must detect the refusal (hub place says lens not allowed, lens hidden, or the first
+  anchor never appears + an access-error signal) and show the step-1 no-access ending
+  FIRST ("You don't have access to <hub › tab> — try it in the practice company"),
+  across all existing walkthroughs, not only new ones.
+- Narrow screens: the lesson card covers part of the replica board (seen on the
+  Mapping Journey). Make the card dock/collapse so the anchored element stays visible
+  at ≤ 900px width.
+
 ## Non-goals
 No product changes beyond anchors. No redesign of any board. No role-path redo (step 5
 — but tag each station with roles). Do not touch Training (it is its own Learn lens).

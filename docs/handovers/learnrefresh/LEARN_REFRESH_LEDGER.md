@@ -319,3 +319,105 @@ Draft with the reason (NOT "cancels 48 payslips"). Closeout: `docs/handovers/APP
   test_data_access_06, test_egress 04d/04e; pb_approval_config test_u10, test_z06d;
   pb_formula_studio test_net_pay_candidates test_01 ("the fixture must have no net pay" — a
   template-data expectation, untouched by this step).
+
+- LR33 **A hub tab's gate is now askable without opening the hub** (`@pb_hub/js/hub_gates`). Each hub
+  registers the lens gates its config already declares in registry `pb_hub_lens_gates` (tag → fn returning
+  `[{key, groups, probe, feature, hubFeature}]`); HubShell's `_resolveAccess` now calls the same
+  `resolveLensAccess`. pb_learn's `places.resolveLensReach` fills `lensReach["tag:lens"]`, `reachable()` reads
+  it, and the Journey marks such stations `gated` ("No access in your company" + "you can still read the
+  lesson"). Registered: people, lifecycle, compliance, home, workforce (pb_mission). A hub that registers
+  nothing stays "unknown", never "no".
+- LR34 **A walkthrough whose screen refuses its reader after landing** now ends on the no-access card
+  (`scenario_overlay.js refusalOnScreen`): an `.o_error_dialog`, the hub place saying the step's lens is not
+  among the reader's tabs, or a refusal sentence (EN/VI regex) inside an alert-like box — checked only while
+  the step's anchor is missing, after a 700 ms grace; anchorless intro cards listen for 2.5 s. `sc.refuse()`
+  / `sc.screenOfStep()` in the service.
+- LR35 **Narrow screens (≤ 900 px) dock the lesson card** as a bottom sheet (`spotlight.js DOCK_BELOW`), scroll
+  the anchored control clear above it, and fold to its title line (`data-spot-fold`, its own listener — not a
+  data-act, LR12). The real-screen walkthrough card docks the same way (`ui.card.docked`).
+- LR36 **Glossary collisions the wider app hit:** `confidenceScore` owned the bare alias "score" (a pay
+  review's Score is a performance score) — dropped; `flag`'s definition was payslip-only — widened to
+  Workforce › Close; "ceiling" is the INSURANCE ceiling (write "limit" for overtime); "period" is the PAY
+  period — `probation` owns "trial period" (longest match wins); `test_explain::test_04` pins `filing` as the
+  LAST glossary entry, so new terms go before it.
+- LR37 The composer corpus cap moved 36,000 → 44,000 (`learn_intent._CORPUS_CAP`; widest corpus 37,677).
+- LR38 **Product Vietnamese on the wider app:** biz_access (Access & delegation) has NO vi_VN.po — the screen is
+  English for everyone, so the replica and the VI lesson name its buttons in English (owner item). pb_hiring had
+  2 entries; step 4 added the taught labels to pb_hiring / pb_onboarding / pb_offboarding / pb_probation / pb_pip /
+  pb_contract_lifecycle (+ pb_tenants "Welcome aboard"). Still weak/global: hiring "Open" (number and button share
+  one msgid → "Mở"), "Step X of 4" is built from "Step" + "of" → "Bước 1 của 4", the request wizard's tab names are
+  hard-coded English, "Roles"/"Met"/"Done"/"Joined this month" clash across modules; Workforce: Board "Ban",
+  Checked out "Đăng xuất", Est. gross "Ước tính. thô thiển", Audit Stream "Truyền phát", Login lens "Ống kính
+  đăng nhập"; pb_probation's po has 19 entries the reader drops.
+- LR39 FACTS_STEP4 corrections found in code: only Hiring has a Next line (per role card) — the five other
+  Lifecycle boards have no Next box; Time Off's head in the hub has only month + Apply on behalf ("File leave"
+  is the dialog's submit); the Overtime panel is "Overtime rules & ceilings" and the button is "Bonus Hours";
+  "Violations in the last 30 days"; "New bank-change request" is a drop zone; Contracts' choices read Make it
+  permanent / Extend it / Let it end; Pay review "Close the review"; Decision Room's Exact cost and Propose
+  exist only on saved-plan rows; Growth plans' gate is pb_pip groups only (no admin fallback).
+- LR40 `replay_tests` "bridge suite did not run" is pre-existing: `engine/runtime.js` imports `@web/core`
+  (LEARN v3), which the node harness cannot resolve. Not a step 4 regression.
+- LR41 **The Journey never painted a spotlight on its FIRST render.** `onPatched` runs `_afterPaint`,
+  `onMounted` did not — so a Try (or lesson) opened by deep link into a freshly mounted Learn hub showed the
+  replica with no card until something re-rendered (pre-existing; seen on sc_records too). `onMounted` now
+  calls `_afterPaint()` (which also walks the Lifecycle road).
+- LR42 Demo boards are often EMPTY (no pay review, no leavers, no trials on payobook.com), so a Watch step on a
+  list or a drawer finds nothing. Lifecycle list anchors (`hi-row`, `nj-list`, `ex2-list`, `pr-list`,
+  `gw-list`, `cl-list`) are also laid on each board's "nobody here yet" branch (one renders at a time), and
+  drawer / open-review steps are Try-only with a Watch step that says what an open one shows. People › Pay's
+  Review tab is opened by pressing it: pattern anchor `pp-tab-<key>` (registry `pattern` block — the
+  generator and the contract lint now treat every pattern key as a prefix).
+- LR43 The hub canvas scrolls through an `overflow:hidden` ancestor that only `scrollIntoView` moves — a
+  manual `scrollTop` found no scroller. The docked card scrolls with `scrollIntoView({block:"start"})` and
+  `body.lrn-docked .lrn-screen` gets 55vh of bottom room so the last control can clear the sheet.
+
+## Step 4 facts for later steps
+
+- **Lines:** `lifecycle` and `workforce` added to LINE_ORDER (overview, payrun, people, lifecycle, workforce,
+  insights, compliance, setup) and to chapter 2 in journey.js CHAPTERS. Lifecycle draws the hero road
+  (journey.js `LIFE_TRAIL` hiring → joiners → probation → exits; walker position per browser in
+  `pbLearnLifeTrail`).
+- **Stations and lessons (key · line · lesson):** paybands · people · L13; payreview · people · L14 (star);
+  decisionroom · people · L15; peoplemore · people · L28 (short); hiring · lifecycle · L16 (star); joiners ·
+  lifecycle · L17 (star); probation · lifecycle · L19; growth · lifecycle · L25 (short); contractends ·
+  lifecycle · L26 (short); exits · lifecycle · L18 (star); wftoday · workforce · L20; wftime · workforce · L21;
+  wfclose · workforce · L22 (star); access · setup · L23 (star); govreports · compliance · L24 (renamed
+  "Government filings", now star + full lesson); compliancemore · compliance · L27 (short). All carry `roles`
+  and a bilingual `search`.
+- **Replica screens:** paybands, payreview (budget meter `rep-pr-budget`, `meter` moment), decisionroom,
+  hiring (+ sub `hiring_request`), joiners, probation, growth, contractends, exits, wftoday, wftime, wfclose,
+  access (English, like the product), filing_flow (sub of govreports), compliancemore, peoplemore. Classes
+  `lrn-y*`. New pipeline chains `review`, `hiring`, `exit`. New icons: briefcase, log-out, key, scale, sliders,
+  hourglass, sprout, file-signature, sun, timer, repeat.
+- **Screens (helper):** the station keys above plus `wftimeoff`, `wfovertime` (places for those two
+  Workforce tabs) and `hiring_request`, `filing_flow`. People › Pay publishes its inner tab
+  (`pb_people_hub:pay/bands|fairness|review|changes`). SCREEN_ACTION_TAGS gained the standalone board tags,
+  `pb_access_board`, `pb_filing_flow`. Access opens by `biz_access.action_pb_access_board`, the filing flow by
+  `pb_govt_reports.action_pb_filing_flow`.
+- **Walkthroughs:** sc_paybands, sc_payreview (W+T), sc_decisionroom, sc_hiring (W+T), sc_joiners, sc_exits
+  (W+T), sc_probation, sc_wftoday, sc_wftime, sc_wfclose (W+T), sc_access, sc_filings. Watch presses only
+  `pp-tab-review` (a tab switch).
+- **Intents:** bandcheck, whosignsreview, whatif, raisehire, newjoiner, leaver, endtrial, approveot, lockweek,
+  delegate, fileinsurance (resolver cases in simulate_resolver.py).
+- **Glossary:** payBand, inTheBand, payReview, calibration, decisionRoom, exactCost, hiringRequest,
+  candidateStage, buddy, probation, clearance, growthPlan, needsYou, lockWeek, accessRole ("Role" would collide
+  with Hiring's Roles tab), handOver, seeItAs; filing and flag widened; "Final settlement" stays fullFinal's alias.
+- **Anchors (product):** pp-* (pay.xml, pay_review.xml; pattern pp-tab-), dr-*, hi-*, nj-*, ex2-*, pr-*, gw-*,
+  cl-*, wf-* (pb_mission, pb_dock, pb_close_lens, pb_today, time_hub, pb_timeoff, pb_ot_desk), ac-*
+  (access_board.xml), cp-* (filing_flow, bank, young worker, audit). Unreferenced ones are `reserved`.
+  Contract checks `wider-app-lesson-anchors`, `wider-app-open-actions`; anchor-lint now covers every scanned
+  template and prefix.
+- **Ask Payobook:** THE WIDER APP block in ONBOARDING_SYSTEM_PROMPT; `_KNOWN_LESSONS` += L13–L24,
+  `_KNOWN_WALKTHROUGHS` += the twelve; test_action_envelope test_18.
+- **Tab gates (LR33):** `@pb_hub/js/hub_gates`; step 5's "every station reachable" sweep should read
+  `lensReach` rather than trust `visible_stations` for hub-tab stations.
+- **Versions after step 4 (all four databases):** pb_learn 19.0.18.0.0, pb_hub 19.0.1.10.1, pb_payroll_ai_insights
+  19.0.3.8.0, pb_pay 19.0.3.5.2, pb_hiring 19.0.1.3.4, pb_mission 19.0.1.11.1, biz_access 19.0.1.4.3,
+  pb_govt_reports 19.0.1.2.1 (+ patch bumps on every other module that got anchors).
+- **Pre-existing test failures seen on the clone (not step 4):** pb_learn test_07b; pb_payroll_ai_insights
+  test_data_access_06, test_egress 04d/04e; and in modules that only got anchors: pb_bank_ocr 07/07b/09/15,
+  pb_timeoff 03/05, week entry 06, pb_decision_room t2/t22, pb_govt_reports filing flow ×2, pb_young_worker
+  09b, pb_people_hub gates ×2 (pb_demo group absent on the template), biz_access empty-home people lens —
+  all Python/data logic, none touched by an attribute.
+- **Validation logins:** the QA login sees every step-4 tab except Filings (no filing group) and Praise/Goals/
+  People-Announce; the demo login is refused every step-4 tab, and every walkthrough ends on the no-access card.
