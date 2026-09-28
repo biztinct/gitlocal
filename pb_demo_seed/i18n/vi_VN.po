@@ -116,3 +116,9 @@ msgstr "người phê duyệt của nó"
 #: code:addons/pb_demo_seed/models/demo_seed.py:0
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
+
+#. module: pb_demo_seed
+#. odoo-javascript
+#: code:addons/pb_demo_seed/static/src/js/demo_seed_settings.js:0
+msgid "Demo data"
+msgstr "Dữ liệu mẫu"

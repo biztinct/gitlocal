@@ -33,7 +33,7 @@ msgstr "Tất cả"
 #. odoo-javascript
 #: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
 msgid "Batch name"
-msgstr "Tên lô"
+msgstr "Tên đợt"
 
 #. module: pb_payrun_wizard
 #. odoo-javascript
@@ -138,13 +138,13 @@ msgstr "Phiếu lương"
 #. odoo-javascript
 #: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
 msgid "Period"
-msgstr "Giai đoạn"
+msgstr "Kỳ lương"
 
 #. module: pb_payrun_wizard
 #. odoo-javascript
 #: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
 msgid "Review exceptions"
-msgstr "Xem xét các trường hợp ngoại lệ"
+msgstr "Soát ngoại lệ"
 
 #. module: pb_payrun_wizard
 #. odoo-javascript
@@ -191,7 +191,7 @@ msgstr "Đợt lương này không còn tồn tại."
 #. odoo-javascript
 #: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
 msgid "To"
-msgstr "Để"
+msgstr "Đến"
 
 #. module: pb_payrun_wizard
 #. odoo-javascript
@@ -359,7 +359,7 @@ msgstr "Chọn một tập tin khác"
 #. odoo-javascript
 #: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:1
 msgid "Coverage"
-msgstr "Mức độ bao phủ"
+msgstr "Mức bao phủ"
 
 #. module: pb_payrun_wizard
 #. odoo-javascript
@@ -488,3 +488,62 @@ msgstr "Dữ liệu lương đang ở chỗ %s để duyệt. Phiếu lương s�
 msgid "The pay data is waiting for its approval. The payslips are made once it is approved."
 msgstr "Dữ liệu lương đang chờ phê duyệt. Phiếu lương sẽ được tạo sau khi được phê duyệt."
 
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "Select period"
+msgstr "Chọn kỳ lương"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "Pay data"
+msgstr "Dữ liệu lương"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "Compute"
+msgstr "Tính lương"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Pay run for"
+msgstr "Đợt lương cho"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Update Payobook"
+msgstr "Cập nhật Payobook"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "This run only"
+msgstr "Chỉ đợt này"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "What should these values do?"
+msgstr "Các giá trị này dùng để làm gì?"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Add these people"
+msgstr "Thêm những người này"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Copy names"
+msgstr "Sao chép tên"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Payroll scheme"
+msgstr "Chương trình lương"

@@ -1,0 +1,18 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_hiring
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_palette.js:0
+msgid "Hiring"
+msgstr "Tuyển dụng"

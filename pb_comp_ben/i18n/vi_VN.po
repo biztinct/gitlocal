@@ -390,3 +390,15 @@ msgstr "tại"
 #: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
 msgid "Show all"
 msgstr "Hiện tất cả"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/comp_ben_palette.js:0
+msgid "Calendar"
+msgstr "Lịch lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/comp_ben_palette.js:0
+msgid "Awards"
+msgstr "Thưởng"

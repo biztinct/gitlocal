@@ -123,3 +123,15 @@ msgstr "Viết trong tháng này"
 #: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
 msgid "Show all"
 msgstr "Hiện tất cả"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/js/rnr_palette.js:0
+msgid "Wall"
+msgstr "Bảng vinh danh"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/js/rnr_palette.js:0
+msgid "Praise"
+msgstr "Khen ngợi"

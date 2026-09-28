@@ -575,7 +575,7 @@ msgstr "Giải thích"
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Explorer"
-msgstr "Nhà thám hiểm"
+msgstr "Khám phá dữ liệu"
 
 #. module: pb_explorer
 #. odoo-javascript

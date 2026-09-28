@@ -91,7 +91,7 @@ msgstr "Nhập Dữ liệu"
 #. odoo-javascript
 #: code:addons/pb_import/static/src/xml/import.xml:0
 msgid "Import batches"
-msgstr "Nhập lô"
+msgstr "Đợt nhập liệu"
 
 #. module: pb_import
 #. odoo-javascript
@@ -103,7 +103,7 @@ msgstr "Đường ống nhập khẩu"
 #. odoo-javascript
 #: code:addons/pb_import/static/src/xml/import.xml:0
 msgid "In progress"
-msgstr "Đang tiến hành"
+msgstr "Đang xử lý"
 
 #. module: pb_import
 #. odoo-javascript
@@ -115,13 +115,13 @@ msgstr "Dòng"
 #. odoo-javascript
 #: code:addons/pb_import/static/src/xml/import.xml:0
 msgid "Load pay data"
-msgstr "Tải dữ liệu thanh toán"
+msgstr "Tải dữ liệu lương"
 
 #. module: pb_import
 #. odoo-javascript
 #: code:addons/pb_import/static/src/xml/import.xml:0
 msgid "Load this period's pay data"
-msgstr "Tải dữ liệu thanh toán của kỳ này"
+msgstr "Tải dữ liệu lương của kỳ này"
 
 #. module: pb_import
 #. odoo-javascript

@@ -224,7 +224,7 @@ msgstr "Bỏ chọn nhân viên"
 #: code:addons/pb_mission/static/src/js/pb_mission.js:89
 #: code:addons/pb_mission/static/src/js/pb_mission.js:430
 msgid "Close"
-msgstr "Đóng"
+msgstr "Chốt kỳ"
 
 #. module: pb_mission
 #. odoo-javascript
@@ -608,7 +608,7 @@ msgstr "Đã đánh giá · %s"
 #: code:addons/pb_mission/static/src/js/pb_mission.js:76
 #: code:addons/pb_mission/static/src/js/pb_mission.js:425
 msgid "Schedule"
-msgstr "Lịch trình"
+msgstr "Lịch ca"
 
 #. module: pb_mission
 #. odoo-javascript
@@ -717,7 +717,7 @@ msgstr "Tuần này sạch sẽ."
 #: code:addons/pb_mission/static/src/js/pb_mission.js:81
 #: code:addons/pb_mission/static/src/js/pb_mission.js:426
 msgid "Time"
-msgstr "Giờ"
+msgstr "Chấm công"
 
 #. module: pb_mission
 #. odoo-javascript
@@ -725,7 +725,7 @@ msgstr "Giờ"
 #: code:addons/pb_mission/static/src/js/pb_mission.js:85
 #: code:addons/pb_mission/static/src/js/pb_mission.js:427
 msgid "Time Off"
-msgstr "Nghỉ Phép"
+msgstr "Nghỉ phép"
 
 #. module: pb_mission
 #. odoo-javascript
@@ -749,7 +749,7 @@ msgstr "Hôm nay"
 #: code:addons/pb_mission/static/src/js/pb_dock.js:55
 #: code:addons/pb_mission/static/src/js/pb_mission.js:429
 msgid "Trips"
-msgstr "Chuyến đi"
+msgstr "Công tác"
 
 #. module: pb_mission
 #. odoo-javascript

@@ -209,3 +209,9 @@ msgstr "Mở hợp đồng này"
 #: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
 msgid "The contract record"
 msgstr "Hồ sơ hợp đồng"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/js/contractlife_palette.js:0
+msgid "Contracts"
+msgstr "Hợp đồng"

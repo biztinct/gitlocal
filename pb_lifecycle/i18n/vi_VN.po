@@ -443,3 +443,16 @@ msgstr "Xác nhận đã hoàn tất"
 #: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_template_step__anchor__key_date
 msgid "The date on the journey"
 msgstr "Ngày ghi trên hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: model:pb.sidebar.item,name:pb_lifecycle.item_lifecycle
+#: code:addons/pb_lifecycle/static/src/js/lifecycle_hub.js:0
+msgid "Lifecycle"
+msgstr "Vòng đời nhân sự"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/lifecycle_hub.js:0
+msgid "Journeys"
+msgstr "Hành trình"

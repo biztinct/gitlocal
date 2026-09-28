@@ -135,3 +135,9 @@ msgstr "Ở quản lý"
 #: code:addons/pb_assets/static/src/xml/assets_board.xml:0
 msgid "Show all"
 msgstr "Hiện tất cả"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_palette.js:0
+msgid "Assets"
+msgstr "Tài sản"

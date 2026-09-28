@@ -83,7 +83,7 @@ msgstr "Một cái tên, một hợp đồng, một mức lương. Đó là tấ
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
 msgid "Active configs"
-msgstr "Cấu hình hoạt động"
+msgstr "Cấu hình đang chạy"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -143,7 +143,7 @@ msgstr "Mang theo bảng lương Excel của bạn"
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
 msgid "Company overview"
-msgstr "Tổng quan về công ty"
+msgstr "Tổng quan công ty"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -189,13 +189,13 @@ msgstr "Số liệu của %s"
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
 msgid "Formula engine"
-msgstr "Động cơ công thức"
+msgstr "Bộ máy công thức"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
 msgid "Get your first payroll out"
-msgstr "Nhận bảng lương đầu tiên của bạn"
+msgstr "Chạy bảng lương đầu tiên"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -242,7 +242,7 @@ msgstr "Nhập dữ liệu"
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
 msgid "Latest pay run"
-msgstr "Lần trả lương mới nhất"
+msgstr "Đợt lương mới nhất"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -260,7 +260,7 @@ msgstr "Gặp gỡ Payobook"
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
 msgid "Monthly payroll"
-msgstr "Bảng lương hàng tháng"
+msgstr "Chi phí lương tháng"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -308,7 +308,7 @@ msgstr "Mở công cụ công thức →"
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
 msgid "Open pay runs →"
-msgstr "Các kỳ lương mở →"
+msgstr "Mở các đợt lương →"
 
 #. module: pb_dashboard
 #: model:ir.model,name:pb_dashboard.model_pb_dashboard
@@ -463,7 +463,7 @@ msgstr "đang chờ duyệt"
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
 msgid "awaiting sign-off"
-msgstr "đang chờ đăng xuất"
+msgstr "đang chờ phê duyệt"
 
 #. module: pb_dashboard
 #. odoo-javascript

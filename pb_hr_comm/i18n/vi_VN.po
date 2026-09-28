@@ -1,0 +1,24 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_hr_comm
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_hr_comm
+#. odoo-javascript
+#: code:addons/pb_hr_comm/static/src/js/comm_palette.js:0
+msgid "Announce"
+msgstr "Thông báo"
+
+#. module: pb_hr_comm
+#. odoo-javascript
+#: code:addons/pb_hr_comm/static/src/js/comm_palette.js:0
+msgid "Announcements"
+msgstr "Thông báo"

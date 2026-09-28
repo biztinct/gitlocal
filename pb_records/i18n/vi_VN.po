@@ -266,3 +266,8 @@ msgstr "Xem yêu cầu"
 msgid "with"
 msgstr "đang ở chỗ"
 
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/js/records_palette.js:0
+msgid "Records"
+msgstr "Hồ sơ"

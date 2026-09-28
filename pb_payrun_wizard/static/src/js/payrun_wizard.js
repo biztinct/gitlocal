@@ -23,11 +23,13 @@ const IC = {
 // labels. "Pay data" appears only when a scheme actually binds components to
 // spreadsheet columns, and on every database where none does, `stepKeys` is the
 // original three and every step number means exactly what it always meant.
+// LEARN REFRESH step 2: these were plain strings, so the rail read English
+// to a Vietnamese reader. `_t` at module level is lazy in Odoo 19.
 const STEP_LABELS = {
-    period: "Select period",
-    data: "Pay data",
-    compute: "Compute",
-    review: "Review exceptions",
+    period: _t("Select period"),
+    data: _t("Pay data"),
+    compute: _t("Compute"),
+    review: _t("Review exceptions"),
 };
 const STEPS_PLAIN = ["period", "compute", "review"];
 const STEPS_SHEET = ["period", "data", "compute", "review"];

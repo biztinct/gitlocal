@@ -391,3 +391,9 @@ msgstr "Đứng yên quá 5 phút"
 #: code:addons/pb_driver_checkin/static/src/js/driver_map.js:0
 msgid "Average hours"
 msgstr "Số giờ trung bình"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/field_palette.js:0
+msgid "Field"
+msgstr "Hiện trường"

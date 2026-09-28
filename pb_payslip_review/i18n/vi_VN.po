@@ -50,7 +50,7 @@ msgstr "GM đang chờ xử lý"
 #. odoo-javascript
 #: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
 msgid "Gross total"
-msgstr "Tổng cộng"
+msgstr "Tổng thu nhập"
 
 #. module: pb_payslip_review
 #. odoo-javascript
@@ -91,7 +91,7 @@ msgstr "Lương thực nhận"
 #. odoo-javascript
 #: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
 msgid "Net total"
-msgstr "Tổng ròng"
+msgstr "Tổng thực nhận"
 
 #. module: pb_payslip_review
 #. odoo-javascript
@@ -133,7 +133,7 @@ msgstr "Phiếu lương"
 #. odoo-javascript
 #: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
 msgid "Salary breakdown"
-msgstr "Phân tích tiền lương"
+msgstr "Chi tiết lương"
 
 #. module: pb_payslip_review
 #. odoo-javascript

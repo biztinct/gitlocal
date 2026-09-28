@@ -1346,7 +1346,7 @@ msgstr "Người duyệt tài chính, trên một mức tiền"
 #: code:addons/pb_approval_config/static/src/js/inbox.js:0
 #: code:addons/pb_approval_config/static/src/xml/people.xml:0
 msgid "Finished"
-msgstr "Kết thúc"
+msgstr "Đã xong"
 
 #. module: pb_approval_config
 #: model:biz.approval.process,description:pb_approval_config.process_correction
@@ -3568,7 +3568,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/xml/people.xml:0
 msgid "To"
-msgstr "Để"
+msgstr "Đến"
 
 #. module: pb_approval_config
 #. odoo-javascript

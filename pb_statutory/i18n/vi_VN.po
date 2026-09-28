@@ -486,7 +486,7 @@ msgstr "Trạng thái"
 #: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
 #: model:ir.actions.client,name:pb_statutory.action_pb_statutory
 msgid "Statutory"
-msgstr "Biên chế"
+msgstr "Bảo hiểm & Thuế"
 
 #. module: pb_statutory
 #. odoo-javascript

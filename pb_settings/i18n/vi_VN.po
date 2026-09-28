@@ -33,7 +33,7 @@ msgstr "Công ty"
 #: code:addons/pb_settings/static/src/js/settings_hub.js:0
 #: code:addons/pb_settings/static/src/js/settings_hub.js:180
 msgid "Companies & Tenants"
-msgstr "Công ty & Người thuê nhà"
+msgstr "Công ty & Đơn vị thuê bao"
 
 #. module: pb_settings
 #. odoo-javascript
@@ -180,7 +180,7 @@ msgstr "Trung tâm cài đặt Payobook"
 #: code:addons/pb_settings/static/src/js/settings_hub.js:0
 #: code:addons/pb_settings/static/src/js/settings_hub.js:159
 msgid "Payroll defaults"
-msgstr "Mặc định về bảng lương"
+msgstr "Mặc định tính lương"
 
 #. module: pb_settings
 #. odoo-javascript
@@ -263,7 +263,7 @@ msgstr "Phần thanh bên"
 #: code:addons/pb_settings/static/src/js/settings_hub.js:0
 #: code:addons/pb_settings/static/src/js/settings_hub.js:130
 msgid "Statutory"
-msgstr "Biên chế"
+msgstr "Bảo hiểm & Thuế"
 
 #. module: pb_settings
 #. odoo-javascript
@@ -358,3 +358,9 @@ msgstr ""
 #: code:addons/pb_settings/static/src/js/settings_hub.js:442
 msgid "Settings collects the surfaces that change how payroll is"
 msgstr "Cài đặt thu thập các bề mặt thay đổi cách tính lương"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Your company"
+msgstr "Công ty của bạn"

@@ -45,3 +45,9 @@ msgstr "Chưa ghi nhận gì"
 #: code:addons/pb_vendor_access/static/src/js/vendors_board.js:0
 msgid "You look after"
 msgstr "Bạn phụ trách"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/js/vendor_palette.js:0
+msgid "Vendors"
+msgstr "Nhà cung cấp"

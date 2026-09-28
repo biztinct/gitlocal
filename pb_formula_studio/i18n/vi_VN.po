@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: 2026-09-19 17:09+1000\n"
@@ -411,7 +411,7 @@ msgstr "Cài đặt"
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1204
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
 msgid "Health"
-msgstr "sức khỏe"
+msgstr "Sức khoẻ"
 
 #. module: pb_formula_studio
 #. odoo-javascript
@@ -527,7 +527,7 @@ msgstr "Toàn bộ cấu hình dưới dạng biểu đồ"
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:1284
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
 msgid "Simulate"
-msgstr "mô phỏng"
+msgstr "Mô phỏng"
 
 #. module: pb_formula_studio
 #. odoo-javascript
@@ -5987,7 +5987,7 @@ msgstr "Cuối tháng"
 #. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:9138
 msgid "Final settlement"
-msgstr "Thanh toán nghỉ việc"
+msgstr "Quyết toán thôi việc"
 
 #. module: pb_formula_studio
 #. odoo-python
@@ -10696,7 +10696,7 @@ msgstr "Chuyển đổi hiển thị công thức"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
 msgid "Letters"
-msgstr "chữ cái"
+msgstr "Chữ cái"
 
 #. module: pb_formula_studio
 #. odoo-javascript

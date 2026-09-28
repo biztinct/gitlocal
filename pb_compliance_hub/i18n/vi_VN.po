@@ -18,7 +18,7 @@ msgstr ""
 #: code:addons/pb_compliance_hub/static/src/js/compliance_hub.js:0
 #: code:addons/pb_compliance_hub/static/src/js/compliance_hub.js:114
 msgid "Audit"
-msgstr "Kiểm tra"
+msgstr "Nhật ký kiểm toán"
 
 #. module: pb_compliance_hub
 #. odoo-javascript
@@ -67,7 +67,7 @@ msgstr "Trung tâm tuân thủ"
 #: code:addons/pb_compliance_hub/static/src/js/compliance_hub.js:0
 #: code:addons/pb_compliance_hub/static/src/js/compliance_hub.js:96
 msgid "Filings"
-msgstr "hồ sơ"
+msgstr "Tờ khai"
 
 #. module: pb_compliance_hub
 #. odoo-javascript
@@ -102,4 +102,4 @@ msgstr "Bảo vệ Lao động Chưa thành niên"
 #: code:addons/pb_compliance_hub/static/src/js/compliance_hub.js:0
 #: code:addons/pb_compliance_hub/static/src/js/compliance_hub.js:112
 msgid "Young workers"
-msgstr "Công nhân trẻ"
+msgstr "Lao động chưa thành niên"

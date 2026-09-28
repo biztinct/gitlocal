@@ -195,3 +195,9 @@ msgstr "đạt bài kiểm tra, trên 1 người đã làm"
 #: code:addons/pb_training/static/src/xml/training_board.xml:0
 msgid "Show all"
 msgstr "Hiện tất cả"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Training"
+msgstr "Đào tạo"

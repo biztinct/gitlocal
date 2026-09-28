@@ -129,3 +129,9 @@ msgstr "Ở quản lý của họ"
 #: code:addons/pb_goals/static/src/xml/goals_board.xml:0
 msgid "Show all"
 msgstr "Hiện tất cả"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_palette.js:0
+msgid "Goals"
+msgstr "Mục tiêu"

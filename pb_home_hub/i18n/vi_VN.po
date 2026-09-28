@@ -50,7 +50,7 @@ msgstr "Tổng quan"
 #: code:addons/pb_home_hub/static/src/js/home_hub.js:93
 #: code:addons/pb_home_hub/static/src/js/home_hub_palette.js:48
 msgid "Pulse"
-msgstr "Xung"
+msgstr "Tổng quan"
 
 #. module: pb_home_hub
 #. odoo-javascript

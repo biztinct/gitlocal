@@ -47,7 +47,7 @@ msgstr "Mã"
 #. odoo-javascript
 #: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
 msgid "Commit import"
-msgstr "Cam kết nhập khẩu"
+msgstr "Ghi vào hệ thống"
 
 #. module: pb_import_wizard
 #. odoo-javascript
@@ -153,13 +153,13 @@ msgstr "Đã khớp"
 #. odoo-javascript
 #: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
 msgid "Match…"
-msgstr "Trận đấu…"
+msgstr "Khớp…"
 
 #. module: pb_import_wizard
 #. odoo-javascript
 #: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
 msgid "Need attention"
-msgstr "Cần chú ý"
+msgstr "Cần xử lý"
 
 #. module: pb_import_wizard
 #. odoo-javascript
@@ -212,7 +212,7 @@ msgstr "Thời gian & hồ sơ"
 #. odoo-javascript
 #: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
 msgid "Resolve these before committing"
-msgstr "Giải quyết những điều này trước khi cam kết"
+msgstr "Xử lý các mục này trước khi ghi vào hệ thống"
 
 #. module: pb_import_wizard
 #. odoo-javascript
@@ -224,7 +224,7 @@ msgstr "Thử lại"
 #. odoo-javascript
 #: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
 msgid "Rows loaded"
-msgstr "Đã tải hàng"
+msgstr "Dòng đã nạp"
 
 #. module: pb_import_wizard
 #. odoo-javascript
@@ -254,7 +254,7 @@ msgstr "Trạng thái"
 #. odoo-javascript
 #: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
 msgid "To"
-msgstr "Để"
+msgstr "Đến"
 
 #. module: pb_import_wizard
 #. odoo-javascript
@@ -267,7 +267,7 @@ msgstr "Hợp lệ"
 #: code:addons/pb_import_wizard/static/src/xml/import_wizard.xml:0
 #: code:addons/pb_import_wizard/static/src/js/import_wizard.js:21
 msgid "Validate"
-msgstr "Xác thực"
+msgstr "Kiểm tra"
 
 #. module: pb_import_wizard
 #. odoo-javascript
@@ -279,7 +279,7 @@ msgstr "hàng được xử lý"
 #. odoo-javascript
 #: code:addons/pb_import_wizard/static/src/js/import_wizard.js:21
 msgid "Source & file"
-msgstr "Nguồn & tập tin"
+msgstr "Nguồn & tệp"
 
 #. module: pb_import_wizard
 #. odoo-javascript
@@ -291,7 +291,7 @@ msgstr "Xem xét và so khớp"
 #. odoo-javascript
 #: code:addons/pb_import_wizard/static/src/js/import_wizard.js:21
 msgid "Commit"
-msgstr "Cam kết"
+msgstr "Ghi vào hệ thống"
 
 #. module: pb_import_wizard
 #. odoo-javascript

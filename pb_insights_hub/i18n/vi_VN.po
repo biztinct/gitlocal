@@ -32,7 +32,7 @@ msgstr "Trình khám phá phân tích"
 #: code:addons/pb_insights_hub/static/src/js/insights_hub.js:0
 #: code:addons/pb_insights_hub/static/src/js/insights_hub.js:97
 msgid "Explorer"
-msgstr "Nhà thám hiểm"
+msgstr "Khám phá dữ liệu"
 
 #. module: pb_insights_hub
 #. odoo-javascript
@@ -74,7 +74,7 @@ msgstr "Báo cáo lương"
 #: code:addons/pb_insights_hub/static/src/js/insights_hub.js:0
 #: code:addons/pb_insights_hub/static/src/js/insights_hub.js:95
 msgid "Pulse"
-msgstr "Xung"
+msgstr "Tổng quan"
 
 #. module: pb_insights_hub
 #. odoo-javascript

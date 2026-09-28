@@ -193,7 +193,7 @@ msgstr "Nhân viên"
 #: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
 #: code:addons/pb_hub/static/src/js/hub_palette_entries.js:168
 msgid "Explorer"
-msgstr "Nhà thám hiểm"
+msgstr "Khám phá dữ liệu"
 
 #. module: pb_hub
 #. odoo-javascript
@@ -488,7 +488,7 @@ msgstr "Thiết lập"
 #: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
 #: code:addons/pb_hub/static/src/js/hub_palette_entries.js:187
 msgid "Statutory"
-msgstr "Biên chế"
+msgstr "Bảo hiểm & Thuế"
 
 #. module: pb_hub
 #. odoo-javascript

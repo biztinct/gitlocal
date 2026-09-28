@@ -168,3 +168,8 @@ msgstr "Hiện tất cả"
 #  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
 # ===================================================================
 
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_palette.js:0
+msgid "Exits"
+msgstr "Nghỉ việc"

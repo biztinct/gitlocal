@@ -93,7 +93,7 @@ msgstr "Đã khớp"
 #. odoo-javascript
 #: code:addons/pb_import_batch/static/src/xml/batch_cockpit.xml:0
 msgid "Match…"
-msgstr "Trận đấu…"
+msgstr "Khớp…"
 
 #. module: pb_import_batch
 #. odoo-javascript
