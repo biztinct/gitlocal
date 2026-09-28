@@ -23,6 +23,7 @@
    ========================================================================== */
 import { openHub } from "@pb_hub/js/hub_nav";
 import { hubPlace, placeSub } from "@pb_hub/js/hub_place";
+import { hubLensAccess } from "@pb_hub/js/hub_gates";
 
 import { tx, SP } from "./runtime";
 
@@ -142,10 +143,68 @@ export function canOpen(screen) {
                          || screen.own_tag || (screen.navs || []).length));
 }
 
-/** true / false / null (unknown) — can this reader reach the screen at all? */
+/* LEARN REFRESH step 4 — which hub TABS this reader may open, asked of the
+   hubs' own gates (`@pb_hub/js/hub_gates`: the same groups and probes the
+   shell uses to hide a tab) BEFORE anybody opens the hub. "<tag>:<lens>" ->
+   boolean; a tab whose hub registered no gates is simply absent (unknown). */
+export const lensReach = {};
+
+/** Ask every hub the content's screens live in, once per page load. */
+export async function resolveLensReach(env, orm, screens) {
+    const tags = new Set();
+    for (const s of screens || []) {
+        for (const p of s.places || []) {
+            const pl = parsePlace(p);
+            if (pl && !pl.detail) {
+                tags.add(pl.tag);
+            }
+        }
+    }
+    await Promise.all([...tags].map(async (tag) => {
+        let allowed = null;
+        try {
+            allowed = await hubLensAccess(env, orm, tag);
+        } catch {
+            allowed = null;
+        }
+        for (const [lens, ok] of Object.entries(allowed || {})) {
+            lensReach[`${tag}:${lens}`] = !!ok;
+        }
+    }));
+    return lensReach;
+}
+
+/** true / false / null — may this reader open ANY tab the screen lives on? */
+export function lensReachable(screen) {
+    let known = false;
+    for (const p of (screen && screen.places) || []) {
+        const pl = parsePlace(p);
+        if (!pl || pl.detail) {
+            continue;
+        }
+        const v = lensReach[`${pl.tag}:${pl.lens}`];
+        if (v === true) {
+            return true;
+        }
+        if (v === false) {
+            known = true;
+        }
+    }
+    return known ? false : null;
+}
+
+/** true / false / null (unknown) — can this reader reach the screen at all?
+ *  The station's menu answer first (the server's), then the hub tab's gate. */
 export function reachable(screen) {
     const st = screen && learnReach.stations && learnReach.stations[screen.key];
-    return st ? !!st.visible : null;
+    if (st && !st.visible) {
+        return false;
+    }
+    const lens = lensReachable(screen);
+    if (lens === false) {
+        return false;
+    }
+    return st ? true : lens;
 }
 
 /** Open a screen where it lives: hub › tab when it is in a hub, else its own

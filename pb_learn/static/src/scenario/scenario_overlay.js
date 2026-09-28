@@ -59,6 +59,62 @@ import { T, tx, esc, ic, reduced, SP } from "../engine/runtime";
 /* The glossary hovercard (LEARNOS Phase 2). The step body is the only
    raw-HTML insertion in this overlay, so it is the only `gtx`. */
 import { gtx, glossaryOpen, closeGlossary } from "../engine/glossary";
+import { navPlace } from "../engine/places";
+import { DOCK_BELOW } from "../engine/spotlight";
+import { hubPlace } from "@pb_hub/js/hub_place";
+
+/* LEARN REFRESH step 4 — the words a screen uses when it refuses its reader,
+   in both languages. Read only from alert-like elements, and only while the
+   step's control has NOT appeared, so a screen that merely talks about access
+   (Access & delegation) is never mistaken for one that refused. */
+const REFUSED_TEXT = new RegExp([
+    "you (do not|don't) have (access|permission|the right)",
+    "you need [^.]{0,60}access",
+    "could not be opened",
+    "not allowed to (open|see|view|read)",
+    "access (error|denied|refused)",
+    "không có quyền", "chưa có quyền", "bạn cần quyền", "không mở được",
+].join("|"), "i");
+const REFUSAL_BOXES = [
+    ".o_error_dialog", ".o_notification", "[role=alert]", ".alert",
+    "[class*=error]", "[class*=denied]", "[class*=noaccess]", "[class*=no-access]",
+    "[class*=blocked]", "[class*=refus]", "[class*=forbid]", "[class*=locked]",
+].join(",");
+const REFUSAL_GRACE = 700;     // ms a screen gets to load before we listen
+const REFUSAL_PROBE = 2500;    // ms an anchorless step keeps listening
+
+function shown(el) {
+    const r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0;
+}
+
+/** Has the screen this step stands on refused its reader? Three signals:
+ *  an error dialog, a tab the hub will not show this person, or a refusal
+ *  sentence in an alert-like box on the page. */
+export function refusalOnScreen(expected) {
+    for (const d of document.querySelectorAll(".o_error_dialog")) {
+        if (shown(d)) {
+            return true;
+        }
+    }
+    const pl = expected && navPlace(expected);
+    if (pl && hubPlace.ready && hubPlace.tag === pl.tag && hubPlace.lenses.length
+            && !hubPlace.lenses.some((l) => l.key === pl.lens)) {
+        return true;
+    }
+    for (const el of document.querySelectorAll(REFUSAL_BOXES)) {
+        if (el.closest(".lrn-scoverlay, .lrn-drawer, .lrn-coach")) {
+            continue;
+        }
+        const text = (el.textContent || "").slice(0, 400);
+        if (REFUSED_TEXT.test(text) && shown(el)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+const REFUSED = { refused: true };
 
 const CARD_W = 372;          // matches the Journey's coach card
 const PRESS_SETTLE = 400;    // ms before Watch performs a demonstrated press
@@ -174,6 +230,11 @@ export class ScenarioOverlay extends Component {
     }
 
     get cardStyle() {
+        // LEARN REFRESH step 4 — narrow screens dock the card along the
+        // bottom, full width, and the control is scrolled up clear of it.
+        if (this.ui.card.docked) {
+            return `top:${this.ui.card.top}px;left:12px;width:calc(100vw - 24px);`;
+        }
         return `top:${this.ui.card.top}px;left:${this.ui.card.left}px;width:${CARD_W}px;`;
     }
 
@@ -238,21 +299,36 @@ export class ScenarioOverlay extends Component {
             }
         }
 
-        const el = step.anchor ? await this._waitFor(step.anchor, step) : null;
+        const got = step.anchor ? await this._waitFor(step.anchor, step) : null;
 
         // A late frame can already have moved us on while the poll was running.
         if (!this.state.active || this.step !== step) {
             return;
         }
+        // LEARN REFRESH step 4 — the screen opened and then refused this
+        // reader. The no-access ending, not a centred card explaining a
+        // control they will never see.
+        if (got === REFUSED) {
+            this.ui.resolving = false;
+            this.sc.refuse(this.sc.screenOfStep(this.state.index));
+            return;
+        }
+        const el = got;
         this.ui.resolving = false;
+        if (!step.anchor) {
+            this._probeRefusal(step);
+        }
 
         if (el) {
             this._targetEl = el;
             this.ui.hasTarget = true;
             try {
+                // Docked (narrow): the control goes near the top, because the
+                // bottom of the screen is the card's.
                 el.scrollIntoView({
                     behavior: reduced() ? "auto" : "smooth",
-                    block: "center", inline: "nearest",
+                    block: window.innerWidth <= DOCK_BELOW ? "start" : "center",
+                    inline: "nearest",
                 });
             } catch {
                 // A detached or exotic element must not end the walkthrough.
@@ -305,6 +381,29 @@ export class ScenarioOverlay extends Component {
         }
     }
 
+    /** An anchorless card (an introduction) is on screen at once; for a
+     *  moment afterwards, listen for the screen behind it refusing the reader,
+     *  so a walkthrough of a gated screen still ends on the no-access card
+     *  before its second step. */
+    _probeRefusal(step) {
+        const t0 = Date.now();
+        const tick = () => {
+            if (this._destroyed || !this.state.active || this.step !== step
+                    || this.state.blocked) {
+                return;
+            }
+            if (Date.now() - t0 > REFUSAL_GRACE
+                    && refusalOnScreen(this.sc.screenOfStep(this.state.index))) {
+                this.sc.refuse(this.sc.screenOfStep(this.state.index));
+                return;
+            }
+            if (Date.now() - t0 < REFUSAL_PROBE) {
+                setTimeout(tick, WAIT_POLL * 2);
+            }
+        };
+        setTimeout(tick, WAIT_POLL * 2);
+    }
+
     /** Poll until the anchor resolves to something with a visible box.
      *
      *  `offsetParent` is null for `position: fixed` elements — the PayAI pill
@@ -312,7 +411,8 @@ export class ScenarioOverlay extends Component {
      *  is measured off the rectangle, never off the layout parent. */
     _waitFor(anchorKey, step) {
         return new Promise((resolve) => {
-            const deadline = Date.now() + (step.timeout || WAIT_TIMEOUT);
+            const t0 = Date.now();
+            const deadline = t0 + (step.timeout || WAIT_TIMEOUT);
             const tick = () => {
                 if (this._destroyed || !this.state.active || this.step !== step) {
                     return resolve(null);
@@ -328,6 +428,10 @@ export class ScenarioOverlay extends Component {
                     if (r.width > 0 && r.height > 0) {
                         return resolve(el);
                     }
+                }
+                if (Date.now() - t0 > REFUSAL_GRACE
+                        && refusalOnScreen(this.sc.screenOfStep(this.state.index))) {
+                    return resolve(REFUSED);
                 }
                 if (Date.now() > deadline) {
                     return resolve(null);
@@ -361,10 +465,14 @@ export class ScenarioOverlay extends Component {
         };
         this.ui.hole = hole;
 
+        const ch = (this.cardRef.el && this.cardRef.el.offsetHeight) || 260;
+        if (vw <= DOCK_BELOW) {
+            this.ui.card = { top: Math.max(12, vh - ch - 12), left: 12, docked: true };
+            return;
+        }
         // right -> left -> below -> above, clamped: the same order the Journey's
         // spotlight uses, so a learner who has done a lesson finds the card in
         // the place they already expect it.
-        const ch = (this.cardRef.el && this.cardRef.el.offsetHeight) || 260;
         const gap = 20;
         let top;
         let left;

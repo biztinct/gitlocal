@@ -7,7 +7,7 @@
    card is placed in whichever direction has room — right, left, below, above —
    clamped to the viewport and above the control bar.
    ========================================================================== */
-import { $, reduced, SP} from "./runtime";
+import { $, esc, reduced, SP, T } from "./runtime";
 
 let OVER = null;
 
@@ -93,9 +93,47 @@ function ring(el) {
     setTimeout(() => el.classList.remove("lrn-hl"), 3000);
 }
 
+/* LEARN REFRESH step 4 — at or below this width the card cannot sit BESIDE
+   the control it explains, so it docks as a sheet along the bottom (above the
+   play bar) and the page is scrolled so the control sits clear above it. The
+   sheet folds down to one line on request, and stays folded for the rest of
+   the lesson, so a reader on a phone can look at the whole board. */
+export const DOCK_BELOW = 900;
+
+function docked() {
+    return window.innerWidth <= DOCK_BELOW;
+}
+
+/** How much of the bottom of the window the play bar takes (it wraps to two
+ *  rows on a phone, so it is measured, not assumed). */
+function barGuard() {
+    const bar = $(".lrn-playbar");
+    if (!bar) {
+        return 12;
+    }
+    const top = bar.getBoundingClientRect().top;
+    return Math.max(12, window.innerHeight - top + 8);
+}
+
+/** The nearest ancestor that actually scrolls, or null. */
+function scrollParent(el) {
+    let p = el && el.parentElement;
+    while (p && p !== document.body) {
+        const cs = window.getComputedStyle(p);
+        if (/(auto|scroll)/.test(cs.overflowY) && p.scrollHeight > p.clientHeight + 2) {
+            return p;
+        }
+        p = p.parentElement;
+    }
+    return null;
+}
+
 export const Spot = {
     hole: null,
     card: null,
+    // Folded by the reader on a narrow screen. Kept across steps (a reader who
+    // folded the card wants to keep looking at the board), cleared on hide().
+    folded: false,
 
     show(anchorKey, cardHTML) {
         // A trace belongs to ONE step. Clearing here rather than at teardown is
@@ -112,17 +150,33 @@ export const Spot = {
             this.card.className = "lrn-coach";
             this.card.setAttribute("role", "region");
             this.card.setAttribute("aria-live", "polite");
+            // The fold toggle is the card's own control, never a data-act the
+            // host would also route (LR12): handled here and stopped here.
+            this.card.addEventListener("click", (ev) => {
+                const t = ev.target.closest("[data-spot-fold]");
+                if (!t) {
+                    return;
+                }
+                ev.preventDefault();
+                ev.stopPropagation();
+                this.folded = !this.folded;
+                t.outerHTML = this._foldBar();
+                this._applyFold();
+                this.position(this._lastRect || null);
+            });
             OVER.appendChild(this.hole);
             OVER.appendChild(this.card);
         }
-        this.card.innerHTML = cardHTML;
+        this.card.innerHTML = this._foldBar() + cardHTML;
+        this._applyFold();
 
         if (!el) {
             this.hole.style.display = "none";
             this.position(null);
             return;
         }
-        el.scrollIntoView({ block: "center", behavior: reduced() ? "auto" : "smooth" });
+        el.scrollIntoView({ block: docked() ? "start" : "center",
+                            behavior: reduced() || docked() ? "auto" : "smooth" });
         const place = () => {
             // Deferred a frame to let scrollIntoView settle, so it can outlive
             // the step that scheduled it — leaving a lesson calls hide() and
@@ -130,7 +184,10 @@ export const Spot = {
             if (!this.hole || !this.card) {
                 return;
             }
-            const r = el.getBoundingClientRect();
+            let r = el.getBoundingClientRect();
+            if (docked()) {
+                r = this._clearOfSheet(el, r);
+            }
             const pad = 8;
             this.hole.style.display = "block";
             this.hole.style.top = r.top - pad + "px";
@@ -146,18 +203,77 @@ export const Spot = {
         }
     },
 
-    /** right -> left -> below -> above, clamped to the viewport. */
+    /** The one-line bar a docked card folds to. Drawn on every card and
+     *  shown only while docked (CSS), so a resize needs no re-render. */
+    _foldBar() {
+        const label = esc(T(this.folded ? "cardUnfold" : "cardFold"));
+        return `<button type="button" class="lrn-coachfold" data-spot-fold="1"
+            aria-label="${label}" title="${label}"
+            aria-expanded="${this.folded ? "false" : "true"}"><span class="lrn-coachgrip"></span></button>`;
+    },
+
+    _applyFold() {
+        // Room under the last control, so even the bottom of a board can be
+        // scrolled clear of a docked sheet.
+        document.body.classList.toggle("lrn-docked", !!this.card && docked());
+        if (!this.card) {
+            return;
+        }
+        const fold = docked() && this.folded;
+        this.card.classList.toggle("docked", docked());
+        this.card.classList.toggle("folded", fold);
+        const b = this.card.querySelector("[data-spot-fold]");
+        if (b) {
+            b.setAttribute("aria-expanded", fold ? "false" : "true");
+        }
+    },
+
+    /** Scroll the control up until it sits above the docked sheet; returns
+     *  its rectangle afterwards. */
+    _clearOfSheet(el, r) {
+        const c = this.card;
+        const H = window.innerHeight;
+        const sheetTop = H - barGuard() - ((c && c.offsetHeight) || 220) - 12;
+        if (r.top >= 64 && r.bottom <= sheetTop - 8) {
+            return r;
+        }
+        // The scroller here may be overflow:hidden (the hub canvas), which
+        // only scrollIntoView can move — so ask for the top, then give back
+        // a little room under the header if there is any above.
+        try {
+            el.scrollIntoView({ block: "start", behavior: "auto" });
+        } catch {
+            return r;
+        }
+        const sp = scrollParent(el);
+        if (sp && sp.scrollTop > 64) {
+            sp.scrollTop -= 64;
+        }
+        return el.getBoundingClientRect();
+    },
+
+    /** right -> left -> below -> above, clamped to the viewport. At or below
+     *  DOCK_BELOW the card is a bottom sheet instead (see above). */
     position(r) {
         const c = this.card;
         if (!c) {
             return;
         }
+        this._lastRect = r;
         const W = window.innerWidth;
         const H = window.innerHeight;
         // Reserve the strip the control bar occupies, so the card's own
         // Back/Next never end up underneath it.
-        const bottomGuard = $(".lrn-playbar") ? 88 : 12;
+        const bottomGuard = docked() ? barGuard() : ($(".lrn-playbar") ? 88 : 12);
         const usable = H - bottomGuard;
+        this._applyFold();
+        if (docked()) {
+            const cw = W - 24;
+            c.style.width = cw + "px";
+            c.style.left = "12px";
+            c.style.top = Math.max(12, usable - c.offsetHeight - 8) + "px";
+            return;
+        }
         c.style.top = "0px";
         c.style.left = "0px";
         const cw = Math.min(372, W - 32);
@@ -192,6 +308,9 @@ export const Spot = {
             this.hole = null;
             this.card = null;
         }
+        this.folded = false;
+        this._lastRect = null;
+        document.body.classList.remove("lrn-docked");
         Trace.clear();
     },
 };

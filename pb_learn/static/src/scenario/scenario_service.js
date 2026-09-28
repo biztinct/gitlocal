@@ -42,8 +42,8 @@ import { registry } from "@web/core/registry";
 
 import { RT } from "../engine/runtime";
 import { loadContent } from "../content/content_loader";
-import { navPlace, openLearn, openScreen, placeLabel, reachable, screenForRef, waitForPlace }
-    from "../engine/places";
+import { navPlace, openLearn, openScreen, placeLabel, reachable, resolveLensReach,
+         screenForRef, waitForPlace } from "../engine/places";
 import { hubPlace } from "@pb_hub/js/hub_place";
 
 /* How long a navigation may take before the walkthrough stops waiting for it.
@@ -254,6 +254,32 @@ export const scenarioService = {
             log("scenario_blocked", `${state.key}:${screen ? screen.key : ""}`);
         }
 
+        /** LEARN REFRESH step 4 — the overlay saw the screen refuse this
+         *  reader after it opened (an access error, a tab the hub will not
+         *  show them, a "you need … access" panel where the step's control
+         *  should be). Same ending as a refusal known before navigating. */
+        function refuse(screen) {
+            block(typeof screen === "string" ? screenForRef(screens, screen) : screen);
+        }
+
+        /** The screen a step stands on (its own, else the last named before
+         *  it, else the scenario's entry) — what a refusal is reported as. */
+        function screenOfStep(index) {
+            const list = steps();
+            for (let i = index; i >= 0; i--) {
+                const st = list[i];
+                if (st && st.screen) {
+                    return screenForRef(screens, st.screen);
+                }
+                if (st && st.nav) {
+                    return screenForRef(screens, st.nav);
+                }
+            }
+            const sc = get(state.key);
+            return sc && sc.entry
+                ? screenForRef(screens, sc.entry.nav || sc.entry.screen) : null;
+        }
+
         /** The way on from a blocked walkthrough: its Try over the practice
          *  company when it has one, otherwise the practice company itself. */
         async function practiceInstead() {
@@ -307,6 +333,15 @@ export const scenarioService = {
             state.done = false;
             state.blocked = null;
             state.lang = RT.lang;
+            // LEARN REFRESH step 4 — which hub tabs this reader may open,
+            // asked of the hubs' own gates before the first navigation, so a
+            // gated screen ends the walkthrough with the no-access card FIRST
+            // instead of after a hub has quietly moved the reader elsewhere.
+            try {
+                await resolveLensReach(env, orm, screens);
+            } catch {
+                // Unknown stays unknown; the checks after landing still run.
+            }
             state.active = true;
             logStart(key, wanted);
             const entry = sc.entry || {};
@@ -422,7 +457,7 @@ export const scenarioService = {
             state,
             load, all, get, steps, current, forScreen,
             begin, next, back, goTo, finish, stop,
-            navigate, practiceInstead,
+            navigate, practiceInstead, refuse, screenOfStep,
             record, log, logStart, nowServer,
             PROGRESS_PREFIX,
         };

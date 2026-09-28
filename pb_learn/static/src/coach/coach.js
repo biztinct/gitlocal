@@ -55,7 +55,8 @@ import { registerLessonRows } from "../hub/learn_palette";
    own icon set draws the tab list, so each tab looks as it does on the rail. */
 import { hubPlace, placeSub, switchLens } from "@pb_hub/js/hub_place";
 import { ic as railIc } from "@pb_import_kit/js/import_icons";
-import { hubScreenOf, openLearn, screenAtPlace, setReach, tabName } from "../engine/places";
+import { hubScreenOf, openLearn, resolveLensReach, screenAtPlace, setReach, tabName }
+    from "../engine/places";
 
 /* The one sentence the drawer needs when the content plane itself failed to
    load — and so cannot supply it. Mirrors the `helperFailed` chrome key. */
@@ -276,6 +277,8 @@ export class CoachHost extends Component {
                 // Which stations this reader can reach, for the walkthrough
                 // engine's "you don't have access" answer (engine/places.js).
                 setReach(runtime.visible_stations);
+                // LEARN REFRESH step 4 — and which hub tabs (their own gates).
+                resolveLensReach(this.env, this.orm, content.screens || []).catch(() => {});
                 // LEARN v3 — lessons in the ⌘K search, from the same content.
                 try {
                     registerLessonRows(content);

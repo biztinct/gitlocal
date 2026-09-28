@@ -261,6 +261,12 @@
     .lrn-scspot { transition: none; }
 }
 
+/* LEARN REFRESH step 4 — docked along the bottom (scenario_overlay.js
+   DOCK_BELOW); short enough that the control above it stays in view. */
+@media (max-width: 900px) {
+    .lrn-sccard:not(.centred) { max-height: 44vh; }
+}
+
 @media (max-width: 640px) {
     .lrn-sccard {
         --lrn-scw: calc(100vw - 24px);
