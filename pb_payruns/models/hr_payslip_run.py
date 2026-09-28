@@ -989,6 +989,61 @@ class HrPayslipRun(models.Model):
         })
         return True
 
+    def _approval_reject(self, request, reason):
+        """Turned down in the inbox: the run ends exactly as the board's Reject
+        ends it — every payslip cancelled, the run Rejected, the reason kept.
+
+        Without this the engine's default no-op ran, and a pay run somebody
+        had said "no" to kept reading "Waiting for approval" with its payslips
+        frozen, and could be neither deleted nor put back to draft (LEARN
+        REFRESH step 2, fix D).
+
+        NOT `action_payslip_run_cancel`: that method withdraws the open
+        request, and this request is not open — it has just been rejected, and
+        withdrawing it again would overwrite the decision with a cancellation.
+        So the legacy body is called directly, with the sentinel, which is the
+        same body the board's Reject reaches.
+
+        sudo, and the authority is the decision: the engine has already checked
+        that the person turning this down holds the step, and an approver is not
+        necessarily somebody with write access to payslips. The actor recorded
+        is still that person (`uid` survives sudo).
+
+        Idempotent: a run that is no longer open is left as it is.
+        """
+        self.ensure_one()
+        if self.state not in ('draft', 'approval_pending'):
+            return True
+        run = self.sudo()._pb_chain_ctx()
+        super(HrPayslipRun, run).action_payslip_run_cancel()
+        run.write({
+            'pb_reject_note': (reason or '').strip()[:512] or False,
+            'pb_reject_uid': self.env.uid,
+            'pb_reject_date': fields.Datetime.now(),
+        })
+        return True
+
+    def _approval_withdraw(self, request, reason):
+        """Withdrawn from the inbox: the run stops waiting and is a draft
+        again, payslips editable — like Send it back, with no reviewer note.
+
+        When the board's own Reject withdraws the request first, the run is
+        still put back to draft here and the Reject then cancels it, so the
+        end state is the same Rejected it always was.
+
+        sudo, and the authority is the engine's: it has already checked that
+        the person withdrawing sent the request in or looks after approvals.
+        """
+        self.ensure_one()
+        if self.state != 'approval_pending':
+            return True
+        run = self.sudo()._pb_chain_ctx()
+        slips = run.slip_ids.filtered(lambda s: s.state == 'verify')
+        if slips:
+            slips.write({'state': 'draft'})
+        run.write({'state': 'draft'})
+        return True
+
     # ------------------------------------------------------------ submitting
     def action_approval_submit(self):
         """Send this run in for approval, and say what happened."""

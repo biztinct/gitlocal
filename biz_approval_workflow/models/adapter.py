@@ -170,6 +170,15 @@ class BizApprovalAdapterMixin(models.AbstractModel):
         """
         return True
 
+    def _approval_withdraw(self, request, reason):
+        """Withdrawn by whoever sent it in (or an administrator).
+
+        Nobody decided anything, so this is neither a return nor a rejection:
+        the record simply stops waiting. A record left frozen "waiting for
+        approval" after its request was withdrawn is a screen that lies.
+        """
+        return True
+
     def _approval_manager_uids(self):
         """Users behind "their manager" — the subjects' own managers."""
         self.ensure_one()

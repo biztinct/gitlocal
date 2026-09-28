@@ -1478,6 +1478,15 @@ class BizApprovalEngine(models.AbstractModel):
             'action': 'cancel', 'reason': reason or '',
             'source_revision': request.source_revision,
         })
+        # The record has to hear it was withdrawn, or a record frozen for its
+        # approval stays frozen with nobody left to decide it.
+        try:
+            record = request._record()
+            if record and hasattr(record, '_approval_withdraw'):
+                record._approval_withdraw(request, reason or '')
+        except Exception:   # noqa: BLE001 — the withdrawal itself always stands
+            _logger.exception('approval: request %s could not record its '
+                              'withdrawal', request.id)
         self.env['biz.approval.event']._log(
             'cancelled', _("\"%s\" was withdrawn", request.title),
             company=request.company_id, request=request)

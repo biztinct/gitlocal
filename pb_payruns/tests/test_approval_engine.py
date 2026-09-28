@@ -638,3 +638,64 @@ class PayrunApprovalCase(TransactionCase):
         self.assertEqual(run.state, 'cancel')
         self.assertEqual(run.pb_reject_note, 'Wrong month')
         self.assertEqual(request.state, 'cancelled')
+
+    def test_turning_it_down_in_the_inbox_rejects_the_run(self):
+        """LEARN REFRESH fix D. "Turn it down" used to leave the run reading
+        Waiting for approval for ever, its payslips frozen."""
+        self._two_step_route()
+        run = self._run()
+        self._slip(run, self.emp_a)
+        self._slip(run, self.emp_b)
+        self._submit(run)
+        request = run.approval_request_id
+
+        self.engine.with_user(self.hr).decide(
+            request.id, 's1', 'reject', reason='Wrong month entirely')
+        run.invalidate_recordset()
+        request.invalidate_recordset()
+        self.assertEqual(run.state, 'cancel')
+        self.assertTrue(all(s.state == 'cancel' for s in run.slip_ids))
+        self.assertEqual(run.pb_reject_note, 'Wrong month entirely')
+        self.assertEqual(run.pb_reject_uid, self.hr,
+                         'the person who turned it down is on the record')
+        self.assertTrue(run.pb_reject_date)
+        # the decision stands as a rejection — it is not re-filed as withdrawn
+        self.assertEqual(request.state, 'rejected')
+
+    def test_turning_it_down_twice_changes_nothing(self):
+        """Idempotent: the engine may call the hook on a run already closed."""
+        self._two_step_route()
+        run = self._run()
+        self._slip(run, self.emp_a)
+        self._submit(run)
+        request = run.approval_request_id
+        self.engine.with_user(self.hr).decide(
+            request.id, 's1', 'reject', reason='Not this month')
+        run.invalidate_recordset()
+        stamp = run.pb_reject_date
+        self.assertTrue(run._approval_reject(request, 'again'))
+        run.invalidate_recordset()
+        self.assertEqual(run.state, 'cancel')
+        self.assertEqual(run.pb_reject_note, 'Not this month')
+        self.assertEqual(run.pb_reject_date, stamp)
+
+    def test_withdrawing_it_puts_the_run_back_to_draft(self):
+        """"Withdraw it" used to leave the run Waiting for approval for ever,
+        with nobody left to decide it."""
+        self._two_step_route()
+        run = self._run()
+        self._slip(run, self.emp_a)
+        self._submit(run)
+        request = run.approval_request_id
+        self.engine.cancel(request.id, 'Sent the wrong month')
+        run.invalidate_recordset()
+        request.invalidate_recordset()
+        self.assertEqual(request.state, 'cancelled')
+        self.assertEqual(run.state, 'draft')
+        self.assertTrue(all(s.state == 'draft' for s in run.slip_ids))
+        self.assertFalse(run.pb_return_note,
+                         'nobody reviewed it, so there is no reviewer note')
+        # and it can be sent in again
+        self._submit(run)
+        run.invalidate_recordset()
+        self.assertEqual(run.state, 'approval_pending')
