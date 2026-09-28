@@ -78,7 +78,7 @@
         </div>
 
         <!-- action bar -->
-        <div class="pbcc-actions" t-if="d.next_actions and d.next_actions.length">
+        <div class="pbcc-actions" data-coach="ic-actions" t-if="d.next_actions and d.next_actions.length">
           <div class="left">
             <button t-foreach="d.next_actions" t-as="a" t-key="a.method"
                     t-attf-class="pbim-btn {{ a.kind }}" t-on-click="() => this.runAction(a.method)">
@@ -112,7 +112,7 @@
              Two switches, because fetching and WRITING are different acts with
              different consequences, and the second hands the connected system
              ownership of every mapped field. -->
-        <div class="pbim-panel pbcc-sched" t-if="d.schedule and d.schedule.available">
+        <div class="pbim-panel pbcc-sched" data-coach="ic-fetch" t-if="d.schedule and d.schedule.available">
           <div class="pbcc-sched-h">
             <h2 class="pbim-h2"><t t-out="ic('clock',16)"/> Automatic fetch</h2>
             <span class="pbcc-sched-next" t-if="d.schedule.enabled and d.schedule.next_run">

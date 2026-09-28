@@ -374,20 +374,17 @@
     "sr-new": {
       "screen": "structures",
       "file": "pb_structures/static/src/xml/structures.xml",
-      "desc": "New structure. Present, and almost always the wrong control: new pay logic belongs in a formula configuration.",
-      "reserved": true
+      "desc": "New structure. Present, and almost always the wrong control: new pay logic belongs in a formula configuration."
     },
     "sr-kpis": {
       "screen": "structures",
       "file": "pb_structures/static/src/xml/structures.xml",
-      "desc": "Structures, salary rules, categories, employees covered and countries.",
-      "reserved": true
+      "desc": "Structures, salary rules, categories, employees covered and countries."
     },
     "sr-filters": {
       "screen": "structures",
       "file": "pb_structures/static/src/xml/structures.xml",
-      "desc": "Status, search, date and country chips. They scope the roster, not the database.",
-      "reserved": true
+      "desc": "Status, search, date and country chips. They scope the roster, not the database."
     },
     "sr-roster": {
       "screen": "structures",
@@ -403,14 +400,12 @@
     "ig-connect": {
       "screen": "integrations",
       "file": "pb_integrations/static/src/xml/integrations.xml",
-      "desc": "Connect a system. Adds a source payroll data can arrive from without anybody retyping it.",
-      "reserved": true
+      "desc": "Connect a system. Adds a source payroll data can arrive from without anybody retyping it."
     },
     "ig-kpis": {
       "screen": "integrations",
       "file": "pb_integrations/static/src/xml/integrations.xml",
-      "desc": "Connectors, connected, errors, synced records, field mappings and staged records.",
-      "reserved": true
+      "desc": "Connectors, connected, errors, synced records, field mappings and staged records."
     },
     "ig-filters": {
       "screen": "integrations",
@@ -1588,6 +1583,16 @@
       "screen": "employees",
       "file": "pb_contracts/static/src/xml/contract_360.xml",
       "desc": "The contract drawer save bar: Discard / Save N changes (slides up once something is staged)."
+    },
+    "ic-actions": {
+      "screen": "integrations",
+      "file": "pb_import_advanced/static/src/xml/connector_cockpit.xml",
+      "desc": "A connection's own screen: its action bar (Test connection, Pull data, Fetch fields, Disconnect)."
+    },
+    "ic-fetch": {
+      "screen": "integrations",
+      "file": "pb_import_advanced/static/src/xml/connector_cockpit.xml",
+      "desc": "The Automatic fetch panel: the per-connection schedule (how often, next run, last run)."
     }
   },
   "pattern": {
@@ -1602,6 +1607,7 @@
     }
   },
   "practice": {
+    "rep-ig-arrivals": "Arrivals from the connected system, drawn under the Integrations roster. In the product it is its own list, found through the search bar.",
     "rep-cd-terms": "The contract drawer's Terms, drawn beside Components and History so a lesson can walk all three. The product shows one tab at a time.",
     "rep-cd-comps": "The contract drawer's Components with Paid by and each amount's source chip.",
     "rep-cd-history": "The contract drawer's History: every change, from and to, with its source.",
@@ -1731,7 +1737,8 @@
       "pb_pay_delivery/static/src/xml/pb_pay_delivery.xml",
       "pb_comp_ben/static/src/xml/paycal_board.xml",
       "pb_comp_ben/static/src/xml/incentives_board.xml",
-      "pb_contracts/static/src/xml/contract_360.xml"
+      "pb_contracts/static/src/xml/contract_360.xml",
+      "pb_import_advanced/static/src/xml/connector_cockpit.xml"
     ],
     "replica": [
       "pb_learn/static/src/engine/screens.js",

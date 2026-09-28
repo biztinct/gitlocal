@@ -1378,49 +1378,43 @@ export const SCREENS = {
                 "Mục nào chỉ có một thẻ thì mở thẳng thẻ đó — Bộ máy công thức mở Xưởng công thức.")))}</p>`;
     },
 
-    /* -------------------------------------------------- Salary Structures */
+    /* -------------------------------------------------- Salary Structures
+       LEARN REFRESH step 5: as structures.xml draws it today — New structure,
+       the quiet numbers line, status / date / country / schedule chips, rows
+       with rules and employees, and the list link. */
     structures() {
         const k = PRACTICE.structures.kpis;
         const rows = PRACTICE.structures.rows.map((s) => {
-            const meta = N(s.rules) + SP + tx(B("rules", "quy tắc")) + DOT
+            const meta = s.code + DOT + s.country + DOT + tx(s.schedule);
+            const counts = N(s.rules) + SP + tx(B("rules", "quy tắc")) + DOT
                 + N(s.employees) + SP + T("employees");
             return `
             <div class="lrn-row">
                 <span class="lrn-avatar">${ic("layers")}</span>
-                <span><span class="lrn-nm">${esc(s.name)}
-                        <span class="lrn-faint">${esc(s.code)}</span></span><br>
-                    <span class="lrn-sub2">${esc(meta)}</span></span>
+                <span><span class="lrn-nm">${esc(s.name)}${s.base ? `${SP}<span class="lrn-chip">${esc(tx(B("base", "căn cứ")))}</span>` : ""}</span><br>
+                    <span class="lrn-sub2">${esc(meta)}</span><br>
+                    <span class="lrn-sub2">${esc(counts)}</span></span>
                 <span class="lrn-rr"><span class="lrn-chip">${esc(tx(s.badge))}</span>
-                    <span class="lrn-sub2">${esc(s.updated)}</span></span>
+                    <span class="lrn-sub2">${esc(tx(B("updated", "đã cập nhật")))}${SP}${esc(s.updated)}</span></span>
             </div>`;
         }).join("");
-
+        const nums = [[B("Structures", "Cấu trúc"), k.structures], [B("Salary rules", "Quy tắc lương"), k.rules],
+                      [B("Categories", "Phân loại"), k.categories], [B("Employees covered", "Nhân viên áp dụng"), k.employees],
+                      [B("Countries", "Quốc gia"), k.countries]];
         return `
-            <div class="lrn-grid g5" data-coach="sr-kpis">
-                ${kpiTile("layers", "", N(k.structures), B("Structures", "Cấu trúc"))}
-                ${kpiTile("list-checks", "", N(k.rules), B("Salary rules", "Quy tắc lương"))}
-                ${kpiTile("grid", "", N(k.categories), B("Categories", "Nhóm quy tắc"))}
-                ${kpiTile("users", "", N(k.employees), B("Employees covered", "Nhân viên áp dụng"))}
-                ${kpiTile("globe", "", N(k.countries), B("Countries", "Quốc gia"))}
-            </div>
-            <div class="lrn-strip">
-                <button class="lrn-btn pri" data-coach="sr-new">${ic("plus")}${
-                    esc(tx(B("New structure", "Cấu trúc mới")))}</button>
-            </div>
+            <div class="lrn-zhead"><span class="lrn-push"></span>
+                <button class="lrn-btn sm pri" data-coach="sr-new">${ic("plus")}${
+                    esc(tx(B("New structure", "Cấu trúc mới")))}</button></div>
+            <div data-coach="sr-kpis">${quietNums(nums, "")}</div>
             <div class="lrn-tabs" data-coach="sr-filters">
-                ${[B("All", "Tất cả"), B("Active", "Đang dùng"), B("Historical", "Lịch sử")].map(
+                ${[B("All", "Tất cả"), B("Active", "Đang hoạt động"), B("Draft", "Nháp"), B("Deprecated", "Ngừng sử dụng")].map(
                     (f, i) => `<button aria-selected="${i === 0}">${esc(tx(f))}</button>`).join("")}
             </div>
             <div class="lrn-panel">
-                <h3>${ic("layers")}${esc(tx(B(
-                    "Salary structures (legacy)", "Cấu trúc lương (thế hệ cũ)")))}</h3>
                 <div class="lrn-rows" data-coach="sr-roster">${rows}</div>
                 <div class="lrn-foot2">
-                    <button class="lrn-link" data-coach="sr-openall">${esc(T("openFullList"))}</button>
+                    <button class="lrn-link" data-coach="sr-openall">${esc(tx(B("Open full structures list →", "Mở danh sách cấu trúc đầy đủ →")))}</button>
                 </div>
-                <p class="lrn-note">${esc(tx(B(
-                    "Old payslips still reference these rule sets. New pay logic belongs in a formula configuration.",
-                    "Phiếu lương cũ vẫn tham chiếu các bộ quy tắc này. Logic lương mới thuộc về cấu hình công thức.")))}</p>
             </div>`;
     },
 
@@ -1539,48 +1533,67 @@ export const SCREENS = {
             </div>`;
     },
 
-    /* ------------------------------------------------------- Integrations */
+    /* ------------------------------------------------------- Integrations
+       LEARN REFRESH step 5: integrations.xml as it is today (Connect a
+       system, the numbers line with Feeds · N stale, Connectors / Data, the
+       roster with "N mappings" as a door into Mapping), the connector's own
+       screen with its Automatic fetch panel, and Arrivals from the connected
+       system. */
     integrations() {
         const k = PRACTICE.integrationKpis;
+        const cs = PRACTICE.connectorScreen;
         const rows = PRACTICE.connectors.map((c) => {
             const meta = tx(c.type) + DOT + tx(c.last);
-            const counts = N(c.mappings) + SP + tx(B("mappings", "ánh xạ")) + DOT
-                + N(c.staged) + SP + tx(B("staged", "đang chờ"));
+            const counts = N(c.feeds) + SP + tx(B("feeds", "nguồn cấp")) + DOT + N(c.staged) + SP
+                + tx(B("staged", "đang chờ")) + DOT + N(c.synced) + SP + tx(B("synced", "đã đồng bộ"));
             return `
             <div class="lrn-row ${c.status === "err" ? "hit" : ""}">
                 <span class="lrn-avatar">${ic(c.icon)}</span>
                 <span><span class="lrn-nm">${esc(tx(c.name))}</span><br>
-                    <span class="lrn-sub2">${esc(meta)}</span></span>
-                <span class="lrn-rr"><span class="lrn-sub2">${esc(counts)}</span>
-                    <span class="lrn-chip ${c.status === "err" ? "danger" : "ok"}"
-                        >${esc(tx(c.status === "err" ? B("Sync failed", "Đồng bộ lỗi")
-                                                     : B("Connected", "Đã kết nối")))}</span></span>
+                    <span class="lrn-sub2">${esc(meta)}</span><br>
+                    <span class="lrn-sub2">${esc(counts)}</span></span>
+                <span class="lrn-rr"><button class="lrn-link">${N(c.mappings)}${SP}${esc(tx(B("mappings", "ánh xạ")))}</button>
+                    <span class="lrn-chip ${c.status === "err" ? "danger" : "ok"}">${
+                        esc(tx(c.status === "err" ? EN("Error") : EN("Connected")))}</span></span>
             </div>`;
         }).join("");
-
+        const nums = [[B("Connectors", "Bộ kết nối"), k.connectors], [B("Connected", "Đã kết nối"), k.connected],
+                      [B("Errors", "Lỗi"), k.errors], [B("Synced records", "Bản ghi được đồng bộ"), k.synced],
+                      [B("Field mappings", "Ánh xạ trường"), k.mappings], [B("Staged records", "Bản ghi đang chờ"), k.staged]];
+        const feeds = `<span class="lrn-yw"><b>${N(k.feeds)}</b>${SP}${esc(tx(B("Feeds", "Nguồn cấp dữ liệu")))}${DOT}${N(k.stale)}${SP}${esc(tx(B("stale", "cũ")))}</span>`;
+        const arrivals = PRACTICE.arrivals.map((a) => `<div class="lrn-kv2"><span>${esc(a.when)}${DOT}<b>${esc(a.who)}</b>${DOT}${
+            esc(tx(a.what))}</span><span class="lrn-chip ${a.outcome.en === "review" ? "warn" : "ok"}">${esc(tx(a.outcome))}</span></div>`).join("");
         return `
-            <div class="lrn-grid g6" data-coach="ig-kpis">
-                ${kpiTile("plug", "", N(k.connectors), B("Connectors", "Đầu nối"))}
-                ${kpiTile("check-circle", "pos", N(k.connected), B("Connected", "Đã kết nối"))}
-                ${kpiTile("alert-triangle", "warn", N(k.errors), B("Errors", "Lỗi"))}
-                ${kpiTile("rotate-ccw", "", N(k.synced), B("Synced records", "Bản ghi đã đồng bộ"))}
-                ${kpiTile("git-branch", "", N(k.mappings), B("Field mappings", "Ánh xạ trường"))}
-                ${kpiTile("inbox", "warn", N(k.staged), B("Staged records", "Bản ghi đang chờ"))}
-            </div>
-            <div class="lrn-strip">
-                <button class="lrn-btn pri" data-coach="ig-connect">${ic("plug")}${
-                    esc(tx(B("Connect a system", "Kết nối một hệ thống")))}</button>
-            </div>
+            <div class="lrn-zhead"><span class="lrn-push"></span>
+                <button class="lrn-btn sm pri" data-coach="ig-connect">${ic("plug")}${
+                    esc(tx(B("Connect a system", "Kết nối một hệ thống")))}</button></div>
+            <div data-coach="ig-kpis">${quietNums(nums, "")}<div class="lrn-ynums">${feeds}</div></div>
             <div class="lrn-tabs" data-coach="ig-filters">
-                ${[B("All", "Tất cả"), B("Connected", "Đã kết nối"), B("Errors", "Lỗi")].map(
+                ${[B("All", "Tất cả"), B("Connected", "Đã kết nối"), B("Error", "Lỗi"), B("Disconnected", "Đã ngắt kết nối")].map(
                     (f, i) => `<button aria-selected="${i === 0}">${esc(tx(f))}</button>`).join("")}
             </div>
-            <div class="lrn-panel">
-                <h3>${ic("plug")}${esc(tx(B("Connectors", "Đầu nối")))}</h3>
-                <div class="lrn-rows" data-coach="ig-roster">${rows}</div>
-                <p class="lrn-note">${esc(tx(B(
-                    "Read the last sync time, not just the status. A connector that stopped nine days ago still says connected.",
-                    "Hãy đọc thời điểm đồng bộ gần nhất, đừng chỉ đọc trạng thái. Một đầu nối ngừng chạy chín ngày trước vẫn hiện là đã kết nối.")))}</p>
+            <div class="lrn-ywf">
+                <div class="lrn-ywfmain">
+                    <div class="lrn-rows" data-coach="ig-roster">${rows}</div>
+                    <div class="lrn-panel" data-coach="rep-ig-arrivals">
+                        <h3>${ic("inbox")}${esc(tx(EN("Arrivals from the connected system")))}</h3>${arrivals}
+                        <p class="lrn-note">${esc(tx(B("Found by typing \"Arrivals\" in the search bar.",
+                            "Tìm bằng cách gõ \"Arrivals\" vào thanh tìm kiếm.")))}</p>
+                    </div>
+                </div>
+                <aside class="lrn-panel lrn-ydock">
+                    <h3>${ic("database")}${esc(cs.name)}</h3>
+                    <div class="lrn-strip" data-coach="ic-actions">${cs.actions.map((a, i) =>
+                        `<button class="lrn-btn sm ${i === 1 ? "pri" : "ghost"}">${esc(tx(a))}</button>`).join("")}</div>
+                    <div class="lrn-strip">${cs.more.map((a) => `<button class="lrn-btn sm ghost">${esc(tx(a))}</button>`).join("")}</div>
+                    <div class="lrn-panel" data-coach="ic-fetch">
+                        <b>${ic("clock")}${esc(tx(EN("Automatic fetch")))}</b>
+                        <label class="lrn-sub2">${ic("check")}${esc(tx(EN("Fetch this system's data automatically")))}</label>
+                        <div class="lrn-kv2"><span>${esc(tx(EN("How often")))}</span><b>${esc(tx(cs.schedule.every))}${DOT}${esc(tx(EN("On day")))}${SP}${cs.schedule.day}${DOT}${esc(cs.schedule.at)}</b></div>
+                        <div class="lrn-kv2"><span>${esc(tx(EN("Next run")))}</span><b>${esc(cs.schedule.next)}</b></div>
+                        <span class="lrn-sub2">${esc(tx(cs.schedule.last))}</span>
+                    </div>
+                </aside>
             </div>`;
     },
 

@@ -942,16 +942,22 @@ const PRACTICE = {
 
   /* Salary Structures — legacy on purpose. New pay logic belongs in a formula
      configuration; these exist because old payslips still reference them. */
+  /* LEARN REFRESH step 5 — Settings › Salary Structures as structures.xml
+     draws it today. The status words come from a plain Python dict and stay
+     English on screen (ledger LR44). This company pays through PAY SCHEMES:
+     its contracts name no structure (Mai's drawer shows "—"), so the two old
+     structures cover nobody and are kept only because old payslips point at
+     them; the probation one is still used by five contracts. */
   structures: {
     categories: 8,
     countries: 1,
     rows: [
-      { name: "VN Standard 2023", code: "VN_STD_2023", rules: 14, employees: 7,
-        updated: "12/2023", badge: B("Historical", "Lịch sử") },
+      { name: "VN Standard 2023", code: "VN_STD_2023", rules: 14, employees: 0, base: true,
+        country: "VN", schedule: EN("Monthly"), updated: "12/2023", badge: EN("Deprecated") },
       { name: "VN Probation 2023", code: "VN_PROB_2023", rules: 9, employees: 5,
-        updated: "12/2023", badge: B("Historical", "Lịch sử") },
+        country: "VN", schedule: EN("Monthly"), updated: "12/2023", badge: EN("Active") },
       { name: "VN Expatriate 2022", code: "VN_EXPAT_2022", rules: 8, employees: 0,
-        updated: "03/2022", badge: B("Archived", "Đã lưu trữ") },
+        country: "VN", schedule: EN("Monthly"), updated: "03/2022", badge: EN("Archived") },
     ],
     get kpis() {
       const r = this.rows;
@@ -970,17 +976,35 @@ const PRACTICE = {
      answer and the integrations station's one mistake. */
   connectors: [
     { name: "Zoho People", icon: "database", status: "ok",
-      type: B("HR system", "Hệ thống nhân sự"),
-      last: B("Synced 06:00 today", "Đồng bộ 06:00 hôm nay"),
-      mappings: 42, staged: 0, synced: 4820 },
-    { name: "Bank SFTP", icon: "send", status: "ok",
-      type: B("Payment file", "Tệp chi lương"),
-      last: B("Synced yesterday", "Đồng bộ hôm qua"),
-      mappings: 9, staged: 0, synced: 312 },
+      type: B("Zoho People", "Zoho People"),
+      last: B("Synced <1h ago", "Đã đồng bộ <1 giờ trước"),
+      mappings: 42, feeds: 3, staged: 0, synced: 4820 },
+    { name: B("Monthly pay data file", "Tệp dữ liệu lương hằng tháng"), icon: "file-text", status: "ok",
+      type: B("Excel File", "Excel File"),
+      last: B("Synced 2 days ago", "Đã đồng bộ 2 ngày trước"),
+      mappings: 9, feeds: 1, staged: 0, synced: 312 },
     { name: B("Time clock — Hà Nội", "Máy chấm công — Hà Nội"), icon: "clock", status: "err",
-      type: B("Attendance", "Chấm công"),
-      last: B("Last synced 9 days ago", "Đồng bộ lần cuối 9 ngày trước"),
-      mappings: 6, staged: 214, synced: 0 },
+      type: B("Demo / Stub", "Demo / Stub"),
+      last: B("Synced 9 days ago", "Đã đồng bộ 9 ngày trước"),
+      mappings: 6, feeds: 1, staged: 214, synced: 0 },
+  ],
+  /* The Zoho connector's own screen (pb_import_advanced connector_cockpit):
+     the action bar and the "Automatic fetch" panel. None of its words have
+     Vietnamese in the product. */
+  connectorScreen: {
+    name: "Zoho People",
+    actions: [EN("Test connection"), EN("Pull data"), EN("Fetch fields")],
+    more: [EN("Configure connection"), EN("Load pay data…"), EN("Open Mapping")],
+    schedule: { every: EN("Monthly"), day: 26, at: "06:00", next: "26/08/2026 06:00",
+                last: EN("Fetched 312 records · 26/07/2026 06:00") },
+  },
+  /* Arrivals from the connected system (pb_zoho_bridge inbox): changes the
+     connected system sent, each with its outcome. Record changes that need a
+     decision wait in the approvals inbox as "Arrivals · N people". */
+  arrivals: [
+    { when: "27/07 06:02", who: "Vũ Thị Hoa", what: EN("Job changed"), outcome: EN("review") },
+    { when: "27/07 06:02", who: "Bùi Anh Tuấn", what: EN("New joiner"), outcome: EN("applied") },
+    { when: "27/07 06:01", who: "Đỗ Thị Lan", what: EN("Left the company"), outcome: EN("applied") },
   ],
   get integrationKpis() {
     const c = this.connectors;
@@ -991,6 +1015,8 @@ const PRACTICE = {
       synced: c.reduce((t, x) => t + x.synced, 0),
       mappings: c.reduce((t, x) => t + x.mappings, 0),
       staged: c.reduce((t, x) => t + x.staged, 0),
+      feeds: c.reduce((t, x) => t + x.feeds, 0),
+      stale: c.filter((x) => x.status === "err").length,
     };
   },
 
