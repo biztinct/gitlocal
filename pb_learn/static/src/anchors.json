@@ -1606,17 +1606,17 @@
     },
     "rp-pick": {
       "screen": "reports",
-      "file": "pb_hr_workforce/static/src/js/payroll_report.js",
+      "file": "pb_hr_workforce/static/src/xml/payroll_report.xml",
       "desc": "Payroll Report run picker (opens on the newest non-cancelled run)."
     },
     "rp-kpis": {
       "screen": "reports",
-      "file": "pb_hr_workforce/static/src/js/payroll_report.js",
+      "file": "pb_hr_workforce/static/src/xml/payroll_report.xml",
       "desc": "Payroll Report totals: Employees, Total Gross, Total Deductions, Total Net Pay, Changes."
     },
     "rp-tabs": {
       "screen": "reports",
-      "file": "pb_hr_workforce/static/src/js/payroll_report.js",
+      "file": "pb_hr_workforce/static/src/xml/payroll_report.xml",
       "desc": "Payroll Report tabs: Earnings, Deductions, Dept Summary."
     },
     "bg-months": {

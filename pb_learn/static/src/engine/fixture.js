@@ -662,13 +662,21 @@ const PRACTICE = {
      (Retro, Proration) over ONE template; Pay Run › Settle carries one
      (Full & Final, whose single tab the product never draws). Counts are one
      quiet line, the money totals stand beside it, and a row opens a drawer in
-     place. THE DESCRIPTOR WORDS ARE ENGLISH IN BOTH LANGUAGES because the
-     product's are: KPI labels, facets, metrics and drawer labels are plain
-     Python strings with no translation (owner item, ledger LR44). Every money
-     figure is derived from the rows. */
+     place. Every money figure is derived from the rows.
+
+     LEARN REFRESH step 6: the descriptor words now reach Vietnamese — every
+     KPI, facet, metric and drawer label is `_()` in ledger_cockpits.py and
+     pb_payrun_ledgers/i18n/vi_VN.po says it (module-scoped Python, so no
+     cross-module collision). Selection values (Source, Status, Basis) read
+     the owning module's selection: Auto/Manual from pb_hr_fullandfinal
+     ("Tự động"/"Thủ công" — NOT the KPI's "Nhập tay"), Draft/Posted/
+     Cancelled and Calendar Days from pb_hr_payroll_formula. Data (component,
+     batch and payslip names, departments) is the practice company's own and
+     reads in the reader's language, as everywhere else in this file. */
   ledgers: {
     fullfinal: {
-      subtitle: EN("Every settlement, its components and net payable at a glance."),
+      subtitle: B("Every settlement, its components and net payable at a glance.",
+                  "Mọi khoản quyết toán, các thành phần và số thực trả trong nháy mắt."),
       /* Hạnh is the leaver on Lifecycle › Exits (same person, same last day).
          Her settlement was made by July's pay data load: worked out, NOT sent
          in (LEARN REFRESH step 6 — a person checks it first), so it sits at
@@ -676,49 +684,56 @@ const PRACTICE = {
          Lan's was made by hand and is Approved, the only state that offers
          Download. */
       rows: [
-        { title: "Bùi Thị Hạnh", code: "NV0044", sub: EN("Retail — Hà Nội · Cashier"), step: 0,
-          badge: EN("Auto"), check: true,
+        { title: "Bùi Thị Hạnh", code: "NV0044",
+          sub: B("Retail — Hà Nội · Cashier", "Bán lẻ — Hà Nội · Thu ngân"), step: 0,
+          badge: B("Auto", "Tự động"), check: true,
           earnings: 8500000 + 980769, deductions: 680000 + 127500 + 85000 },
-        { title: "Đỗ Thị Lan", code: "NV0021", sub: EN("Retail — Hà Nội · Store supervisor"), step: 2,
-          badge: EN("Manual"), earnings: 16100000, deductions: 1370000, download: true },
+        { title: "Đỗ Thị Lan", code: "NV0021",
+          sub: B("Retail — Hà Nội · Store supervisor", "Bán lẻ — Hà Nội · Giám sát cửa hàng"), step: 2,
+          badge: B("Manual", "Thủ công"), earnings: 16100000, deductions: 1370000, download: true },
       ],
       get counts() {
-        return [[EN("Settlements"), this.rows.length],
-                [EN("Ready to check"), this.rows.filter((r) => r.check).length],
-                [EN("Manual"), this.rows.filter((r) => r.badge.en === "Manual").length]];
+        return [[B("Settlements", "Quyết toán"), this.rows.length],
+                [B("Ready to check", "Cần kiểm tra"), this.rows.filter((r) => r.check).length],
+                [B("Manual", "Nhập tay"), this.rows.filter((r) => r.badge.en === "Manual").length]];
       },
       get money() {
         const e = this.rows.reduce((t, r) => t + r.earnings, 0);
         const d = this.rows.reduce((t, r) => t + r.deductions, 0);
-        return [{ label: EN("Net payable"), v: e - d, icon: "banknote" },
-                { label: EN("Earnings"), v: e, icon: "trending-up" },
-                { label: EN("Deductions"), v: d, icon: "receipt" }];
+        return [{ label: B("Net payable", "Thực trả"), v: e - d, icon: "banknote" },
+                { label: B("Earnings", "Thu nhập"), v: e, icon: "trending-up" },
+                { label: B("Deductions", "Khấu trừ"), v: d, icon: "receipt" }];
       },
       /* The three steps a settlement travels (fnf_approval.py: draft/returned →
-         pending → approved), with no Vietnamese in the product either. */
+         pending → approved), titled by `_fnf_steps` in the reader's language. */
       get steps() {
         const at = (i) => this.rows.filter((r) => r.step === i).length;
-        return [{ label: EN("Being prepared"), count: at(0) },
-                { label: EN("Waiting for approval"), count: at(1) },
-                { label: EN("Approved"), count: at(2) }];
+        return [{ label: B("Being prepared", "Đang chuẩn bị"), count: at(0) },
+                { label: B("Waiting for approval", "Chờ phê duyệt"), count: at(1) },
+                { label: B("Approved", "Đã phê duyệt"), count: at(2) }];
       },
       facets: [
-        { label: EN("Source"), chips: [EN("Auto"), EN("Manual")] },
-        { label: EN("Department"), chips: [EN("Retail — Hà Nội"), EN("F&B — Hà Nội")] },
+        { label: B("Source", "Nguồn"), chips: [B("Auto", "Tự động"), B("Manual", "Thủ công")] },
+        { label: B("Department", "Phòng ban"),
+          chips: [B("Retail — Hà Nội", "Bán lẻ — Hà Nội"), B("F&B — Hà Nội", "F&B — Hà Nội")] },
       ],
-      metrics: [EN("Net payable")],
+      metrics: [B("Net payable", "Thực trả")],
+      /* The drawer's subtitle is the settlement's reference, which the monthly
+         load writes as FNF/<name>/<last day> (payroll_import_batch.py) — data,
+         the same in both languages. Its sections, in the product's order:
+         Who, Settlement, Money, Breakdown, Trace (Who and Money left out here). */
       drawer: {
-        title: "Bùi Thị Hạnh", sub: EN("Settlement · 31/07/2026"),
+        title: "Bùi Thị Hạnh", sub: B("FNF/Bùi Thị Hạnh/2026-07-31", "FNF/Bùi Thị Hạnh/2026-07-31"),
         sections: [
-          { label: EN("Settlement"), fields: [[EN("Settlement date"), "31/07/2026"],
-                                              [EN("State"), EN("Being prepared · Ready to check")],
-                                              [EN("Source"), EN("Auto")]] },
-          { label: EN("Breakdown"), fields: [[EN("Basic salary"), 8500000],
-                                             [EN("Unused leave"), 980769],
-                                             [EN("Social insurance"), -680000],
-                                             [EN("Health insurance"), -127500],
-                                             [EN("Unemployment insurance"), -85000]] },
-          { label: EN("Trace"), fields: [[EN("Import batch"), EN("July 2026 pay data")]] },
+          { label: B("Settlement", "Quyết toán"), fields: [[B("Settlement date", "Ngày quyết toán"), "31/07/2026"],
+                                                           [B("Source", "Nguồn"), B("Auto", "Tự động")]] },
+          { label: B("Breakdown", "Chi tiết"), fields: [[B("Basic salary", "Lương cơ bản"), 8500000],
+                                                        [B("Unused leave", "Phép chưa nghỉ"), 980769],
+                                                        [B("Social insurance", "Bảo hiểm xã hội"), -680000],
+                                                        [B("Health insurance", "Bảo hiểm y tế"), -127500],
+                                                        [B("Unemployment insurance", "Bảo hiểm thất nghiệp"), -85000]] },
+          { label: B("Trace", "Nguồn gốc"),
+            fields: [[B("Payroll batch", "Đợt dữ liệu lương"), B("July 2026 pay data", "Dữ liệu lương tháng 7/2026")]] },
         ],
       },
     },
@@ -726,38 +741,53 @@ const PRACTICE = {
        whose pay changed mid-month (the pay data import splits the month at the
        change) and a person who was here for part of it (pb_workseg writes old =
        new = the monthly amount, and the days do the work). The DAYS are only in
-       the drawer, never on the row, and there is no "factor" on this screen. */
+       the drawer, never on the row, and there is no "factor" on this screen.
+       The row's and the drawer's subtitle is the component's name. */
     proration: {
       tab: "proration",
-      subtitle: EN("Every prorated component, old → new → prorated, per employee."),
+      subtitle: B("Every prorated component, old → new → prorated, per employee.",
+                  "Mọi thành phần tính theo tỷ lệ, cũ → mới → theo tỷ lệ, theo từng nhân viên."),
       rows: [
-        { title: "Vũ Thị Hoa", code: "NV0026", sub: EN("Basic salary"), badge: EN("Posted"), kind: "change",
+        { title: "Vũ Thị Hoa", code: "NV0026", sub: B("Basic salary", "Lương cơ bản"),
+          badge: B("Posted", "Đã vào sổ"), kind: "change",
           old: 9500000, new: 11000000, v: Math.round(9500000 * 15 / 31 + 11000000 * 16 / 31) },
-        { title: "Bùi Anh Tuấn", code: "NV0052", sub: EN("Basic salary"), badge: EN("Posted"), kind: "joiner",
+        { title: "Bùi Anh Tuấn", code: "NV0052", sub: B("Basic salary", "Lương cơ bản"),
+          badge: B("Posted", "Đã vào sổ"), kind: "joiner",
           old: 10000000, new: 10000000, v: Math.round(10000000 * 10 / 31) },
       ],
       get counts() {
-        return [[EN("Proration lines"), this.rows.length], [EN("Employees"), this.rows.length],
-                [EN("Batches"), 1]];
+        return [[B("Proration lines", "Dòng phân bổ"), this.rows.length],
+                [B("Employees", "Nhân viên"), this.rows.length],
+                [B("Batches", "Đợt dữ liệu"), 1]];
       },
       get money() {
-        return [{ label: EN("Total prorated"), v: this.rows.reduce((t, r) => t + r.v, 0), icon: "calculator" }];
+        return [{ label: B("Total prorated", "Tổng theo tỷ lệ"), v: this.rows.reduce((t, r) => t + r.v, 0),
+                  icon: "calculator" }];
       },
       facets: [
-        { label: EN("Status"), chips: [EN("Draft"), EN("Posted")] },
-        { label: EN("Component"), chips: [EN("Basic salary"), EN("Night-shift allowance")] },
-        { label: EN("Batch"), chips: [EN("July 2026 pay data"), EN("June 2026 pay data")] },
+        { label: B("Status", "Trạng thái"), chips: [B("Draft", "Nháp"), B("Posted", "Đã vào sổ")] },
+        { label: B("Component", "Thành phần"),
+          chips: [B("Basic salary", "Lương cơ bản"), B("Night-shift allowance", "Phụ cấp ca đêm")] },
+        { label: B("Batch", "Đợt dữ liệu"),
+          chips: [B("July 2026 pay data", "Dữ liệu lương tháng 7/2026"),
+                  B("June 2026 pay data", "Dữ liệu lương tháng 6/2026")] },
       ],
-      metrics: [EN("Old"), EN("New"), EN("Prorated")],
+      metrics: [B("Old", "Cũ"), B("New", "Mới"), B("Prorated", "Theo tỷ lệ")],
       drawer: {
-        title: "Vũ Thị Hoa", sub: EN("Basic salary · promoted on 16/07/2026"),
+        title: "Vũ Thị Hoa", sub: B("Basic salary", "Lương cơ bản"),
         sections: [
-          { label: EN("Period"), fields: [[EN("Effective date"), "16/07/2026"], [EN("Period"), EN("July 2026")],
-                                          [EN("Basis"), EN("Calendar Days")], [EN("Period days"), "31"],
-                                          [EN("Old days"), "15"], [EN("New days"), "16"]] },
-          { label: EN("Money"), fields: [[EN("Old amount"), 9500000], [EN("New amount"), 11000000],
-                                         [EN("Prorated"), Math.round(9500000 * 15 / 31 + 11000000 * 16 / 31)]] },
-          { label: EN("Trace"), fields: [[EN("Import batch"), EN("July 2026 pay data")]] },
+          { label: B("Period", "Kỳ"), fields: [[B("Effective date", "Ngày hiệu lực"), "16/07/2026"],
+                                              [B("Period", "Kỳ"), "01/07/2026 → 31/07/2026"],
+                                              [B("Basis", "Cơ sở tính"), B("Calendar Days", "Ngày lịch")],
+                                              [B("Period days", "Số ngày trong kỳ"), "31"],
+                                              [B("Old days", "Số ngày mức cũ"), "15"],
+                                              [B("New days", "Số ngày mức mới"), "16"]] },
+          { label: B("Money", "Số tiền"), fields: [[B("Old amount", "Số tiền cũ"), 9500000],
+                                                   [B("New amount", "Số tiền mới"), 11000000],
+                                                   [B("Prorated", "Theo tỷ lệ"),
+                                                    Math.round(9500000 * 15 / 31 + 11000000 * 16 / 31)]] },
+          { label: B("Trace", "Nguồn gốc"),
+            fields: [[B("Import batch", "Đợt nhập dữ liệu"), B("July 2026 pay data", "Dữ liệu lương tháng 7/2026")]] },
         ],
       },
     },
@@ -768,35 +798,48 @@ const PRACTICE = {
        allowance started on 16 June (15 of June's 30 days). */
     retro: {
       tab: "retro",
-      subtitle: EN("Retroactive deltas, old → new → delta, per employee."),
+      subtitle: B("Retroactive deltas, old → new → delta, per employee.",
+                  "Chênh lệch hồi tố, cũ → mới → chênh lệch, theo từng nhân viên."),
       rows: [
-        { title: "Vũ Minh Khoa", code: "NV0038", sub: EN("Basic salary"), badge: EN("Posted"),
+        { title: "Vũ Minh Khoa", code: "NV0038", sub: B("Basic salary", "Lương cơ bản"),
+          badge: B("Posted", "Đã vào sổ"),
           old: 11000000, new: 11800000, v: 800000 },
-        { title: EMP.duc.name, code: EMP.duc.code, sub: EN("Night-shift allowance"), badge: EN("Posted"),
+        { title: EMP.duc.name, code: EMP.duc.code, sub: B("Night-shift allowance", "Phụ cấp ca đêm"),
+          badge: B("Posted", "Đã vào sổ"),
           old: 0, new: 300000, v: Math.round(300000 * 15 / 30) },
       ],
       get counts() {
-        return [[EN("Retro lines"), this.rows.length], [EN("Employees"), this.rows.length], [EN("Batches"), 1]];
+        return [[B("Retro lines", "Dòng hồi tố"), this.rows.length],
+                [B("Employees", "Nhân viên"), this.rows.length],
+                [B("Batches", "Đợt dữ liệu"), 1]];
       },
       get money() {
-        return [{ label: EN("Total delta"), v: this.rows.reduce((t, r) => t + r.v, 0), icon: "trending-up" }];
+        return [{ label: B("Total delta", "Tổng chênh lệch"), v: this.rows.reduce((t, r) => t + r.v, 0),
+                  icon: "trending-up" }];
       },
       facets: [
-        { label: EN("Status"), chips: [EN("Posted"), EN("Cancelled")] },
-        { label: EN("Component"), chips: [EN("Basic salary"), EN("Night-shift allowance")] },
-        { label: EN("Applied batch"), chips: [EN("July 2026 pay data")] },
+        { label: B("Status", "Trạng thái"), chips: [B("Posted", "Đã vào sổ"), B("Cancelled", "Đã hủy")] },
+        { label: B("Component", "Thành phần"),
+          chips: [B("Basic salary", "Lương cơ bản"), B("Night-shift allowance", "Phụ cấp ca đêm")] },
+        { label: B("Applied batch", "Đợt áp dụng"),
+          chips: [B("July 2026 pay data", "Dữ liệu lương tháng 7/2026")] },
       ],
-      metrics: [EN("Old"), EN("New"), EN("Delta")],
+      metrics: [B("Old", "Cũ"), B("New", "Mới"), B("Delta", "Chênh lệch")],
       drawer: {
-        title: "Vũ Minh Khoa", sub: EN("Basic salary · BASIC"),
+        title: "Vũ Minh Khoa", sub: B("Basic salary", "Lương cơ bản"),
         sections: [
-          { label: EN("Period"), fields: [[EN("Retro period"), "01/06/2026 – 30/06/2026"],
-                                          [EN("Change effective"), "01/06/2026"]] },
-          { label: EN("Money"), fields: [[EN("Old amount"), 11000000], [EN("New amount"), 11800000],
-                                         [EN("Delta"), 800000]] },
-          { label: EN("Trace"), fields: [[EN("Applied in batch"), EN("July 2026 pay data")],
-                                         [EN("Applied in payslip"), EN("Vũ Minh Khoa — July 2026")],
-                                         [EN("Original payslip"), EN("Vũ Minh Khoa — June 2026")]] },
+          { label: B("Period", "Kỳ"), fields: [[B("Retro period", "Kỳ hồi tố"), "01/06/2026 → 30/06/2026"],
+                                              [B("Change effective", "Thay đổi có hiệu lực từ"), "01/06/2026"]] },
+          { label: B("Money", "Số tiền"), fields: [[B("Old amount", "Số tiền cũ"), 11000000],
+                                                   [B("New amount", "Số tiền mới"), 11800000],
+                                                   [B("Delta", "Chênh lệch"), 800000]] },
+          { label: B("Trace", "Nguồn gốc"),
+            fields: [[B("Applied in batch", "Áp dụng trong đợt"),
+                      B("July 2026 pay data", "Dữ liệu lương tháng 7/2026")],
+                     [B("Applied in payslip", "Áp dụng trong phiếu lương"),
+                      B("Vũ Minh Khoa — July 2026", "Vũ Minh Khoa — Tháng 7/2026")],
+                     [B("Original payslip", "Phiếu lương gốc"),
+                      B("Vũ Minh Khoa — June 2026", "Vũ Minh Khoa — Tháng 6/2026")]] },
         ],
       },
     },
@@ -807,7 +850,13 @@ const PRACTICE = {
      money file and the payslips, each through its own approval; Calendar says
      when changes close and when people are paid; Awards puts one-off money
      into a draft run. Words are the product's, Vietnamese where the product
-     has it (the rest stays English, as on the screen — ledger LR44). */
+     has it (the rest stays English, as on the screen — ledger LR44).
+     LEARN REFRESH step 6: Calendar's words are now Vietnamese (pb_comp_ben
+     vi_VN.po; month names come from `_month_short` / `_month_label`, "Tháng 7").
+     Awards' step strip and buttons are too, but each ROW's kind, approval and
+     "where it has got to" come from plain Python dicts in comp_common.py
+     (`_row`, pb_incentives.py) and its month from strftime("%b %Y") — those
+     stay English on the screen in both languages, so they stay EN() here. */
   afterrun: {
     /* Results reads the same four people the Payslips replica shows, from the
        same derived EMP figures, with June beside July. */
@@ -833,10 +882,10 @@ const PRACTICE = {
       counts: [[B("months planned", "tháng đã lên kế hoạch"), 12], [B("still ahead", "còn phía trước"), 5],
                [B("closed", "đã đóng"), 7], [B("reminders sent", "lời nhắc đã gửi"), 21]],
       months: [
-        { m: B("Jul", "Th7"), closes: "25/07", paid: "01/08", closed: true },
-        { m: B("Aug", "Th8"), closes: "25/08", paid: "01/09", next: true },
-        { m: B("Sep", "Th9"), closes: "25/09", paid: "01/10" },
-        { m: B("Oct", "Th10"), closes: "26/10", paid: "01/11" },
+        { m: B("Jul", "Tháng 7"), closes: "25/07", paid: "01/08", closed: true },
+        { m: B("Aug", "Tháng 8"), closes: "25/08", paid: "01/09", next: true },
+        { m: B("Sep", "Tháng 9"), closes: "25/09", paid: "01/10" },
+        { m: B("Oct", "Tháng 10"), closes: "26/10", paid: "01/11" },
       ],
     },
     awards: {
@@ -848,11 +897,11 @@ const PRACTICE = {
               [B("Agreed, not in a run", "Đã đồng ý, chưa vào kỳ lương"), 1],
               [B("In a pay run", "Trong một kỳ lương"), 1], [B("Paid", "Đã trả"), 2]],
       rows: [
-        { who: EMP.mai.name, kind: EN("Spot award"), amount: 500000, paidIn: EN("July 2026"),
+        { who: EMP.mai.name, kind: EN("Spot award"), amount: 500000, paidIn: EN("Jul 2026"),
           approval: EN("Approved"), where: EN("In the next pay run"), run: RUN.name },
-        { who: EMP.trang.name, kind: EN("Incentive"), amount: 1500000, paidIn: EN("July 2026"),
+        { who: EMP.trang.name, kind: EN("Incentive"), amount: 1500000, paidIn: EN("Jul 2026"),
           approval: EN("Approved"), where: EN("Approved"), run: EN("—") },
-        { who: EMP.hung.name, kind: EN("Bonus"), amount: 2000000, paidIn: EN("August 2026"),
+        { who: EMP.hung.name, kind: EN("Bonus"), amount: 2000000, paidIn: EN("Aug 2026"),
           approval: EN("Waiting for approval"), where: EN("—"), run: EN("—") },
       ],
     },
@@ -997,13 +1046,20 @@ const PRACTICE = {
       mappings: 6, feeds: 1, staged: 214, synced: 0 },
   ],
   /* The Zoho connector's own screen (pb_import_advanced connector_cockpit):
-     the action bar and the "Automatic fetch" panel. None of its words have
-     Vietnamese in the product. */
+     the action bar and the "Automatic fetch" panel. LEARN REFRESH step 6: its
+     words now have Vietnamese (pb_import_advanced vi_VN.po). The three actions
+     are module-scoped Python `_()`; the rest are template strings, and "Open
+     Mapping" is the one whose msgid two modules translate differently
+     (pb_import_advanced "Mở bản đồ", pb_records "Mở Ánh xạ" — which wins
+     depends on module load order), so the replica says the Mapping name. The
+     last line stays as it was: the schedule sentence has no Vietnamese. */
   connectorScreen: {
     name: "Zoho People",
-    actions: [EN("Test connection"), EN("Pull data"), EN("Fetch fields")],
-    more: [EN("Configure connection"), EN("Load pay data…"), EN("Open Mapping")],
-    schedule: { every: EN("Monthly"), day: 26, at: "06:00", next: "26/08/2026 06:00",
+    actions: [B("Test connection", "Kiểm tra kết nối"), B("Pull data", "Kéo dữ liệu"),
+              B("Fetch fields", "Tìm nạp các trường")],
+    more: [B("Configure connection", "Định cấu hình kết nối"), B("Load pay data…", "Tải dữ liệu thanh toán…"),
+           B("Open Mapping", "Mở Ánh xạ")],
+    schedule: { every: B("Monthly", "Hằng tháng"), day: 26, at: "06:00", next: "26/08/2026 06:00",
                 last: EN("Fetched 312 records · 26/07/2026 06:00") },
   },
   /* Arrivals from the connected system (pb_zoho_bridge inbox): changes the
@@ -1072,30 +1128,36 @@ const PRACTICE = {
         blocker: B("No bank account on file", "Chưa có tài khoản ngân hàng") },
     ],
     /* LEARN REFRESH step 5 — the per-row "Contract" drawer (pb_contracts
-       contract_360), opened on Mai. The drawer's words have no Vietnamese in
-       the product (ledger LR44) except the source chips, so the replica shows
-       them as the screen does. Mai's contract names NO salary structure — so
-       the pay scheme pays her, which is the Salary Structures lesson's point
-       seen from the other side. */
+       contract_360), opened on Mai. Mai's contract names NO salary structure —
+       so the pay scheme pays her, which is the Salary Structures lesson's point
+       seen from the other side.
+       LEARN REFRESH step 6: the drawer's words are now Vietnamese (pb_contracts
+       vi_VN.po: `_TERMS` labels are `_lt`, the state and "Open-ended" are `_()`).
+       One value stays English: "Paid" reads the contract's pay-schedule choice,
+       whose only Vietnamese sits in an old-format om_hr_payroll .po the loader
+       does not read. Component names are the practice company's data. */
     drawer: {
-      name: EMP.mai.name, ref: "HĐ-2023-0312", ends: EN("Open-ended"), state: EN("Running"),
+      name: EMP.mai.name, ref: "HĐ-2023-0312",
+      ends: B("Open-ended", "Không xác định thời hạn"), state: B("Running", "Đang hiệu lực"),
       terms: [
-        [EN("The money"), [[EN("Monthly wage"), EMP.mai.base], [EN("Salary structure"), EN("—")],
-                           [EN("Paid"), EN("Monthly")]]],
-        [EN("Dates"), [[EN("Contract starts"), "01/03/2023"], [EN("Contract ends"), EN("—")]]],
+        [B("The money", "Tiền lương"), [[B("Monthly wage", "Lương hàng tháng"), EMP.mai.base],
+                                        [B("Salary structure", "Cấu trúc lương"), B("—", "—")],
+                                        [B("Paid", "Kỳ trả lương"), EN("Monthly")]]],
+        [B("Dates", "Ngày tháng"), [[B("Contract starts", "Hợp đồng bắt đầu"), "01/03/2023"],
+                                    [B("Contract ends", "Hợp đồng kết thúc"), B("—", "—")]]],
       ],
       scheme: RUN.scheme,
       comps: [
-        { code: "BASIC", name: EN("Basic salary"), v: EMP.mai.base,
+        { code: "BASIC", name: B("Basic salary", "Lương cơ bản"), v: EMP.mai.base,
           src: B("Held on this contract", "Lưu trên hợp đồng này"), tone: "b" },
-        { code: "ALW", name: EN("Lunch allowance"), v: EMP.mai.allowance,
+        { code: "ALW", name: B("Lunch allowance", "Phụ cấp ăn trưa"), v: EMP.mai.allowance,
           src: B("Held on this contract", "Lưu trên hợp đồng này"), tone: "b" },
-        { code: "OT", name: EN("Overtime"), v: 0,
+        { code: "OT", name: B("Overtime", "Tăng ca"), v: 0,
           src: B("From a pay data file", "Từ tệp dữ liệu lương"), tone: "ok" },
       ],
       history: [
-        { what: EN("Monthly wage"), from: 11000000, to: EMP.mai.base, when: "01/01/2026",
-          src: EN("Changed on the contract") },
+        { what: B("Monthly wage", "Lương hàng tháng"), from: 11000000, to: EMP.mai.base, when: "01/01/2026",
+          src: B("Changed on the contract", "Đã thay đổi trên hợp đồng") },
       ],
     },
   },
@@ -1804,7 +1866,7 @@ const PRACTICE = {
      a while and comes back by itself. */
   access: {
     roles: [
-      { name: B("Payroll officer", "Chuyên viên tính lương"), line: B("Runs the monthly pay run and fixes its data.", "Chạy đợt lương hằng tháng và sửa dữ liệu của nó."), held: 2 },
+      { name: B("Payroll officer", "Nhân viên tính lương"), line: B("Runs the monthly pay run and fixes its data.", "Chạy đợt lương hằng tháng và sửa dữ liệu của nó."), held: 2 },
       { name: B("HR lead", "Trưởng nhân sự"), line: B("Reviews pay runs and people changes.", "Soát xét đợt lương và thay đổi nhân sự."), held: 1 },
       { name: B("Line manager", "Quản lý trực tiếp"), line: B("Sees their own team and approves its time.", "Xem nhóm của mình và duyệt giờ công của nhóm."), held: 6 },
     ],

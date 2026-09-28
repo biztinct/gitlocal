@@ -479,3 +479,40 @@ Draft with the reason (NOT "cancels 48 payslips"). Closeout: `docs/handovers/APP
   pb_import_advanced, pb_hr_workforce, pb_budget, pb_mission, pb_today, pb_audit, pb_workforce_insights,
   pb_explorer, pb_probation. pb_hr_payroll_formula: Python + .po only (no bump; net_role selection VI written
   to `ir_model_fields_selection` by SQL on each DB).
+
+## Step 6 gotchas (2026-09-28)
+
+- LR54 **Nothing may touch the cursor between `cr.execute` and `cr.fetchall`.** `get_param` (and any ORM read that
+  misses the cache) runs its own query on the same cursor, and the fetch then returns THAT query's rows — the first
+  `pb_review_flags` returned `{}` for every run. Read settings before the query.
+- LR55 **`hr_payslip` has no index on `employee_id`.** A per-payslip `LATERAL` "previous payslip" lookup seq-scanned the
+  table once per row: 4.5 ms × 900 = 13 s for one run. Set-based instead: `DISTINCT ON (c.id)` over a join, and the
+  net line as `DISTINCT ON (slip_id)` over just those payslips' lines (0.4 s).
+- LR56 **The settlement summary crashed from 2026-09-22 (6d1f8d4d6) until step 6.** `_build_component_summary` wraps
+  rule values in a plain `_Line` object and called `pb_pay_band()` / `_fields` on it — AttributeError on every
+  settlement with a figure, so hand-made ones failed and the monthly load's automatic ones were silently never made.
+  The summary now reads the rule's own `net_role` (info / mixed / employer_cost are not money on a settlement).
+- LR57 **"Demo boards are empty" was mostly the reader, not the data** (corrects LR42). The QA login's default company
+  was 1 ("Your Company"); the demo world lives in company 5. With `cids=5` Exits (9 leavers), Probation (10), Growth
+  plans, Hiring (13) are full. Lifecycle › Contracts still shows zeros to a reader without `hr.contract` read — the
+  board swallows the refusal (`_safe`) and says "nothing ending" instead of "no access" (owner item).
+- LR58 **`_register` is an Odoo model attribute** (a bool). A helper method named `_register` on a model fails with
+  "'bool' object is not callable". Prefix helpers (`_walk_register`).
+- LR59 **A migration only sees the modules its module depends on.** pb_demo's 19.0.1.12.0 migration found no
+  `pb.pay.review` (pb_pay is not a dependency) and skipped the review; it was laid by a shell run of the same
+  idempotent method afterwards. Runtime (`action_generate_all`) has the full registry.
+- LR60 **The default pay-run route cannot be walked by one demo login**: `independent` hands step 1 to the backup when
+  the submitter holds it, and HR lead review is per part of the business (no seat per scheme on the demo). The demo
+  company's route is published with HR lead company-wide and independence off (3 steps and "different people per
+  step" kept). Tenants keep theirs.
+- LR61 `rsync --delete a b c dest/` deletes every OTHER directory in `dest/` — never share a staging dir between
+  sessions/agents (step 6 used /tmp/s6stage for the parent, /tmp/s6t5 for the translation agent).
+- LR62 postgres cannot read `/odoo/backups` (like it cannot write there): restore with
+  `sudo cat x.dump | sudo -u postgres pg_restore -d clone`.
+- LR63 **The live server's cron threads attach to a freshly restored clone** (the dbfilter limits HTTP, not cron) —
+  three sessions held `s6clone` open. Immediately after a restore: `UPDATE ir_cron SET active=false; UPDATE
+  ir_mail_server SET active=false; DELETE FROM mail_mail;`, and terminate backends before `dropdb`.
+- LR64 The QA login holds `pb_pip.group_pip_head` directly, so a browser check of Growth plans with it does not prove
+  the administrator fallback; `pb_pip/tests/test_admin_access.py` does.
+- LR65 Hùng's take-home in the practice company is +26.4% on June — UNDER the 30% default — so lessons teach the new
+  flag and still keep "the overtime jump a person must spot" (truth over polish).

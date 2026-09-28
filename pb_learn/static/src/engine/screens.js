@@ -296,9 +296,9 @@ function ledgerHTML(key) {
             </aside>
         </div>`;
 }
-const EN_DOWNLOAD = B("Download", "Download");
-const EN_READY_CHECK = B("Ready to check", "Ready to check");
-const EN_SEND_APPROVAL = B("Send for approval", "Send for approval");
+const EN_DOWNLOAD = B("Download", "Tải xuống");
+const EN_READY_CHECK = B("Ready to check", "Cần kiểm tra");
+const EN_SEND_APPROVAL = B("Send for approval", "Gửi duyệt");
 
 /* -------------------------------------------- the practice employee form
    DRAWN INLINE, UNDER THE ROSTER, AND SAID SO ON THE CARD.
@@ -599,17 +599,17 @@ export const SCREENS = {
                     <h3>${esc(dr.name)}</h3>
                     <span class="lrn-sub2">${esc(dr.ref)}</span>
                     <div class="lrn-strip"><span class="lrn-chip">${esc(tx(dr.ends))}</span><span class="lrn-chip ok">${esc(tx(dr.state))}</span></div>
-                    <div class="lrn-tabs" data-coach="cd-tabs">${[EN("Terms"), EN("Components"), EN("History")].map(
+                    <div class="lrn-tabs" data-coach="cd-tabs">${[B("Terms", "Điều khoản"), B("Components", "Thành phần"), B("History", "Lịch sử")].map(
                         (t, i) => `<button aria-selected="${i === 0}">${esc(tx(t))}</button>`).join("")}</div>
                     <div data-coach="cd-body">
                         <div class="lrn-panel" data-coach="rep-cd-terms">${terms}</div>
                         <div class="lrn-panel" data-coach="rep-cd-comps">
-                            <span class="lrn-sub2">${esc(tx(EN("Paid by")))}${SP}<b>${esc(dr.scheme)}</b></span>${comps}</div>
+                            <span class="lrn-sub2">${esc(tx(B("Paid by", "Trả lương theo")))}${SP}<b>${esc(dr.scheme)}</b></span>${comps}</div>
                         <div class="lrn-panel" data-coach="rep-cd-history">${hist}</div>
                     </div>
                     <div class="lrn-strip lrn-cdsave" data-coach="cd-save">
-                        <button class="lrn-btn sm ghost">${esc(tx(EN("Discard")))}</button>
-                        <button class="lrn-btn sm pri">${ic("check")}${esc(tx(EN("Save 1 change")))}</button>
+                        <button class="lrn-btn sm ghost">${esc(tx(B("Discard", "Bỏ thay đổi")))}</button>
+                        <button class="lrn-btn sm pri">${ic("check")}${esc(tx(B("Save 1 change", "Lưu 1 thay đổi")))}</button>
                     </div>
                 </aside>
             </div>
@@ -645,10 +645,10 @@ export const SCREENS = {
             </div>
             <div class="lrn-ynums" data-coach="ct-kpis">${[
                     [B("Running", "Đang hiệu lực"), N(k.running)],
-                    [EN("Expiring within 30 days"), N(k.expiring)],
+                    [B("Expiring within 30 days", "Hết hạn trong 30 ngày"), N(k.expiring)],
                     [B("Draft", "Nháp"), N(k.draft)],
                     [B("Expired", "Đã hết hạn"), N(k.expired)],
-                    [EN("Monthly wage"), M(k.wageBill)],
+                    [B("Monthly wage", "Lương hàng tháng"), M(k.wageBill)],
                     [B("Average wage", "Lương trung bình"), M(k.avgWage)]].map(
                     ([l, v]) => `<span><b>${esc(v)}</b>${SP}${esc(tx(l))}</span>`).join("")}</div>
             <div class="lrn-tabs" data-coach="ct-filters">
@@ -821,8 +821,8 @@ export const SCREENS = {
     reports() {
         const r = PRACTICE.reports.report;
         const bg = PRACTICE.reports.budget;
-        const kpis = [[EN("Employees"), N(r.employees)], [EN("Total Gross"), M(r.gross)],
-                      [EN("Total Deductions"), M(r.deductions)], [EN("Total Net Pay"), M(r.net)], [EN("Changes"), N(r.changes)]]
+        const kpis = [[B("Employees", "Nhân viên"), N(r.employees)], [B("Total Gross", "Tổng thu nhập"), M(r.gross)],
+                      [B("Total Deductions", "Tổng khấu trừ"), M(r.deductions)], [B("Total Net Pay", "Tổng thực lĩnh"), M(r.net)], [B("Changes", "Thay đổi"), N(r.changes)]]
             .map(([l, v]) => `<div class="lrn-kpi"><div class="lrn-kv">${esc(v)}</div><div class="lrn-kt"><span>${esc(tx(l))}</span></div></div>`).join("");
         const tiles = bg.functions.map((f) => `<div class="lrn-panel lrn-pcard"><b>${esc(tx(f.name))}</b>
             <span class="lrn-sub2">${esc(M(f.spent))}${SP}/${SP}${esc(M(f.budget))}</span>
@@ -833,8 +833,8 @@ export const SCREENS = {
             <div class="lrn-panel">
                 <h3>${ic("bar-chart")}${esc(tx(B("Payroll Report", "Báo cáo lương")))}</h3>
                 <div class="lrn-strip">
-                    <span class="lrn-chip" data-coach="rp-pick">${esc(tx(RUN.name))}${SP}(${N(RUN.employees)}${SP}slips)</span>
-                    <span class="lrn-strip" data-coach="rp-tabs">${[EN("Earnings"), EN("Deductions"), EN("Dept Summary")].map(
+                    <span class="lrn-chip" data-coach="rp-pick">${esc(tx(RUN.name))}${SP}(${N(RUN.employees)}${SP}${esc(tx(B("slips", "phiếu lương")))})</span>
+                    <span class="lrn-strip" data-coach="rp-tabs">${[B("Earnings", "Thu nhập"), B("Deductions", "Khấu trừ"), B("Dept Summary", "Tổng hợp theo phòng ban")].map(
                         (t, i) => `<button class="lrn-chip ${i === 0 ? "b" : ""}">${esc(tx(t))}</button>`).join("")}</span>
                 </div>
                 <div class="lrn-grid g5" data-coach="rp-kpis">${kpis}</div>
@@ -1576,7 +1576,7 @@ export const SCREENS = {
                     <span class="lrn-sub2">${esc(counts)}</span></span>
                 <span class="lrn-rr"><button class="lrn-link">${N(c.mappings)}${SP}${esc(tx(B("mappings", "ánh xạ")))}</button>
                     <span class="lrn-chip ${c.status === "err" ? "danger" : "ok"}">${
-                        esc(tx(c.status === "err" ? EN("Error") : EN("Connected")))}</span></span>
+                        esc(tx(c.status === "err" ? B("Error", "Lỗi") : B("Connected", "Đã kết nối")))}</span></span>
             </div>`;
         }).join("");
         const nums = [[B("Connectors", "Bộ kết nối"), k.connectors], [B("Connected", "Đã kết nối"), k.connected],
@@ -1609,10 +1609,10 @@ export const SCREENS = {
                         `<button class="lrn-btn sm ${i === 1 ? "pri" : "ghost"}">${esc(tx(a))}</button>`).join("")}</div>
                     <div class="lrn-strip">${cs.more.map((a) => `<button class="lrn-btn sm ghost">${esc(tx(a))}</button>`).join("")}</div>
                     <div class="lrn-panel" data-coach="ic-fetch">
-                        <b>${ic("clock")}${esc(tx(EN("Automatic fetch")))}</b>
-                        <label class="lrn-sub2">${ic("check")}${esc(tx(EN("Fetch this system's data automatically")))}</label>
-                        <div class="lrn-kv2"><span>${esc(tx(EN("How often")))}</span><b>${esc(tx(cs.schedule.every))}${DOT}${esc(tx(EN("On day")))}${SP}${cs.schedule.day}${DOT}${esc(cs.schedule.at)}</b></div>
-                        <div class="lrn-kv2"><span>${esc(tx(EN("Next run")))}</span><b>${esc(cs.schedule.next)}</b></div>
+                        <b>${ic("clock")}${esc(tx(B("Automatic fetch", "Tự động lấy dữ liệu")))}</b>
+                        <label class="lrn-sub2">${ic("check")}${esc(tx(B("Fetch this system's data automatically", "Tự động lấy dữ liệu từ hệ thống này")))}</label>
+                        <div class="lrn-kv2"><span>${esc(tx(B("How often", "Tần suất")))}</span><b>${esc(tx(cs.schedule.every))}${DOT}${esc(tx(B("On day", "Vào ngày")))}${SP}${cs.schedule.day}${DOT}${esc(cs.schedule.at)}</b></div>
+                        <div class="lrn-kv2"><span>${esc(tx(B("Next run", "Lần chạy tiếp theo")))}</span><b>${esc(cs.schedule.next)}</b></div>
                         <span class="lrn-sub2">${esc(tx(cs.schedule.last))}</span>
                     </div>
                 </aside>
@@ -2709,16 +2709,16 @@ export const SCREENS = {
     paycal() {
         const c = PRACTICE.afterrun.paycal;
         const cards = c.months.map((m) => `<div class="lrn-panel lrn-pcard ${m.closed ? "closed" : ""}${SP}${m.next ? "next" : ""}">
-            <b>${esc(tx(m.m))}</b><span class="lrn-chip ${m.closed ? "" : "ok"}">${esc(tx(m.closed ? EN("Closed") : EN("Open")))}</span>
-            <span class="lrn-sub2">${esc(tx(EN("Closes")))}${SP}${esc(m.closes)}</span>
+            <b>${esc(tx(m.m))}</b><span class="lrn-chip ${m.closed ? "" : "ok"}">${esc(tx(m.closed ? B("Closed", "Đã đóng") : B("Open", "Mở")))}</span>
+            <span class="lrn-sub2">${esc(tx(B("Closes", "Ngày chốt")))}${SP}${esc(m.closes)}</span>
             <span class="lrn-sub2">${esc(tx(B("Paid", "Đã trả")))}${SP}${esc(m.paid)}</span></div>`).join("");
-        const until = tx(EN("days until changes close for")) + SP + tx(c.month);
+        const until = tx(B("days until changes close for", "ngày nữa là chốt nhận thay đổi cho")) + SP + tx(c.month);
         return `
             <div class="lrn-herocta" data-coach="pc-hero">
                 ${ic("clock")}
-                <span><b>${N(c.days)}${SP}${esc(tx(EN("days")))}</b><br>
+                <span><b>${N(c.days)}${SP}${esc(tx(B("days", "ngày")))}</b><br>
                     <span class="lrn-sub2">${esc(until)}</span><br>
-                    <span class="lrn-sub2">${esc(tx(EN("Changes close")))}${SP}${esc(c.closes)}${SP}·${SP}${esc(tx(EN("people are paid")))}${SP}${esc(c.paid)}</span></span>
+                    <span class="lrn-sub2">${esc(tx(B("Changes close", "Chốt nhận thay đổi")))}${SP}${esc(c.closes)}${SP}·${SP}${esc(tx(B("people are paid", "trả lương")))}${SP}${esc(c.paid)}</span></span>
             </div>
             ${quietNums(c.counts, "")}
             <div class="lrn-grid g4" data-coach="pc-months">${cards}</div>`;
@@ -2728,13 +2728,14 @@ export const SCREENS = {
         const a = PRACTICE.afterrun.awards;
         const rows = a.rows.map((r) => `<tr><th>${esc(r.who)}</th><td>${esc(tx(r.kind))}</td><td>${esc(M(r.amount))}</td>
             <td>${esc(tx(r.paidIn))}</td><td>${esc(tx(r.approval))}</td><td>${esc(tx(r.where))}</td><td>${esc(tx(r.run))}</td></tr>`).join("");
-        const cols = ["Who", "Kind", "Amount", "Paid in", "Approval", "Where it has got to", "Pay run"]
-            .map((c) => `<th>${esc(c)}</th>`).join("");
+        const cols = [B("Who", "Ai"), B("Kind", "Loại"), B("Amount", "Số tiền"), B("Paid in", "Trả trong"),
+                      B("Approval", "Phê duyệt"), B("Where it has got to", "Đã đến bước nào"), B("Pay run", "Đợt lương")]
+            .map((c) => `<th>${esc(tx(c))}</th>`).join("");
         return `
             <div class="lrn-zhead"><span class="lrn-push"></span>
-                <button class="lrn-btn sm ghost">${ic("list-checks")}${esc(tx(EN("All awards")))}</button>
-                <button class="lrn-btn sm ghost" data-coach="aw-put">${ic("send")}${esc(tx(EN("Put into a pay run")))}</button>
-                <button class="lrn-btn sm pri">${ic("plus")}${esc(tx(EN("New award")))}</button></div>
+                <button class="lrn-btn sm ghost">${ic("list-checks")}${esc(tx(B("All awards", "Tất cả khoản thưởng")))}</button>
+                <button class="lrn-btn sm ghost" data-coach="aw-put">${ic("send")}${esc(tx(B("Put into a pay run", "Đưa vào đợt lương")))}</button>
+                <button class="lrn-btn sm pri">${ic("plus")}${esc(tx(B("New award", "Khoản thưởng mới")))}</button></div>
             ${quietNums(a.counts, "")}
             <div data-coach="aw-steps"><div class="lrn-steps">${stepButtons(a.steps.map(([l, n]) => ({ label: l, count: n })), B("", ""))}</div></div>
             <div class="lrn-panel lrn-rtwrap" data-coach="aw-table">
