@@ -7362,8 +7362,8 @@ msgstr "(các) thay đổi"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
-msgid "Change these in Mappings"
-msgstr "Thay đổi những điều này trong Bản đồ"
+msgid "Change these in Mapping"
+msgstr "Thay đổi những mục này trong Ánh xạ"
 
 #. module: pb_formula_studio
 #. odoo-javascript
@@ -7379,7 +7379,7 @@ msgstr ""
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
-msgid "Settings → Integrations → Mappings"
+msgid "Settings → Integrations → Mapping"
 msgstr "Cài đặt → Tích hợp → Ánh xạ"
 
 #. module: pb_formula_studio

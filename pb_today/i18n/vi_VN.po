@@ -24,7 +24,7 @@ msgstr "Trung bình của %(count)s đánh giá ca làm ẩn danh trong %(days)s
 #. odoo-javascript
 #: code:addons/pb_today/static/src/xml/pb_today.xml:0
 msgid "Board"
-msgstr "Ban"
+msgstr "Bảng"
 
 #. module: pb_today
 #. odoo-javascript
@@ -32,7 +32,7 @@ msgstr "Ban"
 #: code:addons/pb_today/static/src/js/pb_today.js:192
 #: code:addons/pb_today/static/src/js/pb_today.js:295
 msgid "Checked out"
-msgstr "Đăng xuất"
+msgstr "Đã về"
 
 #. module: pb_today
 #. odoo-javascript

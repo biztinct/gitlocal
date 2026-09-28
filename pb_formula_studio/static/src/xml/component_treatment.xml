@@ -23,7 +23,7 @@
           </button>
           <button t-if="props.readonly and props.onEdit" class="pct-btn primary"
                   t-on-click="() => props.onEdit()">
-            <t t-out="ic('settings', 15)"/> Change these in Mappings
+            <t t-out="ic('settings', 15)"/> Change these in Mapping
           </button>
         </div>
       </div>
@@ -32,7 +32,7 @@
         <t t-out="ic('lock', 15)"/>
         <span>Read-only here. These settings belong to the scheme, not to this
           pay run — changing one affects every run, past and future — so they are
-          edited under <b>Settings → Integrations → Mappings</b>.</span>
+          edited under <b>Settings → Integrations → Mapping</b>.</span>
       </p>
 
       <div t-if="state.loading" class="pct-empty"><p>Reading the scheme…</p></div>

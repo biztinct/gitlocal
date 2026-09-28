@@ -80,7 +80,7 @@ msgstr "Bỏ bộ lọc"
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
 msgid "Cost per head"
-msgstr "Chi phí mỗi đầu"
+msgstr "Chi phí bình quân đầu người"
 
 #. module: pb_workforce_insights
 #: model:ir.model.fields,field_description:pb_workforce_insights.field_pb_workforce_insights__display_name
@@ -117,7 +117,7 @@ msgstr "ID"
 #: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:0
 #: code:addons/pb_workforce_insights/static/src/js/workforce_insights.js:231
 msgid "Joiners"
-msgstr "Thợ mộc"
+msgstr "Người mới vào"
 
 #. module: pb_workforce_insights
 #. odoo-javascript
@@ -285,7 +285,7 @@ msgstr "theo bộ phận · bấm để mở trong Explorer"
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
 msgid "cost per head"
-msgstr "chi phí mỗi đầu"
+msgstr "chi phí bình quân đầu người"
 
 #. module: pb_workforce_insights
 #. odoo-javascript
@@ -341,7 +341,7 @@ msgstr "đã tham gia"
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
 msgid "left"
-msgstr "trái"
+msgstr "đã nghỉ"
 
 #. module: pb_workforce_insights
 #. odoo-javascript

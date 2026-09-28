@@ -184,3 +184,39 @@ msgstr "Trực thay tôi"
 #: code:addons/pb_hiring/static/src/xml/hiring_board.xml:72
 msgid "Covers"
 msgstr "Người trực thay"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Open roles"
+msgstr "Vị trí đang mở"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Step %(n)s of %(total)s"
+msgstr "Bước %(n)s/%(total)s"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "The role"
+msgstr "Vị trí"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Responsibilities"
+msgstr "Trách nhiệm"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Interview plan"
+msgstr "Kế hoạch phỏng vấn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Budget & review"
+msgstr "Ngân sách & duyệt"

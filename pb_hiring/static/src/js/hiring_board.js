@@ -349,6 +349,19 @@ export class PbHiringBoard extends Component {
         });
     }
 
+    /* LEARN REFRESH step 5 — "Step 3 of 4" as ONE translatable sentence.
+       It was built from two template words ("Step" + "of"), which Vietnamese
+       read as "Bước 3 của 4"; one string lets it read "Bước 3/4". */
+    stepOf(n, total) {
+        return _t("Step %(n)s of %(total)s", { n, total });
+    }
+
+    /** The request wizard's four tab names, translatable (they were an array
+     *  literal inside the template, which no extractor reads). */
+    get requestSteps() {
+        return [_t("The role"), _t("Responsibilities"), _t("Interview plan"), _t("Budget & review")];
+    }
+
     stageMeta(r) {
         const key = this.stageOf(r);
         const index = JOURNEY_STAGES.findIndex((st) => st.key === key);
@@ -384,7 +397,7 @@ export class PbHiringBoard extends Component {
         const k = this.state.kpis || {};
         const tone = (v, t) => (v ? t : "");
         return [
-            { key: "open", n: k.open || 0, label: _t("Open"), tone: tone(k.open, "green"), run: () => this.toggleFocus("open") },
+            { key: "open", n: k.open || 0, label: _t("Open roles"), tone: tone(k.open, "green"), run: () => this.toggleFocus("open") },
             { key: "waiting", n: k.waiting || 0, label: _t("Awaiting sign-off"), tone: tone(k.waiting, "amber"), run: () => this.toggleFocus("waiting") },
             { key: "mine", n: k.waiting_mine || 0, label: _t("Waiting on you"), tone: tone(k.waiting_mine, "amber"), run: () => this.toggleFocus("mine") },
             { key: "cand", n: k.candidates || 0, label: _t("Candidates"), tone: "", run: null },

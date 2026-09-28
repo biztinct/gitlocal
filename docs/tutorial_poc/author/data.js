@@ -4489,7 +4489,7 @@ const LESSONS = {
       {
         screen: "hiring", anchor: "hi-next",
         kicker: B("Each card", "Mỗi thẻ"),
-        title: B("Step X of 4, and what is next", "Bước X của 4, và việc tiếp theo"),
+        title: B("Step X of 4, and what is next", "Bước X/4, và việc tiếp theo"),
         body: B("A role's card says its step and one <b>Next</b> line: here two interview opinions are late. The Next line is the board telling you the one thing that moves this role on.",
                 "Thẻ của một vị trí ghi bước hiện tại và một dòng <b>Tiếp theo</b>: ở đây có hai ý kiến phỏng vấn đang trễ. Dòng Tiếp theo là bảng nói cho bạn một việc giúp vị trí này đi tiếp."),
       },

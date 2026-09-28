@@ -275,7 +275,7 @@ msgstr "Bỏ qua"
 #. odoo-javascript
 #: code:addons/pb_mission/static/src/xml/pb_close_lens.xml:0
 msgid "Est. gross"
-msgstr "Ước tính. thô thiển"
+msgstr "Tổng thu nhập ước tính"
 
 #. module: pb_mission
 #. odoo-javascript

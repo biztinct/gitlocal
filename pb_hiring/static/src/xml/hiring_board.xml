@@ -252,7 +252,7 @@
 
               <div t-if="stageMeta(row)" class="pbhr-where">
                 <span class="pbhr-where-marks"><i t-foreach="stageMeta(row).marks" t-as="mk" t-key="mk_index" t-att-class="mk"/></span>
-                <span>Step <t t-esc="stageMeta(row).index + 1"/> of <t t-esc="stageMeta(row).total"/> · <b t-esc="stageMeta(row).title"/></span>
+                <span><t t-esc="stepOf(stageMeta(row).index + 1, stageMeta(row).total)"/> · <b t-esc="stageMeta(row).title"/></span>
               </div>
 
               <div class="pbhr-chips">
@@ -1008,7 +1008,7 @@
            ================================================================== -->
       <div t-if="state.raising" class="pbim-modal-scrim pbhr-scrim" t-on-click="cancelRaise"><div class="pbim-modal pbhr-dialog pbhr-wizard" data-coach="hi-wizard" role="dialog" aria-modal="true" aria-label="Raise a hiring request" t-on-click.stop="() =&gt; {}">
 <div class="pbim-modal__head"><div><span class="pbhr-eyebrow">BUILD YOUR TEAM</span><div class="pbhr-drawer-title">Let’s shape your next hire.</div><div class="pbhr-drawer-sub">Requested by <t t-esc="state.journey.requestor"/> · Saved as a draft before approval.</div></div><button class="pbim-btn ghost" t-on-click="cancelRaise" aria-label="Close request" title="Close"><t t-out="ic('x',16)"/></button></div>
-<nav class="pbhr-wizard-steps" aria-label="Request steps"><span t-foreach="['The role','Responsibilities','Interview plan','Budget &amp; review']" t-as="step" t-key="step" t-att-class="{on:state.raising.step === step_index,done:state.raising.step &gt; step_index}"><b t-esc="step_index + 1"/><t t-esc="step"/></span></nav>
+<nav class="pbhr-wizard-steps" aria-label="Request steps"><span t-foreach="requestSteps" t-as="step" t-key="step_index" t-att-class="{on:state.raising.step === step_index,done:state.raising.step &gt; step_index}"><b t-esc="step_index + 1"/><t t-esc="step"/></span></nav>
 <div class="pbim-modal__body pbhr-form">
 <t t-if="state.raising.step === 0"><h3 class="pbhr-f--wide">Who does your team need?</h3>
 <label class="pbhr-f pbhr-f--wide"><span>Position title</span><input class="pbhr-in" t-model="state.raising.title" placeholder="e.g. Senior Product Designer"/></label>
@@ -1030,7 +1030,7 @@
 <label class="pbhr-f"><span>Annual budget for this request</span><input type="number" min="1" class="pbhr-in" t-model.number="state.raising.budget_cost"/></label>
 <label class="pbhr-f"><span>Budget currency</span><select class="pbhr-in" t-model="state.raising.currency_id"><option t-foreach="state.journey.currencies" t-as="option" t-key="option.id" t-att-value="option.id" t-esc="option.name"/></select></label>
 <label class="pbhr-f pbhr-f--wide"><span>When should the position be closed?</span><input type="date" class="pbhr-in" t-model="state.raising.target_close_date"/></label></t>
-</div><div class="pbim-modal__foot"><button t-if="state.raising.step &gt; 0" class="pbim-btn ghost" t-on-click="() =&gt; state.raising.step--">← Back</button><button t-else="" class="pbim-btn ghost" t-on-click="cancelRaise">Cancel</button><span class="pbhr-step-count">Step <t t-esc="state.raising.step + 1"/> of 4</span><button t-if="state.raising.step &lt; 3" class="pbim-btn primary" t-on-click="nextRequestStep">Continue →</button><button t-else="" class="pbim-btn primary" t-att-disabled="state.savingRequest" t-on-click="saveRaise"><t t-esc="state.savingRequest ? 'Saving…' : 'Create hiring request'"/></button></div></div></div><!-- ==================================================================
+</div><div class="pbim-modal__foot"><button t-if="state.raising.step &gt; 0" class="pbim-btn ghost" t-on-click="() =&gt; state.raising.step--">← Back</button><button t-else="" class="pbim-btn ghost" t-on-click="cancelRaise">Cancel</button><span class="pbhr-step-count" t-esc="stepOf(state.raising.step + 1, 4)"/><button t-if="state.raising.step &lt; 3" class="pbim-btn primary" t-on-click="nextRequestStep">Continue →</button><button t-else="" class="pbim-btn primary" t-att-disabled="state.savingRequest" t-on-click="saveRaise"><t t-esc="state.savingRequest ? 'Saving…' : 'Create hiring request'"/></button></div></div></div><!-- ==================================================================
            WRITE AN ADVERT
            ================================================================== -->
       <div t-if="state.writingJd" class="pbim-modal-scrim pbhr-scrim" t-on-click="cancelJd">

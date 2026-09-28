@@ -1646,7 +1646,7 @@ const PRACTICE = {
      on every role; "Step 3 of 4" is where candidates are met. */
   hiring: {
     numbers: [
-      [B("Open", "Mở"), 3], [B("Awaiting sign-off", "Chờ phê duyệt"), 1], [B("Waiting on you", "Đang chờ bạn"), 1],
+      [B("Open roles", "Vị trí đang mở"), 3], [B("Awaiting sign-off", "Chờ phê duyệt"), 1], [B("Waiting on you", "Đang chờ bạn"), 1],
       [B("Candidates", "Ứng viên"), 14], [B("Over budget", "Vượt ngân sách"), 0], [B("Interviews this week", "Phỏng vấn tuần này"), 4],
     ],
     steps: [

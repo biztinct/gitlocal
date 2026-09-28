@@ -265,7 +265,7 @@ msgstr "Được xây dựng trên"
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "By"
-msgstr "Bởi"
+msgstr "Theo"
 
 #. module: pb_explorer
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__category_id
@@ -815,7 +815,7 @@ msgstr "Chỉ các kỳ lương chính"
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Measure"
-msgstr "Đo lường"
+msgstr "Chỉ tiêu"
 
 #. module: pb_explorer
 #. odoo-python
@@ -958,7 +958,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Over"
-msgstr "Kết thúc"
+msgstr "Chia theo thời gian"
 
 #. module: pb_explorer
 #. odoo-python
@@ -1235,7 +1235,7 @@ msgstr "Tổng nghĩa vụ bắt buộc"
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Table"
-msgstr "Bàn"
+msgstr "Bảng"
 
 #. module: pb_explorer
 #. odoo-python
@@ -1567,7 +1567,7 @@ msgstr "đã tham gia"
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "left"
-msgstr "trái"
+msgstr "đã nghỉ"
 
 #. module: pb_explorer
 #. odoo-javascript

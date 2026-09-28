@@ -287,7 +287,7 @@ msgstr "Đang tải…"
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
 msgid "Login lens"
-msgstr "Ống kính đăng nhập"
+msgstr "Xem theo đăng nhập"
 
 #. module: pb_audit
 #. odoo-javascript
@@ -387,7 +387,7 @@ msgstr "Đã cập nhật mức lưu giữ."
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
 msgid "Salary lens"
-msgstr "Lăng kính tiền lương"
+msgstr "Xem theo lương"
 
 #. module: pb_audit
 #. odoo-javascript
@@ -452,7 +452,7 @@ msgstr "Nguồn"
 #. odoo-javascript
 #: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
 msgid "Stream"
-msgstr "Truyền phát"
+msgstr "Dòng sự kiện"
 
 #. module: pb_audit
 #. odoo-python
