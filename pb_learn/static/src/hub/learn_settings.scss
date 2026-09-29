@@ -285,3 +285,19 @@
     .lrn-team-row { grid-template-columns: 38px minmax(0, 1fr); }
     .lrn-team-prog, .lrn-team-act { grid-column: 2; align-items: flex-start; }
 }
+
+/* =============================================================================
+   The hub's lens box is definite-height and clips; every other hub's guest
+   scrolls itself. Learn's three guests (Lessons = .lrn-root, Team and
+   Settings = .lrn-set) never did, so everything below the fold was
+   unreachable. The LENS scrolls rather than the guest: .lrn-set is capped at
+   860px, so a guest scrollbar would sit mid-screen. The guest stops shrinking
+   so its own background runs the full length of the content.
+   ========================================================================== */
+.pbhub-lens:has(> .lrn-root, > .lrn-set) {
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    > .lrn-root,
+    > .lrn-set { flex-shrink: 0; }
+}
