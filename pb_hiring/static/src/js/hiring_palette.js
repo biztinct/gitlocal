@@ -56,10 +56,15 @@ registry.category(LIFECYCLE_LENSES).add("hiring", {
         "pb_hiring.group_hiring_user",
         "pb_hiring.group_hiring_manager",
         "pb_hiring.group_hiring_admin",
+        // RECRUIT P1 (RC-D1): a line manager reads the board of their own
+        // roles and holds no hiring group — the probe below is what decides.
+        "base.group_user",
     ]),
     // The board's own question (R-gate): Lifecycle readers who are not on
     // the hiring team, administrators included, are not offered this tab.
     probe: { model: "pb.hiring", method: "can_open" },
+    // RECRUIT P1: a deep link may name the role to open on arrival.
+    propsFromContext: (ctx) => (ctx && ctx.pb_role_id ? { roleId: ctx.pb_role_id } : {}),
 }, { sequence: 10 });
 
 /* ------------------------------------------------- the Insights lens ----
@@ -112,6 +117,12 @@ const HIRING_ADMIN = [
     "pb_hiring.group_hiring_admin",
     "base.group_system",
 ];
+// RECRUIT P1 — the talent lead (and above) sets hiring up.
+const HIRING_SETUP_GATE = [
+    "pb_hiring.group_hiring_manager",
+    "pb_hiring.group_hiring_admin",
+    "base.group_system",
+];
 
 /* ------------------------------------------------------------ Settings ---- */
 // The eight shipped categories carry no sequence, so bolted-on ones start at
@@ -121,8 +132,15 @@ registry.category(SETTINGS_CATEGORIES).add("hiring", {
     icon: "userPlus",
     label: _t("Hiring"),
     blurb: _t("Who picks a hiring request up, and what a panel is asked to score."),
-    groups: HIRING_ADMIN,
+    groups: HIRING_SETUP_GATE,
     cards: [{
+        // RECRUIT P1 (G-10): the talent lead's own door, first.
+        id: "hiring_setup",
+        xmlid: "pb_hiring.action_pb_hiring_setup",
+        icon: "sliders",
+        label: _t("Hiring set-up"),
+        sub: _t("Stages, which columns a role shows, emails and switches."),
+    }, {
         id: "hiring_rules",
         xmlid: "pb_hiring.action_pb_hiring_country_rule",
         icon: "globe",
@@ -259,3 +277,16 @@ palette.add("hiring_cover", {
     requires: "pb_hiring_board",
     action: { xmlid: "pb_hiring.action_pb_hiring_cover" },
 }, { sequence: 3580 });
+
+/* ------------------------------------------------ RECRUIT, the 4000 block --
+ * The RECRUIT programme's own block (ledger: 4000–4099); 3500 stays wave 2's.
+ */
+palette.add("hiring_setup", {
+    id: "hiring_setup",
+    label: _t("Hiring set-up"),
+    sublabel: _t("Stages, presets, emails and switches"),
+    icon: "sliders",
+    groups: HIRING_SETUP_GATE,
+    requires: "pb_hiring_setup",
+    action: { xmlid: "pb_hiring.action_pb_hiring_setup" },
+}, { sequence: 4000 });

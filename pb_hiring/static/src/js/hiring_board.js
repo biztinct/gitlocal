@@ -28,11 +28,12 @@
  * job boards and screening are the RECRUITER's; agreeing, closing and filling
  * a role are the hiring MANAGER's.
  */
-import { Component, markup, useState, onWillStart } from "@odoo/owl";
+import { Component, markup, useState, onWillStart, useRef, useExternalListener, onWillUnmount } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { useSortable } from "@web/core/utils/sortable_owl";
 
 /** The four screening answers, in the order a screener weighs them. */
 /** The four steps a role moves through, in order. A role is at exactly one
@@ -94,6 +95,23 @@ const BGV_ICON = {
     flag: "alert",
     na: "minusCircle",
 };
+
+/* =========================================================================
+ * RECRUIT P1 — the role board.
+ *
+ * THE HERO MOMENT IS THE DRAG. A card lifts (tilt + deep shadow), the column
+ * under it lights up, it settles in 150 ms, the count pills tick and a toast
+ * names what happened with Undo for five seconds. Nothing else animates.
+ *
+ * Who may move is the SERVER's answer (`board.can_move`, RC-D1); this file
+ * only decides whether a handle is OFFERED.
+ * ========================================================================= */
+const HINTS_KEY = "pbhr.hints.v1";
+const COL_PAGE = 30;
+const COL_MORE = 40;
+const TOAST_MS = 5000;
+/** The first-look stages: "Not this time" from here is a CV reject. */
+const CV_STAGES = ["screening", "shortlist", "panel_review"];
 
 export class PbHiringBoard extends Component {
     static template = "pb_hiring.PbHiringBoard";
@@ -193,9 +211,68 @@ export class PbHiringBoard extends Component {
             signing: null,
             letter: null,
             coverForm: null,
+
+            // ---- RECRUIT P1, the role page ----
+            view: "home",
+            roleTab: "board",
+            roleLoading: false,
+            canSetup: false,
+            cand: null,
+            candBusy: false,
+            sel: [],
+            lastPick: null,
+            focusId: null,
+            toast: null,
+            outcome: null,
+            moveMenu: null,
+            showStages: null,
+            noteForm: null,
+            colLimit: {},
+            boardFilter: "",
+            railOpen: "",
+            dragging: null,
+            landed: [],
+            hintsSeen: this.readHints(),
         });
 
-        onWillStart(async () => { await this.load(); });
+        // THE DRAG. `useSortable` is the stock kanban's own hook (RC8): the
+        // columns are its groups, the Closed rail is one more group, Joined
+        // is not a group at all. It is enabled only for somebody who may move.
+        this.boardRef = useRef("board");
+        useSortable({
+            enable: () => this.state.view === "role" && this.state.roleTab === "board"
+                && this.canMove && !this.state.cand,
+            ref: this.boardRef,
+            elements: ".pbhr-kc.is-movable",
+            groups: ".pbhr-col.is-drop",
+            connectGroups: true,
+            cursor: "grabbing",
+            ignore: "button, input, a, .pbhr-kc-quick",
+            placeholderClasses: ["pbhr-kc-ph"],
+            onDragStart: ({ element }) => {
+                this.state.dragging = Number(element.dataset.id) || null;
+            },
+            onGroupEnter: ({ group }) => group.classList.add("is-over"),
+            onGroupLeave: ({ group }) => group.classList.remove("is-over"),
+            onDragEnd: () => {
+                for (const el of (this.boardRef.el || document).querySelectorAll(".pbhr-col.is-over")) {
+                    el.classList.remove("is-over");
+                }
+                this.state.dragging = null;
+            },
+            onDrop: ({ element, parent }) => this.onCardDrop(element, parent),
+        });
+        // CAPTURE: the web client's own hotkey handling sees Escape first
+        // otherwise, and the drawer never heard it.
+        useExternalListener(window, "keydown", (ev) => this.onKey(ev), { capture: true });
+        onWillUnmount(() => { clearTimeout(this._toastTimer); clearTimeout(this._landTimer); });
+
+        onWillStart(async () => {
+            await this.load();
+            const ctx = (this.props.action && this.props.action.context) || {};
+            const roleId = this.props.roleId || ctx.pb_role_id;
+            if (roleId && this.state.allowed) { await this.openRole(Number(roleId)); }
+        });
     }
 
     ic(n, s = 16) { return ic(n, s); }
@@ -224,6 +301,7 @@ export class PbHiringBoard extends Component {
     async load() {
         try {
             const d = await this.orm.call("pb.hiring", "get_board", []);
+            this.state.canSetup = !!d.can_setup;
             if (d.allowed) { this.state.journey = await this.orm.call("pb.hiring", "journey_options", []); }
             Object.assign(this.state, {
                 allowed: d.allowed,
@@ -268,11 +346,15 @@ export class PbHiringBoard extends Component {
     }
 
     async refresh() {
+        if (this.state.view === "role" && this.state.drawer) {
+            // On the role page the board stays on screen while it re-reads:
+            // a full-page spinner after every press is the opposite of calm.
+            await Promise.all([this.load(), this.reloadRole()]);
+            if (this.state.cand) { await this.openCand(this.state.cand.id, { quiet: true }); }
+            return;
+        }
         this.state.loaded = false;
         await this.load();
-        if (this.state.drawer) {
-            await this.openDrawer(this.state.drawer.id);
-        }
     }
 
     // --------------------------------------------------------------- filters
@@ -458,7 +540,10 @@ export class PbHiringBoard extends Component {
                         run: () => this.act("toggle_referrals", { requisition_id: r.id }) }
                     : { text: _t("Waiting for the first applicant") };
             }
-            return { text: r.candidates === 1 ? _t("1 candidate to look at") : _t("%s candidates to look at", r.candidates),
+            // RECRUIT P1: the people still in play, not the closed ones too.
+            const inPlay = Math.max(0, (r.candidates || 0) - (r.closed_total || 0));
+            if (!inPlay) { return { text: _t("Everybody so far is closed. Publish again or add a candidate"), label: _t("Open the board"), tone: "ghost", run: () => this.openRole(r.id) }; }
+            return { text: inPlay === 1 ? _t("1 candidate to look at") : _t("%s candidates to look at", inPlay),
                      label: _t("Review candidates"), tone: "ghost", run: () => this.openAt(r.id, "candidates") };
         }
         if (r.state === "filled") return { text: _t("Filled. Joining carries on under New joiners"), tone: "done" };
@@ -467,8 +552,8 @@ export class PbHiringBoard extends Component {
     }
 
     async openAt(id, section) {
-        await this.openDrawer(id);
-        if (this.state.drawer) this.state.drawerSection = section;
+        await this.openRole(id, section === "candidates"
+            ? { tab: "board" } : { tab: "details", section });
     }
 
     async runNext(ev, row) {
@@ -497,31 +582,60 @@ export class PbHiringBoard extends Component {
         this.state.focus = this.state.focus === key ? "" : key;
     }
 
-    // ---------------------------------------------------------------- drawer
-    async openDrawer(id) {
-        const changedRole = this.state.drawer?.id !== id;
-        this.state.drawerBusy = true;
+    // ------------------------------------------------------------ the role
+    // RECRUIT P1: a role is a PAGE now (Board / Interviews / Details /
+    // Activity), not a pop-up. `state.drawer` keeps its name because every
+    // A1–A3 dialog reads the open role from it.
+    async openDrawer(id) { await this.openRole(id); }
+
+    async openRole(id, { tab = "board", section = "" } = {}) {
+        const changed = !this.state.drawer || this.state.drawer.id !== id;
+        Object.assign(this.state, {
+            view: "role", roleTab: tab, cand: null, sel: [], focusId: null,
+            boardFilter: "", colLimit: {}, moveMenu: null, outcome: null,
+        });
+        if (changed) { this.state.drawer = null; this.state.roleLoading = true; }
         try {
-            this.state.drawer = await this.orm.call(
-                "pb.hiring", "get_requisition", [id]);
-            if (changedRole) this.state.drawerSection = this.state.drawer.state === "open" ? "candidates" : "request";
+            this.state.drawer = await this.orm.call("pb.hiring", "get_requisition", [id]);
+            this.state.drawerSection = section || (changed ? "request" : this.state.drawerSection);
         } catch (e) {
             this.fail(e);
+            this.backHome();
         } finally {
-            this.state.drawerBusy = false;
+            this.state.roleLoading = false;
+        }
+        const el = document.querySelector(".o_action_manager .pbhr, .pbhr");
+        if (el && el.scrollIntoView) { el.scrollIntoView({ block: "start" }); }
+    }
+
+    async reloadRole() {
+        if (!this.state.drawer) { return; }
+        try {
+            this.state.drawer = await this.orm.call("pb.hiring", "get_requisition", [this.state.drawer.id]);
+        } catch (e) {
+            this.fail(e);
         }
     }
 
-    closeDrawer() {
-        this.state.drawer = null;
-        this.state.writingJd = null;
-        this.state.moving = null;
-        this.state.openPanel = "";
-        this.state.lineForm = null;
-        this.state.noting = null;
-        this.state.overriding = null;
-        this.state.signing = null;
-        this.state.letter = null;
+    backHome() {
+        Object.assign(this.state, {
+            view: "home", drawer: null, cand: null, sel: [], focusId: null,
+            toast: null, outcome: null, moveMenu: null, showStages: null,
+            noteForm: null, writingJd: null, moving: null, openPanel: "",
+            lineForm: null, noting: null, overriding: null, signing: null,
+            letter: null, boardFilter: "",
+        });
+    }
+
+    closeDrawer() { this.backHome(); }
+
+    setRoleTab(tab) {
+        this.state.roleTab = tab;
+        this.state.cand = null;
+    }
+
+    openSetup() {
+        this.action.doAction("pb_hiring.action_pb_hiring_setup");
     }
 
     // ------------------------------------------------------------------ acts
@@ -597,8 +711,28 @@ export class PbHiringBoard extends Component {
     async sendMessage() {
         const f = this.state.messageForm;
         if (f.busy) return; f.busy = true;
-        const result = await this.act("message_send", {applicant_id: f.applicant_id, key: f.key, values: {...f.values}}, {reload: false});
-        f.busy = false; if (result) this.state.messageForm = null;
+        const ids = f.applicant_ids && f.applicant_ids.length ? f.applicant_ids : [f.applicant_id];
+        let sent = 0;
+        for (const id of ids) {
+            const result = await this.act("message_send", {applicant_id: id, key: f.key, values: {...f.values}}, {reload: false, silent: ids.length > 1});
+            if (result) { sent++; }
+        }
+        f.busy = false;
+        if (sent) {
+            if (ids.length > 1) { this.notif.add(_t("%s emails queued.", sent), { type: "success" }); }
+            this.state.messageForm = null;
+            this.state.sel = [];
+        }
+    }
+
+    startMessageMany(ids) {
+        const cards = ids.map((id) => this.cardById(id)).filter(Boolean);
+        if (!cards.length) { return; }
+        if (cards.length === 1) { this.startMessage(cards[0]); return; }
+        this.state.messageForm = {
+            applicant_id: cards[0].id, applicant_ids: cards.map((c) => c.id), many: true,
+            name: _t("%s people", cards.length), key: "phone", values: {}, preview: null, busy: false,
+        };
     }
 
     cancelRaise() { this.state.raising = null; }
@@ -1002,8 +1136,12 @@ export class PbHiringBoard extends Component {
     }
 
     /** One panel open at a time: three stacked accordions is a drawer nobody
-     *  can find the bottom of. Pressing the open one closes it. */
-    togglePanel(key) {
+     *  can find the bottom of. Pressing the open one closes it.
+     *
+     *  RC1: this was a SECOND `togglePanel`, which silently replaced the
+     *  panel-picker's add/remove above, so picking an interviewer opened an
+     *  accordion instead. Renamed. */
+    toggleSection(key) {
         this.state.openPanel = this.state.openPanel === key ? "" : key;
     }
 
@@ -1016,10 +1154,10 @@ export class PbHiringBoard extends Component {
             return;
         }
         if (chip.key === "signed" && this.offer.id) {
-            this.togglePanel("offer");
+            this.toggleSection("offer");
             return;
         }
-        this.togglePanel(chip.key === "candidate" ? "offer" : chip.key);
+        this.toggleSection(chip.key === "candidate" ? "offer" : chip.key);
     }
 
     // ------------------------------------------------- the background check
@@ -1269,6 +1407,546 @@ export class PbHiringBoard extends Component {
 
     async openCovers() {
         await this.act("open_covers", {}, { reload: false });
+    }
+
+    // =====================================================================
+    //  RECRUIT P1 — the board
+    // =====================================================================
+    get board() { return (this.state.drawer && this.state.drawer.board) || {}; }
+
+    get canMove() { return !!this.board.can_move; }
+
+    get cards() { return (this.state.drawer && this.state.drawer.candidates_list) || []; }
+
+    cardById(id) { return this.cards.find((c) => c.id === id); }
+
+    stageByKey(key) { return (this.board.stages || []).find((s) => s.key === key); }
+
+    get detailSections() {
+        return [
+            { key: "request", label: _t("Role & interview plan") },
+            { key: "jd", label: _t("Advert & publishing") },
+            { key: "offer", label: _t("Offer & joining") },
+        ];
+    }
+
+    get filteredCards() {
+        const f = this.state.boardFilter;
+        if (!f) { return this.cards; }
+        if (f === "play") { return this.cards.filter((c) => c.family === "open"); }
+        return this.cards.filter((c) => (c.flags || []).includes(f));
+    }
+
+    /** The working columns: every open or done stage this role shows, plus
+     *  any it hides that somebody is still sitting in (zero dead-ends). */
+    get columns() {
+        const by = {};
+        for (const c of this.filteredCards) { (by[c.stage_id] = by[c.stage_id] || []).push(c); }
+        return (this.board.stages || [])
+            .filter((s) => s.family !== "closed" && (s.visible || s.count))
+            .map((s) => ({
+                ...s,
+                cards: by[s.id] || [],
+                hidden: !s.visible,
+                drop: s.key !== "joined",
+                limit: this.state.colLimit[s.key] || COL_PAGE,
+            }));
+    }
+
+    get railRows() {
+        return (this.board.stages || []).filter((s) => s.family === "closed");
+    }
+
+    get railTotal() { return this.railRows.reduce((n, s) => n + (s.count || 0), 0); }
+
+    get closedCards() {
+        return this.filteredCards.filter((c) => c.family === "closed");
+    }
+
+    get hiddenStages() {
+        return (this.board.stages || []).filter((s) => s.family === "open" && !s.visible && !s.always_on);
+    }
+
+    get roleGlance() {
+        const pick = (key) => () => { this.state.boardFilter = this.state.boardFilter === key ? "" : key; this.state.roleTab = "board"; };
+        return (this.board.role_glance || []).map((g) => ({ ...g, run: g.n ? pick(g.key) : null }));
+    }
+
+    get flatOrder() {
+        const out = [];
+        for (const col of this.columns) {
+            for (const c of col.cards.slice(0, col.limit)) { out.push(c.id); }
+        }
+        return out;
+    }
+
+    daysHere(s) {
+        if (s.avg_days === null || s.avg_days === undefined) { return _t("no timings yet"); }
+        if (s.avg_days < 1) { return _t("under a day here"); }
+        const n = Math.round(s.avg_days);
+        return n === 1 ? _t("~1 day here") : _t("~%s days here", n);
+    }
+
+    colEmptyText(col) {
+        if (col.key === "offer") {
+            return this.board.request_agreed
+                ? _t("The person you want to make an offer to. Sending needs the request agreed — it is.")
+                : _t("The person you want to make an offer to. Sending needs the request agreed — it is not yet.");
+        }
+        if (col.key === "joined") {
+            return _t("Joined is set when you confirm the person started, from their offer.");
+        }
+        return col.meaning || _t("Nobody is here yet.");
+    }
+
+    showMore(col) { this.state.colLimit[col.key] = (this.state.colLimit[col.key] || COL_PAGE) + COL_MORE; }
+
+    get requestChip() {
+        const r = this.state.drawer || {};
+        if (["open", "filled"].includes(r.state)) { return { label: _t("Request agreed"), tone: "green" }; }
+        if (r.state === "draft") { return { label: _t("Request not sent yet"), tone: "amber" }; }
+        if (["submitted", "manager_ok", "hr_ok"].includes(r.state)) {
+            return { label: r.waiting ? _t("Waiting on %s", r.waiting) : _t("Request waiting to be agreed"), tone: "amber" };
+        }
+        return { label: r.state_label || "", tone: "" };
+    }
+
+    get seatsLabel() {
+        const r = this.state.drawer || {};
+        const seats = r.headcount || 1;
+        const filled = r.filled_count || 0;
+        return seats === 1 ? _t("1 opening · %s filled", filled) : _t("%(n)s openings · %(f)s filled", { n: seats, f: filled });
+    }
+
+    funnelTitle(row) {
+        return (row.funnel || []).filter((f) => f.family !== "closed").map((f) => `${f.count} ${f.name}`).join(" · ");
+    }
+
+    // ------------------------------------------------------------- hints
+    readHints() {
+        try {
+            return JSON.parse(window.localStorage.getItem(HINTS_KEY) || "[]") || [];
+        } catch {
+            return [];
+        }
+    }
+
+    get hints() {
+        const all = this.canMove ? [
+            { key: "drag", icon: "grip", text: _t("Drag a card to move someone.") },
+            { key: "numbers", icon: "filter", text: _t("Press a number to narrow the board.") },
+            { key: "undo", icon: "undo", text: _t("Everything you move can be undone.") },
+        ] : [
+            { key: "view", icon: "eye", text: _t("Only recruiters and the talent lead move candidates.") },
+            { key: "numbers", icon: "filter", text: _t("Press a number to narrow the board.") },
+            { key: "note", icon: "pencil", text: _t("Open anyone to read their story and leave a note.") },
+        ];
+        return all.filter((h) => !this.state.hintsSeen.includes(h.key));
+    }
+
+    dismissHint(key) {
+        this.state.hintsSeen = [...this.state.hintsSeen, key];
+        try { window.localStorage.setItem(HINTS_KEY, JSON.stringify(this.state.hintsSeen)); } catch { /* a private window: fine */ }
+    }
+
+    dismissAllHints() {
+        for (const h of this.hints) { this.dismissHint(h.key); }
+    }
+
+    // --------------------------------------------------------- selection
+    isSel(id) { return this.state.sel.includes(id); }
+
+    toggleSel(card, ev) {
+        if (!this.canMove) { return; }
+        const sel = this.state.sel;
+        if (ev && ev.shiftKey && this.state.lastPick) {
+            const order = this.flatOrder;
+            const a = order.indexOf(this.state.lastPick);
+            const b = order.indexOf(card.id);
+            if (a > -1 && b > -1) {
+                const [lo, hi] = a < b ? [a, b] : [b, a];
+                this.state.sel = [...new Set([...sel, ...order.slice(lo, hi + 1)])];
+                this.state.lastPick = card.id;
+                return;
+            }
+        }
+        this.state.sel = sel.includes(card.id) ? sel.filter((i) => i !== card.id) : [...sel, card.id];
+        this.state.lastPick = card.id;
+    }
+
+    clearSel() { this.state.sel = []; this.state.lastPick = null; }
+
+    onCardClick(ev, card) {
+        this.state.focusId = card.id;
+        if (this.canMove && (ev.shiftKey || ev.metaKey || ev.ctrlKey || this.state.sel.length)) {
+            this.toggleSel(card, ev);
+            return;
+        }
+        this.openCand(card.id);
+    }
+
+    // ------------------------------------------------------------ moving
+    onCardDrop(element, parent) {
+        const id = Number(element && element.dataset.id);
+        const to = parent && parent.dataset.key;
+        const card = this.cardById(id);
+        if (!card || !to) { return; }
+        const ids = this.state.sel.includes(id) ? [...this.state.sel] : [id];
+        if (to === "__closed") {
+            this.openOutcome(ids);
+            return;
+        }
+        if (to === card.stage_key && ids.length === 1) { return; }
+        this.moveTo(ids, to);
+    }
+
+    /** Move now, tell the server, and let Undo put it back. The card lands
+     *  in its new column before the answer comes (it is the hero moment);
+     *  a refusal puts the board back as the server has it. */
+    async moveTo(ids, key, extra = {}) {
+        const target = this.stageByKey(key);
+        if (!target || !ids.length) { return; }
+        for (const id of ids) {
+            const c = this.cardById(id);
+            if (!c || c.stage_key === key) { continue; }
+            const from = this.stageByKey(c.stage_key);
+            if (from) { from.count = Math.max(0, (from.count || 0) - 1); }
+            target.count = (target.count || 0) + 1;
+            Object.assign(c, { stage_key: key, stage_id: target.id, stage: target.name, family: target.family });
+        }
+        this.state.landed = ids;
+        clearTimeout(this._landTimer);
+        this._landTimer = setTimeout(() => { this.state.landed = []; }, 700);
+        this.state.sel = [];
+        let res = null;
+        try {
+            res = await this.orm.call("pb.hiring", "act", ["journey_stage", { applicant_ids: ids, key, ...extra }]);
+        } catch (e) {
+            this.fail(e);
+            await this.reloadRole();
+            return null;
+        }
+        this.showToast(res);
+        await this.reloadRole();
+        if (this.state.cand && ids.includes(this.state.cand.id)) { await this.openCand(this.state.cand.id, { quiet: true }); }
+        return res;
+    }
+
+    showToast(res) {
+        if (!res || !res.note) { return; }
+        clearTimeout(this._toastTimer);
+        this.state.toast = { text: res.note, moved: res.moved || [], prompt: res.interview_prompt || null };
+        this._toastTimer = setTimeout(() => { this.state.toast = null; }, TOAST_MS);
+    }
+
+    closeToast() { clearTimeout(this._toastTimer); this.state.toast = null; }
+
+    async undoToast() {
+        const t = this.state.toast;
+        if (!t || !t.moved.length) { return; }
+        this.closeToast();
+        const groups = {};
+        for (const m of t.moved) { (groups[m.from_key] = groups[m.from_key] || []).push(m.id); }
+        let last = null;
+        for (const [key, ids] of Object.entries(groups)) {
+            if (!key) { continue; }
+            try {
+                last = await this.orm.call("pb.hiring", "act", ["journey_stage", { applicant_ids: ids, key, undo: true }]);
+            } catch (e) {
+                this.fail(e);
+            }
+        }
+        await this.reloadRole();
+        if (last) {
+            this.state.toast = { text: last.note, moved: [], prompt: null };
+            this._toastTimer = setTimeout(() => { this.state.toast = null; }, TOAST_MS);
+        }
+    }
+
+    async toastPrompt() {
+        const p = this.state.toast && this.state.toast.prompt;
+        this.closeToast();
+        if (p) { await this.openCand(p.applicant_id); }
+    }
+
+    nextKeyFor(card) {
+        const cols = this.columns.filter((c) => c.family === "open");
+        const i = cols.findIndex((c) => c.key === card.stage_key);
+        const next = i > -1 ? cols[i + 1] : cols[1];
+        return next ? next.key : "";
+    }
+
+    async advance(card) {
+        const key = this.nextKeyFor(card);
+        if (!key) {
+            this.notif.add(_t("They are at the last working column. The offer comes next, from the Details tab."), { type: "info" });
+            return;
+        }
+        await this.moveTo([card.id], key);
+    }
+
+    notThisTimeKey(card) {
+        return CV_STAGES.includes(card.stage_key) ? "cv_reject" : "interview_reject";
+    }
+
+    openOutcome(ids, key = "") {
+        const first = this.cardById(ids[0]);
+        this.state.outcome = {
+            ids, key: key || (first ? this.notThisTimeKey(first) : "cv_reject"),
+            reason: "", hold_until: "", send_email: false,
+        };
+    }
+
+    async saveOutcome() {
+        const o = this.state.outcome;
+        if (!o) { return; }
+        this.state.outcome = null;
+        await this.moveTo(o.ids, o.key, {
+            reason: o.reason, hold_until: o.key === "on_hold" ? o.hold_until : "",
+            send_email: ["cv_reject", "interview_reject"].includes(o.key) && o.send_email,
+        });
+    }
+
+    notThisTime(card) { this.openOutcome([card.id], this.notThisTimeKey(card)); }
+
+    openMoveMenu(ids) {
+        if (!this.canMove || !ids.length) { return; }
+        this.state.moveMenu = { ids };
+    }
+
+    get moveTargets() {
+        return (this.board.stages || []).filter((s) => s.key !== "joined" && (s.family === "closed" || s.visible || s.count));
+    }
+
+    async pickMove(stage) {
+        const m = this.state.moveMenu;
+        this.state.moveMenu = null;
+        if (!m) { return; }
+        if (stage.family === "closed") { this.openOutcome(m.ids, stage.key); return; }
+        await this.moveTo(m.ids, stage.key);
+    }
+
+    openMoveMenuSel() { this.openMoveMenu([...this.state.sel]); }
+
+    startMessageSel() { this.startMessageMany([...this.state.sel]); }
+
+    moreLabel(col) { return _t("Show %s more", Math.min(COL_MORE, col.cards.length - col.limit)); }
+
+    activityText(ac) {
+        return ac.from ? _t("moved from %(from)s to %(to)s", { from: ac.from, to: ac.to }) : _t("arrived in %s", ac.to);
+    }
+
+    byLabel(who) { return _t("· by %s", who); }
+
+    get outcomeTitle() {
+        const o = this.state.outcome;
+        if (!o) { return ""; }
+        return o.ids.length === 1
+            ? _t("Close %s as…", (this.cardById(o.ids[0]) || {}).name || "")
+            : _t("Close %s people as…", o.ids.length);
+    }
+
+    get closeAsLabel() {
+        const o = this.state.outcome;
+        return _t("Close as %s", ((o && this.stageByKey(o.key)) || {}).name || "");
+    }
+
+    get moveTitle() {
+        const m = this.state.moveMenu;
+        if (!m) { return ""; }
+        return m.ids.length === 1
+            ? _t("Move %s to…", (this.cardById(m.ids[0]) || {}).name || "")
+            : _t("Move %s people to…", m.ids.length);
+    }
+
+    get noteTitle() { return _t("A note on %s", (this.state.noteForm && this.state.noteForm.name) || ""); }
+
+    opinionsTitle(sc) { return _t("Opinions · round %(n)s · %(when)s", { n: sc.round_no, when: this.dayShort(sc.when) }); }
+
+    get selLabel() { return _t("%s selected", this.state.sel.length); }
+
+    get recruiterLabel() { return _t("%s recruits", (this.state.drawer && this.state.drawer.recruiter) || ""); }
+
+    tabLabel(key) {
+        return { board: _t("Board"), interviews: _t("Interviews"), details: _t("Details"), activity: _t("Activity") }[key] || key;
+    }
+
+    bulkNotThisTime() {
+        if (this.state.sel.length) { this.openOutcome([...this.state.sel]); }
+    }
+
+    // ----------------------------------------------- a hidden stage, shown
+    startShowStages() {
+        this.state.showStages = { picked: [] };
+    }
+
+    toggleShowStage(id) {
+        const f = this.state.showStages;
+        f.picked = f.picked.includes(id) ? f.picked.filter((i) => i !== id) : [...f.picked, id];
+    }
+
+    async saveShowStages() {
+        const f = this.state.showStages;
+        if (!f || !f.picked.length) { this.state.showStages = null; return; }
+        const res = await this.act("role_stages", { requisition_id: this.state.drawer.id, add_ids: f.picked });
+        if (res) { this.state.showStages = null; }
+    }
+
+    // -------------------------------------------------- the candidate drawer
+    async openCand(id, { quiet = false } = {}) {
+        if (!quiet) { this.state.candBusy = true; }
+        this.state.focusId = id;
+        try {
+            this.state.cand = await this.orm.call("pb.hiring", "get_candidate", [id]);
+        } catch (e) {
+            this.fail(e);
+        } finally {
+            this.state.candBusy = false;
+        }
+    }
+
+    closeCand() { this.state.cand = null; }
+
+    /** Arrow keys move to the next card without closing the drawer. */
+    async stepCand(delta) {
+        const order = this.flatOrder.concat(this.closedCards.map((c) => c.id).filter((id) => !this.flatOrder.includes(id)));
+        const at = order.indexOf(this.state.cand ? this.state.cand.id : this.state.focusId);
+        const next = order[at + delta];
+        if (next) { await this.openCand(next, { quiet: true }); this.scrollToCard(next); }
+    }
+
+    scrollToCard(id) {
+        const el = this.boardRef.el && this.boardRef.el.querySelector(`[data-id="${id}"]`);
+        if (el && el.scrollIntoView) { el.scrollIntoView({ block: "nearest", inline: "nearest" }); }
+    }
+
+    async runNextBox(box, which = "main") {
+        const step = which === "main" ? box : box.secondary;
+        if (!step || !step.verb) { return; }
+        const cand = this.state.cand;
+        const payload = step.payload || {};
+        if (step.verb === "advance") {
+            const card = this.cardById(cand.id);
+            if (card) { await this.advance(card); }
+            return;
+        }
+        if (step.verb === "schedule_open") { this.startSchedule({ id: cand.id, name: cand.name }); return; }
+        if (step.verb === "no_show_open") { this.startNoShow({ id: payload.interview_id, candidate: cand.name }); return; }
+        const res = await this.act(step.verb, payload);
+        if (res && res.link) {
+            this.notif.add(res.link, { type: "info", sticky: true, title: _t("Their own link") });
+        }
+    }
+
+    candScreen(tag) {
+        const cand = this.state.cand;
+        if (!cand) { return; }
+        this.screen({ id: cand.id, name: cand.name }, tag);
+    }
+
+    candCard() {
+        const cand = this.state.cand;
+        return cand ? (this.cardById(cand.id) || { id: cand.id, name: cand.name, stage_key: cand.stage_key }) : null;
+    }
+
+    startNoteFor(id, name) { this.state.noteForm = { applicant_id: id, name, body: "" }; }
+
+    async saveNote2() {
+        const f = this.state.noteForm;
+        if (!f || !f.body.trim()) { this.notif.add(_t("Write the note first."), { type: "warning" }); return; }
+        const res = await this.act("candidate_note", { applicant_id: f.applicant_id, body: f.body });
+        if (res) { this.state.noteForm = null; }
+    }
+
+    async addCandidate() {
+        await this.act("add_candidate", { requisition_id: this.state.drawer.id }, { reload: false });
+    }
+
+    whenShort(stored) {
+        if (!stored) { return ""; }
+        const when = new Date(`${String(stored).replace(" ", "T")}Z`);
+        if (isNaN(when.getTime())) { return String(stored); }
+        return when.toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    }
+
+    dayShort(stored) {
+        if (!stored) { return ""; }
+        const when = new Date(`${String(stored).replace(" ", "T")}Z`);
+        if (isNaN(when.getTime())) { return String(stored); }
+        return when.toLocaleDateString(undefined, { day: "numeric", month: "short" });
+    }
+
+    get lockedTitle() { return _t("Only recruiters and the talent lead move candidates"); }
+
+    // ------------------------------------------------------------ keyboard
+    get anyDialog() {
+        const s = this.state;
+        return !!(s.outcome || s.moveMenu || s.showStages || s.noteForm || s.messageForm || s.raising
+            || s.writingJd || s.moving || s.scheduling || s.rescheduling || s.noShowing || s.debriefing
+            || s.rejecting || s.noting || s.overriding || s.lineForm || s.letter || s.signing || s.coverForm);
+    }
+
+    onKey(ev) {
+        if (this.state.view !== "role") { return; }
+        const t = ev.target;
+        const typing = t && (t.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName));
+        if (ev.key === "Escape") {
+            const s = this.state;
+            let done = true;
+            if (s.outcome) { s.outcome = null; }
+            else if (s.moveMenu) { s.moveMenu = null; }
+            else if (s.showStages) { s.showStages = null; }
+            else if (s.noteForm) { s.noteForm = null; }
+            else if (typing || this.anyDialog) { done = false; }
+            else if (s.cand) { this.closeCand(); }
+            else if (s.sel.length) { this.clearSel(); }
+            else if (s.boardFilter) { s.boardFilter = ""; }
+            else { done = false; }
+            if (done) { ev.stopPropagation(); ev.preventDefault(); }
+            return;
+        }
+        if (typing || this.anyDialog || ev.metaKey || ev.ctrlKey || ev.altKey) { return; }
+        if (this.state.roleTab !== "board") { return; }
+        const key = ev.key;
+        if (this.state.cand) {
+            if (key === "ArrowDown" || key === "ArrowRight") { ev.preventDefault(); this.stepCand(1); return; }
+            if (key === "ArrowUp" || key === "ArrowLeft") { ev.preventDefault(); this.stepCand(-1); return; }
+            const c = this.state.cand;
+            if ((key === "m" || key === "M") && this.canMove) { ev.preventDefault(); this.openMoveMenu([c.id]); return; }
+            if ((key === "e" || key === "E") && c.can_recruit) { ev.preventDefault(); this.startMessage({ id: c.id, name: c.name }); return; }
+            if (key === "n" || key === "N") { ev.preventDefault(); this.startNoteFor(c.id, c.name); return; }
+            return;
+        }
+        const cols = this.columns.map((col) => col.cards.slice(0, col.limit).map((c) => c.id)).filter((l) => l.length);
+        if (!cols.length) { return; }
+        let ci = -1;
+        let ri = -1;
+        cols.forEach((list, i) => { const j = list.indexOf(this.state.focusId); if (j > -1) { ci = i; ri = j; } });
+        const focus = (id) => { this.state.focusId = id; this.scrollToCard(id); };
+        if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(key)) {
+            ev.preventDefault();
+            if (ci < 0) { focus(cols[0][0]); return; }
+            if (key === "ArrowDown") { focus(cols[ci][Math.min(ri + 1, cols[ci].length - 1)]); }
+            if (key === "ArrowUp") { focus(cols[ci][Math.max(ri - 1, 0)]); }
+            if (key === "ArrowRight" && ci < cols.length - 1) { focus(cols[ci + 1][Math.min(ri, cols[ci + 1].length - 1)]); }
+            if (key === "ArrowLeft" && ci > 0) { focus(cols[ci - 1][Math.min(ri, cols[ci - 1].length - 1)]); }
+            return;
+        }
+        const target = this.state.sel.length ? [...this.state.sel] : (this.state.focusId ? [this.state.focusId] : []);
+        if (key === "Enter" && this.state.focusId) { ev.preventDefault(); this.openCand(this.state.focusId); return; }
+        if ((key === "m" || key === "M") && target.length) { ev.preventDefault(); this.openMoveMenu(target); return; }
+        if ((key === "e" || key === "E") && target.length && this.canMove) { ev.preventDefault(); this.startMessageMany(target); return; }
+        if ((key === "n" || key === "N") && this.state.focusId) {
+            ev.preventDefault();
+            const c = this.cardById(this.state.focusId);
+            if (c) { this.startNoteFor(c.id, c.name); }
+            return;
+        }
+        if (key === " " && this.state.focusId && this.canMove) {
+            ev.preventDefault();
+            const c = this.cardById(this.state.focusId);
+            if (c) { this.toggleSel(c, ev); }
+        }
     }
 
     // ------------------------------------------------------------ the words
