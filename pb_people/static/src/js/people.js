@@ -7,13 +7,6 @@ import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const STATE_CLS = { open: "ok", close: "warn", draft: "info", cancel: "muted", none: "muted" };
-const STATUS_CHIPS = [
-    { id: "all", label: _t("All") },
-    { id: "running", label: _t("Running") },
-    { id: "expiring", label: _t("Expiring soon") },
-    { id: "new", label: _t("New this month") },
-    { id: "none", label: _t("No contract") },
-];
 const DATE_CHIPS = [
     { id: "all", label: _t("All time") },
     { id: "month", label: _t("Joined this month") },
@@ -120,7 +113,10 @@ export class PbPeople extends Component {
     }
 
     async load() {
-        const d = await this.orm.call("pb.people", "get_roster_data", []);
+        // The roster is capped, so a pressed figure asks the server for
+        // everybody it counts rather than narrowing the first 240.
+        const st = this.state.status;
+        const d = await this.orm.call("pb.people", "get_roster_data", [], { status: st && st !== "all" ? st : null });
         Object.assign(this.state, {
             currency: d.currency, kpis: d.kpis, departments: d.departments,
             people: d.people, peopleTotal: d.people_total, shown: d.shown, loaded: true,
@@ -128,7 +124,6 @@ export class PbPeople extends Component {
     }
 
     ic(n, s = 16) { return ic(n, s); }
-    get statusChips() { return STATUS_CHIPS; }
     get dateChips() { return DATE_CHIPS; }
 
     // ---- formatting ----
@@ -160,13 +155,18 @@ export class PbPeople extends Component {
             { key: "running", n: k.running || 0, label: _t("Running contracts"), tone: "", run: pick("running") },
             { key: "expiring", n: k.expiring_soon || 0, label: _t("Expiring within 30 days"), tone: tone(k.expiring_soon, "amber"), run: pick("expiring") },
             { key: "new", n: k.new_hires || 0, label: _t("New this month"), tone: tone(k.new_hires, "green"), run: pick("new") },
+            { key: "notready", n: k.not_ready || 0, label: _t("Not payroll-ready"), tone: tone(k.not_ready, "amber"), run: pick("notready") },
             { key: "wage", n: this.money(k.total_wage || 0), label: _t("Monthly wage"), tone: "", run: null },
             { key: "ready", n: (k.ready_pct || 0) + "%", label: _t("Payroll-ready"), tone: "", run: null },
         ];
     }
 
     // ---- filtering ----
-    setStatus(s) { this.state.status = s; }
+    setStatus(s) {
+        if (this.state.status === s) return;
+        this.state.status = s;
+        this.load();
+    }
     setDept(d) { this.state.dept = this.state.dept === d ? "" : d; }
     setDate(d) { this.state.dateFilter = d; }
     onSearch(ev) { this.state.search = (ev.target.value || "").toLowerCase(); }
@@ -181,7 +181,7 @@ export class PbPeople extends Component {
         if (st === "running") return p.state === "open";
         if (st === "expiring") return p.days_to_expiry !== null && p.days_to_expiry >= 0 && p.days_to_expiry <= 30;
         if (st === "new") return p.join_date && p.join_date >= this._monthStart();
-        if (st === "none") return p.state === "none";
+        if (st === "notready") return !p.ready;
         return true;
     }
     _inStatus(p) { return this._matchStatus(p, this.state.status); }
@@ -208,7 +208,6 @@ export class PbPeople extends Component {
             return true;
         });
     }
-    countStatus(id) { return this.state.people.filter(p => this._matchStatus(p, id)).length; }
 
     // ---- bulk selection ----
     toggleSelectMode() { this.state.selectMode = !this.state.selectMode; if (!this.state.selectMode) { this.state.selected = []; } }

@@ -361,3 +361,33 @@ msgstr "Chọn đồng nghiệp"
 #: code:addons/pb_probation/static/src/xml/probation_board.xml:338
 msgid "What everybody said"
 msgstr "Mọi người đã nói gì"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Peers"
+msgstr "Đồng nghiệp"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Answers"
+msgstr "Phản hồi"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Meeting"
+msgstr "Trao đổi"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Sign-off"
+msgstr "Phê duyệt"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Outcome"
+msgstr "Kết quả"

@@ -378,3 +378,9 @@ msgstr "Mở hợp đồng của nhân viên"
 #: code:addons/pb_people/static/src/xml/people.xml:0
 msgid "Every contract, on its own board"
 msgstr "Tất cả hợp đồng, trên một bảng riêng"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/js/people.js:0
+msgid "Not payroll-ready"
+msgstr "Chưa sẵn sàng tính lương"

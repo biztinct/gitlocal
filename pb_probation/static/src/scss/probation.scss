@@ -102,7 +102,7 @@
     // than hunting for the word each time. The connecting line is drawn by
     // the dot's own ::after so it can never be one pixel out of line with it.
     .prb-rail {
-        display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+        display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
         border-top: 1px solid var(--pbim-line-2); padding-top: 13px;
     }
     .prb-stage {
@@ -532,8 +532,8 @@
         .prb-facts { grid-template-columns: 1fr; }
         .prb-drawer { width: 100%; }
         .prb-verdicts { grid-template-columns: 1fr; }
-        .prb-rail { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
-        .prb-stage:nth-child(2)::after { display: none; }
+        .prb-rail { grid-template-columns: repeat(3, 1fr); row-gap: 14px; }
+        .prb-stage:nth-child(3)::after { display: none; }
     }
 }
 

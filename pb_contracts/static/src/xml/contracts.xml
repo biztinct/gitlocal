@@ -23,7 +23,7 @@
         <div data-coach="ct-kpis">
           <t t-call="pb_import_kit.QuietGlance">
             <t t-set="qGlance" t-value="glance"/>
-            <t t-set="qGlanceOn" t-value="state.status === 'all' ? '' : state.status"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
           </t>
         </div>
 
@@ -43,12 +43,8 @@
         <!-- filters -->
         <div class="pbim-panel ppl-filters" data-coach="ct-filters">
           <div class="ppl-filter-row">
-            <div class="pbim-chips">
-              <button t-foreach="statusChips" t-as="c" t-key="c.id"
-                      t-attf-class="pbim-fchip {{ state.status === c.id ? 'on' : '' }}" t-on-click="() => this.setStatus(c.id)">
-                <t t-esc="c.label"/> <span class="c" t-esc="countStatus(c.id)"/>
-              </button>
-            </div>
+            <!-- the status buttons went with the quiet numbers: the figures
+                 and steps above filter, counted over every contract -->
             <div class="ppl-search">
               <span class="ic"><t t-out="ic('search',15)"/></span>
               <input t-ref="search" placeholder="Search employee, reference, structure…" t-on-input="onSearch"/>

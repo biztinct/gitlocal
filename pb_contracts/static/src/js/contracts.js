@@ -7,11 +7,6 @@ import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 
 const STATE_CLS = { open: "ok", close: "warn", draft: "info", cancel: "muted" };
-const STATUS_CHIPS = [
-    { id: "all", label: _t("All") }, { id: "draft", label: _t("Draft") },
-    { id: "open", label: _t("Running") }, { id: "expiring", label: _t("Expiring soon") },
-    { id: "close", label: _t("Expired") }, { id: "cancel", label: _t("Cancelled") },
-];
 // The contract's journey. A contract sits at exactly one step (stepOf);
 // cancelled contracts are at no step and "Show all" still lists them.
 const STEPS = [
@@ -40,7 +35,7 @@ export class PbContracts extends Component {
         this.state = useState({
             loaded: false, currency: "", kpis: {}, structures: [],
             contracts: [], total: 0, stepCounts: {}, listedTotal: 0,
-            search: "", status: "all", step: "", structure: "", dateFilter: "all", from: "", to: "",
+            search: "", step: "", structure: "", dateFilter: "all", from: "", to: "",
             drawerContractId: null,
         });
         this.searchRef = useRef("search");
@@ -83,7 +78,6 @@ export class PbContracts extends Component {
     }
 
     ic(n, s = 16) { return ic(n, s); }
-    get statusChips() { return STATUS_CHIPS; }
     get dateChips() { return DATE_CHIPS; }
     stateCls(s) { return STATE_CLS[s] || "muted"; }
     money(n) {
@@ -96,11 +90,6 @@ export class PbContracts extends Component {
         return cur + Math.round(n);
     }
 
-    setStatus(s) {
-        const hadStep = this.state.step;
-        this.state.status = s; this.state.step = "";
-        if (hadStep) this.load();
-    }
     setStructure(s) { this.state.structure = this.state.structure === s ? "" : s; }
     setDate(d) { this.state.dateFilter = d; }
     onSearch(ev) { this.state.search = (ev.target.value || "").toLowerCase(); }
@@ -110,11 +99,6 @@ export class PbContracts extends Component {
     _monthStart() { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), 1).toISOString().slice(0, 10); }
     _yearStart() { return new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10); }
 
-    _matchStatus(c, st) {
-        if (st === "all") return true;
-        if (st === "expiring") return c.days_to_expiry !== null && c.days_to_expiry >= 0 && c.days_to_expiry <= 30;
-        return c.state === st;
-    }
     _inDate(c) {
         const f = this.state.dateFilter;
         if (f === "all") return true;
@@ -132,8 +116,8 @@ export class PbContracts extends Component {
         const q = this.state.search, str = this.state.structure;
         return this.state.contracts.filter(c => {
             if (str && c.structure !== str) return false;
-            if (!this._matchStatus(c, this.state.status)) return false;
-            if (this.state.step && this.stepOf(c) !== this.state.step) return false;
+            const step = this.state.step;
+            if (step === "open" ? c.state !== "open" : (step && this.stepOf(c) !== step)) return false;
             if (!this._inDate(c)) return false;
             if (q && !((c.employee || "").toLowerCase().includes(q) || (c.name || "").toLowerCase().includes(q) || (c.structure || "").toLowerCase().includes(q))) return false;
             return true;
@@ -143,12 +127,13 @@ export class PbContracts extends Component {
     get glance() {
         const k = this.state.kpis || {};
         const tone = (v, t) => (v ? t : "");
-        const pick = (id) => () => this.setStatus(this.state.status === id ? "all" : id);
+        // each figure is a step (Running = steps 02 + 03 together)
+        const pick = (step) => () => this.pickStep(step);
         return [
             { key: "open", n: k.running || 0, label: _t("Running"), tone: "", run: pick("open") },
-            { key: "expiring", n: k.expiring || 0, label: _t("Expiring within 30 days"), tone: tone(k.expiring, "amber"), run: pick("expiring") },
+            { key: "expiring", n: k.expiring || 0, label: _t("Expiring within 30 days"), tone: tone(k.expiring, "amber"), run: pick("ending") },
             { key: "draft", n: k.draft || 0, label: _t("Draft"), tone: "", run: pick("draft") },
-            { key: "close", n: k.expired || 0, label: _t("Expired"), tone: "", run: pick("close") },
+            { key: "close", n: k.expired || 0, label: _t("Expired"), tone: "", run: pick("ended") },
             { key: "wage", n: this.money(k.total_wage || 0), label: _t("Monthly wage"), tone: "", run: null },
             { key: "avg", n: this.money(k.avg_wage || 0), label: _t("Average wage"), tone: "", run: null },
         ];
@@ -162,6 +147,10 @@ export class PbContracts extends Component {
         }
         if (c.state === "close") return "ended";
         return "";
+    }
+    // which figure in the numbers line is lit
+    get glanceOn() {
+        return { open: "open", ending: "expiring", draft: "draft", ended: "close" }[this.state.step] || "";
     }
     get steps() {
         // counted over every contract by the server, not the listed ones
@@ -177,12 +166,11 @@ export class PbContracts extends Component {
     }
     async pickStep(key) {
         this.state.step = this.state.step === key ? "" : key;
-        this.state.status = "all";
         await this.load();
     }
     get anyFilter() {
         const s = this.state;
-        return s.step || s.status !== "all" || s.structure || s.dateFilter !== "all" || s.search;
+        return s.step || s.structure || s.dateFilter !== "all" || s.search;
     }
     get showingLine() {
         const all = this.state.total || 0;
@@ -191,7 +179,7 @@ export class PbContracts extends Component {
             return { all: true, text: !all ? _t("no contracts yet") : all === 1 ? _t("all 1 contract") : _t("all %s contracts", all) };
         }
         const s = this.state;
-        const onlyStep = s.step && s.status === "all" && !s.structure && s.dateFilter === "all" && !s.search;
+        const onlyStep = s.step && !s.structure && s.dateFilter === "all" && !s.search;
         const shown = onlyStep ? (s.stepCounts[s.step] || 0) : this.filtered.length;
         return { all: false, text: _t("%s of %s contracts", shown, all), where: st ? st.title : "" };
     }
@@ -201,12 +189,11 @@ export class PbContracts extends Component {
     }
     showAll() {
         const hadStep = this.state.step;
-        Object.assign(this.state, { step: "", status: "all", structure: "", dateFilter: "all", from: "", to: "", search: "" });
+        Object.assign(this.state, { step: "", structure: "", dateFilter: "all", from: "", to: "", search: "" });
         if (this.searchRef.el) this.searchRef.el.value = "";
         if (hadStep) this.load();
     }
 
-    countStatus(id) { return this.state.contracts.filter(c => this._matchStatus(c, id)).length; }
 
     openContract(id) {
         if (!id) return;

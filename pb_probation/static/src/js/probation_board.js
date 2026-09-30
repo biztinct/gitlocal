@@ -29,38 +29,23 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
-/** The four stops the rail shows, in order. */
-const STAGES = ["peers", "answers", "talk", "decision"];
+/** The five stops the rail shows, in order — the SAME five steps as the
+ *  numbered strip above the cards (flowStepOf), so a card and the strip can
+ *  never disagree about where a person is (owner, 2026-09-30). */
+const STAGES = ["peers", "answers", "talk", "review", "outcome"];
 
 /** What each stop is called.
  *
- * SHORT ENOUGH TO FIT. These four sit in a four-column grid on a card that can
- * be 340px wide, and a label that ellipses ("CONVERSATI…") is a label that has
- * stopped being a label. "Meeting" is the same thing said in seven characters;
- * the prose everywhere else in this module still calls it the conversation,
- * because there it has room to.
+ * SHORT ENOUGH TO FIT. Five stops share a card that can be 340px wide, and a
+ * label that ellipses is a label that has stopped being a label, so each is
+ * one short word for the step's full name in the strip above.
  */
 const STAGE_LABEL = {
-    peers: _t("Colleagues"),
+    peers: _t("Peers"),
     answers: _t("Answers"),
     talk: _t("Meeting"),
-    decision: _t("Decision"),
-};
-
-/** Which review states have passed which stop. */
-const STAGE_DONE = {
-    peers: ["feedback", "consolidation", "one_on_one", "verdict", "closed"],
-    answers: ["consolidation", "one_on_one", "verdict", "closed"],
-    talk: ["verdict", "closed"],
-    decision: ["closed"],
-};
-
-/** Which review state is sitting ON each stop. */
-const STAGE_CURRENT = {
-    peers: ["", "scheduled", "nomination"],
-    answers: ["feedback"],
-    talk: ["consolidation", "one_on_one"],
-    decision: ["verdict"],
+    review: _t("Sign-off"),
+    outcome: _t("Outcome"),
 };
 
 export class PbProbationBoard extends Component {
@@ -324,9 +309,13 @@ export class PbProbationBoard extends Component {
     stageLabel(stage) { return STAGE_LABEL[stage] || stage; }
 
     stageCls(row, stage) {
-        const st = row.review_state || "";
-        if ((STAGE_DONE[stage] || []).includes(st)) { return "done"; }
-        if ((STAGE_CURRENT[stage] || []).includes(st)) { return "now"; }
+        const here = STAGES.indexOf(this.flowStepOf(row));
+        const at = STAGES.indexOf(stage);
+        if (at < here) { return "done"; }
+        if (at === here) {
+            // a decided review has finished its last stop too
+            return stage === "outcome" && row.review_state === "closed" ? "done" : "now";
+        }
         return "todo";
     }
 
@@ -340,7 +329,7 @@ export class PbProbationBoard extends Component {
                 ? row.feedback_in + " " + _t("of") + " " + row.feedback_total
                 : "";
         }
-        if (stage === "decision" && row.verdict_label) {
+        if (stage === "outcome" && row.verdict_label) {
             return row.verdict_label;
         }
         return "";

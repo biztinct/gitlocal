@@ -18,22 +18,17 @@
 
         <!-- the numbers: one quiet line (was five big tiles). Structures
              are settings, not a workflow, so there is no step strip; the
-             status chips below still narrow the list. -->
+             Active / Draft / Deprecated figures narrow the list (they replaced the
+             status buttons). -->
         <div data-coach="sr-kpis">
           <t t-call="pb_import_kit.QuietGlance">
             <t t-set="qGlance" t-value="glance"/>
-            <t t-set="qGlanceOn" t-value="''"/>
+            <t t-set="qGlanceOn" t-value="state.status === 'all' ? '' : state.status"/>
           </t>
         </div>
 
         <div class="pbim-panel ppl-filters" data-coach="sr-filters">
           <div class="ppl-filter-row">
-            <div class="pbim-chips">
-              <button t-foreach="statusChips" t-as="c" t-key="c.id"
-                      t-attf-class="pbim-fchip {{ state.status === c.id ? 'on' : '' }}" t-on-click="() => this.setStatus(c.id)">
-                <t t-esc="c.label"/> <span class="c" t-esc="countStatus(c.id)"/>
-              </button>
-            </div>
             <div class="ppl-search">
               <span class="ic"><t t-out="ic('search',15)"/></span>
               <input placeholder="Search name or code…" t-on-input="onSearch"/>

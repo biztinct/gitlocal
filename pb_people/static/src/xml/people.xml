@@ -59,12 +59,8 @@
         <!-- filter bar -->
         <div class="pbim-panel ppl-filters" data-coach="pe-filters">
           <div class="ppl-filter-row">
-            <div class="pbim-chips">
-              <button t-foreach="statusChips" t-as="c" t-key="c.id"
-                      t-attf-class="pbim-fchip {{ state.status === c.id ? 'on' : '' }}" t-on-click="() => this.setStatus(c.id)">
-                <t t-esc="c.label"/> <span class="c" t-esc="countStatus(c.id)"/>
-              </button>
-            </div>
+            <!-- the status buttons went with the quiet numbers: every figure
+                 above is the filter, counted over everyone, not the listed 240 -->
             <div class="ppl-search">
               <span class="ic"><t t-out="ic('search',15)"/></span>
               <input placeholder="Search name, job, department…" t-on-input="onSearch"/>

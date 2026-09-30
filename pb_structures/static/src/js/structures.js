@@ -7,10 +7,6 @@ import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 import { _t } from "@web/core/l10n/translation";
 
 const STATE_CLS = { active: "ok", draft: "info", deprecated: "warn", archived: "muted" };
-const STATUS_CHIPS = [
-    { id: "all", label: _t("All") }, { id: "active", label: _t("Active") },
-    { id: "draft", label: _t("Draft") }, { id: "deprecated", label: _t("Deprecated") },
-];
 const DATE_CHIPS = [
     { id: "all", label: _t("All time") }, { id: "month", label: _t("Updated this month") },
     { id: "year", label: _t("Updated this year") }, { id: "custom", label: _t("Custom") },
@@ -42,7 +38,6 @@ export class PbStructures extends Component {
     }
 
     ic(n, s = 16) { return ic(n, s); }
-    get statusChips() { return STATUS_CHIPS; }
     get dateChips() { return DATE_CHIPS; }
     get schedules() {
         const set = new Set(this.state.structures.map(s => s.schedule).filter(x => x && x !== "—"));
@@ -50,11 +45,17 @@ export class PbStructures extends Component {
     }
     stateCls(s) { return STATE_CLS[s] || "muted"; }
 
-    /** The counts as one quiet line; none of them filters anything. */
+    /** The counts as one quiet line. The three states filter the list (they
+     *  replaced the status buttons); press the lit one again to show all. */
     get glance() {
         const k = this.state.kpis || {};
+        const pick = (st) => () => this.setStatus(this.state.status === st ? "all" : st);
+        const n = (st) => this.state.structures.filter((x) => x.state === st).length;
         return [
-            { key: "structures", n: k.structures || 0, label: _t("Structures"), tone: "", run: null },
+            { key: "all", n: k.structures || 0, label: _t("Structures"), tone: "", run: () => this.setStatus("all") },
+            { key: "active", n: n("active"), label: _t("Active"), tone: "", run: pick("active") },
+            { key: "draft", n: n("draft"), label: _t("Draft"), tone: "", run: pick("draft") },
+            { key: "deprecated", n: n("deprecated"), label: _t("Deprecated"), tone: n("deprecated") ? "amber" : "", run: pick("deprecated") },
             { key: "rules", n: k.rules || 0, label: _t("Salary rules"), tone: "", run: null },
             { key: "categories", n: k.categories || 0, label: _t("Categories"), tone: "", run: null },
             { key: "employees", n: k.employees || 0, label: _t("Employees covered"), tone: "", run: null },
@@ -93,7 +94,6 @@ export class PbStructures extends Component {
             return true;
         });
     }
-    countStatus(id) { return this.state.structures.filter(s => this._matchStatus(s, id)).length; }
 
     openStructure(id) {
         if (!id) return;

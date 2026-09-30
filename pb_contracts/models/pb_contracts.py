@@ -101,9 +101,11 @@ class PbContracts(models.AbstractModel):
                         ('date_end', '<', str(today)), ('date_end', '>', str(soon))],
             'ending': ending_dom,
             'ended': [('state', '=', 'close')],
+            # the "Running" figure: steps 02 and 03 together
+            'open': [('state', '=', 'open')],
         }
         step_counts = {'draft': draft, 'ending': expiring, 'ended': expired,
-                       'running': max(running - expiring, 0)}
+                       'running': max(running - expiring, 0), 'open': running}
         list_dom = DOM + step_dom.get(step or '', [])
 
         rows = []

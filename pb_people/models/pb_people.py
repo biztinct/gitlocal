@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from datetime import date
+from datetime import date, timedelta
 
 from odoo import api, models
 
@@ -43,7 +43,7 @@ class PbPeople(models.AbstractModel):
             return default
 
     @api.model
-    def get_roster_data(self):
+    def get_roster_data(self, status=None):
         Emp = self.env['hr.employee']
         Contract = self.env['hr.contract']
         company = self.env.company
@@ -64,6 +64,29 @@ class PbPeople(models.AbstractModel):
         except Exception:
             total_wage = 0.0
 
+        # The quiet numbers and what pressing one lists are both read over
+        # EVERY active employee (the roster below is capped), so a figure
+        # never says 4,510 while the list behind it holds 240.
+        today = date.today()
+        month_start = today.replace(day=1)
+        soon = today + timedelta(days=30)
+        status_dom = {
+            'running': [('contract_id.state', '=', 'open')],
+            'expiring': [('contract_id.state', '=', 'open'),
+                         ('contract_id.date_end', '>=', str(today)),
+                         ('contract_id.date_end', '<=', str(soon))],
+            'notready': ['|', '|', ('contract_id', '=', False),
+                         ('contract_id.state', '!=', 'open'),
+                         ('account_number', '=', False)],
+        }
+        if 'first_contract_date' in Emp._fields:
+            status_dom['new'] = [('first_contract_date', '>=', str(month_start))]
+        expiring_soon = self._safe(lambda: Emp.search_count(EMP_DOM + status_dom['expiring']))
+        not_ready = self._safe(lambda: Emp.search_count(EMP_DOM + status_dom['notready']))
+        new_hires = (self._safe(lambda: Emp.search_count(EMP_DOM + status_dom['new']))
+                     if 'new' in status_dom else None)
+        LIST_DOM = EMP_DOM + status_dom.get(status or '', [])
+
         # department breakdown (for filter chips)
         departments = []
         try:
@@ -80,12 +103,10 @@ class PbPeople(models.AbstractModel):
             departments = []
 
         # ---- roster page ----
-        today = date.today()
-        month_start = today.replace(day=1)
-        new_hires = 0
-        expiring_soon = 0
+        count_new = new_hires is None
+        new_hires = new_hires or 0
         people = []
-        emps = self._safe(lambda: Emp.search(EMP_DOM, order='name', limit=ROSTER_LIMIT),
+        emps = self._safe(lambda: Emp.search(LIST_DOM, order='name', limit=ROSTER_LIMIT),
                           default=Emp.browse())
         for e in emps:
             try:
@@ -97,9 +118,8 @@ class PbPeople(models.AbstractModel):
                 dte = None
                 if c and c.state == 'open' and c.date_end:
                     dte = (c.date_end - today).days
-                if dte is not None and 0 <= dte <= 30:
-                    expiring_soon += 1
-                if jd and jd >= month_start:
+                # no stored hire date on this build: count what is listed
+                if count_new and jd and jd >= month_start:
                     new_hires += 1
                 people.append({
                     'id': e.id,
@@ -152,11 +172,14 @@ class PbPeople(models.AbstractModel):
                 'headcount': headcount, 'running': running, 'expiring': expiring,
                 'total_wage': total_wage, 'with_bank': with_bank,
                 'new_hires': new_hires, 'expiring_soon': expiring_soon,
+                'not_ready': not_ready,
                 'ready_pct': round(100 * with_bank / headcount) if headcount else 0,
             },
             'departments': departments,
             'people': people,
-            'people_total': headcount,
+            # how many match what is being listed (everyone, or the figure pressed)
+            'people_total': (self._safe(lambda: Emp.search_count(LIST_DOM))
+                             if status in status_dom else headcount),
             'contracts': contracts,
             'contracts_total': self._safe(lambda: Contract.search_count(CON_DOM)),
             'shown': len(people),
