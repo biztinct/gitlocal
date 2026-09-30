@@ -192,6 +192,56 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   Settings "Hiring" category now opens with the Hiring set-up card and is offered to the
   Talent lead as well as the Head of hiring.
 
+## Gotchas found in phase 2 (2026-09-30)
+
+- **RC29** Install a language AFTER `-u pb_hiring`, never before. The new code adds
+  `ir.attachment.pb_form_key`; any registry loaded with the new code before the column
+  exists fails on the first attachment read (`lang_install` reads the language flags,
+  which are attachments). Order per DB: `-u pb_hiring` → `/tmp/p2_lang.py` through
+  `odoo-bin shell` (installs `id_ID` with the `base.language.install` wizard + its
+  `website_ids`, adds `vi_VN` + `id_ID` to every website, then re-runs `seed_forms`).
+- **RC30** `update_field_translations` RAISES for a language that is not active. Every seed
+  filters to installed languages, so a language installed later gets its seeded words from
+  the next `-u` (or `seed_forms(env)`), never by hand.
+- **RC31** "Missing translation" = the language has NO KEY in the raw JSONB column, never
+  "equals English" ("CV" is "CV" in all three). `_raw()` in `forms_p2.py` reads the column.
+  Role copies are made by copying the raw JSONB (`_copy_raw`), so no language is lost.
+- **RC32** An OWL handler may not contain statements: `t-on-keydown="(ev) => { if (...) {...} }"`
+  compiles `if` as a variable, the WHOLE template fails ("Unexpected token '{'") and the
+  action shows the generic "Something went wrong". Put it in a method. Recipe that catches
+  it before a deploy: load `@odoo/owl` (npm) into a headless page and call
+  `new owl.App(owl.Component, {templates}).getTemplate(name)` for every `t-name`
+  (scratch `owlcheck.js` pattern; ~2 s).
+- **RC33** A client's website floats its own header over the page (payobook.com does): a
+  `position: sticky` bar inside the public page slides under it. The apply page keeps its
+  progress line non-sticky.
+- **RC34** Public-page styles avoid `:has()` (Sass-compiler and old-browser risk); the page
+  script toggles `.is-checked` on the chosen rows instead. `.pb-apply` colours are custom
+  properties (`--pba-*`), and `.rz-site .pb-apply` re-tints them from pb_hiring's own
+  stylesheet, so `rize_website` did not change.
+- **RC35** Never greet a candidate with `name.split(' ')[0]`: in Vietnamese the first word is
+  the FAMILY name ("Cảm ơn bạn, Phạm." — caught live). The thank-you uses the full name. The
+  "Application received" email's `{{first_name}}` token still splits (owner item, P8).
+- **RC36** Headless checks: the payobook login form fades in (wait for `visible`); the public
+  page's script arrives deferred (wait for `form.pba-form[data-pba-ready]` before testing
+  its client-side checks — a click before that is a plain HTML submit, which the server
+  still refuses); an element below the fold of an inner scroll pane must be scrolled into
+  view before a pointer drag.
+- **RC37** With `vi_VN` + `id_ID` on the website, payobook.com and the rize site now carry a
+  language switcher and `/vi/…` `/id/…` URLs everywhere, and `website.auto_redirect_lang`
+  (on) sends a visitor whose browser prefers Vietnamese/Indonesian to those URLs (marketing
+  pages are not translated). Owner item; switch `auto_redirect_lang` off if unwanted.
+- **RC38** The role's market picks the first language only when there is no `frontend_lang`
+  cookie, the page is in the website's default language, and that language is both on the
+  website and offered by the form (`COUNTRY_LANG`: VN → vi_VN, ID → id_ID); query string
+  (utm_*) is kept on the redirect.
+- **RC39** P1 quirk seen, not fixed: a card says "Applied yesterday" for an application made
+  after 17:00 UTC (P1's `_card` compares the UTC create date with the user's today).
+- **RC40** ⌘K and doors after P2: `hiring_forms` **4010** ("Application forms"); the Settings
+  "Hiring" category gains an "Application forms" card; the Hiring set-up "Application forms"
+  card opens `pb_hiring.action_pb_hiring_forms`; a role's Details → "Advert & publishing"
+  shows "Application form: … · Change · Preview · Edit".
+
 ## Phase log
 
 - **P1** (handover `RECRUIT_P1_BOARD.md`) — started and LIVE 2026-09-30: pb_hiring 19.0.2.0.0 +
@@ -201,3 +251,14 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   demo.talentlead / demo.hiringmanager, label "RECRUIT P1 board candidates". Gotchas RC16–RC28.
   API left for P2/P3: `journey_stage`, `get_candidate`, `get_timeline`, `get_setup`,
   `role_glance` (see the P1 report).
+- **P2** (handover `RECRUIT_P2_FORMS.md`) — LIVE 2026-09-30: pb_hiring 19.0.2.1.0 on payobook,
+  rize, payobook_template (backups in `/odoo/backups/2026-09-30-recruit-p2/`); `id_ID`
+  installed and `vi_VN` + `id_ID` added to every website on the three DBs. 248/248 pb_hiring
+  tests on a rize clone (225 + 23 new). Four templates per company, every role its own copy
+  (payobook 14, rize 3). Demo on payobook: role "DEMO Territory Manager" now uses a copy of
+  Tech roles (+ "Do you have a motorbike?" in three languages on the Tech roles template),
+  its job published, 3 candidates (Võ Ngọc Hân / Vo Ngoc Han — the duplicate pair — and
+  Dewi Lestari), label "RECRUIT P2 application-form candidates". Gotchas RC29–RC40.
+  API left for P3/P4: `get_forms`, `get_form`, `pb_form_answers`, `pb_consent_on/_text`,
+  `pb_lang`, `pb_country_id`, `pb_possible_duplicate_id`, `pb_same_person_id`,
+  `res.company.pb_retention_months`.
