@@ -46,8 +46,12 @@ P_DOC_REMINDER_DAYS = 'pb_hiring.doc_reminder_days'
 P_OFFER_MAIL = 'pb_hiring.offer_mail'
 P_CLOSURE_MAIL = 'pb_hiring.closure_mail'
 P_CREATE_CONTRACT = 'pb_hiring.create_contract'
+# RECRUIT P1 (RC-D1): only recruiters and the talent lead move candidates. ON
+# lets a line manager move candidates on their own roles. Ships OFF.
+P_LINE_MANAGERS_MOVE = 'pb_hiring.line_managers_move'
 
 DEFAULTS = {
+    P_LINE_MANAGERS_MOVE: '0',
     # OFF. An advert that leaves the building the first time somebody presses
     # a button is an advert nobody agreed to send. The pack is built either
     # way and a human pushes it.
@@ -149,11 +153,12 @@ POSTING_STATES = [
     ('sent', 'Sent'),
 ]
 
+# RECRUIT P1 (G-24): Rize's words on screen; the stored values stay.
 SCREEN_TAGS = [
-    ('shortlisted', 'Shortlisted'),
-    ('rejected', 'Not this time'),
-    ('future_fit', 'Worth keeping in touch with'),
-    ('other_role', 'Better suited to another role'),
+    ('shortlisted', 'Shortlist'),
+    ('rejected', 'CV reject'),
+    ('future_fit', 'Future-fit'),
+    ('other_role', 'Fit for other role'),
 ]
 
 # ==========================================================================

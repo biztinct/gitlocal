@@ -46,11 +46,14 @@
     </record>
 
     <record id="group_hiring_manager" model="res.groups">
-        <field name="name">Hiring manager</field>
+        <!-- RECRUIT P1 (RC-D2): the tier is the TALENT LEAD. "Hiring
+             manager" now means the line manager whose team the role is in,
+             exactly as the client uses the words. The xmlid stays. -->
+        <field name="name">Talent lead</field>
         <field name="sequence">20</field>
         <field name="privilege_id" ref="res_groups_privilege_hiring"/>
         <field name="implied_ids" eval="[(4, ref('group_hiring_user')), (4, ref('hr_recruitment.group_hr_recruitment_manager'))]"/>
-        <field name="comment">Everything above, plus agreeing a hiring request, agreeing an advert, closing a role and marking one filled.</field>
+        <field name="comment">Everything a recruiter does, plus setting hiring up (stages, presets, emails, switches), agreeing a hiring request and an advert, closing a role and marking one filled.</field>
     </record>
 
     <record id="group_hiring_admin" model="res.groups">
@@ -61,7 +64,7 @@
         <!-- The two built-in administrator accounts and NOBODY ELSE. Every
              other person is added by a human, on purpose. -->
         <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
-        <field name="comment">Everything above, plus the hiring rules — who recruits for which company and country — and the switches.</field>
+        <field name="comment">Everything the talent lead does, plus the hiring rules — who recruits for which company and country.</field>
     </record>
 
 <data noupdate="1">
@@ -443,4 +446,12 @@
         <field name="perm_unlink" eval="False"/>
     </record>
 
+    <!-- RECRUIT P1: presets are per company. -->
+    <data noupdate="1">
+        <record id="rule_stage_preset_company" model="ir.rule">
+            <field name="name">Stage preset: company</field>
+            <field name="model_id" ref="model_pb_hiring_stage_preset"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
 </odoo>

@@ -135,8 +135,8 @@ class PbHiring(models.AbstractModel):
         if not self._can_write():
             raise AccessError(_(
                 "You can see the hiring board, but agreeing, closing or "
-                "filling a role is for the hiring managers. Ask them and "
-                "they will do it in a minute."))
+                "filling a role, and setting hiring up, is for the talent "
+                "lead. Ask them and they will do it in a minute."))
         return True
 
     # =====================================================================
@@ -817,9 +817,13 @@ class PbHiring(models.AbstractModel):
     def _act_mark_done(self, payload):
         interview = self._interview(payload)
         self._require_recruit(interview.requisition_id)
+        pending = len(interview.feedback_ids.filtered(
+            lambda f: f.state == 'pending'))
         interview.action_mark_done()
         return {'id': interview.id, 'state': interview.state,
-                'note': _("Done, with every opinion in.")}
+                'note': _("Done, with every opinion in.") if not pending else
+                _("Done. %s still to come — the reminders keep going.",
+                  counted(pending, _('1 opinion'), _('%s opinions') % pending))}
 
     def _act_cancel_interview(self, payload):
         interview = self._interview(payload)

@@ -67,7 +67,7 @@ class HrApplicant(models.Model):
         failed, to take the move itself down with it.
         """
         before = {}
-        if 'stage_id' in vals:
+        if 'stage_id' in vals and not self.env.context.get('pb_no_stage_log'):
             before = {rec.id: rec.stage_id.id for rec in self}
         res = super().write(vals)
         if before:

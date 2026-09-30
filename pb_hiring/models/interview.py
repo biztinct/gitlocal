@@ -795,12 +795,13 @@ class PbHiringInterview(models.Model):
     #  Marking it done
     # =====================================================================
     def action_mark_done(self, force=False):
-        """DONE MEANS THE OPINIONS ARE IN, not that the hour has passed.
+        """DONE MEANS IT HAPPENED — and a missing opinion no longer holds it.
 
-        An interview marked done with two of three opinions missing is how a
-        candidate waits a fortnight for an answer nobody is working on. The
-        refusal says exactly how many are outstanding and who they are
-        waiting on, so it is an instruction rather than a wall.
+        RECRUIT P1 (RC-D5): the only hard gate in hiring is the offer. An
+        interview marked done with opinions outstanding says so ("N opinions
+        still to come"), and the chase keeps running on the rows still
+        pending — it looks at done interviews as well as scheduled ones. The
+        `force` argument is kept for callers that still pass it.
         """
         self.ensure_one()
         if self.state == 'no_show':
@@ -808,19 +809,16 @@ class PbHiringInterview(models.Model):
         if self.state != 'scheduled':
             raise UserError(_("This interview is already closed."))
         pending = self.feedback_ids.filtered(lambda f: f.state == 'pending')
-        if pending and not force:
-            names = ', '.join(
-                p.panel_employee_id.sudo().name or '' for p in pending)
-            raise UserError(_(
-                "Still waiting for %(n)s of %(total)s %(word)s — %(who)s. "
-                "Their links are live; chase them, or record a no-show if the "
-                "interview did not happen.",
+        self.sudo().write({'state': 'done'})
+        if pending:
+            self.sudo().message_post(body=_(
+                "Marked done. %(n)s of %(total)s %(word)s still to come — "
+                "the reminders keep going.",
                 n=len(pending), total=len(self.feedback_ids),
                 word=counted(len(self.feedback_ids), _('opinion'),
-                             _('opinions')),
-                who=names))
-        self.sudo().write({'state': 'done'})
-        self.sudo().message_post(body=_("Marked done."))
+                             _('opinions'))))
+        else:
+            self.sudo().message_post(body=_("Marked done."))
         return True
 
     def action_cancel(self, note=None):

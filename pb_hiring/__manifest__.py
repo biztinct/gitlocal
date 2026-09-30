@@ -53,8 +53,12 @@ WHAT THIS MODULE IS
   * **Opinions that actually land.** Everybody who sat in the room gets their
     own private link — no sign-in, it works once — with five lines to score
     and one question: would you hire them. A day of working hours later,
-    anybody who has not answered is chased once. A round cannot be closed
-    while an opinion is missing, because "closed" would then mean "forgotten".
+    anybody who has not answered is chased once. A round can be marked done
+    with an opinion still missing, and the chase keeps going until it lands.
+  * **The role board.** Open a role and its candidates sit in columns — the
+    company's own stages, each with a one-line meaning. Drag a card, or tick
+    several and move them together; every move can be undone for five
+    seconds, and only the offer itself can ever say no.
   * **The two answers a candidate is waiting for.** Through to the next round,
     or not this time — both written in plain words, both actually sent. On the
     last conversation the panel's verdict and the decision are recorded
@@ -94,7 +98,7 @@ WHAT THIS MODULE IS
     them, and whether an agency is faster than doing it yourself — with the
     whole thing downloadable as a spreadsheet.
 """,
-    'version': '19.0.1.3.5',
+    'version': '19.0.2.0.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -151,16 +155,21 @@ WHAT THIS MODULE IS
         'views/journey_views.xml',
         'views/application_templates.xml',
         'data/journey_seed.xml',
+        'data/recruit_p1.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'pb_hiring/static/src/scss/hiring.scss',
             # the leaf component first, then the rows that name its action
             'pb_hiring/static/src/scss/hiring_numbers.scss',
+            'pb_hiring/static/src/scss/hiring_board_p1.scss',
             'pb_hiring/static/src/js/hiring_board.js',
+            'pb_hiring/static/src/js/hiring_setup.js',
             'pb_hiring/static/src/js/hiring_numbers.js',
             'pb_hiring/static/src/js/hiring_palette.js',
             'pb_hiring/static/src/xml/hiring_board.xml',
+            'pb_hiring/static/src/xml/hiring_board_p1.xml',
+            'pb_hiring/static/src/xml/hiring_setup.xml',
             'pb_hiring/static/src/xml/hiring_numbers.xml',
         ],
         'web.assets_frontend': [

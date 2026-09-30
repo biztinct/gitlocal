@@ -99,3 +99,7 @@ access_pb_letter_template_hiring_admin,Letter wording head of hiring,pb_lifecycl
 access_hiring_message_user,Hiring email templates,model_pb_hiring_message_template,pb_hiring.group_hiring_user,1,0,0,0
 access_hiring_message_admin,Hiring email templates admin,model_pb_hiring_message_template,pb_hiring.group_hiring_admin,1,1,1,1
 access_hiring_message_system,Hiring email templates system,model_pb_hiring_message_template,base.group_system,1,1,1,1
+access_pb_hiring_stage_preset_staff,Stage presets read,model_pb_hiring_stage_preset,base.group_user,1,0,0,0
+access_pb_hiring_stage_preset_manager,Stage presets talent lead,model_pb_hiring_stage_preset,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_stage_preset_system,Stage presets system,model_pb_hiring_stage_preset,base.group_system,1,1,1,1
+access_hiring_message_manager,Hiring email templates talent lead,model_pb_hiring_message_template,pb_hiring.group_hiring_manager,1,1,1,1

@@ -708,7 +708,7 @@ class PbHiringA3(models.AbstractModel):
                 or self._can_write()):
             raise AccessError(_(
                 "Ending somebody's cover early is for the recruiter it is "
-                "covering, or for the hiring managers."))
+                "covering, or for the talent lead."))
         cover.action_end(note=payload.get('note'))
         return {'id': cover.id, 'note': _("Cover finished.")}
 

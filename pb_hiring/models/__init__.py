@@ -32,3 +32,4 @@ from . import (
 )
 
 from . import journey
+from . import board_p1   # RECRUIT P1 — after journey, whose verbs it extends
