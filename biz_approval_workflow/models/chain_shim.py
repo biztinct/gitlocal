@@ -64,7 +64,7 @@ def register_chain(model_name, process_key, submit_state, driven,
                    draft_state='draft', refuse_state='refused',
                    reverse_to=None, employee_field='employee_id',
                    amount_field=None, currency_field='currency_id',
-                   date_field=None):
+                   date_field=None, state_field='state'):
     """Tell the shim how one consumer's ladder maps onto a route.
 
     ``submit_state``  the status that means "sent in, nobody has decided yet".
@@ -74,6 +74,13 @@ def register_chain(model_name, process_key, submit_state, driven,
                       last one (a pay change being applied and closed) are not
                       the route's business and keep their own buttons.
     ``reverse_to``    statuses that mean "sent back down"; default: the draft.
+    ``state_field``   the Selection the route drives. ``'state'`` for every
+                      consumer before RECRUIT P3; a consumer whose ``state``
+                      is something else (a hiring ROLE's life, while the
+                      route drives its REQUEST) names its own field. A field
+                      other than ``state`` is not covered by the chain
+                      mixin's write guard, so that consumer MUST guard it
+                      itself (``pb_hiring`` does, with its own token).
     """
     spec = {
         'process_key': process_key,
@@ -89,6 +96,7 @@ def register_chain(model_name, process_key, submit_state, driven,
         'amount_field': amount_field,
         'currency_field': currency_field,
         'date_field': date_field,
+        'state_field': state_field or 'state',
     }
     CHAIN_PROCESS_KEYS[model_name] = spec
     return spec
@@ -181,6 +189,14 @@ class BizApprovalChainShim(models.AbstractModel):
     # ==================================================================
     def _chain_spec(self):
         return CHAIN_PROCESS_KEYS.get(self._name)
+
+    def _chain_state_field(self):
+        """The field the route drives (``state`` unless registered otherwise)."""
+        return (self._chain_spec() or {}).get('state_field') or 'state'
+
+    def _chain_state_value(self):
+        self.ensure_one()
+        return self[self._chain_state_field()]
 
     def _approval_engine_process_key(self):
         """The catalogue row this kind of record is approved under."""
@@ -411,11 +427,12 @@ class BizApprovalChainShim(models.AbstractModel):
         spec = self._chain_spec()
         if not spec:
             return super()._approval_validate()
-        if self.state in spec['driven'] or self.state == spec['submit_state']:
+        now = self._chain_state_value()
+        if now in spec['driven'] or now == spec['submit_state']:
             raise UserError(_("This has already been sent in."))
-        if self.state in (self._approval_dead_states or ()):
+        if now in (self._approval_dead_states or ()):
             raise UserError(_("This one is closed, so it cannot be sent in."))
-        if not super()._approval_can(self.state, spec['submit_state']):
+        if not super()._approval_can(now, spec['submit_state']):
             raise UserError(_("You are not allowed to send this in."))
         self._before_approval_transition(spec['submit_state'])
         return True
@@ -427,8 +444,8 @@ class BizApprovalChainShim(models.AbstractModel):
         if not spec:
             return super()._approval_freeze(request)
         target = spec['submit_state']
-        if self.state != target:
-            frm = self.state
+        if self._chain_state_value() != target:
+            frm = self._chain_state_value()
             self._chain_engine_write(target)
             self._after_approval_transition(target)
             self._chain_log(frm, target,
@@ -450,9 +467,9 @@ class BizApprovalChainShim(models.AbstractModel):
         if done < 1:
             return True
         target = ladder[min(done, len(ladder)) - 1]
-        if self.state in (target, spec['final_state']):
+        if self._chain_state_value() in (target, spec['final_state']):
             return True
-        frm = self.state
+        frm = self._chain_state_value()
         self._before_approval_transition(target)
         self._chain_engine_write(target)
         self._after_approval_transition(target)
@@ -466,9 +483,9 @@ class BizApprovalChainShim(models.AbstractModel):
         if not spec:
             return super()._approval_apply(request)
         final = spec['final_state']
-        if self.state == final:
+        if self._chain_state_value() == final:
             return True
-        frm = self.state
+        frm = self._chain_state_value()
         self._before_approval_transition(final)
         self._chain_engine_write(final)
         self._after_approval_transition(final)
@@ -482,8 +499,8 @@ class BizApprovalChainShim(models.AbstractModel):
         if not spec:
             return super()._approval_return(request, reason)
         target = spec['draft_state']
-        if self.state != target:
-            frm = self.state
+        if self._chain_state_value() != target:
+            frm = self._chain_state_value()
             self._chain_engine_write(target)
             self._chain_log(frm, target, reason or '')
         return True
@@ -495,8 +512,8 @@ class BizApprovalChainShim(models.AbstractModel):
         if not spec:
             return super()._approval_reject(request, reason)
         target = spec['refuse_state']
-        if self.state != target:
-            frm = self.state
+        if self._chain_state_value() != target:
+            frm = self._chain_state_value()
             self._before_approval_transition(target)
             self._chain_engine_write(target)
             self._after_approval_transition(target)
@@ -518,7 +535,7 @@ class BizApprovalChainShim(models.AbstractModel):
         spec = self._chain_spec()
         if not spec or not self._engine_managed():
             return super()._advance_state(to_state, note)
-        frm = self.state
+        frm = self._chain_state_value()
         # THE ROUTE DECIDES THE ORDER, NOT THE RECORD'S OWN LADDER.
         #
         # This used to re-check the consumer's transition table before doing
@@ -626,6 +643,12 @@ class BizApprovalChainShim(models.AbstractModel):
     def _chain_engine_write(self, state):
         """A state write the route asked for, so the guard below lets it by."""
         self.ensure_one()
+        field = self._chain_state_field()
+        if field != 'state':
+            # The mixin's token only ever writes `state`; the consumer that
+            # registered another field guards that field itself.
+            return self.with_context(**{ENGINE_WRITE: True}).write(
+                {field: state})
         return self.with_context(**{ENGINE_WRITE: True})._chain_state_write(
             state)
 
@@ -648,15 +671,16 @@ class BizApprovalChainShim(models.AbstractModel):
         left a request sitting in somebody's inbox for a record that is no
         longer on the route.
         """
-        if 'state' not in vals or self.env.context.get(ENGINE_WRITE):
+        field = self._chain_state_field()
+        if field not in vals or self.env.context.get(ENGINE_WRITE):
             return super().write(vals)
         orphans = []
         for rec in self:
-            if not rec._chain_spec() or vals['state'] == rec.state:
+            if not rec._chain_spec() or vals[field] == rec[field]:
                 continue
             request = rec._chain_open_request()
             if request:
-                orphans.append((rec, request, rec.state, vals['state']))
+                orphans.append((rec, request, rec[field], vals[field]))
         result = super().write(vals)
         for rec, request, was, now in orphans:
             rec._chain_close_request(request, was, now)
@@ -671,7 +695,7 @@ class BizApprovalChainShim(models.AbstractModel):
         `env.uid` is, so the trail keeps their name.
         """
         self.ensure_one()
-        selection = self._fields['state'].selection
+        selection = self._fields[self._chain_state_field()].selection
         label = dict(selection).get(now, now) \
             if isinstance(selection, (list, tuple)) else now
         try:
