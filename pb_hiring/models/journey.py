@@ -544,8 +544,10 @@ class HiringMessageTemplate(models.Model):
     company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
     key = fields.Selection([('received', 'Application received'), ('phone', 'Recruiter review'),
                             ('assignment', 'Assignment'), ('on_hold', 'On hold'), ('cv_reject', 'CV rejection')], required=True)
-    subject = fields.Char(required=True)
-    body = fields.Text(required=True)
+    # RECRUIT P2 (G-02): the candidate-facing words exist per language; the
+    # "Application received" email goes out in the language they applied in.
+    subject = fields.Char(required=True, translate=True)
+    body = fields.Text(required=True, translate=True)
     active = fields.Boolean(default=True)
 
     def _render(self, applicant, values=None):
@@ -717,4 +719,10 @@ def seed_journey(env):
                                **{'pb_hiring_' + k: v for k, v in source['sections'].items()}))
         for index, template in enumerate(source['emails']):
             if not env['pb.hiring.message.template'].sudo().search_count([('company_id', '=', company.id), ('key', '=', template['key'])]):
-                env['pb.hiring.message.template'].sudo().create(dict(template, company_id=company.id, sequence=index * 10))
+                env['pb.hiring.message.template'].sudo().with_context(lang='en_US').create(
+                    dict(template, company_id=company.id, sequence=index * 10))
+    # RECRUIT P2: application forms (templates per company, every role its
+    # own copy, the Vietnamese / Indonesian words). Imported here: the forms
+    # file reads this one's constants.
+    from .forms_p2 import seed_forms
+    seed_forms(env)

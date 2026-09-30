@@ -453,5 +453,11 @@
             <field name="model_id" ref="model_pb_hiring_stage_preset"/>
             <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
         </record>
+        <!-- RECRUIT P2: application forms are per company. -->
+        <record id="rule_hiring_form_company" model="ir.rule">
+            <field name="name">Application form: company</field>
+            <field name="model_id" ref="model_pb_hiring_form"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
     </data>
 </odoo>

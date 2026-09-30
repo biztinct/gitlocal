@@ -33,3 +33,4 @@ from . import (
 
 from . import journey
 from . import board_p1   # RECRUIT P1 — after journey, whose verbs it extends
+from . import forms_p2   # RECRUIT P2 — after board_p1, whose drawer and set-up it extends

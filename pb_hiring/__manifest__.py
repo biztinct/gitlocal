@@ -59,6 +59,15 @@ WHAT THIS MODULE IS
     company's own stages, each with a one-line meaning. Drag a card, or tick
     several and move them together; every move can be undone for five
     seconds, and only the offer itself can ever say no.
+  * **Application forms the talent lead builds.** Each role has its own form,
+    copied from a template (Standard, Field roles, Senior roles, Tech roles or
+    the company's own): add, remove, reorder and reword questions, mark any of
+    them required, ask for expected pay, a portfolio file or link, a country
+    from a list. The page a candidate sees is drawn live beside the editor, in
+    English, Vietnamese and Bahasa Indonesia. Required means required — the
+    server refuses an application without it, files included. The consent a
+    person ticks is kept word for word, and somebody who applied before with
+    the same email or phone is flagged, never blocked.
   * **The two answers a candidate is waiting for.** Through to the next round,
     or not this time — both written in plain words, both actually sent. On the
     last conversation the panel's verdict and the decision are recorded
@@ -98,7 +107,7 @@ WHAT THIS MODULE IS
     them, and whether an agency is faster than doing it yourself — with the
     whole thing downloadable as a spreadsheet.
 """,
-    'version': '19.0.2.0.0',
+    'version': '19.0.2.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -129,6 +138,7 @@ WHAT THIS MODULE IS
         'pb_zoho_bridge',           # the joining checklist and the login (D6)
         'pb_vendor_access',         # the agency on the other end of the role
         'pb_insights_hub',          # the hub the Hiring numbers lens joins
+        'phone_validation',         # RECRUIT P2: the phone checked against the country
     ],
     'data': [
         'security/pb_hiring_security.xml',
@@ -156,6 +166,7 @@ WHAT THIS MODULE IS
         'views/application_templates.xml',
         'data/journey_seed.xml',
         'data/recruit_p1.xml',
+        'data/recruit_p2.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -163,17 +174,21 @@ WHAT THIS MODULE IS
             # the leaf component first, then the rows that name its action
             'pb_hiring/static/src/scss/hiring_numbers.scss',
             'pb_hiring/static/src/scss/hiring_board_p1.scss',
+            'pb_hiring/static/src/scss/hiring_forms.scss',
             'pb_hiring/static/src/js/hiring_board.js',
             'pb_hiring/static/src/js/hiring_setup.js',
+            'pb_hiring/static/src/js/hiring_forms.js',
             'pb_hiring/static/src/js/hiring_numbers.js',
             'pb_hiring/static/src/js/hiring_palette.js',
             'pb_hiring/static/src/xml/hiring_board.xml',
             'pb_hiring/static/src/xml/hiring_board_p1.xml',
             'pb_hiring/static/src/xml/hiring_setup.xml',
+            'pb_hiring/static/src/xml/hiring_forms.xml',
             'pb_hiring/static/src/xml/hiring_numbers.xml',
         ],
         'web.assets_frontend': [
             'pb_hiring/static/src/scss/portal_hiring.scss',
+            'pb_hiring/static/src/js/apply_page.js',
         ],
     },
     'post_init_hook': 'post_init_hook',

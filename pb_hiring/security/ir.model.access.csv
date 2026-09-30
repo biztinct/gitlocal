@@ -103,3 +103,9 @@ access_pb_hiring_stage_preset_staff,Stage presets read,model_pb_hiring_stage_pre
 access_pb_hiring_stage_preset_manager,Stage presets talent lead,model_pb_hiring_stage_preset,pb_hiring.group_hiring_manager,1,1,1,1
 access_pb_hiring_stage_preset_system,Stage presets system,model_pb_hiring_stage_preset,base.group_system,1,1,1,1
 access_hiring_message_manager,Hiring email templates talent lead,model_pb_hiring_message_template,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_form_user,Application forms read,model_pb_hiring_form,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_form_manager,Application forms talent lead,model_pb_hiring_form,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_form_system,Application forms system,model_pb_hiring_form,base.group_system,1,1,1,1
+access_pb_hiring_form_field_user,Application questions read,model_pb_hiring_form_field,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_form_field_manager,Application questions talent lead,model_pb_hiring_form_field,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_form_field_system,Application questions system,model_pb_hiring_form_field,base.group_system,1,1,1,1
