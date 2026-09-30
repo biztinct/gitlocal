@@ -1,0 +1,448 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_hiring
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "All open roles"
+msgstr "Semua lowongan"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "A meaningful next step starts with a conversation."
+msgstr "Langkah berarti berikutnya dimulai dengan sebuah percakapan."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "{n} of {m} answered"
+msgstr "{n} dari {m} terjawab"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Required"
+msgstr "Wajib"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Optional"
+msgstr "Opsional"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Drop your file here, or choose one"
+msgstr "Letakkan berkas di sini, atau pilih berkas"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Choose a different file"
+msgstr "Pilih berkas lain"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "or"
+msgstr "atau"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Upload a file"
+msgstr "Unggah berkas"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Paste a link"
+msgstr "Tempel tautan"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Choose your country"
+msgstr "Pilih negara Anda"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Choose one"
+msgstr "Pilih salah satu"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Send my application"
+msgstr "Kirim lamaran saya"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Sending…"
+msgstr "Mengirim…"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Only the hiring team for this role sees your application."
+msgstr "Hanya tim rekrutmen untuk peran ini yang melihat lamaran Anda."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Preview — nothing is sent from this page."
+msgstr "Pratinjau — tidak ada yang dikirim dari halaman ini."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "(English)"
+msgstr "(bahasa Inggris)"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "{n} words"
+msgstr "{n} kata"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Include the country code, like +{code}."
+msgstr "Sertakan kode negara, misalnya +{code}."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Enter an email address like name@example.com."
+msgstr "Masukkan alamat email, misalnya nama@example.com."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Paste a full link that starts with https://"
+msgstr "Tempel tautan lengkap yang diawali https://"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "This file is larger than {mb} MB. Choose a smaller file."
+msgstr "Berkas ini lebih dari {mb} MB. Pilih berkas yang lebih kecil."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "This kind of file cannot be sent here."
+msgstr "Jenis berkas ini tidak dapat dikirim di sini."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Write between {min} and {max} words. You have {n}."
+msgstr "Tulis antara {min} dan {max} kata. Anda baru menulis {n}."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "One answer needs a look before you send."
+msgstr "Ada satu jawaban yang perlu diperiksa sebelum dikirim."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "{n} answers need a look before you send."
+msgstr "Ada {n} jawaban yang perlu diperiksa sebelum dikirim."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Files are not kept when a send fails — please choose them again."
+msgstr "Berkas tidak disimpan saat pengiriman gagal — silakan pilih lagi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Application received"
+msgstr "Lamaran diterima"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "What happens next"
+msgstr "Apa yang terjadi selanjutnya"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "A person on the hiring team reads every application, usually within two weeks."
+msgstr "Seseorang dari tim rekrutmen membaca setiap lamaran, biasanya dalam dua minggu."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "If your experience fits the role, they contact you to arrange a first conversation."
+msgstr "Jika pengalaman Anda cocok dengan peran ini, mereka akan menghubungi Anda untuk mengatur percakapan pertama."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "See other open roles"
+msgstr "Lihat lowongan lainnya"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Language"
+msgstr "Bahasa"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Your application"
+msgstr "Lamaran Anda"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Add your answer to “%s”."
+msgstr "Isi jawaban untuk “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Choose the country you live in."
+msgstr "Pilih negara tempat Anda tinggal."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Choose an answer for “%s”."
+msgstr "Pilih jawaban untuk “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Choose at least one answer for “%s”."
+msgstr "Pilih setidaknya satu jawaban untuk “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Tick the box to agree before you send."
+msgstr "Centang kotak untuk menyetujui sebelum mengirim."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Choose a file for “%s”."
+msgstr "Pilih berkas untuk “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Paste a link for “%s”."
+msgstr "Tempel tautan untuk “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Upload a file or paste a link for “%s”."
+msgstr "Unggah berkas atau tempel tautan untuk “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "%(kinds)s · up to %(mb)s MB"
+msgstr "%(kinds)s · maksimal %(mb)s MB"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "%s per month"
+msgstr "%s per bulan"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "Between %(min)s and %(max)s words"
+msgstr "Antara %(min)s dan %(max)s kata"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "At least %s words"
+msgstr "Minimal %s kata"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "At most %s words"
+msgstr "Maksimal %s kata"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "Thank you, %s."
+msgstr "Terima kasih, %s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Thank you."
+msgstr "Terima kasih."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "Your application for %(role)s is with the %(brand)s hiring team."
+msgstr "Lamaran Anda untuk %(role)s sudah diterima tim rekrutmen %(brand)s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "Either way, you will hear from us. A confirmation is on its way to %s."
+msgstr "Apa pun hasilnya, Anda akan mendapat kabar dari kami. Konfirmasi sedang dikirim ke %s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Either way, you will hear from us."
+msgstr "Apa pun hasilnya, Anda akan mendapat kabar dari kami."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Please open the application form and try again."
+msgstr "Silakan buka formulir lamaran dan coba lagi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Your application is being processed. Please wait a moment before trying again."
+msgstr "Lamaran Anda sedang diproses. Mohon tunggu sebentar sebelum mencoba lagi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "This does not look like a phone number in %s. Include the country code, like +%s."
+msgstr "Ini tidak terlihat seperti nomor telepon di %s. Sertakan kode negara, misalnya +%s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "This does not look like a phone number."
+msgstr "Ini tidak terlihat seperti nomor telepon."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Enter a number, like 15000000."
+msgstr "Masukkan angka, misalnya 15000000."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Choose a date."
+msgstr "Pilih tanggal."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Write between %(min)s and %(max)s words. You have %(n)s."
+msgstr "Tulis antara %(min)s dan %(max)s kata. Anda baru menulis %(n)s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Write at least %(min)s words. You have %(n)s."
+msgstr "Tulis minimal %(min)s kata. Anda baru menulis %(n)s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Keep it under %(max)s words. You have %(n)s."
+msgstr "Tulis tidak lebih dari %(max)s kata. Anda menulis %(n)s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "“%(name)s” is larger than %(mb)s MB. Choose a smaller file."
+msgstr "“%(name)s” lebih dari %(mb)s MB. Pilih berkas yang lebih kecil."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "“%s” is empty. Choose the file again."
+msgstr "“%s” kosong. Pilih berkas itu lagi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "“%(name)s” is not a file we can take here. Use %(kinds)s."
+msgstr "“%(name)s” bukan berkas yang dapat kami terima di sini. Gunakan %(kinds)s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "“%(name)s” is not really a %(kind)s file. Choose the original file."
+msgstr "“%(name)s” sebenarnya bukan berkas %(kind)s. Pilih berkas aslinya."

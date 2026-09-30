@@ -2001,3 +2001,439 @@ msgstr "Hồ sơ đã nhận → Danh sách chọn → Chuyên viên tuyển d�
 #: code:addons/pb_hiring/static/src/xml/hiring_board.xml:0
 msgid "Include an assignment after the recruiter review"
 msgstr "Thêm bài tập sau buổi chuyên viên tuyển dụng xem xét"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "All open roles"
+msgstr "Tất cả vị trí đang tuyển"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "A meaningful next step starts with a conversation."
+msgstr "Một bước tiến ý nghĩa bắt đầu từ một cuộc trò chuyện."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "{n} of {m} answered"
+msgstr "Đã trả lời {n}/{m}"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Required"
+msgstr "Bắt buộc"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Optional"
+msgstr "Không bắt buộc"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Drop your file here, or choose one"
+msgstr "Kéo tệp vào đây, hoặc chọn một tệp"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Choose a different file"
+msgstr "Chọn tệp khác"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "or"
+msgstr "hoặc"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Upload a file"
+msgstr "Tải tệp lên"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Paste a link"
+msgstr "Dán đường dẫn"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Choose your country"
+msgstr "Chọn quốc gia của bạn"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Choose one"
+msgstr "Chọn một"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Send my application"
+msgstr "Gửi hồ sơ của tôi"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Sending…"
+msgstr "Đang gửi…"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Only the hiring team for this role sees your application."
+msgstr "Chỉ đội tuyển dụng của vị trí này xem được hồ sơ của bạn."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Preview — nothing is sent from this page."
+msgstr "Bản xem trước — trang này không gửi gì cả."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "(English)"
+msgstr "(tiếng Anh)"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "{n} words"
+msgstr "{n} từ"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Include the country code, like +{code}."
+msgstr "Ghi kèm mã quốc gia, ví dụ +{code}."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Enter an email address like name@example.com."
+msgstr "Nhập địa chỉ email, ví dụ ten@example.com."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Paste a full link that starts with https://"
+msgstr "Dán đường dẫn đầy đủ bắt đầu bằng https://"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "This file is larger than {mb} MB. Choose a smaller file."
+msgstr "Tệp này lớn hơn {mb} MB. Hãy chọn tệp nhỏ hơn."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "This kind of file cannot be sent here."
+msgstr "Không thể gửi loại tệp này ở đây."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Write between {min} and {max} words. You have {n}."
+msgstr "Hãy viết từ {min} đến {max} từ. Bạn đang có {n} từ."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "One answer needs a look before you send."
+msgstr "Có một câu trả lời cần xem lại trước khi gửi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "{n} answers need a look before you send."
+msgstr "Có {n} câu trả lời cần xem lại trước khi gửi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Files are not kept when a send fails — please choose them again."
+msgstr "Tệp không được giữ lại khi gửi không thành công — vui lòng chọn lại."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Application received"
+msgstr "Đã nhận hồ sơ"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "What happens next"
+msgstr "Điều gì sẽ diễn ra tiếp theo"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "A person on the hiring team reads every application, usually within two weeks."
+msgstr "Một thành viên trong đội tuyển dụng sẽ đọc từng hồ sơ, thường trong vòng hai tuần."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "If your experience fits the role, they contact you to arrange a first conversation."
+msgstr "Nếu kinh nghiệm của bạn phù hợp với vị trí, họ sẽ liên hệ để hẹn buổi trao đổi đầu tiên."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "See other open roles"
+msgstr "Xem các vị trí khác đang tuyển"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Your application"
+msgstr "Hồ sơ ứng tuyển của bạn"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Add your answer to “%s”."
+msgstr "Hãy trả lời câu “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Choose the country you live in."
+msgstr "Chọn quốc gia bạn đang sống."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Choose an answer for “%s”."
+msgstr "Hãy chọn một câu trả lời cho “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Choose at least one answer for “%s”."
+msgstr "Hãy chọn ít nhất một câu trả lời cho “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Tick the box to agree before you send."
+msgstr "Hãy đánh dấu vào ô để đồng ý trước khi gửi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Choose a file for “%s”."
+msgstr "Hãy chọn tệp cho “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Paste a link for “%s”."
+msgstr "Hãy dán đường dẫn cho “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Upload a file or paste a link for “%s”."
+msgstr "Hãy tải tệp lên hoặc dán đường dẫn cho “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "%(kinds)s · up to %(mb)s MB"
+msgstr "%(kinds)s · tối đa %(mb)s MB"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "%s per month"
+msgstr "%s mỗi tháng"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "Between %(min)s and %(max)s words"
+msgstr "Từ %(min)s đến %(max)s từ"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "At least %s words"
+msgstr "Ít nhất %s từ"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "At most %s words"
+msgstr "Tối đa %s từ"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "Thank you, %s."
+msgstr "Cảm ơn bạn, %s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Thank you."
+msgstr "Cảm ơn bạn."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "Your application for %(role)s is with the %(brand)s hiring team."
+msgstr "Hồ sơ ứng tuyển vị trí %(role)s của bạn đã đến đội tuyển dụng %(brand)s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+#, python-format
+msgid "Either way, you will hear from us. A confirmation is on its way to %s."
+msgstr "Dù kết quả thế nào, bạn cũng sẽ nhận được phản hồi. Email xác nhận đang được gửi tới %s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Either way, you will hear from us."
+msgstr "Dù kết quả thế nào, bạn cũng sẽ nhận được phản hồi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Please open the application form and try again."
+msgstr "Vui lòng mở lại mẫu ứng tuyển và thử lại."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/application.py:0
+msgid "Your application is being processed. Please wait a moment before trying again."
+msgstr "Hồ sơ của bạn đang được xử lý. Vui lòng đợi một chút rồi thử lại."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "This does not look like a phone number in %s. Include the country code, like +%s."
+msgstr "Số này không giống số điện thoại ở %s. Hãy ghi kèm mã quốc gia, ví dụ +%s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "This does not look like a phone number."
+msgstr "Số này không giống số điện thoại."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Enter a number, like 15000000."
+msgstr "Nhập một con số, ví dụ 15000000."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+msgid "Choose a date."
+msgstr "Hãy chọn một ngày."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Write between %(min)s and %(max)s words. You have %(n)s."
+msgstr "Hãy viết từ %(min)s đến %(max)s từ. Bạn đang có %(n)s từ."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Write at least %(min)s words. You have %(n)s."
+msgstr "Hãy viết ít nhất %(min)s từ. Bạn đang có %(n)s từ."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "Keep it under %(max)s words. You have %(n)s."
+msgstr "Hãy viết không quá %(max)s từ. Bạn đang có %(n)s từ."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "“%(name)s” is larger than %(mb)s MB. Choose a smaller file."
+msgstr "“%(name)s” lớn hơn %(mb)s MB. Hãy chọn tệp nhỏ hơn."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "“%s” is empty. Choose the file again."
+msgstr "“%s” trống. Hãy chọn lại tệp."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "“%(name)s” is not a file we can take here. Use %(kinds)s."
+msgstr "Chúng tôi không nhận được tệp “%(name)s” ở đây. Hãy dùng %(kinds)s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/forms_p2.py:0
+#, python-format
+msgid "“%(name)s” is not really a %(kind)s file. Choose the original file."
+msgstr "“%(name)s” không thật sự là tệp %(kind)s. Hãy chọn tệp gốc."
