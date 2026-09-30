@@ -864,7 +864,9 @@ class TestA3SourceGates(TransactionCase):
         src = _src('static', 'src', 'js', 'hiring_palette.js')
         numbers = [int(n) for n in re.findall(r'sequence:\s*(\d{4})', src)]
         self.assertTrue(numbers)
-        self.assertTrue(all(3500 <= n < 3600 for n in numbers),
+        # RECRUIT (2026-09-30) owns 4000–4099; wave 2 stays inside 3500.
+        self.assertTrue(all(3500 <= n < 3600 or 4000 <= n < 4100
+                            for n in numbers),
                         'B1 starts at 3600: %s' % numbers)
         self.assertIn('3570', src)
         self.assertIn('3580', src)

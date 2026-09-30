@@ -595,14 +595,16 @@ class TestTheChase(InterviewCase):
 @tagged('post_install', '-at_install')
 class TestMarkingItDone(InterviewCase):
 
-    def test_t8_done_is_blocked_while_an_opinion_is_missing(self):
+    def test_t8_done_is_no_longer_blocked_while_an_opinion_is_missing(self):
+        """RECRUIT P1 (RC-D5): the offer is the only hard gate. Done with
+        opinions outstanding says so, and the rows stay pending for the
+        chase."""
         interview = self._schedule()
-        with self.assertRaises(UserError) as caught:
-            interview.action_mark_done()
-        message = str(caught.exception)
-        self.assertIn('2', message)
-        self.assertIn('RIZE W2 A2 Panel', message,
-                      'the refusal did not say who it is waiting on')
+        interview.action_mark_done()
+        self.assertEqual(interview.state, 'done')
+        self.assertTrue(interview.feedback_ids.filtered(
+            lambda f: f.state == 'pending'),
+            'the outstanding opinions were closed with the interview')
 
     def test_t8_done_is_allowed_once_they_are_all_in(self):
         interview = self._schedule()

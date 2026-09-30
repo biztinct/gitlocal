@@ -1,5 +1,5 @@
 from odoo.tests.common import TransactionCase, tagged
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import UserError
 
 
 @tagged('post_install', '-at_install', 'pb_journey')
@@ -12,31 +12,36 @@ class TestHiringJourney(TransactionCase):
         self.applicant = self.env['hr.applicant'].create({'partner_name': 'QA Candidate', 'job_id': self.job.id,
             'company_id': self.company.id, 'email_from': 'qa@example.invalid'})
 
-    def test_stage_seed_and_optional_assignment(self):
+    def test_stage_seed_and_next_stage(self):
         Stage = self.env['hr.recruitment.stage']
-        self.assertEqual(Stage.search_count([('pb_key', '!=', False)]), 15)
+        # RECRUIT P1: 17 stages — Shortlist and Post-offer are new.
+        self.assertEqual(Stage.search_count([('pb_key', '!=', False)]), 17)
         Stage._ensure_journey_stages()
-        self.assertEqual(Stage.search_count([('pb_key', '!=', False)]), 15)
+        self.assertEqual(Stage.search_count([('pb_key', '!=', False)]), 17)
         self.assertEqual(self.applicant.stage_id.pb_key, 'screening')
-        self.applicant.stage_id = Stage.search([('pb_key', '=', 'phone')], limit=1)
-        self.assertEqual(self.applicant._pb_next_stage().pb_key, 'discussion_1')
-        self.applicant.stage_id = Stage.search([('pb_key', '=', 'reference')], limit=1)
+        self.applicant.stage_id = Stage._pb_stage('phone')
+        # No role behind this candidate: every stage shown except the ones
+        # hidden by default, so Recruiter review -> Assignment.
+        self.assertEqual(self.applicant._pb_next_stage().pb_key, 'assignment')
+        self.applicant.stage_id = Stage._pb_stage('cv_reject')
         self.assertFalse(self.applicant._pb_next_stage())
 
-    def test_hold_and_offer_gates(self):
+    def test_moves_are_not_gated_except_joined(self):
+        """RC-D5: on hold needs no date, offer is allowed; joined is set
+        from the offer."""
         facade = self.env['pb.hiring']
-        for key in ['on_hold', 'offer', 'joined']:
-            stage = self.env['hr.recruitment.stage'].search([('pb_key', '=', key)], limit=1)
-            with self.assertRaises(UserError):
-                facade._act_journey_stage({'applicant_id': self.applicant.id, 'stage_id': stage.id})
-        self.assertEqual(self.applicant.stage_id.pb_key, 'screening')
+        for key in ['on_hold', 'offer', 'post_offer']:
+            facade._act_journey_stage({'applicant_ids': [self.applicant.id], 'key': key})
+            self.assertEqual(self.applicant.stage_id.pb_key, key)
+        with self.assertRaises(UserError):
+            facade._act_journey_stage({'applicant_ids': [self.applicant.id], 'key': 'joined'})
+        self.assertEqual(self.applicant.stage_id.pb_key, 'post_offer')
 
-    def test_direct_stage_write_keeps_offer_gates(self):
+    def test_direct_stage_write_is_not_gated(self):
         for key in ('offer', 'joined'):
-            stage = self.env['hr.recruitment.stage'].search([('pb_key', '=', key)], limit=1)
-            with self.assertRaises(UserError):
-                self.applicant.write({'stage_id': stage.id})
-        self.assertEqual(self.applicant.stage_id.pb_key, 'screening')
+            stage = self.env['hr.recruitment.stage']._pb_stage(key)
+            self.applicant.write({'stage_id': stage.id})
+            self.assertEqual(self.applicant.stage_id.pb_key, key)
 
     def test_request_options_include_countries_without_existing_roles(self):
         options = self.env['pb.hiring'].journey_options()

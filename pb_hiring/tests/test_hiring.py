@@ -432,17 +432,23 @@ class TestScreening(HiringCase):
         applicant.action_pb_screen('future_fit')
         self.assertTrue(applicant.talent_pool_ids)
 
-    def test_another_role_moves_them_to_its_first_stage(self):
+    def test_another_role_copies_them_to_its_first_stage(self):
+        """RECRUIT P1 (G-24): "Fit for other role" puts a COPY in the other
+        role's Applications received and closes this card as CV reject."""
         req, applicant = self._applicant()
         other = self.env['hr.job'].sudo().create({
             'name': 'RIZE W2 Test Other Role',
             'company_id': self.company.id,
         })
         applicant.action_pb_screen('other_role', job_id=other.id)
-        self.assertEqual(applicant.job_id.id, other.id)
-        first = self.env['hr.recruitment.stage'].sudo().search(
-            [], order='sequence, id', limit=1)
-        self.assertEqual(applicant.stage_id.id, first.id)
+        Stage = self.env['hr.recruitment.stage']
+        self.assertEqual(applicant.job_id.id, req.job_id.id)
+        self.assertEqual(applicant.stage_id.pb_key, 'cv_reject')
+        copy = self.env['hr.applicant'].sudo().search(
+            [('job_id', '=', other.id),
+             ('partner_name', '=', applicant.partner_name)])
+        self.assertEqual(len(copy), 1)
+        self.assertEqual(copy.stage_id, Stage._pb_stage('screening'))
 
     def test_an_unknown_answer_is_refused(self):
         _req, applicant = self._applicant()
