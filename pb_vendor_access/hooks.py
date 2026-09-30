@@ -301,10 +301,87 @@ CATALOGUE = [
      'Give people roles and take them away, see every hand-over of access in '
      'the company, and take any of them back. It never includes the system '
      'administrator permission.', None),
+    # 2026-10-01 (owner) — the last groups that had no role.
+    (('approvals-take-part',), 'system', 50,
+     'Take part in approvals',
+     'Send things in for approval, decide the steps that are yours, and see '
+     'the requests you are part of.', None),
+    (('approvals-trail',), 'system', 52,
+     'Approval trail — can look',
+     'Read every approval that has ever happened, for compliance. Changes '
+     'nothing.', None),
+    (('approvals-setup',), 'system', 54,
+     'Approval routes — write',
+     'Write draft approval routes, name who holds each step, and choose where '
+     'a route applies. A draft is not used until somebody publishes it.',
+     None),
+    (('approvals-publish',), 'system', 56,
+     'Approval routes — publish',
+     'Make a draft route the one every new request follows. It does not make '
+     'you an approver.', None),
+    (('approvals-admin',), 'system', 58,
+     'Approvals administrator',
+     'Arrange exceptions and hand-overs, move a waiting step to somebody else, '
+     'and withdraw any request.', None),
+    (('learn-author',), 'system', 70,
+     'Learning content author',
+     'Edit the lessons and paths on the Learn screens. The lessons are the '
+     'same for every company, so give this to very few people.', None),
+    (('demo-login',), 'system', 90,
+     'Demo login',
+     'The access the public demo login uses: a guided look around with the '
+     'demo company\'s data. Not for real staff.', None),
     (('group-setup',), 'system', 40,
      'Set up the group',
      'Name the group of companies, choose its companies, its currency and how '
      'exchange rates are picked, and build its divisions.', None),
+    (('country-payroll-vietnam',), 'payroll', 170,
+     'Vietnam payroll',
+     'Open the payroll screens and reports that are only for Vietnam. It adds '
+     'the country; what somebody may do there still comes from their payroll '
+     'role.', None),
+    (('country-payroll-singapore',), 'payroll', 171,
+     'Singapore payroll',
+     'Open the payroll screens and reports that are only for Singapore. It adds '
+     'the country; what somebody may do there still comes from their payroll '
+     'role.', None),
+    (('country-payroll-malaysia',), 'payroll', 172,
+     'Malaysia payroll',
+     'Open the payroll screens and reports that are only for Malaysia. It adds '
+     'the country; what somebody may do there still comes from their payroll '
+     'role.', None),
+    (('country-payroll-thailand',), 'payroll', 173,
+     'Thailand payroll',
+     'Open the payroll screens and reports that are only for Thailand. It adds '
+     'the country; what somebody may do there still comes from their payroll '
+     'role.', None),
+    (('country-payroll-indonesia',), 'payroll', 174,
+     'Indonesia payroll',
+     'Open the payroll screens and reports that are only for Indonesia. It adds '
+     'the country; what somebody may do there still comes from their payroll '
+     'role.', None),
+    (('country-payroll-cambodia',), 'payroll', 175,
+     'Cambodia payroll',
+     'Open the payroll screens and reports that are only for Cambodia. It adds '
+     'the country; what somebody may do there still comes from their payroll '
+     'role.', None),
+    (('country-payroll-india',), 'payroll', 176,
+     'India payroll',
+     'Open the payroll screens and reports that are only for India. It adds '
+     'the country; what somebody may do there still comes from their payroll '
+     'role.', None),
+    (('ai-assistant',), 'payroll', 180,
+     'AI assistant',
+     'Ask the AI assistant questions about pay and read its dashboards.',
+     None),
+    (('ai-assistant-manager',), 'payroll', 182,
+     'AI assistant — dashboards',
+     'Everything above, plus setting the assistant up and managing its '
+     'dashboards.', None),
+    (('ai-assistant-admin',), 'payroll', 184,
+     'AI assistant administrator',
+     'Everything above, plus every assistant setting and all of its data.',
+     None),
     (('govt-reports',), 'payroll', 95,
      'Government reports',
      'Prepare and download the reports that go to the tax office and social '
@@ -373,6 +450,25 @@ ROLE_ABILITY_GROUPS = {
     'pay-review-signoff': ('pb_pay.group_pay_ceo',),
     'group-setup': ('pb_group.group_group_admin',),
     'govt-reports': ('pb_hr_govt.group_pb_hr_govt_user',),
+
+    # 2026-10-01 (owner) — the last uncovered groups.
+    'approvals-take-part': ('biz_approval_workflow.group_approval_user',),
+    'approvals-trail': ('biz_approval_workflow.group_approval_audit',),
+    'approvals-setup': ('biz_approval_workflow.group_approval_config',),
+    'approvals-publish': ('biz_approval_workflow.group_approval_publish',),
+    'approvals-admin': ('biz_approval_workflow.group_approval_admin',),
+    'learn-author': ('pb_learn.group_learn_author',),
+    'demo-login': ('pb_demo.group_payobook_demo',),
+    'ai-assistant': ('pb_payroll_ai_insights.group_payai_user',),
+    'ai-assistant-manager': ('pb_payroll_ai_insights.group_payai_manager',),
+    'ai-assistant-admin': ('pb_payroll_ai_insights.group_payai_admin',),
+    'country-payroll-vietnam': ('pb_hr_payroll_base.group_payroll_vietnam',),
+    'country-payroll-singapore': ('pb_hr_payroll_base.group_payroll_singapore',),
+    'country-payroll-malaysia': ('pb_hr_payroll_base.group_payroll_malaysia',),
+    'country-payroll-thailand': ('pb_hr_payroll_base.group_payroll_thailand',),
+    'country-payroll-indonesia': ('pb_hr_payroll_base.group_payroll_indonesia',),
+    'country-payroll-cambodia': ('pb_hr_payroll_base.group_payroll_cambodia',),
+    'country-payroll-india': ('pb_hr_payroll_base.group_payroll_india',),
 }
 
 # =============================================================================
@@ -543,13 +639,30 @@ TENANT_ADMIN_ABILITIES = (
     'access-team',                  # who here can do what — REQUIRED
     'audit-read',                   # who changed what, and when
     'company-details',              # the letterhead: name, address, tax, logo
+    # 2026-10-01 (owner): the top tier of each area added since. Pay review
+    # sign-off stays OUT — it decides pay rises and is given on purpose.
+    'hiring-head',                  # hiring rules and switches
+    'goals-head',                   # goal sheets and their switches
+    'training-head',                # courses, tests and their switches
+    'announcements-admin',          # announcements, templates, audiences
+    'where-they-work',              # split months, merged records
+    'group-setup',                  # the group of companies and its currency
+)
+
+#: The abilities the owner added to an EXISTING Tenant administrator role on
+#: 2026-10-01. `ensure_tenant_admin_role` stays create-only; the one-time
+#: widening is migration 1.10.0's, where it is written down and its holders
+#: are granted the new part through the board (so History shows it).
+TENANT_ADMIN_ADDED_20261001 = (
+    'hiring-head', 'goals-head', 'training-head', 'announcements-admin',
+    'where-they-work', 'group-setup',
 )
 
 TENANT_ADMIN_NAME = 'Tenant administrator'
 TENANT_ADMIN_DESCRIPTION = (
     'Runs this whole application: pay, people, joining and leaving, budgets, '
-    'reporting, the connected systems, the calculation rules, and who here can '
-    'do what. It does not include the system administrator permission, so it '
+    'reporting, the connected systems, the calculation rules, hiring, goals, '
+    'training, announcements, and who here can do what. It does not include the system administrator permission, so it '
     'cannot switch developer mode on, open the raw permission table, or reach '
     'anything belonging to the platform this runs on. Growth plans are '
     'deliberately not part of it — give those to your head of HR separately.')

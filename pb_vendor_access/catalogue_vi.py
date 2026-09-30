@@ -223,6 +223,77 @@ VI = {
     "Tenant administrator": "Quản trị viên đơn vị",
     "Runs this whole application: pay, people, joining and leaving, budgets, reporting, the connected systems, the calculation rules, and who here can do what. It does not include the system administrator permission, so it cannot switch developer mode on, open the raw permission table, or reach anything belonging to the platform this runs on. Growth plans are deliberately not part of it — give those to your head of HR separately.":
         "Điều hành toàn bộ ứng dụng này: lương, nhân sự, vào làm và nghỉ việc, ngân sách, báo cáo, các hệ thống được kết nối, quy tắc tính toán và ai ở đây được làm gì. Không bao gồm quyền quản trị hệ thống, nên không bật được chế độ nhà phát triển, không mở được bảng phân quyền gốc và không đụng đến nền tảng mà hệ thống chạy trên đó. Kế hoạch phát triển được cố ý để riêng — hãy giao phần đó cho trưởng phòng nhân sự.",
+    # ------------------------------------------- 2026-10-01 (owner) additions
+    'Take part in approvals':
+        'Tham gia phê duyệt',
+    'Send things in for approval, decide the steps that are yours, and see the requests you are part of.':
+        'Gửi yêu cầu để phê duyệt, quyết định các bước thuộc về bạn và xem các yêu cầu bạn tham gia.',
+    'Approval trail — can look':
+        'Lịch sử phê duyệt — chỉ xem',
+    'Read every approval that has ever happened, for compliance. Changes nothing.':
+        'Xem mọi lần phê duyệt đã từng diễn ra, phục vụ kiểm tra tuân thủ. Không thay đổi gì.',
+    'Approval routes — write':
+        'Quy trình phê duyệt — soạn',
+    'Write draft approval routes, name who holds each step, and choose where a route applies. A draft is not used until somebody publishes it.':
+        'Soạn bản nháp quy trình phê duyệt, chỉ định người phụ trách từng bước và chọn nơi áp dụng. Bản nháp chưa được dùng cho đến khi có người ban hành.',
+    'Approval routes — publish':
+        'Quy trình phê duyệt — ban hành',
+    'Make a draft route the one every new request follows. It does not make you an approver.':
+        'Đưa một bản nháp thành quy trình mà mọi yêu cầu mới sẽ đi theo. Quyền này không biến bạn thành người duyệt.',
+    'Approvals administrator':
+        'Quản trị phê duyệt',
+    'Arrange exceptions and hand-overs, move a waiting step to somebody else, and withdraw any request.':
+        'Sắp xếp ngoại lệ và bàn giao, chuyển một bước đang chờ sang người khác và rút lại bất kỳ yêu cầu nào.',
+    'Learning content author':
+        'Người soạn nội dung học',
+    'Edit the lessons and paths on the Learn screens. The lessons are the same for every company, so give this to very few people.':
+        'Chỉnh sửa bài học và lộ trình trên màn hình Học. Bài học giống nhau cho mọi công ty, nên chỉ giao quyền này cho rất ít người.',
+    'Demo login':
+        'Tài khoản dùng thử',
+    "The access the public demo login uses: a guided look around with the demo company's data. Not for real staff.":
+        'Quyền dành cho tài khoản dùng thử công khai: xem hướng dẫn với dữ liệu của công ty mẫu. Không dành cho nhân viên thật.',
+    'AI assistant':
+        'Trợ lý AI',
+    'Ask the AI assistant questions about pay and read its dashboards.':
+        'Hỏi trợ lý AI về lương và xem các bảng tổng quan của trợ lý.',
+    'AI assistant — dashboards':
+        'Trợ lý AI — bảng tổng quan',
+    'Everything above, plus setting the assistant up and managing its dashboards.':
+        'Mọi quyền ở trên, thêm việc thiết lập trợ lý và quản lý các bảng tổng quan.',
+    'AI assistant administrator':
+        'Quản trị trợ lý AI',
+    'Everything above, plus every assistant setting and all of its data.':
+        'Mọi quyền ở trên, thêm mọi thiết lập của trợ lý và toàn bộ dữ liệu của nó.',
+    'Runs this whole application: pay, people, joining and leaving, budgets, reporting, the connected systems, the calculation rules, hiring, goals, training, announcements, and who here can do what. It does not include the system administrator permission, so it cannot switch developer mode on, open the raw permission table, or reach anything belonging to the platform this runs on. Growth plans are deliberately not part of it — give those to your head of HR separately.':
+        'Điều hành toàn bộ ứng dụng này: lương, nhân sự, vào làm và nghỉ việc, ngân sách, báo cáo, các hệ thống được kết nối, quy tắc tính toán, tuyển dụng, mục tiêu, đào tạo, thông báo và ai ở đây được làm gì. Không bao gồm quyền quản trị hệ thống, nên không bật được chế độ nhà phát triển, không mở được bảng phân quyền gốc và không đụng đến nền tảng mà hệ thống chạy trên đó. Kế hoạch phát triển được cố ý để riêng — hãy giao phần đó cho trưởng phòng nhân sự.',
+    'Vietnam payroll':
+        'Lương Việt Nam',
+    'Open the payroll screens and reports that are only for Vietnam. It adds the country; what somebody may do there still comes from their payroll role.':
+        'Mở các màn hình và báo cáo lương chỉ dành cho Việt Nam. Quyền này chỉ thêm quốc gia; việc được làm gì ở đó vẫn do vai trò lương của người đó quyết định.',
+    'Singapore payroll':
+        'Lương Singapore',
+    'Open the payroll screens and reports that are only for Singapore. It adds the country; what somebody may do there still comes from their payroll role.':
+        'Mở các màn hình và báo cáo lương chỉ dành cho Singapore. Quyền này chỉ thêm quốc gia; việc được làm gì ở đó vẫn do vai trò lương của người đó quyết định.',
+    'Malaysia payroll':
+        'Lương Malaysia',
+    'Open the payroll screens and reports that are only for Malaysia. It adds the country; what somebody may do there still comes from their payroll role.':
+        'Mở các màn hình và báo cáo lương chỉ dành cho Malaysia. Quyền này chỉ thêm quốc gia; việc được làm gì ở đó vẫn do vai trò lương của người đó quyết định.',
+    'Thailand payroll':
+        'Lương Thái Lan',
+    'Open the payroll screens and reports that are only for Thailand. It adds the country; what somebody may do there still comes from their payroll role.':
+        'Mở các màn hình và báo cáo lương chỉ dành cho Thái Lan. Quyền này chỉ thêm quốc gia; việc được làm gì ở đó vẫn do vai trò lương của người đó quyết định.',
+    'Indonesia payroll':
+        'Lương Indonesia',
+    'Open the payroll screens and reports that are only for Indonesia. It adds the country; what somebody may do there still comes from their payroll role.':
+        'Mở các màn hình và báo cáo lương chỉ dành cho Indonesia. Quyền này chỉ thêm quốc gia; việc được làm gì ở đó vẫn do vai trò lương của người đó quyết định.',
+    'Cambodia payroll':
+        'Lương Campuchia',
+    'Open the payroll screens and reports that are only for Cambodia. It adds the country; what somebody may do there still comes from their payroll role.':
+        'Mở các màn hình và báo cáo lương chỉ dành cho Campuchia. Quyền này chỉ thêm quốc gia; việc được làm gì ở đó vẫn do vai trò lương của người đó quyết định.',
+    'India payroll':
+        'Lương Ấn Độ',
+    'Open the payroll screens and reports that are only for India. It adds the country; what somebody may do there still comes from their payroll role.':
+        'Mở các màn hình và báo cáo lương chỉ dành cho Ấn Độ. Quyền này chỉ thêm quốc gia; việc được làm gì ở đó vẫn do vai trò lương của người đó quyết định.',
 }
 
 _MODELS = (('pb.role.profile', ('name', 'description')),
