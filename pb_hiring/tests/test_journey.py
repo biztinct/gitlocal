@@ -58,6 +58,17 @@ class TestHiringJourney(TransactionCase):
         self.assertNotIn('{{', result['body'])
         self.assertIn(self.company._hiring_brand(), result['subject'])
 
+    def test_the_greeting_uses_the_full_name(self):
+        """RC35: the first word of a Vietnamese name is the FAMILY name, so a
+        greeting built from it reads "Chào Phạm". Every candidate message
+        greets with the whole name, in every language."""
+        self.applicant.partner_name = 'Phạm Thị Minh Anh'
+        template = self.env['pb.hiring.message.template'].create({
+            'name': 'QA', 'company_id': self.company.id, 'key': 'received',
+            'subject': 'Hi', 'body': 'Chào {{first_name}}, {{name}}.'})
+        body = template._render(self.applicant)['body']
+        self.assertEqual(body, 'Chào Phạm Thị Minh Anh, Phạm Thị Minh Anh.')
+
     def test_referral_requires_consent(self):
         with self.assertRaises(ValueError):
             self.env['pb.hiring.referral'].sudo().refer(0, 0, {'name': 'QA'})

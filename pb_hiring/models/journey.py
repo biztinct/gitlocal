@@ -553,7 +553,12 @@ class HiringMessageTemplate(models.Model):
     def _render(self, applicant, values=None):
         self.ensure_one()
         company = self.company_id
-        tokens = {'first_name': (applicant.partner_name or '').split(' ')[0],
+        # RC35 / RECRUIT P3: the greeting is the FULL name. The first word of
+        # a Vietnamese name is the family name ("Chào Phạm"), so `first_name`
+        # stays a token for the templates already written and now carries the
+        # whole name; `name` is the same value under an honest key.
+        full = (applicant.partner_name or '').strip()
+        tokens = {'first_name': full, 'name': full,
                   'role': applicant.job_id.name or '', 'brand': company._hiring_brand(),
                   'website': company.website or '', 'linkedin': company.pb_hiring_linkedin or '',
                   'company_intro': company.pb_hiring_intro or '',
@@ -586,7 +591,7 @@ class HiringJourney(models.AbstractModel):
                 'currency_id': company.currency_id.id,
                 'countries': self.env['res.country'].search_read([], ['name']),
                 'message_fields': {t.key: sorted(set(re.findall(r'{{\s*(\w+)\s*}}', t.subject + t.body)) -
-                    {'first_name', 'role', 'brand', 'website', 'linkedin', 'company_intro', 'sender_name', 'hr_name'})
+                    {'first_name', 'name', 'role', 'brand', 'website', 'linkedin', 'company_intro', 'sender_name', 'hr_name'})
                     # sudo (RECRUIT P1, RC16): a line manager reads the board
                     # and holds no read on the templates; only the field names
                     # leave this method, never a template.
