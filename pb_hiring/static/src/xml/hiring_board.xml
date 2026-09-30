@@ -1306,7 +1306,29 @@
             </t>
 
             <!-- ======================== the advert ======================== -->
-            </t><t t-if="state.drawerSection === 'jd'"><div class="pbhr-sec">
+            </t><t t-if="state.drawerSection === 'jd'">
+            <!-- RECRUIT P2: the role's own application form -->
+            <div t-if="state.drawer.app_form" class="pbhr-appform">
+              <span class="pbhr-appform-ic"><t t-out="ic('fileText',16)"/></span>
+              <div class="pbhr-appform-tx">
+                <b>Application form: <t t-esc="state.drawer.app_form.name"/></b>
+                <small><t t-esc="state.drawer.app_form.n_fields"/> questions<t t-if="state.drawer.app_form.origin"> · copied from <t t-esc="state.drawer.app_form.origin"/></t> · this role's own copy</small>
+              </div>
+              <div class="pbhr-appform-acts">
+                <button t-if="state.drawer.form_templates" type="button" class="pbim-btn ghost" t-on-click="() =&gt; { state.formPick = state.formPick === null ? '' : null; }"><t t-out="ic('refresh',13)"/> Change</button>
+                <a class="pbim-btn ghost" t-att-href="state.drawer.app_form.preview_url" target="_blank" rel="noopener"><t t-out="ic('eye',13)"/> Preview</a>
+                <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.openForms(state.drawer.app_form.id)"><t t-out="ic('pencil',13)"/> Edit</button>
+              </div>
+              <div t-if="state.formPick !== null and state.drawer.form_templates" class="pbhr-appform-pick">
+                <select class="pbhr-in" t-model="state.formPick">
+                  <option value="">Start again from a template…</option>
+                  <option t-foreach="state.drawer.form_templates" t-as="ft" t-key="ft.id" t-att-value="ft.id" t-esc="ft.name"/>
+                </select>
+                <button type="button" class="pbim-btn primary" t-att-disabled="!state.formPick" t-on-click="changeRoleForm"><t t-out="ic('check',13)"/> Use it</button>
+                <small>The role gets its own copy. Answers people already gave are kept.</small>
+              </div>
+            </div>
+            <div class="pbhr-sec">
               The advert
               <button t-if="state.canRecruit or state.canRaise" class="pbim-btn ghost pbhr-sec-btn" t-on-click="startJd">
                 <t t-out="ic('plus',14)"/> New version

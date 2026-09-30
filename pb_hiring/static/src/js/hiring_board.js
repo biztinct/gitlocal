@@ -130,7 +130,7 @@ export class PbHiringBoard extends Component {
         this.ivFocusKeys = IV_FOCUS;
 
         this.state = useState({
-            loaded: false,
+            loaded: false, formPick: null,
             journey: { stages: [], managers: [], users: [], currencies: [], company_sections: [] },
             journeyFocus: "all", drawerSection: "candidates", stageMove: null, messageForm: null,
             savingRequest: false,
@@ -1806,6 +1806,27 @@ export class PbHiringBoard extends Component {
     }
 
     closeCand() { this.state.cand = null; }
+
+    // RECRUIT P2: "Same person" links the two records both ways; no merge.
+    async samePerson(cand, undo = false) {
+        const res = await this.act("same_person", { applicant_id: cand.id, undo }, { reload: false });
+        if (res) { await this.openCand(cand.id, { quiet: true }); await this.reloadRole(); }
+    }
+
+    // RECRUIT P2: the role's application form — edit it, or start again
+    // from a template (the role always gets its own copy).
+    openForms(formId) {
+        this.action.doAction("pb_hiring.action_pb_hiring_forms", {
+            additionalContext: { pb_form_id: formId },
+        });
+    }
+
+    async changeRoleForm() {
+        const tid = Number(this.state.formPick);
+        if (!tid || !this.state.drawer) { return; }
+        const res = await this.act("form_copy_to_role", { template_id: tid, requisition_id: this.state.drawer.id }, { reload: false });
+        if (res) { this.state.formPick = null; await this.reloadRole(); }
+    }
 
     /** Arrow keys move to the next card without closing the drawer. */
     async stepCand(delta) {

@@ -280,6 +280,38 @@
             </div>
           </div>
 
+          <!-- RECRUIT P2 (G-29): possibly the same person — a chip and a sentence, never a block -->
+          <div t-if="cand.duplicate" class="pbhr-cd-dup" t-att-class="cand.duplicate.same ? 'is-same' : ''">
+            <span class="pbhr-cd-dup-ic"><t t-out="ic(cand.duplicate.same ? 'userCheck' : 'users',16)"/></span>
+            <div class="pbhr-cd-dup-tx">
+              <b t-if="cand.duplicate.same">The same person as <t t-esc="cand.duplicate.name"/></b>
+              <b t-else="">Possibly the same person as <t t-esc="cand.duplicate.name"/></b>
+              <p>Same email or phone · applied for <t t-esc="cand.duplicate.role"/> on <t t-esc="dayShort(cand.duplicate.applied_on)"/>. Both records stay; merging arrives in a later release.</p>
+              <div class="pbhr-cd-dup-acts">
+                <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.openCand(cand.duplicate.id)"><t t-out="ic('external',13)"/> Open the other record</button>
+                <button t-if="cand.can_recruit and !cand.duplicate.same" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.samePerson(cand)"><t t-out="ic('userCheck',13)"/> Same person</button>
+                <button t-if="cand.can_recruit and cand.duplicate.same" type="button" class="pbim-btn ghost pbhr-quiet" t-on-click="() =&gt; this.samePerson(cand, true)">Not the same person</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- RECRUIT P2: what they answered, in the order of the form -->
+          <div t-if="cand.answers and cand.answers.length" class="pbhr-cd-sec">
+            <div class="l">Answers<t t-if="cand.lang"> · applied in <t t-esc="cand.lang"/></t></div>
+            <div class="pbhr-cd-answers">
+              <t t-foreach="cand.answers" t-as="an" t-key="an.key">
+                <span class="pbhr-cd-q" t-esc="an.label"/>
+                <span class="pbhr-cd-a" t-att-class="{ 'is-empty': an.empty }">
+                  <t t-if="an.empty">Not answered</t>
+                  <t t-esc="an.value"/>
+                  <a t-if="an.link" t-att-href="an.link" target="_blank" rel="noopener noreferrer"><t t-out="ic('link',12)"/> <t t-esc="an.link"/></a>
+                  <a t-foreach="an.files" t-as="fl" t-key="fl.id" t-att-href="fl.url" target="_blank" rel="noopener"><t t-out="ic('paperclip',12)"/> <t t-esc="fl.name"/> · open</a>
+                </span>
+              </t>
+            </div>
+            <div t-if="cand.consent" class="pbhr-cd-consent"><t t-out="ic('shieldCheck',13)"/> <span>Agreed on <t t-esc="dayShort(cand.consent.on)"/> (<t t-esc="cand.consent.lang"/>): “<t t-esc="cand.consent.text"/>”</span></div>
+          </div>
+
           <!-- first look, while it is still owed -->
           <div t-if="cand.can_recruit and cand.stage_key === 'screening' and cand.active" class="pbhr-cd-sec">
             <div class="l">Other first-look answers</div>

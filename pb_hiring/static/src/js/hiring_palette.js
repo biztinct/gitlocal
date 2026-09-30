@@ -141,6 +141,13 @@ registry.category(SETTINGS_CATEGORIES).add("hiring", {
         label: _t("Hiring set-up"),
         sub: _t("Stages, which columns a role shows, emails and switches."),
     }, {
+        // RECRUIT P2 (G-01): the application forms, one press from Settings.
+        id: "hiring_forms",
+        xmlid: "pb_hiring.action_pb_hiring_forms",
+        icon: "fileText",
+        label: _t("Application forms"),
+        sub: _t("The questions candidates answer, per role, in three languages."),
+    }, {
         id: "hiring_rules",
         xmlid: "pb_hiring.action_pb_hiring_country_rule",
         icon: "globe",
@@ -290,3 +297,14 @@ palette.add("hiring_setup", {
     requires: "pb_hiring_setup",
     action: { xmlid: "pb_hiring.action_pb_hiring_setup" },
 }, { sequence: 4000 });
+
+// RECRUIT P2: the application-form builder.
+palette.add("hiring_forms", {
+    id: "hiring_forms",
+    label: _t("Application forms"),
+    sublabel: _t("The questions candidates answer, in three languages"),
+    icon: "fileText",
+    groups: HIRING_SETUP_GATE,
+    requires: "pb_hiring_forms",
+    action: { xmlid: "pb_hiring.action_pb_hiring_forms" },
+}, { sequence: 4010 });
