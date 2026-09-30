@@ -144,14 +144,17 @@ CATALOGUE = [
      'See every hiring request in the company, screen candidates, and write '
      'and publish adverts. Does not agree a request or change the hiring '
      'rules.', None),
+    # RECRUIT P1 (RC-D2, 2026-09-30): the middle tier is the TALENT LEAD —
+    # "hiring manager" is the line manager whose team the role is in.
     (('hiring-manager',), 'lifecycle', 50,
-     'Hiring manager',
-     'Everything a recruiter does, plus agreeing a hiring request and an '
-     'advert, closing a role and marking one filled.', None),
+     'Talent lead',
+     'Everything a recruiter does, plus setting hiring up — stages, presets, '
+     'emails and switches — agreeing a hiring request and an advert, closing '
+     'a role and marking one filled.', None),
     (('hiring-head',), 'lifecycle', 60,
      'Head of hiring',
-     'Everything a hiring manager does, plus the hiring rules — who recruits '
-     'for which company and country — and the hiring switches.', None),
+     'Everything a talent lead does, plus the hiring rules — who recruits '
+     'for which company and country.', None),
 
     # --------------------------------------------------------------- people
     (('equipment-read',), 'people', 10,

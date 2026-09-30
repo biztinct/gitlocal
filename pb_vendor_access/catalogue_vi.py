@@ -78,6 +78,12 @@ VI = {
     "Head of hiring": "Trưởng bộ phận tuyển dụng",
     "Everything a hiring manager does, plus the hiring rules — who recruits for which company and country — and the hiring switches.":
         "Mọi việc của quản lý tuyển dụng, cộng thêm các quy tắc tuyển dụng — ai tuyển cho công ty và quốc gia nào — và các công tắc tuyển dụng.",
+    # RECRUIT P1 (RC-D2): the middle tier's new name and both new sentences.
+    "Talent lead": "Trưởng nhóm tuyển dụng",
+    "Everything a recruiter does, plus setting hiring up — stages, presets, emails and switches — agreeing a hiring request and an advert, closing a role and marking one filled.":
+        "Mọi việc của chuyên viên tuyển dụng, cộng thêm thiết lập tuyển dụng — các giai đoạn, mẫu cột, email và công tắc — duyệt yêu cầu tuyển dụng và tin tuyển dụng, đóng vị trí và đánh dấu vị trí đã tuyển đủ.",
+    "Everything a talent lead does, plus the hiring rules — who recruits for which company and country.":
+        "Mọi việc của trưởng nhóm tuyển dụng, cộng thêm các quy tắc tuyển dụng — ai tuyển cho công ty và quốc gia nào.",
     "Company equipment — can look": "Tài sản công ty — chỉ xem",
     "See what has been given to whom — laptops, phones, accounts, passes. Cannot hand anything out or take it back.":
         "Xem ai đang giữ gì — máy tính, điện thoại, tài khoản, thẻ ra vào. Không giao ra hay thu hồi được gì.",
