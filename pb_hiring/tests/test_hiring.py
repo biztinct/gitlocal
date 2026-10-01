@@ -258,29 +258,24 @@ class TestTheAdvert(HiringCase):
         self.assertEqual(first.version, 1)
         self.assertEqual(second.version, 2)
 
-    def test_agreeing_one_makes_it_the_current_one(self):
+    def test_making_one_final_makes_it_the_current_one(self):
         req = self._requisition()
         Jd = self.env['pb.hiring.jd'].sudo()
         first = Jd.create({'requisition_id': req.id, 'body': '<p>One</p>'})
-        first._chain_state_write('approved')
-        first._become_current()
+        first.action_make_final()
         self.assertEqual(req.jd_current_id.id, first.id)
         second = Jd.create({'requisition_id': req.id, 'body': '<p>Two</p>'})
-        second._chain_state_write('approved')
-        second._become_current()
+        second.action_make_final()
         self.assertEqual(req.jd_current_id.id, second.id)
         # The older one stays readable — that is the whole point of a version
         self.assertTrue(first.exists())
         self.assertEqual(first.body, '<p>One</p>')
 
-    def test_only_one_version_can_be_out_for_agreement(self):
-        req = self._requisition()
-        Jd = self.env['pb.hiring.jd'].sudo()
-        first = Jd.create({'requisition_id': req.id, 'body': '<p>One</p>'})
-        first._chain_state_write('submitted')
-        second = Jd.create({'requisition_id': req.id, 'body': '<p>Two</p>'})
-        with self.assertRaises(ValidationError):
-            second._chain_state_write('submitted')
+    def test_nothing_is_sent_for_agreement_any_more(self):
+        """RECRUIT P3 (G-17): shared for input, made final — no sign-off."""
+        self.assertEqual(
+            [k for k, _v in self.env['pb.hiring.jd']._fields['state'].selection],
+            ['draft', 'final'])
 
     def test_an_empty_advert_cannot_be_sent(self):
         req = self._requisition()
@@ -289,16 +284,12 @@ class TestTheAdvert(HiringCase):
         with self.assertRaises(UserError):
             jd.action_submit()
 
-    def test_the_words_are_in_the_stamp(self):
-        """A consumer whose OWN values are what somebody is signing for
-        stamps them (ledger AM32's carve-out). Editing the advert after it
-        has gone out has to send it round again."""
+    def test_an_advert_has_no_route(self):
+        """The `hiring_jd` route is retired (RECRUIT P3)."""
         req = self._requisition()
         jd = self.env['pb.hiring.jd'].sudo().create(
             {'requisition_id': req.id, 'body': '<p>One</p>'})
-        stamp = jd._chain_revision_values()
-        self.assertIn('body', stamp)
-        self.assertNotIn('write_date', stamp)
+        self.assertFalse(jd._chain_spec())
 
 
 # =========================================================================
@@ -365,12 +356,15 @@ class TestReferrals(HiringCase):
 @tagged('post_install', '-at_install')
 class TestPublishing(HiringCase):
 
-    def test_publishing_needs_an_agreed_advert(self):
+    def test_publishing_without_an_advert_writes_one(self):
+        """RECRUIT P3: no dead end — Publish writes the advert from the
+        role's template and makes it final."""
         req = self._requisition()
         req._chain_state_write('open')
         req._on_opened()
-        with self.assertRaises(UserError):
-            self.env['pb.hiring.posting'].publish_for(req.id)
+        self.env['pb.hiring.posting'].publish_for(req.id)
+        self.assertEqual(req.jd_current_id.state, 'final')
+        self.assertTrue(req.published)
 
     def test_publishing_twice_makes_one_row_per_job_board(self):
         req = self._requisition()
@@ -378,8 +372,7 @@ class TestPublishing(HiringCase):
         req._on_opened()
         jd = self.env['pb.hiring.jd'].sudo().create(
             {'requisition_id': req.id, 'body': '<p>Advert</p>'})
-        jd._chain_state_write('approved')
-        jd._become_current()
+        jd.action_make_final()
         platforms = self.env['hr.job.platform'].sudo().search_count([])
         self.env['pb.hiring.posting'].publish_for(req.id)
         self.env['pb.hiring.posting'].publish_for(req.id)
@@ -394,8 +387,7 @@ class TestPublishing(HiringCase):
         req._on_opened()
         jd = self.env['pb.hiring.jd'].sudo().create(
             {'requisition_id': req.id, 'body': '<p>Advert</p>'})
-        jd._chain_state_write('approved')
-        jd._become_current()
+        jd.action_make_final()
         self.env['pb.hiring.posting'].publish_for(req.id)
         if not req.posting_ids:
             self.skipTest('this database has no job boards set up')
@@ -466,8 +458,13 @@ class TestTheDailyJob(HiringCase):
         req = self._requisition()
         jd = self.env['pb.hiring.jd'].sudo().create(
             {'requisition_id': req.id, 'body': '<p>Advert</p>'})
-        jd._chain_state_write('submitted')
-        self.head.write({'user_id': self.env.uid})
+        # RECRUIT P3: a draft nobody finished goes to the talent lead.
+        self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': 'P3 Talent Lead', 'login': 'p3.daily.lead@example.com',
+            'company_id': self.company.id,
+            'company_ids': [(6, 0, [self.company.id])],
+            'group_ids': [(6, 0, [self.env.ref(
+                'pb_hiring.group_hiring_manager').id])]})
         # FLUSH BEFORE THE RAW SQL, AND INVALIDATE AFTER IT. Odoo leaves the
         # state write in the `towrite` buffer, and the very next `search()`
         # flushes it — which stamps `write_date` back to now and undoes the
@@ -476,7 +473,7 @@ class TestTheDailyJob(HiringCase):
         self.env.flush_all()
         old = fields.Datetime.now() - timedelta(days=30)
         self.env.cr.execute(
-            'UPDATE pb_hiring_jd SET write_date = %s WHERE id = %s',
+            'UPDATE pb_hiring_jd SET create_date = %s WHERE id = %s',
             (old, jd.id))
         self.env.invalidate_all()
         first = self.env['pb.hiring.automation']._nudge_adverts()
@@ -732,8 +729,8 @@ class TestTheApprovalWiring(TransactionCase):
         """`connected` means the model the row names really does answer for
         that row's key. A row that says "not connected yet" on the Matrix is
         a row saying nobody is checking this."""
-        for key, model in (('hiring_request', 'pb.hiring.requisition'),
-                           ('hiring_jd', 'pb.hiring.jd')):
+        # RECRUIT P3: `hiring_jd` is retired; only the request is wired.
+        for key, model in (('hiring_request', 'pb.hiring.requisition'),):
             process = self.env['biz.approval.process']._by_key(key)
             self.assertTrue(process, 'no catalogue row for %s' % key)
             self.assertEqual(process.model_name, model)
@@ -746,15 +743,16 @@ class TestTheApprovalWiring(TransactionCase):
         self.assertNotIn("'pb_approval_config'", src)
         self.assertIn("'biz_approval_workflow'", src)
 
-    def test_the_route_asks_finance_only_when_it_is_over_budget(self):
+    def test_finance_is_not_on_the_route(self):
+        """RECRUIT P3 (R1/R2): over budget tells people; it never adds a
+        seat nobody holds."""
         from odoo.addons.pb_hiring.models.requisition_approval import (
             hiring_route)
         steps = hiring_route()['steps']
-        self.assertEqual(len(steps), 3)
+        self.assertEqual(len(steps), 2)
         self.assertIsNone(steps[0]['condition'])
-        self.assertIsNone(steps[1]['condition'])
-        self.assertEqual(steps[2]['condition'],
-                         {'fact': 'over_budget', 'op': 'eq', 'value': True})
+        self.assertEqual(steps[1]['condition'],
+                         {'fact': 'named_approver', 'op': 'eq', 'value': True})
 
     def test_every_fact_the_route_conditions_on_is_declared(self):
         """A condition on a fact nobody declares is a condition on nothing,

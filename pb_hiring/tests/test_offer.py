@@ -79,8 +79,15 @@ class OfferCase(TransactionCase):
             'opened_on': fields.Date.context_today(self.env.user)
             - timedelta(days=20),
             'state': 'open',
+            # RECRUIT P3: the role's request is a facet of its own; these
+            # tests are about what happens once it is agreed (RC-D5).
+            'request_state': 'agreed',
             'selected_applicant_id': self.applicant.id,
         })
+        # The papers go at the moment the company chose; these tests ask for
+        # them by hand, so the automatic moment is the latest one.
+        self.env['ir.config_parameter'].sudo().set_param(
+            'pb_hiring.docreq_trigger', 'on_accept')
         self.applicant.sudo().write({'pb_requisition_id': self.req.id})
 
     # ------------------------------------------------------------- helpers
@@ -134,14 +141,14 @@ class TestTheBackgroundCheck(OfferCase):
         self.assertEqual(bgv.id, again.id)
         self.assertEqual(len(bgv.item_ids), len(again.item_ids))
 
-    def test_t2_an_offer_is_refused_while_a_line_is_unanswered(self):
-        with self.assertRaises(UserError) as caught:
-            self.env['pb.hiring.offer'].draft_for(self.req.id)
-        # THE SENTENCE NAMES THE LINES. "The check is not complete" is a wall;
-        # naming them is an instruction.
-        message = str(caught.exception)
-        first = self.env['pb.hiring.bgv'].open_for(self.req.id).item_ids[0]
-        self.assertIn(first.name, message)
+    def test_t2_an_offer_is_drafted_while_a_line_is_unanswered(self):
+        """RECRUIT P3 (G-39): the check runs ALONGSIDE the offer. It still
+        says what is unanswered, in a sentence that names the lines."""
+        offer = self.env['pb.hiring.offer'].draft_for(self.req.id)
+        self.assertTrue(offer.exists())
+        ready, message = offer.bgv_id.check_ready()
+        self.assertFalse(ready)
+        self.assertIn(offer.bgv_id.item_ids[0].name, message)
 
     def test_t2_answering_every_line_opens_the_door(self):
         bgv = self._clear_bgv(self.env['pb.hiring.bgv'].open_for(self.req.id))
@@ -155,12 +162,12 @@ class TestTheBackgroundCheck(OfferCase):
                                                 'the dates.')
         bgv.invalidate_recordset(['state', 'flag_count'])
         self.assertEqual(bgv.state, 'flagged')
-        with self.assertRaises(UserError):
-            self.env['pb.hiring.offer'].draft_for(self.req.id)
-        bgv.action_override(note='Policy of that employer. Known in advance.')
-        self.assertTrue(bgv.override_user_id)
+        # RECRUIT P3: a flag tells the Head of HR; it no longer holds the
+        # offer. Going ahead is still written down, in words.
         offer = self.env['pb.hiring.offer'].draft_for(self.req.id)
         self.assertTrue(offer.exists())
+        bgv.action_override(note='Policy of that employer. Known in advance.')
+        self.assertTrue(bgv.override_user_id)
 
     def test_t2_going_ahead_needs_a_reason_in_words(self):
         bgv = self._clear_bgv(self.env['pb.hiring.bgv'].open_for(self.req.id))
@@ -372,11 +379,19 @@ class TestSendingIt(OfferCase):
         offer.sudo().write({'state': 'hr_ok'})
         return offer
 
-    def test_t5_it_is_refused_while_the_papers_are_missing(self):
+    def test_t5_the_papers_never_hold_the_offer_up(self):
+        """RECRUIT P3 (G-40): the papers are chased, not a gate."""
         offer = self._agreed()
+        offer.action_send_to_candidate()
+        self.assertEqual(offer.state, 'sent')
+
+    def test_t5_it_is_refused_while_the_request_is_not_agreed(self):
+        """RC-D5: the one hard rule."""
+        offer = self._agreed()
+        self.req.sudo().write({'request_state': 'sent_in'})
         with self.assertRaises(UserError) as caught:
             offer.action_send_to_candidate()
-        self.assertIn('papers', str(caught.exception).lower())
+        self.assertIn('press Agree', str(caught.exception))
 
     def test_t5_the_hr_lead_can_send_it_anyway(self):
         offer = self._agreed()
