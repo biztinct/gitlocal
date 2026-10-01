@@ -52,6 +52,9 @@ patch(PbHiringBoard.prototype, {
 
     decisionIcon(key) { return DECISION_ICON[key] || "circle"; },
     kindIcon(key) { return KIND_ICON[key] || "circle"; },
+    // OWL templates see no `String`/`Number` (only Math, Object, Array, Date…).
+    sameId(a, b) { return String(a) === String(b); },
+    num(x) { return Number(x) || 0; },
     stars(n) { return [1, 2, 3, 4, 5].map((i) => i <= Math.round(Number(n) || 0)); },
 
     async call5(verb, payload) {
@@ -120,7 +123,8 @@ patch(PbHiringBoard.prototype, {
         if (fr.hidden) { return _t("Hidden until everyone is in"); }
         if (fr.state === "submitted") { return ""; }
         if (fr.late) {
-            return fr.reminded ? _t("late · reminded %s times", fr.reminded) : _t("late");
+            if (!fr.reminded) { return _t("late"); }
+            return fr.reminded === 1 ? _t("late · reminded once") : _t("late · reminded %s times", fr.reminded);
         }
         if (fr.state === "pending") { return _t("not yet"); }
         return _t("not asked any more");

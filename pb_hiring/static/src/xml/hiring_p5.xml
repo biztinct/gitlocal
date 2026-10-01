@@ -131,7 +131,7 @@
       <span>Scorecard</span>
       <select class="pbhr-in" t-on-change="onScorecardPick">
         <option t-if="!state.scheduling.scorecards or !state.scheduling.scorecards.length" value="">The role's own rule</option>
-        <option t-foreach="state.scheduling.scorecards or []" t-as="cc" t-key="cc.id" t-att-value="cc.id" t-att-selected="String(cc.id) === String(state.scheduling.scorecard_id)"><t t-esc="cc.name"/></option>
+        <option t-foreach="state.scheduling.scorecards or []" t-as="cc" t-key="cc.id" t-att-value="cc.id" t-att-selected="sameId(cc.id, state.scheduling.scorecard_id)"><t t-esc="cc.name"/></option>
       </select>
     </label>
     <div t-if="state.scheduling.mode === 'video' and state.scheduling.google" class="pbhr-f pbhr-f--wide pbhr-p5-meet" t-att-class="{ 'is-on': state.scheduling.google.connected }">
@@ -187,10 +187,10 @@
             <small t-if="pt.help" class="pbhr-p5-pq-h" t-esc="pt.help"/>
             <textarea t-if="pt.kind === 'text'" class="pbhr-in" rows="2" t-model="state.proxy.answers[pt.id]"/>
             <div t-elif="pt.kind === 'rating'" class="pbhr-p5-starpick" role="radiogroup" t-att-aria-label="pt.prompt">
-              <button t-foreach="[1,2,3,4,5]" t-as="nn" t-key="nn" type="button" t-att-class="{ on: Number(state.proxy.answers[pt.id]) &gt;= nn }" t-att-aria-label="nn + ' out of 5'" t-on-click="() =&gt; this.setProxy(pt.id, nn)"><t t-out="ic('star',22)"/></button>
+              <button t-foreach="[1,2,3,4,5]" t-as="nn" t-key="nn" type="button" t-att-class="{ on: num(state.proxy.answers[pt.id]) &gt;= nn }" t-att-aria-label="nn + ' out of 5'" t-on-click="() =&gt; this.setProxy(pt.id, nn)"><t t-out="ic('star',22)"/></button>
             </div>
             <div t-elif="pt.kind === 'line'" class="pbhr-p5-chips">
-              <button t-foreach="[1,2,3,4,5]" t-as="nn" t-key="nn" type="button" class="pbhr-p5-chip is-num" t-att-class="{ on: Number(state.proxy.answers[pt.id]) === nn }" t-on-click="() =&gt; this.setProxy(pt.id, nn)" t-esc="nn"/>
+              <button t-foreach="[1,2,3,4,5]" t-as="nn" t-key="nn" type="button" class="pbhr-p5-chip is-num" t-att-class="{ on: num(state.proxy.answers[pt.id]) === nn }" t-on-click="() =&gt; this.setProxy(pt.id, nn)" t-esc="nn"/>
             </div>
             <div t-else="" class="pbhr-p5-chips">
               <button type="button" class="pbhr-p5-chip" t-att-class="{ on: state.proxy.answers[pt.id] === 'yes' }" t-on-click="() =&gt; this.setProxy(pt.id, 'yes')">Yes</button>
@@ -280,6 +280,7 @@
                 <div t-foreach="state.compare.data.candidates" t-as="cd5" t-key="'c' + cd5.id + '-' + rn.round_no + '-' + sl" class="pbhr-p5-cmp-cell" t-att-class="{ 'is-focus': state.compare.focus === cd5_index }">
                   <t t-set="op" t-value="cmpOpinion(cd5, rn.round_no, sl)"/>
                   <t t-if="op">
+                    <small t-if="sl === 0 and cmpRound(cd5, rn.round_no).label !== rn.label" class="pbhr-p5-none"><t t-esc="cmpRound(cd5, rn.round_no).label"/></small>
                     <div class="pbhr-p5-op" t-att-class="{ 'is-pending': op.state !== 'submitted', 'is-late': op.late }">
                       <div class="pbhr-p5-op-h">
                         <b t-esc="op.who"/>

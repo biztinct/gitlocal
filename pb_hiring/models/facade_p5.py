@@ -680,7 +680,7 @@ class PbHiringP5(models.AbstractModel):
             for iv in by_app.get(app.id, []):
                 n = iv.round_no or 1
                 label = iv.scorecard_id.name or dict(STEP_KINDS).get(iv.kind, '') or _('Round %s', n)
-                rounds.setdefault(n, label)
+                rounds.setdefault(n, set()).add(label)
                 ops = []
                 for f in iv.feedback_ids.sorted('id'):
                     if f.state == 'expired':
@@ -716,7 +716,10 @@ class PbHiringP5(models.AbstractModel):
         return {
             'requisition_id': req.id, 'role': req.title or '',
             'candidates': cands,
-            'rounds': [{'round_no': n, 'label': rounds[n]} for n in sorted(rounds)],
+            # One scorecard name when every finalist was scored on the same
+            # one; otherwise each column says its own.
+            'rounds': [{'round_no': n, 'label': next(iter(rounds[n])) if len(rounds[n]) == 1
+                        else _('different scorecards')} for n in sorted(rounds)],
             'can_decide': bool(self._can_move(req)),
             'selected_id': req.selected_applicant_id.id or False,
             'decisions': [{'key': k, 'label': v} for k, v in DECISIONS],

@@ -1237,7 +1237,7 @@
                       <button t-if="state.canRecruit and offer.state === 'draft'" class="pbim-btn ghost" t-on-click="() =&gt; this.startLine(false)">
                         <t t-out="ic('plus',14)"/> Add a line
                       </button>
-                      <select t-if="state.canRecruit and offer.state === 'draft'" class="pbhr-in pbhr-tpl" t-on-change="(ev) =&gt; this.setOfferField('template_id', Number(ev.target.value))">
+                      <select t-if="state.canRecruit and offer.state === 'draft'" class="pbhr-in pbhr-tpl" t-on-change="(ev) =&gt; this.setOfferField('template_id', ev.target.value * 1)">
                         <option value="">Which letter…</option>
                         <t t-foreach="state.drawer.letter_templates" t-as="ltp" t-key="ltp.id">
                           <option t-att-value="ltp.id" t-att-selected="ltp.id === offer.template_id" t-esc="ltp.name"/>
