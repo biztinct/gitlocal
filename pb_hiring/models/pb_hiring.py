@@ -306,12 +306,17 @@ class PbHiring(models.AbstractModel):
         written here would only ever disagree with the one that counts.
         """
         try:
-            request = req._chain_open_request()
+            # RC48: the engine's request is read AS THE SYSTEM. The reader may
+            # read the ROLE (that is what put it on their board) without being
+            # allowed to open an old sign-off on it; `_chain_my_seat` still
+            # compares against the reader's own uid (sudo keeps env.uid).
+            sreq = req.sudo()
+            request = sreq._chain_open_request()
             if not request:
                 return ('', False)
-            step = req._chain_active_step()
+            step = sreq._chain_active_step()
             title = (step.title or '') if step else ''
-            mine = bool(req._chain_my_seat())
+            mine = bool(sreq._chain_my_seat())
             return (title, mine)
         except Exception:               # noqa: BLE001
             _logger.warning('pb_hiring: could not read the sign-off state of '

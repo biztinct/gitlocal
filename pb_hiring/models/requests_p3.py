@@ -1106,7 +1106,7 @@ class HiringRequestP3(models.Model):
         self.ensure_one()
         names = []
         try:
-            step = self._chain_active_step()
+            step = self.sudo()._chain_active_step()
             if step:
                 names = sorted({s.acting_user_id.name for s in
                                 step.sudo().seat_ids.filtered(
