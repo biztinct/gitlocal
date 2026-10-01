@@ -463,6 +463,46 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   `coffee`, `calendarClock`, `listChecks`. Hiring numbers stays light in dark mode, like every
   Insights lens (R134); the board, drawer and dialogs follow dark.
 
+## Gotchas found in phase 7 (2026-10-01)
+
+- **RC83** THE CONNECTOR CONTRACT for a later board API (JobStreet / VietnamWorks / LinkedIn):
+  a model `pb.hiring.connector.<key>` inheriting `pb.hiring.channel.connector`, implementing
+  `post(role_channel, **values) -> {ok, external_url, note}`, `status(rc) -> {state, note}`,
+  `close(rc) -> {ok, note}`; its key added to `_registry()` and to `CONNECTORS`; outbound HTTP only
+  through `_http(method, url, board)` (10 s, no retries, failure = "Could not reach <board> — nothing
+  was posted. Paste the advert by hand and press Mark as posted."); credentials in
+  `ir.config_parameter` `pb_hiring.<key>.api_key`, edited only via a settings field with
+  `groups='base.group_system'`. `_get(unknown)` raises a friendly UserError. Today: `manual`, `email_pack`.
+- **RC84** "Empty country list = every country" is a trap: removing VietnamWorks' LAST country made it
+  appear everywhere (caught by test 11b). `pb.hiring.channel.every_country` is an explicit flag; no
+  country listed and the flag off = offered nowhere.
+- **RC85** Turning a stored many2one into a computed field keeps the old column (the ORM never drops
+  it): `requisition.agency_vendor_id` is now `compute_sudo` first-of `agency_vendor_ids` (inverse
+  replaces the set, `search` maps to the set) and the migration copies the orphan column into
+  `pb_hiring_requisition_agency_rel` (payobook: 1 row). A many2many read FILTERS by the reader's access
+  on the comodel, so a line manager reading the role raised "not allowed to access Vendor" through the
+  old pointer until the compute read the set as the system (RC16/R158's class again).
+- **RC86** `utm.source.create` de-duplicates EXACT names only (`_get_unique_names`): `linkedin` and
+  `LinkedIn` coexist. All matching now goes through `channels_p7.utm_record` (`=ilike`, oldest first);
+  `merge_duplicate_sources` re-points every FK to `utm_source` (found from `pg_constraint`, one savepoint
+  per duplicate) and deletes the copy — payobook merged `facebook` into `Facebook` (id 15 → 4).
+- **RC87** A role's careers-page "live" is the JOB's `website_published`, not `requisition.published`:
+  DEMO Territory Manager was published before P3 and carried `published = False`, so the panel said
+  "Not published" over a live page (found in the walk).
+- **RC88** Mail templates rendered once per agency in one transaction need `@api.depends_context` on a
+  computed field that reads `ctx` (`pb_agency_name`), or the second mail reuses the first agency's
+  cached name.
+- **RC89** P6's walk fix (`_short_name`: given name on buttons and chips) broke two P4 assertions
+  (`card['shared']`, `money_who` expected the full name) — not seen because P6's final suite ran before
+  the fix. Rewritten to `_short_name(...)`; the full-suite gate after any walk fix is the lesson.
+- **RC90** The rehearsal addons dir needs `pb_import_kit` beside `pb_hiring` (RC22): two icon-registry
+  tests read `../pb_import_kit/...` and error with FileNotFoundError otherwise.
+- **RC91** Doors and numbers after P7: no ⌘K row. Hiring set-up gains two inline cards `channels`
+  (`.pbhr-su-p7ch`) and `agencies` (`.pbhr-su-p7ag`). Param `pb_hiring.agency_cooling_months` (6, in
+  code). `pb_hiring.platform_mail` stays 0 (switched on for the walk, put back). Routes `/my/agency`,
+  `/my/agency/role/<id>` (+ `/submit`), `/my/agency/people`; `/my` redirects an agency sign-in to its
+  portal. Agency pages and mails English (P8 languages); light only like every public page.
+
 ## Phase log
 
 - **P1** (handover `RECRUIT_P1_BOARD.md`) — started and LIVE 2026-09-30: pb_hiring 19.0.2.0.0 +
@@ -539,3 +579,18 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   `pb.hiring.join.ask` + `/hiring/w/<token>`, `pb.hiring.offer.document`,
   `calendar.event._pb_quiet_create/_pb_quiet_write`, `pb.hiring.analytics.get_funnel /
   get_ageing / get_leadership / export_xlsx(from, to, kind, department_id, country_id, recruiter_id)`.
+
+- **P7** (handover `RECRUIT_P7_CHANNELS.md`) — LIVE 2026-10-01: pb_hiring 19.0.2.6.0 + pb_vendor_access
+  19.0.1.12.0 on payobook, rize, payobook_template (backups in `/odoo/backups/2026-10-01-recruit-p7/`);
+  migration rehearsed on a payobook clone: 341/344 (the three RC47 data failures), 13 new tests. Migration:
+  payobook 1 agency link copied, `facebook` merged into `Facebook`, 35 candidates tagged with a channel,
+  the manager's agency mail rewritten (all three). Demo on payobook (label "RECRUIT P7 channels and
+  agencies"): vendor DEMO Talent Bridge (id 125) with portal login `demo.agency@example.com` /
+  `RizeR7!2026` (uid 6676), on DEMO Territory Manager; role DEMO Junior Agronomist (943, Indonesia,
+  JobStreet marked posted); VietnamWorks contact `demo.jobs.vnw@example.com` (one advert emailed);
+  the walk's candidates Huynh Thi Mai (LinkedIn link) and Nguyen Van Phuc (agency) and the refused
+  second submission. Gotchas RC83–RC91. API left for P8: `pb.hiring.channel` (`_for_source`, `_applies_to`,
+  `_payload`), `pb.hiring.role.channel._link/_advert_text`, the connector registry (RC83),
+  `pb.hiring.agency.submission` (`_submit`, `_cooling_block`, `_figures`, `coarse_stage/coarse_label`),
+  `hr.applicant.pb_channel_id / pb_agency_vendor_id`, `pb.vendor._pb_invite_agency`, mails
+  `mail_template_agency_invite`, `mail_template_agency_assigned` (English; P8 adds languages).
