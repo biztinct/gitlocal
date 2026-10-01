@@ -1087,7 +1087,9 @@ msgstr "Chưa có ai ở đây."
 
 #. module: pb_hiring
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+#: code:addons/pb_hiring/models/requests_p3.py:0
 msgid "Request agreed"
 msgstr "Yêu cầu đã được đồng ý"
 
