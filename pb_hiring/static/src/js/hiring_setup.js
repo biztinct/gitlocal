@@ -37,6 +37,8 @@ export class PbHiringSetup extends Component {
             editing: null, editName: "", meanings: {},
             adding: null, previewId: null, toast: null, busy: false,
             whoQ: "",
+            // RECRUIT P4: consent & retention
+            retEdit: null, retAdd: { country_id: "", months: 12 }, retConfirm: false,
         });
         this.listRef = useRef("stages");
         useSortable({
@@ -259,6 +261,11 @@ export class PbHiringSetup extends Component {
             if (el && el.scrollIntoView) { el.scrollIntoView({ behavior: "smooth", block: "start" }); }
             return;
         }
+        if (card.key === "retention") {
+            const el = document.querySelector(".pbhr-su-ret");
+            if (el && el.scrollIntoView) { el.scrollIntoView({ behavior: "smooth", block: "start" }); }
+            return;
+        }
         if (card.key === "automations") {
             const el = document.querySelector(".pbhr-su-switches");
             if (el && el.scrollIntoView) { el.scrollIntoView({ behavior: "smooth", block: "start" }); }
@@ -304,6 +311,71 @@ export class PbHiringSetup extends Component {
             undo: () => this.call("set_docreq_trigger", { key: before }),
         });
     }
+
+    // ------------------------------------------ RECRUIT P4: retention
+    get ret() { return (this.state.data && this.state.data.retention) || null; }
+
+    whenLong(stored) {
+        if (!stored) { return ""; }
+        const when = new Date(`${String(stored).replace(" ", "T")}Z`);
+        if (isNaN(when.getTime())) { return String(stored); }
+        return when.toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    }
+
+    startRetEdit(mk) {
+        this.state.retEdit = { key: mk.rule_id || `c${mk.country_id}`, months: mk.months, mode: mk.mode };
+    }
+
+    async saveRetRule(mk) {
+        const f = this.state.retEdit;
+        if (!f) { return; }
+        const months = Number(f.months) || 0;
+        this.state.retEdit = null;
+        if (!mk.rule_id && !mk.country_id) {
+            await this.setRetFallback(months);
+            return;
+        }
+        const payload = mk.rule_id ? { id: mk.rule_id, months, mode: f.mode, note: mk.note }
+            : { country_id: mk.country_id, months, mode: f.mode };
+        await this.call("retention_rule_save", payload, {
+            undo: mk.rule_id ? (res) => this.call("retention_rule_save", { id: mk.rule_id, months: res.before.months, mode: res.before.mode, note: res.before.note }) : null,
+        });
+    }
+
+    async addRetRule() {
+        const f = this.state.retAdd;
+        if (!f.country_id) { return; }
+        const res = await this.call("retention_rule_save", { country_id: Number(f.country_id), months: Number(f.months) || 12 });
+        if (res) { this.state.retAdd = { country_id: "", months: 12 }; }
+    }
+
+    async deleteRetRule(mk) {
+        await this.call("retention_rule_delete", { id: mk.rule_id }, {
+            undo: (res) => this.call("retention_rule_save", { country_id: res.saved.country_id, months: res.saved.months, mode: res.saved.mode, note: res.saved.note }),
+        });
+    }
+
+    async setRetFallback(value) {
+        const months = Number(value) || 0;
+        if (!months) { return; }
+        await this.call("retention_fallback", { months }, {
+            undo: (res) => this.call("retention_fallback", { months: res.before }),
+        });
+    }
+
+    async toggleRetention() {
+        const on = !this.ret.enabled;
+        await this.call("retention_switch", { on }, {
+            undo: () => this.call("retention_switch", { on: !on }),
+        });
+    }
+
+    async runRetention() {
+        this.state.retConfirm = false;
+        await this.call("retention_run", {});
+    }
+
+    openForms() { this.action.doAction("pb_hiring.action_pb_hiring_forms"); }
 
     openBoard() {
         this.action.doAction("pb_lifecycle.action_pb_lifecycle_hub", {

@@ -56,7 +56,7 @@ const SCREEN_ICON = {
     rejected: "xCircle",
 };
 
-const BUDGET_ICON = { within: "checkCircle", over: "alert", unknown: "info" };
+const BUDGET_ICON = { within: "checkCircle", over: "alert", unknown: "info", hidden: "lock" };
 
 /** How an interview is happening, drawn rather than spelled out. */
 const MODE_ICON = { in_person: "mapPin", video: "monitor", phone: "smartphone" };
@@ -238,6 +238,11 @@ export class PbHiringBoard extends Component {
             dragging: null,
             landed: [],
             hintsSeen: this.readHints(),
+
+            // ---- RECRUIT P4, private until shared ----
+            sharedWithMe: [], canBank: false, shareOnly: false,
+            shareSheet: null, shareFlash: [], noteDraft: "", noteShareIds: [],
+            noteEdit: null, bank: null, bankAdd: null, bankTag: null,
         });
 
         // THE DRAG. `useSortable` is the stock kanban's own hook (RC8): the
@@ -277,6 +282,8 @@ export class PbHiringBoard extends Component {
             const ctx = (this.props.action && this.props.action.context) || {};
             const roleId = this.props.roleId || ctx.pb_role_id;
             if (roleId && this.state.allowed) { await this.openRole(Number(roleId)); }
+            const startTab = this.props.startTab || (ctx.pb_focus === "bank" ? "bank" : "");
+            if (!roleId && startTab === "bank" && this.state.canBank) { this.setTab("bank"); }
         });
     }
 
@@ -341,6 +348,10 @@ export class PbHiringBoard extends Component {
                 offerPeriods: d.offer_periods || [],
                 agencies: d.agencies || [],
                 covering: d.covering || [],
+                // RECRUIT P4: "Shared with you", and the Resume bank's door.
+                sharedWithMe: d.shared_with_me || [],
+                canBank: !!d.can_bank,
+                shareOnly: !!d.share_only,
                 loaded: true,
             });
         } catch (e) {
@@ -1660,6 +1671,13 @@ export class PbHiringBoard extends Component {
 
     async undoToast() {
         const t = this.state.toast;
+        if (t && t.undo) {
+            // RECRUIT P4: a share, a note, a tag — anything that carries its
+            // own way back.
+            this.closeToast();
+            await t.undo();
+            return;
+        }
         if (!t || !t.moved.length) { return; }
         this.closeToast();
         const groups = {};

@@ -172,6 +172,9 @@
                "Which roles are we trying to fill" and "what is happening
                this week" are not the same question, and a single list that
                tried to answer both would answer neither. -->
+          <!-- RECRUIT P4: what the recruiters shared with this reader -->
+          <t t-call="pb_hiring.P4SharedWithMe"/>
+
           <div class="pbhr-tabs" data-coach="hi-tabs" role="tablist">
             <button class="pbhr-tab" role="tab" t-att-class="{ on: state.tab === 'roles' }" t-att-aria-selected="state.tab === 'roles' ? 'true' : 'false'" t-on-click="() =&gt; this.setTab('roles')">
               <t t-out="ic('briefcase',15)"/> Roles
@@ -181,9 +184,16 @@
               <t t-out="ic('calendar',15)"/> Interviews
               <span class="pbhr-tab-n" t-esc="state.interviews.length"/>
             </button>
+            <!-- RECRUIT P4 (G-26): the hiring team's own; never a line manager's -->
+            <button t-if="state.canBank" class="pbhr-tab" role="tab" t-att-class="{ on: state.tab === 'bank' }" t-att-aria-selected="state.tab === 'bank' ? 'true' : 'false'" t-on-click="() =&gt; this.setTab('bank')">
+              <t t-out="ic('bookOpen',15)"/> Resume bank
+              <span t-if="state.bank and state.bank.loaded" class="pbhr-tab-n" t-esc="state.bank.total"/>
+            </button>
           </div>
 
-          <t t-if="state.tab === 'roles'">
+          <t t-if="state.tab === 'bank' and state.canBank"><t t-call="pb_hiring.P4Bank"/></t>
+
+          <t t-elif="state.tab === 'roles'">
 
           <!-- ========================= filters ========================= -->
           <div class="pbim-panel pbhr-filters">
@@ -217,7 +227,12 @@
           <!-- ================== nothing at all yet ==================
                An empty state that TEACHES: it says what the first move is
                and who makes it, and it carries the button. -->
-          <div t-if="!state.rows.length" class="pbim-panel pbhr-empty" data-coach="hi-row">
+          <div t-if="!state.rows.length and state.shareOnly" class="pbim-panel pbhr-empty">
+            <div class="pbhr-empty-ic"><t t-out="ic('share2',30)"/></div>
+            <h2>No roles of your own here</h2>
+            <p>The people above were shared with you by a recruiter. Open one to see what they shared.</p>
+          </div>
+          <div t-elif="!state.rows.length" class="pbim-panel pbhr-empty" data-coach="hi-row">
             <div class="pbhr-empty-ic"><t t-out="ic('userPlus',30)"/></div>
             <h2>No roles yet</h2>
             <p>Open a role in five fields and you can publish it and meet
@@ -279,7 +294,7 @@
                 <span t-if="row.is_confidential" class="pbim-badge pbhr-reqchip is-rose"><t t-out="ic('eyeOff',12)"/> Confidential</span>
                 <span class="pbim-badge pbhr-budget" t-att-class="'pbhr-budget--' + row.budget_status" t-att-title="row.budget_note">
                   <t t-out="ic(budgetIcon(row.budget_status),13)"/>
-                  <t t-if="row.budget_status === 'over'">
+                  <t t-if="row.budget_status === 'over' and !row.money_locked">
                     Over by <t t-esc="money(row.budget_over_by, row.currency)"/>
                   </t>
                   <t t-else="" t-esc="row.budget_label"/>
@@ -987,6 +1002,7 @@
     <div t-if="state.messageForm" class="pbim-modal-scrim pbhr-scrim"><div class="pbim-modal pbhr-dialog" role="dialog" aria-modal="true" aria-label="Candidate email"><div class="pbim-modal__head"><div><div class="pbhr-drawer-title">Keep the conversation moving.</div><p t-esc="state.messageForm.name"/><p t-if="state.messageForm.many" class="pbhr-drawer-sub">Each person gets their own copy, with their own name in it.</p></div><button class="pbim-btn ghost" t-on-click="() =&gt; state.messageForm = null">×</button></div><div class="pbim-modal__body"><label class="pbhr-f"><span>Email template</span><select class="pbhr-in" t-model="state.messageForm.key" t-on-change="() =&gt; state.messageForm.preview = null"><option value="received">Application received</option><option value="phone">Let’s chat</option><option value="assignment">Assignment</option><option value="on_hold">On hold / delay</option><option value="cv_reject">Application not progressing</option></select></label><label t-foreach="messageFields" t-as="field" t-key="field" class="pbhr-f pbhr-jd-section"><span t-esc="field.replaceAll('_',' ')"/><input class="pbhr-in" t-model="state.messageForm.values[field]" t-on-input="() =&gt; state.messageForm.preview = null"/></label><div t-if="state.messageForm.preview" class="pbhr-email-preview"><b t-esc="state.messageForm.preview.subject"/><p t-esc="state.messageForm.preview.body"/></div></div><div class="pbim-modal__foot"><button class="pbim-btn ghost" t-on-click="previewMessage">Preview email</button><button class="pbim-btn primary" t-att-disabled="!state.messageForm.preview or state.messageForm.busy" t-on-click="sendMessage">Queue email</button></div></div></div>
       <t t-call="pb_hiring.P1Overlays"/>
       <t t-call="pb_hiring.P3Overlays"/>
+      <t t-call="pb_hiring.P4Overlays"/>
     </div>
   </t>
   <!-- ====================================================================
@@ -1165,13 +1181,16 @@
                   <t t-else="">
                     <div class="pbhr-offer-head">
                       <div>
-                        <div class="pbhr-offer-n">
+                        <div t-if="offer.money_locked" class="pbhr-offer-n pbhr-p4-locked-n">
+                          <t t-out="ic('lock',16)"/> <small>The offer's figures are with the hiring team</small>
+                        </div>
+                        <div t-else="" class="pbhr-offer-n">
                           <t t-esc="money(offer.monthly_total, offer.currency)"/>
                           <small>a month</small>
                         </div>
                         <div class="pbhr-offer-sub">
-                          <t t-esc="money(offer.annual_total, offer.currency)"/>
-                          a year · starts <t t-esc="offer.start_date"/>
+                          <t t-if="!offer.money_locked"><t t-esc="money(offer.annual_total, offer.currency)"/>
+                          a year · </t>starts <t t-esc="offer.start_date"/>
                         </div>
                       </div>
                       <span class="pbim-badge" t-esc="offer.state_label"/>
@@ -1186,7 +1205,8 @@
                             <t t-esc="ol.period_label"/>
                           </div>
                         </div>
-                        <div class="pbhr-line-amt" t-esc="money(ol.amount, offer.currency)"/>
+                        <div t-if="offer.money_locked" class="pbhr-line-amt"><t t-out="ic('lock',12)"/></div>
+                        <div t-else="" class="pbhr-line-amt" t-esc="money(ol.amount, offer.currency)"/>
                         <div class="pbhr-line-btns" t-if="state.canRecruit and offer.state === 'draft'">
                           <button class="pbhr-dot" t-on-click="() =&gt; this.startLine(ol)" title="Change it">
                             <t t-out="ic('pencil',14)"/>
@@ -1270,7 +1290,7 @@
             </t>
 
             <!-- ======================== the facts ======================== -->
-            <t t-if="state.drawerSection === 'request'"><t t-call="pb_hiring.P3Request"/><div class="pbhr-facts">
+            <t t-if="state.drawerSection === 'request'"><t t-call="pb_hiring.P3Request"/><t t-call="pb_hiring.P4RoleDefaults"/><div class="pbhr-facts">
               <div class="pbhr-fact">
                 <span class="k">Why it is needed</span>
                 <span class="v" t-esc="state.drawer.role_type_label"/>

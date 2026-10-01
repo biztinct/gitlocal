@@ -64,7 +64,10 @@ registry.category(LIFECYCLE_LENSES).add("hiring", {
     // the hiring team, administrators included, are not offered this tab.
     probe: { model: "pb.hiring", method: "can_open" },
     // RECRUIT P1: a deep link may name the role to open on arrival.
-    propsFromContext: (ctx) => (ctx && ctx.pb_role_id ? { roleId: ctx.pb_role_id } : {}),
+    // RECRUIT P4: `pb_focus: "bank"` (the ⌘K row) arrives on the Resume bank.
+    propsFromContext: (ctx) => Object.assign({},
+        ctx && ctx.pb_role_id ? { roleId: ctx.pb_role_id } : {},
+        ctx && ctx.pb_focus === "bank" ? { startTab: "bank" } : {}),
 }, { sequence: 10 });
 
 /* ------------------------------------------------- the Insights lens ----
@@ -308,3 +311,14 @@ palette.add("hiring_forms", {
     requires: "pb_hiring_forms",
     action: { xmlid: "pb_hiring.action_pb_hiring_forms" },
 }, { sequence: 4010 });
+
+// RECRUIT P4: the Resume bank — the hiring team's own (never a line manager's).
+palette.add("hiring_bank", {
+    id: "hiring_bank",
+    label: _t("Resume bank"),
+    sublabel: _t("Future-fit people, searched by skill, country and tag"),
+    icon: "bookOpen",
+    groups: ["pb_hiring.group_hiring_user"],
+    requires: "pb_hiring_board",
+    action: { xmlid: HUB_XMLID, lens: "hiring", focus: "bank" },
+}, { sequence: 4020 });

@@ -199,6 +199,93 @@
             <div class="pbhr-su-who-ctl"><code class="pbhr-su-sender" t-esc="who.sender or 'No address yet — add an email to the company'"/></div>
           </div>
         </section>
+
+        <!-- ============ RECRUIT P4: CONSENT & RETENTION ============ -->
+        <section t-if="ret" class="pbim-panel pbhr-su-ret">
+          <div class="pbhr-su-h">
+            <h2><t t-out="ic('hourglass',17)"/> Consent &amp; retention</h2>
+            <p>Every candidate ticks a consent sentence when they apply. That day starts a clock: when their market's months are up, the clean-up takes their name, contact details, answers and files out, and keeps the numbers. Hired people, anyone still in play and anyone with a live offer are never touched.</p>
+          </div>
+
+          <div class="pbhr-su-ret-switch" t-att-class="{ 'is-on': ret.enabled }">
+            <span class="pbhr-p4-ic"><t t-out="ic(ret.enabled ? 'checkCircle' : 'pause',16)"/></span>
+            <div class="pbhr-su-who-tx">
+              <b t-if="ret.enabled">The clean-up runs every night</b>
+              <b t-else="">The clean-up is switched off</b>
+              <small t-if="ret.enabled">Next run <t t-esc="whenLong(ret.next_run)"/>. It takes exactly the people under "Due now".</small>
+              <small t-else="">Nothing is removed until the head of hiring switches it on, or presses Run now. Read "What will go" first.</small>
+            </div>
+            <label t-if="ret.can_run" class="pbhr-su-switch pbhr-su-ret-toggle">
+              <input type="checkbox" t-att-checked="ret.enabled" t-on-change="toggleRetention"/>
+              <span><b>Every night</b></span>
+            </label>
+          </div>
+
+          <div class="pbhr-su-ret-grid">
+            <div class="pbhr-su-ret-h">
+              <span>Market</span><span>Keep for</span><span>Afterwards</span><span>Due now</span><span>Within 30 days</span><span>Kept on purpose</span><span/>
+            </div>
+            <div t-foreach="ret.markets" t-as="mk" t-key="mk.country_id or 0" class="pbhr-su-ret-row" t-att-class="{ 'is-fallback': !mk.rule_id }">
+              <span class="pbhr-su-ret-c"><b t-esc="mk.country"/><small t-if="mk.note" t-esc="mk.note"/><small t-elif="!mk.rule_id">the company's own number</small></span>
+              <span>
+                <t t-if="state.retEdit and state.retEdit.key === (mk.rule_id or 'c' + mk.country_id)">
+                  <input class="pbhr-in pbhr-su-ret-n" type="number" min="1" max="120" t-model="state.retEdit.months"/> months
+                </t>
+                <t t-else=""><b t-esc="mk.months"/> months</t>
+              </span>
+              <span>
+                <select t-if="state.retEdit and state.retEdit.key === (mk.rule_id or 'c' + mk.country_id)" class="pbhr-in" t-model="state.retEdit.mode">
+                  <option t-foreach="ret.modes" t-as="md" t-key="md.key" t-att-value="md.key" t-esc="md.label"/>
+                </select>
+                <t t-else="" t-esc="mk.mode_label"/>
+              </span>
+              <span class="pbhr-su-ret-due" t-att-class="{ 'is-due': mk.due }"><t t-esc="mk.due"/></span>
+              <span t-esc="mk.soon"/>
+              <span t-esc="mk.kept"/>
+              <span class="pbhr-su-ret-acts">
+                <t t-if="state.retEdit and state.retEdit.key === (mk.rule_id or 'c' + mk.country_id)">
+                  <button type="button" class="pbim-btn primary" t-on-click="() =&gt; this.saveRetRule(mk)"><t t-out="ic('check',13)"/> Save</button>
+                  <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; { state.retEdit = null; }">Cancel</button>
+                </t>
+                <t t-elif="ret.can_edit">
+                  <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.startRetEdit(mk)"><t t-out="ic('pencil',13)"/></button>
+                  <button t-if="mk.rule_id" type="button" class="pbim-btn ghost pbhr-no" title="Use the company's own number for this market" t-on-click="() =&gt; this.deleteRetRule(mk)"><t t-out="ic('trash',13)"/></button>
+                </t>
+              </span>
+              <div t-if="mk.sample.length" class="pbhr-su-ret-sample"><t t-out="ic('users',12)"/> Due now: <t t-esc="mk.sample.map((x) =&gt; x.name).join(', ')"/><t t-if="mk.due &gt; mk.sample.length"> and <t t-esc="mk.due - mk.sample.length"/> more</t></div>
+            </div>
+          </div>
+          <p t-if="!ret.markets.length" class="pbhr-p4-empty">Nobody's date is within the next 30 days, and no market has its own rule yet. Every application is kept <t t-esc="ret.fallback_months"/> months.</p>
+
+          <div t-if="ret.can_edit" class="pbhr-su-ret-add">
+            <span>Give a market its own months:</span>
+            <select class="pbhr-in" t-model="state.retAdd.country_id">
+              <option value="">Pick a market…</option>
+              <option t-foreach="ret.countries" t-as="cn" t-key="cn.id" t-att-value="cn.id" t-esc="cn.name"/>
+            </select>
+            <input class="pbhr-in pbhr-su-ret-n" type="number" min="1" max="120" t-model="state.retAdd.months"/> months
+            <button class="pbim-btn ghost" t-att-disabled="!state.retAdd.country_id" t-on-click="addRetRule"><t t-out="ic('plus',13)"/> Add</button>
+            <span class="pbhr-foot-gap"/>
+            <span>Every other market: <input class="pbhr-in pbhr-su-ret-n" type="number" min="1" max="120" t-att-value="ret.fallback_months" t-on-change="(ev) =&gt; this.setRetFallback(ev.target.value)"/> months</span>
+          </div>
+
+          <div class="pbhr-su-ret-foot">
+            <div class="pbhr-su-ret-what">
+              <b><t t-out="ic('info',14)"/> What will go</b>
+              <span><t t-esc="ret.due"/> due now · <t t-esc="ret.soon"/> within 30 days · <t t-esc="ret.kept"/> past their date but kept (hired, still in play, or an offer)</span>
+              <small>The consent sentence on each application form says the months of the role's market. Change the wording under <button type="button" class="pbhr-linkish" t-on-click="openForms">Application forms</button>.</small>
+            </div>
+            <t t-if="ret.can_run">
+              <div t-if="state.retConfirm" class="pbhr-su-ret-confirm">
+                <span>Anonymise <b t-esc="ret.due"/> people now? This cannot be undone.</span>
+                <button class="pbim-btn ghost" t-on-click="() =&gt; { state.retConfirm = false; }">Cancel</button>
+                <button class="pbim-btn primary pbhr-no" t-on-click="runRetention"><t t-out="ic('trash',13)"/> Yes, run it</button>
+              </div>
+              <button t-else="" class="pbim-btn ghost" t-att-disabled="!ret.due" t-on-click="() =&gt; { state.retConfirm = true; }"><t t-out="ic('play',13)"/> Run now</button>
+            </t>
+            <small t-else="" class="pbhr-su-ret-who">Running the clean-up is for the head of hiring.</small>
+          </div>
+        </section>
       </div>
 
       <div t-if="state.toast" class="pbhr-toast" role="status" aria-live="polite">

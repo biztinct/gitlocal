@@ -79,7 +79,8 @@
       </div>
       <p t-if="req.can_send_in and req.missing and req.missing.length and req.state !== 'none'" class="pbhr-p3-hint">Still to fill in before it can be sent: <t t-esc="req.missing.join(', ')"/>.</p>
 
-      <!-- the money -->
+      <!-- the money (RECRUIT P4: the hiring team's, and the request's own writer's) -->
+      <p t-if="req.figures_locked" class="pbhr-p4-lockline"><t t-out="ic('lock',12)"/> The budget figures are with the hiring team.</p>
       <div class="pbhr-p3-money" t-if="req.figures">
         <div class="pbhr-p3-fig">
           <span class="k">Expected (the manager's)</span>
