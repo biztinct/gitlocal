@@ -39,6 +39,7 @@ export class PbHiringNumbers extends Component {
     setup() {
         this.orm = useService("orm");
         this.notif = useService("notification");
+        this.action = useService("action");
         this.ranges = RANGES;
 
         this.state = useState({
@@ -58,6 +59,12 @@ export class PbHiringNumbers extends Component {
             noShows: [],
             agency: [],
             busy: false,
+            // RECRUIT P6: filters, funnel, ageing, leadership
+            dept: "", country: "", recruiter: "",
+            options: { departments: [], countries: [], recruiters: [] },
+            funnel: {}, ageing: {}, leadership: {},
+            ageStage: "", ageRecruiter: "", ageStalled: false, ageMore: false,
+            section: "all",
         });
 
         onWillStart(async () => {
@@ -99,7 +106,7 @@ export class PbHiringNumbers extends Component {
         this.state.busy = true;
         try {
             const d = await this.orm.call("pb.hiring.analytics", "get_board",
-                                          [this.state.from, this.state.to]);
+                                          [this.state.from, this.state.to], this.filterArgs());
             Object.assign(this.state, {
                 allowed: d.allowed !== false,
                 empty: !!d.empty,
@@ -113,6 +120,10 @@ export class PbHiringNumbers extends Component {
                 delays: d.delays || [],
                 noShows: d.no_shows || [],
                 agency: d.agency || [],
+                options: d.options || { departments: [], countries: [], recruiters: [] },
+                funnel: d.funnel || {},
+                ageing: d.ageing || {},
+                leadership: d.leadership || {},
                 loaded: true,
             });
         } catch (e) {
@@ -140,12 +151,12 @@ export class PbHiringNumbers extends Component {
         return Math.round((Number(value || 0) / top) * 100);
     }
 
-    async download() {
+    async download(kind = "all") {
         this.state.busy = true;
         try {
             const res = await this.orm.call(
                 "pb.hiring.analytics", "export_xlsx",
-                [this.state.from, this.state.to]);
+                [this.state.from, this.state.to, kind], this.filterArgs());
             if (!res || !res.file_b64) { return; }
             // A DATA URL AND NOT A SERVER ROUTE. The file is built for this
             // reader, from this reader's own company set, and leaving it on
@@ -166,6 +177,87 @@ export class PbHiringNumbers extends Component {
         } finally {
             this.state.busy = false;
         }
+    }
+
+    // ================================================== RECRUIT P6
+    filterArgs() {
+        return {
+            department_id: Number(this.state.dept) || false,
+            country_id: Number(this.state.country) || false,
+            recruiter_id: Number(this.state.recruiter) || false,
+        };
+    }
+
+    setFilter(key, value) {
+        this.state[key] = value || "";
+        this.load();
+    }
+
+    clearFilters() {
+        Object.assign(this.state, { dept: "", country: "", recruiter: "" });
+        this.load();
+    }
+
+    get anyFilter() { return !!(this.state.dept || this.state.country || this.state.recruiter); }
+
+    // ---- the funnel
+    get steps() { return (this.state.funnel && this.state.funnel.steps) || []; }
+    stepWidth(step) {
+        const top = this.steps.length ? this.steps[0].n : 0;
+        if (!top) { return 0; }
+        return Math.max(4, Math.round((step.n / top) * 100));
+    }
+    stepPct(step) { return step.pct === null || step.pct === undefined ? "—" : `${step.pct}%`; }
+
+    // ---- ageing
+    get ageRows() {
+        const a = this.state.ageing || {};
+        let rows = a.rows || [];
+        if (this.state.ageStage) { rows = rows.filter((r) => r.stage_key === this.state.ageStage); }
+        if (this.state.ageRecruiter) { rows = rows.filter((r) => r.recruiter === this.state.ageRecruiter); }
+        if (this.state.ageStalled) { rows = rows.filter((r) => r.stalled); }
+        return this.state.ageMore ? rows : rows.slice(0, 25);
+    }
+    get ageTotal() {
+        const a = this.state.ageing || {};
+        let rows = a.rows || [];
+        if (this.state.ageStage) { rows = rows.filter((r) => r.stage_key === this.state.ageStage); }
+        if (this.state.ageRecruiter) { rows = rows.filter((r) => r.recruiter === this.state.ageRecruiter); }
+        if (this.state.ageStalled) { rows = rows.filter((r) => r.stalled); }
+        return rows.length;
+    }
+    ageBar(row) {
+        const top = Math.max(1, ...((this.state.ageing.rows || []).map((r) => r.days)));
+        return Math.max(3, Math.round((row.days / top) * 100));
+    }
+    pickAgeStage(key) { this.state.ageStage = this.state.ageStage === key ? "" : key; this.state.ageMore = false; }
+    pickAgeRecruiter(name) { this.state.ageRecruiter = this.state.ageRecruiter === name ? "" : name; this.state.ageMore = false; }
+    toggleStalled() { this.state.ageStalled = !this.state.ageStalled; }
+    showAllAge() { this.state.ageMore = true; }
+    openCandidate(row) {
+        this.action.doAction("pb_hiring.action_pb_hiring_board", {
+            additionalContext: { pb_role_id: row.requisition_id, pb_cand_id: row.applicant_id },
+        });
+    }
+
+    // ---- leadership: the twelve-month chart, plain SVG on tokens
+    get months() { return (this.state.leadership && this.state.leadership.months) || []; }
+    get monthTop() { return Math.max(1, ...this.months.map((m) => m.median || 0)); }
+    barH(m) { return m.median ? Math.max(4, Math.round((m.median / this.monthTop) * 120)) : 0; }
+    barX(i) { return 44 + i * 46; }
+    barY(m) { return 140 - this.barH(m); }
+    barTitle(m) {
+        return m.filled
+            ? _t("%(label)s %(year)s: %(n)s filled, the middle one took %(days)s days", { label: m.label, year: m.year, n: m.filled, days: Math.round(m.median) })
+            : _t("%(label)s %(year)s: nothing filled", { label: m.label, year: m.year });
+    }
+    get gridLines() {
+        const top = this.monthTop;
+        return [0, 0.5, 1].map((f) => ({ y: 140 - f * 120, label: Math.round(top * f) }));
+    }
+    headShare(row) {
+        const rows = (this.state.leadership && this.state.leadership.headcount) || [];
+        return this.share(rows, row.open, "open");
     }
 }
 
