@@ -344,6 +344,61 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   added to `ic()`: `share2`, `tag`, `hourglass`. New recruiter-screen strings are English
   only (Fable's P4 brief); P4 adds no candidate-facing sentence.
 
+## Gotchas found in phase 5 (2026-10-01)
+
+- **RC62** THE GOOGLE INSERT ANSWER (verified on the server's own copy): `GoogleCalendarService.insert()`
+  RETURNS the created event resource (`hangoutLink`, `conferenceData.entryPoints[]` with
+  `conferenceDataVersion=1`), but the standard `_google_insert` is `@after_commit` and
+  `_get_post_sync_values` keeps only `google_id` + `need_sync`. pb_hiring overrides
+  `calendar.event._get_post_sync_values` (`google_p5.py`) to read the Meet link from that same
+  answer — no second sync call. Because it arrives after commit, a Google video interview's
+  invitations WAIT (`interview.invites_pending`) and go from that hook with the link in every mail
+  and `.ics`; the 10-minute job sends them without it after 10 minutes (`_pb_send_overdue_invites`),
+  and a late link sends one "Your video link" mail.
+- **RC63** `send_updates` is a BOOLEAN context key: `insert` turns any truthy value into
+  `sendUpdates=all`, so the string `'none'` (as the P5 handover wrote it) would make Google email
+  every attendee, the candidate included. Pass `send_updates=False`. `_google_patch` ignores the
+  context entirely (`send_updates = not self._is_event_over()`) and `delete` hard-codes
+  `sendUpdates=all`: pb_hiring never deletes (archive → patch with status cancelled) and overrides
+  `calendar.event._is_event_over` to answer True under context `pb_hiring_quiet_google`.
+- **RC64** THE MOCK PATTERN (the first mocks in pb_hiring, `tests/test_interviews_p5.py`): give the
+  organiser tokens on `res.users.settings` (`google_calendar_rtoken/_token/_token_validity`), patch
+  `GoogleCalendarService.insert` with a side effect that stamps `values['id']` (the real one does)
+  and returns the event resource, patch `type(env['res.users'])._get_google_calendar_token`, and
+  call the after-commit job through `GoogleCalendarSync._google_insert.__wrapped__(event.with_user(
+  organiser), service, event._google_values())` — a TransactionCase never commits, so the real
+  callback never runs. Nothing leaves the box.
+- **RC65** OWL TEMPLATES SEE NO `String`, `Number`, `parseInt`, `JSON`: only `Math, RegExp, Array,
+  Object, Date` (+ `window`, `console`) are reserved; anything else is looked up on the component
+  and is `undefined`, so `String(cc.id)` crashed the scheduling sheet the moment its list arrived
+  (owlcheck compiles it fine — it only fails when RENDERED). Put it in a method (`sameId`, `num`).
+  The A3 offer template's `Number(ev.target.value)` had the same latent fault (fixed).
+- **RC66** An opinion is now editable by its panellist until the recruiter decides (`_editable`:
+  no debrief decision, candidate still open and not at Offer/Post-offer); the token answers `used`
+  only after that. A2's tests that asserted "a replay writes nothing" and the GLOBAL chase count
+  were rewritten to the new rule and to per-row stamps (a demo world has its own late rows, and the
+  chase now repeats daily: `last_reminded_at`, `reminder_count`; stops after 14 days late,
+  `pb_hiring.chase_stop_days`).
+- **RC67** Seven noupdate interview templates changed meaning (video link, "reminded every day",
+  public fields): rewritten by `migrations/19.0.2.4.0/post-10_interviews.py` from the data file
+  only where the product's OLD words are still in them (RC41 again). New templates
+  (`mail_template_panel_invite`, `_feedback_lead`, `_interview_video_link`) read public computes
+  only (`pb_link_url`, `pb_due_local`, `pb_round_label`, `pb_when_local`, `pb_join_url`,
+  `pb_agenda`) — RC49. The panel invitation is now sent per OPINION so it carries that
+  panellist's own scorecard link; the interview-level template remains as a fallback.
+- **RC68** A NEW DEPENDENCY ON A SHARED ADDONS DIRECTORY: `abm` still has pb_hiring installed but
+  not `google_calendar`, so after this deploy abm's registry no longer loads pb_hiring and its
+  "Hiring: remind everybody…" cron logs `KeyError: 'pb.hiring.automation'` every ten minutes. abm
+  was not touched (RC-D4). Owner item: switch abm's two hiring crons off, or uninstall pb_hiring there.
+- **RC69** Doors and numbers after P5: no ⌘K row. Hiring set-up's Scorecards card is live (inline
+  editor `.pbhr-p5-sc-sec`); "Who does what" gains scheduling links + Google per recruiter. Params
+  (defaults in code): `pb_hiring.phone_auto_mail` 1, `phone_minutes` 30, `lead_late_days` 2,
+  `chase_every_hours` 24, `chase_stop_days` 14. `google_calendar` + `google_account` installed on
+  payobook, rize, payobook_template; no Google client id on any of them. Icons added to `ic()`:
+  `star`, `columns`, `video`, `helpCircle`. The interviewer page is light-only like every public
+  page (R39). Recruiter screens English only; the "Let's chat" email in en/vi/id
+  (`form_seed_i18n.PHONE_I18N`, seeded by `seed_message_i18n`).
+
 ## Phase log
 
 - **P1** (handover `RECRUIT_P1_BOARD.md`) — started and LIVE 2026-09-30: pb_hiring 19.0.2.0.0 +
@@ -390,3 +445,18 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   `_regenerate_tokens`, `pb.hiring.note` + `_notes_payload`, `search_bank`/`bank_options`,
   `get_retention_preview`, `hr.applicant._pb_retention_protected()` / `_pb_anonymise()`,
   `pb.hiring.retention.rule._months_for`.
+- **P5** (handover `RECRUIT_P5_INTERVIEWS.md`) — LIVE 2026-10-01: pb_hiring 19.0.2.4.0 (+ pb_import_kit
+  icons, no version change) on payobook, rize, payobook_template, with `google_calendar` installed on
+  all three; backups in `/odoo/backups/2026-10-01-recruit-p5/`. Rehearsed on a payobook clone:
+  309/312 (the three RC47 data failures); 12 new tests. Migration: 11 old opinions converted on
+  payobook, 7 templates rewritten per DB, Recruiter review now promises the Calendly link. Google
+  end-to-end with a real account NOT run: no OAuth client on the box (owner item). Demo on payobook
+  (label "RECRUIT P5 interviews"): DEMO Territory Manager kind = Go-to-market, Discussion 2 picks
+  Non-tech; round 2 for Cao Minh Khoa (interview 316) with two opinions + one entered from Slack and
+  a transcript link; DEMO Field Agronomist kind = Operations; demo recruiter's link
+  `https://calendly.com/demo-recruiter/30min`; plus the walk's own: round 2 for Ly Thi Thu (one by
+  the page, one entered for them, a transcript link) and one Let's chat email to Pham Thu Ha.
+  Gotchas RC62–RC69. API left for P6–P8: `feedback.answers_json` / `decision` / `submit_answers`,
+  `get_finalists` + `finalist_decide/undo`, `interview.videocall_url` / `transcript_url`,
+  `res.users.pb_scheduling_link`, `pb.hiring._pb_on_stage_entered(apps, key)` (the automation hook).
+
