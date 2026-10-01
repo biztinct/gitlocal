@@ -384,7 +384,8 @@ class TestRecruitChannels(ChannelCase):
                                              'phone': '+84 912 000 021'})
         a.applicant_id.write({'stage_id': self.env['hr.recruitment.stage']._pb_stage('discussion_1').id})
         vendor.invalidate_recordset()
-        self.assertEqual(vendor.hiring_submitted, 3)
+        # RECRUIT P8: "put forward" counts accepted people; the refusal is its own figure.
+        self.assertEqual(vendor.hiring_submitted, 2)
         self.assertEqual(vendor.hiring_refused, 1)
         self.assertEqual(vendor.hiring_interviewed, 1)
         self.assertEqual(vendor.hiring_open_count, 1)
@@ -392,7 +393,7 @@ class TestRecruitChannels(ChannelCase):
         self.assertIn('views', action)
         rows = self.env['pb.hiring.analytics'].with_user(self.lead)._agency_rows()
         row = next(r for r in rows if r['id'] == vendor.id)
-        self.assertEqual((row['submitted'], row['refused'], row['interviewed']), (3, 1, 1))
+        self.assertEqual((row['submitted'], row['refused'], row['interviewed']), (2, 1, 1))
         board = self.env['pb.hiring.analytics'].with_user(self.lead).get_board()
         self.assertIn('agencies', board)
         out = self.env['pb.hiring.analytics'].with_user(self.lead).export_xlsx(kind='agency')
@@ -407,7 +408,7 @@ class TestRecruitChannels(ChannelCase):
         self.assertIn('channels', [c['key'] for c in setup['cards']])
         self.assertIn('agencies', [c['key'] for c in setup['cards']])
         ag = next(r for r in setup['agencies']['rows'] if r['id'] == vendor.id)
-        self.assertEqual(ag['figures']['submitted'], 3)
+        self.assertEqual(ag['figures']['submitted'], 2)
 
     def test_11b_channel_grid_and_the_header_count(self):
         lead = self.env['pb.hiring'].with_user(self.lead)
