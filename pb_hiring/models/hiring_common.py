@@ -63,7 +63,10 @@ DEFAULTS = {
     # (G-19).
     P_ASK_ESCALATE_DAYS: '3',
     P_DOCREQ_TRIGGER: 'on_check_clear',
-    P_REFERRAL_ANNOUNCE: '1',
+    # OFF (Fable, 2026-10-01, after P3): ON emailed every employee with a
+    # login whenever a role opened for referrals. The talent lead turns it on
+    # in Hiring set-up when the company wants that.
+    P_REFERRAL_ANNOUNCE: '0',
     # OFF. An advert that leaves the building the first time somebody presses
     # a button is an advert nobody agreed to send. The pack is built either
     # way and a human pushes it.
