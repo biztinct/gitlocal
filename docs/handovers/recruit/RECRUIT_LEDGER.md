@@ -399,6 +399,16 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   page (R39). Recruiter screens English only; the "Let's chat" email in en/vi/id
   (`form_seed_i18n.PHONE_I18N`, seeded by `seed_message_i18n`).
 
+## Gotchas found in phase 6 (2026-10-01)
+
+- **RC70** abm's hiring reminders (RC68) switched OFF 2026-10-01 by psql, nothing else touched on
+  abm (no upgrade, no deploy; pb_hiring there stays 19.0.1.3.5): `ir_cron` ids **67**
+  ("Hiring: chase the adverts…", `pb_hiring.cron_hiring_daily`) and **68** ("Hiring: remind
+  everybody about the interviews…", `pb_hiring.cron_hiring_interview_reminders`). Rollback:
+  `sudo -u postgres psql -d abm -c "update ir_cron set active=true where id in (67,68)"`.
+  Also killed a 2-day-old self-matching wait loop (PID 836081, `while pgrep -f "odoo-bin … -d
+  s6clone"` — its own command line matched, so it never ended; `s6clone` no longer existed).
+
 ## Phase log
 
 - **P1** (handover `RECRUIT_P1_BOARD.md`) — started and LIVE 2026-09-30: pb_hiring 19.0.2.0.0 +
