@@ -399,11 +399,16 @@ class PbHiringP4(models.AbstractModel):
         summary = ' · '.join('%s (%s)' % (r['name'], r['parts_label']) for r in rows)
         until = app.pb_retention_until
         months = self.env['pb.hiring.retention.rule']._months_for(app.company_id, app._pb_country())
+        gone = bool(app.pb_anonymised_on)
+        notes = self._notes_payload(app)
+        if gone:
+            # Nobody to share and nothing to write about: the person is gone.
+            notes.update({'can_add': False, 'targets': []})
         return {
-            'share': {'rows': rows, 'summary': summary, 'private': not rows},
+            'share': None if gone else {'rows': rows, 'summary': summary, 'private': not rows},
             'money_who': (_('Recruiters and %s', ', '.join(pay_with)) if pay_with
                           else _('Recruiters only')),
-            'notes': self._notes_payload(app),
+            'notes': notes,
             'retention': {
                 'until': str(until or ''), 'months': months,
                 'extended': bool(app.pb_retention_extended_on),

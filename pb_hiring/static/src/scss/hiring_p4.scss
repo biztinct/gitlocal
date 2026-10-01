@@ -174,10 +174,11 @@
             font-size: 12px; font-weight: 800; background: var(--pbim-soft); color: var(--pbim-primary-strong); }
     }
     .pbhr-p4-mine-tx { flex: 1; min-width: 0; display: flex; flex-direction: column;
-        b { color: var(--pbim-ink); font-size: 13px; }
+        b { color: var(--pbim-ink); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         small { font-size: 11.5px; color: var(--pbim-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     }
-    .pbhr-p4-parts { font-size: 11px; color: var(--pbim-primary-strong); display: inline-flex; gap: 4px; align-items: center; }
+    .pbhr-p4-parts { font-size: 11px; color: var(--pbim-primary-strong); display: inline-flex; gap: 4px; align-items: center;
+        flex: 0 1 auto; max-width: 48%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     // ------------------------------------------------------ the Resume bank
     .pbhr-p4-bank-top { margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; }
