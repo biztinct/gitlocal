@@ -29,13 +29,21 @@ _logger = logging.getLogger(__name__)
 class PbHiringRequisitionA3(models.Model):
     _inherit = 'pb.hiring.requisition'
 
+    # RECRUIT P7 (G-21): SEVERAL agencies per role. The old single pointer is
+    # kept as a read of the first one (and a write that replaces the set), so
+    # every caller written before P7 keeps working; the migration copied the
+    # old column into the set (`migrations/19.0.2.6.0`).
+    agency_vendor_ids = fields.Many2many(
+        'pb.vendor', 'pb_hiring_requisition_agency_rel', 'requisition_id',
+        'vendor_id', string='Agencies helping with this',
+        domain="[('vendor_type', '=', 'recruitment')]",
+        help='The recruitment agencies working on this role. Each one sees the '
+             'role on its own portal and can put people forward there.')
     agency_vendor_id = fields.Many2one(
         'pb.vendor', string='Agency helping with this',
-        domain="[('vendor_type', '=', 'recruitment')]",
-        ondelete='set null', index=True, tracking=True,
-        help='The recruitment agency working on this role. Naming one here is '
-             'what lets anybody say, later, whether the agency filled roles '
-             'faster than we did.')
+        compute='_compute_agency_first', inverse='_inverse_agency_first',
+        search='_search_agency_first', compute_sudo=True,
+        help='The first of the agencies on this role (kept for older screens).')
     offer_ids = fields.One2many('pb.hiring.offer', 'requisition_id',
                                 string='Offers')
     bgv_ids = fields.One2many('pb.hiring.bgv', 'requisition_id',
@@ -65,6 +73,20 @@ class PbHiringRequisitionA3(models.Model):
                 lambda o: o.state == 'joined'))
             rec.offer_out_count = len(offers.filtered(
                 lambda o: o.state in ('sent', 'accepted', 'signed')))
+
+    @api.depends('agency_vendor_ids')
+    def _compute_agency_first(self):
+        # As the system: a line manager reads the role without any right on
+        # the vendor register (the many2many filters by the reader's access).
+        for rec in self:
+            rec.agency_vendor_id = rec.sudo().agency_vendor_ids[:1].id
+
+    def _inverse_agency_first(self):
+        for rec in self:
+            rec.agency_vendor_ids = [(6, 0, rec.agency_vendor_id.ids)]
+
+    def _search_agency_first(self, operator, value):
+        return [('agency_vendor_ids', operator, value)]
 
     def _compute_cover(self):
         """Who is standing in for this role's recruiter right now.
@@ -148,49 +170,60 @@ class PbHiringRequisitionA3(models.Model):
     #  The agency
     # =====================================================================
     def write(self, vals):
-        """Naming an agency is worth telling the hiring manager about.
+        """Naming an agency is worth telling the hiring manager about — once
+        per agency ADDED (RECRUIT P7), and the agency itself gets its portal
+        link.
 
         A recruiter who hands a role to an agency has changed how it will be
         filled and what it will cost, and the person whose team it is should
         not find that out from an invoice.
         """
-        before = {rec.id: rec.agency_vendor_id.id for rec in self} \
-            if 'agency_vendor_id' in vals else {}
+        watch = 'agency_vendor_ids' in vals
+        before = {rec.id: set(rec.agency_vendor_ids.ids) for rec in self} if watch else {}
         res = super().write(vals)
-        if 'agency_vendor_id' in vals:
+        if watch:
             for rec in self:
-                if rec.agency_vendor_id.id == before.get(rec.id):
-                    continue
-                rec._leg('the agency notice on %s' % rec.name,
-                         rec._tell_them_about_the_agency)
+                now = set(rec.agency_vendor_ids.ids)
+                was = before.get(rec.id, set())
+                Vendor = self.env['pb.vendor'].sudo()
+                for vendor in Vendor.browse(sorted(now - was)):
+                    rec._leg('the agency notice on %s' % rec.name,
+                             lambda v=vendor, r=rec: r._tell_them_about_the_agency(v))
+                for vendor in Vendor.browse(sorted(was - now)):
+                    rec._leg('the agency removal on %s' % rec.name,
+                             lambda v=vendor, r=rec: r.sudo().message_post(body=_(
+                                 "%s is no longer working on this role.", v.name or '')))
         return res
 
-    def _tell_them_about_the_agency(self):
+    def _tell_them_about_the_agency(self, vendor=None):
+        """The hiring manager hears about each agency added; the agency gets
+        the role on its portal. Returns how many emails went."""
         self.ensure_one()
-        vendor = self.agency_vendor_id.sudo()
+        vendor = (vendor or self.agency_vendor_ids[:1]).sudo()
         if not vendor:
             self.sudo().message_post(body=_(
                 "No agency is working on this role any more."))
             return 0
         self.sudo().message_post(body=_(
             "%s is working on this role.", vendor.name or ''))
-        if not flag(self.env, P_CLOSURE_MAIL):
-            return 0
-        template = self.env.ref('pb_hiring.mail_template_requisition_agency',
-                                raise_if_not_found=False)
-        if not template:
-            return 0
-        manager = self._person(self.reporting_manager_id
-                               or self.requested_by_id)
-        address = (manager.user_id.email or manager.work_email or '').strip()
-        if not address:
-            _logger.info('pb_hiring: %s was given an agency and there is '
-                         'nobody to tell', self.name)
-            return 0
-        template.sudo().send_mail(
-            self.id, force_send=False,
-            email_values={'email_to': address, 'auto_delete': False})
-        return 1
+        sent = 0
+        if flag(self.env, P_CLOSURE_MAIL):
+            template = self.env.ref('pb_hiring.mail_template_requisition_agency',
+                                    raise_if_not_found=False)
+            manager = self._person(self.reporting_manager_id
+                                   or self.requested_by_id)
+            address = (manager.user_id.email or manager.work_email or '').strip()
+            if template and address:
+                template.sudo().with_context(pb_agency_name=vendor.name or '').send_mail(
+                    self.id, force_send=False,
+                    email_values={'email_to': address, 'auto_delete': False})
+                sent += 1
+            elif not address:
+                _logger.info('pb_hiring: %s was given an agency and there is '
+                             'nobody to tell', self.name)
+        sent += self._leg('the agency\'s own email on %s' % self.name,
+                          lambda: self._tell_the_agency(vendor)) or 0
+        return sent
 
     # ------------------------------------------------------------- the door
     def action_open_offers(self):

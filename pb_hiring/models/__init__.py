@@ -44,3 +44,7 @@ from . import facade_p5      # RECRUIT P5 — proxy entry, Calendly rule, finali
 from . import joining_p6     # RECRUIT P6 — signed is not joined; Before they join
 from . import facade_p6      # RECRUIT P6 — the drawer, the card, set-up, the verbs
 from . import analytics_p6   # RECRUIT P6 — filters, funnel, ageing, leadership, exports
+from . import channels_p7    # RECRUIT P7 — channels, tracked links, the connector seam
+from . import agency_p7      # RECRUIT P7 — agency submissions, the 6-month rule, agency mails
+from . import facade_p7      # RECRUIT P7 — the Publish panel, set-up Channels and Agencies
+from . import analytics_p7   # RECRUIT P7 — each agency's own figures on Hiring numbers

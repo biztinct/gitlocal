@@ -373,6 +373,23 @@
                     </div>
                   </div>
                 </t>
+                <!-- RECRUIT P7: each agency's OWN figures, from what it put forward -->
+                <div t-if="state.agencies.length" class="pbhn-ag">
+                  <div class="pbhn-ag-h">
+                    <span>Agency</span><span>Put forward</span><span>6-month rule</span>
+                    <span>Interviewed</span><span>Offers</span><span>Joined</span><span>Days to fill</span>
+                  </div>
+                  <div t-foreach="state.agencies" t-as="agp" t-key="agp.id" class="pbhn-ag-r">
+                    <span class="pbhn-ag-name" t-esc="agp.name"/>
+                    <span t-esc="agp.submitted"/>
+                    <span t-att-class="{ 'is-rose': agp.refused }" t-esc="agp.refused"/>
+                    <span t-esc="agp.interviewed"/>
+                    <span t-esc="agp.offers"/>
+                    <span t-att-class="{ 'is-green': agp.joined }" t-esc="agp.joined"/>
+                    <span><t t-if="agp.days === null">—</t><t t-else="" t-esc="agp.days"/></span>
+                  </div>
+                  <p class="pbhn-ag-foot">Counted from the people each agency put forward through its portal in these dates. "6-month rule" is how many were not accepted because they were already a candidate or had applied recently.</p>
+                </div>
               </div>
             </div>
 

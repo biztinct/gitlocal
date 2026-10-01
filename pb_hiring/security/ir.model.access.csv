@@ -152,3 +152,17 @@ access_pb_hiring_join_ask_user,Week-before ask recruiter,model_pb_hiring_join_as
 access_pb_hiring_join_ask_manager,Week-before ask manager,model_pb_hiring_join_ask,pb_hiring.group_hiring_manager,1,1,1,1
 access_pb_hiring_join_ask_admin,Week-before ask head of hiring,model_pb_hiring_join_ask,pb_hiring.group_hiring_admin,1,1,1,1
 access_pb_hiring_join_ask_system,Week-before ask system,model_pb_hiring_join_ask,base.group_system,1,1,1,1
+access_pb_hiring_channel_staff,Channel read,model_pb_hiring_channel,base.group_user,1,0,0,0
+access_pb_hiring_channel_user,Channel recruiter,model_pb_hiring_channel,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_channel_manager,Channel talent lead,model_pb_hiring_channel,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_channel_admin,Channel head of hiring,model_pb_hiring_channel,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_channel_system,Channel system,model_pb_hiring_channel,base.group_system,1,1,1,1
+access_pb_hiring_role_channel_user,Role channel recruiter,model_pb_hiring_role_channel,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_role_channel_manager,Role channel talent lead,model_pb_hiring_role_channel,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_role_channel_admin,Role channel head of hiring,model_pb_hiring_role_channel,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_role_channel_system,Role channel system,model_pb_hiring_role_channel,base.group_system,1,1,1,1
+access_pb_hiring_agency_submission_user,Agency submission recruiter,model_pb_hiring_agency_submission,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_agency_submission_manager,Agency submission talent lead,model_pb_hiring_agency_submission,pb_hiring.group_hiring_manager,1,1,0,0
+access_pb_hiring_agency_submission_admin,Agency submission head of hiring,model_pb_hiring_agency_submission,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_agency_submission_system,Agency submission system,model_pb_hiring_agency_submission,base.group_system,1,1,1,1
+access_pb_hiring_agency_submission_portal,Agency submission the agency itself,model_pb_hiring_agency_submission,base.group_portal,1,0,0,0

@@ -45,6 +45,19 @@ WHAT THIS MODULE IS
     careers page and prepares a ready-to-send advert for every job board the
     company uses. Sending them is a switch, off to begin with, so nothing
     leaves the building until somebody says so.
+  * **Publish to every channel, each with its own link.** One panel per role:
+    the careers page, LinkedIn, JobStreet, VietnamWorks, employee referrals and
+    agencies, each with a tracked link that copies in one press and a count of
+    the applications that came through it — so everybody can see which channel
+    works without a report. Where a board has no connection, the panel says
+    where to paste the advert and the recruiter marks it as posted.
+  * **An agency portal.** An agency signs in to see only the roles it was
+    asked to help with, puts people forward with their CV and their agreement,
+    and follows each one as In review, Interviewing, Offer, Joined or Not
+    selected — nothing else from inside the company. Somebody who is already a
+    candidate, or applied in the last six months, is not accepted and the
+    agency is told only the date. What each agency delivers is counted on its
+    own card and in the hiring numbers.
   * **Screening in one press.** Shortlisted, not this time, worth keeping, or
     better suited to another role — and that last one moves the candidate to
     the other role rather than making somebody retype them.
@@ -152,7 +165,7 @@ WHAT THIS MODULE IS
     column too long; and a leadership view of fill rate, open headcount and
     time to fill — each section downloadable as a spreadsheet, or all of it.
 """,
-    'version': '19.0.2.5.0',
+    'version': '19.0.2.6.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -192,6 +205,7 @@ WHAT THIS MODULE IS
         'security/ir.model.access.csv',
         'security/recruit_p4_security.xml',
         'security/recruit_p6_security.xml',
+        'security/recruit_p7_security.xml',
         'data/approval_process.xml',
         'data/ir_sequence.xml',
         'data/hiring_params.xml',
@@ -205,6 +219,7 @@ WHAT THIS MODULE IS
         'data/mail_template_requests.xml',
         'data/mail_template_p5.xml',
         'data/mail_template_p6.xml',
+        'data/mail_template_p7.xml',
         'data/recruit_p6.xml',
         'data/ir_cron.xml',
         'report/hiring_offer_report.xml',
@@ -223,6 +238,8 @@ WHAT THIS MODULE IS
         'data/recruit_p2.xml',
         'views/recruit_p5_views.xml',
         'views/joining_pages.xml',
+        'views/agency_portal_templates.xml',
+        'data/recruit_p7.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -235,6 +252,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/scss/hiring_p4.scss',
             'pb_hiring/static/src/scss/hiring_p5.scss',
             'pb_hiring/static/src/scss/hiring_p6.scss',
+            'pb_hiring/static/src/scss/hiring_p7.scss',
             'pb_hiring/static/src/js/hiring_board.js',
             'pb_hiring/static/src/js/hiring_setup.js',
             'pb_hiring/static/src/js/hiring_forms.js',
@@ -242,6 +260,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/js/hiring_privacy_p4.js',
             'pb_hiring/static/src/js/hiring_p5.js',
             'pb_hiring/static/src/js/hiring_p6.js',
+            'pb_hiring/static/src/js/hiring_p7.js',
             'pb_hiring/static/src/js/hiring_numbers.js',
             'pb_hiring/static/src/js/hiring_palette.js',
             'pb_hiring/static/src/xml/hiring_board.xml',
@@ -252,6 +271,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/xml/hiring_privacy_p4.xml',
             'pb_hiring/static/src/xml/hiring_p5.xml',
             'pb_hiring/static/src/xml/hiring_p6.xml',
+            'pb_hiring/static/src/xml/hiring_p7.xml',
             'pb_hiring/static/src/xml/hiring_numbers.xml',
         ],
         'web.assets_frontend': [
@@ -263,6 +283,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/js/interviewer_page.js',
             'pb_hiring/static/src/scss/joining_pages.scss',
             'pb_hiring/static/src/js/joining_pages.js',
+            'pb_hiring/static/src/scss/agency_portal.scss',
         ],
     },
     'post_init_hook': 'post_init_hook',

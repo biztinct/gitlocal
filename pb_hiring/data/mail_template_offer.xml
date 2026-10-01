@@ -270,16 +270,17 @@
         <field name="body_html" type="html">
             <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
                 <p>
-                    <strong><t t-out="object.agency_vendor_id.name or ''"/></strong>
+                    <strong><t t-out="object.pb_agency_name or ''"/></strong>
                     is now working on
                     <strong><t t-out="object.title or ''"/></strong>
                     (<t t-out="object.name or ''"/>).
                 </p>
                 <p style="color:#4A5568;">
-                    Candidates they put forward arrive on the same board as
-                    everybody else's, and how long they take to fill a role is
-                    counted on their own card — so in a year you will be able
-                    to say whether it was worth it.
+                    They see the role on their own agency portal. Candidates
+                    they put forward arrive on the same board as everybody
+                    else's, tagged Agency, and what they deliver is counted on
+                    their own card — so in a year you will be able to say
+                    whether it was worth it.
                 </p>
                 <br/>
                 <t t-out="object.company_id.name or ''"/>

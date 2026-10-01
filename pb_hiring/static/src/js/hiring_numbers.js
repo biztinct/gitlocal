@@ -58,6 +58,7 @@ export class PbHiringNumbers extends Component {
             delays: [],
             noShows: [],
             agency: [],
+            agencies: [],   // RECRUIT P7: each agency's own figures
             busy: false,
             // RECRUIT P6: filters, funnel, ageing, leadership
             dept: "", country: "", recruiter: "",
@@ -120,6 +121,7 @@ export class PbHiringNumbers extends Component {
                 delays: d.delays || [],
                 noShows: d.no_shows || [],
                 agency: d.agency || [],
+                agencies: d.agencies || [],
                 options: d.options || { departments: [], countries: [], recruiters: [] },
                 funnel: d.funnel || {},
                 ageing: d.ageing || {},
