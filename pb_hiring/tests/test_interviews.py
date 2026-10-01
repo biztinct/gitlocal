@@ -1017,8 +1017,12 @@ class TestA2SourceGates(TransactionCase):
         stock branded invitation needs both."""
         body = _src('models', 'interview.py').split(
             'def _ensure_event', 1)[1].split('def _event_title', 1)[0]
-        self.assertIn('dont_notify=True', body)
-        self.assertIn('no_mail_to_attendees=True', body)
+        # RECRUIT P6: through the one shared helper the chats use too.
+        self.assertIn('_pb_quiet_create', body)
+        self.assertIn('_pb_quiet_write', body)
+        quiet = _src('models', 'google_p5.py').split('QUIET = ', 1)[1].split('\n\n', 1)[0]
+        self.assertIn('dont_notify=True', quiet)
+        self.assertIn('no_mail_to_attendees=True', quiet)
 
     def test_every_hand_built_window_action_carries_views(self):
         import ast

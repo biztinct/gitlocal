@@ -426,17 +426,19 @@ class TestSendingIt(OfferCase):
         self.assertFalse(offer.record_decision('declined'))
         self.assertEqual(offer.candidate_decision, 'accepted')
 
-    def test_t5_a_decline_leaves_the_candidate_exactly_where_they_are(self):
+    def test_t5_a_decline_lands_the_candidate_in_offer_drop(self):
+        """RECRUIT P6 (G-58, test 5): a declined offer is an offer drop with
+        "Declined the offer", so the numbers can count it."""
         offer = self._agreed()
         self._complete_documents(offer)
         offer.action_send_to_candidate()
-        stage = self.applicant.stage_id
         offer.record_decision('declined', comment='Counter-offer at home.')
         self.assertEqual(offer.state, 'declined')
-        self.assertEqual(self.applicant.stage_id, stage)
-        self.assertTrue(self.applicant.active,
-                        'a person who says no to one offer is often the '
-                        'person who says yes to the next role')
+        app = self.applicant.with_context(active_test=False)
+        self.assertEqual(app.stage_id.pb_key, 'offer_drop_out')
+        self.assertEqual(app.refuse_reason_id,
+                         self.env.ref('pb_hiring.refuse_reason_declined_offer'))
+        self.assertIn('Counter-offer', app.pb_stage_reason or '')
 
     def test_t5_an_offer_nobody_has_agreed_shows_a_closed_page(self):
         offer = self._offer()
@@ -476,8 +478,10 @@ class TestTheClosure(OfferCase):
     def test_t6_the_whole_chain_runs_in_one_press(self):
         offer = self._signed()
         self.assertEqual(offer.state, 'signed')
-        offer.action_close()
-        self.assertEqual(offer.state, 'closed')
+        # R8: signed is not joined — nothing exists on the employee side yet.
+        self.assertFalse(offer.employee_id or offer.contract_id or offer.case_id)
+        offer.action_confirm_joined()
+        self.assertEqual(offer.state, 'joined')
 
         # the employee
         self.assertTrue(offer.employee_id)
@@ -515,10 +519,10 @@ class TestTheClosure(OfferCase):
 
     def test_t6_closing_twice_makes_nothing_twice(self):
         offer = self._signed()
-        offer.action_close()
+        offer.action_confirm_joined()
         employee, contract = offer.employee_id, offer.contract_id
         case, comp = offer.case_id, offer.comp_id
-        offer.action_close()
+        offer.action_confirm_joined()
         self.assertEqual(offer.employee_id, employee)
         self.assertEqual(offer.contract_id, contract)
         self.assertEqual(offer.case_id, case)
@@ -526,7 +530,7 @@ class TestTheClosure(OfferCase):
 
     def test_t6_the_role_fills_only_when_the_head_count_is_reached(self):
         offer = self._signed()
-        offer.action_close()
+        offer.action_confirm_joined()
         self.req.invalidate_recordset(['filled_count'])
         self.assertEqual(self.req.filled_count, 1)
         self.assertEqual(self.req.state, 'open',
@@ -547,7 +551,7 @@ class TestTheClosure(OfferCase):
         offer2.action_record_signed(filename='signed.pdf',
                                     content=b'%PDF-1.4 signed',
                                     mimetype='application/pdf')
-        offer2.action_close()
+        offer2.action_confirm_joined()
         self.req.invalidate_recordset(['filled_count'])
         self.assertEqual(self.req.filled_count, 2)
         self.assertEqual(self.req.state, 'filled')
@@ -560,7 +564,7 @@ class TestTheClosure(OfferCase):
         self.env['ir.config_parameter'].sudo().set_param(
             'pb_hiring.create_contract', '0')
         offer = self._signed()
-        offer.action_close()
+        offer.action_confirm_joined()
         self.assertTrue(offer.employee_id)
         self.assertFalse(offer.contract_id)
         self.env['ir.config_parameter'].sudo().set_param(
@@ -569,7 +573,7 @@ class TestTheClosure(OfferCase):
     def test_t6_an_offer_that_is_not_signed_cannot_be_closed(self):
         offer = self._offer()
         with self.assertRaises(UserError):
-            offer.action_close()
+            offer.action_confirm_joined()
 
 
 # =========================================================================
@@ -751,7 +755,7 @@ class TestTheNumbers(OfferCase):
         offer.record_decision('accepted')
         offer.action_record_signed(filename='s.pdf', content=b'%PDF',
                                    mimetype='application/pdf')
-        offer.action_close()
+        offer.action_confirm_joined()
 
         today = fields.Date.context_today(self.env.user)
         board = self.env['pb.hiring.analytics'].get_board(

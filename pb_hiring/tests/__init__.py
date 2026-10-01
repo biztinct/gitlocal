@@ -10,3 +10,4 @@ from . import test_apply_p2
 from . import test_requests_p3
 from . import test_privacy_p4
 from . import test_interviews_p5
+from . import test_joining_p6
