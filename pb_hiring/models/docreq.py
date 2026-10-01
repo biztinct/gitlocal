@@ -283,7 +283,7 @@ class PbHiringDocreq(models.Model):
         # A CLOSED OFFER CLOSES THE PAGE and a late one does NOT. Being past
         # the date is exactly when we most want the papers; the link staying
         # open is the whole reason the reminder is worth sending.
-        if row.offer_id.state in ('closed', 'declined', 'refused'):
+        if row.offer_id.state in ('joined', 'dropped', 'declined', 'refused'):
             return row, 'closed'
         if row.state == 'complete':
             return row, 'done'

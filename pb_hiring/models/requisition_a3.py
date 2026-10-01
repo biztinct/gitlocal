@@ -50,8 +50,9 @@ class PbHiringRequisitionA3(models.Model):
                                compute='_compute_cover')
     filled_count = fields.Integer(
         string='Have joined', compute='_compute_filled', store=True,
-        help='How many people have actually signed and been closed onto this '
-             'role.')
+        help='How many people have actually started in this role — '
+             '"Confirm they joined" on their offer. A signed offer does not '
+             'count until they start.')
     filled_on = fields.Date(string='Filled on', readonly=True, copy=False)
     offer_out_count = fields.Integer(string='Offers out',
                                      compute='_compute_filled', store=True)
@@ -61,7 +62,7 @@ class PbHiringRequisitionA3(models.Model):
         for rec in self:
             offers = rec.offer_ids
             rec.filled_count = len(offers.filtered(
-                lambda o: o.state == 'closed'))
+                lambda o: o.state == 'joined'))
             rec.offer_out_count = len(offers.filtered(
                 lambda o: o.state in ('sent', 'accepted', 'signed')))
 

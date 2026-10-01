@@ -192,19 +192,19 @@
         <field name="model_id" ref="model_pb_hiring_offer"/>
         <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.reporting_manager_id.work_email or '' }}</field>
-        <field name="subject">{{ object.candidate_name }} joins on {{ object.start_date }}</field>
+        <field name="subject">{{ object.candidate_name }} has started — {{ object.pb_join_words }}</field>
         <field name="auto_delete" eval="False"/>
         <field name="body_html" type="html">
             <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
                 <p>
                     <strong><t t-out="object.candidate_name or ''"/></strong>
-                    has signed and joins as
+                    has started as
                     <t t-out="object.job_title or ''"/> on
-                    <strong><t t-out="object.start_date or ''"/></strong>.
+                    <strong><t t-out="object.pb_join_words or ''"/></strong>.
                 </p>
                 <p>
                     Their record, their contract and their pay package are all
-                    ready, and their joining checklist has started. You will be
+                    ready, and their welcome checklist has started. You will be
                     asked for the few things only you can do — a desk, an
                     introduction, their first week.
                 </p>

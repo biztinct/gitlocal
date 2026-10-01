@@ -435,7 +435,7 @@ class PbHiringAutomation(models.AbstractModel):
         rows = self.env['pb.hiring.docreq'].sudo().search([
             ('state', 'in', ('sent', 'partial', 'expired')),
             ('sent_on', '!=', False),
-            ('offer_id.state', 'not in', ('closed', 'declined', 'refused')),
+            ('offer_id.state', 'not in', ('joined', 'dropped', 'declined', 'refused')),
             '|', ('last_reminder_on', '=', False),
             ('last_reminder_on', '<=', today - timedelta(days=every)),
         ], order='deadline', limit=cap)
@@ -460,7 +460,7 @@ class PbHiringAutomation(models.AbstractModel):
             ('deadline', '!=', False), ('deadline', '<', today),
             ('deadline_todo_on', '=', False),
             ('state', '!=', 'complete'),
-            ('offer_id.state', 'not in', ('closed', 'declined', 'refused')),
+            ('offer_id.state', 'not in', ('joined', 'dropped', 'declined', 'refused')),
         ], order='deadline', limit=cap)
         made = 0
         for row in rows:

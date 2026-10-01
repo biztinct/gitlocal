@@ -1239,7 +1239,7 @@ class HiringOfferP3(models.Model):
         self.ensure_one()
         if text(self.env, P_DOCREQ_TRIGGER, 'on_check_clear') != moment:
             return False
-        if self.state in ('closed', 'declined', 'refused'):
+        if self.state in ('joined', 'dropped', 'declined', 'refused'):
             return False
         if self.docreq_id and self.docreq_id.sent_on:
             return False
@@ -1264,7 +1264,7 @@ class HiringBgvP3(models.Model):
         return self.env['pb.hiring.offer'].sudo().search([
             ('requisition_id', '=', self.requisition_id.id),
             ('applicant_id', '=', self.applicant_id.id),
-            ('state', 'not in', ('declined', 'refused', 'closed'))],
+            ('state', 'not in', ('declined', 'refused', 'joined', 'dropped'))],
             order='id desc', limit=1)
 
     def _after_answer(self):
@@ -1491,7 +1491,7 @@ class HiringAutomationP3(models.AbstractModel):
         rows = self.env['pb.hiring.docreq'].sudo().search([
             ('deadline', '!=', False), ('deadline', '<', today),
             ('escalated_on', '=', False), ('state', '!=', 'complete'),
-            ('offer_id.state', 'not in', ('closed', 'declined', 'refused')),
+            ('offer_id.state', 'not in', ('joined', 'dropped', 'declined', 'refused')),
         ], order='deadline', limit=cap)
         made = 0
         for row in rows:

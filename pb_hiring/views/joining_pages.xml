@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       RECRUIT P6 — the three "Before they join" pages. One template per
+       page, one branch per status (a stranger probing the URL space cannot
+       tell a wrong key from a spent one). Light only like every public page
+       (R39: every colour is a literal in the frontend sheet). The `.pbiv`
+       shell is the P5 interviewer page's, so the three read as one family.
+       `t-attf-class`, never a dict `t-att-class` (R42); no `t-key` (R5);
+       no render key called `request` (R4). Works with the script blocked:
+       the server checks everything again.
+       ================================================================== -->
+  <template id="pbjn_icon" name="Joining page icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbhf-ic">
+      <t t-if="icon == 'users'"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></t>
+      <t t-elif="icon == 'laptop'"><path d="M18 5a2 2 0 0 1 2 2v8.526a2 2 0 0 0 .212.897l1.068 2.127a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45l1.068-2.127A2 2 0 0 0 4 15.526V7a2 2 0 0 1 2-2z"/><path d="M20.054 15.987H3.946"/></t>
+      <t t-elif="icon == 'checkCircle'"><path d="M21.8 10A10 10 0 1 1 17 3.34"/><path d="m9 11 3 3L22 4"/></t>
+      <t t-elif="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'alert'"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></t>
+      <t t-elif="icon == 'calendar'"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18"/></t>
+      <t t-elif="icon == 'search'"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></t>
+      <t t-elif="icon == 'userX'"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5M22 8l-5 5"/></t>
+      <t t-elif="icon == 'send'"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></t>
+      <t t-elif="icon == 'keyboard'"><path d="M10 8h.01M12 12h.01M14 8h.01M16 12h.01M18 8h.01M6 8h.01M7 16h10M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/></t>
+      <t t-elif="icon == 'monitor'"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/></t>
+      <t t-elif="icon == 'sparkles'"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="10"/></t>
+    </svg>
+  </template>
+
+  <!-- ======================= the manager: name a buddy ======================= -->
+  <template id="hiring_buddy_page" name="Name a buddy">
+    <t t-call="web.frontend_layout">
+      <div id="wrap" class="pbiv pbjn">
+        <div class="pbiv-wrap">
+          <t t-if="status == 'ok'">
+            <header class="pbiv-hero">
+              <div class="pbiv-eyebrow"><t t-esc="facts.get('company')"/> · Before they join</div>
+              <h1 class="pbiv-h1">Who will look after <t t-esc="facts['candidate']"/>?</h1>
+              <p class="pbiv-sub">
+                <t t-esc="facts['candidate']"/> joins<t t-if="facts.get('department')"> <t t-esc="facts['department']"/></t>
+                as <b t-esc="facts['role']"/> on <b t-esc="facts.get('join_words')"/>.
+              </p>
+              <div class="pbiv-private">
+                <t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'users'"/><t t-set="isz" t-value="16"/></t>
+                <span>A buddy is the colleague they can ask the small questions. Pick one person, or a couple — the first you pick is their buddy on day one.</span>
+              </div>
+            </header>
+
+            <div t-if="problem" class="pbiv-problem" role="alert">
+              <t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t>
+              <span t-esc="problem"/>
+            </div>
+
+            <form id="pbjn-buddy" class="pbiv-form" t-attf-action="/hiring/b/#{token}/answer" method="post" novalidate="novalidate">
+              <input type="hidden" name="order" id="pbjn-order" value=""/>
+              <section class="pbiv-q">
+                <div class="pbjn-search">
+                  <t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'search'"/><t t-set="isz" t-value="16"/></t>
+                  <input type="search" class="pbiv-in" id="pbjn-q" placeholder="Search by name, job or team" autocomplete="off" aria-label="Search people"/>
+                </div>
+                <div id="pbjn-picked" class="pbjn-picked" aria-live="polite"/>
+                <div class="pbjn-people" id="pbjn-people">
+                  <t t-set="had_team" t-value="False"/>
+                  <t t-foreach="people" t-as="p">
+                    <div t-if="p_index == 0 and p['team']" class="pbjn-group">Their team</div>
+                    <div t-if="not p['team'] and (p_index == 0 or people[p_index - 1]['team'])" class="pbjn-group">Everyone else</div>
+                    <label t-attf-class="pbjn-person #{p['team'] and 'is-team' or ''}" t-att-data-q="(p['name'] + ' ' + p['job'] + ' ' + p['dept']).lower()">
+                      <input type="checkbox" name="emp" t-att-value="p['id']"/>
+                      <span class="pbjn-av" t-esc="(p['name'] or '?')[:1]"/>
+                      <span class="pbjn-pt">
+                        <b t-esc="p['name']"/>
+                        <small><t t-esc="p['job']"/><t t-if="p['job'] and p['dept']"> · </t><t t-esc="p['dept']"/></small>
+                      </span>
+                      <span class="pbjn-rank"/>
+                    </label>
+                  </t>
+                  <p t-if="not people" class="pbiv-q-help">Nobody is listed for this company yet. Tell the recruiter who you have in mind.</p>
+                  <p class="pbjn-none" id="pbjn-none" hidden="hidden">Nobody matches. Try part of a name.</p>
+                </div>
+              </section>
+              <section class="pbiv-q">
+                <label class="pbiv-q-label" for="pbjn-why">Why them? <span class="pbiv-opt">optional</span></label>
+                <textarea class="pbiv-in" id="pbjn-why" name="why" rows="2" maxlength="2000" placeholder="Sits next to them, knows the territory, was new here last year."/>
+              </section>
+              <div class="pbiv-foot">
+                <button type="submit" class="pbiv-send" id="pbjn-send">
+                  <t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="17"/></t>
+                  <span id="pbjn-send-tx">Name the buddy</span>
+                </button>
+                <p class="pbiv-fine">This link is yours alone, and there is no sign-in. The recruiter is told the moment you send it.</p>
+              </div>
+            </form>
+          </t>
+          <t t-elif="status == 'thanks'">
+            <div class="pbiv-done">
+              <div class="pbiv-done-ic"><t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'checkCircle'"/><t t-set="isz" t-value="34"/></t></div>
+              <h1 class="pbiv-h1">Thank you</h1>
+              <p class="pbiv-sub"><t t-esc="', '.join(facts.get('answer', {}).get('names') or [])"/> will look after <t t-esc="facts.get('candidate')"/>. The recruiter has been told, and it will be on their welcome checklist from day one.</p>
+            </div>
+          </t>
+          <t t-elif="status == 'used'">
+            <div class="pbiv-done">
+              <div class="pbiv-done-ic"><t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'checkCircle'"/><t t-set="isz" t-value="34"/></t></div>
+              <h1 class="pbiv-h1">Already answered</h1>
+              <p class="pbiv-sub"><t t-esc="facts.get('answered_by') or 'Somebody'"/> named <t t-esc="', '.join(facts.get('answer', {}).get('names') or [])"/>. To change it, write to <t t-esc="facts.get('recruiter_email') or facts.get('recruiter')"/>.</p>
+            </div>
+          </t>
+          <t t-else="">
+            <div class="pbiv-done is-warn">
+              <div class="pbiv-done-ic"><t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="34"/></t></div>
+              <h1 class="pbiv-h1">This link has closed</h1>
+              <p class="pbiv-sub">There is nothing to answer here any more — they may have started already, or the question was taken back. Reply to the email that brought you here if that looks wrong.</p>
+            </div>
+          </t>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ===================== the new joiner: their laptop ===================== -->
+  <template id="hiring_laptop_page" name="Your laptop">
+    <t t-call="web.frontend_layout">
+      <div id="wrap" class="pbiv pbjn" t-att-lang="page_lang">
+        <div class="pbiv-wrap">
+          <t t-if="status == 'ok'">
+            <header class="pbiv-hero">
+              <div class="pbiv-eyebrow"><t t-esc="facts.get('company')"/> · <t t-esc="tx['eyebrow']"/></div>
+              <h1 class="pbiv-h1"><t t-esc="tx['title']"/></h1>
+              <p class="pbiv-sub" t-esc="tx['lede']"/>
+              <div class="pbiv-chips">
+                <span class="pbiv-chip is-link">
+                  <t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'calendar'"/><t t-set="isz" t-value="13"/></t>
+                  <t t-esc="tx['joining']"/>
+                </span>
+                <span class="pbiv-chip"><t t-esc="facts.get('role')"/></span>
+              </div>
+            </header>
+            <div t-if="problem" class="pbiv-problem" role="alert">
+              <t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t>
+              <span t-esc="problem"/>
+            </div>
+            <form id="pbjn-laptop" class="pbiv-form" t-attf-action="/hiring/l/#{token}/answer" method="post" novalidate="novalidate">
+              <section class="pbiv-q" data-required="1" data-kind="kind">
+                <div class="pbiv-q-head"><span class="pbiv-q-n">1</span><div><span class="pbiv-q-label" t-esc="tx['q_kind']"/></div></div>
+                <div class="pbjn-cards" role="radiogroup" t-att-aria-label="tx['q_kind']">
+                  <t t-foreach="['mac', 'windows', 'any']" t-as="k">
+                    <label t-attf-class="pbjn-card pbjn-card--#{k}">
+                      <input type="radio" name="kind" t-att-value="k"/>
+                      <span class="pbjn-card-box">
+                        <span class="pbjn-card-ic"><t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="k == 'any' and 'sparkles' or 'laptop'"/><t t-set="isz" t-value="28"/></t></span>
+                        <b t-esc="tx[k]"/>
+                      </span>
+                    </label>
+                  </t>
+                </div>
+                <p class="pbiv-q-miss" t-esc="tx['need_kind']"/>
+              </section>
+              <section class="pbiv-q">
+                <div class="pbiv-q-head"><span class="pbiv-q-n">2</span><div><label class="pbiv-q-label" for="pbjn-kb" t-esc="tx['q_keyboard']"/></div></div>
+                <select class="pbiv-in" id="pbjn-kb" name="keyboard">
+                  <t t-foreach="['us', 'uk', 'vi', 'id', 'other']" t-as="k">
+                    <option t-att-value="k" t-esc="tx['kb_' + k]"/>
+                  </t>
+                </select>
+              </section>
+              <section class="pbiv-q">
+                <div class="pbiv-q-head"><span class="pbiv-q-n">3</span><div><span class="pbiv-q-label" t-esc="tx['q_screen']"/></div></div>
+                <div class="pbiv-scale pbjn-pills" role="radiogroup" t-att-aria-label="tx['q_screen']">
+                  <t t-foreach="['small', 'large', 'any']" t-as="k">
+                    <label class="pbiv-scale-o"><input type="radio" name="screen" t-att-value="k" t-att-checked="k == 'any' and 'checked' or None"/><span t-esc="tx[k]"/></label>
+                  </t>
+                </div>
+              </section>
+              <section class="pbiv-q">
+                <div class="pbiv-q-head"><span class="pbiv-q-n">4</span><div><span class="pbiv-q-label"><t t-esc="tx['q_extras']"/> <span class="pbiv-opt" t-esc="tx['optional']"/></span></div></div>
+                <div class="pbiv-scale pbjn-pills">
+                  <t t-foreach="['mouse', 'headset', 'monitor', 'stand']" t-as="k">
+                    <label class="pbiv-scale-o"><input type="checkbox" name="extras" t-att-value="k"/><span t-esc="tx[k]"/></label>
+                  </t>
+                </div>
+              </section>
+              <section class="pbiv-q">
+                <label class="pbiv-q-label" for="pbjn-note"><t t-esc="tx['q_note']"/> <span class="pbiv-opt" t-esc="tx['optional']"/></label>
+                <textarea class="pbiv-in" id="pbjn-note" name="note" rows="2" maxlength="2000" t-att-placeholder="tx['note_ph']"/>
+              </section>
+              <div class="pbiv-foot">
+                <button type="submit" class="pbiv-send">
+                  <t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="17"/></t>
+                  <span t-esc="tx['send']"/>
+                </button>
+                <p class="pbiv-fine" t-esc="tx['fine']"/>
+              </div>
+            </form>
+          </t>
+          <t t-elif="status == 'thanks'">
+            <div class="pbiv-done">
+              <div class="pbiv-done-ic"><t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'checkCircle'"/><t t-set="isz" t-value="34"/></t></div>
+              <h1 class="pbiv-h1" t-esc="tx['thanks']"/>
+              <p class="pbiv-sub" t-esc="tx['thanks_sub']"/>
+            </div>
+          </t>
+          <t t-elif="status == 'used'">
+            <div class="pbiv-done">
+              <div class="pbiv-done-ic"><t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'checkCircle'"/><t t-set="isz" t-value="34"/></t></div>
+              <h1 class="pbiv-h1" t-esc="tx['used_title']"/>
+              <p class="pbiv-sub" t-esc="tx['used_sub']"/>
+            </div>
+          </t>
+          <t t-else="">
+            <div class="pbiv-done is-warn">
+              <div class="pbiv-done-ic"><t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="34"/></t></div>
+              <h1 class="pbiv-h1" t-esc="tx['closed_title']"/>
+              <p class="pbiv-sub" t-esc="tx['closed_sub']"/>
+            </div>
+          </t>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ===================== the week before: still on? ===================== -->
+  <template id="hiring_week_page" name="Still joining?">
+    <t t-call="web.frontend_layout">
+      <div id="wrap" class="pbiv pbjn">
+        <div class="pbiv-wrap">
+          <t t-if="status == 'ok'">
+            <header class="pbiv-hero">
+              <div class="pbiv-eyebrow">A week before they join</div>
+              <h1 class="pbiv-h1">Is <t t-esc="facts['candidate']"/> still joining on <t t-esc="facts['join_words']"/>?</h1>
+              <p class="pbiv-sub"><t t-esc="facts['role']"/> · asked of <t t-esc="facts['who']"/>. One answer from anybody who got the email is enough.</p>
+            </header>
+            <div t-if="problem" class="pbiv-problem" role="alert">
+              <t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t>
+              <span t-esc="problem"/>
+            </div>
+            <form id="pbjn-week" class="pbiv-form" t-attf-action="/hiring/w/#{token}/answer" method="post" novalidate="novalidate">
+              <div class="pbjn-answers" role="radiogroup" aria-label="Your answer">
+                <label class="pbjn-ans pbjn-ans--still_on">
+                  <input type="radio" name="answer" value="still_on" t-att-checked="pick == 'still_on' and 'checked' or None"/>
+                  <span class="pbjn-ans-box">
+                    <span class="pbjn-ans-ic"><t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'checkCircle'"/><t t-set="isz" t-value="26"/></t></span>
+                    <b>Still on</b><small>Nothing has changed.</small>
+                  </span>
+                </label>
+                <label class="pbjn-ans pbjn-ans--changed">
+                  <input type="radio" name="answer" value="changed" t-att-checked="pick == 'changed' and 'checked' or None"/>
+                  <span class="pbjn-ans-box">
+                    <span class="pbjn-ans-ic"><t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'calendar'"/><t t-set="isz" t-value="26"/></t></span>
+                    <b>The date changed</b><small>Say the new date.</small>
+                  </span>
+                </label>
+                <label class="pbjn-ans pbjn-ans--dropped">
+                  <input type="radio" name="answer" value="dropped" t-att-checked="pick == 'dropped' and 'checked' or None"/>
+                  <span class="pbjn-ans-box">
+                    <span class="pbjn-ans-ic"><t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'userX'"/><t t-set="isz" t-value="26"/></t></span>
+                    <b>They will not join</b><small>Say why, if you know.</small>
+                  </span>
+                </label>
+              </div>
+              <section class="pbiv-q pbjn-more" data-for="changed">
+                <label class="pbiv-q-label" for="pbjn-date">The new joining date</label>
+                <input type="date" class="pbiv-in pbjn-date" id="pbjn-date" name="new_date" t-att-min="facts.get('min_iso')" t-att-value="facts.get('join_iso')"/>
+                <label class="pbiv-q-label pbjn-sub-l" for="pbjn-reason">Why it moved <span class="pbiv-opt">optional</span></label>
+                <textarea class="pbiv-in" id="pbjn-reason" name="reason" rows="2" maxlength="2000" placeholder="Their notice period was extended by two weeks."/>
+              </section>
+              <section class="pbiv-q pbjn-more" data-for="dropped">
+                <label class="pbiv-q-label" for="pbjn-drop">Why they will not join</label>
+                <select class="pbiv-in" id="pbjn-drop" name="drop_reason">
+                  <t t-foreach="reasons" t-as="r"><option t-att-value="r[0]" t-esc="r[1]"/></t>
+                </select>
+                <label class="pbiv-q-label pbjn-sub-l" for="pbjn-dnote">Anything else <span class="pbiv-opt">optional</span></label>
+                <textarea class="pbiv-in" id="pbjn-dnote" name="note" rows="2" maxlength="2000"/>
+                <p class="pbiv-q-help">The hiring manager, the talent lead and HR are told, and the role stays open.</p>
+              </section>
+              <div class="pbiv-foot">
+                <button type="submit" class="pbiv-send">
+                  <t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="17"/></t>
+                  <span>Send my answer</span>
+                </button>
+                <p class="pbiv-fine">This link is yours. Nothing changes until you press here.</p>
+              </div>
+            </form>
+          </t>
+          <t t-elif="status == 'thanks'">
+            <div class="pbiv-done">
+              <div class="pbiv-done-ic"><t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'checkCircle'"/><t t-set="isz" t-value="34"/></t></div>
+              <h1 class="pbiv-h1">Thank you</h1>
+              <p class="pbiv-sub" t-if="pick == 'changed'">The new date is on their record. The hiring manager and HR have been told, and the plans for their first day moved with it.</p>
+              <p class="pbiv-sub" t-elif="pick == 'dropped'">Recorded. The hiring manager, the talent lead and HR have been told; the role stays open.</p>
+              <p class="pbiv-sub" t-else="">Noted — <t t-esc="facts.get('candidate')"/> joins on <t t-esc="facts.get('join_words')"/>.</p>
+            </div>
+          </t>
+          <t t-elif="status == 'used'">
+            <div class="pbiv-done">
+              <div class="pbiv-done-ic"><t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'checkCircle'"/><t t-set="isz" t-value="34"/></t></div>
+              <h1 class="pbiv-h1">Already answered</h1>
+              <p class="pbiv-sub"><t t-esc="facts.get('answered_by') or 'Somebody'"/> answered: <b t-esc="facts.get('answer')"/>. If that is not right, write to <t t-esc="facts.get('recruiter_email') or facts.get('recruiter')"/>.</p>
+            </div>
+          </t>
+          <t t-elif="status == 'closed' and facts">
+            <div class="pbiv-done">
+              <div class="pbiv-done-ic"><t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'checkCircle'"/><t t-set="isz" t-value="34"/></t></div>
+              <h1 class="pbiv-h1">Nothing to answer</h1>
+              <p class="pbiv-sub"><t t-esc="facts.get('candidate')"/>: <t t-esc="facts.get('state_words')"/> If that is not right, write to <t t-esc="facts.get('recruiter_email') or facts.get('recruiter')"/>.</p>
+            </div>
+          </t>
+          <t t-else="">
+            <div class="pbiv-done is-warn">
+              <div class="pbiv-done-ic"><t t-call="pb_hiring.pbjn_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="34"/></t></div>
+              <h1 class="pbiv-h1">This link has closed</h1>
+              <p class="pbiv-sub">There is nothing to answer here. Reply to the email that brought you here if that looks wrong.</p>
+            </div>
+          </t>
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

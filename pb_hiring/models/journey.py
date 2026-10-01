@@ -434,7 +434,7 @@ class HiringOfferJourney(models.Model):
     def draft_for(self, requisition_id, values=None):
         offer = super().draft_for(requisition_id, values)
         stage = self.env['hr.recruitment.stage']._pb_stage('offer')
-        if stage and offer.state != 'closed' and offer.applicant_id.stage_id.pb_key not in ('offer', 'post_offer', 'joined'):
+        if stage and offer.state not in ('joined', 'dropped') and offer.applicant_id.stage_id.pb_key not in ('offer', 'post_offer', 'joined'):
             offer.applicant_id.sudo().write({'stage_id': stage.id})
         return offer
 
@@ -741,3 +741,7 @@ def seed_journey(env):
     # email in Vietnamese and Bahasa Indonesia.
     from .scorecards_p5 import seed_p5
     seed_p5(env)
+    # RECRUIT P6: the "Before they join" list per company, and the new
+    # joiner's laptop email in three languages.
+    from .joining_p6 import seed_p6
+    seed_p6(env)

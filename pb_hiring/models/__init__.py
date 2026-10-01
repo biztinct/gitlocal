@@ -41,3 +41,6 @@ from . import facade_p4    # RECRUIT P4 — the last layer of every payload; the
 from . import scorecards_p5  # RECRUIT P5 — scorecards per role family and round
 from . import google_p5      # RECRUIT P5 — Google Calendar + Meet, the scheduling link
 from . import facade_p5      # RECRUIT P5 — proxy entry, Calendly rule, finalists
+from . import joining_p6     # RECRUIT P6 — signed is not joined; Before they join
+from . import facade_p6      # RECRUIT P6 — the drawer, the card, set-up, the verbs
+from . import analytics_p6   # RECRUIT P6 — filters, funnel, ageing, leadership, exports

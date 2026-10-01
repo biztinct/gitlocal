@@ -730,10 +730,11 @@ class PbHiringOffer(models.Model):
         return True
 
     def _tell_recruiter_the_answer(self):
-        """A DECLINE IS THE ONE THAT MATTERS MOST, and it changes nothing
-        about the candidate: they stay exactly where they are on the board,
-        because a person who says no to one offer is often the person who
-        says yes to the next role."""
+        """A DECLINE IS THE ONE THAT MATTERS MOST. RECRUIT P6 (G-58): it
+        now lands the candidate in Offer drop with "Declined the offer", so
+        the numbers can count it; they can be dragged back to any column, and
+        a person who says no to one offer is often the person who says yes to
+        the next role."""
         self.ensure_one()
         recruiter = self.requisition_id.sudo().recruiter_id
         accepted = self.candidate_decision == 'accepted'
@@ -747,12 +748,13 @@ class PbHiringOffer(models.Model):
             summary=(_('Offer accepted: %s', self.candidate_name or '')
                      if accepted else
                      _('Offer turned down: %s', self.candidate_name or '')),
-            note=(_("Get the signed copy back and record it here, then close "
-                    "the offer — that is what makes them a joiner.")
+            note=(_("Get the signed copy back and record it on the offer. "
+                    "They move to Post-offer with their joining date, and the "
+                    "Before they join list starts.")
                   if accepted else
-                  _("They said no. Nothing has changed on the board: the role "
-                    "is still open and they are still a candidate. Worth "
-                    "asking why — it is usually the money or the notice "
+                  _("They said no, so they are in Offer drop now. The role is "
+                    "still open; drag them back if they change their mind. "
+                    "Worth asking why — it is usually the money or the notice "
                     "period.")),
             user_id=recruiter.id,
             date_deadline=fields.Date.context_today(self))
@@ -803,8 +805,12 @@ class PbHiringOffer(models.Model):
             # That IS an acceptance and the record should say so.
             'candidate_decision': 'accepted',
         })
+        # RECRUIT P6 (R8): signed is not joined. The candidate goes to
+        # Post-offer with an expected joining date (`joining_p6`), and nothing
+        # on the employee side exists until "Confirm they joined".
         self.sudo().message_post(body=_(
-            "Signed copy recorded. %s is a joiner.", self.candidate_name or ''))
+            "Signed copy recorded. %s is still a candidate until they start.",
+            self.candidate_name or ''))
         return True
 
     # ------------------------------------------------------------- the doors

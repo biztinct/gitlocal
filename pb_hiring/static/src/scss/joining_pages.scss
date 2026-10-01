@@ -1,0 +1,107 @@
+// =====================================================================
+//  RECRUIT P6 — the "Before they join" pages (buddy, laptop, the week
+//  before). Frontend bundle, on top of the P5 `.pbiv` shell. Every colour
+//  is a literal (R39). One column, 16 px gutters, big targets: the laptop
+//  page is answered on a phone at 360 px. Nothing sticky (RC33), no `:has()`
+//  (RC34), no mixed-unit min()/max().
+// =====================================================================
+
+.pbiv.pbjn {
+    .pbjn-search {
+        position: relative; display: flex; align-items: center;
+        svg { position: absolute; left: 13px; color: #64748B; }
+        .pbiv-in { padding-left: 38px; }
+    }
+    .pbjn-picked { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 4px; min-height: 4px; }
+    .pbjn-chip {
+        display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px;
+        border: 1px solid #C7D2FE; background: #EEF2FF; color: #3730A3; font: inherit; font-size: 13px;
+        font-weight: 650; cursor: pointer;
+        &.is-first { background: #4F46E5; color: #fff; border-color: #4F46E5; }
+        &::after { content: "×"; font-weight: 700; opacity: .7; }
+    }
+    .pbjn-need { color: #BE123C; font-size: 13px; font-weight: 650; }
+    .pbjn-people { display: flex; flex-direction: column; gap: 6px; max-height: 420px; overflow-y: auto; margin-top: 8px; padding-right: 2px; }
+    .pbjn-group { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #64748B; margin: 10px 2px 2px; }
+    .pbjn-person {
+        position: relative; display: flex; align-items: center; gap: 12px; margin: 0; padding: 10px 12px;
+        border: 1px solid #E2E8F0; border-radius: 12px; background: #fff; cursor: pointer;
+        input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+        &:hover { border-color: #CBD5E1; }
+        &.is-on { border-color: #4F46E5; background: #EEF2FF; box-shadow: 0 0 0 3px rgba(79, 70, 229, .14); }
+        input:focus-visible ~ .pbjn-pt b { text-decoration: underline; }
+    }
+    .pbjn-av {
+        flex: 0 0 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+        background: #F1F5F9; color: #334155; font-weight: 750; font-size: 14px;
+    }
+    .pbjn-person.is-team .pbjn-av { background: #ECFDF3; color: #15803D; }
+    .pbjn-pt { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column;
+        b { color: #1B1733; font-size: 15px; font-weight: 680; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        small { color: #64748B; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    }
+    .pbjn-rank {
+        flex: 0 0 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+        border: 2px solid #E2E8F0; color: #fff; font-size: 12.5px; font-weight: 750;
+    }
+    .pbjn-person.is-on .pbjn-rank { background: #4F46E5; border-color: #4F46E5; }
+    .pbjn-none { color: #64748B; font-size: 13px; margin: 8px 2px; }
+
+    // ---- the laptop page
+    .pbjn-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .pbjn-card {
+        position: relative; margin: 0; cursor: pointer;
+        input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    }
+    .pbjn-card-box {
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+        min-height: 104px; padding: 14px 8px; border-radius: 16px; border: 2px solid #E2E8F0; background: #fff;
+        text-align: center;
+        b { font-size: 16px; color: #1B1733; font-weight: 720; }
+    }
+    .pbjn-card-ic { color: #64748B; line-height: 0; }
+    .pbjn-card:hover .pbjn-card-box { border-color: #CBD5E1; }
+    .pbjn-card input:checked + .pbjn-card-box { border-color: #4F46E5; background: #EEF2FF;
+        b { color: #3730A3; } .pbjn-card-ic { color: #4F46E5; }
+    }
+    .pbjn-card input:focus-visible + .pbjn-card-box { box-shadow: 0 0 0 3px rgba(79, 70, 229, .22); }
+    .pbjn-pills .pbiv-scale-o span { width: auto; padding: 0 16px; font-size: 14px; font-weight: 600; }
+
+    // ---- the week page
+    .pbjn-answers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px;
+        &.is-missing .pbjn-ans-box { border-color: #BE123C; }
+    }
+    .pbjn-ans {
+        position: relative; margin: 0; cursor: pointer;
+        input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    }
+    .pbjn-ans-box {
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+        min-height: 124px; padding: 14px 10px; border-radius: 16px; border: 2px solid #E2E8F0; background: #fff; text-align: center;
+        b { font-size: 16px; color: #1B1733; font-weight: 740; }
+        small { font-size: 12.5px; color: #64748B; line-height: 1.35; }
+    }
+    .pbjn-ans-ic { line-height: 0; color: #64748B; }
+    @each $k, $c, $soft in (still_on, #15803D, #ECFDF3), (changed, #4F46E5, #EEF2FF), (dropped, #BE123C, #FFF1F2) {
+        .pbjn-ans--#{$k} .pbjn-ans-ic { color: $c; }
+        .pbjn-ans--#{$k} input:checked + .pbjn-ans-box { border-color: $c; background: $soft; b { color: $c; } }
+    }
+    .pbjn-ans input:focus-visible + .pbjn-ans-box { box-shadow: 0 0 0 3px rgba(79, 70, 229, .22); }
+    .pbjn-more { display: flex; flex-direction: column; gap: 8px; }
+    .pbjn-sub-l { margin-top: 8px; font-size: 14px; }
+    .pbjn-date { max-width: 240px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .pbiv.pbjn .pbjn-person, .pbiv.pbjn .pbjn-card-box, .pbiv.pbjn .pbjn-ans-box { transition: border-color .15s, background .15s, box-shadow .15s; }
+    .pbiv.pbjn .pbjn-person.is-on .pbjn-rank { animation: pbiv-pop .25s ease-out; }
+}
+
+@media (max-width: 560px) {
+    .pbiv.pbjn .pbjn-cards { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .pbiv.pbjn .pbjn-card-box { min-height: 92px; padding: 12px 4px; b { font-size: 14px; } }
+    .pbiv.pbjn .pbjn-answers { grid-template-columns: 1fr; }
+    .pbiv.pbjn .pbjn-ans-box { min-height: 0; flex-direction: row; justify-content: flex-start; text-align: left; gap: 12px; padding: 14px; }
+    .pbiv.pbjn .pbjn-ans-box small { display: none; }
+    .pbiv.pbjn .pbjn-people { max-height: 360px; }
+}

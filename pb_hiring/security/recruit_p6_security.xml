@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- RECRUIT P6: the company boundary on every new table, as global rules
+         (no `groups`), like every other hiring table. The screens read these
+         as the system with the role checked first (R89). -->
+    <record id="rule_ffer_document_company" model="ir.rule">
+        <field name="name">Signed document: company</field>
+        <field name="model_id" ref="model_pb_hiring_offer_document"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_rejoin_template_company" model="ir.rule">
+        <field name="name">Before they join list: company</field>
+        <field name="model_id" ref="model_pb_hiring_prejoin_template"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_rejoin_company" model="ir.rule">
+        <field name="name">Before they join item: company</field>
+        <field name="model_id" ref="model_pb_hiring_prejoin"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_oin_change_company" model="ir.rule">
+        <field name="name">Joining date change: company</field>
+        <field name="model_id" ref="model_pb_hiring_join_change"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_oin_ask_company" model="ir.rule">
+        <field name="name">Week-before ask: company</field>
+        <field name="model_id" ref="model_pb_hiring_join_ask"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

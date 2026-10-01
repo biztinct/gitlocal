@@ -167,8 +167,8 @@ class PbHiringA3(models.AbstractModel):
             'offers_out': sum(1 for r in offer_rows
                               if r['state'] in ('sent', 'accepted', 'signed')),
             'filled_month': sum(1 for r in offer_rows
-                                if r['state'] == 'closed' and r['closed_on']
-                                and r['closed_on'][:10] >= str(month_start)),
+                                if r['state'] == 'joined' and r.get('joined_on')
+                                and r['joined_on'][:10] >= str(month_start)),
         }
 
     @api.model
@@ -302,12 +302,13 @@ class PbHiringA3(models.AbstractModel):
                  done=bool(docreq and docreq.state == 'complete')),
             chip('offer', _('Offer'),
                  'done' if offer and offer.state in (
-                     'hr_ok', 'sent', 'accepted', 'signed', 'closed')
+                     'hr_ok', 'sent', 'accepted', 'signed', 'joined')
+                 else 'warn' if offer and offer.state == 'dropped'
                  else 'live' if offer else 'todo',
                  (dict(OFFER_STATES).get(offer.state, '') if offer
                   else _('Not drafted')),
                  done=bool(offer and offer.state in (
-                     'hr_ok', 'sent', 'accepted', 'signed', 'closed'))),
+                     'hr_ok', 'sent', 'accepted', 'signed', 'joined'))),
             chip('candidate', _('Their answer'),
                  'done' if offer and offer.candidate_decision == 'accepted'
                  else 'warn' if offer and offer.candidate_decision == 'declined'
@@ -320,11 +321,17 @@ class PbHiringA3(models.AbstractModel):
                  (str(offer.signed_on) if offer and offer.signed_on
                   else _('Not yet')),
                  done=bool(offer and offer.signed_on)),
+            # RECRUIT P6: day one is the date they actually started, and
+            # until then the date they are expected.
             chip('day_one', _('Day one'),
-                 'done' if offer and offer.state == 'closed' else 'todo',
-                 (str(offer.start_date) if offer and offer.start_date
-                  else _('Not yet')),
-                 done=bool(offer and offer.state == 'closed')),
+                 'done' if offer and offer.state == 'joined'
+                 else 'warn' if offer and offer.state == 'dropped'
+                 else 'live' if offer and offer.state == 'signed' else 'todo',
+                 (str(offer.joined_on or '') if offer and offer.state == 'joined'
+                  else _('Did not join') if offer and offer.state == 'dropped'
+                  else str(offer.expected_join_date or offer.start_date or '')
+                  if offer else _('Not yet')),
+                 done=bool(offer and offer.state == 'joined')),
         ]
         return {
             'ready': True,

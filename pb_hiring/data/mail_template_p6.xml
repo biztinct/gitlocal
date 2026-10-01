@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         RECRUIT P6 — from signed to joined.
+
+         `noupdate="1"` like every template here (a company's rewording
+         survives an upgrade; NEW records are still created on one). Every
+         one is sent with an explicit `email_to` (R6) and reads public
+         fields only (RC49): `pb_join_words`, `pb_link_url`, `pb_due_words`,
+         `pb_answer_words`, `pb_when_words`, `pb_drop_words`. English: these
+         go to the hiring team (P8 adds languages). The new joiner's laptop
+         email is a company email in Candidate emails, in three languages.
+         ================================================================== -->
+
+    <!-- ============ signed: the hiring manager and the talent lead ============ -->
+    <record id="mail_template_offer_signed" model="mail.template">
+        <field name="name">Hiring: an offer is signed</field>
+        <field name="model_id" ref="model_pb_hiring_offer"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">{{ object.candidate_name }} signed — joining {{ object.pb_join_words }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733; font-size:14px; line-height:1.55;">
+                <p>
+                    <strong><t t-out="object.candidate_name or ''"/></strong> has signed the
+                    offer for <t t-out="object.job_title or ''"/> and is expected to join on
+                    <strong><t t-out="object.pb_join_words or ''"/></strong>.
+                </p>
+                <p>
+                    Until they start they are still a candidate: nothing is set up on the
+                    employee side yet. The recruiter is running the "Before they join"
+                    list — a buddy, their laptop and a first chat with the team — and you
+                    may get a short question about the buddy.
+                </p>
+                <p style="color:#64748B;">Nothing is needed from you today. This is the heads-up.</p>
+                <p><a t-att-href="object.pb_board_url" style="color:#4F46E5; font-weight:600;">Open the hiring board</a></p>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the manager: who will look after them ============ -->
+    <record id="mail_template_prejoin_buddy" model="mail.template">
+        <field name="name">Hiring: name a buddy for a new joiner</field>
+        <field name="model_id" ref="model_pb_hiring_prejoin"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">Who will look after {{ object.offer_id.candidate_name }} in their first weeks?</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733; font-size:14px; line-height:1.55;">
+                <p>
+                    <strong><t t-out="object.offer_id.candidate_name or ''"/></strong> joins
+                    your team as <t t-out="object.offer_id.job_title or ''"/> on
+                    <strong><t t-out="object.pb_join_words or ''"/></strong>.
+                </p>
+                <p>
+                    A buddy is the colleague they can ask the small questions — where things
+                    are, who to talk to, how things are really done. Name one person, or a
+                    couple if you like; the first one you choose is their buddy on day one.
+                </p>
+                <p style="margin:22px 0;">
+                    <a t-att-href="object.pb_link_url" style="display:inline-block; padding:12px 22px; border-radius:10px; background:#4F46E5; color:#ffffff; text-decoration:none; font-weight:700;">Name a buddy</a>
+                </p>
+                <p style="color:#64748B;">
+                    It takes a minute and there is no sign-in. Please answer by
+                    <t t-out="object.pb_due_words or ''"/>.
+                </p>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the recruiter: the list ticked itself ============ -->
+    <record id="mail_template_prejoin_answered" model="mail.template">
+        <field name="name">Hiring: an answer arrived for Before they join</field>
+        <field name="model_id" ref="model_pb_hiring_prejoin"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">{{ object.offer_id.candidate_name }}: {{ object.title }} — done</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733; font-size:14px; line-height:1.55;">
+                <p>
+                    <strong><t t-out="object.title or ''"/></strong> is ticked on
+                    <t t-out="object.offer_id.candidate_name or ''"/>'s Before they join list.
+                </p>
+                <p style="white-space:pre-line; padding:10px 14px; border-left:3px solid #E2E8F0; color:#334155;"><t t-out="object.pb_answer_words or ''"/></p>
+                <p style="color:#64748B;">They join on <t t-out="object.pb_join_words or ''"/>.</p>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ a meet-the-team chat (with the calendar file) ============ -->
+    <record id="mail_template_prejoin_chat" model="mail.template">
+        <field name="name">Hiring: a meet-the-team chat before somebody joins</field>
+        <field name="model_id" ref="model_pb_hiring_prejoin"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">Meet the team: {{ object.offer_id.candidate_name }} — {{ object.pb_when_words }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733; font-size:14px; line-height:1.55;">
+                <p>
+                    A first hello before <strong><t t-out="object.offer_id.candidate_name or ''"/></strong>
+                    starts as <t t-out="object.offer_id.job_title or ''"/> on
+                    <t t-out="object.pb_join_words or ''"/>.
+                </p>
+                <table style="border-collapse:collapse; margin:14px 0; font-size:14px;">
+                    <tr><td style="padding:4px 14px 4px 0; color:#64748B;">When</td>
+                        <td style="padding:4px 0; font-weight:600;"><t t-out="object.pb_when_words or ''"/> · <t t-out="object.chat_minutes or 30"/> minutes</td></tr>
+                    <tr><td style="padding:4px 14px 4px 0; color:#64748B;">With</td>
+                        <td style="padding:4px 0;"><t t-out="', '.join(object.chat_people_ids.mapped('name'))"/></td></tr>
+                    <tr t-if="object.videocall_url or object.chat_where"><td style="padding:4px 14px 4px 0; color:#64748B;">Where</td>
+                        <td style="padding:4px 0;"><t t-out="object.videocall_url or object.chat_where or ''"/></td></tr>
+                </table>
+                <p>Nothing to prepare. The calendar file is attached — open it to put the chat in your diary.</p>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the week before: still on? ============ -->
+    <record id="mail_template_join_week" model="mail.template">
+        <field name="name">Hiring: a week before somebody joins</field>
+        <field name="model_id" ref="model_pb_hiring_join_ask"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">{{ object.offer_id.candidate_name }} joins on {{ object.pb_join_words }} — still on?</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733; font-size:14px; line-height:1.55;">
+                <p>
+                    <strong><t t-out="object.offer_id.candidate_name or ''"/></strong> joins as
+                    <t t-out="object.offer_id.job_title or ''"/> on
+                    <strong><t t-out="object.pb_join_words or ''"/></strong>. Is that still right?
+                </p>
+                <p style="margin:22px 0;">
+                    <a t-att-href="object.pb_link_url + '?a=still_on'" style="display:inline-block; margin:0 6px 8px 0; padding:11px 18px; border-radius:10px; background:#15803D; color:#ffffff; text-decoration:none; font-weight:700;">Still on</a>
+                    <a t-att-href="object.pb_link_url + '?a=changed'" style="display:inline-block; margin:0 6px 8px 0; padding:11px 18px; border-radius:10px; background:#EEF2FF; color:#3730A3; text-decoration:none; font-weight:700;">The date changed</a>
+                    <a t-att-href="object.pb_link_url + '?a=dropped'" style="display:inline-block; margin:0 6px 8px 0; padding:11px 18px; border-radius:10px; background:#FFF1F2; color:#BE123C; text-decoration:none; font-weight:700;">They will not join</a>
+                </p>
+                <p style="color:#64748B;">
+                    One answer from any of you is enough; the others will see it. Each button
+                    opens a short page to confirm — nothing changes until you press there.
+                </p>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the joining date moved ============ -->
+    <record id="mail_template_join_date_changed" model="mail.template">
+        <field name="name">Hiring: a joining date changed</field>
+        <field name="model_id" ref="model_pb_hiring_offer"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">{{ object.candidate_name }} now joins on {{ object.pb_join_words }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733; font-size:14px; line-height:1.55;">
+                <p>
+                    <strong><t t-out="object.candidate_name or ''"/></strong>'s joining date has
+                    moved<t t-if="object.pb_old_join_words"> from <t t-out="object.pb_old_join_words"/></t>
+                    to <strong><t t-out="object.pb_join_words or ''"/></strong>.
+                </p>
+                <p t-if="object.join_date_reason" style="padding:10px 14px; border-left:3px solid #E2E8F0; color:#334155;">
+                    <t t-out="object.join_date_reason"/>
+                </p>
+                <p style="color:#64748B;">Plans for their first day move with it.</p>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ did not join ============ -->
+    <record id="mail_template_did_not_join" model="mail.template">
+        <field name="name">Hiring: somebody who signed will not join</field>
+        <field name="model_id" ref="model_pb_hiring_offer"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">{{ object.candidate_name }} will not join</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733; font-size:14px; line-height:1.55;">
+                <p>
+                    <strong><t t-out="object.candidate_name or ''"/></strong> signed the offer
+                    for <t t-out="object.job_title or ''"/> but will not join.
+                </p>
+                <p t-if="object.pb_drop_words" style="padding:10px 14px; border-left:3px solid #E2E8F0; color:#334155;">
+                    <t t-out="object.pb_drop_words"/>
+                </p>
+                <p>
+                    The role stays open and counts this as an offer drop. The recruiter
+                    will look at the other finalists.
+                </p>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

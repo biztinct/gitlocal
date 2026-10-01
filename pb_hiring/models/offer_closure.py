@@ -56,20 +56,41 @@ class PbHiringOfferClosure(models.Model):
     _inherit = 'pb.hiring.offer'
 
     # =====================================================================
-    #  The door
+    #  The door — RECRUIT P6: "Confirm they joined"
     # =====================================================================
-    def action_close(self):
-        """They have joined. Everything downstream, in one press."""
+    def _anchor_date(self):
+        """THE DAY THEY ACTUALLY STARTED, which is what every downstream date
+        hangs off: the contract, the pay package and the joining checklist.
+        Before P6 it was the date the letter promised; now the recruiter says
+        the real one (R8), and until they do the expected date stands in."""
         self.ensure_one()
-        if self.state == 'closed':
+        return (self.joined_on or self.expected_join_date or self.start_date
+                or fields.Date.context_today(self))
+
+    def action_confirm_joined(self, joined_on=None):
+        """They have started. Everything downstream, in one press.
+
+        From a SIGNED offer only (R8): signing keeps the person a candidate,
+        and this is the moment the employee record, the contract, the pay
+        package, the login and the joining checklist are made — anchored on
+        the day they actually started, which may be earlier or later than
+        the expected date. Idempotent: a second press finds everything that
+        already exists and makes none of it again.
+        """
+        self.ensure_one()
+        if self.state == 'joined':
             return True
         if self.state != 'signed':
             raise UserError(_(
-                "An offer is closed once the signed copy is on it. This one "
-                "is “%s” — record the signed letter first, and this button "
-                "does the rest.",
+                "Somebody can be confirmed as joined once their offer is "
+                "signed. This one is “%s” — record the signed copy first.",
                 dict(self._fields['state'].selection).get(self.state,
                                                           self.state)))
+        when = fields.Date.to_date(joined_on) if joined_on else (
+            self.expected_join_date or self.start_date
+            or fields.Date.context_today(self))
+        # Written FIRST, so every leg below reads the real day.
+        self.sudo().write({'joined_on': when})
 
         employee = self._ensure_employee()
         if not employee:
@@ -88,20 +109,46 @@ class PbHiringOfferClosure(models.Model):
             self._ensure_login)
         leg(self.env, 'the joining checklist on offer %s' % self.name,
             self._ensure_case)
-        leg(self.env, 'filing the signed letter on offer %s' % self.name,
+        # RECRUIT P6: what the "Before they join" list collected reaches the
+        # people who prepare day one.
+        leg(self.env, 'the buddy on offer %s' % self.name,
+            self._hand_over_buddy)
+        leg(self.env, 'the laptop note on offer %s' % self.name,
+            self._hand_over_laptop)
+        leg(self.env, 'filing the signed documents on offer %s' % self.name,
             self._file_signed_copy)
 
-        self.sudo().write({'state': 'closed',
+        self.sudo().write({'state': 'joined',
+                           'join_status': 'confirmed',
                            'closed_on': fields.Datetime.now()})
+        leg(self.env, 'the hire date on offer %s' % self.name,
+            self._stamp_hire_date)
         self.sudo().message_post(body=_(
-            "%(who)s joins on %(when)s. Their record, their contract, their "
+            "%(who)s started on %(when)s. Their record, their contract, their "
             "pay package and their joining checklist are all ready.",
-            who=self.candidate_name or '', when=self.start_date or ''))
+            who=self.candidate_name or '', when=when))
 
         leg(self.env, 'filling the role behind offer %s' % self.name,
             lambda: self.requisition_id._on_filled())
         leg(self.env, 'telling everybody about offer %s' % self.name,
             self._tell_them_they_joined)
+        return True
+
+    def action_close(self):
+        """The wave-2 name of the door. Kept so an old caller reaches the new
+        rule (from SIGNED, anchored on the expected date) rather than a
+        missing method."""
+        return self.action_confirm_joined()
+
+    def _stamp_hire_date(self):
+        """`date_closed` is the standard "Hire Date"; the stage write stamps
+        it with NOW, and a person confirmed on Wednesday who started on
+        Monday was hired on Monday."""
+        self.ensure_one()
+        app = self.applicant_id.sudo()
+        if app and self.joined_on:
+            app.with_context(pb_no_stage_log=True).write({
+                'date_closed': fields.Datetime.to_datetime(self.joined_on)})
         return True
 
     # =====================================================================
@@ -244,13 +291,13 @@ class PbHiringOfferClosure(models.Model):
             return existing
         basic = self._basic_line()
         company = self.company_id
+        anchor = self._anchor_date()
         vals = {
             'employee_id': employee.id,
             'name': _('%(who)s — from %(when)s', who=employee.name or '',
-                      when=self.start_date or ''),
+                      when=anchor or ''),
             'wage': float(basic.amount or 0.0),
-            'date_start': str(self.start_date or
-                              fields.Date.context_today(self)),
+            'date_start': str(anchor),
             'company_id': company.id,
         }
         calendar = company.sudo().resource_calendar_id
@@ -309,8 +356,7 @@ class PbHiringOfferClosure(models.Model):
             return existing
         package = Comp.create({
             'employee_id': employee.id,
-            'effective_date': str(self.start_date
-                                  or fields.Date.context_today(self)),
+            'effective_date': str(self._anchor_date()),
             'currency_id': self.currency_id.id,
             'company_id': self.company_id.id,
             'note': _("Built from the offer %(ref)s, signed on %(when)s.",
@@ -378,8 +424,9 @@ class PbHiringOfferClosure(models.Model):
         if not employee:
             return False
         pipeline = self.env['pb.zoho.pipeline'].sudo()
+        anchor = self._anchor_date()
         case, opened = pipeline._open_case(
-            employee.sudo(), 'onboarding', self.start_date, self.company_id)
+            employee.sudo(), 'onboarding', anchor, self.company_id)
         if case:
             self.sudo().write({'case_id': case.id})
         if opened:
@@ -387,7 +434,7 @@ class PbHiringOfferClosure(models.Model):
             # short and honest: this person did not come from a spreadsheet.
             pipeline._after_onboard(case, {
                 'name': employee.name or '',
-                'date_of_joining': str(self.start_date or ''),
+                'date_of_joining': str(anchor or ''),
                 'source': 'pb_hiring',
                 '_raw': {},
             })
@@ -397,45 +444,68 @@ class PbHiringOfferClosure(models.Model):
     #  7. The signed letter, in the vault
     # =====================================================================
     def _file_signed_copy(self):
-        """The signed offer, filed on the person it is about.
+        """EVERY signed document, filed on the person it is about.
+
+        RECRUIT P6 (G-42): an offer carries several signed documents, each
+        with a kind; the kind decides the vault category (an employment
+        agreement or a probation letter is a labour contract; the offer
+        letter and anything else is "other"). Idempotent per document (its
+        `vault_doc_id`), and for the wave-2 single copy by name.
 
         As the SYSTEM: filing is an act the company performs on its own
-        behalf, and the recruiter closing an offer is not necessarily somebody
-        the vault grants create to — its `create` strips the verification
-        fields and checks attachment ownership for anybody who is not HR
-        (`employee_document.py:100-114`). Nothing here writes a verification
-        field, which is the vault's one guarded surface.
+        behalf, and the recruiter confirming a joiner is not necessarily
+        somebody the vault grants create to — its `create` strips the
+        verification fields and checks attachment ownership for anybody who
+        is not HR (`employee_document.py:100-114`). Nothing here writes a
+        verification field, which is the vault's one guarded surface.
         """
         self.ensure_one()
-        if not self.signed_attachment_id or not self.employee_id:
+        if not self.employee_id:
             return False
         Doc = self.env['pb.employee.document'].sudo()
-        existing = Doc.search([('employee_id', '=', self.employee_id.id),
-                               ('name', 'like', self.name or '~none~')],
-                              limit=1)
-        if existing:
-            return existing
-        category = self.env.ref('pb_employee_vault.cat_other',
-                                raise_if_not_found=False)
-        if not category:
+        other = self.env.ref('pb_employee_vault.cat_other',
+                             raise_if_not_found=False)
+        labour = self.env.ref('pb_employee_vault.cat_labor_contract',
+                              raise_if_not_found=False) or other
+        if not other:
             _logger.info('pb_hiring: no document category, so the signed '
-                         'offer on %s was not filed', self.name)
+                         'documents on %s were not filed', self.name)
             return False
-        copy = self.signed_attachment_id.sudo().copy(
-            {'res_model': 'pb.employee.document', 'res_id': 0,
-             'name': slug_filename(
-                 _('Signed offer %(ref)s', ref=self.name or ''),
-                 fallback='signed-offer')})
-        doc = Doc.create({
-            'employee_id': self.employee_id.id,
-            'category_id': category.id,
-            'name': _('Signed offer %(ref)s', ref=self.name or ''),
-            'attachment_id': copy.id,
-            'issue_date': self.signed_on or fields.Date.context_today(self),
-            'company_id': self.company_id.id,
-        })
-        copy.write({'res_id': doc.id})
-        return doc
+        filed = Doc.browse()
+        rows = self.sudo().document_ids.sorted(lambda d: (d.sequence, d.id))
+        for row in rows:
+            if row.vault_doc_id:
+                filed |= row.vault_doc_id
+                continue
+            if not row.attachment_id:
+                continue
+            # The wave-2 copy was filed under this name by the old closure.
+            name = row._vault_name()
+            existing = Doc.search([('employee_id', '=', self.employee_id.id),
+                                   ('name', '=', name)], limit=1)
+            if existing:
+                row.write({'vault_doc_id': existing.id})
+                filed |= existing
+                continue
+            category = labour if row.kind in (
+                'employment_agreement', 'probation_letter') else other
+            copy = row.attachment_id.sudo().copy(
+                {'res_model': 'pb.employee.document', 'res_id': 0,
+                 'name': slug_filename(row.attachment_id.name or name,
+                                       fallback='signed-document')})
+            doc = Doc.create({
+                'employee_id': self.employee_id.id,
+                'category_id': category.id,
+                'name': name,
+                'attachment_id': copy.id,
+                'issue_date': row.signed_on or self.signed_on
+                or fields.Date.context_today(self),
+                'company_id': self.company_id.id,
+            })
+            copy.write({'res_id': doc.id})
+            row.write({'vault_doc_id': doc.id})
+            filed |= doc
+        return filed
 
     # =====================================================================
     #  9. Who is told
@@ -478,8 +548,8 @@ class PbHiringOfferClosure(models.Model):
         self.ensure_one()
         if not self.employee_id:
             raise UserError(_(
-                "There is no employee record yet. One is made the moment the "
-                "offer is closed."))
+                "There is no employee record yet. One is made the moment you "
+                "confirm they joined."))
         return {'type': 'ir.actions.act_window', 'res_model': 'hr.employee',
                 'res_id': self.employee_id.id, 'view_mode': 'form',
                 'views': [[False, 'form']],

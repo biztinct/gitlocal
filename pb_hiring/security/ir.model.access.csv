@@ -132,3 +132,23 @@ access_pb_hiring_scorecard_part_user,Scorecard question recruiter,model_pb_hirin
 access_pb_hiring_scorecard_part_manager,Scorecard question talent lead,model_pb_hiring_scorecard_part,pb_hiring.group_hiring_manager,1,1,1,1
 access_pb_hiring_scorecard_part_admin,Scorecard question head of hiring,model_pb_hiring_scorecard_part,pb_hiring.group_hiring_admin,1,1,1,1
 access_pb_hiring_scorecard_part_system,Scorecard question system,model_pb_hiring_scorecard_part,base.group_system,1,1,1,1
+access_pb_hiring_offer_document_user,Signed document recruiter,model_pb_hiring_offer_document,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_offer_document_manager,Signed document manager,model_pb_hiring_offer_document,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_offer_document_admin,Signed document head of hiring,model_pb_hiring_offer_document,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_offer_document_system,Signed document system,model_pb_hiring_offer_document,base.group_system,1,1,1,1
+access_pb_hiring_prejoin_template_user,Before they join list recruiter,model_pb_hiring_prejoin_template,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_prejoin_template_manager,Before they join list manager,model_pb_hiring_prejoin_template,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_prejoin_template_admin,Before they join list head of hiring,model_pb_hiring_prejoin_template,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_prejoin_template_system,Before they join list system,model_pb_hiring_prejoin_template,base.group_system,1,1,1,1
+access_pb_hiring_prejoin_user,Before they join item recruiter,model_pb_hiring_prejoin,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_prejoin_manager,Before they join item manager,model_pb_hiring_prejoin,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_prejoin_admin,Before they join item head of hiring,model_pb_hiring_prejoin,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_prejoin_system,Before they join item system,model_pb_hiring_prejoin,base.group_system,1,1,1,1
+access_pb_hiring_join_change_user,Joining date change recruiter,model_pb_hiring_join_change,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_join_change_manager,Joining date change manager,model_pb_hiring_join_change,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_join_change_admin,Joining date change head of hiring,model_pb_hiring_join_change,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_join_change_system,Joining date change system,model_pb_hiring_join_change,base.group_system,1,1,1,1
+access_pb_hiring_join_ask_user,Week-before ask recruiter,model_pb_hiring_join_ask,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_join_ask_manager,Week-before ask manager,model_pb_hiring_join_ask,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_join_ask_admin,Week-before ask head of hiring,model_pb_hiring_join_ask,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_join_ask_system,Week-before ask system,model_pb_hiring_join_ask,base.group_system,1,1,1,1

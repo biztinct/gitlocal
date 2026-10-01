@@ -565,12 +565,9 @@ class PbHiringInterview(models.Model):
         Without a connection nothing here differs from before.
         """
         self.ensure_one()
-        quiet = dict(dont_notify=True, no_mail_to_attendees=True,
-                     mail_create_nolog=True, mail_notrack=True,
-                     send_updates=False, pb_hiring_quiet_google=True)
         if self.event_id:
             # A moved hour on the SAME Google entry keeps its Meet link.
-            event = self.event_id.sudo().with_context(**quiet)
+            event = self.event_id.sudo()
             vals = {}
             if event.start != self.start or event.stop != self.stop:
                 vals.update({'start': self.start, 'stop': self.stop,
@@ -578,7 +575,7 @@ class PbHiringInterview(models.Model):
             if event.name != self._event_title():
                 vals['name'] = self._event_title()
             if vals:
-                event.write(vals)
+                event._pb_quiet_write(vals)
             return self.event_id
         google = self._pb_google_connected()
         partners = self.env['res.partner'].sudo().browse()
@@ -604,11 +601,8 @@ class PbHiringInterview(models.Model):
         }
         if self.videocall_url:
             vals['videocall_location'] = self.videocall_url
-        event = self.env['calendar.event'].sudo().with_context(
-            dont_notify=True, no_mail_to_attendees=True,
-            mail_create_nolog=True, mail_notrack=True,
-            send_updates=False, pb_hiring_quiet_google=True,
-        ).create(vals)
+        # RECRUIT P6: through the shared helper the chats use too.
+        event = self.env['calendar.event']._pb_quiet_create(vals)
         self.sudo().write({'event_id': event.id})
         return event
 

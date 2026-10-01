@@ -122,23 +122,37 @@ WHAT THIS MODULE IS
   * **Their answer, in their own words.** The candidate reads the offer on a
     page of their own, accepts or turns it down, and can say why. Signing is
     recorded by a person with the signed copy attached — nothing here pretends
-    to be a signature it is not.
-  * **Day one, in one press.** Closing an offer makes the employee record, the
-    contract that gives them a joining date, the pay package for the
-    compensation team, their login, and the SAME joining checklist somebody
-    arriving through a connected system gets. The role closes itself when the
-    last person has joined, the advert comes off the careers page and the
-    people who need to know are told.
+    to be a signature it is not — and a person can carry several signed
+    documents, with the ones their country usually signs as a checklist.
+  * **Signed is not joined.** A signed offer keeps the person a candidate,
+    in Post-offer, with a countdown to their joining date and a "Before they
+    join" list the recruiter runs: the manager names a buddy from one email,
+    the new joiner tells us how they want their laptop (in their own
+    language), and a first chat with the team goes in everybody's diary. A
+    week before, the recruiter, the manager and HR get one email — still on,
+    the date changed, or they will not join — and every answer does what it
+    says.
+  * **Day one, in one press.** "Confirm they joined" makes the employee
+    record, the contract dated the day they actually started, the pay
+    package for the compensation team, their login, and the SAME joining
+    checklist somebody arriving through a connected system gets — with the
+    buddy already chosen and the laptop note on the laptop step. "Did not
+    join" records an offer drop with its reason. The role closes itself when
+    the last person has joined, the advert comes off the careers page and
+    the people who need to know are told.
   * **Cover for a recruiter.** A fortnight away is a request their own manager
     agrees, and for that fortnight one named colleague can work on their roles
     and on nobody else's. Nothing is granted and nothing has to be taken back.
   * **The numbers.** How long a role takes to fill, how long to a first offer,
     where candidates get stuck, how many offers are accepted, which channels
     actually produce joiners, how often interviews move and whose side moves
-    them, and whether an agency is faster than doing it yourself — with the
-    whole thing downloadable as a spreadsheet.
+    them, and whether an agency is faster than doing it yourself — by
+    department, country and recruiter; the offered, accepted, signed and
+    joined funnel with every drop and its reason; who has been sitting in a
+    column too long; and a leadership view of fill rate, open headcount and
+    time to fill — each section downloadable as a spreadsheet, or all of it.
 """,
-    'version': '19.0.2.4.0',
+    'version': '19.0.2.5.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -177,6 +191,7 @@ WHAT THIS MODULE IS
         'security/pb_hiring_security.xml',
         'security/ir.model.access.csv',
         'security/recruit_p4_security.xml',
+        'security/recruit_p6_security.xml',
         'data/approval_process.xml',
         'data/ir_sequence.xml',
         'data/hiring_params.xml',
@@ -189,6 +204,8 @@ WHAT THIS MODULE IS
         'data/mail_template_offer.xml',
         'data/mail_template_requests.xml',
         'data/mail_template_p5.xml',
+        'data/mail_template_p6.xml',
+        'data/recruit_p6.xml',
         'data/ir_cron.xml',
         'report/hiring_offer_report.xml',
         'views/hiring_views.xml',
@@ -205,6 +222,7 @@ WHAT THIS MODULE IS
         'data/recruit_p1.xml',
         'data/recruit_p2.xml',
         'views/recruit_p5_views.xml',
+        'views/joining_pages.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -216,12 +234,14 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/scss/hiring_p3.scss',
             'pb_hiring/static/src/scss/hiring_p4.scss',
             'pb_hiring/static/src/scss/hiring_p5.scss',
+            'pb_hiring/static/src/scss/hiring_p6.scss',
             'pb_hiring/static/src/js/hiring_board.js',
             'pb_hiring/static/src/js/hiring_setup.js',
             'pb_hiring/static/src/js/hiring_forms.js',
             'pb_hiring/static/src/js/hiring_requests_p3.js',
             'pb_hiring/static/src/js/hiring_privacy_p4.js',
             'pb_hiring/static/src/js/hiring_p5.js',
+            'pb_hiring/static/src/js/hiring_p6.js',
             'pb_hiring/static/src/js/hiring_numbers.js',
             'pb_hiring/static/src/js/hiring_palette.js',
             'pb_hiring/static/src/xml/hiring_board.xml',
@@ -231,6 +251,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/xml/hiring_requests_p3.xml',
             'pb_hiring/static/src/xml/hiring_privacy_p4.xml',
             'pb_hiring/static/src/xml/hiring_p5.xml',
+            'pb_hiring/static/src/xml/hiring_p6.xml',
             'pb_hiring/static/src/xml/hiring_numbers.xml',
         ],
         'web.assets_frontend': [
@@ -240,6 +261,8 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/js/request_page.js',
             'pb_hiring/static/src/scss/interviewer_page.scss',
             'pb_hiring/static/src/js/interviewer_page.js',
+            'pb_hiring/static/src/scss/joining_pages.scss',
+            'pb_hiring/static/src/js/joining_pages.js',
         ],
     },
     'post_init_hook': 'post_init_hook',

@@ -41,8 +41,40 @@ def meet_url(google_values):
     return google_values.get('hangoutLink') or ''
 
 
+#: The context every diary entry this module makes is created and moved
+#: under: no stock invitation, no alarm mail, no chatter noise, and Google
+#: (when the organiser is connected) told to email nobody (RC63).
+QUIET = dict(dont_notify=True, no_mail_to_attendees=True,
+             mail_create_nolog=True, mail_notrack=True,
+             send_updates=False, pb_hiring_quiet_google=True)
+
+
 class CalendarEventHiring(models.Model):
     _inherit = 'calendar.event'
+
+    # RECRUIT P6: a meet-the-team chat is a diary entry too.
+    pb_prejoin_id = fields.Many2one('pb.hiring.prejoin', string='Before they join',
+                                    index='btree_not_null', ondelete='set null',
+                                    copy=False)
+
+    @api.model
+    def _pb_quiet_create(self, vals):
+        """THE ONE HELPER every hiring diary entry is made through (RECRUIT
+        P6 extracted it from the interview path for the meet-the-team chats).
+
+        One `calendar.event`, and NOT ONE BRANDED INVITATION: our own mails
+        with our own `.ics` say it. When the organiser (`user_id`) has
+        connected Google, the entry goes to their Google calendar after the
+        transaction commits; a video entry created WITHOUT a location is
+        what makes Google attach a Meet, and the link comes back through
+        `_get_post_sync_values` below.
+        """
+        return self.sudo().with_context(**QUIET).create(vals)
+
+    def _pb_quiet_write(self, vals):
+        """Move or call off an entry without anybody being emailed by the
+        calendar or by Google (RC63: `_google_patch` reads `_is_event_over`)."""
+        return self.sudo().with_context(**QUIET).write(vals)
 
     def _pb_interview(self):
         self.ensure_one()
@@ -61,6 +93,8 @@ class CalendarEventHiring(models.Model):
         """Only a VIDEO interview asks Google for a Meet; an in-person one
         on a connected calendar is a plain entry."""
         self.ensure_one()
+        if self.pb_prejoin_id:
+            return self.pb_prejoin_id.chat_mode == 'video'
         interview = self._pb_interview() if self.applicant_id else False
         if interview:
             return interview.mode == 'video'
@@ -69,6 +103,12 @@ class CalendarEventHiring(models.Model):
     def _get_post_sync_values(self, request_values, google_values):
         vals = super()._get_post_sync_values(request_values, google_values)
         url = meet_url(google_values)
+        if url and self.pb_prejoin_id:
+            vals['videocall_location'] = url
+            item = self.pb_prejoin_id
+            leg(self.env, 'the Meet link on chat %s' % item.id,
+                lambda: item._pb_meet_arrived(url))
+            return vals
         if url and self.applicant_id:
             interview = self._pb_interview()
             if interview:

@@ -70,6 +70,9 @@ P_CHASE_EVERY_HOURS = 'pb_hiring.chase_every_hours'
 P_CHASE_STOP_DAYS = 'pb_hiring.chase_stop_days'
 
 DEFAULTS = {
+    # RECRUIT P6: the ageing report's "stalled" line and the week-before mail.
+    'pb_hiring.stalled_days': '14',
+    'pb_hiring.week_before_days': '7',
     P_PHONE_AUTO_MAIL: '1',
     P_PHONE_MINUTES: '30',
     P_LEAD_LATE_DAYS: '2',
@@ -366,7 +369,14 @@ DOCREQ_STATES = [
 ]
 
 #: draft → submitted → manager_ok → hr_ok → sent → accepted|declined →
-#: signed → closed, plus the route's own dead end.
+#: signed → joined|dropped, plus the route's own dead end.
+#:
+#: RECRUIT P6 (ruling R8): SIGNED IS NOT JOINED. A signed offer keeps the
+#: person a candidate in Post-offer with an expected joining date; `joined`
+#: is set by "Confirm they joined" (the old `closed`, renamed by the
+#: 19.0.2.5.0 migration — there is deliberately no `closed` value any more,
+#: so a forgotten comparison fails loudly instead of matching nothing), and
+#: `dropped` is "Did not join", an offer drop with its reason.
 OFFER_STATES = [
     ('draft', 'Being prepared'),
     ('submitted', 'Sent for sign-off'),
@@ -376,9 +386,79 @@ OFFER_STATES = [
     ('accepted', 'Accepted'),
     ('declined', 'Turned down'),
     ('signed', 'Signed'),
-    ('closed', 'They have joined'),
+    ('joined', 'They have joined'),
+    ('dropped', 'Did not join'),
     ('refused', 'Not approved'),
 ]
+
+#: The states in which an offer is finished, one way or the other.
+OFFER_DONE = ('declined', 'joined', 'dropped', 'refused')
+
+# ==========================================================================
+#  RECRUIT P6 — from signed to joined
+# ==========================================================================
+#: Where the joining date stands. `changed` is still "pending", with a
+#: change recorded; it reads differently on the card.
+JOIN_STATUS = [
+    ('pending', 'Joining date set'),
+    ('changed', 'Joining date changed'),
+    ('confirmed', 'They have joined'),
+    ('dropped', 'Did not join'),
+]
+
+#: Why somebody who signed did not start. A short fixed list so the numbers
+#: can count it; the note carries the rest.
+DROP_REASONS = [
+    ('other_offer', 'Took another offer'),
+    ('counter_offer', 'Their employer made a counter-offer'),
+    ('notice', 'Could not leave their job in time'),
+    ('personal', 'Personal or family reasons'),
+    ('no_show', 'Did not turn up and stopped answering'),
+    ('other', 'Something else'),
+]
+
+#: The four kinds of thing on the "Before they join" list.
+PREJOIN_KINDS = [
+    ('buddy', 'Buddy'),
+    ('laptop', 'Laptop'),
+    ('chat', 'Meet the team'),
+    ('todo', 'To-do'),
+]
+PREJOIN_OWNERS = [
+    ('recruiter', 'Recruiter'),
+    ('manager', 'Hiring manager'),
+    ('candidate', 'The new joiner'),
+    ('hr', 'HR'),
+]
+PREJOIN_STATES = [
+    ('open', 'To do'),
+    ('done', 'Done'),
+    ('skipped', 'Not needed'),
+    ('cancelled', 'Called off'),
+]
+
+#: A signed document's kind. The country decides which are expected
+#: (`COUNTRY_DOC_SETS`); none of them is ever a gate.
+OFFER_DOC_KINDS = [
+    ('offer_letter', 'Signed offer letter'),
+    ('employment_agreement', 'Employment agreement'),
+    ('probation_letter', 'Probation letter'),
+    ('other', 'Another signed document'),
+]
+
+#: What a market usually wants signed (G-42, from the call). A hint on the
+#: drawer, never a gate. `when` is the plain-English moment.
+COUNTRY_DOC_SETS = {
+    'VN': [('offer_letter', 'now'), ('probation_letter', 'after about two months')],
+    'IN': [('offer_letter', 'now'), ('employment_agreement', 'now')],
+    'ID': [('offer_letter', 'now'), ('employment_agreement', 'now, in both languages')],
+}
+DEFAULT_DOC_SET = [('offer_letter', 'now')]
+
+#: Days without a move after which a candidate counts as stalled.
+P_STALLED_DAYS = 'pb_hiring.stalled_days'
+#: How many days before the joining date the "still on?" email goes.
+P_WEEK_BEFORE_DAYS = 'pb_hiring.week_before_days'
 
 #: The statuses in which an offer is still a live piece of work.
 OFFER_LIVE = ('draft', 'submitted', 'manager_ok', 'hr_ok', 'sent', 'accepted',

@@ -446,3 +446,207 @@ msgstr "“%(name)s” bukan berkas yang dapat kami terima di sini. Gunakan %(ki
 #, python-format
 msgid "“%(name)s” is not really a %(kind)s file. Choose the original file."
 msgstr "“%(name)s” sebenarnya bukan berkas %(kind)s. Pilih berkas aslinya."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Before you join"
+msgstr "Sebelum Anda bergabung"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Your laptop"
+msgstr "Laptop Anda"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "We are getting your first day ready. Tell us how you like to work and we will set your laptop up that way."
+msgstr "Kami sedang menyiapkan hari pertama Anda. Beri tahu kami cara Anda suka bekerja dan kami akan menyiapkan laptop Anda seperti itu."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "You join on {date}"
+msgstr "Anda bergabung pada {date}"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Which kind of laptop?"
+msgstr "Laptop jenis apa?"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Mac"
+msgstr "Mac"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Windows"
+msgstr "Windows"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "No preference"
+msgstr "Tidak ada preferensi"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Keyboard layout"
+msgstr "Tata letak keyboard"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "English (US)"
+msgstr "Bahasa Inggris (AS)"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "English (UK)"
+msgstr "Bahasa Inggris (Inggris)"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Vietnamese"
+msgstr "Bahasa Vietnam"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Indonesian"
+msgstr "Bahasa Indonesia"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Something else"
+msgstr "Lainnya"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Screen size"
+msgstr "Ukuran layar"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "13 to 14 inch, easy to carry"
+msgstr "13 sampai 14 inci, mudah dibawa"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "15 to 16 inch, more room"
+msgstr "15 sampai 16 inci, lebih lega"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Anything else you would like?"
+msgstr "Ada lagi yang Anda inginkan?"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "A mouse"
+msgstr "Mouse"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "A headset"
+msgstr "Headset"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "A second screen"
+msgstr "Layar kedua"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "A laptop stand"
+msgstr "Dudukan laptop"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Anything we should know?"
+msgstr "Ada yang perlu kami ketahui?"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "For example: I am left-handed, or I use a screen reader."
+msgstr "Misalnya: saya kidal, atau saya memakai pembaca layar."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Send my answers"
+msgstr "Kirim jawaban saya"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Only the people preparing your first day see this."
+msgstr "Hanya orang yang menyiapkan hari pertama Anda yang melihat ini."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Choose Mac, Windows or no preference."
+msgstr "Pilih Mac, Windows, atau tidak ada preferensi."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Thank you"
+msgstr "Terima kasih"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Your answers are with the team getting your first day ready. See you soon."
+msgstr "Jawaban Anda sudah diterima tim yang menyiapkan hari pertama Anda. Sampai jumpa."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Already answered"
+msgstr "Sudah dijawab"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "You have already told us. If something has changed, write to {who}."
+msgstr "Anda sudah memberi tahu kami. Jika ada yang berubah, tulis ke {who}."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "This link has closed"
+msgstr "Tautan ini sudah ditutup"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "There is nothing to answer here any more. If you think that is wrong, reply to the email that brought you here."
+msgstr "Tidak ada lagi yang perlu dijawab di sini. Jika menurut Anda ini keliru, balas email yang membawa Anda ke sini."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "That did not save. Try once more; if it happens again, reply to the email that brought you here."
+msgstr "Belum tersimpan. Coba sekali lagi; jika terjadi lagi, balas email yang membawa Anda ke sini."

@@ -268,7 +268,7 @@ class PbHiringAnalytics(models.AbstractModel):
         sent = offers.filtered(lambda o: o.sent_on)
         accepted = sent.filtered(
             lambda o: o.candidate_decision == 'accepted'
-            or o.state in ('accepted', 'signed', 'closed'))
+            or o.state in ('accepted', 'signed', 'joined', 'dropped'))
         declined = sent.filtered(lambda o: o.candidate_decision == 'declined')
         answered = len(accepted) + len(declined)
         return {
@@ -336,7 +336,7 @@ class PbHiringAnalytics(models.AbstractModel):
                                       limit=SCAN_LIMIT)
         hired = {o.applicant_id.id for o in self.env['pb.hiring.offer'].sudo()
                  .search([('requisition_id', 'in', requests.ids),
-                          ('state', '=', 'closed')])}
+                          ('state', '=', 'joined')])}
         buckets = {}
         for app in applicants:
             key = app.source_id.id or 0

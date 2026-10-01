@@ -2736,3 +2736,207 @@ msgstr "Đề xuất cho vị trí này chưa được đồng ý. Hãy nhờ %s
 #: code:addons/pb_hiring/models/facade_p3.py:0
 msgid "Open for candidates. Publish it, or add people yourself."
 msgstr "Đã mở cho ứng viên. Hãy đăng tuyển hoặc tự thêm người."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Before you join"
+msgstr "Trước ngày bạn bắt đầu"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Your laptop"
+msgstr "Máy tính xách tay của bạn"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "We are getting your first day ready. Tell us how you like to work and we will set your laptop up that way."
+msgstr "Chúng tôi đang chuẩn bị cho ngày đầu tiên của bạn. Hãy cho chúng tôi biết bạn thích làm việc thế nào và chúng tôi sẽ cài đặt máy tính theo đúng ý bạn."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "You join on {date}"
+msgstr "Bạn bắt đầu vào {date}"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Which kind of laptop?"
+msgstr "Bạn muốn loại máy tính nào?"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Mac"
+msgstr "Mac"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Windows"
+msgstr "Windows"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "No preference"
+msgstr "Không có yêu cầu riêng"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Keyboard layout"
+msgstr "Kiểu bàn phím"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "English (US)"
+msgstr "Tiếng Anh (Mỹ)"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "English (UK)"
+msgstr "Tiếng Anh (Anh)"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Vietnamese"
+msgstr "Tiếng Việt"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Indonesian"
+msgstr "Tiếng Indonesia"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Something else"
+msgstr "Loại khác"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Screen size"
+msgstr "Kích thước màn hình"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "13 to 14 inch, easy to carry"
+msgstr "13 đến 14 inch, dễ mang theo"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "15 to 16 inch, more room"
+msgstr "15 đến 16 inch, rộng rãi hơn"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Anything else you would like?"
+msgstr "Bạn có cần thêm gì không?"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "A mouse"
+msgstr "Chuột"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "A headset"
+msgstr "Tai nghe"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "A second screen"
+msgstr "Màn hình thứ hai"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "A laptop stand"
+msgstr "Giá đỡ máy tính"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Anything we should know?"
+msgstr "Có điều gì chúng tôi nên biết không?"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "For example: I am left-handed, or I use a screen reader."
+msgstr "Ví dụ: tôi thuận tay trái, hoặc tôi dùng phần mềm đọc màn hình."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Send my answers"
+msgstr "Gửi câu trả lời"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Only the people preparing your first day see this."
+msgstr "Chỉ những người chuẩn bị cho ngày đầu tiên của bạn mới xem được thông tin này."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Choose Mac, Windows or no preference."
+msgstr "Hãy chọn Mac, Windows hoặc không có yêu cầu riêng."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Thank you"
+msgstr "Cảm ơn bạn"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Your answers are with the team getting your first day ready. See you soon."
+msgstr "Câu trả lời của bạn đã đến đội ngũ đang chuẩn bị ngày đầu tiên cho bạn. Hẹn sớm gặp bạn."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "Already answered"
+msgstr "Đã trả lời"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "You have already told us. If something has changed, write to {who}."
+msgstr "Bạn đã cho chúng tôi biết rồi. Nếu có gì thay đổi, hãy viết cho {who}."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "This link has closed"
+msgstr "Đường dẫn này đã đóng"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "There is nothing to answer here any more. If you think that is wrong, reply to the email that brought you here."
+msgstr "Không còn gì để trả lời ở đây nữa. Nếu bạn nghĩ có nhầm lẫn, hãy trả lời email đã dẫn bạn đến đây."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/controllers/joining_pages.py:0
+msgid "That did not save. Try once more; if it happens again, reply to the email that brought you here."
+msgstr "Chưa lưu được. Hãy thử lại; nếu vẫn lỗi, hãy trả lời email đã dẫn bạn đến đây."

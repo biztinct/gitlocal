@@ -175,3 +175,45 @@ PHONE_I18N = {
         },
     },
 }
+
+
+# ==========================================================================
+#  RECRUIT P6 — the new joiner's laptop email (G-56), the P5 "Let's chat"
+#  pattern: a company email in Candidate emails, one text per language,
+#  seeded only where the company still carries the product's English.
+# ==========================================================================
+LAPTOP_EMAIL = {
+    'name': 'Before you join: your laptop',
+    'key': 'laptop',
+    'subject': 'Your laptop for {{role}} at {{brand}}',
+    'body': ("Hi {{first_name}},\n\nWe are getting ready for your first day on "
+             "{{join_date}}. So your laptop is set up the way you like it, tell us "
+             "what you prefer - it takes about a minute: {{laptop_link}}\n\n"
+             "Nothing here is a test, and \"no preference\" is a perfectly good "
+             "answer.\n\nSee you soon,\n{{sender_name}}"),
+}
+
+LAPTOP_I18N = {
+    'subject': {
+        'Your laptop for {{role}} at {{brand}}': {
+            'vi_VN': 'Máy tính xách tay của bạn cho vị trí {{role}} tại {{brand}}',
+            'id_ID': 'Laptop Anda untuk posisi {{role}} di {{brand}}',
+        },
+    },
+    'body': {
+        LAPTOP_EMAIL['body']: {
+            'vi_VN': ("Chào {{first_name}},\n\nChúng tôi đang chuẩn bị cho ngày làm việc "
+                      "đầu tiên của bạn vào {{join_date}}. Để máy tính của bạn được cài đặt "
+                      "theo đúng ý bạn, hãy cho chúng tôi biết lựa chọn của bạn - chỉ mất "
+                      "khoảng một phút: {{laptop_link}}\n\nĐây không phải là bài kiểm tra, "
+                      "và \"không có yêu cầu riêng\" cũng là một câu trả lời hoàn toàn "
+                      "hợp lệ.\n\nHẹn sớm gặp bạn,\n{{sender_name}}"),
+            'id_ID': ("Halo {{first_name}},\n\nKami sedang bersiap untuk hari pertama Anda "
+                      "pada {{join_date}}. Agar laptop Anda disiapkan sesuai keinginan, "
+                      "beri tahu kami pilihan Anda - hanya sekitar satu menit: "
+                      "{{laptop_link}}\n\nIni bukan ujian, dan \"tidak ada preferensi\" "
+                      "adalah jawaban yang sepenuhnya baik.\n\nSampai jumpa,\n"
+                      "{{sender_name}}"),
+        },
+    },
+}
