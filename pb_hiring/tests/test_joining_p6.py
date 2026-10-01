@@ -297,7 +297,8 @@ class TestRecruitJoining(JoiningCase):
         self.assertTrue(asks)
         self.assertIn('recruiter', asks.mapped('role'))
         self.assertIn('manager', asks.mapped('role'))
-        week = self._mails(before).filtered(lambda m: 'still on?' in (m.subject or ''))
+        week = self._mails(before).filtered(
+            lambda m: 'still on?' in (m.subject or '') and offer.candidate_name in (m.subject or ''))
         self.assertEqual(len(week), len(asks))
         Auto._week_before_join()
         self.assertEqual(offer.join_ask_ids, asks, 'once')
