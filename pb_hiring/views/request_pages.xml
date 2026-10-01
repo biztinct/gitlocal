@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       RECRUIT P3 — the manager's one-page hiring request (`/hiring/r/…`)
+       and the advert shared for comment (`/hiring/j/…`).
+
+       THE HERO MOMENT OF THE PHASE: a manager who has never seen the
+       product opens a link, fills one page that saves as they type, reads
+       in one gentle sentence what happens to an over-budget figure, and
+       presses Send in. No sign-in, no steps, no lost work.
+
+       Works WITHOUT JavaScript (the form posts every field to /send); the
+       page script (`request_page.js`) adds the autosave, the progress, the
+       live budget sentence and the ticks. English (the manager's side is
+       English, R11). The company's own name heads the page (white-label).
+
+       QWeb rules kept: `t-attf-class`, never a dict `t-att-class` (R42); no
+       `t-key` (R5); no render key called `request` (R4); icons inlined
+       (the backend ic() registry is a JS module) and passed with
+       `t-value="'name'"`, never a t-set body (W87).
+       ================================================================== -->
+  <template id="rq_icon" name="Request page icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbrq-ic" aria-hidden="true">
+      <t t-if="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'checkCircle'"><path d="M21.8 10A10 10 0 1 1 17 3.34"/><path d="m9 11 3 3L22 4"/></t>
+      <t t-elif="icon == 'send'"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></t>
+      <t t-elif="icon == 'lock'"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></t>
+      <t t-elif="icon == 'wallet'"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></t>
+      <t t-elif="icon == 'calendar'"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></t>
+      <t t-elif="icon == 'mapPin'"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></t>
+      <t t-elif="icon == 'briefcase'"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></t>
+      <t t-elif="icon == 'users'"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></t>
+      <t t-elif="icon == 'userCheck'"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></t>
+      <t t-elif="icon == 'fileText'"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8M16 13H8M16 17H8"/></t>
+      <t t-elif="icon == 'alert'"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'eyeOff'"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></t>
+      <t t-elif="icon == 'layers'"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></t>
+      <t t-elif="icon == 'message'"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></t>
+      <t t-elif="icon == 'upload'"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></t>
+      <t t-elif="icon == 'target'"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></t>
+      <t t-elif="icon == 'building'"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4M10 10h4M10 14h4M10 18h4"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="10"/></t>
+    </svg>
+  </template>
+
+  <!-- One question: a number disc that becomes a tick when answered. -->
+  <template id="rq_q_head" name="Request question head">
+    <div class="pbrq-q-head">
+      <span t-attf-class="pbrq-q-n #{done and 'is-done' or ''}" t-att-data-q="qkey">
+        <span class="pbrq-q-num" t-esc="qn"/>
+        <span class="pbrq-q-tick"><t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="14"/></t></span>
+      </span>
+      <div>
+        <label class="pbrq-q-t" t-att-for="qfor" t-esc="qtitle"/>
+        <p t-if="qhelp" class="pbrq-q-help" t-esc="qhelp"/>
+      </div>
+    </div>
+  </template>
+
+  <template id="hiring_request_page" name="Hiring request">
+    <t t-call="web.frontend_layout">
+      <div id="wrap" class="pbrq">
+        <div class="pbrq-wrap">
+
+          <!-- ============================ the page ============================ -->
+          <t t-if="status == 'ok'">
+            <header class="pbrq-hero">
+              <div class="pbrq-eyebrow"><t t-esc="company"/> · Hiring request</div>
+              <h1 class="pbrq-h1" t-esc="rec.title"/>
+              <p class="pbrq-sub">
+                <t t-if="rec.department_id"><t t-esc="rec.department_id.name"/></t>
+                <t t-if="rec.country_id"> · <t t-esc="rec.country_id.name"/></t>
+                <t t-if="rec.headcount"> · <t t-esc="rec.headcount"/> <t t-if="rec.headcount == 1">person</t><t t-else="">people</t></t>
+              </p>
+              <div class="pbrq-ask" t-if="rec.asked_by_id">
+                <span class="pbrq-ask-av" t-esc="(rec.asked_by_id.name or '?')[:1]"/>
+                <div>
+                  <b><t t-esc="rec.asked_by_id.name"/> asked you<t t-if="asked"> (<t t-esc="asked.name"/>)</t> to complete this.</b>
+                  <p t-if="rec.ask_message" class="pbrq-ask-msg" t-esc="rec.ask_message"/>
+                </div>
+              </div>
+            </header>
+
+            <div class="pbrq-progress" aria-live="polite">
+              <div class="pbrq-progress-bar"><span id="pbrq-bar" t-attf-style="width: #{total and (answered * 100 // total) or 0}%;"/></div>
+              <div class="pbrq-progress-row">
+                <span class="pbrq-progress-tx"><b id="pbrq-answered" t-esc="answered"/> of <t t-esc="total"/> answered</span>
+                <span class="pbrq-saved" id="pbrq-saved">Saves as you type</span>
+              </div>
+            </div>
+
+            <div t-if="problem" class="pbrq-problem" role="alert" id="pbrq-problem">
+              <t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="18"/></t>
+              <span t-esc="problem"/>
+            </div>
+
+            <form id="pbrq-form" class="pbrq-card" t-attf-action="/hiring/r/#{token}/send" method="post"
+                  t-attf-data-save="/hiring/r/#{token}/save" novalidate="novalidate">
+
+              <!-- 1. the role -->
+              <section class="pbrq-q" id="role">
+                <t t-call="pb_hiring.rq_q_head">
+                  <t t-set="qn" t-value="1"/><t t-set="qkey" t-value="'role'"/><t t-set="done" t-value="answers.get('role')"/>
+                  <t t-set="qfor" t-value="'f_title'"/>
+                  <t t-set="qtitle" t-value="'The role'"/>
+                  <t t-set="qhelp" t-value="'What it is called, which part of the business and which country. The recruiter filled these in — change anything that is wrong.'"/>
+                </t>
+                <div class="pbrq-grid3">
+                  <div class="pbrq-f">
+                    <span class="pbrq-l">Role name</span>
+                    <input id="f_title" class="pbrq-in" type="text" name="title" maxlength="120" t-att-value="rec.title" autocomplete="off"/>
+                  </div>
+                  <div class="pbrq-f">
+                    <span class="pbrq-l">Department</span>
+                    <select class="pbrq-in" name="department_id">
+                      <option value="">Choose…</option>
+                      <t t-foreach="opt['departments']" t-as="dp">
+                        <option t-att-value="dp['id']" t-att-selected="dp['id'] == rec.department_id.id" t-esc="dp['name']"/>
+                      </t>
+                    </select>
+                  </div>
+                  <div class="pbrq-f">
+                    <span class="pbrq-l">Country</span>
+                    <select class="pbrq-in" name="country_id">
+                      <option value="">Choose…</option>
+                      <t t-foreach="opt['countries']" t-as="cn">
+                        <option t-att-value="cn['id']" t-att-selected="cn['id'] == rec.country_id.id" t-esc="cn['name']"/>
+                      </t>
+                    </select>
+                  </div>
+                </div>
+              </section>
+
+              <!-- 2. why -->
+              <section class="pbrq-q" id="why">
+                <t t-call="pb_hiring.rq_q_head">
+                  <t t-set="qn" t-value="2"/><t t-set="qkey" t-value="'why'"/><t t-set="done" t-value="answers.get('why')"/>
+                  <t t-set="qfor" t-value="'f_why_' + (rec.role_type or 'new_role')"/>
+                  <t t-set="qtitle" t-value="'Why is the role needed?'"/>
+                  <t t-set="qhelp" t-value="False"/>
+                </t>
+                <div class="pbrq-choices" role="radiogroup">
+                  <t t-foreach="opt['role_types']" t-as="rt">
+                    <label t-attf-class="pbrq-choice #{rec.role_type == rt[0] and 'is-on' or ''}">
+                      <input type="radio" name="role_type" t-att-id="'f_why_' + rt[0]" t-att-value="rt[0]" t-att-checked="rec.role_type == rt[0]"/>
+                      <span t-esc="rt[1]"/>
+                    </label>
+                  </t>
+                </div>
+              </section>
+
+              <!-- 3 and 4. how many, where -->
+              <section class="pbrq-q pbrq-q--pair" id="headcount">
+                <div>
+                  <t t-call="pb_hiring.rq_q_head">
+                    <t t-set="qn" t-value="3"/><t t-set="qkey" t-value="'headcount'"/><t t-set="done" t-value="answers.get('headcount')"/>
+                    <t t-set="qfor" t-value="'f_headcount'"/>
+                    <t t-set="qtitle" t-value="'How many people?'"/>
+                    <t t-set="qhelp" t-value="False"/>
+                  </t>
+                  <div class="pbrq-stepper">
+                    <button type="button" class="pbrq-step" data-step="-1" aria-label="One fewer">−</button>
+                    <input id="f_headcount" class="pbrq-in pbrq-num" type="number" min="1" max="500" name="headcount" t-att-value="rec.headcount or 1" inputmode="numeric"/>
+                    <button type="button" class="pbrq-step" data-step="1" aria-label="One more">+</button>
+                  </div>
+                </div>
+                <div>
+                  <t t-call="pb_hiring.rq_q_head">
+                    <t t-set="qn" t-value="4"/><t t-set="qkey" t-value="'city'"/><t t-set="done" t-value="answers.get('city')"/>
+                    <t t-set="qfor" t-value="'f_city'"/>
+                    <t t-set="qtitle" t-value="'Which city or site?'"/>
+                    <t t-set="qhelp" t-value="False"/>
+                  </t>
+                  <input id="f_city" class="pbrq-in" type="text" name="location" maxlength="120" t-att-value="rec.location or ''" placeholder="Ho Chi Minh City, the Jakarta office, working from home…"/>
+                </div>
+              </section>
+
+              <!-- 5. reports to -->
+              <section class="pbrq-q" id="reports_to">
+                <t t-call="pb_hiring.rq_q_head">
+                  <t t-set="qn" t-value="5"/><t t-set="qkey" t-value="'reports_to'"/><t t-set="done" t-value="answers.get('reports_to')"/>
+                  <t t-set="qfor" t-value="'f_manager'"/>
+                  <t t-set="qtitle" t-value="'Who will they report to?'"/>
+                  <t t-set="qhelp" t-value="False"/>
+                </t>
+                <select id="f_manager" class="pbrq-in" name="reporting_manager_id">
+                  <option value="">Choose a person…</option>
+                  <optgroup t-if="opt['people']" t-att-label="(rec.department_id.name or 'This department')">
+                    <t t-foreach="opt['people']" t-as="pp">
+                      <option t-att-value="pp['id']" t-att-selected="pp['id'] == rec.reporting_manager_id.id"><t t-esc="pp['name']"/><t t-if="pp.get('job_title')"> — <t t-esc="pp['job_title']"/></t></option>
+                    </t>
+                  </optgroup>
+                  <optgroup t-if="opt['others']" label="Everyone else">
+                    <t t-foreach="opt['others']" t-as="pp">
+                      <option t-att-value="pp['id']" t-att-selected="pp['id'] == rec.reporting_manager_id.id"><t t-esc="pp['name']"/><t t-if="pp.get('job_title')"> — <t t-esc="pp['job_title']"/></t></option>
+                    </t>
+                  </optgroup>
+                </select>
+              </section>
+
+              <!-- 6. level -->
+              <section class="pbrq-q" id="level">
+                <t t-call="pb_hiring.rq_q_head">
+                  <t t-set="qn" t-value="6"/><t t-set="qkey" t-value="'level'"/><t t-set="done" t-value="answers.get('level')"/>
+                  <t t-set="qfor" t-value="'f_level'"/>
+                  <t t-set="qtitle" t-value="'How senior is it?'"/>
+                  <t t-set="qhelp" t-value="False"/>
+                </t>
+                <input id="f_level" class="pbrq-in" type="text" name="pb_role_level" maxlength="120" t-att-value="rec.pb_role_level or ''" list="pbrq-levels" placeholder="Junior, experienced, team lead, head of…"/>
+                <datalist id="pbrq-levels"><option value="Junior"/><option value="Experienced"/><option value="Senior"/><option value="Team lead"/><option value="Manager"/><option value="Head of"/></datalist>
+              </section>
+
+              <!-- 7. what they need to do -->
+              <section class="pbrq-q" id="needs">
+                <t t-call="pb_hiring.rq_q_head">
+                  <t t-set="qn" t-value="7"/><t t-set="qkey" t-value="'needs'"/><t t-set="done" t-value="answers.get('needs')"/>
+                  <t t-set="qfor" t-value="'f_needs'"/>
+                  <t t-set="qtitle" t-value="'What will the person need to be able to do?'"/>
+                  <t t-set="qhelp" t-value="'A few lines is plenty — or attach a job description you already have.'"/>
+                </t>
+                <textarea id="f_needs" class="pbrq-in pbrq-ta" name="requirements" rows="5" maxlength="6000" placeholder="Visit forty farms a month, keep the records honest, and train the new field officers…"><t t-esc="rec.requirements or ''"/></textarea>
+                <div class="pbrq-file">
+                  <t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'fileText'"/><t t-set="isz" t-value="16"/></t>
+                  <span t-if="rec.pb_jd_filename">Attached: <b t-esc="rec.pb_jd_filename"/></span>
+                  <span t-else="">Or attach a job description (PDF or Word, up to 10 MB)</span>
+                  <label class="pbrq-btn pbrq-btn--ghost pbrq-btn--sm" for="f_jd_file">
+                    <t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'upload'"/><t t-set="isz" t-value="14"/></t>
+                    <t t-if="rec.pb_jd_filename">Replace</t><t t-else="">Attach</t>
+                  </label>
+                </div>
+              </section>
+
+              <!-- 8. money -->
+              <section class="pbrq-q" id="budget">
+                <t t-call="pb_hiring.rq_q_head">
+                  <t t-set="qn" t-value="8"/><t t-set="qkey" t-value="'budget'"/><t t-set="done" t-value="answers.get('budget')"/>
+                  <t t-set="qfor" t-value="'f_budget'"/>
+                  <t t-set="qtitle" t-value="'What do you expect it to cost in a year?'"/>
+                  <t t-set="qhelp" t-value="'Everything the role costs the company in a year: pay, contributions and benefits. Your best estimate is fine.'"/>
+                </t>
+                <div class="pbrq-money">
+                  <input id="f_budget" class="pbrq-in pbrq-amt" type="text" inputmode="decimal" name="budget_cost" t-att-value="rec.budget_cost and ('%.0f' % rec.budget_cost) or ''" placeholder="0" autocomplete="off"/>
+                  <select class="pbrq-in pbrq-cur" name="currency_id" aria-label="Currency">
+                    <t t-foreach="opt['currencies']" t-as="cu">
+                      <option t-att-value="cu['id']" t-att-selected="cu['id'] == rec.currency_id.id" t-esc="cu['name']"/>
+                    </t>
+                  </select>
+                </div>
+                <p t-attf-class="pbrq-budget is-#{budget_tone}" id="pbrq-budget" aria-live="polite">
+                  <t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'wallet'"/><t t-set="isz" t-value="16"/></t>
+                  <span t-esc="budget_note"/>
+                </p>
+              </section>
+
+              <!-- 9. by when -->
+              <section class="pbrq-q" id="close_by">
+                <t t-call="pb_hiring.rq_q_head">
+                  <t t-set="qn" t-value="9"/><t t-set="qkey" t-value="'close_by'"/><t t-set="done" t-value="answers.get('close_by')"/>
+                  <t t-set="qfor" t-value="'f_close'"/>
+                  <t t-set="qtitle" t-value="'By when should it be filled?'"/>
+                  <t t-set="qhelp" t-value="False"/>
+                </t>
+                <input id="f_close" class="pbrq-in pbrq-date" type="date" name="pb_target_close_date" t-att-value="rec.pb_target_close_date or ''"/>
+              </section>
+
+              <!-- optional: what each interview should focus on -->
+              <details class="pbrq-more">
+                <summary>
+                  <t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'message'"/><t t-set="isz" t-value="16"/></t>
+                  What each interview round should focus on <span class="pbrq-opt">optional</span>
+                </summary>
+                <div class="pbrq-more-body">
+                  <t t-foreach="[1, 2, 3]" t-as="rn">
+                    <div class="pbrq-f">
+                      <label class="pbrq-l" t-att-for="'f_focus_%s' % rn">Discussion <t t-esc="rn"/></label>
+                      <input class="pbrq-in" type="text" maxlength="600" t-att-id="'f_focus_%s' % rn" t-att-name="'focus_%s' % rn" t-att-value="focus.get('focus_%s' % rn) or ''" placeholder="What this round should find out"/>
+                    </div>
+                  </t>
+                </div>
+              </details>
+
+              <!-- confidential -->
+              <label t-attf-class="pbrq-toggle #{rec.is_confidential and 'is-on' or ''}">
+                <input type="checkbox" name="is_confidential" value="1" t-att-checked="rec.is_confidential"/>
+                <span class="pbrq-switch" aria-hidden="true"><span/></span>
+                <span class="pbrq-toggle-tx">
+                  <b><t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'eyeOff'"/><t t-set="isz" t-value="14"/></t> Keep this role confidential</b>
+                  <small>Off the careers page and off referrals, and seen only by the hiring team, you and who they will report to. Use it when somebody is being replaced quietly.</small>
+                </span>
+              </label>
+
+              <footer class="pbrq-send">
+                <p class="pbrq-send-tx">
+                  <t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'userCheck'"/><t t-set="isz" t-value="16"/></t>
+                  Sending it in is your agreement to the role. HR agrees it next; the recruiter can start meeting people meanwhile.
+                </p>
+                <p class="pbrq-missing" id="pbrq-missing" t-if="missing">Still to answer: <span t-esc="', '.join(missing)"/></p>
+                <p class="pbrq-missing" id="pbrq-missing" t-else="" hidden="hidden"/>
+                <button type="submit" class="pbrq-btn pbrq-btn--primary" id="pbrq-send">
+                  <t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="18"/></t>
+                  Send in
+                </button>
+              </footer>
+            </form>
+
+            <!-- the file goes on its own form: forms cannot nest -->
+            <form id="pbrq-file" t-attf-action="/hiring/r/#{token}/file" method="post" enctype="multipart/form-data" class="pbrq-fileform">
+              <input id="f_jd_file" type="file" name="jd_file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="this.form.submit()"/>
+            </form>
+
+            <p class="pbrq-fine">
+              <t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'lock'"/><t t-set="isz" t-value="13"/></t>
+              This link is yours; there is nothing to sign in to. Questions? Ask <t t-esc="contact or 'the hiring team'"/>.
+            </p>
+          </t>
+
+          <!-- =================== sent in: the summary =================== -->
+          <t t-elif="status == 'sent'">
+            <div class="pbrq-card pbrq-done">
+              <div class="pbrq-done-ic">
+                <t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'checkCircle'"/><t t-set="isz" t-value="34"/></t>
+              </div>
+              <div class="pbrq-eyebrow"><t t-esc="company"/> · Hiring request</div>
+              <h1 class="pbrq-h1">
+                <t t-if="request.params.get('sent')">Sent in. Thank you.</t>
+                <t t-else="" t-esc="rec.title"/>
+              </h1>
+              <p class="pbrq-sub" t-if="request.params.get('sent')">
+                Your agreement is recorded. HR is asked to agree it next — you do
+                not need to do anything else, and the recruiter carries on
+                meanwhile.
+              </p>
+              <p class="pbrq-sub" t-else="">
+                This request was sent in. Here is where it has got to.
+              </p>
+              <div class="pbrq-status"><span t-attf-class="pbrq-chip is-#{chip_tone}" t-esc="state_label"/></div>
+              <ol class="pbrq-trail">
+                <t t-foreach="trail" t-as="tr">
+                  <li t-attf-class="#{tr['done'] and 'is-done' or 'is-wait'} #{tr['tone'] and ('is-' + tr['tone']) or ''}">
+                    <b t-esc="tr['label']"/>
+                    <span t-if="tr['who']"> · <t t-esc="tr['who']"/></span>
+                    <span t-if="tr['when']" class="pbrq-trail-when"> · <t t-esc="tr['when'][:10]"/></span>
+                  </li>
+                </t>
+              </ol>
+              <dl class="pbrq-summary">
+                <div><dt>Role</dt><dd><t t-esc="rec.title"/> · <t t-esc="rec.department_id.name"/><t t-if="rec.country_id"> · <t t-esc="rec.country_id.name"/></t></dd></div>
+                <div><dt>How many</dt><dd t-esc="rec.headcount"/></div>
+                <div t-if="rec.location"><dt>Where</dt><dd t-esc="rec.location"/></div>
+                <div t-if="rec.reporting_manager_id"><dt>Reports to</dt><dd t-esc="rec.reporting_manager_id.name"/></div>
+                <div t-if="rec.pb_role_level"><dt>Level</dt><dd t-esc="rec.pb_role_level"/></div>
+                <div><dt>Expected cost a year</dt><dd t-esc="budget_text"/></div>
+                <div t-if="rec.pb_target_close_date"><dt>Filled by</dt><dd t-esc="rec.pb_target_close_date"/></div>
+                <div t-if="rec.is_confidential"><dt>Confidential</dt><dd>Yes</dd></div>
+              </dl>
+              <p t-if="budget_tone == 'over'" class="pbrq-budget is-over">
+                <t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'wallet'"/><t t-set="isz" t-value="16"/></t>
+                <span t-esc="budget_note"/>
+              </p>
+            </div>
+            <p class="pbrq-fine">To change something now, ask <t t-esc="contact or 'the hiring team'"/>.</p>
+          </t>
+
+          <!-- ==================== closed or unknown ==================== -->
+          <t t-else="">
+            <div class="pbrq-card pbrq-done">
+              <div class="pbrq-done-ic is-warn">
+                <t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="34"/></t>
+              </div>
+              <h1 class="pbrq-h1">This link has closed</h1>
+              <p class="pbrq-sub">
+                The role it was about has been closed, or the link was
+                replaced by a newer one.
+                <t t-if="contact">Ask <t t-esc="contact"/><t t-if="contact_email"> (<a t-attf-href="mailto:#{contact_email}" t-esc="contact_email"/>)</t> if you still need it.</t>
+                <t t-else="">Reply to the email that brought you here and the hiring team will sort it out.</t>
+              </p>
+            </div>
+          </t>
+
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ==================================================================
+       `/hiring/j/<token>` — the advert, shared for input (G-17).
+       ================================================================== -->
+  <template id="hiring_jd_page" name="The advert, for your comment">
+    <t t-call="web.frontend_layout">
+      <div id="wrap" class="pbrq">
+        <div class="pbrq-wrap">
+          <t t-if="status == 'ok'">
+            <header class="pbrq-hero">
+              <div class="pbrq-eyebrow"><t t-esc="company"/> · The advert, for your input</div>
+              <h1 class="pbrq-h1" t-esc="jd.title"/>
+              <p class="pbrq-sub">Version <t t-esc="jd.version"/><t t-if="jd.state == 'final'"> · in use</t><t t-else=""> · draft</t>. Read it and say what should change — nothing needs your signature.</p>
+            </header>
+            <div t-if="thanks" class="pbrq-thanks" role="status">
+              <t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'checkCircle'"/><t t-set="isz" t-value="18"/></t>
+              <span>Thank you — your comment is with <t t-esc="contact or 'the recruiter'"/>.</span>
+            </div>
+            <article class="pbrq-card pbrq-advert"><t t-out="jd.body"/></article>
+            <form class="pbrq-card" t-attf-action="/hiring/j/#{token}/comment" method="post">
+              <label class="pbrq-q-t" for="f_comment">Your comment</label>
+              <textarea id="f_comment" class="pbrq-in pbrq-ta" name="body" rows="4" maxlength="4000" required="required" placeholder="What is wrong, missing or worth saying differently…"/>
+              <div class="pbrq-f">
+                <label class="pbrq-l" for="f_name">Your name</label>
+                <input id="f_name" class="pbrq-in" type="text" name="name" maxlength="120" t-att-value="jd.shared_with_id.name or ''"/>
+              </div>
+              <button type="submit" class="pbrq-btn pbrq-btn--primary">
+                <t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="16"/></t>
+                Send my comment
+              </button>
+            </form>
+            <section t-if="comments" class="pbrq-card">
+              <div class="pbrq-q-t">Comments so far</div>
+              <t t-foreach="comments" t-as="cm">
+                <div class="pbrq-comment"><b t-esc="cm.author_name"/> <span class="pbrq-trail-when" t-esc="cm.create_date and cm.create_date.strftime('%d %b') or ''"/><p t-esc="cm.body"/></div>
+              </t>
+            </section>
+          </t>
+          <t t-else="">
+            <div class="pbrq-card pbrq-done">
+              <div class="pbrq-done-ic is-warn">
+                <t t-call="pb_hiring.rq_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="34"/></t>
+              </div>
+              <h1 class="pbrq-h1">This link has closed</h1>
+              <p class="pbrq-sub">The role it was about has been filled or closed, or the link was replaced. <t t-if="contact">Ask <t t-esc="contact"/> if you still need it.</t></p>
+            </div>
+          </t>
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

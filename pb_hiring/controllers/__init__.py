@@ -2,3 +2,4 @@
 from . import portal
 from . import token_pages
 from . import application
+from . import request_pages
