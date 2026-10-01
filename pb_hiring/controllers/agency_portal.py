@@ -148,12 +148,18 @@ class PbHiringAgencyPortal(CustomerPortal):
             return request.render('pb_hiring.agency_portal_none', values)
         roles = self._agency_roles(vendor)
         people = self._people(vendor, limit=8)
+        Sub = request.env['pb.hiring.agency.submission'].sudo()
         values = self._base(vendor, 'agency')
         values.update({
             'roles': [self._role_card(r, vendor) for r in roles],
             'people': people,
-            'n_people': request.env['pb.hiring.agency.submission'].sudo().search_count(
-                [('vendor_id', '=', vendor.id)]),
+            # RECRUIT P8: the same count the role cards use (accepted), and
+            # the 6-month-rule refusals as their own figure.
+            'n_people': Sub.search_count([('vendor_id', '=', vendor.id),
+                                          ('state', '=', 'accepted')]),
+            'n_refused': Sub.search_count([('vendor_id', '=', vendor.id),
+                                           ('state', '=', 'refused_rule')]),
+            'n_all': Sub.search_count([('vendor_id', '=', vendor.id)]),
         })
         return request.render('pb_hiring.agency_portal_home', values)
 

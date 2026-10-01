@@ -26,6 +26,10 @@
         border: 1px solid var(--pbim-line);
         b { font-size: 24px; font-weight: 800; color: var(--pbim-ink, var(--pbim-text)); letter-spacing: -.02em; }
         span { font-size: 12.5px; color: var(--pbim-muted); font-weight: 600; }
+        // RECRUIT P8: refusals counted on their own, quieter than the people
+        // who were accepted.
+        &.pbag-stat--muted { background: transparent; border-style: dashed;
+            b { font-size: 20px; color: var(--pbim-muted); } }
     }
 
     .pbag-sec {

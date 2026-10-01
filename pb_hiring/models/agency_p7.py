@@ -329,7 +329,9 @@ class PbHiringAgencySubmission(models.Model):
                  ('state', 'in', ('sent', 'accepted', 'declined', 'signed', 'joined', 'dropped'))],
                 ['applicant_id'])
             offered = {r['applicant_id'][0] for r in offers if r['applicant_id']}
-        out = {'submitted': len(subs.filtered(lambda s: s.state != 'withdrawn')),
+        # RECRUIT P8: "put forward" counts ACCEPTED people everywhere (the role
+        # cards always did); a 6-month-rule refusal is its own figure.
+        out = {'submitted': len(accepted),
                'accepted': len(accepted), 'refused': len(subs.filtered(
                    lambda s: s.state == 'refused_rule')),
                'interviewed': 0, 'offers': 0, 'joined': 0}

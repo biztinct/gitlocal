@@ -67,6 +67,7 @@
         <div class="pbag-stats">
           <div class="pbag-stat"><b t-esc="len(roles)"/><span><t t-if="len(roles) == 1">role open for you</t><t t-else="">roles open for you</t></span></div>
           <div class="pbag-stat"><b t-esc="n_people"/><span><t t-if="n_people == 1">person put forward</t><t t-else="">people put forward</t></span></div>
+          <div t-if="n_refused" class="pbag-stat pbag-stat--muted"><b t-esc="n_refused"/><span>not accepted (6-month rule)</span></div>
         </div>
 
         <div class="pbag-sec"><t t-out="ic('briefcase', 16)"/> Roles you are working on</div>
@@ -101,7 +102,7 @@
         </div>
 
         <div class="pbag-sec"><t t-out="ic('users', 16)"/> People you put forward
-          <a t-if="n_people &gt; len(people)" href="/my/agency/people" class="pbag-more">See all <t t-esc="n_people"/> <t t-out="ic('arrowRight', 13)"/></a>
+          <a t-if="n_all &gt; len(people)" href="/my/agency/people" class="pbag-more">See all <t t-esc="n_all"/> <t t-out="ic('arrowRight', 13)"/></a>
         </div>
         <div t-if="not people" class="pbme-card pbag-empty pbag-empty--small">
           <p class="pbme-muted">Nobody yet. Open a role above and put someone forward — you will see how far they get here.</p>
