@@ -242,6 +242,64 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   card opens `pb_hiring.action_pb_hiring_forms`; a role's Details → "Advert & publishing"
   shows "Application form: … · Change · Preview · Edit".
 
+## Gotchas found in phase 3 (2026-10-01)
+
+- **RC41** A record inside a `<data noupdate="1">` block is NOT reloaded on `-u` even when
+  its `ir_model_data.noupdate` is flipped to false first — the loader honours the FILE's
+  flag. A noupdate record whose meaning changes (P3: `rule_requisition_own`, the two "a role
+  is yours to recruit" emails) is written by the post-migration from the module's own data
+  file (`post-10_request_facet._noupdate_records`, lxml), and only where it still carries the
+  product's old words.
+- **RC42** `biz_approval_workflow.chain_shim.register_chain(..., state_field=...)` (the one
+  P3 kwarg, default `'state'`): the route can drive a field other than `state`. The chain
+  mixin's write token only guards `state`, so `pb_hiring` guards `request_state` itself:
+  **system-only writes** (`env.su`). The engine's `biz_chain_engine_write` context flag is
+  NOT accepted — a browser can send any context key.
+- **RC43** `fields.Html(translate=True)` is TERM-based on this build:
+  `update_field_translations('body', {lang: '<html>'})` dies with "'str' object is not a
+  mapping". Pass `{lang: {en_term: lang_term}}`; the JD template seed pairs
+  `field.get_trans_terms()` of the two languages in order (same `_body()` shape).
+- **RC44** Creating a company lays approval routes AND gives `hr_lead` to the publisher
+  (Mitchell Admin) at once. A test that needs its own Head of HR re-points that
+  responsibility; creating a second one trips the overlap constraint.
+- **RC45** `payobook` company 5 (the demo company) and `rize` have the hiring request bound
+  to **"No approval needed"** (owner, uid 2, 2026-09-23). There, Send in = agreed at once.
+  The migration re-publishes the "Hiring request" workflows but never touches a fast lane.
+  To show the Head of HR step in a browser on payobook, swap bindings 11940→171 and the
+  company-5 `hr_lead` seat (id 22, normally `demo.a3.an`, a portal user) for a few minutes,
+  then put both back (done 2026-10-01, rollback script `/tmp/p3_swap.sh off`).
+- **RC46** `pb.hiring.bgv` has no `mail.activity` mixin — a to-do about a check is scheduled
+  on the ROLE (`activity_schedule` on the bgv raises AttributeError, swallowed by `leg`).
+- **RC47** Three P1/P2 tests fail on **payobook's own data with the old code too** (proved
+  on an untouched clone running 19.0.2.1.0): `test_01_the_seed_makes_the_17_stages`
+  (somebody reordered stages on payobook, sequence 1120 ≠ 120),
+  `TestRecruitApplyPage.test_06` (payobook's Tech roles form has two fields with the same key
+  → "Expected singleton") and `test_08_09` (the page refuses the full application on that
+  form). All pass on rize. Left as they are: the tests assume the product's seed, payobook is
+  a demo world people edit. Run the suite on a rize clone for the clean baseline.
+- **RC48** A board read that goes through the approval engine reads AS THE SYSTEM: the reader
+  may read the role without being allowed to open an old sign-off on it
+  (`pb.hiring._waiting`, `_agree_holders_names`). Found live: "could not read the sign-off
+  state" on every older role for the recruiter.
+- **RC49** QWeb on a public page and mail templates call no private method (`_x()`): pass
+  values from the controller; mail links are public computed fields (`pb_request_url`,
+  `pb_share_url`) on the record.
+- **RC50** Deploy hygiene seen this phase: `service odoo-server stop` can leave the old
+  master alive for >5 s — wait on its PID before `-u`. A staging dir chowned to `odoo` makes
+  the next `rsync` fail (`chown -R ubuntu` first). `-u pb_hiring` re-activates pb_hiring's own
+  crons on a clone, and the live server's cron threads then race the test run ("could not
+  serialize access") — switch crons off again after every `-u` on a clone. `pkill -f` over
+  ssh matches its own shell.
+- **RC51** The `hiring_jd` catalogue row has no `active` field: it is retired by switching
+  its bindings off and `covered_by_key='hiring_request'` (reads "covered", not "not
+  connected"). An advert waiting in an inbox was withdrawn on payobook (1).
+- **RC52** Doors and numbers after P3: no ⌘K row added. The set-up "Who does what" card is
+  now inline on Hiring set-up (`.pbhr-su-who`); `pb_hiring.sender`,
+  `pb_hiring.ask_escalate_days` (3), `pb_hiring.docreq_trigger` (on_check_clear),
+  `pb_hiring.referral_announce` (1) are the new parameters; `res.company.pb_budget_flag_user_ids`
+  the budget watchers. Token routes: `/hiring/r/<token>` (+ `/save` JSON, `/file`, `/send`),
+  `/hiring/j/<token>` (+ `/comment`).
+
 ## Phase log
 
 - **P1** (handover `RECRUIT_P1_BOARD.md`) — started and LIVE 2026-09-30: pb_hiring 19.0.2.0.0 +
@@ -262,3 +320,17 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   API left for P3/P4: `get_forms`, `get_form`, `pb_form_answers`, `pb_consent_on/_text`,
   `pb_lang`, `pb_country_id`, `pb_possible_duplicate_id`, `pb_same_person_id`,
   `res.company.pb_retention_months`.
+- **P3** (handover `RECRUIT_P3_REQUESTS.md`) — LIVE 2026-10-01: pb_hiring 19.0.2.2.0 on
+  payobook, rize, payobook_template (+ `biz_approval_workflow` code: the `state_field` kwarg,
+  no upgrade needed); backups in `/odoo/backups/2026-10-01-recruit-p3/`. Migration rehearsed
+  on clones of payobook and rize; 285/285 pb_hiring tests on the rize clone, 282/285 on the
+  payobook clone (the three RC47 data failures, also failing on the old code). Website
+  browser-language redirect off on all three. Demo on payobook (label "RECRUIT P3 requests"):
+  DEMO Field Agronomist (asked of DEMO Hiring Manager, reminded), DEMO Regional Sales Lead
+  (sent in over the confirmed budget, agreed via company 5's no-approval lane), DEMO Plant
+  Manager (open, confidential), and three DEMO QA roles from the browser walk; company 5's
+  budget watcher = DEMO Talent Lead. Gotchas RC41–RC52. API left for P4–P6:
+  `request_state`, `requisition._offer_block_reason()` / `pb.hiring._offer_block_reason(req)`,
+  `pb.hiring._sender(company)` (+ `res.company.pb_hiring_sender`), `_request_facts()` on
+  every row, the token routes above.
+
