@@ -3,7 +3,7 @@
 Rize ATS requirements → Payobook Hiring rebuild. Eight phases, designed by Fable and built, tested,
 deployed and browser-checked by Opus in one session (30 Sep – 1 Oct 2026). The gap register this closes is
 `docs/design/rize-recruit-gap.html`; the owner page mirroring it with the "after" column is
-`docs/design/rize-recruit-closeout.html`. Every ruling, gotcha (RC1–RC103) and phase log line is in
+`docs/handovers/recruit/rize-recruit-closeout.html`. Every ruling, gotcha (RC1–RC103) and phase log line is in
 `RECRUIT_LEDGER.md` — read it first in any follow-up session.
 
 ## 1. What is live, per database

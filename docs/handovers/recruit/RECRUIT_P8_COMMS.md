@@ -389,6 +389,6 @@ templates); demo table.
 owner item from P1–P8 in one numbered list; every demo login; every switch and its
 default; the register lines G-01…G-58 with their final status (Have / Built in Pn /
 Deferred / Rize-side); the rulings R1–R12 and RC-D1…; unpushed commits count; what the
-next session must know. Plus `docs/design/rize-recruit-closeout.html` — a plain-English
+next session must know. Plus `docs/handovers/recruit/rize-recruit-closeout.html` — a plain-English
 page for the owner mirroring the gap register's structure with the "after" column
 filled in (publishable as an artifact by Fable).

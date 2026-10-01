@@ -657,4 +657,4 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   round" and "offer signed → talent lead to-do after 1 day", company 5's own words for "Through to the next
   round", plus the walk's waiting-in-Shortlist rule (ran for Dang Thi Mai and Budi Santoso) and Võ Ngọc Hân moved
   to Recruiter review (Let's chat sent in Vietnamese). Gotchas RC92–RC103. Programme close-out:
-  `RECRUIT_CLOSEOUT.md`, `docs/design/rize-recruit-closeout.html`.
+  `RECRUIT_CLOSEOUT.md`, `docs/handovers/recruit/rize-recruit-closeout.html`.
