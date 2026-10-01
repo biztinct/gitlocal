@@ -408,6 +408,60 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   `sudo -u postgres psql -d abm -c "update ir_cron set active=true where id in (67,68)"`.
   Also killed a 2-day-old self-matching wait loop (PID 836081, `while pgrep -f "odoo-bin … -d
   s6clone"` — its own command line matched, so it never ended; `s6clone` no longer existed).
+- **RC71** `res.company.country_id` is NOT stored: a domain through it ("Cannot convert
+  res.company.country_id to SQL") dies, and the numbers section that used it went blank behind
+  `_safe`. A role's market in a domain is `['|', ('country_id','=',c), '&', ('country_id','=',False),
+  ('company_id.partner_id.country_id','=',c)]` (found live in the walk; pinned in test 11).
+- **RC72** On a public page an author `display:` beats the `hidden` attribute, so a filter that sets
+  `row.hidden = true` hides nothing (the buddy list stayed 799 long). `.pbjn [hidden] { display:
+  none !important }`.
+- **RC73** A rule like `.ring svg { transform: rotate(-90deg) }` also rotates every icon `ic()` puts
+  inside the ring (the joined tick read as ">"). Scope SVG chart rules with `> svg`.
+- **RC74** Reading an `hr.employee` many2many as a recruiter (no HR read) goes through the public
+  profile and raises "fields … not available for employee public profiles" the moment a private
+  field (`buddy_id`…) is fetched. Every hand-over leg on the closure runs `self = self.sudo()`.
+- **RC75** A facade override of `_offer_row` sits ABOVE P4's in the MRO and receives the non-sudo
+  offer; reading new fields on it as a line manager raised inside `_safe` and emptied their offer
+  list silently (P4 test 3). Read through `offer.sudo()` (RC55's rule, one layer up).
+- **RC76** THE MIGRATION: `pre-10` renames `closed` → `joined` in SQL before the new selection
+  loads; `post-10` stamps joined offers (`joined_on = start_date`, which is what the old closure
+  dated the contract on), turns the single signed copy into the first
+  `pb.hiring.offer.document` and re-links the vault row the old closure filed by its wave-2 name
+  ("Signed offer OF-…", `_vault_name`), recomputes `filled_count` via `add_to_compute`, rewrites
+  "Somebody is joining" (noupdate, RC41) only where the old words remain. payobook: 2 offers
+  (106/107), 2 documents, both re-linked; rize/template: nothing to move.
+- **RC77** THE SHARED EVENT HELPER (P5 asked for one): `calendar.event._pb_quiet_create(vals)` /
+  `_pb_quiet_write(vals)` with the `QUIET` context in `google_p5.py`. Interviews and the
+  meet-the-team chats both go through it; `calendar.event.pb_prejoin_id` lets
+  `_need_video_call` / `_get_post_sync_values` route a chat's Meet link to
+  `pb.hiring.prejoin._pb_meet_arrived` (invitations wait, the ten-minute job sends them without
+  the link after ten minutes, the RC62 pattern).
+- **RC78** THE WEEK-BEFORE EMAIL is one `pb.hiring.join.ask` per person asked (recruiter, manager,
+  HR-lead seat holders — never a portal login, so company 5's demo seat falls back to the talent
+  leads), each with its own token so the answer says WHO answered. A GET only looks (mail scanners
+  follow links): the three buttons open the page with that answer picked, the POST answers. One
+  answer closes everybody's link ("used", names who and what). A date moved more than
+  `pb_hiring.week_before_days` (7) away re-arms the email.
+- **RC79** Two demo roles (934, 936) were created already open by an earlier demo script, so
+  `opened_on` was empty and they sat outside every Hiring numbers range (the walk's funnel was
+  empty). Backfilled on payobook (`opened_on = create_date`, 2 rows); real roles get it from
+  `_on_opened`.
+- **RC80** Pre-existing, NOT P6 (seen in every closure test): `pb.hiring.docreq._all_in` calls
+  `activity_schedule` on a model without the activity mixin → "the everything-is-in note …
+  failed" WARNING each time the papers complete (RC46's class). Swallowed by `leg`; nobody gets
+  the to-do. Next phase that touches docreq should schedule it on the role.
+- **RC81** Headless walk: after a click that changes OWL state, wait ~1 s before selecting by
+  something the re-render changes (a placeholder) — the chat step "failed" only because it typed
+  before the dialog re-rendered. Run a test class against a demo-seeded clone and every global
+  mail count breaks: filter by the candidate's name.
+- **RC82** Doors and numbers after P6: no ⌘K row. Hiring set-up gains an eighth card `prejoin`
+  (inline editor `.pbhr-su-p6`). Params (defaults in code): `pb_hiring.stalled_days` 14,
+  `pb_hiring.week_before_days` 7. Refuse reasons `pb_hiring.refuse_reason_declined_offer`,
+  `pb_hiring.refuse_reason_did_not_join`. Candidate email key `laptop` ("Before you join: your
+  laptop", en/vi/id, `form_seed_i18n.LAPTOP_I18N`). Token routes `/hiring/b/<token>` (+ `/answer`),
+  `/hiring/l/<token>` (+ `/answer`), `/hiring/w/<token>` (+ `/answer`). Icons added to `ic()`:
+  `coffee`, `calendarClock`, `listChecks`. Hiring numbers stays light in dark mode, like every
+  Insights lens (R134); the board, drawer and dialogs follow dark.
 
 ## Phase log
 
@@ -470,3 +524,18 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   `get_finalists` + `finalist_decide/undo`, `interview.videocall_url` / `transcript_url`,
   `res.users.pb_scheduling_link`, `pb.hiring._pb_on_stage_entered(apps, key)` (the automation hook).
 
+- **P6** (handover `RECRUIT_P6_JOINING.md`) — LIVE 2026-10-01: pb_hiring 19.0.2.5.0 (+ pb_import_kit
+  icons, no version change) on payobook, rize, payobook_template; backups in
+  `/odoo/backups/2026-10-01-recruit-p6/`. abm untouched except its two hiring crons switched off
+  (RC70). Migration rehearsed on a payobook clone: 328/331 (the three RC47 data failures), 19 new
+  tests (all pass, re-run after the walk's fixes). Demo on payobook (label "RECRUIT P6 joining",
+  role DEMO Territory Manager): Cao Minh Khoa signed, joining 13 Oct, buddy and laptop questions
+  asked (the Post-offer hero); Ly Thi Thu signed in the walk → buddies, laptop (Vietnamese page),
+  a chat, date moved twice (once from the week-before page), confirmed joined 1 Oct (employee
+  21180, buddy set, welcome checklist with the buddy step done and the laptop note); Ngo Thanh Tam
+  signed → Did not join (took another offer). Gotchas RC70–RC82. API left for P7/P8:
+  `offer.join_status`, `action_confirm_joined(joined_on)`, `action_did_not_join(reason, note)`,
+  `action_change_join_date(date, reason)`, `pb.hiring.prejoin` (+ `.template`), `pb.hiring.join.change`,
+  `pb.hiring.join.ask` + `/hiring/w/<token>`, `pb.hiring.offer.document`,
+  `calendar.event._pb_quiet_create/_pb_quiet_write`, `pb.hiring.analytics.get_funnel /
+  get_ageing / get_leadership / export_xlsx(from, to, kind, department_id, country_id, recruiter_id)`.
