@@ -78,6 +78,20 @@
                         <page string="Notes">
                             <field name="notes" placeholder="Anything worth knowing about working with them."/>
                         </page>
+                        <!-- RECRUIT P7: who at the supplier signs in to its own
+                             portal. Portal sign-ins only; never anybody inside
+                             the company. -->
+                        <page string="Sign-ins" name="portal_logins"
+                              invisible="vendor_type != 'recruitment'">
+                            <p class="text-muted">
+                                People at this agency who can sign in to its own
+                                portal. They see the roles you put the agency on and
+                                the people they put forward — nothing else. Invite
+                                somebody, or take a sign-in away, from Hiring set-up,
+                                Agencies.
+                            </p>
+                            <field name="portal_user_ids" readonly="1" widget="many2many_tags"/>
+                        </page>
                     </notebook>
                 </sheet>
                 <chatter/>
