@@ -133,6 +133,71 @@
             <input type="checkbox" t-att-checked="state.data.switches.candidate_mail" t-att-disabled="!state.data.can_edit" t-on-change="() =&gt; this.toggleSwitch('candidate_mail')"/>
             <span><b>Email candidates from here</b><small>Off: nothing is sent to a candidate from the board — useful while a new company is being set up.</small></span>
           </label>
+          <label class="pbhr-su-switch">
+            <input type="checkbox" t-att-checked="state.data.switches.referral_announce" t-att-disabled="!state.data.can_edit" t-on-change="() =&gt; this.toggleSwitch('referral_announce')"/>
+            <span><b>Tell colleagues when a role opens to referrals</b><small>On: everyone with a login gets one short email with a "Refer someone" button. Confidential roles are never announced.</small></span>
+          </label>
+        </section>
+
+        <!-- ============ RECRUIT P3: WHO DOES WHAT ============ -->
+        <section class="pbim-panel pbhr-su-who">
+          <div class="pbhr-su-h">
+            <h2>Who does what</h2>
+            <p>Sign-offs record and tell; nothing waits for them. The one thing that waits is sending an offer, until the role's request is agreed.</p>
+          </div>
+
+          <div class="pbhr-su-who-row">
+            <div class="pbhr-su-who-tx">
+              <b><t t-out="ic('wallet',15)"/> Who is told when a request is over budget</b>
+              <small>Usually the CEO, the Head of HR and Finance. They get an email and a to-do; nothing is blocked.</small>
+            </div>
+            <div class="pbhr-su-who-ctl">
+              <div class="pbhr-su-people">
+                <span t-foreach="who.budget_flag" t-as="bu" t-key="bu.id" class="pbhr-su-person">
+                  <t t-esc="bu.name"/>
+                  <button t-if="state.data.can_edit" type="button" class="pbhr-su-person-x" t-att-title="'Stop telling ' + bu.name" t-on-click="() =&gt; this.removeBudgetPerson(bu)"><t t-out="ic('x',12)"/></button>
+                </span>
+                <span t-if="!who.budget_flag.length" class="pbhr-su-warn"><t t-out="ic('alert',13)"/> <t t-esc="who.budget_flag_sentence"/></span>
+              </div>
+              <div t-if="state.data.can_edit" class="pbhr-su-who-add">
+                <input class="pbhr-in" type="text" placeholder="Add somebody — type a name…" t-model="state.whoQ"/>
+                <div t-if="state.whoQ and budgetChoices.length" class="pbhr-su-who-list">
+                  <button t-foreach="budgetChoices" t-as="bc" t-key="bc.id" type="button" t-on-click="() =&gt; this.addBudgetPerson(bc)"><t t-out="ic('plus',12)"/> <t t-esc="bc.name"/></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pbhr-su-who-row">
+            <div class="pbhr-su-who-tx">
+              <b><t t-out="ic('userCheck',15)"/> A second person who agrees every hiring request</b>
+              <small>The Head of HR agrees each request after the manager sends it in. Name somebody here only if the company wants a second agreement.</small>
+            </div>
+            <div class="pbhr-su-who-ctl">
+              <select class="pbhr-in" t-att-disabled="!state.data.can_edit" t-on-change="(ev) =&gt; this.setMrApprover(ev.target.value)">
+                <option value="">Nobody — the Head of HR is enough</option>
+                <option t-foreach="who.users" t-as="wu" t-key="wu.id" t-att-value="wu.id" t-att-selected="who.mr_approver and who.mr_approver.id === wu.id" t-esc="wu.name"/>
+              </select>
+            </div>
+          </div>
+
+          <div class="pbhr-su-who-row">
+            <div class="pbhr-su-who-tx">
+              <b><t t-out="ic('paperclip',15)"/> When the candidate is asked for their papers</b>
+              <small>Asking never holds the offer up. Two working days, a reminder a day, and the talent lead is told when they are late.</small>
+            </div>
+            <div class="pbhr-su-who-ctl pbhr-su-seg" role="radiogroup">
+              <button t-foreach="who.docreq_triggers" t-as="dt" t-key="dt.key" type="button" class="pbhr-su-seg-b" t-att-class="{ on: who.docreq_trigger === dt.key }" t-att-disabled="!state.data.can_edit" t-att-aria-checked="who.docreq_trigger === dt.key ? 'true' : 'false'" role="radio" t-on-click="() =&gt; this.setDocreqTrigger(dt.key)" t-esc="dt.label"/>
+            </div>
+          </div>
+
+          <div class="pbhr-su-who-row">
+            <div class="pbhr-su-who-tx">
+              <b><t t-out="ic('mail',15)"/> Hiring emails come from</b>
+              <small>Every hiring email uses this address, never the person who pressed the button.</small>
+            </div>
+            <div class="pbhr-su-who-ctl"><code class="pbhr-su-sender" t-esc="who.sender or 'No address yet — add an email to the company'"/></div>
+          </div>
         </section>
       </div>
 

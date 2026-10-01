@@ -39,7 +39,9 @@ import { useSortable } from "@web/core/utils/sortable_owl";
 /** The four steps a role moves through, in order. A role is at exactly one
  *  (see `stageOf`), which is what lets the step counts add up. */
 const JOURNEY_STAGES = [
-    { key: "request", title: _t("Request & approve"), sub: _t("Agree the role and budget") },
+    // RECRUIT P3: a role never waits for its request, so the first step is
+    // the role's own set-up; the request is a chip on the card.
+    { key: "setup", title: _t("Set up"), sub: _t("Name it and ask for the request") },
     { key: "publish", title: _t("Prepare & publish"), sub: _t("Write the advert and open it") },
     { key: "recruit", title: _t("Meet your candidates"), sub: _t("Screen, interview and offer") },
     { key: "joined", title: _t("Welcome aboard"), sub: _t("A smooth first day") },
@@ -134,6 +136,9 @@ export class PbHiringBoard extends Component {
             journey: { stages: [], managers: [], users: [], currencies: [], company_sections: [] },
             journeyFocus: "all", drawerSection: "candidates", stageMove: null, messageForm: null,
             savingRequest: false,
+            // ---- RECRUIT P3, requests without friction ----
+            openingRole: null, asking: null, askPeople: [], declining: null,
+            budgetEdit: null, jdTemplatePick: "",
             allowed: true,
             canWrite: false,
             canRecruit: false,
@@ -378,12 +383,13 @@ export class PbHiringBoard extends Component {
                 && String(r.recruiter_id) !== String(this.state.recruiter)) {
                 return false;
             }
-            if (this.state.focus === "waiting" && !r.waiting) { return false; }
+            if (this.state.focus === "waiting" && !["sent_in", "hr_ok"].includes(r.request_state)) { return false; }
+            if (this.state.focus === "norequest" && !(["setup", "open"].includes(r.state) && ["none", "asked", "writing"].includes(r.request_state))) { return false; }
             if (this.state.focus === "mine" && !r.waiting_mine) { return false; }
             if (this.state.focus === "over" && r.budget_status !== "over") {
                 return false;
             }
-            if (this.state.focus === "open" && r.state !== "open") {
+            if (this.state.focus === "open" && !["setup", "open"].includes(r.state)) {
                 return false;
             }
             if (q) {
@@ -408,7 +414,9 @@ export class PbHiringBoard extends Component {
     // arriving, so preparing the advert is no longer where it is stuck.
     // Closed and refused roles are at no step; "Show all" still lists them.
     stageOf(r) {
-        if (["draft", "submitted", "manager_ok", "hr_ok"].includes(r.state)) return "request";
+        // RECRUIT P3: the ROLE's life (setup / open / filled / closed). The
+        // request is its own chip and never decides where a role sits.
+        if (r.state === "setup") return "setup";
         if (r.state === "open") {
             return (r.published || r.candidates || r.referral_open) ? "recruit" : "publish";
         }
@@ -480,7 +488,8 @@ export class PbHiringBoard extends Component {
         const tone = (v, t) => (v ? t : "");
         return [
             { key: "open", n: k.open || 0, label: _t("Open roles"), tone: tone(k.open, "green"), run: () => this.toggleFocus("open") },
-            { key: "waiting", n: k.waiting || 0, label: _t("Awaiting sign-off"), tone: tone(k.waiting, "amber"), run: () => this.toggleFocus("waiting") },
+            { key: "waiting", n: k.waiting || 0, label: _t("Requests to agree"), tone: tone(k.waiting, "amber"), run: () => this.toggleFocus("waiting") },
+            { key: "norequest", n: k.no_request || 0, label: _t("No agreed request"), tone: "", run: () => this.toggleFocus("norequest") },
             { key: "mine", n: k.waiting_mine || 0, label: _t("Waiting on you"), tone: tone(k.waiting_mine, "amber"), run: () => this.toggleFocus("mine") },
             { key: "cand", n: k.candidates || 0, label: _t("Candidates"), tone: "", run: null },
             { key: "over", n: k.over_budget || 0, label: _t("Over budget"), tone: tone(k.over_budget, "rose"), run: () => this.toggleFocus("over") },
@@ -507,17 +516,25 @@ export class PbHiringBoard extends Component {
     nextStep(r) {
         const s = this.state;
         if (r.waiting_mine) {
-            return { text: _t("It is waiting for your sign-off"), label: _t("Review approval"), tone: "primary",
-                     run: () => this.act("open_requisition", { requisition_id: r.id }, { reload: false }) };
+            return { text: _t("The request waits for you to agree it"), label: _t("Agree it"), tone: "primary",
+                     run: () => this.openRole(r.id, { tab: "details", section: "request" }) };
         }
-        if (r.state === "draft") {
-            return s.canRaise
-                ? { text: _t("Finish the request and send it for approval"), label: _t("Send for approval"), tone: "ghost",
-                    run: () => this.act("submit", { requisition_id: r.id }) }
-                : { text: _t("Still being written") };
-        }
-        if (["submitted", "manager_ok", "hr_ok"].includes(r.state)) {
-            return { text: r.waiting ? _t("Waiting on %s", r.waiting) : _t("Waiting for a sign-off"), tone: "wait" };
+        if (r.state === "setup") {
+            if (["none", "not_approved"].includes(r.request_state) && s.canRecruit) {
+                return { text: r.request_state === "none"
+                    ? _t("Publish it, add candidates, or ask a manager for the request")
+                    : _t("The request was not approved. Talk to the manager, then ask again"),
+                         label: _t("Ask a manager"), tone: "ghost", run: () => this.startAsk(r) };
+            }
+            if (["asked", "writing"].includes(r.request_state) && r.asked_name) {
+                return { text: _t("Waiting on %s", r.asked_name) + (r.reminded_ago ? " · " + r.reminded_ago : ""),
+                         label: s.canRecruit ? _t("Remind now") : "", tone: "wait",
+                         run: s.canRecruit ? () => this.remindNow(r) : null };
+            }
+            return s.canRecruit
+                ? { text: _t("Open it for candidates whenever you are ready"), label: _t("Publish"), tone: "ghost",
+                    run: () => this.act("publish", { requisition_id: r.id }) }
+                : { text: _t("Being set up") };
         }
         if (r.state === "open") {
             if (!r.recruiter) {
@@ -526,16 +543,21 @@ export class PbHiringBoard extends Component {
                         run: () => this.act("open_rules", {}, { reload: false }) }
                     : { text: _t("Nobody is recruiting it yet"), tone: "wait" };
             }
+            if (["asked", "writing"].includes(r.request_state) && r.asked_name && s.canRecruit && !r.candidates) {
+                return { text: _t("Waiting on %s", r.asked_name) + (r.reminded_ago ? " · " + r.reminded_ago : ""),
+                         label: _t("Remind now"), tone: "wait", run: () => this.remindNow(r) };
+            }
             if (this.stageOf(r) === "publish") {
                 if (!s.canRecruit) return { text: _t("The advert is being prepared") };
-                return r.jd_state === "approved"
-                    ? { text: _t("The advert is agreed. Put it on the careers page"), label: _t("Advertise it"), tone: "ghost",
-                        run: () => this.act("publish", { requisition_id: r.id }) }
-                    : { text: _t("Write the advert candidates will read"), label: _t("Write the advert"), tone: "ghost",
-                        run: () => this.openAt(r.id, "jd") };
+                if (r.is_confidential) {
+                    return { text: _t("Confidential: not advertised. Add the people you want to meet"), label: _t("Open the board"),
+                             tone: "ghost", run: () => this.openRole(r.id) };
+                }
+                return { text: _t("Put it on the careers page"), label: _t("Publish"), tone: "ghost",
+                         run: () => this.act("publish", { requisition_id: r.id }) };
             }
             if (!r.candidates) {
-                return (s.canRecruit && !r.referral_open)
+                return (s.canRecruit && !r.referral_open && !r.is_confidential)
                     ? { text: _t("Nobody has applied yet. Let colleagues refer people"), label: _t("Open to referrals"), tone: "ghost",
                         run: () => this.act("toggle_referrals", { requisition_id: r.id }) }
                     : { text: _t("Waiting for the first applicant") };
@@ -547,7 +569,6 @@ export class PbHiringBoard extends Component {
                      label: _t("Review candidates"), tone: "ghost", run: () => this.openAt(r.id, "candidates") };
         }
         if (r.state === "filled") return { text: _t("Filled. Joining carries on under New joiners"), tone: "done" };
-        if (r.state === "refused") return { text: _t("Not approved") };
         return { text: _t("Closed") };
     }
 
@@ -1424,7 +1445,7 @@ export class PbHiringBoard extends Component {
 
     get detailSections() {
         return [
-            { key: "request", label: _t("Role & interview plan") },
+            { key: "request", label: _t("Request & role") },
             { key: "jd", label: _t("Advert & publishing") },
             { key: "offer", label: _t("Offer & joining") },
         ];
@@ -1501,14 +1522,10 @@ export class PbHiringBoard extends Component {
 
     showMore(col) { this.state.colLimit[col.key] = (this.state.colLimit[col.key] || COL_PAGE) + COL_MORE; }
 
+    /** RECRUIT P3: the request's own chip, worded by the server. */
     get requestChip() {
         const r = this.state.drawer || {};
-        if (["open", "filled"].includes(r.state)) { return { label: _t("Request agreed"), tone: "green" }; }
-        if (r.state === "draft") { return { label: _t("Request not sent yet"), tone: "amber" }; }
-        if (["submitted", "manager_ok", "hr_ok"].includes(r.state)) {
-            return { label: r.waiting ? _t("Waiting on %s", r.waiting) : _t("Request waiting to be agreed"), tone: "amber" };
-        }
-        return { label: r.state_label || "", tone: "" };
+        return { label: r.request_label || "", tone: r.request_tone || "" };
     }
 
     get seatsLabel() {
@@ -1903,6 +1920,7 @@ export class PbHiringBoard extends Component {
     get anyDialog() {
         const s = this.state;
         return !!(s.outcome || s.moveMenu || s.showStages || s.noteForm || s.messageForm || s.raising
+            || s.openingRole || s.asking || s.declining || s.budgetEdit
             || s.writingJd || s.moving || s.scheduling || s.rescheduling || s.noShowing || s.debriefing
             || s.rejecting || s.noting || s.overriding || s.lineForm || s.letter || s.signing || s.coverForm);
     }

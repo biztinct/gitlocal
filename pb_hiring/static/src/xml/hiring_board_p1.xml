@@ -30,6 +30,7 @@
               <t t-if="state.drawer.published">On the careers page</t>
               <t t-else="">Not advertised yet</t>
             </button>
+            <button t-if="state.drawer.is_confidential" type="button" class="pbhr-pill is-rose" t-on-click="() =&gt; this.openRole(state.drawer.id, { tab: 'details', section: 'request' })"><t t-out="ic('eyeOff',12)"/> Confidential</button>
             <span t-if="state.drawer.recruiter" class="pbhr-role-by"><t t-out="ic('user',13)"/> <t t-esc="recruiterLabel"/></span>
           </div>
         </div>
@@ -37,10 +38,13 @@
           <button t-if="board.can_setup" type="button" class="pbim-btn ghost" t-on-click="openSetup" title="Stages, presets, emails and switches">
             <t t-out="ic('sliders',14)"/> Set up hiring
           </button>
-          <button t-if="state.canRecruit and state.drawer.job_id" type="button" class="pbim-btn ghost" t-on-click="addCandidate">
+          <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state) and ['none', 'not_approved'].includes(state.drawer.request_state)" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.startAsk(state.drawer)">
+            <t t-out="ic('send',14)"/> Ask a manager
+          </button>
+          <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state)" type="button" class="pbim-btn ghost" t-on-click="addCandidate">
             <t t-out="ic('userPlus',14)"/> Add a candidate
           </button>
-          <button t-if="state.canRecruit and state.drawer.state === 'open' and !state.drawer.published" type="button" class="pbim-btn primary" t-on-click="() =&gt; this.act('publish', { requisition_id: state.drawer.id })">
+          <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state) and !state.drawer.published and !state.drawer.is_confidential" type="button" class="pbim-btn primary" t-on-click="() =&gt; this.act('publish', { requisition_id: state.drawer.id })">
             <t t-out="ic('globe',14)"/> Publish
           </button>
         </div>
@@ -80,16 +84,18 @@
           <button type="button" class="pbhr-showall" t-on-click="dismissAllHints">Got it</button>
         </div>
 
+        <!-- RECRUIT P3: a role being set up says what it can do now -->
+        <t t-if="state.drawer" t-call="pb_hiring.P3RoleNext"/>
+
         <!-- nobody at all: the empty board teaches -->
-        <div t-if="state.drawer and !cards.length" class="pbim-panel pbhr-board-empty">
+        <div t-if="state.drawer and !cards.length and !roleNext" class="pbim-panel pbhr-board-empty">
           <div class="pbhr-empty-ic"><t t-out="ic('userPlus',26)"/></div>
           <div>
             <b>Nobody has applied yet. Publish the role or add a candidate.</b>
             <p>The columns below are this role's stages. Point at a column name to read what it means.</p>
             <div class="pbhr-board-empty-acts">
-              <button t-if="state.canRecruit and state.drawer.state === 'open' and !state.drawer.published" type="button" class="pbim-btn primary" t-on-click="() =&gt; this.act('publish', { requisition_id: state.drawer.id })"><t t-out="ic('globe',14)"/> Publish</button>
-              <button t-if="state.canRecruit and state.drawer.job_id" type="button" class="pbim-btn ghost" t-on-click="addCandidate"><t t-out="ic('userPlus',14)"/> Add a candidate</button>
-              <button t-if="state.canRecruit and !state.drawer.job_id" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.openRole(state.drawer.id, { tab: 'details', section: 'request' })"><t t-out="ic('fileText',14)"/> See where the request is</button>
+              <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state) and !state.drawer.published and !state.drawer.is_confidential" type="button" class="pbim-btn primary" t-on-click="() =&gt; this.act('publish', { requisition_id: state.drawer.id })"><t t-out="ic('globe',14)"/> Publish</button>
+              <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state)" type="button" class="pbim-btn ghost" t-on-click="addCandidate"><t t-out="ic('userPlus',14)"/> Add a candidate</button>
             </div>
           </div>
         </div>

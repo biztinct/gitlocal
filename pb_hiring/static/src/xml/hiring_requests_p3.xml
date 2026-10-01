@@ -1,0 +1,285 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       RECRUIT P3 — requests without friction, on the Hiring board.
+
+       Loop variables avoid OWL's reserved operator words (R1): `tr`, `tp`,
+       `ap`, `jv`, `cm`, `ba`. No doubled hyphen inside a comment (R35).
+       Handlers are arrows that CALL a method, never statements (RC32).
+       ==================================================================== -->
+
+  <!-- ============ the role page: what to do with a role that is set up ============ -->
+  <t t-name="pb_hiring.P3RoleNext">
+    <div t-if="roleNext" class="pbim-panel pbhr-p3-next">
+      <span class="pbhr-p3-next-ic"><t t-out="ic('sparkles',18)"/></span>
+      <div class="pbhr-p3-next-tx">
+        <b>Next</b>
+        <span t-esc="roleNext.text"/>
+      </div>
+      <div class="pbhr-p3-next-acts">
+        <button t-if="roleNext.publish" type="button" class="pbim-btn primary" t-on-click="() =&gt; this.act('publish', { requisition_id: state.drawer.id })"><t t-out="ic('globe',14)"/> Publish</button>
+        <button t-if="roleNext.open" type="button" class="pbim-btn primary" t-on-click="() =&gt; this.openForCandidates()"><t t-out="ic('logIn',14)"/> Open for candidates</button>
+        <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.addCandidate()"><t t-out="ic('userPlus',14)"/> Add a candidate</button>
+        <button t-if="roleNext.ask" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.startAsk(state.drawer)"><t t-out="ic('send',14)"/> Ask a manager</button>
+        <button t-if="roleNext.remind" type="button" class="pbim-btn ghost" t-att-disabled="req.remind_wait" t-att-title="req.remind_wait ? 'Remind now works again in a few minutes' : ''" t-on-click="() =&gt; this.remindNow()"><t t-out="ic('bell',14)"/> Remind now</button>
+      </div>
+    </div>
+  </t>
+
+  <!-- ============ Details → Request: status, trail, figures, presses ============ -->
+  <t t-name="pb_hiring.P3Request">
+    <div class="pbhr-p3-req">
+      <div class="pbhr-p3-req-top">
+        <span class="pbhr-pill" t-att-class="'is-' + (req.tone or '')" t-esc="req.chip"/>
+        <span t-if="req.state === 'asked' or req.state === 'writing'" class="pbhr-p3-req-line">
+          <t t-if="req.asked">Asked of <b t-esc="req.asked.name"/></t>
+          <t t-if="req.reminded_ago"> · <t t-esc="req.reminded_ago"/></t>
+          <t t-if="req.remind_every"> · reminded every <t t-esc="req.remind_every"/> working days</t>
+          <t t-if="req.saved_on"> · <span class="pbhr-p3-live"><t t-out="ic('pencil',12)"/> they have started it</span></t>
+        </span>
+        <span t-elif="req.waiting_on" class="pbhr-p3-req-line">Waiting on <b t-esc="req.waiting_on"/> to press Agree</span>
+        <span t-if="req.is_confidential" class="pbhr-pill is-rose"><t t-out="ic('eyeOff',12)"/> Confidential</span>
+      </div>
+
+      <!-- the one rule, said where it is decided -->
+      <div t-if="req.offer_block_reason" class="pbhr-p3-rule">
+        <t t-out="ic('lock',15)"/>
+        <span><b>The offer waits for this.</b> <t t-esc="req.offer_block_reason"/></span>
+      </div>
+      <div t-elif="req.state === 'agreed'" class="pbhr-p3-rule is-ok">
+        <t t-out="ic('checkCircle',15)"/>
+        <span><b>Agreed.</b> An offer can be sent for this role.</span>
+      </div>
+
+      <!-- the trail -->
+      <ol t-if="req.trail and req.trail.length" class="pbhr-p3-trail">
+        <li t-foreach="req.trail" t-as="tr" t-key="tr_index" t-att-class="(tr.done ? 'is-done' : 'is-wait') + (tr.tone ? ' is-' + tr.tone : '')">
+          <b t-esc="tr.label"/>
+          <span t-if="tr.who"> · <t t-esc="tr.who"/></span>
+          <span t-if="tr.when" class="pbhr-p3-when"> · <t t-esc="trailWhen(tr.when)"/></span>
+        </li>
+      </ol>
+      <p t-if="req.message" class="pbhr-p3-msg"><t t-out="ic('mail',13)"/> <t t-esc="req.message"/></p>
+      <p t-if="req.not_approved_reason" class="pbhr-p3-msg is-rose"><t t-out="ic('xCircle',13)"/> <t t-esc="req.not_approved_reason"/></p>
+
+      <!-- the presses -->
+      <div class="pbhr-p3-acts">
+        <button t-if="req.can_agree" type="button" class="pbim-btn primary" t-on-click="() =&gt; this.agreeRequest()"><t t-out="ic('checkCircle',14)"/> Agree</button>
+        <button t-if="req.can_agree" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.startDecline()"><t t-out="ic('xCircle',14)"/> Not approved</button>
+        <button t-if="req.can_ask" type="button" class="pbim-btn" t-att-class="req.state === 'none' ? 'primary' : 'ghost'" t-on-click="() =&gt; this.startAsk(state.drawer)">
+          <t t-out="ic('send',14)"/>
+          <t t-if="req.asked and (req.state === 'asked' or req.state === 'writing')">Ask somebody else</t>
+          <t t-else="">Ask a manager</t>
+        </button>
+        <button t-if="req.can_remind" type="button" class="pbim-btn ghost" t-att-disabled="req.remind_wait" t-att-title="req.remind_wait ? ('Remind now works again in ' + req.remind_wait + ' minutes') : ''" t-on-click="() =&gt; this.remindNow()"><t t-out="ic('bell',14)"/> Remind now</button>
+        <button t-if="req.can_remind" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.copyRequestLink()"><t t-out="ic('link',14)"/> Their link</button>
+        <button t-if="req.can_send_in" type="button" class="pbim-btn ghost" t-att-disabled="req.missing and req.missing.length" t-att-title="req.missing and req.missing.length ? ('Still to fill in: ' + req.missing.join(', ')) : ''" t-on-click="() =&gt; this.sendInMyself()"><t t-out="ic('upload',14)"/> Send it in myself</button>
+        <button t-if="req.can_open_role" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.openForCandidates()"><t t-out="ic('logIn',14)"/> Open for candidates</button>
+      </div>
+      <p t-if="req.can_send_in and req.missing and req.missing.length and req.state !== 'none'" class="pbhr-p3-hint">Still to fill in before it can be sent: <t t-esc="req.missing.join(', ')"/>.</p>
+
+      <!-- the money -->
+      <div class="pbhr-p3-money" t-if="req.figures">
+        <div class="pbhr-p3-fig">
+          <span class="k">Expected (the manager's)</span>
+          <span class="v" t-esc="req.figures.expected ? money(req.figures.expected, req.figures.currency) : 'Not given yet'"/>
+        </div>
+        <div class="pbhr-p3-fig">
+          <span class="k">Confirmed with Finance</span>
+          <span class="v">
+            <t t-if="req.figures.confirmed" t-esc="money(req.figures.confirmed, req.figures.currency)"/>
+            <t t-else="">Not recorded</t>
+            <button t-if="req.can_budget" type="button" class="pbhr-linkish" t-on-click="() =&gt; this.startBudgetEdit()">Change</button>
+          </span>
+        </div>
+        <div class="pbhr-p3-fig">
+          <span class="k">What it is compared with</span>
+          <span class="v" t-esc="req.figures.status === 'unknown' ? 'No budget to compare with' : money(req.figures.dept_remaining, req.figures.dept_currency or req.figures.currency)"/>
+        </div>
+        <div class="pbhr-p3-fig">
+          <span class="k">Budget conversation</span>
+          <span class="v pbhr-p3-seg">
+            <button t-foreach="req.budget_agreements" t-as="ba" t-key="ba.key" type="button" t-att-class="{ on: req.budget_agreement === ba.key }" t-att-disabled="!req.can_budget" t-on-click="() =&gt; this.setBudgetAgreement(ba.key)" t-esc="ba.label"/>
+          </span>
+        </div>
+        <p class="pbhr-p3-budget" t-att-class="'is-' + (req.figures.page_tone or 'unknown')">
+          <t t-out="ic('wallet',14)"/> <span t-esc="req.figures.note or req.figures.page_note"/>
+        </p>
+        <p class="pbhr-p3-watchers">
+          <t t-out="ic('users',13)"/>
+          Told when a request is over budget:
+          <b t-if="req.budget_people.length" t-esc="req.budget_people.join(', ')"/>
+          <span t-else="" class="is-warn" t-esc="req.budget_people_sentence"/>
+          <button t-if="req.can_setup" type="button" class="pbhr-linkish" t-on-click="() =&gt; this.openWhoDoesWhat()">Change</button>
+        </p>
+      </div>
+
+      <!-- confidential -->
+      <label class="pbhr-p3-conf" t-att-class="{ on: req.is_confidential }">
+        <input type="checkbox" t-att-checked="req.is_confidential" t-att-disabled="!req.can_recruit" t-on-change="() =&gt; this.toggleConfidential()"/>
+        <span class="pbhr-p3-switch" aria-hidden="true"><span/></span>
+        <span><b>Confidential</b><small>Off the careers page, off referrals and out of every list; seen only by the hiring team, the person it is for and who they would report to.</small></span>
+      </label>
+    </div>
+  </t>
+
+  <!-- ============ Details → Advert: versions, share, comments, final ============ -->
+  <t t-name="pb_hiring.P3Advert">
+    <div class="pbhr-sec">
+      The advert
+      <span class="pbhr-p3-sec-acts" t-if="advert.can_edit">
+        <select class="pbhr-in pbhr-p3-tpl" t-model="state.jdTemplatePick" aria-label="Template">
+          <option value="">From a template…</option>
+          <option t-foreach="advert.templates" t-as="tp" t-key="tp.id" t-att-value="tp.id"><t t-esc="tp.name"/><t t-if="tp.id === advert.suggested_id"> · suggested</t></option>
+        </select>
+        <button class="pbim-btn ghost pbhr-sec-btn" t-att-disabled="!state.jdTemplatePick and !advert.suggested_id" t-on-click="() =&gt; this.jdFromTemplate()"><t t-out="ic('fileText',14)"/> Start</button>
+        <button class="pbim-btn ghost pbhr-sec-btn" t-on-click="startJd"><t t-out="ic('plus',14)"/> Write one</button>
+      </span>
+    </div>
+    <div t-if="advert.stale" class="pbhr-p3-rule is-info">
+      <t t-out="ic('refresh',15)"/>
+      <span>The advert changed since the job boards' packs were made. <button type="button" class="pbhr-linkish" t-on-click="() =&gt; this.republish()">Republish</button></span>
+    </div>
+    <div t-if="!advert.versions.length" class="pbhr-mini-empty">
+      No advert yet. Start from a template for this kind of role (the suggested one fits its department), share it with the manager for input, then make it final.
+      Publishing without one writes it from the suggested template.
+    </div>
+    <div t-else="" class="pbhr-list">
+      <div t-foreach="advert.versions" t-as="jv" t-key="jv.id" class="pbhr-list-row pbhr-p3-jd" t-att-class="{ 'is-current': jv.is_current }">
+        <div class="pbhr-list-main">
+          <div class="pbhr-list-name">
+            v<t t-esc="jv.version"/> · <t t-esc="jv.title"/>
+            <span t-if="jv.is_current" class="pbim-badge pbhr-cur">In use</span>
+            <span t-elif="jv.state === 'final'" class="pbim-badge">Final</span>
+            <span t-else="" class="pbim-badge pbhr-draft">Draft</span>
+          </div>
+          <div class="pbhr-list-meta">
+            <t t-if="jv.template">From <t t-esc="jv.template"/></t>
+            <t t-if="jv.shared_with"> · shared with <t t-esc="jv.shared_with"/> <t t-esc="trailWhen(jv.shared_on)"/></t>
+            <t t-if="jv.final_on"> · final <t t-esc="trailWhen(jv.final_on)"/></t>
+          </div>
+          <div t-foreach="jv.comments" t-as="cm" t-key="cm.id" class="pbhr-p3-comment">
+            <t t-out="ic('pencil',12)"/> <b t-esc="cm.who"/>: <t t-esc="cm.body"/>
+          </div>
+        </div>
+        <div class="pbhr-list-acts">
+          <button t-if="advert.can_edit" class="pbim-btn ghost" t-att-title="advert.share_to ? ('Email it to ' + advert.share_to + ' with a page to comment on') : 'Nobody is named on this role yet'" t-on-click="() =&gt; this.shareJd(jv)"><t t-out="ic('send',13)"/> <t t-if="advert.share_to">Share with <t t-esc="advert.share_to"/></t><t t-else="">Share</t></button>
+          <button t-if="advert.can_edit and jv.state === 'draft'" class="pbim-btn primary" t-on-click="() =&gt; this.makeFinal(jv)"><t t-out="ic('check',13)"/> Make final</button>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; this.act('open_jd', { jd_id: jv.id }, { reload: false })"><t t-out="ic('pencil',13)"/> Edit</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ============ the sheets ============ -->
+  <t t-name="pb_hiring.P3Overlays">
+
+    <!-- OPEN A ROLE: five things -->
+    <div t-if="state.openingRole" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; { state.openingRole = null; }">
+      <div class="pbim-modal pbhr-dialog pbhr-p3-sheet" role="dialog" aria-modal="true" aria-label="Open a role" t-on-click.stop="() =&gt; {}" t-on-keydown="(ev) =&gt; this.onSheetKey(ev, 'openingRole')">
+        <div class="pbim-modal__head">
+          <div>
+            <span class="pbhr-eyebrow">OPEN A ROLE</span>
+            <div class="pbhr-drawer-title">Five things, and the role exists.</div>
+            <div class="pbhr-drawer-sub">The stages and the application form fill in from the department and country. You can publish it and meet candidates straight away — the hiring request only matters when you send an offer.</div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.openingRole = null; }" title="Close"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-form">
+          <label class="pbhr-f pbhr-f--wide"><span>What is the role called?</span><input class="pbhr-in" t-model="state.openingRole.title" placeholder="Territory Manager" autofocus="autofocus"/></label>
+          <label class="pbhr-f"><span>Department</span><select class="pbhr-in" t-model="state.openingRole.department_id"><option value="">Choose…</option><option t-foreach="state.departments" t-as="ap" t-key="ap.id" t-att-value="ap.id" t-esc="ap.name"/></select></label>
+          <label class="pbhr-f"><span>Country</span><select class="pbhr-in" t-model="state.openingRole.country_id"><option value="">Choose…</option><option t-foreach="state.journey.countries or []" t-as="ap" t-key="ap.id" t-att-value="ap.id" t-esc="ap.name"/></select></label>
+          <label class="pbhr-f"><span>How many seats?</span><input class="pbhr-in" type="number" min="1" max="500" t-model.number="state.openingRole.headcount"/></label>
+          <label class="pbhr-f"><span>Who recruits it?</span><select class="pbhr-in" t-model="state.openingRole.recruiter_id"><option value="">The hiring rule for the country decides</option><option t-foreach="state.journey.recruiters or []" t-as="ap" t-key="ap.id" t-att-value="ap.id" t-esc="ap.name"/></select></label>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.openingRole = null; }">Cancel</button>
+          <span class="pbhr-foot-gap"/>
+          <button class="pbim-btn primary" t-att-disabled="state.openingRole.busy or !state.openingRole.title or !state.openingRole.department_id" t-on-click="() =&gt; this.saveOpenRole()"><t t-out="ic('plus',14)"/> Open the role</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASK A MANAGER -->
+    <div t-if="state.asking" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; { state.asking = null; }">
+      <div class="pbim-modal pbhr-dialog pbhr-p3-sheet" role="dialog" aria-modal="true" aria-label="Ask a manager for a hiring request" t-on-click.stop="() =&gt; {}" t-on-keydown="(ev) =&gt; this.onSheetKey(ev, 'asking')">
+        <div class="pbim-modal__head">
+          <div>
+            <span class="pbhr-eyebrow">ASK A MANAGER</span>
+            <div class="pbhr-drawer-title">
+              <t t-if="state.asking.role_title">The request for <t t-esc="state.asking.role_title"/></t>
+              <t t-else="">A hiring request, from the manager</t>
+            </div>
+            <div class="pbhr-drawer-sub">They get one page by email that saves as they type — no sign-in. Sending it in is their agreement. They are reminded until they do, and the talent lead is told after three working days.</div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.asking = null; }" title="Close"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-form">
+          <t t-if="state.asking.link">
+            <div class="pbhr-p3-rule is-info pbhr-f--wide">
+              <t t-out="ic('info',15)"/>
+              <span><b><t t-esc="state.asking.employee_name"/> has no email address,</b> so nothing was sent. Send them this link however you like — it is the whole request.</span>
+            </div>
+            <div class="pbhr-f pbhr-f--wide pbhr-p3-link"><code t-esc="state.asking.link"/><button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.copyText(state.asking.link)"><t t-out="ic('copy',13)"/> Copy</button></div>
+          </t>
+          <t t-else="">
+            <t t-if="!state.asking.requisition_id">
+              <label class="pbhr-f pbhr-f--wide"><span>The role</span><input class="pbhr-in" t-model="state.asking.title" placeholder="What is the role called?"/></label>
+              <label class="pbhr-f"><span>Department</span><select class="pbhr-in" t-model="state.asking.department_id" t-on-change="() =&gt; this.searchAskPeople()"><option value="">Choose…</option><option t-foreach="state.departments" t-as="ap" t-key="ap.id" t-att-value="ap.id" t-esc="ap.name"/></select></label>
+              <label class="pbhr-f"><span>Country</span><select class="pbhr-in" t-model="state.asking.country_id"><option value="">Choose…</option><option t-foreach="state.journey.countries or []" t-as="ap" t-key="ap.id" t-att-value="ap.id" t-esc="ap.name"/></select></label>
+            </t>
+            <div class="pbhr-f pbhr-f--wide">
+              <span>Which manager?</span>
+              <div t-if="state.asking.employee_id" class="pbhr-p3-picked">
+                <span class="pbhr-p3-av" t-esc="initials(state.asking.employee_name)"/>
+                <b t-esc="state.asking.employee_name"/>
+                <span t-if="state.asking.no_email" class="pbhr-p3-noemail"><t t-out="ic('alert',12)"/> no email — you will get their link to send</span>
+                <button type="button" class="pbhr-linkish" t-on-click="() =&gt; { state.asking.employee_id = ''; }">Change</button>
+              </div>
+              <t t-else="">
+                <div class="pbhr-search pbhr-p3-search"><t t-out="ic('search',15)"/><input type="text" t-att-value="state.asking.q" placeholder="Type a name…" t-on-input="(ev) =&gt; this.onAskQuery(ev)"/></div>
+                <div class="pbhr-p3-people">
+                  <button t-foreach="state.askPeople" t-as="ap" t-key="ap.id" type="button" class="pbhr-p3-person" t-on-click="() =&gt; this.pickAskPerson(ap)">
+                    <span class="pbhr-p3-av" t-esc="initials(ap.name)"/>
+                    <span class="pbhr-p3-person-tx"><b t-esc="ap.name"/><small><t t-esc="ap.role or ''"/><t t-if="ap.department"> · <t t-esc="ap.department"/></t></small></span>
+                    <span t-if="ap.mine" class="pbim-badge">This department</span>
+                  </button>
+                  <div t-if="!state.askPeople.length" class="pbhr-mini-empty">Nobody by that name. Try part of it.</div>
+                </div>
+              </t>
+            </div>
+            <label class="pbhr-f pbhr-f--wide"><span>A line for them (optional)</span><textarea class="pbhr-in" rows="3" t-model="state.asking.message" placeholder="Budi — could you complete this by Friday? It is the second territory role we talked about."/></label>
+            <label class="pbhr-f"><span>Remind them every</span><select class="pbhr-in" t-model.number="state.asking.remind_every_days"><option value="1">working day</option><option value="2">2 working days</option><option value="3">3 working days</option><option value="5">week</option></select></label>
+          </t>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.asking = null; }"><t t-if="state.asking.link">Done</t><t t-else="">Cancel</t></button>
+          <span class="pbhr-foot-gap"/>
+          <button t-if="!state.asking.link" class="pbim-btn primary" t-att-disabled="state.asking.busy or !askReady" t-on-click="() =&gt; this.saveAsk()"><t t-out="ic('send',14)"/> Send the request</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOT APPROVED: a reason is offered, never demanded -->
+    <div t-if="state.declining" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; { state.declining = null; }">
+      <div class="pbim-modal pbhr-dialog pbhr-p3-sheet is-small" role="dialog" aria-modal="true" aria-label="Not approved" t-on-click.stop="() =&gt; {}" t-on-keydown="(ev) =&gt; this.onSheetKey(ev, 'declining')">
+        <div class="pbim-modal__head"><div><div class="pbhr-drawer-title">Not approved</div><div class="pbhr-drawer-sub">The role itself carries on; only the offer waits. The recruiter gets a to-do.</div></div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.declining = null; }" title="Close"><t t-out="ic('x',16)"/></button></div>
+        <div class="pbim-modal__body pbhr-form"><label class="pbhr-f pbhr-f--wide"><span>Why? (optional)</span><textarea class="pbhr-in" rows="3" t-model="state.declining.note" placeholder="Not this quarter — ask again in January."/></label></div>
+        <div class="pbim-modal__foot"><button class="pbim-btn ghost" t-on-click="() =&gt; { state.declining = null; }">Cancel</button><span class="pbhr-foot-gap"/><button class="pbim-btn primary" t-on-click="() =&gt; this.saveDecline()">Not approved</button></div>
+      </div>
+    </div>
+
+    <!-- THE CONFIRMED FIGURE -->
+    <div t-if="state.budgetEdit" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; { state.budgetEdit = null; }">
+      <div class="pbim-modal pbhr-dialog pbhr-p3-sheet is-small" role="dialog" aria-modal="true" aria-label="Confirmed budget" t-on-click.stop="() =&gt; {}" t-on-keydown="(ev) =&gt; this.onSheetKey(ev, 'budgetEdit')">
+        <div class="pbim-modal__head"><div><div class="pbhr-drawer-title">The confirmed budget</div><div class="pbhr-drawer-sub">What Finance confirmed for this role for a year. If the manager's figure is higher, the people who watch the budget are told. Nothing is blocked.</div></div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.budgetEdit = null; }" title="Close"><t t-out="ic('x',16)"/></button></div>
+        <div class="pbim-modal__body pbhr-form"><label class="pbhr-f pbhr-f--wide"><span>Confirmed a year (<t t-esc="req.figures and req.figures.currency"/>)</span><input class="pbhr-in" inputmode="decimal" t-model="state.budgetEdit.confirmed" placeholder="0"/></label></div>
+        <div class="pbim-modal__foot"><button class="pbim-btn ghost" t-on-click="() =&gt; { state.budgetEdit = null; }">Cancel</button><span class="pbhr-foot-gap"/><button class="pbim-btn primary" t-on-click="() =&gt; this.saveBudgetEdit()">Save</button></div>
+      </div>
+    </div>
+  </t>
+
+</templates>

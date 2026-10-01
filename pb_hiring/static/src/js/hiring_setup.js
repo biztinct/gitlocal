@@ -36,6 +36,7 @@ export class PbHiringSetup extends Component {
             loaded: false, data: null, error: "",
             editing: null, editName: "", meanings: {},
             adding: null, previewId: null, toast: null, busy: false,
+            whoQ: "",
         });
         this.listRef = useRef("stages");
         useSortable({
@@ -253,12 +254,55 @@ export class PbHiringSetup extends Component {
             if (el && el.scrollIntoView) { el.scrollIntoView({ behavior: "smooth", block: "start" }); }
             return;
         }
+        if (card.key === "people") {
+            const el = document.querySelector(".pbhr-su-who");
+            if (el && el.scrollIntoView) { el.scrollIntoView({ behavior: "smooth", block: "start" }); }
+            return;
+        }
         if (card.key === "automations") {
             const el = document.querySelector(".pbhr-su-switches");
             if (el && el.scrollIntoView) { el.scrollIntoView({ behavior: "smooth", block: "start" }); }
             return;
         }
         if (card.action) { await this.action.doAction(card.action); }
+    }
+
+    // ---------------------------------------------- RECRUIT P3: who does what
+    get who() { return (this.state.data && this.state.data.who) || { budget_flag: [], users: [], docreq_triggers: [] }; }
+
+    get budgetIds() { return this.who.budget_flag.map((u) => u.id); }
+
+    get budgetChoices() {
+        const q = (this.state.whoQ || "").trim().toLowerCase();
+        const on = new Set(this.budgetIds);
+        return this.who.users.filter((u) => !on.has(u.id) && (!q || u.name.toLowerCase().includes(q))).slice(0, 8);
+    }
+
+    async setBudgetPeople(ids) {
+        const before = this.budgetIds;
+        await this.call("set_budget_people", { user_ids: ids }, {
+            undo: () => this.call("set_budget_people", { user_ids: before }),
+        });
+        this.state.whoQ = "";
+    }
+
+    addBudgetPerson(u) { return this.setBudgetPeople([...this.budgetIds, u.id]); }
+
+    removeBudgetPerson(u) { return this.setBudgetPeople(this.budgetIds.filter((i) => i !== u.id)); }
+
+    async setMrApprover(value) {
+        const before = this.who.mr_approver ? this.who.mr_approver.id : false;
+        await this.call("set_mr_approver", { user_id: Number(value) || false }, {
+            undo: () => this.call("set_mr_approver", { user_id: before }),
+        });
+    }
+
+    async setDocreqTrigger(key) {
+        const before = this.who.docreq_trigger;
+        if (key === before) { return; }
+        await this.call("set_docreq_trigger", { key }, {
+            undo: () => this.call("set_docreq_trigger", { key: before }),
+        });
     }
 
     openBoard() {

@@ -2437,3 +2437,300 @@ msgstr "Chúng tôi không nhận được tệp “%(name)s” ở đây. Hãy 
 #, python-format
 msgid "“%(name)s” is not really a %(kind)s file. Choose the original file."
 msgstr "“%(name)s” không thật sự là tệp %(kind)s. Hãy chọn tệp gốc."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Agree it"
+msgstr "Đồng ý"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Ask a manager"
+msgstr "Nhờ quản lý"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Being set up"
+msgstr "Đang thiết lập"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Confidential: not advertised. Add the people you want to meet"
+msgstr "Bảo mật: không đăng tuyển. Thêm những người bạn muốn gặp"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Name it and ask for the request"
+msgstr "Đặt tên và xin đề xuất tuyển dụng"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "No agreed request"
+msgstr "Chưa có đề xuất được đồng ý"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Open it for candidates whenever you are ready"
+msgstr "Mở cho ứng viên khi bạn sẵn sàng"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Publish it, add candidates, or ask a manager for the request"
+msgstr "Đăng tuyển, thêm ứng viên, hoặc nhờ quản lý gửi đề xuất"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Put it on the careers page"
+msgstr "Đưa lên trang tuyển dụng"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Remind now"
+msgstr "Nhắc ngay"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Request & role"
+msgstr "Đề xuất & vị trí"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Requests to agree"
+msgstr "Đề xuất chờ đồng ý"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Set up"
+msgstr "Thiết lập"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "The request waits for you to agree it"
+msgstr "Đề xuất đang chờ bạn đồng ý"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "The request was not approved. Talk to the manager, then ask again"
+msgstr "Đề xuất không được duyệt. Trao đổi với quản lý rồi nhờ lại"
+
+#. module: pb_hiring
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+#: code:addons/pb_hiring/models/requests_p3.py:0
+#, python-format
+msgid "Waiting on %s"
+msgstr "Đang chờ %s"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_requests_p3.js:0
+msgid "%(who)s has the request · %(when)s. Meanwhile, publish it or add candidates."
+msgstr "%(who)s đang giữ đề xuất · %(when)s. Trong lúc chờ, hãy đăng tuyển hoặc thêm ứng viên."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_requests_p3.js:0
+msgid "A role needs a name and a department."
+msgstr "Một vị trí cần có tên và phòng ban."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_requests_p3.js:0
+msgid "Copied."
+msgstr "Đã sao chép."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_requests_p3.js:0
+msgid "Open it for candidates whenever you are ready."
+msgstr "Mở cho ứng viên khi bạn sẵn sàng."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_requests_p3.js:0
+msgid "Publish it, add candidates, or ask a manager for the hiring request. The request only matters when you send an offer."
+msgstr "Đăng tuyển, thêm ứng viên, hoặc nhờ quản lý gửi đề xuất tuyển dụng. Đề xuất chỉ cần khi bạn gửi lời mời nhận việc."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_requests_p3.js:0
+msgid "The link"
+msgstr "Đường dẫn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:0
+msgid "Ask a manager for a request"
+msgstr "Nhờ quản lý gửi đề xuất"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:0
+msgid "No roles yet"
+msgstr "Chưa có vị trí nào"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_requests_p3.xml:0
+msgid "Open the role"
+msgstr "Mở vị trí"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_requests_p3.xml:0
+msgid "Send the request"
+msgstr "Gửi đề xuất"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_requests_p3.xml:0
+msgid "Agree"
+msgstr "Đồng ý"
+
+#. module: pb_hiring
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hiring/static/src/xml/hiring_requests_p3.xml:0
+#: code:addons/pb_hiring/models/requests_p3.py:0
+msgid "Not approved"
+msgstr "Không duyệt"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_requests_p3.xml:0
+msgid "Their link"
+msgstr "Đường dẫn của họ"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_requests_p3.xml:0
+msgid "Send it in myself"
+msgstr "Tự gửi đề xuất"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_requests_p3.xml:0
+msgid "Open for candidates"
+msgstr "Mở cho ứng viên"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_requests_p3.xml:0
+msgid "Confidential"
+msgstr "Bảo mật"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_requests_p3.xml:0
+msgid "Make final"
+msgstr "Chốt bản cuối"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_requests_p3.xml:0
+msgid "Republish"
+msgstr "Đăng lại"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_requests_p3.xml:0
+msgid "Ask somebody else"
+msgstr "Nhờ người khác"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_requests_p3.xml:0
+msgid "The offer waits for this."
+msgstr "Lời mời nhận việc chờ điều này."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_requests_p3.xml:0
+msgid "An offer can be sent for this role."
+msgstr "Có thể gửi lời mời nhận việc cho vị trí này."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/requests_p3.py:0
+msgid "No request yet"
+msgstr "Chưa có đề xuất"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/requests_p3.py:0
+msgid "Request being written"
+msgstr "Đề xuất đang được viết"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/requests_p3.py:0
+msgid "Sent in"
+msgstr "Đã gửi"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/requests_p3.py:0
+msgid "Head of HR agreed"
+msgstr "Trưởng phòng nhân sự đã đồng ý"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/requests_p3.py:0
+#, python-format
+msgid "reminded %s"
+msgstr "đã nhắc %s"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/requests_p3.py:0
+#, python-format
+msgid "asked %s"
+msgstr "đã nhờ %s"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/requests_p3.py:0
+msgid "today"
+msgstr "hôm nay"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/requests_p3.py:0
+msgid "yesterday"
+msgstr "hôm qua"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/requests_p3.py:0
+#, python-format
+msgid "%s days ago"
+msgstr "%s ngày trước"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/requests_p3.py:0
+#, python-format
+msgid "The request for this role is not agreed yet. Ask %s to press Agree."
+msgstr "Đề xuất cho vị trí này chưa được đồng ý. Hãy nhờ %s bấm Đồng ý."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/facade_p3.py:0
+msgid "Open for candidates. Publish it, or add people yourself."
+msgstr "Đã mở cho ứng viên. Hãy đăng tuyển hoặc tự thêm người."
