@@ -228,6 +228,10 @@
       <div t-if="cd.chips.length" class="pbhr-kc-chips">
         <span t-foreach="cd.chips" t-as="ch" t-key="ch_index" class="pbhr-kc-chip" t-att-class="ch.tone ? 'is-' + ch.tone : ''" t-esc="ch.label"/>
       </div>
+      <!-- RECRUIT P6: the Before they join list, as a bar that fills -->
+      <div t-if="cd.joining and cd.joining.total" class="pbhr-p6-kbar" t-att-title="cd.joining.done + ' of ' + cd.joining.total + ' things ready'">
+        <span t-foreach="p6Segs(cd.joining)" t-as="sg" t-key="sg_index" t-att-class="sg"/>
+      </div>
       <!-- RECRUIT P4: who outside the hiring team sees this person -->
       <div t-if="cd.shared" class="pbhr-kc-share" t-att-class="{ 'is-on': cd.shared_tone === 'info', 'is-flash': isFlash(cd.id) }" t-att-title="(cd.shared_names or []).join(', ')">
         <t t-out="ic(cd.shared_tone === 'info' ? 'share2' : 'lock',10)"/> <t t-esc="cd.shared"/>
@@ -300,6 +304,9 @@
               <button t-if="cand.next.secondary" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.runNextBox(cand.next, 'secondary')" t-esc="cand.next.secondary.label"/>
             </div>
           </div>
+
+          <!-- RECRUIT P6: the countdown, Before they join, the signed documents -->
+          <t t-call="pb_hiring.P6DrawerJoining"/>
 
           <!-- RECRUIT P2 (G-29): possibly the same person — a chip and a sentence, never a block -->
           <div t-if="cand.duplicate" class="pbhr-cd-dup" t-att-class="cand.duplicate.same ? 'is-same' : ''">

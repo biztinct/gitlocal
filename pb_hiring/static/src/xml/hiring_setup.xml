@@ -125,6 +125,9 @@
         <!-- ============ RECRUIT P5: SCORECARDS ============ -->
         <t t-call="pb_hiring.P5SetupScorecards"/>
 
+        <!-- ============ RECRUIT P6: BEFORE THEY JOIN ============ -->
+        <t t-call="pb_hiring.P6SetupPrejoin"/>
+
         <!-- ============ SWITCHES (the automations card, inline) ============ -->
         <section class="pbim-panel pbhr-su-switches">
           <div class="pbhr-su-h"><h2>Switches</h2></div>

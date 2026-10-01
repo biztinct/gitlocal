@@ -929,8 +929,9 @@
           <div class="pbim-modal__head">
             <div>
               <div class="pbhr-drawer-title">Record the signed copy</div>
-              <div class="pbhr-drawer-sub">Attach what they sent back. It is
-                 filed on their own record the moment the offer is closed.</div>
+              <div class="pbhr-drawer-sub">Attach what they sent back. They move
+                 to Post-offer with their joining date; it is filed on their own
+                 record the day you confirm they joined.</div>
             </div>
             <button class="pbim-btn ghost" t-on-click="cancelSigning">
               <t t-out="ic('x',16)"/>
@@ -940,6 +941,16 @@
             <label class="pbhr-f pbhr-f--wide">
               <span>The signed letter</span>
               <input class="pbhr-in" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" t-on-change="onSignedFile"/>
+            </label>
+            <!-- RECRUIT P6 (G-42): several signed documents; this is the first -->
+            <label class="pbhr-f">
+              <span>What it is</span>
+              <select class="pbhr-in" t-model="state.signing.kind">
+                <option value="offer_letter">Signed offer letter</option>
+                <option value="employment_agreement">Employment agreement</option>
+                <option value="probation_letter">Probation letter</option>
+                <option value="other">Another signed document</option>
+              </select>
             </label>
             <label class="pbhr-f">
               <span>Signed on</span>
@@ -1006,6 +1017,7 @@
       <t t-call="pb_hiring.P3Overlays"/>
       <t t-call="pb_hiring.P4Overlays"/>
       <t t-call="pb_hiring.P5Overlays"/>
+      <t t-call="pb_hiring.P6Overlays"/>
     </div>
   </t>
   <!-- ====================================================================
@@ -1225,7 +1237,7 @@
                     </div>
 
                     <!-- RECRUIT P3: the one hard rule, said before it is hit -->
-                    <div t-if="journey.offer_block_reason and !['sent', 'accepted', 'signed', 'closed'].includes(offer.state)" class="pbhr-p3-rule">
+                    <div t-if="journey.offer_block_reason and !['sent', 'accepted', 'signed', 'joined', 'dropped'].includes(offer.state)" class="pbhr-p3-rule">
                       <t t-out="ic('lock',15)"/>
                       <span><b>Sending waits for the request.</b> <t t-esc="journey.offer_block_reason"/></span>
                     </div>
@@ -1260,8 +1272,12 @@
                       <button t-if="state.canRecruit and ['sent','accepted'].includes(offer.state)" class="pbim-btn primary" t-on-click="startSigning">
                         <t t-out="ic('stamp',14)"/> Record the signed copy
                       </button>
+                      <!-- RECRUIT P6 (R8): signed is not joined -->
+                      <button t-if="state.canRecruit and offer.state === 'signed'" class="pbim-btn ghost pbhr-no" t-on-click="() =&gt; this.p6FromOffer(offer, 'drop')">
+                        <t t-out="ic('userX',14)"/> Did not join
+                      </button>
                       <button t-if="state.canRecruit and offer.state === 'signed'" class="pbim-btn primary" t-on-click="closeOffer">
-                        <t t-out="ic('sunrise',14)"/> They have joined
+                        <t t-out="ic('logIn',14)"/> Confirm they joined
                       </button>
                       <button t-if="offer.state === 'sent'" class="pbim-btn ghost" t-on-click="copyOfferLink">
                         <t t-out="ic('link',14)"/> Their own link
@@ -1276,7 +1292,15 @@
                       </span>
                     </div>
 
-                    <div t-if="offer.state === 'closed'" class="pbhr-panel-foot">
+                    <div t-if="offer.state === 'signed'" class="pbhr-p3-rule is-info">
+                      <t t-out="ic('calendar',15)"/>
+                      <span><b>Joining <t t-esc="offer.expected_words"/>.</b> Still a candidate until they start — the Before they join list is on their card in Post-offer.</span>
+                    </div>
+                    <div t-if="offer.state === 'dropped'" class="pbhr-p3-rule">
+                      <t t-out="ic('userX',15)"/>
+                      <span><b>Did not join.</b> <t t-esc="offer.drop_words"/></span>
+                    </div>
+                    <div t-if="offer.state === 'joined'" class="pbhr-panel-foot">
                       <button t-if="offer.employee_id" class="pbim-btn ghost" t-on-click="() =&gt; this.act('open_employee', { offer_id: offer.id }, { reload: false })">
                         <t t-out="ic('user',14)"/> Their record
                       </button>
