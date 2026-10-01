@@ -122,6 +122,9 @@
           </div>
         </section>
 
+        <!-- ============ RECRUIT P5: SCORECARDS ============ -->
+        <t t-call="pb_hiring.P5SetupScorecards"/>
+
         <!-- ============ SWITCHES (the automations card, inline) ============ -->
         <section class="pbim-panel pbhr-su-switches">
           <div class="pbhr-su-h"><h2>Switches</h2></div>
@@ -198,6 +201,9 @@
             </div>
             <div class="pbhr-su-who-ctl"><code class="pbhr-su-sender" t-esc="who.sender or 'No address yet — add an email to the company'"/></div>
           </div>
+
+          <!-- RECRUIT P5: scheduling links and Google Calendar -->
+          <t t-call="pb_hiring.P5SetupPeople"/>
         </section>
 
         <!-- ============ RECRUIT P4: CONSENT & RETENTION ============ -->

@@ -35,6 +35,8 @@
           </div>
         </div>
         <div class="pbhr-role-acts" t-if="state.drawer">
+          <!-- RECRUIT P5: every finalist's scorecards side by side -->
+          <t t-call="pb_hiring.P5CompareButton"/>
           <button t-if="board.can_setup" type="button" class="pbim-btn ghost" t-on-click="openSetup" title="Stages, presets, emails and switches">
             <t t-out="ic('sliders',14)"/> Set up hiring
           </button>
@@ -235,6 +237,7 @@
           <button type="button" title="Advance to the next column" t-on-click.stop="() =&gt; this.advance(cd)"><t t-out="ic('arrowRight',13)"/></button>
           <button type="button" title="Not this time" class="is-no" t-on-click.stop="() =&gt; this.notThisTime(cd)"><t t-out="ic('xCircle',13)"/></button>
         </t>
+        <button t-if="cd.remind" type="button" t-att-title="'Remind ' + cd.remind.who" t-on-click.stop="() =&gt; this.remindCard(cd)"><t t-out="ic('bell',13)"/></button>
         <button t-if="!canMove" type="button" title="Leave a note" t-on-click.stop="() =&gt; this.startNoteFor(cd.id, cd.name)"><t t-out="ic('pencil',13)"/></button>
         <button type="button" title="Open" t-on-click.stop="() =&gt; this.openCand(cd.id)"><t t-out="ic('eye',13)"/></button>
       </div>
@@ -341,21 +344,8 @@
             </div>
           </div>
 
-          <!-- interviews and opinions -->
-          <div t-if="cand.scorecards.length" class="pbhr-cd-sec">
-            <t t-foreach="cand.scorecards" t-as="sc" t-key="sc.interview_id">
-              <div class="l" t-esc="opinionsTitle(sc)"/>
-              <div class="pbhr-tl">
-                <span t-foreach="sc.rows" t-as="fr" t-key="fr.id" t-att-class="{ faded: fr.state !== 'submitted', late: fr.late }">
-                  <b t-esc="fr.who"/>
-                  <t t-if="fr.state === 'submitted'"> · <t t-esc="fr.score"/> / 5<t t-if="fr.verdict"> · <t t-esc="fr.verdict"/></t><t t-if="fr.notes"> · “<t t-esc="fr.notes"/>”</t></t>
-                  <t t-elif="fr.late"> · late</t>
-                  <t t-elif="fr.state === 'pending'"> · not yet</t>
-                  <t t-else=""> · not asked any more</t>
-                </span>
-              </div>
-            </t>
-          </div>
+          <!-- interviews and opinions: RECRUIT P5, the scorecard grid -->
+          <t t-call="pb_hiring.P5DrawerScorecards"/>
 
           <!-- RECRUIT P4 (G-36): private recruiter notes, never on the timeline -->
           <t t-call="pb_hiring.P4DrawerNotes"/>
@@ -514,6 +504,9 @@
     <!-- ============ THE TOAST: what happened, and Undo ============ -->
     <div t-if="state.toast" class="pbhr-toast" role="status" aria-live="polite">
       <span t-esc="state.toast.text"/>
+      <!-- RECRUIT P5: no scheduling link — say where to add it -->
+      <span t-if="state.toast.warning" class="pbhr-p5-warn"><t t-out="ic('alert',13)"/> <t t-esc="state.toast.warning.text"/></span>
+      <button t-if="state.toast.warning" type="button" class="pbhr-toast-link" t-on-click="() =&gt; this.fixSchedulingLink(state.toast.warning)"><t t-if="state.toast.warning.mine">Add my link</t><t t-else="">Open Hiring set-up</t></button>
       <button t-if="state.toast.prompt" type="button" class="pbhr-toast-link" t-on-click="toastPrompt">Log how the interview went?</button>
       <button t-if="state.toast.moved.length or state.toast.undo" type="button" class="pbhr-toast-undo" t-on-click="undoToast"><t t-out="ic('undo',13)"/> Undo</button>
       <button type="button" class="pbhr-toast-x" t-on-click="closeToast" title="Dismiss"><t t-out="ic('x',13)"/></button>

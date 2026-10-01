@@ -559,6 +559,8 @@
                 <option t-foreach="state.modes" t-as="md" t-key="md.key" t-att-value="md.key" t-esc="md.label"/>
               </select>
             </label>
+            <!-- RECRUIT P5: the scorecard, and where the video link comes from -->
+            <t t-call="pb_hiring.P5ScheduleExtra"/>
             <label class="pbhr-f pbhr-f--wide">
               <span>Where, or the link to the call</span>
               <input class="pbhr-in" type="text" t-model="state.scheduling.location" placeholder="Meeting room 2, the site office, or a video link"/>
@@ -1003,6 +1005,7 @@
       <t t-call="pb_hiring.P1Overlays"/>
       <t t-call="pb_hiring.P3Overlays"/>
       <t t-call="pb_hiring.P4Overlays"/>
+      <t t-call="pb_hiring.P5Overlays"/>
     </div>
   </t>
   <!-- ====================================================================
@@ -1346,6 +1349,9 @@
               </div>
             </t>
 
+            <!-- RECRUIT P5 (G-18): which scorecard each round uses -->
+            <t t-call="pb_hiring.P5Rounds"/>
+
             <!-- ======================== the advert ======================== -->
             </t><t t-if="state.drawerSection === 'jd'">
             <!-- RECRUIT P2: the role's own application form -->
@@ -1499,6 +1505,8 @@
                       <t t-out="ic('flag',13)"/> <t t-esc="iv.decision_label"/>
                     </span>
                   </div>
+                  <!-- RECRUIT P5: the Meet link, the transcript, Enter it for them -->
+                  <t t-call="pb_hiring.P5IvExtra"/>
                 </div>
 
                 <div class="pbhr-ivcard-acts" t-if="state.canRecruit">
