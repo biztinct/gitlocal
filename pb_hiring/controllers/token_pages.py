@@ -40,7 +40,8 @@ _UPLOAD_MAX_BYTES = 5 * 1024 * 1024
 
 class PbHiringTokenPages(http.Controller):
 
-    def _page(self, token, row, status):
+    def _page(self, token, row, status, problem=''):
+        live = bool(row and status == 'ok')
         return request.render('pb_hiring.hiring_feedback_page', {
             'status': status,
             # Echoed back so the form posts to the same key — never
@@ -50,8 +51,11 @@ class PbHiringTokenPages(http.Controller):
             # HTTP request the layout itself reads — the page then dies with
             # "'Request' object is not subscriptable" and the visitor gets a
             # 500 instead of a form (R4).
-            'facts': row.page_facts() if (row and status == 'ok') else {},
-            'questions': row.questions() if (row and status == 'ok') else [],
+            'facts': row.page_facts() if live else {},
+            # RECRUIT P5: the scorecard's questions, each with any answer
+            # already given (the interviewer is changing it).
+            'parts': row.parts_for_page() if live else [],
+            'problem': problem,
         })
 
     @http.route('/hiring/f/<string:token>', type='http', auth='public',
@@ -61,20 +65,41 @@ class PbHiringTokenPages(http.Controller):
             'pb.hiring.feedback'].sudo()._request_for_token(token)
         if kw.get('done') == '1' and status in ('used', 'ok'):
             status = 'thanks'
-        return self._page(token, row, status)
+        problem = {
+            'missing': _("Some questions still need an answer — they are marked."),
+            'decision': _("Choose Yes, Maybe, No or Hold before you send it."),
+            'failed': _("That did not save. Try once more; if it happens again, reply to "
+                        "the email that brought you here."),
+        }.get(kw.get('problem'), '')
+        return self._page(token, row, status, problem=problem)
 
     @http.route('/hiring/f/<string:token>/submit', type='http',
                 auth='public', website=True, methods=['POST'], csrf=False,
                 sitemap=False)
     def hiring_feedback_submit(self, token, **post):
         """`csrf=False` for the reason every token page in this product has
-        it: the visitor has no session to carry a token in. The write is
-        idempotent — a replay finds the opinion already given and writes
-        nothing."""
+        it: the visitor has no session to carry a token in. The write touches
+        one opinion only; it can be changed until the recruiter decides
+        (RECRUIT P5), and after that a replay writes nothing."""
         row, status = request.env[
             'pb.hiring.feedback'].sudo()._request_for_token(token)
-        if status == 'ok':
-            try:
+        if status != 'ok':
+            return request.redirect('/hiring/f/%s' % token)
+        try:
+            if post.get('scorecard') == '1':
+                answers = {}
+                for key, value in post.items():
+                    if key.startswith('p_'):
+                        answers[key[2:]] = value
+                if post.get('decision') not in ('yes', 'maybe', 'no', 'hold'):
+                    return request.redirect('/hiring/f/%s?problem=decision' % token)
+                _clean, missing = row.sudo()._clean_answers(answers)
+                if missing:
+                    return request.redirect('/hiring/f/%s?problem=missing' % token)
+                row.sudo().submit_answers(
+                    answers, post.get('decision'),
+                    notes=(post.get('notes') or '').strip()[:_MAX_NOTES])
+            else:
                 ratings = []
                 for question in row.questions():
                     raw = post.get('c_%s' % question['id'])
@@ -84,8 +109,11 @@ class PbHiringTokenPages(http.Controller):
                     ratings,
                     recommendation=post.get('recommendation'),
                     notes=(post.get('notes') or '').strip()[:_MAX_NOTES])
-            except Exception:           # noqa: BLE001 — never a traceback
-                _logger.exception('pb_hiring: a feedback submit failed')
+        except UserError:
+            return request.redirect('/hiring/f/%s?problem=missing' % token)
+        except Exception:               # noqa: BLE001 — never a traceback
+            _logger.exception('pb_hiring: a feedback submit failed')
+            return request.redirect('/hiring/f/%s?problem=failed' % token)
         return request.redirect('/hiring/f/%s?done=1' % token)
 
     # =====================================================================

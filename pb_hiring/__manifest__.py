@@ -60,10 +60,24 @@ WHAT THIS MODULE IS
     can finally answer why its hiring takes as long as it does. Nobody coming
     is written down rather than forgotten.
   * **Opinions that actually land.** Everybody who sat in the room gets their
-    own private link — no sign-in, it works once — with five lines to score
-    and one question: would you hire them. A day of working hours later,
-    anybody who has not answered is chased once. A round can be marked done
-    with an opinion still missing, and the chase keeps going until it lands.
+    own private link — no sign-in — to the scorecard the talent lead chose
+    for that kind of role and that round: written answers, stars, optional
+    scored lines, and one decision, Yes, Maybe, No or Hold. Answers stay
+    hidden from the other panellists until everyone is in. A day of working
+    hours later anybody who has not answered is reminded, every day, and the
+    talent lead is told at two days late; a recruiter can enter an opinion
+    that arrived another way, and the record says who typed it and where it
+    came from. The candidate never waits for an opinion.
+  * **The recruiter's own scheduling link.** Moving a candidate into
+    Recruiter review sends them the "Let's chat" email with the recruiter's
+    Calendly link, in the language they applied in.
+  * **Google Calendar and Meet.** A recruiter who connects their Google
+    Calendar gets every interview on it, and a video interview gets its Meet
+    link made for it — on the invitations, the calendar files and the board.
+    Without a connection everything works as before. The recording or
+    transcript link sits on the interview, for the hiring team only.
+  * **The finalists, side by side.** Every scorecard of every finalist in one
+    grid, with Choose, Keep warm and Not this time one click per column.
   * **The role board.** Open a role and its candidates sit in columns — the
     company's own stages, each with a one-line meaning. Drag a card, or tick
     several and move them together; every move can be undone for five
@@ -124,7 +138,7 @@ WHAT THIS MODULE IS
     them, and whether an agency is faster than doing it yourself — with the
     whole thing downloadable as a spreadsheet.
 """,
-    'version': '19.0.2.3.0',
+    'version': '19.0.2.4.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -157,6 +171,7 @@ WHAT THIS MODULE IS
         'pb_insights_hub',          # the hub the Hiring numbers lens joins
         'phone_validation',         # RECRUIT P2: the phone checked against the country
         'hr_recruitment_skills',    # RECRUIT P4: the Resume bank searches by skill
+        'google_calendar',          # RECRUIT P5 (RC-D3): Google Calendar + Meet for interviews
     ],
     'data': [
         'security/pb_hiring_security.xml',
@@ -173,6 +188,7 @@ WHAT THIS MODULE IS
         'data/letter_template_offer.xml',
         'data/mail_template_offer.xml',
         'data/mail_template_requests.xml',
+        'data/mail_template_p5.xml',
         'data/ir_cron.xml',
         'report/hiring_offer_report.xml',
         'views/hiring_views.xml',
@@ -188,6 +204,7 @@ WHAT THIS MODULE IS
         'data/journey_seed.xml',
         'data/recruit_p1.xml',
         'data/recruit_p2.xml',
+        'views/recruit_p5_views.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -198,11 +215,13 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/scss/hiring_forms.scss',
             'pb_hiring/static/src/scss/hiring_p3.scss',
             'pb_hiring/static/src/scss/hiring_p4.scss',
+            'pb_hiring/static/src/scss/hiring_p5.scss',
             'pb_hiring/static/src/js/hiring_board.js',
             'pb_hiring/static/src/js/hiring_setup.js',
             'pb_hiring/static/src/js/hiring_forms.js',
             'pb_hiring/static/src/js/hiring_requests_p3.js',
             'pb_hiring/static/src/js/hiring_privacy_p4.js',
+            'pb_hiring/static/src/js/hiring_p5.js',
             'pb_hiring/static/src/js/hiring_numbers.js',
             'pb_hiring/static/src/js/hiring_palette.js',
             'pb_hiring/static/src/xml/hiring_board.xml',
@@ -211,6 +230,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/xml/hiring_forms.xml',
             'pb_hiring/static/src/xml/hiring_requests_p3.xml',
             'pb_hiring/static/src/xml/hiring_privacy_p4.xml',
+            'pb_hiring/static/src/xml/hiring_p5.xml',
             'pb_hiring/static/src/xml/hiring_numbers.xml',
         ],
         'web.assets_frontend': [
@@ -218,6 +238,8 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/js/apply_page.js',
             'pb_hiring/static/src/scss/request_page.scss',
             'pb_hiring/static/src/js/request_page.js',
+            'pb_hiring/static/src/scss/interviewer_page.scss',
+            'pb_hiring/static/src/js/interviewer_page.js',
         ],
     },
     'post_init_hook': 'post_init_hook',

@@ -24,6 +24,7 @@ from odoo import _, api, fields, models
 
 from .hiring_common import (
     P_DOC_REMINDER_DAYS, P_JD_REMINDER_DAYS, P_RECRUITER_NUDGE_DAYS,
+    P_CHASE_EVERY_HOURS, P_CHASE_STOP_DAYS, P_LEAD_LATE_DAYS,
     P_REMINDER_CAP, P_REMINDERS, P_URGENT_AFTER_HOURS, counted, flag, leg,
     number,
 )
@@ -49,11 +50,13 @@ class PbHiringAutomation(models.AbstractModel):
     @api.model
     def run_now(self):
         counts = {'jd': 0, 'recruiter': 0, 'late_feedback': 0,
+                  'lead_told': 0,
                   'documents': 0, 'doc_overdue': 0, 'cover_started': 0,
                   'cover_ended': 0}
         for key, fn in (('jd', self._nudge_adverts),
                         ('recruiter', self._nudge_open_roles),
                         ('late_feedback', self._chase_late_feedback),
+                        ('lead_told', self._tell_lead_late_feedback),
                         ('documents', self._chase_documents),
                         ('doc_overdue', self._document_deadlines),
                         ('cover', self._move_covers)):
@@ -95,6 +98,10 @@ class PbHiringAutomation(models.AbstractModel):
             parts.append(_("%(n)s late %(word)s chased.", n=late,
                            word=counted(late, _('opinion was'),
                                         _('opinions were'))))
+        told = counts.get('lead_told', 0)
+        if told:
+            parts.append(_("The talent lead was told about %(n)s %(word)s.", n=told,
+                           word=counted(told, _('late opinion'), _('late opinions'))))
         docs = counts.get('documents', 0)
         if docs:
             parts.append(_("%(n)s %(word)s reminded about their papers.",
@@ -232,8 +239,18 @@ class PbHiringAutomation(models.AbstractModel):
             _logger.info('pb_hiring: interview reminders are switched off, so '
                          'nobody was told about an hour that is coming')
             return counts
+        # RECRUIT P5: "How did it go?" the moment an interview ends, the
+        # chase at the due time (not at the next midnight), the Talent lead
+        # at two days late, and invitations whose Meet link never came.
+        counts.update({'asked': 0, 'late_feedback': 0, 'lead_told': 0,
+                       'invites': 0})
         for key, fn in (('day_before', self._remind_day_before),
-                        ('half_hour', self._remind_half_hour)):
+                        ('half_hour', self._remind_half_hour),
+                        ('asked', self._ask_after_interview),
+                        ('late_feedback', self._chase_late_feedback),
+                        ('lead_told', self._tell_lead_late_feedback),
+                        ('invites', lambda: self.env['pb.hiring.interview']
+                         ._pb_send_overdue_invites())):
             try:
                 counts[key] = fn()
             except Exception:           # noqa: BLE001 — a job never raises
@@ -313,28 +330,89 @@ class PbHiringAutomation(models.AbstractModel):
     # =====================================================================
     @api.model
     def _chase_late_feedback(self):
-        """ONE urgent mail per late opinion, ever.
+        """A reminder per late opinion, then one a day until it lands
+        (RECRUIT P5, G-32 — A2 sent exactly one).
 
-        Idempotent by `urgent_sent_at` rather than by a search for an open
-        to-do, because the to-do is raised on the INTERVIEW and three late
-        opinions on one interview are three different people to chase. R49's
-        lesson from the other side: only an identifier a row actually HAS may
-        be the key.
+        Idempotent by `last_reminded_at`, so this runs safely every ten
+        minutes and every night. Stops when the opinion is in, the interview
+        was called off or moved, the candidate is closed, or it is more than
+        `pb_hiring.chase_stop_days` late (the Talent lead was told long
+        before).
         """
         grace = max(0, number(self.env, P_URGENT_AFTER_HOURS, 0))
-        cutoff = fields.Datetime.now() - timedelta(hours=grace)
+        now = fields.Datetime.now()
+        cutoff = now - timedelta(hours=grace)
+        every = max(1, number(self.env, P_CHASE_EVERY_HOURS, 24))
+        stop = max(1, number(self.env, P_CHASE_STOP_DAYS, 14))
         cap = max(1, number(self.env, P_REMINDER_CAP, 400))
         rows = self.env['pb.hiring.feedback'].sudo().search([
             ('state', '=', 'pending'),
-            ('urgent_sent_at', '=', False),
             ('due_at', '!=', False),
             ('due_at', '<=', cutoff),
+            ('due_at', '>=', now - timedelta(days=stop)),
+            ('interview_id.state', 'in', ('scheduled', 'done')),
+            '|', ('last_reminded_at', '=', False),
+            ('last_reminded_at', '<=', now - timedelta(hours=every)),
+        ], order='due_at', limit=cap)
+        made = 0
+        for row in rows:
+            if not self._candidate_still_in_play(row):
+                continue
+            if leg(self.env, 'the chase on opinion %s' % row.id,
+                   row._chase) is not False:
+                made += 1
+        return made
+
+    @api.model
+    def _candidate_still_in_play(self, row):
+        app = row.applicant_id.sudo().with_context(active_test=False)
+        return bool(app.active and (app.stage_id.pb_family or 'open') == 'open')
+
+    @api.model
+    def _tell_lead_late_feedback(self):
+        """Two days late: the Talent lead is told, once per opinion."""
+        days = max(1, number(self.env, P_LEAD_LATE_DAYS, 2))
+        stop = max(days + 1, number(self.env, P_CHASE_STOP_DAYS, 14))
+        now = fields.Datetime.now()
+        cap = max(1, number(self.env, P_REMINDER_CAP, 400))
+        rows = self.env['pb.hiring.feedback'].sudo().search([
+            ('state', '=', 'pending'),
+            ('lead_told_at', '=', False),
+            ('due_at', '!=', False),
+            ('due_at', '<=', now - timedelta(days=days)),
+            ('due_at', '>=', now - timedelta(days=stop)),
             ('interview_id.state', 'in', ('scheduled', 'done')),
         ], order='due_at', limit=cap)
         made = 0
         for row in rows:
-            if leg(self.env, 'the chase on opinion %s' % row.id,
-                   row._chase) is not False:
+            if not self._candidate_still_in_play(row):
+                continue
+            if leg(self.env, 'telling the talent lead about opinion %s' % row.id,
+                   row._tell_lead) is not False:
+                made += 1
+        return made
+
+    @api.model
+    def _ask_after_interview(self):
+        """"How did it go? Fill in your scorecard" — once, to every panellist
+        who has not answered, in the six hours after an interview ends (a
+        window, so an upgrade never mails a year of history)."""
+        now = fields.Datetime.now()
+        cap = max(1, number(self.env, P_REMINDER_CAP, 400))
+        rows = self.env['pb.hiring.feedback'].sudo().search([
+            ('state', '=', 'pending'),
+            ('ask_sent_at', '=', False),
+            ('interview_id.state', 'in', ('scheduled', 'done')),
+            ('interview_id.stop', '<=', now),
+            ('interview_id.stop', '>=', now - timedelta(hours=6)),
+        ], limit=cap)
+        made = 0
+        for row in rows:
+            def send(row=row):
+                row.write({'ask_sent_at': fields.Datetime.now()})
+                return row._send_template('pb_hiring.mail_template_feedback_ask')
+            if leg(self.env, 'the "how did it go" mail on opinion %s' % row.id,
+                   send):
                 made += 1
         return made
 

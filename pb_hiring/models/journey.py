@@ -60,15 +60,18 @@ OLD_NAMES = {
 }
 #: The talent lead's one-line meaning of each stage, shown on hover over the
 #: column name. Seeded only where a row has none. Deliberately silent about
-#: anything a later phase automates (the Calendly link, the assignment brief):
-#: a sentence promising an email that does not go is a lie on the board.
+#: anything not automated yet (the assignment brief): a sentence promising an
+#: email that does not go is a lie on the board. RECRUIT P5 made the Calendly
+#: promise true, so Recruiter review now says it (and the P5 migration
+#: rewrites the old sentence where a client never changed it).
 MEANINGS = {
     'screening': 'Everyone who applied and has not had a first look yet.',
     'shortlist': 'Worth a conversation. From here they go to a recruiter '
                  'review or straight to a hiring manager review.',
     'panel_review': 'The hiring manager looks at the CV before interviews '
                     'are set up. Used for senior or new roles.',
-    'phone': 'A 30-minute conversation with the recruiter.',
+    'phone': 'A 30-minute conversation with the recruiter. Moving here sends '
+             'the Calendly link.',
     'assignment': 'A take-home task, for roles that need one.',
     'discussion_1': 'The first interview round, with the panel\'s opinions.',
     'discussion_2': 'The second interview round, with the panel\'s opinions.',
@@ -103,7 +106,8 @@ VI_MEANINGS = {
                  'dụng xem xét hoặc thẳng tới quản lý tuyển dụng xem xét.',
     'panel_review': 'Quản lý tuyển dụng xem CV trước khi sắp xếp phỏng vấn. '
                     'Dùng cho vị trí cấp cao hoặc vị trí mới.',
-    'phone': 'Một cuộc trao đổi 30 phút với chuyên viên tuyển dụng.',
+    'phone': 'Một cuộc trao đổi 30 phút với chuyên viên tuyển dụng. Chuyển '
+             'sang đây sẽ gửi đường dẫn Calendly.',
     'assignment': 'Một bài tập làm ở nhà, cho vị trí cần đến.',
     'discussion_1': 'Vòng phỏng vấn thứ nhất, kèm ý kiến của hội đồng.',
     'discussion_2': 'Vòng phỏng vấn thứ hai, kèm ý kiến của hội đồng.',
@@ -733,3 +737,7 @@ def seed_journey(env):
     # RECRUIT P3: the four advert templates per company (three languages).
     from .requests_p3 import seed_p3
     seed_p3(env)
+    # RECRUIT P5: the five scorecards per company, and the "Let's chat"
+    # email in Vietnamese and Bahasa Indonesia.
+    from .scorecards_p5 import seed_p5
+    seed_p5(env)

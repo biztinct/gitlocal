@@ -38,143 +38,217 @@
       <t t-elif="icon == 'award'"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></t>
       <t t-elif="icon == 'fileText'"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8M16 13H8M16 17H8"/></t>
       <t t-elif="icon == 'circle'"><circle cx="12" cy="12" r="10"/></t>
+      <!-- RECRUIT P5: the interviewer's scorecard page. -->
+      <t t-elif="icon == 'star'"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></t>
+      <t t-elif="icon == 'lock'"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></t>
+      <t t-elif="icon == 'video'"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></t>
+      <t t-elif="icon == 'yes'"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></t>
+      <t t-elif="icon == 'maybe'"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></t>
+      <t t-elif="icon == 'no'"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></t>
+      <t t-elif="icon == 'hold'"><circle cx="12" cy="12" r="10"/><line x1="10" x2="10" y1="15" y2="9"/><line x1="14" x2="14" y1="15" y2="9"/></t>
+      <t t-elif="icon == 'pencil'"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></t>
+      <t t-elif="icon == 'send'"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></t>
       <t t-else=""><circle cx="12" cy="12" r="10"/></t>
     </svg>
   </template>
 
+  <!-- ==================================================================
+       RECRUIT P5 — the interviewer's page: ONE screen, the scorecard the
+       talent lead chose for this role and round, four big decision buttons,
+       stars that light as you point, and the line that makes people honest:
+       "Your answers stay hidden from the other panellists until everyone is
+       in." English (call decision R11). Light only, like every public page
+       here (R39: the frontend bundle has no token sheet; every colour is a
+       literal). Works at 360 px; works with the script blocked (the server
+       checks everything again).
+       ================================================================== -->
   <template id="hiring_feedback_page" name="What did you think">
     <t t-call="web.frontend_layout">
-      <div id="wrap" class="pbhf pbhf-page">
-        <div class="pbhf-card">
+      <div id="wrap" class="pbiv">
+        <div class="pbiv-wrap">
 
-          <div class="pbhf-card__brand">Payobook</div>
-
-          <!-- ==================== the questions ==================== -->
+          <!-- ==================== the scorecard ==================== -->
           <t t-if="status == 'ok'">
-            <div class="pbhf-card__ic">
-              <t t-call="pb_hiring.hf_icon">
-                <t t-set="icon" t-value="'users'"/>
-                <t t-set="isz" t-value="28"/>
-              </t>
-            </div>
-            <h1>What did you think?</h1>
-            <p class="pbhf-card__sub">
-              You interviewed
-              <strong t-esc="facts['candidate']"/>
-              for <strong t-esc="facts['role']"/>, round
-              <t t-esc="facts['round']"/>. Five lines to score and one
-              question — it takes a minute, and they are waiting on the
-              slowest of us.
-            </p>
+            <header class="pbiv-hero">
+              <div class="pbiv-eyebrow"><t t-esc="facts.get('brand')"/> · Interview scorecard</div>
+              <h1 class="pbiv-h1" t-esc="facts['candidate']"/>
+              <p class="pbiv-sub">
+                <t t-esc="facts['role']"/> · <b t-esc="facts.get('round_label')"/>
+                <t t-if="facts.get('when')"> · <t t-esc="facts['when']"/></t>
+              </p>
+              <div class="pbiv-chips">
+                <span t-if="facts.get('others')" class="pbiv-chip">With <t t-esc="', '.join(facts['others'])"/></span>
+                <span t-if="facts.get('due')" t-attf-class="pbiv-chip #{facts.get('late') and 'is-late' or ''}">
+                  <t t-call="pb_hiring.hf_icon"><t t-set="icon" t-value="facts.get('late') and 'alert' or 'clock'"/><t t-set="isz" t-value="13"/></t>
+                  <t t-if="facts.get('late')">Wanted by <t t-esc="facts['due']"/> — still worth sending</t>
+                  <t t-else="">Wanted by <t t-esc="facts['due']"/></t>
+                </span>
+                <a t-if="facts.get('cv')" class="pbiv-chip is-link" t-att-href="facts['cv']" target="_blank" rel="noopener">
+                  <t t-call="pb_hiring.hf_icon"><t t-set="icon" t-value="'fileText'"/><t t-set="isz" t-value="13"/></t> Their CV
+                </a>
+                <a t-if="facts.get('video')" class="pbiv-chip is-link" t-att-href="facts['video']" target="_blank" rel="noopener">
+                  <t t-call="pb_hiring.hf_icon"><t t-set="icon" t-value="'video'"/><t t-set="isz" t-value="13"/></t> Video link
+                </a>
+              </div>
+              <div class="pbiv-private">
+                <t t-call="pb_hiring.hf_icon"><t t-set="icon" t-value="'lock'"/><t t-set="isz" t-value="15"/></t>
+                <span>Your answers stay hidden from the other panellists until everyone is in.</span>
+              </div>
+              <p t-if="facts.get('intro')" class="pbiv-intro" t-esc="facts['intro']"/>
+            </header>
 
-            <div class="pbhf-meta" t-if="facts.get('due')">
-              <t t-call="pb_hiring.hf_icon">
-                <t t-set="icon" t-value="facts.get('late') and 'alert' or 'clock'"/>
-                <t t-set="isz" t-value="14"/>
-              </t>
-              <span t-if="facts.get('late')">
-                This was wanted by <t t-esc="facts['due']"/>. It is still
-                worth sending.
-              </span>
-              <span t-else="">Wanted by <t t-esc="facts['due']"/></span>
+            <div t-if="problem" class="pbiv-problem" role="alert">
+              <t t-call="pb_hiring.hf_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t>
+              <span t-esc="problem"/>
+            </div>
+            <div t-elif="facts.get('answered')" class="pbiv-again">
+              <t t-call="pb_hiring.hf_icon"><t t-set="icon" t-value="'pencil'"/><t t-set="isz" t-value="15"/></t>
+              <span>You sent this on <t t-esc="facts.get('submitted_on')"/>. Change anything and send it again — it counts until the recruiter decides.</span>
             </div>
 
-            <form t-attf-action="/hiring/f/#{token}/submit" method="post">
-              <t t-foreach="questions" t-as="q">
-                <div class="pbhf-crit">
-                  <label class="pbhf-label" t-esc="q['name']"/>
-                  <p class="pbhf-help" t-if="q.get('help')" t-esc="q['help']"/>
-                  <div class="pbhf-scale">
+            <form id="pbiv-form" class="pbiv-form" t-attf-action="/hiring/f/#{token}/submit" method="post"
+                  t-att-data-token="token" novalidate="novalidate">
+              <input type="hidden" name="scorecard" value="1"/>
+
+              <t t-foreach="parts" t-as="pt">
+                <section class="pbiv-q" t-att-data-kind="pt['kind']" t-att-data-required="pt['required'] and '1' or '0'" t-att-data-part="pt['id']">
+                  <div class="pbiv-q-head">
+                    <span class="pbiv-q-n" t-esc="pt_index + 1"/>
+                    <div>
+                      <label class="pbiv-q-label" t-att-for="'p_%s' % pt['id']">
+                        <t t-esc="pt['prompt']"/>
+                        <span t-if="pt['required']" class="pbiv-req">Required</span>
+                      </label>
+                      <p t-if="pt.get('help')" class="pbiv-q-help" t-esc="pt['help']"/>
+                    </div>
+                  </div>
+
+                  <!-- a written answer -->
+                  <textarea t-if="pt['kind'] == 'text'" class="pbiv-in" rows="3" t-att-id="'p_%s' % pt['id']"
+                            t-att-name="'p_%s' % pt['id']" maxlength="4000" t-esc="pt.get('value') or ''"
+                            placeholder="A sentence or two is plenty."/>
+
+                  <!-- five stars: the radios run 5..1 and the row is reversed,
+                       so "this star and every star before it" is one CSS rule -->
+                  <div t-elif="pt['kind'] == 'rating'" class="pbiv-stars-wrap">
+                    <div class="pbiv-stars" role="radiogroup" t-att-aria-label="pt['prompt']">
+                      <t t-foreach="[5, 4, 3, 2, 1]" t-as="n">
+                        <input type="radio" class="pbiv-star-in" t-att-id="'p_%s_%s' % (pt['id'], n)"
+                               t-att-name="'p_%s' % pt['id']" t-att-value="n"
+                               t-att-checked="pt.get('value') == n and 'checked' or None"/>
+                        <label class="pbiv-star" t-att-for="'p_%s_%s' % (pt['id'], n)" t-att-title="'%s out of 5' % n">
+                          <t t-call="pb_hiring.hf_icon"><t t-set="icon" t-value="'star'"/><t t-set="isz" t-value="34"/></t>
+                          <span class="pbiv-sr"><t t-esc="n"/> out of 5</span>
+                        </label>
+                      </t>
+                    </div>
+                    <span class="pbiv-stars-word" aria-live="polite"/>
+                  </div>
+
+                  <!-- a scored line, one to five -->
+                  <div t-elif="pt['kind'] == 'line'" class="pbiv-scale" role="radiogroup" t-att-aria-label="pt['prompt']">
                     <t t-foreach="[1, 2, 3, 4, 5]" t-as="n">
-                      <label class="pbhf-scale__o">
-                        <input type="radio" t-attf-name="c_#{q['id']}"
-                               t-att-value="n"/>
+                      <label class="pbiv-scale-o">
+                        <input type="radio" t-att-name="'p_%s' % pt['id']" t-att-value="n"
+                               t-att-checked="pt.get('value') == n and 'checked' or None"/>
                         <span t-esc="n"/>
                       </label>
                     </t>
                   </div>
-                </div>
+
+                  <!-- yes or no -->
+                  <div t-elif="pt['kind'] == 'yes_no'" class="pbiv-scale pbiv-yn" role="radiogroup" t-att-aria-label="pt['prompt']">
+                    <label class="pbiv-scale-o"><input type="radio" t-att-name="'p_%s' % pt['id']" value="yes" t-att-checked="pt.get('value') == 'yes' and 'checked' or None"/><span>Yes</span></label>
+                    <label class="pbiv-scale-o"><input type="radio" t-att-name="'p_%s' % pt['id']" value="no" t-att-checked="pt.get('value') == 'no' and 'checked' or None"/><span>No</span></label>
+                  </div>
+                  <p class="pbiv-q-miss">This one needs an answer.</p>
+                </section>
               </t>
 
-              <div class="pbhf-crit">
-                <label class="pbhf-label">Would you hire them?</label>
-                <div class="pbhf-verdict">
-                  <t t-foreach="facts['recommendations']" t-as="rec">
-                    <label class="pbhf-verdict__o">
-                      <input type="radio" name="recommendation"
-                             t-att-value="rec['key']"/>
-                      <span t-esc="rec['label']"/>
+              <!-- the decision: four big buttons, always required -->
+              <section class="pbiv-q pbiv-decide" data-kind="decision" data-required="1">
+                <div class="pbiv-q-head">
+                  <span class="pbiv-q-n"><t t-call="pb_hiring.hf_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="14"/></t></span>
+                  <div>
+                    <span class="pbiv-q-label">Your decision <span class="pbiv-req">Required</span></span>
+                    <p class="pbiv-q-help">Would you take them forward?</p>
+                  </div>
+                </div>
+                <div class="pbiv-decisions" role="radiogroup" aria-label="Your decision">
+                  <t t-foreach="[('yes', 'Yes', 'Take them forward'), ('maybe', 'Maybe', 'Not sure yet'), ('no', 'No', 'Not for this role'), ('hold', 'Hold', 'Keep them in mind')]" t-as="dc">
+                    <label t-attf-class="pbiv-dec pbiv-dec--#{dc[0]}">
+                      <input type="radio" name="decision" t-att-value="dc[0]"
+                             t-att-checked="facts.get('decision') == dc[0] and 'checked' or None"/>
+                      <span class="pbiv-dec-box">
+                        <span class="pbiv-dec-ic"><t t-call="pb_hiring.hf_icon"><t t-set="icon" t-value="dc[0]"/><t t-set="isz" t-value="26"/></t></span>
+                        <b t-esc="dc[1]"/>
+                        <small t-esc="dc[2]"/>
+                      </span>
                     </label>
                   </t>
                 </div>
+                <p class="pbiv-q-miss">Choose Yes, Maybe, No or Hold.</p>
+              </section>
+
+              <section class="pbiv-q">
+                <label class="pbiv-q-label" for="pbiv-notes">Anything else, in your own words <span class="pbiv-opt">optional</span></label>
+                <textarea class="pbiv-in" id="pbiv-notes" name="notes" rows="3" maxlength="4000"
+                          placeholder="One thing they did well and one thing that worried you is more use than a paragraph of adjectives." t-esc="facts.get('notes') or ''"/>
+              </section>
+
+              <div class="pbiv-foot">
+                <div class="pbiv-progress" aria-live="polite">
+                  <div class="pbiv-progress-bar"><span id="pbiv-bar"/></div>
+                  <span id="pbiv-count" class="pbiv-progress-tx">Answer the questions, then choose</span>
+                </div>
+                <button type="submit" class="pbiv-send">
+                  <t t-call="pb_hiring.hf_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="17"/></t>
+                  <span class="pbiv-send-tx"><t t-if="facts.get('answered')">Send my changes</t><t t-else="">Send my scorecard</t></span>
+                </button>
+                <p class="pbiv-fine">
+                  <span id="pbiv-draft">Your answers are kept on this device until you send them.</span>
+                  This link is yours alone. Only the hiring team reads what you write.
+                </p>
               </div>
-
-              <label class="pbhf-label" for="notes">
-                Anything you want to say in your own words
-              </label>
-              <textarea class="pbhf-input" id="notes" name="notes" rows="4"
-                        placeholder="One thing they did well and one thing that worried you is more use than a paragraph of adjectives."/>
-
-              <button type="submit" class="pbhf-btn pbhf-btn--primary">
-                <t t-call="pb_hiring.hf_icon">
-                  <t t-set="icon" t-value="'check'"/>
-                  <t t-set="isz" t-value="16"/>
-                </t>
-                Send what I thought
-              </button>
             </form>
-            <p class="pbhf-card__fine">
-              This link is yours alone and works once. Only the hiring team
-              reads it.
-            </p>
           </t>
 
           <!-- ==================== just answered ==================== -->
           <t t-elif="status == 'thanks'">
-            <div class="pbhf-card__ic pbhf-card__ic--ok">
-              <t t-call="pb_hiring.hf_icon">
-                <t t-set="icon" t-value="'checkCircle'"/>
-                <t t-set="isz" t-value="28"/>
-              </t>
+            <div class="pbiv-done">
+              <div class="pbiv-done-ic">
+                <t t-call="pb_hiring.hf_icon"><t t-set="icon" t-value="'checkCircle'"/><t t-set="isz" t-value="34"/></t>
+              </div>
+              <h1 class="pbiv-h1">Thank you</h1>
+              <p class="pbiv-sub">Your scorecard is with the hiring team. The other panellists cannot see it until everyone is in — and the candidate hears back sooner because you were quick.</p>
+              <p class="pbiv-sub">You can still change it until the recruiter decides.</p>
+              <a class="pbiv-again-link" t-attf-href="/hiring/f/#{token}">
+                <t t-call="pb_hiring.hf_icon"><t t-set="icon" t-value="'pencil'"/><t t-set="isz" t-value="15"/></t>
+                Change my answers
+              </a>
             </div>
-            <h1>Thank you</h1>
-            <p class="pbhf-card__sub">
-              That is with the hiring team. There is nothing left for you to
-              do here — and the candidate will hear back sooner because you
-              were quick.
-            </p>
           </t>
 
-          <!-- ==================== already answered ==================== -->
+          <!-- ==================== already decided ==================== -->
           <t t-elif="status == 'used'">
-            <div class="pbhf-card__ic pbhf-card__ic--ok">
-              <t t-call="pb_hiring.hf_icon">
-                <t t-set="icon" t-value="'checkCircle'"/>
-                <t t-set="isz" t-value="28"/>
-              </t>
+            <div class="pbiv-done">
+              <div class="pbiv-done-ic">
+                <t t-call="pb_hiring.hf_icon"><t t-set="icon" t-value="'checkCircle'"/><t t-set="isz" t-value="34"/></t>
+              </div>
+              <h1 class="pbiv-h1">Already answered</h1>
+              <p class="pbiv-sub">You have said what you thought, and the recruiter has decided on this round, so the link has closed. If something has changed, tell the recruiter.</p>
             </div>
-            <h1>Already answered</h1>
-            <p class="pbhf-card__sub">
-              You have said what you thought about this one, so the link has
-              closed itself. If you have changed your mind, tell the recruiter
-              — they can still record it.
-            </p>
           </t>
 
           <!-- ==================== closed or unknown ==================== -->
           <t t-else="">
-            <div class="pbhf-card__ic pbhf-card__ic--warn">
-              <t t-call="pb_hiring.hf_icon">
-                <t t-set="icon" t-value="'clock'"/>
-                <t t-set="isz" t-value="28"/>
-              </t>
+            <div class="pbiv-done is-warn">
+              <div class="pbiv-done-ic">
+                <t t-call="pb_hiring.hf_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="34"/></t>
+              </div>
+              <h1 class="pbiv-h1">This link has closed</h1>
+              <p class="pbiv-sub">The interview it was about did not go ahead, or the link has been replaced. Reply to the email that brought you here and the recruiter will sort it out.</p>
             </div>
-            <h1>This link has closed</h1>
-            <p class="pbhf-card__sub">
-              The interview it was about did not go ahead, or the link has
-              been replaced. Reply to the email that brought you here and the
-              recruiter will sort it out.
-            </p>
           </t>
 
         </div>

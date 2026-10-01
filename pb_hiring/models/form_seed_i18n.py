@@ -133,3 +133,45 @@ RECEIVED_I18N = {
         },
     },
 }
+
+
+#: RECRUIT P5 — the "Let's chat" email (key `phone`), sent automatically when
+#: a candidate moves into Recruiter review, in the language they applied in.
+#: Same rule as the received email: written only where a company's template
+#: still carries exactly the product's English and has no text of its own.
+PHONE_I18N = {
+    'subject': {
+        "Let's chat — {{role}} at {{brand}}": {
+            'vi_VN': 'Cùng trò chuyện nhé — {{role}} tại {{brand}}',
+            'id_ID': 'Mari mengobrol — {{role}} di {{brand}}',
+        },
+    },
+    'body': {
+        ("Hi {{first_name}},\n\nGood news - we liked what we saw, and we'd love to get to "
+         "know you a bit better.\n\nThe next step is a relaxed conversation with {{hr_name}} "
+         "from our team. Nothing to prepare, no trick questions. It's really just a chance for "
+         "us to hear about you and what you're after, and for you to ask us anything - the "
+         "role, the team, what we're building, all of it.\n\nIt'll take about {{duration}} "
+         "minutes. Grab a time that works for you here: {{scheduling_link}}.\n\nLooking "
+         "forward to it,\n{{sender_name}}\n{{website}} | {{linkedin}}"): {
+            'vi_VN': ("Chào {{first_name}},\n\nTin vui - chúng tôi rất ấn tượng với hồ sơ của "
+                      "bạn và muốn hiểu thêm về bạn.\n\nBước tiếp theo là một cuộc trò chuyện "
+                      "thoải mái với {{hr_name}} từ đội ngũ của chúng tôi. Bạn không cần chuẩn bị "
+                      "gì, cũng không có câu hỏi đánh đố nào. Đây chỉ là dịp để chúng tôi lắng "
+                      "nghe về bạn và điều bạn đang tìm kiếm, và để bạn hỏi chúng tôi bất cứ điều "
+                      "gì - về vị trí, đội ngũ, những gì chúng tôi đang xây dựng.\n\nCuộc trò "
+                      "chuyện mất khoảng {{duration}} phút. Hãy chọn thời gian phù hợp với bạn "
+                      "tại đây: {{scheduling_link}}.\n\nRất mong được trò chuyện cùng bạn,\n"
+                      "{{sender_name}}\n{{website}} | {{linkedin}}"),
+            'id_ID': ("Halo {{first_name}},\n\nKabar baik - kami menyukai apa yang kami lihat, "
+                      "dan kami ingin mengenal Anda lebih jauh.\n\nLangkah berikutnya adalah "
+                      "obrolan santai dengan {{hr_name}} dari tim kami. Tidak ada yang perlu "
+                      "disiapkan, tidak ada pertanyaan jebakan. Ini hanya kesempatan bagi kami "
+                      "untuk mendengar tentang Anda dan apa yang Anda cari, dan bagi Anda untuk "
+                      "menanyakan apa saja - tentang peran ini, timnya, apa yang sedang kami "
+                      "bangun, semuanya.\n\nObrolan ini sekitar {{duration}} menit. Pilih "
+                      "waktu yang cocok untuk Anda di sini: {{scheduling_link}}.\n\nSampai "
+                      "jumpa,\n{{sender_name}}\n{{website}} | {{linkedin}}"),
+        },
+    },
+}

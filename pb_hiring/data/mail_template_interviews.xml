@@ -46,7 +46,7 @@
                 <table style="border-collapse:collapse; margin:16px 0; font-size:14px;">
                     <tr>
                         <td style="padding:6px 16px 6px 0; color:#64748B;">When</td>
-                        <td style="padding:6px 0;"><strong><t t-out="object.start or ''"/></strong></td>
+                        <td style="padding:6px 0;"><strong><t t-out="object.pb_when_local or object.start or ''"/></strong></td>
                     </tr>
                     <tr>
                         <td style="padding:6px 16px 6px 0; color:#64748B;">How long</td>
@@ -54,11 +54,17 @@
                     </tr>
                     <tr>
                         <td style="padding:6px 16px 6px 0; color:#64748B;">Where</td>
-                        <td style="padding:6px 0;"><t t-out="object.location or 'We will confirm this separately'"/></td>
+                        <td style="padding:6px 0;">
+                            <a t-if="object.pb_join_url" t-att-href="object.pb_join_url" style="color:#4F46E5;">Join the video call</a>
+                            <t t-else="" t-out="object.location or 'We will confirm this separately'"/>
+                        </td>
                     </tr>
                 </table>
+                <p t-if="object.pb_join_url" style="color:#4A5568;">
+                    The video link: <t t-out="object.pb_join_url"/>
+                </p>
                 <p>
-                    There is a calendar file attached — open it and the time
+                    A calendar file is attached — open it and the time
                     will be in your own diary.
                 </p>
                 <p style="color:#4A5568;">
@@ -90,24 +96,24 @@
                 <table style="border-collapse:collapse; margin:16px 0; font-size:14px;">
                     <tr>
                         <td style="padding:6px 16px 6px 0; color:#64748B;">When</td>
-                        <td style="padding:6px 0;"><strong><t t-out="object.start or ''"/></strong></td>
+                        <td style="padding:6px 0;"><strong><t t-out="object.pb_when_local or object.start or ''"/></strong></td>
                     </tr>
                     <tr>
                         <td style="padding:6px 16px 6px 0; color:#64748B;">Where</td>
-                        <td style="padding:6px 0;"><t t-out="object.location or '—'"/></td>
+                        <td style="padding:6px 0;"><t t-out="object.pb_join_url or object.location or '—'"/></td>
                     </tr>
                     <tr t-if="object.feedback_due_at">
                         <td style="padding:6px 16px 6px 0; color:#64748B;">Your view, by</td>
                         <td style="padding:6px 0;"><t t-out="object.feedback_due_at or ''"/></td>
                     </tr>
                 </table>
-                <div t-if="object._agenda_text()" style="border-left:3px solid #E2E8F0; padding-left:12px; color:#4A5568; white-space:pre-wrap;">
-                    <t t-out="object._agenda_text()"/>
+                <div t-if="object.pb_agenda" style="border-left:3px solid #E2E8F0; padding-left:12px; color:#4A5568; white-space:pre-wrap;">
+                    <t t-out="object.pb_agenda"/>
                 </div>
                 <p>
-                    The calendar file is attached. Afterwards you will get your
-                    own link to say what you thought — it takes a minute, and
-                    the candidate is waiting on the slowest of us.
+                    The calendar file is attached. You will get your own link
+                    to the scorecard — it takes a few minutes, and the candidate
+                    is waiting on the slowest of us.
                 </p>
                 <br/>
                 The hiring team
@@ -130,13 +136,17 @@
                     Round <t t-out="object.round_no or 1"/> with
                     <strong><t t-out="object.candidate_name or ''"/></strong>
                     is arranged for
-                    <strong><t t-out="object.start or ''"/></strong>.
-                    Everybody on the panel has been invited.
+                    <strong><t t-out="object.pb_when_local or object.start or ''"/></strong>.
+                    Everybody on the panel has been invited, each with their own
+                    scorecard link.
+                </p>
+                <p t-if="object.pb_join_url">
+                    Video link: <a t-att-href="object.pb_join_url" style="color:#4F46E5;"><t t-out="object.pb_join_url"/></a>
                 </p>
                 <p style="color:#4A5568;">
-                    Their views are wanted by
-                    <t t-out="object.feedback_due_at or ''"/>. Payobook chases
-                    anybody who is late, once.
+                    Their views are wanted a working day after it ends. Anybody
+                    who is late is reminded every day, and the talent lead is
+                    told at two days late.
                 </p>
                 <br/>
                 The hiring team
@@ -158,9 +168,12 @@
                     A reminder that the interview for
                     <strong><t t-out="object.requisition_id.title or ''"/></strong>
                     is tomorrow, at
-                    <strong><t t-out="object.start or ''"/></strong>.
+                    <strong><t t-out="object.pb_when_local or object.start or ''"/></strong>.
                 </p>
-                <p t-if="object.location">
+                <p t-if="object.pb_join_url">
+                    Video link: <a t-att-href="object.pb_join_url" style="color:#4F46E5;"><t t-out="object.pb_join_url"/></a>
+                </p>
+                <p t-elif="object.location">
                     Where: <strong><t t-out="object.location or ''"/></strong>
                 </p>
                 <p style="color:#4A5568;">
@@ -188,9 +201,12 @@
                     The interview with
                     <strong><t t-out="object.candidate_name or ''"/></strong>
                     starts at
-                    <strong><t t-out="object.start or ''"/></strong>.
+                    <strong><t t-out="object.pb_when_local or object.start or ''"/></strong>.
                 </p>
-                <p t-if="object.location">
+                <p t-if="object.pb_join_url">
+                    <a t-att-href="object.pb_join_url" style="color:#4F46E5;">Join the video call</a>
+                </p>
+                <p t-elif="object.location">
                     <t t-out="object.location or ''"/>
                 </p>
                 <br/>
@@ -238,29 +254,30 @@
         <field name="name">Hiring: what did you think</field>
         <field name="model_id" ref="model_pb_hiring_feedback"/>
         <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
-        <field name="subject">What did you think of {{ object.interview_id.candidate_name }}?</field>
+        <field name="subject">How did it go with {{ object.interview_id.candidate_name }}?</field>
         <field name="auto_delete" eval="False"/>
         <field name="body_html" type="html">
             <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
-                <p>Hello,</p>
+                <p>Hello <t t-out="object.panel_employee_id.name or ''"/>,</p>
                 <p>
-                    You have just interviewed
+                    How did it go? You have just interviewed
                     <strong><t t-out="object.interview_id.candidate_name or ''"/></strong>
                     for
                     <strong><t t-out="object.interview_id.requisition_id.title or ''"/></strong>.
-                    Five lines to score and one question: would you hire them?
+                    Fill in your scorecard while it is fresh.
                 </p>
                 <p style="margin:22px 0;">
-                    <a t-att-href="object._token_url()"
+                    <a t-att-href="object.pb_link_url"
                        style="background:#4F46E5; color:#FFFFFF; text-decoration:none; padding:11px 20px; border-radius:9px; font-weight:600; display:inline-block;">
-                        Say what you thought
+                        Fill in your scorecard
                     </a>
                 </p>
                 <p style="color:#4A5568;">
                     It is wanted by
-                    <strong><t t-out="object.due_at or ''"/></strong>
-                    — a day of working hours. No sign-in is needed; the link is
-                    yours alone and works once.
+                    <strong><t t-out="object.pb_due_local or ''"/></strong>
+                    — a day of working hours. No sign-in is needed, and your
+                    answers stay hidden from the other panellists until everyone
+                    is in.
                 </p>
                 <br/>
                 The hiring team
@@ -273,23 +290,25 @@
         <field name="name">Hiring: an opinion is late</field>
         <field name="model_id" ref="model_pb_hiring_feedback"/>
         <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
-        <field name="subject">Still waiting on you: {{ object.interview_id.candidate_name }}</field>
+        <field name="subject">Still waiting on you: {{ object.interview_id.candidate_name }} ({{ object.pb_round_label }})</field>
         <field name="auto_delete" eval="False"/>
         <field name="body_html" type="html">
             <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
-                <p>Hello,</p>
+                <p>Hello <t t-out="object.panel_employee_id.name or ''"/>,</p>
                 <p>
                     <strong><t t-out="object.interview_id.candidate_name or ''"/></strong>
-                    is waiting to hear from us, and we are waiting on you.
+                    (<t t-out="object.interview_id.requisition_id.title or ''"/>,
+                    <t t-out="object.pb_round_label or ''"/>) is waiting to hear
+                    from us, and we are waiting on your scorecard.
                 </p>
                 <p style="margin:22px 0;">
-                    <a t-att-href="object._token_url()"
+                    <a t-att-href="object.pb_link_url"
                        style="background:#4F46E5; color:#FFFFFF; text-decoration:none; padding:11px 20px; border-radius:9px; font-weight:600; display:inline-block;">
-                        It takes a minute
+                        Fill in your scorecard
                     </a>
                 </p>
                 <p style="color:#4A5568;">
-                    This is the only reminder you will get about it. If you did
+                    You will get one reminder a day until it is in. If you did
                     not end up interviewing them, tell the recruiter and they
                     will take you off.
                 </p>

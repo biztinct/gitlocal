@@ -54,8 +54,27 @@ P_SENDER = 'pb_hiring.sender'
 P_ASK_ESCALATE_DAYS = 'pb_hiring.ask_escalate_days'
 P_DOCREQ_TRIGGER = 'pb_hiring.docreq_trigger'
 P_REFERRAL_ANNOUNCE = 'pb_hiring.referral_announce'
+# RECRUIT P5
+#: ON: moving a candidate into Recruiter review (key `phone`) sends the "Let's
+#: chat" email with the recruiter's own scheduling link (G-37). P8 turns this
+#: into the first row of the automations list.
+P_PHONE_AUTO_MAIL = 'pb_hiring.phone_auto_mail'
+#: How long the recruiter review is, in the email ("about 30 minutes").
+P_PHONE_MINUTES = 'pb_hiring.phone_minutes'
+#: Working days late before the Talent lead is told about an opinion.
+P_LEAD_LATE_DAYS = 'pb_hiring.lead_late_days'
+#: Hours between two reminders to the same panellist.
+P_CHASE_EVERY_HOURS = 'pb_hiring.chase_every_hours'
+#: Days late after which the reminders stop (the Talent lead was told long
+#: before; a fortnight-old opinion is a conversation, not an email).
+P_CHASE_STOP_DAYS = 'pb_hiring.chase_stop_days'
 
 DEFAULTS = {
+    P_PHONE_AUTO_MAIL: '1',
+    P_PHONE_MINUTES: '30',
+    P_LEAD_LATE_DAYS: '2',
+    P_CHASE_EVERY_HOURS: '24',
+    P_CHASE_STOP_DAYS: '14',
     P_LINE_MANAGERS_MOVE: '0',
     # RECRUIT P3. Three working days before a request nobody has written
     # goes to the talent lead (G-13); papers asked for when the background
@@ -269,6 +288,54 @@ DEBRIEF_DECISIONS = [
 #: The kinds of stage after which a debrief and a decision make sense. A
 #: debrief on round one is a decision taken before the process has run.
 FINAL_KINDS = ('final', 'panel')
+
+# ==========================================================================
+#  RECRUIT P5 — scorecards (G-32, ruling R4)
+# ==========================================================================
+#: What every scorecard ends with, always required (R4: Yes / Maybe / No /
+#: Hold). Ordered as the four buttons on the interviewer's page.
+DECISIONS = [
+    ('yes', 'Yes'),
+    ('maybe', 'Maybe'),
+    ('no', 'No'),
+    ('hold', 'Hold'),
+]
+#: The old four-way recommendation, read as a decision (the migration).
+RECOMMENDATION_DECISION = {'strong_yes': 'yes', 'yes': 'yes',
+                           'no': 'no', 'strong_no': 'no'}
+
+#: The kind of role a scorecard is written for (Anita's four, plus the
+#: recruiter's own conversation and a catch-all).
+SCORECARD_FAMILIES = [
+    ('recruiter_review', 'Recruiter review'),
+    ('tech', 'Tech'),
+    ('non_tech', 'Non-tech'),
+    ('operations', 'Operations'),
+    ('gtm', 'Go-to-market'),
+    ('other', 'Other'),
+]
+#: The families a ROLE can be (the recruiter review is a round, not a role).
+ROLE_FAMILIES = [f for f in SCORECARD_FAMILIES if f[0] != 'recruiter_review']
+
+#: Which conversation a scorecard is for.
+SCORECARD_ROUNDS = [
+    ('any_round', 'Any round'),
+    ('phone', 'Recruiter review'),
+    ('discussion_1', 'Discussion 1'),
+    ('discussion_2', 'Discussion 2'),
+    ('discussion_3', 'Discussion 3'),
+    ('final', 'The final conversation'),
+]
+#: The board stages that ARE interview rounds, in order.
+ROUND_KEYS = ('phone', 'discussion_1', 'discussion_2', 'discussion_3')
+
+#: One question on a scorecard.
+SCORECARD_PART_KINDS = [
+    ('text', 'Written answer'),
+    ('rating', 'Star rating'),
+    ('line', 'Scored line (1 to 5)'),
+    ('yes_no', 'Yes or no'),
+]
 
 
 # ==========================================================================

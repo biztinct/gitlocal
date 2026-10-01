@@ -122,3 +122,13 @@ access_pb_hiring_note_system,Recruiter notes system,model_pb_hiring_note,base.gr
 access_pb_hiring_retention_rule_user,Retention rules read,model_pb_hiring_retention_rule,pb_hiring.group_hiring_user,1,0,0,0
 access_pb_hiring_retention_rule_manager,Retention rules talent lead,model_pb_hiring_retention_rule,pb_hiring.group_hiring_manager,1,1,1,1
 access_pb_hiring_retention_rule_system,Retention rules system,model_pb_hiring_retention_rule,base.group_system,1,1,1,1
+access_pb_hiring_scorecard_staff,Scorecard read,model_pb_hiring_scorecard,base.group_user,1,0,0,0
+access_pb_hiring_scorecard_user,Scorecard recruiter,model_pb_hiring_scorecard,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_scorecard_manager,Scorecard talent lead,model_pb_hiring_scorecard,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_scorecard_admin,Scorecard head of hiring,model_pb_hiring_scorecard,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_scorecard_system,Scorecard system,model_pb_hiring_scorecard,base.group_system,1,1,1,1
+access_pb_hiring_scorecard_part_staff,Scorecard question read,model_pb_hiring_scorecard_part,base.group_user,1,0,0,0
+access_pb_hiring_scorecard_part_user,Scorecard question recruiter,model_pb_hiring_scorecard_part,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_scorecard_part_manager,Scorecard question talent lead,model_pb_hiring_scorecard_part,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_scorecard_part_admin,Scorecard question head of hiring,model_pb_hiring_scorecard_part,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_scorecard_part_system,Scorecard question system,model_pb_hiring_scorecard_part,base.group_system,1,1,1,1

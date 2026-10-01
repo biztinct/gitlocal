@@ -1490,13 +1490,20 @@ def seed_forms(env):
 
 
 def seed_received_i18n(env):
+    return seed_message_i18n(env, 'received', RECEIVED_I18N)
+
+
+def seed_message_i18n(env, key, words_by_field):
+    """The other languages of one seeded candidate email (P2 `received`,
+    P5 `phone`): only where the company's template still carries exactly the
+    product's English and has no text of its own in that language."""
     langs = [lg for lg in ('vi_VN', 'id_ID') if lg in env['pb.hiring.form']._pb_installed_langs()]
     if not langs:
         return 0
     Tpl = env['pb.hiring.message.template'].sudo().with_context(active_test=False)
-    tpls = Tpl.search([('key', '=', 'received')])
+    tpls = Tpl.search([('key', '=', key)])
     n = 0
-    for fname, table in RECEIVED_I18N.items():
+    for fname, table in words_by_field.items():
         for rid, raw in _raw(tpls, fname).items():
             en = raw.get('en_US') or ''
             words = table.get(en)

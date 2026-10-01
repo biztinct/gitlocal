@@ -132,6 +132,51 @@ class PbHiringInterview(models.Model):
     event_id = fields.Many2one('calendar.event', string='The diary entry',
                                copy=False, ondelete='set null')
 
+    # RECRUIT P5 (G-30, RC-D3). The video link: typed by hand, or made by
+    # Google Meet when the recruiter has connected Google Calendar.
+    videocall_url = fields.Char(
+        string='Video link', copy=False,
+        help='The link everybody joins. Made by Google Meet when the '
+             'recruiter has connected Google Calendar.')
+    invites_pending = fields.Boolean(
+        string='Invitations wait for the video link', readonly=True,
+        copy=False,
+        help='The invitations go out the moment Google sends the Meet link, '
+             'or after ten minutes without it.')
+    video_link_sent_at = fields.Datetime(string='Video link sent', readonly=True,
+                                         copy=False)
+    # The recording or transcript. Hiring team only: no field `groups` (RC54
+    # — every non-sudo read by somebody outside the group would raise); the
+    # payloads leave it out for anybody else (`IV_PUBLIC`) and the form shows
+    # it to the hiring groups only.
+    transcript_url = fields.Char(string='Recording or transcript link',
+                                 copy=False)
+    transcript_attachment_id = fields.Many2one(
+        'ir.attachment', string='Recording or transcript file', copy=False,
+        ondelete='set null')
+    # Public computes for the mail templates (RC49).
+    pb_when_local = fields.Char(compute='_compute_pb_mail_words')
+    pb_join_url = fields.Char(compute='_compute_pb_mail_words')
+    pb_agenda = fields.Text(compute='_compute_pb_mail_words')
+
+    def _compute_pb_mail_words(self):
+        import pytz
+        for rec in self:
+            rec.pb_join_url = rec._pb_join_link() if rec.id else ''
+            rec.pb_agenda = rec._agenda_text() if rec.id else ''
+            when = ''
+            if rec.start:
+                user = rec.sudo().recruiter_id
+                tzname = user.tz or rec.company_id.sudo().partner_id.tz or 'UTC'
+                try:
+                    tz = pytz.timezone(tzname)
+                except Exception:       # noqa: BLE001
+                    tz, tzname = pytz.utc, 'UTC'
+                local = pytz.utc.localize(rec.start).astimezone(tz)
+                when = '%s (%s)' % (local.strftime('%A %d %B, %H:%M'),
+                                    tzname.split('/')[-1].replace('_', ' '))
+            rec.pb_when_local = when
+
     # ---------------------------------------------------------- what happened
     state = fields.Selection(INTERVIEW_STATES, string='How it went',
                              default='scheduled', required=True, index=True,
@@ -411,6 +456,14 @@ class PbHiringInterview(models.Model):
             vals['step_id'] = as_id(values['step_id'])
         if values.get('kind'):
             vals['kind'] = values['kind']
+        # RECRUIT P5: the scorecard the recruiter picked (else the role's
+        # rule picks it on create), and a video link typed by hand IS the
+        # video link.
+        if values.get('scorecard_id'):
+            vals['scorecard_id'] = as_id(values['scorecard_id'])
+        where = vals['location']
+        if vals['mode'] == 'video' and where.lower().startswith(('https://', 'http://')):
+            vals['videocall_url'] = where
         interview = self.sudo().create(vals)
         interview._after_scheduled(move_stage=True)
         return interview
@@ -431,13 +484,62 @@ class PbHiringInterview(models.Model):
         if move_stage:
             leg(self.env, 'the candidate stage for interview %s' % self.id,
                 self._move_candidate_stage)
+        if self._pb_waits_for_meet():
+            # RECRUIT P5: Google makes the Meet link a moment after this
+            # transaction commits (`_google_insert` is an after-commit job).
+            # The invitations wait for it, so the link is in every mail and
+            # every calendar file; a ten-minute job sends them without it if
+            # Google never answers (`_pb_send_overdue_invites`).
+            self.sudo().write({'invites_pending': True})
+            return True
+        self._pb_send_invites()
+        return True
+
+    def _pb_send_invites(self):
+        """The three invitations, each its own leg."""
+        self.ensure_one()
         leg(self.env, 'the candidate invitation for interview %s' % self.id,
             self._invite_candidate)
         leg(self.env, 'the panel invitations for interview %s' % self.id,
             self._invite_panel)
         leg(self.env, "the recruiter's copy for interview %s" % self.id,
             self._invite_recruiter)
+        if self.invites_pending:
+            self.sudo().write({'invites_pending': False})
         return True
+
+    # ------------------------------------------------- RECRUIT P5, Google
+    def _pb_organiser(self):
+        self.ensure_one()
+        return self.recruiter_id or self.env.user
+
+    def _pb_google_connected(self, user=None):
+        """Has this person connected their Google Calendar? (A refresh
+        token, sync not stopped, and the company's sync not paused.)"""
+        user = (user or self._pb_organiser()).sudo()
+        if 'google_calendar_rtoken' not in user._fields or not user:
+            return False
+        try:
+            return bool(user.google_calendar_rtoken) \
+                and user._get_google_sync_status() == 'sync_active'
+        except Exception:               # noqa: BLE001 — a probe never raises
+            return False
+
+    def _pb_google_meet(self):
+        """Google makes the video link: a video interview, organised by
+        somebody who connected Google, with no link typed by hand."""
+        self.ensure_one()
+        return bool(self.mode == 'video' and not (self.location or '').strip()
+                    and not self.videocall_url and self._pb_google_connected())
+
+    def _pb_waits_for_meet(self):
+        self.ensure_one()
+        return bool(self._pb_google_meet() and self.event_id
+                    and not self.event_id.sudo().videocall_location)
+
+    def _pb_join_link(self):
+        self.ensure_one()
+        return self.videocall_url or (self.location if self.mode == 'video' else '') or ''
 
     # =====================================================================
     #  The diary entry
@@ -452,33 +554,88 @@ class PbHiringInterview(models.Model):
         (`calendar_attendee.py:140`) — both are needed, because they guard
         two different things. Our own invitation, with our own ICS, goes out
         from `_invite_candidate` / `_invite_panel` a few lines later.
+
+        RECRUIT P5 (RC-D3): when the organiser has connected Google Calendar
+        the entry also goes to their Google calendar, after this transaction
+        commits, with `send_updates=False` (Google sends nobody anything:
+        the invitations are ours) and the candidate as an attendee. A video
+        interview with no link typed is created WITHOUT a location, which is
+        what makes Google attach a Meet (`_google_values`); the link comes
+        back in the insert answer (`calendar.event._get_post_sync_values`).
+        Without a connection nothing here differs from before.
         """
         self.ensure_one()
+        quiet = dict(dont_notify=True, no_mail_to_attendees=True,
+                     mail_create_nolog=True, mail_notrack=True,
+                     send_updates=False, pb_hiring_quiet_google=True)
         if self.event_id:
+            # A moved hour on the SAME Google entry keeps its Meet link.
+            event = self.event_id.sudo().with_context(**quiet)
+            vals = {}
+            if event.start != self.start or event.stop != self.stop:
+                vals.update({'start': self.start, 'stop': self.stop,
+                             'duration': max(5, self.duration_minutes or 45) / 60.0})
+            if event.name != self._event_title():
+                vals['name'] = self._event_title()
+            if vals:
+                event.write(vals)
             return self.event_id
+        google = self._pb_google_connected()
         partners = self.env['res.partner'].sudo().browse()
         for emp in self.panel_employee_ids.sudo():
             if emp.user_id and emp.user_id.partner_id:
                 partners |= emp.user_id.partner_id
         if self.recruiter_id and self.recruiter_id.partner_id:
             partners |= self.recruiter_id.partner_id
-        event = self.env['calendar.event'].sudo().with_context(
-            dont_notify=True, no_mail_to_attendees=True,
-            mail_create_nolog=True, mail_notrack=True,
-        ).create({
+        if google:
+            partners |= self._pb_candidate_partner()
+        meet = self._pb_google_meet()
+        vals = {
             'name': self._event_title(),
             'start': self.start,
             'stop': self.stop,
             'allday': False,
             'duration': max(5, self.duration_minutes or 45) / 60.0,
-            'location': self.location or '',
+            'location': '' if meet else (self.location or ''),
             'description': self._agenda_text(),
             'partner_ids': [(6, 0, partners.ids)],
             'user_id': self.recruiter_id.id or self.env.uid,
             'applicant_id': self.applicant_id.id,
-        })
+        }
+        if self.videocall_url:
+            vals['videocall_location'] = self.videocall_url
+        event = self.env['calendar.event'].sudo().with_context(
+            dont_notify=True, no_mail_to_attendees=True,
+            mail_create_nolog=True, mail_notrack=True,
+            send_updates=False, pb_hiring_quiet_google=True,
+        ).create(vals)
         self.sudo().write({'event_id': event.id})
         return event
+
+    def _pb_candidate_partner(self):
+        """The candidate as a contact, so Google lists them on the entry.
+        The stock applicant keeps one (`partner_id`, made from the email);
+        one is made the same way when it is missing."""
+        self.ensure_one()
+        app = self.applicant_id.sudo()
+        Partner = self.env['res.partner'].sudo()
+        if not app or not app.email_from:
+            return Partner.browse()
+        if app.partner_id:
+            return app.partner_id
+        try:
+            with self.env.cr.savepoint():
+                partner = app._partner_find_from_emails_single(
+                    [app.email_from], no_create=False,
+                    additional_values={app.email_normalized or app.email_from: {
+                        'name': app.partner_name or app.email_from}})
+                if partner:
+                    app.with_context(pb_no_stage_log=True).write({'partner_id': partner.id})
+                return partner or Partner.browse()
+        except Exception:               # noqa: BLE001 — the hour matters more
+            _logger.warning('pb_hiring: no contact for the candidate on '
+                            'interview %s', self.id, exc_info=True)
+            return Partner.browse()
 
     def _event_title(self):
         self.ensure_one()
@@ -507,14 +664,20 @@ class PbHiringInterview(models.Model):
         attendees = [a for _emp, a in self._panel_contacts()]
         if self.candidate_email:
             attendees.append(self.candidate_email)
+        # RECRUIT P5: the video link is WHERE a video interview is, and the
+        # first line of the description, so every calendar shows a button.
+        link = self._pb_join_link()
+        description = self._agenda_text()
+        if link:
+            description = _("Video link: %s", link) + ('\n\n' + description if description else '')
         return build_ics(
             summary=self._event_title(),
             dt_start=self.start,
             dt_end=self.stop,
             organizer=organiser,
             attendees=attendees,
-            description=self._agenda_text(),
-            location=self.location or '',
+            description=description,
+            location=link or self.location or '',
             uid='pbhiring-interview-%s@payobook' % self.id)
 
     def _ics_attachment(self, name='interview.ics'):
@@ -576,8 +739,23 @@ class PbHiringInterview(models.Model):
         one who misses it, and the log says which.
         """
         self.ensure_one()
+        # RECRUIT P5: one mail per OPINION, so each panellist's invitation
+        # carries their own scorecard link (the old interview-level template
+        # could not know whose link to put in).
+        template = self.env.ref('pb_hiring.mail_template_panel_invite',
+                                raise_if_not_found=False)
+        rows = {f.panel_employee_id.id: f for f in self.feedback_ids.sudo()
+                if f.state == 'pending'}
         sent = 0
-        for _emp, address in self._panel_contacts():
+        for emp, address in self._panel_contacts():
+            row = rows.get(emp.id)
+            if template and row:
+                template.sudo().send_mail(row.id, force_send=False, email_values={
+                    'email_to': address, 'auto_delete': False,
+                    'attachment_ids': [(6, 0, self._ics_attachment().ids)]})
+                row.sudo().write({'invited_at': fields.Datetime.now()})
+                sent += 1
+                continue
             ok = self._send('pb_hiring.mail_template_interview_panel',
                             address, with_ics=True)
             sent += 1 if ok else 0
@@ -614,6 +792,8 @@ class PbHiringInterview(models.Model):
                 'panel_employee_id': emp.id,
                 'due_at': self.feedback_due_at,
                 'company_id': self.company_id.id,
+                # RECRUIT P5: the scorecard every panellist answers.
+                'scorecard_id': self.scorecard_id.id or False,
             })
             made += 1
         return made
@@ -675,6 +855,12 @@ class PbHiringInterview(models.Model):
             fields.Datetime.to_datetime(old_start) - fields.Datetime.now()
         ) < timedelta(minutes=LATE_NOTICE_MINUTES))
 
+        # RECRUIT P5: a Google entry is MOVED, not replaced, so its Meet link
+        # survives (the new row adopts the entry and the link).
+        google_entry = bool(self.event_id and 'google_id' in self.event_id._fields
+                            and self.event_id.sudo().google_id)
+        new_where = values.get('location') if values.get('location') is not None \
+            else self.location
         fresh = self.sudo().create({
             'requisition_id': self.requisition_id.id,
             'applicant_id': self.applicant_id.id,
@@ -692,6 +878,12 @@ class PbHiringInterview(models.Model):
             'rescheduled_from_id': self.id,
             'round_no': self.round_no or 1,
             'late_notice': late,
+            'scorecard_id': self.scorecard_id.id or False,
+            'event_id': self.event_id.id if google_entry else False,
+            'videocall_url': self.videocall_url if google_entry else (
+                new_where if (values.get('mode') or self.mode) == 'video'
+                and (new_where or '').lower().startswith(('https://', 'http://'))
+                else False),
         })
         self.env['pb.hiring.reschedule'].sudo().create({
             'interview_id': self.id,
@@ -716,8 +908,11 @@ class PbHiringInterview(models.Model):
         # holds two invitations at once and wonders which is real.
         leg(self.env, 'calling off interview %s' % self.id,
             self._tell_everybody_it_is_off)
-        leg(self.env, 'the diary entry for interview %s' % self.id,
-            self._drop_event)
+        if google_entry:
+            self.sudo().write({'event_id': False})
+        else:
+            leg(self.env, 'the diary entry for interview %s' % self.id,
+                self._drop_event)
         self.sudo().message_post(body=_(
             "Moved to %(when)s. %(why)s", when=fresh.start, why=reason))
         # The candidate does not change stage again — they are on the same
@@ -730,8 +925,11 @@ class PbHiringInterview(models.Model):
         self.ensure_one()
         if not self.event_id:
             return False
+        # Archived → Google marks its entry cancelled, quietly
+        # (`pb_hiring_quiet_google`: Google sends nobody anything).
         self.event_id.sudo().with_context(
-            dont_notify=True, no_mail_to_attendees=True).write(
+            dont_notify=True, no_mail_to_attendees=True,
+            send_updates=False, pb_hiring_quiet_google=True).write(
                 {'active': False})
         return True
 

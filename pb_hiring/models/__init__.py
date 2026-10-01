@@ -38,3 +38,6 @@ from . import requests_p3  # RECRUIT P3 — the request facet, budget, the offer
 from . import facade_p3    # RECRUIT P3 — the screens' payloads and verbs
 from . import privacy_p4   # RECRUIT P4 — shares, private notes, retention, money groups
 from . import facade_p4    # RECRUIT P4 — the last layer of every payload; the bank
+from . import scorecards_p5  # RECRUIT P5 — scorecards per role family and round
+from . import google_p5      # RECRUIT P5 — Google Calendar + Meet, the scheduling link
+from . import facade_p5      # RECRUIT P5 — proxy entry, Calendly rule, finalists

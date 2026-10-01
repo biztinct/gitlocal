@@ -360,12 +360,19 @@ class PbHiringBoardP1(models.AbstractModel):
         who = row.panel_employee_id.name or _('them')
         if row.state != 'pending':
             return {'note': _("%s has already answered.", who)}
-        if not row.urgent_sent_at:
-            sent = leg(self.env, 'the reminder to %s' % row.id, row._chase)
+        # RECRUIT P5: a reminder every time it is pressed — but not twice in
+        # the same hour, which is a double click rather than a decision.
+        recent = row.last_reminded_at and \
+            row.last_reminded_at > fields.Datetime.now() - timedelta(hours=1)
+        if not recent and row._address():
+            sent = leg(self.env, 'the reminder to %s' % row.id,
+                       lambda: row._chase(manual=True))
             if sent is not False:
-                return {'note': _("%s has been reminded.", who)}
+                return {'note': _("%(who)s has been reminded (%(n)s so far).", who=who,
+                                  n=row.reminder_count)}
         return {'link': row._token_url(),
-                'note': _("%s was already reminded. Their own link is on screen — send it however you like.", who)}
+                'note': _("%s was reminded within the hour. Their own link is on screen — send it however you like.", who)
+                if recent else _("%s has no email address. Their own link is on screen — send it however you like.", who)}
 
     def _act_add_candidate(self, payload):
         """The empty board's second door: a new candidate on this role, in
@@ -690,18 +697,7 @@ class PbHiringBoardP1(models.AbstractModel):
         for iv in ivs:
             if not iv.feedback_ids or iv.state in ('cancelled', 'rescheduled'):
                 continue
-            scorecards.append({
-                'interview_id': iv.id, 'round_no': iv.round_no or 1,
-                'when': str(iv.start or ''), 'state': iv.state,
-                'rows': [{
-                    'id': f.id, 'who': f.panel_employee_id.name or '',
-                    'state': f.state,
-                    'late': bool(f.state == 'pending' and f.due_at and f.due_at < now),
-                    'score': round(f.score_avg or 0.0, 1),
-                    'verdict': dict(f._fields['recommendation'].selection).get(f.recommendation, ''),
-                    'notes': (f.notes or '')[:280],
-                } for f in iv.feedback_ids.sorted('id')],
-            })
+            scorecards.append(self._scorecard_block(iv, now, can_recruit))
         money = None
         if can_recruit and 'salary_expected' in app._fields:
             proposed = app['salary_proposed'] if 'salary_proposed' in app._fields else 0.0
@@ -745,6 +741,55 @@ class PbHiringBoardP1(models.AbstractModel):
         }
 
     @api.model
+    def _scorecard_block(self, iv, now, can_recruit):
+        """One interview's opinions for the drawer (RECRUIT P5): the
+        scorecard's questions as columns, one row per panellist with their
+        answer to each, the decision chip and who typed it in."""
+        from .hiring_common import DECISIONS
+        labels = dict(DECISIONS)
+        card = iv.scorecard_id
+        parts = [p._payload() for p in card._parts_sorted()] if card else []
+        rows = []
+        for f in iv.feedback_ids.sorted('id'):
+            answers = f._answers()
+            rows.append({
+                'id': f.id, 'who': f.panel_employee_id.name or '',
+                'state': f.state,
+                'late': bool(f.state == 'pending' and f.due_at and f.due_at < now),
+                'score': round(f.score_avg or 0.0, 1),
+                'decision': f.decision or '',
+                'decision_label': labels.get(f.decision, '') or
+                dict(f._fields['recommendation'].selection).get(f.recommendation, ''),
+                'verdict': labels.get(f.decision, '') or
+                dict(f._fields['recommendation'].selection).get(f.recommendation, ''),
+                'notes': (f.notes or '')[:600],
+                'answers': {str(a['part_id']): a.get('value') for a in answers if a.get('part_id')},
+                'legacy': [{'prompt': a.get('prompt') or '', 'value': a.get('value')}
+                           for a in answers if not a.get('part_id')],
+                'entered': f._entered_words(),
+                'reminded': f.reminder_count or 0,
+                'can_proxy': bool(can_recruit and f.state == 'pending'),
+                'can_remind': bool(can_recruit and f.state == 'pending'),
+            })
+        inn = len([r for r in rows if r['state'] == 'submitted'])
+        asked = len([r for r in rows if r['state'] != 'expired'])
+        out = {
+            'interview_id': iv.id, 'round_no': iv.round_no or 1,
+            'when': str(iv.start or ''), 'state': iv.state,
+            'scorecard': card.name if card else '', 'parts': parts,
+            'rows': rows, 'in': inn, 'total': asked,
+            'video': iv.videocall_url or '',
+        }
+        if can_recruit:
+            att = iv.transcript_attachment_id
+            out['transcript'] = {
+                'url': iv.transcript_url or '',
+                'file': {'id': att.id, 'name': att.name or '',
+                         'url': '/web/content/%s?download=true' % att.id} if att else None,
+            }
+        return out
+
+    @api.model
     def _next_box(self, app, ivs, can_recruit):
         """ONE sentence and, only when the move is the reader's, one button.
 
@@ -785,7 +830,10 @@ class PbHiringBoardP1(models.AbstractModel):
                              who=who, **{'in': iv.feedback_in, 'total': iv.feedback_total})}
             if can_recruit:
                 box.update({'verb': 'remind_opinion', 'label': _('Remind %s', who.split(' ')[-1]),
-                            'payload': {'feedback_id': late.id}})
+                            'payload': {'feedback_id': late.id},
+                            # RECRUIT P5: the opinion often arrives on Slack.
+                            'secondary': {'verb': 'proxy_open', 'label': _('Enter it for them'),
+                                          'payload': {'feedback_id': late.id}}})
             return box
         live = ivs.filtered(lambda i: i.state == 'scheduled' and i.start and i.start > now)
         if live:
