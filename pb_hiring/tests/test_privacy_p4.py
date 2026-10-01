@@ -131,7 +131,8 @@ class TestRecruitPrivacy(PrivacyCase):
         # the recruiter's card says who it is shared with
         cards = self.facade.get_requisition(self.req.id)['candidates_list']
         card = [c for c in cards if c['id'] == self.app.id][0]
-        self.assertIn(self.lm.name, card['shared'])
+        # P6 names people by their given name on buttons and chips (`_short_name`).
+        self.assertIn(self.facade._short_name(self.lm.name), card['shared'])
 
     def test_02b_unsharing_regenerates_the_file_tokens(self):
         self.share(['cv'])
@@ -153,7 +154,8 @@ class TestRecruitPrivacy(PrivacyCase):
         self.share(['profile', 'cv', 'expected_pay'])
         money = self.facade.with_user(self.lm).get_candidate(self.app.id)['money']
         self.assertEqual(money['expected'], 28000000)
-        self.assertIn(self.lm.name, self.facade.get_candidate(self.app.id)['money_who'])
+        self.assertIn(self.facade._short_name(self.lm.name),
+                      self.facade.get_candidate(self.app.id)['money_who'])
         # the role's budget, on the board row and the role page
         self.req.sudo().write({'budget_cost': 600000000})
         row = self.facade.with_user(self.lm).get_requisition(self.req.id)

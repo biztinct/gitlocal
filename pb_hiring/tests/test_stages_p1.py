@@ -188,7 +188,9 @@ class TestRecruitStages(HiringCase):
                           # RECRUIT P4: Consent & retention, inline
                           'retention',
                           # RECRUIT P6: Before they join, inline
-                          'prejoin'])
+                          'prejoin',
+                          # RECRUIT P7: Channels and Agencies, inline
+                          'channels', 'agencies'])
         for card in setup['cards']:
             self.assertTrue(card['status'], '%s has no sentence' % card['key'])
             if card.get('live') or card.get('inline'):

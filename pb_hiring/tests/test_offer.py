@@ -723,7 +723,8 @@ class TestTheAgency(OfferCase):
         self.req.sudo().write({'agency_vendor_id': self.vendor.id})
         action = self.vendor.action_open_hiring()
         self.assertIn('views', action, 'R125 — a hand-built action needs it')
-        self.assertIn(('agency_vendor_id', '=', self.vendor.id),
+        # RECRUIT P7: several agencies per role — the set, not the pointer.
+        self.assertIn(('agency_vendor_ids', 'in', self.vendor.ids),
                       action['domain'])
 
     def test_t8_setting_an_agency_is_written_in_the_chatter(self):
