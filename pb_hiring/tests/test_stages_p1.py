@@ -184,7 +184,9 @@ class TestRecruitStages(HiringCase):
         setup = self.env['pb.hiring'].get_setup()
         self.assertEqual([c['key'] for c in setup['cards']],
                          ['stages', 'forms', 'scorecards', 'emails',
-                          'automations', 'people'])
+                          'automations', 'people',
+                          # RECRUIT P4: Consent & retention, inline
+                          'retention'])
         for card in setup['cards']:
             self.assertTrue(card['status'], '%s has no sentence' % card['key'])
             if card.get('live') or card.get('inline'):
