@@ -144,7 +144,10 @@ class HrApplicant(models.Model):
         Pool = self.env['hr.talent.pool'].sudo()
         company = self.company_id or self.env.company
         name = _('Worth keeping in touch with — %s', company.name or '')
-        pool = Pool.search([('name', '=', name)], limit=1)
+        # RECRUIT P4: by company as well as by name — two companies whose
+        # names render the same sentence must never share one pool.
+        pool = Pool.search([('name', '=', name), ('company_id', '=', company.id)],
+                           limit=1)
         if not pool:
             pool = Pool.create({'name': name, 'company_id': company.id})
         self.sudo().write({'talent_pool_ids': [(4, pool.id)]})

@@ -36,3 +36,5 @@ from . import board_p1   # RECRUIT P1 — after journey, whose verbs it extends
 from . import forms_p2   # RECRUIT P2 — after board_p1, whose drawer and set-up it extends
 from . import requests_p3  # RECRUIT P3 — the request facet, budget, the offer rule
 from . import facade_p3    # RECRUIT P3 — the screens' payloads and verbs
+from . import privacy_p4   # RECRUIT P4 — shares, private notes, retention, money groups
+from . import facade_p4    # RECRUIT P4 — the last layer of every payload; the bank

@@ -77,6 +77,15 @@ WHAT THIS MODULE IS
     server refuses an application without it, files included. The consent a
     person ticks is kept word for word, and somebody who applied before with
     the same email or phone is flagged, never blocked.
+  * **Private until shared.** A candidate belongs to the hiring team. A
+    recruiter shares exactly the parts a manager needs — profile, CV,
+    portfolio, answers, scorecards — person by person; expected pay is its
+    own tick and never goes by accident. The manager's board shows names,
+    stages and interview dates, and every hidden thing is a labelled lock.
+    Recruiter notes are the author's and the talent lead's, shared one note
+    at a time. A Resume bank keeps the people worth a second look,
+    searchable by skill, country and tag, and each market's retention period
+    takes their details out when their consent runs out.
   * **The two answers a candidate is waiting for.** Through to the next round,
     or not this time — both written in plain words, both actually sent. On the
     last conversation the panel's verdict and the decision are recorded
@@ -115,7 +124,7 @@ WHAT THIS MODULE IS
     them, and whether an agency is faster than doing it yourself — with the
     whole thing downloadable as a spreadsheet.
 """,
-    'version': '19.0.2.2.0',
+    'version': '19.0.2.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -147,10 +156,12 @@ WHAT THIS MODULE IS
         'pb_vendor_access',         # the agency on the other end of the role
         'pb_insights_hub',          # the hub the Hiring numbers lens joins
         'phone_validation',         # RECRUIT P2: the phone checked against the country
+        'hr_recruitment_skills',    # RECRUIT P4: the Resume bank searches by skill
     ],
     'data': [
         'security/pb_hiring_security.xml',
         'security/ir.model.access.csv',
+        'security/recruit_p4_security.xml',
         'data/approval_process.xml',
         'data/ir_sequence.xml',
         'data/hiring_params.xml',
@@ -186,10 +197,12 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/scss/hiring_board_p1.scss',
             'pb_hiring/static/src/scss/hiring_forms.scss',
             'pb_hiring/static/src/scss/hiring_p3.scss',
+            'pb_hiring/static/src/scss/hiring_p4.scss',
             'pb_hiring/static/src/js/hiring_board.js',
             'pb_hiring/static/src/js/hiring_setup.js',
             'pb_hiring/static/src/js/hiring_forms.js',
             'pb_hiring/static/src/js/hiring_requests_p3.js',
+            'pb_hiring/static/src/js/hiring_privacy_p4.js',
             'pb_hiring/static/src/js/hiring_numbers.js',
             'pb_hiring/static/src/js/hiring_palette.js',
             'pb_hiring/static/src/xml/hiring_board.xml',
@@ -197,6 +210,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/xml/hiring_setup.xml',
             'pb_hiring/static/src/xml/hiring_forms.xml',
             'pb_hiring/static/src/xml/hiring_requests_p3.xml',
+            'pb_hiring/static/src/xml/hiring_privacy_p4.xml',
             'pb_hiring/static/src/xml/hiring_numbers.xml',
         ],
         'web.assets_frontend': [

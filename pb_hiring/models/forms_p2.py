@@ -419,11 +419,15 @@ class PbHiringForm(models.Model):
         return tpl
 
     # ------------------------------------------------------------ the page
-    def _pb_consent_sentence(self, company):
+    def _pb_consent_sentence(self, company, country=None):
         self.ensure_one()
         text = self.consent_text or ''
         brand = company._hiring_brand()
-        months = company.pb_retention_months or 12
+        # RECRUIT P4 (G-45): the months are the role's MARKET's, when that
+        # market has its own retention rule; the company's number otherwise.
+        country = country or self.sudo().requisition_id.country_id
+        months = self.env['pb.hiring.retention.rule']._months_for(company, country) \
+            if 'pb.hiring.retention.rule' in self.env else (company.pb_retention_months or 12)
         return text.replace('{brand}', brand).replace('{months}', str(months))
 
     def _pb_check(self, form, files, ctx=None):

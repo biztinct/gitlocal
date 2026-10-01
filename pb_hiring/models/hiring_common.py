@@ -67,6 +67,10 @@ DEFAULTS = {
     # login whenever a role opened for referrals. The talent lead turns it on
     # in Hiring set-up when the company wants that.
     P_REFERRAL_ANNOUNCE: '0',
+    # RECRUIT P4 (G-45): the nightly anonymise leg ships OFF. The preview and
+    # "Run now" work regardless; the head of hiring switches the night on
+    # after reading the preview.
+    'pb_hiring.retention_enabled': '0',
     # OFF. An advert that leaves the building the first time somebody presses
     # a button is an advert nobody agreed to send. The pack is built either
     # way and a human pushes it.
