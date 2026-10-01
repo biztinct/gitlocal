@@ -144,6 +144,14 @@ function setupRequest(form) {
         if (pending.size && ev.target.name) { clearTimeout(timers.get("all")); flush(); }
     });
 
+    // the money reads as money once you leave it (the server takes commas)
+    const amt = form.querySelector("input[name=budget_cost]");
+    const fmt = () => {
+        const n = Number(String(amt.value).replace(/[^0-9.]/g, ""));
+        if (amt.value && !isNaN(n)) { amt.value = n.toLocaleString("en-US", { maximumFractionDigits: 0 }); }
+    };
+    if (amt) { fmt(); amt.addEventListener("blur", fmt); }
+
     // the headcount stepper
     for (const btn of form.querySelectorAll(".pbrq-step")) {
         btn.addEventListener("click", () => {

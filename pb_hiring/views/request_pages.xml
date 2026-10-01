@@ -330,7 +330,11 @@
                 <t t-if="request.params.get('sent')">Sent in. Thank you.</t>
                 <t t-else="" t-esc="rec.title"/>
               </h1>
-              <p class="pbrq-sub" t-if="request.params.get('sent')">
+              <p class="pbrq-sub" t-if="request.params.get('sent') and rec.request_state == 'agreed'">
+                Your agreement is recorded and the request is agreed. There is
+                nothing else for you to do.
+              </p>
+              <p class="pbrq-sub" t-elif="request.params.get('sent')">
                 Your agreement is recorded. HR is asked to agree it next — you do
                 not need to do anything else, and the recruiter carries on
                 meanwhile.

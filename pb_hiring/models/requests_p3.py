@@ -992,8 +992,14 @@ class HiringRequestP3(models.Model):
     #  Budget (G-15, R2)
     # =====================================================================
     def _read_budget(self):
-        """The department's answer, then the confirmed figure's."""
+        """The department's answer, then the confirmed figure's. With no
+        expected figure yet there is nothing to compare: it says so, rather
+        than "this role asks for 0 of it"."""
         status, remaining, currency, note = super()._read_budget()
+        if not (self.budget_cost or 0.0) > 0:
+            return 'unknown', remaining, currency, _(
+                "No expected figure yet. The manager types it on the "
+                "request, and it is compared with the budget then.")
         confirmed = self.budget_confirmed or 0.0
         if confirmed <= 0:
             return status, remaining, currency, note

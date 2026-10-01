@@ -235,8 +235,6 @@ class PbHiringP3(models.AbstractModel):
             add('waiting', _('Waiting on %s', rec._agree_holders_names()),
                 done=False, tone='amber')
         elif rec.request_state == 'agreed':
-            if not decided and rec.agreed_on:
-                add('agreed', _('Agreed'), '', rec.agreed_on)
             add('done', _('Request agreed'), '', rec.agreed_on, tone='green')
         elif rec.request_state == 'not_approved' and not request:
             add('stopped', _('Not approved'), '', rec.write_date, tone='rose')
