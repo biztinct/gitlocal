@@ -161,7 +161,11 @@ class TestArrangingOne(InterviewCase):
             stock, 'a stock calendar invitation leaked out: %s'
             % stock.mapped('subject'))
 
-        ours = fresh.filtered(lambda m: m.model == 'pb.hiring.interview')
+        # RECRUIT P5: each panel member's invitation is sent on THEIR
+        # opinion (so it carries their own scorecard link), the candidate's
+        # and the recruiter's on the interview.
+        ours = fresh.filtered(lambda m: m.model in ('pb.hiring.interview',
+                                                    'pb.hiring.feedback'))
         self.assertEqual(
             len(ours), 4,
             'expected the candidate, two panel members and the recruiter, '
@@ -494,7 +498,13 @@ class TestTheFeedbackPage(InterviewCase):
         self.assertEqual(
             self.env['pb.hiring.feedback']._request_for_token(
                 second.token)[1], 'ok')
-        # And the one just used is closed to a replay.
+        # RECRUIT P5: the one just used stays open to ITS OWNER for changes
+        # until the recruiter decides; then it is closed to a replay.
+        self.assertEqual(
+            self.env['pb.hiring.feedback']._request_for_token(
+                first.token)[1], 'ok')
+        self.assertTrue(first.page_facts()['answered'])
+        interview.sudo().write({'decision': 'select'})
         self.assertEqual(
             self.env['pb.hiring.feedback']._request_for_token(
                 first.token)[1], 'used')
@@ -537,16 +547,25 @@ class TestTheFeedbackPage(InterviewCase):
         self.assertEqual(len(kept), 1)
         self.assertEqual(kept[0]['score'], 3)
 
-    def test_t6_a_replay_writes_nothing(self):
+    def test_t6_a_replay_writes_nothing_once_the_recruiter_decided(self):
+        """RECRUIT P5: before the decision, the panellist's own second
+        answer replaces the first ("You can still change this until the
+        recruiter decides"); after it, a replay writes nothing."""
         interview = self._schedule()
         row = interview.feedback_ids.sorted('id')[0]
         questions = row.questions()
         row.submit([{'id': q['id'], 'score': 2} for q in questions],
                    recommendation='no', notes='First answer.')
+        self.assertTrue(row.submit(
+            [{'id': q['id'], 'score': 3} for q in questions],
+            recommendation='yes', notes='Changed my mind.'))
+        self.assertEqual(row.notes, 'Changed my mind.')
+        self.assertEqual(row.decision, 'yes')
+        interview.sudo().write({'decision': 'reject'})
         self.assertFalse(row.submit(
             [{'id': q['id'], 'score': 5} for q in questions],
-            recommendation='strong_yes', notes='Second answer.'))
-        self.assertEqual(row.notes, 'First answer.')
+            recommendation='strong_yes', notes='Third answer.'))
+        self.assertEqual(row.notes, 'Changed my mind.')
 
 
 # =========================================================================
@@ -560,11 +579,15 @@ class TestTheChase(InterviewCase):
         interview.feedback_ids.sudo().write(
             {'due_at': fields.Datetime.now() - timedelta(hours=1)})
         Auto = self.env['pb.hiring.automation']
-        self.assertEqual(Auto._chase_late_feedback(), 2)
-        self.assertEqual(Auto._chase_late_feedback(), 0,
-                         'a late panel member was nagged twice')
+        # RECRUIT P5: counted on THIS interview's rows — the job now chases
+        # every late opinion in the database once a day, and a demo world has
+        # its own (the A2 version asserted the global count).
+        self.assertGreaterEqual(Auto._chase_late_feedback(), 2)
+        Auto._chase_late_feedback()
         for row in interview.feedback_ids:
             self.assertTrue(row.urgent_sent_at)
+            self.assertEqual(row.reminder_count, 1,
+                             'a late panel member was nagged twice in a day')
         self.assertTrue(self.env['mail.activity'].sudo().search([
             ('res_model', '=', 'pb.hiring.interview'),
             ('res_id', '=', interview.id)]))
@@ -585,8 +608,8 @@ class TestTheChase(InterviewCase):
         interview.feedback_ids.sudo().write(
             {'due_at': fields.Datetime.now() - timedelta(hours=1)})
         interview.action_no_show(by='candidate')
-        self.assertEqual(
-            self.env['pb.hiring.automation']._chase_late_feedback(), 0)
+        self.env['pb.hiring.automation']._chase_late_feedback()
+        self.assertFalse(interview.feedback_ids.filtered('urgent_sent_at'))
 
 
 # =========================================================================

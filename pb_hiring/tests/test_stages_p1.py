@@ -241,5 +241,9 @@ class TestRecruitStages(HiringCase):
     def test_meanings_are_one_sentence_and_never_promise_a_later_phase(self):
         for key, text in MEANINGS.items():
             self.assertLessEqual(len(text), 160, key)
-            self.assertNotIn('Calendly', text, 'P5 owns that promise')
             self.assertNotIn('phone screen', text.lower())
+            if key != 'phone':
+                self.assertNotIn('Calendly', text, 'only Recruiter review sends it')
+        # RECRUIT P5 made the promise true: moving into Recruiter review sends
+        # the recruiter's Calendly link, and the column says so.
+        self.assertIn('Calendly', MEANINGS['phone'])
