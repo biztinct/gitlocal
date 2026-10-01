@@ -957,10 +957,10 @@ class PbHiringForms(models.AbstractModel):
         templates = Form.search([('company_id', 'in', co), ('is_template', '=', True)])
         roles = Form.search([('company_id', 'in', co), ('is_template', '=', False),
                              ('requisition_id', '!=', False),
-                             ('requisition_id.state', 'not in', ('closed', 'refused'))],
+                             ('requisition_id.state', '!=', 'closed')],
                             limit=300)
         reqs = self.env['pb.hiring.requisition'].sudo().search(
-            [('company_id', 'in', co), ('state', 'not in', ('closed', 'refused'))],
+            [('company_id', 'in', co), ('state', '!=', 'closed')],
             order='id desc', limit=300)
         used = {}
         for f in roles:
@@ -1461,7 +1461,7 @@ class PbHiringForms(models.AbstractModel):
         co = self._forms_scope()
         n_tpl = Form.search_count([('company_id', 'in', co), ('is_template', '=', True)])
         n_roles = Form.search_count([('company_id', 'in', co), ('is_template', '=', False),
-                                     ('requisition_id.state', 'not in', ('closed', 'refused'))])
+                                     ('requisition_id.state', '!=', 'closed')])
         default = Form.search([('company_id', 'in', co), ('is_template', '=', True),
                                ('is_default', '=', True)], limit=1)
         text = _('%(t)s templates · %(r)s roles with their own form', t=n_tpl, r=n_roles)

@@ -373,9 +373,16 @@ class PbHiringBoardP1(models.AbstractModel):
         req = self._get(payload)
         self._require_recruit(req)
         if not req.job_id:
+            # RECRUIT P3 (G-14): a role never waits for its request. Adding
+            # the first person opens it for candidates (the job is made then).
+            if req.state == 'setup':
+                req._open_for_candidates()
+            else:
+                req._leg('the job for %s' % req.name, req._ensure_job)
+        if not req.job_id:
             raise UserError(_(
                 "This role has no job yet, so there is nowhere to add a "
-                "candidate. It gets one when the request is agreed."))
+                "candidate. Open it for candidates first."))
         return {'type': 'ir.actions.act_window', 'res_model': 'hr.applicant',
                 'view_mode': 'form', 'views': [[False, 'form']],
                 'target': 'current', 'name': _('New candidate'),
@@ -606,7 +613,7 @@ class PbHiringBoardP1(models.AbstractModel):
         for g in glance:
             if not g['n']:
                 g['tone'] = ''
-        request_agreed = req.state in ('open', 'filled')
+        request_agreed = req.request_state == 'agreed'
         return {
             'stages': stages,
             'closed_counts': closed,
@@ -617,6 +624,7 @@ class PbHiringBoardP1(models.AbstractModel):
             'can_note': True,
             'show_money': self._can_recruit(req),
             'request_agreed': request_agreed,
+            'offer_block_reason': req._offer_block_reason(),
             'total': len(cards),
             'capped': len(cards) >= BOARD_CANDIDATES,
             'activity': self._safe(lambda: self._role_activity(req), default=[]),
@@ -802,8 +810,9 @@ class PbHiringBoardP1(models.AbstractModel):
         if key in ('offer', 'post_offer'):
             req = app.pb_requisition_id
             if key == 'offer':
-                if req and req.state not in ('open', 'filled'):
-                    return {'text': _("The request for this role is not agreed yet, so the offer cannot be sent until it is.")}
+                why = req._offer_block_reason() if req else ''
+                if why:
+                    return {'text': why}
                 return {'text': _("Make the offer from the role's Details tab — Offer & joining.")}
             return {'text': _("Offer accepted. Joined is set from the offer when they start.")}
         done = ivs.filtered(lambda i: i.state == 'done')
@@ -906,7 +915,7 @@ class PbHiringBoardP1(models.AbstractModel):
         Req = self.env['pb.hiring.requisition'].sudo()
         co_ids = self.env.companies.ids or [self.env.company.id]
         roles = Req.search([('company_id', 'in', co_ids),
-                            ('state', 'not in', ('closed', 'refused'))])
+                            ('state', '!=', 'closed')])
         using = {}
         for r in roles:
             for s in r._pb_board_stages():

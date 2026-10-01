@@ -236,16 +236,18 @@ class PbHiring(models.AbstractModel):
         age = (today - (req.create_date.date() if req.create_date
                         else today)).days
 
+        # RECRUIT P3: the role's life and its request are two facets.
+        live = req.state in ('setup', 'open')
         if waiting_mine:
             rank = RANK_WAITING_ON_ME
-        elif req.state in ('draft', 'submitted', 'manager_ok', 'hr_ok') \
-                and req.budget_status == 'over':
+        elif live and req.budget_status == 'over' \
+                and req.request_state != 'agreed':
             rank = RANK_OVER_BUDGET
-        elif req.state == 'open' and not recruiter:
+        elif live and not recruiter:
             rank = RANK_NO_RECRUITER
         elif req.state == 'open':
             rank = RANK_OPEN
-        elif req.state in ('draft', 'submitted', 'manager_ok', 'hr_ok'):
+        elif req.state == 'setup':
             rank = RANK_IN_FLIGHT
         else:
             rank = RANK_SETTLED
@@ -281,7 +283,7 @@ class PbHiring(models.AbstractModel):
                                  % recruiter.id) if recruiter else '',
             'requested_by': self.env['pb.hiring.requisition']._person(
                 req.requested_by_id).name or '',
-            'jd_state': (req.jd_current_id and 'approved')
+            'jd_state': (req.jd_current_id and 'final')
             or (req.jd_ids and req.jd_ids[0].state) or 'none',
             'jd_count': len(req.jd_ids),
             'published': bool(req.published),
@@ -604,17 +606,12 @@ class PbHiring(models.AbstractModel):
         Requisition._require_raise()
         employee = self.env['hr.employee'].sudo().search(
             [('user_id', '=', self.env.uid)], limit=1)
-        if not employee:
-            raise UserError(_(
-                "Payobook does not have an employee record for your login "
-                "yet, and a hiring request has to say who asked for it. Ask "
-                "the HR team to link them."))
         vals = {
             'title': (payload.get('title') or '').strip(),
             'role_type': payload.get('role_type') or 'new_role',
             'department_id': as_id(payload.get('department_id')),
             'headcount': int(payload.get('headcount') or 1),
-            'requested_by_id': employee.id,
+            'requested_by_id': employee.id or False,
             'budget_cost': float(payload.get('budget_cost') or 0.0),
             'location': (payload.get('location') or '').strip(),
             'requirements': (payload.get('requirements') or '').strip(),
@@ -628,16 +625,20 @@ class PbHiring(models.AbstractModel):
                 "A hiring request needs a role name and the part of the "
                 "business it is for."))
         req = Requisition.create(vals)
+        # The full request wizard writes the request as well as the role.
+        req._request_write('writing')
         return {'id': req.id, 'name': req.name,
-                'note': _("%s is saved as a draft. Add the advert and the "
-                          "stages, then send it in.", req.name)}
+                'note': _("%s is saved. Check it, then send the request in.",
+                          req.name)}
 
     def _act_submit(self, payload):
+        """"Send in" — the request, by the manager or for them."""
         req = self._get(payload)
-        req.action_submit()
+        req._request_send_in()
         return {'id': req.id, 'state': req.state,
-                'note': _("Sent in. You will see it move as each person "
-                          "agrees it.")}
+                'request_state': req.request_state,
+                'note': _("Sent in. The Head of HR is asked to agree it; the "
+                          "role carries on meanwhile.")}
 
     def _act_refresh_budget(self, payload):
         req = self._get(payload)
@@ -646,11 +647,13 @@ class PbHiring(models.AbstractModel):
                 'note': req.budget_note or ''}
 
     def _act_open_role(self, payload):
-        """The dormant path's last rung, for a database with no route."""
+        """"Open for candidates" (RECRUIT P3): any recruiter, any time."""
         req = self._get(payload)
-        self._require_write()
-        req.action_open_role(note=payload.get('note'))
-        return {'id': req.id, 'state': req.state}
+        self._require_recruit(req)
+        req._open_for_candidates()
+        return {'id': req.id, 'state': req.state,
+                'note': _("Open for candidates. Publish it, or add people "
+                          "yourself.")}
 
     def _act_close(self, payload):
         req = self._get(payload)
@@ -705,18 +708,11 @@ class PbHiring(models.AbstractModel):
                 'note': _("Version %s started.", jd.version)}
 
     def _act_submit_jd(self, payload):
-        jd = self.env['pb.hiring.jd'].browse(as_id(payload.get('jd_id')))
-        jd.ensure_one()
-        jd.action_submit()
-        return {'id': jd.id, 'state': jd.state,
-                'note': _("Sent to be agreed.")}
+        """RECRUIT P3: there is nothing to send for agreement; "make final"."""
+        return self._act_make_final(payload)
 
     def _act_approve_jd(self, payload):
-        jd = self.env['pb.hiring.jd'].browse(as_id(payload.get('jd_id')))
-        jd.ensure_one()
-        jd.action_approve(note=payload.get('note'))
-        return {'id': jd.id, 'state': jd.state,
-                'note': _("Agreed. It is now the advert this role uses.")}
+        return self._act_make_final(payload)
 
     # --------------------------------------------------------- the screening
     def _act_screen(self, payload):

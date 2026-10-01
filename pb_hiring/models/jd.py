@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
-"""`pb.hiring.jd` — the advert, numbered, agreed and kept.
+"""`pb.hiring.jd` — the advert, numbered, shared and kept.
 
-A JOB DESCRIPTION IS A VERSION, NOT A FIELD. The thing a hiring manager agreed
-to in March is not the thing a recruiter edited in May, and a single text box
-on the request cannot tell those apart. So each one is a numbered row, the
-agreed one is pointed at from the request, and every older one stays readable.
-That is the sheet's "centralized folder" and it needs no folder: the list view
-filtered to the agreed ones IS the library.
+A JOB DESCRIPTION IS A VERSION, NOT A FIELD. The thing a hiring manager read
+in March is not the thing a recruiter edited in May, and a single text box on
+the request cannot tell those apart. So each one is a numbered row, the one
+in use is pointed at from the role, and every older one stays readable.
 
-ONLY ONE CAN BE OUT FOR AGREEMENT AT A TIME. Two versions of the same advert
-in front of the same person is two approvals that contradict each other, and
-whichever comes back last wins by accident.
+RECRUIT P3 (G-17): NO SIGN-OFF. A draft is shared with the manager for input
+(an email and a link to read it and leave a comment); the recruiter makes it
+final when it is right. Making a version final puts it on the job straight
+away, and the role's Details tab then offers "Republish" for the job-board
+packs. The `hiring_jd` route is retired.
 """
 
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 
-from .hiring_common import GROUP_MANAGER, GROUP_USER, JD_STATES
+from .hiring_common import JD_STATES
 
 _logger = logging.getLogger(__name__)
 
@@ -30,12 +30,10 @@ class PbHiringJd(models.Model):
                 'biz.approval.chain.mixin']
     _order = 'requisition_id, version desc, id desc'
 
-    _approval_transitions = {
-        ('draft', 'submitted'): None,
-        ('submitted', 'approved'): None,
-        ('submitted', 'refused'): None,
-        ('draft', 'refused'): GROUP_USER,
-    }
+    # The chain mixin stays (its fields carry the old trail and the seat
+    # rule reads `seat_user_ids`), but no route is registered for this model
+    # any more; `state` is written by `action_make_final` alone.
+    _approval_transitions = {}
 
     name = fields.Char(string='Reference', compute='_compute_name',
                        store=True, readonly=True)
@@ -56,15 +54,26 @@ class PbHiringJd(models.Model):
     state = fields.Selection(JD_STATES, string='How far it has got',
                              default='draft', required=True, tracking=True,
                              copy=False)
-    approved_on = fields.Datetime(string='Agreed on', readonly=True,
+    approved_on = fields.Datetime(string='Made final on', readonly=True,
                                   copy=False)
-    approved_by = fields.Many2one('res.users', string='Agreed by',
+    approved_by = fields.Many2one('res.users', string='Made final by',
                                   readonly=True, copy=False)
     refuse_note = fields.Text(string='Why it was sent back', copy=False)
+    # RECRUIT P3 — shared for input
+    share_token = fields.Char(copy=False, readonly=True, index=True,
+                              groups='base.group_system')
+    shared_with_id = fields.Many2one('hr.employee', string='Shared with',
+                                     readonly=True, copy=False)
+    shared_on = fields.Datetime(string='Shared on', readonly=True, copy=False)
+    template_id = fields.Many2one('pb.hiring.jd.template',
+                                  string='Started from', copy=False,
+                                  ondelete='set null')
+    comment_ids = fields.One2many('pb.hiring.jd.comment', 'jd_id',
+                                  string='Comments')
     company_id = fields.Many2one(
         'res.company', related='requisition_id.company_id', store=True,
         index=True, readonly=True)
-    is_current = fields.Boolean(string='The agreed one',
+    is_current = fields.Boolean(string='The one in use',
                                 compute='_compute_is_current', store=True)
 
     @api.depends('requisition_id.jd_current_id')
@@ -98,45 +107,32 @@ class PbHiringJd(models.Model):
                 vals['title'] = req.title
         return super().create(vals_list)
 
-    @api.constrains('state', 'requisition_id')
-    def _check_one_in_flight(self):
-        for rec in self:
-            if rec.state != 'submitted':
-                continue
-            other = self.sudo().search_count([
-                ('requisition_id', '=', rec.requisition_id.id),
-                ('state', '=', 'submitted'), ('id', '!=', rec.id)])
-            if other:
-                raise ValidationError(_(
-                    "Another version of this advert is already waiting to be "
-                    "agreed. Deal with that one first, or send it back."))
-
     # ----------------------------------------------------------- the buttons
-    def action_submit(self):
+    def action_make_final(self):
+        """This version is the advert. It goes onto the job at once."""
         for rec in self:
-            if rec.state != 'draft':
-                raise UserError(_("This version has already been sent."))
             if not (rec.body or '').strip():
                 raise UserError(_(
-                    "Write the advert before you send it to be agreed. An "
-                    "empty one cannot be agreed to."))
-            rec._advance_state('submitted')
+                    "Write the advert before you make it final. An empty one "
+                    "cannot go on the careers page."))
+            if rec.state != 'final':
+                rec._chain_state_write('final')
+            rec._become_current()
         return True
+
+    # Old names, kept so a stored button or a script still does the right
+    # thing: there is nothing to send and nothing to agree any more.
+    def action_submit(self):
+        return self.action_make_final()
 
     def action_approve(self, note=False):
-        for rec in self:
-            rec._advance_state('approved', note=note or False)
-        return True
-
-    def action_refuse(self, note=False):
-        for rec in self:
-            rec.refuse_note = note or rec.refuse_note
-        return self.action_refuse_chain(note=note or False)
+        return self.action_make_final()
 
     def action_new_version(self):
         """Start again from this one, keeping what was written."""
         self.ensure_one()
         copy = self.sudo().create({
+            'template_id': self.template_id.id or False,
             'requisition_id': self.requisition_id.id,
             'title': self.title,
             'body': self.body,
@@ -146,13 +142,7 @@ class PbHiringJd(models.Model):
                 'res_id': copy.id, 'view_mode': 'form',
                 'views': [[False, 'form']], 'name': copy.name}
 
-    # -------------------------------------------------------- what agreeing does
-    def _after_approval_transition(self, to_state):
-        res = super()._after_approval_transition(to_state)
-        if to_state == 'approved':
-            self._become_current()
-        return res
-
+    # ---------------------------------------------------- what final does
     def _become_current(self):
         """Point the request at this version and put it on the job.
 
@@ -163,6 +153,8 @@ class PbHiringJd(models.Model):
         self.ensure_one()
         self.sudo().write({'approved_on': fields.Datetime.now(),
                            'approved_by': self.env.uid})
+        req = self.requisition_id.sudo()
+        was = req.jd_current_id
         # SAVEPOINTS, not bare try/excepts: a failure that reached the
         # database aborts the WHOLE transaction, and catching the exception
         # in Python does not revive it — every statement after it fails too,
@@ -177,52 +169,21 @@ class PbHiringJd(models.Model):
                 'putting advert %s on the job' % self.id,
                 lambda: job.sudo().write(
                     {'website_description': self.body or ''}))
+        # A role already advertised has job-board packs built from the old
+        # words: the Details tab offers "Republish" until somebody does.
+        if req.published and was != self:
+            req.write({'advert_stale': True})
+        req._log_role(_("Version %s of the advert is final and in use.",
+                        self.version or 1))
         return True
 
-    def _approval_can(self, from_state, to_state):
-        """Agreeing an advert is the hiring manager's job, and the HR team's.
-
-        The hiring manager is the person who ASKED for the role — the one
-        whose team the person will join — so the check is against the record
-        rather than against a group.
-        """
-        self.ensure_one()
-        if self.env.su or self.env.user._is_admin():
-            return True
-        if to_state in ('approved', 'refused') and from_state == 'submitted':
-            if self.env.uid in self._jd_approver_uids():
-                return True
-            return self.env.user.has_group(GROUP_MANAGER)
-        return super()._approval_can(from_state, to_state)
-
-    def _jd_approver_uids(self):
-        """Who is asked to agree this advert, in the order it is asked.
-
-        The person who asked for the role; if they are the person who wrote
-        this version, their own manager instead; and if neither has a login,
-        the HR lead's seat. Whoever it lands on is NAMED in the title so the
-        approver is never a mystery.
-        """
+    def _jd_manager(self):
+        """Who a draft is shared with: the manager the request was asked of,
+        else the person it is for, else who they would report to."""
         self.ensure_one()
         req = self.requisition_id.sudo()
-        Employee = self.env['hr.employee'].sudo()
-        asked = Employee.browse(req.requested_by_id.id).exists()
-        candidates = []
-        if asked.user_id and asked.user_id.id != self.create_uid.id:
-            candidates.append(asked.user_id.id)
-        boss = asked.parent_id.user_id
-        if boss:
-            candidates.append(boss.id)
-        if req.reporting_manager_id.user_id:
-            candidates.append(req.reporting_manager_id.user_id.id)
-        if not candidates and asked.user_id:
-            candidates.append(asked.user_id.id)
-        seen, out = set(), []
-        for uid in candidates:
-            if uid and uid not in seen:
-                seen.add(uid)
-                out.append(uid)
-        return out
+        return (req.asked_employee_id or req.requested_by_id
+                or req.reporting_manager_id)
 
     # ------------------------------------------------------------ the doors
     def action_open_requisition(self):

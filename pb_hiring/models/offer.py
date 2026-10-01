@@ -286,10 +286,9 @@ class PbHiringOffer(models.Model):
     def draft_for(self, requisition_id, values=None):
         """The offer for the person the panel picked.
 
-        THE BACKGROUND CHECK IS THE DOOR and it is checked here rather than on
-        the button, because "draft an offer" is reachable from the board, from
-        the form and from a test, and a rule enforced in one of three places
-        is a rule enforced nowhere.
+        RECRUIT P3 (G-39, RC-D5): the background check runs ALONGSIDE and no
+        longer holds the draft. The one hard rule lives on SENDING — see
+        `action_send_to_candidate`.
         """
         values = values or {}
         req = self.env['pb.hiring.requisition'].browse(
@@ -311,9 +310,6 @@ class PbHiringOffer(models.Model):
             return live
 
         bgv = self.env['pb.hiring.bgv'].open_for(req.id, applicant.id)
-        ready, why = bgv.check_ready()
-        if not ready:
-            raise UserError(why)
 
         # THE WANTED-BY DATE IS A WISH AND THE START DATE IS A PROMISE. A
         # request raised in June asking for somebody by August is perfectly
@@ -602,25 +598,22 @@ class PbHiringOffer(models.Model):
     def action_send_to_candidate(self, force=False):
         """The letter and the link, to the person it is about.
 
-        FORCING IS THE HR LEAD'S and not the recruiter's, because "send it
-        before the papers are in" is a decision to carry a risk, and the
-        person carrying it should be the person who owns it.
+        THE ONE HARD RULE (RC-D5, G-43): no offer leaves unless the role's
+        hiring request is agreed, and the refusal names who presses Agree.
+        The papers are NOT a gate any more (G-40): they are asked for at the
+        moment the company chose and chased; the offer can go before they are
+        all in, and the note on the record says so.
         """
         self.ensure_one()
+        why_not = self.requisition_id.sudo()._offer_block_reason()
+        if why_not:
+            raise UserError(why_not)
         if self.state not in ('hr_ok', 'sent'):
             raise UserError(_(
                 "An offer goes to the candidate once it has been agreed. "
                 "This one is “%s”.",
                 dict(OFFER_STATES).get(self.state, self.state)))
-        ok, why = self._documents_ready()
-        if not ok:
-            if not force:
-                raise UserError(why)
-            if not (self.env.su or self.env.user.has_group(GROUP_MANAGER)):
-                raise UserError(_(
-                    "Sending an offer before the papers are in is the HR "
-                    "lead's call. Ask them, or chase the candidate — their "
-                    "link is still live."))
+        ok, _why = self._documents_ready()
         if not self.candidate_email:
             raise UserError(_(
                 "There is no email address for this candidate, so there is "

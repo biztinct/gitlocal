@@ -40,9 +40,13 @@
                        optional="hide"/>
                 <field name="state" widget="badge"
                        decoration-success="state in ('open', 'filled')"
-                       decoration-info="state in ('manager_ok', 'hr_ok')"
-                       decoration-warning="state == 'submitted'"
-                       decoration-danger="state == 'refused'"/>
+                       decoration-warning="state == 'setup'"/>
+                <field name="request_state" widget="badge"
+                       decoration-success="request_state == 'agreed'"
+                       decoration-info="request_state in ('sent_in', 'hr_ok')"
+                       decoration-warning="request_state in ('none', 'asked', 'writing')"
+                       decoration-danger="request_state == 'not_approved'"/>
+                <field name="is_confidential" optional="hide"/>
             </list>
         </field>
     </record>
@@ -53,28 +57,31 @@
         <field name="arch" type="xml">
             <form string="Hiring request">
                 <header>
+                    <button name="action_open_role" type="object"
+                            string="Open for candidates" class="btn-primary"
+                            invisible="state != 'setup'"/>
                     <button name="action_submit" type="object"
-                            string="Send it in" class="btn-primary"
-                            invisible="state != 'draft'"
-                            confirm="This goes to your manager, then to the HR lead — and to Finance as well if it asks for more than the budget has left. Carry on?"/>
+                            string="Send the request in"
+                            invisible="request_state in ('sent_in', 'hr_ok', 'agreed') or state == 'closed'"
+                            confirm="Sending the request in is the manager's agreement. The Head of HR is asked to agree it next; the role carries on meanwhile. Carry on?"/>
                     <button name="action_refresh_budget" type="object"
                             string="Read the budget again"
-                            invisible="state in ('filled', 'closed', 'refused')"/>
+                            invisible="state in ('filled', 'closed')"/>
                     <button name="action_publish" type="object"
-                            string="Advertise it" class="btn-primary"
-                            invisible="state != 'open' or published"
+                            string="Advertise it"
+                            invisible="state not in ('setup', 'open') or published or is_confidential"
                             confirm="This puts the role on the careers page and prepares an advert for every job board. Nothing is emailed to a job board unless that switch is on. Carry on?"/>
                     <button name="action_mark_filled" type="object"
                             string="Mark it filled"
                             invisible="state != 'open'"/>
                     <button name="action_close" type="object"
                             string="Close it"
-                            invisible="state not in ('submitted', 'manager_ok', 'hr_ok', 'open')"/>
+                            invisible="state not in ('setup', 'open')"/>
                     <button name="action_reopen" type="object"
                             string="Open it again"
-                            invisible="state not in ('refused', 'closed')"/>
+                            invisible="state not in ('closed', 'filled')"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,submitted,manager_ok,hr_ok,open"/>
+                           statusbar_visible="setup,open,filled"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -104,7 +111,10 @@
                             <field name="target_start_date"/>
                         </group>
                         <group string="The money">
+                            <field name="request_state" readonly="1"/>
                             <field name="budget_cost"/>
+                            <field name="budget_confirmed"/>
+                            <field name="budget_agreement"/>
                             <field name="currency_id" groups="base.group_multi_currency"/>
                             <field name="budget_status" readonly="1"/>
                             <field name="budget_remaining" readonly="1"/>
@@ -127,6 +137,7 @@
                             <field name="recruiter_id"/>
                             <field name="recruiter_manager_id"/>
                             <field name="referral_open"/>
+                            <field name="is_confidential"/>
                             <field name="job_id" readonly="1"/>
                             <field name="jd_current_id" readonly="1"/>
                             <field name="published" readonly="1"/>
@@ -156,8 +167,7 @@
                                     <field name="is_current"/>
                                     <field name="approved_on"/>
                                     <field name="state" widget="badge"
-                                           decoration-success="state == 'approved'"
-                                           decoration-danger="state == 'refused'"/>
+                                           decoration-success="state == 'final'"/>
                                 </list>
                             </field>
                         </page>
@@ -211,9 +221,11 @@
                 <field name="department_id"/>
                 <field name="recruiter_id"/>
                 <filter name="live" string="Still going"
-                        domain="[('state', 'in', ['draft', 'submitted', 'manager_ok', 'hr_ok', 'open'])]"/>
-                <filter name="waiting" string="Waiting for a sign-off"
-                        domain="[('state', 'in', ['submitted', 'manager_ok', 'hr_ok'])]"/>
+                        domain="[('state', 'in', ['setup', 'open'])]"/>
+                <filter name="waiting" string="Request waiting to be agreed"
+                        domain="[('request_state', 'in', ['sent_in', 'hr_ok'])]"/>
+                <filter name="no_request" string="No agreed request"
+                        domain="[('request_state', '!=', 'agreed')]"/>
                 <filter name="open" string="Open for candidates"
                         domain="[('state', '=', 'open')]"/>
                 <filter name="over" string="Over budget"
@@ -243,9 +255,9 @@
         <field name="context">{'search_default_live': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Nobody has asked for a new person yet</p>
-            <p>Whoever runs a part of the business raises the first request.
-               It goes to their manager, then to the HR lead, and to Finance
-               as well if it asks for more than the budget has left.</p>
+            <p>A recruiter opens a role; the manager completes the hiring
+               request from the link they are sent. Sending it in is their
+               agreement, and the Head of HR agrees it after.</p>
         </field>
     </record>
 
@@ -266,9 +278,7 @@
                 <field name="company_id" groups="base.group_multi_company"
                        optional="hide"/>
                 <field name="state" widget="badge"
-                       decoration-success="state == 'approved'"
-                       decoration-warning="state == 'submitted'"
-                       decoration-danger="state == 'refused'"/>
+                       decoration-success="state == 'final'"/>
             </list>
         </field>
     </record>
@@ -279,21 +289,15 @@
         <field name="arch" type="xml">
             <form string="Job description">
                 <header>
-                    <button name="action_submit" type="object"
-                            string="Send it to be agreed" class="btn-primary"
-                            invisible="state != 'draft'"/>
-                    <button name="action_approve" type="object"
-                            string="Agree it" class="btn-primary"
-                            invisible="state != 'submitted'"
-                            confirm="Agreeing this makes it the advert for the role, and it replaces whatever is on the careers page. Carry on?"/>
-                    <button name="action_refuse" type="object"
-                            string="Send it back"
-                            invisible="state != 'submitted'"/>
+                    <button name="action_make_final" type="object"
+                            string="Make it final" class="btn-primary"
+                            invisible="state != 'draft'"
+                            confirm="This becomes the advert for the role and replaces whatever is on the careers page. Carry on?"/>
                     <button name="action_new_version" type="object"
                             string="Start a new version"
                             invisible="state == 'draft'"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,submitted,approved"/>
+                           statusbar_visible="draft,final"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -340,10 +344,10 @@
             <search string="Job descriptions">
                 <field name="title"/>
                 <field name="requisition_id"/>
-                <filter name="agreed" string="Agreed"
-                        domain="[('state', '=', 'approved')]"/>
-                <filter name="waiting" string="Waiting to be agreed"
-                        domain="[('state', '=', 'submitted')]"/>
+                <filter name="agreed" string="Final"
+                        domain="[('state', '=', 'final')]"/>
+                <filter name="waiting" string="Drafts"
+                        domain="[('state', '=', 'draft')]"/>
                 <filter name="current" string="The one in use"
                         domain="[('is_current', '=', True)]"/>
                 <group name="group_by">

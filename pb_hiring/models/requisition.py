@@ -96,18 +96,22 @@ class PbHiringRequisition(models.Model):
     #: product does on a database where hiring approvals were never switched
     #: on, and the two must agree on WHO, which is why the manager rung is
     #: `None` and narrowed in `_approval_can` rather than gated on a group.
+    #
+    # RECRUIT P3: the route drives `request_state` (registered with
+    # `state_field`), and the role's own `state` is written by the role's own
+    # buttons through `_chain_state_write`. The pairs below are the dormant
+    # ladder of the REQUEST, for a database where no route was ever
+    # published; `requests_p3.py` reads them explicitly rather than trusting
+    # the mixin's "a missing pair is open to anybody".
     _approval_transitions = {
-        ('draft', 'submitted'): None,
-        ('submitted', 'manager_ok'): None,
-        ('manager_ok', 'hr_ok'): GROUP_MANAGER,
-        ('hr_ok', 'open'): GROUP_MANAGER,
-        ('submitted', 'refused'): None,
-        ('manager_ok', 'refused'): GROUP_MANAGER,
-        ('hr_ok', 'refused'): GROUP_MANAGER,
-        ('draft', 'refused'): None,
-        # past the route's last rung and always the record's own business
-        ('open', 'filled'): GROUP_USER,
-        ('open', 'closed'): GROUP_MANAGER,
+        ('writing', 'sent_in'): None,
+        ('asked', 'sent_in'): None,
+        ('none', 'sent_in'): None,
+        ('not_approved', 'sent_in'): None,
+        ('sent_in', 'agreed'): GROUP_MANAGER,
+        ('hr_ok', 'agreed'): GROUP_MANAGER,
+        ('sent_in', 'not_approved'): GROUP_MANAGER,
+        ('hr_ok', 'not_approved'): GROUP_MANAGER,
     }
 
     # ------------------------------------------------------- what it is about
@@ -135,8 +139,10 @@ class PbHiringRequisition(models.Model):
                                required=True, tracking=True)
     target_start_date = fields.Date(string='Wanted by', tracking=True)
 
+    # RECRUIT P3: optional. A role opened by a recruiter has no request yet,
+    # and the manager asked to write one becomes the person who asked for it.
     requested_by_id = fields.Many2one(
-        'hr.employee', string='Asked for by', required=True, index=True,
+        'hr.employee', string='Asked for by', index=True,
         tracking=True, ondelete='restrict')
     requested_by_user_id = fields.Many2one(
         'res.users', string='Asked for by (login)', index=True,
@@ -182,13 +188,13 @@ class PbHiringRequisition(models.Model):
 
     # ------------------------------------------------------ what it produces
     state = fields.Selection(
-        REQUISITION_STATES, string='How far it has got', default='draft',
-        required=True, tracking=True, copy=False)
+        REQUISITION_STATES, string='The role', default='setup',
+        required=True, tracking=True, copy=False, index=True)
     job_id = fields.Many2one('hr.job', string='The job', copy=False,
                              tracking=True, ondelete='set null')
     jd_ids = fields.One2many('pb.hiring.jd', 'requisition_id',
                              string='Job descriptions')
-    jd_current_id = fields.Many2one('pb.hiring.jd', string='Agreed description',
+    jd_current_id = fields.Many2one('pb.hiring.jd', string='The advert in use',
                                     copy=False, ondelete='set null')
     step_ids = fields.One2many('pb.hiring.step', 'requisition_id',
                                string='Stages', copy=True)
@@ -444,9 +450,9 @@ class PbHiringRequisition(models.Model):
         res = super().write(vals)
         if {'budget_cost', 'department_id', 'company_id',
                 'currency_id'} & set(vals):
-            self.filtered(
-                lambda r: r.state in ('draft', 'submitted'))._refresh_budget(
-                    silent=True)
+            # RECRUIT P3: always. A figure that changes after the request was
+            # sent in is exactly the one the budget watchers must hear about.
+            self._refresh_budget(silent=True)
         return res
 
     # =====================================================================
@@ -466,7 +472,9 @@ class PbHiringRequisition(models.Model):
         # No `_is_admin()` fallback: see the note on `pb.hiring._can_read`.
         # The two built-in administrator accounts hold `group_hiring_admin`
         # already, and anybody else is granted it by name.
-        if user.has_group(GROUP_MANAGER) or user.has_group(GROUP_ADMIN):
+        # RECRUIT P3 (G-14): a recruiter opens a role directly.
+        if user.has_group(GROUP_USER) or user.has_group(GROUP_MANAGER) \
+                or user.has_group(GROUP_ADMIN):
             return True
         employee = self.env['hr.employee'].sudo().search(
             [('user_id', '=', user.id)], limit=1)
@@ -488,61 +496,61 @@ class PbHiringRequisition(models.Model):
         return True
 
     def _approval_can(self, from_state, to_state):
-        """The manager rung is open to the RIGHT manager and to the HR team.
-
-        The mixin's table says `None` for that rung, which on its own means
-        "anybody" — correct as a default and much too wide here. Narrowed to
-        the person the request names.
-        """
+        """Who may send the REQUEST in. Everything after that is the route's
+        (a seat) or, on a database with no route, the talent lead's."""
         self.ensure_one()
         if self.env.su or self.env.user._is_admin():
             return True
-        if to_state == 'submitted':
-            return bool(self.requested_by_user_id
-                        and self.requested_by_user_id.id == self.env.uid) \
-                or self.env.user.has_group(GROUP_MANAGER)
-        if to_state in ('manager_ok', 'refused') and from_state == 'submitted':
-            boss = self._person(self.requested_by_id).parent_id.user_id
-            if boss and boss.id == self.env.uid:
-                return True
+        if to_state == 'sent_in':
+            return self._may_send_in()
         return super()._approval_can(from_state, to_state)
+
+    def _may_send_in(self, user=None):
+        """The manager who was asked, the person the request is for, the
+        department's head, or the hiring team."""
+        self.ensure_one()
+        user = user or self.env.user
+        if user.has_group(GROUP_USER) or user.has_group(GROUP_MANAGER) \
+                or user.has_group(GROUP_ADMIN):
+            return True
+        rec = self.sudo()
+        if user.id in (rec.requested_by_user_id.id,
+                       rec.asked_user_id.id if 'asked_user_id' in rec._fields
+                       else 0):
+            return True
+        return bool(rec.department_id.manager_id.user_id
+                    and rec.department_id.manager_id.user_id.id == user.id)
 
     # =====================================================================
     #  The buttons
     # =====================================================================
     def action_submit(self):
+        """"Send in myself" — the request, by whoever may send it in.
+        `requests_p3.py` holds the send-in itself."""
         for rec in self:
-            if rec.state != 'draft':
-                raise UserError(_("This one has already been sent in."))
-            if not rec.jd_ids and not rec.requirements:
-                raise UserError(_(
-                    "Say what the person needs to be able to do before you "
-                    "send this in — either in the box on this form or as a "
-                    "job description. Nobody can agree to a role they cannot "
-                    "picture."))
-            rec._refresh_budget(silent=True)
-            rec._advance_state('submitted')
-            rec.sudo().message_post(body=_(
-                "Sent in. %s", rec.budget_note or ''))
+            rec._request_send_in()
         return True
 
     def action_manager_agree(self, note=False):
-        for rec in self:
-            rec._advance_state('manager_ok', note=note or False)
-        return True
+        """Kept for the old form button: the manager's agreement IS sending
+        the request in (RECRUIT P3)."""
+        return self.action_submit()
 
     def action_hr_agree(self, note=False):
         for rec in self:
-            rec._advance_state('hr_ok', note=note or False)
+            rec._request_agree(note=note)
         return True
 
     def action_open_role(self, note=False):
+        """"Open for candidates" — the role's own button (RECRUIT P3)."""
         for rec in self:
-            rec._advance_state('open', note=note or False)
+            rec._open_for_candidates()
         return True
 
     def action_refuse(self, note=False):
-        return self.action_refuse_chain(note=note or False)
+        for rec in self:
+            rec._request_decline(note=note)
+        return True
 
     def action_mark_filled(self):
         for rec in self:
@@ -550,7 +558,8 @@ class PbHiringRequisition(models.Model):
                 raise UserError(_(
                     "Only a role that is open for candidates can be marked "
                     "filled."))
-            rec._advance_state('filled')
+            rec._chain_state_write('filled')
+            rec._log_role(_("Marked filled."))
             rec.sudo().write({'closed_on': fields.Date.context_today(rec),
                               'referral_open': False})
             rec._close_job()
@@ -558,33 +567,37 @@ class PbHiringRequisition(models.Model):
 
     def action_close(self, note=False):
         for rec in self:
-            if rec.state not in ('open', 'hr_ok', 'manager_ok', 'submitted'):
+            if rec.state not in ('setup', 'open'):
                 raise UserError(_("This one is already closed."))
-            if rec.state == 'open':
-                rec._advance_state('closed')
-            else:
-                rec.action_refuse_chain(note=note or _("Closed"))
+            rec._chain_state_write('closed')
+            rec._request_withdraw(note or _("The role was closed."))
             rec.sudo().write({'closed_on': fields.Date.context_today(rec),
                               'referral_open': False,
                               'closing_note': note or rec.closing_note})
+            rec._log_role(_("Closed. %s", note or ''))
             rec._close_job()
         return True
 
     def action_reopen(self):
-        """Back to being written, for a request that was turned down and has
-        been rethought. The route is re-run from the top — an approval given
-        to an earlier version of a request is not an approval of this one."""
+        """A closed role is worked on again. Its request keeps whatever it
+        had — an agreed request stays agreed, because the role and the money
+        it was agreed for have not changed."""
         for rec in self:
-            if rec.state not in ('refused', 'closed'):
+            if rec.state not in ('closed', 'filled'):
                 raise UserError(_(
-                    "Only a request that was turned down or closed can be "
-                    "opened again."))
-            rec._chain_state_write('draft')
+                    "Only a role that is closed or filled can be opened "
+                    "again."))
+            rec._chain_state_write('setup')
             rec.sudo().write({'closed_on': False})
-            rec.sudo().message_post(body=_(
-                "Opened again. It has to go all the way round the sign-off "
-                "once more."))
+            rec._log_role(_("Opened again. Press Open for candidates when it "
+                            "is ready."))
         return True
+
+    def _log_role(self, body):
+        """One line on the role's timeline, never fatal."""
+        self.ensure_one()
+        return self._leg('a note on %s' % self.name,
+                         lambda: self.sudo().message_post(body=body))
 
     def _close_job(self):
         self.ensure_one()
@@ -628,10 +641,9 @@ class PbHiringRequisition(models.Model):
                      self.sudo())._chain_engine_write(to_state)
 
     def _after_approval_transition(self, to_state):
-        res = super()._after_approval_transition(to_state)
-        if to_state == 'open':
-            self._on_opened()
-        return res
+        """The route drives the REQUEST (RECRUIT P3); opening the role is the
+        role's own button. `requests_p3.py` reacts to the request states."""
+        return super()._after_approval_transition(to_state)
 
     def _leg(self, name, fn):
         """One piece of paperwork, inside its own SAVEPOINT.
@@ -808,9 +820,9 @@ class PbHiringRequisition(models.Model):
                 self.sudo().activity_schedule(
                     'mail.mail_activity_data_todo',
                     summary=_('Start hiring: %s', self.title),
-                    note=_("%(who)s asked for this and it has been agreed. "
-                           "%(count)s to find.",
-                           who=self._person(self.requested_by_id).name or '',
+                    note=_("%(who)s needs this role filled. %(count)s to find.",
+                           who=self._person(self.requested_by_id).name
+                           or self.department_id.name or '',
                            count=_('%(n)s %(word)s', n=self.headcount,
                                    word=counted(self.headcount, _('person'),
                                                 _('people')))),
@@ -823,7 +835,8 @@ class PbHiringRequisition(models.Model):
     def _open_referrals(self):
         self.ensure_one()
         wanted = (flag(self.env, P_REFERRAL_AUTO)
-                  and self.role_type not in SENSITIVE_TYPES)
+                  and self.role_type not in SENSITIVE_TYPES
+                  and not self.is_confidential)
         if self.referral_open != wanted:
             self.sudo().write({'referral_open': wanted})
         return wanted
@@ -842,8 +855,8 @@ class PbHiringRequisition(models.Model):
         self.ensure_one()
         if not self.job_id:
             raise UserError(_(
-                "There is no job behind this request yet. One is made the "
-                "moment the request is agreed."))
+                "There is no job behind this role yet. One is made the moment "
+                "the role is opened for candidates."))
         return {'type': 'ir.actions.act_window', 'res_model': 'hr.job',
                 'res_id': self.job_id.id, 'view_mode': 'form',
                 'views': [[False, 'form']], 'name': self.job_id.name}

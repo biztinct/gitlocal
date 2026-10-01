@@ -715,10 +715,9 @@ def seed_journey(env):
     env['pb.hiring.requisition']._pb_fill_visible_stages()
     source = json.loads((Path(__file__).parent.parent / 'data/journey_content.json').read_text())
     for company in env['res.company'].sudo().search([]):
-        if env.cr.dbname == 'rize' and not company.pb_mr_approver_id:
-            matches = env['res.users'].sudo().search([('name', '=ilike', 'Dhruv%'), ('share', '=', False), ('company_ids', 'in', company.id)])
-            if len(matches) == 1:
-                company.pb_mr_approver_id = matches
+        # RECRUIT P3: no approver is named by default. (A customer person's
+        # name was hard-coded here for one database; the company's named
+        # approver is set in Hiring set-up → Who does what, or not at all.)
         if env.cr.dbname == 'rize' and not company.pb_hiring_brand:
             company.write(dict(pb_hiring_brand='Rize', pb_hiring_intro=source['intro'],
                                **{'pb_hiring_' + k: v for k, v in source['sections'].items()}))
@@ -731,3 +730,6 @@ def seed_journey(env):
     # file reads this one's constants.
     from .forms_p2 import seed_forms
     seed_forms(env)
+    # RECRUIT P3: the four advert templates per company (three languages).
+    from .requests_p3 import seed_p3
+    seed_p3(env)

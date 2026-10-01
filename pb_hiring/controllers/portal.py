@@ -66,6 +66,7 @@ class PbHiringPortal(CustomerPortal):
             ('state', '=', 'open'),
             ('referral_open', '=', True),
             ('role_type', '!=', 'sensitive_replacement'),
+            ('is_confidential', '=', False),
             ('company_id', 'in', co_ids),
         ], order='opened_on desc, id desc', limit=60)
 

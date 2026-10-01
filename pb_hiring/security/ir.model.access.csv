@@ -109,3 +109,9 @@ access_pb_hiring_form_system,Application forms system,model_pb_hiring_form,base.
 access_pb_hiring_form_field_user,Application questions read,model_pb_hiring_form_field,pb_hiring.group_hiring_user,1,0,0,0
 access_pb_hiring_form_field_manager,Application questions talent lead,model_pb_hiring_form_field,pb_hiring.group_hiring_manager,1,1,1,1
 access_pb_hiring_form_field_system,Application questions system,model_pb_hiring_form_field,base.group_system,1,1,1,1
+access_pb_hiring_jd_template_user,Advert templates read,model_pb_hiring_jd_template,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_jd_template_manager,Advert templates talent lead,model_pb_hiring_jd_template,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_jd_template_system,Advert templates system,model_pb_hiring_jd_template,base.group_system,1,1,1,1
+access_pb_hiring_jd_comment_user,Advert comments recruiter,model_pb_hiring_jd_comment,pb_hiring.group_hiring_user,1,0,1,0
+access_pb_hiring_jd_comment_admin,Advert comments head of hiring,model_pb_hiring_jd_comment,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_jd_comment_system,Advert comments system,model_pb_hiring_jd_comment,base.group_system,1,1,1,1

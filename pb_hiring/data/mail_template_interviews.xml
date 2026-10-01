@@ -31,7 +31,7 @@
     <record id="mail_template_interview_candidate" model="mail.template">
         <field name="name">Hiring: your interview is arranged</field>
         <field name="model_id" ref="model_pb_hiring_interview"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.candidate_email or '' }}</field>
         <field name="subject">Your interview for {{ object.requisition_id.title }}</field>
         <field name="auto_delete" eval="False"/>
@@ -75,7 +75,7 @@
     <record id="mail_template_interview_panel" model="mail.template">
         <field name="name">Hiring: you are on an interview panel</field>
         <field name="model_id" ref="model_pb_hiring_interview"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="subject">You are interviewing {{ object.candidate_name }} — {{ object.requisition_id.title }}</field>
         <field name="auto_delete" eval="False"/>
         <field name="body_html" type="html">
@@ -119,7 +119,7 @@
     <record id="mail_template_interview_recruiter" model="mail.template">
         <field name="name">Hiring: an interview is in the diary (recruiter's copy)</field>
         <field name="model_id" ref="model_pb_hiring_interview"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.recruiter_id.email or '' }}</field>
         <field name="subject">In the diary: {{ object.candidate_name }} — {{ object.requisition_id.title }}</field>
         <field name="auto_delete" eval="False"/>
@@ -148,7 +148,7 @@
     <record id="mail_template_interview_tomorrow" model="mail.template">
         <field name="name">Hiring: an interview tomorrow</field>
         <field name="model_id" ref="model_pb_hiring_interview"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="subject">Tomorrow: {{ object.candidate_name }} — {{ object.requisition_id.title }}</field>
         <field name="auto_delete" eval="False"/>
         <field name="body_html" type="html">
@@ -178,7 +178,7 @@
     <record id="mail_template_interview_soon" model="mail.template">
         <field name="name">Hiring: an interview in half an hour</field>
         <field name="model_id" ref="model_pb_hiring_interview"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="subject">In half an hour: {{ object.candidate_name }}</field>
         <field name="auto_delete" eval="False"/>
         <field name="body_html" type="html">
@@ -203,7 +203,7 @@
     <record id="mail_template_interview_off" model="mail.template">
         <field name="name">Hiring: an interview has been called off</field>
         <field name="model_id" ref="model_pb_hiring_interview"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="subject">Called off: {{ object.candidate_name }} — {{ object.requisition_id.title }}</field>
         <field name="auto_delete" eval="False"/>
         <field name="body_html" type="html">
@@ -237,7 +237,7 @@
     <record id="mail_template_feedback_ask" model="mail.template">
         <field name="name">Hiring: what did you think</field>
         <field name="model_id" ref="model_pb_hiring_feedback"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="subject">What did you think of {{ object.interview_id.candidate_name }}?</field>
         <field name="auto_delete" eval="False"/>
         <field name="body_html" type="html">
@@ -272,7 +272,7 @@
     <record id="mail_template_feedback_urgent" model="mail.template">
         <field name="name">Hiring: an opinion is late</field>
         <field name="model_id" ref="model_pb_hiring_feedback"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="subject">Still waiting on you: {{ object.interview_id.candidate_name }}</field>
         <field name="auto_delete" eval="False"/>
         <field name="body_html" type="html">
@@ -303,7 +303,7 @@
     <record id="mail_template_candidate_next_round" model="mail.template">
         <field name="name">Hiring: a candidate goes through</field>
         <field name="model_id" ref="hr_recruitment.model_hr_applicant"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.email_from or '' }}</field>
         <field name="subject">Good news about {{ object.job_id.name }}</field>
         <field name="auto_delete" eval="False"/>
@@ -331,7 +331,7 @@
     <record id="mail_template_candidate_rejected" model="mail.template">
         <field name="name">Hiring: not this time</field>
         <field name="model_id" ref="hr_recruitment.model_hr_applicant"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.email_from or '' }}</field>
         <field name="subject">About your application for {{ object.job_id.name }}</field>
         <field name="auto_delete" eval="False"/>

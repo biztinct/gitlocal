@@ -28,7 +28,7 @@
     <record id="mail_template_docreq_ask" model="mail.template">
         <field name="name">Hiring: please send us a few documents</field>
         <field name="model_id" ref="model_pb_hiring_docreq"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.candidate_email or '' }}</field>
         <field name="subject">A few documents for {{ object.requisition_id.title }}</field>
         <field name="auto_delete" eval="False"/>
@@ -68,7 +68,7 @@
     <record id="mail_template_docreq_remind" model="mail.template">
         <field name="name">Hiring: still waiting on a document or two</field>
         <field name="model_id" ref="model_pb_hiring_docreq"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.candidate_email or '' }}</field>
         <field name="subject">Still waiting on a document or two</field>
         <field name="auto_delete" eval="False"/>
@@ -102,7 +102,7 @@
     <record id="mail_template_offer_candidate" model="mail.template">
         <field name="name">Hiring: our offer to you</field>
         <field name="model_id" ref="model_pb_hiring_offer"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.candidate_email or '' }}</field>
         <field name="subject">Our offer: {{ object.job_title }}</field>
         <field name="auto_delete" eval="False"/>
@@ -153,7 +153,7 @@
     <record id="mail_template_offer_answered" model="mail.template">
         <field name="name">Hiring: the candidate has answered the offer</field>
         <field name="model_id" ref="model_pb_hiring_offer"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.requisition_id.recruiter_id.email or '' }}</field>
         <field name="subject">{{ object.candidate_name }} has answered the offer</field>
         <field name="auto_delete" eval="False"/>
@@ -190,7 +190,7 @@
     <record id="mail_template_offer_closed" model="mail.template">
         <field name="name">Hiring: somebody is joining</field>
         <field name="model_id" ref="model_pb_hiring_offer"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.reporting_manager_id.work_email or '' }}</field>
         <field name="subject">{{ object.candidate_name }} joins on {{ object.start_date }}</field>
         <field name="auto_delete" eval="False"/>
@@ -221,7 +221,7 @@
     <record id="mail_template_requisition_filled" model="mail.template">
         <field name="name">Hiring: the role is filled</field>
         <field name="model_id" ref="model_pb_hiring_requisition"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.recruiter_manager_id.email or '' }}</field>
         <field name="subject">{{ object.title }} is filled</field>
         <field name="auto_delete" eval="False"/>
@@ -263,7 +263,7 @@
     <record id="mail_template_requisition_agency" model="mail.template">
         <field name="name">Hiring: an agency is working on this role</field>
         <field name="model_id" ref="model_pb_hiring_requisition"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.reporting_manager_id.work_email or '' }}</field>
         <field name="subject">An agency is now working on {{ object.title }}</field>
         <field name="auto_delete" eval="False"/>

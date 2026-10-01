@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 """A hiring request travels the route the business published.
 
-THE DEFAULT ROUTE IS THREE RUNGS AND ONE OF THEM IS CONDITIONAL: their
-manager, the HR lead, and the Finance approver ONLY when the request asks for
-more than the budget has left. That is the whole reason the budget answer is
-computed on the record rather than looked up by a human at the end — the route
-chooses itself from a fact, and a fact has to exist before anybody can choose
-on it.
+RECRUIT P3 (RC-D5, R1/R2): SIGN-OFFS RECORD AND NOTIFY; NOTHING WAITS FOR
+THEM EXCEPT THE OFFER. The manager's "Send in" IS the manager's agreement, so
+the default route is ONE rung — the Head of HR (`hr_lead`) — plus, only when a
+company has named one (`res.company.pb_mr_approver_id`), that person as a
+second rung. FINANCE IS NOT ON THE ROUTE any more: an over-budget request used
+to add a Finance rung nobody held, and the request then waited for ever. Over
+budget now TELLS the company's budget-flag people and blocks nothing.
+
+The route drives `request_state` (the request facet, RC-D6) — never the
+role's own `state` — through the shim's `state_field`.
 
 WHAT AN APPROVER IS AGREEING TO is the role, the number of people and the
 money: change any of those and the approval that was given was given to a
@@ -32,24 +36,32 @@ HIRING_PROCESS_KEY = 'hiring_request'
 
 register_chain(
     'pb.hiring.requisition', HIRING_PROCESS_KEY,
-    submit_state='submitted',
-    driven=('manager_ok', 'hr_ok', 'open'),
+    submit_state='sent_in',
+    driven=('hr_ok', 'agreed'),
+    draft_state='writing',
+    refuse_state='not_approved',
+    reverse_to=('writing',),
     employee_field='requested_by_id',
     amount_field='budget_cost',
     currency_field='currency_id',
     date_field='target_start_date',
+    state_field='request_state',
 )
+
+#: The steps of the default route, reused by the 19.0.2.2.0 migration that
+#: re-publishes every company's route with them.
+def hiring_steps():
+    return [
+        role_step(_('Head of HR'), 'hr_lead', key='hr'),
+        manager_step(_('The company\'s named approver'), key='mgr',
+                     condition={'fact': 'named_approver', 'op': 'eq',
+                                'value': True}),
+    ]
 
 
 def hiring_route():
-    """Today's ladder, written as a route somebody can read and change."""
-    return route(
-        manager_step(_('Their manager')),
-        role_step(_('HR lead'), 'hr_lead', key='hr'),
-        role_step(_('Finance approver'), 'finance', key='fin',
-                  condition={'fact': 'over_budget', 'op': 'eq',
-                             'value': True}),
-    )
+    """One rung, and a second only where a company named an approver."""
+    return route(*hiring_steps())
 
 
 class PbHiringRequisitionApproval(models.Model):
@@ -77,6 +89,8 @@ class PbHiringRequisitionApproval(models.Model):
                             'unit': rec.currency_id.name or ''},
             'role_type': {'value': rec.role_type or '', 'unit': ''},
             'department': {'value': rec.department_id.name or '', 'unit': ''},
+            'named_approver': {
+                'value': bool(rec.company_id.pb_mr_approver_id), 'unit': ''},
         }
 
     @api.model
@@ -93,6 +107,9 @@ class PbHiringRequisitionApproval(models.Model):
             'role_type': {'type': 'char', 'label': _('Why it is needed')},
             'department': {'type': 'char',
                            'label': _('Which part of the business')},
+            'named_approver': {
+                'type': 'bool',
+                'label': _('The company has named its own approver')},
         }
 
     def _chain_revision_values(self):
@@ -134,11 +151,13 @@ class PbHiringRequisitionApproval(models.Model):
         return Seed.lay(
             company, HIRING_PROCESS_KEY, 'Hiring request', hiring_route(),
             binding_note='The route every hiring request follows unless a '
-                         'part of the business is given its own. The Finance '
-                         'rung is only asked when the request costs more than '
-                         'the budget has left.',
+                         'part of the business is given its own. The '
+                         'manager sending it in is their agreement; the Head '
+                         'of HR agrees it, and the company\'s named approver '
+                         'too when there is one. Over budget tells people '
+                         'and blocks nothing.',
             model_name='pb.hiring.requisition',
-            role_keys=('hr_lead', 'finance'),
+            role_keys=('hr_lead',),
             reason='Set up when hiring requests were switched on')
 
 

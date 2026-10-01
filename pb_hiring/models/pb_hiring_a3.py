@@ -328,6 +328,8 @@ class PbHiringA3(models.AbstractModel):
         ]
         return {
             'ready': True,
+            # RECRUIT P3 — the one hard rule, said before it is hit.
+            'offer_block_reason': req._offer_block_reason(),
             'applicant_id': applicant.id,
             'candidate': applicant.sudo().partner_name or '',
             'chips': chips,

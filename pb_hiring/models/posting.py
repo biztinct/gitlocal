@@ -73,15 +73,22 @@ class PbHiringPosting(models.Model):
         """
         req = self.env['pb.hiring.requisition'].browse(as_id(requisition_id))
         req.ensure_one()
+        # RECRUIT P3 (G-14, G-12): publishing never waits for the request.
+        # A role still being set up is opened for candidates by publishing
+        # it; a confidential one is never advertised.
+        if req.is_confidential:
+            raise UserError(_(
+                "This role is confidential, so it is not advertised. Turn "
+                "Confidential off on the role's Details tab first."))
+        if req.state == 'setup':
+            req._open_for_candidates()
         if req.state != 'open':
             raise UserError(_(
-                "A role is advertised once it has been agreed. This one is "
-                "still %s.", dict(req._fields['state'].selection).get(
+                "Only a role that is open for candidates can be advertised. "
+                "This one is %s.", dict(req._fields['state'].selection).get(
                     req.state, req.state)))
         if not req.jd_current_id:
-            raise UserError(_(
-                "There is no agreed advert for this role yet. Write one and "
-                "have it agreed, then publish."))
+            req._ensure_advert()
         job = req.job_id or req._ensure_job()
         try:
             job.sudo().write({'website_published': True,
@@ -90,7 +97,7 @@ class PbHiringPosting(models.Model):
         except Exception:               # noqa: BLE001
             _logger.warning('pb_hiring: %s could not be put on the careers '
                             'page', job.name, exc_info=True)
-        req.sudo().write({'published': True})
+        req.sudo().write({'published': True, 'advert_stale': False})
 
         platforms = self.env['hr.job.platform'].sudo().search([])
         made, refreshed = 0, 0

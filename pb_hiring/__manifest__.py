@@ -4,8 +4,8 @@
 # a USER-VISIBLE string and carries no programme code (ledger GR7, TIDY T10).
 # Built as RIZE Wave 2 phase A1.
     'name': 'Payobook Hiring',
-    'summary': 'Ask for a new person, get it agreed, write the advert and let '
-               'everybody refer somebody',
+    'summary': 'Open a role, ask the manager for the request, advertise it '
+               'and let everybody refer somebody',
     'description': """
 Hiring, from the moment somebody needs a person to the moment the
 advert goes out.
@@ -18,16 +18,25 @@ disappeared.
 
 WHAT THIS MODULE IS
 
-  * **The hiring request.** A function head asks for a role. The request
-    carries the money it expects to cost and Payobook works out, from the
-    budget already in the system, whether there is room for it — within, over
-    by how much, or nothing budgeted at all. It then travels the route the
-    business published: their manager, the HR lead, and the Finance approver
-    only when it is over budget.
-  * **The advert, written down and agreed.** A job description is a numbered
-    version on the request. It is agreed by the hiring manager, and the agreed
-    one is what goes onto the job and onto the careers page. The older versions
-    stay readable, so a year later somebody can see what was actually promised.
+  * **Roles without friction.** A recruiter opens a role in five fields and
+    can publish it and meet candidates the same minute. The hiring request is
+    a separate thing: the recruiter asks the manager, who gets one page by
+    email that saves as they type, with reminders until it is sent in and the
+    talent lead told when it is not. Sending it in is the manager's agreement;
+    the Head of HR agrees it after. Nothing waits for any of that except one
+    thing — an offer is never sent until the request is agreed.
+  * **Budget that tells, and never blocks.** The manager types what the role
+    is expected to cost; HR can record the confirmed figure. Over the
+    department's budget or the confirmed figure, the people the company names
+    are told by email — and nothing stops.
+  * **The advert, shared rather than signed.** A job description is a
+    numbered version on the role, started from a template for the kind of
+    role. It is shared with the manager for their comments and made final by
+    the recruiter; the final one goes onto the careers page. Older versions
+    stay readable.
+  * **Confidential roles.** Off the careers page, off referrals and out of
+    sight of everybody but the hiring team, the person it is for and who they
+    would report to.
   * **Referrals that go somewhere.** Every employee gets a page listing the
     roles that are open to referrals, with one short form. What they send in
     becomes a real candidate on the real job, tagged as a referral, and the
@@ -73,15 +82,14 @@ WHAT THIS MODULE IS
     last conversation the panel's verdict and the decision are recorded
     together, and that is where the offer starts from.
 
-  * **The background check, and the door it holds shut.** A checklist per
-    candidate, every line answered before an offer can be drafted, and a
-    written "we are going ahead anyway" when something comes back. It is not a
-    note: it stops the next step until somebody has said.
+  * **The background check, alongside.** A checklist per candidate that runs
+    beside the offer rather than in front of it. When something comes back,
+    the Head of HR is told the same day.
   * **The papers, asked for once.** The candidate gets one link, on their
-    phone, listing exactly what is wanted with two working days to send it.
-    They are reminded once a day and never twice, and the recruiter is told
-    the day the window shuts — because somebody who has gone quiet is a person
-    to ring, not a row to expire.
+    phone, listing exactly what is wanted with two working days to send it —
+    at the moment the company chose (when the offer is drafted, when the
+    check is clear, or when they accept). They are reminded once a day, the
+    recruiter is told the day the window shuts and the talent lead after.
   * **The offer.** Every line of it typed out with the word a candidate would
     use, a month and a year worked out at the bottom, the company's own offer
     letter filled in and printed, and a route — the hiring manager first,
@@ -107,7 +115,7 @@ WHAT THIS MODULE IS
     them, and whether an agency is faster than doing it yourself — with the
     whole thing downloadable as a spreadsheet.
 """,
-    'version': '19.0.2.1.0',
+    'version': '19.0.2.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -153,6 +161,7 @@ WHAT THIS MODULE IS
         'data/hiring_doc_templates.xml',
         'data/letter_template_offer.xml',
         'data/mail_template_offer.xml',
+        'data/mail_template_requests.xml',
         'data/ir_cron.xml',
         'report/hiring_offer_report.xml',
         'views/hiring_views.xml',
@@ -164,6 +173,7 @@ WHAT THIS MODULE IS
         'views/offer_token_templates.xml',
         'views/journey_views.xml',
         'views/application_templates.xml',
+        'views/request_pages.xml',
         'data/journey_seed.xml',
         'data/recruit_p1.xml',
         'data/recruit_p2.xml',
@@ -175,20 +185,25 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/scss/hiring_numbers.scss',
             'pb_hiring/static/src/scss/hiring_board_p1.scss',
             'pb_hiring/static/src/scss/hiring_forms.scss',
+            'pb_hiring/static/src/scss/hiring_p3.scss',
             'pb_hiring/static/src/js/hiring_board.js',
             'pb_hiring/static/src/js/hiring_setup.js',
             'pb_hiring/static/src/js/hiring_forms.js',
+            'pb_hiring/static/src/js/hiring_requests_p3.js',
             'pb_hiring/static/src/js/hiring_numbers.js',
             'pb_hiring/static/src/js/hiring_palette.js',
             'pb_hiring/static/src/xml/hiring_board.xml',
             'pb_hiring/static/src/xml/hiring_board_p1.xml',
             'pb_hiring/static/src/xml/hiring_setup.xml',
             'pb_hiring/static/src/xml/hiring_forms.xml',
+            'pb_hiring/static/src/xml/hiring_requests_p3.xml',
             'pb_hiring/static/src/xml/hiring_numbers.xml',
         ],
         'web.assets_frontend': [
             'pb_hiring/static/src/scss/portal_hiring.scss',
             'pb_hiring/static/src/js/apply_page.js',
+            'pb_hiring/static/src/scss/request_page.scss',
+            'pb_hiring/static/src/js/request_page.js',
         ],
     },
     'post_init_hook': 'post_init_hook',

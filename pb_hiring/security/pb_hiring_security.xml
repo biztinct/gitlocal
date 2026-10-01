@@ -229,7 +229,12 @@
         <field name="name">Hiring request: mine and my department's</field>
         <field name="model_id" ref="model_pb_hiring_requisition"/>
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
-        <field name="domain_force">['|', '|', '|', ('requested_by_user_id', '=', user.id), ('reporting_manager_id.user_id', '=', user.id), ('recruiter_id', '=', user.id), ('department_id.manager_id.user_id', '=', user.id)]</field>
+        <!-- RECRUIT P3 (G-12): the manager asked to write the request reads
+             it; a CONFIDENTIAL role is seen by the person it is for, who
+             they would report to and the recruiter — never by the rest of
+             the department's management chain. The hiring team keeps the
+             wide rule below. -->
+        <field name="domain_force">['|', '|', '|', '|', ('requested_by_user_id', '=', user.id), ('reporting_manager_id.user_id', '=', user.id), ('recruiter_id', '=', user.id), ('asked_user_id', '=', user.id), '&amp;', ('department_id.manager_id.user_id', '=', user.id), ('is_confidential', '=', False)]</field>
     </record>
 
     <record id="rule_requisition_all" model="ir.rule">
@@ -451,6 +456,17 @@
         <record id="rule_stage_preset_company" model="ir.rule">
             <field name="name">Stage preset: company</field>
             <field name="model_id" ref="model_pb_hiring_stage_preset"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <!-- RECRUIT P3: advert templates and comments are per company. -->
+        <record id="rule_jd_template_company" model="ir.rule">
+            <field name="name">Advert template: company</field>
+            <field name="model_id" ref="model_pb_hiring_jd_template"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_jd_comment_company" model="ir.rule">
+            <field name="name">Advert comment: company</field>
+            <field name="model_id" ref="model_pb_hiring_jd_comment"/>
             <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
         </record>
         <!-- RECRUIT P2: application forms are per company. -->

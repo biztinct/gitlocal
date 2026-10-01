@@ -15,20 +15,23 @@
          posting's id to a template declared on the request would silently
          render somebody else's record. -->
 
-    <!-- ============ the recruiter: a role has been agreed ============ -->
+    <!-- ============ the recruiter: a role is theirs (RECRUIT P3: at
+         creation or send-in, never "agreed" — agreement gates nothing but
+         the offer) ============ -->
     <record id="mail_template_requisition_recruiter" model="mail.template">
-        <field name="name">Hiring: a role has been agreed</field>
+        <field name="name">Hiring: a role is yours to recruit</field>
         <field name="model_id" ref="model_pb_hiring_requisition"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.recruiter_id.email or '' }}</field>
-        <field name="subject">{{ object.title }} has been agreed — it is yours to fill</field>
+        <field name="subject">{{ object.title }} is yours to recruit</field>
         <field name="auto_delete" eval="False"/>
         <field name="body_html" type="html">
             <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
                 <p>Hello,</p>
                 <p>
-                    <strong><t t-out="object.title or ''"/></strong> has been
-                    agreed and it is on your desk.
+                    <strong><t t-out="object.title or ''"/></strong> is on your
+                    desk: the hiring rule for its country names you as the
+                    recruiter.
                 </p>
                 <ul>
                     <li>Part of the business:
@@ -37,16 +40,16 @@
                         <strong><t t-out="object.headcount or 1"/></strong></li>
                     <li t-if="object.location or object.country_id">Where:
                         <strong><t t-out="object.location or object.country_id.name or ''"/></strong></li>
-                    <li t-if="object.target_start_date">Wanted by:
-                        <strong><t t-out="object.target_start_date or ''"/></strong></li>
-                    <li>Asked for by:
+                    <li t-if="object.pb_target_close_date">Wanted by:
+                        <strong><t t-out="object.pb_target_close_date or ''"/></strong></li>
+                    <li t-if="object.requested_by_id">For:
                         <strong><t t-out="object.requested_by_id.name or ''"/></strong></li>
                 </ul>
                 <p>
-                    Open <strong>Lifecycle</strong> in Payobook and go to
-                    <strong>Hiring</strong>. Its row is near the top. The next
-                    thing it needs is an advert somebody has agreed — until
-                    there is one, the role cannot be published.
+                    Open <strong>Hiring</strong> in Payobook; the role is on
+                    the home page. You can publish it and meet candidates
+                    straight away — the hiring request only has to be agreed
+                    before an offer is sent.
                 </p>
                 <br/>
                 The hiring team
@@ -56,9 +59,9 @@
 
     <!-- ====== the recruiter's manager: the same news, one line ====== -->
     <record id="mail_template_requisition_recruiter_manager" model="mail.template">
-        <field name="name">Hiring: a role has been agreed (manager's copy)</field>
+        <field name="name">Hiring: a role is yours to recruit (manager's copy)</field>
         <field name="model_id" ref="model_pb_hiring_requisition"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.recruiter_manager_id.email or '' }}</field>
         <field name="subject">A new role for your team to fill: {{ object.title }}</field>
         <field name="auto_delete" eval="False"/>
@@ -68,10 +71,9 @@
                 <p>
                     <strong><t t-out="object.title or ''"/></strong>
                     (<t t-out="object.headcount or 1"/> to find, in
-                    <t t-out="object.department_id.name or ''"/>) has been
-                    agreed, and
-                    <strong><t t-out="object.recruiter_id.name or ''"/></strong>
-                    is picking it up.
+                    <t t-out="object.department_id.name or ''"/>) is being
+                    recruited by
+                    <strong><t t-out="object.recruiter_id.name or ''"/></strong>.
                 </p>
                 <p style="color:#4A5568;">
                     You are told at the same time so that the role is not
@@ -87,7 +89,7 @@
     <record id="mail_template_referral_recruiter" model="mail.template">
         <field name="name">Hiring: somebody put a name forward</field>
         <field name="model_id" ref="model_pb_hiring_referral"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.requisition_id.recruiter_id.email or '' }}</field>
         <field name="subject">{{ object.employee_id.name }} put someone forward for {{ object.requisition_id.title }}</field>
         <field name="auto_delete" eval="False"/>
@@ -120,7 +122,7 @@
     <record id="mail_template_posting" model="mail.template">
         <field name="name">Hiring: an advert for a job board</field>
         <field name="model_id" ref="model_pb_hiring_posting"/>
-        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
         <field name="email_to">{{ object.platform_email or '' }}</field>
         <field name="subject">{{ object.subject }}</field>
         <field name="auto_delete" eval="False"/>

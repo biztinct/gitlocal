@@ -49,9 +49,21 @@ P_CREATE_CONTRACT = 'pb_hiring.create_contract'
 # RECRUIT P1 (RC-D1): only recruiters and the talent lead move candidates. ON
 # lets a line manager move candidates on their own roles. Ships OFF.
 P_LINE_MANAGERS_MOVE = 'pb_hiring.line_managers_move'
+# RECRUIT P3
+P_SENDER = 'pb_hiring.sender'
+P_ASK_ESCALATE_DAYS = 'pb_hiring.ask_escalate_days'
+P_DOCREQ_TRIGGER = 'pb_hiring.docreq_trigger'
+P_REFERRAL_ANNOUNCE = 'pb_hiring.referral_announce'
 
 DEFAULTS = {
     P_LINE_MANAGERS_MOVE: '0',
+    # RECRUIT P3. Three working days before a request nobody has written
+    # goes to the talent lead (G-13); papers asked for when the background
+    # check is clear (G-40); employees told when a role opens to referrals
+    # (G-19).
+    P_ASK_ESCALATE_DAYS: '3',
+    P_DOCREQ_TRIGGER: 'on_check_clear',
+    P_REFERRAL_ANNOUNCE: '1',
     # OFF. An advert that leaves the building the first time somebody presses
     # a button is an advert nobody agreed to send. The pack is built either
     # way and a human pushes it.
@@ -104,19 +116,51 @@ ROLE_TYPES = [
 #: being replaced is usually still at their desk.
 SENSITIVE_TYPES = ('sensitive_replacement',)
 
+# RECRUIT P3 (RC-D6): `state` is the ROLE's own life. A role never waits for
+# its request; the request is its own facet (`request_state`, below) and it
+# matters for exactly one thing — sending an offer (RC-D5).
 REQUISITION_STATES = [
-    ('draft', 'Being written'),
-    ('submitted', 'Sent in'),
-    ('manager_ok', 'Manager agreed'),
-    ('hr_ok', 'HR agreed'),
+    ('setup', 'Being set up'),
     ('open', 'Open for candidates'),
     ('filled', 'Filled'),
     ('closed', 'Closed'),
-    ('refused', 'Not approved'),
+]
+ROLE_STATES = REQUISITION_STATES
+
+#: The statuses in which a role is still being worked on.
+REQUISITION_LIVE = ('setup', 'open')
+
+#: The hiring REQUEST, as a facet of the role. `sent_in` is the manager's
+#: own agreement (their "Send in" is the agreement); the route then records
+#: the Head of HR (and a company's named approver, if any) as `agreed`.
+REQUEST_STATES = [
+    ('none', 'No request yet'),
+    ('asked', 'Waiting on the manager'),
+    ('writing', 'Being written'),
+    ('sent_in', 'Sent in'),
+    ('hr_ok', 'Head of HR agreed'),
+    ('agreed', 'Agreed'),
+    ('not_approved', 'Not approved'),
 ]
 
-#: The statuses after which nothing is still being asked for.
-REQUISITION_LIVE = ('draft', 'submitted', 'manager_ok', 'hr_ok', 'open')
+#: The request states in which somebody is still asked to write it.
+REQUEST_WAITING = ('asked', 'writing')
+#: The request states in which it is with the people who press Agree.
+REQUEST_WITH_HR = ('sent_in', 'hr_ok')
+
+#: A tracking tag for the budget conversation. It blocks nothing (R2).
+BUDGET_AGREEMENT = [
+    ('not_yet', 'Not yet'),
+    ('agreed', 'Agreed'),
+    ('declined', 'Declined'),
+]
+
+#: When the candidate is asked for their papers (G-40). Never a gate.
+DOCREQ_TRIGGERS = [
+    ('before_offer', 'When the offer is drafted'),
+    ('on_check_clear', 'When the background check is clear'),
+    ('on_accept', 'When the candidate accepts the offer'),
+]
 
 BUDGET_STATUS = [
     ('unknown', 'No budget set'),
@@ -124,11 +168,11 @@ BUDGET_STATUS = [
     ('over', 'Over budget'),
 ]
 
+# RECRUIT P3 (G-17): a job description is shared for input, never signed
+# off. A draft becomes final when the recruiter says so.
 JD_STATES = [
-    ('draft', 'Being written'),
-    ('submitted', 'Sent for agreement'),
-    ('approved', 'Agreed'),
-    ('refused', 'Not agreed'),
+    ('draft', 'Draft'),
+    ('final', 'Final'),
 ]
 
 STEP_KINDS = [
@@ -352,6 +396,13 @@ def flag(env, key, default=None):
     raw = env['ir.config_parameter'].sudo().get_param(
         key, DEFAULTS.get(key) if default is None else default)
     return str(raw).strip().lower() in ('1', 'true', 'yes', 'on')
+
+
+def text(env, key, default=''):
+    """A parameter read as a word (a choice between named options)."""
+    raw = env['ir.config_parameter'].sudo().get_param(
+        key, DEFAULTS.get(key, default))
+    return str(raw or '').strip()
 
 
 def number(env, key, default=0):

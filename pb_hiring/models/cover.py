@@ -137,7 +137,7 @@ class PbHiringCover(models.Model):
             rec.requisition_count = self.env[
                 'pb.hiring.requisition'].sudo().search_count([
                     ('recruiter_id', '=', rec.recruiter_id.id),
-                    ('state', 'in', ('open', 'hr_ok')),
+                    ('state', 'in', ('setup', 'open')),
                 ]) if rec.recruiter_id else 0
 
     @api.constrains('date_from', 'date_to', 'recruiter_id', 'cover_user_id')
@@ -236,7 +236,7 @@ class PbHiringCover(models.Model):
         self.ensure_one()
         roles = self.env['pb.hiring.requisition'].sudo().search([
             ('recruiter_id', '=', self.recruiter_id.id),
-            ('state', 'in', ('open', 'hr_ok', 'manager_ok')),
+            ('state', 'in', ('setup', 'open')),
         ])
         for role in roles:
             role._leg('the cover note on %s' % role.name,
