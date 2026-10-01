@@ -300,6 +300,50 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   the budget watchers. Token routes: `/hiring/r/<token>` (+ `/save` JSON, `/file`, `/send`),
   `/hiring/j/<token>` (+ `/comment`).
 
+## Gotchas found in phase 4 (2026-10-01)
+
+- **RC53** `pb.hiring.country.rule.recruiter_id` is REQUIRED, so retention cannot live on
+  that table (a market could not get its months without naming a recruiter). Retention is
+  its own table `pb.hiring.retention.rule` (company, country, months, purge_mode, note);
+  `res.company.pb_retention_months` stays the fallback. `_months_for(company, country)` is
+  the one lookup (the consent sentence uses it too: the role's market).
+- **RC54** Field `groups` on a stored compute is safe (computes run as the system), but EVERY
+  non-sudo read of the field by a user outside the group raises — the approval route's
+  `_chain_revision_values` re-reads offer lines as the LAST approver (a Head of HR / Finance
+  seat with no hiring group). It now reads `self.sudo()`. The inbox's `_record_of` is
+  already sudo, so `_approval_detail` keeps showing amounts to a seat.
+- **RC55** `_offer_row` is now called with `offer.sudo()` and masks after: the native money
+  fields carry `groups=pb_hiring.group_hiring_user`, so the old non-sudo read would have
+  emptied the line manager's whole offer list through `_safe`.
+- **RC56** Requisition BUDGET fields deliberately carry NO field `groups`: the in-app "Raise
+  a hiring request" wizard and the manager's request page write `budget_cost` as the line
+  manager. Budget is masked in every payload instead (`_mask_money_row`), and the Request
+  section shows the figures only to the hiring team and the request's own writer
+  (`requested_by_user_id` / `asked_user_id`).
+- **RC57** `requested_by_user_id` is a stored compute on `requested_by_id` only: giving the
+  employee a login AFTER the role exists leaves it False (record rules on offers/stage logs
+  then miss the manager). Tests that link a login late must recompute it
+  (`env.add_to_compute` + `_recompute_recordset`). Real roles: the login exists first.
+- **RC58** A file a reader outside the hiring team may open is served as
+  `/web/content/<id>?access_token=<t>` (per-attachment token, `generate_access_token()`);
+  without the token they get 404 (no read on the candidate). Taking a FILE part away from
+  anybody regenerates the token of every tokened file on that candidate — other sharers get
+  the fresh link on their next drawer load. The hiring team's own links carry no token.
+- **RC59** The rehearsal staging dir: after `chown -R odoo` a plain `rsync` into it fails
+  half-way and the next test run silently uses the OLD files; and the `.done` sentinel
+  written by root cannot be removed by `ubuntu`, so a wait loop returns at once on the
+  previous run's result. Stage to a ubuntu-owned dir and `sudo rsync` across; `sudo rm` the
+  sentinel (scratch `p4sync.sh` pattern).
+- **RC60** The Chrome MCP profile was locked again (RC27); the P4 walk ran headless
+  puppeteer-core against the installed Chrome. First page load after an asset purge took
+  >60 s on payobook.com — give `waitForSelector` 180 s.
+- **RC61** Doors and numbers after P4: ⌘K **4020** "Resume bank" (hub lens `hiring`,
+  `focus: "bank"` → `propsFromContext` `startTab`); Hiring set-up gains a seventh card
+  `retention` (inline). Params: `pb_hiring.retention_enabled` (0, the nightly leg),
+  `pb_hiring.referral_announce` now defaults 0 and was written 0 on all three DBs. Icons
+  added to `ic()`: `share2`, `tag`, `hourglass`. New recruiter-screen strings are English
+  only (Fable's P4 brief); P4 adds no candidate-facing sentence.
+
 ## Phase log
 
 - **P1** (handover `RECRUIT_P1_BOARD.md`) — started and LIVE 2026-09-30: pb_hiring 19.0.2.0.0 +
@@ -333,4 +377,16 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   `request_state`, `requisition._offer_block_reason()` / `pb.hiring._offer_block_reason(req)`,
   `pb.hiring._sender(company)` (+ `res.company.pb_hiring_sender`), `_request_facts()` on
   every row, the token routes above.
-
+- **P4** (handover `RECRUIT_P4_PRIVACY.md`) — LIVE 2026-10-01: pb_hiring 19.0.2.3.0 (+ pb_import_kit
+  icons, no version change) on payobook, rize, payobook_template (backups in
+  `/odoo/backups/2026-10-01-recruit-p4/`). Rehearsed on a payobook clone: 297/300 (the three RC47
+  data failures); 15 new tests. Nightly clean-up OFF and referral announcement OFF on all three.
+  `hr_recruitment_skills` already installed on all three (now a dependency). Demo on payobook
+  (label "RECRUIT P4 privacy"): three shares with DEMO Hiring Manager on DEMO Territory Manager,
+  two recruiter notes (one shared), five Future-fit people with skills + "Keep in touch", one
+  past-date candidate (anonymised by the head-of-hiring Run now during the walk), Indonesia 24
+  months rule, plus the walk's own records. Gotchas RC53–RC61. API left for P5–P8:
+  `pb.hiring.share.parts_for`, `pb.hiring._parts`, `_doc_rows(app, parts, tokenised)`,
+  `_regenerate_tokens`, `pb.hiring.note` + `_notes_payload`, `search_bank`/`bank_options`,
+  `get_retention_preview`, `hr.applicant._pb_retention_protected()` / `_pb_anonymise()`,
+  `pb.hiring.retention.rule._months_for`.
