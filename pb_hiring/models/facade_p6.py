@@ -66,6 +66,14 @@ class PbHiringP6(models.AbstractModel):
         return _('%s days ago', -days)
 
     @api.model
+    def _short_name(self, name):
+        """What a button calls a person: the given name (the last word of a
+        Vietnamese name), the whole name when it is two words or fewer once a
+        DEMO prefix is set aside."""
+        words = (name or '').replace('DEMO ', '', 1).split()
+        return ' '.join(words) if len(words) <= 2 else words[-1]
+
+    @api.model
     def _item_row(self, item, offer, can_recruit):
         kinds, owners, states = dict(PREJOIN_KINDS), dict(PREJOIN_OWNERS), dict(PREJOIN_STATES)
         manager = offer._manager()
@@ -104,7 +112,7 @@ class PbHiringP6(models.AbstractModel):
         if can_recruit and offer.state == 'signed':
             if item.state == 'open':
                 if item.kind == 'buddy':
-                    who = (manager.name or '').split(' ')[-1] if manager else ''
+                    who = self._short_name(manager.name) if manager else ''
                     verb = {'verb': 'prejoin_send', 'label': (_('Remind %s', who) if item.sent_at
                                                               else _('Ask %s', who)) if who
                             else (_('Remind them') if item.sent_at else _('Send the question'))}

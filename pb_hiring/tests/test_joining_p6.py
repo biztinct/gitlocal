@@ -505,6 +505,14 @@ class TestRecruitJoining(JoiningCase):
         self.assertFalse((A.get_funnel(start, end, department_id=other.id))['offered'])
         board = A.get_board(start, end, department_id=self.dept.id)
         self.assertFalse(board['empty'])
+        # the market filter (a role with no country of its own takes the
+        # company's) — `res.company.country_id` is not stored
+        country = self.company.partner_id.country_id or self.env.ref('base.vn')
+        self.req.sudo().write({'country_id': country.id})
+        self.assertFalse(A.get_board(start, end, country_id=country.id)['empty'])
+        self.req.sudo().write({'country_id': False})
+        if self.company.partner_id.country_id:
+            self.assertFalse(A.get_board(start, end, country_id=country.id)['empty'])
         self.assertIn('joined', [t['key'] for t in board['tiles']])
         self.assertTrue(board['options']['departments'])
         # ageing: somebody parked for three weeks is stalled

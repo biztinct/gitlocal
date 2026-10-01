@@ -211,18 +211,20 @@
               <div class="pbhn-lead-grid">
                 <figure class="pbhn-chart">
                   <figcaption>Days to fill, the middle role each month</figcaption>
-                  <svg viewBox="0 0 600 168" class="pbhn-svg" role="img" aria-label="Days to fill by month">
+                  <div t-if="!monthsFilled" class="pbhn-none">No role was filled in these twelve months, so there is nothing to time yet.</div>
+                  <svg t-else="" viewBox="0 0 600 168" class="pbhn-svg" role="img" aria-label="Days to fill by month">
                     <t t-foreach="gridLines" t-as="gl" t-key="gl_index">
                       <line x1="40" t-att-y1="gl.y" x2="596" t-att-y2="gl.y" class="pbhn-gline"/>
                       <text x="34" t-att-y="gl.y + 4" class="pbhn-tick" text-anchor="end" t-esc="gl.label"/>
                     </t>
                     <t t-foreach="months" t-as="mo" t-key="mo.month">
-                      <rect t-if="mo.median" class="pbhn-barr" t-att-x="barX(mo_index)" t-att-y="barY(mo)" width="30" t-att-height="barH(mo)" rx="4">
+                      <rect t-if="mo.filled" class="pbhn-barr" t-att-x="barX(mo_index)" t-att-y="barY(mo)" width="30" t-att-height="barH(mo)" rx="4">
                         <title t-esc="barTitle(mo)"/>
                       </rect>
                       <rect t-else="" class="pbhn-barr is-none" t-att-x="barX(mo_index)" y="137" width="30" height="3" rx="1.5">
                         <title t-esc="barTitle(mo)"/>
                       </rect>
+                      <text t-if="mo.filled" t-att-x="barX(mo_index) + 15" t-att-y="barY(mo) - 5" class="pbhn-val" text-anchor="middle" t-esc="Math.round(mo.median)"/>
                       <text t-att-x="barX(mo_index) + 15" y="160" class="pbhn-tick" text-anchor="middle" t-esc="mo.label"/>
                     </t>
                   </svg>
@@ -258,8 +260,8 @@
               <div class="pbim-panel pbhn-table">
                 <div class="pbhn-table-head">
                   <h3><t t-out="ic('layoutList',16)"/> Where candidates
-                      wait</h3>
-                  <button class="pbhn-dl" t-on-click="() => this.download('stages')" title="Download this report"><t t-out="ic('download',14)"/></button>
+                      wait
+                  <button class="pbhn-dl" t-on-click="() => this.download('stages')" title="Download this report"><t t-out="ic('download',14)"/></button></h3>
                   <p>Days between one move and the next. The stage somebody is
                      sitting in now is not counted — it is still running.</p>
                 </div>
@@ -290,8 +292,8 @@
               <!-- ==================== where they came from ==================== -->
               <div class="pbim-panel pbhn-table">
                 <div class="pbhn-table-head">
-                  <h3><t t-out="ic('globe',16)"/> Where they came from</h3>
-                  <button class="pbhn-dl" t-on-click="() => this.download('sources')" title="Download this report"><t t-out="ic('download',14)"/></button>
+                  <h3><t t-out="ic('globe',16)"/> Where they came from
+                  <button class="pbhn-dl" t-on-click="() => this.download('sources')" title="Download this report"><t t-out="ic('download',14)"/></button></h3>
                   <p>Candidates per channel, and how many of each actually
                      joined.</p>
                 </div>
@@ -320,8 +322,8 @@
               <!-- ==================== the delays ==================== -->
               <div class="pbim-panel pbhn-table">
                 <div class="pbhn-table-head">
-                  <h3><t t-out="ic('repeat',16)"/> Interviews that moved</h3>
-                  <button class="pbhn-dl" t-on-click="() => this.download('delays')" title="Download this report"><t t-out="ic('download',14)"/></button>
+                  <h3><t t-out="ic('repeat',16)"/> Interviews that moved
+                  <button class="pbhn-dl" t-on-click="() => this.download('delays')" title="Download this report"><t t-out="ic('download',14)"/></button></h3>
                   <p>It is not about blame. It is the only way anybody can
                      answer why hiring here takes as long as it does.</p>
                 </div>
@@ -354,8 +356,8 @@
               <div class="pbim-panel pbhn-table">
                 <div class="pbhn-table-head">
                   <h3><t t-out="ic('building',16)"/> An agency, or our own
-                      team</h3>
-                  <button class="pbhn-dl" t-on-click="() => this.download('agency')" title="Download this report"><t t-out="ic('download',14)"/></button>
+                      team
+                  <button class="pbhn-dl" t-on-click="() => this.download('agency')" title="Download this report"><t t-out="ic('download',14)"/></button></h3>
                   <p>Only roles that actually filled are timed. A role still
                      open has not taken anything yet.</p>
                 </div>

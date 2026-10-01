@@ -242,8 +242,13 @@ export class PbHiringNumbers extends Component {
 
     // ---- leadership: the twelve-month chart, plain SVG on tokens
     get months() { return (this.state.leadership && this.state.leadership.months) || []; }
-    get monthTop() { return Math.max(1, ...this.months.map((m) => m.median || 0)); }
-    barH(m) { return m.median ? Math.max(4, Math.round((m.median / this.monthTop) * 120)) : 0; }
+    get monthsFilled() { return this.months.some((m) => m.filled); }
+    /** A round top for the axis, so its three labels never repeat. */
+    get monthTop() {
+        const top = Math.max(0, ...this.months.map((m) => m.median || 0));
+        return Math.max(4, Math.ceil(top / 2) * 2);
+    }
+    barH(m) { return m.filled ? Math.max(4, Math.round(((m.median || 0) / this.monthTop) * 110)) : 0; }
     barX(i) { return 44 + i * 46; }
     barY(m) { return 140 - this.barH(m); }
     barTitle(m) {

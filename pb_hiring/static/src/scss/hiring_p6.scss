@@ -27,8 +27,8 @@
     }
     .pbhr-p6-ring {
         position: relative; width: 84px; height: 84px; grid-row: span 2;
-        svg { transform: rotate(-90deg); display: block; }
-        circle { fill: none; stroke-width: 8; }
+        > svg { transform: rotate(-90deg); display: block; }
+        > svg circle { fill: none; stroke-width: 8; }
     }
     .pbhr-p6-ring-bg { stroke: var(--pbim-line-2); }
     .pbhr-p6-ring-seg { stroke: var(--pbim-line);

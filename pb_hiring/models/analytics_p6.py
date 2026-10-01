@@ -65,8 +65,10 @@ class PbHiringAnalyticsP6(models.AbstractModel):
             dom.append(('department_id', 'child_of', f['department_id']))
         if f.get('country_id'):
             cid = f['country_id']
+            # `res.company.country_id` is not stored: go through the
+            # company's partner, which is (found live in the P6 walk).
             dom += ['|', ('country_id', '=', cid), '&', ('country_id', '=', False),
-                    ('company_id.country_id', '=', cid)]
+                    ('company_id.partner_id.country_id', '=', cid)]
         if f.get('recruiter_id'):
             dom.append(('recruiter_id', '=', f['recruiter_id']))
         return dom
@@ -246,10 +248,17 @@ class PbHiringAnalyticsP6(models.AbstractModel):
     def _funnel_sentence(self, t, waiting_join):
         if not t['offered']:
             return _("No offer reached a candidate on these roles yet.")
-        return _("%(o)s offered, %(a)s accepted, %(s)s signed and %(j)s joined. "
-                 "%(d)s turned it down and %(x)s did not join; %(w)s are still on "
-                 "their way.", o=t['offered'], a=t['accepted'], s=t['signed'],
-                 j=t['joined'], d=t['declined'], x=t['dropped'], w=waiting_join)
+        head = _("%(o)s offered, %(a)s accepted, %(s)s signed and %(j)s joined.",
+                 o=t['offered'], a=t['accepted'], s=t['signed'], j=t['joined'])
+        out = _("%(d)s turned it down and %(x)s did not join.", d=t['declined'],
+                x=t['dropped'])
+        if waiting_join == 1:
+            way = _("1 person is still on their way.")
+        elif waiting_join:
+            way = _("%s people are still on their way.", waiting_join)
+        else:
+            way = ''
+        return ' '.join(x for x in (head, out, way) if x)
 
     # =====================================================================
     #  Ageing (G-54)

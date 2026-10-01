@@ -7,6 +7,9 @@
 // =====================================================================
 
 .pbiv.pbjn {
+    // An author `display` beats the `hidden` attribute; the filter and the
+    // week page's follow-ups rely on it (found in the P6 walk).
+    [hidden] { display: none !important; }
     .pbjn-search {
         position: relative; display: flex; align-items: center;
         svg { position: absolute; left: 13px; color: #64748B; }

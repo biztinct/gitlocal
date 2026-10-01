@@ -227,6 +227,7 @@
         &:hover, &:focus-visible { color: var(--pbim-primary-strong, #3730A3); border-color: var(--pbim-primary, #4F46E5); }
     }
     .pbhn-table-head h3 { width: 100%; }
+    .pbhn-table-head h3 .pbhn-dl { margin-left: auto; }
     .pbhn-sec { padding: 18px 20px 16px; margin-bottom: 16px; }
 
     // ---- the funnel
@@ -273,6 +274,7 @@
     .pbhn-svg { width: 100%; height: auto; display: block; }
     .pbhn-gline { stroke: var(--pbim-line, #E2E8F0); stroke-width: 1; }
     .pbhn-tick { fill: var(--pbim-muted, #64748B); font-size: 11px; }
+    .pbhn-val { fill: var(--pbim-ink, #1B1733); font-size: 11px; font-weight: 700; }
     .pbhn-barr { fill: var(--pbim-primary, #4F46E5);
         &:hover { fill: var(--pbim-primary-strong, #3730A3); }
         &.is-none { fill: var(--pbim-line, #E2E8F0); }

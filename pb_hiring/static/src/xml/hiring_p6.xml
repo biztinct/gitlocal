@@ -85,7 +85,7 @@
                 <t t-esc="it6.owner_name"/>
                 <t t-if="it6.state === 'open'"> · <t t-if="it6.late">late — was due <t t-esc="it6.due_words"/></t><t t-else="">by <t t-esc="it6.due_words"/></t></t>
                 <t t-if="it6.state === 'open' and it6.sent"> · asked<t t-if="it6.reminded">, reminded</t></t>
-                <t t-if="it6.state === 'done' and it6.answered_by"> · <t t-esc="it6.answered_by"/></t>
+                <t t-if="it6.state === 'done' and it6.answered_by and it6.answered_by !== it6.owner_name"> · answered by <t t-esc="it6.answered_by"/></t>
                 <t t-if="it6.state === 'skipped'"> · not needed</t>
               </small>
               <span t-if="it6.answer" class="pbhr-p6-answer" t-esc="it6.answer"/>
