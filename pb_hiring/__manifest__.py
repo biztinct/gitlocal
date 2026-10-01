@@ -164,8 +164,22 @@ WHAT THIS MODULE IS
     joined funnel with every drop and its reason; who has been sitting in a
     column too long; and a leadership view of fill rate, open headcount and
     time to fill — each section downloadable as a spreadsheet, or all of it.
+  * **Every email in the candidate's own language.** Each email a candidate
+    gets — received, let's chat, the interview and its reminders, next round,
+    not this time, the papers, the offer — is one text with English,
+    Vietnamese and Bahasa Indonesia versions, chosen by the language they
+    applied in. The talent lead rewrites any of them in Hiring set-up, sees
+    the email drawn as the candidate will get it, sends a test to themselves,
+    and can go back to the standard words. A missing language is a chip, and
+    English goes in its place with a note on the candidate's timeline.
+  * **Automations the talent lead owns.** "When a candidate enters Recruiter
+    review, send Let's chat to the candidate, right away" — rules written as
+    sentences from four pickers, tried on a real candidate before they are
+    switched on, with a log of every time one ran or was skipped and why.
+    The emails the product always sends are listed beside them, each with
+    its own switch. An automation can never stop a move.
 """,
-    'version': '19.0.2.6.0',
+    'version': '19.0.2.7.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -206,6 +220,7 @@ WHAT THIS MODULE IS
         'security/recruit_p4_security.xml',
         'security/recruit_p6_security.xml',
         'security/recruit_p7_security.xml',
+        'security/recruit_p8_security.xml',
         'data/approval_process.xml',
         'data/ir_sequence.xml',
         'data/hiring_params.xml',
@@ -220,6 +235,7 @@ WHAT THIS MODULE IS
         'data/mail_template_p5.xml',
         'data/mail_template_p6.xml',
         'data/mail_template_p7.xml',
+        'data/mail_template_p8.xml',
         'data/recruit_p6.xml',
         'data/ir_cron.xml',
         'report/hiring_offer_report.xml',
@@ -240,6 +256,7 @@ WHAT THIS MODULE IS
         'views/joining_pages.xml',
         'views/agency_portal_templates.xml',
         'data/recruit_p7.xml',
+        'data/recruit_p8.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -253,6 +270,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/scss/hiring_p5.scss',
             'pb_hiring/static/src/scss/hiring_p6.scss',
             'pb_hiring/static/src/scss/hiring_p7.scss',
+            'pb_hiring/static/src/scss/hiring_p8.scss',
             'pb_hiring/static/src/js/hiring_board.js',
             'pb_hiring/static/src/js/hiring_setup.js',
             'pb_hiring/static/src/js/hiring_forms.js',
@@ -261,6 +279,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/js/hiring_p5.js',
             'pb_hiring/static/src/js/hiring_p6.js',
             'pb_hiring/static/src/js/hiring_p7.js',
+            'pb_hiring/static/src/js/hiring_p8.js',
             'pb_hiring/static/src/js/hiring_numbers.js',
             'pb_hiring/static/src/js/hiring_palette.js',
             'pb_hiring/static/src/xml/hiring_board.xml',
@@ -272,6 +291,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/xml/hiring_p5.xml',
             'pb_hiring/static/src/xml/hiring_p6.xml',
             'pb_hiring/static/src/xml/hiring_p7.xml',
+            'pb_hiring/static/src/xml/hiring_p8.xml',
             'pb_hiring/static/src/xml/hiring_numbers.xml',
         ],
         'web.assets_frontend': [

@@ -166,3 +166,11 @@ access_pb_hiring_agency_submission_manager,Agency submission talent lead,model_p
 access_pb_hiring_agency_submission_admin,Agency submission head of hiring,model_pb_hiring_agency_submission,pb_hiring.group_hiring_admin,1,1,1,1
 access_pb_hiring_agency_submission_system,Agency submission system,model_pb_hiring_agency_submission,base.group_system,1,1,1,1
 access_pb_hiring_agency_submission_portal,Agency submission the agency itself,model_pb_hiring_agency_submission,base.group_portal,1,0,0,0
+access_pb_hiring_auto_rule_user,Automation recruiter,model_pb_hiring_automation_rule,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_auto_rule_manager,Automation talent lead,model_pb_hiring_automation_rule,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_auto_rule_admin,Automation head of hiring,model_pb_hiring_automation_rule,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_auto_rule_system,Automation system,model_pb_hiring_automation_rule,base.group_system,1,1,1,1
+access_pb_hiring_auto_run_user,Automation run recruiter,model_pb_hiring_automation_run,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_auto_run_manager,Automation run talent lead,model_pb_hiring_automation_run,pb_hiring.group_hiring_manager,1,0,0,0
+access_pb_hiring_auto_run_admin,Automation run head of hiring,model_pb_hiring_automation_run,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_auto_run_system,Automation run system,model_pb_hiring_automation_run,base.group_system,1,1,1,1

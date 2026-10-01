@@ -132,7 +132,11 @@
         <t t-call="pb_hiring.P7SetupChannels"/>
         <t t-call="pb_hiring.P7SetupAgencies"/>
 
-        <!-- ============ SWITCHES (the automations card, inline) ============ -->
+        <!-- ============ RECRUIT P8: EMAILS AND LANGUAGES, AUTOMATIONS ============ -->
+        <t t-call="pb_hiring.P8SetupEmails"/>
+        <t t-call="pb_hiring.P8SetupAutomations"/>
+
+        <!-- ============ SWITCHES ============ -->
         <section class="pbim-panel pbhr-su-switches">
           <div class="pbhr-su-h"><h2>Switches</h2></div>
           <label class="pbhr-su-switch">
@@ -300,6 +304,8 @@
           </div>
         </section>
       </div>
+
+      <t t-if="state.loaded and !state.error" t-call="pb_hiring.P8Overlays"/>
 
       <div t-if="state.toast" class="pbhr-toast" role="status" aria-live="polite">
         <span t-esc="state.toast.text"/>
