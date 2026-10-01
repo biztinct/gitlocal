@@ -429,7 +429,11 @@
           </label>
           <label t-if="state.outcome.key === 'cv_reject' or state.outcome.key === 'interview_reject'" class="pbhr-f pbhr-f--wide pbhr-tick">
             <input type="checkbox" t-model="state.outcome.send_email"/>
-            <span>Send the "not this time" email</span>
+            <span>Send the "not this time" email, in the language they applied in</span>
+          </label>
+          <label t-if="state.outcome.key === 'on_hold'" class="pbhr-f pbhr-f--wide pbhr-tick">
+            <input type="checkbox" t-model="state.outcome.send_email"/>
+            <span>Send the on-hold email (it uses the reason and the date above)</span>
           </label>
         </div>
         <div class="pbim-modal__foot">
