@@ -503,6 +503,59 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   `/my/agency/role/<id>` (+ `/submit`), `/my/agency/people`; `/my` redirects an agency sign-in to its
   portal. Agency pages and mails English (P8 languages); light only like every public page.
 
+## Gotchas found in phase 8 (2026-10-01)
+
+- **RC92** THE CANDIDATE-EMAIL STORE STAYS `pb.hiring.message.template` (deviation from the P8 handover's
+  "convert to mail.template"). `mail.template.body_html` is `html_translate` (term-based) on this build: a whole
+  Vietnamese body written in the vi_VN context is term-mapped onto the other languages and every unmatched term
+  OVERWRITES the English (`odoo/orm/fields_textual.py` `_String.write`). The message template's `subject`/`body`
+  (+ new `button`) are plain `translate=True`: one whole value per language, which is what a three-tab editor
+  needs. Writing `False` to a translated field NULLs it for EVERY language — remove one language with
+  `update_field_translations(f, {lang: False})` (`comms_p8._write_lang`).
+- **RC93** THE ONE DOOR: `pb.hiring._mail_candidate(key, applicant, values, attachments, record, email_to,
+  reply_to, gate, dry, lang)` → `{status: sent|dry|mail_off|no_email|no_template|missing, lang, fell_back,
+  mail_id}`; never raises. Values may be callables `f(lang)` (dates and money formatted in the email's
+  language). Senders re-pointed BY XMLID (`comms_p8.RETIRED`): interview `_send` only for the candidate's
+  address (panel/recruiter copies stay the English mail.template), docreq `_mail`, offer `_mail` (gate off:
+  `offer_mail` decides), applicant `_pb_tell_candidate` (picks `cv_reject` vs `interview_reject` by the stage
+  they are now in), `_pb_send_received`, `_pb_send_scheduling_link`, prejoin `_send_laptop_mail`, the board's
+  message form. Six candidate-only mail templates archived; the four shared interview ones stay active.
+- **RC94** `pb.hiring.automation` was ALREADY the daily-step AbstractModel (crons point at it), so the rules are
+  `pb.hiring.automation.rule` + `.run`. The built-in rows are NOT records: `automation_p8.BUILTINS` (sentence,
+  switch param or "always on" with the reason) — one global switch each, the same param the code reads.
+- **RC95** TWO PATHS INTO "enters a stage": board moves (`_act_journey_stage`, P5's `_pb_on_stage_entered` hook —
+  the toast words come back from it) carry context `pb_board_move`; every other stage write fires from the
+  `hr.applicant.write` hook. Silenced by `pb_no_stage_log`, `pb_no_automation`, `install_mode`; depth capped at 2
+  (`pb_automation_depth`). Every hook is a `leg` AFTER super(): a rule can never stop a move.
+- **RC96** The Calendly rule is the seeded row `seed_key='calendly'`, `once_per_candidate=False` (P5 sent every
+  time) and is effective only while `pb_hiring.phone_auto_mail` is also on (P5's tests switch that param).
+  Switching the row on also switches the param back on. A company created after an upgrade gets its four seed
+  rows lazily (`_ensure_seeds` on the first fire / screen read).
+- **RC97** Test traps: a `tag` action on a tag the candidate already has is SKIPPED (one tag per rule in hook
+  tests); A2's `test_t3` asserts the exact reminder-counts dict, so the queue count is added only when non-zero.
+- **RC98** The kit's `.pbim-modal` resets the `--pbim-*` tokens to the light palette: dialogs inside `.pbhr`
+  showed dark ink on dark fields in dark mode (found in the walk). The P8 dialogs re-include P1's
+  `pbhr-dark-tokens` mixin — a cross-file mixin works because the bundle compiles as one stylesheet.
+- **RC99** Found in the walk: "Your words" (and so "Reset to the standard text") compared English only — a
+  Vietnamese-only edit could not be reset. It compares every language now. `{{website}} | {{linkedin}}` with
+  neither set left a lone "|": separator-only lines are dropped at render.
+- **RC100** The "Assignment" seed row ships OFF (deviation: the handover said ON) — the assignment email needs
+  tasks, format, deadline and a submission link only a person can fill, so an automatic send would always fail
+  with "needs details". The row's note says so.
+- **RC101** RC80 FIXED: `pb.hiring.docreq.activity_schedule` redirects to the OFFER (the docreq has no activity
+  mixin), which repairs "papers are in", "chase the papers" and the talent-lead escalation to-dos in one place.
+  G-44: `offer._pb_close_other_finalists` after `_on_signed` (not quiet) — only when signed+joined offers ≥ the
+  role's headcount, only finalists (discussion 1–3, reference, offer), never somebody with a live offer of their
+  own; switch `pb_hiring.auto_close_finalists`.
+- **RC102** Chrome MCP profile locked again (RC27): the P8 walk ran headless puppeteer-core (`drive.js` +
+  `w8a/w8b/w8c.js`). The walk's own records (rule 19, two to-dos, two runs) registered with pb.demo.seed.
+- **RC103** Doors and numbers after P8: no ⌘K row. Hiring set-up cards `emails` and `automations` are inline
+  (`.pbhr-su-p8em`, `.pbhr-su-p8au`). New params (defaults in code, all ON): `pb_hiring.auto_received`,
+  `auto_chase`, `auto_doc_remind`, `auto_check_todo`, `auto_close_finalists`, `auto_week_before`,
+  `auto_share_mail`. New mail template `mail_template_share_granted` (English). Agency "put forward" counts
+  accepted people everywhere (`_figures['submitted']`), refusals their own figure. Agency pages and emails stay
+  English (owner item). New recruiter-screen strings English only (R11).
+
 ## Phase log
 
 - **P1** (handover `RECRUIT_P1_BOARD.md`) — started and LIVE 2026-09-30: pb_hiring 19.0.2.0.0 +
@@ -594,3 +647,14 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
   `pb.hiring.agency.submission` (`_submit`, `_cooling_block`, `_figures`, `coarse_stage/coarse_label`),
   `hr.applicant.pb_channel_id / pb_agency_vendor_id`, `pb.vendor._pb_invite_agency`, mails
   `mail_template_agency_invite`, `mail_template_agency_assigned` (English; P8 adds languages).
+
+- **P8** (handover `RECRUIT_P8_COMMS.md`) — LIVE 2026-10-01: pb_hiring 19.0.2.7.0 on payobook, rize,
+  payobook_template (backups in `/odoo/backups/2026-10-01-recruit-p8/`; abm untouched). Rehearsed on a payobook
+  clone: 357/360 (the three RC47 data failures), 16 new tests. Migration: 10 new candidate emails per company in
+  three languages (payobook 40 + 104 language versions, rize/template 10 + 26), VI/ID for assignment / on hold /
+  CV reject, 6 English-only candidate mail templates archived per DB, 4 seed automations per company. Demo on
+  payobook (label "RECRUIT P8 emails and automations"): company 5 rules "enters Discussion 2 → tag DEMO Final
+  round" and "offer signed → talent lead to-do after 1 day", company 5's own words for "Through to the next
+  round", plus the walk's waiting-in-Shortlist rule (ran for Dang Thi Mai and Budi Santoso) and Võ Ngọc Hân moved
+  to Recruiter review (Let's chat sent in Vietnamese). Gotchas RC92–RC103. Programme close-out:
+  `RECRUIT_CLOSEOUT.md`, `docs/design/rize-recruit-closeout.html`.
