@@ -51,3 +51,4 @@ from . import analytics_p7   # RECRUIT P7 — each agency's own figures on Hirin
 from . import comms_p8       # RECRUIT P8 — one door for candidate email, three languages, the Emails screen
 from . import automation_p8  # RECRUIT P8 — the automations the talent lead owns, the run log, the clocks
 from . import hooks_p8       # RECRUIT P8 — the event hooks, G-44, the share email, check-started to-do
+from . import guide_record   # RECRUIT close-out — "What was built" card (admins)
