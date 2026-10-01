@@ -128,6 +128,10 @@
         <!-- ============ RECRUIT P6: BEFORE THEY JOIN ============ -->
         <t t-call="pb_hiring.P6SetupPrejoin"/>
 
+        <!-- ============ RECRUIT P7: CHANNELS and AGENCIES ============ -->
+        <t t-call="pb_hiring.P7SetupChannels"/>
+        <t t-call="pb_hiring.P7SetupAgencies"/>
+
         <!-- ============ SWITCHES (the automations card, inline) ============ -->
         <section class="pbim-panel pbhr-su-switches">
           <div class="pbhr-su-h"><h2>Switches</h2></div>

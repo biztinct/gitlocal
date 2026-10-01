@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- RECRUIT P7 (G-20): every company has its six channels, and the
+         JobStreet / VietnamWorks / Careers page / Agency sources exist once.
+         Idempotent; runs on every upgrade (the panel also runs it for a
+         company made later). -->
+    <function model="pb.hiring.channel" name="_seed_all"/>
+</odoo>

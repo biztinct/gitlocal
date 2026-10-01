@@ -149,9 +149,11 @@ class PbHiringPosting(models.Model):
         where = req.location or (req.country_id.name or '')
         subject = _("%(title)s — %(where)s", title=req.title or job.name,
                     where=where) if where else (req.title or job.name)
-        url = ''
+        # RECRUIT P7: a channel's own tracked link when the pack is for one
+        # channel, so applications through it carry that channel's source.
+        url = self.env.context.get('pb_pack_url') or ''
         try:
-            url = job.sudo().full_url or ''
+            url = url or job.sudo().full_url or ''
         except Exception:               # noqa: BLE001
             url = ''
         if not url:

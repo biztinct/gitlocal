@@ -26,9 +26,9 @@
             <button t-if="state.drawer.department" type="button" class="pbhr-pill" t-on-click="() =&gt; this.openRole(state.drawer.id, { tab: 'details', section: 'request' })"><t t-esc="state.drawer.department"/></button>
             <button type="button" class="pbhr-pill" t-on-click="() =&gt; this.openRole(state.drawer.id, { tab: 'details', section: 'request' })"><t t-esc="seatsLabel"/></button>
             <button type="button" class="pbhr-pill" t-att-class="'is-' + requestChip.tone" t-on-click="() =&gt; this.openRole(state.drawer.id, { tab: 'details', section: 'request' })"><t t-esc="requestChip.label"/></button>
-            <button type="button" class="pbhr-pill" t-att-class="state.drawer.published ? 'is-info' : ''" t-on-click="() =&gt; this.openRole(state.drawer.id, { tab: 'details', section: 'jd' })">
-              <t t-if="state.drawer.published">On the careers page</t>
-              <t t-else="">Not advertised yet</t>
+            <!-- RECRUIT P7: how many channels the role is live on; opens Publish to… -->
+            <button type="button" class="pbhr-pill" t-att-class="state.drawer.p7_live ? 'is-info' : ''" t-on-click="() =&gt; state.canRecruit ? this.p7OpenSheet() : this.openRole(state.drawer.id, { tab: 'details', section: 'jd' })">
+              <t t-if="state.drawer.p7_live"><t t-out="ic('share2',11)"/> </t><t t-esc="p7Pill"/>
             </button>
             <button t-if="state.drawer.is_confidential" type="button" class="pbhr-pill is-rose" t-on-click="() =&gt; this.openRole(state.drawer.id, { tab: 'details', section: 'request' })"><t t-out="ic('eyeOff',12)"/> Confidential</button>
             <span t-if="state.drawer.recruiter" class="pbhr-role-by"><t t-out="ic('user',13)"/> <t t-esc="recruiterLabel"/></span>
@@ -46,8 +46,9 @@
           <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state)" type="button" class="pbim-btn ghost" t-on-click="addCandidate">
             <t t-out="ic('userPlus',14)"/> Add a candidate
           </button>
-          <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state) and !state.drawer.published and !state.drawer.is_confidential" type="button" class="pbim-btn primary" t-on-click="() =&gt; this.act('publish', { requisition_id: state.drawer.id })">
-            <t t-out="ic('globe',14)"/> Publish
+          <!-- RECRUIT P7: one door to every channel (replaces the bare Publish) -->
+          <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state)" type="button" class="pbim-btn" t-att-class="state.drawer.p7_live ? 'ghost' : 'primary'" t-on-click="() =&gt; this.p7OpenSheet()" title="Every channel this role can go to, each with its own link">
+            <t t-out="ic('share2',14)"/> Publish to…
           </button>
         </div>
       </div>
@@ -93,10 +94,10 @@
         <div t-if="state.drawer and !cards.length and !roleNext" class="pbim-panel pbhr-board-empty">
           <div class="pbhr-empty-ic"><t t-out="ic('userPlus',26)"/></div>
           <div>
-            <b>Nobody has applied yet. Publish the role or add a candidate.</b>
+            <b>Nobody has applied yet. Publish the role to its channels, or add a candidate.</b>
             <p>The columns below are this role's stages. Point at a column name to read what it means.</p>
             <div class="pbhr-board-empty-acts">
-              <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state) and !state.drawer.published and !state.drawer.is_confidential" type="button" class="pbim-btn primary" t-on-click="() =&gt; this.act('publish', { requisition_id: state.drawer.id })"><t t-out="ic('globe',14)"/> Publish</button>
+              <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state)" type="button" class="pbim-btn primary" t-on-click="() =&gt; this.p7OpenSheet()"><t t-out="ic('share2',14)"/> Publish to…</button>
               <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state)" type="button" class="pbim-btn ghost" t-on-click="addCandidate"><t t-out="ic('userPlus',14)"/> Add a candidate</button>
             </div>
           </div>

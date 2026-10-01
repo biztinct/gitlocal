@@ -1018,6 +1018,7 @@
       <t t-call="pb_hiring.P4Overlays"/>
       <t t-call="pb_hiring.P5Overlays"/>
       <t t-call="pb_hiring.P6Overlays"/>
+      <t t-call="pb_hiring.P7Overlays"/>
     </div>
   </t>
   <!-- ====================================================================
@@ -1343,14 +1344,11 @@
                 <span class="v" t-esc="state.drawer.target_close_date or '—'"/>
               </div>
               <div class="pbhr-fact">
-                <span class="k">Agency</span>
-                <select t-if="state.canRecruit" class="pbhr-in pbhr-agency" t-on-change="(ev) =&gt; this.setAgency(ev.target.value)">
-                  <option value="">Nobody — we are doing it</option>
-                  <t t-foreach="state.drawer.agencies" t-as="ag" t-key="ag.id">
-                    <option t-att-value="ag.id" t-att-selected="ag.id === state.drawer.agency_id" t-esc="ag.name"/>
-                  </t>
-                </select>
-                <span t-else="" class="v" t-esc="state.drawer.agency or 'Nobody'"/>
+                <span class="k">Agencies</span>
+                <span class="v">
+                  <t t-esc="state.drawer.agency_names or 'Nobody — we are doing it'"/>
+                  <button t-if="state.canRecruit" type="button" class="pbhr-p7-linkbtn" t-on-click="() =&gt; this.p7OpenSheet('agency')"> · <t t-if="state.drawer.agency_names">Change</t><t t-else="">Add an agency</t></button>
+                </span>
               </div>
             </div>
 
@@ -1402,24 +1400,9 @@
             <!-- RECRUIT P3: shared for input, made final, from a template -->
             <t t-call="pb_hiring.P3Advert"/>
 
-            <!-- ======================== the adverts sent ================= -->
-            <t t-if="state.drawer.postings.length">
-              <div class="pbhr-sec">Where it has gone</div>
-              <div class="pbhr-list">
-                <div t-foreach="state.drawer.postings" t-as="po" t-key="po.id" class="pbhr-list-row">
-                  <div class="pbhr-list-main">
-                    <div class="pbhr-list-name" t-esc="po.platform"/>
-                    <div class="pbhr-list-meta" t-esc="po.email"/>
-                  </div>
-                  <span class="pbim-badge" t-esc="po.state_label"/>
-                  <div class="pbhr-list-acts">
-                    <button t-if="po.state !== 'sent' and state.canRecruit" class="pbim-btn ghost" t-on-click="() =&gt; this.act('send_posting', { posting_id: po.id })">
-                      <t t-out="ic('send',13)"/> Send now
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </t>
+            <!-- ======================== where it has gone ================ -->
+            <!-- RECRUIT P7: the Publish panel (each channel, its link, its count) -->
+            <t t-call="pb_hiring.P7Inline"/>
 
             <!-- ======================== the referrals =================== -->
             <t t-if="state.drawer.referrals.length">

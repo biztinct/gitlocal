@@ -19,6 +19,7 @@ from odoo.exceptions import UserError
 from odoo.addons.website_hr_recruitment.controllers.main import WebsiteHrRecruitment
 from ..models.forms_p2 import (COUNTRY_LANG, FILE_KINDS, FORM_LANGS, LANG_WORDS,
                                _raw, lang_word)
+from ..models.channels_p7 import utm_record
 
 
 def clean_url(value):
@@ -350,9 +351,16 @@ class HiringApplications(WebsiteHrRecruitment):
         for key in ('source', 'medium', 'campaign'):
             name = attribution.get('latest', {}).get(key)
             if name:
-                model = request.env['utm.' + key].sudo()
-                rec = model.search([('name', '=', name)], limit=1) or model.create({'name': name})
-                extra[key + '_id'] = rec.id
+                # RECRUIT P7: case-insensitive, the seeded row first — never a
+                # second `linkedin` beside `LinkedIn`.
+                rec = utm_record(request.env, 'utm.' + key, name)
+                if rec:
+                    extra[key + '_id'] = rec.id
+        if extra.get('source_id'):
+            channel = request.env['pb.hiring.channel'].sudo()._for_source(
+                job.company_id, request.env['utm.source'].sudo().browse(extra['source_id']))
+            if channel:
+                extra['pb_channel_id'] = channel.id
         with request.env.cr.savepoint():
             applicant = form._pb_make_applicant(job, req, clean, answers, uploads, lang, extra)
         request.session['pb_application_last'] = time.time()
