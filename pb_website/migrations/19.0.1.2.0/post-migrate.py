@@ -15,4 +15,6 @@ def migrate(cr, version):
         ("website_id", "!=", False),
         ("id", "!=", source.id),
     ])
-    copies.write({"arch_db": source.arch_db, "name": source.name})
+    # Website view writes operate on a singleton because of copy-on-write.
+    for copy in copies:
+        copy.write({"arch_db": source.arch_db, "name": source.name})
