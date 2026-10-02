@@ -123,6 +123,7 @@ export class HubShell extends Component {
             // key -> boolean; null while unresolved, which the rail reads as
             // "show everything" so the shell never flashes an empty rail
             allowed: null,
+            railCalm: false,
         });
 
         // lensProps memo (see the getter). Module-level constants would be
@@ -373,6 +374,7 @@ export class HubShell extends Component {
         // twice tells you twice.
         const def = (this.config.lenses || []).find((l) => l.key === key);
         if (def && this.gate(def.feature).locked) { this.openLock(def); return; }
+        this.state.railCalm = true;     // fold the hover-opened sub-menu back
         if (this.state.lens === key) { return; }
         if (this.state.allowed && !this.state.allowed[key]) { return; }
         this.state.lens = key;

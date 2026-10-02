@@ -97,6 +97,7 @@ export class PbSidebar extends Component {
             sections: [],
             activeItemId: null,
             expandedItems: {},
+            calm: false,
             collapsedSections: this._loadCollapsed(),
             loaded: false,
             visible: false,
@@ -398,6 +399,9 @@ export class PbSidebar extends Component {
 
     navigateTo(item) {
         this.state.activeItemId = item.id;
+        // Fold the hover-opened rail back at once (biz-sb-calm, until the
+        // pointer leaves) so the chosen screen's sub-menu shows beside it.
+        this.state.calm = true;
         const ref = item.action_xmlid || item.action_tag;
         if (ref) this.actionService.doAction(ref, { clearBreadcrumbs: true });
     }

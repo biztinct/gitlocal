@@ -84,6 +84,11 @@
 
         <!-- ========================= lens rail ========================= -->
         <nav class="pbhub-rail" t-attf-aria-label="{{ brand.label }} lenses">
+          <!-- The sub-menu folds to icons and opens over the screen on hover,
+               like the main menu; a click folds it back (is-calm until the
+               pointer leaves). Owner, 2026-10-02. -->
+          <div class="pbhub-rail__in" t-att-class="{ 'is-calm': state.railCalm }"
+               t-on-mouseleave="() => { this.state.railCalm = false; }">
           <!-- ONE class attribute: a static `class` plus `t-att-class` is the
                documented-safe pair; t-att-class and t-attf-class both compile
                to `class` and the last one written wins (W23). -->
@@ -102,6 +107,7 @@
                  in one sentence — never nothing. -->
             <span t-if="isLocked(l)" class="pbhub-rail__lock" t-out="ic('lock', 10)"/>
           </button>
+          </div>
         </nav>
 
         <!-- ==================== canvas: one lens ====================

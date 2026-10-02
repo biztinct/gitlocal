@@ -52,13 +52,16 @@ $biz-sb-auto-bp: 1920px !default;
         transition: width 160ms ease, box-shadow 160ms ease;
         z-index: 25;
 
-        &:hover {
+        // `.biz-sb-calm` is set by a click on an item and cleared when the
+        // pointer leaves: the rail folds back the moment you choose a screen,
+        // so that screen's own sub-menu shows beside it (owner, 2026-10-02).
+        &:hover:not(.biz-sb-calm) {
             width: $full-w;
             box-shadow: 6px 0 24px rgba(0, 0, 0, 0.28);
         }
 
         // Collapsed state: icons only, everything textual hidden
-        &:not(:hover) {
+        &:not(:hover), &.biz-sb-calm {
             .biz-sidebar-label,
             .biz-sidebar-sub {
                 display: none !important;

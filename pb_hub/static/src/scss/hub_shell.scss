@@ -206,38 +206,53 @@
         align-items: stretch;
     }
 
+    // The sub-menu is a slim strip of icons that opens OVER the screen on
+    // hover (names beside the icons) and folds back on a click — the same
+    // behaviour as the main menu (owner, 2026-10-02). The <nav> keeps the
+    // strip's width in the layout; the inner panel is what widens.
     .pbhub-rail {
-        z-index: 1;
-        flex: 0 0 76px;
+        position: relative;
+        z-index: 20;
+        flex: 0 0 64px;
+    }
+    .pbhub-rail__in {
+        position: absolute;
+        top: 0; bottom: 0; left: 0;
+        width: 64px;
         display: flex;
         flex-direction: column;
-        align-items: center;
         gap: 4px;
-        padding: 14px 0;
+        padding: 14px 8px;
         overflow-y: auto;
         overflow-x: hidden;
         background: var(--pbim-surface, #fff);
         border-right: 1px solid var(--pbim-line, #E2E8F0);
+        transition: width 160ms ease, box-shadow 160ms ease;
+
+        &:hover:not(.is-calm) {
+            width: 224px;
+            box-shadow: 10px 0 28px -12px rgba(30, 27, 46, .28);
+        }
+        &:not(:hover) .pbhub-rail__l,
+        &.is-calm .pbhub-rail__l { display: none; }
     }
     .pbhub-rail__b {
-        width: 60px;
+        width: 100%;
         flex: none;
         display: flex;
-        flex-direction: column;
         align-items: center;
-        gap: 5px;
-        padding: 9px 3px;
+        gap: 12px;
+        padding: 10px 14px;
         border: 0;
         border-radius: var(--pbim-r-sm, 10px);
         background: transparent;
         color: var(--pbim-muted, #64748B);
         font: inherit;
-        font-size: 9px;
-        font-weight: 800;
-        letter-spacing: .04em;
+        font-size: 13px;
+        font-weight: 650;
         line-height: 1.2;
-        text-transform: uppercase;
-        text-align: center;
+        text-align: left;
+        white-space: nowrap;
         cursor: pointer;
         transition: background .12s, color .12s;
 
@@ -251,8 +266,8 @@
             color: var(--pbim-primary, #5A4BB0);
         }
     }
-    .pbhub-rail__ic { display: inline-flex; }
-    .pbhub-rail__l { display: block; }
+    .pbhub-rail__ic { display: inline-flex; flex: none; }
+    .pbhub-rail__l { display: block; overflow: hidden; text-overflow: ellipsis; }
 
     // FLEET P4 — a part of the product this company has not bought, kept on
     // screen on purpose. It has to read as an OFFER and not as a fault: muted
@@ -510,9 +525,6 @@
     // Below the small-laptop breakpoint the labels cost more than they inform;
     // the rail keeps the icons and the tooltip carries the name.
     @media (max-width: 1099px) {
-        .pbhub-rail { flex-basis: 56px; }
-        .pbhub-rail__b { width: 46px; }
-        .pbhub-rail__l { display: none; }
         .pbhub-brand__tx { display: none; }
         .pbhub-search { min-width: 0; max-width: 120px; }
         .pbhub-search__tx { display: none; }
