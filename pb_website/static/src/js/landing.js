@@ -8,6 +8,7 @@
     document.title = 'Payobook — Intelligent Global Payroll';
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     var menu = root.querySelector('.pb-menu'), nav = root.querySelector('#pb-navigation');
+    if (!menu || !nav) return; // An older cached homepage may still be in flight during an upgrade.
     function closeMenu() { nav.classList.remove('is-open'); menu.setAttribute('aria-expanded','false'); menu.setAttribute('aria-label','Open navigation'); }
     menu.addEventListener('click',function () {
       var open = !nav.classList.contains('is-open');
@@ -104,7 +105,7 @@
     }
     function draw(now) {
       if (!w || !h) return;
-      var t=reduced.matches?0:(now-start)/1000, rot=angle+Math.sin(t*.065)*.12;
+      var t=reduced.matches?0:Math.max(0,(now-start)/1000), rot=angle+Math.sin(t*.065)*.12;
       var cx=w/2,cy=h/2,r=Math.min(w,h)*.345;
       ctx.clearRect(0,0,w,h);
       var glow=ctx.createRadialGradient(cx,cy,r*.8,cx,cy,r*1.5);glow.addColorStop(0,'rgba(131,174,232,.13)');glow.addColorStop(.5,'rgba(107,147,222,.05)');glow.addColorStop(1,'rgba(80,130,210,0)');ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
