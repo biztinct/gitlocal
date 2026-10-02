@@ -160,3 +160,20 @@
 }
 @media (max-width: 360px) { .pb-hero h1 { font-size: 52px; } .pb-hero-copy { min-width: 0; } }
 @media (prefers-reduced-motion: reduce) { .pb_landing *, .pb_landing *::before, .pb_landing *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+// A lightweight, native visual explanation of a connected calculation.
+.pb-mindmap-feature { display: grid; grid-template-columns: .75fr 1fr; align-items: center; gap: 60px; padding: 40px; background: #fff; border: 1px solid #1c2e4612; border-radius: 20px; margin-top: 25px; }
+.pb-mindmap-art { padding: 22px; border-radius: 14px; background: radial-gradient(circle,#cad6e640 1px,transparent 1px) 0 0 / 22px 22px,#f7f9fb; border: 1px solid #c1cfdf70; }
+.pb-mindmap-tree { position: relative; padding-top: 22px; max-width: 460px; margin: auto; }
+.pb-mindmap-node { padding: 10px 12px; border-radius: 9px; border: 1px solid #809ab470; background: #fff; text-align: center; box-shadow: 0 5px 15px #22394f08; small { display: block; font-size: 7px; letter-spacing: 1px; color: #748494; } b { display: block; font-size: 10px; color: #23394a; font-weight: 600; margin: 4px 0; } strong { color: #376c60; font-size: 12px; font-weight: 600; } }
+.pb-mindmap-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; width: 72%; }
+.pb-mindmap-salary { border-color: #559da480; }.pb-mindmap-cap { border-color: #bd936580; }
+.pb-mindmap-branches { height: 22px; width: 36%; margin-left: 18%; border: 1px dashed #90a7bd; border-top: none; border-radius: 0 0 8px 8px; position: relative; &::after { content: ''; border-left: 1px dashed #90a7bd; height: 15px; position: absolute; left: 50%; bottom: -15px; } }
+.pb-mindmap-min { width: 30%; margin: 14px 0 0 21%; border-color: #8b91bf80; }
+.pb-mindmap-rate { position: absolute; width: 31%; right: 0; top: 116px; border-color: #bd936580; }
+.pb-mindmap-join { position: relative; width: 50%; height: 40px; margin-left: 36%; border: 1px dashed #90a7bd; border-top: none; border-radius: 0 0 8px 8px; span { position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 22px; height: 22px; border-radius: 50%; background: #e9edf7; color: #51639a; border: 1px solid #b7c2df; font-size: 16px; display: grid; place-items: center; } }
+.pb-mindmap-round { width: 31%; margin: 22px 0 0 45%; border-color: #8b91bf80; }
+.pb-mindmap-stem { height: 20px; width: 1px; margin-left: 60.5%; border-left: 1px dashed #90a7bd; }
+.pb-mindmap-result { width: 43%; margin-left: 39%; border-color: #23394a; background: #182a3d; small { color: #a8bbc6; } b { color: #f2f6fb; } strong { color: #d6fc8b; font-size: 16px; } }
+@media (max-width: 900px) { .pb-mindmap-feature { grid-template-columns: 1fr; gap: 25px; padding: 30px; } }
+@media (max-width: 650px) { .pb-mindmap-feature { padding: 25px 20px; border-radius: 14px; } .pb-mindmap-art { padding: 15px; margin-inline: -7px; } .pb-mindmap-inputs { gap: 12px; } .pb-mindmap-node { padding: 8px 6px; } .pb-mindmap-node b { font-size: 8px; } .pb-mindmap-node small { font-size: 6px; } .pb-mindmap-rate { top: 106px; } }

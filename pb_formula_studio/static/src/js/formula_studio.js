@@ -383,6 +383,11 @@ export class PbFormulaStudio extends Component {
             moreOpen: false,
             // grid workbench: slide-in drawers over the full-width spreadsheet
             outlineDrawer: false,
+            outlineCollapsed: false,
+            previewCollapsed: false,
+            outlineWidth: 320,
+            previewWidth: 360,
+            workspaceWidth: 0,
             previewDrawer: false,
             // header: the lifecycle menu on the state chip
             stateMenuOpen: false,
@@ -487,6 +492,7 @@ export class PbFormulaStudio extends Component {
         });
         this.formulaRef = useRef("formulaInput");
         this.testFileRef = useRef("testFile");
+        this.workRef = useRef("work");
         this.rawEditorRef = useRef("rawEditor");
         this.depCanvasRef = useRef("depCanvas");
         this._rawNeedsSeed = false;
@@ -610,18 +616,23 @@ export class PbFormulaStudio extends Component {
                 this.openConfigSwitcher();
             }
         });
-        onMounted(() => { this._bindArrowEvents(); this.redrawArrows(); });
+        onMounted(() => { this._bindArrowEvents(); this._observeWorkspace(); this.redrawArrows(); });
         // Clear every pending debounce/open timer on unmount so a fired callback
         // never sets state on a destroyed component (W100 review finding — the
         // 350 ms hover-open timer was the reported case, but none of the studio's
         // debounce timers were being cleared).
         onWillUnmount(() => {
+            this._arrowsDestroyed = true;
+            cancelAnimationFrame(this._arrowFrame);
+            if (this._workObserver) this._workObserver.disconnect();
+            for (const remove of this._arrowListeners || []) remove();
             for (const t of [this._hoverTimer, this._rawTimer, this._replayTimer,
                 this._whatifTimer, this._liveTimer, this._testTimer, this._rateTimer]) {
                 clearTimeout(t);
             }
         });
         onPatched(() => {
+            this._observeWorkspace();
             this.redrawArrows();
             // F12 — seed the raw textarea imperatively (uncontrolled, so the caret
             // never jumps mid-edit); only when a re-seed was requested.
@@ -3079,15 +3090,91 @@ export class PbFormulaStudio extends Component {
 
     // ---- dependency arrows (imperative SVG over the two left panes) ----
     toggleArrows() { this.state.arrowsOn = !this.state.arrowsOn; this.redrawArrows(); }
-    redrawArrows() { requestAnimationFrame(() => requestAnimationFrame(() => this.drawArrows())); }
+    redrawArrows() {
+        if (this._arrowsDestroyed || this._arrowFrame) return;
+        this._arrowFrame = requestAnimationFrame(() => {
+            this._arrowFrame = requestAnimationFrame(() => {
+                this._arrowFrame = null;
+                if (!this._arrowsDestroyed) this.drawArrows();
+            });
+        });
+    }
     _bindArrowEvents() {
-        const ol = document.querySelector(".pbfs-outline");
-        if (ol) ol.addEventListener("scroll", () => this.redrawArrows());
-        const ed = document.querySelector(".pbfs-editor");
-        if (ed) ed.addEventListener("scroll", () => this.redrawArrows());
-        const pv = document.querySelector(".pbfs-test");
-        if (pv) pv.addEventListener("scroll", () => this.redrawArrows());
-        window.addEventListener("resize", () => this.redrawArrows());
+        this._arrowListeners = [];
+        for (const el of [document.querySelector(".pbfs-outline"), document.querySelector(".pbfs-editor"), document.querySelector(".pbfs-test"), window]) {
+            if (!el) continue;
+            const event = el === window ? "resize" : "scroll";
+            const listener = () => this.redrawArrows();
+            el.addEventListener(event, listener, { passive: true });
+            this._arrowListeners.push(() => el.removeEventListener(event, listener));
+        }
+    }
+
+    _observeWorkspace() {
+        const work = this.workRef.el;
+        if (!work || work === this._observedWorkspace) return;
+        if (this._workObserver) this._workObserver.disconnect();
+        this._observedWorkspace = work;
+        this._workObserver = new ResizeObserver(([entry]) => {
+            const width = Math.round(entry.contentRect.width);
+            if (width !== this.state.workspaceWidth) this.state.workspaceWidth = width;
+            this.redrawArrows();
+        });
+        this._workObserver.observe(work);
+    }
+    get panelWidths() {
+        // Reserve room for the calculation card as well as both resize handles.
+        const available = Math.max(484, (this.state.workspaceWidth || 1200) - 316);
+        let outline = this.state.outlineCollapsed ? 44 : Math.max(220, Math.min(500, this.state.outlineWidth));
+        let preview = this.state.previewCollapsed ? 44 : Math.max(260, Math.min(500, this.state.previewWidth));
+        const excess = Math.max(0, outline + preview - available);
+        if (excess) {
+            const roomLeft = Math.max(0, outline - (this.state.outlineCollapsed ? 44 : 220));
+            const roomRight = Math.max(0, preview - (this.state.previewCollapsed ? 44 : 260));
+            const room = roomLeft + roomRight;
+            if (room) { outline -= excess * roomLeft / room; preview -= excess * roomRight / room; }
+        }
+        return { outline: Math.round(outline), preview: Math.round(preview) };
+    }
+    get panelStyle() {
+        const widths = this.panelWidths;
+        return `--pbfs-outline-width:${widths.outline}px;--pbfs-preview-width:${widths.preview}px`;
+    }
+    togglePanel(which) {
+        this.state[which + "Collapsed"] = !this.state[which + "Collapsed"];
+        this.redrawArrows();
+    }
+    resizePanel(which, width) {
+        const other = which === "outline" ? "preview" : "outline";
+        const min = which === "outline" ? 220 : 260;
+        const max = Math.max(min, Math.min(500, (this.state.workspaceWidth || 1200) - 316 - this.panelWidths[other]));
+        this.state[which + "Width"] = Math.round(Math.max(min, Math.min(max, width)));
+        this.redrawArrows();
+    }
+    startPanelResize(which, event) {
+        if (event.button !== 0 || this.state[which + "Collapsed"]) return;
+        event.preventDefault();
+        event.currentTarget.setPointerCapture(event.pointerId);
+        this._panelDrag = { which, pointerId: event.pointerId, x: event.clientX, width: this.panelWidths[which] };
+    }
+    movePanelResize(event) {
+        const drag = this._panelDrag;
+        if (!drag || drag.pointerId !== event.pointerId) return;
+        const delta = (event.clientX - drag.x) * (drag.which === "outline" ? 1 : -1);
+        this.resizePanel(drag.which, drag.width + delta);
+    }
+    endPanelResize(event) {
+        if (this._panelDrag && this._panelDrag.pointerId === event.pointerId) this._panelDrag = null;
+    }
+    keyboardPanelResize(which, event) {
+        if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+        event.preventDefault();
+        if (this.state[which + "Collapsed"]) this.togglePanel(which);
+        let width = this.panelWidths[which];
+        if (event.key === "Home") width = 0;
+        else if (event.key === "End") width = 500;
+        else width += (event.key === "ArrowRight" ? 1 : -1) * (which === "outline" ? 1 : -1) * (event.shiftKey ? 40 : 20);
+        this.resizePanel(which, width);
     }
     // scrollIntoView on an element inside a closed drawer scrolls the action
     // container horizontally to "reveal" the off-canvas panel, displacing the
@@ -3149,7 +3236,7 @@ export class PbFormulaStudio extends Component {
             if (!el) return false;
             const r = el.getBoundingClientRect();
             const st = getComputedStyle(el);
-            return r.width > 5 && st.visibility !== "hidden" && st.position !== "absolute";
+            return r.width > 5 && st.visibility !== "hidden" && st.position !== "absolute" && !el.classList.contains("pbfs-panel-collapsed");
         };
         if (!anchorable(outline)) return;
         const deps = this.depColsOf(c);

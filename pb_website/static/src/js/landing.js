@@ -1,3 +1,4 @@
+// @odoo-module ignore
 /* Payobook homepage: progressive enhancement, accessible previews and canvas globe. */
 (function () {
   "use strict";

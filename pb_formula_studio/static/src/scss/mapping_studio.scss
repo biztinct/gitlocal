@@ -997,13 +997,10 @@
     .pbms-link__svg { width: 150px; height: 16px; }
     .pbms-count { font-size: 11px; }
 
-    /* ---- the board chips: one row that scrolls, never two that stack ----
-       A strip that grows a second row whenever a board is added is a strip
-       whose height nobody can predict. Sideways is the axis with room. */
+    /* Wrap board chips so every destination remains visible at any width. */
     .pbms-modes {
         padding: 6px 16px; gap: 5px;
-        flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
-        scrollbar-width: thin;
+        flex-wrap: wrap; overflow: visible;
     }
     .pbms-modes::-webkit-scrollbar { height: 5px; }
     .pbms-modes::-webkit-scrollbar-thumb {
@@ -1022,8 +1019,7 @@
     /* ---- the lane chips: the table of contents, and the filter ---- */
     .pbms-wrap .pbms-lanes {
         padding: 5px 16px; gap: 5px;
-        flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
-        scrollbar-width: thin;
+        flex-wrap: wrap; overflow: visible;
     }
     .pbms-wrap .pbms-lanes::-webkit-scrollbar { height: 5px; }
     .pbms-wrap .pbms-lanes::-webkit-scrollbar-thumb {
@@ -1077,3 +1073,7 @@
         .pbms-top { padding: 4px 16px; }
     }
 }
+
+/* Long destination names may wrap inside a chip on small screens. */
+.pbms-modes .pbms-mode, .pbms-modes .pbms-schemechip { max-width: 100%; white-space: normal; }
+.pbms-modes__sp { display: none; }

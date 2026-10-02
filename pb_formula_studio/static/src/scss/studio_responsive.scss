@@ -180,3 +180,34 @@
         transition: none;
     }
 }
+
+
+/* Adjustable desktop rails; grid and narrow-screen drawers keep their layout. */
+.pbfs .pbfs-panel-resizer, .pbfs .pbfs-panel-restore, .pbfs .pbfs-panel-collapse { display: none; }
+@media (min-width: 1101px) {
+    .pbfs .pbfs-work:not(.pbfs-work--full) {
+        grid-template-columns: var(--pbfs-outline-width, 320px) 8px minmax(0, 1fr) 8px var(--pbfs-preview-width, 360px);
+        .pbfs-panel-resizer {
+            display: flex; align-items: center; justify-content: center;
+            cursor: col-resize; touch-action: none; background: #f3f1fa; z-index: 2;
+            span { width: 2px; height: 48px; border-radius: 2px; background: #c4bce6; }
+            &:hover, &:focus-visible { background: #dcd5f5; outline: 2px solid #6751bf; outline-offset: -2px; }
+        }
+        .pbfs-panel-collapse { display: inline-flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+        .tp-head .pbfs-panel-collapse { margin-left: auto; }
+        .pbfs-outline, .pbfs-test { min-width: 0; }
+        .pbfs-panel-collapsed {
+            padding: 8px 4px; overflow: hidden;
+            > :not(.pbfs-panel-restore) { display: none; }
+            .pbfs-panel-restore {
+                display: flex; flex-direction: column; align-items: center; gap: 16px;
+                width: 100%; padding: 8px 0; border: 1px solid #dcd5f5; border-radius: 8px;
+                color: #5944ae; background: #f5f2ff; cursor: pointer; font-size: 24px;
+                .pbfs-panel-label { writing-mode: vertical-rl; font-size: 12px; font-weight: 700; }
+                &:focus-visible { outline: 2px solid #6751bf; }
+            }
+        }
+        .pbfs-editor { padding: 22px clamp(12px, 2vw, 30px); min-width: 0; }
+        .ol-head { flex-wrap: wrap; gap: 6px; }
+    }
+}
