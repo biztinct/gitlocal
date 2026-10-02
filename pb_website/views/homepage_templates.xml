@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <template id="pb_website_homepage_assets" inherit_id="website.layout" name="Payobook homepage assets" active="False">
-    <xpath expr="//head" position="inside">
-      <t t-if="pb_homepage"><t t-call-assets="pb_website.assets_homepage"/></t>
-    </xpath>
-  </template>
+  <record id="pb_website_homepage_assets" model="ir.ui.view"><field name="active" eval="False"/></record>
   <template id="pb_website_homepage" inherit_id="website.homepage" name="Payobook — Intelligent Global Payroll">
     <xpath expr="//t[@t-call='website.layout']/div[@id='wrap']" position="before">
-      <t t-set="head"><t t-out="head or ''"/><t t-call-assets="pb_website.assets_homepage"/></t>
+      <t t-call-assets="pb_website.assets_homepage"/>
       <t t-set="no_header" t-value="True"/>
       <t t-set="no_footer" t-value="True"/>
       <t t-set="additional_title">Payobook — Intelligent Global Payroll</t>
