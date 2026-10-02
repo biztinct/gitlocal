@@ -247,15 +247,13 @@
     }
 
     // ------------------------------------------------------------- the rail
-    // THE RAIL IS PINNED to the right edge of the board: on a role with
-    // eleven working columns it would otherwise be a long scroll away from
-    // the card being dragged, and a drop target nobody can reach is a
-    // dead end.
+    // The Closed column is the LAST column of the board and scrolls with it
+    // (owner, 2026-10-02: pinned to the right edge it covered a working
+    // column). A card dragged towards the right edge scrolls the board, so
+    // it is still reachable; "Not this time" on every card is the other way.
     .pbhr-rail {
-        flex-basis: 190px; border-style: dashed;
-        position: sticky; right: 0; z-index: 2;
+        flex-basis: 224px; border-style: dashed;
         background: var(--pbim-bg, #F5F6FA);
-        box-shadow: -14px 0 18px -14px rgba(30, 27, 46, .25);
     }
     .pbhr-rail-row {
         display: flex; justify-content: space-between; align-items: center; gap: 8px;
@@ -264,7 +262,7 @@
         b { color: var(--pbim-ink); font-weight: 650; font-variant-numeric: tabular-nums; }
         &:hover, &.on { color: var(--pbim-ink); background: var(--pbim-line-2); border-radius: 7px; }
     }
-    .pbhr-rail-list { display: flex; flex-direction: column; gap: 4px; }
+    .pbhr-rail-list { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
     .pbhr-rail-person {
         border: 1px solid var(--pbim-line); background: var(--pbhr-kc-bg); border-radius: 8px;
         padding: 5px 8px; font: inherit; font-size: 12px; color: var(--pbim-text); text-align: left; cursor: pointer;

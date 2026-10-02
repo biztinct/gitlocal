@@ -276,11 +276,21 @@
     @media (max-width: 1400px) {
         .pbhr-ff-grid { grid-template-columns: 220px minmax(0, 1fr) 380px; }
     }
+    // Laptop widths: the list and the editor stay side by side (so pressing a
+    // template visibly opens it), and the live page moves underneath.
     @media (max-width: 1180px) {
-        .pbhr-ff-grid { grid-template-columns: 1fr; }
+        .pbhr-ff-grid {
+            grid-template-columns: 220px minmax(0, 1fr);
+            grid-template-areas: "rail side" "stage stage";
+        }
+        .pbhr-ff-rail { grid-area: rail; }
+        .pbhr-ff-side { grid-area: side; }
+        .pbhr-ff-stage { grid-area: stage; height: 75vh; }
+    }
+    @media (max-width: 820px) {
+        .pbhr-ff-grid { grid-template-columns: 1fr; grid-template-areas: "rail" "side" "stage"; }
         .pbhr-ff-rail, .pbhr-ff-side { height: auto; max-height: none; }
         .pbhr-ff-rail { max-height: 320px; }
-        .pbhr-ff-stage { height: 75vh; }
     }
 }
 

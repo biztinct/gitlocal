@@ -174,7 +174,8 @@
     .pbhr-p8-ask { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--pbim-text); font-weight: 600; }
 
     // ------------------------------------------------------- the rule sheet
-    .pbhr-p8-rb { display: flex; flex-direction: column; gap: 14px; }
+    // the body has no padding of its own: line it up with the title above
+    .pbhr-p8-rb { display: flex; flex-direction: column; gap: 14px; padding: 18px 22px 22px; }
     .pbhr-p8-live {
         display: flex; gap: 10px; align-items: flex-start; margin: 0; padding: 14px 16px; border-radius: 14px;
         background: var(--pbim-soft); border-left: 4px solid var(--pbim-primary);

@@ -131,6 +131,12 @@ export class PbHiringForms extends Component {
         this.state.showMissing = false;
         this.state.addOpen = false;
         await this.loadForm();
+        // On a narrow window the editor sits below the list: bring it into view
+        // so pressing a template visibly opens it.
+        const side = document.querySelector(".pbhr-ff-side");
+        if (side && side.getBoundingClientRect().top > window.innerHeight * 0.6) {
+            side.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
     }
 
     async setLang(code) {

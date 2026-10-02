@@ -144,14 +144,16 @@
               <button t-foreach="railRows" t-as="rr" t-key="rr.key" type="button" class="pbhr-rail-row" t-att-class="{ on: state.railOpen === rr.key }" t-att-title="rr.meaning" t-on-click="() =&gt; { state.railOpen = state.railOpen === rr.key ? '' : rr.key; }">
                 <span t-esc="rr.name"/><b t-esc="rr.count"/>
               </button>
+              <!-- the people in the open line are ordinary cards: open one, or
+                   drag it back into a working column -->
               <div t-if="state.railOpen" class="pbhr-rail-list">
                 <t t-foreach="closedCards.filter((c) =&gt; c.stage_key === state.railOpen)" t-as="cd" t-key="cd.id">
-                  <button type="button" class="pbhr-rail-person" t-on-click="() =&gt; this.openCand(cd.id)"><t t-esc="cd.name"/></button>
+                  <t t-call="pb_hiring.KCard"/>
                 </t>
                 <div t-if="!closedCards.filter((c) =&gt; c.stage_key === state.railOpen).length" class="pbhr-col-empty">Nobody here.</div>
               </div>
               <div class="pbhr-rail-hint">
-                <t t-if="canMove">Drop a card here, or press a line to see who is in it</t>
+                <t t-if="canMove">Drop a card here to close it. Press a line to see who is in it; drag anyone back to bring them back.</t>
                 <t t-else="">Press a line to see who is in it</t>
               </div>
             </div>
