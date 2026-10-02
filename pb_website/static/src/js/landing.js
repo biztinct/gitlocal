@@ -1,354 +1,138 @@
-/* Payobook landing page — motion & interactivity.
- * Plain IIFE (NOT an Odoo module) so it can use the vendored globals
- * gsap / ScrollTrigger / Lenis / Chart. Runs only when .pb_landing exists,
- * and degrades gracefully if any library is missing.
- */
+/* Payobook homepage: progressive enhancement, accessible previews and canvas globe. */
 (function () {
   "use strict";
-
   function boot() {
-    var root = document.querySelector(".pb_landing");
-    if (!root) return; // only on the landing page
-
-    // Bespoke page owns the whole viewport — drop Odoo's website header/footer
-    // (CSS :has handles this with no flash; this is the cross-engine fallback).
-    document.querySelectorAll(
-      "#wrapwrap > header, #wrapwrap > footer, header.o_header_standard, .o_header_affix, #footer, .o_footer, .o_frontend_to_backend_nav, .o_frontend_to_backend_edit_btn"
-    ).forEach(function (el) { el.style.display = "none"; });
-    var ww = document.getElementById("wrapwrap");
-    if (ww) ww.style.paddingTop = "0";
-    document.title = "Payobook — Effortless Payroll Solutions";
-
-    var hasGsap = typeof window.gsap !== "undefined";
-    var hasST = typeof window.ScrollTrigger !== "undefined";
-    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (hasGsap && hasST) window.gsap.registerPlugin(window.ScrollTrigger);
-
-    // ---------------------------------------------------------------- Lenis
-    var lenis = null;
-    if (typeof window.Lenis !== "undefined" && !reduce) {
-      try {
-        lenis = new window.Lenis({ lerp: 0.1, smoothWheel: true, wheelMultiplier: 1 });
-        if (hasGsap && hasST) {
-          lenis.on("scroll", window.ScrollTrigger.update);
-          window.gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
-          window.gsap.ticker.lagSmoothing(0);
-        } else {
-          var raf = function (time) { lenis.raf(time); requestAnimationFrame(raf); };
-          requestAnimationFrame(raf);
-        }
-      } catch (e) { lenis = null; }
-    }
-
-    // smooth anchor jumps
-    root.querySelectorAll('a[href^="#"]').forEach(function (a) {
-      a.addEventListener("click", function (ev) {
-        var id = a.getAttribute("href");
-        if (id.length < 2) return;
-        var target = document.querySelector(id);
+    var root = document.querySelector('.pb_landing');
+    if (!root || root.dataset.initialized) return;
+    root.dataset.initialized = 'true';
+    document.title = 'Payobook — Intelligent Global Payroll';
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var menu = root.querySelector('.pb-menu'), nav = root.querySelector('#pb-navigation');
+    function closeMenu() { nav.classList.remove('is-open'); menu.setAttribute('aria-expanded','false'); menu.setAttribute('aria-label','Open navigation'); }
+    menu.addEventListener('click',function () {
+      var open = !nav.classList.contains('is-open');
+      nav.classList.toggle('is-open',open); menu.setAttribute('aria-expanded',String(open));
+      menu.setAttribute('aria-label',open ? 'Close navigation' : 'Open navigation');
+    });
+    root.addEventListener('keydown',function (e) { if (e.key === 'Escape' && nav.classList.contains('is-open')) { closeMenu(); menu.focus(); } });
+    root.querySelectorAll('a[href^="#"]').forEach(function (link) {
+      link.addEventListener('click',function (e) {
+        var target = root.querySelector(link.getAttribute('href'));
         if (!target) return;
-        ev.preventDefault();
-        if (lenis) lenis.scrollTo(target, { offset: -70, duration: 1.1 });
-        else target.scrollIntoView({ behavior: "smooth" });
+        e.preventDefault(); closeMenu();
+        target.scrollIntoView({behavior: reduced.matches ? 'auto' : 'smooth', block:'start'});
+        history.replaceState(null,'',link.getAttribute('href'));
+        // Preserve keyboard access after skip navigation without changing tab order.
+        if (link.classList.contains('pb-skip')) { target.setAttribute('tabindex','-1'); target.focus({preventScroll:true}); }
       });
     });
-
-    // ------------------------------------------------------------- Nav stuck
-    var nav = root.querySelector('[data-pb="nav"]');
-    if (nav) {
-      var onScroll = function () { nav.classList.toggle("is-stuck", window.scrollY > 30); };
-      onScroll();
-      window.addEventListener("scroll", onScroll, { passive: true });
-    }
-
-    // ---------------------------------------------------- Headline char split
-    var headline = root.querySelector('[data-pb="headline"]');
-    if (headline && !reduce) {
-      var wrapChars = function (node) {
-        var out = [];
-        Array.prototype.slice.call(node.childNodes).forEach(function (child) {
-          if (child.nodeType === 3) { // text — collapse whitespace, drop indentation-only nodes
-            var text = child.textContent.replace(/\s+/g, " ").trim();
-            if (!text) { node.removeChild(child); return; }
-            var frag = document.createDocumentFragment();
-            var words = text.split(" ");
-            words.forEach(function (word, wi) {
-              // wrap each word so inline-block chars never break mid-word
-              var wspan = document.createElement("span");
-              wspan.className = "pbw-word";
-              word.split("").forEach(function (ch) {
-                var s = document.createElement("span");
-                s.className = "pbw-ch";
-                s.textContent = ch;
-                wspan.appendChild(s);
-                out.push(s);
-              });
-              frag.appendChild(wspan);
-              if (wi < words.length - 1) frag.appendChild(document.createTextNode(" "));
-            });
-            node.replaceChild(frag, child);
-          } else if (child.nodeType === 1) {
-            if (child.classList && child.classList.contains("pbw-grad")) {
-              // animate the gradient line as ONE unit — per-char spans break background-clip:text
-              child.style.opacity = "0";
-              child.style.transform = "translateY(0.5em)";
-              out.push(child);
-            } else {
-              out = out.concat(wrapChars(child));
-            }
-          }
-        });
-        return out;
-      };
-      var chars = wrapChars(headline);
-      if (hasGsap && chars.length) {
-        window.gsap.to(chars, {
-          y: 0, opacity: 1, rotate: 0, duration: 0.9, ease: "power3.out",
-          stagger: 0.016, delay: 0.15,
-        });
-      } else {
-        chars.forEach(function (c) { c.style.opacity = 1; c.style.transform = "none"; });
+    function accessibleTabs(container, callback) {
+      var tabs = Array.from(container.querySelectorAll('[role="tab"]'));
+      function select(tab) {
+        tabs.forEach(function (item) { var active = item === tab; item.setAttribute('aria-selected',String(active)); item.tabIndex = active ? 0 : -1; });
+        callback(tab);
       }
-    } else if (headline) {
-      headline.querySelectorAll(".pbw-ch").forEach(function (c) { c.style.opacity = 1; });
-    }
-
-    // ------------------------------------------------------ Reveal on scroll
-    var reveals = [].slice.call(root.querySelectorAll('[data-pb="reveal"]'))
-      .concat([].slice.call(root.querySelectorAll(".pbw-sec__head")));
-    if ("IntersectionObserver" in window) {
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          if (en.isIntersecting) { en.target.classList.add("is-in"); io.unobserve(en.target); }
+      tabs.forEach(function (tab,i) {
+        tab.addEventListener('click',function () { select(tab); });
+        tab.addEventListener('keydown',function (e) {
+          var next;
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (i+1)%tabs.length;
+          else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (i+tabs.length-1)%tabs.length;
+          else if (e.key === 'Home') next = 0;
+          else if (e.key === 'End') next = tabs.length-1;
+          if (next !== undefined) { e.preventDefault(); select(tabs[next]); tabs[next].focus(); }
         });
-      }, { threshold: 0.18, rootMargin: "0px 0px -8% 0px" });
-      reveals.forEach(function (el) { io.observe(el); });
-    } else {
-      reveals.forEach(function (el) { el.classList.add("is-in"); });
+      });
     }
-
-    // dashboard bars trigger
-    var bars = root.querySelector(".pbw-dash__bars");
-    if (bars && "IntersectionObserver" in window) {
-      var bio = new IntersectionObserver(function (e) {
-        if (e[0].isIntersecting) { bars.classList.add("is-in"); bio.disconnect(); }
-      }, { threshold: 0.4 });
-      bio.observe(bars);
-    } else if (bars) { bars.classList.add("is-in"); }
-
-    // ----------------------------------------------------------- Counters
-    var counters = root.querySelectorAll("[data-count]");
-    var animateCount = function (el) {
-      var target = parseFloat(el.getAttribute("data-count")) || 0;
-      var suffix = el.getAttribute("data-suffix") || "";
-      var dur = 1300, start = null;
-      var step = function (ts) {
-        if (!start) start = ts;
-        var p = Math.min((ts - start) / dur, 1);
-        var eased = 1 - Math.pow(1 - p, 3);
-        el.textContent = Math.round(target * eased) + suffix;
-        if (p < 1) requestAnimationFrame(step);
-        else el.textContent = target + suffix;
-      };
-      requestAnimationFrame(step);
+    var ai = {
+      analytics: {question:'How is our payroll changing across countries?',title:'Seven countries.\nOne clear perspective.',answer:'Compare payroll costs across your region, then explore the people and departments behind the change.',chart:'Payroll distribution',note:'USD equivalent',insight:'Go beyond the total. Understand the drivers.',bars:[84,56,46,67,38,28,18]},
+      summary: {question:'Give me a clear summary of this pay period.',title:'The numbers,\nin plain language.',answer:'Payroll rose 3.1% this period, mainly from new hires. Singapore remains the largest share of regional payroll. Review the key movements before approval.',chart:'Regional payroll at a glance',note:'Example period',insight:'An executive summary you can take into the conversation.',bars:[84,56,46,67,38,28,18]},
+      pulse: {question:'What needs my attention before I approve?',title:'See the change.\nKnow where to look.',answer:'The illustrative run shows an unusual increase in overtime in Vietnam. Review the underlying entries and confirm the reason before signing off.',chart:'Changes flagged for review',note:'Illustrative signals',insight:'A focused review starts with the right questions.',bars:[16,22,18,87,12,32,14]},
+      forecast: {question:'What could our payroll look like next period?',title:'Look ahead.\nPlan with perspective.',answer:'Explore projected payroll costs using recent trends and planned headcount. Compare scenarios to understand how team growth could affect your next period.',chart:'Illustrative next-period projection',note:'Scenario, not a guarantee',insight:'Make planning conversations more informed.',bars:[88,69,50,75,44,31,21]}
     };
-    if ("IntersectionObserver" in window && !reduce) {
-      var cio = new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          if (en.isIntersecting) { animateCount(en.target); cio.unobserve(en.target); }
-        });
-      }, { threshold: 0.6 });
-      counters.forEach(function (el) { cio.observe(el); });
-    } else {
-      counters.forEach(function (el) {
-        el.textContent = (el.getAttribute("data-count") || "") + (el.getAttribute("data-suffix") || "");
-      });
-    }
-
-    // ----------------------------------------------------- Country tabs swap
-    var COUNTRIES = {
-      SG: { name: "Singapore", note: "Resident & non-resident tax, multi-tier CPF, and statutory levies — computed automatically each pay run.", chips: ["CPF", "SDL", "FWL", "Income Tax", "Transport & housing allowances"] },
-      MY: { name: "Malaysia", note: "EPF, SOCSO, EIS and monthly tax deduction (PCB) handled to the sen, every cycle.", chips: ["EPF", "SOCSO", "EIS", "PCB (Income Tax)", "Allowances"] },
-      ID: { name: "Indonesia", note: "PPh 21 income tax with BPJS Kesehatan and Ketenagakerjaan, plus union dues and allowances.", chips: ["PPh 21", "BPJS Kesehatan", "BPJS Ketenagakerjaan", "Union dues", "Tunjangan"] },
-      IN: { name: "India", note: "Provident Fund, Professional Tax and TDS — with bank export and analytics built in.", chips: ["Provident Fund", "Professional Tax", "TDS", "HRA", "Bank export"] },
-      VN: { name: "Vietnam", note: "Progressive PIT with social, health and unemployment insurance — and one-click government XLS reports.", chips: ["BHXH", "BHYT", "BHTN", "PIT", "Govt XLS reports", "13th month"] },
-      TH: { name: "Thailand", note: "Social Security Fund, provident fund and progressive personal income tax across the board.", chips: ["SSF", "Provident Fund", "Income Tax", "Allowances"] },
-      KH: { name: "Cambodia", note: "National Social Security Fund with Tax on Salary and fringe-benefit handling.", chips: ["NSSF", "Tax on Salary", "WTS", "Fringe benefits", "Allowances"] },
+    function text(id,value) { root.querySelector('#'+id).textContent = value; }
+    accessibleTabs(root.querySelector('.pb-ai-tabs'),function (tab) {
+      var data = ai[tab.dataset.ai];
+      text('pb-ai-question',data.question); text('pb-ai-title',data.title); text('pb-ai-answer',data.answer);
+      root.querySelector('.pb-bars').setAttribute('aria-label',data.chart+' — illustrative preview');
+      text('pb-ai-chart-title',data.chart); text('pb-ai-chart-note',data.note); text('pb-ai-insight',data.insight);
+      root.querySelector('#pb-ai-panel').setAttribute('aria-labelledby',tab.id);
+      root.querySelectorAll('.pb-bars > div').forEach(function (bar,i) { bar.style.setProperty('--bar',data.bars[i]+'%'); });
+    });
+    var countries = {
+      SG:['Singapore','Bring CPF contributions and local payroll levies into your pay run, with clear visibility from calculation to review.',['CPF','SDL','FWL']],
+      IN:['India','Connect salary structures with Provident Fund, Professional Tax and TDS calculations in a guided payroll workflow.',['Provident Fund','Professional Tax','TDS']],
+      MY:['Malaysia','Bring statutory contributions and monthly tax deductions together with your salary components.',['EPF','SOCSO','EIS','PCB']],
+      VN:['Vietnam','Connect personal income tax with social, health and unemployment insurance calculations and statutory reporting.',['PIT','BHXH','BHYT','BHTN']],
+      ID:['Indonesia','Bring income tax and social insurance components into a connected payroll experience.',['PPh 21','BPJS Kesehatan','BPJS Ketenagakerjaan']],
+      TH:['Thailand','Connect local income tax and Social Security Fund contributions to your payroll calculations.',['Income Tax','SSF','Provident Fund']],
+      KH:['Cambodia','Bring local salary tax and social security components into your country payroll workflow.',['Tax on Salary','NSSF','Fringe benefits']]
     };
-    var tabs = root.querySelector('[data-pb="country-tabs"]');
-    var panel = root.querySelector('[data-pb="country-panel"]');
-    if (tabs && panel) {
-      tabs.addEventListener("click", function (ev) {
-        var btn = ev.target.closest(".pbw-ctab");
-        if (!btn) return;
-        var code = btn.getAttribute("data-code");
-        var data = COUNTRIES[code];
-        if (!data) return;
-        tabs.querySelectorAll(".pbw-ctab").forEach(function (t) { t.classList.remove("is-active"); });
-        btn.classList.add("is-active");
-        panel.classList.add("is-swapping");
-        setTimeout(function () {
-          panel.innerHTML =
-            '<div class="pbw-country__flag"><b>' + code + "</b></div>" +
-            '<div class="pbw-country__detail"><h3>' + data.name + "</h3>" +
-            '<p class="pbw-country__note">' + data.note + "</p>" +
-            '<div class="pbw-chips">' + data.chips.map(function (c) {
-              return '<span class="pbw-chip">' + c + "</span>";
-            }).join("") + "</div></div>";
-          panel.classList.remove("is-swapping");
-        }, 220);
+    accessibleTabs(root.querySelector('.pb-country-tabs'),function (tab) {
+      var code = tab.dataset.country, data = countries[code];
+      text('pb-country-code',code); text('pb-country-name',data[0]); text('pb-country-description',data[1]);
+      var chips = root.querySelector('#pb-country-chips'); chips.replaceChildren();
+      data[2].forEach(function (label) { var chip = document.createElement('span'); chip.textContent = label; chips.appendChild(chip); });
+      root.querySelector('#pb-country-panel').setAttribute('aria-labelledby',tab.id);
+    });
+    var formulas = {
+      allowance:['BASIC × ALLOWANCE_RATE','Basic salary','50,000','Allowance rate','20%','10,000','This rule calculates the allowance as 20% of basic salary.'],
+      bonus:['BASIC × BONUS_RATE','Basic salary','50,000','Bonus rate','10%','5,000','This rule calculates a bonus as 10% of basic salary.'],
+      overtime:['OVERTIME_HOURS × HOURLY_RATE','Overtime hours','12','Hourly rate','250','3,000','This rule multiplies 12 overtime hours by a sample hourly rate of 250.']
+    };
+    root.querySelectorAll('[data-formula]').forEach(function (btn) {
+      btn.addEventListener('click',function () {
+        root.querySelectorAll('[data-formula]').forEach(function (other) { other.classList.toggle('is-active',other===btn); other.setAttribute('aria-pressed',String(other===btn)); });
+        var data = formulas[btn.dataset.formula];
+        ['pb-formula-code','pb-formula-input-label','pb-formula-input','pb-formula-rate-label','pb-formula-rate','pb-formula-result','pb-formula-explanation'].forEach(function (id,i) { text(id,data[i]); });
       });
+    });
+    // Globe: public-domain Natural Earth land points, projected onto a shaded sphere.
+    var canvas = root.querySelector('#pb-globe'), ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    var land = window.PB_LAND || [], w=0,h=0,visible=true,frame=0,start=performance.now(),last=0;
+    var rad = Math.PI/180, angle=105*rad, tilt=19*rad;
+    function project(lon,lat,rot) {
+      var a=lon*rad-rot, b=lat*rad;
+      var x=Math.cos(b)*Math.sin(a), y=Math.sin(b), z=Math.cos(b)*Math.cos(a);
+      return [x,y*Math.cos(tilt)-z*Math.sin(tilt),y*Math.sin(tilt)+z*Math.cos(tilt)];
     }
-
-    // -------------------------------------------------- Pipeline horizontal
-    var pipe = root.querySelector('[data-pb="pipe"]');
-    var pipeTrack = root.querySelector('[data-pb="pipe-track"]');
-    if (pipe && pipeTrack && hasGsap && hasST && window.innerWidth > 880 && !reduce) {
-      var amt = function () { return Math.max(0, pipeTrack.scrollWidth - pipe.clientWidth + 32); };
-      window.gsap.to(pipeTrack, {
-        x: function () { return -amt(); },
-        ease: "none",
-        scrollTrigger: {
-          trigger: pipe,
-          start: "center center",
-          end: function () { return "+=" + amt(); },
-          pin: true, scrub: 1, invalidateOnRefresh: true, anticipatePin: 1,
-        },
+    function size() {
+      var rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
+      w=rect.width;h=rect.height;canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+      draw(performance.now());
+    }
+    function draw(now) {
+      if (!w || !h) return;
+      var t=reduced.matches?0:(now-start)/1000, rot=angle+Math.sin(t*.065)*.12;
+      var cx=w/2,cy=h/2,r=Math.min(w,h)*.345;
+      ctx.clearRect(0,0,w,h);
+      var glow=ctx.createRadialGradient(cx,cy,r*.8,cx,cy,r*1.5);glow.addColorStop(0,'rgba(131,174,232,.13)');glow.addColorStop(.5,'rgba(107,147,222,.05)');glow.addColorStop(1,'rgba(80,130,210,0)');ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
+      var sphere=ctx.createRadialGradient(cx-r*.45,cy-r*.5,r*.07,cx,cy,r*1.05);sphere.addColorStop(0,'#263d58');sphere.addColorStop(.5,'#162a42');sphere.addColorStop(.85,'#101c30');sphere.addColorStop(1,'#070e1b');ctx.fillStyle=sphere;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
+      function line(points,color,width) {
+        ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();var active=false;
+        points.forEach(function (p) { var q=project(p[0],p[1],rot); if(q[2]>.015) { var px=cx+q[0]*r,py=cy-q[1]*r;if(!active)ctx.moveTo(px,py);else ctx.lineTo(px,py);active=true; } else active=false; });ctx.stroke();
+      }
+      for(var lat=-60;lat<=60;lat+=20) { var row=[];for(var lon=-180;lon<=180;lon+=3)row.push([lon,lat]);line(row,'rgba(169,202,255,.10)',.6); }
+      for(var lon2=-180;lon2<180;lon2+=20) { var col=[];for(var lat2=-88;lat2<=88;lat2+=3)col.push([lon2,lat2]);line(col,'rgba(169,202,255,.10)',.6); }
+      land.forEach(function (p) { var q=project(p[0],p[1],rot);if(q[2]<=0)return;ctx.fillStyle='rgba(183,216,239,'+(.16+.66*q[2])+')';ctx.beginPath();ctx.arc(cx+q[0]*r,cy-q[1]*r,Math.max(.55,r*.0045)*(.5+.5*q[2]),0,Math.PI*2);ctx.fill(); });
+      var nodes=[[103.82,1.35],[77.2,28.6],[101.7,3.14],[105.8,21.03],[106.8,-6.2],[100.5,13.75],[104.9,11.56]];
+      // Great-circle flight paths, raised above the globe.
+      var origin=nodes[0];nodes.slice(1).forEach(function (p,idx) {
+        var u=vec(origin),v=vec(p),dot=Math.max(-1,Math.min(1,u[0]*v[0]+u[1]*v[1]+u[2]*v[2])),omega=Math.acos(dot),arc=[];
+        for(var i=0;i<=40;i++){var f=i/40,aa=Math.sin((1-f)*omega)/Math.sin(omega),bb=Math.sin(f*omega)/Math.sin(omega),x=u[0]*aa+v[0]*bb,y=u[1]*aa+v[1]*bb,z=u[2]*aa+v[2]*bb;arc.push([Math.atan2(x,z)/rad,Math.asin(y)/rad,1+Math.sin(f*Math.PI)*.12]);}
+        ctx.beginPath();ctx.strokeStyle='rgba(214,252,139,.34)';ctx.lineWidth=.9;arc.forEach(function (p,i){var q=project(p[0],p[1],rot);if(q[2]>0){var x=cx+q[0]*r*p[2],y=cy-q[1]*r*p[2];if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}});ctx.stroke();
+        var pos=arc[Math.floor(((t*.18+idx*.17)%1)*40)],q=project(pos[0],pos[1],rot);if(q[2]>0){ctx.fillStyle='#d6fc8b';ctx.shadowBlur=8;ctx.shadowColor='#d6fc8b';ctx.beginPath();ctx.arc(cx+q[0]*r*pos[2],cy-q[1]*r*pos[2],1.7,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;}
       });
-    } else if (pipe) {
-      pipe.classList.add("is-native");
+      nodes.forEach(function (p,i){var q=project(p[0],p[1],rot);if(q[2]<0)return;var x=cx+q[0]*r,y=cy-q[1]*r,pulse=4+((t*.45+i*.2)%1)*10;ctx.strokeStyle='rgba(214,252,139,'+(.3*(1-(pulse-4)/10))+')';ctx.beginPath();ctx.arc(x,y,pulse,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#d6fc8b';ctx.shadowBlur=13;ctx.shadowColor='#d6fc8b';ctx.beginPath();ctx.arc(x,y,2.3,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;});
+      ctx.strokeStyle='rgba(176,213,255,.38)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
     }
-
-    // hero mockup parallax
-    var mockup = root.querySelector('[data-pb="mockup"]');
-    if (mockup && hasGsap && hasST && !reduce) {
-      window.gsap.to(mockup, {
-        yPercent: -12, ease: "none",
-        scrollTrigger: { trigger: ".pbw-hero", start: "top top", end: "bottom top", scrub: true },
-      });
-    }
-
-    // --------------------------------------------------------- PayAI chart
-    var chartCanvas = root.querySelector('[data-pb="payai-chart"]');
-    if (chartCanvas && typeof window.Chart !== "undefined") {
-      var drawChart = function () {
-        var ctx = chartCanvas.getContext("2d");
-        var g = ctx.createLinearGradient(0, 0, 0, 180);
-        g.addColorStop(0, "rgba(169,196,250,0.95)");
-        g.addColorStop(1, "rgba(92,97,157,0.55)");
-        new window.Chart(ctx, {
-          type: "bar",
-          data: {
-            labels: ["SG", "MY", "ID", "IN", "VN", "TH", "KH"],
-            datasets: [{
-              data: [38, 17, 14, 12, 9, 6, 4],
-              backgroundColor: g, borderRadius: 6, borderSkipped: false, maxBarThickness: 30,
-            }],
-          },
-          options: {
-            responsive: true, maintainAspectRatio: false,
-            animation: { duration: 1400, easing: "easeOutQuart" },
-            plugins: { legend: { display: false }, tooltip: { enabled: false } },
-            scales: {
-              x: { grid: { display: false }, ticks: { color: "rgba(255,255,255,0.55)", font: { size: 10 } } },
-              y: { display: false, beginAtZero: true },
-            },
-          },
-        });
-      };
-      if ("IntersectionObserver" in window) {
-        var chio = new IntersectionObserver(function (e) {
-          if (e[0].isIntersecting) { drawChart(); chio.disconnect(); }
-        }, { threshold: 0.4 });
-        chio.observe(chartCanvas);
-      } else { drawChart(); }
-    }
-
-    // --------------------------------------------- Aurora / particle canvas
-    var canvases = root.querySelectorAll('[data-pb="aurora"]');
-    if (!reduce) canvases.forEach(initAurora);
-
-    function initAurora(canvas) {
-      var ctx = canvas.getContext("2d");
-      if (!ctx) return;
-      var W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
-      var orbs = [], dots = [], running = true;
-      var PALETTE = ["92,97,157", "169,196,250", "201,207,245", "159,224,212"];
-
-      function size() {
-        var r = canvas.getBoundingClientRect();
-        W = r.width; H = r.height;
-        canvas.width = W * dpr; canvas.height = H * dpr;
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      }
-      function seed() {
-        orbs = []; dots = [];
-        var nOrbs = 5;
-        for (var i = 0; i < nOrbs; i++) {
-          orbs.push({
-            x: Math.random() * W, y: Math.random() * H,
-            r: 140 + Math.random() * 220,
-            vx: (Math.random() - 0.5) * 0.18, vy: (Math.random() - 0.5) * 0.18,
-            c: PALETTE[i % PALETTE.length],
-          });
-        }
-        var nDots = Math.min(70, Math.round((W * H) / 22000));
-        for (var j = 0; j < nDots; j++) {
-          dots.push({
-            x: Math.random() * W, y: Math.random() * H,
-            r: Math.random() * 1.6 + 0.4,
-            vy: -(Math.random() * 0.25 + 0.05),
-            a: Math.random() * 0.5 + 0.15, tw: Math.random() * Math.PI * 2,
-          });
-        }
-      }
-      function frame() {
-        if (!running) return;
-        ctx.clearRect(0, 0, W, H);
-        ctx.globalCompositeOperation = "lighter";
-        orbs.forEach(function (o) {
-          o.x += o.vx; o.y += o.vy;
-          if (o.x < -o.r) o.x = W + o.r; if (o.x > W + o.r) o.x = -o.r;
-          if (o.y < -o.r) o.y = H + o.r; if (o.y > H + o.r) o.y = -o.r;
-          var grad = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
-          grad.addColorStop(0, "rgba(" + o.c + ",0.22)");
-          grad.addColorStop(1, "rgba(" + o.c + ",0)");
-          ctx.fillStyle = grad;
-          ctx.beginPath(); ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2); ctx.fill();
-        });
-        dots.forEach(function (d) {
-          d.y += d.vy; d.tw += 0.05;
-          if (d.y < -4) { d.y = H + 4; d.x = Math.random() * W; }
-          var a = d.a * (0.6 + 0.4 * Math.sin(d.tw));
-          ctx.fillStyle = "rgba(220,228,255," + a + ")";
-          ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2); ctx.fill();
-        });
-        ctx.globalCompositeOperation = "source-over";
-        requestAnimationFrame(frame);
-      }
-      size(); seed(); requestAnimationFrame(frame);
-
-      var rt;
-      window.addEventListener("resize", function () {
-        clearTimeout(rt); rt = setTimeout(function () { size(); seed(); }, 200);
-      });
-      // pause when off-screen to save CPU
-      if ("IntersectionObserver" in window) {
-        new IntersectionObserver(function (e) {
-          var vis = e[0].isIntersecting;
-          if (vis && !running) { running = true; requestAnimationFrame(frame); }
-          running = vis;
-        }, { threshold: 0 }).observe(canvas);
-      }
-    }
-
-    if (hasST) setTimeout(function () { window.ScrollTrigger.refresh(); }, 400);
+    function vec(p){var a=p[0]*rad,b=p[1]*rad;return [Math.cos(b)*Math.sin(a),Math.sin(b),Math.cos(b)*Math.cos(a)];}
+    function loop(now) { frame=0;if(!visible||document.hidden||reduced.matches)return;if(now-last>40){draw(now);last=now;}frame=requestAnimationFrame(loop); }
+    function resume(){if(frame)cancelAnimationFrame(frame);frame=0;draw(performance.now());if(visible&&!document.hidden&&!reduced.matches)frame=requestAnimationFrame(loop);}
+    if('ResizeObserver' in window)new ResizeObserver(size).observe(canvas);else window.addEventListener('resize',size,{passive:true});
+    if('IntersectionObserver' in window)new IntersectionObserver(function(entries){visible=entries[0].isIntersecting;resume();},{rootMargin:'100px'}).observe(canvas);
+    document.addEventListener('visibilitychange',resume);reduced.addEventListener('change',resume);size();resume();
   }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot);
-  } else {
-    boot();
-  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
