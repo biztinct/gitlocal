@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <record id="pb_website_homepage_assets" model="ir.ui.view" forcecreate="False"><field name="active" eval="False"/></record>
   <template id="pb_website_homepage" inherit_id="website.homepage" name="Payobook — Intelligent Global Payroll">
     <xpath expr="//t[@t-call='website.layout']/div[@id='wrap']" position="before">
       <t t-call-assets="pb_website.assets_homepage"/>
