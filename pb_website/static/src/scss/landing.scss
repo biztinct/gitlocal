@@ -49,6 +49,15 @@
 .pb-country-code { width: 35px; height: 35px; border-radius: 9px; display: inline-grid; place-items: center; background: #c7d7ff0d; border: 1px solid #cad6ff20; font-size: 10px; font-weight: 700; color: #dbe5ff; flex-shrink: 0; }
 .pb-float-sg { top: 31%; right: -4%; animation: pb-float 8s ease-in-out infinite; }
 .pb-float-in { bottom: 20%; left: -4%; animation: pb-float 8s ease-in-out -4s infinite; }
+// Compact country labels keep the connected globe visible on every screen.
+.pb-hero-focus .pb-global-support { color: #9caec7; font-size: 12px; letter-spacing: 0; }
+.pb-globe-country { position: absolute; top: var(--country-top); display: flex; align-items: center; gap: 9px; padding: 8px 11px; background: linear-gradient(120deg,#16223bea,#111b2bdc); border: 1px solid #b7c9ff2b; border-radius: 10px; box-shadow: 0 12px 30px #0003; backdrop-filter: blur(12px); font-size: 11px; white-space: nowrap; }
+.pb-globe-country .pb-country-code { width: 26px; height: 26px; font-size: 8px; border-radius: 7px; }
+.pb-globe-country .pb-live-dot { width: 4px; height: 4px; margin-left: 4px; }
+.pb-globe-country--left { left: -3%; }
+.pb-globe-country--right { right: -3%; }
+@media (max-width: 900px) { .pb-globe-country { gap: 6px; padding: 6px 8px; font-size: 9px; } .pb-globe-country .pb-country-code { width: 22px; height: 22px; font-size: 7px; } }
+@media (max-width: 650px) { .pb-globe-country--left { left: 0; } .pb-globe-country--right { right: 0; } .pb-hero-focus .pb-global-support { font-size: 11px; } }
 .pb-world-ai { position: absolute; bottom: 1%; right: -1%; background: linear-gradient(135deg,#222e40ed,#101828ee); border: 1px solid #d6fc8b40; border-radius: 14px; padding: 18px 24px; display: flex; gap: 17px; box-shadow: 0 25px 65px #0006; small { display: block; font-size: 8px; letter-spacing: 1.7px; color: #d6fc8b; margin-bottom: 8px; } strong { font-size: 15px; font-weight: 500; line-height: 1.5; display: block; } }
 .pb-spark { color: #d6fc8b; font-size: 24px; }
 .pb-world-coordinate { position: absolute; bottom: -8%; left: 18%; color: #6b7c9b; letter-spacing: 1px; font-family: monospace; font-size: 9px; span { margin-left: 18px; font-size: 8px; } }

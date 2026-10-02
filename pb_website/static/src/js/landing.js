@@ -117,7 +117,7 @@
       for(var lat=-60;lat<=60;lat+=20) { var row=[];for(var lon=-180;lon<=180;lon+=3)row.push([lon,lat]);line(row,'rgba(169,202,255,.10)',.6); }
       for(var lon2=-180;lon2<180;lon2+=20) { var col=[];for(var lat2=-88;lat2<=88;lat2+=3)col.push([lon2,lat2]);line(col,'rgba(169,202,255,.10)',.6); }
       land.forEach(function (p) { var q=project(p[0],p[1],rot);if(q[2]<=0)return;ctx.fillStyle='rgba(183,216,239,'+(.16+.66*q[2])+')';ctx.beginPath();ctx.arc(cx+q[0]*r,cy-q[1]*r,Math.max(.55,r*.0045)*(.5+.5*q[2]),0,Math.PI*2);ctx.fill(); });
-      var nodes=[[103.82,1.35],[77.2,28.6],[101.7,3.14],[105.8,21.03],[106.8,-6.2],[100.5,13.75],[104.9,11.56]];
+      var nodes=[[103.82,1.35],[77.2,28.6],[101.7,3.14],[105.8,21.03],[106.8,-6.2],[100.5,13.75],[104.9,11.56],[120.98,14.60]];
       // Great-circle flight paths, raised above the globe.
       var origin=nodes[0];nodes.slice(1).forEach(function (p,idx) {
         var u=vec(origin),v=vec(p),dot=Math.max(-1,Math.min(1,u[0]*v[0]+u[1]*v[1]+u[2]*v[2])),omega=Math.acos(dot),arc=[];
