@@ -4,11 +4,9 @@ from . import models
 from . import controllers
 from . import translate
 
-from odoo import SUPERUSER_ID, api
-
 MODULE = "_web_debranding"
 
 
-def uninstall_hook(cr, registry):
-    env = api.Environment(cr, SUPERUSER_ID, {})
+def uninstall_hook(env):
+    """Odoo 19 compatible uninstall hook - takes env directly."""
     env["ir.model.data"]._module_data_uninstall([MODULE])

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         TWO OFFER LETTERS TO START FROM: one that works anywhere, and one
+         for Vietnam, which is where this product's own company is and where
+         the wording a candidate expects is genuinely different.
+
+         THE TEMPLATE PICKER READS THE NAME. `pb.hiring.offer._pick_template`
+         prefers a company's own template over a shared one and a template
+         whose NAME contains the country over one that does not — so
+         "Offer letter — Vietnam" is chosen for a Vietnamese role by the
+         wording of its own name rather than by a hidden column. A company
+         adding Singapore adds one row and calls it "Offer letter —
+         Singapore".
+
+         Company-less (R8) so both reach every company. `noupdate="1"` so a
+         company that has reworded its offer letter keeps its wording through
+         every upgrade — and a reworded letter is the FIRST thing any company
+         does with this.
+
+         The holes are filled by substitution and never by evaluation, exactly
+         as every other letter in this product is: the worst thing an
+         administrator can do to a `${...}` is misspell it, and a misspelt one
+         stays on the page rather than running something.
+         ================================================================== -->
+
+    <record id="letter_template_offer_generic" model="pb.letter.template">
+        <field name="name">Offer letter</field>
+        <field name="letter_type">offer</field>
+        <field name="subject">Our offer to you</field>
+        <field name="sequence">60</field>
+        <field name="company_id" eval="False"/>
+        <field name="body_html" type="html">
+            <div>
+                <p>Dear ${candidate_name},</p>
+                <p>
+                    We are delighted to offer you the role of
+                    <strong>${job_title}</strong> in ${department} at
+                    ${company}, based at ${location}, starting on
+                    <strong>${start_date}</strong>.
+                </p>
+                <p>What you would be paid:</p>
+                ${lines}
+                <p>
+                    That is <strong>${monthly_total}</strong> a month and
+                    <strong>${annual_total}</strong> over a year.
+                </p>
+                <p>
+                    You would report to ${manager}. This offer is made on the
+                    understanding that the documents we have asked you for are
+                    in order and that your references confirm what you have
+                    told us.
+                </p>
+                <p>
+                    If you are happy to accept, say so on the page in the email
+                    that brought you this letter, then sign a copy and send it
+                    back to your recruiter. If anything here is not what you
+                    expected, tell us — we would far rather talk about it than
+                    lose you over it.
+                </p>
+                <p>We hope you will join us.</p>
+                <p>${company}<br/>${date}</p>
+            </div>
+        </field>
+    </record>
+
+    <record id="letter_template_offer_vietnam" model="pb.letter.template">
+        <field name="name">Offer letter — Vietnam</field>
+        <field name="letter_type">offer</field>
+        <field name="subject">Our offer to you</field>
+        <field name="sequence">61</field>
+        <field name="company_id" eval="False"/>
+        <field name="body_html" type="html">
+            <div>
+                <p>Dear ${candidate_name},</p>
+                <p>
+                    Following our conversations, ${company} is pleased to offer
+                    you the position of <strong>${job_title}</strong> in
+                    ${department}, based at ${location}, with a proposed start
+                    date of <strong>${start_date}</strong>.
+                </p>
+                <p>Your pay would be made up as follows:</p>
+                ${lines}
+                <p>
+                    In total that is <strong>${monthly_total}</strong> a month,
+                    or <strong>${annual_total}</strong> over a full year, in
+                    ${currency}.
+                </p>
+                <p>
+                    You would report to ${manager}. Your employment would be on
+                    a labour contract signed on or before your first day, and
+                    the statutory insurances and personal income tax are
+                    handled by ${company} in the usual way. A probation period
+                    applies as set out in that contract.
+                </p>
+                <p>
+                    This offer depends on the documents we have asked you for
+                    reaching us, and on your references.
+                </p>
+                <p>
+                    To accept, use the page in the email that brought you this
+                    letter, then sign a copy and return it to your recruiter.
+                    If anything here is not what you were expecting, please
+                    tell us.
+                </p>
+                <p>We very much hope you will join us.</p>
+                <p>${company}<br/>${date}</p>
+            </div>
+        </field>
+    </record>
+
+</odoo>

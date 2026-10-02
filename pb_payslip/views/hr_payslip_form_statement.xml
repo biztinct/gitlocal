@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      Pay-statement hero on the payslip form. The OWL `pb_payslip_statement`
+      widget (fed by the computed pb_statement_json) renders the whole
+      statement; `vu-no-hero` suppresses the VU auto-hero so it isn't doubled.
+      The native employee title + identity group stay for DRAFT editing and are
+      hidden once the slip is computed/approved (the statement shows them).
+      The notebook (Salary Computation / Formula JSON / Accounting) is untouched.
+    -->
+    <record id="view_hr_payslip_form_pb_statement" model="ir.ui.view">
+        <field name="name">hr.payslip.form.pb-statement</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_form"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="class" add="vu-no-hero pb-payslip-form" separator=" "/>
+            </xpath>
+
+            <xpath expr="//div[@class='oe_title']" position="before">
+                <field name="pb_statement_json" widget="pb_payslip_statement" nolabel="1"/>
+            </xpath>
+
+            <!-- clean numbered workflow stepper (health19 vu_progress_rail) as a
+                 full-width row below the action buttons, replacing the cramped
+                 native statusbar arrow-chain -->
+            <xpath expr="//field[@name='pb_statement_json']" position="before">
+                <widget name="vu_progress_rail"
+                        steps="draft,level1,level2,done"
+                        labels="Draft,HR review,GM review,Paid"
+                        state_field="state"/>
+            </xpath>
+
+            <xpath expr="//header/field[@name='state']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//div[@class='oe_title']" position="attributes">
+                <attribute name="invisible">state not in ('draft', 'verify')</attribute>
+            </xpath>
+
+            <xpath expr="//sheet/group" position="attributes">
+                <attribute name="invisible">state not in ('draft', 'verify')</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

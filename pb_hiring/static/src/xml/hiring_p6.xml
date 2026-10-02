@@ -1,0 +1,382 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       RECRUIT P6 — from signed to joined.
+       Loop variables avoid OWL's reserved words (R1): `it6`, `dc6`, `ch6`,
+       `rs6`, `pp6`, `sg`, `dk6`, `tp6`, `ow6`, `kd6`, `mn6`.
+       An OWL handler holds no statements (RC32); no String/Number in a
+       template (RC65).
+       ==================================================================== -->
+
+  <!-- ============ THE DRAWER: countdown, Before they join, documents ============ -->
+  <t t-name="pb_hiring.P6DrawerJoining">
+    <t t-set="jn" t-value="cand.joining"/>
+    <div t-if="jn" class="pbhr-cd-sec pbhr-p6" t-att-class="'is-' + jn.state">
+
+      <!-- the hero: the countdown ring that fills as the list ticks -->
+      <div class="pbhr-p6-hero" t-att-class="p6HeroTone(jn)">
+        <div class="pbhr-p6-ring" t-att-title="p6RingTitle(jn)">
+          <svg viewBox="0 0 84 84" width="84" height="84" aria-hidden="true">
+            <circle class="pbhr-p6-ring-bg" cx="42" cy="42" r="34"/>
+            <circle t-foreach="p6Ring(jn)" t-as="sg" t-key="sg_index" class="pbhr-p6-ring-seg" t-att-class="sg.cls" cx="42" cy="42" r="34" t-att-stroke-dasharray="sg.da" t-att-stroke-dashoffset="sg.off"/>
+          </svg>
+          <div class="pbhr-p6-ring-c">
+            <t t-if="jn.state === 'joined'"><t t-out="ic('check',22)"/></t>
+            <t t-elif="jn.state === 'dropped'"><t t-out="ic('userX',20)"/></t>
+            <t t-elif="jn.days === 0"><b>Today</b></t>
+            <t t-elif="jn.days &lt; 0"><b t-esc="-jn.days"/><small>late</small></t>
+            <t t-else=""><b t-esc="jn.days"/><small t-esc="jn.days === 1 ? 'day' : 'days'"/></t>
+          </div>
+        </div>
+        <div class="pbhr-p6-hero-tx">
+          <t t-if="jn.state === 'joined'">
+            <small>Started</small>
+            <b t-esc="jn.joined_words"/>
+            <span>An employee now. Their first weeks carry on under New joiners.</span>
+          </t>
+          <t t-elif="jn.state === 'dropped'">
+            <small>Did not join</small>
+            <b t-esc="jn.dropped_words or 'No reason recorded'"/>
+            <span>Counted as an offer drop. Drag them back if that was a mistake.</span>
+          </t>
+          <t t-else="">
+            <small>Joining</small>
+            <b t-esc="jn.expected_long"/>
+            <span><t t-esc="p6When(jn)"/> · <t t-esc="p6Things(jn)"/></span>
+            <div class="pbhr-p6-flags">
+              <span t-if="jn.week.answer" class="pbhr-p6-flag" t-att-class="'is-' + jn.week.answer"><t t-out="ic(jn.week.answer === 'still_on' ? 'checkCircle' : 'calendar',11)"/> <t t-esc="jn.week.answer_label"/> — <t t-esc="jn.week.by"/></span>
+              <span t-elif="jn.week.sent_at" class="pbhr-p6-flag"><t t-out="ic('mail',11)"/> “Still on?” asked</span>
+              <span t-if="jn.changes.length" class="pbhr-p6-flag is-changed"><t t-out="ic('calendarClock',11)"/> Moved from <t t-esc="jn.changes[jn.changes.length - 1].old_words"/></span>
+              <span t-if="jn.late" class="pbhr-p6-flag is-late"><t t-out="ic('alert',11)"/> <t t-esc="jn.late === 1 ? '1 thing late' : jn.late + ' things late'"/></span>
+            </div>
+          </t>
+        </div>
+        <div class="pbhr-p6-hero-acts">
+          <t t-if="jn.can_act">
+            <button type="button" class="pbim-btn" t-att-class="jn.confirm_primary ? 'primary' : 'ghost'" t-on-click="() =&gt; this.p6OpenConfirm()"><t t-out="ic('logIn',14)"/> Confirm they joined</button>
+            <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.p6OpenDate()"><t t-out="ic('calendarClock',14)"/> Change the date</button>
+            <button type="button" class="pbim-btn ghost pbhr-no" t-on-click="() =&gt; this.p6OpenDrop()"><t t-out="ic('userX',14)"/> Did not join</button>
+          </t>
+          <t t-elif="jn.state === 'joined' and cand.can_recruit">
+            <button t-if="jn.employee_id" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.act('open_employee', { offer_id: jn.offer_id }, { reload: false })"><t t-out="ic('user',14)"/> Their record</button>
+            <button t-if="jn.case_id" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.act('open_case', { offer_id: jn.offer_id }, { reload: false })"><t t-out="ic('layoutList',14)"/> Welcome checklist</button>
+          </t>
+        </div>
+      </div>
+
+      <!-- Before they join -->
+      <t t-if="jn.items.length or jn.can_act">
+        <div class="l pbhr-p6-l">
+          <span>Before they join</span>
+          <span class="pbhr-p6-count" t-att-class="{ 'is-all': jn.total and jn.done === jn.total }"><t t-esc="jn.done"/> of <t t-esc="jn.total"/></span>
+          <span t-if="p6Live(jn)" class="pbhr-p6-live" title="Answers from the manager and the new joiner tick here by themselves"><span class="pbhr-p6-live-dot"/> Live</span>
+        </div>
+        <div class="pbhr-p6-items">
+          <div t-foreach="jn.items" t-as="it6" t-key="it6.id" class="pbhr-p6-item" t-att-class="{ 'is-done': it6.state === 'done', 'is-skipped': it6.state === 'skipped', 'is-late': it6.late, 'is-ticked': p6IsTicked(it6.id) }">
+            <span class="pbhr-p6-tick">
+              <t t-if="it6.state === 'done'"><t t-out="ic('check',13)"/></t>
+              <t t-elif="it6.state === 'skipped'"><t t-out="ic('minus',13)"/></t>
+              <t t-else=""><t t-out="ic(it6.icon,13)"/></t>
+            </span>
+            <div class="pbhr-p6-item-tx">
+              <b t-esc="it6.title"/>
+              <small>
+                <t t-esc="it6.owner_name"/>
+                <t t-if="it6.state === 'open'"> · <t t-if="it6.late">late — was due <t t-esc="it6.due_words"/></t><t t-else="">by <t t-esc="it6.due_words"/></t></t>
+                <t t-if="it6.state === 'open' and it6.sent"> · asked<t t-if="it6.reminded">, reminded</t></t>
+                <t t-if="it6.state === 'done' and it6.answered_by and it6.answered_by !== it6.owner_name"> · answered by <t t-esc="it6.answered_by"/></t>
+                <t t-if="it6.state === 'skipped'"> · not needed</t>
+              </small>
+              <span t-if="it6.answer" class="pbhr-p6-answer" t-esc="it6.answer"/>
+              <span t-if="it6.chat and it6.state === 'open'" class="pbhr-p6-answer">
+                <t t-out="ic('coffee',11)"/> <t t-esc="it6.chat.when_words"/> · <t t-esc="it6.chat.people.join(', ')"/>
+                <t t-if="it6.chat.waiting_meet"> · invitations wait for the Meet link</t>
+              </span>
+            </div>
+            <div class="pbhr-p6-item-acts" t-if="jn.can_act">
+              <button t-if="it6.action" type="button" class="pbim-btn" t-att-class="it6.state === 'open' and !it6.sent and it6.kind !== 'todo' ? 'primary' : 'ghost'" t-on-click="() =&gt; this.p6ItemAction(it6)" t-esc="it6.action.label"/>
+              <button t-if="it6.state === 'open' and (it6.kind === 'buddy' or it6.kind === 'laptop')" type="button" class="pbim-btn ghost pbhr-p6-ic" title="Their own link, to send however you like" t-on-click="() =&gt; this.p6ItemLink(it6)"><t t-out="ic('link',13)"/></button>
+              <button t-if="it6.state === 'open' and it6.kind !== 'todo'" type="button" class="pbim-btn ghost pbhr-p6-ic" title="Mark done — they told you another way" t-on-click="() =&gt; this.p6ItemDone(it6)"><t t-out="ic('check',13)"/></button>
+              <button t-if="it6.state === 'open'" type="button" class="pbim-btn ghost pbhr-p6-ic" title="Not needed for this person" t-on-click="() =&gt; this.p6ItemSkip(it6)"><t t-out="ic('minusCircle',13)"/></button>
+              <button t-if="it6.removable and it6.state === 'open'" type="button" class="pbim-btn ghost pbhr-p6-ic" title="Take it off the list" t-on-click="() =&gt; this.p6ItemRemove(it6)"><t t-out="ic('trash',13)"/></button>
+            </div>
+          </div>
+          <div t-if="!jn.items.length" class="pbhr-col-empty">Nothing on the list. Add a to-do, or set the company's list up in Hiring set-up.</div>
+        </div>
+        <div t-if="jn.can_act" class="pbhr-p6-add">
+          <t t-if="state.p6Add">
+            <input class="pbhr-in" t-model="state.p6Add.title" placeholder="Book their desk next to the team" maxlength="200" t-on-keydown="(ev) =&gt; this.p6AddKey(ev)"/>
+            <select class="pbhr-in" t-model="state.p6Add.owner">
+              <option value="recruiter">Recruiter</option>
+              <option value="manager">Hiring manager</option>
+              <option value="hr">HR</option>
+            </select>
+            <input class="pbhr-in" type="date" t-model="state.p6Add.due" t-att-max="jn.expected"/>
+            <button type="button" class="pbim-btn primary" t-on-click="() =&gt; this.p6AddSave()"><t t-out="ic('plus',13)"/> Add</button>
+            <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.p6AddCancel()">Cancel</button>
+          </t>
+          <t t-else="">
+            <button type="button" class="pbhr-linkish" t-on-click="() =&gt; this.p6AddOpen()"><t t-out="ic('plus',12)"/> Add a to-do</button>
+            <button type="button" class="pbhr-linkish" t-on-click="() =&gt; this.p6OpenChat(null)"><t t-out="ic('coffee',12)"/> Another chat with the team</button>
+            <button type="button" class="pbhr-linkish" t-on-click="() =&gt; this.p6WeekNow()"><t t-out="ic('mail',12)"/> Send the “still on?” email now</button>
+          </t>
+        </div>
+      </t>
+
+      <!-- what they will arrive with -->
+      <div t-if="jn.buddies.length or jn.laptop.length" class="pbhr-p6-ready">
+        <div t-if="jn.buddies.length" class="pbhr-p6-ready-row"><t t-out="ic('users',13)"/> <span>Buddy <b t-esc="jn.buddies[0]"/><t t-if="jn.buddies.length &gt; 1"> · also <t t-esc="jn.buddies.slice(1).join(', ')"/></t></span></div>
+        <div t-if="jn.laptop.length" class="pbhr-p6-ready-row"><t t-out="ic('laptop',13)"/> <span><t t-foreach="jn.laptop" t-as="lp6" t-key="lp6_index"><t t-if="lp6_index"> · </t><t t-esc="lp6.label"/>: <b t-esc="lp6.value"/></t></span></div>
+      </div>
+
+      <!-- signed documents, with the market's usual set -->
+      <t t-if="cand.can_recruit and (jn.doc_count or jn.can_docs)">
+        <div class="l pbhr-p6-l"><span>Signed documents</span><span class="pbhr-p6-count" t-esc="jn.doc_count"/></div>
+        <div t-if="jn.doc_set and jn.doc_set.rows and jn.doc_set.rows.length" class="pbhr-p6-docset">
+          <span class="pbhr-p6-docset-l">Usually signed<t t-if="jn.doc_set.country"> in <t t-esc="jn.doc_set.country"/></t>:</span>
+          <span t-foreach="jn.doc_set.rows" t-as="dk6" t-key="dk6.kind" class="pbhr-p6-docset-i" t-att-class="{ 'is-have': dk6.have }"><t t-out="ic(dk6.have ? 'checkCircle' : 'circle',12)"/> <t t-esc="dk6.label"/><small t-if="!dk6.have and dk6.when !== 'now'"> — <t t-esc="dk6.when"/></small></span>
+        </div>
+        <div class="pbhr-p6-docs">
+          <div t-foreach="jn.documents" t-as="dc6" t-key="dc6.id" class="pbhr-p6-doc">
+            <span class="pbhr-p6-doc-ic"><t t-out="ic('fileText',14)"/></span>
+            <div class="pbhr-p6-doc-tx">
+              <b t-esc="dc6.label"/>
+              <small><a t-att-href="dc6.url" t-esc="dc6.name"/><t t-if="dc6.signed_on"> · signed <t t-esc="dayShort(dc6.signed_on)"/></t><t t-if="dc6.by"> · recorded by <t t-esc="dc6.by"/></t></small>
+            </div>
+            <span t-if="dc6.filed" class="pbhr-p6-filed"><t t-out="ic('archive',11)"/> Filed</span>
+            <button t-elif="jn.can_docs" type="button" class="pbim-btn ghost pbhr-p6-ic" title="Remove this document" t-on-click="() =&gt; this.p6DocRemove(dc6)"><t t-out="ic('trash',13)"/></button>
+          </div>
+          <button t-if="jn.can_docs" type="button" class="pbhr-linkish pbhr-p6-docadd" t-on-click="() =&gt; this.p6OpenDoc()"><t t-out="ic('upload',12)"/> Add a signed document</button>
+        </div>
+      </t>
+
+      <!-- every change to the date -->
+      <div t-if="jn.changes.length" class="pbhr-p6-changes">
+        <div t-foreach="jn.changes" t-as="ch6" t-key="ch6_index" class="pbhr-p6-change">
+          <t t-out="ic('calendarClock',12)"/>
+          <span><b><t t-esc="ch6.old_words"/> → <t t-esc="ch6.new_words"/></b> · <t t-esc="ch6.by"/><t t-if="ch6.source === 'email'"> (from the week-before email)</t><t t-if="ch6.reason"> — “<t t-esc="ch6.reason"/>”</t></span>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ============ Everything that floats ============ -->
+  <t t-name="pb_hiring.P6Overlays">
+
+    <!-- CONFIRM THEY JOINED — says exactly what it creates -->
+    <div t-if="state.p6Confirm" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; this.p6Close()">
+      <div class="pbim-modal pbhr-dialog pbhr-dialog--small pbhr-p6-dialog" role="dialog" aria-modal="true" aria-label="Confirm they joined" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title"><t t-out="ic('logIn',16)"/> Confirm that <t t-esc="state.p6Confirm.name"/> started</div>
+            <div class="pbhr-drawer-sub">This turns the candidate into a colleague. It cannot be undone from here.</div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-form">
+          <label class="pbhr-f">
+            <span>The day they started</span>
+            <input class="pbhr-in" type="date" t-model="state.p6Confirm.joined_on"/>
+          </label>
+          <div class="pbhr-f pbhr-f--wide">
+            <span>What this makes</span>
+            <ul class="pbhr-p6-makes">
+              <li><t t-out="ic('user',13)"/> Their employee record</li>
+              <li><t t-out="ic('fileText',13)"/> A contract dated <b t-esc="state.p6Confirm.joined_on or '—'"/></li>
+              <li><t t-out="ic('logIn',13)"/> Their sign-in, held until day one</li>
+              <li><t t-out="ic('layoutList',13)"/> The welcome checklist<t t-if="state.p6Confirm.buddy">, with <b t-esc="state.p6Confirm.buddy"/> as buddy</t></li>
+              <li t-if="state.p6Confirm.docs"><t t-out="ic('archive',13)"/> <t t-esc="state.p6Confirm.docs"/> signed <t t-esc="state.p6Confirm.docs === 1 ? 'document' : 'documents'"/> filed on their record</li>
+            </ul>
+          </div>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()">Not yet</button>
+          <button class="pbim-btn primary" t-att-disabled="state.p6Busy or !state.p6Confirm.joined_on" t-on-click="() =&gt; this.p6SaveConfirm()"><t t-out="ic('check',14)"/> Yes, they started</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DID NOT JOIN — asks the reason and says who is told -->
+    <div t-if="state.p6Drop" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; this.p6Close()">
+      <div class="pbim-modal pbhr-dialog pbhr-dialog--small pbhr-p6-dialog" role="dialog" aria-modal="true" aria-label="Did not join" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title"><t t-out="ic('userX',16)"/> <t t-esc="state.p6Drop.name"/> will not join</div>
+            <div class="pbhr-drawer-sub">Recorded as an offer drop. <t t-esc="state.p6Drop.manager or 'The hiring manager'"/>, the talent lead and HR are told; the role stays open.</div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-form">
+          <div class="pbhr-f pbhr-f--wide">
+            <span>Why</span>
+            <div class="pbhr-p6-reasons" role="radiogroup" aria-label="Why">
+              <button t-foreach="state.p6Drop.reasons" t-as="rs6" t-key="rs6.key" type="button" class="pbhr-p5-chip" t-att-class="{ on: state.p6Drop.reason === rs6.key }" role="radio" t-att-aria-checked="state.p6Drop.reason === rs6.key ? 'true' : 'false'" t-on-click="() =&gt; this.p6SetDropReason(rs6.key)" t-esc="rs6.label"/>
+            </div>
+          </div>
+          <label class="pbhr-f pbhr-f--wide">
+            <span>Anything else (optional)</span>
+            <textarea class="pbhr-in" rows="2" t-model="state.p6Drop.note" placeholder="Their employer matched the salary on Friday."/>
+          </label>
+          <p class="pbhr-p6-fine">Their meet-the-team chats are called off quietly, and the open items on the list are closed.</p>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()">Cancel</button>
+          <button class="pbim-btn primary pbhr-p6-danger" t-att-disabled="state.p6Busy" t-on-click="() =&gt; this.p6SaveDrop()"><t t-out="ic('userX',14)"/> Record that they did not join</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHANGE THE JOINING DATE -->
+    <div t-if="state.p6Date" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; this.p6Close()">
+      <div class="pbim-modal pbhr-dialog pbhr-dialog--small pbhr-p6-dialog" role="dialog" aria-modal="true" aria-label="Change the joining date" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title"><t t-out="ic('calendarClock',16)"/> Change <t t-esc="state.p6Date.name"/>'s joining date</div>
+            <div class="pbhr-drawer-sub">Now <t t-esc="state.p6Date.current_words"/>. The hiring manager and HR are told, and the list's due dates move with it.</div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-form">
+          <label class="pbhr-f">
+            <span>New joining date</span>
+            <input class="pbhr-in" type="date" t-model="state.p6Date.date"/>
+          </label>
+          <label class="pbhr-f pbhr-f--wide">
+            <span>Why (optional)</span>
+            <textarea class="pbhr-in" rows="2" t-model="state.p6Date.reason" placeholder="Their notice period was extended by two weeks."/>
+          </label>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="state.p6Busy or !state.p6Date.date" t-on-click="() =&gt; this.p6SaveDate()"><t t-out="ic('check',14)"/> Move the date</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- A MEET-THE-TEAM CHAT -->
+    <div t-if="state.p6Chat" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; this.p6Close()">
+      <div class="pbim-modal pbhr-dialog pbhr-p6-dialog pbhr-p6-chat" role="dialog" aria-modal="true" aria-label="Meet the team" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title"><t t-out="ic('coffee',16)"/> A chat with the team for <t t-esc="state.p6Chat.name"/></div>
+            <div class="pbhr-drawer-sub">A first hello before day one. Everybody gets an invitation with a calendar file; it goes in your diary too.</div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-form">
+          <div class="pbhr-f pbhr-f--wide">
+            <span>Who they meet <small t-if="state.p6Chat.picked.length">· <t t-esc="state.p6Chat.picked.length"/> chosen</small></span>
+            <input class="pbhr-in" t-model="state.p6Chat.q" placeholder="Search the team"/>
+            <div class="pbhr-p6-people">
+              <button t-foreach="p6ChatPeople()" t-as="pp6" t-key="pp6.id" type="button" class="pbhr-p6-person" t-att-class="{ on: state.p6Chat.picked.includes(pp6.id), 'is-team': pp6.team }" t-on-click="() =&gt; this.p6TogglePerson(pp6.id)">
+                <span class="pbhr-kc-check" t-att-class="{ on: state.p6Chat.picked.includes(pp6.id) }"><t t-out="ic('check',11)"/></span>
+                <b t-esc="pp6.name"/><small><t t-if="pp6.manager">their manager · </t><t t-esc="pp6.job"/></small>
+              </button>
+              <div t-if="!p6ChatPeople().length" class="pbhr-col-empty">Nobody matches.</div>
+            </div>
+          </div>
+          <label class="pbhr-f">
+            <span>When</span>
+            <input class="pbhr-in" type="datetime-local" t-model="state.p6Chat.start"/>
+          </label>
+          <div class="pbhr-f">
+            <span>How long</span>
+            <div class="pbhr-p5-chips">
+              <button t-foreach="[15, 30, 45, 60]" t-as="mn6" t-key="mn6" type="button" class="pbhr-p5-chip is-num" t-att-class="{ on: state.p6Chat.minutes === mn6 }" t-on-click="() =&gt; this.p6SetMinutes(mn6)" t-esc="mn6"/>
+            </div>
+          </div>
+          <div class="pbhr-f pbhr-f--wide">
+            <span>How</span>
+            <div class="pbhr-p5-chips">
+              <button type="button" class="pbhr-p5-chip" t-att-class="{ on: state.p6Chat.mode === 'video' }" t-on-click="() =&gt; this.p6SetMode('video')"><t t-out="ic('video',13)"/> Video call</button>
+              <button type="button" class="pbhr-p5-chip" t-att-class="{ on: state.p6Chat.mode === 'in_person' }" t-on-click="() =&gt; this.p6SetMode('in_person')"><t t-out="ic('mapPin',13)"/> In person</button>
+            </div>
+          </div>
+          <label class="pbhr-f pbhr-f--wide">
+            <span><t t-if="state.p6Chat.mode === 'video'">The video link</t><t t-else="">Where</t></span>
+            <input class="pbhr-in" t-model="state.p6Chat.where" t-att-placeholder="state.p6Chat.mode === 'video' ? (state.p6Chat.google ? 'Leave empty: Google Meet makes the link' : 'Paste the link') : 'Level 3 kitchen, Ho Chi Minh City office'"/>
+          </label>
+          <div t-if="state.p6Chat.mode === 'video' and state.p6Chat.google" class="pbhr-f pbhr-f--wide pbhr-p5-meet is-on"><t t-out="ic('video',16)"/> <span>Google Meet makes the video link when you press Put it in the diary — leave the box empty.</span></div>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="state.p6Busy" t-on-click="() =&gt; this.p6SaveChat()"><t t-out="ic('calendar',14)"/> Put it in the diary</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD A SIGNED DOCUMENT -->
+    <div t-if="state.p6Doc" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; this.p6Close()">
+      <div class="pbim-modal pbhr-dialog pbhr-dialog--small pbhr-p6-dialog" role="dialog" aria-modal="true" aria-label="Add a signed document" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title"><t t-out="ic('upload',16)"/> Add a signed document</div>
+            <div class="pbhr-drawer-sub">Filed on their employee record the day you confirm they joined<t t-if="state.p6Doc.joined"> — they have, so it is filed at once</t>.</div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-form">
+          <label class="pbhr-f">
+            <span>What it is</span>
+            <select class="pbhr-in" t-model="state.p6Doc.kind">
+              <option t-foreach="state.p6Doc.kinds" t-as="kd6" t-key="kd6.key" t-att-value="kd6.key" t-esc="kd6.label"/>
+            </select>
+          </label>
+          <label class="pbhr-f">
+            <span>Signed on</span>
+            <input class="pbhr-in" type="date" t-model="state.p6Doc.signed_on"/>
+          </label>
+          <label class="pbhr-f pbhr-f--wide">
+            <span>Name on screen (optional)</span>
+            <input class="pbhr-in" t-model="state.p6Doc.label" placeholder="Employment agreement (English and Bahasa)" maxlength="120"/>
+          </label>
+          <label class="pbhr-f pbhr-f--wide">
+            <span>The file</span>
+            <input class="pbhr-in" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" t-on-change="(ev) =&gt; this.p6DocFile(ev)"/>
+          </label>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="state.p6Busy or !state.p6Doc.data" t-on-click="() =&gt; this.p6SaveDoc()"><t t-out="ic('check',14)"/> Add it</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ============ HIRING SET-UP → BEFORE THEY JOIN ============ -->
+  <t t-name="pb_hiring.P6SetupPrejoin">
+    <section class="pbim-panel pbhr-su-p6" t-if="state.data.prejoin">
+      <div class="pbhr-su-h">
+        <h2>Before they join</h2>
+        <span class="pbhr-pill"><t t-esc="p6Rows.length"/> on every signed offer</span>
+        <span class="pbhr-foot-gap"/>
+      </div>
+      <p class="pbhr-su-lede">When an offer is signed, the person stays a candidate in Post-offer and this list is laid out for them, with dates counted back from their joining date. <b>{manager}</b> and <b>{name}</b> are filled in per person. Changing the list affects offers signed from now on.</p>
+      <div class="pbhr-p6-tpls" t-ref="p6tpl">
+        <div t-foreach="p6Rows" t-as="tp6" t-key="tp6.id" class="pbhr-p6-tpl" t-att-data-id="tp6.id">
+          <span t-if="state.data.can_edit" class="pbhr-su-grip" title="Drag to reorder"><t t-out="ic('grip',14)"/></span>
+          <span class="pbhr-p5-part-ic"><t t-out="ic(p6KindIcon(tp6.kind),14)"/></span>
+          <input class="pbhr-in pbhr-p6-tpl-t" t-att-value="tp6.title" t-att-disabled="!state.data.can_edit" maxlength="200" t-on-change="(ev) =&gt; this.p6TplSave(tp6, 'title', ev.target.value)"/>
+          <select class="pbhr-in pbhr-p6-tpl-o" t-att-disabled="!state.data.can_edit" t-on-change="(ev) =&gt; this.p6TplSave(tp6, 'owner', ev.target.value)">
+            <option t-foreach="state.data.prejoin.owners" t-as="ow6" t-key="ow6.key" t-att-value="ow6.key" t-att-selected="ow6.key === tp6.owner" t-esc="ow6.label"/>
+          </select>
+          <label class="pbhr-p6-tpl-d">
+            <input class="pbhr-in" type="number" min="0" max="120" t-att-value="-tp6.days" t-att-disabled="!state.data.can_edit" t-on-change="(ev) =&gt; this.p6TplDays(tp6, ev.target.value)"/>
+            <small>days before</small>
+          </label>
+          <button t-if="state.data.can_edit" type="button" class="pbim-btn ghost pbhr-no" title="Take it off the list" t-on-click="() =&gt; this.p6TplRemove(tp6)"><t t-out="ic('trash',13)"/></button>
+        </div>
+        <div t-if="!p6Rows.length" class="pbhr-p4-empty">Nothing on the list. Add the first thing below — a buddy, the laptop, a chat with the team, or a to-do.</div>
+      </div>
+      <div t-if="state.data.can_edit" class="pbhr-p5-add">
+        <span>Add</span>
+        <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.p6TplAdd('buddy')"><t t-out="ic('users',13)"/> A buddy question</button>
+        <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.p6TplAdd('laptop')"><t t-out="ic('laptop',13)"/> Laptop preferences</button>
+        <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.p6TplAdd('chat')"><t t-out="ic('coffee',13)"/> A chat with the team</button>
+        <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.p6TplAdd('todo')"><t t-out="ic('checkCircle',13)"/> A to-do</button>
+      </div>
+    </section>
+  </t>
+
+</templates>

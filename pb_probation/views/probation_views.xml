@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Native arch, skinned by the shared form engine. The day-to-day surface
+         is the Probation lens on the Lifecycle hub; these are the records
+         behind it, reached from the board, from the command bar and from a
+         review's own chatter. -->
+
+    <!-- ================================================================ -->
+    <!--  Probation reviews                                               -->
+    <!-- ================================================================ -->
+    <record id="view_pb_probation_review_list" model="ir.ui.view">
+        <field name="name">pb.probation.review.list</field>
+        <field name="model">pb.probation.review</field>
+        <field name="arch" type="xml">
+            <list string="Probation reviews" create="0">
+                <field name="employee_id"/>
+                <field name="kind" optional="hide"/>
+                <field name="round" optional="hide"/>
+                <field name="trial_end"/>
+                <field name="manager_user_id" optional="show"/>
+                <field name="nominee_count" optional="show"/>
+                <field name="feedback_in" optional="show"/>
+                <field name="feedback_total" optional="hide"/>
+                <field name="feedback_deadline" optional="hide"/>
+                <field name="avg_rating" optional="hide"/>
+                <field name="verdict" optional="show" widget="badge"
+                       decoration-success="verdict == 'pass'"
+                       decoration-warning="verdict == 'extend'"
+                       decoration-danger="verdict == 'fail'"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'closed'"
+                       decoration-info="state in ('feedback', 'consolidation')"
+                       decoration-warning="state in ('one_on_one', 'verdict')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_probation_review_form" model="ir.ui.view">
+        <field name="name">pb.probation.review.form</field>
+        <field name="model">pb.probation.review</field>
+        <field name="arch" type="xml">
+            <form string="Probation review">
+                <header>
+                    <button name="action_start_nomination" type="object"
+                            string="Ask for colleagues" class="btn-primary"
+                            invisible="state not in ('scheduled', 'nomination')"/>
+                    <button name="action_confirm_nominees" type="object"
+                            string="Send the questions"
+                            invisible="state != 'nomination'"
+                            confirm="Each colleague chosen gets a private link and a few days to answer. Carry on?"/>
+                    <button name="action_extend_deadline" type="object"
+                            string="Give them another day"
+                            invisible="state != 'feedback' or deadline_extended"/>
+                    <button name="action_consolidate" type="object"
+                            string="Put the answers together" class="btn-primary"
+                            invisible="state != 'feedback'"/>
+                    <button name="action_one_on_one_done" type="object"
+                            string="The conversation happened"
+                            class="btn-primary"
+                            invisible="state != 'one_on_one'"/>
+                    <button name="action_start_exit" type="object"
+                            string="Start their exit"
+                            invisible="verdict != 'fail' or exit_case_id"
+                            confirm="This opens their leaving checklist with the four clearances on it. Nothing is sent to them. Carry on?"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="nomination,feedback,one_on_one,verdict,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Who">
+                            <field name="employee_id" readonly="state != 'scheduled'"/>
+                            <field name="manager_user_id"/>
+                            <field name="hrbp_user_id"/>
+                            <field name="kind" readonly="state != 'scheduled'"/>
+                            <field name="round" readonly="1"/>
+                        </group>
+                        <group string="When">
+                            <field name="trial_end"/>
+                            <field name="policy_id" readonly="1"/>
+                            <field name="feedback_deadline" readonly="1"/>
+                            <field name="deadline_extended" readonly="1"/>
+                            <field name="case_id" readonly="1"/>
+                            <field name="one_on_one_checkin_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Colleagues asked" name="peers">
+                            <field name="nominee_ids" widget="many2many_tags"
+                                   readonly="state not in ('scheduled', 'nomination')"
+                                   options="{'no_create': True}"/>
+                            <separator string="Their links"/>
+                            <field name="feedback_request_ids" readonly="1">
+                                <list>
+                                    <field name="respondent_email"/>
+                                    <field name="window_end"/>
+                                    <field name="submitted_at" optional="hide"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'submitted'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="What everybody said" name="report">
+                            <field name="avg_rating" readonly="1"/>
+                            <field name="consolidated_html" nolabel="1"
+                                   readonly="1"/>
+                        </page>
+                        <page string="The decision" name="verdict">
+                            <group>
+                                <group>
+                                    <field name="verdict"/>
+                                    <field name="extension_months"
+                                           invisible="verdict != 'extend'"/>
+                                    <field name="new_trial_end" readonly="1"
+                                           invisible="not new_trial_end"/>
+                                </group>
+                                <group>
+                                    <field name="verdict_at" readonly="1"/>
+                                    <field name="verdict_by" readonly="1"/>
+                                    <field name="letter_id" readonly="1"/>
+                                    <field name="exit_case_id" readonly="1"/>
+                                </group>
+                            </group>
+                            <group string="What they are good at">
+                                <field name="strengths" nolabel="1" colspan="2"
+                                       placeholder="In words they would recognise…"/>
+                            </group>
+                            <group string="What to work on">
+                                <field name="improvements" nolabel="1"
+                                       colspan="2"
+                                       placeholder="Specific, and something they can actually do…"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_probation_review_search" model="ir.ui.view">
+        <field name="name">pb.probation.review.search</field>
+        <field name="model">pb.probation.review</field>
+        <field name="arch" type="xml">
+            <search string="Probation reviews">
+                <field name="employee_id"/>
+                <field name="manager_user_id"/>
+                <filter name="live" string="Still running"
+                        domain="[('state', '!=', 'closed')]"/>
+                <filter name="waiting" string="Waiting on a decision"
+                        domain="[('state', '=', 'verdict')]"/>
+                <filter name="passed" string="Confirmed"
+                        domain="[('verdict', '=', 'pass')]"/>
+                <filter name="not_passed" string="Not confirmed"
+                        domain="[('verdict', '=', 'fail')]"/>
+                <group>
+                    <filter name="by_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="by_verdict" string="Decision"
+                            context="{'group_by': 'verdict'}"/>
+                    <filter name="by_trial_end" string="Trial ends"
+                            context="{'group_by': 'trial_end'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_probation_review" model="ir.actions.act_window">
+        <field name="name">Probation reviews</field>
+        <field name="res_model">pb.probation.review</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nobody is being reviewed just now</p>
+            <p>A review opens by itself three weeks before somebody's trial
+               period ends. It asks their manager for three to five colleagues,
+               gives each of them a private link, puts the answers together with
+               the 30, 60 and 90 day notes, and then waits for a decision.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Probation policies                                              -->
+    <!-- ================================================================ -->
+    <record id="view_pb_probation_policy_list" model="ir.ui.view">
+        <field name="name">pb.probation.policy.list</field>
+        <field name="model">pb.probation.policy</field>
+        <field name="arch" type="xml">
+            <list string="Probation policies" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="country_id" placeholder="Any country"/>
+                <field name="duration_months"/>
+                <field name="evaluation_lead_days"/>
+                <field name="feedback_window_days"/>
+                <field name="default_extension_months" optional="hide"/>
+                <field name="extension_grace_days" optional="hide"/>
+                <field name="note" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_probation_policy" model="ir.actions.act_window">
+        <field name="name">Probation policies</field>
+        <field name="res_model">pb.probation.policy</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">How long a trial period lasts</p>
+            <p>Read from the top; the first policy that fits the country
+               somebody works in is used. It fills in the end of the trial
+               period when their joining checklist opens, and it decides how
+               early the review starts and how long colleagues get to answer.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Training                                                        -->
+    <!-- ================================================================ -->
+    <record id="view_pb_training_track_list" model="ir.ui.view">
+        <field name="name">pb.training.track.list</field>
+        <field name="model">pb.training.track</field>
+        <field name="arch" type="xml">
+            <list string="Training courses">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="job_ids" widget="many2many_tags"/>
+                <field name="item_count"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_training_track_form" model="ir.ui.view">
+        <field name="name">pb.training.track.form</field>
+        <field name="model">pb.training.track</field>
+        <field name="arch" type="xml">
+            <form string="Training course">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Agronomist essentials"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="job_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="What it is for">
+                        <field name="description" nolabel="1" colspan="2"
+                               placeholder="One or two sentences a new joiner would understand…"/>
+                    </group>
+                    <separator string="What is in it"/>
+                    <p class="text-muted">
+                        A required item stops a trial period being passed until
+                        it is ticked off. Leave it off for something worth doing
+                        but not worth blocking somebody over.
+                    </p>
+                    <field name="item_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name"/>
+                            <field name="description" optional="show"/>
+                            <field name="required" widget="boolean_toggle"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_training_track" model="ir.actions.act_window">
+        <field name="name">Training courses</field>
+        <field name="res_model">pb.training.track</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No course is required yet</p>
+            <p>A course bound to a job is given to everybody who joins in that
+               job, and its required items have to be finished before their
+               trial period can be passed. There is one example ready to use —
+               add the jobs that need it and it starts working.</p>
+        </field>
+    </record>
+
+    <record id="view_pb_training_status_list" model="ir.ui.view">
+        <field name="name">pb.training.status.list</field>
+        <field name="model">pb.training.status</field>
+        <field name="arch" type="xml">
+            <list string="Training" create="0">
+                <field name="employee_id"/>
+                <field name="track_id"/>
+                <field name="item_id"/>
+                <field name="required" optional="show" widget="boolean_toggle"
+                       readonly="1"/>
+                <field name="score" optional="hide"/>
+                <field name="done_at" optional="hide"/>
+                <field name="note" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-warning="state == 'todo'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_training_status" model="ir.actions.act_window">
+        <field name="name">Who has done what</field>
+        <field name="res_model">pb.training.status</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing is outstanding</p>
+            <p>One row per person per course item. Rows appear when somebody
+               joins in a job that needs a course, and the required ones have to
+               be ticked off before their trial period can be passed.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  The lens's own door                                             -->
+    <!-- ================================================================ -->
+    <!-- Declared as a RECORD rather than reached by bare tag (W98): a bare tag
+         is synthesised with no action NAME, and anything returning through a
+         breadcrumb lands on a crumb labelled "Unnamed".
+
+         Test URL: /odoo/action-pb_probation_board  (the lens on its own)
+                   /odoo/action-pb_lifecycle_hub  (inside the Lifecycle hub) -->
+    <record id="action_pb_probation_board" model="ir.actions.client">
+        <field name="name">Probation</field>
+        <field name="tag">pb_probation_board</field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  The trial state on the employee form                            -->
+    <!-- ================================================================ -->
+    <!-- Additive, and placed beside the trial end date it explains. A state
+         with no date beside it reads as an opinion; the two together read as
+         a fact. -->
+    <record id="view_hr_employee_form_probation" model="ir.ui.view">
+        <field name="name">hr.employee.form.probation</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <field name="employee_type" position="after">
+                <field name="pb_probation_state"
+                       groups="pb_lifecycle.group_lifecycle_user"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

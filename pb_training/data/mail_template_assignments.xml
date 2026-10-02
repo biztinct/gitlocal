@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- ==================================================================
+         noupdate="1", as every mail template in this codebase is: a tenant
+         that has reworded one of these must not have it reverted by the next
+         upgrade. Outgoing debranding rides automatically (biz_mail_debrand)
+         and the word for the vendor never appears in any of them anyway.
+
+         EVERY ONE IS SENT WITH AN EXPLICIT `email_to` IN `email_values`. A
+         template's own rendered address can reach mail.mail EMPTY, and the
+         message is then created, queued and addressed to nobody with no error
+         anywhere (R6). The `email_to` field below is kept as documentation of
+         who each one is FOR.
+
+         A template renders against the MODEL it is declared on, so the five
+         about an assignment are declared on the assignment and the two about
+         an answer are declared on the request.
+         ================================================================== -->
+
+    <!-- ============ the person: you have been put on a course ============ -->
+    <record id="mail_template_assignment_start" model="mail.template">
+        <field name="name">Training: a course has been added to your training</field>
+        <field name="model_id" ref="model_pb_training_assignment"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">{{ object.channel_id.name }} — to be finished by {{ object.due_date }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>
+                    <strong><t t-out="object.channel_id.name or ''"/></strong>
+                    has been added to your training.
+                </p>
+                <ul>
+                    <li>To be finished by:
+                        <strong><t t-out="object.due_date or ''"/></strong></li>
+                    <li t-if="object.counts_for_probation">
+                        Your trial period cannot be confirmed until this one is
+                        finished.</li>
+                </ul>
+                <p>
+                    It is on your own training page, with its lessons and the
+                    test at the end. If you cannot finish it in time, there is a
+                    button on the same page to ask your manager for longer.
+                </p>
+                <p>
+                    <a t-attf-href="/my/training"
+                       style="display:inline-block; padding:10px 18px; background:#4F46E5; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Open my training
+                    </a>
+                </p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ their manager: one line, for the diary ============ -->
+    <record id="mail_template_assignment_start_manager" model="mail.template">
+        <field name="name">Training: somebody in your team has been put on a course</field>
+        <field name="model_id" ref="model_pb_training_assignment"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.parent_id.work_email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }} has been put on {{ object.channel_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    has been put on
+                    <strong><t t-out="object.channel_id.name or ''"/></strong>,
+                    to be finished by
+                    <strong><t t-out="object.due_date or ''"/></strong>.
+                </p>
+                <p>
+                    Nothing is needed from you today. If it runs late you will
+                    hear again, and if they ask for longer the request comes to
+                    you to agree or turn down.
+                </p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the person: it is coming up ============ -->
+    <record id="mail_template_assignment_due" model="mail.template">
+        <field name="name">Training: a course of yours is coming up</field>
+        <field name="model_id" ref="model_pb_training_assignment"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">{{ object.channel_id.name }} — {{ object.due_words }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>
+                    <strong><t t-out="object.channel_id.name or ''"/></strong> —
+                    <strong><t t-out="object.due_words or ''"/></strong>.
+                </p>
+                <p t-if="object.progress_words">
+                    <t t-out="object.progress_words or ''"/>
+                </p>
+                <p>
+                    <a t-attf-href="/my/training/#{object.channel_id.id}"
+                       style="display:inline-block; padding:10px 18px; background:#4F46E5; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Carry on with it
+                    </a>
+                </p>
+                <p>
+                    If you need longer, there is a button on that page to ask
+                    your manager. It is better than the date going past.
+                </p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the person: it has gone past ============ -->
+    <record id="mail_template_assignment_overdue" model="mail.template">
+        <field name="name">Training: a course of yours is past its date</field>
+        <field name="model_id" ref="model_pb_training_assignment"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">{{ object.channel_id.name }} — {{ object.due_words }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>
+                    <strong><t t-out="object.channel_id.name or ''"/></strong> was
+                    to be finished by
+                    <strong><t t-out="object.due_date or ''"/></strong> and is
+                    now <strong><t t-out="object.due_words or ''"/></strong>.
+                </p>
+                <p t-if="object.progress_words">
+                    <t t-out="object.progress_words or ''"/>
+                </p>
+                <p t-if="object.counts_for_probation">
+                    Your trial period cannot be confirmed until it is finished.
+                </p>
+                <p>
+                    <a t-attf-href="/my/training/#{object.channel_id.id}"
+                       style="display:inline-block; padding:10px 18px; background:#4F46E5; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Finish it now
+                    </a>
+                </p>
+                <p>
+                    If something is genuinely in the way, ask your manager for
+                    more time on that page rather than leaving it.
+                </p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ their manager: it is late ============ -->
+    <record id="mail_template_assignment_manager_late" model="mail.template">
+        <field name="name">Training: somebody in your team is late with a course</field>
+        <field name="model_id" ref="model_pb_training_assignment"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.parent_id.work_email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }} is {{ object.due_words }} on {{ object.channel_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong> was
+                    to have finished
+                    <strong><t t-out="object.channel_id.name or ''"/></strong> by
+                    <strong><t t-out="object.due_date or ''"/></strong>.
+                    It is <strong><t t-out="object.due_words or ''"/></strong>.
+                </p>
+                <p t-if="object.progress_words">
+                    <t t-out="object.progress_words or ''"/>
+                </p>
+                <p t-if="object.counts_for_probation">
+                    Their trial period cannot be confirmed until it is finished.
+                </p>
+                <p>
+                    A word from you is usually all it takes. If they need
+                    longer, they can ask you for it from their own training
+                    page and you will get the request to agree.
+                </p>
+                <p>
+                    <a t-attf-href="/my/training/team"
+                       style="display:inline-block; padding:10px 18px; background:#4F46E5; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        See my team's training
+                    </a>
+                </p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the HR lead: it is well past ============ -->
+    <record id="mail_template_assignment_hr_late" model="mail.template">
+        <field name="name">Training: a course is well past its date</field>
+        <field name="model_id" ref="model_pb_training_assignment"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.company_id.email or '' }}</field>
+        <field name="subject">Still not done: {{ object.channel_id.name }} for {{ object.employee_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.channel_id.name or ''"/></strong> for
+                    <strong><t t-out="object.employee_id.name or ''"/></strong> is
+                    <strong><t t-out="object.due_words or ''"/></strong>, and
+                    their manager has already been told.
+                </p>
+                <ul>
+                    <li>Part of the business:
+                        <strong><t t-out="object.employee_id.department_id.name or ''"/></strong></li>
+                    <li>Their manager:
+                        <strong><t t-out="object.employee_id.parent_id.name or ''"/></strong></li>
+                    <li>Was to be finished by:
+                        <strong><t t-out="object.due_date or ''"/></strong></li>
+                    <li>Why they are on it:
+                        <strong><t t-out="object.reason_words or ''"/></strong></li>
+                </ul>
+                <p t-if="object.counts_for_probation">
+                    Their trial period cannot be confirmed until it is finished.
+                </p>
+                <p>
+                    Open <strong>Learn</strong> in Payobook and go to
+                    <strong>Training</strong>. The Assignments tab opens on the
+                    rows that are late.
+                </p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ more time: agreed ============ -->
+    <record id="mail_template_delay_approved" model="mail.template">
+        <field name="name">Training: your request for more time was agreed</field>
+        <field name="model_id" ref="model_pb_training_delay"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">You have until {{ object.new_due_date }} for {{ object.channel_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>
+                    Your manager has agreed the extra time you asked for on
+                    <strong><t t-out="object.channel_id.name or ''"/></strong>.
+                </p>
+                <ul>
+                    <li>It was due: <strong><t t-out="object.old_due_date or ''"/></strong></li>
+                    <li>It is now due: <strong><t t-out="object.new_due_date or ''"/></strong></li>
+                </ul>
+                <p>
+                    Nothing will chase you before that date.
+                </p>
+                <p>
+                    <a t-attf-href="/my/training/#{object.channel_id.id}"
+                       style="display:inline-block; padding:10px 18px; background:#4F46E5; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Carry on with the course
+                    </a>
+                </p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ more time: turned down ============ -->
+    <record id="mail_template_delay_refused" model="mail.template">
+        <field name="name">Training: your request for more time was turned down</field>
+        <field name="model_id" ref="model_pb_training_delay"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">About the extra time you asked for on {{ object.channel_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>
+                    Your manager has not agreed the extra time you asked for on
+                    <strong><t t-out="object.channel_id.name or ''"/></strong>,
+                    so the date has not moved.
+                </p>
+                <p t-if="object.refuse_note">
+                    What they said:
+                    <em><t t-out="object.refuse_note or ''"/></em>
+                </p>
+                <ul>
+                    <li>Still to be finished by:
+                        <strong><t t-out="object.assignment_id.due_date or ''"/></strong></li>
+                </ul>
+                <p>
+                    Have a word with them if that is not going to work. In the
+                    meantime the course is where it always was.
+                </p>
+                <p>
+                    <a t-attf-href="/my/training/#{object.channel_id.id}"
+                       style="display:inline-block; padding:10px 18px; background:#4F46E5; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Open the course
+                    </a>
+                </p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

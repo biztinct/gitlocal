@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- F113 / T113.2b — India 2026 statutory pack (B4). Published so the India
+         template resolves values at seed + certification (pinned 2026.1).
+         ⚠ See item notes + report for VERIFY items. -->
+    <data noupdate="1">
+        <record id="legis_pack_in_2026" model="hr.formula.legislation.pack">
+            <field name="name">India Statutory Parameters 2026</field>
+            <field name="country_code">IN</field>
+            <field name="version">2026.1</field>
+            <field name="effective_date">2026-01-01</field>
+            <field name="authority">EPF &amp; MP Act 1952 · ESI Act 1948 · Finance Act 2025 (new tax regime)</field>
+            <field name="state">published</field>
+            <field name="sequence">5</field>
+            <field name="description">India EPF, ESI, professional-tax and new-regime TDS parameters (standard deduction, 87A rebate, cess), 2026.</field>
+        </record>
+
+        <record id="legis_pack_in_2026_epfee" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_in_2026"/>
+            <field name="code">EPFEE</field><field name="label">EPF Rate (EE)</field>
+            <field name="value">0.12</field><field name="number_format">percentage</field><field name="sequence">10</field>
+        </record>
+        <record id="legis_pack_in_2026_epfer" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_in_2026"/>
+            <field name="code">EPFER</field><field name="label">EPF Rate (ER)</field>
+            <field name="value">0.12</field><field name="number_format">percentage</field><field name="sequence">20</field>
+        </record>
+        <record id="legis_pack_in_2026_epfwage" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_in_2026"/>
+            <field name="code">EPFWAGE</field><field name="label">EPF Wage Ceiling</field>
+            <field name="value">15000</field><field name="number_format">currency</field><field name="note">⚠ VERIFY — statutory ₹15,000; many employers use actual basic</field><field name="sequence">30</field>
+        </record>
+        <record id="legis_pack_in_2026_esiee" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_in_2026"/>
+            <field name="code">ESIEE</field><field name="label">ESI Rate (EE)</field>
+            <field name="value">0.0075</field><field name="number_format">percentage</field><field name="sequence">40</field>
+        </record>
+        <record id="legis_pack_in_2026_esier" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_in_2026"/>
+            <field name="code">ESIER</field><field name="label">ESI Rate (ER)</field>
+            <field name="value">0.0325</field><field name="number_format">percentage</field><field name="sequence">50</field>
+        </record>
+        <record id="legis_pack_in_2026_esilimit" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_in_2026"/>
+            <field name="code">ESILIMIT</field><field name="label">ESI Eligibility Ceiling</field>
+            <field name="value">21000</field><field name="number_format">currency</field><field name="sequence">60</field>
+        </record>
+        <record id="legis_pack_in_2026_ptamt" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_in_2026"/>
+            <field name="code">PTAMT</field><field name="label">Professional Tax (monthly)</field>
+            <field name="value">200</field><field name="number_format">currency</field><field name="note">⚠ VERIFY — state-specific slab; annual cap ₹2,500</field><field name="sequence">70</field>
+        </record>
+        <record id="legis_pack_in_2026_stdded" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_in_2026"/>
+            <field name="code">STDDED</field><field name="label">Standard Deduction (annual)</field>
+            <field name="value">75000</field><field name="number_format">currency</field><field name="sequence">80</field>
+        </record>
+        <record id="legis_pack_in_2026_rebate" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_in_2026"/>
+            <field name="code">REBATE</field><field name="label">87A Rebate Income Threshold</field>
+            <field name="value">1200000</field><field name="number_format">currency</field><field name="note">FY2025-26 new regime — nil tax up to ₹12L taxable</field><field name="sequence">90</field>
+        </record>
+        <record id="legis_pack_in_2026_cessrate" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_in_2026"/>
+            <field name="code">CESSRATE</field><field name="label">Health &amp; Education Cess</field>
+            <field name="value">0.04</field><field name="number_format">percentage</field><field name="sequence">100</field>
+        </record>
+    </data>
+</odoo>

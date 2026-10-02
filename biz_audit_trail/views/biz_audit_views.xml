@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Admin CONFIG surfaces only (base.group_system). These are NOT demo
+         screens — the per-employee timeline (Phase H) and the audit console
+         (Phase J) are the designed surfaces. Native list/form is the sanctioned
+         fallback for pure config models (F–J WOW rule exemption). -->
+
+    <!-- ===================== biz.audit.rule ===================== -->
+    <record id="view_biz_audit_rule_list" model="ir.ui.view">
+        <field name="name">biz.audit.rule.list</field>
+        <field name="model">biz.audit.rule</field>
+        <field name="arch" type="xml">
+            <list string="Audit Rules" editable="bottom">
+                <field name="name"/>
+                <field name="model_name"/>
+                <field name="field_names"/>
+                <field name="company_id" optional="show"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_biz_audit_rule_form" model="ir.ui.view">
+        <field name="name">biz.audit.rule.form</field>
+        <field name="model">biz.audit.rule</field>
+        <field name="arch" type="xml">
+            <form string="Audit Rule">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="model_name"/>
+                        <field name="field_names"
+                               placeholder="department_id,job_title,parent_id"/>
+                        <field name="company_id"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_biz_audit_rule" model="ir.actions.act_window">
+        <field name="name">Audit Rules</field>
+        <field name="res_model">biz.audit.rule</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'active_test': False}</field>
+    </record>
+
+    <!-- ===================== biz.audit.entry (read-only) ===================== -->
+    <record id="view_biz_audit_entry_list" model="ir.ui.view">
+        <field name="name">biz.audit.entry.list</field>
+        <field name="model">biz.audit.entry</field>
+        <field name="arch" type="xml">
+            <list string="Audit Entries" create="false" edit="false">
+                <field name="stamp"/>
+                <field name="model_name"/>
+                <field name="res_display"/>
+                <field name="field_label"/>
+                <field name="old_value"/>
+                <field name="new_value"/>
+                <field name="user_id"/>
+                <field name="company_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_biz_audit_entry_search" model="ir.ui.view">
+        <field name="name">biz.audit.entry.search</field>
+        <field name="model">biz.audit.entry</field>
+        <field name="arch" type="xml">
+            <search string="Audit Entries">
+                <field name="res_display"/>
+                <field name="model_name"/>
+                <field name="field_label"/>
+                <field name="user_id"/>
+                <group name="group_by">
+                    <filter name="grp_model" string="Model"
+                            context="{'group_by': 'model_name'}"/>
+                    <filter name="grp_user" string="By"
+                            context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_biz_audit_entry" model="ir.actions.act_window">
+        <field name="name">Audit Entries</field>
+        <field name="res_model">biz.audit.entry</field>
+        <field name="view_mode">list</field>
+        <field name="search_view_id" ref="view_biz_audit_entry_search"/>
+    </record>
+
+    <!-- ===================== menus (Settings › Technical) ===================== -->
+    <menuitem id="menu_biz_audit_root" name="Audit Trail"
+              parent="base.menu_custom" groups="base.group_system" sequence="90"/>
+    <menuitem id="menu_biz_audit_entry" name="Audit Entries"
+              parent="menu_biz_audit_root" action="action_biz_audit_entry"
+              groups="base.group_system" sequence="10"/>
+    <menuitem id="menu_biz_audit_rule" name="Audit Rules"
+              parent="menu_biz_audit_root" action="action_biz_audit_rule"
+              groups="base.group_system" sequence="20"/>
+</odoo>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_pb_workforce_insights" model="ir.actions.client">
+        <field name="name">Workforce Insights</field>
+        <field name="tag">pb_workforce_insights</field>
+    </record>
+
+</odoo>

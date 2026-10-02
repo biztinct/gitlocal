@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hiring Experience Blueprint</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#F4F5FB; --paper:#FFFFFF; --ink:#1E1B2E; --muted:#5B6272; --line:#E2E8F0; --line-strong:#C9CCE0;
+  --i:#5A4BB0; --i-ink:#241F52; --i-soft:#EDEAF8; --i-light:#CBC2EE;
+  --ok:#2E7D4F; --ok-soft:#E3F1E8; --warn:#D97706; --warn-soft:#FBEFD9; --bad:#DC2668; --bad-soft:#FCE4EC; --info:#2563EB; --info-soft:#E4ECFD; --teal:#0F766E; --teal-soft:#DDF3F0;
+  --shadow:0 1px 2px rgba(30,27,46,.06), 0 8px 24px -16px rgba(30,27,46,.25);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ color-scheme:dark;
+    --ground:#14131C; --paper:#1C1B26; --ink:#ECEAF4; --muted:#A5A8B8; --line:#2C2B3A; --line-strong:#3D3C4E;
+    --i:#9C8DE6; --i-ink:#D8D0F7; --i-soft:#2A2545; --i-light:#3B3466;
+    --ok:#7BC49A; --ok-soft:#1F3328; --warn:#E8B45C; --warn-soft:#3A2F14; --bad:#F08AA5; --bad-soft:#40222C; --info:#8FB0F5; --info-soft:#1E2A45; --teal:#6FCABF; --teal-soft:#153331;
+    --shadow:none; }
+}
+:root[data-theme="dark"]{ color-scheme:dark;
+  --ground:#14131C; --paper:#1C1B26; --ink:#ECEAF4; --muted:#A5A8B8; --line:#2C2B3A; --line-strong:#3D3C4E;
+  --i:#9C8DE6; --i-ink:#D8D0F7; --i-soft:#2A2545; --i-light:#3B3466;
+  --ok:#7BC49A; --ok-soft:#1F3328; --warn:#E8B45C; --warn-soft:#3A2F14; --bad:#F08AA5; --bad-soft:#40222C; --info:#8FB0F5; --info-soft:#1E2A45; --teal:#6FCABF; --teal-soft:#153331;
+  --shadow:none; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding-block:32px 72px;padding-inline:20px}
+h1,h2,h3,h4{text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
+h2{font-size:22px;font-weight:600;letter-spacing:-.01em;margin-block:48px 10px;padding-top:14px;border-top:1px solid var(--line-strong)}
+h3{font-size:16.5px;font-weight:600;margin-block:22px 6px}
+p{margin:0 0 10px;max-width:74ch}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:8px}
+.lede{font-size:17px;max-width:70ch;margin-top:12px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;color:var(--muted);font-size:13px;margin-top:12px}
+.tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:500;padding:1px 7px;border-radius:5px;background:var(--i-soft);color:var(--i-ink);white-space:nowrap;margin:2px 4px 2px 0}
+.tag.ph{background:var(--teal-soft);color:var(--teal)}
+.principles{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:14px}
+.pr{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+.pr .n{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--i);font-weight:500}
+.pr h4{font-size:15px;font-weight:600;margin:4px 0 4px}
+.pr p{font-size:13.5px;color:var(--muted);margin:0}
+.note{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--i);border-radius:8px;padding:12px 16px;margin:14px 0;max-width:82ch;font-size:14px}
+.note p{max-width:none}
+.tbl{overflow-x:auto;margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--ground)}
+tr:last-child td{border-bottom:0}
+/* ---------- mock chrome ---------- */
+.mock{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-top:14px;overflow:hidden;font-size:13px}
+.mock .top{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.mock .top h4{font-size:16px;font-weight:600}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:2px 9px;border-radius:999px;background:var(--i-soft);color:var(--i-ink);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.info{background:var(--info-soft);color:var(--info)} .pill.grey{background:var(--ground);color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:9px;border:1px solid var(--line-strong);background:var(--paper);color:var(--i);white-space:nowrap}
+.btn.solid{background:var(--i);color:#fff;border-color:var(--i)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.spacer{flex:1}
+.tabs{display:flex;gap:4px;padding:0 16px;border-bottom:1px solid var(--line)}
+.tabs span{padding:8px 10px;font-size:13px;color:var(--muted);border-bottom:2px solid transparent}
+.tabs span.on{color:var(--i);border-color:var(--i);font-weight:600}
+.glance{display:flex;flex-wrap:wrap;gap:6px 18px;padding:10px 16px;font-size:13px;color:var(--muted);border-bottom:1px solid var(--line)}
+.glance b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.glance .amber b{color:var(--warn)} .glance .rose b{color:var(--bad)} .glance .green b{color:var(--ok)}
+.board{display:flex;gap:10px;padding:14px 16px 16px;overflow-x:auto}
+.col{flex:0 0 172px;background:var(--ground);border:1px solid var(--line);border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:8px;min-height:250px}
+.col.drop{outline:2px dashed var(--i);outline-offset:-2px;background:var(--i-soft)}
+.col h5{margin:0;font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:6px;padding:2px 4px}
+.col h5 .c{margin-left:auto;font-size:11px;font-weight:500;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:0 7px;color:var(--muted)}
+.col .days{font-size:11px;color:var(--muted);padding:0 4px;margin-top:-6px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 9px 8px 11px;position:relative;box-shadow:0 1px 1px rgba(30,27,46,.04)}
+.card::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--line-strong)}
+.card.sl::before{background:var(--ok)} .card.rf::before{background:var(--bad)} .card.wait::before{background:var(--warn)} .card.lift{box-shadow:0 10px 24px -8px rgba(30,27,46,.35);transform:rotate(-1.5deg) translateY(-2px);border-color:var(--i-light)}
+.card .nm{font-weight:600;font-size:13px;line-height:1.25}
+.card .sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.card .ic{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.card .ic span{font-size:10.5px;padding:1px 6px;border-radius:5px;background:var(--ground);color:var(--muted);border:1px solid var(--line)}
+.card .ic span.w{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.card .ic span.k{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.card .ic span.i{background:var(--info-soft);color:var(--info);border-color:transparent}
+.col.closed{flex:0 0 150px;background:transparent;border-style:dashed}
+.col.closed .row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);padding:4px 4px;border-bottom:1px dashed var(--line)}
+.col.closed .row b{color:var(--ink);font-weight:500}
+.hint{font-size:11.5px;color:var(--muted);padding:6px 6px;border:1px dashed var(--line-strong);border-radius:8px;text-align:center}
+.toast{margin:0 16px 16px;display:inline-flex;align-items:center;gap:12px;background:var(--ink);color:var(--paper);font-size:12.5px;padding:8px 12px;border-radius:10px}
+.toast b{color:var(--i-light);font-weight:600}
+.selbar{margin:0 16px 12px;display:inline-flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--i-light);border-radius:12px;padding:6px 12px;font-size:12.5px;box-shadow:var(--shadow)}
+.callouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:12px}
+.co{display:flex;gap:10px;font-size:13.5px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.co .n{flex:0 0 22px;height:22px;border-radius:50%;background:var(--i);color:#fff;font-family:"IBM Plex Mono",monospace;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:500}
+/* drawer mock */
+.split{display:grid;grid-template-columns:1fr 340px;gap:0}
+.drawer{border-left:1px solid var(--line);background:var(--paper);padding:14px;display:flex;flex-direction:column;gap:12px;font-size:12.5px}
+.drawer .hero{display:flex;gap:10px;align-items:center}
+.av{width:38px;height:38px;border-radius:50%;background:var(--i-soft);color:var(--i-ink);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px}
+.drawer h4{font-size:15px;font-weight:600}
+.drawer .kv{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;color:var(--muted)}
+.drawer .kv b{color:var(--ink);font-weight:500}
+.next{background:var(--i-soft);border-radius:10px;padding:10px 12px}
+.next .l{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--i-ink);font-weight:600}
+.next p{margin:3px 0 8px;font-size:12.5px;color:var(--ink);max-width:none}
+.sec{border-top:1px solid var(--line);padding-top:8px}
+.sec .l{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px}
+.tl{margin:6px 0 0;padding-left:14px;border-left:2px solid var(--line);display:flex;flex-direction:column;gap:5px;color:var(--muted)}
+.tl b{color:var(--ink);font-weight:500}
+.lock{font-size:10.5px;padding:1px 6px;border-radius:5px;background:var(--warn-soft);color:var(--warn);margin-left:auto}
+.faded{color:var(--muted)}
+/* matrix */
+.matrix{display:grid;grid-template-columns:150px repeat(9,1fr);gap:4px;font-size:11.5px;align-items:center;padding:12px 16px;overflow-x:auto}
+.matrix .h{color:var(--muted);text-align:center;font-size:10.5px;line-height:1.2}
+.matrix .r{font-weight:500}
+.matrix .d{height:22px;border-radius:6px;background:var(--i-soft);border:1px solid var(--i-light)}
+.matrix .d.off{background:var(--ground);border-color:var(--line)}
+/* form builder */
+.fb{display:grid;grid-template-columns:1fr 300px;gap:0}
+.fb .prev{padding:16px;border-right:1px solid var(--line)}
+.field{border:1px solid var(--line);border-radius:8px;padding:6px 10px;margin-bottom:8px;font-size:12.5px;display:flex;justify-content:space-between;background:var(--paper)}
+.field .req{color:var(--bad);font-size:11px}
+.fb .side{padding:14px;font-size:12.5px;display:flex;flex-direction:column;gap:8px}
+.fb .side .it{display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+.fb .side .it .g{color:var(--line-strong);font-family:"IBM Plex Mono",monospace}
+.fb .side .it .sw{margin-left:auto;width:26px;height:14px;border-radius:7px;background:var(--i);position:relative}
+.fb .side .it .sw.off{background:var(--line-strong)}
+.langs{display:flex;gap:4px;margin-bottom:10px}
+.langs span{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line-strong);color:var(--muted)}
+.langs span.on{background:var(--i);color:#fff;border-color:var(--i)}
+/* rules table */
+.rules{display:grid;gap:8px;margin-top:10px}
+.rule{display:grid;grid-template-columns:200px 1fr;gap:12px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:14px}
+.rule b{font-weight:600}
+.phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:12px}
+.phase{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:14px;box-shadow:var(--shadow)}
+.phase .num{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--teal);font-weight:500}
+.phase h4{font-size:15px;margin:3px 0 6px}
+.phase p{color:var(--muted);font-size:13.5px;margin:0}
+.foot{margin-top:48px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+@media (max-width:860px){ .split,.fb{grid-template-columns:1fr} .drawer{border-left:0;border-top:1px solid var(--line)} .rule{grid-template-columns:1fr} .matrix{grid-template-columns:120px repeat(9,40px)} }
+@media (prefers-reduced-motion:no-preference){ .card{transition:transform .15s,box-shadow .15s} }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="eyebrow">Rize · Hiring · experience design</div>
+  <h1>Hiring Experience Blueprint</h1>
+  <p class="lede">The one design every phase of the Rize Hiring rebuild builds to. A recruiter who has never seen the product should open it, understand the board in ten seconds, and get through a whole hiring cycle without a training session. The screens below are drawn to scale with demo data so you can judge the feel before anything is coded.</p>
+  <div class="meta"><span>Prepared 30 September 2026</span><span>Follows the gap register (G-01 … G-58) and your three rulings of today</span><span>Built on the Payobook indigo kit; Lucide icons; light and dark</span></div>
+
+  <h2>Seven promises the design keeps</h2>
+  <div class="principles">
+    <div class="pr"><span class="n">01</span><h4>One door, one room</h4><p>"Hiring" opens on your roles. Open a role and you are on its board. Everything else (candidate, request, job description, adverts, set-up) opens from where you are, never from a menu tree.</p></div>
+    <div class="pr"><span class="n">02</span><h4>The screen says what to do next</h4><p>Every role card and every candidate carries one plain sentence and one button: "Two opinions are in, one is late. Remind Minh." Nothing is left for the reader to work out.</p></div>
+    <div class="pr"><span class="n">03</span><h4>Rize's words, everywhere</h4><p>Applications received, Shortlist, Recruiter review, Discussion 1, CV reject. The talent lead's description of each stage shows under its column name, so a stand-in recruiter reads the process off the board.</p></div>
+    <div class="pr"><span class="n">04</span><h4>Move things with your hands</h4><p>Drag a card. Tick three and move them together. Edit a stage name by clicking it. No "Change status" dialog, no dropdown-then-update.</p></div>
+    <div class="pr"><span class="n">05</span><h4>Nothing blocks; everything undoes</h4><p>Any card to any column, no sign-off in the way. A move shows a five-second "Undo". Reasons are offered, never demanded. The one exception, sending an offer, explains itself when it cannot.</p></div>
+    <div class="pr"><span class="n">06</span><h4>Empty states teach</h4><p>A column with nobody in it says what belongs there. A new role shows the three things to do before publishing. A first-time visitor gets three hints, once.</p></div>
+    <div class="pr"><span class="n">07</span><h4>Private until shared</h4><p>A candidate belongs to the recruiter. Sharing with a hiring manager or a panel is one explicit control that says exactly what they will see. Money and recruiter notes carry a lock.</p></div>
+  </div>
+
+  <h2>Who sees what</h2>
+  <div class="tbl"><table>
+    <tr><th>Person</th><th>Opens on</th><th>Can do</th><th>Never sees</th></tr>
+    <tr><td><b>Recruiter</b></td><td>Roles I recruit for (all roles reachable)</td><td>Everything on the board: move, email, notes, share, offers</td><td>Other recruiters' private notes</td></tr>
+    <tr><td><b>Talent lead</b> (was "Hiring manager" tier)</td><td>All roles + the Set-up door</td><td>Everything a recruiter can, plus stages, forms, scorecards, emails, automations, who does what</td><td>—</td></tr>
+    <tr><td><b>Head of hiring / HR</b></td><td>All roles</td><td>Sign-offs (recorded, never blocking), offers, retention rules</td><td>Recruiter private notes unless shared</td></tr>
+    <tr><td><b>Hiring manager</b> (line manager)</td><td>My roles only</td><td>Raise or complete a request, read what was shared, leave notes, score interviews, see the board</td><td>Cards cannot be dragged; resume bank; money unless the recruiter shared it</td></tr>
+    <tr><td><b>Interviewer</b></td><td>A private link per interview (no login needed)</td><td>Fill the scorecard</td><td>Other panellists' answers until all are in; money; notes</td></tr>
+    <tr><td><b>Finance</b></td><td>A sign-off note with the figures</td><td>Agree or comment</td><td>Candidates, notes, the board</td></tr>
+    <tr><td><b>Agency</b></td><td>Its own portal: open roles assigned to it</td><td>Submit a candidate</td><td>Anything internal; other candidates</td></tr>
+    <tr><td><b>Candidate</b></td><td>The public form; secure links for documents, offer and joining details</td><td>Apply, upload, accept</td><td>Anything internal</td></tr>
+  </table></div>
+
+  <h2>The hero: a role's board</h2>
+  <p>This is the screen a recruiter lives in. Columns are the stages this role shows; cards are people. Closed outcomes (CV reject, Interview reject, Drop-out, On hold, Offer drop) stay real stages, so the numbers mean what Anita wants them to mean, but they sit in a quiet rail on the right so the working board stays about the people still in play.</p>
+
+  <div class="mock">
+    <div class="top">
+      <h4>Territory Manager · Vietnam</h4>
+      <span class="pill">Sales</span><span class="pill">2 openings · 0 filled</span><span class="pill ok">Request agreed</span><span class="pill info">Published · 3 channels</span>
+      <span class="spacer"></span>
+      <span class="btn ghost">Ask a manager</span><span class="btn">Add a candidate</span><span class="btn solid">Publish</span>
+    </div>
+    <div class="tabs"><span class="on">Board</span><span>Interviews</span><span>Details</span><span>Activity</span></div>
+    <div class="glance"><span><b>14</b> people in play</span><span class="amber"><b>3</b> waiting on you</span><span><b>2</b> interviews this week</span><span class="rose"><b>1</b> opinion late</span><span class="green"><b>0</b> offers out</span><span class="faded">Showing everyone · press a number to narrow</span></div>
+    <div class="board">
+      <div class="col"><h5>Applications received <span class="c">5</span></h5><div class="days">~2 days here</div>
+        <div class="card"><div class="nm">Nguyen Thi Lan</div><div class="sub">Applied 1 day ago · JobStreet</div><div class="ic"><span class="w">First look</span></div></div>
+        <div class="card"><div class="nm">Tran Minh Duc</div><div class="sub">Applied 2 days ago · Referral</div><div class="ic"><span class="w">First look</span><span>Referred by Hoa</span></div></div>
+        <div class="card"><div class="nm">Le Van Hung</div><div class="sub">Applied 3 days ago · LinkedIn</div><div class="ic"><span class="w">First look</span></div></div>
+        <div class="hint">+2 more</div>
+      </div>
+      <div class="col"><h5>Shortlist <span class="c">3</span></h5><div class="days">~3 days here</div>
+        <div class="card sl"><div class="nm">Pham Thu Ha</div><div class="sub">Shortlisted yesterday</div><div class="ic"><span class="k">Shared with Minh</span></div></div>
+        <div class="card sl"><div class="nm">Vo Quoc Bao</div><div class="sub">Shortlisted 2 days ago</div><div class="ic"><span class="i">Portfolio</span></div></div>
+        <div class="card sl lift"><div class="nm">Dang Thi Mai</div><div class="sub">Shortlisted 4 days ago</div><div class="ic"><span>Agency · TalentVN</span></div></div>
+      </div>
+      <div class="col drop"><h5>Recruiter review <span class="c">2</span></h5><div class="days">~4 days here</div>
+        <div class="card"><div class="nm">Bui Anh Tuan</div><div class="sub">Calendly sent · slot Thu 10:00</div><div class="ic"><span class="i">Meet</span></div></div>
+        <div class="card wait"><div class="nm">Hoang Kim Chi</div><div class="sub">Calendly sent 5 days ago</div><div class="ic"><span class="w">No slot picked</span></div></div>
+      </div>
+      <div class="col"><h5>Hiring manager review <span class="c">1</span></h5><div class="days">~1 day here</div>
+        <div class="card wait"><div class="nm">Do Van Long</div><div class="sub">Waiting on Minh · 2 days</div><div class="ic"><span class="w">Remind</span></div></div>
+      </div>
+      <div class="col"><h5>Discussion 1 <span class="c">2</span></h5><div class="days">~5 days here</div>
+        <div class="card"><div class="nm">Ngo Thanh Tam</div><div class="sub">Tue 14:00 · Meet</div><div class="ic"><span class="i">Interview set</span></div></div>
+        <div class="card wait"><div class="nm">Ly Thi Thu</div><div class="sub">Done Mon · opinions 2 of 3</div><div class="ic"><span class="w">1 late</span></div></div>
+      </div>
+      <div class="col"><h5>Discussion 2 <span class="c">1</span></h5><div class="days">~6 days here</div>
+        <div class="card"><div class="nm">Cao Minh Khoa</div><div class="sub">Scores 4.2 · Yes ×2</div><div class="ic"><span class="k">Ready to decide</span></div></div>
+      </div>
+      <div class="col"><h5>Offer <span class="c">0</span></h5><div class="days">—</div><div class="hint">The person you want to make an offer to. Sending needs the request agreed — it is.</div></div>
+      <div class="col closed"><h5>Closed <span class="c">9</span></h5>
+        <div class="row"><span>CV reject</span><b>6</b></div><div class="row"><span>Interview reject</span><b>2</b></div><div class="row"><span>Drop-out</span><b>1</b></div><div class="row"><span>On hold</span><b>0</b></div><div class="row"><span>Offer drop</span><b>0</b></div>
+        <div class="hint" style="margin-top:6px">Drop a card here, or press to open</div>
+      </div>
+    </div>
+    <div class="selbar">3 selected <span class="btn">Move to ▾</span><span class="btn">Send an email</span><span class="btn ghost">Not this time</span><span class="btn ghost">Clear</span></div><br>
+    <div class="toast">Dang Thi Mai moved to Recruiter review · the Calendly email went out <b>Undo</b></div>
+  </div>
+  <div class="callouts">
+    <div class="co"><span class="n">1</span><div><b>Header chips answer the four questions</b> a stand-in asks: which team, how many seats, is there an agreed request, where is it advertised. Each chip opens the matching part of Details.</div></div>
+    <div class="co"><span class="n">2</span><div><b>The quiet numbers line</b> (your approved pattern): grey at zero, colour only when someone must act. Press a figure to narrow the board; press it again to clear.</div></div>
+    <div class="co"><span class="n">3</span><div><b>Column headers</b> carry the count, a "~N days here" caption from real stage timings, and on hover the talent lead's one-line meaning of the stage. Hidden stages for this role are one click away for the talent lead ("Show a hidden stage").</div></div>
+    <div class="co"><span class="n">4</span><div><b>Cards</b> show name, when they applied and from where, and at most two chips. A coloured left edge means: green shortlisted, amber waiting on somebody, rose a problem. Hover shows Advance, Not this time and Open.</div></div>
+    <div class="co"><span class="n">5</span><div><b>Drag anywhere.</b> The target column lights up; the card lands; a toast names what happened and offers Undo for five seconds. Automations that fired (like the Calendly email) are named in the toast, so nothing happens silently.</div></div>
+    <div class="co"><span class="n">6</span><div><b>Multi-select</b> by ticking cards (or shift-click a range). A floating bar moves, emails or closes them together. Keyboard: arrows move focus, Enter opens, M moves, Esc clears.</div></div>
+    <div class="co"><span class="n">7</span><div><b>Closed rail</b> keeps the outcome stages honest without stealing width. Dropping on it opens a small popover: which outcome, an optional reason, and a tick to send the "not this time" email in the candidate's language.</div></div>
+    <div class="co"><span class="n">8</span><div><b>Empty columns explain themselves</b> in one sentence. The Offer column also states the one hard rule in context, so the recruiter learns it before hitting it.</div></div>
+  </div>
+
+  <h2>The candidate drawer</h2>
+  <p>Opening a card slides a drawer over the board; the board stays visible behind it so the recruiter never loses their place. The drawer is one scroll, no tabs: the next step first, then the story of this person top to bottom.</p>
+  <div class="mock split">
+    <div style="padding:16px;color:var(--muted);font-size:13px">The board, dimmed, still visible. Arrow keys move to the next card without closing the drawer.</div>
+    <div class="drawer">
+      <div class="hero"><div class="av">LT</div><div><h4>Ly Thi Thu</h4><div class="faded">Territory Manager · Vietnam · Discussion 1</div></div><span class="lock">Private to hiring</span></div>
+      <div class="kv"><span>Applied</span><b>12 Sep · LinkedIn</b><span>Based in</span><b>Ho Chi Minh City</b><span>Expects</span><b>₫28,000,000 / month <span class="lock">recruiter only</span></b><span>Shared with</span><b>Minh (profile, CV) · Change</b></div>
+      <div class="next"><div class="l">Next</div><p>Discussion 1 happened on Monday. Two opinions are in; Quang's is a day late.</p><span class="btn solid">Remind Quang</span> <span class="btn">Enter it for him</span></div>
+      <div class="sec"><div class="l">Scorecards · Discussion 1</div><div class="tl"><span><b>Minh</b> · 4 / 5 · Yes · "Strong on territory planning"</span><span><b>Hoa</b> · 4 / 5 · Maybe · "Check numbers depth"</span><span class="faded">Quang · not yet</span></div></div>
+      <div class="sec"><div class="l">Recruiter notes <span class="lock">Only you and the talent lead</span></div><div class="tl"><span>Comfortable at ₫28m; would move for ₫30m. <span class="faded">Shared with Minh</span></span></div></div>
+      <div class="sec"><div class="l">Timeline</div><div class="tl"><span><b>Mon</b> Discussion 1 · attended</span><span><b>Thu</b> Moved to Discussion 1 by An</span><span><b>Wed</b> Calendly email sent · slot picked</span><span><b>Tue</b> Shortlisted by An · shared with Minh</span><span><b>12 Sep</b> Applied via LinkedIn</span></div></div>
+      <div class="sec"><div class="l">Documents</div><div class="tl"><span>CV.pdf · preview</span><span>Portfolio link</span></div></div>
+    </div>
+  </div>
+  <div class="callouts">
+    <div class="co"><span class="n">1</span><div><b>Locks are visible, not hidden.</b> Money and recruiter notes show a small lock with who can see them, so a recruiter never wonders whether the hiring manager saw a figure.</div></div>
+    <div class="co"><span class="n">2</span><div><b>"Shared with … · Change"</b> is the one privacy control: tick what (profile, CV, portfolio, assignment, scorecards, expected pay) and who (the hiring manager, panel members named on the role). The talent lead sets a default per role.</div></div>
+    <div class="co"><span class="n">3</span><div><b>The Next box</b> is computed from the record: late opinion, unpicked slot, no outcome logged, offer waiting on the request. Only when the move is the reader's does it show a button; otherwise it names who it waits on.</div></div>
+  </div>
+
+  <h2>Hiring home: the roles</h2>
+  <p>The first screen. A recruiter sees the roles they recruit for; a talent lead sees all; a hiring manager sees only theirs. Cards are sorted by what needs a hand, not alphabetically.</p>
+  <div class="mock">
+    <div class="top"><h4>Hiring</h4><span class="spacer"></span><span class="btn ghost">Set up hiring</span><span class="btn">Ask a manager for a request</span><span class="btn solid">Open a role</span></div>
+    <div class="glance"><span><b>8</b> open roles</span><span class="amber"><b>3</b> waiting on you</span><span><b>5</b> interviews this week</span><span class="rose"><b>2</b> roles past their close-by date</span><span class="green"><b>1</b> joined this month</span></div>
+    <div class="board" style="flex-wrap:wrap">
+      <div class="card" style="flex:1 1 260px"><div class="nm">Territory Manager · Vietnam</div><div class="sub">Sales · An recruits · open 23 days · 2 seats</div><div class="ic"><span>5</span><span class="k">3</span><span>2</span><span>1</span><span>2</span><span>1</span><span class="faded">→ 9 closed</span></div><div class="sub" style="margin-top:6px;color:var(--warn)">1 opinion late · Remind Quang</div></div>
+      <div class="card wait" style="flex:1 1 260px"><div class="nm">Junior Agronomist · Indonesia</div><div class="sub">Field · Dewi recruits · open 4 days · 1 seat</div><div class="ic"><span class="w">No request yet</span></div><div class="sub" style="margin-top:6px;color:var(--warn)">Ask Budi to complete the request · reminded 2 days ago</div></div>
+      <div class="card sl" style="flex:1 1 260px"><div class="nm">Finance Analyst · Singapore</div><div class="sub">Finance · Priya recruits · open 41 days · 1 seat</div><div class="ic"><span class="k">Offer out</span></div><div class="sub" style="margin-top:6px">Offer sent Monday · candidate viewing</div></div>
+    </div>
+  </div>
+  <div class="callouts">
+    <div class="co"><span class="n">1</span><div><b>The mini funnel</b> on each role card is the board in miniature: one segment per visible stage, in stage order, so a recruiter reads "5 new, 3 shortlisted, 2 in recruiter review" without opening anything.</div></div>
+    <div class="co"><span class="n">2</span><div><b>"Open a role"</b> creates a role directly (your ruling: roles and requests are separate). It asks for five things: title, department, country, seats, recruiter. The stage set and the application form are pre-filled from department + country; the recruiter accepts or edits.</div></div>
+    <div class="co"><span class="n">3</span><div><b>"Ask a manager for a request"</b> is how a request starts when the manager will not open the product on their own: pick the manager and the role, add a line, send. The role card then tracks "Waiting on Budi · reminded 2 days ago · Remind now".</div></div>
+  </div>
+
+  <h2>Set up hiring: the talent lead's door</h2>
+  <p>One page with six cards, each with a status line and a Go button. Nothing here needs a ticket. The stages card is drawn below because it is the one Anita will use first.</p>
+  <div class="mock">
+    <div class="top"><h4>Stages</h4><span class="pill grey">Used by 8 roles</span><span class="spacer"></span><span class="btn">Preview as a board</span><span class="btn solid">Add a stage</span></div>
+    <div style="padding:12px 16px;font-size:13px;color:var(--muted)">The universal list. Click a name to rename it. Drag to reorder. Each stage has a one-line meaning that shows on the board. Below, which stages a role shows by default for each department and country; a role can still change its own.</div>
+    <div class="matrix">
+      <span></span><span class="h">Applications received</span><span class="h">Shortlist</span><span class="h">Recruiter review</span><span class="h">HM review</span><span class="h">Assignment</span><span class="h">Discussion 1</span><span class="h">Discussion 2</span><span class="h">Discussion 3</span><span class="h">Offer</span>
+      <span class="r">Sales · Vietnam</span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d off"></span><span class="d off"></span><span class="d"></span><span class="d"></span><span class="d off"></span><span class="d"></span>
+      <span class="r">Field · Indonesia</span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d off"></span><span class="d off"></span><span class="d"></span>
+      <span class="r">Tech · any country</span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d off"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span>
+      <span class="r">Finance · Singapore</span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d off"></span><span class="d"></span>
+    </div>
+  </div>
+  <div class="callouts">
+    <div class="co"><span class="n">1</span><div><b>Six cards on the set-up page:</b> Stages · Application forms · Scorecards · Emails and languages · Automations · Who does what. Each states its status in a sentence ("Standard set, 4 presets, last changed by Anita on 2 Oct").</div></div>
+    <div class="co"><span class="n">2</span><div><b>The preset grid</b> answers Vijay's proposal from the call: a department + country row pre-fills which columns a new role shows. Tap a square to toggle. "Preview as a board" renders a sample board with those columns so the choice is seen, not imagined.</div></div>
+    <div class="co"><span class="n">3</span><div><b>Outcome stages</b> (the closed rail) are always on for every role; they are the words analytics depend on.</div></div>
+  </div>
+
+  <h2>Application form builder <span class="tag ph">phase 2</span></h2>
+  <p>Vijay described "a side panel where they create a field and drag it onto the form". This is that, with the candidate's view live on the left in the language being edited.</p>
+  <div class="mock fb">
+    <div class="prev">
+      <div class="langs"><span class="on">English</span><span>Tiếng Việt</span><span>Bahasa Indonesia · 3 missing</span></div>
+      <div class="field"><span>Full name</span><span class="req">required</span></div>
+      <div class="field"><span>Email</span><span class="req">required</span></div>
+      <div class="field"><span>Phone (Vietnam format)</span><span class="req">required</span></div>
+      <div class="field"><span>Where are you based right now?</span><span class="req">required</span></div>
+      <div class="field"><span>Expected monthly pay</span><span class="req">required</span></div>
+      <div class="field"><span>CV (PDF or Word)</span><span class="req">required</span></div>
+      <div class="field"><span>Portfolio (file or link)</span><span class="req">required for this role</span></div>
+      <div class="field"><span>I agree to Rize keeping my details for 12 months</span><span class="req">required</span></div>
+    </div>
+    <div class="side">
+      <div style="font-weight:600">Fields on this form</div>
+      <div class="it"><span class="g">⋮⋮</span>Full name<span class="sw"></span></div>
+      <div class="it"><span class="g">⋮⋮</span>Expected monthly pay<span class="sw"></span></div>
+      <div class="it"><span class="g">⋮⋮</span>Portfolio<span class="sw"></span></div>
+      <div class="it"><span class="g">⋮⋮</span>LinkedIn<span class="sw off"></span></div>
+      <div style="font-weight:600;margin-top:6px">Add a question</div>
+      <div class="it">Short answer</div><div class="it">Choice</div><div class="it">Yes / No</div><div class="it">File</div>
+      <div style="font-weight:600;margin-top:6px">Templates</div>
+      <div class="it">Standard · Field roles · Senior roles · Tech</div>
+      <span class="btn solid" style="align-self:flex-start;margin-top:6px">Use this form for Territory Manager</span>
+    </div>
+  </div>
+  <div class="callouts">
+    <div class="co"><span class="n">1</span><div><b>Required means required.</b> The server refuses a submission missing a required file, which closes the portfolio hole Anita reported in Zoho.</div></div>
+    <div class="co"><span class="n">2</span><div><b>Languages are tabs, not copies.</b> One form, three label sets; the "3 missing" nudge lists exactly which labels still need Bahasa. The candidate sees the version for the role's market with a switch.</div></div>
+    <div class="co"><span class="n">3</span><div><b>Consent</b> is a field the talent lead cannot remove, only reword per market; the retention months come from the country's rule.</div></div>
+  </div>
+
+  <h2>Requests without friction <span class="tag ph">phase 3</span></h2>
+  <div class="rules">
+    <div class="rule"><b>The manager's page</b><span>The email link opens one page, no login hunt: the role at the top, the questions in order, saving as they type, a progress line ("6 of 9 answered"). Budget is a plain money field with a live, gentle note: "This is above the department's budget. The CEO, Head of HR and Finance will be told when you submit. Nothing stops."</span></div>
+    <div class="rule"><b>Reminders the recruiter controls</b><span>On the role card: "Waiting on Budi · reminded 2 days ago · Remind now · every 2 days". After 3 business days the talent lead is told automatically.</span></div>
+    <div class="rule"><b>Sign-offs record, never block</b><span>Manager, HR and Finance get a note and a one-click "Noted / Agreed". The role does not wait. The request's chip says "Request agreed" only when the manager and HR have pressed it; until then the Offer column explains that sending an offer will wait.</span></div>
+    <div class="rule"><b>Job description</b><span>Lives on the role's Details tab as a versioned text with "Share draft with Budi for input". Edits flow to the advert with a "Republish" nudge.</span></div>
+  </div>
+
+  <h2>Scorecards that people actually fill in <span class="tag ph">phase 5</span></h2>
+  <div class="rules">
+    <div class="rule"><b>The interviewer's page</b><span>One private link, no login. The candidate's name, the round, the CV if shared. Then the scorecard the talent lead designed for this role and round: free-text areas, a five-star rating, and four big decision buttons Yes / Maybe / No / Hold. A line at the top: "Your answers stay hidden from the other panellists until everyone is in."</span></div>
+    <div class="rule"><b>The recruiter's view</b><span>Per candidate, a grid: rows are panellists, columns are the scorecard's parts, with the decision as a coloured chip. "Enter it for them" opens the same form with a note "entered by An from Slack, 3 Oct" that stays on the record.</span></div>
+    <div class="rule"><b>Reminders</b><span>A chase after 24 working hours, then daily until done, each one naming the candidate and the round; the talent lead is told when a panellist is two days late. Moving the candidate on never stops a late scorecard from being submitted.</span></div>
+    <div class="rule"><b>Phone screen</b><span>Moving a card into Recruiter review sends the recruiter's own Calendly link automatically; the card shows "Calendly sent · slot picked Thu 10:00" once the calendar hold appears. The transcript slot on the interview is visible to recruiters and the talent lead only.</span></div>
+  </div>
+
+  <h2>From offer to joined <span class="tag ph">phase 6</span></h2>
+  <div class="rules">
+    <div class="rule"><b>Offer</b><span>"Send offer" is the one button that can refuse, and when it does it says why in a sentence with the fix: "The request for this role is not agreed yet. Ask Budi and Nithya to press Agree." Money on the offer shows a lock naming who can see it.</span></div>
+    <div class="rule"><b>Post-offer</b><span>A signed offer moves the card to Post-offer with a countdown: "Joining Mon 3 Nov · 9 days". Under it, the recruiter's pre-joining list: ask Budi to name a buddy · ask Lan for laptop preferences · set up a coffee chat. Each is one button that sends the right email or link.</span></div>
+    <div class="rule"><b>The week before</b><span>Recruiter, hiring manager and HR get one email: "Lan joins on Monday. Still on? · Date changed · Did not join". Each answer is a button that does the right thing.</span></div>
+    <div class="rule"><b>Joined</b><span>"Confirm they joined" on the day creates the employee, contract and login and hands over to HR's onboarding. "Did not join" records an offer drop with a reason. Hiring numbers then show offered → accepted → joined per market.</span></div>
+  </div>
+
+  <h2>Rules that bind every screen</h2>
+  <div class="rules">
+    <div class="rule"><b>Motion with purpose</b><span>Cards lift on drag and settle on drop (150 ms). Columns highlight when a card is over them. Count pills tick. Drawers slide from the right. Nothing bounces, nothing loops. Reduced-motion users get instant changes.</span></div>
+    <div class="rule"><b>Undo, not confirm</b><span>Reversible actions (moves, shares, note edits, reminders) show a toast with Undo for five seconds. Confirmations are only for the irreversible: sending an offer, confirming a joining, purging data.</span></div>
+    <div class="rule"><b>Every state designed</b><span>Loading shows skeleton cards in the columns, not a spinner. Empty columns and empty boards teach. Errors say what went wrong and what to press. A huge board (500 cards) shows the first 30 per column with "Show 40 more".</span></div>
+    <div class="rule"><b>First visit</b><span>Three hints, shown once and dismissable: "Drag a card to move someone", "Press a number to narrow the board", "Everything you move can be undone". Hover on any column name shows the talent lead's meaning of that stage.</span></div>
+    <div class="rule"><b>Keyboard</b><span>Arrow keys move between cards, Enter opens, M moves, E emails, N notes, Esc closes; ⌘K reaches any role or person. The floating bar appears after the first tick.</span></div>
+    <div class="rule"><b>Plain words</b><span>No internal vocabulary on screen. Rize's stage names. "Not this time" for reject, "Waiting on Minh" not "pending approval", "Agreed" not "validated". The word "Odoo" never appears.</span></div>
+    <div class="rule"><b>Light and dark</b><span>Both themes designed, both checked in the browser before a phase is reported done.</span></div>
+  </div>
+
+  <h2>Vocabulary sheet</h2>
+  <div class="tbl"><table>
+    <tr><th>Stage (in order)</th><th>Family</th><th>Meaning the board shows on hover (talent lead can edit)</th></tr>
+    <tr><td>Applications received</td><td>Open</td><td>Everyone who applied and has not had a first look yet.</td></tr>
+    <tr><td>Shortlist</td><td>Open</td><td>Worth a conversation. From here they go to a recruiter review or straight to a hiring manager review.</td></tr>
+    <tr><td>Recruiter review</td><td>Open</td><td>A 30-minute conversation with the recruiter. Moving here sends the Calendly link.</td></tr>
+    <tr><td>Hiring manager review</td><td>Open · optional per role</td><td>The hiring manager looks at the CV before interviews are set up. Used for senior or new roles.</td></tr>
+    <tr><td>Assignment</td><td>Open · optional per role</td><td>A take-home task. Moving here sends the brief.</td></tr>
+    <tr><td>Discussion 1 / 2 / 3</td><td>Open · 3 is optional per role</td><td>Interview rounds, each with its own scorecard.</td></tr>
+    <tr><td>Offer</td><td>Open</td><td>The person we want. Sending the offer needs the request agreed.</td></tr>
+    <tr><td>Post-offer</td><td>Open</td><td>Offer accepted, joining date known, pre-joining tasks running. Still a candidate.</td></tr>
+    <tr><td>Joined</td><td>Done</td><td>Started on the confirmed date. Now an employee.</td></tr>
+    <tr><td>CV reject</td><td>Closed</td><td>Not taken forward after the first look.</td></tr>
+    <tr><td>Interview reject</td><td>Closed</td><td>Not taken forward after a conversation or interview.</td></tr>
+    <tr><td>Drop-out</td><td>Closed</td><td>The candidate withdrew before an offer.</td></tr>
+    <tr><td>On hold</td><td>Closed · reversible</td><td>Paused with a date to look again.</td></tr>
+    <tr><td>Offer drop</td><td>Closed</td><td>Declined the offer, or accepted and did not join.</td></tr>
+  </table></div>
+  <div class="tbl"><table>
+    <tr><th>First-look outcome</th><th>What happens</th></tr>
+    <tr><td>Shortlist</td><td>Card moves to Shortlist.</td></tr>
+    <tr><td>CV reject</td><td>Card moves to CV reject; optional reason; optional "not this time" email.</td></tr>
+    <tr><td>Future-fit</td><td>Goes to the Resume bank with a tag; card moves to CV reject so the count stays honest.</td></tr>
+    <tr><td>Fit for other role</td><td>Pick the other role; a copy lands in its Applications received; this card moves to CV reject.</td></tr>
+  </table></div>
+
+  <h2>What each phase builds from this blueprint</h2>
+  <div class="phases">
+    <div class="phase"><span class="num">Phase 1</span><h4>Board, stages, the non-blocking rule</h4><p>Hiring home, the role board with drag-and-drop, closed rail, quiet numbers, drawer with Next box and timeline, Rize's stage set with presets and per-role visibility, role tiers renamed, gates removed, stock menus hidden, first-visit hints.</p></div>
+    <div class="phase"><span class="num">Phase 2</span><h4>Application forms</h4><p>The builder, templates, required files, expected pay, consent, three languages, duplicate flag.</p></div>
+    <div class="phase"><span class="num">Phase 3</span><h4>Requests, budget, the offer rule</h4><p>Open a role directly, Ask a manager, the manager's page, non-blocking sign-offs, budget flag, JD sharing, the explicit offer rule.</p></div>
+    <div class="phase"><span class="num">Phase 4</span><h4>Privacy and resume bank</h4><p>Share with…, locks on money and notes, private recruiter notes, Resume bank tab, consent and retention.</p></div>
+    <div class="phase"><span class="num">Phase 5</span><h4>Interviews and scorecards</h4><p>Scorecard templates per role and round, interviewer page, proxy entry, reminders, Calendly rule, Google Calendar + Meet, transcript slot, side-by-side debrief.</p></div>
+    <div class="phase"><span class="num">Phase 6</span><h4>Joining and numbers</h4><p>Post-offer, countdown, pre-joining list, week-before email, Confirm they joined, offer-drop funnel, market filters, ageing.</p></div>
+    <div class="phase"><span class="num">Phase 7</span><h4>Channels and agencies</h4><p>Publish-to panel with tracked links, agency portal, 6-month cooling rule.</p></div>
+    <div class="phase"><span class="num">Phase 8</span><h4>Communications</h4><p>Language versions of every candidate email, the automations list, notification deltas.</p></div>
+  </div>
+
+  <div class="foot">Names on the mocks are demo names, not real candidates. Stage timings and counts are illustrative. Companion document: the gap register (G-01 … G-58), which says why each piece exists and where Rize asked for it.</div>
+</div>
+
+</body>
+</html>

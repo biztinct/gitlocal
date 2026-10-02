@@ -1,0 +1,870 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Payobook · Payroll Blueprint</title><style>@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;650;700&family=Manrope:wght@500;600;700;750;800&display=swap');
+:root{--ink:#211d36;--muted:#777487;--purple:#6650bf;--violet:#f0ecfb;--line:#e9e5f1;--green:#138975;--amber:#a76715;--bg:#f7f6fa}*{box-sizing:border-box}body{margin:0;font:14px 'DM Sans',sans-serif;color:var(--ink);background:var(--bg)}button,input,select,textarea{font:inherit}button,a,input,select,textarea{outline-offset:4px}button{cursor:pointer;transition:.15s;border:1px solid var(--line);background:white;border-radius:10px;padding:10px 15px;color:var(--ink);font-weight:650}button:hover{filter:brightness(.97)}button:disabled{opacity:.5;cursor:not-allowed}a{color:var(--purple);text-decoration:none}button.primary{background:var(--purple);border-color:var(--purple);color:white;box-shadow:0 5px 12px #6650bf20}button.quiet{background:transparent;border-color:transparent;padding:7px 10px}button.small{padding:7px 10px;font-size:12px}.shell{min-height:100vh;display:grid;grid-template-columns:216px minmax(0,1fr)}.rail{background:#29214e;color:#d2cce4;padding:30px 18px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}.brand{font:800 24px Manrope,sans-serif;letter-spacing:-1px;color:white;margin:0 14px 32px}.brand span{color:#b6a3ff}.raillabel{font-size:10px;letter-spacing:1.6px;text-transform:uppercase;margin:20px 14px 13px;color:#ada2cc}.rail nav{display:grid;gap:6px}.rail nav button{display:flex;align-items:center;gap:12px;text-align:left;background:transparent;border:0;color:#c5bddb;font-size:13px;padding:13px 12px}.rail nav button.active{background:#ffffff15;color:white}.rail nav b{display:grid;place-items:center;width:25px;height:25px;border-radius:8px;background:#ffffff0a;font-size:12px;font-weight:500}.rail nav .active b{background:#c9baff;color:#352661}.railbottom{margin-top:auto;font-size:11px;padding:20px 12px 0;line-height:1.7;color:#bdb3d2}.railbottom a{color:#e1d7ff}.workspace{min-width:0}.topbar{height:76px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 35px;gap:16px}.crumb{color:var(--muted);font-size:12px}.crumb b{color:var(--ink);font-weight:600}.topactions,.row{display:flex;gap:10px;align-items:center}.dot{display:inline-block;width:6px;height:6px;background:var(--green);border-radius:50%;margin-right:5px}.pill{display:inline-flex;align-items:center;padding:5px 9px;border-radius:6px;background:var(--violet);color:var(--purple);font-size:10px;letter-spacing:.3px;font-weight:700;white-space:nowrap}.pill.green{background:#e8f6f0;color:var(--green)}.pill.amber{background:#fff3df;color:var(--amber)}.pill.gray{background:#f0eff4;color:#777184}.bodygrid{display:grid;grid-template-columns:minmax(0,1fr) 294px;gap:28px;padding:32px 35px 100px;max-width:1600px;margin:auto}.content{min-width:0}.eyebrow{font-size:10px;letter-spacing:1.8px;text-transform:uppercase;font-weight:700;color:var(--purple);margin-bottom:12px}h1{font:750 31px/1.25 Manrope,sans-serif;letter-spacing:-1.2px;margin:0 0 10px}h2{font:750 19px/1.35 Manrope,sans-serif;letter-spacing:-.5px;margin:0 0 8px}h3{font-size:14px;margin:0 0 6px}p{color:var(--muted);line-height:1.65;margin:0 0 20px}.card{border:1px solid var(--line);background:white;border-radius:15px;padding:22px;margin:20px 0}.card:first-child{margin-top:0}.hero{padding:27px;background:linear-gradient(120deg,#eee8fd,#f7f4ff 65%,#edf4f3);border:1px solid #e1d9f4;border-radius:17px;margin:24px 0}.hero h2{font-size:23px}.hero p{max-width:470px;font-size:13px}.hero .row{margin-top:20px}.mini{font-size:11px;line-height:1.6;color:var(--muted)}.split{display:flex;align-items:center;justify-content:space-between;gap:14px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.choice{padding:19px;border:1px solid var(--line);background:#fff;border-radius:13px;text-align:left;min-height:118px}.choice.active{border-color:#9a84dc;background:#f6f3ff;box-shadow:0 0 0 2px #eee8fc}.choice h3{margin-top:12px}.choice p{font-size:12px;margin:6px 0 0}.iconbox{width:31px;height:31px;border-radius:9px;background:var(--violet);color:var(--purple);display:grid;place-items:center;font-size:17px}.story{position:sticky;top:22px;align-self:start}.story .card{padding:21px;margin-top:0}.storyhead{display:flex;gap:10px;align-items:center;margin:18px 0}.avatar{width:37px;height:37px;border-radius:50%;background:#ece7fa;display:grid;place-items:center;color:var(--purple);font-weight:700}.money{font:750 30px Manrope,sans-serif;letter-spacing:-1px;margin:7px 0 20px}.money small{font:11px 'DM Sans';color:var(--muted);letter-spacing:0}.receipt{display:grid;gap:13px;margin:20px 0}.receipt>div{display:flex;justify-content:space-between;font-size:12px;gap:6px}.receipt .total{border-top:1px solid var(--line);padding-top:14px;font-weight:700}.receipt span{color:var(--muted)}.storyfoot{border-top:1px dashed var(--line);padding-top:15px;font-size:11px;line-height:1.7;color:var(--muted)}.banner{padding:13px 15px;background:#fff6e9;color:#886326;border:1px solid #f2e6d3;border-radius:10px;font-size:12px;line-height:1.6;margin:17px 0}.banner.info{background:#f1eef9;border-color:#e4ddf5;color:#655484}.progress{height:4px;background:#eae5f6;border-radius:9px;margin-top:15px}.progress span{height:100%;display:block;background:#8a71cf;border-radius:9px}.footer{position:fixed;bottom:0;left:216px;right:0;z-index:5;background:#fffffff5;backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:15px 35px;display:flex;justify-content:space-between;align-items:center;gap:14px}.tabs{display:flex;gap:5px;background:#f0edf5;border-radius:10px;padding:4px;margin:24px 0 15px}.tabs button{flex:1;background:none;border:0;font-size:12px;padding:10px}.tabs .active{background:white;color:var(--purple);box-shadow:0 2px 5px #29214e08}.search{width:100%;padding:12px 15px;border:1px solid var(--line);border-radius:9px;background:white;margin:0 0 14px}.component{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;padding:17px 5px;border-bottom:1px solid #efedf4}.component:last-child{border:0}.component h3{font-size:13px;margin:0 0 5px}.component .meta{font-size:11px;color:var(--muted);line-height:1.7}.component.removed{opacity:.55}.component button.remove{border:0;background:none;color:#91859d;padding:7px}.component input{accent-color:var(--purple);width:16px;height:16px}.field{display:flex;flex-direction:column;gap:7px;font-size:12px;color:#5b566b;margin:15px 0}.field input,.field select,.field textarea{border:1px solid #dfdbe8;border-radius:8px;background:white;padding:11px;color:var(--ink);width:100%;min-width:0}.field textarea{font:12px/1.8 ui-monospace,monospace;min-height:130px;resize:vertical}.sectiontitle{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);font-weight:700;margin:27px 0 14px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px}th{text-align:left;color:var(--muted);font-size:10px;letter-spacing:.5px;text-transform:uppercase;font-weight:600;padding:12px 9px;background:#f7f5fa}td{padding:12px 9px;border-bottom:1px solid var(--line);vertical-align:top}td input{width:100%;min-width:75px;padding:8px;border:1px solid var(--line);border-radius:6px}.formula{background:#29233f;color:#ede6ff;padding:17px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.8 ui-monospace,monospace}.ruleline{display:flex;gap:9px;align-items:center;flex-wrap:wrap;line-height:2.3;color:#766882}.ruleline select,.ruleline input{padding:8px;border:1px solid #ddd4ef;border-radius:7px;background:#f8f5ff;color:#503d83;max-width:100%}.ruleline input{width:115px}.linkrow{display:flex;align-items:center;justify-content:space-between;padding:15px 0;border-bottom:1px solid var(--line);gap:12px}.linkrow:last-child{border:0}.linkrow p{font-size:11px;margin:3px 0}.code{font:11px ui-monospace,monospace;color:var(--purple);overflow-wrap:anywhere}.check{display:flex;align-items:flex-start;gap:11px;padding:14px 0;border-bottom:1px solid var(--line);line-height:1.5}.check input{accent-color:var(--purple);margin-top:4px}.check small{color:var(--muted);display:block;margin-top:3px}.flow{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:20px 0}.flow span{padding:10px;border-radius:8px;border:1px solid var(--line);font-size:11px;background:white}.flow i{font-style:normal;color:#b2a8c4}.pass{color:var(--green)}.fail{color:#b35b3d}.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}.kpis>div{padding:17px;background:#fff;border:1px solid var(--line);border-radius:11px}.kpis b{font:750 23px Manrope;display:block;margin-bottom:4px}.kpis small{font-size:10px;color:var(--muted)}dialog{border:0;border-radius:20px;box-shadow:0 30px 100px #29214e35;padding:0;width:min(760px,calc(100vw - 30px));max-height:90vh;color:var(--ink)}dialog::backdrop{background:#211a4259;backdrop-filter:blur(5px)}.dialoghead{padding:23px 27px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:white;z-index:2}.dialogbody{padding:2px 27px 25px}.dialogfoot{padding:16px 27px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;position:sticky;bottom:0;background:white}#toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:#30254d;color:white;padding:12px 20px;border-radius:10px;box-shadow:0 8px 30px #30254d20;z-index:30;display:none;font-size:12px}.enginegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.node{border:1px solid var(--line);border-left:3px solid #a88bdf;border-radius:9px;padding:14px;background:white;min-width:0}.node b{display:block;font-size:12px;margin-bottom:7px}.node.output{border-left-color:#18a186}.node.input{border-left-color:#53a4bb}.node .code{font-size:10px;line-height:1.7}.empty{text-align:center;padding:35px;color:var(--muted)}@media(max-width:1100px){.shell{grid-template-columns:185px minmax(0,1fr)}.rail{padding:24px 12px}.bodygrid{padding:26px 23px 100px;gap:20px;grid-template-columns:minmax(0,1fr) 250px}.footer{left:185px;padding:15px 23px}.topbar{padding:0 23px}h1{font-size:27px}}@media(max-width:900px){.bodygrid{grid-template-columns:1fr}.story{position:static}.story .card{margin-bottom:0}.story .money{margin-bottom:10px}.story .receipt{display:grid;grid-template-columns:1fr 1fr}.story .receipt .total{border:0;padding:0}.topactions .mini{display:none}}@media(max-width:620px){.shell{display:block}.rail{height:auto;position:static;padding:16px;display:block}.brand{margin:0 0 13px;font-size:21px}.raillabel,.railbottom{display:none}.rail nav{display:flex;overflow:auto;gap:3px}.rail nav button{padding:9px;white-space:nowrap;font-size:11px}.rail nav b{display:none}.topbar{height:61px;padding:0 16px}.crumb{font-size:10px}.bodygrid{padding:25px 16px 105px}.footer{left:0;padding:13px 16px}.footer .mini{display:none}.grid2,.enginegrid{grid-template-columns:1fr}.component{grid-template-columns:24px minmax(0,1fr) auto}.component .row{gap:0}.component .pill{display:none}.hero{padding:21px}.kpis{gap:7px}.kpis>div{padding:12px}.dialogbody{padding:2px 18px 20px}.dialoghead,.dialogfoot{padding:16px 18px}.topactions button{padding:7px;font-size:11px}}
+/* Revised journey: progressive setup with schema-scoped optional studios. */
+.startchoices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.startchoices .choice{min-height:180px}.journeystrip{display:flex;gap:7px;flex-wrap:wrap;margin:24px 0}.journeystrip span{background:white;border:1px solid var(--line);padding:8px 10px;border-radius:7px;font-size:10px;color:var(--muted)}.scopebar{display:flex;flex-wrap:wrap;gap:12px 24px;padding:14px 17px;background:#f0edf8;border-radius:10px;font-size:11px;color:var(--muted)}.scopebar b{display:block;color:var(--ink);font-size:12px;margin-top:4px}.setupcard p{max-width:620px}.journeytabs{margin-top:0;margin-bottom:28px}.outputtable{border:1px solid var(--line);border-radius:12px;background:white}.outputtable table{table-layout:fixed}.outputtable th:nth-child(1){width:22%}.outputtable th:nth-child(2){width:48%}.outputtable th:nth-child(3){width:16%}.outputtable th:nth-child(4){width:14%}.excelinline{display:block;white-space:pre-wrap;overflow-wrap:anywhere;font:11px/1.8 ui-monospace,monospace;padding-bottom:8px;color:#574274}.num{font-variant-numeric:tabular-nums;font-weight:650;white-space:nowrap}.mappingheader{display:grid;grid-template-columns:1fr 30px 1fr;gap:12px;align-items:center;background:#f8f6fc;padding:18px;border-radius:12px}.mappingheader select{width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:8px;background:white}.wirearrow{color:var(--purple);font-size:22px;text-align:center}.mappingrow{display:grid;grid-template-columns:minmax(0,1fr) 23px minmax(0,1fr) 115px 24px;gap:7px;align-items:center;border-bottom:1px solid var(--line)}.mappingrow .field{font-size:10px}.mappingrow .field select{font-size:11px;padding:8px}.mappingrows{margin:14px 0}.approvalrows input{accent-color:var(--purple)}dialog:has(.mappingrows),dialog:has(.approvalrows){width:min(960px,calc(100vw - 30px))}.outputtable button{padding:6px;font-size:10px}.setupcard .row{flex-wrap:wrap}@media(max-width:1150px){.startchoices{grid-template-columns:1fr}.startchoices .choice{min-height:0}.startchoices .choice h3{margin-top:0}.startchoices .iconbox{float:left;margin-right:14px}.outputtable table{min-width:640px}}@media(max-width:620px){.mappingrow{grid-template-columns:1fr 20px 1fr}.mappingrow>div:nth-child(4){grid-column:1/3}.mappingheader{grid-template-columns:1fr}.mappingheader .wirearrow{transform:rotate(90deg)}.scopebar{display:block}.scopebar span{display:block;margin:4px 0}.topbar .topactions button:last-child{display:none}}
+</style></head><body><div id="app"></div><dialog id="drawer"></dialog><div id="toast" role="status"></div><script>const WORKBOOK_ROWS = [
+  {
+    "code": "BASIC_SALARY",
+    "name": "Basic contractual salary",
+    "group": "earnings",
+    "source": "Earning Codes!A5:H5",
+    "original": {
+      "C": "Fixed",
+      "D": "Cash",
+      "E": "Taxable",
+      "F": "Included subject to eligibility/cap",
+      "G": "Working-day proration",
+      "H": "Monthly"
+    }
+  },
+  {
+    "code": "UNIFORM",
+    "name": "Uniform allowance",
+    "group": "earnings",
+    "source": "Earning Codes!A6:H6",
+    "original": {
+      "C": "Occationally",
+      "D": "Cash",
+      "E": "Conditional exempt",
+      "F": "Excluded",
+      "G": "No",
+      "H": "Ad hoc"
+    }
+  },
+  {
+    "code": "SEVERANCE_STAT",
+    "name": "Statutory severance allowance",
+    "group": "earnings",
+    "source": "Earning Codes!A7:H7",
+    "original": {
+      "C": "Termination",
+      "D": "Cash",
+      "E": "Exempt within statutory entitlement",
+      "F": "Excluded",
+      "G": "No",
+      "H": "Ad hoc"
+    }
+  },
+  {
+    "code": "OTHER_EXEMPT",
+    "name": "Other exempt reimbursement",
+    "group": "earnings",
+    "source": "Earning Codes!A8:H8",
+    "original": {
+      "C": "Reimbursement",
+      "D": "Cash",
+      "E": "Conditional exempt",
+      "F": "Excluded",
+      "G": "No",
+      "H": "Ad hoc"
+    }
+  },
+  {
+    "code": "AL_ENCASH_EXEMPT",
+    "name": "Unused annual-leave encashment",
+    "group": "earnings",
+    "source": "Earning Codes!A9:H9",
+    "original": {
+      "C": "Termination",
+      "D": "Cash",
+      "E": "Exempt for qualifying payment",
+      "F": "Excluded",
+      "G": "No",
+      "H": "Ad hoc"
+    }
+  },
+  {
+    "code": "TRANSPORT_ADD",
+    "name": "Additional transportation",
+    "group": "earnings",
+    "source": "Earning Codes!A10:H10",
+    "original": {
+      "C": "Allowance",
+      "D": "Cash",
+      "E": "Taxable unless reimbursement evidence",
+      "F": "Excluded",
+      "G": "Policy dependent",
+      "H": "Monthly/Ad hoc"
+    }
+  },
+  {
+    "code": "TRANSPORT",
+    "name": "Transportation allowance",
+    "group": "earnings",
+    "source": "Earning Codes!A11:H11",
+    "original": {
+      "C": "Allowance",
+      "D": "Cash",
+      "E": "Taxable",
+      "F": "Excluded",
+      "G": "Working-day proration",
+      "H": "Monthly"
+    }
+  },
+  {
+    "code": "PHONE_ALLOW",
+    "name": "Phone allowance",
+    "group": "earnings",
+    "source": "Earning Codes!A12:H12",
+    "original": {
+      "C": "Allowance",
+      "D": "Cash",
+      "E": "Taxable",
+      "F": "Excluded",
+      "G": "Working-day proration",
+      "H": "Monthly"
+    }
+  },
+  {
+    "code": "PRIVATE_INS_ALLOW",
+    "name": "Private insurance allowance for expat",
+    "group": "earnings",
+    "source": "Earning Codes!A13:H13",
+    "original": {
+      "C": "Benefit/Allowance",
+      "D": "Cash",
+      "E": "Taxable",
+      "F": "Confirm",
+      "G": "No",
+      "H": "Monthly/Ad hoc"
+    }
+  },
+  {
+    "code": "PREMIUM_INS_ALLOW",
+    "name": "Premium Health Insurance for family member",
+    "group": "earnings",
+    "source": "Earning Codes!A14:H14",
+    "original": {
+      "C": "Benefit/Allowance",
+      "D": "Non-cash",
+      "E": "Taxable",
+      "F": "Excluded",
+      "G": "No",
+      "H": "Scheme"
+    }
+  },
+  {
+    "code": "LOGISTICS_INC",
+    "name": "Logistics Incentive",
+    "group": "earnings",
+    "source": "Earning Codes!A15:H15",
+    "original": {
+      "C": "Incentive",
+      "D": "Cash",
+      "E": "Taxable",
+      "F": "Excluded",
+      "G": "No",
+      "H": "Monthly/Ad hoc"
+    }
+  },
+  {
+    "code": "AGS_INC",
+    "name": "Season Agronomy Incentive",
+    "group": "earnings",
+    "source": "Earning Codes!A16:H16",
+    "original": {
+      "C": "Incentive",
+      "D": "Cash",
+      "E": "Taxable",
+      "F": "Excluded",
+      "G": "No",
+      "H": "Scheme"
+    }
+  },
+  {
+    "code": "PRODUCT_LAUNCH_INC",
+    "name": "New product launch incentive",
+    "group": "earnings",
+    "source": "Earning Codes!A17:H17",
+    "original": {
+      "C": "Incentive",
+      "D": "Cash",
+      "E": "Taxable",
+      "F": "Excluded",
+      "G": "No",
+      "H": "Ad hoc"
+    }
+  },
+  {
+    "code": "VARIABLE_BONUS",
+    "name": "Variable Bonus",
+    "group": "earnings",
+    "source": "Earning Codes!A18:H18",
+    "original": {
+      "C": "Bonus",
+      "D": "Cash",
+      "E": "Taxable",
+      "F": "Excluded",
+      "G": "No",
+      "H": "Scheme"
+    }
+  },
+  {
+    "code": "REFERRAL_INC",
+    "name": "Referral Incentive",
+    "group": "earnings",
+    "source": "Earning Codes!A19:H19",
+    "original": {
+      "C": "Incentive",
+      "D": "Cash",
+      "E": "Taxable",
+      "F": "Excluded",
+      "G": "No",
+      "H": "Ad hoc"
+    }
+  },
+  {
+    "code": "OTHER_TAXABLE",
+    "name": "Other taxable allowance",
+    "group": "earnings",
+    "source": "Earning Codes!A20:H20",
+    "original": {
+      "C": "Allowance",
+      "D": "Cash",
+      "E": "Taxable",
+      "F": "Excluded",
+      "G": "Policy dependent",
+      "H": "Ad hoc"
+    }
+  },
+  {
+    "code": "ADJ_ADD",
+    "name": "Prior-period addition",
+    "group": "earnings",
+    "source": "Earning Codes!A21:H21",
+    "original": {
+      "C": "Adjustment",
+      "D": "Cash",
+      "E": "Depends on source component",
+      "F": "Excluded",
+      "G": "No",
+      "H": "Ad hoc"
+    }
+  },
+  {
+    "code": "ADJ_DEDUCT",
+    "name": "Prior-period deduction adjustment",
+    "group": "earnings",
+    "source": "Earning Codes!A22:H22",
+    "original": {
+      "C": "Adjustment",
+      "D": "Cash",
+      "E": "Depends on source component",
+      "F": "Excluded",
+      "G": "No",
+      "H": "Ad hoc"
+    }
+  },
+  {
+    "code": "NONCASH_BENEFIT",
+    "name": "Taxable non-cash benefit",
+    "group": "earnings",
+    "source": "Earning Codes!A23:H23",
+    "original": {
+      "C": "Benefit",
+      "D": "Non-cash",
+      "E": "Taxable",
+      "F": "Excluded",
+      "G": "No",
+      "H": "Monthly/Ad hoc"
+    }
+  },
+  {
+    "code": "OT_WEEKDAY",
+    "name": "Weekday overtime pay",
+    "group": "earnings",
+    "source": "Earning Codes!A24:H24",
+    "original": {
+      "C": "Overtime",
+      "D": "Cash",
+      "E": "PIT exempt for qualifying OT",
+      "F": "Excluded",
+      "G": "Hours × rate",
+      "H": "Monthly"
+    }
+  },
+  {
+    "code": "OT_WEEKEND",
+    "name": "Weekend overtime pay",
+    "group": "earnings",
+    "source": "Earning Codes!A25:H25",
+    "original": {
+      "C": "Overtime",
+      "D": "Cash",
+      "E": "PIT exempt for qualifying OT",
+      "F": "Excluded",
+      "G": "Hours × 200%",
+      "H": "Monthly"
+    }
+  },
+  {
+    "code": "OT_HOLIDAY",
+    "name": "Public-holiday overtime pay",
+    "group": "earnings",
+    "source": "Earning Codes!A26:H26",
+    "original": {
+      "C": "Overtime",
+      "D": "Cash",
+      "E": "PIT exempt for qualifying OT",
+      "F": "Excluded",
+      "G": "Hours × approved rate",
+      "H": "Monthly"
+    }
+  },
+  {
+    "code": "NIGHT_SHIFT",
+    "name": "Night-work premium",
+    "group": "earnings",
+    "source": "Earning Codes!A27:H27",
+    "original": {
+      "C": "Overtime",
+      "D": "Cash",
+      "E": "PIT exempt for qualifying payment",
+      "F": "Excluded",
+      "G": "Hours × approved rate",
+      "H": "Monthly"
+    }
+  },
+  {
+    "code": "THIRTEENTH_MONTH",
+    "name": "13th-month salary",
+    "group": "earnings",
+    "source": "Earning Codes!A28:H28",
+    "original": {
+      "C": "Bonus",
+      "D": "Cash",
+      "E": "Taxable",
+      "F": "Excluded",
+      "G": "Policy proration",
+      "H": "Annual"
+    }
+  },
+  {
+    "code": "EE_SI",
+    "name": "Employee Social Insurance",
+    "group": "deductions",
+    "source": "Deduction Codes!A4:F4",
+    "original": {
+      "C": "Statutory",
+      "D": "Employee",
+      "E": "Eligible insurance salary × 8%, capped",
+      "F": "Yes"
+    }
+  },
+  {
+    "code": "EE_HI",
+    "name": "Employee Health Insurance",
+    "group": "deductions",
+    "source": "Deduction Codes!A5:F5",
+    "original": {
+      "C": "Statutory",
+      "D": "Employee",
+      "E": "Eligible insurance salary × 1.5%, capped",
+      "F": "Yes"
+    }
+  },
+  {
+    "code": "EE_UI",
+    "name": "Employee Unemployment Insurance",
+    "group": "deductions",
+    "source": "Deduction Codes!A6:F6",
+    "original": {
+      "C": "Statutory",
+      "D": "Employee",
+      "E": "Eligible local salary × 1%, UI cap",
+      "F": "Yes"
+    }
+  },
+  {
+    "code": "UNION_DUES",
+    "name": "Employee Union Dues",
+    "group": "deductions",
+    "source": "Deduction Codes!A7:F7",
+    "original": {
+      "C": "Union",
+      "D": "Employee",
+      "E": "Eligible insurance salary × 0.5% (company-applied), capped at 253,000",
+      "F": "No"
+    }
+  },
+  {
+    "code": "PIT",
+    "name": "Personal Income Tax",
+    "group": "deductions",
+    "source": "Deduction Codes!A8:F8",
+    "original": {
+      "C": "Statutory",
+      "D": "Employee",
+      "E": "Progressive / flat 10% / non-resident 20%",
+      "F": "N/A"
+    }
+  },
+  {
+    "code": "ADVANCE",
+    "name": "Salary Advance",
+    "group": "deductions",
+    "source": "Deduction Codes!A9:F9",
+    "original": {
+      "C": "Company",
+      "D": "Employee",
+      "E": "Approved amount",
+      "F": "No"
+    }
+  },
+  {
+    "code": "PRIOR_DED",
+    "name": "Prior-period Deduction",
+    "group": "deductions",
+    "source": "Deduction Codes!A10:F10",
+    "original": {
+      "C": "Adjustment",
+      "D": "Employee",
+      "E": "Approved amount",
+      "F": "Depends on source"
+    }
+  },
+  {
+    "code": "OTHER_DED",
+    "name": "Other Deduction",
+    "group": "deductions",
+    "source": "Deduction Codes!A11:F11",
+    "original": {
+      "C": "Company",
+      "D": "Employee",
+      "E": "Approved/legal amount",
+      "F": "No"
+    }
+  },
+  {
+    "code": "VN_SHUI_LOCAL",
+    "name": "Vietnam SI/HI/UI",
+    "group": "benefits",
+    "source": "Benefits!A4:F4",
+    "original": {
+      "C": "Mandatory",
+      "D": "Eligible local employees",
+      "E": "10.5% of capped bases",
+      "F": "21.5% of capped bases"
+    }
+  },
+  {
+    "code": "VN_SI_HI_FOREIGN",
+    "name": "Foreign employee SI/HI",
+    "group": "benefits",
+    "source": "Benefits!A5:F5",
+    "original": {
+      "C": "Mandatory when eligible",
+      "D": "Eligible foreign employees with qualifying permit/contract",
+      "E": "9.5% of capped SI/HI base",
+      "F": "20.5% of capped SI/HI base"
+    }
+  },
+  {
+    "code": "PRIVATE_HEALTH_EMP",
+    "name": "Private health insurance - employee",
+    "group": "benefits",
+    "source": "Benefits!A6:F6",
+    "original": {
+      "C": "Voluntary/company",
+      "D": "TBD",
+      "E": "TBD",
+      "F": "TBD"
+    }
+  },
+  {
+    "code": "PRIVATE_HEALTH_DEP",
+    "name": "Private health insurance - dependants",
+    "group": "benefits",
+    "source": "Benefits!A7:F7",
+    "original": {
+      "C": "Voluntary/company",
+      "D": "TBD",
+      "E": "TBD",
+      "F": "TBD"
+    }
+  },
+  {
+    "code": "UNION_MEMBER",
+    "name": "Union membership",
+    "group": "benefits",
+    "source": "Benefits!A8:F8",
+    "original": {
+      "C": "Employee choice / organizational",
+      "D": "Approved union members",
+      "E": "Current payroll 0.5% capped",
+      "F": "Employer 2%"
+    }
+  },
+  {
+    "code": "OTHER_BENEFITS",
+    "name": "Other company benefits",
+    "group": "benefits",
+    "source": "Benefits!A9:F9",
+    "original": {
+      "C": "TBD",
+      "D": "TBD",
+      "E": "TBD",
+      "F": "TBD"
+    }
+  }
+];
+</script><script>const STEPS = ['Basics','Components','Rules','Formulas','Test','Create schema'];
+const NOTES = {
+ UNIFORM:'Annual exemption needs the amount already exempted this tax year. Only the remaining limit is exempt.',
+ SEVERANCE_STAT:'Use a separately approved statutory entitlement. Any excess is taxable; do not infer years of service from payroll amounts.',
+ OTHER_EXEMPT:'Exemption requires valid supporting evidence. The sample qualification switch demonstrates the taxable fallback.',
+ AL_ENCASH_EXEMPT:'Preserve the workbook’s qualifying leave-payment exemption; entitlement and qualification are separate inputs.',
+ PRIVATE_INS_ALLOW:'Insurance-base treatment is marked Confirm in the source. This cash allowance is separate from an insurer-paid premium.',
+ PREMIUM_INS_ALLOW:'Linked to the dependant health plan. Premium is counted once as non-cash income; the company bears incremental PIT.',
+ ADJ_ADD:'Select the original earning. The amount is a signed current-period correction; historical tax/cap recalculation is a later integration.',
+ ADJ_DEDUCT:'A negative earning correction, even though it appears in the Earning Codes tab. Never also enter the same adjustment as PRIOR_DED.',
+ THIRTEENTH_MONTH:'Proposed formula: monthly contractual salary × eligible annual service days / annual scheduled days, capped at one month. January payout by default.',
+ UNION_DUES:'Workbook conflict: Deduction Codes says 0.5%; Statutory Config cites a 1% reference alongside the company-applied 0.5%. Retain 0.5% for demonstration and obtain policy sign-off.',
+ PRIOR_DED:'Post-tax recovery by default. Original reference and approved PIT-deductible amount are required when source-dependent treatment is selected.',
+ OTHER_DED:'Requires a documented legal or contractual basis. Included in the schema with zero sample amount.',
+ PRIVATE_HEALTH_EMP:'Eligibility and cost cells say TBD. Proposed: enrolled employees, company pays 100%, premium supplied per payroll period; PIT policy still needs review.',
+ PRIVATE_HEALTH_DEP:'Proposed eligibility: enrolled spouse / children up to 18. Links to PREMIUM_INS_ALLOW so the premium is not counted twice.',
+ OTHER_BENEFITS:'The source has no defined policy, eligibility or costs. Configure a named plan or remove this placeholder.',
+ VN_SHUI_LOCAL:'Plan references EE_SI / EE_HI / EE_UI and creates employer costs. It does not create another 10.5% deduction.',
+ VN_SI_HI_FOREIGN:'Separate foreign-employee eligibility. SI/HI only; never adds unemployment insurance.',
+ UNION_MEMBER:'Member dues link to UNION_DUES. Employer union contribution uses a separate employer eligibility flag.'
+};
+function defaults(){return WORKBOOK_ROWS.map(r=>{
+ const c={...r,included:true,category:r.original.C,mode:'input',amount:0,rate:0,proration:'none',cash:'cash',frequency:'monthly',month:1,eligibility:'all',tax:'taxable',insurance:'excluded',taxBearer:'employee',cap:5000000,sign:1,sourceCode:'',pitDeductible:'no',employeeShare:0,link:'',reviewed:false,note:NOTES[r.code]||'',eeSi:8,eeHi:1.5,eeUi:1,erSi:17.5,erHi:3,erUi:1};
+ if(r.group==='earnings'){
+  c.cash=r.original.D==='Non-cash'?'noncash':'cash'; c.frequency=r.original.H==='Annual'?'annual':r.original.H==='Ad hoc'?'adhoc':r.original.H==='Scheme'?'scheme':'monthly';
+  c.proration=r.original.G==='Working-day proration'?'working':'none';
+  if(r.original.E.includes('exempt')||r.original.E.includes('Exempt'))c.tax='qualified';
+  if(r.code==='BASIC_SALARY'){c.mode='contract';c.insurance='included'}
+  if(r.code==='UNIFORM')c.tax='annualcap';
+  if(r.code==='SEVERANCE_STAT')c.tax='entitlement';
+  if(r.code==='TRANSPORT'||r.code==='PHONE_ALLOW'){c.mode='role';c.eligibility='role'}
+  if(r.code==='TRANSPORT_ADD')c.tax='taxable';
+  if(r.code==='PRIVATE_INS_ALLOW'){c.insurance='review';c.eligibility='foreign'}
+  if(r.code==='PREMIUM_INS_ALLOW'){c.mode='linked';c.link='PRIVATE_HEALTH_DEP';c.taxBearer='employer';c.eligibility='enrolled';c.frequency='monthly'}
+  if(r.code.startsWith('ADJ_')){c.tax='inherit';c.insurance='inherit';c.sign=r.code==='ADJ_DEDUCT'?-1:1}
+  if(r.code.startsWith('OT_')||r.code==='NIGHT_SHIFT'){c.mode='hourly';c.rate={OT_WEEKDAY:150,OT_WEEKEND:200,OT_HOLIDAY:300,NIGHT_SHIFT:30}[r.code]}
+  if(r.code==='THIRTEENTH_MONTH'){c.mode='annual';c.frequency='annual'}
+ }else if(r.group==='deductions'){
+  c.pitDeductible=r.original.F==='Yes'?'yes':r.original.F.includes('Depends')?'source':'no';
+  if(['EE_SI','EE_HI','EE_UI','UNION_DUES'].includes(c.code)){c.mode='percentage';c.rate={EE_SI:8,EE_HI:1.5,EE_UI:1,UNION_DUES:.5}[c.code];c.eligibility=c.code==='EE_UI'?'local':c.code==='UNION_DUES'?'union':'insured'}
+  if(c.code==='PIT')c.mode='pit';
+ }else{
+  c.cash='noncash';c.eligibility=c.code==='VN_SHUI_LOCAL'?'local':c.code==='VN_SI_HI_FOREIGN'?'foreign':c.code==='UNION_MEMBER'?'union':'enrolled';
+  c.mode=c.code.startsWith('VN_')||c.code==='UNION_MEMBER'?'plan':'premium';
+  c.taxBearer='employer';c.rate=c.code==='UNION_MEMBER'?2:0;
+  if(c.code==='PRIVATE_HEALTH_DEP')c.link='PREMIUM_INS_ALLOW';
+ }
+ return c;
+});}
+const DEFAULT_RULES={effective:'2026-07-01',siCap:50600000,uiCap:106200000,unionCap:253000,personalRelief:15500000,dependentRelief:6200000,shortThreshold:5000000,shortRate:10,nonresidentRate:20,rounding:'nearest',insuranceBasis:'contract',region:'Region I',transportAG:800000,phoneAG:300000,transportTM:960000,phoneTM:360000,transportCO:1100000,phoneCO:0,reviewed:false};
+function sampleProfile(kind='standard'){
+ const s={profile:kind,salary:30000000,paidDays:22,standardDays:22,calendarDays:30,paidCalendarDays:30,hoursPerDay:8,dependants:1,nationality:'local',resident:true,contractMonths:12,insured:true,union:true,employerUnion:true,role:'AG',month:9,qualified:true,commitment:false,serviceDays:240,annualDays:260,uniformYtd:4000000,entitlement:5000000,benefitEnrolled:false,values:{UNIFORM:2000000,OT_WEEKEND:8,ADVANCE:1000000,PRIVATE_HEALTH_EMP:1000000,PRIVATE_HEALTH_DEP:1200000},due:{},sourcePitAmount:0};
+ if(kind==='joiner')s.paidDays=11;
+ if(kind==='foreign'){s.nationality='foreign';s.resident=false;s.union=false;s.dependants=0;s.role='OTHER'}
+ if(kind==='benefit'){s.benefitEnrolled=true;s.profile='benefit'}
+ if(kind==='short'){s.contractMonths=2;s.insured=false;s.union=false;s.employerUnion=false;s.salary=6000000;s.role='OTHER';s.dependants=0;s.values={};}
+ return s;
+}
+const R=name=>({ref:name}), L=value=>({value}), F=(fn,...args)=>({fn,args:args.map(a=>typeof a==='object'?a:L(a))});
+const sum=a=>a.length?F('SUM',...a):L(0);
+function formatExpr(e){if('ref'in e)return e.ref;if('value'in e)return typeof e.value==='string'?JSON.stringify(e.value):String(e.value);return `${e.fn}(${e.args.map(formatExpr).join(', ')})`;}
+function exprRefs(e){return 'ref'in e?[e.ref]:e.args?[...new Set(e.args.flatMap(exprRefs))]:[];}
+function compile(config){
+ const cs=config.components.filter(c=>c.included), params=config.rules, nodes=[], inputDefs={};
+ const input=(name,value,type='number')=>{inputDefs[name]={code:name,type,default:value};return R(name)};
+ const node=(code,name,group,expr,source)=>{nodes.push({code,name,group,expr,formula:'='+formatExpr(expr),dependencies:exprRefs(expr),source:source||'Generated from configuration'});return R(code)};
+ const I={salary:input('CONTRACT_SALARY',30000000),paid:input('PAID_DAYS',22),standard:input('STANDARD_DAYS',22),cal:input('CALENDAR_DAYS',30),paidCal:input('PAID_CALENDAR_DAYS',30),hpd:input('HOURS_PER_DAY',8),dependants:input('REGISTERED_DEPENDANTS',1),ytd:input('UNIFORM_YTD_EXEMPT',4000000),entitlement:input('APPROVED_SEVERANCE_ENTITLEMENT',5000000),service:input('ELIGIBLE_ANNUAL_DAYS',240),annual:input('ANNUAL_SCHEDULED_DAYS',260)};
+ const param=k=>input('PARAM_'+k.toUpperCase(),params[k]);
+ const round=e=>F(params.rounding==='floor'?'FLOOR':'ROUND',e);
+ const eligible=c=>F('ELIGIBLE',c.eligibility,c.link&&c.mode==='linked'?c.link:c.code);
+ const due=c=>F('DUE',c.code,c.frequency,c.month);
+ const amount=c=>{
+  let a=c.mode==='fixed'?L(c.amount):c.mode==='contract'?I.salary:c.mode==='hourly'?F('MUL',input(c.code+'_HOURS',0),F('DIV',I.salary,F('MUL',I.standard,I.hpd)),c.rate/100):c.mode==='role'?F('ROLE_RATE',c.code,param(c.code==='PHONE_ALLOW'?'phoneAG':'transportAG'),param(c.code==='PHONE_ALLOW'?'phoneTM':'transportTM'),param(c.code==='PHONE_ALLOW'?'phoneCO':'transportCO')):c.mode==='annual'?F('MUL',I.salary,F('MIN',1,F('DIV',I.service,I.annual))):c.mode==='linked'?F('PLAN_ER_PREMIUM',c.link):input(c.code+'_INPUT',0);
+  if(c.proration==='working')a=F('MUL',a,F('DIV',I.paid,I.standard));
+  if(c.proration==='calendar')a=F('MUL',a,F('DIV',I.paidCal,I.cal));
+  return round(F('IF',F('AND',eligible(c),due(c)),F('MUL',a,c.sign),0));
+ };
+ const earnings=cs.filter(c=>c.group==='earnings');
+ for(const c of earnings)node(c.code,c.name,'earnings',amount(c),c.source);
+ const cash=[],noncash=[],taxes=[],employerTaxes=[],insurance=[];
+ for(const c of earnings){
+  (c.cash==='cash'?cash:noncash).push(R(c.code));
+  let t=R(c.code);
+  if(c.tax==='exempt')t=L(0);
+  if(c.tax==='qualified')t=F('IF',F('QUALIFIED',c.code),0,R(c.code));
+  if(c.tax==='annualcap')t=F('MAX',0,F('SUB',R(c.code),F('MAX',0,F('SUB',c.cap,input(c.code+'_YTD_EXEMPT',0)))));
+  if(c.tax==='entitlement')t=F('MAX',0,F('SUB',R(c.code),I.entitlement));
+  if(c.tax==='inherit')t=F('ORIGINAL_TAXABLE',c.sourceCode,R(c.code));
+  taxes.push(node(c.code+'_TAXABLE',c.name+' · taxable','helpers',t,c.source));
+  if(c.taxBearer==='employer')employerTaxes.push(R(c.code+'_TAXABLE'));
+  if(c.insurance==='included')insurance.push(params.insuranceBasis==='contract'?F('IF',eligible(c),c.mode==='contract'?I.salary:c.mode==='role'?F('ROLE_RATE',c.code,param(c.code==='PHONE_ALLOW'?'phoneAG':'transportAG'),param(c.code==='PHONE_ALLOW'?'phoneTM':'transportTM'),param(c.code==='PHONE_ALLOW'?'phoneCO':'transportCO')):c.mode==='fixed'?c.amount:input(c.code+'_INPUT',0),0):R(c.code));
+  if(c.insurance==='inherit')insurance.push(F('ORIGINAL_INSURANCE',c.sourceCode,R(c.code)));
+ }
+ node('INSURANCE_SALARY','Insurance salary base','helpers',F('MAX',0,sum(insurance)));
+ node('SI_HI_BASE','Capped SI / HI base','helpers',F('MIN',R('INSURANCE_SALARY'),param('siCap')));
+ node('UI_BASE','Capped UI base','helpers',F('MIN',R('INSURANCE_SALARY'),param('uiCap')));
+ const erCosts=[],benefitEE=[];
+ for(const c of cs.filter(c=>c.group==='benefits')){
+  let expr;
+  if(c.mode==='plan'){
+   if(c.code==='UNION_MEMBER')expr=F('IF',F('EMPLOYER_UNION_ELIGIBLE'),F('MUL',R('SI_HI_BASE'),c.rate/100),0);
+   else expr=F('IF',F('AND',eligible(c),F('ELIGIBLE','insured',c.code)),F('SUM',F('MUL',R('SI_HI_BASE'),(c.erSi+c.erHi)/100),c.code==='VN_SHUI_LOCAL'?F('MUL',R('UI_BASE'),c.erUi/100):0),0);
+  }else{
+   const total=F('IF',eligible(c),F('PLAN_PREMIUM',c.code),0);
+   expr=F('MUL',total,1-c.employeeShare/100);
+   benefitEE.push(node(c.code+'_EE',c.name+' · employee cost','deductions',round(F('MUL',total,c.employeeShare/100)),c.source));
+   const linked=earnings.find(e=>e.mode==='linked'&&e.link===c.code);
+   if(!linked){noncash.push(R(c.code));const t=c.tax==='exempt'?L(0):c.tax==='qualified'?F('IF',F('QUALIFIED',c.code),0,R(c.code)):R(c.code);taxes.push(t);if(c.taxBearer==='employer')employerTaxes.push(t);}
+  }
+  erCosts.push(node(c.code,c.name+' · employer cost','benefits',round(expr),c.source));
+ }
+ const ds=cs.filter(c=>c.group==='deductions'&&c.code!=='PIT'),deductions=[...benefitEE],taxDeduct=[];
+ for(const c of ds){
+  let e=c.mode==='percentage'?F('MUL',R(c.code==='EE_UI'?'UI_BASE':'SI_HI_BASE'),c.rate/100):c.mode==='fixed'?L(c.amount):input(c.code+'_INPUT',0);
+  if(c.code==='UNION_DUES')e=F('MIN',e,param('unionCap'));
+  e=round(F('IF',['EE_SI','EE_HI','EE_UI'].includes(c.code)?F('AND',eligible(c),F('ELIGIBLE','insured',c.code)):eligible(c),e,0));
+  deductions.push(node(c.code,c.name,'deductions',e,c.source));
+  if(c.pitDeductible==='yes')taxDeduct.push(R(c.code));
+  if(c.pitDeductible==='source')taxDeduct.push(F('MIN',R(c.code),input(c.code+'_APPROVED_PIT_DEDUCTIBLE',0)));
+ }
+ node('CASH_GROSS','Cash earnings','outputs',sum(cash));
+ node('NONCASH_TOTAL','Non-cash benefits','outputs',sum(noncash));
+ node('TAXABLE_GROSS','Taxable income before relief','helpers',F('MAX',0,sum(taxes)));
+ node('PIT_DEDUCTIBLE','PIT-deductible contributions','helpers',sum(taxDeduct));
+ node('PERSONAL_RELIEF','Resident personal relief','helpers',param('personalRelief'));
+ node('DEPENDANT_RELIEF','Registered dependant relief','helpers',F('MUL',I.dependants,param('dependentRelief')));
+ node('ASSESSABLE','Resident assessable income','helpers',F('MAX',0,F('SUB',R('TAXABLE_GROSS'),R('PIT_DEDUCTIBLE'),R('PERSONAL_RELIEF'),R('DEPENDANT_RELIEF'))));
+ node('EMPLOYER_TAXABLE','Income with employer-borne PIT','helpers',F('MAX',0,sum(employerTaxes)));
+ const pitIncluded=cs.some(c=>c.code==='PIT'), pitComponent=cs.find(c=>c.code==='PIT');
+ node('TAX_GROSS_UP','Employer-borne incremental PIT','outputs',pitIncluded?F('IF',eligible(pitComponent),F('GROSS_UP',R('TAXABLE_GROSS'),R('EMPLOYER_TAXABLE'),R('PIT_DEDUCTIBLE'),R('PERSONAL_RELIEF'),R('DEPENDANT_RELIEF')),0):L(0));
+ node('PIT','Personal income tax','outputs',pitIncluded?F('IF',eligible(pitComponent),round(F('TAX',F('ADD',R('TAXABLE_GROSS'),R('TAX_GROSS_UP')),R('PIT_DEDUCTIBLE'),R('PERSONAL_RELIEF'),R('DEPENDANT_RELIEF'))),0):L(0));
+ node('DEDUCTIONS','Employee deductions excluding PIT','outputs',sum(deductions));
+ node('NET_PAY','Net bank payment','outputs',F('SUB',F('ADD',R('CASH_GROSS'),R('TAX_GROSS_UP')),R('DEDUCTIONS'),R('PIT')));
+ // A linked premium is represented by its plan cost, not added to employer cost twice.
+ const unlinkedNoncash=earnings.filter(c=>c.cash==='noncash'&&c.mode!=='linked').map(c=>R(c.code));
+ node('EMPLOYER_COST','Total employer cost','outputs',F('SUM',R('CASH_GROSS'),sum(erCosts),sum(unlinkedNoncash),R('TAX_GROSS_UP')));
+ return {format:'payobook.configuration-poc.v1',productionCompatible:false,name:config.name,country:'VN',currency:'VND',cycle:config.cycle,effectiveFrom:params.effective,parameters:structuredClone(params),components:structuredClone(cs),inputs:Object.values(inputDefs),nodes,removed:config.components.filter(c=>!c.included).map(c=>c.code),issues:issues(config),notes:'Executable prototype expression tree. Production import requires an adapter to create_config and the Formula Studio parser; this is not an activation payload.'};
+}
+function progressive(x){const bands=[[10000000,.05,0],[30000000,.1,500000],[60000000,.2,3500000],[100000000,.3,9500000],[Infinity,.35,14500000]];const b=bands.find(b=>x<=b[0]);return Math.max(0,x*b[1]-b[2]);}
+function evaluateSchema(schema,s){
+ const values={},rules=schema.parameters,cs=schema.components,byCode=Object.fromEntries(cs.map(c=>[c.code,c]));
+ const mapped={CONTRACT_SALARY:s.salary,PAID_DAYS:s.paidDays,STANDARD_DAYS:s.standardDays,CALENDAR_DAYS:s.calendarDays,PAID_CALENDAR_DAYS:s.paidCalendarDays,HOURS_PER_DAY:s.hoursPerDay,REGISTERED_DEPENDANTS:s.dependants,UNIFORM_YTD_EXEMPT:s.uniformYtd,APPROVED_SEVERANCE_ENTITLEMENT:s.entitlement,ELIGIBLE_ANNUAL_DAYS:s.serviceDays,ANNUAL_SCHEDULED_DAYS:s.annualDays};
+ for(const i of schema.inputs){let v=i.default;if(i.code in mapped)v=mapped[i.code];else if(i.code.endsWith('_INPUT'))v=s.values[i.code.slice(0,-6)]||0;else if(i.code.endsWith('_HOURS'))v=s.values[i.code.slice(0,-6)]||0;else if(i.code.endsWith('_APPROVED_PIT_DEDUCTIBLE'))v=s.sourcePitAmount||0;values[i.code]=v;}
+ const eligible=(kind,code)=>kind==='all'?true:kind==='local'?s.nationality==='local':kind==='foreign'?s.nationality==='foreign':kind==='insured'?s.insured:kind==='union'?s.union:kind==='role'?['AG','TM','CO'].includes(s.role):kind==='enrolled'?s.benefitEnrolled:false;
+ const premium=code=>{const c=byCode[code];return c&&eligible(c.eligibility,code)?(c.amount>0?c.amount:s.values[code]||0):0};
+ const tax=(gross,d,p,dep)=>!s.resident?Math.max(0,gross)*rules.nonresidentRate/100:s.contractMonths<3?(gross>=rules.shortThreshold&&!s.commitment?gross*rules.shortRate/100:0):progressive(Math.max(0,gross-d-p-dep));
+ const calc=e=>{
+  if('ref'in e){if(!(e.ref in values))throw Error('Missing dependency: '+e.ref);return values[e.ref]}
+  if('value'in e)return e.value;
+  if(e.fn==='IF')return calc(e.args[0])?calc(e.args[1]):calc(e.args[2]);
+  const a=e.args.map(calc);
+  switch(e.fn){case'SUM':case'ADD':return a.reduce((x,y)=>x+y,0);case'SUB':return a.slice(1).reduce((x,y)=>x-y,a[0]);case'MUL':return a.reduce((x,y)=>x*y,1);case'DIV':if(a[1]<=0)throw Error('A day or hour denominator must be greater than zero.');return a[0]/a[1];case'MIN':return Math.min(...a);case'MAX':return Math.max(...a);case'ROUND':return Math.round(a[0]);case'FLOOR':return Math.floor(a[0]);case'AND':return a.every(Boolean);case'ELIGIBLE':return eligible(...a);case'EMPLOYER_UNION_ELIGIBLE':return s.employerUnion;case'DUE':return a[1]==='annual'?s.month===a[2]:a[1]==='scheme'?!!s.due[a[0]]:true;case'QUALIFIED':return s.qualified;case'ROLE_RATE':return s.role==='AG'?a[1]:s.role==='TM'?a[2]:s.role==='CO'?a[3]:0;case'PLAN_PREMIUM':return premium(a[0]);case'PLAN_ER_PREMIUM':return premium(a[0])*(byCode[a[0]]?.employeeShare!=null?1-byCode[a[0]].employeeShare/100:1);case'ORIGINAL_TAXABLE':return byCode[a[0]]?.tax==='exempt'?0:byCode[a[0]]?.tax==='qualified'&&s.qualified?0:a[1];case'ORIGINAL_INSURANCE':return byCode[a[0]]?.insurance==='included'?a[1]:0;case'TAX':return tax(...a);case'GROSS_UP':{const[gross,born,d,p,dep]=a;let x=0;const base=tax(Math.max(0,gross-born),d,p,dep);for(let n=0;n<200;n++){const next=Math.max(0,tax(gross+x,d,p,dep)-base);if(Math.abs(next-x)<.001)return Math.round(next);x=next}throw Error('Gross-up did not converge.');}default:throw Error('Unknown expression: '+e.fn)}
+ };
+ for(const n of schema.nodes)values[n.code]=calc(n.expr);
+ if(Object.values(values).some(v=>typeof v==='number'&&!Number.isFinite(v)))throw Error('Invalid numeric result.');
+ return values;
+}
+function issues(config){
+ const cs=config.components.filter(c=>c.included),out=[];
+ const add=(code,title,detail,severity='review')=>out.push({code,title,detail,severity});
+ if(!config.rules.reviewed)add('rules','Confirm the effective-dated rule pack','Workbook values are proposed defaults. The union-rate notes conflict; statutory source and policy review are still required.');
+ if(config.rules.effective<'2026-07-01')add('rules','Date outside this prototype’s rule pack','This prototype carries the July 2026 workbook pack only. Historical versions require a separate parameter set.','error');
+ for(const c of cs){
+  if(c.insurance==='review')add(c.code,'Choose the insurance treatment',c.name+' is marked Confirm in the workbook.');
+  if((c.tax==='inherit'||c.insurance==='inherit')&&(!c.sourceCode||!cs.some(x=>x.code===c.sourceCode)))add(c.code,'Choose an original component',c.name+' needs an included source earning; no self or adjustment-to-adjustment references.');
+  if(c.group==='benefits'&&c.mode==='premium'&&!c.reviewed)add(c.code,'Confirm benefit policy and funding',c.name+': eligibility/cost details were incomplete. The premium input remains explicit.');
+  if(c.mode==='linked'&&!cs.some(x=>x.code===c.link))add(c.code,'Restore or replace a removed benefit link',c.name+' refers to '+c.link+'.','error');
+  if(c.code==='UNION_DUES'&&!c.reviewed)add(c.code,'Resolve 0.5% / 1% source conflict',NOTES.UNION_DUES);
+  if(c.code==='OTHER_DED'&&!c.reviewed)add(c.code,'Document the deduction basis',NOTES.OTHER_DED);
+  if(c.code==='PRIOR_DED'&&c.pitDeductible==='source'&&!c.reviewed)add(c.code,'Define adjustment evidence',NOTES.PRIOR_DED);
+ }
+ if(!cs.some(c=>c.code==='PIT'))add('PIT','PIT component removed','No income tax will be withheld by this draft.','review');
+ for(const [plan,links]of [['VN_SHUI_LOCAL',['EE_SI','EE_HI','EE_UI']],['VN_SI_HI_FOREIGN',['EE_SI','EE_HI']],['UNION_MEMBER',['UNION_DUES']]])if(cs.some(c=>c.code===plan))for(const code of links)if(!cs.some(c=>c.code===code))add(plan,'Missing employee contribution',plan+' refers to removed '+code+'. Employer costs remain separate.','error');
+ return out;
+}
+</script><script>const BLUEPRINT_STEPS=['Start','Pay rules','Connect & finish','Outputs & formulas','Test','Review & create'];
+const BP_BANDS=[{lower:0,rate:5},{lower:10000000,rate:10},{lower:30000000,rate:20},{lower:60000000,rate:30},{lower:100000000,rate:35}];
+const BP_CONNECTIONS=[
+ {title:'Tax tables',screen:'Statutory → Tax Tables',model:'hr.formula.config.vn_tax_table_id → vietnam.tax.table; hr.formula.rate.table',status:'Snapshot proposed',detail:'Choose an approved, effective-dated tax master; pin its bands and relief to this configuration. Formula Studio uses its own rate tables. The current source-code default creates 2024 bands; never assume it is the approved 2026 pack.',gap:'The config already links to a tax master via vn_tax_table_id. A pinned version bridge to Formula Studio bands and approval check are proposed. This preview reads workbook values, not live company records.'},
+ {title:'Insurance policies',screen:'Statutory → Insurance Policies',model:'hr.formula.config.vn_insurance_policy_id → vietnam.insurance.policy',status:'Existing model',detail:'Select the policy by company, effective date and employee eligibility. Keep SI/HI/UI ceilings, employee deductions and employer costs separate.',gap:'The config already has vn_insurance_policy_id and a company-default switch. Effective-date resolution and an approved snapshot still need to be wired into the blueprint payload.'},
+ {title:'Employee, contract & bank',screen:'Formula Studio → Data mapping',model:'hr.employee · hr.contract · res.partner.bank',status:'Existing screen',detail:'Salary, residency, dependants and eligibility are typed inputs. Bank account lanes are separate from calculation inputs. Preserve account numbers as text.',gap:'Required-input contracts, damaged-account checks and employee-specific effective dates must be enforced by the adapter.'},
+ {title:'Payroll calendar & corrections',screen:'Payroll cycles · Retro adjustments',model:'hr.payroll.cycle.component.mapping · payroll retro / proration models',status:'Workflow extension',detail:'Pair mid-cycle advances with end-cycle recovery. Segment joiners, leavers and rate changes. Corrections need an original period and source component.',gap:'Historical tax recomputation, YTD accumulators and segment aggregation are integration recipes, not simulated by a single monthly amount.'},
+ {title:'Bank file & release',screen:'Pay & Deliver',model:'pb.bank.file.layout · pb.bank.file.column',status:'Mapping extension',detail:'The bank layout is a delivery contract, not a formula. Reconcile file totals with approved net pay; validate account text, bank identifier type, currency and value date.',gap:'The existing source enum does not cover all workbook fields such as bank code, currency, email and FX. Extend it before using this proposed layout.'},
+ {title:'Payslip layout',screen:'Payslip Configuration · Pay & Deliver',model:'hr.payslip.config',status:'Existing model',detail:'Keep bilingual labels, grouping, zero suppression and confidentiality separate from calculation rules. Release after confirmed payment.',gap:'Bind generated component codes to the selected structure and layout. This preview uses synthetic employees only.'},
+ {title:'Formula Engine & release',screen:'Formula Studio → Formulas · Test · Review',model:'hr.formula.config · hr.formula.rule · formula review / release models',status:'Adapter required',detail:'Persist each rule as excel_formula with its code, input mapping, dependency order and category. Keep manual edits, version comparisons, sample data and release evidence.',gap:'create_config currently seeds templates; it does not ingest this blueprint. A validated create-from-blueprint adapter is required. Export is a proposal, not a live activation payload.'}
+];
+function newBlueprint(){return {version:2,name:'Vietnam · Monthly payroll',cycle:'end',step:0,group:'earnings',people:['local'],components:defaults(),rules:{...DEFAULT_RULES},bands:structuredClone(BP_BANDS),overrides:{},delivery:{currency:'VND',fx:26071,cutoff:15,payday:'penultimate',late:'next',bank:'generic',account:'001234567890',bankCode:'970436',bankCodeType:'napas',language:'both',hideZero:true,release:'confirmed',approvals:true},scenarios:['joiner','foreign','short','benefit','annual'],sample:sampleProfile(),reviews:{},tested:false,created:false};}
+function checkBands(bands){if(!Array.isArray(bands)||bands.length<1)throw Error('Add at least one tax band.');if(bands[0].lower!==0)throw Error('The first tax band must start at 0.');bands.forEach((b,i)=>{if(!Number.isFinite(b.lower)||b.lower<0||!Number.isFinite(b.rate)||b.rate<0||b.rate>=100)throw Error('Use non-negative thresholds and rates from 0 to less than 100%.');if(i&&b.lower<=bands[i-1].lower)throw Error('Tax thresholds must increase. Duplicate or overlapping starts are not allowed.');});}
+function bpTax(x,bands){checkBands(bands);let t=0;bands.forEach((b,i)=>{t+=Math.max(0,Math.min(Math.max(x,0),bands[i+1]?.lower??Infinity)-b.lower)*b.rate/100});return t;}
+function bpTaxExcel(x,bands){checkBands(bands);return 'SUM('+bands.map((b,i)=>`MAX(0,${i<bands.length-1?`MIN((${x}),${bands[i+1].lower})`:`(${x})`}-${b.lower})*${b.rate/100}`).join(',')+')';}
+// A small, explicit Excel parser. No eval / Function; the same parsed formulas drive the preview.
+function parseExcel(formula){
+ if(typeof formula!=='string'||!formula.startsWith('='))throw Error('Start your Excel formula with =.');
+ const src=formula.slice(1),tokens=[];let at=0;
+ while(at<src.length){if(/\s/.test(src[at])){at++;continue}const rest=src.slice(at);let m;if((m=rest.match(/^(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?/))){tokens.push({type:'n',value:Number(m[0])});at+=m[0].length}else if((m=rest.match(/^"(?:[^"]|"")*"/))){tokens.push({type:'s',value:m[0].slice(1,-1).replaceAll('""','"')});at+=m[0].length}else if((m=rest.match(/^[A-Za-z_][A-Za-z0-9_]*/))){tokens.push({type:'id',value:m[0].toUpperCase()});at+=m[0].length}else if((m=rest.match(/^(?:>=|<=|<>|[+\-*/^%=<>(),])/))){tokens.push({type:m[0]});at+=m[0].length}else throw Error('Unsupported Excel syntax near '+rest.slice(0,18)+'. Use component codes and the supported functions.');}
+ let p=0;const peek=()=>tokens[p]?.type,take=t=>{if(peek()!==t)throw Error('Expected '+t+' in formula.');return tokens[p++]};
+ function primary(){if(peek()==='n'||peek()==='s')return {value:tokens[p++].value};if(peek()==='id'){const name=tokens[p++].value;if(peek()==='('){p++;const args=[];if(peek()!==')'){args.push(expr());while(peek()===','){p++;args.push(expr())}}take(')');if(!['IF','AND','OR','NOT','SUM','MIN','MAX','ROUND','FLOOR','ABS'].includes(name))throw Error(name+' is not supported in this preview.');return {fn:name,args}}return {ref:name}}if(peek()==='('){p++;const a=expr();take(')');return a}throw Error('Expected an amount, component code or function.');}
+ function unary(){if(peek()==='-'||peek()==='+'){const op=tokens[p++].type;return {op:'u'+op,a:unary()}}let a=primary();while(peek()==='%'){p++;a={op:'/',a,b:{value:100}}}return a}
+ function power(){let a=unary();if(peek()==='^'){p++;a={op:'^',a,b:power()}}return a}
+ function mul(){let a=power();while(['*','/'].includes(peek())){const op=tokens[p++].type;a={op,a,b:power()}}return a}
+ function add(){let a=mul();while(['+','-'].includes(peek())){const op=tokens[p++].type;a={op,a,b:mul()}}return a}
+ function expr(){let a=add();if(['=','<>','<','>','<=','>='].includes(peek())){const op=tokens[p++].type;a={op,a,b:add()}}return a}
+ const ast=expr();if(p!==tokens.length)throw Error('Unexpected content after the formula.');return ast;
+}
+function excelRefs(e){return e.ref?[e.ref]:e.args?[...new Set(e.args.flatMap(excelRefs))]:e.op?[...new Set([...excelRefs(e.a),...(e.b?excelRefs(e.b):[])])]:[];}
+function calcExcel(e,resolve){if('value'in e)return e.value;if(e.ref)return resolve(e.ref);if(e.op){const a=calcExcel(e.a,resolve);if(e.op==='u-')return -a;if(e.op==='u+')return +a;const b=calcExcel(e.b,resolve);switch(e.op){case'+':return a+b;case'-':return a-b;case'*':return a*b;case'/':if(b===0)throw Error('Division by zero: check scheduled days, hours or FX.');return a/b;case'^':return a**b;case'=':return a===b;case'<>':return a!==b;case'<':return a<b;case'>':return a>b;case'<=':return a<=b;case'>=':return a>=b;}}
+ if(e.fn==='IF'){if(e.args.length!==3)throw Error('IF needs condition, yes and no values.');return calcExcel(e.args[0],resolve)?calcExcel(e.args[1],resolve):calcExcel(e.args[2],resolve)}
+ const a=e.args.map(x=>calcExcel(x,resolve));switch(e.fn){case'SUM':return a.reduce((n,v)=>n+Number(v),0);case'MIN':return Math.min(...a);case'MAX':return Math.max(...a);case'AND':return a.every(Boolean);case'OR':return a.some(Boolean);case'NOT':if(a.length!==1)throw Error('NOT needs one value.');return !a[0];case'ABS':if(a.length!==1)throw Error('ABS needs one value.');return Math.abs(a[0]);case'ROUND':if(a.length!==2||!Number.isInteger(a[1]))throw Error('ROUND needs a value and integer decimal places.');return Math.sign(a[0])*Math.round((Math.abs(a[0])+Number.EPSILON)*10**a[1])/10**a[1];case'FLOOR':if(a.length!==2||a[1]<=0)throw Error('FLOOR needs a positive significance.');return Math.floor(a[0]/a[1])*a[1];}throw Error('Unknown Excel function.');}
+function compileBlueprint(b){
+ checkBands(b.bands);
+ const errors=issues(b).filter(x=>x.severity==='error');if(errors.length)throw Error(errors[0].title+': '+errors[0].detail);
+ for(const [key,v] of Object.entries(b.rules)){if(typeof v==='number'&&(!Number.isFinite(v)||v<0))throw Error('Invalid non-negative parameter: '+key);}
+ if(b.rules.shortRate>=100||b.rules.nonresidentRate>=100)throw Error('Tax rates must be below 100%.');
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(b.rules.effective))throw Error('Choose an effective date.');
+ if(!Number.isInteger(b.delivery.cutoff)||b.delivery.cutoff<1||b.delivery.cutoff>28)throw Error('Choose a cutoff day from 1 to 28 for a monthly calendar.');
+ for(const c of b.components.filter(c=>c.included)){for(const key of ['amount','rate','cap','employeeShare','erSi','erHi','erUi'])if(!Number.isFinite(c[key])||c[key]<0)throw Error(c.name+': '+key+' must be a non-negative number.');if(c.employeeShare>100)throw Error(c.name+': employee share cannot exceed 100%.');if(!Number.isInteger(c.month)||c.month<1||c.month>12)throw Error(c.name+': choose a payout month from 1 to 12.');}
+ const base=compile(b),inputMap=Object.fromEntries(base.inputs.map(x=>[x.code,{...x,description:x.code.toLowerCase().replaceAll('_',' ')}]));const nodes=[];
+ const addInput=(code,value,description='',type='number')=>{if(!inputMap[code])inputMap[code]={code,type,default:value,description:description||code.toLowerCase().replaceAll('_',' ')};return code};
+ const resident=addInput('IS_RESIDENT',1),local=addInput('IS_LOCAL',1),insured=addInput('IS_INSURED',1),union=addInput('IS_UNION_MEMBER',1),months=addInput('CONTRACT_MONTHS',12),commit=addInput('VALID_TAX_COMMITMENT',0),month=addInput('PAY_MONTH',9),role=addInput('ROLE_CODE',1,'1 = AG, 2 = territory manager, 3 = compliance officer, 0 = other');
+ const elig=(kind,code)=>kind==='all'?'1':kind==='local'?local:kind==='foreign'?`(${local}=0)`:kind==='insured'?insured:kind==='union'?union:kind==='role'?`(${role}>0)`:addInput(code+'_ENROLLED',0);
+ const totalTax=(g,d,p,dep)=>`IF(${resident}=0,MAX(0,(${g}))*${b.rules.nonresidentRate/100},IF(${months}<3,IF(AND((${g})>=${b.rules.shortThreshold},${commit}=0),MAX(0,(${g}))*${b.rules.shortRate/100},0),${bpTaxExcel(`MAX(0,(${g})-(${d})-(${p})-(${dep}))`,b.bands)}))`;
+ const premium=code=>{const c=b.components.find(c=>c.code===code&&c.included);if(!c)return '0';return `IF(${elig(c.eligibility,code)},${c.amount||addInput(code+'_PREMIUM',0)},0)`};
+ function convert(e){if(e.ref){const percentage=b.components.find(c=>c.group==='earnings'&&c.mode==='percentage'&&c.included&&e.ref===c.code+'_INPUT');return percentage?`(CONTRACT_SALARY*${percentage.rate/100})`:e.ref;}if('value'in e)return typeof e.value==='string'?JSON.stringify(e.value):String(e.value);const a=e.args.map(convert),v=e.args.map(x=>x.value);
+ switch(e.fn){case'ADD':case'SUM':return `SUM(${a.join(',')})`;case'SUB':return '('+a.join('-')+')';case'MUL':return '('+a.join('*')+')';case'DIV':return '('+a.join('/')+')';case'ROUND':return `ROUND(${a[0]},0)`;case'FLOOR':return `FLOOR(${a[0]},1)`;case'ELIGIBLE':return elig(v[0],v[1]);case'DUE':return v[1]==='annual'?`(${month}=${v[2]})`:['scheme','adhoc'].includes(v[1])?addInput(v[0]+'_DUE',1,'Approved and due in this payroll: 1 yes / 0 no'):'1';case'QUALIFIED':return addInput(v[0]+'_QUALIFIED',1,'Evidence confirms exemption: 1 yes / 0 no');case'EMPLOYER_UNION_ELIGIBLE':return addInput('EMPLOYER_UNION_ELIGIBLE',1);case'ROLE_RATE':return `IF(${role}=1,${a[1]},IF(${role}=2,${a[2]},IF(${role}=3,${a[3]},0)))`;case'PLAN_PREMIUM':return premium(v[0]);case'PLAN_ER_PREMIUM':return `(${premium(v[0])}*${1-(b.components.find(c=>c.code===v[0])?.employeeShare||0)/100})`;case'ORIGINAL_TAXABLE':return `(${a[1]}*${addInput((v[0]||'UNRESOLVED')+'_ORIGINAL_TAX_RATIO',1,'Approved original taxable fraction, 0–1; historical re-run not simulated')})`;case'ORIGINAL_INSURANCE':return `(${a[1]}*${addInput((v[0]||'UNRESOLVED')+'_ORIGINAL_INSURANCE_RATIO',0,'Approved original insurance fraction, 0–1')})`;case'TAX':return totalTax(...a);case'GROSS_UP':{
+ const [g,born,d,p,dep]=a;let prev='0';const baseline=totalTax(`MAX(0,${g}-${born})`,d,p,dep);
+ for(let i=1;i<=32;i++){const code='PIT_ITER_'+i;nodes.push({code,name:'Employer PIT · calculation step '+i,group:'internal',excel_formula:`=MAX(0,${totalTax(`${g}+${prev}`,d,p,dep)}-${baseline})`,source:'Generated non-circular Excel gross-up helper'});prev=code;}
+ nodes.push({code:'GROSS_UP_RESIDUAL',name:'Gross-up precision check',group:'checks',excel_formula:`=ABS(${prev}-MAX(0,${totalTax(`${g}+${prev}`,d,p,dep)}-${baseline}))`,source:'Must be below 1 VND'});return `ROUND(${prev},0)`;}
+ default:return `${e.fn}(${a.join(',')})`;}}
+ for(const n of base.nodes){let excel_formula='='+convert(n.expr);const c=b.components.find(c=>c.code===n.code&&c.included);if(c?.group==='earnings'&&c.mode==='percentage'){let amount=`(CONTRACT_SALARY*${c.rate/100})`;if(c.proration==='working')amount=`(${amount}*PAID_DAYS/STANDARD_DAYS)`;if(c.proration==='calendar')amount=`(${amount}*PAID_CALENDAR_DAYS/CALENDAR_DAYS)`;const due=c.frequency==='annual'?`PAY_MONTH=${c.month}`:['adhoc','scheme'].includes(c.frequency)?addInput(c.code+'_DUE',1):'1';excel_formula=`=${b.rules.rounding==='floor'?'FLOOR':'ROUND'}(IF(AND(${elig(c.eligibility,c.code)},${due}),${amount}*${c.sign},0),${b.rules.rounding==='floor'?1:0})`;}
+ nodes.push({code:n.code,name:n.name,group:n.group,excel_formula,source:n.source});}
+ if(b.delivery.currency==='USD')nodes.push({code:'PAYMENT_AMOUNT',name:'Bank payment · USD',group:'outputs',excel_formula:`=ROUND(NET_PAY/${addInput('APPROVED_FX_RATE',b.delivery.fx,'Approved VND per USD; payroll calculation remains VND')},2)`,source:'Bank Accounts · approved FX'});
+ else nodes.push({code:'PAYMENT_AMOUNT',name:'Bank payment · VND',group:'outputs',excel_formula:'=ROUND(NET_PAY,0)',source:'Bank File Spec'});
+ for(const n of nodes){n.generated_formula=n.excel_formula;if(b.overrides[n.code]){n.excel_formula=b.overrides[n.code];n.manual=true}n.ast=parseExcel(n.excel_formula);n.dependencies=excelRefs(n.ast);}
+ const codes=new Set([...Object.keys(inputMap),...nodes.map(n=>n.code)]);if(codes.size!==Object.keys(inputMap).length+nodes.length)throw Error('Duplicate component or input code.');for(const n of nodes)for(const ref of n.dependencies)if(!codes.has(ref))throw Error(n.code+' refers to missing '+ref+'. Restore the component or update its formula.');
+ return {format:'payobook.blueprint.excel.v2',productionCompatible:false,name:b.name,country_code:'VN',cycle_type:b.cycle,currency:'VND',paymentCurrency:b.delivery.currency,effectiveFrom:b.rules.effective,inputs:Object.values(inputMap),nodes,components:b.components.filter(c=>c.included),bands:b.bands,delivery:b.delivery,connections:BP_CONNECTIONS,removed:b.components.filter(c=>!c.included).map(c=>c.code),note:'Excel rule proposal. Requires validated adapter to existing models; no production records are created.'};
+}
+function bpInputValues(schema,s){const vals={},mapped={CONTRACT_SALARY:s.salary,PAID_DAYS:s.paidDays,STANDARD_DAYS:s.standardDays,CALENDAR_DAYS:s.calendarDays,PAID_CALENDAR_DAYS:s.paidCalendarDays,HOURS_PER_DAY:s.hoursPerDay,REGISTERED_DEPENDANTS:s.dependants,UNIFORM_YTD_EXEMPT:s.uniformYtd,APPROVED_SEVERANCE_ENTITLEMENT:s.entitlement,ELIGIBLE_ANNUAL_DAYS:s.serviceDays,ANNUAL_SCHEDULED_DAYS:s.annualDays,IS_RESIDENT:+s.resident,IS_LOCAL:+(s.nationality==='local'),IS_INSURED:+s.insured,IS_UNION_MEMBER:+s.union,EMPLOYER_UNION_ELIGIBLE:+s.employerUnion,CONTRACT_MONTHS:s.contractMonths,VALID_TAX_COMMITMENT:+s.commitment,PAY_MONTH:s.month,ROLE_CODE:{AG:1,TM:2,CO:3,OTHER:0}[s.role]??0};for(const i of schema.inputs){let v=i.default;if(i.code in mapped)v=mapped[i.code];else if(i.code.endsWith('_INPUT')){const c=schema.components.find(c=>c.code===i.code.slice(0,-6));v=c?.group==='earnings'&&c.mode==='percentage'?s.salary*c.rate/100:s.values[i.code.slice(0,-6)]||0;}else if(i.code.endsWith('_HOURS'))v=s.values[i.code.slice(0,-6)]||0;else if(i.code.endsWith('_PREMIUM'))v=s.values[i.code.slice(0,-8)]||0;else if(i.code.endsWith('_ENROLLED'))v=+s.benefitEnrolled;else if(i.code.endsWith('_QUALIFIED'))v=+s.qualified;else if(i.code.endsWith('_DUE'))v=+(s.due[i.code.slice(0,-4)]??true);vals[i.code]=v;}if(s.mappedInputs)for(const [code,value] of Object.entries(s.mappedInputs)){if(Object.hasOwn(vals,code)){if(typeof value!=='number'||!Number.isFinite(value))throw Error('Invalid mapped value for '+code);vals[code]=value;}}return vals;}
+function runBlueprint(schema,s){
+ if(s.standardDays<=0||s.calendarDays<=0||s.hoursPerDay<=0||s.annualDays<=0)throw Error('Scheduled days and hours must be greater than zero.');if(s.paidDays<0||s.paidDays>s.standardDays)throw Error('Paid days must be between zero and scheduled days.');if(s.salary<0||s.dependants<0||!Number.isInteger(s.dependants))throw Error('Check salary and registered dependant count.');
+ const values=bpInputValues(schema,s),by=Object.fromEntries(schema.nodes.map(n=>[n.code,n])),visiting=new Set();
+ if(values.STANDARD_DAYS<=0||values.CALENDAR_DAYS<=0||values.HOURS_PER_DAY<=0||values.ANNUAL_SCHEDULED_DAYS<=0)throw Error('Mapped scheduled days and hours must be greater than zero.');if(values.PAID_DAYS<0||values.PAID_DAYS>values.STANDARD_DAYS)throw Error('Mapped paid days must be between zero and scheduled days.');if(values.CONTRACT_SALARY<0||values.REGISTERED_DEPENDANTS<0||!Number.isInteger(values.REGISTERED_DEPENDANTS))throw Error('Check mapped salary and dependant count.');
+ function resolve(code){if(Object.hasOwn(values,code))return values[code];if(visiting.has(code))throw Error('Circular formula dependency at '+code+'.');if(!by[code])throw Error('Missing input '+code);visiting.add(code);const v=calcExcel(by[code].ast,resolve);if(typeof v!=='number'&&typeof v!=='boolean'||!Number.isFinite(Number(v)))throw Error('Invalid result for '+code);values[code]=v;visiting.delete(code);return v;}
+ schema.nodes.forEach(n=>resolve(n.code));if(values.GROSS_UP_RESIDUAL>=1)throw Error('Employer tax calculation did not converge within 1 VND. Review rates or provide a tested gross-up formula.');return values;
+}
+function bpBankIssues(d){const out=[];if(!/^\d{6,34}$/.test(d.account))out.push('Account must be 6–34 digits in this demo layout; preserve leading zeros and reject scientific notation.');if(d.bankCodeType==='napas'&&!/^\d{6}$/.test(d.bankCode))out.push('NAPAS code must contain six digits.');if(d.bankCodeType==='bic'&&!/^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(d.bankCode))out.push('BIC must have 8 or 11 valid characters.');if(d.currency==='USD'&&(!Number.isFinite(d.fx)||d.fx<=0))out.push('An approved FX rate greater than zero is required.');return out;}
+function bpReviews(b){const out=issues(b).map(x=>({...x,title:x.title,detail:x.detail}));if(!b.reviews.tax)out.push({code:'tax',title:'Pin an approved tax-table version',detail:'Workbook pack is a proposal; tax master data has not been read from your company.'});if(!b.reviews.bank)out.push({code:'bank',title:'Confirm bank format with a sample acceptance file',detail:'Bank identifier types and transmitted columns need confirmation. Validation helpers must stay out of the payment file.'});if(!b.reviews.opening)out.push({code:'opening',title:'Reconcile migration and year-to-date balances',detail:'Workbook start-date and opening-balance notes differ. Employee Master, GL Mapping and UAT tabs referenced by the dashboard are absent.'});if(b.people.includes('net'))out.push({code:'net',title:'Net-contract recipe needs an integration test',detail:'Employer-paid benefit PIT is calculated here. A guaranteed net contract needs a separate approved inversion recipe including insurance and rounding.'});if(b.scenarios.includes('retro'))out.push({code:'retro',title:'Connect historical recalculation',detail:'Prior-period rows need original period, tax version, YTD impact and settlement rules. This preview only calculates current-period corrections.'});if(b.scenarios.includes('segments'))out.push({code:'segments',title:'Connect effective-dated pay segments',detail:'Aggregate segment-level salary and calendar inputs from existing proration records. One monthly denominator is insufficient for multiple rate changes.'});bpBankIssues(b.delivery).forEach(x=>out.push({code:'bank',title:'Bank validation',detail:x,severity:'error'}));if(!b.name.trim())out.push({code:'name',title:'Name your configuration',detail:'A configuration name is required.',severity:'error'});if(!b.tested)out.push({code:'test',title:'Run the scenario checks',detail:'Check the generated Excel formulas against sample inputs before handing over.'});return out;}
+function bpChecks(b){const results=[],push=(name,fn)=>{try{const detail=fn();results.push({name,pass:true,detail:detail||'Passed'})}catch(e){results.push({name,pass:false,detail:e.message})}};
+ push('Every formula parses and all references resolve',()=>{runBlueprint(compileBlueprint(b),sampleProfile());return 'Excel formulas evaluated; no missing references or cycles'});
+ push('Tax bands are continuous at every boundary',()=>{checkBands(b.bands);for(const r of b.bands.slice(1)){if(Math.abs(bpTax(r.lower,b.bands)-bpTax(r.lower-1,b.bands))>1)throw Error('Boundary discontinuity')}return b.bands.length+' editable marginal bands checked'});
+ for(const [kind,name]of [['standard','Full month'],['joiner','Mid-month joiner'],['foreign','Non-resident foreign employee'],['short','Short contract'],['benefit','Employer-paid benefits']])push(name,()=>{const v=runBlueprint(compileBlueprint(b),sampleProfile(kind));if(Math.abs(v.NET_PAY-(v.CASH_GROSS+v.TAX_GROSS_UP-v.DEDUCTIONS-v.PIT))>.01)throw Error('Net pay does not reconcile');return 'Net pay '+Math.round(v.NET_PAY).toLocaleString('en-US')+' VND · reconciles'});
+ push('Zero scheduled days are caught before calculation',()=>{try{runBlueprint(compileBlueprint(b),{...sampleProfile(),standardDays:0})}catch(e){if(e.message.includes('Scheduled'))return 'Invalid input blocked';throw e}throw Error('Invalid denominator accepted')});
+ push('Bank fields preserve account text and validate identifiers',()=>{const e=bpBankIssues(b.delivery);if(e.length)throw Error(e.join(' '));return 'Synthetic account and identifier validated; bank acceptance still required'});return results;}
+</script><script>// Optional setup data and validation. These are draft contracts, not live Odoo records.
+const APPROVAL_SEED=[
+ ['Employee master changes','HR Ops','HR Reviewer','HR Lead','None','1 working day','Import report + change evidence'],
+ ['Salary/contract changes','HR Ops','HR Reviewer','HR + Finance','None (unified)','1 working day','Approved letter/contract'],
+ ['Timesheet and leave','Employee/Manager','Line Manager','HR','None','By day 15 cutoff','Approved timesheet'],
+ ['Overtime','Employee/Manager','Line Manager','Functional Manager','200 hours/person/year — source requires policy review','By day 15','Approved hours and reason'],
+ ['Incentive/bonus','Functional Owner','HR/Payroll','Functional Manager + Finance','None','By day 15','Scheme result and approval'],
+ ['Draft payroll run','Payroll Preparer','HR Reviewer','HR Lead','None','1 working day','Control report + variance'],
+ ['Funding and payroll journal','Payroll/Finance','Finance Reviewer','Finance Controller','None','1 working day','Funding tie-out + journal'],
+ ['Bank file creation','Payroll/Finance Maker','Bank Checker','Authorized Signatory','None','On/before penultimate working day','Bank control total'],
+ ['Bank payment release','Bank Maker','Bank Checker','Authorized Signatory','Per bank mandate','On/before penultimate working day','Bank release confirmation'],
+ ['Reopen / off-cycle payroll','Payroll Preparer','HR + Finance Review','Country/Finance Approver','None','Case by case','Exception approval and audit reason']
+];
+const SAMPLE_FEEDS={api:{label:'HR integration API · monthly payroll',fields:{monthly_salary:30000000,paid_days:22,scheduled_days:22,dependants:1,resident:1,contract_months:12,employee_id:'SAMPLE-001'}},excel:{label:'Excel payroll input · September sample',fields:{'Contract salary':30000000,'Paid days':22,'Scheduled days':22,'Dependants':1,'Resident':1,'Contract months':12,'Employee ID':'SAMPLE-001'}},models:{label:'Payobook employee & contract models · sample',fields:{'hr.contract.wage':30000000,'payroll.paid_days':22,'payroll.standard_days':22,'employee.registered_dependants':1,'employee.resident_flag':1,'contract.duration_months':12,'employee.employee_code':'SAMPLE-001'}}};
+function initJourney(b){if(b.journey?.revision===3)return b;const was=b.step;b.journey={revision:3,company:'Example Vietnam company',start:'vietnam',payTab:'components',import:{status:'not_started',filename:'',rows:[]},mapping:{status:'not_started',source:'api',rows:[],validated:false},approvals:{status:'not_started',name:'Vietnam · Approval matrix',separation:true,rows:APPROVAL_SEED.map((r,i)=>({id:'approval_'+(i+1),enabled:true,object:r[0],maker:r[1],reviewer:r[2],approver:r[3],assignee:'',delegate:'',threshold:r[4],sla:r[5],evidence:r[6],decision:'all',onReject:'return',escalate:'Workflow owner',source:'Approval Matrix!A'+(i+5)+':K'+(i+5)}))},payslip:{status:'not_started',rows:[]}};b.journey.mapping.rows=seedMappings('api');b.step=was===2?1:was===3?2:was;b.tested=false;b.created=false;return b;}
+function seedMappings(source){const keys=Object.keys(SAMPLE_FEEDS[source].fields);return ['CONTRACT_SALARY','PAID_DAYS','STANDARD_DAYS','REGISTERED_DEPENDANTS','IS_RESIDENT','CONTRACT_MONTHS'].map((target,i)=>({target,field:keys[i],transform:'identity',required:true}));}
+function validateMappings(b){const m=b.journey.mapping,fields=SAMPLE_FEEDS[m.source].fields,inputs=new Set(compileBlueprint(b).inputs.map(x=>x.code)),seen=new Set(),values={};if(!m.rows.length)throw Error('Add a mapping before marking this task configured.');for(const row of m.rows){if(!inputs.has(row.target))throw Error('Mapping target is missing from this schema: '+row.target);if(seen.has(row.target))throw Error('Map each destination once: '+row.target);seen.add(row.target);if(!Object.hasOwn(fields,row.field)){if(row.required)throw Error('Choose a source for '+row.target);continue}let v=fields[row.field];if(row.transform==='number')v=Number(String(v).replaceAll(',',''));if(row.transform==='thousands')v=Number(v)*1000;if(typeof v!=='number'||!Number.isFinite(v))throw Error(row.target+' needs a numeric value; choose a numeric source or conversion.');if(['IS_RESIDENT','IS_LOCAL','IS_INSURED','IS_UNION_MEMBER','VALID_TAX_COMMITMENT'].includes(row.target)&&![0,1].includes(v))throw Error(row.target+' must be 0 or 1.');if(['STANDARD_DAYS','CALENDAR_DAYS','HOURS_PER_DAY'].includes(row.target)&&v<=0)throw Error(row.target+' must be greater than zero.');if(row.target==='REGISTERED_DEPENDANTS'&&(!Number.isInteger(v)||v<0))throw Error('Dependants must be a non-negative whole number.');values[row.target]=v;}runBlueprint(compileBlueprint(b),{...b.sample,mappedInputs:values});return values;}
+function validateApprovals(a){const rows=a.rows.filter(r=>r.enabled);if(!rows.length)throw Error('Add an enabled transaction rule, or skip this optional task.');for(const r of rows){if(!r.object.trim()||!r.maker.trim()||!r.reviewer.trim()||!r.approver.trim())throw Error('Fill transaction, maker, reviewer and approver for every enabled rule.');if(a.separation&&(r.maker.trim().toLowerCase()===r.reviewer.trim().toLowerCase()||r.maker.trim().toLowerCase()===r.approver.trim().toLowerCase()))throw Error('Maker must differ from reviewer and approver when separation is enabled.');if(!r.evidence.trim())throw Error('Define required evidence for '+r.object);}return true;}
+function seedPayslip(b){return b.components.filter(c=>c.included).map(c=>({code:c.code,label:c.name,labelVi:c.code==='BASIC_SALARY'?'Lương cơ bản':'',section:c.group==='earnings'?'earnings':c.group==='deductions'?'deductions':'benefits',show:c.group!=='benefits',hideZero:c.code!=='BASIC_SALARY'})).concat([{code:'NET_PAY',label:'Net pay',labelVi:'Thực lĩnh',section:'summary',show:true,hideZero:false}]);}
+function validatePayslip(b){const available=new Set(compileBlueprint(b).nodes.map(n=>n.code)),seen=new Set();for(const r of b.journey.payslip.rows.filter(r=>r.show)){if(!available.has(r.code))throw Error('Payslip refers to removed component '+r.code);if(seen.has(r.code))throw Error('Payslip component appears twice: '+r.code);seen.add(r.code);if(!r.label.trim())throw Error('Add a display label for '+r.code);}if(!seen.has('NET_PAY'))throw Error('Keep net pay visible in this payslip.');return true;}
+function optionalStatus(b,key){const task=b.journey[key];if(task.status!=='configured')return task.status;try{if(key==='mapping')validateMappings(b);if(key==='approvals')validateApprovals(task);if(key==='payslip')validatePayslip(b);return 'configured'}catch{return 'needs_review'}}
+function applyStartingPoint(b,kind){if(!['vietnam','blank','excel'].includes(kind))throw Error('Unknown starting point.');b.components=kind==='vietnam'?defaults():[];b.overrides={};b.journey.start=kind;b.journey.mapping.status='not_started';b.journey.mapping.validated=false;b.journey.payslip.status='not_started';b.journey.payslip.rows=[];b.sample=sampleProfile();b.tested=false;b.created=false;if(kind==='excel')b.journey.import={status:'not_started',filename:'',rows:[]};return b;}
+function stageSampleImport(){return [{code:'BASIC_SALARY',name:'Basic contractual salary',amount:0,formula:'=ROUND(CONTRACT_SALARY*PAID_DAYS/STANDARD_DAYS,0)',include:true},{code:'PROJECT_ALLOWANCE',name:'Project allowance',amount:750000,formula:'=750000',include:true},{code:'EE_SI',name:'Employee social insurance',amount:0,formula:'=ROUND(MIN(CONTRACT_SALARY,PARAM_SICAP)*0.08,0)',include:true},{code:'PIT',name:'Personal income tax',amount:0,formula:'',include:true}];}
+function applySampleImport(b,rows){const selected=rows.filter(r=>r.include),codes=new Set();if(!selected.length)throw Error('Choose at least one component to import.');const components=[],overrides={};for(const r of selected){if(!/^[A-Z][A-Z0-9_]{2,39}$/.test(r.code)||codes.has(r.code))throw Error('Imported codes must be valid and unique.');codes.add(r.code);const existing=defaults().find(c=>c.code===r.code);components.push(existing?{...existing}:{...defaults().find(c=>c.code==='OTHER_TAXABLE'),code:r.code,name:r.name,mode:'fixed',amount:r.amount,source:'Illustrative workbook import',note:'Sample import; confirm source and policy.',reviewed:false});if(r.formula)overrides[r.code]=r.formula;}
+ const candidate={...b,components,overrides};runBlueprint(compileBlueprint(candidate),sampleProfile());b.components=components;b.overrides=overrides;b.journey.import.status='sample_applied';b.journey.import.rows=structuredClone(rows);b.journey.mapping.status='not_started';b.journey.payslip.status='not_started';b.journey.payslip.rows=[];b.tested=false;b.created=false;return b;}
+</script><script>/* global defaults, sampleProfile, BLUEPRINT_STEPS, newBlueprint, compileBlueprint, runBlueprint, bpReviews, BP_CONNECTIONS, bpTax, bpChecks, bpBankIssues */
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const cash=x=>Number(x||0).toLocaleString('en-US',{maximumFractionDigits:0});
+let bp=newBlueprint(),query='',resultList=[],engineMode=false,engineFilter='outputs',editingCode=null,editorTab='guided',toastTimer;
+try{const saved=JSON.parse(localStorage.getItem('payobook-blueprint-v2'));if(saved?.version===2)bp=saved;}catch{/* Storage may be unavailable for local files. */}
+const app=document.querySelector('#app'),drawer=document.querySelector('#drawer');
+function toast(msg){const e=document.querySelector('#toast');e.textContent=msg;e.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.style.display='none',3400)}
+function save(){try{localStorage.setItem('payobook-blueprint-v2',JSON.stringify(bp));return true}catch{return false}}
+function changed(){bp.tested=false;bp.created=false;resultList=[];save()}
+function setPath(path,value){const keys=path.split('.');let o=bp;keys.slice(0,-1).forEach(k=>o=o[k]);o[keys.at(-1)]=value;changed()}
+function getPath(path){return path.split('.').reduce((o,k)=>o?.[k],bp)}
+function selectHtml(path,options,label){return `<select data-path="${esc(path)}" aria-label="${esc(label)}">${options.map(([v,t])=>`<option value="${esc(v)}" ${String(getPath(path))===String(v)?'selected':''}>${esc(t)}</option>`).join('')}</select>`}
+function field(label,path,type='text',options=null){return `<label class="field">${esc(label)}${options?selectHtml(path,options,label):`<input data-path="${esc(path)}" type="${type}" value="${esc(getPath(path))}" ${type==='number'?'step="any"':''}>`}</label>`}
+function btn(text,action,cls='',attrs=''){return `<button class="${cls}" data-action="${action}" ${attrs}>${text}</button>`}
+function pill(text,cls=''){return `<span class="pill ${cls}">${esc(text)}</span>`}
+function summary(){try{const schema=compileBlueprint(bp);return {schema,values:runBlueprint(schema,bp.sample)}}catch(e){return {error:e.message}}}
+function head(kicker,title,copy){return `<div class="eyebrow">${kicker}</div><h1>${title}</h1><p>${copy}</p>`}
+function render(){const s=summary();app.innerHTML=`<div class="shell"><aside class="rail"><div class="brand">payobook<span>.</span></div><div class="raillabel">New configuration</div><nav>${BLUEPRINT_STEPS.map((x,i)=>`<button data-action="step" data-step="${i}" class="${bp.step===i&&!engineMode?'active':''}"><b>${i+1}</b>${x}</button>`).join('')}</nav><div class="railbottom">OPTION 02 · PAYROLL BLUEPRINT<br>Made for the way you pay.<br><a href="prototype.html">View original option ↗</a><br>${btn('How this connects ↗','connections','quiet')}</div></aside><div class="workspace"><header class="topbar"><div class="crumb">Payroll configurations &nbsp; / &nbsp; <b>${engineMode?'Formula Engine preview':'New blueprint'}</b></div><div class="topactions"><span class="mini"><span class="dot"></span>Local design draft</span>${btn('Save draft','save','small')}${btn('Settings','journey-settings','small')}${btn('Implementation guide ↗','journey-guide','small')}</div></header><div class="bodygrid"><main class="content">${engineMode?enginePage(s):[journeyStart,payRulesPage,connectSetupPage,outputsPage,testPage,journeyReview][bp.step](s)}</main>${story(s)}</div><footer class="footer"><div class="row">${bp.step>0||engineMode?btn('← Back',engineMode?'exit-engine':'back'):pill('🇻🇳 Vietnam · VND')}<span class="mini">${engineMode?'Excel formulas · Synthetic sample':`Step ${bp.step+1} of 6 · ${bp.components.filter(c=>c.included).length} components`}</span></div><div class="row">${engineMode?btn('Export Excel rule package','export','primary'):bp.step===5?btn('Create prototype schema →','create','primary'):btn(['Continue to pay rules →','Continue to optional setup →','Review outputs & formulas →','Continue to test →','Review your blueprint →'][bp.step],'next','primary')}</div></footer></div></div>`;}
+function story(s){const v=s.values||{};return `<aside class="story"><div class="card"><div class="split"><span class="eyebrow" style="margin:0">See it in someone’s pay</span>${pill('LIVE','green')}</div><div class="storyhead"><div class="avatar">${bp.sample.nationality==='local'?'LM':'AK'}</div><div><b>${bp.sample.nationality==='local'?'Linh':'Alex'} · Example employee</b><div class="mini">${bp.sample.resident?'Resident':'Non-resident'} · ${bp.sample.paidDays}/${bp.sample.standardDays} paid days</div></div></div><label class="field">Try a different situation<select aria-label="Example employee" data-sample><option value="standard" ${bp.sample.profile==='standard'?'selected':''}>Full month · local employee</option><option value="joiner" ${bp.sample.profile==='joiner'?'selected':''}>Joined halfway through the month</option><option value="foreign" ${bp.sample.profile==='foreign'?'selected':''}>Foreign employee · non-resident</option><option value="short" ${bp.sample.profile==='short'?'selected':''}>Short contract · resident</option><option value="benefit" ${bp.sample.profile==='benefit'?'selected':''}>Company pays benefit tax</option></select></label>${s.error?`<div class="banner"><b>Preview needs attention</b><br>${esc(s.error)}</div>`:`<div class="mini">Estimated take-home pay</div><div class="money">${(v.NET_PAY/1000000).toFixed(2)}m <small>VND</small></div><div class="receipt"><div><span>Cash earnings</span><b>${cash(v.CASH_GROSS)}</b></div><div><span>Employee deductions</span><b>− ${cash(v.DEDUCTIONS)}</b></div><div><span>Personal income tax</span><b>− ${cash(v.PIT)}</b></div>${v.TAX_GROSS_UP?`<div><span>Company-paid tax</span><b>+ ${cash(v.TAX_GROSS_UP)}</b></div>`:''}<div class="total"><span>Employer cost</span><b>${cash(v.EMPLOYER_COST)}</b></div></div>${v.NET_PAY<0?'<div class="banner">Negative net pay: agree a recovery/carry-forward policy before release.</div>':''}`}${btn('Adjust sample inputs ↗','sample','small')}<div class="storyfoot" style="margin-top:17px">Calculated from the actual generated Excel formulas. Sample data only; workbook assumptions still need review.</div></div><div class="card" style="background:#f1edf9;border-color:#e5dcf6"><div class="iconbox">ƒx</div><h3 style="margin-top:13px">Simple outside. Excel inside.</h3><p class="mini" style="margin-bottom:10px">Guided choices create readable formulas. Open any rule to edit the Excel directly.</p>${btn('Inspect formulas →','engine','quiet small')}</div><div class="mini" style="padding:0 8px">${bpReviews(bp).length} review items · ${Object.keys(bp.overrides).length} manual formulas<div class="progress"><span style="width:${(bp.step+1)/6*100}%"></span></div></div></aside>`}
+function startPage(){return `${head('Vietnam template / Built around your people','Great payroll starts with<br>the right questions.','Tell us how your company pays. We’ll turn your decisions into a clear, connected payroll schema.')}<div class="hero">${pill('VIETNAM STARTER')}<h2 style="margin-top:18px">A head start. Every detail yours.</h2><p>All 38 workbook components are included. Shape the rules, try real-life situations, and create an editable Excel formula blueprint.</p><div class="row">${btn('Shape your payroll →','next','primary')}<span class="mini">Your original design stays available.</span></div></div><h2>Who are you paying?</h2><p class="mini">Choose the situations you need. These tailor the guidance; each employee’s eligibility still controls their pay.</p><div class="grid2">${[['local','◎','Local employees','Salary, allowances, insurance and income tax.'],['foreign','↗','International employees','Residency, insurance eligibility and payment currency.'],['short','◷','Short-term employees','Contract duration, payment threshold and tax commitment.'],['net','≈','Guaranteed take-home pay','A specialist recipe for net-to-gross contracts.']].map(([k,i,t,d])=>`<button class="choice ${bp.people.includes(k)?'active':''}" data-action="people" data-key="${k}" aria-pressed="${bp.people.includes(k)}"><span class="iconbox">${i}</span><h3>${t}</h3><p>${d}</p></button>`).join('')}</div>${bp.people.includes('net')?'<div class="banner">Net-contract gross-up is an advanced integration recipe. This preview calculates employer-paid benefit tax; full net contracts need their own tested recipe.</div>':''}<div class="card"><h2>Give your blueprint a home</h2>${field('Configuration name','name')}<div class="grid2">${field('Effective from','rules.effective','date')}${field('Payroll cycle','cycle','text',[['end','End-month payroll'],['mid','Mid-month advance'],['regular','Regular payroll']])}</div><div class="banner info">${bp.cycle==='mid'?'Mid-cycle outputs need a paired end-cycle recovery mapping. The demo still computes a full payroll; advance-only settlement is an integration recipe.':'The effective date selects which statutory version should apply. It does not certify the workbook’s rates.'}</div></div><div class="sectiontitle">Real life belongs in the design</div><div class="card">${[['joiner','Joiners & leavers','Prorate with paid days and a defined calendar.'],['annual','Annual & event-based pay','Payout month, approved entitlement and year-to-date exemptions.'],['segments','Salary changes within a month','Split by effective date; aggregate approved proration records.'],['retro','Corrections & arrears','Trace the original period and recompute historical consequences.']].map(([k,t,d])=>`<label class="check"><input type="checkbox" data-scenario="${k}" ${bp.scenarios.includes(k)?'checked':''}><span><b>${t}</b><small>${d}</small></span></label>`).join('')}</div>`}
+function componentsPage(){const list=bp.components.filter(c=>c.group===bp.group&&`${c.name} ${c.code}`.toLowerCase().includes(query.toLowerCase()));return `${head('02 / What goes into pay','Every component. One clear rule.','Start with the workbook’s earnings, deductions and benefits. Keep what you need, remove what you don’t, and make each rule your own.')}<div class="split">${pill(bp.components.filter(c=>c.included).length+' included')}${btn('+ Add component','add','small')}</div><div class="tabs">${[['earnings','Earnings'],['deductions','Deductions'],['benefits','Benefits']].map(([k,t])=>btn(`${t} &nbsp; ${bp.components.filter(c=>c.group===k&&c.included).length}`,'group',bp.group===k?'active':'',`data-key="${k}"`)).join('')}</div><input class="search" aria-label="Search components" placeholder="Find a component by name or code…" value="${esc(query)}" data-search><div class="card" style="margin-top:0;padding:5px 18px">${list.map(c=>`<div class="component ${c.included?'':'removed'}"><input type="checkbox" aria-label="Include ${esc(c.name)}" data-include="${esc(c.code)}" ${c.included?'checked':''}><div><h3>${esc(c.name)}</h3><div class="meta">${esc(description(c))}</div></div><div class="row">${bp.overrides[c.code]?pill('MANUAL'):c.note&&!c.reviewed?pill('REVIEW','amber'):''}${btn(c.included?'Configure ↗':'View','edit','small',`data-code="${esc(c.code)}"`)}</div></div>`).join('')||'<div class="empty">No matching components.</div>'}</div><div class="banner info">Benefits link to deductions and taxable earnings. A health plan or union membership is counted once, even when it appears in several places.</div>`}
+function description(c){if(c.mode==='plan')return 'Employer contribution · employee deductions linked separately';const modes={contract:'Contract salary',input:'Approved payroll input',fixed:'Fixed amount '+cash(c.amount),role:'Role-based amount',hourly:c.rate+'% × hourly rate',annual:'Annual service-day ratio',linked:'Linked to '+c.link,percentage:c.rate+'% of capped base',pit:'Residency & contract tax rules',plan:'Linked insurance / union plan',premium:'Enrolled plan premium'};return `${modes[c.mode]||c.mode} · ${c.group==='benefits'?'Employer cost':c.cash==='noncash'?'Non-cash':c.proration==='working'?'Prorated by working days':c.frequency} · ${c.tax==='taxable'?'Taxable':c.tax==='annualcap'?'Annual exemption cap':c.tax==='qualified'?'Evidence-based exemption':c.tax}`}
+function taxPage(){const tax=bpTax(bp.taxTry??40000000,bp.bands);return `${head('03 / Shared rules, clearly connected','Tax and protection, in context.','Choose the rule pack once. See where it comes from, when it applies, and what it changes in someone’s pay.')}<div class="card"><div class="split"><div>${pill('WORKBOOK SNAPSHOT','amber')}<h2 style="margin-top:12px">Vietnam · PIT · 2026 proposal</h2><div class="mini">PIT Brackets + Statutory Config · ${esc(bp.rules.effective)}</div></div>${btn('Source & connections ↗','connections','small')}</div><div class="banner">Your statutory master and Formula Engine rate table are separate. Proposed behavior: pin an approved version, then detect source changes. No live company tax table has been loaded.</div><div class="tablewrap"><table><thead><tr><th>Monthly assessable income from</th><th>To (exclusive)</th><th>Marginal rate</th></tr></thead><tbody>${bp.bands.map((b,i)=>`<tr><td>${cash(b.lower)} VND</td><td>${bp.bands[i+1]?cash(bp.bands[i+1].lower):'No upper limit'}</td><td><b>${b.rate}%</b></td></tr>`).join('')}</tbody></table></div><div class="split" style="margin-top:17px"><span class="mini">Upper bounds are derived, so bands cannot overlap.</span>${btn('Edit tax bands','bands','small')}</div><label class="field">Try assessable income · <b id="taxTryLabel">${cash(bp.taxTry??40000000)} VND</b><input type="range" min="0" max="150000000" step="1000000" value="${bp.taxTry??40000000}" data-taxtry aria-label="Try assessable income"></label><div class="split"><span class="mini">After relief and eligible deductions</span><b id="taxTryResult">PIT ${cash(tax)} VND</b></div></div><div class="card"><h2>Relief before tax</h2><div class="grid2">${field('Personal relief · VND / month','rules.personalRelief','number')}${field('Per registered dependant · VND / month','rules.dependentRelief','number')}</div><details><summary>Other tax routes</summary><div class="grid2">${field('Short-contract threshold · VND / payment','rules.shortThreshold','number')}${field('Short-contract withholding · %','rules.shortRate','number')}${field('Non-resident withholding · %','rules.nonresidentRate','number')}</div><p class="mini">Residency, contract months and a valid commitment are explicit employee inputs. Nationality alone never decides tax residency. Short-contract testing here treats the sample as a single payment.</p></details></div><div class="card"><div class="split"><h2>Insurance follows eligibility</h2>${pill('SEPARATE EMPLOYEE & EMPLOYER COST')}</div><div class="grid2">${field('SI / HI salary ceiling · VND','rules.siCap','number')}${field('UI salary ceiling · VND','rules.uiCap','number')}${field('Insurance salary basis','rules.insuranceBasis','text',[['contract','Contractual eligible pay'],['paid','Actual eligible pay']])}${field('Rounding','rules.rounding','text',[['nearest','Nearest whole VND'],['floor','Round down to whole VND']])}</div><p class="mini">Foreign employees use a distinct eligibility plan. UI is excluded for them. Edit contribution rates in the corresponding deduction and benefit components.</p>${btn('Review insurance components →','insurance','small')}</div><div class="banner">Union dues conflict in the source: company 0.5% and a 1% reference both appear. Choose and document a policy in the union component; this is not automatically resolved by selecting Vietnam.</div>`}
+function deliveryPage(s){const d=bp.delivery;return `${head('04 / From approved pay to payday','Close the loop on payday.','Calculations, bank files and payslips have different jobs. Connect them without mixing payment details into payroll formulas.')}<div class="flow"><span>Approved inputs</span><i>→</i><span>Excel calculation</span><i>→</i><span>HR + Finance review</span><i>→</i><span>Bank release</span><i>→</i><span>Payslip</span></div><div class="card"><h2>A calendar people can rely on</h2><div class="grid2">${field('Monthly input cutoff · day','delivery.cutoff','number')}${field('Planned payday','delivery.payday','text',[['penultimate','Second-last working day'],['last','Last working day']])}${field('Late variable inputs','delivery.late','text',[['next','Next cycle, with traceable carry-forward'],['offcycle','Separate off-cycle approval'],['reopen','Controlled reopen with HR + Finance']])}</div><div class="banner info">${d.payday==='penultimate'?'29 September 2026':'30 September 2026'} in the weekend-only example calendar. Production dates must use your holiday calendar. Joiner salary and final pay need separate rules from late bonus inputs.</div></div><div class="card"><div class="split"><h2>Payment destination</h2>${pill('SYNTHETIC DATA','gray')}</div><div class="grid2">${field('Payment currency','delivery.currency','text',[['VND','VND · domestic payment'],['USD','USD · approved FX conversion']])}${field('Bank identifier type','delivery.bankCodeType','text',[['napas','NAPAS · domestic six digits'],['bic','BIC / SWIFT · international']])}${field('Example account · text, not number','delivery.account')}${field('Example bank identifier','delivery.bankCode')}</div>${d.currency==='USD'?field('Approved FX · VND per USD','delivery.fx','number'):''}<div id="bankValidation" class="banner ${bpBankIssues(d).length?'':'info'}">${bpBankIssues(d).map(esc).join('<br>')||'Leading zeros preserved. Account and identifier formats pass this demo layout; bank acceptance still needs confirmation.'}</div><div class="tablewrap"><table><thead><tr><th>Payee</th><th>Account</th><th>Amount</th><th>Currency</th></tr></thead><tbody><tr><td>SAMPLE LINH</td><td id="bankAccountCell" class="code">${esc(d.account)}</td><td id="bankAmountCell">${s.values?Number(s.values.PAYMENT_AMOUNT).toLocaleString('en-US',{maximumFractionDigits:d.currency==='USD'?2:0}):'Needs valid formula'}</td><td>${esc(d.currency)}</td></tr></tbody></table></div><div class="split" style="margin-top:18px"><span class="mini">No file is sent to a bank.</span>${btn('Map bank file fields ↗','bankmap','small')}</div></div><div class="card"><h2>A payslip that explains the result</h2><div class="grid2">${field('Payslip language','delivery.language','text',[['both','Vietnamese + English'],['vi','Vietnamese'],['en','English']])}${field('Payslip release','delivery.release','text',[['confirmed','After payment confirmation'],['approved','After payroll approval · policy review']])}</div><label class="check"><input type="checkbox" data-path="delivery.hideZero" ${d.hideZero?'checked':''}><span>Hide zero-value optional lines<small>Always show base salary, period and net pay.</small></span></label>${btn('Preview payslip ↗','payslip','small')}</div><div class="card"><h2>Different approvals for different decisions</h2>${['Input changes → HR checker','Payroll results → HR reviewer + Finance approver','Bank file → separate maker and checker','Payment release → authorized bank signatories','Reopen a paid period → HR + Finance with reason'].map(x=>`<div class="linkrow"><b style="font-size:12px">${x}</b>${pill('PROPOSED ROLE')}</div>`).join('')}<p class="mini" style="margin-top:15px">Roles replace personal names from the workbook. Payroll approval does not authorize bank release. Role assignment and audit evidence belong to the existing approval workflow.</p></div>`}
+function testPage(){return `${head('05 / Build confidence before release','Try the days that aren’t ordinary.','Use real-life examples to challenge the rules. A passing calculation is evidence, not a substitute for policy approval.')}<div class="hero"><div class="split"><div><h2>One click. Nine meaningful checks.</h2><p style="margin-bottom:0">Formula references, tax boundaries, joiners, foreign employees, short contracts, benefits and bank validation.</p></div>${btn('Run scenario checks','tests','primary')}</div></div>${resultList.length?`<div class="kpis"><div><b>${resultList.filter(r=>r.pass).length}/${resultList.length}</b><small>CHECKS PASSED</small></div><div><b>${bpReviews(bp).length}</b><small>REVIEW ITEMS</small></div><div><b>${Object.keys(bp.overrides).length}</b><small>MANUAL FORMULAS</small></div></div><div class="card">${resultList.map(r=>`<div class="linkrow"><div><b class="${r.pass?'pass':'fail'}">${r.pass?'✓':'!'} ${esc(r.name)}</b><p>${esc(r.detail)}</p></div>${pill(r.pass?'PASS':'NEEDS FIX',r.pass?'green':'amber')}</div>`).join('')}</div>`:bp.tested?'<div class="banner info">Checks passed on this saved draft. Run again to see the individual results.</div>':'<div class="card empty">Your results will appear here. Change an input or rule and run again.</div>'}<div class="card"><h2>Go beyond the happy path</h2><p class="mini">These are implementation recipes to connect, not capabilities silently assumed by the demo.</p>${[['Multiple salary rates in one month','Split effective dates → calculate each segment → aggregate once.'],['Prior-year arrears and corrections','Original period + historical tax version + YTD delta + current settlement.'],['Mid-cycle advances and loan recovery','Pair schemas; prevent duplicate recovery; define negative-net carry-forward.'],['Net contracts, multiple countries and shadow payroll','Use separately tested recipes for guaranteed net, tax equalisation and allocation.'],['Concurrent rules and missing inputs','Define priority, mutual exclusion and stop-on-missing behavior. Never silently use zero for mandatory inputs.']].map(([t,d])=>`<div class="linkrow"><div><b>${t}</b><p>${d}</p></div>${pill('INTEGRATION RECIPE','gray')}</div>`).join('')}</div>`}
+function reviewPage(s){const reviews=bpReviews(bp);return `${head('06 / A blueprint you can explain','Ready to review. Built to evolve.','Create a local schema to inspect inputs, outputs and Excel formulas. Production activation remains a separate, controlled step.')}<div class="kpis"><div><b>${bp.components.filter(c=>c.included).length}</b><small>PAY COMPONENTS</small></div><div><b>${s.schema?.nodes.filter(n=>n.group!=='internal').length??'—'}</b><small>VISIBLE FORMULA RULES</small></div><div><b>${s.schema?.inputs.length??'—'}</b><small>TYPED INPUTS</small></div></div><div class="card"><h2>${esc(bp.name)}</h2><div class="receipt"><div><span>Template</span><b>Vietnam · workbook proposal</b></div><div><span>Effective from</span><b>${esc(bp.rules.effective)}</b></div><div><span>Output</span><b>Editable Excel formulas</b></div><div><span>Persistence</span><b>This browser only</b></div></div>${s.error?`<div class="banner">${esc(s.error)}</div>`:''}${btn('Inspect model connections ↗','connections','small')}</div><div class="card"><div class="split"><h2>Decisions that still need an owner</h2>${pill(reviews.length+' OPEN','amber')}</div><p class="mini">You can create a prototype draft with open policy reviews. Invalid formulas or failed calculations block creation.</p>${reviews.slice(0,8).map(r=>`<div class="linkrow"><div><b>${esc(r.title)}</b><p>${esc(r.detail)}</p></div></div>`).join('')}${reviews.length>8?btn('See all '+reviews.length+' review items','reviews','small'):''}</div><div class="banner info">Production path: validated blueprint adapter → draft configuration → model mappings → test evidence → review → release. Existing records have not been created or changed by this prototype.</div>`}
+function enginePage(s){if(s.error)return `${head('Excel Formula Engine / Preview','Let’s repair this formula.','Your configuration is preserved. Resolve the error and return to the engine.')}<div class="banner">${esc(s.error)}</div>${Object.keys(bp.overrides).map(code=>btn('Edit '+esc(code),'formula','small',`data-code="${esc(code)}"`)).join(' ')}`;const nodes=engineFilter==='inputs'?s.schema.inputs:s.schema.nodes.filter(n=>engineFilter==='all'?n.group!=='internal':engineFilter==='outputs'?n.group==='outputs':n.manual);return `${head('Excel Formula Engine / Prototype schema',bp.created?'Your schema, brought to life.':'Follow the formula to the answer.','Readable component names are references in the existing engine. Click a rule to edit its Excel formula and see the sample recalculate.')}<div class="flow"><span>${s.schema.inputs.length} inputs</span><i>→</i><span>${bp.components.filter(c=>c.included).length} components</span><i>→</i><span>Tax & contributions</span><i>→</i><span>Net pay & employer cost</span></div><div class="tabs">${[['outputs','Outputs'],['inputs','Inputs'],['all','Formula rules'],['manual','Manual edits']].map(([k,t])=>btn(t,'engine-filter',engineFilter===k?'active':'',`data-key="${k}"`)).join('')}</div><div class="enginegrid">${nodes.map(n=>`<div class="node ${engineFilter==='inputs'?'input':n.group==='outputs'?'output':''}"><div class="split"><b>${esc(n.name||n.description)}</b>${n.manual?pill('MANUAL','amber'):''}</div><div class="code">${esc(n.code)}</div><h2 style="margin:12px 0">${cash(s.values[n.code])}</h2>${n.excel_formula?`${btn('Open Excel formula ↗','formula','small',`data-code="${esc(n.code)}"`)}<div class="mini" style="margin-top:10px">${n.dependencies.length} dependencies · ${esc(n.source)}</div>`:`<div class="mini">${esc(n.description)} · ${esc(n.type)}</div>`}</div>`).join('')||'<div class="card empty">No manually edited formulas yet.</div>'}</div><div class="banner info">Company-paid PIT uses 32 generated Excel helper steps without circular references. A residual check blocks results that fail to converge within 1 VND. Helpers are included in the export.</div>`}
+function modal(title,body,footer=''){drawer.innerHTML=`<div class="dialoghead"><h2 style="margin:0">${esc(title)}</h2>${btn('✕','close','quiet','aria-label="Close dialog"')}</div><div class="dialogbody">${body}</div>${footer?`<div class="dialogfoot">${footer}</div>`:''}`;if(!drawer.open)drawer.showModal()}
+function editComponent(code,tab='guided'){
+ editingCode=code;editorTab=tab;const i=bp.components.findIndex(c=>c.code===code),c=bp.components[i],p='components.'+i,s=summary(),node=s.schema?.nodes.find(n=>n.code===code);
+ if(tab==='excel'){formulaModal(code);return}
+ const modes=c.group==='earnings'?[['contract','contract salary'],['input','an approved input'],['fixed','a fixed amount'],['percentage','a percentage of contract salary'],['role','a role-based amount'],['hourly','hours × hourly rate'],['annual','annual service ratio'],['linked','a linked benefit premium']]:c.group==='deductions'?c.code==='PIT'?[['pit','income tax']]:[['input','an approved deduction'],['fixed','a fixed amount'],['percentage','a capped-base percentage']]:c.mode==='plan'?[['plan','statutory employer contribution']]:[['premium','a benefit premium']];
+ const taxOptions=[['taxable','Fully taxable'],['exempt','Exempt · approved basis required'],['qualified','Exempt only with qualifying evidence'],...(c.group==='earnings'?[['annualcap','Exempt within annual cap'],['entitlement','Exempt within approved entitlement'],['inherit','Inherit approved original treatment']]:[])];
+ modal(c.name,`<div class="tabs">${btn('Guided rule','edit-guided','active')}${btn('Excel formula','edit-excel')}</div><div class="mini">${esc(c.source)} · <span class="code">${esc(c.code)}</span></div>${c.note?`<div class="banner">${esc(c.note)}</div>`:''}${bp.overrides[code]?'<div class="banner">A manual Excel formula is in control. Guided changes will be saved without replacing it. Restore the guided formula when you want to reconnect.</div>':''}<div class="sectiontitle">In plain language</div><div class="ruleline">For ${selectHtml(p+'.eligibility',[['all','all employees'],['local','local employees'],['foreign','foreign employees'],['insured','insured employees'],['union','union members'],['role','eligible roles'],['enrolled','enrolled employees']],'Eligibility')}, calculate ${selectHtml(p+'.mode',modes,'Calculation method')}.</div><div class="grid2">${['fixed','premium'].includes(c.mode)?field('Amount · VND (0 uses premium input)',p+'.amount','number'):''}${['percentage','hourly'].includes(c.mode)||c.code==='UNION_MEMBER'?field('Rate · %',p+'.rate','number'):''}${c.group==='earnings'?field('Proration',p+'.proration','text',[['none','No proration'],['working','Paid working days / scheduled days'],['calendar','Paid calendar days / period days']]):''}${c.mode==='premium'?field('Employee share of premium · %',p+'.employeeShare','number'):''}</div>${c.mode==='input'?'<div class="banner info">The amount is a named payroll input. Map it to approved data in the production engine, or choose a fixed amount to try a value here.</div>':''}${c.mode==='plan'&&c.code!=='UNION_MEMBER'?`<div class="sectiontitle">Employer contribution rates</div><div class="grid2">${field('Employer SI · %',p+'.erSi','number')}${field('Employer HI · %',p+'.erHi','number')}${c.code==='VN_SHUI_LOCAL'?field('Employer UI · %',p+'.erUi','number'):''}</div><p class="mini">Employee rates live in the linked SI / HI / UI deduction components. This plan adds employer cost only.</p>`:''}${c.code==='UNION_DUES'?field('Monthly union deduction cap · VND','rules.unionCap','number'):''}${c.mode==='linked'?field('Linked benefit',p+'.link','text',[['','Choose benefit'],...bp.components.filter(x=>x.group==='benefits'&&x.included).map(x=>[x.code,x.name])]):''}<details style="margin:18px 0" ${c.tax==='inherit'||c.insurance==='review'?'open':''}><summary><b>${c.group==='deductions'?'Deduction treatment':c.mode==='plan'?'Plan details':'Tax, insurance & payout details'}</b><span class="mini"> · ${esc(c.group==='deductions'?c.pitDeductible==='yes'?'before PIT':'after PIT':c.tax)}</span></summary><div class="grid2">${c.group==='earnings'?field('Frequency',p+'.frequency','text',[['monthly','Every month'],['adhoc','When approved and due'],['annual','Annual · selected payout month'],['scheme','Scheme approval / due flag']]):''}${c.group==='earnings'&&c.frequency==='annual'?field('Payout month · 1 to 12',p+'.month','number'):''}${c.group==='earnings'?field('Cash treatment',p+'.cash','text',[['cash','Paid in cash through payroll'],['noncash','Non-cash · exclude from bank net']]):''}${c.group==='earnings'||c.mode==='premium'?field('Tax treatment',p+'.tax','text',taxOptions):''}${c.group==='earnings'?field('Insurance base',p+'.insurance','text',[['included','Include, subject to eligibility / ceiling'],['excluded','Exclude'],['inherit','Inherit approved original treatment'],['review','Needs policy decision']]):''}${c.group==='earnings'||c.mode==='premium'?field('Who pays the PIT?',p+'.taxBearer','text',[['employee','Employee'],['employer','Company · gross up incremental PIT']]):''}${c.group==='deductions'&&c.code!=='PIT'?field('Deductible before PIT?',p+'.pitDeductible','text',[['yes','Yes'],['no','No'],['source','Approved source amount']]):''}</div>${c.tax==='annualcap'?field('Annual exemption cap · VND',p+'.cap','number'):''}${c.tax==='inherit'||c.insurance==='inherit'?field('Original earning reference',p+'.sourceCode','text',[['','Choose an earning'],...bp.components.filter(x=>x.group==='earnings'&&!x.code.startsWith('ADJ_')&&x.included&&x.code!==c.code).map(x=>[x.code,x.name])]):''}<p class="mini">Eligibility, qualification evidence and approved inputs must be mapped per employee. Sample switches demonstrate their effect.</p></details>${c.mode==='role'?`<details><summary>Shared role allowance rates</summary><div class="grid2">${field('AG transport · VND','rules.transportAG','number')}${field('AG phone · VND','rules.phoneAG','number')}${field('Territory manager transport · VND','rules.transportTM','number')}${field('Territory manager phone · VND','rules.phoneTM','number')}${field('Compliance officer transport · VND','rules.transportCO','number')}${field('Compliance officer phone · VND','rules.phoneCO','number')}</div></details>`:''}<div class="sectiontitle">Excel generated from these choices</div><div class="formula generated-formula">${esc(node?.excel_formula||s.error||'Restore this component to generate its formula')}</div><label class="check"><input type="checkbox" data-path="${p}.reviewed" ${c.reviewed?'checked':''}><span>Record this policy choice for the design review<small>A prototype decision, not statutory approval.</small></span></label>`,btn(c.included?'Remove from this schema':'Restore to this schema','toggle-edit','small')+btn('Done','close','primary'));
+}
+function formulaModal(code){editingCode=code;editorTab='excel';let node;try{node=compileBlueprint({...bp,overrides:{}}).nodes.find(n=>n.code===code)}catch(e){toast(e.message);return}if(!node){toast('This component is removed. Restore it before editing its formula.');return}const active=bp.overrides[code]||node.excel_formula;modal(node.name+' · Excel',`<div class="banner info">Edit familiar Excel syntax with readable component references. Your manual formula takes priority and will not be overwritten by guided changes.</div><div class="mini">Supported here: IF, AND, OR, NOT, SUM, MIN, MAX, ROUND, FLOOR, ABS; arithmetic and comparisons. Other Excel functions require validation in the production engine.</div><label class="field">Excel formula<textarea id="excelEdit" aria-label="Excel formula" spellcheck="false">${esc(active)}</textarea></label><div id="formulaFeedback" role="status"></div><details><summary>Compare with the guided formula</summary><div class="formula" style="margin-top:15px">${esc(node.excel_formula)}</div></details><div class="sectiontitle">Inputs to this rule</div><div class="flow">${node.dependencies.map(x=>`<span class="code">${esc(x)}</span>`).join('')}</div><p class="mini">The export uses these codes as Formula Engine references. For a standalone Excel workbook, define matching names or translate them to cell references.</p>`,btn('Restore guided formula','restore-formula')+btn('Validate & apply','apply-formula','primary'));}
+function sampleModal(){modal('Make the example your own',`<p class="mini" style="margin-top:20px">Synthetic data only. Every amount below flows into the generated Excel formulas.</p><div class="grid2">${field('Contractual salary · VND','sample.salary','number')}${field('Paid working days','sample.paidDays','number')}${field('Scheduled working days','sample.standardDays','number')}${field('Registered dependants','sample.dependants','number')}${field('Contract length · months','sample.contractMonths','number')}${field('Uniform allowance paid · VND','sample.values.UNIFORM','number')}${field('Already exempted uniform this year · VND','sample.uniformYtd','number')}${field('Advance recovery · VND','sample.values.ADVANCE','number')}${field('Payroll month','sample.month','number')}</div><label class="check"><input type="checkbox" data-path="sample.resident" ${bp.sample.resident?'checked':''}>Tax resident</label><label class="check"><input type="checkbox" data-path="sample.commitment" ${bp.sample.commitment?'checked':''}>Valid short-contract tax commitment</label><label class="check"><input type="checkbox" data-path="sample.benefitEnrolled" ${bp.sample.benefitEnrolled?'checked':''}>Enrolled in private health plans</label>`,btn('See recalculated pay','close','primary'));}
+function connectionsModal(){modal('One blueprint. Your existing payroll system.',`<p style="margin-top:20px">These connections are grounded in the repository’s current models and screens. The prototype illustrates the handoff; it does not read or write live company records.</p>${BP_CONNECTIONS.map(c=>`<div class="card"><div class="split"><h2>${c.title}</h2>${pill(c.status)}</div><b class="mini">${c.screen}</b><p style="margin:12px 0">${c.detail}</p><div class="code">${esc(c.model)}</div><div class="banner info">${c.gap}</div></div>`).join('')}`,btn('Back to blueprint','close','primary'));}
+function bandsModal(){modal('Edit your tax-table snapshot',`<p style="margin-top:20px">Thresholds are monthly VND. Rates are percentages. Changes affect this blueprint only; they do not update a shared statutory master.</p><div id="bandsError" role="alert"></div><div class="tablewrap"><table><thead><tr><th>Income from · VND</th><th>Rate · %</th></tr></thead><tbody id="bandRows">${bp.bands.map((b,i)=>`<tr><td><input aria-label="Band ${i+1} lower threshold" data-band-lower value="${b.lower}" type="number"></td><td><input aria-label="Band ${i+1} rate" data-band-rate value="${b.rate}" type="number" step="any"></td></tr>`).join('')}</tbody></table></div><div class="row" style="margin-top:15px">${btn('+ Add band','band-add','small')}${btn('Remove last band','band-remove','small')}</div><div class="banner info">Standard Excel output uses SUM, MIN and MAX for marginal slices. The existing BRACKET helper may also be used inside Formula Studio, but is not a standard Excel function.</div>`,btn('Cancel','close')+btn('Apply tax bands','bands-save','primary'));}
+function addModal(){modal('Add a pay component',`<p style="margin-top:20px">Start with a simple rule. You can add conditions and edit its Excel formula next.</p><label class="field">Component name<input id="newName" placeholder="e.g. Project completion bonus"></label><label class="field">Unique component code<input id="newCode" placeholder="PROJECT_BONUS"></label><label class="field">Category<select id="newGroup"><option value="earnings">Earnings</option><option value="deductions">Deductions</option><option value="benefits">Benefits</option></select></label><div id="addError" role="alert"></div>`,btn('Cancel','close')+btn('Add & configure','add-save','primary'));}
+function exportPackage(){const s=summary();if(s.error){toast(s.error);return}const clean={...s.schema,nodes:s.schema.nodes.map(({ast,...n})=>{void ast;return n}),reviewItems:bpReviews(bp),scenarioResults:resultList,manualOverrides:bp.overrides,recipeSettings:{people:bp.people,scenarios:bp.scenarios},target:{config:'hr.formula.config',rule:'hr.formula.rule',formulaField:'excel_formula'},optionalSetup:{...bp.journey,resolvedStatuses:Object.fromEntries(['mapping','approvals','payslip'].map(k=>[k,optionalStatus(bp,k)]))},activationAllowed:false};const blob=new Blob([JSON.stringify(clean,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Vietnam_Payroll_Blueprint_Excel_Rules.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Excel formula package exported. Production adapter still required.');}
+function showPayslip(){const s=summary();if(s.error){toast(s.error);return}const v=s.values;modal('Payslip preview · synthetic employee',`<div class="card" style="margin-top:22px"><div class="split"><h2>${bp.delivery.language==='en'?'PAYSLIP':bp.delivery.language==='vi'?'PHIẾU LƯƠNG':'PHIẾU LƯƠNG / PAYSLIP'}</h2>${pill('PREVIEW','gray')}</div><p class="mini">SAMPLE-001 · Linh · September 2026<br>Confidential · ${bp.sample.paidDays} / ${bp.sample.standardDays} paid working days</p><div class="receipt">${[['Lương cơ bản / Basic salary',v.BASIC_SALARY||0],['Thu nhập tiền mặt / Cash earnings',v.CASH_GROSS],['Phúc lợi phi tiền mặt / Non-cash benefits',v.NONCASH_TOTAL],['Các khoản khấu trừ / Deductions',-v.DEDUCTIONS],['Thuế TNCN / Personal income tax',-v.PIT],['Thuế công ty trả / Company-paid tax',v.TAX_GROSS_UP]].filter((r,i)=>i===0||!bp.delivery.hideZero||r[1]!==0).map(([t,a])=>`<div><span>${esc(bp.delivery.language==='en'?t.split(' / ')[1]:bp.delivery.language==='vi'?t.split(' / ')[0]:t)}</span><b>${cash(a)}</b></div>`).join('')}<div class="total"><span>${bp.delivery.language==='en'?'Net pay':'Thực lĩnh / Net pay'}</span><b>${cash(v.NET_PAY)} VND</b></div></div><div class="mini">${bp.delivery.currency==='USD'?'Payment: '+Number(v.PAYMENT_AMOUNT).toLocaleString('en-US',{maximumFractionDigits:2})+' USD at approved FX.':''}<br>Release: ${bp.delivery.release==='confirmed'?'after payment confirmation':'after payroll approval · policy review required'}.</div></div>`,btn('Close preview','close','primary'));}
+app.addEventListener('input',e=>{if(e.target.matches('[data-search]')){query=e.target.value;const focusAt=e.target.selectionStart;render();const input=app.querySelector('[data-search]');input.focus();input.setSelectionRange(focusAt,focusAt)}if(e.target.matches('[data-taxtry]')){bp.taxTry=Number(e.target.value);document.querySelector('#taxTryLabel').textContent=cash(bp.taxTry)+' VND';document.querySelector('#taxTryResult').textContent='PIT '+cash(bpTax(bp.taxTry,bp.bands))+' VND';save()}});
+
+function onPathInput(e){const el=e.target;if(!el.dataset.path||!['text','number','date'].includes(el.type))return;const v=el.type==='number'?Number(el.value):el.value;if(el.type==='number'&&(!Number.isFinite(v)||el.value===''))return;setPath(el.dataset.path,v);const s=summary(),aside=app.querySelector('.story');if(aside)aside.outerHTML=story(s);const bank=app.querySelector('#bankValidation');if(bank){const errors=bpBankIssues(bp.delivery);bank.className='banner '+(errors.length?'':'info');bank.textContent=errors.join(' ')||'Leading zeros preserved. Demo layout checks pass; bank acceptance still required.';app.querySelector('#bankAccountCell').textContent=bp.delivery.account;app.querySelector('#bankAmountCell').textContent=s.values?Number(s.values.PAYMENT_AMOUNT).toLocaleString('en-US',{maximumFractionDigits:bp.delivery.currency==='USD'?2:0}):'Needs valid formula';}const formula=drawer.querySelector('.generated-formula');if(formula)formula.textContent=s.schema?.nodes.find(n=>n.code===editingCode)?.excel_formula||s.error||'Restore component to generate its formula';}
+app.addEventListener('input',onPathInput);drawer.addEventListener('input',onPathInput);
+function onChange(e){const el=e.target;if(el.dataset.path){let value=el.type==='checkbox'?el.checked:el.type==='number'?Number(el.value):el.value;if(el.type==='number'&&(!Number.isFinite(value)||el.value==='')){toast('Enter a valid number.');return}setPath(el.dataset.path,value);render();if(drawer.open&&editingCode&&editorTab==='guided'&&el.dataset.path.startsWith('components.'))editComponent(editingCode);return}if(el.dataset.include){const c=bp.components.find(c=>c.code===el.dataset.include);c.included=el.checked;changed();render();toast(c.included?'Component restored.':'Component removed. Linked rules are checked automatically.')}if(el.hasAttribute('data-sample')){bp.sample=sampleProfile(el.value);save();render()}if(el.dataset.scenario){bp.scenarios=el.checked?[...new Set([...bp.scenarios,el.dataset.scenario])]:bp.scenarios.filter(x=>x!==el.dataset.scenario);changed();render()}}
+app.addEventListener('change',onChange);drawer.addEventListener('change',onChange);
+async function onClick(e){const el=e.target.closest('[data-action]');if(!el)return;const a=el.dataset.action;try{switch(a){case'step':bp.step=Number(el.dataset.step);engineMode=false;save();render();window.scrollTo(0,0);break;case'next':bp.step=Math.min(5,bp.step+1);save();render();window.scrollTo(0,0);break;case'back':bp.step=Math.max(0,bp.step-1);render();window.scrollTo(0,0);break;case'people':bp.people=bp.people.includes(el.dataset.key)?bp.people.filter(x=>x!==el.dataset.key):[...bp.people,el.dataset.key];changed();render();break;case'save':toast(save()?'Draft saved in this browser.':'Browser storage unavailable. Use Export to save a copy.');break;case'group':bp.group=el.dataset.key;query='';render();break;case'edit':editComponent(el.dataset.code);break;case'edit-guided':editComponent(editingCode);break;case'edit-excel':formulaModal(editingCode);break;case'close':drawer.close();editingCode=null;render();break;case'toggle-edit':{const c=bp.components.find(c=>c.code===editingCode);c.included=!c.included;changed();drawer.close();editingCode=null;render();toast(c.included?'Restored to schema.':'Removed from schema. Dependency checks updated.');break}case'add':addModal();break;case'add-save':{const name=drawer.querySelector('#newName').value.trim(),code=drawer.querySelector('#newCode').value.trim().toUpperCase(),group=drawer.querySelector('#newGroup').value;if(!name||!/^[A-Z][A-Z0-9_]{2,39}$/.test(code))throw Error('Enter a name and a unique code of 3–40 letters, digits or underscores, starting with a letter.');const s=compileBlueprint(bp);if(bp.components.some(c=>c.code===code)||s.nodes.some(n=>n.code===code)||s.inputs.some(n=>n.code===code))throw Error('That code is already used. Choose another.');const c={...defaults().find(c=>c.code==='OTHER_TAXABLE'),code,name,group,mode:group==='benefits'?'premium':'input',source:'Custom component · user-defined',note:'Define an approved basis, eligibility and source before production use.',reviewed:false};bp.components.push(c);bp.group=group;changed();render();editComponent(code);break}case'formula':formulaModal(el.dataset.code);break;case'apply-formula':{const text=drawer.querySelector('#excelEdit').value.trim();const candidate={...bp,overrides:{...bp.overrides,[editingCode]:text}};try{const s=compileBlueprint(candidate);runBlueprint(s,bp.sample);bp.overrides[editingCode]=text;changed();drawer.close();editingCode=null;render();toast('Excel formula validated and applied. Manual edit preserved.')}catch(err){drawer.querySelector('#formulaFeedback').innerHTML=`<div class="banner">${esc(err.message)}</div>`}break}case'restore-formula':delete bp.overrides[editingCode];changed();formulaModal(editingCode);render();toast('Guided formula restored.');break;case'sample':sampleModal();break;case'connections':connectionsModal();break;case'engine':engineMode=true;render();window.scrollTo(0,0);break;case'exit-engine':engineMode=false;render();break;case'engine-filter':engineFilter=el.dataset.key;render();break;case'bands':bandsModal();break;case'band-add':{const rows=drawer.querySelector('#bandRows'),n=rows.children.length+1;rows.insertAdjacentHTML('beforeend',`<tr><td><input aria-label="Band ${n} lower threshold" data-band-lower type="number" value="0"></td><td><input aria-label="Band ${n} rate" data-band-rate type="number" step="any" value="0"></td></tr>`);break}case'band-remove':{const rows=drawer.querySelector('#bandRows');if(rows.children.length>1)rows.lastElementChild.remove();break}case'bands-save':{const rows=[...drawer.querySelectorAll('#bandRows tr')],bands=rows.map(r=>({lower:Number(r.querySelector('[data-band-lower]').value),rate:Number(r.querySelector('[data-band-rate]').value)}));try{if(rows.some(r=>[...r.querySelectorAll('input')].some(x=>x.value==='')))throw Error('Every band needs a threshold and rate.');compileBlueprint({...bp,bands});bp.bands=bands;bp.reviews.tax=false;changed();drawer.close();render();toast('Tax snapshot updated. All formulas regenerated.')}catch(err){drawer.querySelector('#bandsError').innerHTML=`<div class="banner">${esc(err.message)}</div>`}break}case'insurance':bp.step=1;bp.journey.payTab='components';bp.group='deductions';query='';render();break;case'tests':resultList=bpChecks(bp);bp.tested=resultList.every(r=>r.pass);save();render();toast(bp.tested?'All nine checks passed. Policy review remains separate.':'Some checks need attention.');break;case'reviews':modal('All open review items',bpReviews(bp).map(r=>`<div class="linkrow"><div><h3>${esc(r.title)}</h3><p>${esc(r.detail)}</p></div></div>`).join(''),btn('Close','close','primary'));break;case'create':{const s=summary();if(s.error)throw Error(s.error);if(!bp.name.trim())throw Error('Give your configuration a name.');if(!bp.tested)throw Error('Run and pass the scenario checks before creating the prototype schema.');bp.created=true;save();engineMode=true;engineFilter='outputs';render();window.scrollTo(0,0);toast('Prototype schema created locally. Open reviews remain attached.');break}case'export':exportPackage();break;case'payslip':showPayslip();break;case'bankmap':modal('Bank file mapping · proposed contract',`<p style="margin-top:20px">The workbook mixes transmission fields and validation helpers. Send only the bank-approved transmission contract.</p><div class="tablewrap"><table><thead><tr><th>Bank field</th><th>Source</th><th>Treatment</th></tr></thead><tbody>${[['Payment type','Literal PAY','Text'],['Payment date','Approved payroll calendar','Extension required'],['Debit account','Company funding account','Text · required before release'],['Beneficiary account','res.partner.bank.acc_number','Text · preserve leading zeros'],['Beneficiary name','Account holder name','Length per bank contract'],['Bank identifier','Bank master + identifier type','NAPAS and BIC are distinct'],['Amount','PAYMENT_AMOUNT','Reconcile to approved payroll'],['Currency / FX','Approved currency and rate','Source enum extension'],['Advice email','Employee delivery contact','Optional · protect access'],['Length / count checks','Validation only','Never transmit as payment fields'],['Reserved columns','Bank-specified blanks','Include only if bank mandates']].map(r=>`<tr>${r.map(x=>`<td>${esc(x)}</td>`).join('')}</tr>`).join('')}</tbody></table></div><div class="banner">Bank format and acceptance testing are still open. This preview does not produce or submit a payment instruction.</div>`,btn('Close mapping','close','primary'));break;case'notes':modal('Why this is a different configuration experience',`<div class="card"><h2>Make decisions. See consequences.</h2><p>A focused path replaces a long setup form. Each step gives one clear decision, a sensible starting point and a live employee story.</p><h2>Two ways to work, one source of truth.</h2><p>Guided settings generate Excel formulas. Manual edits are marked and preserved; the original generated formula remains available for comparison and restoration. Complex formulas are never silently reverse-translated into simple settings.</p><h2>Connect to the system you already have.</h2><p>Tax tables, insurance policies, bank details, payslip layouts, tests and release controls keep their own responsibilities. A blueprint binds them together with effective dates and evidence.</p><h2>Make uncertainty visible.</h2><p>The workbook has unresolved policy choices, missing referenced tabs, bank-format ambiguity and conflicting migration dates. The design carries those as review tasks instead of inheriting a green dashboard status.</p><h2>Flexible does not mean every scenario is implemented.</h2><p>This HTML calculates the supported monthly recipes using editable Excel. Historical recalculation, net contracts, segment aggregation and live model writes are clearly identified integration work.</p><div class="banner info">Workbook values are demonstrative inputs, not a certified legal pack. Option 1 remains unchanged.</div></div>`,btn('Explore connections','connections')+btn('Back to design','close','primary'));break;}}catch(err){toast(err.message);const error=drawer.querySelector('#addError');if(error)error.innerHTML=`<div class="banner">${esc(err.message)}</div>`}}
+app.addEventListener('click',onClick);drawer.addEventListener('click',onClick);drawer.addEventListener('close',()=>{editingCode=null;render()});</script><script>/* global initJourney, seedMappings, SAMPLE_FEEDS, validateMappings, validateApprovals, validatePayslip, seedPayslip, optionalStatus, applyStartingPoint, stageSampleImport, applySampleImport */
+initJourney(bp);
+let outputFilter='outputs',importDraft=[],settingsOrigin=false;
+const statusLabel={not_started:'Not started',draft:'In progress',configured:'Configured · draft',skipped:'Skipped — manage later',needs_review:'Needs review'};
+function statusPill(key){const s=optionalStatus(bp,key);return pill(statusLabel[s]||s,s==='configured'?'green':s==='needs_review'?'amber':'gray')}
+function journeyStart(){const old=startPage(),begin=old.indexOf('<h2>Who are you paying?'),details=old.slice(begin);const j=bp.journey;return `${head('01 / Choose your starting point','A clear start. A connected payroll.','Choose how to build this schema. You can configure the details now and connect optional workflows whenever you are ready.')}<div class="grid2">${field('Company','journey.company')}${field('Configuration name','name')}</div><div class="sectiontitle">How would you like to start?</div><div class="startchoices">${[['vietnam','🇻🇳','Vietnam template','All 24 earnings, 8 deductions and 6 benefits. Every item is editable.'],['excel','▦','Import Excel workbook','Review a payroll definition, identify inputs and preserve supported Excel formulas.'],['blank','＋','Blank canvas','Start with your own components. Vietnam’s shared parameters remain available.']].map(([key,icon,title,desc])=>`<button class="choice ${j.start===key?'active':''}" data-action="journey-start" data-key="${key}" aria-pressed="${j.start===key}"><span class="iconbox">${icon}</span><h3>${title}</h3><p>${desc}</p></button>`).join('')}</div>${j.start==='excel'?`<div class="hero"><div class="split"><div><h2>${j.import.status==='sample_applied'?'Sample workbook reviewed':'Review before you import'}</h2><p>Importing a payroll definition creates components and formulas. Mapping a recurring Excel input file happens later in Source mapping.</p></div>${btn(j.import.status==='sample_applied'?'Review sample import':'Explore Excel import','journey-import','primary')}</div><div class="mini">This HTML demonstrates the review with an illustrative workbook. Real .xlsx parsing is an implementation task.</div></div>`:`<div class="banner info">${j.start==='vietnam'?'The complete Vietnam library is selected. Tax values are workbook assumptions awaiting approval.':'No business components are preloaded. Add them in Pay rules; shared country parameters are retained.'}</div>`}<div class="journeystrip">${['Start','Pay rules','Optional setup','Outputs & formulas','Test','Create'].map((x,i)=>`<span>${i+1} · ${x}</span>`).join('')}</div><div class="card"><h2>Your schema’s foundations</h2><div class="grid2">${field('Effective from','rules.effective','date')}${field('Payroll cycle','cycle','text',[['end','End-month payroll'],['mid','Mid-month advance'],['regular','Regular payroll']])}</div><p class="mini">Vietnam · VND calculation currency. Payment currency is configured separately. Mid-cycle settlement requires a paired end-cycle recovery recipe.</p></div>${details.slice(0,details.indexOf('<div class="card"><h2>Give your blueprint'))}${details.slice(details.indexOf('<div class="sectiontitle">Real life'))}`}
+function payRulesPage(s){const tab=bp.journey.payTab;const tabs=`<div class="tabs journeytabs">${[['components','Components'],['tax','Tax & protection'],['delivery','Calendar & payment']].map(([k,t])=>btn(t,'journey-paytab',tab===k?'active':'',`data-key="${k}"`)).join('')}</div>`;let page=tab==='tax'?taxPage(s):tab==='delivery'?deliveryPage(s):componentsPage(s);if(tab==='delivery'){page=page.split('<div class="card"><h2>A payslip that explains the result')[0]+'<div class="banner info">Approval workflows and payslip mapping are optional tasks in Connect & finish. Manage them later from Settings.</div>';}return tabs+page.replace('03 / Shared rules, clearly connected','02 / Shared rules, clearly connected').replace('04 / From approved pay to payday','02 / From approved pay to payday');}
+function connectSetupPage(){return `${head('03 / Optional setup','Connect what you need. Continue when ready.','These tasks belong to this company and schema. Configure them here, or skip individually and return through Settings.')}<div class="scopebar"><span>Company <b>${esc(bp.journey.company)}</b></span><span>Schema <b>${esc(bp.name)}</b></span></div>${[['mapping','⇄','Source mapping','Connect integration APIs, Excel inputs or Payobook models to the generated payroll inputs.','Open Mapping Studio','journey-mapping','Settings → Source mapping'],['approvals','✓','Approval matrix','Use the workbook’s transaction stages. Define your company’s makers, reviewers, approvers, delegates and controls.','Configure approval matrix','journey-approvals','Settings → Approval matrices'],['payslip','▤','Payslip mapping','Place generated components into the Payslip Studio layout. Choose labels, sections and which values employees see.','Open Payslip Studio','journey-payslip','Settings → Payslip Studio']].map(([key,icon,title,desc,label,action,later])=>`<div class="card setupcard"><div class="split"><div class="row"><span class="iconbox">${icon}</span><h2 style="margin:0">${title}</h2></div>${statusPill(key)}</div><p style="margin:15px 0">${desc}</p><div class="split"><div class="row">${btn(label,action,'primary small')}${btn('Skip for now','journey-skip','quiet small',`data-key="${key}"`)}</div></div><div class="mini" style="margin-top:15px">Manage later: <b>${later}</b> · same schema, same saved configuration</div></div>`).join('')}<div class="banner info">Skipping never discards your draft or disables an existing approval policy. You can create a schema before these tasks are complete. Live payroll and delivery require their applicable data and policy checks.</div>${btn('Skip remaining tasks & review outputs →','journey-skip-all','small')}`}
+function outputsPage(s){if(s.error)return `${head('04 / Outputs & formulas','See what your rules create.','Resolve the calculation issue below to review the final outputs.')}<div class="banner">${esc(s.error)}</div>${btn('Return to pay rules','journey-fix','primary')}`;const schema=s.schema;let rows=outputFilter==='inputs'?schema.inputs:schema.nodes.filter(n=>outputFilter==='all'?n.group!=='internal':outputFilter==='manual'?n.manual:n.group===outputFilter);return `${head('04 / Outputs & formulas','See what your rules create.','Review every output before testing or creating the schema. The Excel formulas below are the same formulas used for the sample calculation.')}<div class="flow"><span>${schema.inputs.length} inputs & parameters</span><i>→</i><span>${schema.components.length} components</span><i>→</i><span>${schema.nodes.length} Excel rules</span><i>→</i><span>Net pay & employer cost</span></div><div class="split"><label class="field" style="margin:0 0 16px">Show formulas<select data-output-filter aria-label="Show formulas">${[['outputs','Final payroll outputs'],['inputs','Inputs & parameters'],['earnings','Earnings'],['deductions','Deductions'],['benefits','Benefits / employer costs'],['helpers','Intermediate calculations'],['manual','Manual Excel edits'],['all','All visible formula rules']].map(([v,t])=>`<option value="${v}" ${outputFilter===v?'selected':''}>${t}</option>`).join('')}</select></label>${btn('Export Excel rule package','export','small')}</div><div class="tablewrap outputtable"><table><thead><tr><th>Component / output</th><th>${outputFilter==='inputs'?'Input meaning':'Excel formula'}</th><th>Sample value</th><th>Review</th></tr></thead><tbody>${rows.map(n=>`<tr><td><b>${esc(n.name||n.description)}</b><div class="code" style="margin-top:6px">${esc(n.code)}</div></td><td>${n.excel_formula?`<code class="excelinline">${esc(n.excel_formula)}</code>`:esc(n.description)}<div class="mini">${n.manual?'Manual edit preserved':n.excel_formula?'Generated from your settings':'Typed input / parameter'}</div></td><td class="num">${cash(s.values[n.code])}</td><td>${n.excel_formula?btn('Inspect / edit','formula','small',`data-code="${esc(n.code)}"`):pill(n.type,'gray')}</td></tr>`).join('')||'<tr><td colspan="4">No items in this view.</td></tr>'}</tbody></table></div><div class="banner info">Amounts are VND unless the payment output specifies USD. Inspect any formula to see its dependencies and compare manual edits with the guided version. The 32 gross-up helper steps are included in the export.</div>`}
+function journeyReview(s){return reviewPage(s)+`<div class="card"><div class="split"><h2>Optional setup handoff</h2>${btn('Manage in Settings','journey-settings','small')}</div>${[['mapping','Source mapping'],['approvals','Approval matrix'],['payslip','Payslip mapping']].map(([k,t])=>`<div class="linkrow"><b>${t}</b>${statusPill(k)}</div>`).join('')}<p class="mini" style="margin-top:14px">These statuses travel with this schema. A skipped task remains available through its own Settings menu.</p></div>`}
+function settingsModal(){settingsOrigin=true;modal('Settings · configuration workspace',`<div class="scopebar" style="margin-top:20px"><span>Company <b>${esc(bp.journey.company)}</b></span><span>Schema <b>${esc(bp.name)}</b></span></div><p style="margin-top:18px">Return here after creation to manage this schema’s configuration. Changes are local to this prototype.</p>${[['mapping','Source mapping','journey-mapping','Existing Mapping Studio / Mapping Canvas'],['approvals','Approval matrices','journey-approvals','Schema-specific workflow design'],['payslip','Payslip Studio','journey-payslip','Existing Payslip Studio layout editor']].map(([key,title,action,sub])=>`<div class="linkrow"><div><h3>${title}</h3><p>${sub}</p>${statusPill(key)}</div>${btn('Manage →',action,'small')}</div>`).join('')}<div class="banner info">In production these are separate menu entries scoped to the selected schema. Existing studios are reused; the approval-matrix menu and versioned model are proposed extensions.</div>`,btn('Return to configuration','close','primary'));}
+function scope(){return `<div class="scopebar" style="margin:18px 0"><span>Company <b>${esc(bp.journey.company)}</b></span><span>Schema <b>${esc(bp.name)}</b></span></div>`}
+function mappingModal(){const m=bp.journey.mapping,s=summary();if(s.error){toast(s.error);return}const options=s.schema.inputs.filter(i=>!i.code.startsWith('PARAM_')).map(i=>[i.code,i.code]);modal('Mapping Studio · source → schema',`${scope()}<div class="mappingheader"><div><div class="eyebrow">FROM</div><select data-mapping-source aria-label="Mapping source">${Object.entries(SAMPLE_FEEDS).map(([k,v])=>`<option value="${k}" ${m.source===k?'selected':''}>${v.label}</option>`).join('')}</select></div><div class="wirearrow">→</div><div><div class="eyebrow">TO</div><b>${esc(bp.name)}</b><div class="mini">Generated payroll inputs</div></div></div><p class="mini" style="margin-top:18px">Representative Mapping Canvas interaction using a synthetic feed. Connect each source field to a payroll input; validate the sample before saving.</p><div id="mappingFeedback" role="status"></div><div class="mappingrows">${m.rows.map((r,i)=>`<div class="mappingrow"><div>${field('Source field','journey.mapping.rows.'+i+'.field','text',[['','Choose source'],...Object.entries(SAMPLE_FEEDS[m.source].fields).map(([key,value])=>[key,key+' · '+value])])}</div><div class="wirearrow">→</div><div>${field('Payroll input','journey.mapping.rows.'+i+'.target','text',options)}</div><div>${field('Transform','journey.mapping.rows.'+i+'.transform','text',[['identity','As received'],['number','To number'],['thousands','Thousands → VND']])}</div>${btn('×','journey-map-remove','quiet',`data-index="${i}" aria-label="Remove mapping ${i+1}"`)}</div>`).join('')}</div><div class="row">${btn('+ Add mapping','journey-map-add','small')}${btn('Validate & try mapped sample','journey-map-test','small')}</div><div class="banner info">${m.rows.length} mapped fields are shown. Parameters remain in the rule pack. Bank account destinations use separate text lanes in the existing canvas; they are not numeric payroll inputs.</div><details><summary>Implementation connection</summary><p class="mini">Reuse the registered pb_mapping_studio action, MappingStudio and MappingCanvas. Pass pb_config, pb_mode and the source identity; preserve a return-to-wizard destination. No API is called by this HTML.</p></details>`,btn('Skip for now','journey-skip','',`data-key="mapping"`)+btn('Save mapping draft','journey-map-save','primary'));}
+function approvalsModal(){const a=bp.journey.approvals;modal('Approval matrix · this schema',`${scope()}${field('Matrix name','journey.approvals.name')}<p class="mini">The 10 workbook rows describe different transaction workflows, not ten serial approvals for every payroll. Edit the roles and controls for each event.</p><label class="check"><input type="checkbox" data-path="journey.approvals.separation" ${a.separation?'checked':''}><span>Separate maker from reviewer and approver<small>Production enforcement must resolve distinct people, even when they hold multiple roles.</small></span></label><div id="approvalFeedback" role="status"></div><div class="approvalrows">${a.rows.map((r,i)=>`<div class="linkrow"><label class="row" style="align-items:flex-start"><input type="checkbox" data-path="journey.approvals.rows.${i}.enabled" ${r.enabled?'checked':''}><div><b>${esc(r.object)}</b><p>${esc(r.maker)} → ${esc(r.reviewer)} → ${esc(r.approver)}</p><div class="mini">${esc(r.sla)} · ${esc(r.threshold)}</div></div></label>${btn('Edit','journey-approval-edit','small',`data-index="${i}"`)}</div>`).join('')}</div>${btn('+ Add transaction rule','journey-approval-add','small')}<div class="banner info">Named users, delegates and limits may remain unassigned in a draft. They must resolve to authorized company users before this matrix can be activated. Workbook “Ready” flags are not approval evidence.</div>`,btn('Skip for now','journey-skip','',`data-key="approvals"`)+btn('Save matrix draft','journey-approval-save','primary'));}
+function approvalEdit(i){const p='journey.approvals.rows.'+i,r=bp.journey.approvals.rows[i];modal('Approval rule · '+r.object,`${scope()}${field('Transaction / event',p+'.object')}<div class="grid2">${field('Maker role',p+'.maker')}${field('Reviewer role',p+'.reviewer')}${field('Final approver role(s)',p+'.approver')}${field('Final decision rule',p+'.decision','text',[['all','All selected approvers'],['any','Any one authorized approver'],['sequential','Approve in defined order']])}${field('Named assignee · optional draft identifier',p+'.assignee')}${field('Backup / delegate · optional',p+'.delegate')}${field('Threshold / limit · policy description',p+'.threshold')}${field('SLA / deadline',p+'.sla')}${field('If rejected',p+'.onReject','text',[['return','Return to maker with reason'],['stop','Stop this transaction']])}${field('Escalation owner / role',p+'.escalate')}</div>${field('Required evidence / control',p+'.evidence')}<div class="mini">Source: ${esc(r.source)}. Threshold text is a policy draft; the implementation must use typed conditions with units and currency. Named identifiers are not validated against live users here.</div>`,btn('Back to matrix','journey-approvals','primary'));}
+function payslipModal(){const p=bp.journey.payslip;if(!p.rows.length)p.rows=seedPayslip(bp);modal('Payslip Studio · map the employee view',`${scope()}<div class="grid2">${field('Payslip language','delivery.language','text',[['both','Vietnamese + English'],['vi','Vietnamese'],['en','English']])}${field('Release payslip','delivery.release','text',[['confirmed','After payment confirmation'],['approved','After payroll approval · review policy']])}</div><p class="mini">Place outputs into sections and edit display labels. Layout changes do not rewrite payroll calculations.</p><div id="payslipFeedback" role="status"></div><div class="tablewrap"><table><thead><tr><th>Show</th><th>Component / label</th><th>Section</th><th>Hide zero</th></tr></thead><tbody>${p.rows.map((r,i)=>`<tr><td><input type="checkbox" aria-label="Show ${esc(r.code)} on payslip" data-path="journey.payslip.rows.${i}.show" ${r.show?'checked':''}></td><td><div class="code">${esc(r.code)}</div>${field('English label · '+r.code,'journey.payslip.rows.'+i+'.label')}${field('Vietnamese label · '+r.code,'journey.payslip.rows.'+i+'.labelVi')}</td><td>${selectHtml('journey.payslip.rows.'+i+'.section',[['earnings','Earnings'],['deductions','Deductions'],['benefits','Non-cash benefits'],['summary','Summary']],'Section for '+r.code)}</td><td><input type="checkbox" aria-label="Hide zero ${esc(r.code)}" data-path="journey.payslip.rows.${i}.hideZero" ${r.hideZero?'checked':''}></td></tr>`).join('')}</tbody></table></div><div class="row" style="margin-top:18px">${btn('Add newly included components','journey-payslip-sync','small')}${btn('Preview mapped payslip','journey-payslip-preview','small')}</div><details style="margin-top:20px"><summary>Implementation connection</summary><p class="mini">Reuse Formula Studio’s Payslip Studio: payslip_studio_data, move_component, create_section, update_section, reorder_sections and save_payslip_theme. Existing rule visibility/section fields are the persistent mapping. The HTML uses the same concepts without writing live records.</p></details>`,btn('Skip for now','journey-skip','',`data-key="payslip"`)+btn('Save payslip mapping draft','journey-payslip-save','primary'));}
+function mappedPayslipPreview(){validatePayslip(bp);const s=summary();if(s.error)throw Error(s.error);const rows=bp.journey.payslip.rows.filter(r=>r.show&&(!r.hideZero||s.values[r.code]!==0));modal('Mapped payslip · synthetic preview',`${scope()}<div class="card"><h2>PHIẾU LƯƠNG / PAYSLIP</h2><p class="mini">SAMPLE-001 · September 2026 · Confidential</p>${[['earnings','Earnings / Thu nhập'],['deductions','Deductions / Khấu trừ'],['benefits','Benefits / Phúc lợi'],['summary','Summary / Tổng cộng']].map(([key,title])=>{const sec=rows.filter(r=>r.section===key);return sec.length?`<div class="sectiontitle">${title}</div><div class="receipt">${sec.map(r=>`<div><span>${esc(bp.delivery.language==='en'?r.label:bp.delivery.language==='vi'?r.labelVi||r.label:r.labelVi?r.labelVi+' / '+r.label:r.label)}</span><b>${cash(s.values[r.code])} VND</b></div>`).join('')}</div>`:''}).join('')}</div><div class="mini">Missing Vietnamese labels fall back to English in this demo and remain translation work for rollout. Net pay is a final result; summary lines are not added to the earnings section again.</div>`,btn('Back to Payslip Studio','journey-payslip','primary'));}
+function importModal(){modal('Import Excel · review the definition',`${scope()}<div class="banner info">Design walkthrough: local .xlsx parsing is not connected in this HTML. Selecting a file records its name only. The example workbook below demonstrates the review and creates actual editable rules in the prototype.</div><label class="field">Select a workbook for the proposed import<input type="file" accept=".xlsx,.xls,.csv" data-import-file></label><div id="importFileStatus" class="mini">${esc(bp.journey.import.filename||'No file selected')}</div><div class="hero"><h2>Try an illustrative payroll workbook</h2><p>Four component rows demonstrate salary inputs, a fixed allowance, a contribution formula and PIT generated from the selected tax rules.</p>${btn('Review example workbook','journey-import-example','primary')}</div><div class="flow"><span>Select workbook</span><i>→</i><span>Choose sheets & headers</span><i>→</i><span>Classify inputs / rules</span><i>→</i><span>Validate formulas</span><i>→</i><span>Apply reviewed rows</span></div>`,btn('Back','close'));}
+function importReview(){if(!importDraft.length)importDraft=stageSampleImport();modal('Review example workbook · before applying',`<p style="margin-top:20px">Illustrative data, not extracted from your selected file. The production review will show original sheet/cell provenance, formula support and unresolved references.</p><div id="importFeedback" role="status"></div>${importDraft.map((r,i)=>`<div class="card"><label class="row"><input type="checkbox" data-import-include="${i}" ${r.include?'checked':''}><b>${esc(r.name)}</b>${pill(r.formula?'EXCEL FORMULA':'GENERATE PIT')}</label><div class="code" style="margin-top:12px">${r.code}</div><label class="field">Formula · ${r.code}<input aria-label="Import formula ${r.code}" data-import-formula="${i}" value="${esc(r.formula)}" placeholder="Generated from tax settings"></label></div>`).join('')}<div class="banner">Applying replaces this schema’s current component draft and formula overrides. Tax settings remain. Unsupported formulas and missing dependencies are blocked.</div>`,btn('Back to import','journey-import')+btn('Validate & apply example','journey-import-apply','primary'));}
+function guideModal(){modal('Design & implementation handoff',`<div class="card"><h2>Approved journey</h2><p>Start → Pay rules → Connect & finish → Outputs & formulas → Test → Review & create.</p><h2>One schema, reusable studios</h2><p>Source mapping and payslip mapping launch the existing editors with this schema selected. Approval matrices are company- and schema-specific. All three are optional during creation and managed later from their own Settings entries.</p><h2>Excel remains the rule language</h2><p>Guided controls generate Excel. Preserve manual overrides and their last-generated counterpart. Validate the dependency graph and execute the same formula for preview. Importing a payroll definition is distinct from mapping recurring payroll input data.</p><h2>Read the implementation blueprint</h2><p>The project contains <b>IMPLEMENTATION_HANDOFF.md</b> alongside <b>Payroll_Blueprint_Option2.html</b>. It documents exact source entry points, draft lifecycle, proposed contracts, security, migration, limitations and acceptance tests.</p><p><a href="IMPLEMENTATION_HANDOFF.md" download>Download the full implementation handoff ↗</a></p><h2>Prototype boundaries</h2><p>Settings, mapping, approvals and payslip layouts save in this browser. Source feeds and Excel-import review are illustrative. They do not query live users, connect APIs, parse uploaded workbooks or activate approvals.</p><div class="banner info">Use the Markdown handoff as the starting brief for the next implementation session. Re-check current repository code before applying the proposed changes.</div></div>`,btn('Model connections','connections')+btn('Close guide','close','primary'));}
+function finishOptional(key){if(key==='mapping')validateMappings(bp);if(key==='approvals')validateApprovals(bp.journey.approvals);if(key==='payslip')validatePayslip(bp);bp.journey[key].status='configured';changed();drawer.close();render();toast('Saved for this schema. Manage later through Settings.');}
+function journeyClick(e){const el=e.target.closest('[data-action]');if(!el)return;const action=el.dataset.action;
+ // The existing click handler owns ordinary navigation. Intercept this one prerequisite.
+ if(action==='next'&&bp.step===0&&bp.journey.start==='excel'&&bp.journey.import.status!=='sample_applied'){e.stopImmediatePropagation();toast('Review and apply the example import, or choose another starting point.');return}
+ if(action==='next'&&bp.step===2){for(const key of ['mapping','approvals','payslip'])if(bp.journey[key].status==='not_started')bp.journey[key].status='skipped';save();}if(!action.startsWith('journey-'))return;e.stopImmediatePropagation();try{switch(action){case'journey-start':{const key=el.dataset.key;if(key===bp.journey.start){if(key==='excel')importModal();break}modal('Change your starting point?',`<p style="margin-top:20px">Switch to ${esc(key)}. This replaces ${bp.components.filter(c=>c.included).length} component settings and ${Object.keys(bp.overrides).length} manual formulas in this local draft. Mapping and payslip tasks return to Not started; the approval matrix is retained.</p>`,btn('Keep current draft','close')+btn('Use this starting point','journey-start-apply','primary',`data-key="${key}"`));break}case'journey-start-apply':applyStartingPoint(bp,el.dataset.key);changed();drawer.close();render();if(el.dataset.key==='excel')importModal();break;case'journey-paytab':bp.journey.payTab=el.dataset.key;save();render();window.scrollTo(0,0);break;case'journey-fix':bp.step=1;render();break;case'journey-settings':settingsModal();break;case'journey-guide':guideModal();break;case'journey-mapping':mappingModal();break;case'journey-approvals':approvalsModal();break;case'journey-payslip':payslipModal();break;case'journey-skip':bp.journey[el.dataset.key].status='skipped';changed();drawer.close();render();toast('Skipped. Your draft is kept for later in Settings.');break;case'journey-skip-all':for(const key of ['mapping','approvals','payslip'])if(bp.journey[key].status==='not_started')bp.journey[key].status='skipped';bp.step=3;changed();render();window.scrollTo(0,0);break;case'journey-map-add':bp.journey.mapping.rows.push({target:'',field:'',transform:'identity',required:true});bp.journey.mapping.status='draft';changed();mappingModal();break;case'journey-map-remove':bp.journey.mapping.rows.splice(Number(el.dataset.index),1);bp.journey.mapping.status='draft';changed();mappingModal();break;case'journey-map-test':{const values=validateMappings(bp);bp.sample.mappedInputs=values;bp.journey.mapping.validated=true;changed();render();drawer.querySelector('#mappingFeedback').innerHTML=`<div class="banner info">${Object.keys(values).length} sample values validated and applied to the employee preview. This does not verify a live feed.</div>`;break}case'journey-map-save':finishOptional('mapping');break;case'journey-approval-edit':approvalEdit(Number(el.dataset.index));break;case'journey-approval-add':bp.journey.approvals.rows.push({id:'custom_'+Date.now(),enabled:true,object:'New transaction',maker:'',reviewer:'',approver:'',assignee:'',delegate:'',threshold:'None',sla:'',evidence:'',decision:'all',onReject:'return',escalate:'Workflow owner',source:'User-defined'});bp.journey.approvals.status='draft';changed();approvalEdit(bp.journey.approvals.rows.length-1);break;case'journey-approval-save':finishOptional('approvals');break;case'journey-payslip-save':finishOptional('payslip');break;case'journey-payslip-preview':mappedPayslipPreview();break;case'journey-payslip-sync':{const codes=new Set(bp.journey.payslip.rows.map(r=>r.code));bp.journey.payslip.rows.push(...seedPayslip(bp).filter(r=>!codes.has(r.code)));bp.journey.payslip.status='draft';changed();payslipModal();break}case'journey-import':importModal();break;case'journey-import-example':importDraft=stageSampleImport();importReview();break;case'journey-import-apply':applySampleImport(bp,importDraft);changed();drawer.close();render();toast('Example workbook applied. Review its Excel rules in Outputs & formulas.');break;}}catch(err){toast(err.message);const feedback=drawer.querySelector('#mappingFeedback,#approvalFeedback,#payslipFeedback,#importFeedback');if(feedback)feedback.innerHTML=`<div class="banner">${esc(err.message)}</div>`}}
+app.addEventListener('click',journeyClick,true);drawer.addEventListener('click',journeyClick,true);
+function journeyChange(e){const el=e.target;if(el.hasAttribute('data-output-filter')){outputFilter=el.value;render()}if(el.hasAttribute('data-mapping-source')){bp.journey.mapping.source=el.value;bp.journey.mapping.rows=seedMappings(el.value);bp.journey.mapping.status='draft';delete bp.sample.mappedInputs;changed();mappingModal();render()}if(el.hasAttribute('data-import-file')){bp.journey.import.filename=el.files?.[0]?.name||'';save();drawer.querySelector('#importFileStatus').textContent=bp.journey.import.filename?bp.journey.import.filename+' selected. File content has not been parsed.':'No file selected.'}if(el.hasAttribute('data-import-include'))importDraft[Number(el.dataset.importInclude)].include=el.checked;}
+app.addEventListener('change',journeyChange);drawer.addEventListener('change',journeyChange);drawer.addEventListener('input',e=>{if(e.target.hasAttribute('data-import-formula'))importDraft[Number(e.target.dataset.importFormula)].formula=e.target.value});
+// Draft changes invalidate configured statuses until explicitly saved again.
+const originalSetPath=setPath;setPath=function(path,value){originalSetPath(path,value);const task=path.split('.')[1];if(path.startsWith('journey.')&&['mapping','approvals','payslip'].includes(task)){bp.journey[task].status='draft';if(task==='mapping'){bp.journey.mapping.validated=false;delete bp.sample.mappedInputs;}save()}};
+// Earlier optional setup is a local design contract, retained separately from calculation settings.
+void settingsOrigin;
+render();
+</script></body></html>

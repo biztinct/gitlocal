@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ============================================================
+             BUDGET GUARDRAILS — Configuration Views
+             ============================================================ -->
+
+        <record id="view_wfp_budget_guardrail_tree" model="ir.ui.view">
+            <field name="name">wfp.budget.guardrail.tree</field>
+            <field name="model">wfp.budget.guardrail</field>
+            <field name="arch" type="xml">
+                <list editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="rule_type"/>
+                    <field name="threshold_value"/>
+                    <field name="threshold_amount"/>
+                    <field name="department_id" optional="show"/>
+                    <field name="grade_id" optional="hide"/>
+                    <field name="enforcement" widget="badge"
+                           decoration-warning="enforcement == 'warn'"
+                           decoration-danger="enforcement == 'block'"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_wfp_budget_guardrail_form" model="ir.ui.view">
+            <field name="name">wfp.budget.guardrail.form</field>
+            <field name="model">wfp.budget.guardrail</field>
+            <field name="arch" type="xml">
+                <form string="Budget Guardrail">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Rule Name"/></h1>
+                        </div>
+                        <group>
+                            <group string="Rule Definition">
+                                <field name="rule_type"/>
+                                <field name="threshold_value"
+                                       invisible="rule_type in ('max_increase_amount', 'dept_budget_cap', 'total_budget_cap')"/>
+                                <field name="threshold_amount"
+                                       invisible="rule_type in ('max_increase_pct', 'compa_min', 'compa_max', 'min_rating_for_increase')"/>
+                                <field name="enforcement"/>
+                            </group>
+                            <group string="Scope">
+                                <field name="department_id"/>
+                                <field name="grade_id"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        <field name="description" placeholder="Explain this rule to managers..."/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_wfp_budget_guardrail" model="ir.actions.act_window">
+            <field name="name">Budget Guardrails</field>
+            <field name="res_model">wfp.budget.guardrail</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Define budget guardrails
+                </p>
+                <p>Configure rules like max increase %, budget caps, and compa-ratio bounds
+                to govern compensation recommendations.</p>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             APPROVAL STEPS — Inline on Compensation Cycle
+             ============================================================ -->
+
+        <record id="view_wfp_approval_step_tree" model="ir.ui.view">
+            <field name="name">wfp.approval.step.tree</field>
+            <field name="model">wfp.approval.step</field>
+            <field name="arch" type="xml">
+                <list editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="role"/>
+                    <field name="approver_id"/>
+                    <field name="department_id" optional="hide"/>
+                    <field name="threshold_amount" optional="hide"/>
+                    <field name="threshold_pct" optional="hide"/>
+                    <field name="state" widget="badge"
+                           decoration-info="state == 'active'"
+                           decoration-success="state == 'approved'"
+                           decoration-danger="state == 'rejected'"
+                           decoration-muted="state in ('pending', 'skipped')"/>
+                    <field name="decision_date" optional="show"/>
+                    <button name="action_approve" type="object" string="✓"
+                            class="btn-success btn-sm"
+                            invisible="state != 'active'"/>
+                    <button name="action_reject" type="object" string="✗"
+                            class="btn-danger btn-sm"
+                            invisible="state != 'active'"/>
+                    <button name="action_skip" type="object" string="Skip"
+                            class="btn-link btn-sm"
+                            invisible="state not in ('pending', 'active')"/>
+                </list>
+            </field>
+        </record>
+
+    </data>
+</odoo>

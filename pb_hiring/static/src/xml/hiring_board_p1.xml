@@ -1,0 +1,530 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       RECRUIT P1 — a role's page: Board / Interviews / Details / Activity.
+
+       Loop variables avoid OWL's reserved operator words (R1): `col`, `cd`,
+       `ch`, `rr`, `st`, `ac`, `hn`, `sc`, `fr`, `tl`, `dc`, `mt`, `hs`.
+       Section rules use `=` and never a doubled hyphen inside a comment (R35).
+       ==================================================================== -->
+  <t t-name="pb_hiring.RolePage">
+    <div class="pbhr-role">
+
+      <!-- ============ the header: the four questions a stand-in asks ============ -->
+      <div class="pbhr-role-top">
+        <button type="button" class="pbhr-back" t-on-click="backHome" title="Back to every role">
+          <t t-out="ic('chevronLeft',15)"/> All roles
+        </button>
+        <div class="pbhr-role-id">
+          <h1 class="pbhr-role-h1">
+            <t t-if="state.drawer" t-esc="state.drawer.title"/>
+            <t t-else="">Opening the role…</t>
+            <span t-if="state.drawer and (state.drawer.country or state.drawer.location)" class="pbhr-role-where"> · <t t-esc="state.drawer.country or state.drawer.location"/></span>
+          </h1>
+          <div t-if="state.drawer" class="pbhr-role-chips">
+            <button t-if="state.drawer.department" type="button" class="pbhr-pill" t-on-click="() =&gt; this.openRole(state.drawer.id, { tab: 'details', section: 'request' })"><t t-esc="state.drawer.department"/></button>
+            <button type="button" class="pbhr-pill" t-on-click="() =&gt; this.openRole(state.drawer.id, { tab: 'details', section: 'request' })"><t t-esc="seatsLabel"/></button>
+            <button type="button" class="pbhr-pill" t-att-class="'is-' + requestChip.tone" t-on-click="() =&gt; this.openRole(state.drawer.id, { tab: 'details', section: 'request' })"><t t-esc="requestChip.label"/></button>
+            <!-- RECRUIT P7: how many channels the role is live on; opens Publish to… -->
+            <button type="button" class="pbhr-pill" t-att-class="state.drawer.p7_live ? 'is-info' : ''" t-on-click="() =&gt; state.canRecruit ? this.p7OpenSheet() : this.openRole(state.drawer.id, { tab: 'details', section: 'jd' })">
+              <t t-if="state.drawer.p7_live"><t t-out="ic('share2',11)"/> </t><t t-esc="p7Pill"/>
+            </button>
+            <button t-if="state.drawer.is_confidential" type="button" class="pbhr-pill is-rose" t-on-click="() =&gt; this.openRole(state.drawer.id, { tab: 'details', section: 'request' })"><t t-out="ic('eyeOff',12)"/> Confidential</button>
+            <span t-if="state.drawer.recruiter" class="pbhr-role-by"><t t-out="ic('user',13)"/> <t t-esc="recruiterLabel"/></span>
+          </div>
+        </div>
+        <div class="pbhr-role-acts" t-if="state.drawer">
+          <!-- RECRUIT P5: every finalist's scorecards side by side -->
+          <t t-call="pb_hiring.P5CompareButton"/>
+          <button t-if="board.can_setup" type="button" class="pbim-btn ghost" t-on-click="openSetup" title="Stages, presets, emails and switches">
+            <t t-out="ic('sliders',14)"/> Set up hiring
+          </button>
+          <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state) and ['none', 'not_approved'].includes(state.drawer.request_state)" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.startAsk(state.drawer)">
+            <t t-out="ic('send',14)"/> Ask a manager
+          </button>
+          <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state)" type="button" class="pbim-btn ghost" t-on-click="addCandidate">
+            <t t-out="ic('userPlus',14)"/> Add a candidate
+          </button>
+          <!-- RECRUIT P7: one door to every channel (replaces the bare Publish) -->
+          <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state)" type="button" class="pbim-btn" t-att-class="state.drawer.p7_live ? 'ghost' : 'primary'" t-on-click="() =&gt; this.p7OpenSheet()" title="Every channel this role can go to, each with its own link">
+            <t t-out="ic('share2',14)"/> Publish to…
+          </button>
+        </div>
+      </div>
+
+      <!-- ============ the four tabs ============ -->
+      <div class="pbhr-tabs pbhr-role-tabs" role="tablist">
+        <button t-foreach="[['board', 'Board', 'layoutList'], ['interviews', 'Interviews', 'calendar'], ['details', 'Details', 'fileText'], ['activity', 'Activity', 'history']]" t-as="rt" t-key="rt[0]" class="pbhr-tab" role="tab" t-att-class="{ on: state.roleTab === rt[0] }" t-att-aria-selected="state.roleTab === rt[0] ? 'true' : 'false'" t-on-click="() =&gt; this.setRoleTab(rt[0])">
+          <t t-out="ic(rt[2],15)"/> <t t-esc="tabLabel(rt[0])"/>
+          <span t-if="rt[0] === 'board' and state.drawer" class="pbhr-tab-n" t-esc="cards.length"/>
+          <span t-if="rt[0] === 'interviews' and state.drawer" class="pbhr-tab-n" t-esc="(board.interviews or []).length"/>
+        </button>
+      </div>
+
+      <!-- ============ BOARD ============ -->
+      <t t-if="state.roleTab === 'board'">
+        <t t-if="state.drawer and board.role_glance">
+          <div class="pbhr-glance-row">
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="roleGlance"/>
+              <t t-set="qGlanceOn" t-value="state.boardFilter"/>
+            </t>
+            <span class="pbhr-glance-hint">
+              <t t-if="state.boardFilter">Showing some people · <button type="button" class="pbhr-showall" t-on-click="() =&gt; { state.boardFilter = ''; }">Show everyone</button></t>
+              <t t-else="">Showing everyone · press a number to narrow</t>
+            </span>
+          </div>
+        </t>
+
+        <!-- first visit: three hints, once, dismissable -->
+        <div t-if="state.drawer and hints.length" class="pbhr-hints">
+          <span class="pbhr-hints-ic"><t t-out="ic('sparkles',15)"/></span>
+          <span t-foreach="hints" t-as="hn" t-key="hn.key" class="pbhr-hint">
+            <t t-out="ic(hn.icon,13)"/> <t t-esc="hn.text"/>
+            <button type="button" class="pbhr-hint-x" t-on-click="() =&gt; this.dismissHint(hn.key)" title="Got it"><t t-out="ic('x',12)"/></button>
+          </span>
+          <button type="button" class="pbhr-showall" t-on-click="dismissAllHints">Got it</button>
+        </div>
+
+        <!-- RECRUIT P3: a role being set up says what it can do now -->
+        <t t-if="state.drawer" t-call="pb_hiring.P3RoleNext"/>
+
+        <!-- nobody at all: the empty board teaches -->
+        <div t-if="state.drawer and !cards.length and !roleNext" class="pbim-panel pbhr-board-empty">
+          <div class="pbhr-empty-ic"><t t-out="ic('userPlus',26)"/></div>
+          <div>
+            <b>Nobody has applied yet. Publish the role to its channels, or add a candidate.</b>
+            <p>The columns below are this role's stages. Point at a column name to read what it means.</p>
+            <div class="pbhr-board-empty-acts">
+              <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state)" type="button" class="pbim-btn primary" t-on-click="() =&gt; this.p7OpenSheet()"><t t-out="ic('share2',14)"/> Publish to…</button>
+              <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state)" type="button" class="pbim-btn ghost" t-on-click="addCandidate"><t t-out="ic('userPlus',14)"/> Add a candidate</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- the columns -->
+        <div class="pbhr-board" t-ref="board" t-att-class="{ 'is-dragging': state.dragging, 'is-readonly': !canMove, 'is-dim': state.cand }">
+          <t t-if="state.roleLoading or !state.drawer">
+            <div t-foreach="[1,2,3,4,5]" t-as="sk" t-key="sk" class="pbhr-col is-skel">
+              <div class="pbhr-col-h"><span class="pbhr-skel-line"/></div>
+              <div t-foreach="[1,2,3]" t-as="sk2" t-key="sk2" class="pbhr-kc is-skel"><span class="pbhr-skel-line"/><span class="pbhr-skel-line short"/></div>
+            </div>
+          </t>
+          <t t-else="">
+            <div t-foreach="columns" t-as="col" t-key="col.key" class="pbhr-col" t-att-class="{ 'is-drop': col.drop and canMove, 'is-hidden-stage': col.hidden, 'is-done': col.family === 'done' }" t-att-data-key="col.key">
+              <div class="pbhr-col-h">
+                <span class="pbhr-col-name" t-att-data-tooltip="col.meaning"><t t-esc="col.name"/></span>
+                <span class="pbhr-col-n" t-key="col.key + '-' + col.count"><t t-esc="col.count"/></span>
+              </div>
+              <div class="pbhr-col-days"><t t-esc="daysHere(col)"/></div>
+              <div t-if="col.hidden" class="pbhr-col-cap"><t t-out="ic('eyeOff',12)"/> Hidden for this role — shown until it is empty</div>
+              <t t-foreach="col.cards.slice(0, col.limit)" t-as="cd" t-key="cd.id">
+                <t t-call="pb_hiring.KCard"/>
+              </t>
+              <button t-if="col.cards.length &gt; col.limit" type="button" class="pbhr-col-more" t-on-click="() =&gt; this.showMore(col)">
+                <t t-esc="moreLabel(col)"/>
+              </button>
+              <div t-if="!col.cards.length" class="pbhr-col-empty" t-esc="state.boardFilter ? 'Nobody here matches.' : colEmptyText(col)"/>
+            </div>
+
+            <!-- a hidden stage, one click away for the talent lead -->
+            <button t-if="board.can_setup and hiddenStages.length" type="button" class="pbhr-col pbhr-col-ghost" t-on-click="startShowStages">
+              <t t-out="ic('plus',16)"/>
+              <span>Show a hidden stage</span>
+              <small><t t-esc="hiddenStages.length"/> hidden for this role</small>
+            </button>
+
+            <!-- the Closed rail -->
+            <div class="pbhr-col pbhr-rail" t-att-class="{ 'is-drop': canMove }" data-key="__closed">
+              <div class="pbhr-col-h">
+                <span class="pbhr-col-name">Closed</span>
+                <span class="pbhr-col-n" t-key="'rail-' + railTotal"><t t-esc="railTotal"/></span>
+              </div>
+              <button t-foreach="railRows" t-as="rr" t-key="rr.key" type="button" class="pbhr-rail-row" t-att-class="{ on: state.railOpen === rr.key }" t-att-title="rr.meaning" t-on-click="() =&gt; { state.railOpen = state.railOpen === rr.key ? '' : rr.key; }">
+                <span t-esc="rr.name"/><b t-esc="rr.count"/>
+              </button>
+              <!-- the people in the open line are ordinary cards: open one, or
+                   drag it back into a working column -->
+              <div t-if="state.railOpen" class="pbhr-rail-list">
+                <t t-foreach="closedCards.filter((c) =&gt; c.stage_key === state.railOpen)" t-as="cd" t-key="cd.id">
+                  <t t-call="pb_hiring.KCard"/>
+                </t>
+                <div t-if="!closedCards.filter((c) =&gt; c.stage_key === state.railOpen).length" class="pbhr-col-empty">Nobody here.</div>
+              </div>
+              <div class="pbhr-rail-hint">
+                <t t-if="canMove">Drop a card here to close it. Press a line to see who is in it; drag anyone back to bring them back.</t>
+                <t t-else="">Press a line to see who is in it</t>
+              </div>
+            </div>
+          </t>
+        </div>
+
+        <!-- the floating selection bar -->
+        <div t-if="state.sel.length" class="pbhr-selbar" role="toolbar" aria-label="Selected candidates">
+          <b t-esc="selLabel"/>
+          <button type="button" class="pbim-btn ghost" t-on-click="openMoveMenuSel"><t t-out="ic('arrowRight',14)"/> Move to <t t-out="ic('chevronDown',12)"/></button>
+          <button t-if="state.canRecruit" type="button" class="pbim-btn ghost" t-on-click="openShareSel"><t t-out="ic('share2',14)"/> Share with…</button>
+          <button type="button" class="pbim-btn ghost" t-on-click="startMessageSel"><t t-out="ic('mail',14)"/> Send an email</button>
+          <button type="button" class="pbim-btn ghost pbhr-no" t-on-click="bulkNotThisTime"><t t-out="ic('xCircle',14)"/> Not this time</button>
+          <button type="button" class="pbim-btn ghost" t-on-click="clearSel">Clear</button>
+          <span class="pbhr-selbar-keys">M move · E email · S share · Esc clear</span>
+        </div>
+      </t>
+
+      <!-- ============ INTERVIEWS (this role only) ============ -->
+      <t t-elif="state.roleTab === 'interviews'">
+        <div t-if="!(board.interviews or []).length" class="pbim-panel pbhr-empty">
+          <div class="pbhr-empty-ic"><t t-out="ic('calendar',28)"/></div>
+          <h2>No interviews for this role yet</h2>
+          <p>Open a candidate on the board and press "Arrange an interview". Everybody gets an invitation with a calendar file, and each person on the panel gets their own link to give an opinion.</p>
+          <button type="button" class="pbim-btn primary" t-on-click="() =&gt; this.setRoleTab('board')"><t t-out="ic('layoutList',14)"/> Go to the board</button>
+        </div>
+        <t t-else="">
+          <t t-call="pb_hiring.IvList"><t t-set="ivList" t-value="board.interviews"/></t>
+        </t>
+      </t>
+
+      <!-- ============ DETAILS ============ -->
+      <t t-elif="state.roleTab === 'details'">
+        <t t-if="state.drawer" t-call="pb_hiring.RoleDetails"/>
+      </t>
+
+      <!-- ============ ACTIVITY ============ -->
+      <t t-else="">
+        <div t-if="!(board.activity or []).length" class="pbim-panel pbhr-empty">
+          <div class="pbhr-empty-ic"><t t-out="ic('history',28)"/></div>
+          <h2>Nothing has moved yet</h2>
+          <p>Every move on this board is written down here — who moved whom, from where to where, and when.</p>
+        </div>
+        <div t-else="" class="pbim-panel pbhr-activity">
+          <div t-foreach="board.activity" t-as="ac" t-key="ac_index" class="pbhr-act-row">
+            <span class="pbhr-act-when" t-esc="whenShort(ac.at)"/>
+            <span class="pbhr-act-tx">
+              <button type="button" class="pbhr-linkish" t-on-click="() =&gt; { this.setRoleTab('board'); this.openCand(ac.applicant_id); }" t-esc="ac.who"/>
+              <span> </span><t t-esc="activityText(ac)"/>
+              <span t-if="ac.by" class="pbhr-act-by"> <t t-esc="byLabel(ac.by)"/></span>
+            </span>
+          </div>
+        </div>
+      </t>
+    </div>
+  </t>
+
+  <!-- ====================================================================
+       One card. Name, when they applied and from where, at most two chips,
+       a coloured edge (green shortlisted, amber waiting, rose a problem),
+       and three quick actions on hover.
+       ==================================================================== -->
+  <t t-name="pb_hiring.KCard">
+    <div class="pbhr-kc" t-att-class="{ 'is-movable': canMove and cd.family !== 'done', 'is-sel': isSel(cd.id), 'is-focus': state.focusId === cd.id, 'is-open': state.cand and state.cand.id === cd.id, 'is-landed': state.landed.includes(cd.id), 'is-out': !cd.active }" t-att-data-id="cd.id" tabindex="-1" t-att-title="canMove ? '' : lockedTitle" t-on-click="(ev) =&gt; this.onCardClick(ev, cd)">
+      <span class="pbhr-kc-edge" t-att-class="cd.edge ? 'is-' + cd.edge : ''"/>
+      <button t-if="canMove" type="button" class="pbhr-kc-check" t-att-class="{ on: isSel(cd.id) }" t-att-aria-pressed="isSel(cd.id) ? 'true' : 'false'" title="Tick to move several at once (shift-click for a range)" t-on-click.stop="(ev) =&gt; this.toggleSel(cd, ev)">
+        <t t-out="ic('check',11)"/>
+      </button>
+      <div class="pbhr-kc-nm" t-esc="cd.name"/>
+      <div class="pbhr-kc-sub">
+        <t t-if="cd.next_interview_at"><t t-out="ic('calendar',11)"/> <t t-esc="whenShort(cd.next_interview_at)"/></t>
+        <t t-elif="cd.waiting" t-esc="cd.waiting"/>
+        <t t-else="" t-esc="cd.sub"/>
+      </div>
+      <div t-if="cd.chips.length" class="pbhr-kc-chips">
+        <span t-foreach="cd.chips" t-as="ch" t-key="ch_index" class="pbhr-kc-chip" t-att-class="ch.tone ? 'is-' + ch.tone : ''" t-esc="ch.label"/>
+      </div>
+      <!-- RECRUIT P6: the Before they join list, as a bar that fills -->
+      <div t-if="cd.joining and cd.joining.total" class="pbhr-p6-kbar" t-att-title="cd.joining.done + ' of ' + cd.joining.total + ' things ready'">
+        <span t-foreach="p6Segs(cd.joining)" t-as="sg" t-key="sg_index" t-att-class="sg"/>
+      </div>
+      <!-- RECRUIT P4: who outside the hiring team sees this person -->
+      <div t-if="cd.shared" class="pbhr-kc-share" t-att-class="{ 'is-on': cd.shared_tone === 'info', 'is-flash': isFlash(cd.id) }" t-att-title="(cd.shared_names or []).join(', ')">
+        <t t-out="ic(cd.shared_tone === 'info' ? 'share2' : 'lock',10)"/> <t t-esc="cd.shared"/>
+      </div>
+      <div class="pbhr-kc-quick">
+        <t t-if="canMove and cd.family === 'open'">
+          <button type="button" title="Advance to the next column" t-on-click.stop="() =&gt; this.advance(cd)"><t t-out="ic('arrowRight',13)"/></button>
+          <button type="button" title="Not this time" class="is-no" t-on-click.stop="() =&gt; this.notThisTime(cd)"><t t-out="ic('xCircle',13)"/></button>
+        </t>
+        <button t-if="cd.remind" type="button" t-att-title="'Remind ' + cd.remind.who" t-on-click.stop="() =&gt; this.remindCard(cd)"><t t-out="ic('bell',13)"/></button>
+        <button t-if="!canMove" type="button" title="Leave a note" t-on-click.stop="() =&gt; this.startNoteFor(cd.id, cd.name)"><t t-out="ic('pencil',13)"/></button>
+        <button type="button" title="Open" t-on-click.stop="() =&gt; this.openCand(cd.id)"><t t-out="ic('eye',13)"/></button>
+      </div>
+    </div>
+  </t>
+
+  <!-- ====================================================================
+       Everything that floats over the page: the candidate drawer, the
+       closed-outcome popover, the move menu, the hidden-stage checklist, the
+       note, and the toast. Each scrim is a direct child of the root (R114).
+       ==================================================================== -->
+  <t t-name="pb_hiring.P1Overlays">
+
+    <!-- ============ THE CANDIDATE DRAWER ============ -->
+    <div t-if="state.cand or state.candBusy" class="pbhr-cscrim" t-on-click="closeCand">
+      <aside class="pbhr-cdrawer" role="dialog" aria-modal="true" t-att-aria-label="state.cand ? state.cand.name : 'Candidate'" t-on-click.stop="() =&gt; {}">
+        <t t-if="!state.cand">
+          <div class="pbhr-cd-skel"><span class="pbhr-skel-line"/><span class="pbhr-skel-line"/><span class="pbhr-skel-line short"/></div>
+        </t>
+        <t t-else="">
+          <t t-set="cand" t-value="state.cand"/>
+          <div class="pbhr-cd-hero">
+            <span class="pbhr-cand-av" t-att-class="'pbhr-av--' + (cand.id % 6)" t-esc="initials(cand.name)"/>
+            <div class="pbhr-cd-id">
+              <h2 t-esc="cand.name"/>
+              <div class="pbhr-cd-sub"><t t-esc="cand.role"/> · <b t-esc="cand.stage"/></div>
+            </div>
+            <button t-if="cand.can_recruit and cand.share" type="button" class="pbhr-p4-hero" t-att-class="{ 'is-on': !cand.share.private, 'is-flash': isFlash(cand.id) }" t-on-click="() =&gt; this.openShare([cand.id])" title="Share with… (S)"><t t-out="ic(cand.share.private ? 'lock' : 'share2',11)"/> <t t-esc="candLockTitle(cand)"/></button>
+            <span t-elif="!cand.can_recruit" class="pbhr-p4-hero" t-att-class="{ 'is-on': !cand.locked }"><t t-out="ic(cand.locked ? 'lock' : 'share2',11)"/> <t t-esc="candLockTitle(cand)"/></span>
+            <button type="button" class="pbhr-cd-x" t-on-click="closeCand" title="Close (Esc)"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbhr-cd-nav">
+            <button type="button" t-on-click="() =&gt; this.stepCand(-1)" title="Previous card (arrow key)"><t t-out="ic('chevronUp',13)"/></button>
+            <button type="button" t-on-click="() =&gt; this.stepCand(1)" title="Next card (arrow key)"><t t-out="ic('chevronDown',13)"/></button>
+            <span>Arrow keys move to the next person</span>
+          </div>
+
+          <div class="pbhr-cd-kv">
+            <t t-if="cand.applied_on"><span>Applied</span><b><t t-esc="dayShort(cand.applied_on)"/><t t-if="cand.source"> · <t t-esc="cand.source"/></t></b></t>
+            <t t-if="cand.location"><span>Based in</span><b t-esc="cand.location"/></t>
+            <t t-if="cand.email and cand.can_recruit"><span>Email</span><b t-esc="cand.email"/></t>
+            <t t-if="cand.phone and cand.can_recruit"><span>Phone</span><b t-esc="cand.phone"/></t>
+            <t t-if="cand.money and cand.money.expected"><span>Expects</span><b><t t-esc="money(cand.money.expected, cand.money.currency)"/> <span class="pbhr-lock"><t t-out="ic('lock',10)"/> <t t-esc="cand.money_who or 'Recruiters and you'"/></span></b></t>
+            <t t-if="cand.linkedin and !cand.can_recruit"><span>LinkedIn</span><b><a t-att-href="cand.linkedin" target="_blank" rel="noopener noreferrer" t-esc="cand.linkedin"/></b></t>
+            <t t-if="cand.portfolio and !cand.can_recruit"><span>Portfolio</span><b><a t-att-href="cand.portfolio" target="_blank" rel="noopener noreferrer" t-esc="cand.portfolio"/></b></t>
+            <t t-if="cand.screen_label"><span>First look</span><b t-esc="cand.screen_label"/></t>
+            <t t-if="cand.reason"><span>Reason</span><b t-esc="cand.reason"/></t>
+          </div>
+
+          <!-- RECRUIT P4: who sees this person, or what is not shared with the reader -->
+          <t t-call="pb_hiring.P4DrawerShare"/>
+          <t t-call="pb_hiring.P4DrawerLocks"/>
+
+          <!-- the Next box: computed from the record on the server -->
+          <div class="pbhr-cd-next">
+            <div class="l">Next</div>
+            <p t-esc="cand.next.text"/>
+            <div t-if="cand.next.verb" class="pbhr-cd-next-acts">
+              <button type="button" class="pbim-btn primary" t-on-click="() =&gt; this.runNextBox(cand.next)" t-esc="cand.next.label"/>
+              <button t-if="cand.next.secondary" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.runNextBox(cand.next, 'secondary')" t-esc="cand.next.secondary.label"/>
+            </div>
+          </div>
+
+          <!-- RECRUIT P6: the countdown, Before they join, the signed documents -->
+          <t t-call="pb_hiring.P6DrawerJoining"/>
+
+          <!-- RECRUIT P2 (G-29): possibly the same person — a chip and a sentence, never a block -->
+          <div t-if="cand.duplicate" class="pbhr-cd-dup" t-att-class="cand.duplicate.same ? 'is-same' : ''">
+            <span class="pbhr-cd-dup-ic"><t t-out="ic(cand.duplicate.same ? 'userCheck' : 'users',16)"/></span>
+            <div class="pbhr-cd-dup-tx">
+              <b t-if="cand.duplicate.same">The same person as <t t-esc="cand.duplicate.name"/></b>
+              <b t-else="">Possibly the same person as <t t-esc="cand.duplicate.name"/></b>
+              <p>Same email or phone · applied for <t t-esc="cand.duplicate.role"/> on <t t-esc="dayShort(cand.duplicate.applied_on)"/>. Both records stay; merging arrives in a later release.</p>
+              <div class="pbhr-cd-dup-acts">
+                <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.openCand(cand.duplicate.id)"><t t-out="ic('external',13)"/> Open the other record</button>
+                <button t-if="cand.can_recruit and !cand.duplicate.same" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.samePerson(cand)"><t t-out="ic('userCheck',13)"/> Same person</button>
+                <button t-if="cand.can_recruit and cand.duplicate.same" type="button" class="pbim-btn ghost pbhr-quiet" t-on-click="() =&gt; this.samePerson(cand, true)">Not the same person</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- RECRUIT P2: what they answered, in the order of the form -->
+          <div t-if="cand.answers and cand.answers.length" class="pbhr-cd-sec">
+            <div class="l">Answers<t t-if="cand.lang"> · applied in <t t-esc="cand.lang"/></t></div>
+            <div class="pbhr-cd-answers">
+              <t t-foreach="cand.answers" t-as="an" t-key="an.key">
+                <span class="pbhr-cd-q" t-esc="an.label"/>
+                <span class="pbhr-cd-a" t-att-class="{ 'is-empty': an.empty }">
+                  <t t-if="an.empty">Not answered</t>
+                  <t t-esc="an.value"/>
+                  <a t-if="an.link" t-att-href="an.link" target="_blank" rel="noopener noreferrer"><t t-out="ic('link',12)"/> <t t-esc="an.link"/></a>
+                  <a t-foreach="an.files" t-as="fl" t-key="fl.id" t-att-href="fl.url" target="_blank" rel="noopener"><t t-out="ic('paperclip',12)"/> <t t-esc="fl.name"/> · open</a>
+                </span>
+              </t>
+            </div>
+            <div t-if="cand.consent" class="pbhr-cd-consent"><t t-out="ic('shieldCheck',13)"/> <span>Agreed on <t t-esc="dayShort(cand.consent.on)"/> (<t t-esc="cand.consent.lang"/>): “<t t-esc="cand.consent.text"/>”</span></div>
+          </div>
+
+          <!-- first look, while it is still owed -->
+          <div t-if="cand.can_recruit and cand.stage_key === 'screening' and cand.active" class="pbhr-cd-sec">
+            <div class="l">Other first-look answers</div>
+            <div class="pbhr-cd-firstlook">
+              <button t-if="cand.next.verb !== 'screen'" type="button" class="pbim-btn ghost pbhr-scr--shortlisted" t-on-click="() =&gt; this.candScreen('shortlisted')"><t t-out="ic('checkCircle',13)"/> Shortlist</button>
+              <button t-if="cand.next.verb !== 'screen'" type="button" class="pbim-btn ghost pbhr-scr--rejected" t-on-click="() =&gt; this.candScreen('rejected')"><t t-out="ic('xCircle',13)"/> CV reject</button>
+              <button type="button" class="pbim-btn ghost pbhr-scr--future_fit" t-on-click="() =&gt; this.candScreen('future_fit')"><t t-out="ic('bookOpen',13)"/> Future-fit</button>
+              <button type="button" class="pbim-btn ghost pbhr-scr--other_role" t-on-click="() =&gt; this.candScreen('other_role')"><t t-out="ic('arrowLeftRight',13)"/> Fit for other role</button>
+            </div>
+          </div>
+
+          <!-- interviews and opinions: RECRUIT P5, the scorecard grid -->
+          <t t-call="pb_hiring.P5DrawerScorecards"/>
+
+          <!-- RECRUIT P4 (G-36): private recruiter notes, never on the timeline -->
+          <t t-call="pb_hiring.P4DrawerNotes"/>
+
+          <!-- the story, newest first -->
+          <div class="pbhr-cd-sec">
+            <div class="l">Timeline</div>
+            <div t-if="!cand.timeline.length" class="pbhr-col-empty">Nothing has happened yet.</div>
+            <div t-else="" class="pbhr-tl">
+              <span t-foreach="cand.timeline.slice(0, 30)" t-as="tl" t-key="tl_index" t-att-class="'k-' + tl.kind">
+                <b t-esc="dayShort(tl.at)"/> <t t-esc="tl.text"/><t t-if="tl.by"> · <t t-esc="tl.by"/></t>
+              </span>
+            </div>
+          </div>
+
+          <!-- documents -->
+          <div class="pbhr-cd-sec">
+            <div class="l">Documents</div>
+            <div t-if="!cand.can_recruit and !cand.documents.length" class="pbhr-p4-lockline"><t t-out="ic('lock',12)"/> No files have been shared with you. Ask the recruiter for the CV if you need it.</div>
+            <div t-elif="!cand.documents.length" class="pbhr-col-empty">No files yet. A CV sent with the application lands here.</div>
+            <div t-else="" class="pbhr-tl">
+              <a t-foreach="cand.documents" t-as="dc" t-key="dc.id" t-att-href="dc.url" target="_blank" rel="noopener"><t t-out="ic('paperclip',12)"/> <t t-esc="dc.name"/> · open<t t-if="dc.kind and !cand.can_recruit"> · <t t-esc="partWord(dc.kind)"/></t></a>
+            </div>
+          </div>
+          <t t-call="pb_hiring.P4DrawerRetention"/>
+
+          <!-- the actions -->
+          <div class="pbhr-cd-acts">
+            <t t-if="cand.can_move and cand.family === 'open'">
+              <button type="button" class="pbim-btn primary" t-on-click="() =&gt; this.advance(candCard())"><t t-out="ic('arrowRight',14)"/> Advance</button>
+            </t>
+            <button t-if="cand.can_move" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.openMoveMenu([cand.id])"><t t-out="ic('layers',14)"/> Move to</button>
+            <button t-if="cand.can_recruit and cand.share" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.openShare([cand.id])"><t t-out="ic('share2',14)"/> Share with…</button>
+            <button t-if="cand.can_recruit" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.startMessage({ id: cand.id, name: cand.name })"><t t-out="ic('mail',14)"/> Email</button>
+            <button t-if="cand.can_recruit and cand.family === 'open'" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.startSchedule({ id: cand.id, name: cand.name })"><t t-out="ic('calendar',14)"/> Arrange an interview</button>
+            <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.startNoteFor(cand.id, cand.name)"><t t-out="ic('pencil',14)"/> Note</button>
+            <button t-if="cand.can_move and cand.family === 'open'" type="button" class="pbim-btn ghost pbhr-no" t-on-click="() =&gt; this.notThisTime(candCard())"><t t-out="ic('xCircle',14)"/> Not this time</button>
+            <button t-if="cand.can_recruit" type="button" class="pbim-btn ghost pbhr-quiet" t-on-click="() =&gt; this.act('open_applicant', { applicant_id: cand.id }, { reload: false })"><t t-out="ic('external',14)"/> Open the full record</button>
+          </div>
+          <div class="pbhr-cd-keys"><t t-if="cand.can_recruit">Esc closes · M move · E email · N note · S share</t><t t-else="">Esc closes · N note</t></div>
+        </t>
+      </aside>
+    </div>
+
+    <!-- ============ WHICH OUTCOME (a drop on Closed, or Not this time) ============ -->
+    <div t-if="state.outcome" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; { state.outcome = null; }">
+      <div class="pbim-modal pbhr-dialog pbhr-dialog--small" role="dialog" aria-modal="true" aria-label="Close for now" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title">
+              <t t-esc="outcomeTitle"/>
+            </div>
+            <div class="pbhr-drawer-sub">A reason is welcome, never required. You can move them back at any time.</div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.outcome = null; }"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-form">
+          <div class="pbhr-f pbhr-f--wide">
+            <span>Which outcome</span>
+            <div class="pbhr-outcomes">
+              <button t-foreach="railRows" t-as="rr" t-key="rr.key" type="button" class="pbhr-outcome" t-att-class="{ on: state.outcome.key === rr.key }" t-att-title="rr.meaning" t-on-click="() =&gt; { state.outcome.key = rr.key; }">
+                <b t-esc="rr.name"/><small t-esc="rr.meaning"/>
+              </button>
+            </div>
+          </div>
+          <label class="pbhr-f pbhr-f--wide">
+            <span>Reason, if you want to say (optional)</span>
+            <textarea class="pbhr-in" rows="2" t-model="state.outcome.reason" placeholder="Looking for more field experience."/>
+          </label>
+          <label t-if="state.outcome.key === 'on_hold'" class="pbhr-f">
+            <span>Look again on (optional)</span>
+            <input class="pbhr-in" type="date" t-model="state.outcome.hold_until"/>
+          </label>
+          <label t-if="state.outcome.key === 'cv_reject' or state.outcome.key === 'interview_reject'" class="pbhr-f pbhr-f--wide pbhr-tick">
+            <input type="checkbox" t-model="state.outcome.send_email"/>
+            <span>Send the "not this time" email, in the language they applied in</span>
+          </label>
+          <label t-if="state.outcome.key === 'on_hold'" class="pbhr-f pbhr-f--wide pbhr-tick">
+            <input type="checkbox" t-model="state.outcome.send_email"/>
+            <span>Send the on-hold email (it uses the reason and the date above)</span>
+          </label>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.outcome = null; }">Cancel</button>
+          <button class="pbim-btn primary" t-on-click="saveOutcome"><t t-out="ic('check',14)"/> <t t-esc="closeAsLabel"/></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MOVE TO ============ -->
+    <div t-if="state.moveMenu" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; { state.moveMenu = null; }">
+      <div class="pbim-modal pbhr-dialog pbhr-dialog--small" role="dialog" aria-modal="true" aria-label="Move to" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title">
+              <t t-esc="moveTitle"/>
+            </div>
+            <div class="pbhr-drawer-sub">Any column, any direction. You can undo it for five seconds after.</div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.moveMenu = null; }"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-movelist">
+          <button t-foreach="moveTargets" t-as="mt" t-key="mt.key" type="button" class="pbhr-moveto" t-att-class="'fam-' + mt.family" t-on-click="() =&gt; this.pickMove(mt)">
+            <span class="pbhr-moveto-dot"/>
+            <b t-esc="mt.name"/>
+            <small t-if="!mt.visible and mt.family === 'open'">hidden for this role</small>
+            <small t-else="" t-esc="mt.count"/>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SHOW A HIDDEN STAGE ============ -->
+    <div t-if="state.showStages" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; { state.showStages = null; }">
+      <div class="pbim-modal pbhr-dialog pbhr-dialog--small" role="dialog" aria-modal="true" aria-label="Show a hidden stage" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title">Show a hidden stage on this role</div>
+            <div class="pbhr-drawer-sub">Only this role changes. Other roles keep their own columns.</div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.showStages = null; }"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-movelist">
+          <button t-foreach="hiddenStages" t-as="hs" t-key="hs.id" type="button" class="pbhr-moveto" t-att-class="{ on: state.showStages.picked.includes(hs.id) }" t-on-click="() =&gt; this.toggleShowStage(hs.id)">
+            <span class="pbhr-kc-check" t-att-class="{ on: state.showStages.picked.includes(hs.id) }"><t t-out="ic('check',11)"/></span>
+            <b t-esc="hs.name"/>
+            <small t-esc="hs.meaning"/>
+          </button>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.showStages = null; }">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="!state.showStages.picked.length" t-on-click="saveShowStages"><t t-out="ic('eye',14)"/> Show on this role</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ A NOTE ============ -->
+    <div t-if="state.noteForm" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; { state.noteForm = null; }">
+      <div class="pbim-modal pbhr-dialog pbhr-dialog--small" role="dialog" aria-modal="true" aria-label="Leave a note" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title" t-esc="noteTitle"/>
+            <div class="pbhr-drawer-sub"><t t-if="state.canRecruit">It goes on their timeline, with your name on it. For something only you and the talent lead should read, use Recruiter notes in the drawer.</t><t t-else="">The hiring team reads it on their timeline, with your name on it.</t></div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.noteForm = null; }"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-form">
+          <label class="pbhr-f pbhr-f--wide">
+            <span>Your note</span>
+            <textarea class="pbhr-in" rows="4" t-model="state.noteForm.body" placeholder="Strong on territory planning; check numbers depth in the next round."/>
+          </label>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.noteForm = null; }">Cancel</button>
+          <button class="pbim-btn primary" t-on-click="saveNote2"><t t-out="ic('check',14)"/> Add the note</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ THE TOAST: what happened, and Undo ============ -->
+    <div t-if="state.toast" class="pbhr-toast" role="status" aria-live="polite">
+      <span t-esc="state.toast.text"/>
+      <!-- RECRUIT P5: no scheduling link — say where to add it -->
+      <span t-if="state.toast.warning" class="pbhr-p5-warn"><t t-out="ic('alert',13)"/> <t t-esc="state.toast.warning.text"/></span>
+      <button t-if="state.toast.warning" type="button" class="pbhr-toast-link" t-on-click="() =&gt; this.fixSchedulingLink(state.toast.warning)"><t t-if="state.toast.warning.mine">Add my link</t><t t-else="">Open Hiring set-up</t></button>
+      <button t-if="state.toast.prompt" type="button" class="pbhr-toast-link" t-on-click="toastPrompt">Log how the interview went?</button>
+      <button t-if="state.toast.moved.length or state.toast.undo" type="button" class="pbhr-toast-undo" t-on-click="undoToast"><t t-out="ic('undo',13)"/> Undo</button>
+      <button type="button" class="pbhr-toast-x" t-on-click="closeToast" title="Dismiss"><t t-out="ic('x',13)"/></button>
+    </div>
+  </t>
+
+</templates>

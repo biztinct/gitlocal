@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_pb_payrun_results" model="ir.actions.client">
+        <field name="name">Pay Run Results</field>
+        <field name="tag">pb_payrun_results</field>
+    </record>
+
+    <!-- IA REDESIGN CYCLE 5 — retired by the rail cutover: absorbed by the Pay
+         Run hub, which mounts this cockpit as its Results lens. The client
+         action and this record both survive; `active` false takes it off the
+         rail and the 900 band keeps its sequence unique for the day somebody
+         re-enables it (W18). -->
+    <record id="item_payrun_results" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_payrun"/>
+        <field name="name">Results Grid</field>
+        <field name="active" eval="False"/>
+        <field name="icon">table</field>
+        <field name="sequence">918</field>
+        <field name="action_xmlid">pb_payrun_results.action_pb_payrun_results</field>
+        <field name="action_tag">pb_payrun_results</field>
+    </record>
+</odoo>

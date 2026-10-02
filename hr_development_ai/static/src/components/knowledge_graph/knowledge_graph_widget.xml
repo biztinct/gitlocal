@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="hr_development_ai.KnowledgeGraphWidget">
+        <div class="knowledge-graph-widget">
+            <!-- Loading State -->
+            <t t-if="state.isLoading">
+                <div class="loading-state">
+                    <div class="hr-dev-spinner"/>
+                    <p>Loading knowledge graph...</p>
+                </div>
+            </t>
+
+            <!-- Loaded State -->
+            <t t-else="">
+                <!-- Header -->
+                <div class="graph-header">
+                    <h4>
+                        <i class="fa fa-project-diagram me-2"/>
+                        Knowledge Graph
+                    </h4>
+                    <div class="graph-controls">
+                        <button
+                            class="btn btn-sm btn-secondary"
+                            t-on-click="resetLayout"
+                            title="Reset Layout">
+                            <i class="fa fa-redo"/>
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <t t-if="state.graphData.nodes.length === 0">
+                    <div class="hr-dev-empty-state">
+                        <div class="hr-dev-empty-state-icon">
+                            <i class="fa fa-project-diagram"/>
+                        </div>
+                        <div class="hr-dev-empty-state-text">No Knowledge Nodes</div>
+                        <p class="text-muted">Create knowledge nodes to visualize the knowledge graph</p>
+                    </div>
+                </t>
+
+                <!-- Graph Canvas -->
+                <t t-else="">
+                    <div class="graph-container">
+                        <canvas t-ref="graphCanvas"/>
+                    </div>
+
+                    <!-- Selected Node Info -->
+                    <t t-if="state.selectedNode">
+                        <div class="selected-node-info">
+                            <h5>
+                                <t t-esc="state.selectedNode.name"/>
+                            </h5>
+                            <p class="node-type">
+                                <span class="hr-dev-badge" t-att-class="state.selectedNode.node_type">
+                                    <t t-esc="state.selectedNode.node_type"/>
+                                </span>
+                            </p>
+                            <t t-if="state.selectedNode.description">
+                                <p class="node-description">
+                                    <t t-esc="state.selectedNode.description"/>
+                                </p>
+                            </t>
+                        </div>
+                    </t>
+
+                    <!-- Legend -->
+                    <div class="graph-legend">
+                        <h6>Node Types:</h6>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <span class="legend-color concept"/>
+                                <span>Concept</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color resource"/>
+                                <span>Resource</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color skill_category"/>
+                                <span>Skill Category</span>
+                            </div>
+                        </div>
+                        <p class="legend-hint">
+                            <i class="fa fa-info-circle me-1"/>
+                            Click on a node to view details
+                        </p>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </t>
+
+</templates>

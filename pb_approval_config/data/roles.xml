@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         THE RESPONSIBILITY CATALOGUE.
+
+         A responsibility is an organisational job — "the HR lead for Retail"
+         — and NOT a permission. Filling one grants nobody any access; a
+         person still needs the right to read the thing they are asked to
+         decide, and the picker says so when they have not got it.
+
+         `fallback_to_company` off means each part of the business needs its
+         own person: there is never a silent fall-back to "anyone in HR". It
+         is deliberately off for the two responsibilities that are ABOUT a
+         part of the business (the HR lead and the budget holder) and on for
+         the ones that are genuinely one seat for the whole company.
+
+         `is_pool` means the responsibility is held by several people at once
+         and any one of them may decide — the bank mandate's shape.
+         ================================================================== -->
+
+    <record id="role_hr_lead" model="biz.approval.role">
+        <field name="key">hr_lead</field>
+        <field name="name">HR lead</field>
+        <field name="description">Checks the people and the amounts for one part of the business.</field>
+        <field name="fallback_to_company" eval="False"/>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="role_finance" model="biz.approval.role">
+        <field name="key">finance</field>
+        <field name="name">Finance approver</field>
+        <field name="description">Releases money.</field>
+        <field name="fallback_to_company" eval="True"/>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="role_payroll_mgr" model="biz.approval.role">
+        <field name="key">payroll_mgr</field>
+        <field name="name">Payroll manager</field>
+        <field name="description">Looks after the payroll process itself.</field>
+        <field name="fallback_to_company" eval="True"/>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="role_director" model="biz.approval.role">
+        <field name="key">director</field>
+        <field name="name">Country director</field>
+        <field name="description">The final word in the company.</field>
+        <field name="fallback_to_company" eval="True"/>
+        <field name="sequence">40</field>
+    </record>
+
+    <record id="role_scheme_owner" model="biz.approval.role">
+        <field name="key">scheme_owner</field>
+        <field name="name">Scheme owner</field>
+        <field name="description">Owns one pay scheme and the rules inside it.</field>
+        <field name="fallback_to_company" eval="True"/>
+        <field name="sequence">50</field>
+    </record>
+
+    <record id="role_budget" model="biz.approval.role">
+        <field name="key">budget</field>
+        <field name="name">Budget holder</field>
+        <field name="description">Owns the budget of one part of the business.</field>
+        <field name="fallback_to_company" eval="False"/>
+        <field name="sequence">60</field>
+    </record>
+
+    <record id="role_signatory" model="biz.approval.role">
+        <field name="key">signatory</field>
+        <field name="name">Bank signatory</field>
+        <field name="description">Named on the bank mandate. Any one of them may sign.</field>
+        <field name="fallback_to_company" eval="True"/>
+        <field name="is_pool" eval="True"/>
+        <field name="sequence">70</field>
+    </record>
+
+    <record id="role_access" model="biz.approval.role">
+        <field name="key">access</field>
+        <field name="name">Access team</field>
+        <field name="description">Gives people their roles, and reviews them.</field>
+        <field name="fallback_to_company" eval="True"/>
+        <field name="sequence">80</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,438 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       RECRUIT P5 — interviews and scorecards.
+       Loop variables avoid OWL's reserved words (R1): `sc`, `fr`, `pt`,
+       `qq`, `cd5`, `rn`, `sl`, `op`, `dk`, `rd`, `fam`, `src`, `lk`, `cc`.
+       An OWL handler holds no statements (RC32).
+       ==================================================================== -->
+
+  <!-- The role header's door to the grid -->
+  <t t-name="pb_hiring.P5CompareButton">
+    <button t-if="state.canRecruit and state.drawer.finalists_count" type="button" class="pbim-btn ghost pbhr-p5-cmp-btn" t-on-click="openCompare" title="Every scorecard of every finalist, side by side">
+      <t t-out="ic('columns',14)"/> Compare finalists <span class="pbhr-tab-n" t-esc="state.drawer.finalists_count"/>
+    </button>
+  </t>
+
+  <!-- ====================================================================
+       The drawer: one interview's opinions as a grid — rows are panellists,
+       columns are the scorecard's questions, the decision a coloured chip.
+       ==================================================================== -->
+  <t t-name="pb_hiring.P5DrawerScorecards">
+    <div t-if="cand.scorecards.length" class="pbhr-cd-sec pbhr-p5-scs">
+      <t t-foreach="cand.scorecards" t-as="sc" t-key="sc.interview_id">
+        <div class="pbhr-p5-sc">
+          <div class="pbhr-p5-sc-h">
+            <div class="l" t-esc="opinionsTitle(sc)"/>
+            <span t-if="sc.scorecard" class="pbhr-p5-sc-card"><t t-out="ic('checkCheck',11)"/> <t t-esc="sc.scorecard"/></span>
+            <span class="pbhr-p5-in" t-att-class="{ 'is-all': sc.total and sc.in === sc.total }" t-esc="inLabel(sc)"/>
+          </div>
+          <div t-if="sc.hidden_note" class="pbhr-p4-lockline"><t t-out="ic('lock',12)"/> <t t-esc="sc.hidden_note"/></div>
+
+          <div class="pbhr-p5-grid-wrap">
+            <table class="pbhr-p5-grid">
+              <thead>
+                <tr>
+                  <th>Who</th>
+                  <th>Decision</th>
+                  <th t-foreach="sc.parts" t-as="pt" t-key="pt.id" t-att-title="pt.prompt"><t t-out="ic(kindIcon(pt.kind),11)"/> <t t-esc="pt.prompt"/></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="sc.rows" t-as="fr" t-key="fr.id" t-att-class="{ 'is-late': fr.late, 'is-pending': fr.state !== 'submitted', 'is-hidden': fr.hidden }">
+                  <td class="pbhr-p5-who">
+                    <b t-esc="fr.who"/>
+                    <small t-if="fr.entered" class="pbhr-p5-entered"><t t-out="ic('pencil',10)"/> <t t-esc="fr.entered"/></small>
+                  </td>
+                  <t t-if="fr.state === 'submitted' and !fr.hidden">
+                    <td>
+                      <span t-if="fr.decision" class="pbhr-p5-dec" t-att-class="'is-' + fr.decision"><t t-out="ic(decisionIcon(fr.decision),11)"/> <t t-esc="fr.decision_label"/></span>
+                      <span t-elif="fr.verdict" class="pbhr-p5-dec"><t t-esc="fr.verdict"/></span>
+                      <span t-if="fr.score" class="pbhr-p5-score"><t t-out="ic('star',10)"/> <t t-esc="fr.score"/></span>
+                    </td>
+                    <td t-foreach="sc.parts" t-as="pt" t-key="pt.id" t-att-title="partWords(fr, pt)">
+                      <span t-if="pt.kind === 'rating' and partValue(fr, pt)" class="pbhr-p5-stars"><t t-foreach="stars(partValue(fr, pt))" t-as="on" t-key="on_index"><span t-att-class="{ on: on }"><t t-out="ic('star',11)"/></span></t></span>
+                      <span t-else="" class="pbhr-p5-val" t-esc="partWords(fr, pt)"/>
+                    </td>
+                  </t>
+                  <t t-else="">
+                    <td t-att-colspan="sc.parts.length + 1" class="pbhr-p5-wait">
+                      <span t-esc="opinionLine(fr)"/>
+                      <span t-if="fr.can_remind or fr.can_proxy" class="pbhr-p5-wait-acts">
+                        <button t-if="fr.can_remind" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.remindRow(fr)"><t t-out="ic('bell',12)"/> Remind</button>
+                        <button t-if="fr.can_proxy" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.openProxy(fr.id)"><t t-out="ic('pencil',12)"/> Enter it for them</button>
+                      </span>
+                    </td>
+                  </t>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div t-foreach="sc.rows.filter((r) =&gt; r.notes and !r.hidden)" t-as="fr" t-key="'n' + fr.id" class="pbhr-p5-quote">
+            <b t-esc="fr.who"/> “<t t-esc="fr.notes"/>”
+          </div>
+          <div t-foreach="sc.rows.filter((r) =&gt; r.legacy and r.legacy.length)" t-as="fr" t-key="'l' + fr.id" class="pbhr-p5-legacy">
+            <b t-esc="fr.who"/> · <t t-foreach="fr.legacy" t-as="lg" t-key="lg_index"><span><t t-esc="lg.prompt"/> <b t-esc="lg.value"/>/5</span></t>
+          </div>
+
+          <!-- the video link, and the recording or transcript (hiring team only) -->
+          <div t-if="sc.video" class="pbhr-p5-link"><t t-out="ic('video',13)"/> <a t-att-href="sc.video" target="_blank" rel="noopener noreferrer">Video link</a></div>
+          <div t-if="sc.transcript" class="pbhr-p5-tr">
+            <div class="pbhr-p5-tr-h"><t t-out="ic('fileText',13)"/> Recording or transcript <span class="pbhr-lock"><t t-out="ic('lock',10)"/> Recruiters and the talent lead</span></div>
+            <div class="pbhr-p5-tr-row">
+              <input type="url" class="pbhr-in" placeholder="Paste the recording or transcript link" t-att-value="transcriptDraft(sc)" t-on-input="(ev) =&gt; this.onTranscriptInput(sc, ev)"/>
+              <button type="button" class="pbim-btn ghost" t-att-disabled="transcriptDraft(sc) === ((sc.transcript and sc.transcript.url) or '')" t-on-click="() =&gt; this.saveTranscript(sc)"><t t-out="ic('check',12)"/> Save</button>
+              <a t-if="sc.transcript.url" class="pbim-btn ghost" t-att-href="sc.transcript.url" target="_blank" rel="noopener noreferrer"><t t-out="ic('external',12)"/></a>
+            </div>
+            <div class="pbhr-p5-tr-row">
+              <a t-if="sc.transcript.file" t-att-href="sc.transcript.file.url" class="pbhr-p5-file"><t t-out="ic('paperclip',12)"/> <t t-esc="sc.transcript.file.name"/></a>
+              <button t-if="sc.transcript.file" type="button" class="pbhr-linkish" t-on-click="() =&gt; this.clearTranscriptFile(sc)">Remove</button>
+              <label t-else="" class="pbhr-p5-upload"><t t-out="ic('upload',12)"/> Or attach the file<input type="file" t-on-change="(ev) =&gt; this.uploadTranscript(sc, ev)"/></label>
+            </div>
+          </div>
+        </div>
+      </t>
+    </div>
+  </t>
+
+  <!-- ====================================================================
+       Role Details → Rounds and scorecards (G-18)
+       ==================================================================== -->
+  <t t-name="pb_hiring.P5Rounds">
+    <div t-if="state.drawer.rounds" class="pbhr-p5-rounds">
+      <div class="pbhr-sec">Rounds and scorecards</div>
+      <p class="pbhr-p5-lede">Every conversation has a scorecard. The kind of role chooses one for each round; pick another for any round.</p>
+      <div class="pbhr-p5-family">
+        <span>Kind of role</span>
+        <div class="pbhr-su-seg" role="radiogroup" aria-label="Kind of role">
+          <button t-foreach="state.drawer.role_families" t-as="fam" t-key="fam.key" type="button" class="pbhr-su-seg-b" t-att-class="{ on: state.drawer.scorecard_family === fam.key }" t-att-disabled="!state.canWrite" role="radio" t-att-aria-checked="state.drawer.scorecard_family === fam.key ? 'true' : 'false'" t-on-click="() =&gt; this.setRoleFamily(fam.key)" t-esc="fam.label"/>
+        </div>
+      </div>
+      <div t-if="!state.drawer.rounds.length" class="pbhr-p4-empty">This role shows no interview rounds. Show Recruiter review or a Discussion column on the board and it appears here.</div>
+      <div t-foreach="state.drawer.rounds" t-as="rd" t-key="rd.step_id or rd.stage_key" class="pbhr-p5-round">
+        <span class="pbhr-p5-round-n" t-esc="rd_index + 1"/>
+        <div class="pbhr-p5-round-tx">
+          <b t-esc="rd.name"/>
+          <small><t t-if="rd.owner"><t t-esc="rd.owner"/> · </t><t t-esc="roundSource(rd)"/></small>
+        </div>
+        <select class="pbhr-in pbhr-p5-round-pick" t-att-disabled="!state.canWrite" t-on-change="(ev) =&gt; this.setRoundScorecard(rd, ev.target.value)" t-att-aria-label="rd.name">
+          <option t-foreach="state.drawer.scorecard_choices" t-as="cc" t-key="cc.id" t-att-value="cc.id" t-att-selected="cc.id === rd.scorecard_id" t-esc="cc.name"/>
+        </select>
+      </div>
+    </div>
+  </t>
+
+  <!-- ====================================================================
+       The scheduling sheet: which scorecard, and where the video link comes from
+       ==================================================================== -->
+  <t t-name="pb_hiring.P5ScheduleExtra">
+    <label class="pbhr-f">
+      <span>Scorecard</span>
+      <select class="pbhr-in" t-on-change="onScorecardPick">
+        <option t-if="!state.scheduling.scorecards or !state.scheduling.scorecards.length" value="">The role's own rule</option>
+        <option t-foreach="state.scheduling.scorecards or []" t-as="cc" t-key="cc.id" t-att-value="cc.id" t-att-selected="sameId(cc.id, state.scheduling.scorecard_id)"><t t-esc="cc.name"/></option>
+      </select>
+    </label>
+    <div t-if="state.scheduling.mode === 'video' and state.scheduling.google" class="pbhr-f pbhr-f--wide pbhr-p5-meet" t-att-class="{ 'is-on': state.scheduling.google.connected }">
+      <t t-out="ic('video',16)"/>
+      <span t-if="state.scheduling.google.connected">Google Meet makes the video link when you press Arrange — leave the box below empty. It goes into every invitation and calendar file.</span>
+      <span t-elif="state.scheduling.google.mine">Paste the video link below — or connect your Google Calendar and the Meet link is made for you.
+        <button type="button" class="pbhr-linkish" t-on-click="connectGoogle">Connect Google Calendar</button>
+      </span>
+      <span t-else="">Paste the video link below. When <t t-esc="state.scheduling.google.organiser"/> connects their Google Calendar in Hiring set-up, the Meet link is made automatically.</span>
+    </div>
+  </t>
+
+  <!-- The Interviews tab: the Meet link, the transcript, and proxy entry -->
+  <t t-name="pb_hiring.P5IvExtra">
+    <div t-if="iv.videocall_url or iv.transcript_url or iv.transcript_file or iv.invites_pending or (state.canRecruit and (iv.feedback_rows or []).some((f) =&gt; f.state === 'pending'))" class="pbhr-p5-iv">
+      <a t-if="iv.videocall_url" class="pbhr-p5-iv-chip is-video" t-att-href="iv.videocall_url" target="_blank" rel="noopener noreferrer"><t t-out="ic('video',12)"/> Join the video call</a>
+      <span t-if="iv.invites_pending" class="pbhr-p5-iv-chip is-wait"><t t-out="ic('clock',12)"/> Invitations go out with the Meet link</span>
+      <a t-if="iv.transcript_url" class="pbhr-p5-iv-chip" t-att-href="iv.transcript_url" target="_blank" rel="noopener noreferrer"><t t-out="ic('fileText',12)"/> Transcript</a>
+      <a t-if="iv.transcript_file" class="pbhr-p5-iv-chip" t-att-href="iv.transcript_file.url"><t t-out="ic('paperclip',12)"/> <t t-esc="iv.transcript_file.name"/></a>
+      <t t-if="state.canRecruit">
+        <button t-foreach="(iv.feedback_rows or []).filter((f) =&gt; f.state === 'pending')" t-as="fr" t-key="fr.id" type="button" class="pbhr-p5-iv-chip is-btn" t-att-class="{ 'is-late': fr.late }" t-on-click="() =&gt; this.openProxy(fr.id)" title="Type their opinion in for them">
+          <t t-out="ic('pencil',12)"/> <t t-esc="fr.who"/>: enter it for them
+        </button>
+      </t>
+    </div>
+  </t>
+
+  <!-- ====================================================================
+       Everything that floats: Enter it for them; the finalists grid.
+       ==================================================================== -->
+  <t t-name="pb_hiring.P5Overlays">
+
+    <!-- ============ ENTER IT FOR THEM ============ -->
+    <div t-if="state.proxy" class="pbim-modal-scrim pbhr-scrim" t-on-click="closeProxy">
+      <div class="pbim-modal pbhr-dialog pbhr-p5-proxy" role="dialog" aria-modal="true" t-att-aria-label="proxyTitle()" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title"><t t-out="ic('pencil',15)"/> <t t-esc="proxyTitle()"/></div>
+            <div class="pbhr-drawer-sub">For an opinion that arrived another way. The record says you typed it and where it came from; <t t-esc="state.proxy.who"/>'s own link stops asking. <t t-esc="state.proxy.candidate"/> · round <t t-esc="state.proxy.round_no"/> · <t t-esc="state.proxy.scorecard"/></div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="closeProxy"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-p5-proxy-body">
+          <div class="pbhr-p5-pq" t-att-class="{ 'is-missing': state.proxy.missing.includes('source') }">
+            <span class="pbhr-p5-pq-l">Where did it come from? <em>Required</em></span>
+            <div class="pbhr-p5-chips">
+              <button t-foreach="p5Sources" t-as="src" t-key="src" type="button" class="pbhr-p5-chip" t-att-class="{ on: state.proxy.source === src }" t-on-click="() =&gt; { state.proxy.source = src; state.proxy.missing = state.proxy.missing.filter((m) =&gt; m !== 'source'); }" t-esc="src"/>
+            </div>
+            <input class="pbhr-in" type="text" maxlength="120" t-model="state.proxy.source" placeholder="Or say it in a few words: “Slack, 3 Oct”"/>
+          </div>
+          <div t-foreach="state.proxy.parts" t-as="pt" t-key="pt.id" class="pbhr-p5-pq" t-att-class="{ 'is-missing': state.proxy.missing.includes(pt.id) }">
+            <span class="pbhr-p5-pq-l"><t t-esc="pt.prompt"/> <em t-if="pt.required">Required</em></span>
+            <small t-if="pt.help" class="pbhr-p5-pq-h" t-esc="pt.help"/>
+            <textarea t-if="pt.kind === 'text'" class="pbhr-in" rows="2" t-model="state.proxy.answers[pt.id]"/>
+            <div t-elif="pt.kind === 'rating'" class="pbhr-p5-starpick" role="radiogroup" t-att-aria-label="pt.prompt">
+              <button t-foreach="[1,2,3,4,5]" t-as="nn" t-key="nn" type="button" t-att-class="{ on: num(state.proxy.answers[pt.id]) &gt;= nn }" t-att-aria-label="nn + ' out of 5'" t-on-click="() =&gt; this.setProxy(pt.id, nn)"><t t-out="ic('star',22)"/></button>
+            </div>
+            <div t-elif="pt.kind === 'line'" class="pbhr-p5-chips">
+              <button t-foreach="[1,2,3,4,5]" t-as="nn" t-key="nn" type="button" class="pbhr-p5-chip is-num" t-att-class="{ on: num(state.proxy.answers[pt.id]) === nn }" t-on-click="() =&gt; this.setProxy(pt.id, nn)" t-esc="nn"/>
+            </div>
+            <div t-else="" class="pbhr-p5-chips">
+              <button type="button" class="pbhr-p5-chip" t-att-class="{ on: state.proxy.answers[pt.id] === 'yes' }" t-on-click="() =&gt; this.setProxy(pt.id, 'yes')">Yes</button>
+              <button type="button" class="pbhr-p5-chip" t-att-class="{ on: state.proxy.answers[pt.id] === 'no' }" t-on-click="() =&gt; this.setProxy(pt.id, 'no')">No</button>
+            </div>
+          </div>
+          <div class="pbhr-p5-pq" t-att-class="{ 'is-missing': state.proxy.missing.includes('decision') }">
+            <span class="pbhr-p5-pq-l">Their decision <em>Required</em></span>
+            <div class="pbhr-p5-decs">
+              <button t-foreach="state.proxy.decisions" t-as="dk" t-key="dk.key" type="button" class="pbhr-p5-decb" t-att-class="'is-' + dk.key + (state.proxy.decision === dk.key ? ' on' : '')" t-on-click="() =&gt; { state.proxy.decision = dk.key; state.proxy.missing = state.proxy.missing.filter((m) =&gt; m !== 'decision'); }">
+                <t t-out="ic(decisionIcon(dk.key),18)"/> <b t-esc="dk.label"/>
+              </button>
+            </div>
+          </div>
+          <div class="pbhr-p5-pq">
+            <span class="pbhr-p5-pq-l">In their words <em class="is-opt">optional</em></span>
+            <textarea class="pbhr-in" rows="2" t-model="state.proxy.notes" placeholder="Paste what they wrote, or the gist of it."/>
+          </div>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="closeProxy">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="state.proxy.busy" t-on-click="saveProxy"><t t-out="ic('check',14)"/> <t t-esc="proxySaveLabel()"/></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ FINALISTS SIDE BY SIDE — the hero ============ -->
+    <div t-if="state.compare" class="pbhr-p5-cmp-scrim" t-on-click="closeCompare">
+      <section class="pbhr-p5-cmp" role="dialog" aria-modal="true" aria-label="Compare finalists" t-on-click.stop="() =&gt; {}">
+        <header class="pbhr-p5-cmp-head">
+          <div>
+            <h2 t-esc="compareTitle"/>
+            <p>Every scorecard in one place. Decide with one click per person — nothing waits for a missing opinion.</p>
+          </div>
+          <span class="pbhr-p5-cmp-keys">← → move between people · C choose · W keep warm · N not this time · Esc closes</span>
+          <button type="button" class="pbim-btn ghost" t-on-click="closeCompare" title="Close (Esc)"><t t-out="ic('x',16)"/></button>
+        </header>
+
+        <div t-if="state.compare.loading" class="pbhr-p5-cmp-body">
+          <div class="pbhr-p5-cmp-skel"><span class="pbhr-skel-line"/><span class="pbhr-skel-line"/><span class="pbhr-skel-line short"/></div>
+        </div>
+        <div t-elif="!state.compare.data.candidates.length" class="pbhr-p5-cmp-body">
+          <div class="pbim-panel pbhr-empty">
+            <div class="pbhr-empty-ic"><t t-out="ic('columns',28)"/></div>
+            <h2>Nobody is in a discussion round yet</h2>
+            <p>Finalists are the people in Discussion 1, 2 or 3, a reference check or the offer column. Move somebody there on the board and they appear here with every scorecard they have.</p>
+            <button type="button" class="pbim-btn primary" t-on-click="closeCompare"><t t-out="ic('layoutList',14)"/> Back to the board</button>
+          </div>
+        </div>
+        <div t-else="" class="pbhr-p5-cmp-body">
+          <div class="pbhr-p5-cmp-grid" t-att-style="cmpCols()">
+            <!-- the people -->
+            <div class="pbhr-p5-cmp-corner">
+              <b><t t-esc="state.compare.data.candidates.length"/> finalists</b>
+              <small t-if="!state.compare.data.can_decide">You can read this; deciding is for recruiters and the talent lead.</small>
+            </div>
+            <div t-foreach="state.compare.data.candidates" t-as="cd5" t-key="cd5.id" class="pbhr-p5-cmp-col-h" t-att-data-i="cd5_index" t-att-class="{ 'is-focus': state.compare.focus === cd5_index, 'is-chosen': cd5.selected }" t-on-click="() =&gt; { state.compare.focus = cd5_index; }">
+              <span class="pbhr-cand-av" t-att-class="'pbhr-av--' + (cd5.id % 6)" t-esc="initials(cd5.name)"/>
+              <div class="pbhr-p5-cmp-id">
+                <button type="button" class="pbhr-linkish" t-on-click.stop="() =&gt; this.cmpOpen(cd5)" t-esc="cd5.name"/>
+                <small><t t-esc="cd5.stage"/><t t-if="cd5.source"> · <t t-esc="cd5.source"/></t></small>
+              </div>
+              <span t-if="cd5.selected" class="pbhr-p5-chosen"><t t-out="ic('award',12)"/> Chosen</span>
+            </div>
+
+            <!-- the overall line: stars, decisions, how many are in -->
+            <div class="pbhr-p5-cmp-rl is-overall">Overall</div>
+            <div t-foreach="state.compare.data.candidates" t-as="cd5" t-key="'o' + cd5.id" class="pbhr-p5-cmp-cell is-overall" t-att-class="{ 'is-focus': state.compare.focus === cd5_index }">
+              <div class="pbhr-p5-avg">
+                <span class="pbhr-p5-stars is-big"><t t-foreach="stars(cd5.avg)" t-as="on" t-key="on_index"><span t-att-class="{ on: on }"><t t-out="ic('star',15)"/></span></t></span>
+                <b t-if="cd5.avg" t-esc="cd5.avg"/>
+                <small t-else="">no scores yet</small>
+              </div>
+              <div class="pbhr-p5-counts">
+                <span t-foreach="cmpCounts(cd5)" t-as="cc" t-key="cc.key" class="pbhr-p5-dec" t-att-class="'is-' + cc.key"><t t-esc="cc.n"/> <t t-esc="cc.label"/></span>
+              </div>
+              <span class="pbhr-p5-in" t-att-class="{ 'is-all': cd5.total and cd5.in === cd5.total }" t-esc="cmpIn(cd5)"/>
+            </div>
+
+            <!-- round by round, one line per panellist -->
+            <t t-foreach="state.compare.data.rounds" t-as="rn" t-key="rn.round_no">
+              <div class="pbhr-p5-cmp-round" t-att-style="'grid-column: 1 / -1'">
+                <b>Round <t t-esc="rn.round_no"/></b> · <t t-esc="rn.label"/>
+              </div>
+              <t t-foreach="cmpSlots(rn.round_no)" t-as="sl" t-key="sl">
+                <div class="pbhr-p5-cmp-rl"><t t-if="sl === 0">Opinions</t></div>
+                <div t-foreach="state.compare.data.candidates" t-as="cd5" t-key="'c' + cd5.id + '-' + rn.round_no + '-' + sl" class="pbhr-p5-cmp-cell" t-att-class="{ 'is-focus': state.compare.focus === cd5_index }">
+                  <t t-set="op" t-value="cmpOpinion(cd5, rn.round_no, sl)"/>
+                  <t t-if="op">
+                    <small t-if="sl === 0 and cmpRound(cd5, rn.round_no).label !== rn.label" class="pbhr-p5-none"><t t-esc="cmpRound(cd5, rn.round_no).label"/></small>
+                    <div class="pbhr-p5-op" t-att-class="{ 'is-pending': op.state !== 'submitted', 'is-late': op.late }">
+                      <div class="pbhr-p5-op-h">
+                        <b t-esc="op.who"/>
+                        <span t-if="op.decision" class="pbhr-p5-dec" t-att-class="'is-' + op.decision"><t t-out="ic(decisionIcon(op.decision),11)"/> <t t-esc="op.decision_label"/></span>
+                        <span t-elif="op.state === 'pending'" class="pbhr-p5-wait-tag"><t t-if="op.late">late</t><t t-else="">not yet</t></span>
+                      </div>
+                      <span t-if="op.score" class="pbhr-p5-stars"><t t-foreach="stars(op.score)" t-as="on" t-key="on_index"><span t-att-class="{ on: on }"><t t-out="ic('star',11)"/></span></t> <b t-esc="op.score"/></span>
+                      <p t-if="op.notes" class="pbhr-p5-note" t-att-class="{ 'is-open': isNoteOpen(op.id) }" t-on-click="() =&gt; this.toggleNote(op.id)" t-att-title="isNoteOpen(op.id) ? 'Click to fold' : 'Click to read it all'" t-esc="op.notes"/>
+                      <small t-if="op.entered" class="pbhr-p5-entered"><t t-out="ic('pencil',10)"/> <t t-esc="op.entered"/></small>
+                      <button t-if="op.state === 'pending' and state.canRecruit" type="button" class="pbhr-linkish" t-on-click="() =&gt; this.openProxy(op.id)">Enter it for them</button>
+                    </div>
+                  </t>
+                  <span t-elif="sl === 0 and !cmpRound(cd5, rn.round_no)" class="pbhr-p5-none">Not interviewed in this round</span>
+                </div>
+              </t>
+            </t>
+
+            <!-- one click per column -->
+            <div class="pbhr-p5-cmp-rl is-foot">Decide</div>
+            <div t-foreach="state.compare.data.candidates" t-as="cd5" t-key="'f' + cd5.id" class="pbhr-p5-cmp-cell is-foot" t-att-class="{ 'is-focus': state.compare.focus === cd5_index }">
+              <t t-if="state.compare.data.can_decide">
+                <button type="button" class="pbim-btn primary pbhr-p5-choose" t-att-disabled="cd5.selected" t-on-click="() =&gt; this.decideFinalist(cd5, 'choose')"><t t-out="ic('award',14)"/> <t t-if="cd5.selected">Chosen</t><t t-else="">Choose</t></button>
+                <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.decideFinalist(cd5, 'warm')"><t t-out="ic('pause',13)"/> Keep warm</button>
+                <button type="button" class="pbim-btn ghost pbhr-no" t-on-click="() =&gt; this.decideFinalist(cd5, 'no')"><t t-out="ic('xCircle',13)"/> Not this time</button>
+              </t>
+              <small t-else="">The recruiter decides.</small>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </t>
+
+  <!-- ====================================================================
+       Hiring set-up → Scorecards (G-32): list, questions editor with drag
+       reorder, and the interviewer's page as it will look.
+       ==================================================================== -->
+  <t t-name="pb_hiring.P5SetupScorecards">
+    <section class="pbim-panel pbhr-p5-sc-sec">
+      <div class="pbhr-su-h">
+        <h2><t t-out="ic('checkCheck',17)"/> Scorecards</h2>
+        <span class="pbhr-foot-gap"/>
+        <button t-if="state.data.can_edit" class="pbim-btn ghost" t-on-click="() =&gt; this.scNew(false)"><t t-out="ic('plus',14)"/> New scorecard</button>
+      </div>
+      <p class="pbhr-su-lede">What every interviewer answers after a conversation: written answers, star ratings, scored lines or yes/no questions — and always the decision, Yes, Maybe, No or Hold. A role picks one per round from its kind of role; a round can name its own on the role's Details tab. The starting five are examples to edit.</p>
+
+      <div t-if="!sc.cards.length" class="pbhr-p4-empty">No scorecards yet. Press “New scorecard” to start one.</div>
+      <div t-else="" class="pbhr-p5-sc-wrap">
+        <!-- the list -->
+        <div class="pbhr-p5-sc-list" role="listbox" aria-label="Scorecards">
+          <button t-foreach="sc.cards" t-as="cc" t-key="cc.id" type="button" class="pbhr-p5-sc-item" t-att-class="{ on: scCard and scCard.id === cc.id }" role="option" t-att-aria-selected="scCard and scCard.id === cc.id ? 'true' : 'false'" t-on-click="() =&gt; this.pickCard(cc)">
+            <b><t t-esc="cc.name"/> <span t-if="cc.is_default" class="pbhr-p5-def">default</span></b>
+            <small><t t-esc="cc.family_label"/> · <t t-esc="cc.applies_label"/></small>
+            <small><t t-esc="scQuestions(cc)"/> · <t t-esc="scUsed(cc)"/></small>
+          </button>
+        </div>
+
+        <!-- the editor -->
+        <div t-if="scCard" class="pbhr-p5-sc-ed" t-key="scCard.id">
+          <div class="pbhr-p5-sc-ed-top">
+            <input class="pbhr-in pbhr-p5-sc-name" t-att-value="scCard.name" t-att-disabled="!state.data.can_edit" maxlength="80" aria-label="Scorecard name" t-on-change="(ev) =&gt; this.scSave('name', ev.target.value)"/>
+            <select class="pbhr-in" t-att-disabled="!state.data.can_edit" aria-label="Kind of role" t-on-change="(ev) =&gt; this.scSave('family', ev.target.value)">
+              <option t-foreach="sc.families" t-as="fam" t-key="fam.key" t-att-value="fam.key" t-att-selected="fam.key === scCard.family" t-esc="fam.label"/>
+            </select>
+            <select class="pbhr-in" t-att-disabled="!state.data.can_edit" aria-label="Which round" t-on-change="(ev) =&gt; this.scSave('applies_to', ev.target.value)">
+              <option t-foreach="sc.rounds" t-as="rd" t-key="rd.key" t-att-value="rd.key" t-att-selected="rd.key === scCard.applies_to" t-esc="rd.label"/>
+            </select>
+          </div>
+          <textarea class="pbhr-in" rows="2" t-att-disabled="!state.data.can_edit" placeholder="A line for the interviewer at the top of their page (optional)" t-on-change="(ev) =&gt; this.scSave('intro', ev.target.value)" t-esc="scCard.intro"/>
+
+          <div class="pbhr-p5-parts" t-ref="scParts">
+            <div t-foreach="scCard.parts" t-as="pt" t-key="pt.id" class="pbhr-p5-part" t-att-data-id="pt.id">
+              <span t-if="state.data.can_edit" class="pbhr-su-grip" title="Drag to reorder"><t t-out="ic('grip',14)"/></span>
+              <span class="pbhr-p5-part-ic" t-att-title="pt.kind_label"><t t-out="ic(kindIcon(pt.kind),14)"/></span>
+              <div class="pbhr-p5-part-tx">
+                <input class="pbhr-in pbhr-p5-part-q" t-att-value="pt.prompt" t-att-disabled="!state.data.can_edit" maxlength="160" aria-label="Question" t-on-change="(ev) =&gt; this.partSave(pt, 'prompt', ev.target.value)"/>
+                <input class="pbhr-in pbhr-p5-part-h" t-att-value="pt.help" t-att-disabled="!state.data.can_edit" maxlength="200" placeholder="A line under it — what a five looks like (optional)" aria-label="Help line" t-on-change="(ev) =&gt; this.partSave(pt, 'help', ev.target.value)"/>
+              </div>
+              <select class="pbhr-in pbhr-p5-part-k" t-att-disabled="!state.data.can_edit" aria-label="Kind of question" t-on-change="(ev) =&gt; this.partSave(pt, 'kind', ev.target.value)">
+                <option t-foreach="sc.kinds" t-as="kk" t-key="kk.key" t-att-value="kk.key" t-att-selected="kk.key === pt.kind" t-esc="kk.label"/>
+              </select>
+              <label class="pbhr-p5-req"><input type="checkbox" t-att-checked="pt.required" t-att-disabled="!state.data.can_edit" t-on-change="(ev) =&gt; this.partSave(pt, 'required', ev.target.checked)"/> Required</label>
+              <button t-if="state.data.can_edit" type="button" class="pbim-btn ghost pbhr-no" title="Remove this question" t-on-click="() =&gt; this.partRemove(pt)"><t t-out="ic('trash',13)"/></button>
+            </div>
+          </div>
+          <div class="pbhr-p5-part is-decision">
+            <span class="pbhr-p5-part-ic"><t t-out="ic('lock',13)"/></span>
+            <div class="pbhr-p5-part-tx"><b>Decision: Yes · Maybe · No · Hold</b><small>Always asked, always required — the four big buttons at the end of every scorecard.</small></div>
+          </div>
+
+          <div t-if="state.data.can_edit" class="pbhr-p5-add">
+            <span>Add a question:</span>
+            <button t-foreach="sc.kinds" t-as="kk" t-key="kk.key" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.partAdd(kk.key)"><t t-out="ic(kindIcon(kk.key),13)"/> <t t-esc="kk.label"/></button>
+          </div>
+
+          <div class="pbhr-p5-sc-acts">
+            <button type="button" class="pbim-btn ghost" t-att-class="{ on: state.scPreview }" t-on-click="() =&gt; { state.scPreview = !state.scPreview; }"><t t-out="ic('eye',13)"/> Preview the interviewer's page</button>
+            <span class="pbhr-foot-gap"/>
+            <button t-if="state.data.can_edit and !scCard.is_default" type="button" class="pbim-btn ghost" t-on-click="scDefault"><t t-out="ic('flag',13)"/> Make it the company default</button>
+            <button t-if="state.data.can_edit" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.scNew(true)"><t t-out="ic('copy',13)"/> Copy</button>
+            <button t-if="state.data.can_edit and !scCard.is_default" type="button" class="pbim-btn ghost pbhr-no" t-on-click="scArchive"><t t-out="ic('archive',13)"/> Put away</button>
+          </div>
+
+          <!-- the interviewer's page, as it will look -->
+          <div t-if="state.scPreview" class="pbhr-p5-pv" aria-label="Preview of the interviewer's page">
+            <div class="pbhr-p5-pv-hero">
+              <small>Interview scorecard</small>
+              <b>Sample Candidate</b>
+              <span>The role · <t t-esc="scCard.name"/></span>
+              <div class="pbhr-p5-pv-private"><t t-out="ic('lock',13)"/> Your answers stay hidden from the other panellists until everyone is in.</div>
+              <p t-if="scCard.intro" t-esc="scCard.intro"/>
+            </div>
+            <div t-foreach="scCard.parts" t-as="pt" t-key="'pv' + pt.id" class="pbhr-p5-pv-q">
+              <b><t t-esc="pt_index + 1"/>. <t t-esc="pt.prompt"/> <em t-if="pt.required">Required</em></b>
+              <small t-if="pt.help" t-esc="pt.help"/>
+              <div t-if="pt.kind === 'rating'" class="pbhr-p5-stars is-big"><t t-foreach="previewStars()" t-as="nn" t-key="nn"><span t-att-class="{ on: nn &lt;= 4 }"><t t-out="ic('star',20)"/></span></t></div>
+              <div t-elif="pt.kind === 'line'" class="pbhr-p5-chips"><t t-foreach="previewStars()" t-as="nn" t-key="nn"><span class="pbhr-p5-chip is-num" t-esc="nn"/></t></div>
+              <div t-elif="pt.kind === 'yes_no'" class="pbhr-p5-chips"><span class="pbhr-p5-chip">Yes</span><span class="pbhr-p5-chip">No</span></div>
+              <div t-else="" class="pbhr-p5-pv-text">A sentence or two is plenty.</div>
+            </div>
+            <div class="pbhr-p5-pv-q">
+              <b>Your decision <em>Required</em></b>
+              <div class="pbhr-p5-decs">
+                <span t-foreach="[['yes','Yes'],['maybe','Maybe'],['no','No'],['hold','Hold']]" t-as="dk" t-key="dk[0]" class="pbhr-p5-decb" t-att-class="'is-' + dk[0]"><t t-out="ic(decisionIcon(dk[0]),18)"/> <b t-esc="dk[1]"/></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </t>
+
+  <!-- Hiring set-up → Who does what: scheduling links and Google Calendar -->
+  <t t-name="pb_hiring.P5SetupPeople">
+    <div class="pbhr-su-who-row pbhr-p5-links">
+      <div class="pbhr-su-who-tx">
+        <b><t t-out="ic('calendar',15)"/> Scheduling links and Google Calendar</b>
+        <small>Moving a candidate into Recruiter review sends the recruiter's own scheduling link (Calendly or similar) in the “Let's chat” email. A recruiter who connects Google Calendar gets every interview on it, and a video interview gets its Meet link made automatically.</small>
+        <small t-if="google.sentence" class="pbhr-su-warn"><t t-out="ic('alert',13)"/> <t t-esc="google.sentence"/>
+          <button t-if="google.can_set_up" type="button" class="pbhr-linkish" t-on-click="openGoogleSettings">Open General settings</button>
+        </small>
+      </div>
+      <div class="pbhr-su-who-ctl">
+        <div t-foreach="links" t-as="lk" t-key="lk.id" class="pbhr-p5-link-row">
+          <span class="pbhr-p5-link-who"><b t-esc="lk.name"/><small t-if="lk.me">you</small></span>
+          <input class="pbhr-in" type="url" placeholder="https://calendly.com/…" t-att-value="linkValue(lk)" t-att-disabled="!canEditLink(lk)" t-att-aria-label="'Scheduling link for ' + lk.name" t-on-input="(ev) =&gt; this.onLinkInput(lk, ev)" t-on-change="() =&gt; this.saveLink(lk)"/>
+          <span t-if="lk.google" class="pbhr-p5-g is-on" title="Google Calendar connected"><t t-out="ic('checkCircle',12)"/> Google</span>
+          <button t-elif="lk.me and google.ready" type="button" class="pbim-btn ghost pbhr-p5-g" t-on-click="connectGoogle"><t t-out="ic('calendar',12)"/> Connect Google Calendar</button>
+          <span t-else="" class="pbhr-p5-g" t-att-title="lk.me ? 'Google Calendar is not set up for this company yet' : 'Only ' + lk.name + ' can connect their own Google Calendar'">Google not connected</span>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Skill Development Badges -->
+    <record id="badge_first_skill" model="gamification.badge">
+        <field name="name">First Skill Acquired</field>
+        <field name="description">Added your first skill to your profile</field>
+        <field name="level">bronze</field>
+    </record>
+
+    <record id="badge_skill_master" model="gamification.badge">
+        <field name="name">Skill Master</field>
+        <field name="description">Achieved expert level in a skill</field>
+        <field name="level">gold</field>
+    </record>
+
+    <record id="badge_course_complete" model="gamification.badge">
+        <field name="name">Learning Champion</field>
+        <field name="description">Completed 10 courses</field>
+        <field name="level">silver</field>
+    </record>
+
+    <record id="badge_mentor" model="gamification.badge">
+        <field name="name">Valued Mentor</field>
+        <field name="description">Successfully mentored an employee</field>
+        <field name="level">gold</field>
+    </record>
+
+    <record id="badge_development_plan" model="gamification.badge">
+        <field name="name">Growth Focused</field>
+        <field name="description">Completed your first development plan</field>
+        <field name="level">silver</field>
+    </record>
+
+</odoo>

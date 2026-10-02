@@ -1,0 +1,222 @@
+// =====================================================================
+//  RECRUIT P5 — the interviewer's scorecard page (`/hiring/f/<token>`).
+//  Frontend bundle.
+//
+//  Every colour is a custom property with a literal value (R39: the
+//  backend token sheet is not in this bundle). One column, 16 px gutters,
+//  big targets — it is filled in on a phone in a corridor as often as at a
+//  desk. Nothing sticky (RC33: a client's site floats its own header). No
+//  `:has()` (RC34), no mixed-unit `min()`/`max()`. Motion only on the stars
+//  lighting and the decision settling; none for reduced-motion users.
+// =====================================================================
+
+@keyframes pbiv-rise { from { transform: translateY(8px); opacity: 0; } }
+@keyframes pbiv-pop { 0% { transform: scale(.6); } 70% { transform: scale(1.12); } 100% { transform: scale(1); } }
+
+.pbiv {
+    --iv-accent: #4F46E5;
+    --iv-accent-ink: #ffffff;
+    --iv-accent-soft: #EEF2FF;
+    --iv-ring: rgba(79, 70, 229, .22);
+    --iv-ink: #1B1733;
+    --iv-text: #334155;
+    --iv-muted: #64748B;
+    --iv-line: #E2E8F0;
+    --iv-line-2: #F1F5F9;
+    --iv-card: #ffffff;
+    --iv-bg: #F7F8FC;
+    --iv-star: #F59E0B;
+    --iv-star-off: #E2E8F0;
+    --iv-yes: #15803D;
+    --iv-yes-soft: #ECFDF3;
+    --iv-maybe: #B45309;
+    --iv-maybe-soft: #FFFBEB;
+    --iv-no: #BE123C;
+    --iv-no-soft: #FFF1F2;
+    --iv-hold: #475569;
+    --iv-hold-soft: #F1F5F9;
+    background: var(--iv-bg);
+    color: var(--iv-ink);
+    min-height: 85vh;
+    padding: 32px 16px 72px;
+    font-size: 15px;
+
+    .pbiv-wrap { max-width: 680px; margin: 0 auto; }
+    .pbhf-ic { flex: 0 0 auto; vertical-align: -2px; }
+    .pbiv-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+    // ------------------------------------------------------------ the top
+    .pbiv-hero {
+        background: var(--iv-card); border: 1px solid var(--iv-line); border-radius: 18px;
+        padding: 26px 26px 22px; box-shadow: 0 10px 30px rgba(16, 24, 40, .06);
+    }
+    .pbiv-eyebrow { color: var(--iv-accent); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .pbiv-h1 { font-size: 30px; line-height: 1.15; letter-spacing: -.02em; margin: 8px 0 6px; color: var(--iv-ink); font-weight: 760; overflow-wrap: anywhere; }
+    .pbiv-sub { color: var(--iv-muted); margin: 0; font-size: 15px; line-height: 1.55; b { color: var(--iv-text); font-weight: 650; } }
+    .pbiv-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .pbiv-chip {
+        display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+        border-radius: 999px; background: var(--iv-line-2); color: var(--iv-text);
+        font-size: 13px; font-weight: 550; text-decoration: none;
+        &.is-late { background: var(--iv-maybe-soft); color: var(--iv-maybe); }
+        &.is-link { background: var(--iv-accent-soft); color: var(--iv-accent); }
+        &.is-link:hover { text-decoration: underline; }
+    }
+    .pbiv-private {
+        display: flex; gap: 10px; align-items: center; margin-top: 16px;
+        padding: 12px 14px; border-radius: 12px; background: var(--iv-accent-soft);
+        color: #3730A3; font-size: 14px; font-weight: 600; line-height: 1.45;
+    }
+    .pbiv-intro {
+        margin: 14px 0 0; padding-left: 12px; border-left: 3px solid var(--iv-line);
+        color: var(--iv-text); font-size: 14px; line-height: 1.6;
+    }
+    .pbiv-problem, .pbiv-again {
+        display: flex; gap: 10px; align-items: flex-start; margin: 14px 0 0;
+        padding: 12px 14px; border-radius: 12px; font-size: 14px; line-height: 1.5;
+    }
+    .pbiv-problem { background: var(--iv-no-soft); color: var(--iv-no); border: 1px solid #FECDD3; }
+    .pbiv-again { background: var(--iv-card); color: var(--iv-text); border: 1px solid var(--iv-line); }
+
+    // -------------------------------------------------------- the questions
+    .pbiv-form { margin-top: 14px; }
+    .pbiv-q {
+        background: var(--iv-card); border: 1px solid var(--iv-line); border-radius: 16px;
+        padding: 18px 20px; margin-bottom: 12px;
+        &.is-missing { border-color: var(--iv-no); box-shadow: 0 0 0 3px rgba(190, 18, 60, .12); }
+        &.is-missing .pbiv-q-miss { display: block; }
+        &.is-done .pbiv-q-n { background: var(--iv-yes); color: #fff; }
+    }
+    .pbiv-q-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+    .pbiv-q-n {
+        flex: 0 0 26px; height: 26px; border-radius: 50%; display: inline-flex;
+        align-items: center; justify-content: center; background: var(--iv-line-2);
+        color: var(--iv-muted); font-size: 12.5px; font-weight: 700; margin-top: 1px;
+    }
+    .pbiv-q-label { display: block; font-size: 16px; font-weight: 680; color: var(--iv-ink); line-height: 1.35; margin: 0; }
+    .pbiv-q-help { margin: 3px 0 0; font-size: 13px; color: var(--iv-muted); line-height: 1.5; }
+    .pbiv-q-miss { display: none; margin: 10px 0 0; color: var(--iv-no); font-size: 13px; font-weight: 600; }
+    .pbiv-req, .pbiv-opt {
+        display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px;
+        font-size: 11px; font-weight: 650; vertical-align: 2px;
+        background: var(--iv-line-2); color: var(--iv-muted);
+    }
+    .pbiv-in {
+        width: 100%; border: 1px solid var(--iv-line); border-radius: 12px;
+        padding: 11px 13px; font: inherit; font-size: 15px; color: var(--iv-text);
+        background: #fff; outline: none; resize: vertical; line-height: 1.55;
+        &:focus { border-color: var(--iv-accent); box-shadow: 0 0 0 3px var(--iv-ring); }
+    }
+
+    // ------------------------------------------------------------ stars
+    .pbiv-stars-wrap { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .pbiv-stars { display: inline-flex; flex-direction: row-reverse; gap: 4px; }
+    .pbiv-star-in { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .pbiv-star {
+        cursor: pointer; color: var(--iv-star-off); margin: 0; padding: 2px; border-radius: 8px;
+        line-height: 0;
+        svg { fill: currentColor; stroke: currentColor; stroke-width: 1; }
+    }
+    // Lit: the one pointed at and every one before it (DOM after it).
+    .pbiv-stars:hover .pbiv-star { color: var(--iv-star-off); }
+    .pbiv-star:hover, .pbiv-star:hover ~ .pbiv-star,
+    .pbiv-stars:not(:hover) .pbiv-star-in:checked ~ .pbiv-star,
+    .pbiv-stars:not(:hover) .pbiv-star-in:checked + .pbiv-star { color: var(--iv-star); }
+    .pbiv-star-in:focus-visible + .pbiv-star { box-shadow: 0 0 0 3px var(--iv-ring); }
+    .pbiv-stars-word { font-size: 14px; font-weight: 650; color: var(--iv-maybe); min-height: 20px; }
+
+    // ------------------------------------------- a scored line, a yes/no
+    .pbiv-scale { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pbiv-scale-o {
+        position: relative; cursor: pointer; margin: 0;
+        input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+        span {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 52px; height: 48px; border: 1px solid var(--iv-line); border-radius: 12px;
+            background: #fff; color: var(--iv-text); font-size: 16px; font-weight: 700;
+        }
+        input:checked + span { border-color: var(--iv-accent); background: var(--iv-accent-soft); color: #3730A3; box-shadow: 0 0 0 3px var(--iv-ring); }
+        input:focus-visible + span { border-color: var(--iv-accent); }
+    }
+    .pbiv-yn .pbiv-scale-o span { width: 96px; }
+
+    // ------------------------------------------------- the four decisions
+    .pbiv-decisions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .pbiv-dec {
+        position: relative; cursor: pointer; margin: 0;
+        input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    }
+    .pbiv-dec-box {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 4px; min-height: 112px; padding: 14px 8px; border-radius: 16px;
+        border: 2px solid var(--iv-line); background: #fff; text-align: center;
+        b { font-size: 18px; font-weight: 760; color: var(--iv-ink); }
+        small { font-size: 12px; color: var(--iv-muted); line-height: 1.35; }
+    }
+    .pbiv-dec-ic { color: var(--iv-muted); line-height: 0; }
+    .pbiv-dec:hover .pbiv-dec-box { border-color: #CBD5E1; }
+    .pbiv-dec input:focus-visible + .pbiv-dec-box { box-shadow: 0 0 0 3px var(--iv-ring); }
+    @each $k, $c, $soft in (yes, #15803D, #ECFDF3), (maybe, #B45309, #FFFBEB), (no, #BE123C, #FFF1F2), (hold, #475569, #F1F5F9) {
+        .pbiv-dec--#{$k} .pbiv-dec-ic { color: $c; }
+        .pbiv-dec--#{$k} input:checked + .pbiv-dec-box {
+            border-color: $c; background: $soft;
+            b { color: $c; }
+        }
+    }
+
+    // ------------------------------------------------------------ sending
+    .pbiv-foot { padding: 8px 4px 0; }
+    .pbiv-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .pbiv-progress-bar { flex: 1 1 auto; height: 6px; border-radius: 999px; background: var(--iv-line); overflow: hidden; }
+    .pbiv-progress-bar span { display: block; height: 100%; width: 0; background: var(--iv-accent); border-radius: 999px; }
+    .pbiv-progress-tx { font-size: 13px; color: var(--iv-muted); font-weight: 600; white-space: nowrap; }
+    .pbiv-send {
+        display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+        width: 100%; padding: 15px 22px; border: 0; border-radius: 14px;
+        background: var(--iv-accent); color: var(--iv-accent-ink);
+        font: inherit; font-size: 16px; font-weight: 720; cursor: pointer;
+        &:focus-visible { box-shadow: 0 0 0 4px var(--iv-ring); outline: none; }
+        &[disabled] { opacity: .7; cursor: progress; }
+    }
+    .pbiv-fine { margin: 12px 2px 0; font-size: 12.5px; color: var(--iv-muted); line-height: 1.6; }
+
+    // ------------------------------------------------------- the endings
+    .pbiv-done {
+        background: var(--iv-card); border: 1px solid var(--iv-line); border-radius: 18px;
+        padding: 34px 28px; text-align: center; box-shadow: 0 10px 30px rgba(16, 24, 40, .06);
+        .pbiv-sub { max-width: 460px; margin: 6px auto 0; }
+        &.is-warn .pbiv-done-ic { background: var(--iv-maybe-soft); color: var(--iv-maybe); }
+    }
+    .pbiv-done-ic {
+        width: 68px; height: 68px; border-radius: 20px; margin: 0 auto 6px;
+        display: grid; place-items: center; background: var(--iv-yes-soft); color: var(--iv-yes);
+    }
+    .pbiv-again-link {
+        display: inline-flex; align-items: center; gap: 7px; margin-top: 18px;
+        color: var(--iv-accent); font-weight: 650; text-decoration: none;
+        &:hover { text-decoration: underline; }
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .pbiv .pbiv-hero, .pbiv .pbiv-done { animation: pbiv-rise .25s ease-out both; }
+    .pbiv .pbiv-star { transition: color .12s, transform .12s; }
+    .pbiv .pbiv-star:hover { transform: scale(1.12); }
+    .pbiv .pbiv-dec-box { transition: border-color .15s, background .15s, transform .15s; }
+    .pbiv .pbiv-dec input:checked + .pbiv-dec-box .pbiv-dec-ic { animation: pbiv-pop .25s ease-out; }
+    .pbiv .pbiv-dec:hover .pbiv-dec-box { transform: translateY(-1px); }
+    .pbiv .pbiv-progress-bar span { transition: width .3s ease-out; }
+    .pbiv .pbiv-send { transition: transform .12s, box-shadow .12s; }
+    .pbiv .pbiv-send:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(79, 70, 229, .28); }
+}
+
+@media (max-width: 560px) {
+    .pbiv { padding: 18px 12px 56px; }
+    .pbiv .pbiv-hero { padding: 20px 18px 18px; border-radius: 16px; }
+    .pbiv .pbiv-h1 { font-size: 25px; }
+    .pbiv .pbiv-q { padding: 16px 14px; }
+    .pbiv .pbiv-decisions { grid-template-columns: repeat(2, 1fr); }
+    .pbiv .pbiv-dec-box { min-height: 96px; }
+    .pbiv .pbiv-scale-o span { width: 46px; height: 46px; }
+    .pbiv .pbiv-star svg { width: 30px; height: 30px; }
+}

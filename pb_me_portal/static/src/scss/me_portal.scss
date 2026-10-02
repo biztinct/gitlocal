@@ -1,0 +1,185 @@
+// Employee Self-Service portal — a branded "My Payobook" surface over the pbim
+// design tokens (imported into this frontend bundle). Scoped to .pbme so the
+// public /my/payslips/<token> path and other portal pages are never affected.
+// White + rail, no gradients on chrome, mobile-first (this is the phone surface).
+
+.pbme {
+    @include pbim-root-vars;
+    color: var(--pbim-text);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+    // ---------- hero ----------
+    .pbme-hero {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh);
+        padding: 22px 24px; margin: 4px 0 20px;
+    }
+    .pbme-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--pbim-primary-strong); }
+    .pbme-h1 { font-size: 25px; font-weight: 800; letter-spacing: -.01em; margin: 3px 0 0; }
+    .pbme-hero-sub { color: var(--pbim-muted); font-size: 13.5px; margin: 5px 0 0; }
+    .pbme-hero-actions { display: flex; gap: 10px; }
+
+    // ---------- hub home ----------
+    &.pbme-hub { margin-bottom: 6px; }
+    .pbme-hub-hero {
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh); padding: 26px 26px 22px; margin-bottom: 6px;
+    }
+    .pbme-hub-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--pbim-primary-strong); }
+    .pbme-hub-title { font-size: 26px; font-weight: 800; margin: 4px 0 2px; }
+    .pbme-hub-sub { color: var(--pbim-muted); font-size: 14px; margin: 0; }
+
+    // ---------- shared card ----------
+    .pbme-card {
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r); box-shadow: var(--pbim-sh); padding: 20px;
+    }
+    .pbme-card-title { font-size: 15px; font-weight: 800; margin: 0 0 4px; }
+    .pbme-muted { color: var(--pbim-muted); font-size: 13px; }
+    .pbme-mt { margin-top: 16px; display: flex; gap: 10px; }
+
+    // ---------- buttons ----------
+    .pbme-btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        border-radius: var(--pbim-r-sm); padding: 9px 16px; font-size: 13.5px; font-weight: 700;
+        border: 1px solid var(--pbim-line); background: var(--pbim-surface); color: var(--pbim-text);
+        text-decoration: none; cursor: pointer; transition: all .15s;
+        &:hover { text-decoration: none; }
+        &--primary { background: var(--pbim-primary); border-color: var(--pbim-primary); color: #fff; &:hover { background: var(--pbim-primary-hover); color: #fff; } }
+        &--ghost:hover { background: var(--pbim-bg); border-color: var(--pbim-primary-light); }
+        &--block { display: flex; width: 100%; margin-top: 8px; }
+    }
+    .pbme-icon-btn { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--pbim-line); color: var(--pbim-muted); text-decoration: none; &:hover { background: var(--pbim-bg); color: var(--pbim-primary-strong); } }
+
+    // ---------- badges ----------
+    .pbme-badge { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; text-transform: capitalize; }
+    .pbme-badge--done, .pbme-badge--approved { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbme-badge--draft { background: var(--pbim-slate-soft); color: var(--pbim-slate); }
+    .pbme-badge--hr_review { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .pbme-badge--refused, .pbme-badge--cancel { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+
+    // ---------- payslip cards ----------
+    .pbme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+    .pbme-pay-card {
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r); box-shadow: var(--pbim-sh); padding: 18px; display: flex; flex-direction: column; gap: 6px;
+        transition: box-shadow .15s, transform .15s;
+        &:hover { box-shadow: var(--pbim-sh-lg); transform: translateY(-2px); }
+    }
+    .pbme-pay-top { display: flex; align-items: center; justify-content: space-between; }
+    .pbme-pay-period { font-size: 16px; font-weight: 800; }
+    .pbme-pay-range { font-size: 12px; color: var(--pbim-muted); }
+    .pbme-pay-net { display: flex; align-items: baseline; justify-content: space-between; margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--pbim-line-2); }
+    .pbme-pay-net-l { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--pbim-muted); }
+    .pbme-pay-net-v { font-size: 19px; font-weight: 800; color: var(--pbim-green); }
+    .pbme-pay-act { display: flex; gap: 8px; margin-top: 12px; .pbme-btn { flex: 1; } }
+    .pbme-pager { margin-top: 22px; display: flex; justify-content: center; }
+
+    // ---------- detail layout ----------
+    .pbme-detail { display: grid; grid-template-columns: 1fr 320px; gap: 18px; align-items: start; }
+    .pbme-detail-main { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+    .pbme-detail-side { display: flex; flex-direction: column; gap: 14px; }
+
+    .pbme-lines { width: 100%; border-collapse: collapse; }
+    .pbme-lines th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--pbim-muted); padding: 0 0 10px; border-bottom: 1px solid var(--pbim-line); }
+    .pbme-lines td { padding: 9px 0; border-bottom: 1px solid var(--pbim-line-2); font-size: 13.5px; }
+    .pbme-num { text-align: right; font-variant-numeric: tabular-nums; }
+    .pbme-line--NET td { font-weight: 800; color: var(--pbim-green); border-top: 2px solid var(--pbim-line); }
+    .pbme-line--GROSS td { font-weight: 700; }
+
+    .pbme-netcard { text-align: center; background: var(--pbim-primary-dark); border-color: var(--pbim-primary-dark); color: #fff; }
+    .pbme-netcard-l { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; opacity: .8; }
+    .pbme-netcard-v { font-size: 30px; font-weight: 800; margin: 4px 0; }
+    .pbme-netcard-p { font-size: 12px; opacity: .8; }
+
+    // ---------- profile ----------
+    .pbme-profile-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .pbme-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--pbim-soft); }
+    .pbme-profile-name { font-size: 18px; font-weight: 800; }
+    .pbme-profile-job { font-size: 13px; color: var(--pbim-muted); }
+    .pbme-kv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; }
+    .pbme-kv { display: flex; flex-direction: column; gap: 2px; span { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--pbim-muted); font-weight: 700; } b { font-size: 13.5px; } }
+
+    .pbme-reqform { }
+    .pbme-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; margin: 14px 0 16px; }
+    .pbme-form-grid label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: var(--pbim-muted); }
+    .pbme-form-wide { grid-column: 1 / -1; }
+    .pbme-form-grid input, .pbme-form-grid textarea, .pbme-flabel input, .pbme-flabel select {
+        border: 1px solid var(--pbim-line); border-radius: 9px; padding: 9px 11px; font-size: 13.5px;
+        font-family: inherit; color: var(--pbim-text); background: #fff; width: 100%;
+        &:focus { outline: none; border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+    }
+    .pbme-flabel { display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: var(--pbim-muted); margin-bottom: 12px; }
+
+    .pbme-req-list { display: flex; flex-direction: column; gap: 2px; }
+    .pbme-req-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 4px; border-top: 1px solid var(--pbim-line-2); text-decoration: none; color: var(--pbim-text); &:first-child { border-top: none; } &:hover { color: var(--pbim-primary-strong); } }
+    .pbme-req-name { font-weight: 700; font-size: 13px; }
+    .pbme-req-note { margin-top: 12px; font-size: 13px; background: var(--pbim-bg); padding: 10px 12px; border-radius: 9px; }
+
+    // ---------- diff ----------
+    .pbme-diff { width: 100%; border-collapse: collapse; }
+    .pbme-diff th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--pbim-muted); padding: 0 10px 10px 0; border-bottom: 1px solid var(--pbim-line); }
+    .pbme-diff td { padding: 11px 10px 11px 0; border-bottom: 1px solid var(--pbim-line-2); font-size: 13.5px; vertical-align: top; }
+    .pbme-diff tr.is-changed { background: var(--pbim-soft); }
+    .pbme-diff-f { font-weight: 700; }
+    .pbme-diff-cur { color: var(--pbim-muted); }
+    .pbme-diff-arrow { color: var(--pbim-primary-strong); font-weight: 800; }
+
+    // ---------- stepper ----------
+    .pbme-stepper { display: flex; flex-direction: column; gap: 0; }
+    .pbme-step { display: flex; align-items: center; gap: 11px; padding: 7px 0; position: relative; }
+    .pbme-step:not(:last-child)::after { content: ""; position: absolute; left: 6px; top: 26px; bottom: -7px; width: 2px; background: var(--pbim-line); }
+    .pbme-step-dot { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 2px solid var(--pbim-line); flex: 0 0 auto; z-index: 1; }
+    .pbme-step-lab { font-size: 13px; font-weight: 700; color: var(--pbim-muted); }
+    .pbme-step--done .pbme-step-dot { background: var(--pbim-green); border-color: var(--pbim-green); }
+    .pbme-step--done .pbme-step-lab { color: var(--pbim-text); }
+    .pbme-step--current .pbme-step-dot { background: var(--pbim-primary); border-color: var(--pbim-primary); box-shadow: 0 0 0 4px var(--pbim-ring); }
+    .pbme-step--current .pbme-step-lab { color: var(--pbim-primary-strong); }
+    .pbme-step--refused .pbme-step-dot { background: var(--pbim-rose); border-color: var(--pbim-rose); }
+    .pbme-step--refused .pbme-step-lab { color: var(--pbim-rose); }
+
+    // ---------- documents ----------
+    .pbme-doc-list { display: flex; flex-direction: column; }
+    .pbme-doc-row { display: flex; align-items: center; gap: 13px; padding: 12px 2px; border-top: 1px solid var(--pbim-line-2); &:first-child { border-top: none; } }
+    .pbme-doc-ic { width: 40px; height: 40px; border-radius: 10px; background: var(--pbim-soft); color: var(--pbim-primary-strong); display: grid; place-items: center; font-size: 17px; flex: 0 0 auto; }
+    .pbme-doc-main { flex: 1; min-width: 0; }
+    .pbme-doc-name { font-weight: 700; font-size: 13.5px; }
+    .pbme-doc-meta { display: flex; gap: 10px; align-items: center; margin-top: 3px; font-size: 12px; }
+    .pbme-doc-cat { color: var(--pbim-muted); }
+    .pbme-exp { font-weight: 700; }
+    .pbme-exp--expired { color: var(--pbim-rose); }
+    .pbme-exp--soon { color: var(--pbim-amber); }
+    .pbme-exp--valid { color: var(--pbim-green); }
+    .pbme-doc-side { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+    .pbme-verified { font-size: 12px; font-weight: 800; color: var(--pbim-green); }
+    .pbme-pending { font-size: 12px; font-weight: 700; color: var(--pbim-muted); }
+
+    // ---------- tax sheet ----------
+    .pbme-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .pbme-tile { background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-radius: var(--pbim-r); box-shadow: var(--pbim-sh); padding: 14px 16px; }
+    .pbme-tile-l { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--pbim-muted); font-weight: 700; }
+    .pbme-tile-v { font-size: 19px; font-weight: 800; margin: 4px 0 1px; font-variant-numeric: tabular-nums; }
+    .pbme-tile-y { font-size: 11px; color: var(--pbim-muted); }
+    .pbme-tablewrap { overflow-x: auto; padding: 12px; }
+    .pbme-taxtable { width: 100%; border-collapse: collapse; min-width: 520px; }
+    .pbme-taxtable th { text-align: right; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--pbim-muted); padding: 8px 10px; border-bottom: 1px solid var(--pbim-line); white-space: nowrap; &:first-child { text-align: left; } }
+    .pbme-taxtable td { padding: 9px 10px; border-bottom: 1px solid var(--pbim-line-2); font-size: 13px; }
+
+    // ---------- empty ----------
+    .pbme-empty { text-align: center; padding: 50px 20px; background: var(--pbim-surface); border: 1px dashed var(--pbim-line); border-radius: var(--pbim-r-lg); }
+    .pbme-empty-ic { width: 66px; height: 66px; border-radius: 50%; background: var(--pbim-soft); color: var(--pbim-primary-strong); display: grid; place-items: center; font-size: 26px; margin: 0 auto 14px; }
+    .pbme-empty-ic--err { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+    .pbme-empty h3 { font-size: 17px; font-weight: 800; }
+    .pbme-empty p { color: var(--pbim-muted); margin-top: 5px; }
+
+    // ---------- mobile (this is the phone surface) ----------
+    @media (max-width: 768px) {
+        .pbme-detail { grid-template-columns: 1fr; }
+        .pbme-detail-side { order: -1; }
+        .pbme-kv-grid, .pbme-form-grid { grid-template-columns: 1fr; }
+        .pbme-h1 { font-size: 21px; }
+        .pbme-hero { padding: 18px; }
+    }
+}

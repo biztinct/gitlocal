@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         The dials, shipped so they are DISCOVERABLE rather than folklore.
+
+         The SWITCHES — contract_mail and auto_trigger — are deliberately
+         NOT here, for the reason P3, P4 and P5 all wrote down: they
+         default in code (`contract_common.DEFAULTS`), and shipping a
+         record for a switch freezes whatever value a test run happened to
+         leave behind, because `noupdate="1"` means the next upgrade never
+         corrects it.
+
+         `pb_contract_lifecycle.auto_trigger` in particular defaults to OFF
+         in code and is meant to be turned on by hand, once, after an
+         administrator has read the count the nightly job logs and the
+         Contracts board shows on screen.
+         ================================================================== -->
+
+    <record id="param_lead_days" model="ir.config_parameter">
+        <field name="key">pb_contract_lifecycle.lead_days</field>
+        <!-- Two months. Long enough to speak to the person, agree a new
+             agreement and get it signed without anybody being rushed; short
+             enough that the answer is still about the work they are doing
+             now. -->
+        <field name="value">60</field>
+    </record>
+
+    <record id="param_approve_days" model="ir.config_parameter">
+        <field name="key">pb_contract_lifecycle.approve_days</field>
+        <!-- How long a manager has to agree an extension before the HR team
+             is told. Short on purpose: a window that runs for a fortnight is
+             answered on the fourteenth day. -->
+        <field name="value">5</field>
+    </record>
+
+    <record id="param_extension_months" model="ir.config_parameter">
+        <field name="key">pb_contract_lifecycle.default_extension_months</field>
+        <field name="value">12</field>
+    </record>
+
+    <record id="param_trigger_cap" model="ir.config_parameter">
+        <field name="key">pb_contract_lifecycle.trigger_cap</field>
+        <!-- Even with the trigger switched on, one night never raises more
+             than this many decisions. A backlog worked through over three
+             nights is a backlog; three hundred at once is an incident. -->
+        <field name="value">20</field>
+    </record>
+
+    <record id="param_nag_days" model="ir.config_parameter">
+        <field name="key">pb_contract_lifecycle.nag_days</field>
+        <!-- Inside this many days of the end date, HR is nudged daily. -->
+        <field name="value">7</field>
+    </record>
+
+</data>
+</odoo>

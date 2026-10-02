@@ -4,7 +4,8 @@ import { patch } from "@web/core/utils/patch";
 import { FormController } from "@web/views/form/form_controller";
 
 // Patch FormController to override breadcrumb for country selector
-patch(FormController.prototype, "payroll_breadcrumb_override", {
+// Odoo 19 patch syntax - second argument is the patch object directly
+patch(FormController.prototype, {
     /**
      * Override the display name in breadcrumb for new records
      * when opened from the enhanced country selector
@@ -19,9 +20,9 @@ patch(FormController.prototype, "payroll_breadcrumb_override", {
             return context.default_name || "Payroll Dashboard";
         }
 
-        // Otherwise, use default behavior
-        return this._super(...arguments);
+        // Otherwise, use default behavior (super.getDisplayName in Odoo 19)
+        return super.getDisplayName(...arguments);
     },
 });
 
-console.log("Payroll breadcrumb override loaded");
+console.log("Payroll breadcrumb override loaded (Odoo 19)");

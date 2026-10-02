@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ============ B7 · public client review page ============ -->
+  <template id="formula_review_page" name="Formula Client Review">
+    <t t-call="web.layout">
+      <t t-set="head">
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title>Payroll review · <t t-out="d['config']['name']"/></title>
+        <style>
+          :root{--ink:#1E1B2E;--paper:#F4F5FB;--panel:#fff;--i:#5A4BB0;--i600:#4A3D96;--i-soft:#EDEAF8;--i-border:#CBC2EE;--line:#E8E9F3;--muted:#6B7280;--good:#059669;--good-soft:#ECFDF5;--amber:#B45309;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif}
+          *{box-sizing:border-box}
+          body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+          .frv{max-width:960px;margin:0 auto;padding:0 20px 72px}
+          a{color:var(--i600)}
+          h1,h2,h3{margin:0;letter-spacing:-.01em}
+          .num{font-variant-numeric:tabular-nums}
+          /* top bar */
+          .frv-top{background:#14102E;color:#fff;margin:0 -20px 26px;padding:22px 20px}
+          .frv-top-in{max-width:920px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+          .frv-mark{font-weight:800;font-size:1.05rem;letter-spacing:-.02em}
+          .frv-mark span{color:#B9AEEF}
+          .frv-ro{margin-left:auto;font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#C9C4E4;border:1px solid rgba(255,255,255,.2);padding:4px 11px;border-radius:999px}
+          .frv-title{max-width:920px;margin:0 auto;padding-top:14px}
+          .frv-kick{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#B9AEEF}
+          .frv-h1{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:800;margin-top:6px}
+          .frv-sub{color:#C9C4E4;font-size:.95rem;margin-top:6px}
+          /* flash */
+          .frv-flash{background:var(--good-soft);border:1px solid #A7F3D0;color:#166534;border-radius:11px;padding:12px 15px;margin-bottom:20px;font-weight:600;font-size:.92rem}
+          /* summary strip */
+          .frv-sum{display:flex;flex-wrap:wrap;gap:26px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:22px}
+          .frv-stat b{display:block;font-family:var(--mono);font-size:1.5rem;font-weight:700;letter-spacing:-.02em}
+          .frv-stat span{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-top:2px;display:block}
+          .frv-state{margin-left:auto;align-self:center;font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em;padding:5px 12px;border-radius:999px;background:var(--i-soft);color:var(--i600)}
+          /* cards */
+          .frv-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:22px}
+          .frv-card h2{font-size:1.15rem;font-weight:800;margin-bottom:4px}
+          .frv-card .lead{color:var(--muted);font-size:.92rem;margin-bottom:16px}
+          .frv-sec-lbl{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 8px}
+          /* payslip preview */
+          .slip-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:.95rem}
+          .slip-row:last-child{border-bottom:0}
+          .slip-row .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600}
+          .slip-row.ded .v{color:#B91C1C}
+          .slip-total{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding:14px 18px;background:#14102E;color:#fff;border-radius:11px}
+          .slip-total .v{font-family:var(--mono);font-size:1.2rem;font-weight:800}
+          .slip-empty{color:var(--muted);font-size:.9rem;padding:8px 0}
+          /* release / signoff */
+          .frv-rel{border-left:3px solid var(--i);padding-left:16px;margin-bottom:16px}
+          .frv-rel h3{font-size:1rem;font-weight:800}
+          .frv-rel .meta{font-size:.8rem;color:var(--muted);font-family:var(--mono);margin-top:2px}
+          .frv-rel pre{white-space:pre-wrap;font-family:var(--sans);font-size:.92rem;color:#4B5563;margin:10px 0 0;line-height:1.55}
+          .signed{display:flex;align-items:center;gap:10px;background:var(--good-soft);border:1px solid #A7F3D0;border-radius:11px;padding:14px 16px;color:#166534;font-weight:600}
+          .signed svg{width:20px;height:20px;flex:none}
+          .frv-form{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px}
+          .frv-input{flex:1;min-width:180px;height:40px;border:1px solid var(--line);border-radius:9px;padding:0 13px;font-size:.95rem;font-family:var(--sans)}
+          .frv-input:focus{outline:none;border-color:var(--i);box-shadow:0 0 0 3px var(--i-soft)}
+          textarea.frv-input{height:auto;min-height:74px;padding:11px 13px;resize:vertical;width:100%}
+          .frv-btn{height:40px;padding:0 20px;border:0;border-radius:9px;background:var(--i);color:#fff;font-weight:700;font-size:.92rem;cursor:pointer;font-family:var(--sans);display:inline-flex;align-items:center;gap:8px}
+          .frv-btn:hover{background:var(--i600)}
+          .frv-btn svg{width:16px;height:16px}
+          /* components table */
+          .frv-tbl-wrap{overflow-x:auto}
+          table.frv-tbl{width:100%;border-collapse:collapse;font-size:.9rem}
+          .frv-tbl th{text-align:left;font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);font-weight:600}
+          .frv-tbl td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+          .frv-tbl tr:last-child td{border-bottom:0}
+          .frv-col{font-family:var(--mono);font-weight:700;color:var(--i600);background:var(--i-soft);border-radius:5px;padding:1px 6px;font-size:.78rem}
+          .frv-type{font-family:var(--mono);font-size:.72rem;color:var(--muted);text-transform:uppercase}
+          .frv-fx{font-family:var(--mono);font-size:.82rem;color:#4B5563}
+          /* discussion */
+          .cmt{padding:12px 0;border-bottom:1px solid var(--line)}
+          .cmt:last-of-type{border-bottom:0}
+          .cmt-head{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+          .cmt-who{font-weight:700;font-size:.9rem}
+          .cmt-side{font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:999px}
+          .cmt-side.client{background:var(--i-soft);color:var(--i600)}
+          .cmt-side.bureau{background:#E0F2FE;color:#0369A1}
+          .cmt-date{font-size:.74rem;color:var(--muted);font-family:var(--mono);margin-left:auto}
+          .cmt-body{font-size:.93rem;color:#374151;white-space:pre-wrap}
+          .cmt-empty{color:var(--muted);font-size:.9rem;padding:6px 0 14px}
+          .frv-foot{text-align:center;color:var(--muted);font-size:.8rem;margin-top:34px}
+          .frv-foot b{color:var(--i600)}
+          @media(max-width:560px){.frv-sum{gap:18px}.frv-state{margin-left:0}}
+        </style>
+      </t>
+
+      <div class="frv-top">
+        <div class="frv-top-in">
+          <span class="frv-mark">Payo<span>book</span></span>
+          <span class="frv-ro">Read-only review</span>
+        </div>
+      </div>
+
+      <div class="frv" id="top">
+        <div class="frv-title" style="margin-bottom:24px">
+          <div class="frv-kick">Payroll configuration review</div>
+          <h1 class="frv-h1" t-out="d['config']['name']"/>
+          <div class="frv-sub">
+            <t t-if="d['config']['country']"><t t-out="d['config']['country']"/> · </t>
+            Prepared by <t t-out="d['company']"/><t t-if="d['client_name']"> for <t t-out="d['client_name']"/></t>.
+          </div>
+        </div>
+
+        <t t-if="flash == 'signed'">
+          <div class="frv-flash">Thank you — your sign-off has been recorded.</div>
+        </t>
+        <t t-if="flash == 'commented'">
+          <div class="frv-flash">Your comment has been posted.</div>
+        </t>
+
+        <!-- summary -->
+        <div class="frv-sum">
+          <div class="frv-stat"><b class="num" t-out="d['config']['component_count']"/><span>Components</span></div>
+          <div class="frv-stat"><b class="num" t-out="'{:,}'.format(d['config']['employees'])"/><span>Employees</span></div>
+          <div class="frv-stat"><b class="num" t-out="str(d['config']['score']) + '%'"/><span>Health score</span></div>
+          <span class="frv-state" t-out="d['config']['state']"/>
+        </div>
+
+        <!-- payslip preview -->
+        <div class="frv-card">
+          <h2>Sample payslip</h2>
+          <p class="lead">A representative payslip computed live through the engine<t t-if="d['preview']['sample_name']"> — <t t-out="d['preview']['sample_name']"/></t>.</p>
+          <t t-if="d['preview']['ok']">
+            <t t-if="d['preview']['earnings']">
+              <div class="frv-sec-lbl">Earnings</div>
+              <t t-foreach="d['preview']['earnings']" t-as="l">
+                <div class="slip-row"><span t-out="l['name']"/><span class="v" t-out="l['display']"/></div>
+              </t>
+            </t>
+            <t t-if="d['preview']['deductions']">
+              <div class="frv-sec-lbl">Deductions</div>
+              <t t-foreach="d['preview']['deductions']" t-as="l">
+                <div class="slip-row ded"><span t-out="l['name']"/><span class="v" t-out="l['display']"/></div>
+              </t>
+            </t>
+            <t t-foreach="d['preview']['totals']" t-as="l">
+              <div class="slip-total"><span t-out="l['name']"/><span class="v" t-out="l['display']"/></div>
+            </t>
+          </t>
+          <t t-else="">
+            <div class="slip-empty">No sample data available for a preview yet.</div>
+          </t>
+        </div>
+
+        <!-- release sign-off -->
+        <t t-if="d['release']">
+          <div class="frv-card" id="release">
+            <h2>Release for your approval</h2>
+            <div class="frv-rel">
+              <h3 t-out="d['release']['name']"/>
+              <div class="meta"><t t-out="d['release']['change_count']"/> component<t t-if="d['release']['change_count'] != 1">s</t> changed · sealed by <t t-out="d['release']['approved_by']"/></div>
+              <t t-if="d['release']['narrative']"><pre t-out="d['release']['narrative']"/></t>
+            </div>
+            <t t-if="d['signed_off']">
+              <div class="signed">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+                Signed off by <t t-out="d['signed_off_name']"/> on <t t-out="d['signed_off_date']"/>.
+              </div>
+            </t>
+            <t t-else="">
+              <form class="frv-form" t-attf-action="/formula/review/{{ d['token'] }}/signoff" method="post">
+                <input class="frv-input" type="text" name="name" placeholder="Your name" required="required"/>
+                <button class="frv-btn" type="submit">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+                  Approve &amp; sign off
+                </button>
+              </form>
+            </t>
+          </div>
+        </t>
+
+        <!-- components -->
+        <div class="frv-card">
+          <h2>Salary components</h2>
+          <p class="lead">Every component in this configuration, exactly as it computes.</p>
+          <div class="frv-tbl-wrap">
+            <table class="frv-tbl">
+              <thead><tr><th>Col</th><th>Component</th><th>Type</th><th>Formula / value</th></tr></thead>
+              <tbody>
+                <t t-foreach="d['components']" t-as="c">
+                  <tr>
+                    <td><span class="frv-col" t-out="c['col']"/></td>
+                    <td t-out="c['name']"/>
+                    <td><span class="frv-type" t-out="c['type']"/></td>
+                    <td>
+                      <t t-if="c['type'] == 'formula'"><span class="frv-fx" t-out="c['formula']"/></t>
+                      <t t-elif="c['type'] == 'constant'"><span class="v" t-out="c['value_display']"/></t>
+                      <t t-else=""><span class="frv-type">from input</span></t>
+                    </td>
+                  </tr>
+                </t>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- discussion -->
+        <div class="frv-card" id="discuss">
+          <h2>Questions &amp; comments</h2>
+          <p class="lead">Anything unclear or off? Leave a note and the payroll team will follow up.</p>
+          <t t-if="d['comments']">
+            <t t-foreach="d['comments']" t-as="c">
+              <div class="cmt">
+                <div class="cmt-head">
+                  <span class="cmt-who" t-out="c['author_name']"/>
+                  <span t-attf-class="cmt-side {{ c['side'] }}" t-out="c['side']"/>
+                  <span class="cmt-date" t-out="c['date']"/>
+                </div>
+                <div class="cmt-body" t-out="c['body']"/>
+              </div>
+            </t>
+          </t>
+          <t t-else="">
+            <div class="cmt-empty">No comments yet.</div>
+          </t>
+          <form t-attf-action="/formula/review/{{ d['token'] }}/comment" method="post" style="margin-top:14px">
+            <input class="frv-input" type="text" name="name" placeholder="Your name" required="required" style="margin-bottom:10px"/>
+            <textarea class="frv-input" name="body" placeholder="Write a comment…" required="required"></textarea>
+            <div style="margin-top:10px"><button class="frv-btn" type="submit">Post comment</button></div>
+          </form>
+        </div>
+
+        <div class="frv-foot">Shared securely by <b>Payobook</b> · this link is private to you and can be revoked at any time.</div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============ invalid / expired ============ -->
+  <template id="formula_review_invalid" name="Formula Review Invalid">
+    <t t-call="web.layout">
+      <t t-set="head">
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title>Link unavailable</title>
+        <style>
+          body{margin:0;background:#14102E;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center;text-align:center}
+          .box{max-width:420px;padding:32px}
+          .box b{font-weight:800;font-size:1.05rem}
+          .box b span{color:#B9AEEF}
+          .box h1{font-size:1.5rem;font-weight:800;margin:20px 0 10px}
+          .box p{color:#C9C4E4;line-height:1.55}
+        </style>
+      </t>
+      <div class="box">
+        <b>Payo<span>book</span></b>
+        <h1>This review link is no longer available</h1>
+        <p>It may have expired or been revoked. Please ask your payroll contact for a fresh link.</p>
+      </div>
+    </t>
+  </template>
+
+</odoo>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Reference sequence for profile change requests. -->
+    <record id="seq_profile_change_request" model="ir.sequence">
+        <field name="name">Profile Change Request</field>
+        <field name="code">pb.profile.change.request</field>
+        <field name="prefix">PCR/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <data noupdate="1">
+        <!-- CONFIG whitelist: which personal fields an employee may propose. Only
+             ever within the shipped x_* column set (the model intersects). -->
+        <record id="param_editable_fields" model="ir.config_parameter">
+            <field name="key">pb_me_portal.editable_fields</field>
+            <field name="value">x_phone,x_private_email,x_address,x_emergency_contact,x_emergency_phone</field>
+        </record>
+
+        <!-- CONFIG: the PIT-relevant line codes surfaced on the tax sheet. Resolved
+             from the live VN formula config (demo_catalog.py); a deployment on a
+             different config just lists its own codes. -->
+        <record id="param_tax_codes" model="ir.config_parameter">
+            <field name="key">pb_me_portal.tax_codes</field>
+            <field name="value">GROSS,SIEMP,HIEMP,UIEMP,PIT</field>
+        </record>
+
+        <!-- Audit the personal-contact fields a profile change request writes, so
+             the Phase-H biz_audit_trail records the master change with the true
+             actor (the approving HR user). All five are STORED Chars on
+             hr.employee (audit directly — C18.56). -->
+        <record id="audit_rule_profile_contact" model="biz.audit.rule">
+            <field name="name">Profile contact changes</field>
+            <field name="model_name">hr.employee</field>
+            <field name="field_names">private_phone,private_email,private_street,emergency_contact,emergency_phone</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Categories an employee may self-upload into (ID, certificates, health
+             checks, misc). Labor contracts and work permits stay HR-managed. -->
+        <record id="pb_employee_vault.cat_id_document" model="pb.employee.document.category">
+            <field name="ess_uploadable" eval="True"/>
+        </record>
+        <record id="pb_employee_vault.cat_certificate" model="pb.employee.document.category">
+            <field name="ess_uploadable" eval="True"/>
+        </record>
+        <record id="pb_employee_vault.cat_health_check" model="pb.employee.document.category">
+            <field name="ess_uploadable" eval="True"/>
+        </record>
+        <record id="pb_employee_vault.cat_other" model="pb.employee.document.category">
+            <field name="ess_uploadable" eval="True"/>
+        </record>
+    </data>
+</odoo>

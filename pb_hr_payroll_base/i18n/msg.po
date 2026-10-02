@@ -146,18 +146,19 @@ msgstr "<strong>Tiền tệ:</strong>"
 
 #. module: pb_hr_payroll_base
 msgid ""
-"<strong>Field Mapping:</strong> Configure how external data maps to Odoo "
+"<strong>Field Mapping:</strong> Configure how external data maps to Payobook "
 "employee fields."
 msgstr ""
 "<strong>Ánh xạ trường:</strong> Định cấu hình cách ánh xạ dữ liệu bên ngoài "
-"tới các trường nhân viên của Odoo."
+"tới các trường nhân viên của Payobook."
 
 #. module: pb_hr_payroll_base
 msgid ""
-"<strong>Field Mapping:</strong> Map your spreadsheet columns to Odoo fields."
+"<strong>Field Mapping:</strong> Map your spreadsheet columns to Payobook "
+"fields."
 msgstr ""
 "<strong>Ánh xạ trường:</strong> Ánh xạ các cột trong bảng tính của bạn tới "
-"các trường Odoo."
+"các trường Payobook."
 
 #. module: pb_hr_payroll_base
 msgid "<strong>India:</strong> __custom__.payrollstaging_india"
@@ -2369,8 +2370,8 @@ msgid "Number of messages with delivery error"
 msgstr "Số lượng tin nhắn có lỗi gửi"
 
 #. module: pb_hr_payroll_base
-msgid "Odoo Field"
-msgstr "Lĩnh vực Odoo"
+msgid "Payobook Field"
+msgstr "Trường Payobook"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
@@ -3338,10 +3339,10 @@ msgstr "Số lượng cập nhật"
 #. module: pb_hr_payroll_base
 msgid ""
 "Use the import wizard to bring employee data from Zoho into the staging area,\n"
-"                then process it to create employees and contracts in Odoo."
+"                then process it to create employees and contracts in Payobook."
 msgstr ""
 "Sử dụng trình hướng dẫn nhập để đưa dữ liệu nhân viên từ Zoho vào khu vực tổ chức,\r\n"
-"                sau đó xử lý nó để tạo nhân viên và hợp đồng trong Odoo."
+"                sau đó xử lý nó để tạo nhân viên và hợp đồng trong Payobook."
 
 #. module: pb_hr_payroll_base
 msgid "User Access Issues"

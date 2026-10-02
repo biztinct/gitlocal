@@ -1,0 +1,134 @@
+// ApprovalStepper — self-contained theming via --bac-* custom properties.
+// A consuming app overrides these on any ancestor element to tint the stepper;
+// with no override the neutral defaults below apply (C18.1: biz_* engines style
+// through their own custom props, overlays override).
+.bac-stepper {
+    --bac-accent: #7c3aed;
+    --bac-accent-soft: #ede9fe;
+    --bac-done: #16a34a;
+    --bac-done-soft: #dcfce7;
+    --bac-pending: #cbd5e1;
+    --bac-rail: #e2e8f0;
+    --bac-text: #1e293b;
+    --bac-muted: #64748b;
+    --bac-refuse: #e11d48;
+    --bac-refuse-soft: #ffe4e6;
+
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    color: var(--bac-text);
+
+    .bac-step {
+        display: flex;
+        gap: 12px;
+        min-height: 52px;
+
+        &__rail {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 26px;
+            flex: 0 0 26px;
+        }
+        &__body {
+            padding-bottom: 16px;
+            flex: 1 1 auto;
+        }
+        &__label {
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        &__group {
+            color: var(--bac-muted);
+            font-size: 11.5px;
+            margin-top: 1px;
+        }
+    }
+
+    .bac-node {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        border: 2px solid var(--bac-pending);
+        color: #fff;
+        flex: 0 0 26px;
+        z-index: 1;
+
+        &__ic { width: 15px; height: 15px; }
+        &__dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--bac-pending);
+        }
+        &__pulse {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--bac-accent);
+            box-shadow: 0 0 0 0 var(--bac-accent);
+            animation: bac-pulse 1.8s infinite;
+        }
+    }
+    .bac-connector {
+        width: 2px;
+        flex: 1 1 auto;
+        background: var(--bac-rail);
+        margin: 2px 0;
+    }
+
+    .bac-step--done .bac-node {
+        background: var(--bac-done);
+        border-color: var(--bac-done);
+    }
+    .bac-step--current .bac-node {
+        border-color: var(--bac-accent);
+        background: var(--bac-accent-soft);
+    }
+    .bac-step--current .bac-step__label { color: var(--bac-accent); }
+
+    .bac-actor {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 6px;
+
+        &__avatar {
+            width: 22px; height: 22px; border-radius: 50%;
+            object-fit: cover; border: 1px solid var(--bac-rail);
+        }
+        &__meta { display: flex; flex-direction: column; line-height: 1.25; }
+        &__name { font-weight: 500; font-size: 12px; }
+        &__stamp { color: var(--bac-muted); font-size: 11px; }
+        &__note {
+            margin-top: 4px;
+            color: var(--bac-muted);
+            font-style: italic;
+            font-size: 12px;
+        }
+    }
+
+    .bac-refusal {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 10px 12px;
+        margin-top: 4px;
+        border-radius: 8px;
+        background: var(--bac-refuse-soft);
+        color: var(--bac-refuse);
+
+        &__ic { width: 20px; height: 20px; flex: 0 0 20px; margin-top: 1px; }
+        &__body { display: flex; flex-direction: column; gap: 2px; }
+        &__title { font-weight: 700; }
+        &__meta { font-size: 11.5px; opacity: 0.85; }
+        &__note { font-size: 12px; font-style: italic; opacity: 0.9; }
+    }
+}
+
+@keyframes bac-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.5); }
+    70%  { box-shadow: 0 0 0 8px rgba(124, 58, 237, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0); }
+}

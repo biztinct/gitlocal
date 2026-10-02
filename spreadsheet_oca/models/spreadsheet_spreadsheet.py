@@ -12,7 +12,6 @@ import logging
 _logger = logging.getLogger(__name__)
 from odoo.exceptions import UserError
 from datetime import datetime
-from pudb import set_trace
 
 from odoo import models, api
 from odoo.exceptions import ValidationError

@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Mentorship Session Action - must be defined before form view that references it -->
+    <record id="action_hr_mentorship_session" model="ir.actions.act_window">
+        <field name="name">Mentorship Sessions</field>
+        <field name="res_model">hr.mentorship.session</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No sessions scheduled
+            </p>
+            <p>
+                Mentorship sessions help track progress and document learning outcomes.
+            </p>
+        </field>
+    </record>
+
+    <!-- Mentorship Form View -->
+    <record id="view_hr_mentorship_form" model="ir.ui.view">
+        <field name="name">hr.mentorship.form</field>
+        <field name="model">hr.mentorship</field>
+        <field name="arch" type="xml">
+            <form string="Mentorship">
+                <header>
+                    <button name="action_activate" string="Activate" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_schedule_session" string="Schedule Session" type="object" invisible="state not in ['active']"/>
+                    <button name="action_put_on_hold" string="Put On Hold" type="object" invisible="state not in ['active']"/>
+                    <button name="action_complete" string="Complete" type="object" class="oe_highlight" invisible="state not in ['active', 'on_hold']"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="state in ['completed', 'cancelled']"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_hr_mentorship_session)d" type="action" class="oe_stat_button" icon="fa-calendar" context="{'search_default_mentorship_id': id}">
+                            <field name="session_count" widget="statinfo" string="Sessions"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Participants">
+                            <field name="mentor_id"/>
+                            <field name="mentee_id"/>
+                        </group>
+                        <group string="Timeline">
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="last_session_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Matching Details">
+                            <field name="matching_type"/>
+                            <field name="match_score" widget="progressbar" invisible="matching_type != 'ai_suggested'"/>
+                        </group>
+                        <group string="Focus">
+                            <field name="focus_area"/>
+                            <field name="meeting_frequency"/>
+                        </group>
+                    </group>
+                    <group string="Match Rationale" invisible="matching_type != 'ai_suggested'">
+                        <field name="match_reason" nolabel="1" placeholder="Why this mentor-mentee pairing was suggested..."/>
+                    </group>
+                    <notebook>
+                        <page string="Goals" name="goals">
+                            <field name="goals" placeholder="What are the goals of this mentorship relationship?"/>
+                        </page>
+                        <page string="Focus Skills" name="skills">
+                            <field name="focus_skill_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="category_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Sessions" name="sessions">
+                            <field name="session_ids">
+                                <list>
+                                    <field name="session_date"/>
+                                    <field name="topic"/>
+                                    <field name="duration"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Progress Notes" name="progress">
+                            <field name="progress_notes" placeholder="Track progress, milestones, and observations..."/>
+                        </page>
+                        <page string="Evaluation" name="evaluation">
+                            <group>
+                                <group>
+                                    <field name="mentee_satisfaction" widget="radio"/>
+                                </group>
+                                <group>
+                                    <field name="mentor_satisfaction" widget="radio"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter reload_on_follower="True"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Mentorship List View -->
+    <record id="view_hr_mentorship_list" model="ir.ui.view">
+        <field name="name">hr.mentorship.list</field>
+        <field name="model">hr.mentorship</field>
+        <field name="arch" type="xml">
+            <list string="Mentorships" decoration-success="state == 'completed'" decoration-info="state == 'active'" decoration-muted="state == 'cancelled'">
+                <field name="mentor_id"/>
+                <field name="mentee_id"/>
+                <field name="focus_area"/>
+                <field name="start_date"/>
+                <field name="session_count"/>
+                <field name="last_session_date" optional="show"/>
+                <field name="matching_type" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'completed'" decoration-info="state == 'active'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Mentorship Kanban View -->
+    <record id="view_hr_mentorship_kanban" model="ir.ui.view">
+        <field name="name">hr.mentorship.kanban</field>
+        <field name="model">hr.mentorship</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_group_by="state">
+                <field name="name"/>
+                <field name="mentor_id"/>
+                <field name="mentee_id"/>
+                <field name="focus_area"/>
+                <field name="session_count"/>
+                <field name="matching_type"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary">
+                                        <field name="mentor_id"/> → <field name="mentee_id"/>
+                                    </div>
+                                    <div class="o_secondary">
+                                        <span class="badge" t-att-class="record.focus_area.raw_value == 'leadership' ? 'text-bg-success' : record.focus_area.raw_value == 'technical' ? 'text-bg-primary' : 'text-bg-info'">
+                                            <field name="focus_area"/>
+                                        </span>
+                                        <span t-if="record.matching_type.raw_value == 'ai_suggested'" class="badge text-bg-warning ms-1">
+                                            AI Matched
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_content">
+                                <div><field name="session_count"/> sessions</div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Search view removed - relying on Odoo's automatic search view generation -->
+
+    <!-- Mentorship Action -->
+    <record id="action_hr_mentorship" model="ir.actions.act_window">
+        <field name="name">Mentorships</field>
+        <field name="res_model">hr.mentorship</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a Mentorship
+            </p>
+            <p>
+                Pair experienced employees with those seeking to develop specific skills or advance their careers.
+            </p>
+        </field>
+    </record>
+
+    <!-- Mentorship Session Form View -->
+    <record id="view_hr_mentorship_session_form" model="ir.ui.view">
+        <field name="name">hr.mentorship.session.form</field>
+        <field name="model">hr.mentorship.session</field>
+        <field name="arch" type="xml">
+            <form string="Mentorship Session">
+                <header>
+                    <button name="action_complete" string="Mark Complete" type="object" class="oe_highlight" invisible="state != 'scheduled'"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="state in ['completed', 'cancelled']"/>
+                    <field name="state" widget="statusbar" statusbar_visible="scheduled,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="topic" class="o_text_overflow" placeholder="Session Topic..."/>
+                        </h1>
+                        <h3>
+                            <field name="mentor_id" readonly="1"/> mentoring <field name="mentee_id" readonly="1"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="mentorship_id"/>
+                            <field name="session_date"/>
+                            <field name="duration"/>
+                        </group>
+                        <group>
+                            <field name="next_session_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Discussion Notes" name="notes">
+                            <field name="discussion_notes" placeholder="What was discussed in this session..."/>
+                        </page>
+                        <page string="Skills Practiced" name="skills">
+                            <field name="skills_practiced">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="category_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Action Items" name="actions">
+                            <group>
+                                <field name="action_items_mentor" placeholder="Actions for mentor to complete..."/>
+                            </group>
+                            <group>
+                                <field name="action_items_mentee" placeholder="Actions for mentee to complete..."/>
+                            </group>
+                        </page>
+                        <page string="Feedback" name="feedback">
+                            <group>
+                                <field name="mentor_feedback" placeholder="Mentor's feedback on the session..."/>
+                            </group>
+                            <group>
+                                <field name="mentee_feedback" placeholder="Mentee's feedback on the session..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter reload_on_follower="True"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Mentorship Session List View -->
+    <record id="view_hr_mentorship_session_list" model="ir.ui.view">
+        <field name="name">hr.mentorship.session.list</field>
+        <field name="model">hr.mentorship.session</field>
+        <field name="arch" type="xml">
+            <list string="Mentorship Sessions" decoration-success="state == 'completed'">
+                <field name="session_date"/>
+                <field name="mentorship_id"/>
+                <field name="mentor_id"/>
+                <field name="mentee_id"/>
+                <field name="topic"/>
+                <field name="duration" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'completed'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Mentorship Session Calendar View -->
+    <record id="view_hr_mentorship_session_calendar" model="ir.ui.view">
+        <field name="name">hr.mentorship.session.calendar</field>
+        <field name="model">hr.mentorship.session</field>
+        <field name="arch" type="xml">
+            <calendar string="Mentorship Sessions" date_start="session_date" color="mentorship_id" mode="month">
+                <field name="topic"/>
+                <field name="mentor_id"/>
+                <field name="mentee_id"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Search view removed - relying on Odoo's automatic search view generation -->
+
+</odoo>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13): a frozen file means a later phase can
+     never move this item without shipping a migration, and P3 renumbers the
+     rail again when Mission Control arrives. -->
+<odoo noupdate="0">
+
+    <!-- RETIRED by Workforce P3a: Today is now the first LENS of the Mission
+         Control shell (pb_mission mounts this very component with
+         embedded="true", W17), so it stops being a rail destination. The client
+         action survives untouched and is still reachable at
+         /odoo/action-pb_today; only the rail entry goes.
+
+         It moves into the 900 retired band because the shell's single
+         "Workforce" item takes sequence 10, and a deactivated item still
+         OCCUPIES its sequence for W8's uniqueness rule (W18) — the moment an
+         admin re-enables this record, a duplicate would matter.
+
+         Gate kept as it was (`hr_attendance.group_hr_attendance_officer`): the
+         record has to stay re-enable-able exactly as it was, and the shell asks
+         the SAME question client-side before it puts the Today lens on its
+         rail. -->
+    <record id="item_wf_today" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_workforce"/>
+        <field name="name">Today</field>
+        <field name="icon">activity</field>
+        <field name="sequence">906</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_today.action_pb_today</field>
+        <field name="action_tag">pb_today</field>
+        <field name="match_action_tags">pb_today,pb_driver_map</field>
+        <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_officer')])]"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,464 @@
+<title>Group Blueprint</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap">
+<style>
+  :root{
+    --ground:#F7F7FB; --card:#FFFFFF; --ink:#1E1B2E; --sub:#5C5A72; --faint:#83809A;
+    --line:#E4E2EF; --line2:#EFEEF6; --brand:#5A4BB0; --deep:#241F52; --soft:#EDEAF8;
+    --good:#2E7D4F; --goodbg:#E9F4ED; --warn:#B4700A; --warnbg:#FBF1E1; --stop:#C21F5B; --stopbg:#FCEBF1; --teal:#0F766E; --tealbg:#E6F3F1;
+    --shadow:0 1px 2px rgba(36,31,82,.05), 0 8px 24px rgba(36,31,82,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#141225; --card:#1D1A32; --ink:#EDEBF7; --sub:#B6B2CC; --faint:#918DAB; --line:#302C4A; --line2:#282443;
+      --brand:#B0A2F0; --deep:#CFC6F5; --soft:#2A2450; --good:#7FD1A0; --goodbg:#1B3227; --warn:#E4A94F; --warnbg:#33280F;
+      --stop:#F58BB0; --stopbg:#37172A; --teal:#5FC7BC; --tealbg:#12312D; --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.28);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#141225; --card:#1D1A32; --ink:#EDEBF7; --sub:#B6B2CC; --faint:#918DAB; --line:#302C4A; --line2:#282443;
+    --brand:#B0A2F0; --deep:#CFC6F5; --soft:#2A2450; --good:#7FD1A0; --goodbg:#1B3227; --warn:#E4A94F; --warnbg:#33280F;
+    --stop:#F58BB0; --stopbg:#37172A; --teal:#5FC7BC; --tealbg:#12312D; --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.28);
+  }
+  *{box-sizing:border-box}
+  body{background:var(--ground);color:var(--ink);font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:500;line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:940px;margin:0 auto;padding:0 22px 90px}
+  header.top{padding:52px 0 26px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--brand);margin:0 0 14px}
+  h1{font-size:clamp(30px,5.2vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1.08;margin:0 0 14px;text-wrap:balance}
+  .standfirst{font-size:17px;color:var(--sub);margin:0;max-width:66ch}
+  .stamp{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .stamp span{font-size:12px;font-weight:600;color:var(--sub);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+  nav.toc{position:sticky;top:0;z-index:5;background:color-mix(in srgb, var(--ground) 92%, transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin:0 -22px 40px;padding:10px 22px}
+  nav.toc ol{display:flex;gap:4px;list-style:none;margin:0;padding:0;overflow-x:auto;scrollbar-width:thin}
+  nav.toc a{display:block;white-space:nowrap;font-size:12.5px;font-weight:700;color:var(--sub);text-decoration:none;padding:7px 11px;border-radius:8px}
+  nav.toc a:hover{background:var(--soft);color:var(--brand)}
+  section{margin:0 0 56px;scroll-margin-top:64px}
+  .snum{font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--faint)}
+  h2{font-size:clamp(22px,3.2vw,29px);font-weight:800;letter-spacing:-.025em;line-height:1.18;margin:6px 0 8px;text-wrap:balance}
+  h3{font-size:17px;font-weight:800;letter-spacing:-.015em;margin:30px 0 8px}
+  h4{font-size:14.5px;font-weight:800;margin:18px 0 6px}
+  p{margin:0 0 14px;max-width:70ch}
+  ul,ol.body{margin:0 0 16px;padding-left:20px;max-width:70ch}
+  li{margin:0 0 7px}
+  strong{font-weight:800}
+  .lead{font-size:16.5px;color:var(--sub)}
+  .tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow);margin:0 0 18px}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:600px}
+  th{text-align:left;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:11px 14px;border-bottom:1px solid var(--line2);color:var(--sub);vertical-align:top}
+  tr:last-child td{border-bottom:0}
+  td:first-child{color:var(--ink);font-weight:700}
+  .pill{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .p-yes{background:var(--goodbg);color:var(--good)} .p-part{background:var(--warnbg);color:var(--warn)} .p-no{background:var(--stopbg);color:var(--stop)} .p-new{background:var(--tealbg);color:var(--teal)}
+  .note{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:0 0 20px;box-shadow:var(--shadow)}
+  .note.risk{background:var(--stopbg);border-color:color-mix(in srgb, var(--stop) 30%, transparent)}
+  .note.win{background:var(--goodbg);border-color:color-mix(in srgb, var(--good) 30%, transparent)}
+  .note.idea{background:var(--soft);border-color:color-mix(in srgb, var(--brand) 30%, transparent)}
+  .note h4{margin:0 0 7px;font-size:14.5px}
+  .note p{margin:0;font-size:14.5px;max-width:none}
+  .note p + p{margin-top:10px}
+  .grid2{display:grid;grid-template-columns:1fr;gap:12px;margin:0 0 20px}
+  @media(min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
+  .grid3{display:grid;grid-template-columns:1fr;gap:12px;margin:0 0 20px}
+  @media(min-width:760px){.grid3{grid-template-columns:1fr 1fr 1fr}}
+  .col{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+  .col h4{margin:0 0 10px;font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--faint)}
+  .col ul{margin:0;padding-left:18px;max-width:none;font-size:14px;color:var(--sub)}
+  .col p{font-size:14px;color:var(--sub);margin:0;max-width:none}
+  .screen{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:0 0 16px;box-shadow:var(--shadow)}
+  .screen h4{margin:0 0 4px;font-size:16px;letter-spacing:-.01em}
+  .screen .where{font-size:12px;color:var(--faint);font-weight:700;margin:0 0 12px}
+  .screen .hero{font-size:14.5px;margin:0 0 10px;padding:12px 14px;background:var(--soft);border-radius:10px;max-width:none}
+  .screen .hero b{color:var(--brand)}
+  .screen ul{margin:0;padding-left:18px;font-size:14px;color:var(--sub);max-width:none}
+  ol.steps{list-style:none;counter-reset:s;margin:0;padding:0}
+  ol.steps li{counter-increment:s;position:relative;padding:0 0 22px 44px;margin:0}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:28px;height:28px;border-radius:50%;background:var(--soft);color:var(--brand);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  ol.steps li::after{content:"";position:absolute;left:13.5px;top:32px;bottom:0;width:1px;background:var(--line)}
+  ol.steps li:last-child::after{display:none}
+  ol.steps b{display:block;font-size:15.5px;font-weight:800;letter-spacing:-.015em;margin-bottom:3px}
+  ol.steps p{margin:0;font-size:14.5px;color:var(--sub)}
+  .ladder{display:grid;gap:6px;margin:0 0 20px}
+  .rung{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+  .rung b{font-size:13.5px}
+  .rung span{font-size:13px;color:var(--sub)}
+  @media(max-width:560px){.rung{grid-template-columns:1fr}}
+  details.eng{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+  details.eng summary{cursor:pointer;padding:16px 20px;font-size:14px;font-weight:800;list-style:none}
+  details.eng summary::-webkit-details-marker{display:none}
+  details.eng summary::before{content:"▸ ";color:var(--brand)}
+  details.eng[open] summary::before{content:"▾ "}
+  details.eng .body{padding:0 20px 18px;border-top:1px solid var(--line2)}
+  details.eng .body p, details.eng .body li{font-size:13.5px;max-width:none}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:var(--soft);color:var(--brand);padding:1px 6px;border-radius:5px;font-weight:600}
+  a{color:var(--brand)}
+  footer{margin-top:14px;padding-top:22px;border-top:1px solid var(--line);font-size:13px;color:var(--faint)}
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <p class="eyebrow">Payobook · design blueprint</p>
+  <h1>One group. Every payroll. One truth.</h1>
+  <p class="standfirst">The design that makes Payobook world class for a group with many companies, countries, currencies, divisions and payroll schemes: how every number is sliced and added up, how a person belongs to a scheme, what happens to money across borders, how planning and pay reviews work per plant and for the whole group, and what replaces the old planning screens. Built on what was verified in <a href="one-group-many-payrolls.html">One group, many payrolls</a>.</p>
+  <div class="stamp">
+    <span>7 September 2026</span>
+    <span>7 phases · Fable designs, Opus builds</span>
+    <span>Replaces the old planning module</span>
+  </div>
+</header>
+
+<nav class="toc"><ol>
+  <li><a href="#a">Scenarios</a></li>
+  <li><a href="#b">The model</a></li>
+  <li><a href="#c">Slicing &amp; adding up</a></li>
+  <li><a href="#d">Money</a></li>
+  <li><a href="#e">People in two places</a></li>
+  <li><a href="#f">Planning</a></li>
+  <li><a href="#g">Pay review, redesigned</a></li>
+  <li><a href="#h">Phases</a></li>
+</ol></nav>
+
+<!-- ================= A ================= -->
+<section id="a">
+  <p class="snum">PART A</p>
+  <h2>Every scenario a client can bring, and what the design does with it</h2>
+  <p class="lead">You named four: divisions with their own schemes, departments inside divisions, two currencies, and a person split across two countries. A world-class product has to hold the ones you did not name too. Here is the full list I designed against. The last column is the honest status once all seven phases are done.</p>
+
+  <h3>Structure</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Scenario</th><th>How the design handles it</th><th>After</th></tr></thead>
+    <tbody>
+      <tr><td>Several companies in one country, one currency</td><td>A company tree with a parent. Group totals need no conversion; every screen still shows which company a number came from.</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>Companies in several countries and currencies</td><td>Group currency on the parent, conversion at view time at that month's rate, refusal to invent a rate.</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>A division that exists in two companies (Retail in Vietnam and in Singapore)</td><td>Divisions become group-level records. A department in any company attaches to one. "Retail" then adds up across borders.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>One scheme shared by two divisions</td><td>The scheme map allows many departments to point at one scheme.</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>One division with two schemes (factory floor and office staff)</td><td>The map works at department level, and can go finer with a rule such as "job title contains Operator".</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>A scheme per kind of run (advance, main, 13th month, final settlement)</td><td>The map holds one scheme per kind of run. Reports default to the main run so people are never counted twice.</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>A person with no department, or a department with no scheme</td><td>Never silent. An exceptions list names them, the pay run shows them before it starts, and headcount keeps them in an "Unassigned" bucket.</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>Departments renamed, merged or moved under another division</td><td>History is kept as it was: every summary row records the department and division as at the end of that pay period. Division links carry effective dates.</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>A scheme changes over the year (new version, new rules)</td><td>Every summary row records the scheme and its version, so last year compares with this year honestly.</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>Different fiscal years per country</td><td>Group reports use calendar months and let the fiscal year be chosen per company; planning years follow the company.</td><td><span class="pill p-part">Partly</span> planning stays calendar-year in this programme</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>People</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Scenario</th><th>How the design handles it</th><th>After</th></tr></thead>
+    <tbody>
+      <tr><td>Joins or leaves in the middle of a month</td><td>Today nothing prorates this. The design introduces work segments: the days a person is in a given entity, division and scheme. A joiner is one short segment, and pay follows the days.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Transfers between divisions mid-month, same company</td><td>Two segments, two schemes, each prorated by days. One person, one month, two payslips that add up.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Transfers between companies</td><td>One person identity across companies. The old employment ends, the new one starts, and the group headcount still counts one human being.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Works 20 days here and 10 days there</td><td>Two overlapping segments. Either entity pays its own days, or the home entity pays and the host is charged. Both supported, chosen per case.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Part-time and shared roles</td><td>A segment carries a full-time equivalent. Headcount screens offer "people" and "full-time equivalents" side by side.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Interns, contractors, a different scheme for a type of employment</td><td>The map can route by employment type as well as by department.</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>Expatriate paid at home, working abroad</td><td>The home-pays pattern with a charge to the host, so cost lands where the work happens.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Two part-time jobs in two entities</td><td>Two employments under one person, each with its own contract and scheme.</td><td><span class="pill p-new">New</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Money</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Scenario</th><th>How the design handles it</th><th>After</th></tr></thead>
+    <tbody>
+      <tr><td>No exchange rate on file for a month</td><td>The screen shows the parts separately and says why. It never shows a converted total it cannot stand behind.</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>Which rate: month average, month end, day of payment</td><td>One group-level policy, chosen once. Every converted number remembers the rate and date it used.</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>The board changes its reporting currency</td><td>Nothing is stored converted, so the change is instant and history restates cleanly.</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>"As booked" against "at today's rate"</td><td>A switch. Historical rates are kept per month.</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>Rounding differs by currency (dong has no decimals)</td><td>Each currency keeps its own decimals; the group currency rounds last.</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>Budgets in group currency against actuals in local money</td><td>The Budget screen's conversion becomes the shared service every screen uses.</td><td><span class="pill p-yes">Handled</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Reading the numbers</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Scenario</th><th>How the design handles it</th><th>After</th></tr></thead>
+    <tbody>
+      <tr><td>Slice from the group all the way to one person</td><td>Group → country → company → division → department → job → person, every level a filter and a grouping. Scheme and kind of run alongside.</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>Compare scheme against scheme, month against month</td><td>A comparison lens: two or more schemes side by side per month, cost per head, overtime share, contributions.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Counted twice because of an advance run</td><td>Kind of run is a filter that defaults to the main run; headcount counts persons, never payslips.</td><td><span class="pill p-yes">Handled</span></td></tr>
+      <tr><td>A division head must see only their division</td><td>Visibility follows division and company as well as role. A group CFO sees all; country HR sees a country.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Old reports that quietly ignore the company</td><td>Three existing report screens sum across companies when they should not. They are fixed or retired in phase 3.</td><td><span class="pill p-yes">Fixed</span></td></tr>
+      <tr><td>Numbers that lag behind a closed pay run</td><td>Every screen shows "built at" and rebuilds on run close.</td><td><span class="pill p-yes">Handled</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Planning and pay reviews</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Scenario</th><th>How the design handles it</th><th>After</th></tr></thead>
+    <tbody>
+      <tr><td>Plan one plant, one division, one scheme, or the group</td><td>A scope picker on the Decision Room. Plans remember their scope and compare across scopes.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Different statutory rules per country in the plan</td><td>A rule set per country, shipped for the eight countries the payroll engine already knows, overridable per scheme.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Group plan in the board's currency</td><td>Each entity plans in its own money; the group view converts with the same service as the reports.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Cost a pay rise through the company's own payroll formulas</td><td>A "true cost" lane that runs each person through their scheme, carried over from the old module and made fast.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Plan against what actually happened</td><td>Once a run closes, the plan for that month gets an actual beside it.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>A pay review with proposals, limits, approvals and an audit trail</td><td>Rebuilt from first principles as Pay Review: guidance pre-filled, calibration view, cascade, apply with undo, letters. Part G.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Pay bands and a merit table per country and currency</td><td>Pay Bands with the band pictured, health cards and a place-a-new-hire tool; the merit table becomes the guidance grid inside the review. Part G.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Is pay fair across gender and across people in the same job?</td><td>A Fairness lens computed from what payroll paid, live inside every review. Part G.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>A promotion or correction outside the review</td><td>Pay changes: one screen, same guidance, limits, approvals and letter. Part G.</td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Which entity pays a person split across two</td><td>A group setting with two patterns and a per-assignment override. Part E.</td><td><span class="pill p-new">New</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note idea">
+    <h4>Is it enough?</h4>
+    <p>For the questions of structure, slicing, currency and planning: yes, and I have tried to be specific about the two places it stays partial, fiscal years in planning and the phone width of the hub frame. The one honest caveat is that "people in two places" is new ground for the payroll engine itself, not just the reports, and I have put it in its own phase with its own rehearsal so it cannot destabilise a pay run for anyone who never uses it.</p>
+  </div>
+</section>
+
+<!-- ================= B ================= -->
+<section id="b">
+  <p class="snum">PART B</p>
+  <h2>The model: six ideas that carry everything</h2>
+  <p class="lead">Most of what follows comes from adding six small, well-named things to the product and making every screen read them. None of them is exotic; together they are what a group needs.</p>
+
+  <div class="grid2">
+    <div class="col"><h4>1 · The group</h4><p>A group record above the operating companies, with the board's currency, the exchange-rate policy, and the fiscal calendar on it. It is deliberately not the system's own "branch" feature, because a branch is forced to share its parent's currency, and Vietnam and Singapore cannot. One switch for the whole group.</p></div>
+    <div class="col"><h4>2 · Divisions at group level</h4><p>Retail is one record for the whole group. A department in any company attaches to it with a from-date. So "Retail" adds up across Vietnam and Singapore, and history stays put when a department moves.</p></div>
+    <div class="col"><h4>3 · The scheme map</h4><p>The one place that says "this department, for this kind of run, is paid by this scheme". Employees inherit it; the pay run reads it; exceptions are listed, never hidden.</p></div>
+    <div class="col"><h4>4 · The person</h4><p>One identity per human being across companies, holding the things that do not change when they move: name, national ID, tax number, start date with the group. Employments hang off it.</p></div>
+    <div class="col"><h4>5 · Work segments</h4><p>The days a person spends in an entity, division and scheme, with a full-time equivalent. A whole month is one segment. A joiner, a transfer, or a split month is two.</p></div>
+    <div class="col"><h4>6 · Facts that remember</h4><p>Every summary row keeps company, division, department, scheme and version, kind of run, currency, and the person, as at the end of its period. What you see is always reproducible.</p></div>
+  </div>
+
+  <h3>How a person resolves to a scheme, in order</h3>
+  <p>Today the pay run guesses down a ladder that ends in "the first scheme I can find". The new ladder ends in a named exception instead.</p>
+  <div class="ladder">
+    <div class="rung"><b>1 · A segment says so</b><span>This person, these days, this scheme. Wins always.</span></div>
+    <div class="rung"><b>2 · Their department's map entry</b><span>For this kind of run. Walks up the department tree until it finds one.</span></div>
+    <div class="rung"><b>3 · A rule on the map</b><span>"Employment type is Intern" or "Job title contains Driver", when a department is not enough.</span></div>
+    <div class="rung"><b>4 · The company's only scheme</b><span>A single-scheme company behaves exactly as today. AB Mauri never notices any of this.</span></div>
+    <div class="rung"><b>5 · Nobody</b><span>Named on the exceptions list, shown before the run starts, never paid under a guess.</span></div>
+  </div>
+</section>
+
+<!-- ================= C ================= -->
+<section id="c">
+  <p class="snum">PART C</p>
+  <h2>Slicing down and adding up</h2>
+  <p class="lead">You asked whether it is good enough to slice to department level and to group to the top. This is the exact contract.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Level</th><th>Filter by it</th><th>Group by it</th><th>Adds up honestly because</th></tr></thead>
+    <tbody>
+      <tr><td>Group</td><td>—</td><td class="">Yes</td><td>Converted at view time in the group currency, or shown per currency when a rate is missing.</td></tr>
+      <tr><td>Country</td><td>Yes</td><td>Yes</td><td>Same currency within a country; contributions and tax are comparable.</td></tr>
+      <tr><td>Company</td><td>Yes</td><td>Yes</td><td>Every fact row carries its company. Today's screens that forget this are fixed.</td></tr>
+      <tr><td>Division</td><td>Yes</td><td>Yes</td><td>A group-level record, so it crosses companies without double counting.</td></tr>
+      <tr><td>Department</td><td>Yes</td><td>Yes</td><td>Stored as at the end of the period; a later transfer does not rewrite history.</td></tr>
+      <tr><td>Job</td><td>Yes</td><td>Yes</td><td>Stored per period like department.</td></tr>
+      <tr><td>Person</td><td>Yes</td><td>Yes, with permission</td><td>Counted once per group. Employments and segments roll up to the person.</td></tr>
+      <tr><td>Payroll scheme</td><td>Yes</td><td>Yes</td><td>Stored on every row with its version.</td></tr>
+      <tr><td>Kind of run</td><td>Yes, default main</td><td>Yes</td><td>Advance runs never inflate headcount or cost unless you ask.</td></tr>
+      <tr><td>Time</td><td>Month, quarter, year, fiscal year</td><td>Yes</td><td>Calendar for the group, fiscal per company.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>What you can measure at any of those levels</h3>
+  <ul>
+    <li>Gross pay, net pay, employer cost, employee deductions, statutory contributions, overtime, allowances, one-off payments.</li>
+    <li>People and full-time equivalents, joiners and leavers, cost per head, overtime share, average pay, pay spread within a band.</li>
+    <li>Plan against actual, budget against actual, this period against any other, this scheme against any other.</li>
+  </ul>
+
+  <h3>The Explorer, finished</h3>
+  <div class="screen">
+    <h4>Analytics Explorer</h4>
+    <p class="where">Insights → Explorer · existing screen, extended</p>
+    <p class="hero"><b>The hero:</b> a breadcrumb that reads <em>Group › Vietnam › Retail › Bread</em> and updates the whole canvas as you click down or back up, with the currency of what you are looking at always in the header, and a single switch between "group currency" and "each in its own money".</p>
+    <ul>
+      <li>Scheme and kind of run join the filter rail. Multi-select on scheme gives a side-by-side comparison automatically.</li>
+      <li>A "Compare schemes" lens: months across, schemes down, one measure at a time, with a sparkline per cell.</li>
+      <li>Headcount tiles show people and full-time equivalents, and say "counted once across the group".</li>
+      <li>A rate badge on every converted figure: which rate, which date, and "missing" in amber when there is none.</li>
+      <li>Ask in words still works: "retail scheme cost per head by department last quarter in dollars".</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= D ================= -->
+<section id="d">
+  <p class="snum">PART D</p>
+  <h2>Money across borders</h2>
+  <p class="lead">One service, used by every screen, lifted out of the Budget screen where it already behaves correctly.</p>
+  <div class="grid3">
+    <div class="col"><h4>Stored</h4><p>Every amount keeps the currency it was paid in. Nothing is stored converted, ever.</p></div>
+    <div class="col"><h4>Converted</h4><p>At view time, at the group's chosen rate for that month, remembering rate and date on the figure.</p></div>
+    <div class="col"><h4>Refused</h4><p>No rate on file means the parts are shown separately with a plain reason. A guessed rate is never shown.</p></div>
+  </div>
+  <div class="screen">
+    <h4>Group settings</h4>
+    <p class="where">Settings → Group · new</p>
+    <p class="hero"><b>The hero:</b> your companies drawn as a tree under the group, each with its flag, currency and people count, and one card above them for the group currency and rate policy. Name the group, tick its companies, and it exists.</p>
+    <ul>
+      <li>Rate policy: month average, month end, or day of payment. Shown on every converted number afterwards.</li>
+      <li>A rate coverage strip: which months have rates for which currency pairs, and a "fetch" button when a rate source is connected.</li>
+      <li>Divisions live here too: create Retail once, attach departments from any company, see the people count roll up.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= E ================= -->
+<section id="e">
+  <p class="snum">PART E</p>
+  <h2>People in two places</h2>
+  <p class="lead">The hardest part of what you asked, designed so it also fixes something you did not ask about: pay for people who join or leave mid-month is not prorated today.</p>
+  <p>A <strong>work segment</strong> is the days a person spends in an entity, division and scheme, with a full-time equivalent. Every person has a standing segment that is simply "all month, my department, my scheme". Segments are only ever written for the exceptions: a mid-month joiner, a transfer, a secondment, a split month. Payroll then reads segments, not the person, so a month with two segments produces two payslips whose days add up to the month.</p>
+
+  <div class="grid2">
+    <div class="col"><h4>Each entity pays its own days</h4><ul><li>Vietnam pays 20 days under the Retail scheme in dong.</li><li>Singapore pays 10 days under the Logistics scheme in dollars.</li><li>Each with its own contributions and tax.</li><li>Cost lands where the work was done, no transfer needed.</li></ul></div>
+    <div class="col"><h4>Home pays, host is charged</h4><ul><li>Vietnam pays 30 days, one payslip, one set of rules.</li><li>A charge of one third moves the cost to Singapore in the reports.</li><li>The person stays one employee with one contract.</li><li>Right for short secondments and many expatriate arrangements.</li></ul></div>
+  </div>
+
+  <div class="note idea">
+    <h4>You choose the pattern, once, and can override it per person</h4>
+    <p>"How split months are paid" is a group setting with two choices: <strong>each entity pays its own days</strong>, or <strong>the home entity pays and the host is charged</strong>. Home means the entity of the person's standing employment. Any single assignment can override the group default, because a short secondment and a genuine dual employment are different arrangements even in the same company.</p>
+    <p>With the charge pattern, the charge appears as an internal cost line in every report and in an export you can hand to finance. There is no accounting connection, as you ruled earlier; the product shows the cost where the work happened and leaves the booking to you.</p>
+  </div>
+
+  <div class="screen">
+    <h4>Assignments</h4>
+    <p class="where">People → Employees → a person → Where they work · new</p>
+    <p class="hero"><b>The hero:</b> the month as a strip of days; drag to mark the ten days in Singapore, pick the entity and scheme, and the two payslips preview beneath it in their own currencies with the group total beside them, before you save anything.</p>
+    <ul>
+      <li>One person, counted once: the group headcount and every division count use fractions that add to one.</li>
+      <li>The pay run shows split people with a chip, and previews both slips before computing.</li>
+      <li>The same screen handles a mid-month joiner, a transfer and part-time, because they are all segments.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= F ================= -->
+<section id="f">
+  <p class="snum">PART F</p>
+  <h2>Planning, by plant and for the group</h2>
+  <div class="screen">
+    <h4>Decision Room, with scope</h4>
+    <p class="where">People → Plan · existing, extended</p>
+    <p class="hero"><b>The hero:</b> a scope chip at the top of the stage that reads <em>Retail scheme · Vietnam</em>; click it and choose the group, a country, a company, a division or a scheme, and the roster, the rules and every number on the stage change to that scope in one motion.</p>
+    <ul>
+      <li>Rule sets per country for the eight the engine knows, editable per scheme. Singapore stops inheriting Vietnam's contribution cap.</li>
+      <li>Group view: each entity's line in its own money, the group total in the board's currency, both on the same stage.</li>
+      <li>Full-time equivalents everywhere a split person exists.</li>
+      <li>A "true cost" lane that runs the plan through each person's actual scheme, for the months where accuracy matters more than speed.</li>
+      <li>Plan against actual: once a run closes, the stage draws the actual over the plan for that month.</li>
+      <li>Approve a plan, version it, and hand the approved rises to the pay review below.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= G ================= -->
+<section id="g">
+  <p class="snum">PART G</p>
+  <h2>Pay, rethought from the question a company actually has</h2>
+  <p class="lead">The old module was seven screens nobody opened, because each one asked a person to run a process the software should run for them: set up grades, then a matrix, then a scenario, then a cycle, then approvals, then apply, then export. I have not repainted them. I started from the question a company asks three or four times a year — <em>who should get what, can we afford it, is it fair, and how do we make it happen without a spreadsheet</em> — and designed one area, called <strong>Pay</strong>, that answers it. Four surfaces, and a lot of intelligence between them.</p>
+
+  <div class="note idea">
+    <h4>What "world class" means here, concretely</h4>
+    <p>Measured against Lattice, Pave, Carta and Workday's compensation tools. They all do three things well: a manager worksheet that opens pre-filled with guidance rather than blank; a calibration view where you see everyone at once and fix the outliers; and a cascade of budgets and approvals that never leaves the tool. The design matches all three. It does one thing they cannot: it is payroll-native. Apply writes the contract, prepares the next pay run and prints the payslip, with no export, no import and no second system to reconcile.</p>
+  </div>
+
+  <div class="screen">
+    <h4>Pay Review</h4>
+    <p class="where">People → Pay → Review · replaces Compensation Cycles, Planning Scenarios, Employee Forecasts and the Merit Matrix</p>
+    <p class="hero"><b>The hero: guidance first, then judgement.</b> A review opens with a suggested raise already filled in for every person from the guidance grid, the budget meter already showing what that costs, and the fairness check already run. A manager's job becomes adjusting a good answer, not building one. Type a percentage over a selected block of rows and the meter, the fairness line and every row move together.</p>
+    <ul>
+      <li><strong>Scope and budget.</strong> Whole company, a division, or a scheme. Budget in the review's currency; a group review shows each country's slice in its own money underneath. A review can be born from an approved Decision Room plan and inherit both.</li>
+      <li><strong>The worksheet.</strong> One row per person reads as a sentence: name, team, a small band bar with their dot on it, a rating chip, the guidance percentage, the proposal you can type into, the new pay, the cost. Block selection, keyboard everywhere, paste a column from a spreadsheet, undo. Rows sort by who is furthest below band, who is unrated, who is over budget.</li>
+      <li><strong>Calibration.</strong> A second view of the same review: every person as a dot, rating across and proposed raise up. Drag a dot to change a proposal. Outliers ring in rose; the budget meter follows. This is where a leadership team spends its hour, and it is the view the old tool never had.</li>
+      <li><strong>Fairness, live.</strong> Every change updates one sentence: "This review narrows the pay gap in Bread from 4.1% to 3.6%." Same-job pay spread and any inversion (a manager paid less than a report) surface as chips on the rows concerned.</li>
+      <li><strong>Limits that explain themselves.</strong> Maximum raise, band ceiling, division budget, minimum rating. A breach shows the limit on the row in plain words and a "What blocks approval" panel lists them all. Warn or block, set per review.</li>
+      <li><strong>The cascade.</strong> Each manager sees their people and their slice of the budget. Submit, then HR review, finance sign-off and CEO approval as a horizontal timeline with a nudge button. Each step is a real task on the approver's Home. Rejection returns the row to the manager with the reason on it.</li>
+      <li><strong>Apply, safely.</strong> A preview lists every contract that will change, in local currency, with the effective date. Apply writes the new pay onto the contracts, queues it for the next pay run, generates each person's letter, and keeps a one-click undo for 24 hours.</li>
+      <li><strong>Tell people.</strong> Letters through the existing letter engine, and a "Your pay, explained" page in the employee portal showing old, new, and why.</li>
+      <li><strong>The trail.</strong> Every proposal, change, sign-off and apply, who and when, exportable. A review closed is a review you can defend a year later.</li>
+    </ul>
+  </div>
+
+  <div class="screen">
+    <h4>Pay Bands</h4>
+    <p class="where">People → Pay → Bands · replaces Pay Grades and the band figures on contracts</p>
+    <p class="hero"><b>The hero: the band as a picture.</b> Every band is a horizontal range with every person in it as a dot. Drag a band's edge and the dots that fall outside light up with what it would cost to bring them back in. Hover a dot and the person's name, pay and position in band appear.</p>
+    <ul>
+      <li>Bands per country and currency, per job family and level, with a from-date so history is kept when bands move.</li>
+      <li>Health cards you do not have to go looking for: below band, above band, compression (new joiners paid more than long-serving people in the same job), inversion, spread.</li>
+      <li><strong>Place a new hire.</strong> Pick the job and level; see the band, the median, the people already in it, and a suggested offer. A decision that takes a spreadsheet today takes one screen.</li>
+      <li>Import bands from a spreadsheet; every contract shows its band and position as a plain percentage, kept current.</li>
+    </ul>
+  </div>
+
+  <div class="screen">
+    <h4>Fairness</h4>
+    <p class="where">People → Pay → Fairness · new</p>
+    <p class="hero"><b>The hero: one honest number per question.</b> The pay gap by gender, by job level, by division; the spread of pay within the same job; the people who are paid least for the same work. Each with the plain-English reason behind it and a "show me the people" link for those allowed to see them.</p>
+    <ul>
+      <li>Computed from what payroll actually paid, never from a survey, so it is always current.</li>
+      <li>Runs live inside a review, so a decision that widens a gap is visible before it is approved.</li>
+      <li>Exportable as a one-page statement for a board or a regulator.</li>
+    </ul>
+  </div>
+
+  <div class="screen">
+    <h4>Pay changes</h4>
+    <p class="where">People → Pay → Changes · new</p>
+    <p class="hero"><b>The hero: a promotion in one screen.</b> Pick the person, the new job or pay, the date; the band, the guidance and the limits appear as you type; the same approval steps run; apply writes the contract and prints the letter.</p>
+    <ul>
+      <li>Covers promotions, corrections and market adjustments outside a review, so pay is never changed by editing a contract directly.</li>
+      <li>Every change lands on the same trail as the review, so the history of a person's pay is one list.</li>
+    </ul>
+  </div>
+
+  <h3>Where the old pieces went</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Old screen</th><th>Becomes</th></tr></thead>
+    <tbody>
+      <tr><td>Planning Dashboard</td><td>The Decision Room (Part F) and the Explorer (Part C).</td></tr>
+      <tr><td>Planning Scenarios</td><td>Decision Room plans with approval and versions; a review can be born from one.</td></tr>
+      <tr><td>Employee Forecasts</td><td>The review worksheet, and the true-cost lane in the Decision Room.</td></tr>
+      <tr><td>Pay Grades</td><td>Pay Bands, with the band pictured and a place-a-new-hire tool.</td></tr>
+      <tr><td>Merit Matrix</td><td>The guidance grid inside Pay Review settings: performance across, position in band down, a percentage per cell, the cost of the guidance recomputed live in the corner. Ratings are entered per review, pasted, or synced from the connected HR system.</td></tr>
+      <tr><td>Compensation Cycles</td><td>Pay Review, with the cascade, the limits, the apply and the letters built in.</td></tr>
+      <tr><td>Tag Formula Components</td><td>Gone. The payroll engine already classifies every column from the value-kind work; the planner and the review read that.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note">
+    <h4>What is kept from the old data</h4>
+    <p>Pay grades become bands; band positions on contracts are recomputed; merit matrices become guidance grids; past compensation cycles with their approvals become read-only past reviews on the trail; the budget table used by the Budget screen is re-homed. Nothing you have entered is lost. When the last migration has run and every old door has a new one, the old module is uninstalled.</p>
+  </div>
+</section>
+
+<!-- ================= H ================= -->
+<section id="h">
+  <p class="snum">PART H</p>
+  <h2>Seven phases, back to back</h2>
+  <p class="lead">Each phase is a handover I write and a build the implementation agent does, tests and deploys, in the same order as the earlier programmes. The first two are the foundation everything else stands on.</p>
+  <ol class="steps">
+    <li><b>The group</b><p>A group record with its member companies, group currency and rate policy, the shared conversion service lifted from the Budget screen, group-level divisions, and the Group settings screen. Nothing changes for any existing screen yet; the Budget screen switches to the shared service and behaves identically.</p></li>
+    <li><b>Who is paid by what</b><p>The scheme map becomes the truth: on the employee record as "Paid by", the exceptions list, and the pay run choosing its people by scheme with the count shown first and the scheme written on each payslip. Single-scheme companies behave exactly as today.</p></li>
+    <li><b>Numbers that remember</b><p>Scheme, version, kind of run, currency, division and person on every summary row. The Explorer's breadcrumb, scheme comparison, group currency switch and rate badges. The three report screens that forget the company are fixed or retired.</p></li>
+    <li><b>Planning with scope</b><p>The Decision Room's scope picker, country rule sets, group view, plan against actual, approvals and versions, and the true-cost lane carried over from the old engine.</p></li>
+    <li><b>People in two places</b><p>The person identity, work segments, day-based proration in the engine, both payment patterns, fractional headcount everywhere. Rehearsed on the clone with the split cases before it goes anywhere near a live run.</p></li>
+    <li><b>Pay: Review, Bands, Fairness, Changes</b><p>The Pay area rebuilt from first principles (Part G), the migration of every old record, the Budget screen's table re-homed, and the old module uninstalled. Large enough that it may run as two builds: Bands and Fairness first, then Review and Changes on top of them.</p></li>
+    <li><b>Visibility, Vietnamese, closeout</b><p>Division and country visibility for every new screen, Vietnamese for every word, and a closeout that tells you what is live, what changed for your clients, and what to decide next.</p></li>
+  </ol>
+
+  <div class="note win">
+    <h4>What stays safe throughout</h4>
+    <p>Every phase is rehearsed on the clone database and tested there before it touches a live company. Pay runs on a single-scheme company are unchanged until phase 2 and identical after it. Nothing is stored converted, so no currency work can corrupt a stored number. The old module stays installed and reachable until the last migration in phase 6 has been verified.</p>
+  </div>
+</section>
+
+<section>
+  <details class="eng">
+    <summary>For the engineers · the same design with names and places</summary>
+    <div class="body">
+      <p><strong>Modules.</strong> <code>pb_group</code> (P1: <code>pb.group</code> record with member companies via <code>res.company.pb_group_id</code> — NOT <code>parent_id</code>, because Odoo 19's <code>_get_company_root_delegated_field_names()</code> returns <code>['currency_id']</code>, so a branch copies the root's currency and shows it read-only; presentation currency + rate policy + fiscal start live on <code>pb.group</code>, <code>pb.fx</code> service lifted from <code>pb.budget.fx</code> with the same <code>(value, known)</code> contract and a <code>rate_for(currency, month)</code> that records source and date, <code>pb.division</code> + <code>pb.division.link</code> (department, division, date_from, date_to), Settings lens "Group"). <code>pb_scheme_map</code> (P2: makes <code>hr.formula.scheme.assignment</code> authoritative with <code>cycle_type</code>, <code>employment_type</code>/domain rules, <code>paid_by_config_id</code> computed on <code>hr.employee</code>, <code>pb.scheme.exception</code> view, pay-run wizard population + <code>formula_config_id</code> stamped at create, company-scoped contract search, ladder in <code>_find_formula_config</code> consulting the map above the country rung). <code>pb_explorer</code> extension (P3: <code>config_id</code>, <code>config_version</code>, <code>cycle</code>, <code>currency_id</code>, <code>division_id</code>, <code>person_id</code>, <code>fte</code> on <code>pb.fact.*</code>; dimensions/filters; presentation toggle; compare lens; fixes to <code>pb_hr_payroll_analytics</code> company filters and <code>pb_payruns</code> <code>search([])</code>). <code>pb_decision_room</code> 2.x (P4: scope on plans/assumptions, <code>pb.decision.ruleset</code> per country, group view via <code>pb.fx</code>, true-cost lane porting <code>wfp.employer.cost.calculator</code>, approvals/versions). <code>pb_workseg</code> (P5: <code>pb.person</code>, <code>pb.work.segment</code>, segment-driven population and per-segment payslips with day proration in <code>_get_formula_input_values</code>, <code>pb.cost.transfer</code>). <code>pb_pay</code> (P6, possibly split 6a bands+fairness / 6b review+changes): <code>pb.pay.band</code> + <code>pb.pay.band.level</code> (country, currency, job family, level, min/mid/max, date_from), <code>pb.pay.guidance</code> grid, <code>pb.pay.rating</code> per review per person (entered, pasted, or via <code>pb_zoho_bridge</code>), <code>pb.pay.review</code> + <code>pb.pay.review.line</code> using <code>biz.approval.chain.mixin</code> / <code>biz.approval.step.log</code> for the cascade, <code>pb.pay.change</code> for one-offs, letters through <code>pb.letter.template</code> / <code>pb.hr.letter</code>, the portal page on the <code>pb_me_portal</code> kit; fairness computed from facts + open contracts, never stored; apply writes <code>hr.contract.wage</code> with an undo record; migrations from <code>wfp.pay.grade</code>, <code>wfp.merit.matrix</code>, <code>wfp.compensation.cycle</code> (read-only history), <code>hr.contract.grade_id/compa_ratio</code>; <code>pb_budget</code> re-homed to <code>pb.budget.line</code>; then <code>pb_hr_workforce_planning</code> uninstalled. Split-month policy: <code>pb.group.split_pay_policy</code> (<code>each_pays</code> | <code>home_pays</code>) with <code>pb.work.segment.pay_policy</code> override and <code>pb.cost.transfer</code> lines for the charge (report + export, no accounting posting). P7: division/country record rules, <code>vi_VN.po</code>, closeout.</p>
+      <p><strong>Invariants enforced by tests across all phases.</strong> No stored converted amount anywhere. Sum of segment days per person per month equals the calendar (or a named exception). Sum of segment FTE per person ≤ 1 unless flagged. Facts: sum over any grouping equals the sum over runs of the same filter. Headcount = distinct persons. Kind-of-run default = main. A company with exactly one active scheme and no map entries produces the identical run population before and after P2.</p>
+    </div>
+  </details>
+</section>
+
+<footer>Payobook · design blueprint · 7 September 2026 · everything marked "verified" was checked on the live Payobook and AB Mauri databases; everything else is design.</footer>
+
+</div>

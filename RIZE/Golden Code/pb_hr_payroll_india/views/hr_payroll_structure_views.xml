@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Extend Contract Form for India Fields -->
+    <record id="hr_contract_form_inherit_india" model="ir.ui.view">
+        <field name="name">hr.contract.view.form.inherit.india</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_contract_form_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='dependents']" position="after">
+                <!-- India specific fields -->
+                <group string="India Payroll Details" attrs="{'invisible': [('struct_id', '!=', %(pb_hr_payroll_india.structure_india_employee)d)]}">
+                    <group>
+                        <field name="pf_employee_rate"/>
+                        <field name="pf_employer_rate"/>
+                        <field name="esi_employee_rate"/>
+                        <field name="esi_employer_rate"/>
+                    </group>
+                    <group>
+                        <field name="income_tax_rate"/>
+                        <field name="professional_tax"/>
+                        <field name="gratuity_eligible"/>
+                        <field name="gratuity_rate"/>
+                    </group>
+                </group>
+                
+                <group string="India Employee Numbers" attrs="{'invisible': [('struct_id', '!=', %(pb_hr_payroll_india.structure_india_employee)d)]}">
+                    <group>
+                        <field name="uan_number"/>
+                        <field name="esi_number"/>
+                    </group>
+                    <group>
+                        <field name="pan_number"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- India Payroll Structure Tree View -->
+    <record id="view_hr_payroll_structure_tree_india" model="ir.ui.view">
+        <field name="name">hr.payroll.structure.tree.india</field>
+        <field name="model">hr.payroll.structure</field>
+        <field name="arch" type="xml">
+            <tree string="India Payroll Structures">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="country_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- India Payroll Structure Action -->
+    <record id="action_hr_payroll_structure_india" model="ir.actions.act_window">
+        <field name="name">India Payroll Structures</field>
+        <field name="res_model">hr.payroll.structure</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_hr_payroll_structure_tree_india"/>
+        <field name="domain">[('country_id.code', '=', 'IN')]</field>
+        <field name="context">{'default_country_id': %(base.in)d}</field>
+    </record>
+    
+</odoo>

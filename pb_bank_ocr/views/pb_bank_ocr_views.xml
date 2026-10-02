@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Bank registry (admin) -->
+    <record id="view_pb_bank_registry_list" model="ir.ui.view">
+        <field name="name">pb.bank.registry.list</field>
+        <field name="model">pb.bank.registry</field>
+        <field name="arch" type="xml">
+            <list string="VN Bank Registry" editable="bottom">
+                <field name="short_name"/>
+                <field name="name"/>
+                <field name="swift_prefix"/>
+                <field name="aliases"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_pb_bank_registry" model="ir.actions.act_window">
+        <field name="name">VN Bank Registry</field>
+        <field name="res_model">pb.bank.registry</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- Bank change request (admin/debug — the cockpit is the primary UI) -->
+    <record id="view_pb_bank_change_request_list" model="ir.ui.view">
+        <field name="name">pb.bank.change.request.list</field>
+        <field name="model">pb.bank.change.request</field>
+        <field name="arch" type="xml">
+            <list string="Bank Change Requests">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="x_bank_name"/>
+                <field name="ocr_state"/>
+                <field name="name_match_band"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-info="state in ('hr_review','finance_review')"
+                       decoration-danger="state == 'refused'"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_pb_bank_change_request_form" model="ir.ui.view">
+        <field name="name">pb.bank.change.request.form</field>
+        <field name="model">pb.bank.change.request</field>
+        <field name="arch" type="xml">
+            <form string="Bank Change Request">
+                <header>
+                    <button name="action_run_ocr" string="Run OCR" type="object"/>
+                    <button name="action_validate" string="Validate" type="object"/>
+                    <button name="action_submit" string="Submit" type="object"
+                            class="btn-primary" invisible="not can_submit"/>
+                    <button name="action_hr_approve" string="Approve as HR" type="object"
+                            class="btn-primary" invisible="not can_hr_approve"/>
+                    <button name="action_finance_approve" string="Approve as Finance" type="object"
+                            class="btn-primary" invisible="not can_finance_approve"/>
+                    <button name="action_refuse_chain" string="Refuse" type="object"
+                            invisible="not can_refuse"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,hr_review,finance_review,approved"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Request">
+                            <field name="name" readonly="1"/>
+                            <field name="employee_id"/>
+                            <field name="attachment_id"/>
+                            <field name="doc_kind"/>
+                            <field name="ocr_state"/>
+                            <field name="ocr_provider"/>
+                        </group>
+                        <group string="Validation">
+                            <field name="v_format_ok"/>
+                            <field name="v_format_msg"/>
+                            <field name="name_match_score"/>
+                            <field name="name_match_band"/>
+                            <field name="duplicate_ids" widget="many2many_tags"/>
+                            <field name="duplicate_ack"/>
+                        </group>
+                    </group>
+                    <group string="Extracted">
+                        <group>
+                            <field name="x_bank_name"/>
+                            <field name="x_bank_branch"/>
+                            <field name="x_account_name"/>
+                        </group>
+                        <group>
+                            <field name="x_account_number"/>
+                            <field name="x_iban"/>
+                            <field name="x_swift"/>
+                        </group>
+                    </group>
+                    <field name="approval_widget_json" widget="biz_approval_stepper" nolabel="1"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Garbage-collect pings older than biz_geo.retention_days (default 90). -->
+    <record id="cron_geo_gc" model="ir.cron">
+        <field name="name">Geo Tracking: GC old pings</field>
+        <field name="model_id" ref="model_biz_geo_tracker"/>
+        <field name="state">code</field>
+        <field name="code">model.gc_pings()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- Advance active route simulators, one tick per minute (demo tooling). -->
+    <record id="cron_geo_route_sim" model="ir.cron">
+        <field name="name">Geo Tracking: advance route simulators</field>
+        <field name="model_id" ref="model_biz_geo_route_sim"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_advance()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- Sensible defaults so the map + retention work out of the box. -->
+    <record id="ir_config_geo_tile_url" model="ir.config_parameter">
+        <field name="key">biz_geo.tile_url</field>
+        <field name="value">https://tile.openstreetmap.org/{z}/{x}/{y}.png</field>
+    </record>
+    <record id="ir_config_geo_tile_attr" model="ir.config_parameter">
+        <field name="key">biz_geo.tile_attribution</field>
+        <field name="value">© OpenStreetMap contributors</field>
+    </record>
+    <record id="ir_config_geo_retention" model="ir.config_parameter">
+        <field name="key">biz_geo.retention_days</field>
+        <field name="value">90</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==========================================================
+       THE HERO — "see it in someone's pay".
+       Three states, all designed: waiting (no draft yet), live, and
+       could-not-compute. There is no spinner-only state and no blank
+       state: a panel with nothing in it is the moment a person stops
+       believing the number will ever appear.
+       ========================================================== -->
+  <t t-name="pb_blueprint.PayPreview">
+    <div t-attf-class="pbbp-pay {{ state.open ? 'is-open' : '' }}">
+
+      <!-- Below 1200px the panel is a bottom bar and this button is its
+           disclosure. It is always in the markup and hidden by CSS on a wide
+           screen: one set of markup, one set of behaviour, no width probing in
+           JavaScript that a resize can make stale. -->
+      <button class="pbbp-pay-bar" t-on-click="toggleOpen"
+              t-att-aria-expanded="state.open ? 'true' : 'false'">
+        <span class="pbbp-pay-bar-lbl">Estimated take-home pay</span>
+        <span class="pbbp-pay-bar-num"><t t-esc="headline"/></span>
+        <span class="pbbp-pay-bar-cur" t-esc="currency"/>
+        <span class="pbbp-pay-bar-x" t-out="ic(state.open ? 'chevronDown' : 'chevronUp', 16)"/>
+      </button>
+
+      <div class="pbbp-pay-body">
+        <div class="pbbp-pay-head">
+          <span class="pbbp-eyebrow">See it in someone's pay</span>
+          <span t-attf-class="pbbp-pill {{ pill.cls }}">
+            <span class="d"/><t t-esc="pill.text"/>
+          </span>
+        </div>
+
+        <t t-if="props.status === 'waiting'">
+          <div class="pbbp-pay-who is-ghost">
+            <span class="pbbp-av is-ghost">?</span>
+            <div class="pbbp-pay-who-t">
+              <b>Your sample employee</b>
+              <small>appears here the moment the configuration is created</small>
+            </div>
+          </div>
+          <div class="pbbp-pay-big is-ghost">
+            <span class="n">— — —</span>
+          </div>
+          <div class="pbbp-pay-lines is-ghost">
+            <div class="pbbp-pay-line"><span>Cash earnings</span><b>—</b></div>
+            <div class="pbbp-pay-line"><span>Employee deductions</span><b>—</b></div>
+            <div class="pbbp-pay-line"><span>Income tax</span><b>—</b></div>
+            <div class="pbbp-pay-line"><span>Employer cost</span><b>—</b></div>
+          </div>
+        </t>
+
+        <t t-elif="props.status === 'empty'">
+          <div class="pbbp-pay-msg">
+            <span class="i" t-out="ic('user', 20)"/>
+            <b>No sample employee yet</b>
+            <p>Add one and the panel starts showing real numbers from this configuration.</p>
+            <button class="pbim-btn primary pbim-btn-sm" t-on-click="() => this.props.onAddSample()">
+              <t t-out="ic('plus', 14)"/> Add a sample
+            </button>
+          </div>
+        </t>
+
+        <t t-elif="props.status === 'error'">
+          <div class="pbbp-pay-msg is-err">
+            <span class="i" t-out="ic('alert', 20)"/>
+            <b>The numbers could not be worked out</b>
+            <p t-esc="props.reason"/>
+            <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.props.onRetry()">
+              <t t-out="ic('rotate', 14)"/> Try again
+            </button>
+          </div>
+        </t>
+
+        <t t-else="">
+          <div class="pbbp-pay-who">
+            <span class="pbbp-av" t-esc="initials"/>
+            <div class="pbbp-pay-who-t">
+              <b t-esc="sample and sample.name"/>
+              <small t-esc="sample and sample.subtitle"/>
+            </div>
+          </div>
+
+          <label class="pbbp-pay-pick" t-if="props.samples.length > 1">
+            <span>Try a different situation</span>
+            <select t-att-value="props.sampleId" t-on-change="onPick">
+              <option t-foreach="props.samples" t-as="s" t-key="s.id"
+                      t-att-value="s.id" t-att-selected="s.id === props.sampleId"
+                      t-esc="s.name"/>
+            </select>
+          </label>
+
+          <div class="pbbp-pay-big">
+            <span class="l">Estimated take-home pay</span>
+            <div class="pbbp-pay-num" aria-live="polite">
+              <span class="n" t-esc="headline"/>
+              <span class="c" t-esc="currency"/>
+              <span t-if="state.delta" t-attf-class="pbbp-delta {{ state.delta.up ? 'up' : 'down' }}"
+                    t-esc="state.delta.text"/>
+            </div>
+          </div>
+
+          <div class="pbbp-pay-lines">
+            <div class="pbbp-pay-line" t-foreach="lines" t-as="ln" t-key="ln.key">
+              <span t-esc="ln.label"/>
+              <b t-attf-class="{{ ln.value === null ? 'is-none' : '' }}" t-esc="full(ln.value)"/>
+            </div>
+          </div>
+
+          <button class="pbbp-pay-adjust" t-on-click="() => this.props.onAdjust()">
+            <t t-out="ic('pencil', 13)"/> Adjust sample inputs
+          </button>
+
+          <p class="pbbp-pay-foot">
+            Calculated by the real payroll engine from this configuration. Sample data only.
+          </p>
+        </t>
+      </div>
+    </div>
+  </t>
+
+  <!-- ==========================================================
+       "Adjust sample inputs" — the kit's dialog chrome, so this and
+       every other dialog in the product are one object.
+       ========================================================== -->
+  <t t-name="pb_blueprint.SampleInputsDialog">
+    <div class="pbim-modal-scrim" t-on-click="() => this.props.onClose()" t-on-keydown="onKey">
+      <div class="pbim-modal is-narrow pbbp-inputs" t-on-click.stop="">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbim-modal__ttl">Adjust sample inputs</div>
+            <div class="pbim-modal__sub" t-esc="props.title"/>
+          </div>
+          <div class="pbim-modal__sp"/>
+          <button class="pbim-modal__x" t-on-click="() => this.props.onClose()"
+                  title="Close" t-out="ic('x', 16)"/>
+        </div>
+
+        <div class="pbim-modal__body" t-ref="body">
+          <p class="pbim-note">
+            These are the numbers the panel calculates from. Change one and the take-home
+            figure moves — nobody's real pay is touched.
+          </p>
+          <!-- The consequence, where the change is made. A scenario whose
+               numbers are already agreed will report a failure the moment an
+               input moves, and the Test step cannot say why on its own. -->
+          <p class="pbim-note is-warn" t-if="props.confirmed">
+            Somebody has already agreed what this scenario should produce. Change an
+            input and its check will disagree until you agree to the new numbers —
+            open it on the Test step and choose “Expect today's numbers instead”.
+          </p>
+          <div class="pbbp-inputs-grid">
+            <label class="pbbp-inputs-row" t-foreach="props.rows" t-as="row" t-key="row.code">
+              <span class="pbbp-inputs-lbl">
+                <b t-esc="row.name"/>
+                <code t-esc="row.code"/>
+              </span>
+              <input type="text" inputmode="decimal"
+                     t-att-value="state.values[row.code]"
+                     t-on-input="(ev) => this.onInput(row.code, ev)"
+                     t-att-class="state.bad[row.code] ? 'is-bad' : ''"/>
+              <small class="pbbp-err" t-if="state.bad[row.code]" t-esc="state.bad[row.code]"/>
+            </label>
+          </div>
+        </div>
+
+        <div class="pbim-modal__foot">
+          <span class="pbbp-hint">⌘/Ctrl + Enter saves</span>
+          <div class="pbim-modal__sp"/>
+          <button class="pbim-btn ghost" t-on-click="() => this.props.onClose()">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="hasBad or props.busy" t-on-click="save">
+            <t t-if="props.busy">Saving…</t>
+            <t t-else="">Save and recalculate</t>
+          </button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

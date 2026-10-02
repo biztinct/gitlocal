@@ -13,7 +13,7 @@
                 <sheet>
                     <div class="oe_title">
                         <h1><field name="period_name"/></h1>
-                        <p class="oe_grey" attrs="{'invisible': [('use_sample_data', '=', False)]}">
+                        <p class="oe_grey" invisible="not use_sample_data">
                             <i class="fa fa-info-circle"/> This report uses sample data for demonstration
                         </p>
                     </div>
@@ -44,7 +44,7 @@
     <record id="action_view_hr_analytics_budget_variance" model="ir.actions.act_window">
         <field name="name">Budget Variance</field>
         <field name="res_model">hr.analytics.budget.variance</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
 </odoo>

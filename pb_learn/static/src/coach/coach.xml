@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- The launcher and the drawer.
+
+     Note what is NOT here: no backdrop, no o_dialog, no focus trap. The screen
+     behind the drawer stays readable and clickable, because the whole reason
+     someone opens this is that they are stuck on that screen.
+
+     The launcher is bottom-right, stacked ABOVE PayAI's pill and (until the
+     deploy-time uninstall) the retired guided-tour module's
+     FAB — see coach.scss. Those two are not modified and not hidden: a demo
+     user gets all three, deliberately. -->
+<t t-name="pb_learn.CoachHost">
+    <!-- `data-place` is the subscription to tab changes (LEARN REFRESH
+         step 1): reading `placeKey` here is what re-renders the helper when
+         the hub on screen switches tab, drawer open or not. -->
+    <div class="lrn-coachhost" t-on-click="onClick" t-att-data-place="placeKey">
+
+        <!-- The Coach is on EVERY screen, so it cannot borrow the Journey's
+             sprite: off the Journey the launcher rendered as a blank circle
+             with no icon at all. Same symbols, injected wherever it mounts. -->
+        <t t-call="pb_learn.IconSprite"/>
+
+        <!-- LEARN v3 — THE ONE HELPER. The only floating control in the corner:
+             PayAI's pill stands down when this module is installed and its
+             chat is the Ask tab below. `helper-orb` is the tour's last stop. -->
+        <button class="lrn-fab" t-on-click="toggle" data-coach="helper-orb"
+                t-att-class="{ open: state.open }"
+                t-att-aria-expanded="state.open"
+                aria-haspopup="dialog"
+                t-att-title="state.open ? '' : launcherTitle">
+            <span class="lrn-fabcore" aria-hidden="true">
+                <svg class="lrn-ic"><use t-attf-href="#lrn-i-#{state.open ? 'x' : 'sparkles'}"/></svg>
+            </span>
+            <span class="lrn-fablabel" t-if="!state.open" t-esc="launcherLabel"/>
+            <kbd class="lrn-fabkey" t-if="!state.open" aria-hidden="true">?</kbd>
+        </button>
+
+        <!-- LEARN v3 — one moment card above the button: a milestone, the
+             month-end nudge, or "first time on this screen". -->
+        <div class="lrn-momenthost" t-if="state.moment and !state.open" t-out="momentHTML"/>
+
+        <aside class="lrn-drawer" t-if="state.open" role="dialog"
+               t-att-class="{ 'lrn-still': isStill }"
+               t-att-aria-label="coachName">
+            <header class="lrn-dhead">
+                <span class="lrn-dtitle">
+                    <span class="lrn-dmark" aria-hidden="true">
+                        <svg class="lrn-ic"><use href="#lrn-i-sparkles"/></svg>
+                    </span>
+                    <span class="lrn-dname">
+                        <b t-esc="coachName"/>
+                        <small t-if="screenLabel" class="lrn-dplace" t-key="screenLabel"><t t-esc="onScreenText"/> <t t-esc="screenLabel"/></small>
+                    </span>
+                </span>
+                <!-- Routed through the delegated handler on the root, like every
+                     other control in this drawer. A direct t-on-click here did not
+                     fire and cost three rounds to notice, while data-act has worked
+                     from the first build — so use the path that is already proven
+                     rather than the one that should work. -->
+                <!-- LEARNOS Phase 4 — "Explain this screen". In the HEADER
+                     rather than in the body, because it has to be reachable
+                     while an answer is already showing: the commonest use is
+                     "that was not what I meant, what IS this screen". It
+                     disappears off the map, where it would have nothing to
+                     explain. Same delegated data-act path as its neighbours. -->
+                <button t-if="covered" class="lrn-btn sm ghost" data-act="c-explain"
+                        t-att-title="explainHintText" t-att-aria-label="explainLabel">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-info"/></svg>
+                </button>
+                <button class="lrn-btn sm ghost" data-act="c-lang">
+                    <span t-esc="langLabel"/>
+                </button>
+                <button class="lrn-btn sm ghost" data-act="c-close" aria-label="Close">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-x"/></svg>
+                </button>
+            </header>
+
+            <!-- The standing promise, on screen rather than in a policy doc. -->
+            <p class="lrn-dhonest">
+                <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-shield-check"/></svg>
+                <span t-esc="honestText"/>
+            </p>
+
+            <!-- LEARN v3 — Guide me / Ask / Practice. Same delegated data-act
+                 path as every other control in the drawer. -->
+            <nav class="lrn-dtabs" role="tablist">
+                <t t-foreach="tabs" t-as="tab" t-key="tab.key">
+                    <button type="button" role="tab" class="lrn-dtab" data-act="c-tab"
+                            t-att-data-tab="tab.key"
+                            t-att-aria-selected="state.tab === tab.key ? 'true' : 'false'">
+                        <svg class="lrn-ic" aria-hidden="true"><use t-attf-href="#lrn-i-#{tab.icon}"/></svg>
+                        <span t-esc="tab.label"/>
+                    </button>
+                </t>
+            </nav>
+
+            <!-- The Ask tab is PayAI's chat, mounted here instead of in a
+                 modal of its own. It brings its own input box. -->
+            <div class="lrn-dask-tab" t-if="state.tab === 'ask' and askTab">
+                <t t-component="askTab.Component" close="closeHelper" handoff="state.handoff"/>
+            </div>
+
+            <!-- Keyed on screen + tab: a tab switch re-mounts the body, and
+                 the mount is the cross-fade (coach.scss, ≤200 ms, none under
+                 Reduce motion). -->
+            <div class="lrn-dbody" t-if="state.tab !== 'ask'" t-key="bodyKey" t-out="bodyHTML"/>
+
+            <form class="lrn-dask" t-if="state.tab === 'guide'" t-on-submit="onSubmit">
+                <input type="text" t-ref="input" t-att-value="state.question"
+                       t-on-input="onInput" t-att-disabled="state.busy"
+                       t-att-placeholder="askPlaceholder" t-att-aria-label="askPlaceholder"/>
+                <button class="lrn-btn sm pri" type="submit" t-att-disabled="state.busy">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-send"/></svg>
+                </button>
+            </form>
+        </aside>
+    </div>
+</t>
+
+</templates>

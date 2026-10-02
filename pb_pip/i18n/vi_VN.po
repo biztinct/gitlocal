@@ -1,0 +1,224 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-23 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "%s drifting or at risk"
+msgstr "%s đang chệch hướng hoặc có rủi ro"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "%s plans"
+msgstr "%s kế hoạch"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "1 drifting or at risk"
+msgstr "1 đang chệch hướng hoặc có rủi ro"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "1 plan"
+msgstr "1 kế hoạch"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "A manager asked HR to look"
+msgstr "Quản lý đã nhờ Nhân sự xem xét"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Asked"
+msgstr "Đã yêu cầu"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Being evaluated"
+msgstr "Đang được đánh giá"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Coaching"
+msgstr "Kèm cặp"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Decision"
+msgstr "Quyết định"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Drifting or at risk"
+msgstr "Chệch hướng hoặc có rủi ro"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Objectives and regular check-ins"
+msgstr "Mục tiêu và các buổi trao đổi định kỳ"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Open"
+msgstr "Đang mở"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Plan running"
+msgstr "Kế hoạch đang chạy"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Plans running"
+msgstr "Kế hoạch đang chạy"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing %s of %s plans"
+msgstr "Đang hiển thị %s trên %s kế hoạch"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing %s of %s plans at %s"
+msgstr "Đang hiển thị %s trên %s kế hoạch ở bước %s"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing all %s closed plans"
+msgstr "Đang hiển thị tất cả %s kế hoạch đã đóng"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing all %s plans · press a step or a number to narrow it"
+msgstr "Đang hiển thị tất cả %s kế hoạch · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing all 1 closed plan"
+msgstr "Đang hiển thị 1 kế hoạch đã đóng"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing all 1 plan · press a step or a number to narrow it"
+msgstr "Đang hiển thị 1 kế hoạch · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing no closed plans yet"
+msgstr "Chưa có kế hoạch nào đã đóng"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Showing no plans yet"
+msgstr "Chưa có kế hoạch nào"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Still a conversation"
+msgstr "Vẫn đang trao đổi"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:0
+msgid "Waiting on a decision"
+msgstr "Đang chờ quyết định"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_palette.js:0
+msgid "Growth plans"
+msgstr "Kế hoạch phát triển"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:75
+msgid "Run today's checks"
+msgstr "Chạy kiểm tra hôm nay"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:392
+#: code:addons/pb_pip/static/src/xml/pip_board.xml:497
+msgid "What has to change"
+msgstr "Điều cần thay đổi"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:65
+msgid "On track"
+msgstr "Đúng hướng"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:66
+msgid "At risk"
+msgstr "Có rủi ro"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:67
+msgid "Met"
+msgstr "Đạt"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_board.js:68
+msgid "Not met"
+msgstr "Không đạt"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/xml/pip_request.xml:58
+msgid "Ask HR about someone in your team"
+msgstr "Hỏi nhân sự về một người trong nhóm của bạn"

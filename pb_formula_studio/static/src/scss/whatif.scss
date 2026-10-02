@@ -1,0 +1,73 @@
+/* B8 — What-if sliders + cost projection (inherits --i* palette from .pbfs) */
+
+.pbfs-whatif-scrim { position: fixed; inset: 0; z-index: 1200; background: rgba(20, 16, 50, .38); display: flex; align-items: center; justify-content: center; padding: 4vh 4vw; }
+.pbfs-whatif { width: 100%; max-width: 760px; max-height: 90vh; background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 30px 80px rgba(20, 16, 50, .4); display: flex; flex-direction: column; animation: pbfs-map-in .2s ease; }
+
+.pbfs-whatif .wi-head { display: flex; align-items: center; gap: 14px; padding: 15px 20px; border-bottom: 1px solid var(--line, #E8E9F3); }
+.pbfs-whatif .wi-title { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.pbfs-whatif .wi-title > svg { width: 23px; height: 23px; color: var(--i, #5A4BB0); flex: none; }
+.pbfs-whatif .wi-title b { font-size: 15px; font-weight: 800; color: var(--ink, #1E1B2E); display: block; }
+.pbfs-whatif .wi-title small { font-size: 12px; color: var(--muted, #6B7280); }
+.pbfs-whatif .hs-x { border: 0; background: none; color: var(--muted, #6B7280); cursor: pointer; padding: 5px; border-radius: 7px; }
+.pbfs-whatif .hs-x:hover { background: #F1F5F9; color: var(--ink, #1E1B2E); }
+.pbfs-whatif .hs-x svg { width: 18px; height: 18px; }
+
+.pbfs-whatif .wi-body { padding: 20px; overflow-y: auto; }
+.pbfs-whatif .wi-loading { padding: 40px; text-align: center; color: var(--muted, #6B7280); font-size: 13px; }
+
+/* controls */
+.pbfs-whatif .wi-controls { background: #FAFAFE; border: 1px solid var(--line, #E8E9F3); border-radius: 14px; padding: 16px 18px; }
+.pbfs-whatif .wi-pick { display: flex; flex-direction: column; gap: 6px; }
+.pbfs-whatif .wi-pick span { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; color: var(--muted, #6B7280); }
+.pbfs-whatif .wi-pick select { border: 1.5px solid var(--line, #E8E9F3); border-radius: 9px; padding: 9px 11px; font-family: inherit; font-size: 13.5px; color: var(--ink, #1E1B2E); background: #fff; cursor: pointer; }
+.pbfs-whatif .wi-pick select:focus { border-color: var(--i, #5A4BB0); outline: none; }
+.pbfs-whatif .wi-slider-block { margin-top: 16px; }
+.pbfs-whatif .wi-slider-vals { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+.pbfs-whatif .wi-from { font-size: 12.5px; color: var(--muted, #6B7280); }
+.pbfs-whatif .wi-from b { color: var(--ink, #1E1B2E); font-weight: 700; margin-left: 3px; }
+.pbfs-whatif .wi-to { font-size: 18px; color: var(--ink, #1E1B2E); }
+.pbfs-whatif .wi-to b { font-weight: 800; }
+.pbfs-whatif .wi-to.up b { color: #B45309; } .pbfs-whatif .wi-to.dn b { color: #166534; }
+.pbfs-whatif .wi-pct { font-size: 12.5px; font-weight: 800; margin-left: 6px; color: var(--muted, #6B7280); }
+.pbfs-whatif .wi-to.up .wi-pct { color: #B45309; } .pbfs-whatif .wi-to.dn .wi-pct { color: #166534; }
+.pbfs-whatif .wi-slider { width: 100%; accent-color: var(--i, #5A4BB0); cursor: pointer; }
+.pbfs-whatif .wi-slider-scale { display: flex; justify-content: space-between; font-size: 10.5px; color: #B4B9C9; font-weight: 700; margin-top: 2px; }
+
+/* result cards */
+.pbfs-whatif .wi-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 18px; }
+.pbfs-whatif .wi-card { background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 12px; padding: 13px 14px; display: flex; flex-direction: column; gap: 5px; }
+.pbfs-whatif .wi-card.accent { border-color: var(--i-border, #CBC2EE); background: var(--i-soft, #EDEAF8); }
+.pbfs-whatif .wi-card-lbl { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; color: var(--muted, #6B7280); line-height: 1.3; }
+.pbfs-whatif .wi-card-val { font-size: 17px; font-weight: 800; color: var(--ink, #1E1B2E); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.pbfs-whatif .wi-card-val.up { color: #B45309; } .pbfs-whatif .wi-card-val.dn { color: #166534; }
+.pbfs-whatif .wi-card-delta { font-size: 12.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.pbfs-whatif .wi-card-delta.up { color: #B45309; } .pbfs-whatif .wi-card-delta.dn { color: #166534; }
+
+/* sampled / exact scope banner */
+.pbfs-whatif .wi-scope { display: flex; align-items: center; gap: 9px; margin-top: 14px; padding: 10px 14px; border-radius: 10px; font-size: 12.5px; font-weight: 600; }
+.pbfs-whatif .wi-scope svg { width: 16px; height: 16px; flex: none; }
+.pbfs-whatif .wi-scope.sampled { background: #FFFBEB; color: #92400E; border: 1px solid #FCD34D; }
+.pbfs-whatif .wi-scope.exact { background: #ECFDF5; color: #166534; border: 1px solid #A7F3D0; }
+.pbfs-whatif .wi-scope b { font-weight: 800; }
+.pbfs-whatif .wi-scope .pbfs-btn { margin-left: auto; }
+
+/* histogram */
+.pbfs-whatif .wi-hist { margin-top: 18px; }
+.pbfs-whatif .wi-hist-title, .pbfs-whatif .wi-movers-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; color: var(--muted, #6B7280); margin-bottom: 10px; }
+.pbfs-whatif .wi-hist-bars { display: flex; align-items: flex-end; gap: 14px; height: 110px; padding: 0 6px; }
+.pbfs-whatif .wi-hist-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; }
+.pbfs-whatif .wi-hist-stack { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 3px; }
+.pbfs-whatif .wi-hb { width: 40%; border-radius: 4px 4px 0 0; min-height: 2px; transition: height .25s ease; }
+.pbfs-whatif .wi-hb.pos { background: #D97706; }
+.pbfs-whatif .wi-hb.neg { background: #059669; }
+.pbfs-whatif .wi-hb-lbl { font-size: 10px; font-weight: 700; color: var(--muted, #6B7280); }
+
+/* movers */
+.pbfs-whatif .wi-movers { margin-top: 20px; }
+.pbfs-whatif .wi-mover { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-bottom: 1px solid var(--line-soft, #F0F1F8); font-size: 12.5px; }
+.pbfs-whatif .wi-mover-nm { flex: 1; color: var(--ink, #1E1B2E); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pbfs-whatif .wi-mover-b { color: var(--muted, #6B7280); font-variant-numeric: tabular-nums; }
+.pbfs-whatif .wi-mover-arrow { color: #CBD5E1; }
+.pbfs-whatif .wi-mover-c { color: var(--ink, #1E1B2E); font-weight: 700; font-variant-numeric: tabular-nums; }
+.pbfs-whatif .wi-mover-d { width: 96px; text-align: right; font-weight: 800; font-variant-numeric: tabular-nums; }
+.pbfs-whatif .wi-mover-d.up { color: #B45309; } .pbfs-whatif .wi-mover-d.dn { color: #166534; }

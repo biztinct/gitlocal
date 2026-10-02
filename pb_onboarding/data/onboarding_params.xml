@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         The dials, shipped so they are DISCOVERABLE rather than folklore.
+
+         The four switches that gate outgoing email — poster_mail,
+         pulse_mail, buddy_mail and auto_steps — are DELIBERATELY NOT here.
+         They default to ON in code (`onboarding_common.DEFAULTS`), and
+         shipping a record for them would freeze whatever value a test run
+         happened to leave behind: `noupdate="1"` means the next upgrade
+         never corrects it. A switch whose only home is a row somebody set
+         once, months ago, is the kind of thing that turns "why did nobody
+         get a welcome card" into an afternoon.
+
+         Everything below is a number or a word with a sensible answer, and
+         changing one is a normal thing for an HR administrator to do.
+         ================================================================== -->
+
+    <record id="param_orientation_freq" model="ir.config_parameter">
+        <field name="key">pb_onboarding.orientation_freq</field>
+        <!-- 'weekly' or 'biweekly'. Fortnightly keeps the even ISO weeks, so
+             the answer does not depend on when this was installed. -->
+        <field name="value">biweekly</field>
+    </record>
+
+    <record id="param_orientation_weekday" model="ir.config_parameter">
+        <field name="key">pb_onboarding.orientation_weekday</field>
+        <!-- 0 = Monday. 1 = Tuesday, which is the default because a Monday
+             session collides with everybody's first morning. -->
+        <field name="value">1</field>
+    </record>
+
+    <record id="param_buddy_connect_days" model="ir.config_parameter">
+        <field name="key">pb_onboarding.buddy_connect_days</field>
+        <field name="value">14</field>
+    </record>
+
+    <record id="param_buddy_connect_count" model="ir.config_parameter">
+        <field name="key">pb_onboarding.buddy_connect_count</field>
+        <!-- Six catch-ups, a fortnight apart: three months of buddying. -->
+        <field name="value">6</field>
+    </record>
+
+    <record id="param_buddy_tenure" model="ir.config_parameter">
+        <field name="key">pb_onboarding.buddy_tenure_months</field>
+        <field name="value">6</field>
+    </record>
+
+    <record id="param_poster_cap" model="ir.config_parameter">
+        <field name="key">pb_onboarding.poster_cap</field>
+        <!-- Past this many colleagues the welcome card is NOT sent and the
+             log says so. Sixty people is a card; six hundred is an incident,
+             and the difference has to be a number somebody chose. -->
+        <field name="value">60</field>
+    </record>
+
+    <record id="param_day1_hour" model="ir.config_parameter">
+        <field name="key">pb_onboarding.day1_hour</field>
+        <field name="value">9</field>
+    </record>
+
+</data>
+</odoo>

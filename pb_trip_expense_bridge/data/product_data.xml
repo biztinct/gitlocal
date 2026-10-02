@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="product_travel_expense" model="product.product">
+        <field name="name">Travel Expense</field>
+        <field name="type">service</field>
+        <field name="purchase_ok" eval="True"/>
+        <field name="can_be_expensed" eval="True"/>
+        <field name="list_price">0.0</field>
+    </record>
+</odoo>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Documents are PII (C18.32). Global company scope, then: an employee sees
+         ONLY their own; HR read/write/create company-scoped; managers unlink. -->
+
+    <!-- Company scoping (global — AND'd with every group's rules). -->
+    <record id="document_rule_company" model="ir.rule">
+        <field name="name">Employee Document: company</field>
+        <field name="model_id" ref="model_pb_employee_document"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- A plain internal user reads ONLY their own documents (read-only; no
+         self-service create this phase — HR uploads. ESS upload is Phase I with
+         its own create rule keyed to the owner). -->
+    <record id="document_rule_own_read" model="ir.rule">
+        <field name="name">Employee Document: own (read)</field>
+        <field name="model_id" ref="model_pb_employee_document"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- HR officers read / write / create every company document (upload on
+         behalf — the vault's core flow). No unlink at this tier. -->
+    <record id="document_rule_hr_all" model="ir.rule">
+        <field name="name">Employee Document: HR (all, no unlink)</field>
+        <field name="model_id" ref="model_pb_employee_document"/>
+        <field name="groups" eval="[(4, ref('om_hr_payroll.group_hr_payroll_user')), (4, ref('hr.group_hr_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Managers additionally unlink. -->
+    <record id="document_rule_manager_all" model="ir.rule">
+        <field name="name">Employee Document: managers (all + unlink)</field>
+        <field name="model_id" ref="model_pb_employee_document"/>
+        <field name="groups" eval="[(4, ref('om_hr_payroll.group_hr_payroll_manager')), (4, ref('hr.group_hr_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+</odoo>

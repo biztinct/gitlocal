@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!--
+    Rize careers pages: /jobs, /jobs/<role>, /jobs/apply/<role>.
+
+    The stock jobs pages carried placeholder copy and stock photographs, and the
+    stock role advert (hr.job.website_description default) is a Belgian sales
+    job with a photo wall. Every Rize role was created with that default saved on
+    it, so the role page refuses to show an advert that still contains the stock
+    image path and falls back to the role summary, then to a plain line.
+    A role published from Hiring always carries its own agreed advert
+    (pb_hiring posting.py writes jd_current_id.body).
+
+    Priority 90 so these replacements apply after every stock inherit
+    (job_right_side_bar etc. xpath into the stock #wrap first, then it is
+    replaced wholesale here).
+  -->
+
+  <!-- ============================ JOBS LIST ============================ -->
+  <template id="rz_jobs_index" inherit_id="website_hr_recruitment.index" priority="90" name="Rize open roles">
+    <xpath expr="//div[@id='wrap']" position="before">
+      <t t-set="additional_title">Open roles</t>
+    </xpath>
+    <xpath expr="//div[@id='wrap']" position="replace">
+      <t t-call="rize_website.rz_shell">
+        <t t-set="rz_active" t-value="'jobs'"/>
+
+        <section class="rz-page-head">
+          <span class="rz-eyebrow"><span class="rz-eyebrow__dot"></span>Careers at Rize</span>
+          <h1 class="rz-page-head__title">Grow with <span class="rz-gold-text">Rize.</span></h1>
+          <p class="rz-page-head__sub">
+            We are modernizing the world's most essential crop across Vietnam, Indonesia,
+            India and Singapore.<t t-if="jobs"> Every role below is open now — read it, then apply in a few minutes.</t>
+          </p>
+          <form t-if="jobs or search" action="/jobs" method="get" class="rz-search" role="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="search" name="search" t-att-value="search or ''" placeholder="Search a role or a team" aria-label="Search a role or a team"/>
+          </form>
+        </section>
+
+        <section t-if="jobs" class="rz-jobs" aria-label="Open roles">
+          <a t-foreach="jobs" t-as="job" t-attf-href="/jobs/#{ slug(job) }" class="rz-job">
+            <t t-set="j" t-value="job.sudo()"/>
+            <t t-set="where" t-value="j.address_id.city or j.address_id.country_id.name or j.company_id.country_id.name"/>
+            <div class="rz-job__top">
+              <span class="rz-job__dept" t-esc="j.department_id.name or 'Rize'"/>
+              <span t-if="not j.website_published" class="rz-chip">Not public yet</span>
+            </div>
+            <h2 class="rz-job__title" t-esc="j.name"/>
+            <ul class="rz-meta">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.99-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 14.99 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+                <t t-esc="where or 'Remote'"/>
+              </li>
+              <li t-if="j.contract_type_id">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>
+                <t t-esc="j.contract_type_id.name"/>
+              </li>
+              <li t-if="j.no_of_recruitment &gt; 1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <t t-esc="j.no_of_recruitment"/> people wanted
+              </li>
+            </ul>
+            <span class="rz-job__go">View role
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </span>
+          </a>
+        </section>
+
+        <section t-else="" class="rz-notice rz-notice--inline">
+          <span class="rz-notice__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>
+          </span>
+          <t t-if="search">
+            <h2 class="rz-notice__title">Nothing matches “<t t-esc="search"/>”</h2>
+            <p class="rz-notice__text">Try another word, or see every open role.</p>
+            <div class="rz-notice__cta">
+              <a class="rz-btn rz-btn--gold" href="/jobs">Show every role</a>
+            </div>
+          </t>
+          <t t-else="">
+            <h2 class="rz-notice__title">No open roles right now</h2>
+            <p class="rz-notice__text">New roles appear here the moment they are agreed. Until then, see what Rize is building.</p>
+            <div class="rz-notice__cta">
+              <a class="rz-btn rz-btn--gold" href="https://www.rize.farm" target="_blank" rel="noopener">Visit rize.farm</a>
+            </div>
+          </t>
+        </section>
+
+        <div t-if="pager and pager.get('page_count', 0) &gt; 1" class="rz-pager">
+          <t t-call="website.pager"/>
+        </div>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============================ ROLE PAGE ============================ -->
+  <template id="rz_job_detail" inherit_id="website_hr_recruitment.detail" priority="90" name="Rize role page">
+    <!-- The stock "All Jobs" bar sits outside #wrap; our frame has its own way back. -->
+    <xpath expr="//t[@t-call='website.layout']/nav" position="replace"/>
+    <xpath expr="//div[@id='wrap']" position="replace">
+      <t t-call="rize_website.rz_shell">
+        <t t-set="rz_active" t-value="'jobs'"/>
+        <t t-set="j" t-value="job.sudo()"/>
+        <t t-set="where" t-value="j.address_id.city or j.address_id.country_id.name or j.company_id.country_id.name"/>
+        <t t-set="advert" t-value="j.website_description or ''"/>
+        <t t-set="advert_is_stock" t-value="'website_hr_recruitment/static/src/img' in advert"/>
+        <!-- Signed-in people are shown roles that are not public yet; the form
+             refuses those, so only offer Apply when the form will take it. -->
+        <t t-set="can_apply" t-value="j.pb_hiring_accepts_applications(website)"/>
+
+        <article class="rz-role" itemscope="itemscope" itemtype="https://schema.org/JobPosting">
+          <!-- Structured data for job search engines (kept from the stock page). -->
+          <meta t-if="j.contract_type_id" itemprop="employmentType" t-att-content="j.contract_type_id.name"/>
+          <meta t-if="j.published_date" itemprop="datePosted" t-att-content="j.published_date"/>
+          <meta itemprop="title" t-att-content="j.name"/>
+          <meta itemprop="directApply" content="true"/>
+          <span itemprop="hiringOrganization" itemscope="itemscope" itemtype="https://schema.org/Organization">
+            <meta itemprop="name" t-att-content="j.company_id.name"/>
+            <meta itemprop="logo" t-attf-content="/logo.png?company=#{j.company_id.id}"/>
+          </span>
+          <span t-if="j.address_id.contact_address" itemprop="jobLocation" itemscope="itemscope" itemtype="https://schema.org/Place">
+            <meta itemprop="address" t-att-content="j.address_id.contact_address"/>
+          </span>
+
+          <a href="/jobs" class="rz-back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            All open roles
+          </a>
+
+          <header class="rz-role__head">
+            <span class="rz-eyebrow"><span class="rz-eyebrow__dot"></span><t t-esc="j.department_id.name or 'Careers at Rize'"/></span>
+            <h1 class="rz-role__title" t-esc="j.name"/>
+            <ul class="rz-meta">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.99-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 14.99 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+                <t t-esc="where or 'Remote'"/>
+              </li>
+              <li t-if="j.contract_type_id">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>
+                <t t-esc="j.contract_type_id.name"/>
+              </li>
+              <li t-if="j.no_of_recruitment &gt; 1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <t t-esc="j.no_of_recruitment"/> people wanted
+              </li>
+            </ul>
+            <div t-if="can_apply" class="rz-role__cta">
+              <a class="rz-btn rz-btn--gold rz-btn--lg" t-attf-href="/jobs/apply/#{ slug(job) }">Apply for this role</a>
+            </div>
+            <div t-else="" class="rz-role__closed" role="note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+              <div>
+                <strong>Not public yet</strong>
+                <span>Only people signed in can see this role. Applications open once it is agreed and published from Hiring.</span>
+              </div>
+            </div>
+          </header>
+
+          <div class="rz-paper" itemprop="description">
+            <div t-if="advert and not advert_is_stock" class="rz-advert" t-field="job.website_description"/>
+            <div t-elif="j.description" class="rz-advert" t-out="j.description"/>
+            <div t-else="" class="rz-advert rz-advert--empty">
+              <p>The full description for this role is still being written. You can apply now — the recruiter will walk you through the details on your first call.</p>
+            </div>
+          </div>
+
+          <div t-if="can_apply" class="rz-role__foot">
+            <p>Sounds like you? The form takes a few minutes.</p>
+            <a class="rz-btn rz-btn--gold rz-btn--lg" t-attf-href="/jobs/apply/#{ slug(job) }">Apply for this role</a>
+          </div>
+        </article>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ========================== APPLICATION FORM ========================= -->
+  <!-- The Hiring app renders its own form (pb_hiring.application_journey);
+       only the frame around it changes here. -->
+  <template id="rz_application" inherit_id="pb_hiring.application_journey" priority="90" name="Rize application frame">
+    <xpath expr="//main[hasclass('pb-apply')]" position="replace">
+      <!-- The browser tab otherwise reads the view's name, "Application journey". -->
+      <t t-set="additional_title" t-value="job.name"/>
+      <t t-call="rize_website.rz_shell">
+        <t t-set="rz_active" t-value="'jobs'"/>
+        <!-- `$0` must be the whole text of its element to be swapped for the original node. -->
+        <t>$0</t>
+      </t>
+    </xpath>
+  </template>
+</odoo>

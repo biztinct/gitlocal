@@ -1,0 +1,967 @@
+// =====================================================================
+//  Analytics Explorer — the payroll analytics workbench (Sudima Phase N)
+//  Root is `.pbex.pbim`: the shared kit supplies the --pbim-* tokens
+//  (pb_import_kit/import_tokens.scss). Everything is namespaced under .pbex
+//  so nothing leaks. White surfaces, ONE indigo primary, Lucide SVG icons,
+//  NO gradients, NO emoji (C11). Mixed-unit min()/max() avoided (C2).
+// =====================================================================
+
+.pbex {
+    position: relative;
+    height: 100%;
+    overflow: auto;
+    background: var(--pbim-bg, #F5F6FA);
+    color: var(--pbim-text, #1B1733);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+
+    * { box-sizing: border-box; }
+    svg { display: inline-block; vertical-align: middle; }
+
+    // ---- local aliases (fall back when the kit is not in the bundle) ----
+    --p:        var(--pbim-primary, #5A4BB0);
+    --p-hover:  var(--pbim-primary-hover, #4A3D96);
+    --p-deep:   var(--pbim-primary-dark, #241F52);
+    --p-light:  var(--pbim-primary-light, #CBC2EE);
+    --soft:     var(--pbim-soft, #EDEAF8);
+    --line:     var(--pbim-line, #E2E8F0);
+    --line-2:   var(--pbim-line-2, #F1F5F9);
+    --muted:    var(--pbim-muted, #64748B);
+    --ink:      var(--pbim-ink, #1B1733);
+    --surface:  #fff;
+    --green:    var(--pbim-green, #2E7D4F);
+    --green-s:  var(--pbim-green-soft, #E3F2E9);
+    --amber:    var(--pbim-amber, #D97706);
+    --amber-s:  var(--pbim-amber-soft, #FEF3C7);
+    --rose:     var(--pbim-rose, #DC2668);
+    --rose-s:   var(--pbim-rose-soft, #FCE7EF);
+    --blue:     var(--pbim-cyan, #2563EB);
+    --blue-s:   var(--pbim-cyan-soft, #E5EDFD);
+    --r:        14px;
+    --r-sm:     10px;
+    --sh:       0 8px 24px rgba(16, 12, 40, .07);
+    --sh-lift:  0 14px 36px rgba(16, 12, 40, .12);
+
+    // ------------------------------------------------------------ loading
+    .pbex-loading {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; gap: 14px;
+        align-items: center; justify-content: center; color: var(--muted);
+    }
+    .pbex-spin {
+        width: 34px; height: 34px; border-radius: 50%;
+        border: 3px solid var(--soft); border-top-color: var(--p);
+        animation: pbex-spin .8s linear infinite;
+        &.sm { width: 22px; height: 22px; border-width: 2.5px; }
+    }
+    @keyframes pbex-spin { to { transform: rotate(360deg); } }
+
+    .pbex-wrap { padding: 22px 26px 40px; max-width: 1560px; margin: 0 auto; }
+
+    // ------------------------------------------------------------- header
+    .pbex-head {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 20px; margin-bottom: 18px;
+
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 11px; font-weight: 700; letter-spacing: .09em;
+            text-transform: uppercase; color: var(--p);
+        }
+        h1 {
+            margin: 6px 0 4px; font-size: 30px; font-weight: 700;
+            letter-spacing: -.02em; color: var(--ink);
+        }
+        .sub { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 62ch; }
+    }
+    .pbex-head-tools { display: flex; gap: 8px; flex-shrink: 0; }
+
+    .pbex-btn {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 8px 14px; border-radius: var(--r-sm);
+        border: 1px solid var(--line); background: var(--surface);
+        color: var(--ink); font-size: 13px; font-weight: 600;
+        cursor: pointer; transition: all .16s ease;
+        white-space: nowrap;
+
+        &:hover:not(:disabled) {
+            border-color: var(--p-light); color: var(--p);
+            box-shadow: 0 2px 10px rgba(90, 75, 176, .12);
+        }
+        &:disabled { opacity: .5; cursor: not-allowed; }
+        &.ghost { background: var(--surface); }
+    }
+
+    // ------------------------------------------------------------ notices
+    .pbex-alert {
+        display: flex; align-items: flex-start; gap: 9px;
+        padding: 11px 14px; border-radius: var(--r-sm);
+        font-size: 13px; margin-bottom: 12px; line-height: 1.45;
+
+        &.danger { background: var(--rose-s); color: #9F1239;
+                   border: 1px solid #F9C8D8; }
+        &.warn   { background: var(--amber-s); color: #92400E;
+                   border: 1px solid #FCD9A2; }
+        &.info   { background: var(--blue-s); color: #1E40AF;
+                   border: 1px solid #C7DAFB; }
+        svg { flex-shrink: 0; margin-top: 1px; }
+    }
+
+    // -------------------------------------------------------------- lenses
+    .pbex-lensbar { margin-bottom: 12px; }
+
+    .pbex-lenstoggle {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 7px 13px; margin-bottom: 9px; border-radius: 999px;
+        border: 1px solid var(--line); background: var(--surface);
+        color: var(--ink); font-size: 12.5px; font-weight: 600;
+        cursor: pointer; transition: all .16s ease;
+
+        &:hover { border-color: var(--p-light); color: var(--p); }
+        .lb { white-space: nowrap; }
+        .ct {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 20px; height: 19px; padding: 0 6px; border-radius: 999px;
+            background: var(--soft); color: var(--p);
+            font-size: 11px; font-weight: 700;
+        }
+        .cv { display: inline-flex; transition: transform .18s ease;
+              color: var(--muted);
+              &.open { transform: rotate(180deg); } }
+    }
+
+    // A WRAPPED GRID (same shape as the Insights gallery), never a horizontal
+    // scroller: an overflow-x strip hides most of the choices behind a gesture
+    // people do not think to make.
+    .pbex-lenses {
+        display: grid; gap: 10px;
+        grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
+        animation: pbex-rise .2s cubic-bezier(.22, .8, .3, 1);
+    }
+    .pbex-lens {
+        display: flex; align-items: center; gap: 10px;
+        padding: 11px 13px; border-radius: var(--r-sm);
+        border: 1px solid var(--line); background: var(--surface);
+        cursor: pointer; text-align: left; transition: all .16s ease;
+        min-width: 0;
+
+        &:hover { border-color: var(--p-light); box-shadow: var(--sh);
+                  transform: translateY(-1px); }
+        &.active { border-color: var(--p); background: var(--soft); }
+
+        .ico {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+            background: var(--soft); color: var(--p);
+        }
+        &.active .ico { background: var(--p); color: #fff; }
+        .txt { display: flex; flex-direction: column; gap: 1px; min-width: 0;
+               flex: 1; }
+        b { font-size: 13px; font-weight: 650; color: var(--ink);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        i { font-style: normal; font-size: 11px; color: var(--muted);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ext { color: var(--p-light); flex-shrink: 0; transition: all .14s ease; }
+        &:hover .ext { color: var(--p); transform: translateX(2px); }
+        &.classic .ico { background: var(--line-2); color: var(--muted); }
+        &.classic:hover .ico { background: var(--soft); color: var(--p); }
+    }
+
+    // ------------------------------------------------------------- ask bar
+    .pbex-ask {
+        display: flex; align-items: center; gap: 9px;
+        padding: 7px 8px 7px 14px; margin-bottom: 10px;
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: 999px; box-shadow: var(--sh);
+        transition: border-color .16s ease, box-shadow .16s ease;
+
+        &:focus-within { border-color: var(--p-light);
+                         box-shadow: 0 0 0 3px rgba(90, 75, 176, .1), var(--sh); }
+        .ask-ico { color: var(--p); display: inline-flex; flex-shrink: 0; }
+        .ask-input {
+            flex: 1; min-width: 0; border: 0; outline: 0; background: transparent;
+            font-size: 13.5px; color: var(--ink); padding: 5px 0;
+            &::placeholder { color: #94A3B8; }
+        }
+        .ask-clear {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 24px; height: 24px; border: 0; border-radius: 50%;
+            background: var(--line-2); color: var(--muted); cursor: pointer;
+            flex-shrink: 0;
+            &:hover { background: var(--soft); color: var(--p); }
+        }
+        .primary-btn {
+            background: var(--p); border-color: var(--p); color: #fff;
+            border-radius: 999px; padding: 7px 18px; flex-shrink: 0;
+            &:hover:not(:disabled) { background: var(--p-hover); color: #fff;
+                                     border-color: var(--p-hover); }
+        }
+    }
+    .pbex-askwhy {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+        margin: -4px 0 12px; padding: 0 14px; font-size: 11.5px;
+        color: var(--muted);
+
+        .lbl { font-weight: 600; }
+        .why-tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 9px; border-radius: 999px; background: var(--soft);
+            color: var(--p-deep);
+            b { font-size: 10px; text-transform: uppercase; opacity: .6;
+                letter-spacing: .04em; }
+        }
+        .why-none { font-style: italic; }
+    }
+
+    // ----------------------------------------------------------- chip rail
+    .pbex-rail {
+        display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px 18px;
+        padding: 14px 16px; margin-bottom: 16px;
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--r); box-shadow: var(--sh);
+    }
+    .pbex-chip-group {
+        display: flex; flex-direction: column; gap: 6px;
+        &.grow { flex: 1 1 320px; min-width: 240px; }
+
+        .grp-label {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10.5px; font-weight: 700; letter-spacing: .08em;
+            text-transform: uppercase; color: var(--muted);
+        }
+    }
+
+    .pbex-picker { position: relative; }
+
+    .pbex-chip {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 8px 13px; border-radius: 999px;
+        border: 1px solid var(--line); background: var(--surface);
+        color: var(--ink); font-size: 13px; font-weight: 600;
+        cursor: pointer; white-space: nowrap;
+        // The hover MOVES colour, so its transition lives in the
+        // reduced-motion block at the foot of this file with everything else
+        // that does (R85). It sat here, unguarded, until LOOK P4.
+
+        &:hover { border-color: var(--p-light); color: var(--p); }
+        &.primary {
+            background: var(--p); border-color: var(--p); color: #fff;
+            &:hover { background: var(--p-hover); color: #fff; }
+        }
+        &.dashed { border-style: dashed; color: var(--muted); }
+        &.plain  { border-color: transparent; color: var(--muted);
+                   font-weight: 500; text-decoration: underline; }
+    }
+
+    .pbex-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+
+    .pbex-tag {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 6px 6px 6px 11px; border-radius: 999px;
+        background: var(--soft); color: var(--p-deep); font-size: 12.5px;
+
+        b { font-weight: 700; opacity: .62; font-size: 11px;
+            text-transform: uppercase; letter-spacing: .04em; }
+        .tag-x {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 18px; height: 18px; border: 0; border-radius: 50%;
+            background: rgba(36, 31, 82, .1); color: var(--p-deep);
+            cursor: pointer; padding: 0;
+            &:hover { background: var(--p); color: #fff; }
+        }
+    }
+
+    // ------------------------------------------------------------ dropdown
+    .pbex-menu {
+        position: absolute; z-index: 40; top: calc(100% + 6px); left: 0;
+        min-width: 210px; padding: 6px;
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--r-sm); box-shadow: var(--sh-lift);
+        max-height: 340px; overflow: auto;
+
+        &.wide { min-width: 260px; }
+    }
+    .pbex-menu-scroll { max-height: 260px; overflow: auto; }
+    .pbex-menu-item {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 10px; width: 100%; padding: 8px 10px; border: 0;
+        border-radius: 8px; background: transparent; color: var(--ink);
+        font-size: 13px; text-align: left; cursor: pointer;
+
+        &:hover  { background: var(--line-2); }
+        &.active { background: var(--soft); color: var(--p); font-weight: 600; }
+    }
+    .pbex-menu-back {
+        display: flex; align-items: center; gap: 7px; width: 100%;
+        padding: 7px 10px; margin-bottom: 4px; border: 0;
+        border-bottom: 1px solid var(--line-2); background: transparent;
+        color: var(--muted); font-size: 11.5px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .05em; cursor: pointer;
+        svg { transform: rotate(90deg); }
+        &:hover { color: var(--p); }
+    }
+
+    // ------------------------------------------------------------ the WHEN
+    // The period picker: the seven starting points, then a strip of months
+    // that is a SPARKLINE OF THE QUESTION BEING ASKED — each bar is that
+    // month's weight for the measure on screen, so changing the measure
+    // redraws it. Press one, shift-press another, or sweep across them.
+    //
+    // NOTHING IN HERE HAS A FIXED HEIGHT (L2): every string is translated and
+    // the preset sub-lines wrap on a phone, so each row grows by what it has
+    // to say instead of printing over the one below it.
+    .pbex-menu.pbex-when { min-width: 392px; max-width: 440px; max-height: 440px; }
+
+    // TWO COLUMNS, so the seven starting points AND the month strip are both
+    // on screen at once. In one column the strip fell below the menu's own
+    // scroll line — a picker whose second half has to be found by scrolling is
+    // a picker most people never see the second half of.
+    .pbex-when-presets {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+        padding-bottom: 7px; margin-bottom: 7px;
+        border-bottom: 1px solid var(--line-2);
+
+        // "Everything" is the way out, so it sits under the six and spans them.
+        .pbex-menu-item:last-child { grid-column: 1 / -1; }
+
+        .pw-l { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+        .pw-l b { font-weight: 700; font-size: 13px; }
+        .pw-l i {
+            font-style: normal; font-size: 11.5px; color: var(--muted);
+            line-height: 1.3;
+        }
+    }
+
+    .pbex-when-head {
+        display: flex; align-items: baseline; gap: 6px;
+        padding: 2px 4px 6px;
+        font-size: 10.5px; font-weight: 700; letter-spacing: .07em;
+        text-transform: uppercase; color: var(--muted);
+        i { font-style: normal; font-weight: 600; opacity: .75; }
+    }
+
+    // The strip itself. Many months SCROLL — a chip is never squeezed until
+    // it cannot be read, and no month is ever dropped.
+    .pbex-when-strip {
+        display: flex; align-items: flex-end; gap: 0;
+        overflow-x: auto; overflow-y: hidden;
+        padding: 2px 2px 4px; scrollbar-width: thin;
+    }
+
+    .pbex-mchip {
+        position: relative; flex: 0 0 38px;
+        display: flex; flex-direction: column; align-items: center; gap: 4px;
+        padding: 5px 3px 5px; cursor: pointer; font-family: inherit;
+        border: 1px solid transparent; border-radius: 0;
+        background: transparent; color: var(--muted);
+
+        &:hover { background: var(--line-2); color: var(--p); }
+        &:focus-visible {
+            outline: none; z-index: 3; position: relative;
+            box-shadow: 0 0 0 2px var(--p-light);
+        }
+
+        // A CHOSEN RUN OF CHIPS READS AS ONE BAND: the two ends keep their
+        // corners and everything between them is square, so four months look
+        // like one stretch of four rather than four of anything.
+        &.is-in {
+            background: var(--soft); color: var(--p-deep);
+            border-color: var(--p-light);
+            .pbex-mchip-fill { background: var(--p); }
+        }
+        &.is-in.is-first {
+            border-top-left-radius: 9px; border-bottom-left-radius: 9px;
+        }
+        &.is-in.is-last {
+            border-top-right-radius: 9px; border-bottom-right-radius: 9px;
+        }
+    }
+
+    // The bar is the month's weight for the measure on screen. It grows from
+    // the floor, so the strip reads left to right as a shape.
+    .pbex-mchip-bar {
+        display: flex; align-items: flex-end; justify-content: center;
+        width: 12px; height: 34px;
+        border-radius: 3px; background: var(--line-2);
+    }
+    .pbex-mchip-fill {
+        display: block; width: 12px; min-height: 2px;
+        border-radius: 3px; background: var(--p-light);
+    }
+    .pbex-mchip-l {
+        font-size: 9.5px; font-weight: 700; letter-spacing: .01em;
+        white-space: nowrap;
+    }
+
+    .pbex-when-hint {
+        padding: 6px 4px 2px; font-size: 11px; color: var(--muted);
+        line-height: 1.4;
+    }
+
+    .pbex-when-empty {
+        display: flex; align-items: flex-start; gap: 8px;
+        padding: 10px 6px 4px; font-size: 12px; color: var(--muted);
+        line-height: 1.45;
+        svg { flex: 0 0 auto; margin-top: 1px; color: var(--p); }
+    }
+
+    // --------------------------------------------------------------- card
+    .pbex-card {
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--r); box-shadow: var(--sh); overflow: hidden;
+    }
+    .pbex-card-head {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 16px; padding: 16px 18px 12px; border-bottom: 1px solid var(--line-2);
+        flex-wrap: wrap;
+    }
+    .pbex-headline {
+        display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+        .ttl { font-size: 13.5px; font-weight: 600; color: var(--muted); }
+        .val { font-size: 26px; font-weight: 700; letter-spacing: -.02em;
+               color: var(--ink); font-variant-numeric: tabular-nums; }
+        .more { font-size: 11.5px; color: var(--amber); font-weight: 600; }
+    }
+    .pbex-forms { display: flex; gap: 4px; }
+    .pbex-form-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 34px; height: 34px; border-radius: 9px;
+        border: 1px solid transparent; background: transparent;
+        color: var(--muted); cursor: pointer; transition: all .15s ease;
+
+        &:hover  { background: var(--line-2); color: var(--ink); }
+        &.active { background: var(--soft); border-color: var(--p-light);
+                   color: var(--p); }
+    }
+
+    // ---------------------------------------------------------------- viz
+    .pbex-viz { position: relative; padding: 18px; min-height: 340px; }
+    .pbex-veil {
+        position: absolute; inset: 0; z-index: 5;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(255, 255, 255, .66);
+    }
+    .pbex-canvas-wrap { position: relative; height: 380px; }
+
+    .pbex-empty {
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: 6px; padding: 60px 20px;
+        color: var(--muted); text-align: center;
+        p { margin: 4px 0 0; font-size: 15px; font-weight: 600; color: var(--ink); }
+        span { font-size: 13px; }
+        svg { color: var(--p-light); }
+    }
+
+    // -------------------------------------------------------------- donut
+    .pbex-donut {
+        display: flex; align-items: center; gap: 30px; flex-wrap: wrap;
+        padding: 6px 4px;
+    }
+    .pbex-arc {
+        cursor: pointer; transition: opacity .18s ease, transform .18s ease;
+        transform-origin: 120px 120px;
+        &:hover { transform: scale(1.025); }
+        &.dim { opacity: .3; }
+    }
+    .pbex-donut-val {
+        font-size: 20px; font-weight: 700; fill: var(--ink);
+        font-variant-numeric: tabular-nums;
+    }
+    .pbex-donut-cap {
+        font-size: 10.5px; fill: var(--muted); text-transform: uppercase;
+        letter-spacing: .1em;
+    }
+    .pbex-legend {
+        flex: 1 1 300px; min-width: 260px;
+        display: flex; flex-direction: column; gap: 2px;
+        max-height: 300px; overflow: auto;
+    }
+    .pbex-leg {
+        display: flex; align-items: center; gap: 9px; width: 100%;
+        padding: 6px 9px; border: 0; border-radius: 8px;
+        background: transparent; cursor: pointer; text-align: left;
+        font-size: 12.5px; color: var(--ink); transition: all .15s ease;
+
+        &:hover { background: var(--line-2); }
+        &.dim { opacity: .42; }
+        i { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+        .nm { flex: 1; overflow: hidden; text-overflow: ellipsis;
+              white-space: nowrap; }
+        .vl { font-weight: 600; font-variant-numeric: tabular-nums; }
+        .pc { color: var(--muted); width: 48px; text-align: right;
+              font-variant-numeric: tabular-nums; }
+    }
+
+    .pbex-note {
+        margin: 10px 0 0; font-size: 11.5px; color: var(--muted);
+        line-height: 1.5;
+    }
+
+    // ------------------------------------------------------------ heatmap
+    .pbex-heat-wrap { overflow-x: auto; }
+    .pbex-heat {
+        border-collapse: separate; border-spacing: 3px; width: 100%;
+        font-size: 12px;
+
+        th {
+            font-weight: 600; color: var(--muted); font-size: 11px;
+            padding: 4px 6px; text-align: center; white-space: nowrap;
+        }
+        th.rowh {
+            text-align: left; color: var(--ink); font-weight: 600;
+            font-size: 12px; position: sticky; left: 0;
+            background: var(--surface); z-index: 2;
+            max-width: 200px; overflow: hidden; text-overflow: ellipsis;
+        }
+    }
+    .pbex-heat-cell {
+        padding: 9px 8px; border-radius: 7px; text-align: center;
+        font-variant-numeric: tabular-nums; font-weight: 600;
+        cursor: pointer; transition: transform .14s ease, box-shadow .14s ease;
+        min-width: 62px;
+        &:hover { transform: scale(1.06); box-shadow: var(--sh-lift); }
+    }
+
+    // -------------------------------------------------------------- table
+    .pbex-table-wrap { overflow-x: auto; }
+    .pbex-table {
+        width: 100%; border-collapse: collapse; font-size: 13px;
+
+        th {
+            padding: 9px 12px; text-align: left; font-size: 11px;
+            font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+            color: var(--muted); border-bottom: 1px solid var(--line);
+            white-space: nowrap;
+        }
+        td { padding: 9px 12px; border-bottom: 1px solid var(--line-2); }
+        th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+        th.rowh, td.rowh { text-transform: none; letter-spacing: 0;
+                           font-size: 13px; color: var(--ink); }
+        tbody th.rowh {
+            display: flex; align-items: center; gap: 8px; font-weight: 600;
+            border-bottom: 1px solid var(--line-2); text-transform: none;
+            letter-spacing: 0; font-size: 13px; color: var(--ink);
+        }
+        .swatch { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+        td.clickable { cursor: pointer; }
+        td.clickable:hover { background: var(--soft); color: var(--p);
+                             font-weight: 600; }
+        .tot { font-weight: 700; }
+        .muted { color: var(--muted); }
+        .strong { font-weight: 600; }
+        tbody tr:hover { background: #FAFAFD; }
+        &.drill tbody tr:last-child td { border-bottom: 0; }
+    }
+
+    // --------------------------------------------------------------- foot
+    .pbex-foot {
+        display: flex; flex-wrap: wrap; gap: 8px 20px;
+        padding: 10px 18px; border-top: 1px solid var(--line-2);
+        background: #FCFCFE; font-size: 11.5px; color: var(--muted);
+        span { display: inline-flex; align-items: center; gap: 5px; }
+    }
+
+    // ------------------------------------------------------------ narrative
+    .pbex-btn.explain {
+        margin-left: 8px; gap: 6px;
+        &.on { background: var(--soft); border-color: var(--p-light);
+               color: var(--p); }
+    }
+    .pbex-story {
+        margin-top: 16px; background: var(--surface);
+        border: 1px solid var(--line); border-radius: var(--r);
+        box-shadow: var(--sh); overflow: hidden;
+        animation: pbex-rise .26s cubic-bezier(.22, .8, .3, 1);
+    }
+    .pbex-story-head {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 16px; padding: 15px 18px; border-bottom: 1px solid var(--line-2);
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 10.5px; font-weight: 700; letter-spacing: .09em;
+            text-transform: uppercase; color: var(--p);
+        }
+        h3 { margin: 5px 0 0; font-size: 17px; font-weight: 700;
+             color: var(--ink); display: flex; align-items: center; gap: 9px;
+             flex-wrap: wrap; svg { color: var(--muted); } }
+    }
+    .pbex-story-body { padding: 16px 18px 18px; }
+
+    .pbex-water { overflow-x: auto; padding: 8px 0 4px; }
+    .pbex-water-svg { height: 232px; display: block; }
+    .pbex-water-bar {
+        transition: opacity .18s ease;
+        &:hover { opacity: .82; }
+    }
+    .pbex-water-val {
+        font-size: 11px; font-weight: 700; fill: var(--ink);
+        font-variant-numeric: tabular-nums;
+    }
+    .pbex-water-lbl { font-size: 10.5px; fill: var(--muted); }
+
+    .pbex-story-stats {
+        display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px;
+        .stat {
+            flex: 1 1 128px; padding: 10px 13px; border-radius: var(--r-sm);
+            background: #FAFAFD; border: 1px solid var(--line-2);
+            b { display: block; font-size: 17px; font-weight: 700;
+                color: var(--ink); font-variant-numeric: tabular-nums; }
+            i { font-style: normal; font-size: 11px; color: var(--muted);
+                line-height: 1.35; display: block; margin-top: 2px; }
+            &.up b   { color: var(--green); }
+            &.down b { color: var(--rose); }
+            &.bad    { border-color: #F9C8D8; background: var(--rose-s);
+                       b { color: #9F1239; } }
+        }
+    }
+
+    .pbex-anoms {
+        margin-top: 18px;
+        h4 { margin: 0 0 9px; font-size: 11px; font-weight: 700;
+             letter-spacing: .08em; text-transform: uppercase;
+             color: var(--muted); }
+    }
+    .pbex-anom {
+        display: flex; align-items: center; gap: 11px; width: 100%;
+        padding: 10px 13px; margin-bottom: 6px; border-radius: var(--r-sm);
+        border: 1px solid var(--line-2); background: var(--surface);
+        cursor: pointer; text-align: left; transition: all .15s ease;
+
+        &:hover { border-color: var(--p-light); background: #FCFCFE;
+                  transform: translateX(2px); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+               background: var(--muted); }
+        &.high .dot { background: var(--rose); }
+        &.warn .dot { background: var(--amber); }
+        &.info .dot { background: var(--blue); }
+        .txt { flex: 1; min-width: 0; }
+        b { display: block; font-size: 13px; font-weight: 600; color: var(--ink); }
+        i { font-style: normal; font-size: 11.5px; color: var(--muted); }
+        svg { color: var(--muted); flex-shrink: 0; }
+        &:hover svg { color: var(--p); }
+    }
+
+    // -------------------------------------------------------------- drill
+    .pbex-drill {
+        margin-top: 16px; background: var(--surface);
+        border: 1px solid var(--line); border-radius: var(--r);
+        box-shadow: var(--sh); overflow: hidden;
+        animation: pbex-rise .26s cubic-bezier(.22, .8, .3, 1);
+    }
+    @keyframes pbex-rise {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: none; }
+    }
+    .pbex-drill-head {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 16px; padding: 15px 18px; border-bottom: 1px solid var(--line-2);
+
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 10.5px; font-weight: 700; letter-spacing: .09em;
+            text-transform: uppercase; color: var(--p);
+        }
+        h3 { margin: 5px 0 3px; font-size: 17px; font-weight: 700;
+             color: var(--ink); }
+        .sub { margin: 0; font-size: 12.5px; color: var(--muted); }
+    }
+    .pbex-drill-load { display: flex; justify-content: center; padding: 34px; }
+    .pbex-pager {
+        display: flex; align-items: center; justify-content: center; gap: 14px;
+        padding: 12px; border-top: 1px solid var(--line-2);
+        font-size: 12.5px; color: var(--muted);
+    }
+
+    // ======================================================= GROUP P3
+    //  The breadcrumb (the hero), the money chip, the people strip, the
+    //  rate badges and the compare table. Tokens only — no invented hex.
+    // ================================================================
+    .pbex-trail {
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: 10px 16px;
+        margin: 2px 0 14px; padding: 10px 14px;
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--r); box-shadow: var(--sh);
+    }
+    .pbex-crumbs {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 2px;
+        min-width: 0;
+    }
+    .pbex-crumb {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 10px; border: 0; border-radius: 999px;
+        background: transparent; color: var(--muted);
+        font-size: 13px; font-weight: 600; cursor: pointer;
+        transition: background .18s ease, color .18s ease;
+
+        &:hover:not(:disabled) { background: var(--soft); color: var(--p); }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 1px; }
+        &.last { color: var(--ink); cursor: default; }
+        &:disabled { cursor: default; }
+    }
+    .pbex-sep { display: inline-flex; color: var(--line); }
+    .pbex-next {
+        display: inline-flex; align-items: center; gap: 4px;
+        margin-left: 2px; color: var(--muted); font-size: 12px;
+        i { font-style: normal; opacity: .8; }
+    }
+
+    .pbex-money { display: flex; align-items: center; gap: 10px; }
+    .pbex-cur {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 11px; border-radius: 999px;
+        background: var(--soft); color: var(--p-deep);
+        font-size: 12.5px; b { font-weight: 700; }
+    }
+    .pbex-seg {
+        display: inline-flex; padding: 3px; gap: 2px;
+        background: var(--line-2); border-radius: 999px;
+
+        button {
+            border: 0; background: transparent; cursor: pointer;
+            padding: 5px 12px; border-radius: 999px;
+            font-size: 12.5px; font-weight: 600; color: var(--muted);
+            transition: background .18s ease, color .18s ease;
+            &:hover { color: var(--p); }
+            &.on { background: var(--surface); color: var(--p-deep);
+                   box-shadow: 0 1px 3px rgba(16, 12, 40, .1); }
+            &:focus-visible { outline: 2px solid var(--p); outline-offset: 1px; }
+        }
+    }
+
+    .pbex-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 9px; border-radius: 999px; cursor: pointer;
+        background: var(--soft); color: var(--p-deep);
+        font-size: 11.5px; font-weight: 600; white-space: nowrap;
+        &:hover { background: var(--p-light); }
+    }
+
+    .pbex-heads {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px;
+        padding: 10px 18px 0;
+
+        .hd { display: inline-flex; align-items: baseline; gap: 6px;
+              b { font-size: 16px; font-weight: 700; color: var(--ink);
+                  font-variant-numeric: tabular-nums; }
+              i { font-style: normal; font-size: 12.5px; color: var(--muted); } }
+        .note { font-size: 12px; color: var(--muted); font-style: italic; }
+        .pbex-btn.sm { margin-left: auto; padding: 6px 10px; font-size: 12.5px; }
+    }
+
+    .pbex-parts {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+        padding: 12px 18px 0;
+        .lbl { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+        .note { font-size: 12px; color: var(--muted); flex-basis: 100%; }
+    }
+    .pbex-part {
+        display: inline-flex; align-items: baseline; gap: 8px;
+        padding: 7px 13px; border-radius: var(--r-sm); cursor: pointer;
+        border: 1px solid var(--line); background: var(--surface);
+        font-size: 13px; color: var(--ink);
+        b { font-weight: 700; color: var(--muted); font-size: 11.5px;
+            letter-spacing: .04em; }
+        &:hover { border-color: var(--p-light); }
+        &.on { border-color: var(--p); background: var(--soft);
+               b { color: var(--p-deep); } }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 1px; }
+    }
+
+    .pbex-rates {
+        margin: 12px 18px 0; padding: 12px 14px;
+        background: var(--line-2); border-radius: var(--r-sm);
+    }
+    .pbex-rates-head {
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 12.5px; font-weight: 600; color: var(--p-deep);
+        span { display: inline-flex; align-items: center; gap: 6px; }
+    }
+    .pbex-rate-rows {
+        display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px;
+    }
+    .pbex-rate {
+        display: inline-flex; align-items: baseline; gap: 7px;
+        font-size: 12.5px; color: var(--ink);
+        b { color: var(--muted); font-weight: 600; }
+    }
+
+    .pbex-alert.nocv {
+        .nocv-row { display: block; font-variant-numeric: tabular-nums; }
+        .nocv-why { display: block; margin-top: 4px; opacity: .9; }
+    }
+    .pbex-link {
+        border: 0; background: transparent; padding: 0; margin-top: 6px;
+        color: var(--p); font-weight: 600; font-size: 12.5px; cursor: pointer;
+        text-decoration: underline;
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 2px; }
+    }
+
+    .pbex-into {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 18px; height: 18px; padding: 0; flex-shrink: 0;
+        border: 0; border-radius: 50%; cursor: zoom-in;
+        background: var(--line-2); color: var(--muted);
+        &:hover { background: var(--p); color: #fff; }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 2px; }
+    }
+
+    // ======================================================= GROUP P7
+    //  "Look inside." A bar in this board is a DOOR — clicking it walks the
+    //  breadcrumb one rung down the group — and until now nothing on screen
+    //  said so. Three things say it together: the pointer changes, the bar
+    //  lights up, and a chip names where the click would land. At the bottom
+    //  of the walk `nextRungLabel` is empty, none of this renders, and the
+    //  board says nothing it cannot do.
+    // ================================================================
+    .pbex-viz.can-open {
+        .pbex-canvas-wrap canvas { cursor: zoom-in; }
+        .pbex-arc.open { cursor: zoom-in; }
+        .pbex-heat-cell { cursor: zoom-in; }
+        .pbex-leg { cursor: zoom-in; }
+    }
+
+    .pbex-peek {
+        position: absolute; z-index: 6; top: 10px; right: 14px;
+        display: inline-flex; align-items: center; gap: 7px;
+        max-width: 92%; padding: 6px 12px; border-radius: 999px;
+        background: var(--soft); color: var(--p-deep);
+        border: 1px solid var(--p-light);
+        font-size: 12px; white-space: nowrap; overflow: hidden;
+        text-overflow: ellipsis; pointer-events: none;
+        b { font-weight: 700; }
+        span { color: var(--p); }
+        svg { flex-shrink: 0; }
+    }
+
+    // The focusable doors over a canvas. Transparent until the bar under
+    // them is the one being pointed at or tabbed to, and never in the way of
+    // the pointer: the chart keeps its own tooltip and its own click.
+    .pbex-doors {
+        position: absolute; inset: 0; pointer-events: none;
+    }
+    .pbex-door {
+        position: absolute; padding: 0; margin: 0;
+        border: 1.5px solid transparent; border-radius: 6px;
+        background: transparent; pointer-events: none;
+        // A tint over the bar would change the colour the reader is reading,
+        // so the door announces itself with an edge instead: a ring round the
+        // bar and a thick cap on top of it, both in the one primary.
+        &.on {
+            border-color: var(--p);
+            box-shadow: inset 0 3px 0 0 var(--p);
+        }
+        &:focus-visible {
+            outline: 2px solid var(--p); outline-offset: 2px;
+            border-color: var(--p);
+        }
+    }
+
+    // The bar that was pressed, growing out into the board it is about to
+    // become. Drawn only for the length of the descent, and never at all on
+    // a machine that asked for calm — that reader gets the finished chart on
+    // the first frame.
+    .pbex-viz.descending { overflow: hidden; }
+    .pbex-descent {
+        position: absolute; z-index: 6; pointer-events: none;
+        border-radius: 6px; opacity: 0;
+        background: var(--soft); border: 1.5px solid var(--p);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .pbex-descent {
+            animation: pbex-descend .3s cubic-bezier(.3, .7, .3, 1) forwards;
+        }
+        @keyframes pbex-descend {
+            from { opacity: .85; transform: scale(1); }
+            to   { opacity: 0;
+                   transform: scale(var(--pbex-sx, 4), var(--pbex-sy, 3)); }
+        }
+        .pbex-viz.arrived {
+            .pbex-canvas-wrap, .pbex-donut, .pbex-heat-wrap, .pbex-table-wrap {
+                animation: pbex-arrive .34s cubic-bezier(.22, .8, .3, 1) both;
+            }
+        }
+        // translateY only: a scale would change what the chart library
+        // measures its own container as, and it redraws on every change.
+        @keyframes pbex-arrive {
+            from { opacity: 0; transform: translateY(9px); }
+            to   { opacity: 1; transform: none; }
+        }
+        .pbex-door { transition: box-shadow .16s ease, border-color .16s ease; }
+        .pbex-chip { transition: border-color .16s ease, color .16s ease,
+                                 background .16s ease; }
+        // Sweeping the month strip stretches ONE shape: the band's corners
+        // travel with it rather than four buttons lighting up in turn, and a
+        // bar travels to its new weight when the measure changes.
+        .pbex-mchip {
+            transition: background .14s ease, color .14s ease,
+                        border-color .14s ease,
+                        border-radius .18s cubic-bezier(.22, .68, .36, 1);
+        }
+        .pbex-mchip-fill {
+            transition: height .38s cubic-bezier(.22, .68, .36, 1),
+                        background .14s ease;
+        }
+        .pbex-peek { animation: pbex-peek-in .16s ease-out both; }
+        @keyframes pbex-peek-in {
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: none; }
+        }
+    }
+
+    // The heat map's row label now carries the same door as the table's, so
+    // the cell becomes a row of two things and the NAME is what truncates.
+    .pbex-heat tbody th.rowh {
+        display: flex; align-items: center; gap: 7px;
+        span {
+            min-width: 0; overflow: hidden; text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    .pbex-table.cmp {
+        td.spark, th.spark { width: 76px; padding-right: 4px; }
+        td.spark svg { display: block; }
+    }
+    .pbex-tag.runs {
+        background: var(--line-2); color: var(--ink);
+        &.warn { background: var(--amber-s); color: var(--amber); }
+    }
+
+    // --------------------------------------------------------- responsive
+    @media (max-width: 900px) {
+        .pbex-wrap { padding: 16px 14px 32px; }
+        .pbex-head { flex-direction: column; gap: 12px; }
+        .pbex-head h1 { font-size: 25px; }
+        .pbex-donut { justify-content: center; }
+    }
+    @media (max-width: 620px) {
+        .pbex-rail { padding: 12px; gap: 10px 12px; }
+        .pbex-trail { flex-direction: column; align-items: flex-start; }
+        .pbex-money { width: 100%; flex-wrap: wrap; }
+        .pbex-seg button { padding: 5px 9px; font-size: 12px; }
+        .pbex-crumb { padding: 5px 7px; font-size: 12.5px; }
+        .pbex-next { display: none; }
+        .pbex-heads { padding: 10px 14px 0; gap: 6px 12px;
+                      .pbex-btn.sm { margin-left: 0; } }
+        .pbex-parts { padding: 10px 14px 0; }
+        .pbex-rates { margin: 10px 14px 0; }
+        .pbex-chip-group.grow { flex-basis: 100%; }
+        .pbex-head-tools .lbl { display: none; }
+        .pbex-btn { padding: 8px 10px; }
+        .pbex-headline .val { font-size: 21px; }
+        .pbex-canvas-wrap { height: 300px; }
+        .pbex-card-head { gap: 10px; }
+    }
+}
+
+/* ------------------------------------------------------------------ hub mode
+   IA Cycle 4. `.pbex` already declares `height: 100%; overflow: auto`, so the
+   scrollport is unchanged (W20); only the page padding tightens for a lens box
+   the rail has already inset. The head keeps its tools row and, with the
+   identity block suppressed, the sub line is what names the surface. */
+.pbex.pbex--embedded {
+    .pbex-wrap { padding: 18px 22px 36px; }
+    .pbex-head-main .sub { margin-top: 0; }
+}

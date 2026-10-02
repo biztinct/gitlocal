@@ -1,0 +1,610 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="payroll_country_selector_template" name="Payroll Country Selector">
+        <t t-call="web.layout">
+            <t t-set="head">
+                <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+                <style>
+                    /* Global font */
+                    * {
+                        font-family: 'Roboto', sans-serif;
+                    }
+                    
+                    /* Professional gradient background */
+                    .payroll-selector-container {
+                        min-height: 100vh;
+                        background: #f8f9fa;
+                        background-image: 
+                            radial-gradient(circle at 10% 20%, rgba(91, 173, 254, 0.05) 0%, transparent 50%),
+                            radial-gradient(circle at 80% 80%, rgba(91, 173, 254, 0.05) 0%, transparent 50%),
+                            radial-gradient(circle at 40% 40%, rgba(229, 229, 247, 0.1) 0%, transparent 50%);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    
+                    /* Subtle animated background pattern */
+                    .payroll-selector-container::before {
+                        content: '';
+                        position: absolute;
+                        width: 200%;
+                        height: 200%;
+                        background-image: 
+                            repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(91, 173, 254, 0.03) 35px, rgba(91, 173, 254, 0.03) 70px);
+                        animation: backgroundMove 30s linear infinite;
+                    }
+                    
+                    @keyframes backgroundMove {
+                        0% { transform: translate(0, 0); }
+                        100% { transform: translate(-50px, -50px); }
+                    }
+                    
+                    .selector-content {
+                        position: relative;
+                        z-index: 1;
+                        text-align: center;
+                        padding: 3rem;
+                        background: white;
+                        border-radius: 20px;
+                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+                        max-width: 900px;
+                        width: 90%;
+                    }
+                    
+                    .selector-title {
+                        color: #2c3e50;
+                        font-size: 2.5rem;
+                        font-weight: 300;
+                        margin-bottom: 0.5rem;
+                        animation: fadeInDown 0.8s ease-out;
+                        letter-spacing: -0.5px;
+                    }
+                    
+                    .selector-subtitle {
+                        color: #7f8c8d;
+                        font-size: 1.1rem;
+                        font-weight: 400;
+                        margin-bottom: 3rem;
+                        animation: fadeInUp 0.8s ease-out;
+                    }
+                    
+                    @keyframes fadeInDown {
+                        from {
+                            opacity: 0;
+                            transform: translateY(-20px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+                    
+                    @keyframes fadeInUp {
+                        from {
+                            opacity: 0;
+                            transform: translateY(20px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+                    
+                    .flags-container {
+                        display: flex;
+                        gap: 3rem;
+                        justify-content: center;
+                        flex-wrap: wrap;
+                        animation: fadeIn 1s ease-out 0.3s both;
+                    }
+                    
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    
+                    .flag-button {
+                        position: relative;
+                        cursor: pointer;
+                        transition: transform 0.3s ease;
+                        padding: 1rem;
+                        border-radius: 15px;
+                        background: rgba(255, 255, 255, 0.5);
+                    }
+                    
+                    .flag-button:hover {
+                        transform: translateY(-10px);
+                        background: rgba(255, 255, 255, 0.8);
+                    }
+                    
+                    .flag-wrapper {
+                        width: 200px;
+                        height: 150px;
+                        position: relative;
+                        transform-style: preserve-3d;
+                        transform-origin: left center;
+                    }
+                    
+                    .flag {
+                        width: 100%;
+                        height: 100%;
+                        background-size: cover;
+                        background-position: center;
+                        border-radius: 8px;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+                        position: relative;
+                        animation: wave 4s ease-in-out infinite;
+                        transform-style: preserve-3d;
+                        overflow: hidden;
+                    }
+                    
+                    /* Subtle wave effect */
+                    @keyframes wave {
+                        0%, 100% {
+                            transform: perspective(600px) rotateY(0deg) rotateX(0deg);
+                        }
+                        25% {
+                            transform: perspective(600px) rotateY(-8deg) rotateX(2deg);
+                        }
+                        50% {
+                            transform: perspective(600px) rotateY(0deg) rotateX(-2deg);
+                        }
+                        75% {
+                            transform: perspective(600px) rotateY(8deg) rotateX(2deg);
+                        }
+                    }
+                    
+                    /* Flag shimmer effect */
+                    .flag::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: -100%;
+                        right: 0;
+                        bottom: 0;
+                        background: linear-gradient(90deg, 
+                            transparent 0%,
+                            rgba(255,255,255,0.2) 50%,
+                            transparent 100%
+                        );
+                        animation: shimmer 3s ease-in-out infinite;
+                        border-radius: 8px;
+                    }
+                    
+                    @keyframes shimmer {
+                        0% { left: -100%; }
+                        50%, 100% { left: 100%; }
+                    }
+                    
+                    .flag-vietnam {
+                        background-image: linear-gradient(to bottom, #da251d 0%, #da251d 100%);
+                        position: relative;
+                    }
+                    
+                    .flag-vietnam::after {
+                        content: '★';
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        color: #ffcd00;
+                        font-size: 60px;
+                        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                    }
+                    
+                    .flag-indonesia {
+                        background-image: linear-gradient(to bottom, #ff0000 0%, #ff0000 50%, #ffffff 50%, #ffffff 100%);
+                    }
+                    
+                    .flag-india {
+                        background-image: linear-gradient(to bottom, #ff9933 0%, #ff9933 33.33%, #ffffff 33.33%, #ffffff 66.66%, #138808 66.66%, #138808 100%);
+                        position: relative;
+                    }
+                    
+                    /* Improved India flag with Ashoka Chakra */
+                    .flag-india::after {
+                        content: '';
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        width: 50px;
+                        height: 50px;
+                        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='20' fill='none' stroke='%23000080' stroke-width='3'/%3E%3Cg stroke='%23000080' stroke-width='2' fill='none'%3E%3C!-- 24 spokes --%3E%3Cpath d='M50,30 L50,50'/%3E%3Cpath d='M50,50 L50,70'/%3E%3Cpath d='M30,50 L50,50'/%3E%3Cpath d='M50,50 L70,50'/%3E%3Cpath d='M35.86,35.86 L50,50'/%3E%3Cpath d='M50,50 L64.14,64.14'/%3E%3Cpath d='M64.14,35.86 L50,50'/%3E%3Cpath d='M50,50 L35.86,64.14'/%3E%3Cpath d='M50,34 L50,50'/%3E%3Cpath d='M50,50 L50,66'/%3E%3Cpath d='M34,50 L50,50'/%3E%3Cpath d='M50,50 L66,50'/%3E%3Cpath d='M38.69,38.69 L50,50'/%3E%3Cpath d='M50,50 L61.31,61.31'/%3E%3Cpath d='M61.31,38.69 L50,50'/%3E%3Cpath d='M50,50 L38.69,61.31'/%3E%3Cpath d='M42,35 L50,50'/%3E%3Cpath d='M50,50 L58,65'/%3E%3Cpath d='M58,35 L50,50'/%3E%3Cpath d='M50,50 L42,65'/%3E%3Cpath d='M35,42 L50,50'/%3E%3Cpath d='M50,50 L65,58'/%3E%3Cpath d='M65,42 L50,50'/%3E%3Cpath d='M50,50 L35,58'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='4' fill='%23000080'/%3E%3C/svg%3E");
+                        background-size: contain;
+                        background-repeat: no-repeat;
+                        background-position: center;
+                    }
+                    
+                    .country-name {
+                        margin-top: 1.5rem;
+                        color: #2c3e50;
+                        font-size: 1.25rem;
+                        font-weight: 500;
+                        transition: all 0.3s ease;
+                        letter-spacing: 0.5px;
+                    }
+                    
+                    .flag-button:hover .country-name {
+                        color: #3498db;
+                        transform: scale(1.05);
+                    }
+                    
+                    /* Ripple effect on click */
+                    .flag-button::after {
+                        content: '';
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        width: 0;
+                        height: 0;
+                        border-radius: 50%;
+                        background: rgba(52, 152, 219, 0.3);
+                        transform: translate(-50%, -50%);
+                        transition: width 0.6s, height 0.6s;
+                    }
+                    
+                    .flag-button.clicked::after {
+                        width: 300px;
+                        height: 300px;
+                    }
+                    
+                    /* Loading spinner */
+                    .loading-overlay {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(255, 255, 255, 0.95);
+                        display: none;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 9999;
+                        backdrop-filter: blur(5px);
+                    }
+                    
+                    .loading-overlay.active {
+                        display: flex;
+                    }
+                    
+                    .spinner {
+                        width: 50px;
+                        height: 50px;
+                        border: 3px solid rgba(52, 152, 219, 0.2);
+                        border-top-color: #3498db;
+                        border-radius: 50%;
+                        animation: spin 1s linear infinite;
+                    }
+                    
+                    @keyframes spin {
+                        to { transform: rotate(360deg); }
+                    }
+                    
+                    /* Updated access indicators */
+                    .flag-button.no-access {
+                        opacity: 0.7;
+                    }
+                    
+                    .flag-button.no-access .country-name::after {
+                        content: '🔒';
+                        margin-left: 0.5rem;
+                        font-size: 1rem;
+                        opacity: 0.7;
+                    }
+                    
+                    .flag-button.has-access .country-name::after {
+                        content: '✓';
+                        margin-left: 0.5rem;
+                        color: #27ae60;
+                        font-weight: bold;
+                    }
+                </style>
+            </t>
+            
+            <div class="payroll-selector-container">
+                <div class="selector-content">
+                    <h1 class="selector-title">Select Your Payroll Region</h1>
+                    <p class="selector-subtitle">Choose your country to access the appropriate payroll system</p>
+                    
+                    <div class="flags-container">
+                        <!-- Vietnam Flag -->
+                        <div class="flag-button" data-country="VN">
+                            <div class="flag-wrapper">
+                                <div class="flag flag-vietnam"></div>
+                            </div>
+                            <div class="country-name">Vietnam</div>
+                        </div>
+                        
+                        <!-- Indonesia Flag -->
+                        <div class="flag-button" data-country="ID">
+                            <div class="flag-wrapper">
+                                <div class="flag flag-indonesia"></div>
+                            </div>
+                            <div class="country-name">Indonesia</div>
+                        </div>
+                        
+                        <!-- India Flag -->
+                        <div class="flag-button" data-country="IN">
+                            <div class="flag-wrapper">
+                                <div class="flag flag-india"></div>
+                            </div>
+                            <div class="country-name">India</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Loading overlay -->
+            <div class="loading-overlay">
+                <div class="spinner"></div>
+            </div>
+            
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const flagButtons = document.querySelectorAll('.flag-button');
+                    const loadingOverlay = document.querySelector('.loading-overlay');
+                    
+                    // Access rights passed from controller
+                    const accessRights = <t t-raw="json.dumps(access_rights)"/>;
+                    
+                    flagButtons.forEach(button => {
+                        const country = button.dataset.country;
+                        
+                        // Add visual indicator for access
+                        if (accessRights[country]) {
+                            button.classList.add('has-access');
+                        } else {
+                            button.classList.add('no-access');
+                            button.style.opacity = '0.7';
+                        }
+                        
+                        button.addEventListener('click', function() {
+                            // Add clicked animation
+                            this.classList.add('clicked');
+                            
+                            // Show loading
+                            loadingOverlay.classList.add('active');
+                            
+                            const countryCode = this.dataset.country;
+                            
+                            // Make AJAX call to select country
+                            fetch('/payroll/select-country', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    jsonrpc: '2.0',
+                                    method: 'call',
+                                    params: {
+                                        country_code: countryCode
+                                    },
+                                    id: Math.floor(Math.random() * 1000000)
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.result &amp;&amp; data.result.success) {
+                                    // Check if we should open dashboard or menu
+                                    if (data.result.action === 'dashboard' &amp;&amp; data.result.action_id) {
+                                        // Open dashboard action
+                                        window.location.href = '/web#action=' + data.result.action_id;
+                                    } else {
+                                        // Redirect to the appropriate menu
+                                        window.location.href = '/web#menu_id=' + data.result.menu_id;
+                                    }
+                                } else if (data.result &amp;&amp; data.result.error === 'access_denied') {
+                                    // Show access denied message
+                                    loadingOverlay.classList.remove('active');
+                                    this.classList.remove('clicked');
+                                    showAccessDeniedModal(data.result.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                loadingOverlay.classList.remove('active');
+                                this.classList.remove('clicked');
+                            });
+                        });
+                    });
+                    
+                    function showAccessDeniedModal(message) {
+                        // Create modal if it doesn't exist
+                        let modal = document.getElementById('access-denied-modal');
+                        if (!modal) {
+                            modal = document.createElement('div');
+                            modal.id = 'access-denied-modal';
+                            modal.className = 'access-modal';
+                            modal.innerHTML = `
+                                &lt;div class="modal-content"&gt;
+                                    &lt;div class="modal-icon"&gt;
+                                        &lt;svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"&gt;
+                                            &lt;path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#f44336"/&gt;
+                                        &lt;/svg&gt;
+                                    &lt;/div&gt;
+                                    &lt;h2&gt;Access Denied&lt;/h2&gt;
+                                    &lt;p class="modal-message"&gt;&lt;/p&gt;
+                                    &lt;div class="modal-actions"&gt;
+                                        &lt;button class="btn-request-access"&gt;Request Access&lt;/button&gt;
+                                        &lt;button class="btn-close"&gt;Close&lt;/button&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+                            `;
+                            document.body.appendChild(modal);
+                            
+                            // Add event listeners
+                            modal.querySelector('.btn-close').addEventListener('click', () =&gt; {
+                                modal.classList.remove('show');
+                            });
+                            
+                            modal.querySelector('.btn-request-access').addEventListener('click', () =&gt; {
+                                // Open email client or internal messaging
+                                window.location.href = 'mailto:admin@payobook.com?subject=Payroll Access Request&amp;body=Please grant me access to the selected country payroll system.';
+                                modal.classList.remove('show');
+                            });
+                            
+                            // Close on background click
+                            modal.addEventListener('click', (e) =&gt; {
+                                if (e.target === modal) {
+                                    modal.classList.remove('show');
+                                }
+                            });
+                        }
+                        
+                        // Update message and show modal
+                        modal.querySelector('.modal-message').textContent = message;
+                        modal.classList.add('show');
+                    }
+                });
+            </script>
+            
+            <style>
+                /* Updated modal styles for professional look */
+                .access-modal {
+                    display: none;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.5);
+                    z-index: 10000;
+                    align-items: center;
+                    justify-content: center;
+                    backdrop-filter: blur(5px);
+                }
+                
+                .access-modal.show {
+                    display: flex;
+                    animation: fadeIn 0.3s ease-out;
+                }
+                
+                .modal-content {
+                    background: white;
+                    border-radius: 12px;
+                    padding: 2.5rem;
+                    max-width: 450px;
+                    width: 90%;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+                    animation: slideUp 0.3s ease-out;
+                    text-align: center;
+                }
+                
+                @keyframes slideUp {
+                    from {
+                        transform: translateY(30px);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateY(0);
+                        opacity: 1;
+                    }
+                }
+                
+                .modal-icon {
+                    margin-bottom: 1.5rem;
+                    animation: bounce 0.5s ease-out 0.3s;
+                }
+                
+                @keyframes bounce {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.1); }
+                }
+                
+                .modal-content h2 {
+                    color: #e74c3c;
+                    margin-bottom: 1rem;
+                    font-size: 1.75rem;
+                    font-weight: 400;
+                }
+                
+                .modal-message {
+                    color: #7f8c8d;
+                    margin-bottom: 2rem;
+                    line-height: 1.6;
+                    font-size: 1rem;
+                }
+                
+                .modal-actions {
+                    display: flex;
+                    gap: 1rem;
+                    justify-content: center;
+                }
+                
+                .modal-actions button {
+                    padding: 0.75rem 2rem;
+                    border: none;
+                    border-radius: 6px;
+                    font-size: 0.95rem;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    font-family: 'Roboto', sans-serif;
+                }
+                
+                .btn-request-access {
+                    background: #3498db;
+                    color: white;
+                }
+                
+                .btn-request-access:hover {
+                    background: #2980b9;
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+                }
+                
+                .btn-close {
+                    background: #ecf0f1;
+                    color: #7f8c8d;
+                }
+                
+                .btn-close:hover {
+                    background: #bdc3c7;
+                    color: #2c3e50;
+                }
+                /* Visual indicator for no access */
+                .flag-button.no-access .country-name::after {
+                    content: '🔒';
+                    margin-left: 0.5rem;
+                    font-size: 1rem;
+                    opacity: 0.7;
+                }
+                
+                .flag-button.has-access .country-name::after {
+                    content: '✓';
+                    margin-left: 0.5rem;
+                    color: #27ae60;
+                    font-weight: bold;
+                }
+                
+                /* Responsive design */
+                @media (max-width: 768px) {
+                    .selector-content {
+                        padding: 2rem;
+                        margin: 1rem;
+                    }
+                    
+                    .selector-title {
+                        font-size: 2rem;
+                    }
+                    
+                    .flags-container {
+                        gap: 2rem;
+                    }
+                    
+                    .flag-wrapper {
+                        width: 160px;
+                        height: 120px;
+                    }
+                    
+                    .country-name {
+                        font-size: 1.1rem;
+                    }
+                }
+            </style>
+        </t>
+    </template>
+</odoo>

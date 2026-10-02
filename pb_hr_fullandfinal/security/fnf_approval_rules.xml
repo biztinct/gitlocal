@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- A seat is also a read (ledger AM60): the finance approver asked to
+         agree to somebody's last pay must be able to open the settlement, and
+         the engine re-checks that before it accepts a decision. -->
+
+    <record id="rule_fnf_seat" model="ir.rule">
+        <field name="name">Final settlement: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_hr_full_final_settlement"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('seat_user_ids', 'in', [user.id])]</field>
+    </record>
+
+</odoo>

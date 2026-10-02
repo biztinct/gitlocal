@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       RECRUIT P7 (G-21) — the agency portal, `/my/agency`.
+
+       The .pbme kit (pb_me_portal) with its own `.pbag` layer, light only
+       like every public page (R39). Phone first: one column at 360 px, the
+       form full width, nothing wider than the screen.
+
+       THE TEMPLATES SEE NO RECORD. The controller hands plain dictionaries
+       (role title, department, country, close-by, the advert; the agency's
+       own people with a coarse stage), so no expression here can reach a
+       field it should not (`controllers/agency_portal.py`).
+
+       Icons through `ic(name, size)` — the controller passes the ONE Lucide
+       registry (`pb_import_kit` IC), never an inlined glyph set.
+       `t-attf-class`, never a dict `t-att-class` (R42); no `t-key` (R5).
+       ================================================================== -->
+
+  <template id="portal_breadcrumbs_agency" name="Agency portal menu"
+            inherit_id="portal.portal_breadcrumbs" priority="44">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'agency'" class="breadcrumb-item active">Agency portal</li>
+      <li t-if="page_name in ('agency_role', 'agency_people')" class="breadcrumb-item"><a href="/my/agency">Agency portal</a></li>
+      <li t-if="page_name == 'agency_role'" class="breadcrumb-item active">A role</li>
+      <li t-if="page_name == 'agency_people'" class="breadcrumb-item active">People you put forward</li>
+    </xpath>
+  </template>
+
+  <!-- ============================ the stage chip ============================ -->
+  <template id="agency_chip" name="Agency stage chip">
+    <span t-attf-class="pbag-chip pbag-chip--#{p['stage'] or 'none'}">
+      <t t-if="p['stage'] == 'joined'" t-out="ic('checkCircle', 12)"/>
+      <t t-elif="p['stage'] == 'offer'" t-out="ic('award', 12)"/>
+      <t t-elif="p['stage'] == 'interviewing'" t-out="ic('users', 12)"/>
+      <t t-elif="p['stage'] == 'refused'" t-out="ic('ban', 12)"/>
+      <t t-elif="p['stage'] == 'not_selected'" t-out="ic('minusCircle', 12)"/>
+      <t t-else="" t-out="ic('eye', 12)"/>
+      <t t-esc="p['label']"/>
+    </span>
+  </template>
+
+  <!-- ============================ one person row ============================ -->
+  <template id="agency_person" name="Agency person row">
+    <div class="pbag-person">
+      <div class="pbag-person-av" t-esc="(p['name'] or '?')[:1].upper()"/>
+      <div class="pbag-person-main">
+        <div class="pbag-person-name" t-esc="p['name']"/>
+        <div class="pbag-person-meta"><t t-if="show_role"><t t-esc="p['role']"/> · </t><t t-esc="p['on']"/></div>
+        <div t-if="p['why']" class="pbag-person-why" t-esc="p['why']"/>
+      </div>
+      <t t-call="pb_hiring.agency_chip"/>
+    </div>
+  </template>
+
+  <!-- ============================ home ============================ -->
+  <template id="agency_portal_home" name="Agency portal">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbag">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_eyebrow" t-value="'%s · Agency portal' % brand"/>
+          <t t-set="hero_title" t-value="agency"/>
+          <t t-set="hero_sub" t-value="'The roles %s asked you to help with, and the people you put forward.' % brand"/>
+        </t>
+
+        <div class="pbag-stats">
+          <div class="pbag-stat"><b t-esc="len(roles)"/><span><t t-if="len(roles) == 1">role open for you</t><t t-else="">roles open for you</t></span></div>
+          <div class="pbag-stat"><b t-esc="n_people"/><span><t t-if="n_people == 1">person put forward</t><t t-else="">people put forward</t></span></div>
+          <div t-if="n_refused" class="pbag-stat pbag-stat--muted"><b t-esc="n_refused"/><span>not accepted (6-month rule)</span></div>
+        </div>
+
+        <div class="pbag-sec"><t t-out="ic('briefcase', 16)"/> Roles you are working on</div>
+        <div t-if="not roles" class="pbme-card pbag-empty">
+          <div class="pbag-empty-ic"><t t-out="ic('briefcase', 26)"/></div>
+          <h3>No roles are open for you right now</h3>
+          <p class="pbme-muted">When the hiring team asks your agency to help with a role, it appears here and you get an email. Nothing to do until then.</p>
+        </div>
+        <div t-else="" class="pbag-roles">
+          <a t-foreach="roles" t-as="r" t-att-href="r['url']" class="pbme-card pbag-role">
+            <div class="pbag-role-top">
+              <span class="pbag-role-ic"><t t-out="ic('briefcase', 18)"/></span>
+              <div class="pbag-role-id">
+                <div class="pbag-role-name" t-esc="r['title']"/>
+                <div class="pbag-role-meta">
+                  <span t-if="r['department']"><t t-esc="r['department']"/></span>
+                  <span t-if="r['country']"><t t-out="ic('mapPin', 12)"/> <t t-esc="r['location'] or r['country']"/></span>
+                  <span t-if="r['close_by']"><t t-out="ic('calendar', 12)"/> Close by <t t-esc="r['close_by']"/></span>
+                </div>
+              </div>
+            </div>
+            <p t-if="r['summary']" class="pbag-role-sum" t-esc="r['summary']"/>
+            <div class="pbag-role-foot">
+              <span class="pbag-count">
+                <t t-if="r['put_forward'] == 0">Nobody put forward yet</t>
+                <t t-elif="r['put_forward'] == 1">1 person put forward</t>
+                <t t-else=""><t t-esc="r['put_forward']"/> people put forward</t>
+              </span>
+              <span class="pbme-btn pbme-btn--primary pbag-go"><t t-out="ic('userPlus', 15)"/> Put someone forward</span>
+            </div>
+          </a>
+        </div>
+
+        <div class="pbag-sec"><t t-out="ic('users', 16)"/> People you put forward
+          <a t-if="n_all &gt; len(people)" href="/my/agency/people" class="pbag-more">See all <t t-esc="n_all"/> <t t-out="ic('arrowRight', 13)"/></a>
+        </div>
+        <div t-if="not people" class="pbme-card pbag-empty pbag-empty--small">
+          <p class="pbme-muted">Nobody yet. Open a role above and put someone forward — you will see how far they get here.</p>
+        </div>
+        <div t-else="" class="pbme-card pbag-people">
+          <t t-foreach="people" t-as="p"><t t-call="pb_hiring.agency_person"><t t-set="show_role" t-value="True"/></t></t>
+        </div>
+
+        <div class="pbag-rule">
+          <span class="pbag-rule-ic"><t t-out="ic('clock', 16)"/></span>
+          <div><b>The 6-month rule.</b> We cannot accept somebody who is already a candidate with us, or who applied to us in the last six months. If that happens you are told the date, and nothing is sent.</div>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================ one role ============================ -->
+  <template id="agency_portal_role" name="Agency portal role">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbag">
+        <a href="/my/agency" class="pbag-back"><t t-out="ic('chevronLeft', 15)"/> All roles</a>
+
+        <div class="pbme-hero pbag-hero">
+          <div>
+            <div class="pbme-eyebrow"><t t-esc="brand"/> · Agency portal</div>
+            <h1 class="pbme-h1" t-esc="role['title']"/>
+            <div class="pbag-role-meta pbag-role-meta--hero">
+              <span t-if="role['department']"><t t-esc="role['department']"/></span>
+              <span t-if="role['country']"><t t-out="ic('mapPin', 12)"/> <t t-esc="role['location'] or role['country']"/></span>
+              <span t-if="role['close_by']"><t t-out="ic('calendar', 12)"/> Close by <t t-esc="role['close_by']"/></span>
+            </div>
+          </div>
+          <div class="pbme-hero-actions">
+            <a href="#put-forward" class="pbme-btn pbme-btn--primary"><t t-out="ic('userPlus', 15)"/> Put someone forward</a>
+          </div>
+        </div>
+
+        <div t-if="sent_name" class="pbag-notice pbag-notice--ok" role="status">
+          <t t-out="ic('checkCircle', 18)"/>
+          <div><b>Thank you — <t t-esc="sent_name"/> is with the recruiter.</b> You will see how far they get under People you put forward.</div>
+        </div>
+        <div t-if="refused" class="pbag-notice pbag-notice--no" role="alert">
+          <t t-out="ic('ban', 18)"/>
+          <div><b t-esc="refused"/> Nothing was sent. You can put forward somebody else.</div>
+        </div>
+        <div t-if="problem" class="pbag-notice pbag-notice--warn" role="alert">
+          <t t-out="ic('alert', 18)"/>
+          <div><b t-esc="problem"/> Your answers are kept below; files are not, so choose the CV again.</div>
+        </div>
+
+        <div class="pbag-grid">
+          <div class="pbme-card pbag-jd">
+            <div class="pbag-card-h"><t t-out="ic('fileText', 16)"/> The role</div>
+            <div t-if="jd" class="pbag-jd-body"><t t-out="jd"/></div>
+            <p t-else="" class="pbme-muted">The advert for this role is being written. The recruiter will send it to you.</p>
+          </div>
+
+          <form class="pbme-card pbag-form" id="put-forward" t-attf-action="/my/agency/role/#{role['id']}/submit" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <div class="pbag-card-h"><t t-out="ic('userPlus', 16)"/> Put someone forward</div>
+            <label class="pbag-f">
+              <span>Full name</span>
+              <input type="text" name="name" required="required" maxlength="200" autocomplete="off" t-att-value="values.get('name')" placeholder="As on their CV"/>
+            </label>
+            <label class="pbag-f">
+              <span>Email</span>
+              <input type="email" name="email" required="required" maxlength="200" autocomplete="off" t-att-value="values.get('email')" placeholder="name@example.com"/>
+            </label>
+            <label class="pbag-f">
+              <span>Phone</span>
+              <input type="tel" name="phone" required="required" maxlength="60" autocomplete="off" t-att-value="values.get('phone')" placeholder="+84 912 345 678"/>
+              <small>With the country code.</small>
+            </label>
+            <label class="pbag-f">
+              <span>Where they are <em>optional</em></span>
+              <input type="text" name="location" maxlength="200" t-att-value="values.get('location')" placeholder="Ho Chi Minh City"/>
+            </label>
+            <label class="pbag-f pbag-file">
+              <span>CV</span>
+              <input type="file" name="cv" required="required" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
+              <small>PDF or Word, up to 5 MB.</small>
+            </label>
+            <label class="pbag-f">
+              <span>Why they fit <em>optional</em></span>
+              <textarea name="note" rows="3" maxlength="2000" placeholder="Two lines the recruiter will read first."><t t-esc="values.get('note') or ''"/></textarea>
+            </label>
+            <label class="pbag-agree">
+              <input type="checkbox" name="agreed" value="1" required="required"/>
+              <span>The candidate agreed to be put forward for this role.</span>
+            </label>
+            <button type="submit" class="pbme-btn pbme-btn--primary pbag-submit"><t t-out="ic('send', 15)"/> Put them forward</button>
+            <p class="pbag-fine">The recruiter sees them at once. Under the 6-month rule we cannot accept somebody who is already a candidate with us or applied in the last six months; you are told the date if so.</p>
+          </form>
+        </div>
+
+        <t t-if="mine">
+          <div class="pbag-sec"><t t-out="ic('users', 16)"/> You put forward for this role</div>
+          <div class="pbme-card pbag-people">
+            <t t-foreach="mine" t-as="p"><t t-call="pb_hiring.agency_person"><t t-set="show_role" t-value="False"/></t></t>
+          </div>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================ everyone ============================ -->
+  <template id="agency_portal_people" name="Agency portal people">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbag">
+        <a href="/my/agency" class="pbag-back"><t t-out="ic('chevronLeft', 15)"/> All roles</a>
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_eyebrow" t-value="'%s · Agency portal' % brand"/>
+          <t t-set="hero_title">People you put forward</t>
+          <t t-set="hero_sub">Everyone, newest first, with where they are now.</t>
+        </t>
+        <div t-if="not people" class="pbme-card pbag-empty pbag-empty--small">
+          <p class="pbme-muted">Nobody yet. Open a role and put someone forward.</p>
+        </div>
+        <div t-else="" class="pbme-card pbag-people">
+          <t t-foreach="people" t-as="p"><t t-call="pb_hiring.agency_person"><t t-set="show_role" t-value="True"/></t></t>
+        </div>
+        <div class="pbag-legend">
+          <span><b>In review</b> the recruiter is reading their CV</span>
+          <span><b>Interviewing</b> they are talking to us</span>
+          <span><b>Offer</b> an offer is being made or was made</span>
+          <span><b>Joined</b> they started</span>
+          <span><b>Not selected</b> not taken forward this time</span>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================ no agency ============================ -->
+  <template id="agency_portal_none" name="Agency portal, no agency">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbag">
+        <div class="pbme-card pbag-empty">
+          <div class="pbag-empty-ic"><t t-out="ic('lock', 26)"/></div>
+          <h3>This sign-in is not linked to an agency</h3>
+          <p class="pbme-muted">Ask the recruiter who invited you to send the invitation again, to the address you signed in with.</p>
+          <a href="/my" class="pbme-btn">Back</a>
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

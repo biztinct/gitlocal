@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- FLEET P5 — three example plans, one for each way of charging.
+
+     EVERY PRICE IN THIS FILE IS A PLACEHOLDER AND IS MARKED "OWNER TO CONFIRM"
+     in the phase report. Nothing in the product has an opinion about what
+     Payobook should cost; these exist so the three price structures are each
+     demonstrated by a real record on day one, and so the Plans tab is not an
+     empty screen with a "create one" button on it.
+
+     `noupdate="1"` on purpose: the moment the owner edits a price, an upgrade
+     must not put the placeholder back.
+
+     The tax rate is 0 on all three. VAT on software services in Vietnam is the
+     owner's decision, not ours (also flagged in the report).
+-->
+<odoo noupdate="1">
+
+    <record id="plan_starter" model="pb.plan">
+        <field name="name">Starter</field>
+        <field name="code">starter</field>
+        <field name="blurb">For a small office paying people every month.</field>
+        <field name="sequence">10</field>
+        <field name="pricing">per_employee</field>
+        <!-- OWNER TO CONFIRM: 30,000 ₫ per employee per month. -->
+        <field name="price">30000</field>
+        <field name="currency_id" ref="base.VND"/>
+        <field name="employee_limit">50</field>
+        <field name="vat_pct">0</field>
+        <field name="trial_days">14</field>
+    </record>
+
+    <record id="plan_growth" model="pb.plan">
+        <field name="name">Growth</field>
+        <field name="code">growth</field>
+        <field name="blurb">For a company whose payroll changes every month.</field>
+        <field name="sequence">20</field>
+        <field name="pricing">per_payslip</field>
+        <!-- OWNER TO CONFIRM: 25,000 ₫ per payslip produced. -->
+        <field name="price">25000</field>
+        <field name="currency_id" ref="base.VND"/>
+        <field name="employee_limit">500</field>
+        <field name="vat_pct">0</field>
+        <field name="trial_days">14</field>
+    </record>
+
+    <!-- The size bands are written INLINE, in the same create as the plan.
+         A separate `pb.plan.tier` record after it fails the plan's own
+         constraint ("a plan priced by company size needs at least one band")
+         at the moment the plan is created with none, and takes the whole
+         upgrade with it. Same reason `plan_save` builds its bands into the
+         create rather than adding them afterwards.
+
+         OWNER TO CONFIRM: every band below. The top band is open-ended by
+         design — a company that hires its 2,001st person is charged the top
+         band rather than nothing at all. -->
+    <record id="plan_enterprise" model="pb.plan">
+        <field name="name">Enterprise</field>
+        <field name="code">enterprise</field>
+        <field name="blurb">One price a month, whatever the payroll does.</field>
+        <field name="sequence">30</field>
+        <field name="pricing">flat_tier</field>
+        <field name="price">0</field>
+        <field name="currency_id" ref="base.VND"/>
+        <field name="employee_limit">0</field>
+        <field name="vat_pct">0</field>
+        <field name="trial_days">30</field>
+        <field name="tier_ids" eval="[(5, 0, 0),
+            (0, 0, {'up_to': 200, 'price': 6000000}),
+            (0, 0, {'up_to': 500, 'price': 12000000}),
+            (0, 0, {'up_to': 2000, 'price': 30000000})]"/>
+    </record>
+
+</odoo>

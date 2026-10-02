@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Nightly: write (or remove) the stretches the contract dates imply for
+         the entities whose "pay joiners and leavers by the day" switch is on.
+
+         The job derives them rather than a person typing them because a
+         contract date is already the truth: retyping it as a stretch of days
+         would be one more thing to keep in step.
+
+         TWO GUARDS, and they are different things (GR14 and GR25).
+         `model_id` names `res.company` — a model every worker has had since
+         the platform was installed — because Odoo builds a server action's
+         eval context with `env[model_name]` BEFORE a line of the code runs, so
+         a cron pointing at a table this upgrade created is a KeyError inside
+         the platform where no guard of ours can reach it. The code then checks
+         the REGISTRY, because the worker already running does not have this
+         module's code the moment the row lands.
+
+         Deliberately NOT `noupdate="1"`: a cron is plumbing, and a fix to it
+         has to reach a database that already has yesterday's version. -->
+
+    <record id="cron_derive_joiners_leavers" model="ir.cron">
+        <field name="name">Payroll: work out mid-month joiners and leavers</field>
+        <field name="model_id" ref="base.model_res_company"/>
+        <field name="state">code</field>
+        <field name="code">env['pb.work.segment']._cron_derive() if 'pb.work.segment' in env else None</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

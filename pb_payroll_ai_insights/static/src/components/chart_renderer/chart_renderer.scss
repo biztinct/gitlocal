@@ -1,0 +1,75 @@
+/* Chart Renderer — Container, Toolbar & Drill-down Hint */
+
+.payai-chart-container {
+    position: relative;
+    flex: 1;
+    min-height: 0;           /* allow shrinking in flex layout */
+    display: flex;
+    flex-direction: column;
+}
+
+.payai-chart-wrapper {
+    position: relative;
+    flex: 1;
+    min-height: 0;           /* allow shrinking in flex layout */
+    width: 100%;
+    padding: 4px;
+
+    canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+
+/* --- Chart Type Toolbar --- */
+
+.payai-chart-toolbar {
+    display: flex;
+    gap: 4px;
+    padding: 6px 8px;
+    justify-content: flex-end;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.payai-chart-type-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: all 0.2s;
+
+    &:hover {
+        background: #f1f5f9;
+        color: #6366f1;
+        border-color: #e2e8f0;
+    }
+
+    &.active {
+        background: #eef2ff;
+        color: #6366f1;
+        border-color: #c7d2fe;
+        box-shadow: 0 1px 3px rgba(99, 102, 241, 0.15);
+    }
+}
+
+/* --- Drill-down Hint --- */
+
+.payai-drilldown-hint {
+    text-align: center;
+    font-size: 11px;
+    color: #94a3b8;
+    padding: 4px 0 2px;
+    opacity: 0.7;
+
+    i {
+        font-size: 10px;
+        margin-right: 3px;
+    }
+}

@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       The Pay screens are a cockpit; these are the plain lists behind them.
+
+       They exist for the same reason every cockpit in this product ships a
+       pair: somebody eventually needs to look at one record on its own, an
+       administrator needs a way in that does not depend on a JavaScript
+       bundle, and the approval trail is worth reading in the platform's own
+       stepper. No menu points at any of them.
+       ================================================================== -->
+
+  <record id="view_pb_pay_review_list" model="ir.ui.view">
+    <field name="name">pb.pay.review.list</field>
+    <field name="model">pb.pay.review</field>
+    <field name="arch" type="xml">
+      <list string="Pay reviews" create="0">
+        <field name="name"/>
+        <field name="scope_label"/>
+        <field name="year"/>
+        <field name="effective_date"/>
+        <field name="people"/>
+        <field name="budget_amount" sum="Budget"/>
+        <field name="allocated_amount" sum="Proposed"/>
+        <field name="lines_blocked"/>
+        <field name="state" widget="badge"/>
+        <field name="is_legacy" optional="hide"/>
+        <field name="currency_id" column_invisible="1"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_pb_pay_review_form" model="ir.ui.view">
+    <field name="name">pb.pay.review.form</field>
+    <field name="model">pb.pay.review</field>
+    <field name="arch" type="xml">
+      <form string="Pay review" create="0">
+        <sheet>
+          <div class="oe_title">
+            <h1><field name="name" readonly="1"/></h1>
+          </div>
+          <field name="approval_widget_json" widget="biz_approval_stepper"
+                 nolabel="1"/>
+          <group>
+            <group string="Who it covers">
+              <field name="scope_label" readonly="1"/>
+              <field name="company_ids" widget="many2many_tags" readonly="1"/>
+              <field name="people" readonly="1"/>
+            </group>
+            <group string="The money">
+              <field name="currency_id" invisible="1"/>
+              <field name="budget_amount" readonly="1"/>
+              <field name="allocated_amount" readonly="1"/>
+              <field name="remaining_amount" readonly="1"/>
+              <field name="effective_date" readonly="1"/>
+            </group>
+          </group>
+          <group string="How it was decided">
+            <field name="guidance_id" readonly="1"/>
+            <field name="lines_blocked" readonly="1"/>
+            <field name="is_legacy" readonly="1"/>
+            <field name="undo_until" readonly="1"/>
+            <field name="note" readonly="1"/>
+          </group>
+          <notebook>
+            <page string="People">
+              <field name="line_ids" readonly="1">
+                <list>
+                  <field name="employee_id"/>
+                  <field name="job_id"/>
+                  <field name="department_id"/>
+                  <field name="rating"/>
+                  <field name="current_wage"/>
+                  <field name="proposal_pct"/>
+                  <field name="new_wage"/>
+                  <field name="annual_cost_delta" sum="A year"/>
+                  <field name="state"/>
+                  <field name="currency_id" column_invisible="1"/>
+                </list>
+              </field>
+            </page>
+            <page string="Limits">
+              <field name="limit_ids" readonly="1">
+                <list>
+                  <field name="name"/>
+                  <field name="enforcement"/>
+                </list>
+              </field>
+            </page>
+            <page string="What was written">
+              <field name="apply_ids" readonly="1">
+                <list>
+                  <field name="employee_id"/>
+                  <field name="old_wage"/>
+                  <field name="new_wage"/>
+                  <field name="effective_date"/>
+                  <field name="applied_by"/>
+                  <field name="state"/>
+                  <field name="letter_id"/>
+                  <field name="currency_id" column_invisible="1"/>
+                </list>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <record id="view_pb_pay_change_list" model="ir.ui.view">
+    <field name="name">pb.pay.change.list</field>
+    <field name="model">pb.pay.change</field>
+    <field name="arch" type="xml">
+      <list string="Pay changes">
+        <field name="employee_id"/>
+        <field name="kind"/>
+        <field name="current_wage"/>
+        <field name="new_wage"/>
+        <field name="pct"/>
+        <field name="effective_date"/>
+        <field name="state" widget="badge"/>
+        <field name="currency_id" column_invisible="1"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_pb_pay_change_form" model="ir.ui.view">
+    <field name="name">pb.pay.change.form</field>
+    <field name="model">pb.pay.change</field>
+    <field name="arch" type="xml">
+      <form string="Pay change">
+        <sheet>
+          <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+          <field name="approval_widget_json" widget="biz_approval_stepper"
+                 nolabel="1"/>
+          <group>
+            <group string="Who">
+              <field name="employee_id"/>
+              <field name="new_job_id"/>
+              <field name="band_id" readonly="1"/>
+            </group>
+            <group string="The money">
+              <field name="currency_id" invisible="1"/>
+              <field name="current_wage" readonly="1"/>
+              <field name="new_wage"/>
+              <field name="pct" readonly="1"/>
+              <field name="guidance_pct" readonly="1"/>
+              <field name="effective_date"/>
+            </group>
+          </group>
+          <group string="Why">
+            <field name="kind"/>
+            <field name="reason"/>
+          </group>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <record id="view_pb_pay_guidance_form" model="ir.ui.view">
+    <field name="name">pb.pay.guidance.form</field>
+    <field name="model">pb.pay.guidance</field>
+    <field name="arch" type="xml">
+      <form string="Guidance">
+        <sheet>
+          <div class="oe_title"><h1><field name="name"/></h1></div>
+          <group>
+            <group>
+              <field name="rating_scale"/>
+              <field name="country_code"/>
+              <field name="active"/>
+            </group>
+            <group>
+              <field name="company_ids" widget="many2many_tags"/>
+              <field name="note"/>
+            </group>
+          </group>
+          <field name="cell_ids">
+            <list editable="bottom">
+              <field name="rating"/>
+              <field name="position_band"/>
+              <field name="pct"/>
+            </list>
+          </field>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="view_pb_pay_settings_form" model="ir.ui.view">
+    <field name="name">pb.pay.settings.form</field>
+    <field name="model">pb.pay.settings</field>
+    <field name="arch" type="xml">
+      <form string="Pay settings">
+        <sheet>
+          <group>
+            <field name="company_id"/>
+            <field name="guidance_id"/>
+            <field name="portal_enabled"/>
+            <field name="change_finance_pct"/>
+          </group>
+          <field name="limit_ids">
+            <list editable="bottom">
+              <field name="kind"/>
+              <field name="value"/>
+              <field name="enforcement"/>
+              <field name="division_id"/>
+            </list>
+          </field>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_pb_pay_review_records" model="ir.actions.act_window">
+    <field name="name">Pay reviews</field>
+    <field name="res_model">pb.pay.review</field>
+    <field name="view_mode">list,form</field>
+    <field name="help" type="html">
+      <p class="o_view_nocontent_smiley_face">No pay review yet</p>
+      <p>A review opens with a suggested rise already filled in for everybody it covers. Start one from the Pay screen.</p>
+    </field>
+  </record>
+
+  <record id="action_pb_pay_change_records" model="ir.actions.act_window">
+    <field name="name">Pay changes</field>
+    <field name="res_model">pb.pay.change</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+</odoo>

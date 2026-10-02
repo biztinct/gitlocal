@@ -3,7 +3,7 @@
 
 {
     'name': 'Employee Contracts',
-    'version': '1.0',
+    'version': '19.0.1.0.0',
     'category': 'Human Resources/Contracts',
     'sequence': 335,
     'description': """
@@ -17,6 +17,7 @@ Add all information on the employee form to manage contracts.
 
 You can assign several contracts per employee.
     """,
+    'author': 'Odoo S.A.',
     'website': 'https://www.odoo.com/app/employees',
     'depends': ['hr'],
     'data': [

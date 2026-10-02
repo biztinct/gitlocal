@@ -1,0 +1,176 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_hiring_requisition_staff,Hiring request mine and my department's,model_pb_hiring_requisition,base.group_user,1,1,1,0
+access_pb_hiring_requisition_user,Hiring request recruiter,model_pb_hiring_requisition,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_requisition_manager,Hiring request manager,model_pb_hiring_requisition,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_requisition_admin,Hiring request head of hiring,model_pb_hiring_requisition,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_requisition_system,Hiring request system,model_pb_hiring_requisition,base.group_system,1,1,1,1
+access_pb_hiring_step_staff,Hiring stage mine,model_pb_hiring_step,base.group_user,1,1,1,1
+access_pb_hiring_step_user,Hiring stage recruiter,model_pb_hiring_step,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_step_manager,Hiring stage manager,model_pb_hiring_step,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_step_system,Hiring stage system,model_pb_hiring_step,base.group_system,1,1,1,1
+access_pb_hiring_jd_staff,Job description mine,model_pb_hiring_jd,base.group_user,1,1,1,0
+access_pb_hiring_jd_user,Job description recruiter,model_pb_hiring_jd,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_jd_manager,Job description manager,model_pb_hiring_jd,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_jd_admin,Job description head of hiring,model_pb_hiring_jd,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_jd_system,Job description system,model_pb_hiring_jd,base.group_system,1,1,1,1
+access_pb_hiring_referral_staff,Referral mine,model_pb_hiring_referral,base.group_user,1,0,0,0
+access_pb_hiring_referral_user,Referral recruiter,model_pb_hiring_referral,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_referral_manager,Referral manager,model_pb_hiring_referral,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_referral_admin,Referral head of hiring,model_pb_hiring_referral,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_referral_system,Referral system,model_pb_hiring_referral,base.group_system,1,1,1,1
+access_pb_hiring_posting_staff,Advert read,model_pb_hiring_posting,base.group_user,1,0,0,0
+access_pb_hiring_posting_user,Advert recruiter,model_pb_hiring_posting,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_posting_manager,Advert manager,model_pb_hiring_posting,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_posting_admin,Advert head of hiring,model_pb_hiring_posting,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_posting_system,Advert system,model_pb_hiring_posting,base.group_system,1,1,1,1
+access_pb_hiring_country_rule_staff,Hiring rule read,model_pb_hiring_country_rule,base.group_user,1,0,0,0
+access_pb_hiring_country_rule_user,Hiring rule recruiter,model_pb_hiring_country_rule,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_country_rule_manager,Hiring rule manager,model_pb_hiring_country_rule,pb_hiring.group_hiring_manager,1,0,0,0
+access_pb_hiring_country_rule_admin,Hiring rule head of hiring,model_pb_hiring_country_rule,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_country_rule_system,Hiring rule system,model_pb_hiring_country_rule,base.group_system,1,1,1,1
+access_pb_hiring_interview_staff,Interview mine,model_pb_hiring_interview,base.group_user,1,0,0,0
+access_pb_hiring_interview_user,Interview recruiter,model_pb_hiring_interview,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_interview_manager,Interview manager,model_pb_hiring_interview,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_interview_admin,Interview head of hiring,model_pb_hiring_interview,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_interview_system,Interview system,model_pb_hiring_interview,base.group_system,1,1,1,1
+access_pb_hiring_reschedule_staff,Interview moved mine,model_pb_hiring_reschedule,base.group_user,1,0,0,0
+access_pb_hiring_reschedule_user,Interview moved recruiter,model_pb_hiring_reschedule,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_reschedule_manager,Interview moved manager,model_pb_hiring_reschedule,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_reschedule_admin,Interview moved head of hiring,model_pb_hiring_reschedule,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_reschedule_system,Interview moved system,model_pb_hiring_reschedule,base.group_system,1,1,1,1
+access_pb_hiring_feedback_staff,Interview opinion mine,model_pb_hiring_feedback,base.group_user,1,0,0,0
+access_pb_hiring_feedback_user,Interview opinion recruiter,model_pb_hiring_feedback,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_feedback_manager,Interview opinion manager,model_pb_hiring_feedback,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_feedback_admin,Interview opinion head of hiring,model_pb_hiring_feedback,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_feedback_system,Interview opinion system,model_pb_hiring_feedback,base.group_system,1,1,1,1
+access_pb_hiring_criterion_staff,Scoring line read,model_pb_hiring_criterion,base.group_user,1,0,0,0
+access_pb_hiring_criterion_user,Scoring line recruiter,model_pb_hiring_criterion,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_criterion_manager,Scoring line manager,model_pb_hiring_criterion,pb_hiring.group_hiring_manager,1,0,0,0
+access_pb_hiring_criterion_admin,Scoring line head of hiring,model_pb_hiring_criterion,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_criterion_system,Scoring line system,model_pb_hiring_criterion,base.group_system,1,1,1,1
+access_pb_hiring_stage_log_staff,Candidate stage move read,model_pb_hiring_stage_log,base.group_user,1,0,0,0
+access_pb_hiring_stage_log_user,Candidate stage move recruiter,model_pb_hiring_stage_log,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_stage_log_manager,Candidate stage move manager,model_pb_hiring_stage_log,pb_hiring.group_hiring_manager,1,0,0,0
+access_pb_hiring_stage_log_admin,Candidate stage move head of hiring,model_pb_hiring_stage_log,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_stage_log_system,Candidate stage move system,model_pb_hiring_stage_log,base.group_system,1,1,1,1
+access_pb_hiring_bgv_template_staff,Background check line read,model_pb_hiring_bgv_template,base.group_user,1,0,0,0
+access_pb_hiring_bgv_template_user,Background check line recruiter,model_pb_hiring_bgv_template,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_bgv_template_manager,Background check line manager,model_pb_hiring_bgv_template,pb_hiring.group_hiring_manager,1,0,0,0
+access_pb_hiring_bgv_template_admin,Background check line head of hiring,model_pb_hiring_bgv_template,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_bgv_template_system,Background check line system,model_pb_hiring_bgv_template,base.group_system,1,1,1,1
+access_pb_hiring_bgv_user,Background check recruiter,model_pb_hiring_bgv,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_bgv_manager,Background check manager,model_pb_hiring_bgv,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_bgv_admin,Background check head of hiring,model_pb_hiring_bgv,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_bgv_system,Background check system,model_pb_hiring_bgv,base.group_system,1,1,1,1
+access_pb_hiring_bgv_item_user,Background check answer recruiter,model_pb_hiring_bgv_item,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_bgv_item_manager,Background check answer manager,model_pb_hiring_bgv_item,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_bgv_item_admin,Background check answer head of hiring,model_pb_hiring_bgv_item,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_bgv_item_system,Background check answer system,model_pb_hiring_bgv_item,base.group_system,1,1,1,1
+access_pb_hiring_doc_template_staff,Joining document read,model_pb_hiring_doc_template,base.group_user,1,0,0,0
+access_pb_hiring_doc_template_user,Joining document recruiter,model_pb_hiring_doc_template,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_doc_template_manager,Joining document manager,model_pb_hiring_doc_template,pb_hiring.group_hiring_manager,1,0,0,0
+access_pb_hiring_doc_template_admin,Joining document head of hiring,model_pb_hiring_doc_template,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_doc_template_system,Joining document system,model_pb_hiring_doc_template,base.group_system,1,1,1,1
+access_pb_hiring_docreq_user,Document request recruiter,model_pb_hiring_docreq,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_docreq_manager,Document request manager,model_pb_hiring_docreq,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_docreq_admin,Document request head of hiring,model_pb_hiring_docreq,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_docreq_system,Document request system,model_pb_hiring_docreq,base.group_system,1,1,1,1
+access_pb_hiring_docreq_item_user,Document asked for recruiter,model_pb_hiring_docreq_item,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_docreq_item_manager,Document asked for manager,model_pb_hiring_docreq_item,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_docreq_item_admin,Document asked for head of hiring,model_pb_hiring_docreq_item,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_docreq_item_system,Document asked for system,model_pb_hiring_docreq_item,base.group_system,1,1,1,1
+access_pb_hiring_offer_staff,Offer the ones about me,model_pb_hiring_offer,base.group_user,1,0,0,0
+access_pb_hiring_offer_user,Offer recruiter,model_pb_hiring_offer,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_offer_manager,Offer manager,model_pb_hiring_offer,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_offer_admin,Offer head of hiring,model_pb_hiring_offer,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_offer_system,Offer system,model_pb_hiring_offer,base.group_system,1,1,1,1
+access_pb_hiring_offer_line_staff,Offer line read,model_pb_hiring_offer_line,base.group_user,1,0,0,0
+access_pb_hiring_offer_line_user,Offer line recruiter,model_pb_hiring_offer_line,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_offer_line_manager,Offer line manager,model_pb_hiring_offer_line,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_offer_line_admin,Offer line head of hiring,model_pb_hiring_offer_line,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_offer_line_system,Offer line system,model_pb_hiring_offer_line,base.group_system,1,1,1,1
+access_pb_hiring_cover_staff,Cover mine,model_pb_hiring_cover,base.group_user,1,1,1,0
+access_pb_hiring_cover_user,Cover recruiter,model_pb_hiring_cover,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_cover_manager,Cover manager,model_pb_hiring_cover,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_cover_admin,Cover head of hiring,model_pb_hiring_cover,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_cover_system,Cover system,model_pb_hiring_cover,base.group_system,1,1,1,1
+access_pb_letter_template_hiring_user,Letter wording recruiter,pb_lifecycle.model_pb_letter_template,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_letter_template_hiring_admin,Letter wording head of hiring,pb_lifecycle.model_pb_letter_template,pb_hiring.group_hiring_admin,1,1,0,0
+access_hiring_message_user,Hiring email templates,model_pb_hiring_message_template,pb_hiring.group_hiring_user,1,0,0,0
+access_hiring_message_admin,Hiring email templates admin,model_pb_hiring_message_template,pb_hiring.group_hiring_admin,1,1,1,1
+access_hiring_message_system,Hiring email templates system,model_pb_hiring_message_template,base.group_system,1,1,1,1
+access_pb_hiring_stage_preset_staff,Stage presets read,model_pb_hiring_stage_preset,base.group_user,1,0,0,0
+access_pb_hiring_stage_preset_manager,Stage presets talent lead,model_pb_hiring_stage_preset,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_stage_preset_system,Stage presets system,model_pb_hiring_stage_preset,base.group_system,1,1,1,1
+access_hiring_message_manager,Hiring email templates talent lead,model_pb_hiring_message_template,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_form_user,Application forms read,model_pb_hiring_form,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_form_manager,Application forms talent lead,model_pb_hiring_form,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_form_system,Application forms system,model_pb_hiring_form,base.group_system,1,1,1,1
+access_pb_hiring_form_field_user,Application questions read,model_pb_hiring_form_field,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_form_field_manager,Application questions talent lead,model_pb_hiring_form_field,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_form_field_system,Application questions system,model_pb_hiring_form_field,base.group_system,1,1,1,1
+access_pb_hiring_jd_template_user,Advert templates read,model_pb_hiring_jd_template,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_jd_template_manager,Advert templates talent lead,model_pb_hiring_jd_template,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_jd_template_system,Advert templates system,model_pb_hiring_jd_template,base.group_system,1,1,1,1
+access_pb_hiring_jd_comment_user,Advert comments recruiter,model_pb_hiring_jd_comment,pb_hiring.group_hiring_user,1,0,1,0
+access_pb_hiring_jd_comment_admin,Advert comments head of hiring,model_pb_hiring_jd_comment,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_jd_comment_system,Advert comments system,model_pb_hiring_jd_comment,base.group_system,1,1,1,1
+access_pb_hiring_share_user,Candidate shares recruiter,model_pb_hiring_share,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_share_system,Candidate shares system,model_pb_hiring_share,base.group_system,1,1,1,1
+access_pb_hiring_note_user,Recruiter notes recruiter,model_pb_hiring_note,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_note_system,Recruiter notes system,model_pb_hiring_note,base.group_system,1,1,1,1
+access_pb_hiring_retention_rule_user,Retention rules read,model_pb_hiring_retention_rule,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_retention_rule_manager,Retention rules talent lead,model_pb_hiring_retention_rule,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_retention_rule_system,Retention rules system,model_pb_hiring_retention_rule,base.group_system,1,1,1,1
+access_pb_hiring_scorecard_staff,Scorecard read,model_pb_hiring_scorecard,base.group_user,1,0,0,0
+access_pb_hiring_scorecard_user,Scorecard recruiter,model_pb_hiring_scorecard,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_scorecard_manager,Scorecard talent lead,model_pb_hiring_scorecard,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_scorecard_admin,Scorecard head of hiring,model_pb_hiring_scorecard,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_scorecard_system,Scorecard system,model_pb_hiring_scorecard,base.group_system,1,1,1,1
+access_pb_hiring_scorecard_part_staff,Scorecard question read,model_pb_hiring_scorecard_part,base.group_user,1,0,0,0
+access_pb_hiring_scorecard_part_user,Scorecard question recruiter,model_pb_hiring_scorecard_part,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_scorecard_part_manager,Scorecard question talent lead,model_pb_hiring_scorecard_part,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_scorecard_part_admin,Scorecard question head of hiring,model_pb_hiring_scorecard_part,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_scorecard_part_system,Scorecard question system,model_pb_hiring_scorecard_part,base.group_system,1,1,1,1
+access_pb_hiring_offer_document_user,Signed document recruiter,model_pb_hiring_offer_document,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_offer_document_manager,Signed document manager,model_pb_hiring_offer_document,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_offer_document_admin,Signed document head of hiring,model_pb_hiring_offer_document,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_offer_document_system,Signed document system,model_pb_hiring_offer_document,base.group_system,1,1,1,1
+access_pb_hiring_prejoin_template_user,Before they join list recruiter,model_pb_hiring_prejoin_template,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_prejoin_template_manager,Before they join list manager,model_pb_hiring_prejoin_template,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_prejoin_template_admin,Before they join list head of hiring,model_pb_hiring_prejoin_template,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_prejoin_template_system,Before they join list system,model_pb_hiring_prejoin_template,base.group_system,1,1,1,1
+access_pb_hiring_prejoin_user,Before they join item recruiter,model_pb_hiring_prejoin,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_prejoin_manager,Before they join item manager,model_pb_hiring_prejoin,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_prejoin_admin,Before they join item head of hiring,model_pb_hiring_prejoin,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_prejoin_system,Before they join item system,model_pb_hiring_prejoin,base.group_system,1,1,1,1
+access_pb_hiring_join_change_user,Joining date change recruiter,model_pb_hiring_join_change,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_join_change_manager,Joining date change manager,model_pb_hiring_join_change,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_join_change_admin,Joining date change head of hiring,model_pb_hiring_join_change,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_join_change_system,Joining date change system,model_pb_hiring_join_change,base.group_system,1,1,1,1
+access_pb_hiring_join_ask_user,Week-before ask recruiter,model_pb_hiring_join_ask,pb_hiring.group_hiring_user,1,1,1,1
+access_pb_hiring_join_ask_manager,Week-before ask manager,model_pb_hiring_join_ask,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_join_ask_admin,Week-before ask head of hiring,model_pb_hiring_join_ask,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_join_ask_system,Week-before ask system,model_pb_hiring_join_ask,base.group_system,1,1,1,1
+access_pb_hiring_channel_staff,Channel read,model_pb_hiring_channel,base.group_user,1,0,0,0
+access_pb_hiring_channel_user,Channel recruiter,model_pb_hiring_channel,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_channel_manager,Channel talent lead,model_pb_hiring_channel,pb_hiring.group_hiring_manager,1,1,1,0
+access_pb_hiring_channel_admin,Channel head of hiring,model_pb_hiring_channel,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_channel_system,Channel system,model_pb_hiring_channel,base.group_system,1,1,1,1
+access_pb_hiring_role_channel_user,Role channel recruiter,model_pb_hiring_role_channel,pb_hiring.group_hiring_user,1,1,1,0
+access_pb_hiring_role_channel_manager,Role channel talent lead,model_pb_hiring_role_channel,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_role_channel_admin,Role channel head of hiring,model_pb_hiring_role_channel,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_role_channel_system,Role channel system,model_pb_hiring_role_channel,base.group_system,1,1,1,1
+access_pb_hiring_agency_submission_user,Agency submission recruiter,model_pb_hiring_agency_submission,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_agency_submission_manager,Agency submission talent lead,model_pb_hiring_agency_submission,pb_hiring.group_hiring_manager,1,1,0,0
+access_pb_hiring_agency_submission_admin,Agency submission head of hiring,model_pb_hiring_agency_submission,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_agency_submission_system,Agency submission system,model_pb_hiring_agency_submission,base.group_system,1,1,1,1
+access_pb_hiring_agency_submission_portal,Agency submission the agency itself,model_pb_hiring_agency_submission,base.group_portal,1,0,0,0
+access_pb_hiring_auto_rule_user,Automation recruiter,model_pb_hiring_automation_rule,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_auto_rule_manager,Automation talent lead,model_pb_hiring_automation_rule,pb_hiring.group_hiring_manager,1,1,1,1
+access_pb_hiring_auto_rule_admin,Automation head of hiring,model_pb_hiring_automation_rule,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_auto_rule_system,Automation system,model_pb_hiring_automation_rule,base.group_system,1,1,1,1
+access_pb_hiring_auto_run_user,Automation run recruiter,model_pb_hiring_automation_run,pb_hiring.group_hiring_user,1,0,0,0
+access_pb_hiring_auto_run_manager,Automation run talent lead,model_pb_hiring_automation_run,pb_hiring.group_hiring_manager,1,0,0,0
+access_pb_hiring_auto_run_admin,Automation run head of hiring,model_pb_hiring_automation_run,pb_hiring.group_hiring_admin,1,1,1,1
+access_pb_hiring_auto_run_system,Automation run system,model_pb_hiring_automation_run,base.group_system,1,1,1,1

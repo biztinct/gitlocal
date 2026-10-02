@@ -1,0 +1,944 @@
+/* =============================================================================
+   Payobook Coach — launcher + drawer.
+
+   The drawer deliberately has NO backdrop and NO dimming. You open it because
+   you are stuck on the screen behind it, so that screen stays readable and
+   clickable the whole time. It also never covers the middle of the viewport,
+   where the thing being explained usually is.
+   ========================================================================== */
+
+.lrn-coachhost {
+    position: fixed;
+    inset: auto 0 0 auto;
+    /* Above the app, below Odoo's own dialogs — and below the retired
+       guided-tour launcher (1990) so that on a tenant where it is still
+       installed the two never fight for the same click. PayAI is the data
+       copilot; this is the learning surface. */
+    z-index: 1040;
+    pointer-events: none;   /* only the launcher and drawer are clickable */
+
+    * { pointer-events: auto; }
+}
+
+/* --------------------------------------------------------------- launcher */
+.lrn-fab {
+    position: fixed;
+    right: 24px;
+    /* THE STACK, bottom-right, measured off the controls that are actually
+       there — CSS only, because none of them may be modified:
+         PayAI pill      .payai-floating-pill   bottom 24px, ~48px tall
+         retired tour FAB .pbc-launcher         bottom 92px, 48px tall
+         this launcher                          bottom 160px
+       Three controls while that module is still installed, and TWO once it
+       is not. Its files left the repository in LEARNOS Phase 1b and the
+       database uninstall is the deploy step, so BOTH states must still render
+       and there is no moment where the corner has a hole in it. The offset is
+       decided at runtime from whether the SERVICE exists — first_login.js sets
+       body.pb-coach-absent — and the default is the three-control stack: a
+       wrong guess that leaves a gap is better than one that overlaps a live
+       button. */
+    bottom: 160px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    min-width: 50px;
+    height: 50px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 25px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 650;
+    white-space: nowrap;
+    background: var(--vuf-primary, #1565C0);
+    color: var(--vuf-primary-ink, #fff);
+    box-shadow: var(--vuf-sh-lg, 0 18px 50px rgba(16, 12, 40, .14));
+    cursor: pointer;
+    transition: transform .16s, background .16s;
+
+    .lrn-ic { width: 22px; height: 22px; stroke-width: 1.8; flex: 0 0 auto; }
+
+    &:hover { transform: translateY(-2px); }
+    &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(90, 75, 176, .35);
+    }
+    /* Open, the label is gone and the control is a plain close button. */
+    &.open {
+        background: var(--vuf-ink, #101728);
+        padding: 0;
+        min-width: 50px;
+        width: 50px;
+        border-radius: 50%;
+    }
+}
+
+.lrn-fablabel { line-height: 1; }
+
+/* The tour module uninstalled: its 92px slot is empty, so this launcher drops into it
+   and the corner reads as two controls rather than two and a hole.
+
+   DECLARED HERE, ABOVE THE MEDIA QUERIES, and the order is the whole point.
+   Both selectors have the same specificity (0,2,1), so the LAST one wins — and
+   the mobile block below also sets `body.pb-coach-absent .lrn-fab`. Sitting
+   after it, this rule silently overrode the phone offset and put the launcher
+   back at 92px on a 380px screen. tests/test_retirement.py::test_10 asserts the
+   ORDER, not the presence, because presence was never the thing that was
+   wrong. */
+body.pb-coach-absent .lrn-fab { bottom: 92px; }
+
+/* ----------------------------------------------------------------- drawer */
+.lrn-drawer {
+    /* Declared as custom properties, NOT written inline. Bootstrap's Sass
+       min() intercepts `min(400px, calc(100vw - 44px))` and fails with
+       "calc(...) is not a number for min" — which takes the WHOLE asset bundle
+       down silently: Odoo keeps serving the previous CSS and the page just
+       looks unstyled. Sass passes custom properties through verbatim.
+       (Ledger §5.x — and it caught me again here.) */
+    --lrn-dw: min(400px, calc(100vw - 44px));
+    --lrn-dh: min(660px, calc(100vh - 130px));
+
+    position: fixed;
+    right: 22px;
+    bottom: 84px;
+    width: var(--lrn-dw);
+    max-height: var(--lrn-dh);
+    display: flex;
+    flex-direction: column;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-lg, 16px);
+    box-shadow: var(--vuf-sh-lg, 0 18px 50px rgba(16, 12, 40, .14));
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--vuf-ink, #101728);
+}
+
+.lrn-dhead {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--vuf-line, #E5E7EB);
+
+    .lrn-dtitle {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-right: auto;
+    }
+    .lrn-ic { width: 17px; height: 17px; }
+}
+
+/* The promise, on screen rather than in a policy document. */
+.lrn-dhonest {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    margin: 0;
+    padding: 8px 12px;
+    background: var(--vuf-info-bg, #E8F0FB);
+    color: var(--vuf-info, #1565C0);
+    font-size: 11.5px;
+
+    .lrn-ic { width: 14px; height: 14px; margin-top: 1px; flex: 0 0 auto; }
+}
+
+.lrn-dbody {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+}
+
+.lrn-dask {
+    display: flex;
+    gap: 7px;
+    padding: 10px 12px;
+    border-top: 1px solid var(--vuf-line, #E5E7EB);
+
+    input {
+        flex: 1;
+        min-width: 0;
+        padding: 8px 11px;
+        border: 1px solid var(--vuf-line, #E5E7EB);
+        border-radius: var(--vuf-r-pill, 999px);
+        font: inherit;
+        outline: none;
+
+        &:focus { border-color: var(--vuf-primary, #1565C0); }
+    }
+}
+
+/* ---------------------------------------------------------------- content */
+.lrn-cground {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--vuf-line-soft, #F1F0F7);
+    font-size: 12px;
+
+    .lrn-ic { width: 14px; height: 14px; color: var(--vuf-primary, #1565C0); }
+    p { flex: 1 0 100%; margin: 2px 0 0; }
+    &.off { color: var(--vuf-muted, #6B7280); }
+}
+
+.lrn-clabel {
+    margin-bottom: 6px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--vuf-muted, #6B7280);
+}
+
+/* "Show me how" — the scenarios for the screen behind the drawer.
+   Above the suggested questions and visually heavier than them, because a
+   walkthrough of the screen in front of you is a better first offer than a
+   list of questions about it. One button per MODE: watch, try and do are three
+   different promises about who presses, not one scenario with a setting. */
+/* LEARNOS Phase 4 — the "not sure what to ask?" opener.
+   Above the walkthroughs and the chips, and visually quieter than both: it is
+   the fallback for somebody who has no question yet, not the headline. */
+.lrn-cnotsure {
+    margin-bottom: 12px;
+
+    .lrn-btn { width: 100%; justify-content: center; }
+}
+
+/* LEARNOS Phase 5 — the way into the free-roam sandbox. LAST in the drawer
+   and quiet: it is not an answer to anything, it is the door for somebody who
+   would rather look than read. Separated by a rule so it does not read as one
+   more suggested question. */
+.lrn-cpractice {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--vuf-line, #E5E7EB);
+
+    .lrn-note { margin: 4px 0 7px; }
+    .lrn-btn { width: 100%; justify-content: center; }
+}
+
+.lrn-cscens { margin-bottom: 12px; }
+
+.lrn-cscen {
+    margin-bottom: 6px;
+    padding: 9px 11px;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-left: 3px solid var(--vuf-primary, #1565C0);
+    border-radius: var(--vuf-r-sm, 10px);
+
+    .lrn-cscentitle {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 12.5px;
+        font-weight: 700;
+    }
+    .lrn-ic { width: 14px; height: 14px; flex: 0 0 auto; color: var(--vuf-primary, #1565C0); }
+    .lrn-cscenmodes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+}
+
+.lrn-cq {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    width: 100%;
+    margin-bottom: 6px;
+    padding: 9px 11px;
+    text-align: left;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-sm, 10px);
+    font: inherit;
+    font-size: 12.5px;
+    color: inherit;
+    cursor: pointer;
+
+    .lrn-ic { width: 14px; height: 14px; margin-top: 2px; flex: 0 0 auto; color: var(--vuf-primary, #1565C0); }
+    &:hover { border-color: var(--vuf-primary, #1565C0); }
+    &:focus-visible { outline: none; box-shadow: var(--vuf-sh-ring); }
+}
+
+.lrn-canswer h4 {
+    margin: 0 0 10px;
+    font-size: 13.5px;
+    font-weight: 800;
+}
+
+.lrn-cblock {
+    margin-bottom: 9px;
+
+    &.p { }
+    &.simpler {
+        padding: 10px 11px;
+        border-radius: var(--vuf-r-sm, 10px);
+        background: var(--vuf-info-bg, #E8F0FB);
+    }
+    &.warn, &.ok, &.refusal {
+        display: flex;
+        align-items: flex-start;
+        gap: 7px;
+        padding: 9px 11px;
+        border-radius: var(--vuf-r-sm, 10px);
+        font-size: 12.5px;
+        .lrn-ic { width: 15px; height: 15px; margin-top: 1px; flex: 0 0 auto; }
+    }
+    &.warn { background: var(--vuf-warn-bg, #FDF3E2); color: var(--vuf-warn, #B45309); }
+    &.ok { background: var(--vuf-ok-bg, #E7F6EF); color: var(--vuf-ok, #10B981); }
+    /* A refusal is information, not a telling-off: same weight as any other
+       block, never red, and always followed by who can and how to ask. */
+    &.refusal { background: var(--vuf-line-soft, #F1F0F7); color: var(--vuf-ink, #101728); }
+}
+
+.lrn-csteps {
+    margin: 0 0 9px;
+    padding-left: 20px;
+
+    li { margin-bottom: 7px; }
+}
+
+.lrn-clink {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 6px;
+    padding: 1px 7px;
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-pill, 999px);
+    background: transparent;
+    font: inherit;
+    font-size: 11px;
+    color: var(--vuf-primary, #1565C0);
+    cursor: pointer;
+
+    .lrn-ic { width: 12px; height: 12px; }
+    &:hover { border-color: var(--vuf-primary, #1565C0); }
+}
+
+.lrn-cmeta {
+    margin-bottom: 7px;
+    font-size: 12.5px;
+}
+
+.lrn-csource {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    margin-top: 10px;
+    padding-top: 9px;
+    border-top: 1px solid var(--vuf-line-soft, #F1F0F7);
+    font-size: 11.5px;
+    color: var(--vuf-muted, #6B7280);
+
+    .lrn-ic { width: 13px; height: 13px; margin-top: 1px; flex: 0 0 auto; }
+}
+
+.lrn-ctools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--vuf-line-soft, #F1F0F7);
+}
+
+.lrn-cmiss p { margin: 0 0 6px; }
+
+/* Phase D2 — the consent card. Quiet on purpose: it sits BELOW the answer
+   and must read as a question being asked, not as a banner demanding an
+   answer before the drawer will work. Solid colours only, no gradient. */
+.lrn-cconsent {
+    margin-top: 14px;
+    padding: 12px;
+    border: 1px solid var(--vuf-line-soft, #F1F0F7);
+    border-radius: 10px;
+    background: var(--vuf-surface-2, #FAFAFD);
+
+    .lrn-clabel {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        text-transform: none;
+        font-size: 12px;
+        letter-spacing: 0;
+        color: var(--vuf-text, #1F2937);
+    }
+    .lrn-ic { width: 14px; height: 14px; color: var(--vuf-primary, #1565C0); }
+    p { margin: 0; }
+    .lrn-ctools { margin-top: 10px; padding-top: 0; border-top: 0; }
+}
+
+/* On a phone the drawer takes the bottom sheet, still without a backdrop. */
+@media (max-width: 640px) {
+    .lrn-drawer {
+        right: 10px;
+        left: 10px;
+        bottom: 78px;
+        width: auto;
+        max-height: calc(100vh - 120px);
+    }
+    /* Narrow viewport: the same stack, tighter. The label is dropped rather
+       than wrapped — a two-line pill in the corner covers more than it helps. */
+    .lrn-fab { right: 14px; bottom: 148px; padding: 0; min-width: 46px; width: 46px; border-radius: 50%; }
+    body.pb-coach-absent .lrn-fab { bottom: 86px; }
+    .lrn-fablabel { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-fab { transition: none; }
+}
+
+/* =============================================================================
+   THE FIRST-RUN WELCOME CARD — LEARNOS Phase 3.
+
+   Centred, small, and NO BACKDROP — the same argument as the drawer above it.
+   This is an offer, not a gate: the screen behind it has to stay readable
+   while somebody decides whether they have two minutes, and a dimmed app on
+   the first second of a first login says "you may not use this yet".
+
+   It appears once and is gone the moment either button is pressed, so it
+   carries no close affordance beyond its own two answers plus Escape.
+   ========================================================================== */
+.lrn-welcome {
+    position: fixed;
+    /* NO CSS min() — Bootstrap's Sass intercepts it and takes the whole bundle
+       down (the standing trap this file has now hit twice). A width and a
+       max-width express the same intent with no function call at all. */
+    left: 50%;
+    top: 22%;
+    transform: translateX(-50%);
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    z-index: 1045;
+    padding: 18px 18px 16px;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-lg, 16px);
+    box-shadow: var(--vuf-sh-lg, 0 18px 50px rgba(16, 12, 40, .14));
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--vuf-ink, #101728);
+}
+
+.lrn-welcome-h {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    .lrn-welcome-ic {
+        display: inline-grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+        border-radius: 9px;
+        background: var(--vuf-primary-soft, #EEF0FE);
+        color: var(--vuf-primary, #5A4BB0);
+    }
+    .lrn-ic { width: 17px; height: 17px; }
+}
+
+.lrn-welcome-t {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    color: var(--vuf-ink, #101728);
+}
+
+.lrn-welcome-b {
+    margin: 10px 0 0;
+    color: var(--vuf-ink-soft, #4B5563);
+}
+
+.lrn-welcome-a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+
+    button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 9px;
+        font-size: 13px;
+        cursor: pointer;
+    }
+    .lrn-welcome-go {
+        background: var(--vuf-primary, #5A4BB0);
+        border: 1px solid var(--vuf-primary, #5A4BB0);
+        color: #fff;
+        font-weight: 700;
+        .lrn-ic { width: 14px; height: 14px; }
+    }
+    /* "Later" is a real answer, so it is a real button — quieter, never a
+       link and never smaller than the tap target beside it. */
+    .lrn-welcome-later {
+        background: transparent;
+        border: 1px solid var(--vuf-line, #E5E7EB);
+        color: var(--vuf-ink-soft, #4B5563);
+        font-weight: 600;
+    }
+}
+
+@media (max-width: 640px) {
+    .lrn-welcome { top: auto; bottom: 16px; }
+    .lrn-welcome-a button { flex: 1 1 auto; justify-content: center; }
+}
+
+/* =============================================================================
+   LEARN v3 — ONE HELPER
+   The Coach is the only floating control now: PayAI's pill stands down when
+   this module is installed and its chat is the drawer's Ask tab. Declared at
+   the END of the file on purpose: `body.lrn-one-helper .lrn-fab` has the same
+   specificity as the pb-coach-absent rules above and has to come after both
+   the desktop and the phone copies of them to win.
+   ========================================================================== */
+body.lrn-one-helper .lrn-fab {
+    bottom: 24px;
+    height: 52px;
+    padding: 0 8px 0 6px;
+    gap: 10px;
+    border-radius: 26px;
+    background: var(--vuf-primary-deep, #241F52);
+    color: #fff;
+    box-shadow: 0 12px 32px -10px rgba(36, 31, 82, .6);
+
+    .lrn-ic { width: 20px; height: 20px; }
+
+    &.open {
+        width: 52px;
+        min-width: 52px;
+        padding: 0;
+        border-radius: 50%;
+        justify-content: center;
+        .lrn-fabcore { background: transparent; }
+        .lrn-fabcore::after { display: none; }
+    }
+}
+
+.lrn-fabcore {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--vuf-primary, #5A4BB0);
+
+    /* A slow breath on the ring, so the one control in the corner reads as
+       alive without moving anything the eye has to track. */
+    &::after {
+        content: "";
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        border: 2px solid var(--vuf-primary-light, #CBC2EE);
+        opacity: .5;
+        animation: lrn-breathe 2.8s ease-in-out infinite;
+    }
+}
+
+@keyframes lrn-breathe {
+    0%, 100% { transform: scale(.93); opacity: .2; }
+    50%      { transform: scale(1.05); opacity: .65; }
+}
+
+.lrn-fabkey {
+    padding: 2px 6px;
+    margin-right: 4px;
+    border: 0;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, .14);
+    color: #fff;
+    font: 600 10.5px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+    box-shadow: none;
+}
+
+/* The guided import and pay-run wizards keep their action bar in the bottom
+   right. PayAI's pill hid itself there; the helper steps up instead, because
+   a wizard is exactly where people get stuck. */
+body.lrn-one-helper:has(.iw-root) .lrn-fab,
+body.lrn-one-helper:has(.pw-root) .lrn-fab { bottom: 88px; }
+
+/* ----------------------------------------------------------- the drawer */
+body.lrn-one-helper .lrn-drawer {
+    --lrn-dw: min(420px, calc(100vw - 44px));
+    --lrn-dh: min(700px, calc(100vh - 110px));
+    bottom: 88px;
+    border-radius: 18px;
+}
+
+/* The Ask tab draws charts, so it gets more room. Same custom-property route
+   as the base rule: Sass must not see the min(). */
+body.lrn-one-helper .lrn-drawer:has(.lrn-dask-tab) {
+    --lrn-dw: min(480px, calc(100vw - 44px));
+    height: var(--lrn-dh);
+}
+
+.lrn-dtitle { min-width: 0; }
+
+.lrn-dmark {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    flex: 0 0 auto;
+    background: var(--vuf-primary, #5A4BB0);
+    color: #fff;
+
+    .lrn-ic { width: 16px; height: 16px; }
+}
+
+.lrn-dname {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.25;
+
+    small {
+        overflow: hidden;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--vuf-muted, #6B7280);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}
+
+/* Guide me / Ask / Practice — a segmented control, one solid choice. */
+.lrn-dtabs {
+    display: flex;
+    gap: 4px;
+    padding: 10px 12px 2px;
+}
+
+.lrn-dtab {
+    flex: 1 1 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 6px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--vuf-primary-soft, #F6F4FC);
+    color: var(--vuf-ink-soft, #4B4866);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+
+    .lrn-ic { width: 15px; height: 15px; }
+
+    &:hover { background: var(--vuf-primary-soft2, #EDEAF8); }
+    &:focus-visible { outline: 2px solid var(--vuf-primary, #5A4BB0); outline-offset: 2px; }
+
+    &[aria-selected="true"] {
+        background: var(--vuf-primary, #5A4BB0);
+        color: #fff;
+    }
+}
+
+/* The Ask tab hosts PayAI's chat; it owns its own scroll and input. */
+.lrn-dask-tab {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* The next step, with its reason, top of the Guide tab. */
+.lrn-cnext {
+    margin-bottom: 12px;
+    padding: 12px;
+    border: 1px solid var(--vuf-primary-soft2, #EDEAF8);
+    border-left: 4px solid var(--vuf-primary, #5A4BB0);
+    border-radius: 12px;
+    background: var(--vuf-primary-soft, #F6F4FC);
+
+    .lrn-note { margin: 2px 0 8px; }
+}
+
+.lrn-cnext-t {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.lrn-cnext-min {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--vuf-muted, #6B7280);
+
+    .lrn-ic { width: 12px; height: 12px; }
+}
+
+@media (max-width: 640px) {
+    body.lrn-one-helper .lrn-fab { right: 14px; bottom: 16px; width: 52px; min-width: 52px; padding: 0; justify-content: center; }
+    body.lrn-one-helper .lrn-fab .lrn-fabkey { display: none; }
+    body.lrn-one-helper .lrn-drawer { bottom: 78px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-fabcore::after { animation: none; }
+}
+
+/* =============================================================================
+   LEARN v3 — the moment card, above the helper button. Calm: it slides up
+   once, never bounces, and one press dismisses it.
+   ========================================================================== */
+.lrn-hmoment {
+    --lrn-mw: min(360px, calc(100vw - 32px));
+    position: fixed;
+    right: 24px;
+    bottom: 88px;
+    width: var(--lrn-mw);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 14px 12px;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--vuf-line, #E2E8F0);
+    border-radius: 16px;
+    box-shadow: 0 18px 44px -18px rgba(36, 31, 82, .5);
+    font-size: 13px;
+    color: var(--vuf-ink, #1E1B2E);
+    animation: lrn-hmoment-in .28s cubic-bezier(.2, .7, .2, 1);
+
+    b { display: block; font-size: 13.5px; font-weight: 800; padding-right: 18px; }
+    p { margin: 3px 0 10px; color: var(--vuf-ink-soft, #4B4866); line-height: 1.45; }
+    .lrn-ctools { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    &.milestone {
+        background: var(--vuf-primary-deep, #241F52);
+        border-color: transparent;
+        color: #fff;
+        p { color: rgba(255, 255, 255, .82); }
+        .lrn-momentic { background: rgba(255, 255, 255, .12); color: #B7F0CF; }
+        .lrn-momentx { color: rgba(255, 255, 255, .7); }
+        .lrn-btn.ghost { color: #fff; border-color: rgba(255, 255, 255, .25); background: transparent; }
+        .lrn-btn.pri { background: #fff; color: var(--vuf-primary-deep, #241F52); border-color: #fff; }
+    }
+    &.monthend .lrn-momentic { background: #FBE3EA; color: #DC2668; }
+}
+
+.lrn-momentmain { flex: 1 1 auto; min-width: 0; }
+
+.lrn-momentic {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    border-radius: 10px;
+    background: var(--vuf-primary-soft, #EDEAF8);
+    color: var(--vuf-primary, #5A4BB0);
+
+    .lrn-ic { width: 17px; height: 17px; }
+}
+
+.lrn-momentx {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--vuf-muted, #6B7280);
+    cursor: pointer;
+
+    .lrn-ic { width: 14px; height: 14px; }
+}
+
+@keyframes lrn-hmoment-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+}
+
+body.lrn-one-helper:has(.iw-root) .lrn-hmoment,
+body.lrn-one-helper:has(.pw-root) .lrn-hmoment { bottom: 152px; }
+
+@media (max-width: 640px) {
+    .lrn-hmoment { right: 16px; bottom: 80px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-hmoment { animation: none; }
+}
+
+/* =============================================================================
+   LEARN REFRESH step 1 — THE HELPER KNOWS THE TAB.
+
+   The hub page's orientation: the tab line under the grounded block, the
+   "people often come here to" doors, and every tab of the page as a compact
+   vertical list with the current one marked. Each row is ONE button (the
+   whole row is the target, keyboard reachable), and "Take me there" switches
+   the hub's tab with the drawer left open.
+
+   Tab switch → the body and the "On:" line re-mount (t-key) and the mount is
+   a 180 ms cross-fade. None at all under Reduce motion.
+   ========================================================================== */
+@keyframes lrn-xfade {
+    from { opacity: 0; transform: translateY(3px); }
+    to   { opacity: 1; transform: none; }
+}
+.lrn-dbody, .lrn-dplace { animation: lrn-xfade 180ms ease-out both; }
+.lrn-dplace { display: block; }
+
+.lrn-cline {
+    font-weight: 600;
+    color: var(--vuf-ink, #101728);
+}
+.lrn-cground .lrn-hnolesson {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    color: var(--vuf-muted, #6B7280);
+    .lrn-ic { color: var(--vuf-muted, #6B7280); margin-top: 1px; }
+}
+
+.lrn-hoften { margin: 0 0 14px; }
+.lrn-hoftenbtn {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 0 0 6px;
+    padding: 9px 11px;
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-md, 10px);
+    background: var(--vuf-surface, #fff);
+    color: var(--vuf-ink, #101728);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 120ms ease, background 120ms ease;
+
+    &:hover:not(:disabled), &:focus-visible {
+        border-color: var(--vuf-primary, #1565C0);
+        background: var(--vuf-info-bg, #E8F0FB);
+        outline: none;
+    }
+    &:disabled { cursor: default; opacity: .75; }
+}
+.lrn-hoftengo {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex: 0 0 auto;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--vuf-primary, #1565C0);
+    .lrn-ic { width: 13px; height: 13px; }
+}
+
+.lrn-hub { margin: 4px 0 14px; }
+.lrn-hubfold {
+    border-top: 1px solid var(--vuf-line-soft, #F1F0F7);
+    padding-top: 10px;
+    summary { cursor: pointer; list-style: revert; }
+}
+.lrn-htabs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-md, 10px);
+    overflow: hidden;
+}
+.lrn-htab + .lrn-htab { border-top: 1px solid var(--vuf-line-soft, #F1F0F7); }
+.lrn-htabbtn {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 0;
+    background: transparent;
+    color: var(--vuf-ink, #101728);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 120ms ease;
+
+    &:hover:not(:disabled), &:focus-visible {
+        background: var(--vuf-info-bg, #E8F0FB);
+        outline: none;
+    }
+    &:disabled { cursor: default; }
+}
+.lrn-htab.here .lrn-htabbtn {
+    background: var(--vuf-info-bg, #E8F0FB);
+    box-shadow: inset 3px 0 0 var(--vuf-primary, #1565C0);
+}
+.lrn-htabic {
+    display: inline-flex;
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: var(--vuf-line-soft, #F1F0F7);
+    color: var(--vuf-primary, #1565C0);
+}
+.lrn-htabtx {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    gap: 1px;
+    b {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12.5px;
+        .lrn-ic { width: 12px; height: 12px; color: var(--vuf-muted, #6B7280); }
+    }
+    small { font-size: 11.5px; line-height: 1.35; color: var(--vuf-muted, #6B7280); }
+}
+.lrn-htabgo {
+    flex: 0 0 auto;
+    color: var(--vuf-muted, #6B7280);
+    opacity: 0;
+    transition: opacity 120ms ease;
+    .lrn-ic { width: 14px; height: 14px; }
+}
+.lrn-htabbtn:hover .lrn-htabgo, .lrn-htabbtn:focus-visible .lrn-htabgo { opacity: 1; }
+.lrn-htab .lrn-chip { flex: 0 0 auto; }
+
+@media (max-width: 640px) {
+    /* Touch has no hover: the arrow is always there, so the row reads as a door. */
+    .lrn-htabgo { opacity: 1; }
+    .lrn-htabtx small { font-size: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-dbody, .lrn-dplace { animation: none; }
+    .lrn-hoftenbtn, .lrn-htabbtn, .lrn-htabgo { transition: none; }
+}
+.lrn-still .lrn-dbody, .lrn-still .lrn-dplace { animation: none; }

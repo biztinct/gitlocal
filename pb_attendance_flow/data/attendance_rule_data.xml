@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- The GLOBAL fallback rule (company_id=False) — applied to every company
+         that has no rule of its own (C18.20 two-search resolver). Ships the
+         Phase-B defaults (15 / 15 / 16) so shift compliance is unchanged until an
+         admin tightens the grace per company. company_id is deliberately empty:
+         a company-specific override is created from the config form. This global
+         row is visible to all companies (unlike a base.main_company row — C18.35),
+         so no per-company post_init seed is needed. -->
+    <record id="attendance_rule_global" model="pb.attendance.rule">
+        <field name="name">Attendance Rules (Global default)</field>
+        <field name="company_id" eval="False"/>
+        <field name="grace_in_minutes">15</field>
+        <field name="grace_out_minutes">15</field>
+        <field name="open_checkout_hours">16</field>
+        <field name="count_late_as">report_only</field>
+        <!-- Workforce P4 §3.1 close tolerance. On an EXISTING database this
+             file is frozen (noupdate="1" above), so these two land through
+             migrations/19.0.1.0.7/pre-migrate.py instead — see W13.1. -->
+        <field name="variance_minutes">10</field>
+        <field name="variance_hours_week">0.5</field>
+    </record>
+</odoo>

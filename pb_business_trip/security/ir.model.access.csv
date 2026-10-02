@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_business_trip_user,pb.business.trip user,model_pb_business_trip,base.group_user,1,1,1,0
+access_pb_business_trip_officer,pb.business.trip officer,model_pb_business_trip,hr_attendance.group_hr_attendance_officer,1,1,0,0
+access_pb_business_trip_payroll,pb.business.trip payroll,model_pb_business_trip,om_hr_payroll.group_hr_payroll_manager,1,1,0,0
+access_pb_business_trip_manager,pb.business.trip manager,model_pb_business_trip,hr.group_hr_manager,1,1,1,1
+access_pb_business_trip_line_user,pb.business.trip.line user,model_pb_business_trip_line,base.group_user,1,1,1,1
+access_pb_business_trip_line_officer,pb.business.trip.line officer,model_pb_business_trip_line,hr_attendance.group_hr_attendance_officer,1,1,0,0
+access_pb_business_trip_line_manager,pb.business.trip.line manager,model_pb_business_trip_line,hr.group_hr_manager,1,1,1,1
+access_pb_trip_policy_user,pb.trip.policy user,model_pb_trip_policy,base.group_user,1,0,0,0
+access_pb_trip_policy_manager,pb.trip.policy manager,model_pb_trip_policy,hr.group_hr_manager,1,1,1,1
+access_pb_trip_expense_category_user,pb.trip.expense.category user,model_pb_trip_expense_category,base.group_user,1,0,0,0
+access_pb_trip_expense_category_manager,pb.trip.expense.category manager,model_pb_trip_expense_category,hr.group_hr_manager,1,1,1,1

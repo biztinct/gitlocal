@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- LEARN REFRESH step 6. The only rule on settlements was "the ones I was
+         asked to decide", on base.group_user — and every payroll person is an
+         internal user, so Pay Run › Settle showed nobody their company's
+         settlements (0 of 86 on the demo world). The payroll team and system
+         administrators see every settlement in their companies; the global
+         multi-company rule still applies. Outside noupdate so an upgrade lays
+         it. -->
+    <record id="rule_fnf_payroll_team" model="ir.rule">
+        <field name="name">Final settlement: the payroll team sees them all</field>
+        <field name="model_id" ref="model_hr_full_final_settlement"/>
+        <field name="groups" eval="[(4, ref('om_hr_payroll.group_hr_payroll_user')), (4, ref('om_hr_payroll.group_hr_payroll_manager')), (4, ref('pb_hr_payroll_base.group_payroll_base_officer')), (4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>

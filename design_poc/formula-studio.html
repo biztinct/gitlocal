@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en" class="pal-indigo">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Payobook — Formula Studio (Design POC)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css"/>
+<link rel="stylesheet" href="assets/palettes.css"/>
+<style>
+/* ============================================================
+   Formula Studio — design POC
+   Decisions: Hybrid (cards default + grid toggle) · Implementer-first
+   · Cockpit for editing + Wizard for first setup · PayAI NL→formula
+   Built on the Indigo-solid token system from the rest of the POC.
+   ============================================================ */
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--pb-bg);color:var(--pb-ink);height:100vh;overflow:hidden;}
+button{font-family:inherit;cursor:pointer;}
+.mono{font-family:"JetBrains Mono",monospace;}
+
+/* ---------- shell ---------- */
+.fs-shell{display:flex;height:100vh;}
+.fs-side{width:230px;flex-shrink:0;background:var(--pb-side-bg-1);color:var(--pb-side-ink);display:flex;flex-direction:column;padding:16px 12px;}
+.fs-brand{display:flex;align-items:center;gap:10px;padding:6px 8px 16px;}
+.fs-brand .logo{width:34px;height:34px;border-radius:9px;background:var(--pb-brand);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:17px;}
+.fs-brand b{font-size:15px;font-weight:800;} .fs-brand small{display:block;color:var(--pb-side-muted);font-size:11px;font-weight:600;}
+.fs-nav{display:flex;flex-direction:column;gap:1px;margin-top:6px;}
+.fs-nav .sec{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--pb-side-muted);text-transform:uppercase;padding:14px 10px 6px;}
+.fs-nav a{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:9px;color:var(--pb-side-ink);text-decoration:none;font-size:13.5px;font-weight:600;}
+.fs-nav a:hover{background:var(--pb-side-hover);}
+.fs-nav a.active{background:var(--pb-side-active);}
+.fs-nav svg{width:17px;height:17px;flex-shrink:0;stroke:currentColor;}
+
+.fs-main{flex:1;display:flex;flex-direction:column;min-width:0;}
+
+/* ---------- top bar ---------- */
+.fs-top{background:#fff;border-bottom:1px solid var(--pb-border);padding:13px 22px;display:flex;align-items:center;gap:16px;}
+.fs-config{display:flex;align-items:center;gap:12px;min-width:0;}
+.fs-config .nm{font-size:17px;font-weight:800;letter-spacing:-.01em;}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:var(--r-pill);background:var(--pb-brand-tint);color:var(--pb-brand-600);}
+.chip.cur{background:#EEF1F5;color:#64748B;}
+.state-pill{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;padding:5px 13px;border-radius:var(--r-pill);}
+.state-pill .d{width:7px;height:7px;border-radius:50%;background:currentColor;}
+.state-pill.testing{background:var(--pb-warn-tint);color:#B7791F;}
+.state-pill.validated{background:var(--pb-info-tint);color:#2563EB;}
+.state-pill.active{background:var(--pb-success-tint);color:#0F8A63;}
+.fs-top-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+
+/* score ring */
+.ring{position:relative;width:46px;height:46px;flex-shrink:0;}
+.ring svg{transform:rotate(-90deg);} .ring .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;}
+
+/* segmented toggle */
+.seg{display:inline-flex;gap:2px;background:#EEF1F5;border-radius:10px;padding:3px;}
+.seg button{border:none;background:none;color:#64748B;padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:700;display:inline-flex;align-items:center;gap:6px;}
+.seg button.active{background:#fff;color:var(--pb-brand);box-shadow:var(--sh-xs);}
+.seg svg{width:15px;height:15px;stroke:currentColor;}
+
+.btn{display:inline-flex;align-items:center;gap:7px;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;border:1px solid transparent;}
+.btn svg{width:16px;height:16px;stroke:currentColor;}
+.btn-primary{background:var(--pb-brand);color:#fff;box-shadow:var(--sh-brand);}
+.btn-primary:hover{background:var(--pb-brand-600);}
+.btn-soft{background:var(--pb-brand-tint);color:var(--pb-brand);border-color:var(--pb-brand-tint-2);}
+.btn-soft:hover{background:var(--pb-brand);color:#fff;}
+.btn-ghost{background:#fff;color:var(--pb-ink);border-color:var(--pb-border);}
+.btn-ghost:hover{background:#F8FAFC;}
+.btn-ai{background:#1E1B4B;color:#fff;}
+.btn-ai:hover{background:#312E81;} .btn-ai svg{stroke:#A5B4FC;}
+
+/* ---------- body 3-pane ---------- */
+.fs-work{flex:1;display:grid;grid-template-columns:280px 1fr 340px;min-height:0;}
+.fs-work.no-right{grid-template-columns:280px 1fr;}
+
+/* left outline */
+.fs-outline{border-right:1px solid var(--pb-border);background:#fff;overflow-y:auto;padding:12px;}
+.ol-head{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 10px;}
+.ol-head .t{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--pb-muted);}
+.ol-add{width:26px;height:26px;border-radius:8px;border:1px solid var(--pb-border);background:#fff;display:flex;align-items:center;justify-content:center;}
+.ol-add svg{width:15px;height:15px;stroke:var(--pb-brand);}
+.ol-grp{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pb-muted);padding:12px 8px 5px;}
+.ol-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;cursor:pointer;border:1px solid transparent;}
+.ol-item:hover{background:#F6F7FB;}
+.ol-item.active{background:var(--pb-brand-tint);border-color:var(--pb-brand-tint-2);}
+.ol-col{width:22px;height:22px;border-radius:6px;background:#EEF1F5;color:#64748B;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ol-item.active .ol-col{background:var(--pb-brand);color:#fff;}
+.ol-nm{font-size:13px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ol-typ{font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px;}
+.ol-typ.input{background:#E0F4F9;color:#0E7490;} .ol-typ.formula{background:var(--pb-brand-tint);color:var(--pb-brand-600);} .ol-typ.constant{background:#EEF1F5;color:#64748B;}
+.ol-err{width:7px;height:7px;border-radius:50%;background:var(--pb-danger);flex-shrink:0;}
+
+/* center editor */
+.fs-editor{overflow-y:auto;padding:26px 30px;}
+.ed-card{background:#fff;border:1px solid var(--pb-border);border-radius:var(--r-xl);box-shadow:var(--sh-sm);max-width:720px;margin:0 auto;overflow:hidden;}
+.ed-hero{padding:22px 26px;border-bottom:1px solid var(--pb-border-soft);display:flex;align-items:flex-start;gap:16px;}
+.ed-hero .col-badge{width:44px;height:44px;border-radius:11px;background:var(--pb-brand);color:#fff;font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ed-hero h2{font-size:20px;font-weight:800;letter-spacing:-.01em;}
+.ed-hero .sub{color:var(--pb-muted);font-size:13px;margin-top:3px;}
+.ed-hero .code-tag{font-size:11px;font-weight:700;background:#EEF1F5;color:#64748B;padding:3px 8px;border-radius:6px;margin-left:8px;}
+.ed-body{padding:24px 26px;}
+.ed-label{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--pb-muted);margin-bottom:10px;}
+/* formula chips */
+.formula-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 18px;background:#FAFAFE;border:1.5px dashed var(--pb-brand-tint-2);border-radius:14px;}
+.fchip{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--pb-border);border-radius:9px;padding:7px 12px;font-size:13.5px;font-weight:700;box-shadow:var(--sh-xs);}
+.fchip .ref{width:18px;height:18px;border-radius:5px;background:var(--pb-brand-tint);color:var(--pb-brand-600);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.fop{font-size:17px;font-weight:800;color:var(--pb-brand);padding:0 2px;}
+.fnum{color:#0E7490;}
+.fchip.add{border-style:dashed;color:var(--pb-brand);background:var(--pb-brand-tint);} .fchip.add .ref{display:none;}
+.explain{display:flex;gap:11px;margin-top:16px;padding:13px 16px;background:var(--pb-info-tint);border-radius:12px;align-items:flex-start;}
+.explain svg{width:18px;height:18px;stroke:#2563EB;flex-shrink:0;margin-top:1px;}
+.explain p{font-size:13px;color:#1E3A8A;line-height:1.5;}
+.explain b{font-weight:800;}
+.ed-grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px;}
+.field label{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--pb-muted);display:block;margin-bottom:6px;}
+.field .ctrl{border:1px solid var(--pb-border);border-radius:9px;padding:9px 12px;font-size:13.5px;font-weight:600;background:#fff;display:flex;align-items:center;justify-content:space-between;}
+.field .ctrl svg{width:15px;height:15px;stroke:var(--pb-muted);}
+.dep-map{margin-top:24px;padding-top:20px;border-top:1px solid var(--pb-border-soft);}
+.dep-row{display:flex;align-items:center;gap:10px;font-size:13px;margin-top:9px;}
+.dep-row .lbl{color:var(--pb-muted);width:90px;font-weight:600;}
+.dep-pill{font-size:11.5px;font-weight:700;background:#EEF1F5;color:#475569;padding:4px 10px;border-radius:var(--r-pill);}
+.ed-foot{padding:16px 26px;background:#FAFAFE;border-top:1px solid var(--pb-border-soft);display:flex;align-items:center;gap:10px;}
+.valid-ok{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:#0F8A63;}
+.valid-ok svg{width:16px;height:16px;stroke:#0F8A63;}
+
+/* grid view */
+.fs-gridview{padding:0;overflow:auto;}
+.formula-bar{display:flex;align-items:center;gap:10px;padding:10px 18px;background:#fff;border-bottom:1px solid var(--pb-border);position:sticky;top:0;z-index:5;}
+.formula-bar .fx{font-weight:800;color:var(--pb-brand);font-style:italic;font-size:15px;}
+.formula-bar input{flex:1;border:1px solid var(--pb-border);border-radius:8px;padding:8px 12px;font-size:13.5px;}
+table.grid{border-collapse:collapse;width:100%;font-size:13px;}
+table.grid th,table.grid td{border:1px solid var(--pb-border);padding:9px 12px;text-align:right;white-space:nowrap;}
+table.grid thead th{background:#F4F5FB;font-weight:800;text-align:center;position:sticky;top:49px;}
+table.grid .rowhdr,table.grid .corner{background:#F4F5FB;color:#64748B;font-weight:800;text-align:center;}
+table.grid td.txt{text-align:left;}
+table.grid .colcode{display:block;font-size:10px;color:var(--pb-muted);font-weight:700;}
+table.grid td.sel{outline:2px solid var(--pb-brand);outline-offset:-2px;background:var(--pb-brand-tint);}
+table.grid td.formula{color:var(--pb-brand-600);font-weight:600;}
+
+/* right test panel */
+.fs-test{border-left:1px solid var(--pb-border);background:#fff;overflow-y:auto;padding:18px;}
+.tp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.tp-head .t{font-size:13px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--pb-muted);}
+.tp-sel{width:100%;border:1px solid var(--pb-border);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:space-between;background:#FAFAFE;margin-bottom:16px;}
+.tp-sel svg{width:15px;height:15px;stroke:var(--pb-muted);}
+.tp-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:9px;font-size:13px;}
+.tp-row:nth-child(odd){background:#F8FAFC;}
+.tp-row .nm{font-weight:600;color:#475569;display:flex;align-items:center;gap:8px;}
+.tp-row .nm .c{font-size:10px;font-weight:800;color:#94A3B8;width:16px;}
+.tp-row .v{font-weight:700;}
+.tp-row.live .v{color:var(--pb-brand);}
+.tp-row.total{border-top:2px solid var(--pb-border);margin-top:6px;font-size:15px;}
+.tp-row.total .nm{font-weight:800;color:var(--pb-ink);} .tp-row.total .v{font-weight:900;}
+.tp-row.ded .v{color:#B7791F;}
+
+/* ---------- PayAI slide-in ---------- */
+.ai-scrim{position:fixed;inset:0;background:rgba(15,12,40,.42);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40;}
+.ai-scrim.open{opacity:1;pointer-events:auto;}
+.ai-panel{position:fixed;top:0;right:0;height:100vh;width:420px;background:#fff;box-shadow:-12px 0 40px rgba(15,12,40,.18);transform:translateX(100%);transition:transform .28s cubic-bezier(.22,1,.36,1);z-index:41;display:flex;flex-direction:column;}
+.ai-panel.open{transform:translateX(0);}
+.ai-top{background:#1E1B4B;color:#fff;padding:18px 20px;display:flex;align-items:center;gap:12px;}
+.ai-top .ico{width:36px;height:36px;border-radius:10px;background:rgba(165,180,252,.18);display:flex;align-items:center;justify-content:center;}
+.ai-top .ico svg{width:20px;height:20px;stroke:#A5B4FC;}
+.ai-top b{font-size:15px;font-weight:800;} .ai-top small{display:block;color:#A5B4FC;font-size:11.5px;font-weight:600;}
+.ai-top .x{margin-left:auto;background:none;border:none;color:#A5B4FC;}.ai-top .x svg{width:20px;height:20px;stroke:currentColor;}
+.ai-body{flex:1;overflow-y:auto;padding:20px;}
+.ai-msg{margin-bottom:16px;}
+.ai-msg .who{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--pb-muted);margin-bottom:6px;}
+.ai-bubble{padding:13px 16px;border-radius:13px;font-size:13.5px;line-height:1.55;}
+.ai-bubble.user{background:var(--pb-brand-tint);color:var(--pb-brand-600);font-weight:600;border-top-left-radius:4px;}
+.ai-bubble.bot{background:#F4F5FB;color:var(--pb-ink);}
+.ai-proposal{margin-top:12px;border:1px solid var(--pb-brand-tint-2);border-radius:12px;overflow:hidden;}
+.ai-proposal .ph{background:var(--pb-brand-tint);padding:10px 14px;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--pb-brand-600);}
+.ai-proposal .pf{padding:14px;font-size:14px;font-weight:700;}
+.ai-proposal .map{padding:0 14px 12px;font-size:12px;color:var(--pb-muted);}
+.ai-proposal .pa{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--pb-border-soft);}
+.ai-input{padding:14px 18px;border-top:1px solid var(--pb-border);display:flex;gap:10px;align-items:center;}
+.ai-input input{flex:1;border:1px solid var(--pb-border);border-radius:11px;padding:11px 14px;font-size:13.5px;}
+.ai-input .send{width:40px;height:40px;border-radius:11px;background:var(--pb-brand);border:none;display:flex;align-items:center;justify-content:center;}
+.ai-input .send svg{width:18px;height:18px;stroke:#fff;}
+.ai-chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px;}
+.ai-chip{font-size:11.5px;font-weight:600;background:#F4F5FB;border:1px solid var(--pb-border);border-radius:var(--r-pill);padding:6px 11px;color:#475569;}
+
+/* ---------- wizard overlay ---------- */
+.wz-scrim{position:fixed;inset:0;background:rgba(15,12,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:24px;}
+.wz-scrim.open{display:flex;}
+.wz{width:min(960px,100%);height:min(660px,92vh);background:#fff;border-radius:20px;overflow:hidden;display:flex;box-shadow:0 30px 80px rgba(15,12,40,.4);}
+.wz-rail{width:260px;background:#1E1B4B;color:#fff;padding:26px 22px;flex-shrink:0;}
+.wz-rail h3{font-size:16px;font-weight:800;}.wz-rail .rsub{color:#A5B4FC;font-size:12.5px;margin-top:4px;margin-bottom:26px;}
+.wz-step{display:flex;gap:13px;padding:11px 0;align-items:flex-start;}
+.wz-step .num{width:28px;height:28px;border-radius:50%;background:rgba(165,180,252,.16);color:#A5B4FC;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.wz-step.active .num{background:#fff;color:var(--pb-brand-600);}
+.wz-step.done .num{background:#0EA371;color:#fff;}
+.wz-step .st{font-size:13.5px;font-weight:700;}.wz-step .sd{font-size:11.5px;color:#A5B4FC;margin-top:2px;}
+.wz-step.active .st{color:#fff;}.wz-step:not(.active) .st{color:#C7CBF5;}
+.wz-main{flex:1;display:flex;flex-direction:column;min-width:0;}
+.wz-content{flex:1;padding:34px 38px;overflow-y:auto;}
+.wz-content h2{font-size:23px;font-weight:800;letter-spacing:-.01em;}
+.wz-content .lead{color:var(--pb-muted);font-size:14px;margin-top:6px;margin-bottom:24px;}
+.wz-foot{padding:16px 38px;border-top:1px solid var(--pb-border);display:flex;align-items:center;gap:10px;}
+.tmpl{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.tmpl-card{border:1.5px solid var(--pb-border);border-radius:14px;padding:18px;cursor:pointer;}
+.tmpl-card:hover{border-color:var(--pb-brand-tint-2);background:#FAFAFE;}
+.tmpl-card.sel{border-color:var(--pb-brand);background:var(--pb-brand-tint);}
+.tmpl-card .ti{width:40px;height:40px;border-radius:11px;background:var(--pb-brand-tint);display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+.tmpl-card.sel .ti{background:var(--pb-brand);} .tmpl-card .ti svg{width:20px;height:20px;stroke:var(--pb-brand-600);} .tmpl-card.sel .ti svg{stroke:#fff;}
+.tmpl-card b{font-size:14.5px;font-weight:800;}.tmpl-card p{font-size:12.5px;color:var(--pb-muted);margin-top:5px;line-height:1.5;}
+.wz-fields{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.wz-fields .field.full{grid-column:span 2;}
+.comp-preview{margin-top:6px;border:1px solid var(--pb-border);border-radius:12px;overflow:hidden;}
+.comp-preview .cph{background:#F4F5FB;padding:10px 14px;font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--pb-muted);}
+.comp-preview .cpr{display:flex;align-items:center;gap:12px;padding:9px 14px;border-top:1px solid var(--pb-border-soft);font-size:13px;}
+.comp-preview .cpr .c{width:20px;height:20px;border-radius:5px;background:#EEF1F5;color:#64748B;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.comp-preview .cpr .f{margin-left:auto;color:var(--pb-brand-600);font-weight:600;font-size:12px;}
+
+/* hint banner */
+.poc-hint{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:#1E1B4B;color:#fff;font-size:12.5px;font-weight:600;padding:9px 18px;border-radius:var(--r-pill);box-shadow:0 8px 24px rgba(15,12,40,.3);z-index:30;display:flex;align-items:center;gap:14px;}
+.poc-hint b{color:#A5B4FC;} .poc-hint button{background:rgba(255,255,255,.14);border:none;color:#fff;border-radius:7px;padding:5px 11px;font-size:12px;font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="fs-shell">
+  <!-- sidebar (context) -->
+  <aside class="fs-side">
+    <div class="fs-brand"><div class="logo">P</div><div><b>Payobook</b><small>Payroll Suite</small></div></div>
+    <nav class="fs-nav">
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 9.5 12 3l9 6.5V21H3z"/></svg>Dashboard</a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="m9 12 2 2 4-4"/></svg>Approvals</a>
+      <div class="sec">Pay Run</div>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>Run Payroll</a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Pay Runs</a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Payslips</a>
+      <div class="sec">Setup</div>
+      <a href="#" class="active"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>Formula Engine</a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/></svg>Salary Structures</a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6z"/></svg>Statutory</a>
+    </nav>
+  </aside>
+
+  <div class="fs-main">
+    <!-- top bar -->
+    <header class="fs-top">
+      <div class="fs-config">
+        <span class="nm">Vietnam Payroll Formula</span>
+        <span class="chip">🇻🇳&nbsp; Vietnam</span>
+        <span class="chip cur">VND ₫</span>
+        <span class="state-pill testing" id="statePill"><span class="d"></span>Testing</span>
+      </div>
+      <div class="fs-top-right">
+        <div class="ring" title="Validation health">
+          <svg width="46" height="46"><circle cx="23" cy="23" r="19" stroke="#EEF1F5" stroke-width="5" fill="none"/><circle cx="23" cy="23" r="19" stroke="#0F8A63" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="119" stroke-dashoffset="13"/></svg>
+          <span class="val">90</span>
+        </div>
+        <div class="seg">
+          <button class="active" id="segCards" onclick="setView('cards')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Cards</button>
+          <button id="segGrid" onclick="setView('grid')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Grid</button>
+        </div>
+        <button class="btn btn-ai" onclick="openAI()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3.2"/></svg>Ask PayAI</button>
+        <button class="btn btn-primary" onclick="advance()" id="nextBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Validate &amp; Test</button>
+      </div>
+    </header>
+
+    <!-- 3-pane workspace -->
+    <div class="fs-work" id="work">
+      <!-- LEFT: component outline -->
+      <div class="fs-outline" id="outline"></div>
+
+      <!-- CENTER: editor (cards or grid) -->
+      <div class="fs-editor" id="editorCards"></div>
+      <div class="fs-gridview" id="editorGrid" style="display:none;"></div>
+
+      <!-- RIGHT: live test panel -->
+      <div class="fs-test" id="testPanel"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PayAI slide-in -->
+<div class="ai-scrim" id="aiScrim" onclick="closeAI()"></div>
+<aside class="ai-panel" id="aiPanel">
+  <div class="ai-top">
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div>
+    <div><b>PayAI Formula Assistant</b><small>Describe a rule in plain English</small></div>
+    <button class="x" onclick="closeAI()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="ai-body" id="aiBody">
+    <div class="ai-msg"><div class="who">PayAI</div><div class="ai-bubble bot">Hi 👋 Tell me what a component should compute and I'll write the formula, mapping it to your existing columns. Try one of these:</div>
+      <div class="ai-chips">
+        <span class="ai-chip" onclick="aiAsk('Net pay is gross minus all employee deductions')">Net = gross − deductions</span>
+        <span class="ai-chip" onclick="aiAsk('Add a 13th month bonus equal to one month basic')">13th-month bonus</span>
+        <span class="ai-chip" onclick="aiAsk('Explain the Net Salary formula')">Explain Net Salary</span>
+      </div>
+    </div>
+  </div>
+  <div class="ai-input">
+    <input id="aiInput" placeholder="e.g. overtime is 1.5× hourly rate × OT hours" onkeydown="if(event.key==='Enter')aiAsk(this.value)"/>
+    <button class="send" onclick="aiAsk(document.getElementById('aiInput').value)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m4 12 16-8-6 16-3-7z"/></svg></button>
+  </div>
+</aside>
+
+<!-- First-setup wizard -->
+<div class="wz-scrim" id="wzScrim">
+  <div class="wz">
+    <div class="wz-rail">
+      <h3>New Formula Config</h3>
+      <div class="rsub">Let's set up a payroll calculation in 5 quick steps.</div>
+      <div class="wz-step done"><div class="num">✓</div><div><div class="st">Basics</div><div class="sd">Name, country, cycle</div></div></div>
+      <div class="wz-step active"><div class="num">2</div><div><div class="st">Components</div><div class="sd">Pick a starter set</div></div></div>
+      <div class="wz-step"><div class="num">3</div><div><div class="st">Formulas</div><div class="sd">Review &amp; tune</div></div></div>
+      <div class="wz-step"><div class="num">4</div><div><div class="st">Test</div><div class="sd">Run on sample staff</div></div></div>
+      <div class="wz-step"><div class="num">5</div><div><div class="st">Activate</div><div class="sd">Go live</div></div></div>
+    </div>
+    <div class="wz-main">
+      <div class="wz-content">
+        <h2>How do you want to start?</h2>
+        <p class="lead">Pick a starting point. You can add, remove, or rewrite any component afterwards.</p>
+        <div class="tmpl">
+          <div class="tmpl-card sel"><div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6z"/></svg></div><b>Vietnam Standard</b><p>10 components pre-wired: Basic, allowances, SI/HI/UI, Gross & Net — VN statutory rates.</p></div>
+          <div class="tmpl-card"><div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 3v4a1 1 0 0 0 1 1h4M5 3h9l5 5v11a2 2 0 0 1-2 2H5z"/><path d="M9 13h6M9 17h4"/></svg></div><b>Import from Excel</b><p>Upload your spreadsheet — headers, columns and formulas are detected automatically.</p></div>
+          <div class="tmpl-card"><div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/></svg></div><b>From Salary Structure</b><p>Pull rules from an existing Odoo salary structure as your starting columns.</p></div>
+          <div class="tmpl-card"><div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div><b>Blank canvas</b><p>Start empty and build components one by one — or ask PayAI to draft them for you.</p></div>
+        </div>
+        <div class="comp-preview">
+          <div class="cph">Vietnam Standard · 10 components will be created</div>
+          <div class="cpr"><span class="c">A</span> Basic Salary <span class="f">input</span></div>
+          <div class="cpr"><span class="c">B</span> Housing Allowance <span class="f">= Basic × 20%</span></div>
+          <div class="cpr"><span class="c">E</span> Gross Salary <span class="f">= A+B+C+D</span></div>
+          <div class="cpr"><span class="c">J</span> Net Salary <span class="f">= Gross − Deductions</span></div>
+        </div>
+      </div>
+      <div class="wz-foot">
+        <button class="btn btn-ghost" onclick="closeWizard()">Cancel</button>
+        <div style="margin-left:auto;display:flex;gap:10px;">
+          <button class="btn btn-ghost">Back</button>
+          <button class="btn btn-primary" onclick="closeWizard()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Create components</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="poc-hint">
+  <span>Design POC · <b>Formula Studio</b></span>
+  <button onclick="openWizard()">▶ First-setup wizard</button>
+  <button onclick="openAI()">✦ PayAI</button>
+  <button onclick="setView('grid')">⊞ Grid view</button>
+</div>
+
+<script>
+// ---- authentic dataset (Vietnam demo config) ----
+const COMPONENTS = [
+  {col:'A', code:'BASIC',     name:'Basic Salary',                 type:'input',    grp:'Inputs',     formula:null,                explain:'Comes from each employee\'s contract or the monthly import.'},
+  {col:'B', code:'HRA',       name:'Housing Allowance',            type:'formula',  grp:'Earnings',   formula:[{ref:'A'},{op:'×'},{num:'0.2'}], explain:'Housing Allowance is <b>20% of Basic Salary</b>.'},
+  {col:'C', code:'TRANSPORT', name:'Transport Allowance',          type:'constant', grp:'Earnings',   formula:[{num:'500,000'}], explain:'A fixed <b>₫500,000</b> for every employee.'},
+  {col:'D', code:'MEAL',      name:'Meal Allowance',               type:'constant', grp:'Earnings',   formula:[{num:'730,000'}], explain:'A fixed <b>₫730,000</b> for every employee.'},
+  {col:'E', code:'GROSS',     name:'Gross Salary',                 type:'formula',  grp:'Totals',     formula:[{ref:'A'},{op:'+'},{ref:'B'},{op:'+'},{ref:'C'},{op:'+'},{ref:'D'}], explain:'Gross is <b>Basic + Housing + Transport + Meal</b>.'},
+  {col:'F', code:'SI_EMP',    name:'Social Insurance (Employee)',  type:'formula',  grp:'Deductions', formula:[{ref:'A'},{op:'×'},{num:'0.08'}], explain:'Employee social insurance is <b>8% of Basic</b> (VN statutory).'},
+  {col:'G', code:'HI_EMP',    name:'Health Insurance (Employee)',  type:'formula',  grp:'Deductions', formula:[{ref:'A'},{op:'×'},{num:'0.015'}], explain:'Employee health insurance is <b>1.5% of Basic</b>.'},
+  {col:'H', code:'UI_EMP',    name:'Unemployment Insurance (Emp.)',type:'formula',  grp:'Deductions', formula:[{ref:'A'},{op:'×'},{num:'0.01'}], explain:'Employee unemployment insurance is <b>1% of Basic</b>.'},
+  {col:'I', code:'TOTAL_DED', name:'Total Deductions',             type:'formula',  grp:'Totals',     formula:[{ref:'F'},{op:'+'},{ref:'G'},{op:'+'},{ref:'H'}], explain:'Sum of all employee insurance contributions.'},
+  {col:'J', code:'NET',       name:'Net Salary',                   type:'formula',  grp:'Totals',     formula:[{ref:'E'},{op:'−'},{ref:'I'}], explain:'Net take-home is <b>Gross − Total Deductions</b>.'},
+];
+const SAMPLES = {
+  'Sample A — Standard': {A:15000000},
+  'Sample B — Senior':   {A:28000000},
+  'Sample C — Manager':  {A:45000000},
+};
+let curSample = 'Sample A — Standard';
+let selectedCol = 'B';
+
+const colIdx = c => c.charCodeAt(0)-65;
+function compute(basic){
+  const v={}; v.A=basic;
+  v.B=v.A*0.2; v.C=500000; v.D=730000;
+  v.E=v.A+v.B+v.C+v.D;
+  v.F=v.A*0.08; v.G=v.A*0.015; v.H=v.A*0.01;
+  v.I=v.F+v.G+v.H; v.J=v.E-v.I;
+  return v;
+}
+const vnd = n => '₫'+Math.round(n).toLocaleString('en-US');
+
+// ---- left outline ----
+function renderOutline(){
+  const groups=['Inputs','Earnings','Deductions','Totals'];
+  let h='<div class="ol-head"><span class="t">Components</span><button class="ol-add" title="Add component"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button></div>';
+  groups.forEach(g=>{
+    const items=COMPONENTS.filter(c=>c.grp===g);
+    if(!items.length)return;
+    h+=`<div class="ol-grp">${g}</div>`;
+    items.forEach(c=>{
+      h+=`<div class="ol-item ${c.col===selectedCol?'active':''}" onclick="selectCol('${c.col}')">
+        <span class="ol-col">${c.col}</span>
+        <span class="ol-nm">${c.name}</span>
+        <span class="ol-typ ${c.type}">${c.type}</span>
+      </div>`;
+    });
+  });
+  document.getElementById('outline').innerHTML=h;
+}
+
+// ---- center: card editor ----
+function renderCard(){
+  const c=COMPONENTS.find(x=>x.col===selectedCol);
+  const v=compute(SAMPLES[curSample].A);
+  const usedBy=COMPONENTS.filter(x=>x.formula && x.formula.some(t=>t.ref===c.col)).map(x=>x.name);
+  const depends=c.formula?c.formula.filter(t=>t.ref).map(t=>COMPONENTS.find(y=>y.col===t.ref).name):[];
+
+  let fline='';
+  if(c.type==='input'){
+    fline=`<div class="formula-line"><span class="fchip"><span class="ref">${c.col}</span> From contract / import</span></div>`;
+  } else {
+    fline='<div class="formula-line">';
+    c.formula.forEach(t=>{
+      if(t.op) fline+=`<span class="fop">${t.op}</span>`;
+      else if(t.ref){const r=COMPONENTS.find(y=>y.col===t.ref);fline+=`<span class="fchip"><span class="ref">${t.ref}</span> ${r.name}</span>`;}
+      else fline+=`<span class="fchip fnum mono">${t.num}</span>`;
+    });
+    fline+=`<span class="fchip add">+ add</span></div>`;
+  }
+
+  document.getElementById('editorCards').innerHTML=`
+    <div class="ed-card">
+      <div class="ed-hero">
+        <div class="col-badge">${c.col}</div>
+        <div style="flex:1">
+          <h2>${c.name}<span class="code-tag mono">${c.code}</span></h2>
+          <div class="sub">Column ${c.col} · ${c.type==='input'?'Input value':c.type==='constant'?'Fixed constant':'Calculated formula'} · appears on payslip</div>
+        </div>
+        <div class="valid-ok"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Valid</div>
+      </div>
+      <div class="ed-body">
+        <div class="ed-label">Formula</div>
+        ${fline}
+        <div class="explain"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg><p>${c.explain} ${c.type!=='input'?`<br>For <b>${curSample}</b> this evaluates to <b>${vnd(v[c.col])}</b>.`:`For <b>${curSample}</b> the value is <b>${vnd(v[c.col])}</b>.`}</p></div>
+
+        <div class="ed-grid2">
+          <div class="field"><label>Category</label><div class="ctrl">${c.grp}<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div></div>
+          <div class="field"><label>Number format</label><div class="ctrl">Currency · ₫<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div></div>
+        </div>
+
+        <div class="dep-map">
+          <div class="ed-label">Dependencies</div>
+          <div class="dep-row"><span class="lbl">Depends on</span>${depends.length?depends.map(d=>`<span class="dep-pill">${d}</span>`).join(''):'<span class="dep-pill">— none —</span>'}</div>
+          <div class="dep-row"><span class="lbl">Used by</span>${usedBy.length?usedBy.map(d=>`<span class="dep-pill">${d}</span>`).join(''):'<span class="dep-pill">— none —</span>'}</div>
+        </div>
+      </div>
+      <div class="ed-foot">
+        <button class="btn btn-soft" onclick="openAI()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Edit with PayAI</button>
+        <button class="btn btn-ghost">Test this rule</button>
+        <span style="margin-left:auto;color:var(--pb-muted);font-size:12.5px;">Last validated 2 min ago</span>
+      </div>
+    </div>`;
+}
+
+// ---- center: grid view ----
+function renderGrid(){
+  const v=compute(SAMPLES[curSample].A);
+  const c=COMPONENTS.find(x=>x.col===selectedCol);
+  const fdisplay = c.type==='input'?'(from import)':c.type==='constant'?'='+c.formula[0].num:'='+c.formula.map(t=>t.op?t.op:t.ref?t.ref+'1':t.num).join('');
+  let head='<tr><th class="corner"></th>';
+  COMPONENTS.forEach(col=>head+=`<th class="${col.col===selectedCol?'sel':''}">${col.col}<span class="colcode">${col.code}</span></th>`);
+  head+='</tr>';
+  // one data row per sample
+  let rows='';
+  Object.keys(SAMPLES).forEach((s,i)=>{
+    const vv=compute(SAMPLES[s].A);
+    rows+=`<tr><td class="rowhdr">${i+1}</td>`;
+    COMPONENTS.forEach(col=>{
+      const isFormula=col.type==='formula';
+      const selCell = (col.col===selectedCol && s===curSample);
+      rows+=`<td class="${isFormula?'formula':''} ${selCell?'sel':''}">${vnd(vv[col.col])}</td>`;
+    });
+    rows+='</tr>';
+  });
+  document.getElementById('editorGrid').innerHTML=`
+    <div class="formula-bar"><span class="fx">fx</span><span class="mono" style="font-weight:700;color:#64748B">${selectedCol}</span>
+      <input class="mono" value="${fdisplay}" /></div>
+    <table class="grid"><thead>${head}</thead><tbody>${rows}</tbody></table>`;
+}
+
+// ---- right: live test panel ----
+function renderTest(){
+  const v=compute(SAMPLES[curSample].A);
+  let rows='';
+  COMPONENTS.forEach(c=>{
+    const cls=c.type==='formula'&&c.grp!=='Totals'?'live':'';
+    const ded=c.grp==='Deductions'?'ded':'';
+    const tot=(c.code==='NET')?'total':'';
+    rows+=`<div class="tp-row ${cls} ${ded} ${tot} ${c.col===selectedCol?'':''}"><span class="nm"><span class="c">${c.col}</span>${c.name}</span><span class="v">${c.grp==='Deductions'?'−':''}${vnd(v[c.col])}</span></div>`;
+  });
+  document.getElementById('testPanel').innerHTML=`
+    <div class="tp-head"><span class="t">Live preview</span><button class="btn btn-ghost" style="padding:5px 10px;font-size:12px;">↻ Recompute</button></div>
+    <div class="tp-sel" onclick="cycleSample()">${curSample}<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    ${rows}`;
+}
+
+function selectCol(c){selectedCol=c;renderOutline();renderCard();renderGrid();renderTest();}
+function cycleSample(){const ks=Object.keys(SAMPLES);curSample=ks[(ks.indexOf(curSample)+1)%ks.length];renderCard();renderGrid();renderTest();}
+function setView(v){
+  const cards=v==='cards';
+  document.getElementById('editorCards').style.display=cards?'block':'none';
+  document.getElementById('editorGrid').style.display=cards?'none':'block';
+  document.getElementById('segCards').classList.toggle('active',cards);
+  document.getElementById('segGrid').classList.toggle('active',!cards);
+}
+
+// ---- PayAI ----
+function openAI(){document.getElementById('aiScrim').classList.add('open');document.getElementById('aiPanel').classList.add('open');}
+function closeAI(){document.getElementById('aiScrim').classList.remove('open');document.getElementById('aiPanel').classList.remove('open');}
+function aiAsk(q){
+  if(!q)return;
+  const body=document.getElementById('aiBody');
+  body.insertAdjacentHTML('beforeend',`<div class="ai-msg"><div class="who">You</div><div class="ai-bubble user">${q}</div></div>`);
+  let bot='';
+  if(/net/i.test(q)){
+    bot=`<div class="ai-msg"><div class="who">PayAI</div><div class="ai-bubble bot">Here's the formula for <b>Net Salary</b>. I mapped "all employee deductions" to your Total Deductions column.
+      <div class="ai-proposal"><div class="ph">Proposed formula · column J</div><div class="pf mono">= Gross − Total Deductions</div>
+      <div class="map">Mapped: <b>gross</b> → E (Gross Salary) · <b>deductions</b> → I (Total Deductions)</div>
+      <div class="pa"><button class="btn btn-primary" style="flex:1" onclick="closeAI()"><svg viewBox='0 0 24 24' fill='none' stroke-width='2'><path d='m9 12 2 2 4-4'/></svg>Apply to column J</button><button class="btn btn-ghost" onclick="closeAI()">Discard</button></div></div></div></div>`;
+  } else if(/13|bonus|month/i.test(q)){
+    bot=`<div class="ai-msg"><div class="who">PayAI</div><div class="ai-bubble bot">I'll add a new component <b>13th Month Bonus</b> (column K) equal to one month of Basic Salary.
+      <div class="ai-proposal"><div class="ph">New component · column K · BONUS_13</div><div class="pf mono">= Basic Salary</div>
+      <div class="map">Tip: many VN employers prorate this by months worked — want me to add that?</div>
+      <div class="pa"><button class="btn btn-primary" style="flex:1" onclick="closeAI()">Create component</button><button class="btn btn-ghost" onclick="closeAI()">Cancel</button></div></div></div>`;
+  } else {
+    bot=`<div class="ai-msg"><div class="who">PayAI</div><div class="ai-bubble bot"><b>Net Salary</b> (column J) computes <span class="mono">= Gross − Total Deductions</span>. In plain terms: it takes the Gross (Basic + all allowances) and subtracts the employee's combined Social, Health and Unemployment insurance. For ${curSample} that's ${vnd(compute(SAMPLES[curSample].A).J)}.</div></div>`;
+  }
+  body.insertAdjacentHTML('beforeend',bot);
+  body.scrollTop=body.scrollHeight;
+  document.getElementById('aiInput').value='';
+}
+
+// ---- wizard ----
+function openWizard(){document.getElementById('wzScrim').classList.add('open');}
+function closeWizard(){document.getElementById('wzScrim').classList.remove('open');}
+document.querySelectorAll('.tmpl-card').forEach(c=>c.onclick=function(){document.querySelectorAll('.tmpl-card').forEach(x=>x.classList.remove('sel'));this.classList.add('sel');});
+
+// ---- state machine demo on next button ----
+const STATES=[['testing','Testing','Validate & Test'],['validated','Validated','Activate'],['active','Active','Activate']];
+let si=0;
+function advance(){
+  si=Math.min(si+1,STATES.length-1);
+  const [cls,label,btn]=STATES[si];
+  const pill=document.getElementById('statePill');
+  pill.className='state-pill '+cls; pill.innerHTML='<span class="d"></span>'+label;
+  document.getElementById('nextBtn').innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>${btn}`;
+}
+
+renderOutline();renderCard();renderGrid();renderTest();
+</script>
+</body>
+</html>

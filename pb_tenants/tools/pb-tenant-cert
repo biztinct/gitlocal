@@ -1,0 +1,150 @@
+#!/bin/bash
+# pb-tenant-cert <hostname> <slug>
+#
+# Gives ONE tenant subdomain its own Let's Encrypt certificate, obtained over
+# HTTP-01 through the nginx plugin.
+#
+# WHY THIS EXISTS: the *.payobook.com wildcard was issued with certbot's MANUAL
+# dns-01 flow and its renewal config carries no auth hook, so `certbot renew`
+# reaches it and blocks waiting for a human to paste a TXT record — it will
+# never renew unattended. A per-host HTTP-01 certificate renews through
+# certbot.timer like every other cert on this box, with nothing to remember.
+#
+# The wildcard STAYS in place. nginx prefers an exact server_name match over a
+# wildcard one, so this block takes over for its own host while every hostname
+# without a block of its own still falls through to sites-available/pb-wildcard.
+#
+# Installed at /usr/local/bin/pb-tenant-cert, invoked via sudo by the odoo user
+# (sudoers: odoo ALL=(root) NOPASSWD: /usr/local/bin/pb-tenant-cert).
+# Tear-down reuses pb-domain-detach, which is hostname-generic.
+set -euo pipefail
+
+HOSTNAME_ARG="${1:-}"
+SLUG_ARG="${2:-}"
+
+# strict validation — these values are interpolated into a root-owned config
+if ! [[ "$HOSTNAME_ARG" =~ ^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$ ]]; then
+    echo "invalid hostname" >&2; exit 2
+fi
+if ! [[ "$SLUG_ARG" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*$ ]]; then
+    echo "invalid slug" >&2; exit 2
+fi
+# A tenant may only ever be issued a certificate for its OWN subdomain. Without
+# this the caller could request a block for any hostname it liked. This is the
+# counterpart to pb-domain-attach's "refusing to manage a payobook.com hostname"
+# guard: that script handles client-owned domains, this one handles ours.
+if [[ "$HOSTNAME_ARG" != "${SLUG_ARG}."* ]]; then
+    echo "hostname must be the slug's own subdomain" >&2; exit 2
+fi
+
+CONF="/etc/nginx/sites-available/pb-tenant-${HOSTNAME_ARG}.conf"
+LINK="/etc/nginx/sites-enabled/pb-tenant-${HOSTNAME_ARG}.conf"
+LIVE="/etc/letsencrypt/live/pb-tenant-${HOSTNAME_ARG}"
+
+# STEP 1 — obtain the certificate, and NOTHING else.
+#
+# `certonly` is load-bearing. Running the nginx INSTALLER here (plain
+# `certbot --nginx`) ranks *.payobook.com as the best server block for this
+# hostname and rewrites sites-available/pb-wildcard to point at this one
+# tenant's certificate — which then gets served to EVERY other tenant. That
+# happened once; do not reintroduce it. certonly authenticates over HTTP-01
+# using a temporary block certbot reverts itself, and never touches our config.
+#
+# --keep-until-expiring makes a re-run a no-op instead of a needless issuance,
+# which matters against Let's Encrypt's 50-certs-per-week-per-domain limit.
+# --deploy-hook reloads nginx on RENEWAL, when nothing else would.
+certbot certonly --nginx --non-interactive --agree-tos \
+    --register-unsafely-without-email \
+    --cert-name "pb-tenant-${HOSTNAME_ARG}" -d "$HOSTNAME_ARG" \
+    --keep-until-expiring \
+    --deploy-hook "systemctl reload nginx"
+
+# Refuse to write a block referencing a certificate that is not there: nginx
+# would fail to start, taking every other tenant down with it.
+if [[ ! -s "${LIVE}/fullchain.pem" ]]; then
+    echo "certificate missing at ${LIVE} after certbot run" >&2; exit 1
+fi
+
+# STEP 2 — now that the cert exists, write the block ourselves.
+#
+# Mirrors sites-available/pb-wildcard. Routing is by dbfilter (^%d$) on the
+# hostname's first label, exactly as the wildcard block does — no pinning header.
+# KEEP THE /web/database GUARD IN STEP WITH pb-wildcard: without it this block
+# would expose the database manager on the tenant's own hostname.
+cat > "$CONF" <<EOF
+# Managed by pb_tenants — tenant subdomain ${HOSTNAME_ARG} (${SLUG_ARG})
+# Exists so this host has its own auto-renewing certificate; behaviour is
+# otherwise identical to sites-available/pb-wildcard. Keep the two in step.
+# nginx prefers this exact server_name over the wildcard block, so this wins for
+# this host while every other hostname still falls through to pb-wildcard.
+server {
+    listen 443 ssl;
+    server_name ${HOSTNAME_ARG};
+
+    ssl_certificate ${LIVE}/fullchain.pem;
+    ssl_certificate_key ${LIVE}/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    proxy_set_header X-Forwarded-Host \$host;
+    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto \$scheme;
+    proxy_set_header X-Real-IP \$remote_addr;
+    add_header X-Frame-Options "SAMEORIGIN";
+
+    access_log /var/log/nginx/tenants-access.log;
+    error_log  /var/log/nginx/tenants-error.log;
+
+    proxy_buffers 16 64k;
+    proxy_buffer_size 128k;
+    proxy_read_timeout 900s;
+    proxy_connect_timeout 900s;
+    proxy_send_timeout 900s;
+    client_max_body_size 128M;
+
+    gzip on;
+    gzip_min_length 1100;
+    gzip_types text/css text/plain text/xml application/xml application/json application/javascript;
+
+    location ^~ /web/database/ { return 404; }
+
+    location /websocket {
+        proxy_pass http://127.0.0.1:8069;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection \$connection_upgrade;
+        proxy_set_header X-Forwarded-Host \$host;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header X-Real-IP \$remote_addr;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8069;
+        proxy_redirect off;
+    }
+
+    location ~ /[a-zA-Z0-9_-]*/static/ {
+        proxy_cache_valid 200 302 60m;
+        proxy_buffering on;
+        expires 864000;
+        proxy_pass http://127.0.0.1:8069;
+    }
+}
+server {
+    listen 80;
+    server_name ${HOSTNAME_ARG};
+    return 301 https://\$host\$request_uri;
+}
+EOF
+
+ln -sf "$CONF" "$LINK"
+# If this block is bad, back it out rather than leaving nginx unreloadable.
+if ! nginx -t; then
+    rm -f "$LINK" "$CONF"
+    nginx -t
+    echo "generated block failed nginx -t; rolled back" >&2
+    exit 1
+fi
+systemctl reload nginx
+echo "OK ${HOSTNAME_ARG} -> ${SLUG_ARG}"

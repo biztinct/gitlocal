@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payobook Learning OS — Final Report</title>
+<style>
+:root{
+  --ink:#1F2937; --ink-2:#4B5563; --muted:#6B7280; --faint:#9CA3AF;
+  --page:#F6F6FB; --surface:#FFFFFF; --line:#E7E5F2;
+  --indigo:#4F46E5; --indigo-soft:#EEF0FF; --indigo-deep:#312E81;
+  --green:#10B981; --green-soft:#ECFDF5;
+  --amber:#B7791F; --amber-soft:#FEF6E7;
+  --red:#C0332A; --red-soft:#FDEDEC;
+  --teal:#0E7490; --teal-soft:#ECFEFF;
+  --radius:18px; --shadow:0 1px 2px rgba(17,24,39,.04), 0 8px 24px rgba(17,24,39,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ink:#F3F4F6; --ink-2:#D1D5DB; --muted:#9CA3AF; --faint:#6B7280;
+    --page:#0F1117; --surface:#171A22; --line:#2A2E3A;
+    --indigo:#8B85FF; --indigo-soft:#1E1B4B; --indigo-deep:#C7D2FE;
+    --green-soft:#052E22; --amber-soft:#2A1F07; --red-soft:#2C1210; --teal-soft:#062B33;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--page); color:var(--ink);
+  font:16px/1.62 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px; margin:0 auto; padding:0 24px 96px}
+svg{flex:none}
+a{color:var(--indigo)}
+
+/* ---------- hero ---------- */
+.hero{
+  background:var(--indigo-deep); color:#fff; border-radius:0 0 28px 28px;
+  padding:56px 24px 44px; margin-bottom:-28px;
+}
+@media (prefers-color-scheme: dark){ .hero{background:#1E1B4B} }
+.hero-in{max-width:1080px; margin:0 auto}
+.eyebrow{
+  font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+  color:#C7D2FE; font-weight:700; margin-bottom:14px;
+}
+h1{font-size:clamp(30px,5vw,46px); line-height:1.12; margin:0 0 14px; letter-spacing:-.02em; font-weight:800}
+.hero p{margin:0; color:#DDE1FF; font-size:clamp(16px,2.2vw,19px); max-width:62ch}
+.hero-meta{display:flex; flex-wrap:wrap; gap:10px; margin-top:24px}
+.pill{
+  display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:999px;
+  font-size:13px; font-weight:600; background:rgba(255,255,255,.13); color:#fff;
+}
+.pill.live{background:var(--green); color:#04281C}
+.pill.hold{background:#FDE68A; color:#5A3E05}
+
+/* ---------- layout ---------- */
+section{margin-top:52px}
+h2{
+  font-size:22px; margin:0 0 6px; letter-spacing:-.01em; font-weight:750;
+  display:flex; align-items:center; gap:10px;
+}
+h2 .ic{color:var(--indigo)}
+.lede{color:var(--muted); margin:0 0 22px; max-width:70ch}
+h3{font-size:16px; margin:0 0 8px; font-weight:700}
+
+.card{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:22px 24px; box-shadow:var(--shadow); position:relative; overflow:hidden;
+}
+.card.rail::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--indigo)}
+.card.rail.green::before{background:var(--green)}
+.card.rail.amber::before{background:var(--amber)}
+.card.rail.red::before{background:var(--red)}
+.card.rail.teal::before{background:var(--teal)}
+.grid{display:grid; gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:860px){ .g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media(max-width:620px){ .g2,.g3,.g4{grid-template-columns:1fr} }
+
+/* ---------- stat ---------- */
+.stat .kl{display:flex; align-items:center; gap:7px; font-size:12px; font-weight:700;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+.stat .kv{font-size:30px; font-weight:800; letter-spacing:-.02em; margin:8px 0 2px}
+.stat .ks{font-size:13px; color:var(--muted)}
+
+/* ---------- before / after ---------- */
+.ba{display:grid; grid-template-columns:1fr auto 1fr; gap:0; align-items:stretch}
+@media(max-width:720px){ .ba{grid-template-columns:1fr} .ba .arrow{transform:rotate(90deg); padding:10px 0} }
+.ba .side{padding:20px 22px}
+.ba .arrow{display:flex; align-items:center; justify-content:center; padding:0 8px; color:var(--faint)}
+.ba .tag{font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; margin-bottom:10px}
+.ba .before .tag{color:var(--red)}
+.ba .after .tag{color:var(--green)}
+.ba ul{margin:0; padding-left:18px}
+.ba li{margin:6px 0; color:var(--ink-2)}
+.ba .before{background:var(--red-soft); border-radius:var(--radius) 0 0 var(--radius)}
+.ba .after{background:var(--green-soft); border-radius:0 var(--radius) var(--radius) 0}
+@media(max-width:720px){
+  .ba .before{border-radius:var(--radius) var(--radius) 0 0}
+  .ba .after{border-radius:0 0 var(--radius) var(--radius)}
+}
+
+/* ---------- phases ---------- */
+.phase{display:grid; grid-template-columns:76px 1fr; gap:18px; align-items:start;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:20px 22px; box-shadow:var(--shadow); margin-bottom:14px}
+@media(max-width:620px){ .phase{grid-template-columns:1fr; gap:10px} }
+.phase .no{
+  display:flex; align-items:center; justify-content:center; width:56px; height:56px;
+  border-radius:16px; background:var(--indigo-soft); color:var(--indigo);
+  font-weight:800; font-size:19px; letter-spacing:-.02em;
+}
+.phase h3{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px}
+.phase .sha{font:600 11.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--muted);
+  background:var(--page); border:1px solid var(--line); padding:4px 7px; border-radius:6px}
+.phase p{margin:0 0 10px; color:var(--ink-2)}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip{font-size:12px; font-weight:600; padding:4px 10px; border-radius:999px;
+  background:var(--page); border:1px solid var(--line); color:var(--ink-2)}
+.chip.ok{background:var(--green-soft); border-color:transparent; color:var(--green)}
+.chip.warn{background:var(--amber-soft); border-color:transparent; color:var(--amber)}
+
+/* ---------- lists ---------- */
+ul.clean{list-style:none; margin:0; padding:0}
+ul.clean li{display:flex; gap:11px; padding:9px 0; border-bottom:1px solid var(--line); color:var(--ink-2)}
+ul.clean li:last-child{border-bottom:0}
+ul.clean .ic{margin-top:3px}
+ul.clean b{color:var(--ink); font-weight:650}
+
+/* ---------- table ---------- */
+.tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); box-shadow:var(--shadow)}
+table{border-collapse:collapse; width:100%; min-width:640px; font-size:14.5px}
+th,td{text-align:left; padding:13px 16px; border-bottom:1px solid var(--line); vertical-align:top}
+th{font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:750; background:var(--page)}
+tr:last-child td{border-bottom:0}
+td b{font-weight:650}
+.sev{display:inline-block; font-size:11px; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+  padding:3px 9px; border-radius:999px; white-space:nowrap}
+.sev.you{background:var(--indigo-soft); color:var(--indigo)}
+.sev.med{background:var(--amber-soft); color:var(--amber)}
+.sev.low{background:var(--page); color:var(--muted); border:1px solid var(--line)}
+
+/* ---------- callout ---------- */
+.callout{display:grid; grid-template-columns:auto 1fr; gap:14px; align-items:start;
+  background:var(--amber-soft); border-radius:var(--radius); padding:20px 22px; border:1px solid transparent}
+.callout.indigo{background:var(--indigo-soft)}
+.callout .ic{color:var(--amber); margin-top:2px}
+.callout.indigo .ic{color:var(--indigo)}
+.callout h3{margin-bottom:4px}
+.callout p{margin:0; color:var(--ink-2)}
+.callout p + p{margin-top:8px}
+
+code{font:600 13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  background:var(--page); border:1px solid var(--line); padding:2px 6px; border-radius:6px; white-space:nowrap}
+.foot{margin-top:56px; padding-top:22px; border-top:1px solid var(--line); color:var(--muted); font-size:13.5px}
+.foot b{color:var(--ink-2)}
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-in">
+    <div class="eyebrow">Payobook &middot; Learning OS &middot; Final report</div>
+    <h1>Teaching payroll to someone<br>who has never run it</h1>
+    <p>Six build phases that replaced the old tours, coach and lessons with one learning system —
+       one that works identically on a brand-new empty tenant and the demo world, and never touches
+       your real data to do it.</p>
+    <div class="hero-meta">
+      <span class="pill live">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Live on all 4 databases
+      </span>
+      <span class="pill">16 Aug 2026</span>
+      <span class="pill">14 commits &middot; branch 19.1</span>
+      <span class="pill hold">Not pushed to remote</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ============ WHY ============ -->
+  <section>
+    <h2>
+      <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+      What you reported, and what it actually was
+    </h2>
+    <p class="lede">You saw a brand-new tenant, <b>abm.payobook.com</b>, showing 1,230 employees and
+      ₫28.0M of monthly payroll on a database with nothing in it — and asked whether it had been
+      seeded by mistake.</p>
+
+    <div class="card rail red">
+      <h3>The golden template was clean. The dashboard was lying.</h3>
+      <p style="margin:8px 0 0; color:var(--ink-2)">
+        Those four numbers were <b>hardcoded sample constants</b> living inside the old analytics
+        module. Whenever a database had no payslips, the dashboard quietly fell back to them and
+        presented invented figures as if they were real. Nothing had been seeded — the tenant was
+        genuinely empty, and the screen was fiction. Two sibling surfaces did the same thing, and one
+        of them <b>created real employee and department records</b> to make its demo look convincing.
+      </p>
+      <p style="margin:12px 0 0; color:var(--ink-2)">
+        That became the program's first rule: <b>no surface may ever show a number it did not
+        measure.</b> Sample data is now only possible when the demo module is installed, and it is
+        always labelled.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ EXPERIENCE ============ -->
+  <section>
+    <h2>
+      <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
+      What a new customer experiences now
+    </h2>
+    <p class="lede">The same journey, before this program and after it.</p>
+
+    <div class="card" style="padding:0">
+      <div class="ba">
+        <div class="side before">
+          <div class="tag">Before</div>
+          <ul>
+            <li>Dashboard invents 1,230 staff and ₫28.0M of payroll</li>
+            <li>A clunky "Guided tours" popup with six list items</li>
+            <li>Tour copy written for the demo world — "your 12 division configs"</li>
+            <li>Lessons and answers loaded from database records that a tenant might not have</li>
+            <li>Language written for people who already know payroll</li>
+            <li>No safe place to practise; the only way to learn was to do it for real</li>
+          </ul>
+        </div>
+        <div class="arrow">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </div>
+        <div class="side after">
+          <div class="tag">After</div>
+          <ul>
+            <li>Honest zeros, plus a five-step checklist from empty database to first real payslip</li>
+            <li>One walkthrough plays three ways: <b>Watch</b>, <b>Try</b>, <b>Do</b></li>
+            <li>Every technical word has a tap-for-plain-English card</li>
+            <li>All content is a static file — identical on any tenant, nothing to corrupt</li>
+            <li>Every sentence rewritten for a beginner, in English and Vietnamese</li>
+            <li>A watermarked practice company you can wander freely</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card rail">
+        <h3>Watch</h3>
+        <p style="margin:6px 0 0;color:var(--ink-2)">The system drives. A spotlight moves across the
+          real screens and explains each control as it goes.</p>
+      </div>
+      <div class="card rail teal">
+        <h3>Try</h3>
+        <p style="margin:6px 0 0;color:var(--ink-2)">You drive, on a fake company. You click and type
+          for real; a wrong click gets a gentle nudge, never a failure.</p>
+      </div>
+      <div class="card rail green">
+        <h3>Do</h3>
+        <p style="margin:6px 0 0;color:var(--ink-2)">You drive on your own data, and the guide
+          <b>stops</b> before anything that writes: "You press it — I'll wait."</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NUMBERS ============ -->
+  <section>
+    <h2>
+      <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/></svg></span>
+      The work, in numbers
+    </h2>
+    <p class="lede">Everything below is live on the apex, the golden template and both tenants.</p>
+
+    <div class="grid g4">
+      <div class="card stat rail">
+        <div class="kl">Content moved out of the DB</div>
+        <div class="kv">14 &rarr; 0</div>
+        <div class="ks">database models deleted; content is now one static bilingual file</div>
+      </div>
+      <div class="card stat rail teal">
+        <div class="kl">Plain-English terms</div>
+        <div class="kv">13 &rarr; 66</div>
+        <div class="ks">glossary entries, each with a hover card wherever the word appears</div>
+      </div>
+      <div class="card stat rail green">
+        <div class="kl">Over-long sentences</div>
+        <div class="kv">177 &rarr; 0</div>
+        <div class="ks">average English sentence cut from 13.2 to 10.8 words</div>
+      </div>
+      <div class="card stat rail amber">
+        <div class="kl">Unredacted AI paths</div>
+        <div class="kv">3 &rarr; 0</div>
+        <div class="ks">every route where payroll data could reach an outside model is closed</div>
+      </div>
+    </div>
+
+    <div class="grid g4" style="margin-top:16px">
+      <div class="card stat"><div class="kl">Walkthroughs</div><div class="kv">7</div><div class="ks">six ported from the old tours, one new</div></div>
+      <div class="card stat"><div class="kl">Questions answered</div><div class="kv">41</div><div class="ks">intents, 328 recognised phrasings</div></div>
+      <div class="card stat"><div class="kl">Automated checks</div><div class="kv">284</div><div class="ks">plus 69 content-truth contracts</div></div>
+      <div class="card stat"><div class="kl">Deploys</div><div class="kv">5</div><div class="ks">each rehearsed on a clone first</div></div>
+    </div>
+  </section>
+
+  <!-- ============ PHASES ============ -->
+  <section>
+    <h2>
+      <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg></span>
+      The six phases
+    </h2>
+    <p class="lede">Each one was designed, built, independently reviewed, fixed, and only then shipped.</p>
+
+    <div class="phase">
+      <div class="no">0</div>
+      <div>
+        <h3>Truth on empty tenants <span class="sha">6add0cc2</span></h3>
+        <p>Deleted the fake-number fallback and the two sibling surfaces that invented data. Money now
+           shows the tenant's own currency instead of always dong; the greeting follows the clock.
+           An empty tenant gets a "Let's set up your payroll" panel instead of a green 100% ring over fiction.</p>
+        <div class="chips"><span class="chip ok">Live</span><span class="chip">Honest zeros rule</span><span class="chip">Currency-aware</span></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="no">1</div>
+      <div>
+        <h3>Content leaves the database, and one engine replaces the tours
+          <span class="sha">1db8724c</span><span class="sha">6593ad25</span></h3>
+        <p>All learning content became a single generated file that ships with the code, so a tenant with
+           an empty database sees exactly what the demo does. The old tours module was retired and its six
+           tours became <b>scenarios</b> that play as Watch, Try or Do. Any step that would write something
+           real must be explicitly marked, and the engine is built so it <i>cannot</i> press those buttons for you.</p>
+        <div class="chips"><span class="chip ok">Live</span><span class="chip">Zero DB reads for content</span><span class="chip">Old tours module deleted</span><span class="chip">Learner progress preserved</span></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="no">2</div>
+      <div>
+        <h3>Plain language, in both languages <span class="sha">346dc24f</span></h3>
+        <p>Every learner-facing sentence rewritten for someone who has never run payroll — short sentences,
+           one idea each, no jargon without an explanation — with Vietnamese rewritten as a peer, not a
+           translation. A build gate now <b>fails</b> if anyone writes a sentence over 28 words or uses a
+           banned term, so the writing cannot quietly drift back.</p>
+        <div class="chips"><span class="chip ok">Live</span><span class="chip">396 passages rewritten</span><span class="chip">Hover-card glossary</span><span class="chip">Language gate in the build</span></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="no">3</div>
+      <div>
+        <h3>The first-run journey <span class="sha">f117ef5d</span></h3>
+        <p>The five-step activation checklist: meet Payobook, add an employee, import your Excel, run a
+           practice payroll, run the real one. Every tick is a <b>real count</b> — never "you clicked this
+           once". A welcome card offers the tour on first login. New tenants also get their country's
+           currency at provisioning instead of inheriting dollars.</p>
+        <div class="chips"><span class="chip ok">Live</span><span class="chip">Checklist retires itself</span><span class="chip">Currency at provisioning</span></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="no">4</div>
+      <div>
+        <h3>A companion that answers and explains <span class="sha">e180e353</span></h3>
+        <p>Added the six obvious questions nobody had written — starting with <i>"How do I run payroll?"</i>,
+           which the product genuinely could not answer. Fixed a worse problem: asked without screen context,
+           the coach used to return a confidently wrong answer under a "Grounded in" badge. It now stays
+           honest and says it doesn't know. Every screen can also explain itself in plain words, offline.</p>
+        <div class="chips"><span class="chip ok">Live</span><span class="chip">Honest misses</span><span class="chip">Explain this screen</span><span class="chip">AI egress hardened</span></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="no">5</div>
+      <div>
+        <h3>The practice world <span class="sha">d3aa8888</span></h3>
+        <p>A free-roam <b>practice company</b> you can walk around under a permanent watermark, where the
+           software is structurally unable to write to your business data. Try mode learned to accept typed
+           answers — including Vietnamese names typed without tone marks and amounts with any grouping —
+           and three new interactive flows cover importing a sheet, adding your first employee, and reading
+           a formula.</p>
+        <div class="chips"><span class="chip ok">Live</span><span class="chip">Free-roam sandbox</span><span class="chip">Typed answers</span><span class="chip">3 new Try flows</span></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="no">6</div>
+      <div>
+        <h3>Senses: voice, memory, and closing the last gaps <span class="sha">b33ed460</span></h3>
+        <p>Hold-to-talk voice input that never sends your question without you reading it first, behind a
+           consent card that says plainly what leaves the building. A "Continue where you left off"
+           suggestion computed <b>entirely on your own server</b>. Progress rings and a quiet streak counter.
+           And the last three places where an AI feature could have exported real names were repaired
+           <i>together with</i> their protection.</p>
+        <div class="chips"><span class="chip ok">Live</span><span class="chip warn">Features off until you enable them</span><span class="chip">No data leaves for suggestions</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WAITING ON YOU ============ -->
+  <section>
+    <h2>
+      <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
+      Waiting on you
+    </h2>
+    <p class="lede">Three decisions only you can make. Nothing is broken while they wait.</p>
+
+    <div class="callout" style="margin-bottom:16px">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></span>
+      <div>
+        <h3>1. Nobody can reach the Companion settings screen</h3>
+        <p>The screen that turns the AI features on is restricted to a "learning author" group — and
+          <b>that group currently has zero members</b> on the live server. Until someone is added to it, the
+          switches can only be flipped by a database command.</p>
+        <p><b>What I need from you:</b> tell me who should hold it (yourself, presumably) and I'll grant it.</p>
+      </div>
+    </div>
+
+    <div class="callout indigo" style="margin-bottom:16px">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
+      <div>
+        <h3>2. Four features are built, tested, live — and switched off</h3>
+        <p>Deliberately, per tenant: the <b>AI answer composer</b>, <b>Continue where you left off</b>,
+          the <b>progress rings and streak</b>, and <b>voice input</b>. They were each validated on the live
+          server and then turned back off, because switching on an AI feature for real customers is your
+          call, not mine.</p>
+        <p><b>What I need from you:</b> say the word and I'll enable any combination, on the apex only or everywhere.</p>
+      </div>
+    </div>
+
+    <div class="callout indigo">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v12"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+      <div>
+        <h3>3. Fourteen commits are local, not pushed</h3>
+        <p>Everything is committed on branch <code>19.1</code> and deployed to the server, but nothing has been
+          pushed to the remote — consistent with your standing rule.</p>
+        <p><b>What I need from you:</b> a go-ahead to push, whenever you want it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OPEN TICKETS ============ -->
+  <section>
+    <h2>
+      <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></span>
+      Found along the way — open items
+    </h2>
+    <p class="lede">Real issues this work uncovered in the product but did not fix, because each is a
+      decision or a separate piece of work. All are recorded in the project ledger.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th style="width:110px">Priority</th><th>What it is</th><th style="width:36%">Why it was left</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="sev you">Your call</span></td>
+            <td><b>AI managers can read every conversation</b> — including, now, the map of who was
+              discussed with the assistant. There is no ownership check on that path.</td>
+            <td>Widening or narrowing who may read colleagues' AI chats is a product/privacy decision, not
+              an implementation detail.</td>
+          </tr>
+          <tr>
+            <td><span class="sev med">Medium</span></td>
+            <td><b>Your dashboard's money tiles read ₫0 for one company</b> on the apex. Not a bug in the
+              tile — that company's payslips genuinely have no line coded <code>GROSS</code>.</td>
+            <td>The old fake numbers had been hiding this for months. Fixing it means deciding how converted
+              formula payslips should map to the standard codes.</td>
+          </tr>
+          <tr>
+            <td><span class="sev med">Medium</span></td>
+            <td><b>A silently reverted approval fix.</b> The live pay-run wizard had been rolled back to a
+              version that could skip the HR approval tier — invisible because the database thought it was
+              up to date.</td>
+            <td><b>Already repaired and deployed</b> during this program. Listed because the <i>class</i> of
+              problem now has a permanent guard: every deploy compares code on disk against what each
+              database believes it has.</td>
+          </tr>
+          <tr>
+            <td><span class="sev low">Low</span></td>
+            <td><b>New tenants inherit US dollars</b> unless a country is set at provisioning.</td>
+            <td>Fixed for new tenants in Phase 3; existing tenants keep their current currency until someone
+              changes it deliberately.</td>
+          </tr>
+          <tr>
+            <td><span class="sev low">Low</span></td>
+            <td><b>Two Pay Runs screens offer different actions</b> for a finished run (the kanban still shows
+              the old bank-file and email buttons).</td>
+            <td>Cosmetic inconsistency in another module; the learning content is written to be true of both.</td>
+          </tr>
+          <tr>
+            <td><span class="sev low">Low</span></td>
+            <td><b>Four modules are ahead locally but were never deployed</b> — the demo generator, pay
+              delivery, the demo portal and the marketing website.</td>
+            <td>Outside this program's scope. Worth a deliberate catch-up deploy so the gap does not grow.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ HONEST LIMITS ============ -->
+  <section>
+    <h2>
+      <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+      What the privacy protection does and does not cover
+    </h2>
+    <p class="lede">Written down inside the code itself, so the next person to touch it cannot miss it.</p>
+
+    <div class="grid g2">
+      <div class="card rail green">
+        <h3 style="color:var(--green)">Protected</h3>
+        <ul class="clean">
+          <li><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <span>Employee names are replaced with placeholders before any question leaves the server, and put back only in what you read.</span></li>
+          <li><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <span>Emails, phone numbers, record ids and money amounts are stripped from free text.</span></li>
+          <li><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <span>The tutorial assistant only ever reads its own teaching material — never a payroll record.</span></li>
+          <li><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <span>"Continue where you left off" and the progress rings are computed on your own server; nothing leaves.</span></li>
+          <li><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <span>Spoken replies are read aloud by your own browser — the answer is never posted to a speech service.</span></li>
+        </ul>
+      </div>
+      <div class="card rail amber">
+        <h3 style="color:var(--amber)">Known limits, stated on purpose</h3>
+        <ul class="clean">
+          <li><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg></span>
+            <span>On three of four question types, <b>your typed question goes out as you wrote it</b> — scrubbing a live question would ruin the answer.</span></li>
+          <li><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg></span>
+            <span>Voice sends <b>raw audio</b> to a speech service. Names cannot be removed from a recording — the consent card says exactly that.</span></li>
+          <li><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg></span>
+            <span>A salary typed with no separators (<code>15000000</code>) slips past the amount filter.</span></li>
+          <li><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg></span>
+            <span>A half-accented spelling of a name in free text may not be caught.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WAS BUILT ============ -->
+  <section>
+    <h2>
+      <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>
+      How it was built, and what that caught
+    </h2>
+    <p class="lede">Every phase went through the same loop: designed as a written handover, implemented,
+      then torn apart by an independent reviewer with no memory of writing it — who re-ran every check and
+      tried to break each safety claim on purpose.</p>
+
+    <div class="grid g4" style="margin-bottom:16px">
+      <div class="card stat"><div class="kl">Review passes</div><div class="kv">10</div><div class="ks">independent, adversarial</div></div>
+      <div class="card stat"><div class="kl">Fix rounds</div><div class="kv">6</div><div class="ks">before anything shipped</div></div>
+      <div class="card stat"><div class="kl">Sabotage tests</div><div class="kv">~60</div><div class="ks">each run twice: broken, then restored</div></div>
+      <div class="card stat"><div class="kl">Blockers stopped</div><div class="kv">3</div><div class="ks">caught pre-ship, none reached you</div></div>
+    </div>
+
+    <div class="card rail">
+      <h3>The three that would have hurt</h3>
+      <ul class="clean" style="margin-top:6px">
+        <li>
+          <span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg></span>
+          <span><b>Two employees with near-identical names</b> — Hùng and Hưng — collapsed into one entry in
+            the name-protection map, so the second person's real name would have gone out in full. Caught by
+            a reviewer's own test case, not by ours.</span>
+        </li>
+        <li>
+          <span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg></span>
+          <span><b>The PDF report's AI narratives</b> carried alert summaries that already had real names put
+            back into them — protected everywhere except the one place they were re-sent.</span>
+        </li>
+        <li>
+          <span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg></span>
+          <span><b>Tenant provisioning could have been aborted entirely</b> by the new currency setting, on
+            any tenant that had ever posted an accounting entry.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card">
+        <h3>Two silent rollbacks on the live server</h3>
+        <p style="margin:6px 0 0;color:var(--ink-2)">Unrelated to this work, and invisible to a normal
+          upgrade: the server's files had been reverted to older versions while each database still believed
+          it was current. One of them had disabled the sidebar's collapse; the other could let a pay run
+          <b>skip the HR approval tier</b>. Both restored. Every deploy now checks disk against database.</p>
+      </div>
+      <div class="card">
+        <h3>A test suite that had never actually run</h3>
+        <p style="margin:6px 0 0;color:var(--ink-2)">The thirteen tests guarding the practice sandbox were
+          silently erroring out on a naming collision — reported as environment noise, never as failure. The
+          rehearsal step caught it, and the sandbox's containment was proven properly before it shipped.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHERE THINGS ARE ============ -->
+  <section>
+    <h2>
+      <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></span>
+      Where everything lives
+    </h2>
+    <div class="grid g2">
+      <div class="card">
+        <h3>Documentation</h3>
+        <ul class="clean">
+          <li><span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+            <span><b>docs/handovers/LEARNOS_LEDGER.md</b> — the running list of every trap this program hit,
+              so the next one does not repeat them</span></li>
+          <li><span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+            <span><b>docs/handovers/LEARNOS_PHASE*.md</b> — eight build specifications, one per phase</span></li>
+          <li><span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+            <span><b>~/Documents/GitHub/learnos_phase*_shots/</b> — 40+ validation screenshots from the live server</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Live versions, all four databases</h3>
+        <ul class="clean">
+          <li><span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <span><b>pb_learn</b> &mdash; 19.0.12.0.2 &nbsp;<span style="color:var(--muted)">the learning system</span></span></li>
+          <li><span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <span><b>pb_payroll_ai_insights</b> &mdash; 19.0.3.0.0 &nbsp;<span style="color:var(--muted)">the assistant</span></span></li>
+          <li><span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <span><b>pb_dashboard</b> &mdash; 19.0.1.1.0 &nbsp;<span style="color:var(--muted)">home screen and checklist</span></span></li>
+          <li><span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+            <span><b>pb_coach</b> &mdash; removed from the code and uninstalled everywhere</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <b>Payobook Learning OS</b> &middot; six phases, 14 commits (<code>6add0cc2</code> &rarr; <code>b9efd020</code>),
+    branch <code>19.1</code>, deployed to <b>payobook</b>, <b>payobook_template</b>, <b>abm</b> and <b>acme</b>.
+    Final checks: 284 automated assertions, 69 content-truth contracts, 354 server tests — all green.
+    Report generated 16 August 2026.
+  </div>
+
+</div>
+</body>
+</html>

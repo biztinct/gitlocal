@@ -1,0 +1,318 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       RECRUIT P1 — Hiring set-up. Six cards; the Stages card is live.
+       Loop variables: `cd`, `st`, `pr`, `oc`, `pc`, `sw`, `dp`, `cn`.
+       ==================================================================== -->
+  <t t-name="pb_hiring.PbHiringSetup">
+    <div class="pbim pbim-page pbhr pbhr-setup">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Reading hiring set-up…</span></div>
+      <div t-elif="state.error" class="pbim-wrap">
+        <div class="pbim-panel pbhr-empty">
+          <div class="pbhr-empty-ic"><t t-out="ic('lock',28)"/></div>
+          <h2>Hiring set-up is for the hiring team</h2>
+          <p t-esc="state.error"/>
+        </div>
+      </div>
+      <div t-else="" class="pbim-wrap">
+        <div class="pbhr-head">
+          <div class="pbhr-head-id">
+            <h1 class="pbim-h1">Hiring set-up</h1>
+            <p class="pbim-sub">Everything a talent lead changes without a ticket: the stages, which columns a role shows, the forms, the scorecards, the emails and who does what.</p>
+          </div>
+          <div class="pbhr-head-actions">
+            <button class="pbim-btn ghost" t-on-click="openBoard"><t t-out="ic('layoutList',15)"/> Back to the hiring board</button>
+          </div>
+        </div>
+
+        <div t-if="!state.data.can_edit" class="pbim-panel pbhr-notice">
+          <div class="pbhr-notice-ic"><t t-out="ic('info',20)"/></div>
+          <div><b>You can read this page</b><p>Changing stages, presets and switches is for the talent lead and the head of hiring.</p></div>
+        </div>
+
+        <!-- ============ the six cards ============ -->
+        <div class="pbhr-su-cards">
+          <button t-foreach="state.data.cards" t-as="cd" t-key="cd.key" type="button" class="pbim-panel pbhr-su-card" t-att-class="{ 'is-live': cd.live, 'is-off': !cd.action and !cd.live and !cd.inline }" t-on-click="() =&gt; this.openCard(cd)">
+            <span class="pbhr-su-card-ic"><t t-out="ic(cd.icon,18)"/></span>
+            <span class="pbhr-su-card-t" t-esc="cd.title"/>
+            <span class="pbhr-su-card-s" t-esc="cd.status"/>
+            <span class="pbhr-su-card-go">
+              <t t-if="cd.live or cd.inline">Below <t t-out="ic('arrowDown',13)"/></t>
+              <t t-elif="cd.action">Go <t t-out="ic('arrowRight',13)"/></t>
+              <t t-else="">Ask the head of hiring</t>
+            </span>
+          </button>
+        </div>
+
+        <!-- ============ STAGES ============ -->
+        <section class="pbim-panel pbhr-su-stages">
+          <div class="pbhr-su-h">
+            <h2>Stages</h2>
+            <span class="pbhr-pill" t-esc="rolesCountLabel"/>
+            <span class="pbhr-foot-gap"/>
+          </div>
+          <p class="pbhr-su-lede">The universal list, in the order a board shows it. Click a name to rename it everywhere. Drag the handle to reorder. The meaning shows when somebody points at the column on a board.</p>
+          <div class="pbhr-su-list" t-ref="stages">
+            <div t-foreach="stages" t-as="st" t-key="st.id" class="pbhr-su-row" t-att-class="'fam-' + st.family" t-att-data-id="st.id">
+              <span t-if="state.data.can_edit" class="pbhr-su-grip" title="Drag to reorder"><t t-out="ic('grip',14)"/></span>
+              <span class="pbhr-su-dot"/>
+              <div class="pbhr-su-name">
+                <input t-if="state.editing === st.id" class="pbhr-in" t-model="state.editName" t-on-keydown="(ev) =&gt; this.onRenameKey(ev, st)" t-on-blur="() =&gt; this.saveRename(st)" maxlength="60"/>
+                <button t-else="" type="button" class="pbhr-su-namebtn" t-att-disabled="!state.data.can_edit" t-on-click="() =&gt; this.startRename(st)" t-att-title="renameTitle">
+                  <t t-esc="st.name"/> <t t-if="state.data.can_edit" t-out="ic('pencil',12)"/>
+                </button>
+                <small><t t-esc="familyLabel(st.family)"/><t t-if="st.always_on"> · always on</t> · <t t-esc="usedBy(st)"/></small>
+              </div>
+              <input class="pbhr-in pbhr-su-meaning" t-model="state.meanings[st.id]" t-att-disabled="!state.data.can_edit" maxlength="160" placeholder="One sentence: what does it mean to be here?" t-on-change="() =&gt; this.saveMeaning(st)"/>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ PRESETS ============ -->
+        <section class="pbim-panel pbhr-su-presets">
+          <div class="pbhr-su-h">
+            <h2>Which columns a new role shows</h2>
+            <span class="pbhr-foot-gap"/>
+            <button t-if="state.data.can_edit" class="pbim-btn primary" t-on-click="startAdd"><t t-out="ic('plus',14)"/> Add a preset</button>
+          </div>
+          <p class="pbhr-su-lede">Presets fill in new roles; existing roles keep their own columns. A role picks the preset for its department and country, then its department, then its country, then Standard. Always on for every role: <t t-esc="alwaysOnNames"/> and every closed outcome.</p>
+
+          <div t-if="state.adding" class="pbhr-su-add">
+            <select class="pbhr-in" t-model="state.adding.department_id">
+              <option value="">Any department</option>
+              <option t-foreach="state.data.departments" t-as="dp" t-key="dp.id" t-att-value="dp.id" t-esc="dp.name"/>
+            </select>
+            <select class="pbhr-in" t-model="state.adding.country_id">
+              <option value="">Any country</option>
+              <option t-foreach="state.data.countries" t-as="cn" t-key="cn.id" t-att-value="cn.id" t-esc="cn.name"/>
+            </select>
+            <button class="pbim-btn primary" t-on-click="saveAdd"><t t-out="ic('check',14)"/> Add it</button>
+            <button class="pbim-btn ghost" t-on-click="() =&gt; { state.adding = null; }">Cancel</button>
+          </div>
+
+          <div class="pbhr-su-matrix" t-attf-style="--cols: {{ optionalStages.length }}">
+            <span class="pbhr-su-mh is-corner"/>
+            <span t-foreach="optionalStages" t-as="oc" t-key="oc.id" class="pbhr-su-mh" t-esc="oc.name"/>
+            <span class="pbhr-su-mh"/>
+            <t t-foreach="presets" t-as="pr" t-key="pr.id">
+              <span class="pbhr-su-mr"><b t-esc="pr.name"/><small t-if="pr.is_standard">the fallback</small></span>
+              <button t-foreach="optionalStages" t-as="pc" t-key="pc.id" type="button" class="pbhr-su-cell" t-att-class="{ on: has(pr, pc) }" t-att-disabled="!state.data.can_edit" t-att-title="cellTitle(pr, pc)" t-att-aria-pressed="has(pr, pc) ? 'true' : 'false'" t-on-click="() =&gt; this.toggleCell(pr, pc)">
+                <t t-if="has(pr, pc)" t-out="ic('check',12)"/>
+              </button>
+              <span class="pbhr-su-rowacts">
+                <button type="button" class="pbim-btn ghost" t-att-class="{ on: state.previewId === pr.id }" t-on-click="() =&gt; this.togglePreview(pr)"><t t-out="ic('eye',13)"/> Preview as a board</button>
+                <button t-if="state.data.can_edit and !pr.is_standard" type="button" class="pbim-btn ghost pbhr-no" title="Remove this preset" t-on-click="() =&gt; this.removePreset(pr)"><t t-out="ic('trash',13)"/></button>
+              </span>
+            </t>
+          </div>
+
+          <div t-if="state.previewId" class="pbhr-su-preview">
+            <div class="pbhr-su-preview-h"><t t-out="ic('eye',14)"/> <span t-esc="previewTitle"/></div>
+            <div class="pbhr-board pbhr-board--preview">
+              <div t-foreach="previewColumns" t-as="st" t-key="st.id" class="pbhr-col">
+                <div class="pbhr-col-h"><span class="pbhr-col-name" t-esc="st.name"/><span class="pbhr-col-n" t-esc="sampleCount(st_index)"/></div>
+                <div t-foreach="sampleCards(st_index)" t-as="x" t-key="x_index" class="pbhr-kc is-sample"><div class="pbhr-kc-nm">Sample person</div><div class="pbhr-kc-sub">Applied 2 days ago</div></div>
+                <div t-if="!sampleCount(st_index)" class="pbhr-col-empty" t-esc="st.meaning"/>
+              </div>
+              <div class="pbhr-col pbhr-rail"><div class="pbhr-col-h"><span class="pbhr-col-name">Closed</span></div>
+                <div t-foreach="closedStages" t-as="st" t-key="st.id" class="pbhr-rail-row"><span t-esc="st.name"/><b>0</b></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ RECRUIT P5: SCORECARDS ============ -->
+        <t t-call="pb_hiring.P5SetupScorecards"/>
+
+        <!-- ============ RECRUIT P6: BEFORE THEY JOIN ============ -->
+        <t t-call="pb_hiring.P6SetupPrejoin"/>
+
+        <!-- ============ RECRUIT P7: CHANNELS and AGENCIES ============ -->
+        <t t-call="pb_hiring.P7SetupChannels"/>
+        <t t-call="pb_hiring.P7SetupAgencies"/>
+
+        <!-- ============ RECRUIT P8: EMAILS AND LANGUAGES, AUTOMATIONS ============ -->
+        <t t-call="pb_hiring.P8SetupEmails"/>
+        <t t-call="pb_hiring.P8SetupAutomations"/>
+
+        <!-- ============ SWITCHES ============ -->
+        <section class="pbim-panel pbhr-su-switches">
+          <div class="pbhr-su-h"><h2>Switches</h2></div>
+          <label class="pbhr-su-switch">
+            <input type="checkbox" t-att-checked="state.data.switches.line_managers_move" t-att-disabled="!state.data.can_edit" t-on-change="() =&gt; this.toggleSwitch('line_managers_move')"/>
+            <span><b>Let line managers move candidates on their own roles</b><small>Off: only recruiters and the talent lead move candidates. Line managers still see the board, open anyone and leave notes.</small></span>
+          </label>
+          <label class="pbhr-su-switch">
+            <input type="checkbox" t-att-checked="state.data.switches.candidate_mail" t-att-disabled="!state.data.can_edit" t-on-change="() =&gt; this.toggleSwitch('candidate_mail')"/>
+            <span><b>Email candidates from here</b><small>Off: nothing is sent to a candidate from the board — useful while a new company is being set up.</small></span>
+          </label>
+          <label class="pbhr-su-switch">
+            <input type="checkbox" t-att-checked="state.data.switches.referral_announce" t-att-disabled="!state.data.can_edit" t-on-change="() =&gt; this.toggleSwitch('referral_announce')"/>
+            <span><b>Tell colleagues when a role opens to referrals</b><small>On: everyone with a login gets one short email with a "Refer someone" button. Confidential roles are never announced.</small></span>
+          </label>
+        </section>
+
+        <!-- ============ RECRUIT P3: WHO DOES WHAT ============ -->
+        <section class="pbim-panel pbhr-su-who">
+          <div class="pbhr-su-h">
+            <h2>Who does what</h2>
+            <p>Sign-offs record and tell; nothing waits for them. The one thing that waits is sending an offer, until the role's request is agreed.</p>
+          </div>
+
+          <div class="pbhr-su-who-row">
+            <div class="pbhr-su-who-tx">
+              <b><t t-out="ic('wallet',15)"/> Who is told when a request is over budget</b>
+              <small>Usually the CEO, the Head of HR and Finance. They get an email and a to-do; nothing is blocked.</small>
+            </div>
+            <div class="pbhr-su-who-ctl">
+              <div class="pbhr-su-people">
+                <span t-foreach="who.budget_flag" t-as="bu" t-key="bu.id" class="pbhr-su-person">
+                  <t t-esc="bu.name"/>
+                  <button t-if="state.data.can_edit" type="button" class="pbhr-su-person-x" t-att-title="'Stop telling ' + bu.name" t-on-click="() =&gt; this.removeBudgetPerson(bu)"><t t-out="ic('x',12)"/></button>
+                </span>
+                <span t-if="!who.budget_flag.length" class="pbhr-su-warn"><t t-out="ic('alert',13)"/> <t t-esc="who.budget_flag_sentence"/></span>
+              </div>
+              <div t-if="state.data.can_edit" class="pbhr-su-who-add">
+                <input class="pbhr-in" type="text" placeholder="Add somebody — type a name…" t-model="state.whoQ"/>
+                <div t-if="state.whoQ and budgetChoices.length" class="pbhr-su-who-list">
+                  <button t-foreach="budgetChoices" t-as="bc" t-key="bc.id" type="button" t-on-click="() =&gt; this.addBudgetPerson(bc)"><t t-out="ic('plus',12)"/> <t t-esc="bc.name"/></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pbhr-su-who-row">
+            <div class="pbhr-su-who-tx">
+              <b><t t-out="ic('userCheck',15)"/> A second person who agrees every hiring request</b>
+              <small>The Head of HR agrees each request after the manager sends it in. Name somebody here only if the company wants a second agreement.</small>
+            </div>
+            <div class="pbhr-su-who-ctl">
+              <select class="pbhr-in" t-att-disabled="!state.data.can_edit" t-on-change="(ev) =&gt; this.setMrApprover(ev.target.value)">
+                <option value="">Nobody — the Head of HR is enough</option>
+                <option t-foreach="who.users" t-as="wu" t-key="wu.id" t-att-value="wu.id" t-att-selected="who.mr_approver and who.mr_approver.id === wu.id" t-esc="wu.name"/>
+              </select>
+            </div>
+          </div>
+
+          <div class="pbhr-su-who-row">
+            <div class="pbhr-su-who-tx">
+              <b><t t-out="ic('paperclip',15)"/> When the candidate is asked for their papers</b>
+              <small>Asking never holds the offer up. Two working days, a reminder a day, and the talent lead is told when they are late.</small>
+            </div>
+            <div class="pbhr-su-who-ctl pbhr-su-seg" role="radiogroup">
+              <button t-foreach="who.docreq_triggers" t-as="dt" t-key="dt.key" type="button" class="pbhr-su-seg-b" t-att-class="{ on: who.docreq_trigger === dt.key }" t-att-disabled="!state.data.can_edit" t-att-aria-checked="who.docreq_trigger === dt.key ? 'true' : 'false'" role="radio" t-on-click="() =&gt; this.setDocreqTrigger(dt.key)" t-esc="dt.label"/>
+            </div>
+          </div>
+
+          <div class="pbhr-su-who-row">
+            <div class="pbhr-su-who-tx">
+              <b><t t-out="ic('mail',15)"/> Hiring emails come from</b>
+              <small>Every hiring email uses this address, never the person who pressed the button.</small>
+            </div>
+            <div class="pbhr-su-who-ctl"><code class="pbhr-su-sender" t-esc="who.sender or 'No address yet — add an email to the company'"/></div>
+          </div>
+
+          <!-- RECRUIT P5: scheduling links and Google Calendar -->
+          <t t-call="pb_hiring.P5SetupPeople"/>
+        </section>
+
+        <!-- ============ RECRUIT P4: CONSENT & RETENTION ============ -->
+        <section t-if="ret" class="pbim-panel pbhr-su-ret">
+          <div class="pbhr-su-h">
+            <h2><t t-out="ic('hourglass',17)"/> Consent &amp; retention</h2>
+            <p>Every candidate ticks a consent sentence when they apply. That day starts a clock: when their market's months are up, the clean-up takes their name, contact details, answers and files out, and keeps the numbers. Hired people, anyone still in play and anyone with a live offer are never touched.</p>
+          </div>
+
+          <div class="pbhr-su-ret-switch" t-att-class="{ 'is-on': ret.enabled }">
+            <span class="pbhr-p4-ic"><t t-out="ic(ret.enabled ? 'checkCircle' : 'pause',16)"/></span>
+            <div class="pbhr-su-who-tx">
+              <b t-if="ret.enabled">The clean-up runs every night</b>
+              <b t-else="">The clean-up is switched off</b>
+              <small t-if="ret.enabled">Next run <t t-esc="whenLong(ret.next_run)"/>. It takes exactly the people under "Due now".</small>
+              <small t-else="">Nothing is removed until the head of hiring switches it on, or presses Run now. Read "What will go" first.</small>
+            </div>
+            <label t-if="ret.can_run" class="pbhr-su-switch pbhr-su-ret-toggle">
+              <input type="checkbox" t-att-checked="ret.enabled" t-on-change="toggleRetention"/>
+              <span><b>Every night</b></span>
+            </label>
+          </div>
+
+          <div class="pbhr-su-ret-grid">
+            <div class="pbhr-su-ret-h">
+              <span>Market</span><span>Keep for</span><span>Afterwards</span><span>Due now</span><span>Within 30 days</span><span>Kept on purpose</span><span/>
+            </div>
+            <div t-foreach="ret.markets" t-as="mk" t-key="mk.country_id or 0" class="pbhr-su-ret-row" t-att-class="{ 'is-fallback': !mk.rule_id }">
+              <span class="pbhr-su-ret-c"><b t-esc="mk.country"/><small t-if="mk.note" t-esc="mk.note"/><small t-elif="!mk.rule_id">the company's own number</small></span>
+              <span>
+                <t t-if="state.retEdit and state.retEdit.key === (mk.rule_id or 'c' + mk.country_id)">
+                  <input class="pbhr-in pbhr-su-ret-n" type="number" min="1" max="120" t-model="state.retEdit.months"/> months
+                </t>
+                <t t-else=""><b t-esc="mk.months"/> months</t>
+              </span>
+              <span>
+                <select t-if="state.retEdit and state.retEdit.key === (mk.rule_id or 'c' + mk.country_id)" class="pbhr-in" t-model="state.retEdit.mode">
+                  <option t-foreach="ret.modes" t-as="md" t-key="md.key" t-att-value="md.key" t-esc="md.label"/>
+                </select>
+                <t t-else="" t-esc="mk.mode_label"/>
+              </span>
+              <span class="pbhr-su-ret-due" t-att-class="{ 'is-due': mk.due }"><t t-esc="mk.due"/></span>
+              <span t-esc="mk.soon"/>
+              <span t-esc="mk.kept"/>
+              <span class="pbhr-su-ret-acts">
+                <t t-if="state.retEdit and state.retEdit.key === (mk.rule_id or 'c' + mk.country_id)">
+                  <button type="button" class="pbim-btn primary" t-on-click="() =&gt; this.saveRetRule(mk)"><t t-out="ic('check',13)"/> Save</button>
+                  <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; { state.retEdit = null; }">Cancel</button>
+                </t>
+                <t t-elif="ret.can_edit">
+                  <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.startRetEdit(mk)"><t t-out="ic('pencil',13)"/></button>
+                  <button t-if="mk.rule_id" type="button" class="pbim-btn ghost pbhr-no" title="Use the company's own number for this market" t-on-click="() =&gt; this.deleteRetRule(mk)"><t t-out="ic('trash',13)"/></button>
+                </t>
+              </span>
+              <div t-if="mk.sample.length" class="pbhr-su-ret-sample"><t t-out="ic('users',12)"/> Due now: <t t-esc="mk.sample.map((x) =&gt; x.name).join(', ')"/><t t-if="mk.due &gt; mk.sample.length"> and <t t-esc="mk.due - mk.sample.length"/> more</t></div>
+            </div>
+          </div>
+          <p t-if="!ret.markets.length" class="pbhr-p4-empty">Nobody's date is within the next 30 days, and no market has its own rule yet. Every application is kept <t t-esc="ret.fallback_months"/> months.</p>
+
+          <div t-if="ret.can_edit" class="pbhr-su-ret-add">
+            <span>Give a market its own months:</span>
+            <select class="pbhr-in" t-model="state.retAdd.country_id">
+              <option value="">Pick a market…</option>
+              <option t-foreach="ret.countries" t-as="cn" t-key="cn.id" t-att-value="cn.id" t-esc="cn.name"/>
+            </select>
+            <input class="pbhr-in pbhr-su-ret-n" type="number" min="1" max="120" t-model="state.retAdd.months"/> months
+            <button class="pbim-btn ghost" t-att-disabled="!state.retAdd.country_id" t-on-click="addRetRule"><t t-out="ic('plus',13)"/> Add</button>
+            <span class="pbhr-foot-gap"/>
+            <span>Every other market: <input class="pbhr-in pbhr-su-ret-n" type="number" min="1" max="120" t-att-value="ret.fallback_months" t-on-change="(ev) =&gt; this.setRetFallback(ev.target.value)"/> months</span>
+          </div>
+
+          <div class="pbhr-su-ret-foot">
+            <div class="pbhr-su-ret-what">
+              <b><t t-out="ic('info',14)"/> What will go</b>
+              <span><t t-esc="ret.due"/> due now · <t t-esc="ret.soon"/> within 30 days · <t t-esc="ret.kept"/> past their date but kept (hired, still in play, or an offer)</span>
+              <small>The consent sentence on each application form says the months of the role's market. Change the wording under <button type="button" class="pbhr-linkish" t-on-click="openForms">Application forms</button>.</small>
+            </div>
+            <t t-if="ret.can_run">
+              <div t-if="state.retConfirm" class="pbhr-su-ret-confirm">
+                <span>Anonymise <b t-esc="ret.due"/> people now? This cannot be undone.</span>
+                <button class="pbim-btn ghost" t-on-click="() =&gt; { state.retConfirm = false; }">Cancel</button>
+                <button class="pbim-btn primary pbhr-no" t-on-click="runRetention"><t t-out="ic('trash',13)"/> Yes, run it</button>
+              </div>
+              <button t-else="" class="pbim-btn ghost" t-att-disabled="!ret.due" t-on-click="() =&gt; { state.retConfirm = true; }"><t t-out="ic('play',13)"/> Run now</button>
+            </t>
+            <small t-else="" class="pbhr-su-ret-who">Running the clean-up is for the head of hiring.</small>
+          </div>
+        </section>
+      </div>
+
+      <t t-if="state.loaded and !state.error" t-call="pb_hiring.P8Overlays"/>
+
+      <div t-if="state.toast" class="pbhr-toast" role="status" aria-live="polite">
+        <span t-esc="state.toast.text"/>
+        <button t-if="state.toast.undo" type="button" class="pbhr-toast-undo" t-on-click="runUndo"><t t-out="ic('undo',13)"/> Undo</button>
+        <button type="button" class="pbhr-toast-x" t-on-click="() =&gt; { state.toast = null; }"><t t-out="ic('x',13)"/></button>
+      </div>
+    </div>
+  </t>
+
+</templates>

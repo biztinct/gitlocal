@@ -1,0 +1,70 @@
+#!/bin/bash
+# pb-domain-attach <hostname> <slug>
+# Attaches a client-owned custom domain to a Payobook tenant:
+# writes an nginx server block pinned to the tenant DB, obtains a
+# Let's Encrypt certificate (HTTP-01 via the nginx plugin), reloads nginx.
+# Installed at /usr/local/bin/pb-domain-attach, invoked via sudo by the
+# odoo user (sudoers: odoo ALL=(root) NOPASSWD: /usr/local/bin/pb-domain-attach).
+set -euo pipefail
+
+HOSTNAME_ARG="${1:-}"
+SLUG_ARG="${2:-}"
+
+# strict validation — these values are interpolated into a root-owned config
+if ! [[ "$HOSTNAME_ARG" =~ ^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$ ]]; then
+    echo "invalid hostname" >&2; exit 2
+fi
+if ! [[ "$SLUG_ARG" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*$ ]]; then
+    echo "invalid slug" >&2; exit 2
+fi
+case "$HOSTNAME_ARG" in
+    *payobook.com) echo "refusing to manage a payobook.com hostname" >&2; exit 2;;
+esac
+
+CONF="/etc/nginx/sites-available/pb-tenant-${HOSTNAME_ARG}.conf"
+LINK="/etc/nginx/sites-enabled/pb-tenant-${HOSTNAME_ARG}.conf"
+
+cat > "$CONF" <<EOF
+# Managed by pb_tenants — custom domain ${HOSTNAME_ARG} -> tenant ${SLUG_ARG}
+server {
+    listen 80;
+    server_name ${HOSTNAME_ARG};
+
+    proxy_read_timeout 720s;
+    proxy_connect_timeout 720s;
+    proxy_send_timeout 720s;
+    client_max_body_size 128M;
+
+    proxy_set_header X-Forwarded-Host \$host;
+    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto \$scheme;
+    proxy_set_header X-Real-IP \$remote_addr;
+    proxy_set_header X-Odoo-dbfilter ^${SLUG_ARG}\$;
+
+    location /websocket {
+        proxy_pass http://127.0.0.1:8069;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection \$connection_upgrade;
+        proxy_set_header X-Forwarded-Host \$host;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header X-Odoo-dbfilter ^${SLUG_ARG}\$;
+    }
+    location / {
+        proxy_pass http://127.0.0.1:8069;
+        proxy_redirect off;
+    }
+}
+EOF
+
+ln -sf "$CONF" "$LINK"
+nginx -t
+systemctl reload nginx
+
+# certbot rewrites the block for 443 + redirect and installs auto-renewal
+certbot --nginx --non-interactive --agree-tos --register-unsafely-without-email \
+    --cert-name "pb-tenant-${HOSTNAME_ARG}" -d "$HOSTNAME_ARG" --redirect
+
+nginx -t
+systemctl reload nginx
+echo "OK ${HOSTNAME_ARG} -> ${SLUG_ARG}"

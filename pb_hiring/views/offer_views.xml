@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Native arch, skinned by the shared form engine. The day-to-day
+         surface is the Hiring lens's drawer; these are the records behind it,
+         reached from the board, from the command bar and from a candidate's
+         own chatter.
+
+         EVERY `nolabel="1"` FIELD DIRECTLY INSIDE A `<group>` CARRIES
+         `colspan="2"` (R128). An inner group is a two-column grid and a
+         label-less field takes the NARROW cell.
+
+         SEARCH `<group>` TAKES NO `string` OR `expand` on Odoo 19 (R129):
+         either one fails RNG validation and aborts the whole module load.
+
+         `<field name="token">` APPEARS NOWHERE (R13). A token is protected by
+         the access list, the record rule and by never being put in a view or
+         a payload; the "copy the link" button hands it over on purpose. -->
+
+    <!-- ================================================================ -->
+    <!--  Offers                                                          -->
+    <!-- ================================================================ -->
+    <record id="view_pb_hiring_offer_list" model="ir.ui.view">
+        <field name="name">pb.hiring.offer.list</field>
+        <field name="model">pb.hiring.offer</field>
+        <field name="arch" type="xml">
+            <list string="Offers" create="0">
+                <field name="name" width="130px"/>
+                <field name="candidate_name" width="200px"/>
+                <field name="job_title" optional="show"/>
+                <field name="requisition_id" optional="hide"/>
+                <field name="start_date" optional="show"/>
+                <field name="monthly_total" optional="show" sum="A month"/>
+                <field name="annual_total" optional="hide" sum="A year"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="candidate_decision" optional="show"
+                       widget="badge"
+                       decoration-success="candidate_decision == 'accepted'"
+                       decoration-danger="candidate_decision == 'declined'"/>
+                <field name="signed_on" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state in ('signed', 'closed')"
+                       decoration-info="state in ('sent', 'accepted')"
+                       decoration-warning="state in ('submitted', 'manager_ok')"
+                       decoration-danger="state in ('declined', 'refused')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_hiring_offer_form" model="ir.ui.view">
+        <field name="name">pb.hiring.offer.form</field>
+        <field name="model">pb.hiring.offer</field>
+        <field name="arch" type="xml">
+            <form string="Offer" create="0">
+                <header>
+                    <button name="action_submit" type="object"
+                            string="Send for sign-off" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_prepare_letter" type="object"
+                            string="Write the letter"
+                            invisible="state in ('closed', 'declined', 'refused')"/>
+                    <button name="action_open_pdf" type="object"
+                            string="Read the letter"
+                            invisible="not attachment_id"/>
+                    <button name="action_request_documents" type="object"
+                            string="Ask for their papers"
+                            invisible="state in ('draft', 'closed', 'declined', 'refused')"/>
+                    <button name="action_send_to_candidate" type="object"
+                            string="Send it to them" class="btn-primary"
+                            invisible="state != 'hr_ok'"/>
+                    <button name="action_close" type="object"
+                            string="They have joined" class="btn-primary"
+                            invisible="state != 'signed'"/>
+                    <button name="action_copy_link" type="object"
+                            string="Their own link"
+                            invisible="state in ('draft', 'submitted', 'manager_ok')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,hr_ok,sent,signed,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_employee" type="object"
+                                class="oe_stat_button" icon="fa-user"
+                                invisible="not employee_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Their record</span>
+                            </div>
+                        </button>
+                        <button name="action_open_package" type="object"
+                                class="oe_stat_button" icon="fa-money"
+                                invisible="not comp_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Pay package</span>
+                            </div>
+                        </button>
+                        <button name="action_open_case" type="object"
+                                class="oe_stat_button" icon="fa-list-ul"
+                                invisible="not case_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Joining checklist</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="candidate_name" readonly="1"/></h1>
+                        <h2><field name="name" readonly="1"
+                                   class="oe_inline"/></h2>
+                    </div>
+                    <group>
+                        <group string="The role">
+                            <field name="requisition_id" readonly="1"/>
+                            <field name="applicant_id" readonly="1"/>
+                            <field name="job_title"/>
+                            <field name="location"/>
+                            <field name="reporting_manager_id"/>
+                            <field name="start_date"/>
+                        </group>
+                        <group string="The money">
+                            <field name="currency_id"/>
+                            <field name="monthly_total" readonly="1"/>
+                            <field name="annual_total" readonly="1"/>
+                            <field name="bgv_id" readonly="1"/>
+                            <field name="docreq_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="What is being offered" name="lines">
+                            <field name="line_ids"
+                                   readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="kind"/>
+                                    <field name="amount"/>
+                                    <field name="period"/>
+                                    <field name="annual_amount" readonly="1"/>
+                                    <field name="note" optional="hide"/>
+                                    <field name="currency_id"
+                                           column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="The letter" name="letter">
+                            <group>
+                                <field name="letter_template_id"/>
+                                <field name="attachment_id" readonly="1"/>
+                            </group>
+                            <field name="rendered_html" nolabel="1"
+                                   colspan="2" readonly="1"/>
+                        </page>
+                        <page string="What they said" name="answer">
+                            <group>
+                                <group string="Their answer">
+                                    <field name="sent_on" readonly="1"/>
+                                    <field name="candidate_decision"
+                                           readonly="1"/>
+                                    <field name="decided_on" readonly="1"/>
+                                </group>
+                                <group string="Signed">
+                                    <field name="signed_on" readonly="1"/>
+                                    <field name="signed_by_id" readonly="1"/>
+                                    <field name="signed_attachment_id"
+                                           readonly="1"/>
+                                </group>
+                            </group>
+                            <separator string="In their own words"/>
+                            <field name="candidate_comment" nolabel="1"
+                                   colspan="2" readonly="1"/>
+                        </page>
+                        <page string="Day one" name="joined"
+                              invisible="state != 'closed'">
+                            <group>
+                                <field name="employee_id" readonly="1"/>
+                                <field name="contract_id" readonly="1"/>
+                                <field name="comp_id" readonly="1"/>
+                                <field name="case_id" readonly="1"/>
+                                <field name="login_user_id" readonly="1"/>
+                                <field name="closed_on" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_hiring_offer_search" model="ir.ui.view">
+        <field name="name">pb.hiring.offer.search</field>
+        <field name="model">pb.hiring.offer</field>
+        <field name="arch" type="xml">
+            <search string="Offers">
+                <field name="candidate_name"/>
+                <field name="name"/>
+                <field name="job_title"/>
+                <field name="requisition_id"/>
+                <filter name="f_live" string="Still live"
+                        domain="[('state', 'in', ('draft', 'submitted', 'manager_ok', 'hr_ok', 'sent', 'accepted', 'signed'))]"/>
+                <filter name="f_out" string="With the candidate"
+                        domain="[('state', '=', 'sent')]"/>
+                <filter name="f_accepted" string="Accepted"
+                        domain="[('candidate_decision', '=', 'accepted')]"/>
+                <filter name="f_joined" string="They have joined"
+                        domain="[('state', '=', 'closed')]"/>
+                <separator/>
+                <filter name="f_mine" string="Roles I recruit"
+                        domain="[('requisition_id.recruiter_id', '=', uid)]"/>
+                <group name="group_by">
+                    <filter name="g_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="g_role" string="Hiring request"
+                            context="{'group_by': 'requisition_id'}"/>
+                    <filter name="g_start" string="Starting on"
+                            context="{'group_by': 'start_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_hiring_offer" model="ir.actions.act_window">
+        <field name="name">Offers</field>
+        <field name="res_model">pb.hiring.offer</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pb_hiring_offer_search"/>
+        <field name="context">{'search_default_f_live': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiley_face">No offers yet</p>
+            <p>An offer starts from the panel's decision on the last
+               conversation. Pick somebody on the hiring board and the offer
+               opens from there — it cannot be raised on its own, because an
+               offer nobody decided to make is not an offer.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Background checks                                               -->
+    <!-- ================================================================ -->
+    <record id="view_pb_hiring_bgv_list" model="ir.ui.view">
+        <field name="name">pb.hiring.bgv.list</field>
+        <field name="model">pb.hiring.bgv</field>
+        <field name="arch" type="xml">
+            <list string="Background checks" create="0">
+                <field name="candidate_name" width="220px"/>
+                <field name="requisition_id"/>
+                <field name="pending_count"/>
+                <field name="flag_count"
+                       decoration-danger="flag_count > 0"/>
+                <field name="override_user_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'complete'"
+                       decoration-warning="state == 'open'"
+                       decoration-danger="state == 'flagged'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_hiring_bgv_form" model="ir.ui.view">
+        <field name="name">pb.hiring.bgv.form</field>
+        <field name="model">pb.hiring.bgv</field>
+        <field name="arch" type="xml">
+            <form string="Background check" create="0">
+                <header>
+                    <button name="action_open_requisition" type="object"
+                            string="The hiring request"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="candidate_name" readonly="1"/></h1>
+                    </div>
+                    <div class="alert alert-info" role="status"
+                         invisible="not override_user_id">
+                        <strong>We went ahead anyway.</strong>
+                        <field name="override_user_id" readonly="1"
+                               class="oe_inline"/> on
+                        <field name="override_on" readonly="1"
+                               class="oe_inline"/>:
+                        <field name="override_note" readonly="1"
+                               class="oe_inline"/>
+                    </div>
+                    <group>
+                        <field name="requisition_id" readonly="1"/>
+                        <field name="applicant_id" readonly="1"/>
+                        <field name="pending_count" readonly="1"/>
+                        <field name="flag_count" readonly="1"/>
+                    </group>
+                    <field name="item_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name" readonly="1"/>
+                            <field name="required" readonly="1"/>
+                            <field name="result"/>
+                            <field name="note"/>
+                            <field name="attachment_ids"
+                                   widget="many2many_binary"
+                                   optional="show"/>
+                            <field name="checked_by_id" readonly="1"
+                                   optional="hide"/>
+                            <field name="checked_on" readonly="1"
+                                   optional="hide"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_hiring_bgv" model="ir.actions.act_window">
+        <field name="name">Background checks</field>
+        <field name="res_model">pb.hiring.bgv</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Document requests                                               -->
+    <!-- ================================================================ -->
+    <record id="view_pb_hiring_docreq_list" model="ir.ui.view">
+        <field name="name">pb.hiring.docreq.list</field>
+        <field name="model">pb.hiring.docreq</field>
+        <field name="arch" type="xml">
+            <list string="Document requests" create="0">
+                <field name="candidate_name" width="220px"/>
+                <field name="requisition_id" optional="show"/>
+                <field name="sent_on" optional="show"/>
+                <field name="deadline"/>
+                <field name="in_count"/>
+                <field name="wanted_count"/>
+                <field name="last_reminder_on" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'complete'"
+                       decoration-info="state in ('sent', 'partial')"
+                       decoration-danger="state == 'expired'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_hiring_docreq_form" model="ir.ui.view">
+        <field name="name">pb.hiring.docreq.form</field>
+        <field name="model">pb.hiring.docreq</field>
+        <field name="arch" type="xml">
+            <form string="Document request" create="0">
+                <header>
+                    <button name="action_send" type="object"
+                            string="Ask them again" class="btn-primary"/>
+                    <button name="action_remind" type="object"
+                            string="Remind them now"
+                            invisible="state == 'complete'"/>
+                    <button name="action_copy_link" type="object"
+                            string="Their own link"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="candidate_name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="What was asked">
+                            <field name="offer_id" readonly="1"/>
+                            <field name="requisition_id" readonly="1"/>
+                            <field name="sent_on" readonly="1"/>
+                            <field name="deadline" readonly="1"/>
+                        </group>
+                        <group string="How it is going">
+                            <field name="in_count" readonly="1"/>
+                            <field name="wanted_count" readonly="1"/>
+                            <field name="last_reminder_on" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="item_ids" readonly="1">
+                        <list>
+                            <field name="sequence" widget="handle"/>
+                            <field name="name"/>
+                            <field name="required"/>
+                            <field name="received_at"/>
+                            <field name="attachment_id"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_hiring_docreq" model="ir.actions.act_window">
+        <field name="name">Document requests</field>
+        <field name="res_model">pb.hiring.docreq</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Recruiter cover                                                 -->
+    <!-- ================================================================ -->
+    <record id="view_pb_hiring_cover_list" model="ir.ui.view">
+        <field name="name">pb.hiring.cover.list</field>
+        <field name="model">pb.hiring.cover</field>
+        <field name="arch" type="xml">
+            <list string="Cover">
+                <field name="recruiter_id" width="200px"/>
+                <field name="cover_user_id" width="200px"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="approver_user_id" optional="show"/>
+                <field name="approver_source" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-info="state == 'approved'"
+                       decoration-warning="state == 'submitted'"
+                       decoration-danger="state == 'refused'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_hiring_cover_form" model="ir.ui.view">
+        <field name="name">pb.hiring.cover.form</field>
+        <field name="model">pb.hiring.cover</field>
+        <field name="arch" type="xml">
+            <form string="Cover">
+                <header>
+                    <button name="action_submit" type="object"
+                            string="Send it to be agreed" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_approve" type="object"
+                            string="Agree it" class="btn-primary"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_refuse" type="object"
+                            string="Turn it down"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_start" type="object"
+                            string="Start it now"
+                            invisible="state != 'approved'"/>
+                    <button name="action_end" type="object"
+                            string="Finish it"
+                            invisible="state not in ('active', 'approved')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,approved,active,ended"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <div class="alert alert-warning" role="status"
+                         invisible="approver_source != 'none'">
+                        <strong>Nobody can be asked to agree this yet.</strong>
+                        Add a hiring rule naming the recruiter's manager, or
+                        ask the HR team to set the manager on the employee
+                        record.
+                    </div>
+                    <group>
+                        <group string="Who">
+                            <field name="recruiter_id"/>
+                            <field name="cover_user_id"/>
+                            <field name="approver_user_id" readonly="1"/>
+                            <field name="approver_source" readonly="1"/>
+                        </group>
+                        <group string="When">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="requisition_count" readonly="1"/>
+                            <field name="started_on" readonly="1"
+                                   invisible="not started_on"/>
+                            <field name="ended_on" readonly="1"
+                                   invisible="not ended_on"/>
+                        </group>
+                    </group>
+                    <separator string="Why"/>
+                    <field name="reason" nolabel="1" colspan="2"/>
+                    <separator string="Why it was turned down"
+                               invisible="state != 'refused'"/>
+                    <field name="refuse_note" nolabel="1" colspan="2"
+                           readonly="1" invisible="state != 'refused'"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_hiring_cover_search" model="ir.ui.view">
+        <field name="name">pb.hiring.cover.search</field>
+        <field name="model">pb.hiring.cover</field>
+        <field name="arch" type="xml">
+            <search string="Cover">
+                <field name="recruiter_id"/>
+                <field name="cover_user_id"/>
+                <filter name="f_running" string="Running now"
+                        domain="[('state', '=', 'active')]"/>
+                <filter name="f_waiting" string="Waiting to be agreed"
+                        domain="[('state', '=', 'submitted')]"/>
+                <filter name="f_mine" string="Mine"
+                        domain="['|', ('recruiter_id', '=', uid), ('cover_user_id', '=', uid)]"/>
+                <group name="group_by">
+                    <filter name="g_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="g_recruiter" string="Who is away"
+                            context="{'group_by': 'recruiter_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_hiring_cover" model="ir.actions.act_window">
+        <field name="name">Cover for a recruiter</field>
+        <field name="res_model">pb.hiring.cover</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pb_hiring_cover_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiley_face">Nobody is covering for
+               anybody</p>
+            <p>When a recruiter is away, one named colleague can pick up their
+               roles for a set number of days. Their own manager agrees it,
+               nothing about anybody's permissions changes, and it ends by
+               itself on the day it says.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  The two editable lists, behind the cog                          -->
+    <!-- ================================================================ -->
+    <record id="view_pb_hiring_bgv_template_list" model="ir.ui.view">
+        <field name="name">pb.hiring.bgv.template.list</field>
+        <field name="model">pb.hiring.bgv.template</field>
+        <field name="arch" type="xml">
+            <list string="What a background check covers" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="help_text" width="420px"/>
+                <field name="required"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_hiring_bgv_template" model="ir.actions.act_window">
+        <field name="name">What a background check covers</field>
+        <field name="res_model">pb.hiring.bgv.template</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiley_face">Nothing is checked yet</p>
+            <p>Each line here is one thing somebody has to answer before an
+               offer can be drafted. Leave the company empty and every company
+               uses it.</p>
+        </field>
+    </record>
+
+    <record id="view_pb_hiring_doc_template_list" model="ir.ui.view">
+        <field name="name">pb.hiring.doc.template.list</field>
+        <field name="model">pb.hiring.doc.template</field>
+        <field name="arch" type="xml">
+            <list string="What a joiner is asked for" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="help_text" width="420px"/>
+                <field name="required"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_hiring_doc_template" model="ir.actions.act_window">
+        <field name="name">What a joiner is asked for</field>
+        <field name="res_model">pb.hiring.doc.template</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiley_face">Nothing is asked for
+               yet</p>
+            <p>Each line here appears on the candidate's own page with the
+               sentence under it. The sentence is the useful half: "a
+               photograph of the page with your picture on it" saves a week of
+               emails.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  The numbers                                                     -->
+    <!-- ================================================================ -->
+    <record id="action_pb_hiring_numbers" model="ir.actions.client">
+        <field name="name">Hiring numbers</field>
+        <field name="tag">pb_hiring_numbers</field>
+    </record>
+
+</odoo>

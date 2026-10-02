@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_demo_seed_system,pb.demo.seed system,model_pb_demo_seed,base.group_system,1,1,1,1
+access_pb_demo_record_system,pb.demo.record system,model_pb_demo_record,base.group_system,1,1,1,1

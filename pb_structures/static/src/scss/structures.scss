@@ -1,0 +1,10 @@
+// Salary Structures — module-specific bits (layout + theme from the kit).
+.sal-board, .sal-detail {
+    .sal-base { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--pbim-primary-strong); background: var(--pbim-soft); border-radius: 999px; padding: 1px 7px; margin-left: 6px; vertical-align: middle; }
+    .ppl-av svg { width: 20px; height: 20px; }
+    .sal-counts { min-width: 200px; }
+    .sal-group + .sal-group { margin-top: 12px; }
+    .sal-gcount { font-size: 12px; font-weight: 800; color: var(--pbim-muted); margin-left: 4px; }
+    .sal-rate { font-size: 11px; color: var(--pbim-muted); }
+}
+.sal-detail .ppl-d-wrap > .sal-group { margin-top: 14px; }

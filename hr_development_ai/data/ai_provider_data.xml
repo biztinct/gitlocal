@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="default_ai_provider_config" model="hr.ai.provider.config">
+        <field name="company_id" ref="base.main_company"/>
+        <field name="provider">odoo_native</field>
+        <field name="llama_endpoint">http://localhost:11434</field>
+        <field name="model_name">llama3.1</field>
+        <field name="timeout">60</field>
+        <field name="is_active" eval="True"/>
+    </record>
+
+</odoo>

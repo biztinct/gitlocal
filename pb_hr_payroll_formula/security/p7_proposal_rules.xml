@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         WHO MAY SEE A PROPOSAL THEY WERE ASKED TO DECIDE.
+
+         A seat is also a read (ledger AM60/AM96): the engine re-checks
+         `check_access('read')` before it lets anybody decide, and a country
+         director asked to agree to a statutory rate holds no Formula Engine
+         role at all.
+
+         Every internal user gets READ on these four models (the ACL above),
+         narrowed here to their own company — the same shape
+         `pb.scheme.proposal` has carried since Phase 4, and for the same
+         reason. Writing one still needs a Formula role, and carrying one out
+         still needs the permission the original door required.
+         ================================================================== -->
+
+    <record id="rule_statutory_proposal_company" model="ir.rule">
+        <field name="name">Statutory proposal: company</field>
+        <field name="model_id" ref="model_pb_statutory_proposal"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_mapping_proposal_company" model="ir.rule">
+        <field name="name">Mapping proposal: company</field>
+        <field name="model_id" ref="model_pb_mapping_proposal"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_schememap_proposal_company" model="ir.rule">
+        <field name="name">Scheme map proposal: company</field>
+        <field name="model_id" ref="model_pb_schememap_proposal"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_demo_proposal_company" model="ir.rule">
+        <field name="name">Demo data proposal: company</field>
+        <field name="model_id" ref="model_pb_demo_proposal"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

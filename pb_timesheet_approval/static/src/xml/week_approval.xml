@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- The weekly grid, plus the week's own approval. An EXTENSION rather than
+       a copy: pb_hr_workforce keeps owning every line it wrote, and this file
+       owns exactly the two places the week is sent in from. -->
+  <t t-name="pb_timesheet_approval.WeekApproval"
+     t-inherit="pb_hr_workforce.AttendanceWeekGrid"
+     t-inherit-mode="extension">
+
+    <xpath expr="//t[@t-set-slot='tray']" position="inside">
+      <span class="wfg-tray__info wfg-tray__info--muted"
+            t-if="state.packets.summary.pending > 0">
+        <t t-esc="state.packets.summary.pending"/> week(s) with an approver
+      </span>
+      <button class="wfg-btn wfg-btn--submit tsa-send"
+              t-if="packetsToSend > 0"
+              t-att-disabled="state.packetBusy"
+              t-on-click="() => this.submitWeekPackets()">
+        Send <t t-esc="packetsToSend"/> week(s) for approval
+      </button>
+    </xpath>
+
+    <xpath expr="//div[hasclass('wfg-rail')]/div[hasclass('wfg-rail__head')]"
+           position="before">
+      <div class="tsa-panel" t-if="packetRows.length">
+        <div class="tsa-panel__head">
+          <span>This week's approvals</span>
+          <span class="tsa-panel__count">
+            <t t-esc="state.packets.summary.approved"/> of <t t-esc="packetRows.length"/> approved
+          </span>
+        </div>
+        <div class="tsa-row" t-foreach="packetRows" t-as="pk" t-key="pk.employee_id">
+          <div class="tsa-row__who">
+            <span class="tsa-row__name" t-esc="pk.name"/>
+            <span class="tsa-row__hours">
+              <t t-esc="pk.hours"/> h<t t-if="pk.ot_hours"> · <t t-esc="pk.ot_hours"/> h overtime</t>
+            </span>
+          </div>
+          <span t-attf-class="tsa-pill tsa-pill--{{ pk.tone }}" t-esc="pk.state_label"/>
+          <button class="tsa-act" t-if="pk.state === 'draft' or pk.state === 'returned'"
+                  t-att-disabled="state.packetBusy"
+                  t-on-click="() => this.submitWeekFor(pk.employee_id)">
+            Send in
+          </button>
+          <button class="tsa-act tsa-act--ghost" t-elif="pk.request_id"
+                  t-on-click="() => this.openWeekRequest(pk.request_id)">
+            Open
+          </button>
+        </div>
+        <div class="tsa-note" t-foreach="packetNotes" t-as="nr"
+             t-key="nr.employee_id">
+          <b t-esc="nr.name"/>: <t t-esc="nr.note"/>
+        </div>
+      </div>
+    </xpath>
+
+  </t>
+
+</templates>

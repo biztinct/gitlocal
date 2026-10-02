@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_bank_change_request_user,pb.bank.change.request user,model_pb_bank_change_request,base.group_user,1,1,1,0
+access_pb_bank_change_request_hr,pb.bank.change.request hr,model_pb_bank_change_request,om_hr_payroll.group_hr_payroll_user,1,1,1,0
+access_pb_bank_change_request_mgr,pb.bank.change.request mgr,model_pb_bank_change_request,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pb_bank_change_request_system,pb.bank.change.request system,model_pb_bank_change_request,base.group_system,1,1,1,1
+access_pb_employee_bank_history_user,pb.employee.bank.history user,model_pb_employee_bank_history,base.group_user,1,0,0,0
+access_pb_employee_bank_history_hr,pb.employee.bank.history hr,model_pb_employee_bank_history,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_pb_employee_bank_history_system,pb.employee.bank.history system,model_pb_employee_bank_history,base.group_system,1,1,1,1
+access_pb_bank_registry_user,pb.bank.registry user,model_pb_bank_registry,base.group_user,1,0,0,0
+access_pb_bank_registry_mgr,pb.bank.registry mgr,model_pb_bank_registry,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pb_bank_registry_system,pb.bank.registry system,model_pb_bank_registry,base.group_system,1,1,1,1

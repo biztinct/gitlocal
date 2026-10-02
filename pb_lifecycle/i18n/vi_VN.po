@@ -1,0 +1,458 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-15 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "%(what)s for %(who)s"
+msgstr "%(what)s cho %(who)s"
+
+#. module: pb_lifecycle
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_lifecycle
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_lifecycle
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_lifecycle
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_lifecycle
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/security/letter_approval_rules.xml:0
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_lifecycle
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_lifecycle
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "Kind of letter"
+msgstr "Loại thư"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/security/letter_approval_rules.xml:0
+msgid "Letter"
+msgstr "Thư"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "No email on record"
+msgstr "Hồ sơ không có email"
+
+#. module: pb_lifecycle
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/data/pb_sidebar.xml:0
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_lifecycle
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "Quotes pay"
+msgstr "Có nêu mức lương"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "Quotes what they are paid"
+msgstr "Có nêu mức lương của họ"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter.py:0
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter.py:0
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_lifecycle
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "Subject"
+msgstr "Tiêu đề"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "The PDF is ready"
+msgstr "Tệp PDF đã sẵn sàng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "The letter"
+msgstr "Nội dung thư"
+
+#. module: pb_lifecycle
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "This letter has already been sent."
+msgstr "Thư này đã được gửi."
+
+#. module: pb_lifecycle
+msgid "To"
+msgstr "Gửi tới"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_lifecycle
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_lifecycle
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter.py:0
+msgid "your approver"
+msgstr "người phê duyệt của bạn"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "%s journeys"
+msgstr "%s hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "%s with steps overdue"
+msgstr "%s có bước quá hạn"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "1 journey"
+msgstr "1 hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "1 with steps overdue"
+msgstr "1 có bước quá hạn"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Due in 7 days"
+msgstr "Đến hạn trong 7 ngày"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Every step settled, ready to close"
+msgstr "Mọi bước đã xong, sẵn sàng đóng"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Letters this month"
+msgstr "Thư trong tháng này"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Need attention"
+msgstr "Cần chú ý"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Not started"
+msgstr "Chưa bắt đầu"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Nothing left to do"
+msgstr "Không còn việc gì"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Running now"
+msgstr "Đang chạy"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Set up, not running yet"
+msgstr "Đã thiết lập, chưa chạy"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Showing %s of %s journeys"
+msgstr "Đang hiển thị %s trên %s hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Showing %s of %s journeys at %s"
+msgstr "Đang hiển thị %s trên %s hành trình ở bước %s"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Showing all %s journeys · press a step or a number to narrow it"
+msgstr "Đang hiển thị tất cả %s hành trình · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Showing all 1 journey · press a step or a number to narrow it"
+msgstr "Đang hiển thị 1 hành trình · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Showing no journeys yet"
+msgstr "Chưa có hành trình nào"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Steps overdue"
+msgstr "Bước quá hạn"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Steps still to do"
+msgstr "Còn bước phải làm"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Under way"
+msgstr "Đang tiến hành"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+
+# ===================================================================
+#  Checklists for Probation, Performance plan, Conversion and Other.
+# ===================================================================
+
+#. module: pb_lifecycle
+#: model:pb.journey.template,name:pb_lifecycle.journey_template_probation
+msgid "Probation — the review"
+msgstr "Thử việc — đánh giá"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_plan
+msgid "Plan the review"
+msgstr "Lên lịch buổi đánh giá"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_feedback
+msgid "Gather feedback"
+msgstr "Thu thập nhận xét"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_meeting
+msgid "Probation review meeting"
+msgstr "Họp đánh giá thử việc"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_decision
+msgid "Decide: pass, extend or end"
+msgstr "Quyết định: đạt, gia hạn hay kết thúc"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_letter
+msgid "Confirmation letter"
+msgstr "Thư xác nhận"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_record
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_oth_record
+msgid "Update the employee record"
+msgstr "Cập nhật hồ sơ nhân viên"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_payroll
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_payroll
+msgid "Tell payroll"
+msgstr "Báo cho bộ phận lương"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template,name:pb_lifecycle.journey_template_pip
+msgid "Performance plan — standard"
+msgstr "Kế hoạch cải thiện hiệu suất — tiêu chuẩn"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_write
+msgid "Write the plan"
+msgstr "Soạn kế hoạch"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_check
+msgid "Check the plan with HR"
+msgstr "Rà soát kế hoạch với nhân sự"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_share
+msgid "Share the plan with the employee"
+msgstr "Trao đổi kế hoạch với nhân viên"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_mid
+msgid "Mid-point check-in"
+msgstr "Trao đổi giữa kỳ"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_final
+msgid "Final review meeting"
+msgstr "Họp đánh giá cuối kỳ"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_outcome
+msgid "Record the outcome"
+msgstr "Ghi nhận kết quả"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template,name:pb_lifecycle.journey_template_conversion
+msgid "Conversion — to a permanent contract"
+msgstr "Chuyển đổi — sang hợp đồng không xác định thời hạn"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_terms
+msgid "Confirm the new terms"
+msgstr "Xác nhận điều khoản mới"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_contract
+msgid "Prepare the new contract"
+msgstr "Soạn hợp đồng mới"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_pay
+msgid "Update pay and components"
+msgstr "Cập nhật lương và các khoản"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_sign
+msgid "Sign the new contract"
+msgstr "Ký hợp đồng mới"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_letter
+msgid "Send the confirmation letter"
+msgstr "Gửi thư xác nhận"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_access
+msgid "Update system access and benefits"
+msgstr "Cập nhật quyền truy cập hệ thống và phúc lợi"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template,name:pb_lifecycle.journey_template_other
+msgid "General — basic"
+msgstr "Chung — cơ bản"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_oth_agree
+msgid "Agree what needs to happen"
+msgstr "Thống nhất việc cần làm"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_oth_done
+msgid "Confirm it is done"
+msgstr "Xác nhận đã hoàn tất"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_template_step__anchor__key_date
+msgid "The date on the journey"
+msgstr "Ngày ghi trên hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: model:pb.sidebar.item,name:pb_lifecycle.item_lifecycle
+#: code:addons/pb_lifecycle/static/src/js/lifecycle_hub.js:0
+msgid "Lifecycle"
+msgstr "Vòng đời nhân sự"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/lifecycle_hub.js:0
+msgid "Journeys"
+msgstr "Hành trình"

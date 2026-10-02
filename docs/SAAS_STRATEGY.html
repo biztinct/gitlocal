@@ -1,0 +1,1225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payobook SaaS Strategy</title>
+<style>
+  :root {
+    --ink: #1E1B2E;
+    --paper: #FFFFFF;
+    --canvas: #F7F7FB;
+    --primary: #5A4BB0;
+    --primary-deep: #241F52;
+    --primary-hover: #4A3D96;
+    --primary-soft: #EDEAF8;
+    --primary-light: #CBC2EE;
+    --border: #E2E8F0;
+    --muted: #64748B;
+    --success: #2E7D4F;
+    --success-soft: #E6F3EC;
+    --info: #2563EB;
+    --info-soft: #E8EFFD;
+    --warn: #D97706;
+    --warn-soft: #FBF0DE;
+    --error: #DC2668;
+    --error-soft: #FCE8F0;
+    --code-bg: #F1F0F8;
+    --shadow: 0 1px 3px rgba(30, 27, 46, .06), 0 4px 16px rgba(30, 27, 46, .05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #ECEAF6;
+      --paper: #1C192E;
+      --canvas: #131120;
+      --primary: #9C8DE0;
+      --primary-deep: #CBC2EE;
+      --primary-hover: #B0A3EA;
+      --primary-soft: #272242;
+      --primary-light: #453C6E;
+      --border: #2E2A45;
+      --muted: #9AA0B5;
+      --success: #5CBB8A;
+      --success-soft: #1B2E24;
+      --info: #7BA3F5;
+      --info-soft: #1B2438;
+      --warn: #E9A23B;
+      --warn-soft: #322715;
+      --error: #EF6E9F;
+      --error-soft: #351822;
+      --code-bg: #221F38;
+      --shadow: 0 1px 3px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .25);
+    }
+  }
+  :root[data-theme="light"] {
+    --ink: #1E1B2E; --paper: #FFFFFF; --canvas: #F7F7FB; --primary: #5A4BB0;
+    --primary-deep: #241F52; --primary-hover: #4A3D96; --primary-soft: #EDEAF8;
+    --primary-light: #CBC2EE; --border: #E2E8F0; --muted: #64748B;
+    --success: #2E7D4F; --success-soft: #E6F3EC; --info: #2563EB; --info-soft: #E8EFFD;
+    --warn: #D97706; --warn-soft: #FBF0DE; --error: #DC2668; --error-soft: #FCE8F0;
+    --code-bg: #F1F0F8;
+    --shadow: 0 1px 3px rgba(30, 27, 46, .06), 0 4px 16px rgba(30, 27, 46, .05);
+  }
+  :root[data-theme="dark"] {
+    --ink: #ECEAF6; --paper: #1C192E; --canvas: #131120; --primary: #9C8DE0;
+    --primary-deep: #CBC2EE; --primary-hover: #B0A3EA; --primary-soft: #272242;
+    --primary-light: #453C6E; --border: #2E2A45; --muted: #9AA0B5;
+    --success: #5CBB8A; --success-soft: #1B2E24; --info: #7BA3F5; --info-soft: #1B2438;
+    --warn: #E9A23B; --warn-soft: #322715; --error: #EF6E9F; --error-soft: #351822;
+    --code-bg: #221F38;
+    --shadow: 0 1px 3px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .25);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  code, pre {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .86em;
+  }
+  code {
+    background: var(--code-bg);
+    border-radius: 5px;
+    padding: .1em .38em;
+    white-space: nowrap;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    overflow-x: auto;
+    line-height: 1.55;
+  }
+  pre code { background: none; padding: 0; white-space: pre; }
+  a { color: var(--primary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .ic {
+    width: 18px; height: 18px;
+    stroke: currentColor; fill: none;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    flex: none; vertical-align: -3px;
+  }
+
+  .shell {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+    display: grid;
+    grid-template-columns: 232px minmax(0, 1fr);
+    gap: 40px;
+  }
+  @media (max-width: 1023px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 20px 16px 60px; }
+    nav.toc { display: none; }
+  }
+
+  nav.toc {
+    position: sticky;
+    top: 28px;
+    align-self: start;
+    font-size: 13.5px;
+  }
+  nav.toc .toc-brand {
+    font-weight: 700;
+    letter-spacing: .01em;
+    color: var(--primary-deep);
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  nav.toc .toc-brand .mark {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: var(--primary);
+    color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800;
+  }
+  :root[data-theme="dark"] nav.toc .toc-brand .mark { color: #17152A; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) nav.toc .toc-brand .mark { color: #17152A; } }
+  nav.toc .toc-sub { color: var(--muted); font-size: 12px; margin-bottom: 18px; }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--border); }
+  nav.toc li a {
+    display: block;
+    padding: 5px 0 5px 14px;
+    margin-left: -2px;
+    color: var(--muted);
+    border-left: 2px solid transparent;
+  }
+  nav.toc li a:hover { color: var(--primary); border-left-color: var(--primary-light); text-decoration: none; }
+
+  main { min-width: 0; }
+  section { margin-bottom: 56px; scroll-margin-top: 24px; }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 11.5px; font-weight: 700;
+    letter-spacing: .09em; text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-size: clamp(30px, 4.5vw, 42px);
+    line-height: 1.12;
+    letter-spacing: -.02em;
+    margin: 0 0 14px;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  h2 {
+    font-size: 25px;
+    letter-spacing: -.015em;
+    line-height: 1.2;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+  h3 { font-size: 17.5px; margin: 26px 0 8px; letter-spacing: -.01em; }
+  .section-lede { color: var(--muted); max-width: 68ch; margin: 0 0 22px; }
+  p { max-width: 72ch; }
+  section > ul, section > ol { max-width: 72ch; }
+  li { margin-bottom: 6px; }
+
+  /* ---------- hero ---------- */
+  .hero {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--primary);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 40px 44px 34px;
+    margin-bottom: 48px;
+  }
+  @media (max-width: 640px) { .hero { padding: 26px 22px; } }
+  .hero .subtitle { color: var(--muted); max-width: 66ch; margin: 0 0 24px; font-size: 17px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--primary-soft);
+    color: var(--primary-deep);
+    border: 1px solid var(--primary-light);
+    border-radius: 999px;
+    font-size: 13px; font-weight: 600;
+    padding: 6px 14px;
+  }
+  .chip .ic { width: 15px; height: 15px; }
+
+  .thesis {
+    background: var(--primary-soft);
+    border: 1px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-top: 26px;
+    max-width: none;
+  }
+  .thesis strong { color: var(--primary-deep); }
+
+  /* ---------- cards ---------- */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 22px 24px;
+  }
+  .card .verdict {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: .05em; text-transform: uppercase;
+    border-radius: 999px;
+    padding: 4px 12px;
+    margin-bottom: 12px;
+  }
+  .verdict.yes  { background: var(--success-soft); color: var(--success); }
+  .verdict.no   { background: var(--error-soft);   color: var(--error); }
+  .verdict.cond { background: var(--warn-soft);    color: var(--warn); }
+  .card h3 { margin: 0 0 8px; }
+  .card p { font-size: 14.5px; color: var(--muted); margin: 0 0 8px; }
+  .card p strong { color: var(--ink); }
+
+  .icon-badge {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+  }
+  .icon-badge .ic { width: 20px; height: 20px; }
+  .badge-indigo { background: var(--primary-soft); color: var(--primary); }
+  .badge-green  { background: var(--success-soft); color: var(--success); }
+  .badge-blue   { background: var(--info-soft);    color: var(--info); }
+  .badge-amber  { background: var(--warn-soft);    color: var(--warn); }
+  .badge-rose   { background: var(--error-soft);   color: var(--error); }
+
+  /* ---------- tables ---------- */
+  .table-wrap {
+    overflow-x: auto;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
+    min-width: 660px;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  th {
+    font-size: 12px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--muted);
+    background: var(--primary-soft);
+    white-space: nowrap;
+  }
+  th:first-child { border-top-left-radius: 13px; }
+  th:last-child { border-top-right-radius: 13px; }
+  td.num { font-variant-numeric: tabular-nums; }
+  tr.recommended td { background: var(--success-soft); }
+  .pill {
+    display: inline-block;
+    font-size: 11.5px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase;
+    border-radius: 999px;
+    padding: 2px 10px;
+    white-space: nowrap;
+  }
+  .pill.good { background: var(--success-soft); color: var(--success); }
+  .pill.mid  { background: var(--warn-soft);    color: var(--warn); }
+  .pill.bad  { background: var(--error-soft);   color: var(--error); }
+  .pill.info { background: var(--info-soft);    color: var(--info); }
+  .pill.brand{ background: var(--primary-soft); color: var(--primary); }
+
+  /* ---------- diagram ---------- */
+  .diagram {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 28px 24px;
+    overflow-x: auto;
+  }
+  .diagram-title {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .flow { display: flex; flex-direction: column; align-items: center; min-width: 560px; }
+  .tier { display: flex; gap: 12px; justify-content: center; flex-wrap: nowrap; }
+  .node {
+    border: 1.5px solid var(--border);
+    background: var(--canvas);
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 13px;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .node .nl { display: block; font-weight: 700; }
+  .node .ns { display: block; font-size: 11.5px; color: var(--muted); }
+  .node.client { border-style: dashed; }
+  .node.hub {
+    border-color: var(--primary-light);
+    background: var(--primary-soft);
+    min-width: 320px;
+  }
+  .node.hub .nl { color: var(--primary-deep); }
+  .node.db { border-color: var(--success); background: var(--success-soft); }
+  .node.db .nl { color: var(--success); font-variant-numeric: tabular-nums; }
+  .node.warn-node { border-color: var(--warn); background: var(--warn-soft); }
+  .connector {
+    width: 2px; height: 22px;
+    background: var(--primary-light);
+    position: relative;
+  }
+  .connector::after {
+    content: "";
+    position: absolute;
+    bottom: -1px; left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--primary-light);
+  }
+  .conn-label {
+    font-size: 11px; color: var(--muted);
+    letter-spacing: .04em;
+    margin: 3px 0;
+  }
+  .fan { display: flex; justify-content: center; gap: 90px; }
+  .fan .connector { height: 18px; }
+
+  /* ---------- checklist ---------- */
+  .check-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 12px;
+  }
+  .check-item {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    font-size: 14px;
+  }
+  .check-item .ic { width: 19px; height: 19px; color: var(--success); margin-top: 2px; }
+  .check-item strong { display: block; margin-bottom: 2px; }
+  .check-item span { color: var(--muted); }
+  .check-item span code { white-space: normal; }
+
+  /* ---------- phases ---------- */
+  .phase {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 24px 28px;
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; flex-wrap: wrap; }
+  .phase-num {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 16px;
+    flex: none;
+  }
+  :root[data-theme="dark"] .phase-num { color: #17152A; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .phase-num { color: #17152A; } }
+  .phase h3 { margin: 0; font-size: 19px; }
+  .phase .phase-meta { font-size: 12.5px; color: var(--muted); margin-left: auto; white-space: nowrap; }
+  .phase .goal { color: var(--muted); font-size: 14.5px; margin: 4px 0 14px; max-width: 76ch; }
+  .phase-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+  .phase-col h4 {
+    font-size: 11.5px; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 8px;
+  }
+  .phase-col ul { margin: 0; padding-left: 18px; font-size: 14px; }
+  .phase-col li { margin-bottom: 5px; }
+
+  .callout {
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin: 18px 0;
+    font-size: 14.5px;
+    display: flex; gap: 12px;
+    max-width: none;
+  }
+  .callout .ic { margin-top: 3px; }
+  .callout.warn { background: var(--warn-soft); color: var(--ink); border: 1px solid var(--warn); }
+  .callout.warn .ic { color: var(--warn); }
+  .callout.info { background: var(--info-soft); border: 1px solid var(--info); }
+  .callout.info .ic { color: var(--info); }
+  .callout p { margin: 0; max-width: none; }
+
+  /* ---------- FAQ ---------- */
+  details {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0 20px;
+    margin-bottom: 10px;
+  }
+  details summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 15px 0;
+    list-style: none;
+    display: flex; align-items: center; gap: 10px;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary .ic { color: var(--primary); transition: transform .18s ease; }
+  details[open] summary .ic { transform: rotate(90deg); }
+  details .faq-body { padding: 0 0 16px 28px; color: var(--muted); font-size: 14.5px; }
+  details .faq-body p { margin: 0 0 8px; }
+  details .faq-body strong { color: var(--ink); }
+
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: 30px;
+    padding-top: 22px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  footer ul { padding-left: 18px; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+    <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></symbol>
+    <symbol id="i-server" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol>
+    <symbol id="i-branch" viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="i-drive" viewBox="0 0 24 24"><line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/></symbol>
+  </defs>
+</svg>
+
+<div class="shell">
+
+<nav class="toc" aria-label="Contents">
+  <div class="toc-brand"><span class="mark">P</span> Payobook</div>
+  <div class="toc-sub">SaaS Strategy &middot; Aug 2026</div>
+  <ol>
+    <li><a href="#answers">Your questions, answered</a></li>
+    <li><a href="#today">Where you are today</a></li>
+    <li><a href="#target">Target architecture</a></li>
+    <li><a href="#models">Tenancy models compared</a></li>
+    <li><a href="#security">Security &amp; isolation</a></li>
+    <li><a href="#custom">Custom code per client</a></li>
+    <li><a href="#scale">Performance &amp; scaling</a></li>
+    <li><a href="#ops">Operations</a></li>
+    <li><a href="#roadmap">Phased roadmap</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<header class="hero">
+  <div class="eyebrow"><svg class="ic"><use href="#i-layers"/></svg> Platform strategy</div>
+  <h1>From one server to a SaaS platform</h1>
+  <p class="subtitle">How Payobook grows from a single Odoo&nbsp;19 instance on Lightsail into a
+    multi-client SaaS — with real data isolation, one shared codebase, and a scaling path you
+    only pay for when you need it.</p>
+  <div class="chips">
+    <span class="chip"><svg class="ic"><use href="#i-users"/></svg> Target: 2&ndash;10 clients, 12&ndash;18 months</span>
+    <span class="chip"><svg class="ic"><use href="#i-globe"/></svg> client.payobook.com per tenant</span>
+    <span class="chip"><svg class="ic"><use href="#i-db"/></svg> One database per client</span>
+    <span class="chip"><svg class="ic"><use href="#i-branch"/></svg> One shared codebase</span>
+  </div>
+  <div class="thesis">
+    <strong>The strategy in one sentence:</strong> adopt the model Odoo&nbsp;S.A. runs its own SaaS on —
+    <strong>one codebase, one Odoo service, one wildcard domain, and a separate PostgreSQL database
+    per client</strong> — stay on the current Lightsail box until clearly defined triggers fire, then
+    move the database tier out first and the compute tier second. No new ports, no per-client
+    servers, no rewrite.
+  </div>
+</header>
+
+<!-- ============================================================ -->
+<section id="answers">
+  <div class="eyebrow"><svg class="ic"><use href="#i-check"/></svg> Decisions</div>
+  <h2>Your questions, answered</h2>
+  <p class="section-lede">Each of the ideas you raised, judged against what production SaaS platforms actually do.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="verdict yes"><svg class="ic"><use href="#i-check"/></svg> Yes — do this</span>
+      <h3>Subdomains per client</h3>
+      <p><strong><code>acme.payobook.com</code>, <code>vinh.payobook.com</code> — exactly right.</strong>
+        Subdomain-per-tenant is the standard for B2B SaaS (Slack, Shopify, Zendesk, Odoo&nbsp;Online all
+        do it). One wildcard DNS record <code>*.payobook.com</code> and one wildcard TLS certificate
+        cover every client you will ever add — onboarding a client requires <em>zero</em> DNS work.</p>
+      <p>Odoo supports this natively: with <code>dbfilter&nbsp;=&nbsp;^%d$</code> the subdomain
+        automatically selects the client's database. No custom routing code.</p>
+    </div>
+
+    <div class="card">
+      <span class="verdict yes"><svg class="ic"><use href="#i-check"/></svg> Yes — with guardrails</span>
+      <h3>Same codebase, same server</h3>
+      <p><strong>Correct for 2&ndash;10 clients.</strong> Pros: deploy once and every client benefits,
+        one server to secure and patch, lowest possible cost per client, one monitoring surface.</p>
+      <p>Cons you must manage: a bad deploy or a heavy job affects everyone (shared blast radius),
+        and all clients ride the same Odoo version. Guardrails: test on a staging copy before
+        every rollout, keep client-specific modules installed <em>only</em> in that client's
+        database, and keep a documented escape hatch — a demanding client can graduate to their own
+        container later.</p>
+    </div>
+
+    <div class="card">
+      <span class="verdict no"><svg class="ic"><use href="#i-x"/></svg> No — not needed</span>
+      <h3>Different ports per domain</h3>
+      <p><strong>Ports are the wrong tool.</strong> HTTP routing is done by <em>hostname</em>
+        (the <code>Host</code> header), not by port. nginx listens on 443 for <em>all</em> subdomains
+        and proxies every one of them to the same Odoo backend on 8069; Odoo picks the right database
+        from the hostname.</p>
+      <p>Per-client ports would break clean HTTPS URLs, multiply certificates and firewall rules,
+        and add zero isolation. Everything stays on 443 outside and 8069 (plus the websocket/gevent
+        port) inside.</p>
+    </div>
+
+    <div class="card">
+      <span class="verdict cond"><svg class="ic"><use href="#i-gauge"/></svg> Fine now — plan the exit</span>
+      <h3>Lightsail performance</h3>
+      <p><strong>Lightsail comfortably carries 2&ndash;10 tenants</strong> — bundles now reach large
+        sizes, and payroll traffic is spiky-but-predictable (month-end), not consumer-scale.</p>
+      <p>Its real limits: no autoscaling, everything on one box, and app + database compete for
+        the same RAM and disk I/O. The strategy is <em>trigger-based migration</em>: precise,
+        measurable conditions (in <a href="#scale">section 7</a>) that tell you when to move the
+        database out, and later the compute. Don't migrate pre-emptively — that's paying for
+        problems you don't have yet.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="today">
+  <div class="eyebrow"><svg class="ic"><use href="#i-server"/></svg> Baseline</div>
+  <h2>Where you are today</h2>
+  <p class="section-lede">Verified facts about the current deployment — the starting point every step in this document builds on.</p>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Layer</th><th>Current state</th><th>SaaS-readiness</th></tr>
+      <tr>
+        <td><strong>Hosting</strong></td>
+        <td>Single AWS Lightsail instance (ssh alias <code>Payobook19v2</code>; the public IP changes — never hardcode it)</td>
+        <td><span class="pill mid">Single box</span></td>
+      </tr>
+      <tr>
+        <td><strong>Application</strong></td>
+        <td>Odoo 19 Community, one service via <code>/etc/init.d/odoo-server</code>, config <code>/etc/odoo-server.conf</code>, <code>proxy_mode = True</code></td>
+        <td><span class="pill good">Reusable as-is</span></td>
+      </tr>
+      <tr>
+        <td><strong>Database</strong></td>
+        <td>One PostgreSQL database <code>Payobook19v2</code>, pinned by <code>db_name</code>; no <code>dbfilter</code> configured</td>
+        <td><span class="pill mid">Single-tenant</span></td>
+      </tr>
+      <tr>
+        <td><strong>Web tier</strong></td>
+        <td>nginx reverse proxy &rarr; <code>127.0.0.1:8069</code>, websocket block for the Odoo 19 bus, Let's Encrypt cert on the apex only</td>
+        <td><span class="pill good">Extends cleanly</span></td>
+      </tr>
+      <tr>
+        <td><strong>Domain</strong></td>
+        <td><code>payobook.com</code> apex only — no <code>www</code>, no wildcard</td>
+        <td><span class="pill mid">Needs wildcard</span></td>
+      </tr>
+      <tr>
+        <td><strong>Funnel</strong></td>
+        <td>Marketing site (<code>pb_website</code>) + self-service demo signup (<code>pb_demo_portal</code>) into a shared demo world</td>
+        <td><span class="pill good">Becomes the trial funnel</span></td>
+      </tr>
+      <tr>
+        <td><strong>Multi-tenancy</strong></td>
+        <td>None — no provisioning code, no tenant model, no subdomain routing anywhere in the codebase</td>
+        <td><span class="pill bad">To build</span></td>
+      </tr>
+      <tr>
+        <td><strong>Outgoing mail</strong></td>
+        <td>No SMTP server configured — signup/reset emails silently never send</td>
+        <td><span class="pill bad">Blocker — fix in Phase 0</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="callout info">
+    <svg class="ic"><use href="#i-check"/></svg>
+    <p><strong>The good news:</strong> nothing here needs to be thrown away. The nginx + Odoo + Postgres stack you already run
+    is exactly the stack the target architecture uses — it gains a wildcard, a dbfilter, and more databases. The marketing
+    site and demo world keep living on the apex domain, untouched, and become the top of the sales funnel.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="target">
+  <div class="eyebrow"><svg class="ic"><use href="#i-layers"/></svg> Architecture</div>
+  <h2>Target architecture</h2>
+  <p class="section-lede">The native Odoo SaaS pattern: shared code and process, isolated data. This is what
+    Odoo&nbsp;S.A. runs odoo.com's own hosted offering on, and what most independent Odoo SaaS providers use
+    at this scale.</p>
+
+  <div class="diagram">
+    <div class="diagram-title">One platform &middot; many databases</div>
+    <div class="flow">
+      <div class="tier">
+        <div class="node client"><span class="nl">acme.payobook.com</span><span class="ns">Client A users</span></div>
+        <div class="node client"><span class="nl">vinh.payobook.com</span><span class="ns">Client B users</span></div>
+        <div class="node client"><span class="nl">payobook.com</span><span class="ns">Marketing + demo world</span></div>
+      </div>
+      <div class="conn-label">DNS: one wildcard record &nbsp;*.payobook.com &rarr; server</div>
+      <div class="connector"></div>
+      <div class="node hub">
+        <span class="nl">nginx &middot; :443</span>
+        <span class="ns">wildcard TLS cert &middot; proxies every hostname to the same backend</span>
+      </div>
+      <div class="connector"></div>
+      <div class="node hub">
+        <span class="nl">Odoo 19 service &middot; :8069 / :8072</span>
+        <span class="ns">one codebase: payobook-core + payobook-custom/&lt;client&gt; &middot; dbfilter = ^%d$ picks the DB from the subdomain</span>
+      </div>
+      <div class="fan">
+        <div class="connector"></div>
+        <div class="connector"></div>
+        <div class="connector"></div>
+      </div>
+      <div class="tier">
+        <div class="node db"><span class="nl">DB: acme</span><span class="ns">+ filestore/acme</span></div>
+        <div class="node db"><span class="nl">DB: vinh</span><span class="ns">+ filestore/vinh</span></div>
+        <div class="node db"><span class="nl">DB: Payobook19v2</span><span class="ns">demo + website (apex)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>How a request flows</h3>
+  <ol>
+    <li>A user opens <code>acme.payobook.com</code>. The wildcard DNS record resolves it to your server.</li>
+    <li>nginx accepts it on 443 with the wildcard certificate and proxies it to Odoo on 8069 — the same
+      backend for every client. The <code>Host</code> header travels with the request.</li>
+    <li>Odoo's <code>dbfilter = ^%d$</code> matches the first label of the hostname (<code>acme</code>)
+      against database names and opens the <code>acme</code> registry. The user sees only that database —
+      they cannot reach, list, or even learn of any other tenant.</li>
+    <li>The apex (<code>payobook.com</code>) keeps its own nginx server block which pins the existing
+      <code>Payobook19v2</code> database via the <code>X-Odoo-dbfilter</code> header — so the marketing site and
+      demo world continue unchanged without renaming anything.</li>
+  </ol>
+
+  <h3>The key configuration (for later — Phase 1)</h3>
+  <pre><code># /etc/odoo-server.conf
+db_name =                  # remove the pin — the filter chooses per request
+dbfilter = ^%d$            # acme.payobook.com -> database "acme"
+list_db = False            # nobody can enumerate or manage databases via the web
+proxy_mode = True          # already set
+
+# nginx: one extra server block
+server {
+    listen 443 ssl;
+    server_name *.payobook.com;          # every current and future client
+    # wildcard cert via DNS-01 challenge
+    location / { proxy_pass http://127.0.0.1:8069; ... }
+    location /websocket { ... }          # same upgrade headers as today
+}
+server {
+    listen 443 ssl;
+    server_name payobook.com;            # apex stays on the existing DB
+    proxy_set_header X-Odoo-dbfilter ^Payobook19v2$;
+    ...
+}</code></pre>
+
+  <div class="callout warn">
+    <svg class="ic"><use href="#i-alert"/></svg>
+    <p><strong>Naming rule from day one:</strong> a client's database name must exactly equal their subdomain
+    label (<code>acme</code> DB &harr; <code>acme.payobook.com</code>), lowercase, no spaces. This one convention is
+    what makes routing, provisioning, backups and the upgrade loop all scriptable with zero lookup tables.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="models">
+  <div class="eyebrow"><svg class="ic"><use href="#i-db"/></svg> The core decision</div>
+  <h2>Tenancy models compared</h2>
+  <p class="section-lede">Four ways the industry hosts multiple clients, and why database-per-tenant wins for payroll at your scale.</p>
+
+  <div class="table-wrap">
+    <table>
+      <tr>
+        <th>Model</th>
+        <th>Data isolation</th>
+        <th>Cost / client</th>
+        <th>Ops burden</th>
+        <th>Verdict for Payobook</th>
+      </tr>
+      <tr>
+        <td><strong>Shared DB, multi-company</strong><br><span style="color:var(--muted);font-size:12.5px">All clients as <code>res.company</code> rows in one database</span></td>
+        <td><span class="pill bad">Weakest</span> — one missed record rule leaks payroll across clients</td>
+        <td class="num">Lowest</td>
+        <td>Low</td>
+        <td><strong>Rejected.</strong> Salary data behind nothing but ORM rules is an unacceptable risk; backups, restores and deletion are all-or-nothing.</td>
+      </tr>
+      <tr class="recommended">
+        <td><strong>Database per tenant, shared app</strong><br><span style="color:var(--muted);font-size:12.5px">One Odoo service, N Postgres DBs — the native Odoo SaaS pattern</span></td>
+        <td><span class="pill good">Strong</span> — hard Postgres boundary; no query can cross it</td>
+        <td class="num">Very low</td>
+        <td>Low&ndash;medium</td>
+        <td><strong>Recommended.</strong> <span class="pill brand">The strategy</span> Deploy once for everyone; isolate data per client; per-client backup, restore, export and deletion.</td>
+      </tr>
+      <tr>
+        <td><strong>Container per tenant</strong><br><span style="color:var(--muted);font-size:12.5px">Docker: each client gets an Odoo container + DB</span></td>
+        <td><span class="pill good">Strong+</span> — process &amp; resource isolation too</td>
+        <td class="num">Medium</td>
+        <td>Medium&ndash;high (orchestration, registry, per-container upgrades)</td>
+        <td><strong>Later.</strong> The documented Phase-4 evolution — worth it beyond ~10&ndash;20 tenants or for a client demanding dedicated resources. Premature today.</td>
+      </tr>
+      <tr>
+        <td><strong>VM / server per tenant</strong><br><span style="color:var(--muted);font-size:12.5px">A separate Lightsail box per client</span></td>
+        <td><span class="pill good">Strongest</span></td>
+        <td class="num">Highest</td>
+        <td>Highest — N servers to patch, monitor, certify</td>
+        <td><strong>Rejected as default.</strong> This is your existing on-prem/enterprise track, priced accordingly — not the SaaS baseline.</td>
+      </tr>
+    </table>
+  </div>
+
+  <h3>Why this is also what the state of the art does</h3>
+  <p>Modern SaaS vocabulary (the AWS SaaS Lens) calls these the <em>pool</em> (shared everything),
+  <em>silo</em> (dedicated everything) and <em>bridge</em> (shared compute, isolated data) models. Consumer-scale
+  products (Slack, Notion) pool aggressively because they built row-level isolation into their product from day
+  one and operate at millions of tenants. <strong>B2B systems that hold regulated or high-sensitivity data —
+  payroll, accounting, health — overwhelmingly choose the bridge or silo model.</strong> Odoo's own hosted SaaS
+  is bridge: shared application servers, one database per customer. You inherit a decade of that platform's
+  design decisions (dbfilter, per-DB registries, per-DB filestores, per-DB module installs) for free by
+  following the same shape.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="security">
+  <div class="eyebrow"><svg class="ic"><use href="#i-shield"/></svg> Non-negotiables</div>
+  <h2>Security &amp; data isolation</h2>
+  <p class="section-lede">Payroll is among the most sensitive data classes a business holds. These controls are the platform's baseline, not enhancements.</p>
+
+  <div class="check-grid">
+    <div class="check-item"><svg class="ic"><use href="#i-check"/></svg>
+      <div><strong>Hard database boundary</strong><span>Each client's data lives in its own PostgreSQL database and its own filestore directory. No SQL query, ORM call or export can cross tenants — isolation is structural, not rule-based.</span></div>
+    </div>
+    <div class="check-item"><svg class="ic"><use href="#i-check"/></svg>
+      <div><strong>Database manager disabled</strong><span><code>list_db = False</code> hides every database-listing and create/duplicate/drop endpoint from the web. Provisioning happens only over SSH.</span></div>
+    </div>
+    <div class="check-item"><svg class="ic"><use href="#i-check"/></svg>
+      <div><strong>Strong master password</strong><span><code>admin_passwd</code> rotated to a long random secret and stored in a password manager — it protects every tenant at once.</span></div>
+    </div>
+    <div class="check-item"><svg class="ic"><use href="#i-check"/></svg>
+      <div><strong>Strict dbfilter</strong><span><code>dbfilter = ^%d$</code> means a hostname can only ever reach its one matching database. A client cannot discover other tenants even exist.</span></div>
+    </div>
+    <div class="check-item"><svg class="ic"><use href="#i-check"/></svg>
+      <div><strong>TLS everywhere</strong><span>Wildcard certificate for <code>*.payobook.com</code> (DNS-01 challenge, auto-renewed) + HSTS. Sessions are cookie-scoped per subdomain by the browser automatically.</span></div>
+    </div>
+    <div class="check-item"><svg class="ic"><use href="#i-check"/></svg>
+      <div><strong>Per-tenant backups, tested restores</strong><span>Nightly <code>pg_dump</code> + filestore archive per tenant, encrypted, shipped off-box (S3/object storage). A backup you haven't restored is a hope, not a backup — restore-drill quarterly.</span></div>
+    </div>
+    <div class="check-item"><svg class="ic"><use href="#i-check"/></svg>
+      <div><strong>Login hardening</strong><span>Rate-limit <code>/web/login</code> at nginx, fail2ban on repeated failures, strong password policy, 2FA for admin accounts (built into Odoo).</span></div>
+    </div>
+    <div class="check-item"><svg class="ic"><use href="#i-check"/></svg>
+      <div><strong>Clean offboarding</strong><span>A departing client gets their full <code>pg_dump</code> + filestore handed over, then the database is dropped and backups age out — provable deletion, per contract.</span></div>
+    </div>
+    <div class="check-item"><svg class="ic"><use href="#i-check"/></svg>
+      <div><strong>Demo separated from production tenants</strong><span>The shared demo world stays a permanently untrusted zone on the apex DB. Trial users never touch a paying client's database.</span></div>
+    </div>
+    <div class="check-item"><svg class="ic"><use href="#i-check"/></svg>
+      <div><strong>Deliverable email</strong><span>A real SMTP relay (SES or similar) with SPF, DKIM and DMARC on <code>payobook.com</code> — payslip mails and password resets from a raw server IP land in spam or nowhere.</span></div>
+    </div>
+    <div class="check-item"><svg class="ic"><use href="#i-check"/></svg>
+      <div><strong>Data residency on record</strong><span>State in contracts where data lives (your AWS region) and who holds admin access. Vietnamese and regional clients increasingly ask; having the answer written down is a sales asset.</span></div>
+    </div>
+    <div class="check-item"><svg class="ic"><use href="#i-check"/></svg>
+      <div><strong>Least-privilege access</strong><span>SSH by key only; the <code>odoo</code> system user owns app files; Postgres reachable only from localhost (until the DB tier moves out, then via security group + TLS).</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="custom">
+  <div class="eyebrow"><svg class="ic"><use href="#i-branch"/></svg> Shared code, private features</div>
+  <h2>Custom code per client — without breaking the others</h2>
+  <p class="section-lede">Some clients will need their own modules. The trick is that a shared addons path is
+    safe in Odoo: each database only loads the modules <em>installed in it</em>. Custom code sits beside core
+    code on disk, but only exists inside the paying client's world.</p>
+
+  <h3>Two-tier addons layout</h3>
+  <pre><code>/odoo/custom/addons/
+├── payobook-core/          # the product — every pb_*, biz_* module; all tenants
+└── payobook-custom/
+    ├── acme/               #   xc_acme_overtime_rules, xc_acme_bank_export ...
+    └── vinh/               #   xc_vinh_union_levy ...</code></pre>
+
+  <ul>
+    <li><strong>Naming:</strong> client modules are prefixed <code>xc_&lt;client&gt;_*</code> — grep-able,
+      unmistakable in any module list, and impossible to confuse with the product.</li>
+    <li><strong>The one hard rule:</strong> client modules are <em>installed only in that client's database</em>.
+      Odoo builds a separate registry per database, so an uninstalled module is inert — code on disk that a
+      tenant never executes.</li>
+    <li><strong>Never fork core for one client.</strong> A client need is either (a) configuration —
+      Payobook's formula-config system already covers most payroll variance, (b) a generic feature worth adding
+      to <code>payobook-core</code> for everyone, or (c) a true one-off that becomes an <code>xc_</code> module
+      inheriting core. Decide explicitly which of the three it is, every time.</li>
+    <li><strong>Rollout ritual:</strong> restore last night's backup of that client's DB as
+      <code>acme_staging</code>, install/upgrade there, smoke-test the payroll run, then apply to production
+      in a maintenance window. Other tenants are untouched because nothing was installed in their databases.</li>
+  </ul>
+
+  <div class="callout info">
+    <svg class="ic"><use href="#i-box"/></svg>
+    <p><strong>The escape hatch (write it into the client contract tier):</strong> when a client's custom surface grows
+    large — many modules, integration daemons, strict SLA, "we need our own version" — they graduate to a dedicated
+    container or box at a dedicated-infrastructure price. The shared platform never bends its rules for one tenant;
+    the tenant moves instead. This is exactly how Odoo.sh and every mature SaaS handles the outlier client.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="scale">
+  <div class="eyebrow"><svg class="ic"><use href="#i-gauge"/></svg> Capacity</div>
+  <h2>Performance &amp; scaling on Lightsail</h2>
+  <p class="section-lede">One well-tuned box carries this stage comfortably. What matters is knowing the tuning knobs, the honest ceiling, and the exact tripwires that trigger each migration step.</p>
+
+  <h3>Tuning the single box (do once, in Phase 0)</h3>
+  <ul>
+    <li><strong>Worker mode:</strong> confirm <code>workers</code> is set (rule of thumb: <code>2 &times; vCPU + 1</code>,
+      each worker budgeting roughly 300&ndash;800&nbsp;MB for payroll workloads) and that the websocket/longpolling
+      port (8072, gevent) is the one nginx's <code>/websocket</code> block proxies to. Multi-tenant traffic on a
+      single threaded process is the first thing that would hurt.</li>
+    <li><strong>Cron isolation:</strong> keep <code>max_cron_threads = 1</code> so scheduled jobs (one tenant's
+      payrun) can never occupy all workers and starve interactive users of other tenants.</li>
+    <li><strong>Connections:</strong> <code>db_maxconn</code> &times; workers must stay under Postgres
+      <code>max_connections</code>; give Postgres ~25% of RAM as <code>shared_buffers</code>.</li>
+    <li><strong>The known noisy neighbour:</strong> your formula-engine payruns over thousands of employees are
+      exactly the heavy job that can starve other tenants. Mitigate by scheduling client payruns off-peak and
+      keeping batch compute chunked (the wizard already computes in batches) — and treat "a payrun visibly slowed
+      another tenant" as a formal migration trigger, below.</li>
+  </ul>
+
+  <h3>Migration triggers — move only when a tripwire fires</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Tripwire (measured, not felt)</th><th>Action</th><th>Effort</th></tr>
+      <tr>
+        <td>Sustained CPU &gt; 70% or RAM pressure outside payrun windows</td>
+        <td>Resize to a larger Lightsail bundle (snapshot &rarr; relaunch). Vertical scaling is the cheapest move and buys the most headroom per hour spent.</td>
+        <td class="num">Hours</td>
+      </tr>
+      <tr>
+        <td>One tenant's payrun measurably slows another tenant, more than once</td>
+        <td>Split the database tier out: managed PostgreSQL (Lightsail managed DB or RDS) or a second instance. App and DB stop competing for RAM/disk; DB gains its own backups, metrics and failover option.</td>
+        <td class="num">1&ndash;2 days</td>
+      </tr>
+      <tr>
+        <td>Backup/restore windows getting long, or disk I/O saturating at month-end</td>
+        <td>Same as above — the database tier moves first. This is the industry-standard first split for exactly this reason.</td>
+        <td class="num">1&ndash;2 days</td>
+      </tr>
+      <tr>
+        <td>Compute ceiling on the largest sensible bundle, or you need autoscaling / private subnets</td>
+        <td>Move compute to EC2 (or containers on ECS). Lightsail has no autoscaling and limited networking — this is its genuine end of the road.</td>
+        <td class="num">Days</td>
+      </tr>
+      <tr>
+        <td>&gt; ~10&ndash;20 tenants, or a client contractually requires dedicated resources</td>
+        <td>Containerize: one Odoo container per tenant (or per tenant-group), orchestrated. Strong process isolation, per-tenant versions and resource caps become possible.</td>
+        <td class="num">Weeks</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <svg class="ic"><use href="#i-clock"/></svg>
+    <p><strong>Sequencing matters:</strong> database out first, compute second, containers last. Each step is
+    independently useful, reversible in planning, and none requires redesigning the application — because the
+    tenancy model (DB-per-tenant) was chosen to survive all three moves unchanged.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="ops">
+  <div class="eyebrow"><svg class="ic"><use href="#i-refresh"/></svg> Running it</div>
+  <h2>Operations: provisioning, upgrades, backups</h2>
+  <p class="section-lede">At 2&ndash;10 tenants the right tooling is a small set of boring, reliable scripts — not a control-panel product.</p>
+
+  <h3>Onboarding a client (target: under 30 minutes, scripted)</h3>
+  <ol>
+    <li><strong>Golden template:</strong> maintain one <code>payobook_template</code> database — Payobook fully
+      installed and configured, zero client data, outgoing mail and crons neutralized.</li>
+    <li><strong>Clone it:</strong> <code>createdb acme -T payobook_template</code> + copy the template filestore
+      to <code>filestore/acme</code>. (DB name = subdomain, per the naming rule.)</li>
+    <li><strong>Personalize:</strong> set company details, <code>web.base.url = https://acme.payobook.com</code>
+      (frozen), create the client admin user, enable crons and mail.</li>
+    <li><strong>Verify:</strong> open <code>https://acme.payobook.com</code> — wildcard DNS and TLS already
+      cover it; log in, run the smoke checklist.</li>
+    <li><strong>Record it:</strong> one row in the tenant register (client, subdomain/DB, plan, go-live date,
+      custom modules, contacts).</li>
+  </ol>
+
+  <h3>Deploying code to N tenants</h3>
+  <p>Your existing proven deploy ritual (staged rsync &rarr; stop &rarr; detached
+    <code>systemd-run</code> upgrade with a sentinel file &rarr; start &rarr; verify) generalizes directly:
+    rsync <em>once</em> — the codebase is shared — then loop the <code>-u</code> upgrade step over each tenant
+    database before restarting. Two additions become mandatory at N&nbsp;&gt;&nbsp;1:</p>
+  <ul>
+    <li><strong>Staging first, always:</strong> restore a production tenant's backup as a staging DB, run the
+      full upgrade + a payroll smoke test there before touching production tenants.</li>
+    <li><strong>Maintenance windows:</strong> announce a standing window (e.g. a weekday 21:00 slot) in client
+      contracts. At this scale upgrades take minutes per DB; the window is about expectations, not duration.</li>
+  </ul>
+
+  <h3>Backups</h3>
+  <ul>
+    <li>Nightly per-tenant <code>pg_dump</code> + filestore tar, encrypted, uploaded off-box; 30&ndash;90 day
+      retention per contract tier.</li>
+    <li>Weekly Lightsail snapshot of the whole instance (fast disaster recovery of the box itself).</li>
+    <li>Quarterly restore drill: restore one tenant into staging, open it, run a payslip. Log that it happened.</li>
+  </ul>
+
+  <h3>Monitoring (minimum viable)</h3>
+  <ul>
+    <li>Uptime checks on the apex plus every tenant subdomain (any external monitor; a check per tenant is one line).</li>
+    <li>Lightsail metric alarms: CPU, RAM (via agent), disk fill.</li>
+    <li>A daily glance-able digest: last night's backup sizes per tenant + error-count grep of the Odoo log.</li>
+  </ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="roadmap">
+  <div class="eyebrow"><svg class="ic"><use href="#i-branch"/></svg> Execution</div>
+  <h2>Phased roadmap</h2>
+  <p class="section-lede">Five phases, each independently shippable, each leaving the platform strictly better.
+    Phases 0&ndash;2 are the SaaS foundation; 3 monetizes customization; 4 is the pre-planned growth path you
+    execute only when triggers fire.</p>
+
+  <div class="phase">
+    <div class="phase-head">
+      <span class="phase-num">0</span>
+      <h3>Harden the current box</h3>
+      <span class="phase-meta">~2&ndash;3 days &middot; before any tenant</span>
+    </div>
+    <p class="goal">Make the single-tenant server safe enough to carry other people's payroll. Every item here protects the existing system too — zero risk of regression.</p>
+    <div class="phase-cols">
+      <div class="phase-col">
+        <h4>Steps</h4>
+        <ul>
+          <li>Set <code>list_db = False</code>; rotate <code>admin_passwd</code> to a vault-stored secret</li>
+          <li>Configure SMTP relay + SPF/DKIM/DMARC (also unblocks the existing demo signup emails)</li>
+          <li>Audit <code>workers</code>/gevent port vs the nginx websocket block; set <code>max_cron_threads = 1</code></li>
+          <li>Stand up nightly encrypted <code>pg_dump</code> + filestore backup to object storage; weekly instance snapshot</li>
+          <li>nginx rate-limit on <code>/web/login</code>; fail2ban</li>
+        </ul>
+      </div>
+      <div class="phase-col">
+        <h4>Verify</h4>
+        <ul>
+          <li>Database manager URLs return 404/refused from the web</li>
+          <li>A test mail arrives in Gmail inbox (not spam)</li>
+          <li>A backup file restores cleanly on a scratch DB</li>
+          <li>Login rate-limit trips on a scripted burst</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head">
+      <span class="phase-num">1</span>
+      <h3>Multi-tenant plumbing + pilot tenant</h3>
+      <span class="phase-meta">~2&ndash;4 days</span>
+    </div>
+    <p class="goal">Wildcard domain, dbfilter routing, and a first real tenant database — proving isolation end-to-end while the apex site keeps running unchanged.</p>
+    <div class="phase-cols">
+      <div class="phase-col">
+        <h4>Steps</h4>
+        <ul>
+          <li>Add DNS <code>*.payobook.com</code> A record (and <code>www</code> while at it)</li>
+          <li>Issue wildcard Let's Encrypt cert via DNS-01 challenge (automate renewal with the DNS provider's API)</li>
+          <li>Add the wildcard nginx server block; pin the apex block to <code>Payobook19v2</code> via <code>X-Odoo-dbfilter</code></li>
+          <li>Switch odoo-server.conf: drop <code>db_name</code> pin, set <code>dbfilter = ^%d$</code></li>
+          <li>Create a pilot tenant DB (e.g. <code>pilot</code>) and run a full payroll cycle in it</li>
+        </ul>
+      </div>
+      <div class="phase-col">
+        <h4>Risks &amp; verify</h4>
+        <ul>
+          <li>Apex regression is the main risk — verify payobook.com, /demo signup, and the demo world before and after</li>
+          <li><code>pilot.payobook.com</code> reaches only the pilot DB; apex reaches only Payobook19v2</li>
+          <li>A wrong subdomain (<code>nothere.payobook.com</code>) fails cleanly, leaking nothing</li>
+          <li>Websocket bus works on both hosts (no "real-time connection lost")</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head">
+      <span class="phase-num">2</span>
+      <h3>Tenant lifecycle automation</h3>
+      <span class="phase-meta">~3&ndash;5 days</span>
+    </div>
+    <p class="goal">Turn onboarding, backup and upgrade into scripts so a new client is routine, not a project.</p>
+    <div class="phase-cols">
+      <div class="phase-col">
+        <h4>Steps</h4>
+        <ul>
+          <li>Build the <code>payobook_template</code> golden database (installed, configured, neutralized, no data)</li>
+          <li><code>tenant-new.sh</code>: clone template &rarr; filestore &rarr; base URL &rarr; admin user &rarr; smoke check</li>
+          <li><code>tenant-backup.sh</code>: per-tenant dump/archive loop (called nightly)</li>
+          <li>Generalize the deploy ritual: per-DB <code>-u</code> loop with a sentinel per tenant</li>
+          <li>Start the tenant register; write <code>tenant-offboard.sh</code> (export, drop, log)</li>
+        </ul>
+      </div>
+      <div class="phase-col">
+        <h4>Verify</h4>
+        <ul>
+          <li>Provision a throwaway tenant end-to-end in &lt; 30 minutes, then offboard it cleanly</li>
+          <li>A code deploy upgrades template + all tenants, and each subdomain passes its smoke check</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head">
+      <span class="phase-num">3</span>
+      <h3>Custom-code delivery process</h3>
+      <span class="phase-meta">~2&ndash;3 days + per-client work</span>
+    </div>
+    <p class="goal">Ship the first client-specific module under the two-tier addons layout, establishing the pattern every later customization follows.</p>
+    <div class="phase-cols">
+      <div class="phase-col">
+        <h4>Steps</h4>
+        <ul>
+          <li>Create <code>payobook-custom/&lt;client&gt;/</code> in the addons path; adopt the <code>xc_&lt;client&gt;_*</code> naming rule</li>
+          <li>Write the config-vs-core-vs-custom decision rule into the engineering doc</li>
+          <li>First custom module: staging-copy test &rarr; window &rarr; install in that tenant only</li>
+          <li>Price customization + define the dedicated-infrastructure graduation tier commercially</li>
+        </ul>
+      </div>
+      <div class="phase-col">
+        <h4>Verify</h4>
+        <ul>
+          <li>The module exists on disk for all, is installed in exactly one DB, and other tenants show zero behavior change</li>
+          <li>A core deploy after the custom install passes on all tenants (no hidden coupling)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head">
+      <span class="phase-num">4</span>
+      <h3>Scale-out — executed on triggers only</h3>
+      <span class="phase-meta">When tripwires fire (section 7)</span>
+    </div>
+    <p class="goal">The pre-planned growth path. Nothing here is built in advance; each move is a known, costed play executed when its measured trigger fires.</p>
+    <div class="phase-cols">
+      <div class="phase-col">
+        <h4>The plays, in order</h4>
+        <ul>
+          <li>Bigger Lightsail bundle (vertical)</li>
+          <li>Database tier out to managed PostgreSQL / RDS</li>
+          <li>Compute to EC2/containers when the box's CPU is the limit</li>
+          <li>Container-per-tenant orchestration beyond ~10&ndash;20 tenants</li>
+        </ul>
+      </div>
+      <div class="phase-col">
+        <h4>Why it's safe to defer</h4>
+        <ul>
+          <li>DB-per-tenant survives every one of these moves unchanged — databases migrate one at a time, subdomains never change</li>
+          <li>Nothing in Phases 0&ndash;3 has to be redone</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="faq">
+  <div class="eyebrow"><svg class="ic"><use href="#i-users"/></svg> Anticipated questions</div>
+  <h2>FAQ</h2>
+
+  <details>
+    <summary><svg class="ic"><use href="#i-chevron"/></svg> Can a client use their own domain, like payroll.acme.com?</summary>
+    <div class="faq-body">
+      <p>Yes, as a premium option. They add a CNAME <code>payroll.acme.com &rarr; acme.payobook.com</code>; you issue a
+      certificate for that hostname (HTTP-01 challenge works fine for single names) and add a small nginx server block that
+      pins their database via <code>X-Odoo-dbfilter ^acme$</code>. Keep it a paid tier — each custom domain is a
+      certificate and a config block you now own.</p>
+    </div>
+  </details>
+  <details>
+    <summary><svg class="ic"><use href="#i-chevron"/></svg> How do Odoo version upgrades (19 &rarr; 20) work with many tenants?</summary>
+    <div class="faq-body">
+      <p>The same as one tenant, times N — which is exactly why the tenant count on a shared platform should grow
+      faster than the version count. Migrate the template first, then tenants one at a time (each is an independent
+      database), staging-tested each. Until a migration completes you can run two Odoo services side by side (old and
+      new version) and point each tenant's nginx block at the right one — a per-tenant cutover with instant rollback.</p>
+    </div>
+  </details>
+  <details>
+    <summary><svg class="ic"><use href="#i-chevron"/></svg> What happens to the demo world and the marketing site?</summary>
+    <div class="faq-body">
+      <p>Nothing — that's deliberate. The apex keeps serving <code>pb_website</code> and the shared demo database.
+      Strategically it becomes the top of the funnel: visitor &rarr; demo signup (existing <code>pb_demo_portal</code>) &rarr;
+      guided trial &rarr; sales conversation &rarr; <code>tenant-new.sh</code>. The Phase-0 SMTP fix is what makes the
+      existing signup flow actually deliver its emails.</p>
+    </div>
+  </details>
+  <details>
+    <summary><svg class="ic"><use href="#i-chevron"/></svg> Why not one big multi-company database? Odoo supports companies natively.</summary>
+    <div class="faq-body">
+      <p>Multi-company is for one <em>organization</em> with several legal entities — shared users, shared chart of
+      accounts patterns, cross-company flows. Between <em>unrelated businesses</em> it means their salary data is
+      separated only by ORM record rules; one misconfigured rule or one <code>sudo()</code> in any module leaks payroll
+      across clients. It also makes per-client backup, restore, export and deletion impossible. The hard Postgres
+      boundary costs nothing at your scale and removes the entire risk class.</p>
+    </div>
+  </details>
+  <details>
+    <summary><svg class="ic"><use href="#i-chevron"/></svg> Does every new client make the server slower?</summary>
+    <div class="faq-body">
+      <p>Marginally, and mostly in RAM: each active tenant's registry and cache occupy worker memory, and its users
+      occupy worker time. Payroll usage is bursty (month-end) and small-N tenants mostly idle. The Phase-0 tuning plus
+      the section-7 tripwires are the honest answer: measure, and act only when a threshold is actually crossed.</p>
+    </div>
+  </details>
+  <details>
+    <summary><svg class="ic"><use href="#i-chevron"/></svg> Should provisioning be self-service (client signs up, instance appears)?</summary>
+    <div class="faq-body">
+      <p>Not yet. Fully automated self-service provisioning is what odoo.com and SaaS kits sell, but at 2&ndash;10
+      B2B payroll clients every onboarding involves data import, formula configuration and training anyway — a scripted
+      30-minute manual step is not the bottleneck, and skipping the control-panel build saves weeks. Revisit if trial
+      volume ever makes sales-touch onboarding the constraint.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ============================================================ -->
+<section id="sources">
+  <footer>
+    <p><strong>Document status:</strong> strategy adopted 2026-08-07 &middot; scale assumption 2&ndash;10 clients in 12&ndash;18 months &middot;
+    supersedes nothing (first SaaS strategy document). Server facts sourced from the live Payobook19v2 deployment record.</p>
+    <p><strong>External references consulted:</strong></p>
+    <ul>
+      <li><a href="https://www.odoo.com/documentation/19.0/administration/on_premise/deploy.html">Odoo deployment documentation — dbfilter, proxy_mode, workers</a></li>
+      <li><a href="https://oec.sh/blog/odoo-multi-tenant-architecture">Odoo multi-tenant architecture guide (dbfilter vs instances vs containers)</a></li>
+      <li><a href="https://peerlist.io/hawksdev/articles/odoo-multitenant-setup-subdomain-per-database-with-nginx--le">Subdomain-per-database with nginx and wildcard Let's Encrypt</a></li>
+      <li><a href="https://way4tech.com/blog/run-your-own-odoo-saas/">Running an independent Odoo SaaS platform</a></li>
+      <li><a href="https://go-cloud.io/aws-lightsail-vs-ec2/">Lightsail vs EC2 — capabilities and migration signals</a></li>
+      <li><a href="https://www.tech-reader.blog/2025/02/problem-aws-lightsail-to-ec2-migration.html">Lightsail-to-EC2 migration patterns (database-first)</a></li>
+      <li><a href="https://docs.aws.amazon.com/wellarchitected/latest/saas-lens/saas-lens.html">AWS Well-Architected SaaS Lens — pool / bridge / silo tenancy models</a></li>
+    </ul>
+  </footer>
+</section>
+
+</main>
+</div>
+
+</body>
+</html>

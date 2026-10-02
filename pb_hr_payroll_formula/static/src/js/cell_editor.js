@@ -1,4 +1,5 @@
 /** @odoo-module **/
+import { _t } from "@web/core/l10n/translation";
 
 import { Component, useState, useRef, onMounted } from "@odoo/owl";
 
@@ -71,7 +72,7 @@ export class CellEditor extends Component {
             const num = parseFloat(value);
             if (isNaN(num) && value !== "") {
                 this.state.isValid = false;
-                this.state.error = "Invalid number";
+                this.state.error = _t("Invalid number");
                 return false;
             }
         } else if (type === "formula") {
@@ -87,7 +88,7 @@ export class CellEditor extends Component {
                 const closeParens = (value.match(/\)/g) || []).length;
                 if (openParens !== closeParens) {
                     this.state.isValid = false;
-                    this.state.error = "Unbalanced parentheses";
+                    this.state.error = _t("Unbalanced parentheses");
                     return false;
                 }
             }

@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ============================================================= -->
+  <!--  A closed Lucide set for the two public pages. The backend's   -->
+  <!--  ic() registry is a JS module and cannot be called from QWeb,  -->
+  <!--  so the handful of glyphs these pages use are inlined here —   -->
+  <!--  the same shape pb_ess_workforce's ack page uses.              -->
+  <!-- ============================================================= -->
+  <template id="lc_icon" name="Lifecycle page icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pblc-ic">
+      <t t-if="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'check-circle'"><path d="M21.8 10A10 10 0 1 1 17 3.34"/><path d="m9 11 3 3L22 4"/></t>
+      <t t-elif="icon == 'clipboard'"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></t>
+      <t t-elif="icon == 'message'"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'alert'"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="10"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  A journey step, answered with no login at all.                -->
+  <!--  ONE template, five outcomes. The status IS the page — a       -->
+  <!--  separate "sorry" page per status would drift, and a stranger  -->
+  <!--  probing the URL space must not be able to tell an unknown     -->
+  <!--  link from a finished one.                                     -->
+  <!-- ============================================================= -->
+  <template id="journey_task_page" name="Your step">
+    <t t-call="web.frontend_layout">
+      <div id="wrap" class="pblc pblc-page">
+        <div class="pblc-card">
+
+          <div class="pblc-card__brand">Payobook</div>
+
+          <!-- ==== something to confirm ==== -->
+          <t t-if="status == 'ok' and task.get('kind') != 'form'">
+            <div class="pblc-card__ic">
+              <t t-call="pb_lifecycle.lc_icon"><t t-set="icon" t-value="'clipboard'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1><t t-esc="task['name']"/></h1>
+            <p class="pblc-card__sub" t-if="greeting" t-esc="greeting"/>
+            <p class="pblc-card__body" t-if="task.get('description')" t-esc="task['description']"/>
+            <div class="pblc-meta" t-if="task.get('due')">
+              <t t-call="pb_lifecycle.lc_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="14"/></t>
+              <span>Needed by <t t-esc="task['due']"/></span>
+            </div>
+            <form t-attf-action="/journey/t/#{token}/submit" method="post">
+              <label class="pblc-label" for="note">Anything we should know? (optional)</label>
+              <textarea class="pblc-input" id="note" name="note" rows="3"
+                        placeholder="Leave this empty if everything is fine."/>
+              <button type="submit" class="pblc-btn pblc-btn--primary">
+                <t t-call="pb_lifecycle.lc_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t>
+                Yes, that is confirmed
+              </button>
+            </form>
+            <p class="pblc-card__fine">This link works once, and only for this step.</p>
+          </t>
+
+          <!-- ==== a short form to fill in ==== -->
+          <t t-elif="status == 'ok'">
+            <div class="pblc-card__ic">
+              <t t-call="pb_lifecycle.lc_icon"><t t-set="icon" t-value="'message'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1><t t-esc="task['name']"/></h1>
+            <p class="pblc-card__sub" t-if="greeting" t-esc="greeting"/>
+            <p class="pblc-card__body" t-if="task.get('description')" t-esc="task['description']"/>
+            <form t-attf-action="/journey/t/#{token}/submit" method="post">
+              <t t-foreach="questions" t-as="q">
+                <label class="pblc-label" t-attf-for="q_#{q['key']}" t-esc="q['label']"/>
+                <t t-if="q['type'] == 'choice'">
+                  <select class="pblc-input" t-attf-id="q_#{q['key']}" t-attf-name="q_#{q['key']}">
+                    <option value="">Choose one…</option>
+                    <option t-foreach="q['options']" t-as="opt"
+                            t-att-value="opt" t-esc="opt"/>
+                  </select>
+                </t>
+                <t t-elif="q['type'] == 'rating'">
+                  <div class="pblc-rating">
+                    <t t-foreach="[1, 2, 3, 4, 5]" t-as="n">
+                      <label class="pblc-rating__o">
+                        <input type="radio" t-attf-name="q_#{q['key']}" t-att-value="n"/>
+                        <span t-esc="n"/>
+                      </label>
+                    </t>
+                  </div>
+                </t>
+                <t t-else="">
+                  <textarea class="pblc-input" t-attf-id="q_#{q['key']}"
+                            t-attf-name="q_#{q['key']}" rows="3"/>
+                </t>
+              </t>
+              <button type="submit" class="pblc-btn pblc-btn--primary">
+                <t t-call="pb_lifecycle.lc_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t>
+                Send my answers
+              </button>
+            </form>
+            <p class="pblc-card__fine">This link works once, and only for this step.</p>
+          </t>
+
+          <!-- ==== just answered ==== -->
+          <t t-elif="status == 'thanks'">
+            <div class="pblc-card__ic pblc-card__ic--ok">
+              <t t-call="pb_lifecycle.lc_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>Thank you</h1>
+            <p class="pblc-card__sub">That is noted, and the team can see it. There is nothing left for you to do here.</p>
+          </t>
+
+          <!-- ==== already answered ==== -->
+          <t t-elif="status == 'used'">
+            <div class="pblc-card__ic pblc-card__ic--ok">
+              <t t-call="pb_lifecycle.lc_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>Already done</h1>
+            <p class="pblc-card__sub">This one has been answered, so the link has closed itself. Nothing is missing.</p>
+          </t>
+
+          <!-- ==== unknown, cancelled or finished ==== -->
+          <t t-else="">
+            <div class="pblc-card__ic pblc-card__ic--warn">
+              <t t-call="pb_lifecycle.lc_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>This link has closed</h1>
+            <p class="pblc-card__sub">It may already have been answered, or it may have been replaced. If you still need to tell us something, reply to the email that brought you here.</p>
+          </t>
+
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  A feedback questionnaire, answered with no login at all.      -->
+  <!-- ============================================================= -->
+  <template id="journey_feedback_page" name="Your feedback">
+    <t t-call="web.frontend_layout">
+      <div id="wrap" class="pblc pblc-page">
+        <div class="pblc-card">
+
+          <div class="pblc-card__brand">Payobook</div>
+
+          <t t-if="status == 'ok'">
+            <div class="pblc-card__ic">
+              <t t-call="pb_lifecycle.lc_icon"><t t-set="icon" t-value="'message'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>A few questions</h1>
+            <p class="pblc-card__sub">
+              Your answers help us look after
+              <strong t-esc="feedback['about']"/>. They are read by the HR team only.
+            </p>
+            <div class="pblc-meta" t-if="feedback.get('window_end')">
+              <t t-call="pb_lifecycle.lc_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="14"/></t>
+              <span>Open until <t t-esc="feedback['window_end']"/></span>
+            </div>
+            <form t-attf-action="/journey/f/#{token}/submit" method="post">
+              <t t-foreach="questions" t-as="q">
+                <label class="pblc-label" t-attf-for="q_#{q['key']}" t-esc="q['label']"/>
+                <t t-if="q['type'] == 'choice'">
+                  <select class="pblc-input" t-attf-id="q_#{q['key']}" t-attf-name="q_#{q['key']}">
+                    <option value="">Choose one…</option>
+                    <option t-foreach="q['options']" t-as="opt"
+                            t-att-value="opt" t-esc="opt"/>
+                  </select>
+                </t>
+                <t t-elif="q['type'] == 'rating'">
+                  <div class="pblc-rating">
+                    <t t-foreach="[1, 2, 3, 4, 5]" t-as="n">
+                      <label class="pblc-rating__o">
+                        <input type="radio" t-attf-name="q_#{q['key']}" t-att-value="n"/>
+                        <span t-esc="n"/>
+                      </label>
+                    </t>
+                  </div>
+                </t>
+                <t t-else="">
+                  <textarea class="pblc-input" t-attf-id="q_#{q['key']}"
+                            t-attf-name="q_#{q['key']}" rows="3"/>
+                </t>
+              </t>
+              <button type="submit" class="pblc-btn pblc-btn--primary">
+                <t t-call="pb_lifecycle.lc_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t>
+                Send my answers
+              </button>
+            </form>
+            <p class="pblc-card__fine">This link works once, and only for these questions.</p>
+          </t>
+
+          <t t-elif="status == 'thanks'">
+            <div class="pblc-card__ic pblc-card__ic--ok">
+              <t t-call="pb_lifecycle.lc_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>Thank you</h1>
+            <p class="pblc-card__sub">Your answers are with the HR team. There is nothing left for you to do here.</p>
+          </t>
+
+          <t t-elif="status == 'used'">
+            <div class="pblc-card__ic pblc-card__ic--ok">
+              <t t-call="pb_lifecycle.lc_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>Already answered</h1>
+            <p class="pblc-card__sub">These questions have been answered, so the link has closed itself.</p>
+          </t>
+
+          <t t-else="">
+            <div class="pblc-card__ic pblc-card__ic--warn">
+              <t t-call="pb_lifecycle.lc_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>This link has closed</h1>
+            <p class="pblc-card__sub">The answering window has passed, or the link has been replaced. Reply to the email that brought you here if you still want to tell us something.</p>
+          </t>
+
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

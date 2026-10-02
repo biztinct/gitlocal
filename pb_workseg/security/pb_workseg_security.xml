@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         ONE TIER. Reading where somebody works is part of reading a roster,
+         and everybody who may plan or run payroll may look. CHANGING it moves
+         money between legal entities, so it is a payroll manager's act.
+         ================================================================== -->
+
+    <record id="module_category_workseg" model="ir.module.category">
+        <field name="name">Where they work</field>
+        <field name="sequence">53</field>
+    </record>
+
+    <record id="res_groups_privilege_workseg" model="res.groups.privilege">
+        <field name="name">Where they work</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="module_category_workseg"/>
+    </record>
+
+    <record id="group_workseg_manager" model="res.groups">
+        <field name="name">Set where they work</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_workseg"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Split a person's month between entities, join two employee records into one person, and choose how a split month is paid.</field>
+    </record>
+
+    <!-- Additive: this only ADDS an implication to groups somebody else owns. -->
+    <record id="base.group_system" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('pb_workseg.group_workseg_manager'))]"/>
+    </record>
+
+<data noupdate="1">
+
+    <!-- A charge is a fact about the entity that CARRIED it, so the paying
+         company owns the row and the platform's own company rules scope it. -->
+    <record id="rule_cost_transfer_company" model="ir.rule">
+        <field name="name">Charged between entities: company</field>
+        <field name="model_id" ref="model_pb_cost_transfer"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- A segment belongs to the HOME entity's books: it is that entity's
+         payslip the days come out of. -->
+    <record id="rule_work_segment_company" model="ir.rule">
+        <field name="name">Work segment: company</field>
+        <field name="model_id" ref="model_pb_work_segment"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('home_company_id', '=', False), ('home_company_id', 'in', company_ids)]</field>
+    </record>
+
+</data>
+
+<!-- ======================================================================
+     GROUP P7 — WHO SEES WHAT.
+
+     The same two-branch shape as `pb_group.rule_division_link_visibility`,
+     and the reasoning is written out once there:
+
+       * `user.pb_vis_kind` is empty for everybody who has not been given a
+         visibility row, and the domain is then `[(1, '=', 1)]` — no
+         narrowing at all. Nothing changes for anyone until an administrator
+         says it should.
+       * A DIVISION scope filters on the division, which already implies the
+         companies its departments sit in.
+       * Every other scope filters on the company.
+
+     The three fields are computed and NOT stored on `res.users`
+     (`pb_group/models/pb_group_visibility.py`), so this is plain attribute
+     access, exactly like every rule the platform ships.
+
+     A GLOBAL rule, and deliberately not `noupdate`: it is plumbing, and a
+     correction has to reach a database that already carries yesterday's
+     version (GR25).
+     ====================================================================== -->
+
+<record id="rule_work_segment_visibility" model="ir.rule">
+    <field name="name">Work segment: who sees what</field>
+    <field name="model_id" ref="model_pb_work_segment"/>
+    <field name="global" eval="True"/>
+    <field name="domain_force">[(1, '=', 1)] if not user.pb_vis_kind else ([('division_id', 'in', user.pb_vis_division_ids.ids)] if user.pb_vis_division_ids else ['|', ('home_company_id', 'in', user.pb_vis_company_ids.ids), ('host_company_id', 'in', user.pb_vis_company_ids.ids)])</field>
+</record>
+
+<record id="rule_cost_transfer_visibility" model="ir.rule">
+    <field name="name">Charged between entities: who sees what</field>
+    <field name="model_id" ref="model_pb_cost_transfer"/>
+    <field name="global" eval="True"/>
+    <field name="domain_force">[(1, '=', 1)] if not user.pb_vis_kind else ['|', ('company_id', '=', False), ('company_id', 'in', user.pb_vis_company_ids.ids)]</field>
+</record>
+
+
+</odoo>

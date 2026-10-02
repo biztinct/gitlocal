@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         WHO MAY SEE A PROPOSED FILING.
+
+         A seat is also a read (ledger AM60): the engine re-checks
+         `check_access('read')` before it lets anybody decide, and the payroll
+         manager a filing route names may hold no role on this module at all.
+         The narrow rule gives a person who has been ASKED to decide exactly
+         the read that seat needs, and nothing else.
+
+         The wide rule ships WITH it and never without: rules are OR-ed over
+         the groups a person is in, and a payroll officer is also a plain
+         internal user, so the narrow rule on its own would have taken their
+         own proposals away from them.
+         ================================================================== -->
+
+    <record id="rule_filing_proposal_seat" model="ir.rule">
+        <field name="name">Filing: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_filing_proposal"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|',
+            ('seat_user_ids', 'in', [user.id]),
+            ('user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_filing_proposal_payroll" model="ir.rule">
+        <field name="name">Filing: payroll</field>
+        <field name="model_id" ref="model_pb_filing_proposal"/>
+        <field name="groups" eval="[
+            (4, ref('pb_hr_payroll_base.group_payroll_base_officer')),
+            (4, ref('pb_hr_payroll_base.group_payroll_base_manager'))]"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

@@ -5,8 +5,8 @@ from datetime import datetime
 from unittest.mock import patch
 
 from odoo import fields
-from odoo.tests import new_test_user
-from odoo.tests.common import tagged, TransactionCase
+from odoo.tests import Form, new_test_user
+from odoo.tests.common import tagged, TransactionCase, freeze_time
 
 
 @tagged('attendance_process')
@@ -16,12 +16,13 @@ class TestHrAttendance(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super(TestHrAttendance, cls).setUpClass()
-        cls.user = new_test_user(cls.env, login='fru', groups='base.group_user,hr_attendance.group_hr_attendance_use_pin')
+        cls.user = new_test_user(cls.env, login='fru', groups='base.group_user')
         cls.user_no_pin = new_test_user(cls.env, login='gru', groups='base.group_user')
         cls.test_employee = cls.env['hr.employee'].create({
             'name': "François Russie",
             'user_id': cls.user.id,
             'pin': '1234',
+            'ruleset_id': False,
         })
         cls.employee_kiosk = cls.env['hr.employee'].create({
             'name': "Machiavel",
@@ -41,56 +42,42 @@ class TestHrAttendance(TransactionCase):
         self.test_employee._attendance_action_change()
         assert self.test_employee.attendance_state == 'checked_out'
 
-    def test_checkin_self_without_pin(self):
-        """ Employee can check in/out without pin with his own account """
-        employee = self.test_employee.with_user(self.user)
-        employee.with_user(self.user).attendance_manual({}, entered_pin=None)
-        self.assertEqual(employee.attendance_state, 'checked_in', "He should be able to check in without pin")
-        employee.attendance_manual({}, entered_pin=None)
-        self.assertEqual(employee.attendance_state, 'checked_out', "He should be able to check out without pin")
+    def test_employee_group_id(self):
+        # Create attendance for one of them
+        self.env['hr.attendance'].create({
+            'employee_id': self.employee_kiosk.id,
+            'check_in': '2025-08-01 08:00:00',
+            'check_out': '2025-08-01 17:00:00',
+        })
+        context = self.env.context.copy()
+        context['read_group_expand'] = True
 
-    def test_checkin_self_with_pin(self):
-        """ Employee can check in/out with pin with his own account """
-        employee = self.test_employee.with_user(self.user)
-        employee.attendance_manual({}, entered_pin='1234')
-        self.assertEqual(employee.attendance_state, 'checked_in', "He should be able to check in with his pin")
-        employee.attendance_manual({}, entered_pin='1234')
-        self.assertEqual(employee.attendance_state, 'checked_out', "He should be able to check out with his pin")
+        groups = self.env['hr.attendance'].with_context(**context).web_read_group(
+            domain=[],
+            groupby=['employee_id']
+        )
+        groups = groups['groups']
 
-    def test_checkin_self_wrong_pin(self):
-        """ Employee cannot check in/out with wrong pin with his own account """
-        employee = self.test_employee.with_user(self.user)
-        action = employee.attendance_manual({}, entered_pin='9999')
-        self.assertNotEqual(employee.attendance_state, 'checked_in', "He should not be able to check in with a wrong pin")
-        self.assertTrue(action.get('warning'))
+        grouped_employee_ids = [g['employee_id'][0] for g in groups]
 
-    def test_checkin_kiosk_with_pin(self):
-        """ Employee can check in/out with his pin in kiosk """
-        employee = self.employee_kiosk.with_user(self.user)
-        employee.attendance_manual({}, entered_pin='5678')
-        self.assertEqual(employee.attendance_state, 'checked_in', "He should be able to check in with his pin")
-        employee.attendance_manual({}, entered_pin='5678')
-        self.assertEqual(employee.attendance_state, 'checked_out', "He should be able to check out with his pin")
+        self.assertNotIn(self.test_employee.id, grouped_employee_ids)
+        self.assertIn(self.employee_kiosk.id, grouped_employee_ids)
 
-    def test_checkin_kiosk_with_wrong_pin(self):
-        """ Employee cannot check in/out with wrong pin in kiosk """
-        employee = self.employee_kiosk.with_user(self.user)
-        action = employee.attendance_manual({}, entered_pin='8888')
-        self.assertNotEqual(employee.attendance_state, 'checked_in', "He should not be able to check in with a wrong pin")
-        self.assertTrue(action.get('warning'))
+        # Specific to gantt view.
+        context['gantt_start_date'] = fields.Datetime.now()
+        context['allowed_company_ids'] = [self.env.company.id]
 
-    def test_checkin_kiosk_without_pin(self):
-        """ Employee cannot check in/out without his pin in kiosk """
-        employee = self.employee_kiosk.with_user(self.user)
-        action = employee.attendance_manual({}, entered_pin=None)
-        self.assertNotEqual(employee.attendance_state, 'checked_in', "He should not be able to check in with no pin")
-        self.assertTrue(action.get('warning'))
+        groups = self.env['hr.attendance'].with_context(**context).web_read_group(
+            domain=[],
+            groupby=['employee_id']
+        )
+        groups = groups['groups']
 
-    def test_checkin_kiosk_no_pin_mode(self):
-        """ Employee cannot check in/out without pin in kiosk when user has not group `use_pin` """
-        employee = self.employee_kiosk.with_user(self.user_no_pin)
-        employee.attendance_manual({}, entered_pin=None)
-        self.assertEqual(employee.attendance_state, 'checked_out', "He shouldn't be able to check in without")
+        grouped_employee_ids = [g['employee_id'][0] for g in groups]
+
+        # Check that both employees appears
+        self.assertIn(self.test_employee.id, grouped_employee_ids)
+        self.assertIn(self.employee_kiosk.id, grouped_employee_ids)
 
     def test_hours_today(self):
         """ Test day start is correctly computed according to the employee's timezone """
@@ -113,3 +100,43 @@ class TestHrAttendance(TransactionCase):
         # now = 2019/3/2 14:00 in the employee's timezone
         with patch.object(fields.Datetime, 'now', lambda: tz_datetime(2019, 3, 2, 14, 0).astimezone(pytz.utc).replace(tzinfo=None)):
             self.assertEqual(employee.hours_today, 5, "It should have counted 5 hours")
+
+    def test_remove_check_in_value_from_attendance(self):
+        attendance_form = Form(self.env['hr.attendance'])
+        attendance_form.employee_id = self.test_employee
+        attendance_form.check_in = False
+        with self.assertRaises(AssertionError):
+            attendance_form.save()
+
+    # @freeze_time("2024-02-1")
+    # def test_change_in_out_mode_when_manual_modification(self):
+    #     TODO naja: cron should work eventually when the adjustment feature is back
+    #     company = self.env['res.company'].create({
+    #         'name': 'Monsters, Inc.',
+    #         'absence_management': True,
+    #     })
+
+    #     employee = self.env['hr.employee'].create({
+    #         'name': "James P. Sullivan",
+    #         'company_id': company.id,
+    #         'date_version': date(2021, 1, 1),
+    #         'contract_date_start': date(2021, 1, 1),
+    #     })
+    #     breakpoint()
+
+    #     self.env['hr.attendance']._cron_absence_detection()
+
+    #     attendance = self.env['hr.attendance'].search([('employee_id', '=', employee.id)])
+
+    #     self.assertEqual(attendance.in_mode, 'technical')
+    #     self.assertEqual(attendance.out_mode, 'technical')
+    #     self.assertEqual(attendance.color, 1)
+
+    #     attendance.write({
+    #         'check_in': datetime(2021, 1, 4, 8, 0),
+    #         'check_out': datetime(2021, 1, 4, 17, 0),
+    #     })
+
+    #     self.assertEqual(attendance.in_mode, 'manual')
+    #     self.assertEqual(attendance.out_mode, 'manual')
+    #     self.assertEqual(attendance.color, 0)

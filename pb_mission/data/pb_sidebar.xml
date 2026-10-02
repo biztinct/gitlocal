@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13): a frozen file means P3b and P4 could never
+     move this record without shipping a migration, and both of them touch the
+     Workforce rail. The three phases before this one each paid for that lesson
+     once (W13.1/W27). -->
+<odoo noupdate="0">
+
+    <!-- WORKFORCE › Mission Control — the whole section, in one door.
+
+         Seven items (Today 10 · Schedule 20 · Time 30 · Time Off 40 ·
+         Overtime 50 · Trips 60 · Team Approvals 70) become this one, and they
+         all move into the 900 retired band: a deactivated item still OCCUPIES
+         its sequence for W8's uniqueness rule, and this record takes 10 (W18).
+         None of the seven client actions is touched — every cockpit is still
+         registered and still reachable at its own URL.
+
+         P3b renames this item "Workforce" -> "Mission Control". The section
+         header already says WORKFORCE, so "WORKFORCE > Workforce" read as a
+         stutter; "WORKFORCE > Mission Control" reads as intended. The action
+         itself keeps the name "Workforce", because that is what the breadcrumb
+         and the section are about.
+
+         W28 (a label is unique across the WHOLE sidebar table, not just its
+         section): no other `pb.sidebar.item` in any module carries either
+         label. "Mission Control" appears nowhere else in the codebase's
+         sidebar data, and Formula Studio's own Command Center is a ~K palette
+         inside a cockpit, not a rail entry — deliberately NOT reused as a name
+         here, because two things called Command Center would be two things.
+
+         The record is `noupdate="0"` and its stored `ir_model_data.noupdate`
+         flag was asserted clear by P3a, so a plain `-u pb_mission` really does
+         move it — which W13.1 says must still be checked in the DATABASE
+         afterwards, and `test_sidebar.py` is what checks it.
+
+         UNGATED, on purpose. The seven it replaces had five different gates
+         between them and TWO of them — Trips and Team Approvals — were open to
+         every internal user, so any gate here would take a door away from
+         somebody who has one today. Instead, the shell's rail asks each lens's
+         own question client-side (`LENSES[].groups` in pb_mission.js) and shows
+         only the lenses this persona could actually read, so nobody is offered
+         a surface that would answer with an AccessError. That is a visibility
+         hint, not a security boundary: every facade still enforces its own gate
+         server-side (W12). -->
+    <!-- IA REDESIGN CYCLE 5 — THE RAIL CUTOVER moved this record and renamed it.
+         The WORKFORCE section is retired (it held this item and nothing else
+         live), and Mission Control becomes the third item of OPERATE, beside Pay
+         Run and People: the three missions you spend a working day inside.
+
+         "Mission Control" -> "Workforce" reverses P3b's rename, and the reason
+         P3b gave for it has gone with the section. That rename existed because
+         the section header said WORKFORCE and "WORKFORCE > Workforce" read as a
+         stutter; the header now says OPERATE, the IA dossier's own rail draws
+         this entry as "Workforce", and the action has been called Workforce
+         throughout. W28 (a label is unique across the WHOLE `pb.sidebar.item`
+         table, not just its section) holds: no other item carries either label,
+         and the retired `sec_workforce` SECTION is inactive, so nothing on the
+         rail says the word twice. The shell's own lens rail still labels its
+         approvals lens plainly "Approvals" — W38: judge an in-surface label by
+         what else is visible in that surface. -->
+    <!-- GATED SINCE ACCESS P4, in TWO LANES read as an OR — see
+         `pb_payhub/data/pb_sidebar.xml` for why the lane written here is a
+         PERMISSION and the ROLE lane is written onto the row by
+         `pb_vendor_access`. The "UNGATED, on purpose" note above is what was
+         true before that phase, and the reason it gives — that the seven items
+         this one replaced had five different gates between them — is exactly
+         why the lane here is the WIDEST of the seven rather than the narrowest:
+         the two attendance tiers, either of which is enough.
+
+         `(4, ref(…))` never `(6, 0, …)` — an ADD, so `pb_demo`'s join survives
+         the next upgrade of this module. -->
+    <record id="item_workforce" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_payrun"/>
+        <field name="groups_id"
+               eval="[(4, ref('hr_attendance.group_hr_attendance_officer')),
+                      (4, ref('hr_attendance.group_hr_attendance_manager'))]"/>
+        <field name="name">Workforce</field>
+        <field name="icon">compass</field>
+        <field name="sequence">30</field>
+        <field name="action_xmlid">pb_mission.action_pb_workforce</field>
+        <field name="action_tag">pb_workforce</field>
+        <!-- The absorbed cockpits keep their client actions (W18), so a
+             bookmark, a stray doAction or the shell's own standalone fallback
+             must light THIS entry rather than leaving the rail with nothing
+             selected.
+             P7 removed `shift_planning_grid` and `attendance_live` from this
+             list: those two cockpits were DELETED, component and action, so
+             the tags no longer name anything the action registry can produce.
+             A match dimension is a claim on a real surface (W71) — an entry
+             that can never match is not harmless, it is a reader being told
+             there is a screen somewhere that there is not. -->
+        <field name="match_action_tags">pb_workforce,pb_today,pb_schedule,pb_time_hub,pb_timeoff,pb_ot_desk,pb_trips,pb_team,pb_attendance_weekgrid,pb_attendance_flow,pb_driver_map</field>
+    </record>
+
+</odoo>

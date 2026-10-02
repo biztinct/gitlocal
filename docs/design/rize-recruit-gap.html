@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rize Recruit Gap Register</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#FBFBF8; --paper:#FFFFFF; --ink:#1B2420; --muted:#5F6B64; --line:#DFE4DE; --line-strong:#C9D1CA;
+  --accent:#2E6B4E; --accent-ink:#1F4D37; --accent-soft:#E6F0EA;
+  --xl:#3B4F8A; --xl-soft:#E7EBF7; --mt:#8A4B1F; --mt-soft:#F8ECE0;
+  --have:#2E6B4E; --have-soft:#E3EFE7; --partial:#8F5E00; --partial-soft:#FBF0D3; --gap:#A5382A; --gap-soft:#FBE4DF;
+  --deferred:#4D5D8A; --deferred-soft:#E6EAF5; --client:#5F6B64; --client-soft:#EEF0EC;
+  --shadow:0 1px 2px rgba(27,36,32,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#121714; --paper:#1A211D; --ink:#E8ECE7; --muted:#A3AEA6; --line:#2C352F; --line-strong:#3C4740;
+    --accent:#7BB998; --accent-ink:#A9D6BF; --accent-soft:#1E3128;
+    --xl:#A9B8EA; --xl-soft:#232B45; --mt:#E2A877; --mt-soft:#3B2A1C;
+    --have:#7BB998; --have-soft:#1E3128; --partial:#E2B65C; --partial-soft:#3A2F14; --gap:#EE8B7B; --gap-soft:#402220;
+    --deferred:#A9B8EA; --deferred-soft:#232B45; --client:#A3AEA6; --client-soft:#242B27;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#121714; --paper:#1A211D; --ink:#E8ECE7; --muted:#A3AEA6; --line:#2C352F; --line-strong:#3C4740;
+  --accent:#7BB998; --accent-ink:#A9D6BF; --accent-soft:#1E3128;
+  --xl:#A9B8EA; --xl-soft:#232B45; --mt:#E2A877; --mt-soft:#3B2A1C;
+  --have:#7BB998; --have-soft:#1E3128; --partial:#E2B65C; --partial-soft:#3A2F14; --gap:#EE8B7B; --gap-soft:#402220;
+  --deferred:#A9B8EA; --deferred-soft:#232B45; --client:#A3AEA6; --client-soft:#242B27;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding-block:32px 64px;padding-inline:20px}
+h1,h2,h3{text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
+h2{font-size:22px;font-weight:600;letter-spacing:-.01em;margin-block:44px 12px;padding-top:12px;border-top:1px solid var(--line-strong)}
+h3{font-size:16px;font-weight:600;margin-block:24px 8px}
+p{margin:0 0 10px;max-width:72ch}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:8px}
+.lede{font-size:17px;color:var(--ink);max-width:70ch;margin-top:12px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;color:var(--muted);font-size:13px;margin-top:14px}
+.sources{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:24px}
+.src{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px 18px;box-shadow:var(--shadow)}
+.src .tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:500;padding:2px 8px;border-radius:5px;margin-bottom:8px}
+.src.xl .tag{background:var(--xl-soft);color:var(--xl)}
+.src.mt .tag{background:var(--mt-soft);color:var(--mt)}
+.src p{font-size:14px;color:var(--muted);margin:0 0 6px}
+.src strong{color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:14px;font-size:13px;color:var(--muted);align-items:center}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:2px 9px;border-radius:999px;white-space:nowrap;line-height:1.6}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.9}
+.chip.have{background:var(--have-soft);color:var(--have)}
+.chip.partial{background:var(--partial-soft);color:var(--partial)}
+.chip.gap{background:var(--gap-soft);color:var(--gap)}
+.chip.deferred{background:var(--deferred-soft);color:var(--deferred)}
+.chip.client{background:var(--client-soft);color:var(--client)}
+.ref{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:500;padding:1px 7px;border-radius:5px;margin:2px 4px 2px 0;white-space:nowrap}
+.ref.xl{background:var(--xl-soft);color:var(--xl)}
+.ref.mt{background:var(--mt-soft);color:var(--mt)}
+.ref.rl{background:var(--accent-soft);color:var(--accent-ink)}
+.glance{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:10px;font-size:15px;align-items:baseline}
+.glance b{font-weight:600;font-variant-numeric:tabular-nums}
+.glance span.k{color:var(--muted)}
+.note{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:14px 0;max-width:80ch;font-size:14px}
+.note p{max-width:none}
+/* rulings */
+.rulings{display:grid;gap:10px;margin-top:12px}
+.ruling{display:grid;grid-template-columns:48px 1.1fr 1.1fr 1.3fr;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:14px;box-shadow:var(--shadow)}
+.ruling .id{font-family:"IBM Plex Mono",monospace;font-weight:500;color:var(--accent-ink);font-size:13px}
+.ruling .lab{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:3px}
+.ruling .verdict{border-left:2px solid var(--accent);padding-left:12px}
+.ruling-head{display:grid;grid-template-columns:48px 1.1fr 1.1fr 1.3fr;gap:14px;padding:0 16px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+/* filter bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ground);padding-block:10px;border-bottom:1px solid var(--line);margin-top:18px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.bar label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.bar select,.bar input{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line-strong);border-radius:7px;background:var(--paper);color:var(--ink)}
+.bar input{min-width:200px}
+.bar .count{margin-left:auto;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar button{font:inherit;font-size:13px;padding:5px 10px;border:1px solid var(--line-strong);border-radius:7px;background:var(--paper);color:var(--ink);cursor:pointer}
+.bar button:focus-visible,.bar select:focus-visible,.bar input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+/* register */
+.area{margin-top:28px}
+.area h3{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:8px}
+.area h3 .n{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--muted);font-weight:500}
+.area h3 .sub{font-size:13px;color:var(--muted);font-weight:400}
+.rows{display:grid;gap:8px;margin-top:10px}
+.row{display:grid;grid-template-columns:78px 1.15fr 1.15fr 1.15fr 150px;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:14px;box-shadow:var(--shadow);align-items:start}
+.row.hidden{display:none}
+.row .id{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:500;color:var(--ink)}
+.row .id small{display:block;font-family:"IBM Plex Sans",sans-serif;font-size:11.5px;color:var(--muted);font-weight:400;margin-top:4px;line-height:1.35}
+.row .lab{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:3px}
+.row .want b{font-weight:600}
+.row .want .refs{margin-top:8px;line-height:1.9}
+.row .st{display:grid;gap:6px;justify-items:start}
+.row .st .sz{font-size:12.5px;color:var(--muted)}
+.row .st .sz b{color:var(--ink);font-weight:600}
+.row .today,.row .change{color:var(--ink)}
+.row .change .cta{font-weight:500}
+.row ul{margin:4px 0 0;padding-left:18px}
+.row li{margin:2px 0}
+.rows-head{display:grid;grid-template-columns:78px 1.15fr 1.15fr 1.15fr 150px;gap:14px;padding:0 16px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.area.empty{display:none}
+/* simple tables */
+.tbl{overflow-x:auto;margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--ground)}
+tr:last-child td{border-bottom:0}
+td .mono{font-size:12.5px}
+/* phases */
+.phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:12px}
+.phase{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow);font-size:14px}
+.phase .num{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--accent-ink);font-weight:500}
+.phase h4{margin:4px 0 6px;font-size:15px;font-weight:600}
+.phase p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.phase .ids{line-height:1.9}
+.phase.later{border-style:dashed}
+details{margin-top:8px}
+summary{cursor:pointer;font-weight:500;color:var(--accent-ink)}
+.foot{margin-top:48px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+@media (max-width:900px){
+  .row,.ruling{grid-template-columns:1fr}
+  .rows-head,.ruling-head{display:none}
+  .row .id{display:flex;gap:10px;align-items:baseline}
+  .row .id small{margin:0}
+  .bar .count{margin-left:0;width:100%}
+}
+@media (prefers-reduced-motion:no-preference){ .row{transition:border-color .15s} .row:hover{border-color:var(--line-strong)} }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="eyebrow">Rize · Hiring · requirements review</div>
+  <h1>Rize Recruit Gap Register</h1>
+  <p class="lede">What Rize asked for in the Zoho Recruit requirements workbook and in the 28 September call, what the Payobook Hiring screens already do, and what has to change. Every line names where the ask came from, so a change can be traced back to a cell in the workbook or a minute in the call.</p>
+  <div class="meta">
+    <span>Prepared 30 September 2026</span>
+    <span>Client contact on the call: Anita Rayan (Talent, Rize) with Nithya and Debalina</span>
+    <span>Compared against Payobook Hiring as it runs on payobook.com today</span>
+  </div>
+
+  <div class="sources">
+    <div class="src xl">
+      <span class="tag">XL</span>
+      <p><strong>Zoho Recruit.xlsx</strong> — Rize's written requirements. Nine tabs, 37 numbered asks (REC-001 to REC-037), a "who can do what" grid, form-field lists, a notification matrix, a template list, dashboards and reports, and 11 open questions for the vendor (OQ-01 to OQ-11).</p>
+      <p>Tag format: <span class="ref xl">XL REC-006</span> a numbered ask · <span class="ref xl">XL §5 Exceptions</span> a table on tab 5 · <span class="ref xl">XL OQ-04</span> an open question.</p>
+    </div>
+    <div class="src mt">
+      <span class="tag">MT</span>
+      <p><strong>Meeting of 28 Sep 2026</strong> — the transcript and notes of the call with Anita. Where the call and the workbook disagree, the call is the later word and is treated as the ruling (see "Where the call changed the workbook").</p>
+      <p>Tag format: <span class="ref mt">MT 00:31:43</span> a minute in the transcript · <span class="ref mt">MT decision</span> one of the eight "Aligned" decisions in the notes · <span class="ref mt">MT next step</span> an action the notes assigned to someone.</p>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span>Status of each ask today:</span>
+    <span class="chip have">Have — works today, wording may differ</span>
+    <span class="chip partial">Partial — exists, must change</span>
+    <span class="chip gap">Gap — must be built</span>
+    <span class="chip deferred">Deferred — Rize put it on hold</span>
+    <span class="chip client">Rize's side — not a build item</span>
+  </div>
+
+  <h2>At a glance</h2>
+  <div class="glance" id="glance"></div>
+  <div class="note">
+    <p><strong>The short version.</strong> Most of the mechanics Rize needs already exist in Payobook Hiring: requests with a budget check, referrals, interviews with calendar files and two reminders, panel opinions with a 24-working-hour clock, background checks, document collection, offers, a joining hand-off and a numbers screen with Excel export. What Rize is really asking for is a different <em>shape</em>: their own stage names shown as a drag-and-drop board per role, nothing that waits on a sign-off (except the offer), application forms they can edit themselves in three languages, a recruiter-owned privacy model, and a pause between "offer signed" and "joined". Those five shape changes drive most of the work; the rest is small deltas.</p>
+    <p><strong>Two things to know before build.</strong> (1) The workbook and the call disagree in twelve places; the call is taken as the ruling and each is listed below for your confirmation. (2) Hiring runs on the payobook.com demo database. At the last check it was not yet installed on Rize's own database, so the first deploy step is an install, not an upgrade.</p>
+  </div>
+
+  <h2>Where the call changed the workbook</h2>
+  <p>Twelve places where the 28 September call refined, softened or reversed a line in the workbook. The register below follows the call. If you would rather follow the workbook on any of these, say so and the affected lines change.</p>
+  <div class="ruling-head"><span>Ref</span><span>Workbook says</span><span>Call says</span><span>Taken as the ruling</span></div>
+  <div class="rulings" id="rulings"></div>
+
+  <h2>The register</h2>
+  <p>Grouped by the workbook's own nine tabs, plus a tenth area the call added (joining and pre-onboarding). "Today" describes the Payobook Hiring screens as they run now; "What changes" is the enhancement or change needed. Size is a rough build-effort mark: S is days, M is a week or two, L is several weeks.</p>
+
+  <div class="bar" id="bar">
+    <label>Status
+      <select id="fStatus">
+        <option value="">All</option>
+        <option value="gap">Gap</option>
+        <option value="partial">Partial</option>
+        <option value="have">Have</option>
+        <option value="deferred">Deferred</option>
+        <option value="client">Rize's side</option>
+      </select>
+    </label>
+    <label>Source
+      <select id="fSource">
+        <option value="">Any</option>
+        <option value="xl">In the workbook</option>
+        <option value="mt">In the call</option>
+        <option value="xlonly">Workbook only</option>
+        <option value="mtonly">Call only</option>
+        <option value="both">Both</option>
+      </select>
+    </label>
+    <label>Priority
+      <select id="fPrio">
+        <option value="">Any</option>
+        <option value="Critical">Critical</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Call">Raised in the call (unrated)</option>
+      </select>
+    </label>
+    <label>Find <input id="fText" type="search" placeholder="e.g. REC-020, Calendly, budget"></label>
+    <button id="fClear" type="button">Clear</button>
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="rows-head"><span>Ref</span><span>What Rize wants · where it came from</span><span>Today in Payobook Hiring</span><span>What changes</span><span>Status · size · phase</span></div>
+  <div id="register"></div>
+
+  <h2>Rize's eleven open questions, answered for Payobook</h2>
+  <p>Tab 9 of the workbook asks the vendor eleven questions written with Zoho Recruit in mind. Here is the Payobook answer to each, so Rize gets a reply in their own structure.</p>
+  <div class="tbl"><table id="oq"></table></div>
+
+  <h2>On hold, or on Rize's side</h2>
+  <p>Items the call parked, or that only Rize can move. None of these block the first build phases, but four of them (marked) are inputs a later phase needs.</p>
+  <div class="tbl"><table id="hold"></table></div>
+
+  <h2>Proposed build order</h2>
+  <p>Eight phases, ordered by what Anita said she needs first ("I need the pipelines configured first. I need the jobs configured first" — <span class="ref mt">MT 00:34:01</span>) and by what each phase depends on. This is the order I would run if you give the go-ahead; nothing is started yet.</p>
+  <div class="phases" id="phases"></div>
+
+  <h2>Notes for the build team</h2>
+  <details>
+    <summary>Where today's capability lives (module names only)</summary>
+    <div class="tbl"><table>
+      <tr><th>Area</th><th>Module / mechanism today</th><th>Watch out</th></tr>
+      <tr><td>Everything hiring</td><td><span class="mono">pb_hiring</span> 19.0.1.3.5 on top of standard <span class="mono">hr_recruitment</span> + <span class="mono">website_hr_recruitment</span>; screens registered as lenses on the Lifecycle, Insights and Settings hubs; approval routes via <span class="mono">biz_approval_workflow</span>.</td><td>Not installed on the <span class="mono">rize</span> database at the last check (18 Sep); tenant-sync rule applies.</td></tr>
+      <tr><td>Stages</td><td>15 global stages keyed by <span class="mono">pb_key</span>; six stock stages still active; per-request steps in <span class="mono">pb.hiring.step</span>.</td><td>Standard <span class="mono">stage.job_ids</span> exists but is unused; stock "New" stage still carries the acknowledgement template.</td></tr>
+      <tr><td>Apply form</td><td>Fixed QWeb template + controller in <span class="mono">pb_hiring/controllers/application.py</span>; <span class="mono">rize_website</span> re-skins the careers pages.</td><td><span class="mono">hr_recruitment_survey</span> is present but unused; no Indonesian language anywhere in custom code; <span class="mono">vi_VN.po</span> has 35 strings.</td></tr>
+      <tr><td>Interviews / feedback</td><td><span class="mono">pb.hiring.interview</span>, <span class="mono">pb.hiring.feedback</span> (token pages), <span class="mono">pb.hiring.criterion</span>; reminders by 10-minute cron.</td><td><span class="mono">calendar.event</span> created with <span class="mono">dont_notify</span>; no <span class="mono">google_calendar</span> in the repo (check the server's core addons before assuming).</td></tr>
+      <tr><td>Offer / close</td><td><span class="mono">pb.hiring.offer</span> + lines, <span class="mono">pb.hiring.bgv</span>, <span class="mono">pb.hiring.docreq</span>; close creates employee/contract/comp/login/checklist via the Zoho pipeline hook.</td><td>Enterprise-only <span class="mono">sign</span>, <span class="mono">hr_contract_salary</span>, <span class="mono">appointment</span>, <span class="mono">hr_referral</span> are absent; do not plan on them.</td></tr>
+      <tr><td>Roles</td><td><span class="mono">group_hiring_user</span> / <span class="mono">group_hiring_manager</span> / <span class="mono">group_hiring_admin</span>; Access-screen catalogue in <span class="mono">pb_vendor_access/hooks.py</span> (needs a row + migration for any new role).</td><td>Record rules give Recruiter tier everything; no field-level groups on offer money.</td></tr>
+      <tr><td>Rules that bind every string</td><td>No "Odoo" in any user-visible text; Lucide icons not emoji; quiet-board pattern for numbers; Vietnamese strings need both the .po and any stored value.</td><td>Each handover must restate these.</td></tr>
+    </table></div>
+  </details>
+
+  <div class="foot">Sources: <span class="mono">RIZE/Zoho Recruit.xlsx</span> and <span class="mono">RIZE/Zoho ATS__Rize - 2026_09_28 16_03 IST - Notes by Gemini.pdf</span>. "Today" facts were read from the current code on branch 19.1 on 30 September 2026. Transcript minutes are the Gemini timestamps; the notes say the transcript may contain errors, so a minute is a pointer, not a quotation.</div>
+</div>
+
+<script>
+const AREAS = [
+  ["A1","Platform, access and configuration","workbook tab 1"],
+  ["A2","Requisition and job description","workbook tab 2"],
+  ["A3","Sourcing and posting","workbook tab 3"],
+  ["A4","Screening and talent pool","workbook tab 4"],
+  ["A5","Interviews and feedback","workbook tab 5"],
+  ["A6","Selection, offer and closure","workbook tab 6"],
+  ["A7","Communications","workbook tab 7"],
+  ["A8","Analytics and reporting","workbook tab 8"],
+  ["A9","Joining and pre-onboarding","added by the call; not in the workbook"]
+];
+
+// status: have | partial | gap | deferred | client ; prio: Critical | High | Medium | Call | —
+const ROWS = [
+// ---------- A1
+{id:"G-01",area:"A1",title:"Application form editable per role: add, remove, reorder, rename fields, own questions",prio:"Critical",
+ src:["XL REC-005","XL §1 Current UI","MT 00:02:35","MT 00:21:23","MT next step"],
+ today:"One fixed form for every role: name, email, phone, country/location, LinkedIn, CV, work permission, relocation, and a 150–250-word \"why us\" answer; a portfolio link is optional. Nobody can add, remove or rename a field.",
+ change:"A form builder for the TA Lead: start from a template (standard, by department, by seniority), add / remove / reorder / rename fields, add own questions such as \"Where are you based?\" (the call put screening questions inside the form), mark each required, and pick the form when a role is opened. Screening questions replace separate assessments.",
+ status:"gap",size:"L",phase:2},
+{id:"G-02",area:"A1",title:"Application form in Vietnamese and Bahasa Indonesia, chosen by market",prio:"High",
+ src:["XL REC-036","MT 00:02:35","MT 00:53:30"],ruling:"R11",
+ today:"English only. Vietnamese covers a handful of Hiring words; Indonesian is not installed anywhere in the product. The confirmation page and emails are English.",
+ change:"Each form carries a Vietnamese and an Indonesian version of its labels, questions, confirmation page and confirmation email; the candidate sees the version for the role's market with a switch. Install Indonesian. Recruiter-side screens stay English (the call settled this).",
+ status:"gap",size:"M",phase:2},
+{id:"G-03",area:"A1",title:"A drag-and-drop board per role: columns are stages, cards are people, move several at once",prio:"Critical",
+ src:["XL REC-006","XL §1 Current UI","XL OQ-04","MT 00:04:46"],
+ today:"The Hiring screen lists roles with a small per-stage count bar. Opening a role shows the candidates as a list with a \"Move stage\" button, one person at a time. (The stock candidate board exists elsewhere but is not the Hiring screen.)",
+ change:"Opening a role shows columns for its stages with a card per candidate; drag a card to move it; tick several and move them together; a one-click \"Advance\" on the card. Counts update as cards move.",
+ status:"partial",size:"M",phase:1},
+{id:"G-04",area:"A1",title:"Rize's own stage names, with columns shown or hidden per role; department + country pre-fills",prio:"Critical",
+ src:["XL REC-007","XL §1 Current UI","XL OQ-01","MT 00:08:44","MT 00:12:15","MT 00:14:35","MT decision"],
+ today:"One fixed stage list for every role: Screening, Panel Review, Recruiter Phone Call, Assignment, Discussion 1–3, Reference Check, Offer Stage, Joined, plus CV Reject, Interview Reject, Drop Out, On Hold and Offer Drop out. Six stock stages (New, Qualification, First Interview…) still sit beside them. Nothing hides a column for one role.",
+ change:"Rename to Rize's words: Applications received, Shortlist, Recruiter review, Hiring manager review, Assignment, Discussion 1 / 2 / 3, Offer, Post-offer, Joined; CV reject, Interview reject, Drop-out, On hold, Offer drop. A role shows only the columns it needs (e.g. no Discussion 3, no Assignment); a department + country template pre-fills which columns; the TA Lead edits per role without a ticket. Retire the six stock stages. Anita accepted one universal set as long as every stage of hers exists and can be hidden per role.",
+ status:"partial",size:"M",phase:1},
+{id:"G-05",area:"A1",title:"Nothing waits on a sign-off; recruiters move anyone anywhere; one hard rule only",prio:"Critical",
+ src:["XL REC-035","MT 00:15:23","MT 00:31:43","MT 00:38:34","MT decision"],ruling:"R1",
+ today:"Several stops exist: a role cannot take candidates until the request is agreed by the manager, HR and (if over budget) Finance; the job description has its own sign-off; moving to Offer needs a finished background check and a drafted offer; Joined needs a signed offer; an interview cannot be closed while an opinion is missing; an offer cannot be sent until the candidate's documents are in and the hiring manager + HR have agreed.",
+ change:"Remove every stop except one: no offer goes out unless the role's hiring request is agreed. All other sign-offs become \"record and notify\" (the approver is told; nothing waits). Recruiter and TA Lead move any candidate to any stage; a reason on a reject is offered, not forced.",
+ status:"partial",size:"M",phase:1},
+{id:"G-06",area:"A1",title:"Who may move a candidate: recruiters and the TA Lead only",prio:"Critical",
+ src:["XL §1 Who can do what","MT 00:16:34"],ruling:"R6",
+ today:"Recruiter, Hiring manager and Head of hiring tiers can all move candidates. A line manager who raised a request can see it and comment.",
+ change:"Follow the call: Recruiter and TA Lead move; hiring managers see the board for their roles and leave notes. The workbook grid gave hiring managers the move right, so this needs Rize's confirmation.",
+ status:"partial",size:"S",phase:1},
+{id:"G-07",area:"A1",title:"Role names and what each role sees (Recruiter, TA Lead, Head of HR, Hiring Manager, Finance, Interviewer, Agency, Candidate)",prio:"Critical",
+ src:["XL §1 Who can do what","XL REC-008","MT 00:16:34"],
+ today:"Three tiers: Recruiter, Hiring manager, Head of hiring. \"Hiring manager\" here is a power tier (can approve and change anything), not the line manager who raises a request; the line manager gets access simply by being the requester or reporting manager. Interviewers get a private link per interview. Finance is a sign-off seat only. Candidates use secure links, no login. There is no agency access.",
+ change:"Rename the tiers Recruiter / TA Lead / Head of hiring so the words match Rize's grid; a line manager sees only their own roles; Finance sees only the money it must agree; an interviewer sees only their assigned candidates; agencies get their own portal (G-21).",
+ status:"partial",size:"S",phase:1},
+{id:"G-08",area:"A1",title:"Recruiter-owned privacy: comp, opinions and the resume bank visible only where the recruiter shares them",prio:"Critical",
+ src:["XL REC-008","XL OQ-05","MT 00:16:34","MT 00:17:58","MT 00:19:08","MT decision"],
+ today:"A recruiter sees everything. Salary asked / offered on the candidate card is recruiter-only. Offer money is visible to anyone who can open the offer (requester, reporting manager, sign-off seats). Panel members see only their own opinion. The keep-in-touch pool is recruiter-only. There is no \"share this with the hiring manager\" switch.",
+ change:"A candidate is recruiter-only until shared. \"Share with…\" per candidate chooses what (profile, CV, assignment, attachments, compensation) and with whom (the hiring manager, named panel members set on the role). Money fields hidden from everyone else. Resume bank stays hidden from hiring managers. Panel members remain blind to each other until all opinions are in.",
+ status:"partial",size:"L",phase:4},
+{id:"G-09",area:"A1",title:"Delegate a recruiter's roles to a backup for a date range, approved, logged, auto-reverted",prio:"Medium",
+ src:["XL REC-028","XL §7 Notifications"],
+ today:"\"Recruiter cover\": pick the cover person, dates and reason; the recruiter's manager approves; the cover can act on those roles; it ends on the date; both are emailed.",
+ change:"Approver becomes the TA Lead once the tiers are renamed (G-07). Nothing else.",
+ status:"have",size:"S",phase:1},
+{id:"G-10",area:"A1",title:"TA Lead self-serves stages, forms, templates and automations without a ticket",prio:"Critical",
+ src:["XL REC-035","XL OQ-11","MT 01:06:00","MT decision"],
+ today:"Settings → Hiring lets the Head of hiring edit the scoring lines, candidate emails, letter templates, country → recruiter rules and a few switches. The stage list, the application form and the automatic emails are fixed in the product.",
+ change:"One \"Hiring set-up\" home for the TA Lead that gathers: stages and per-role visibility (G-04), form templates (G-01), scorecard templates (G-32), email templates with language versions (G-47) and automation rules (G-50). Built as a shell in phase 1, filled by the later phases.",
+ status:"partial",size:"M",phase:1},
+{id:"G-11",area:"A1",title:"A simpler screen with fewer filters",prio:"Call",
+ src:["MT 01:03:57","MT 01:05:06","MT next step"],
+ today:"Hiring is already one screen (Roles / Interviews, four journey chips). The stock Recruitment menus (Applications, Candidates, Configuration…) are still reachable and duplicate it with the filters Anita complained about.",
+ change:"Hide the stock Recruitment menus for Rize; the board and the set-up home are the only doors. Review the board's chips against Rize's stage words.",
+ status:"partial",size:"S",phase:1},
+
+// ---------- A2
+{id:"G-12",area:"A2",title:"Hiring manager raises the request on a standard form; all mandatory fields; a Confidential toggle",prio:"High",
+ src:["XL REC-009","XL §2 Requisition form fields"],
+ today:"Department managers (from the org chart) and hiring staff raise a request through a four-step wizard: title, department, country, reason, headcount, city, reporting manager, level, JD or attachment, discussion focus per round, assignment brief, annual budget + currency, close-by date. There is no Confidential toggle; the reason \"Replacing somebody quietly\" only stops referrals and the public advert, not who can see the request inside.",
+ change:"Add a Confidential toggle that hides the role from referrals, adverts and from everyone except Recruiter, TA Lead and HR. Keep the mandatory-field checks. Budget handling moves to G-15.",
+ status:"partial",size:"S",phase:3},
+{id:"G-13",area:"A2",title:"Recruiter asks a hiring manager to complete a request; reminders until done; escalation",prio:"High",
+ src:["XL REC-034","XL §2 step 0 (alt)","XL §7 Notifications","MT 00:27:02","MT 00:28:26"],
+ today:"Not possible. A recruiter can only raise the request themselves. No reminder exists.",
+ change:"\"Ask <manager> to complete a hiring request\" from a role or from the board. The manager gets an email and an in-app note with a link that opens the form pre-filled with the role. Reminders repeat on a cadence the recruiter sets (workbook: every 2 business days); after 3 business days it escalates to the TA Lead / Head of HR.",
+ status:"gap",size:"M",phase:3},
+{id:"G-14",area:"A2",title:"A role can exist before, or without, a hiring request",prio:"Call",
+ src:["MT 00:25:48","MT decision"],ruling:"R9",
+ today:"A role (advert + pipeline) only comes into being when a request is agreed; the public form refuses applications until then.",
+ change:"Create a role directly; candidates and the board work without a request; a request can be raised or attached later. The only consequence of \"no agreed request\" is the offer rule (G-43).",
+ status:"gap",size:"M",phase:3},
+{id:"G-15",area:"A2",title:"Budget entered by the hiring manager; over-budget flags CEO, Head of HR and Finance by email; nothing blocked",prio:"High",
+ src:["XL REC-010","XL §2 Exceptions","MT 00:28:26","MT 00:29:31","MT 00:30:27","MT 00:31:43"],ruling:"R2",
+ today:"The figure is compared to the department's budget lines. Over budget adds Finance as a required sign-off and the role cannot open until Finance agrees. A currency mismatch reports \"unknown\".",
+ change:"The hiring manager types the expected budget; the recruiter or HR can record the confirmed figure after checking with Finance. If expected exceeds confirmed (or the department budget where one exists) an email + in-app notice goes to the CEO, Head of HR and Finance. Nothing waits. A \"Budget: agreed / not yet / declined\" tag for tracking only. Needs from Rize: who the \"CEO\" recipient is per company.",
+ status:"partial",size:"S",phase:3},
+{id:"G-16",area:"A2",title:"Recruiter auto-assigned by the role's country; recruiter and TA Lead told",prio:"High",
+ src:["XL REC-011","XL §2 step 3"],
+ today:"A country → recruiter table assigns the recruiter when the request is agreed; the recruiter gets an email and a to-do; their manager gets a copy.",
+ change:"Fire on submission instead of on agreement, since agreement no longer gates anything.",
+ status:"have",size:"S",phase:3},
+{id:"G-17",area:"A2",title:"Job description from a role-family template, shared with the hiring manager for input, versioned, no sign-off gate",prio:"High",
+ src:["XL REC-012","XL §7 Templates","XL §2 Exceptions"],
+ today:"The \"Job descriptions\" screen keeps versions linked to the request, but the JD goes through a sign-off and a nudge fires after 3 days.",
+ change:"Replace the sign-off with \"shared with <manager> for input\" plus a notice; JD templates by role family; edits flow to the advert. The overdue nudge stays but goes to the TA Lead.",
+ status:"partial",size:"S",phase:3},
+{id:"G-18",area:"A2",title:"Interview rounds and the panel named on the request",prio:"High",
+ src:["XL §2 Requisition form fields","MT 00:20:17"],ruling:"R12",
+ today:"Each request carries its rounds with a focus and an owner per round; the wizard makes one step per Discussion.",
+ change:"Name the panel members per round (they are who can receive shared data, G-08) and the scorecard per round (G-32). The call: if no panel is named, sharing goes to the hiring manager only.",
+ status:"have",size:"S",phase:5},
+
+// ---------- A3
+{id:"G-19",area:"A3",title:"Referral opens automatically when the role goes live, unless Confidential",prio:"Medium",
+ src:["XL REC-013","XL §3 Exceptions","XL §7 Notifications"],
+ today:"Referrals open when the role opens; employees use \"Refer someone\" on their portal (consent, relationship, CV); blocked for \"Replacing somebody quietly\"; a referrer cannot sit on the panel; the referral becomes a candidate tagged Source = Referral.",
+ change:"Tie the switch to the Confidential toggle (G-12) and to \"role published\" rather than \"request agreed\"; send the referral announcement email to employees (today the card just appears).",
+ status:"have",size:"S",phase:3},
+{id:"G-20",area:"A3",title:"Post to website, LinkedIn, employee portal and regional boards from one place, each source-tagged",prio:"High",
+ src:["XL REC-014","XL §1 Current UI","XL OQ-10","MT 00:49:10","MT 00:51:19","MT next step"],
+ today:"\"Publish\" puts the role on the careers page and prepares an email pack per job board (the sending switch is off). There is no live link to LinkedIn, JobStreet or VietnamWorks. The source is captured from the link the candidate clicked and shown on the card.",
+ change:"Now: a \"Publish to…\" panel per role that issues a tracked link per channel (LinkedIn, JobStreet Indonesia, VietnamWorks, referral portal, agency) so every application carries its source even when the posting itself is pasted on the board's site. Later: direct posting where a board offers it and Rize holds the subscription (JobStreet is already subscribed; Anita to confirm the list).",
+ status:"partial",size:"M now · L later",phase:7},
+{id:"G-21",area:"A3",title:"Agency portal: see assigned open roles, submit only, no internal data; 6-month cooling; performance tracked",prio:"Medium",
+ src:["XL REC-030","XL OQ-07","XL §3 Exceptions","MT 00:49:10"],
+ today:"A role can be tagged with a recruitment agency; the agency page shows roles, people found and average days to fill; the hiring manager is emailed. There is no agency login, no submit page, no cooling rule.",
+ change:"An agency login that sees only the open roles assigned to it and a submit form; every submission tagged Source = Agency; if the same person (email or phone) is already in any pipeline or applied within the last 6 months, the submission is refused and the agency told why; agency figures on Hiring numbers.",
+ status:"gap",size:"L",phase:7},
+
+// ---------- A4
+{id:"G-22",area:"A4",title:"Expected salary asked on the application form",prio:"High",
+ src:["XL REC-001","XL §4 Application form fields"],
+ today:"Not on the form. The field exists on the candidate card and is recruiter-only.",
+ change:"A form-builder field, recruiter-only once captured, carried into the offer.",
+ status:"gap",size:"S",phase:2},
+{id:"G-23",area:"A4",title:"Portfolio required where the role needs it, and impossible to skip",prio:"High",
+ src:["XL REC-002","XL §4 Application form fields","MT 00:22:39","MT next step"],
+ today:"Portfolio is an optional web link; there is no file upload; it cannot be made required per role. (The skip bug Anita reported is in Zoho; Payobook has no required portfolio at all yet.)",
+ change:"Portfolio = file or link; required per form; checked on the server so it cannot be skipped.",
+ status:"gap",size:"S",phase:2},
+{id:"G-24",area:"A4",title:"Who screens first and how: recruiter for most roles, hiring manager first for senior or new roles",prio:"Critical",
+ src:["XL REC-003","MT 00:45:09"],
+ today:"\"First look\" on each new candidate: Shortlisted / Not this time / Worth keeping in touch with / Better suited to another role. A \"Panel Review\" stage exists for a manager look.",
+ change:"Rename the outcomes to Rize's words (Shortlist / CV reject / Future-fit / Fit for other role); \"Hiring manager review\" becomes a column a role can show or hide (G-04).",
+ status:"have",size:"S",phase:1},
+{id:"G-25",area:"A4",title:"Applied date and one full timeline on the candidate",prio:"High",
+ src:["XL REC-004","XL REC-031"],
+ today:"\"Applied on\" is stored; every stage move is logged; emails, notes and interviews sit in the record's history — spread over three places.",
+ change:"One \"Timeline\" panel in the candidate drawer: applied, screened, each stage move (who, when), interviews, emails, notes, offer events.",
+ status:"partial",size:"S",phase:1},
+{id:"G-26",area:"A4",title:"Tagging on the board; a searchable Resume bank hidden from hiring managers",prio:"High",
+ src:["XL REC-015","XL §4 step 2"],
+ today:"\"Worth keeping in touch with\" drops the person into a keep-in-touch pool per company; the pool is recruiter-only; there is no search by skill, role or country; \"Better suited to another role\" can point to another role.",
+ change:"A \"Resume bank\" tab inside Hiring: search by skill, role, country and tag; add someone to a role from there; stays hidden from hiring managers.",
+ status:"partial",size:"M",phase:4},
+{id:"G-27",area:"A4",title:"The application form field list (11 fields)",prio:"High",
+ src:["XL §4 Application form fields"],
+ today:"Have: name, email, phone, country/location (free text), role (from the link), CV (pdf/doc, 5 MB, checked), source (auto), referred-by (via referral). Missing: expected salary, portfolio as a required file, data consent, phone format by country, country as a pick-list (to drive routing). CV text is not parsed into the profile (not available on this edition).",
+ change:"Covered by G-01, G-22, G-23 and G-45; country becomes a pick-list that drives recruiter routing; phone format follows the country.",
+ status:"partial",size:"S",phase:2},
+{id:"G-28",area:"A4",title:"Screening assessments (five types) and automatic filtering of high volumes",prio:"—",
+ src:["XL §4 Assessments","MT 00:24:51","MT 00:41:51"],ruling:"R5",
+ today:"An \"Assignment\" stage, an assignment brief per role and an \"Assignment\" email exist for take-home tasks.",
+ change:"None now. The call parked assessments (\"not at the moment\") and automatic filtering (\"I'd want to see pretty much all profiles\"); screening questions go into the form (G-01).",
+ status:"deferred",size:"—",phase:0},
+{id:"G-29",area:"A4",title:"Duplicate application flagged; merge or link",prio:"—",
+ src:["XL §4 Exceptions"],
+ today:"The card shows how many other applications share the email or phone; nothing flags at apply time; no merge.",
+ change:"At apply and on the card: \"Possibly the same person as…\" with a link to the earlier record; a merge action for the recruiter.",
+ status:"partial",size:"S",phase:2},
+
+// ---------- A5
+{id:"G-30",area:"A5",title:"Scheduling with calendar holds, an automatic video link, transcript attached, time zones handled",prio:"High",
+ src:["XL REC-016","XL §5 step 1","XL OQ-10","MT 00:35:02","MT 00:48:06"],
+ today:"An interview record creates a calendar entry and emails calendar files to candidate, panel and recruiter, with the meeting link typed by hand; each person's calendar shows the time in their own zone. No Google Calendar or Meet connection, no automatic Meet link, no transcript slot.",
+ change:"Connect Google Calendar (standard connector; Rize's Google admin must authorise it); create the Meet link automatically; a slot on the interview for the recording / transcript link visible to Recruiter and TA Lead only (pasted by hand first; automatic pull from Meet later).",
+ status:"partial",size:"M",phase:5},
+{id:"G-31",area:"A5",title:"Reminders 24 hours and 30 minutes before, to everyone",prio:"Medium",
+ src:["XL REC-017","XL §7 Notifications"],
+ today:"Both emails go out automatically to candidate, panel and recruiter.",
+ change:"None. (SMS was optional in the workbook and not raised on the call; not planned.)",
+ status:"have",size:"—",phase:0},
+{id:"G-32",area:"A5",title:"Scorecards per role and per discussion round; recruiter may enter on a panellist's behalf; reminders; hidden between panellists",prio:"High",
+ src:["XL REC-020","XL §5 Interview rounds","XL §7 Notifications","XL OQ-06","MT 00:36:26","MT 00:37:31","MT 00:38:34","MT 00:40:50","MT decision","MT next step"],ruling:"R4",
+ today:"One company-wide scorecard: five scoring lines (1–5), a recommendation (Strong no → Strong yes) and notes. Each panel member answers on a private link; due in 24 working hours; one chase email plus a to-do for the recruiter; a summary when all are in; panel members cannot see each other's answers; the recruiter can only fill in by opening the member's link; the interview cannot be marked done while an opinion is missing.",
+ change:"Scorecard templates (free-text areas, a star rating, a decision Yes / No / Maybe / Hold, optional scored lines) chosen per role AND per discussion round when the role is set up. \"Enter on their behalf\" for the recruiter, marked as such (feedback often arrives on Slack). Reminders repeat until done. Answers still accepted after the candidate has moved on. Keep hidden-until-all-in. No gate on moving. Needs from Rize: Anita's four scorecard designs (tech, non-tech, ops, go-to-market).",
+ status:"partial",size:"M",phase:5},
+{id:"G-33",area:"A5",title:"Reschedule needs 30 minutes' notice, a reason, an Internal / External tag; old and new times kept",prio:"Medium",
+ src:["XL REC-018","XL §5 Exceptions"],
+ today:"Reason required; \"our side moved it / the candidate moved it\" tag; a late-notice flag; old and new times kept.",
+ change:"None.",
+ status:"have",size:"—",phase:0},
+{id:"G-34",area:"A5",title:"Every interview closed with an outcome: attended, candidate no-show, interviewer no-show",prio:"Medium",
+ src:["XL REC-019","XL §5 Exceptions","XL §7 Notifications"],ruling:"R7",
+ today:"Outcomes Done / Nobody came (and who) / Called off / Moved, with a to-do for the recruiter on a no-show.",
+ change:"Prompt for the outcome when a candidate is moved past an open interview, but never block the move (the workbook's \"cannot advance until logged\" gives way to the non-blocking rule).",
+ status:"have",size:"S",phase:1},
+{id:"G-35",area:"A5",title:"Advance, or send a templated rejection editable by HR",prio:"Medium",
+ src:["XL REC-021","XL §7 Templates"],
+ today:"\"A candidate goes through\" and \"not this time\" emails exist; \"Application not progressing\" sits in Candidate emails and is editable; all sent by hand from the board.",
+ change:"A rejection variant per stage (CV reject vs interview reject) and per language (G-47); optional automatic send on the move (G-50).",
+ status:"have",size:"S",phase:8},
+{id:"G-36",area:"A5",title:"Private recruiter notes: author and TA Lead only; shareable with a named hiring manager",prio:"High",
+ src:["XL REC-037","MT 00:16:34","MT 00:17:58"],
+ today:"The notes box and the chat notes on a candidate are visible to anyone who can open the card.",
+ change:"A \"Recruiter notes\" area visible only to the author and the TA Lead, with \"share with <hiring manager>\" per note (for example a compensation discussion).",
+ status:"gap",size:"S",phase:4},
+{id:"G-37",area:"A5",title:"Moving to the Recruiter review stage sends the recruiter's Calendly link automatically",prio:"Call",
+ src:["MT 00:45:09","MT 00:46:12","MT 00:47:06"],
+ today:"A \"Let's chat\" email exists with a scheduling-link placeholder the recruiter types in each time and sends by hand.",
+ change:"Each recruiter stores their Calendly link once on their profile; moving a candidate to \"Recruiter review\" sends the email automatically (the first rule of G-50). The slot booking and calendar sync stay with Calendly and Google, as agreed: \"our job ends when the email is sent\".",
+ status:"partial",size:"S",phase:5},
+{id:"G-38",area:"A5",title:"Panel debrief with scores side by side; decision Selected / Not selected / Hold; others flagged",prio:"High",
+ src:["XL REC-022","XL §5 Interview rounds","XL §6 step 1"],
+ today:"A debrief on the panel or final round records We want them / Keep them warm / Not this time and marks the chosen candidate; summaries are per interview, not across finalists.",
+ change:"A finalists view showing all scorecards side by side; choosing one flags the others \"Archive / Future-fit\".",
+ status:"partial",size:"S",phase:5},
+
+// ---------- A6
+{id:"G-39",area:"A6",title:"Background check by calls against a template, documents attached, runs alongside and never blocks",prio:"High",
+ src:["XL REC-023","XL §6 Exceptions","MT 00:31:43"],
+ today:"A background check with template lines and documents per line; an adverse flag needs an HR-lead note; the offer cannot be drafted until the check is \"ready\".",
+ change:"The check runs in parallel; an adverse result raises a flag to HR / Head of HR; no gate on the offer.",
+ status:"partial",size:"S",phase:3},
+{id:"G-40",area:"A6",title:"Secure upload link for documents, 2-day deadline, reminders, live checklist",prio:"Medium",
+ src:["XL REC-024","XL §7 Notifications"],
+ today:"All present: document request, two working days, daily reminders, a personal upload page, a checklist for the recruiter. Today it is sent before the offer goes out; the workbook wants it on \"check clear\".",
+ change:"Make the trigger point a setting; drop the gate on sending the offer; escalate after 2 business days as the matrix asks.",
+ status:"have",size:"S",phase:3},
+{id:"G-41",area:"A6",title:"Offer built from a country salary file; hiring manager + HR sign-off recorded and notified, not blocking; money masked",prio:"High",
+ src:["XL REC-025","XL §6 Offer fields","XL §7 Templates"],
+ today:"An offer with pay lines (pay, statutory, benefit, perk, variable; monthly / yearly / one-off), totals, currency and a letter template. The hiring manager → HR sign-off must complete before sending. Money is visible to whoever can open the offer.",
+ change:"Sign-off becomes record + notify. Money fields hidden from everyone except Recruiter, TA Lead, HR, Finance and the named hiring manager. Offer templates per country.",
+ status:"partial",size:"M",phase:4},
+{id:"G-42",area:"A6",title:"Offer letter generated in the system and e-signed (DocuSign); signed copy auto-filed",prio:"High",
+ src:["XL REC-026","XL OQ-10","MT 00:25:48","MT 00:27:02","MT 00:32:49","MT 00:34:01","MT next step"],ruling:"R3",
+ today:"A letter is generated from a template as a PDF; the candidate has an accept / decline page; the signed copy is uploaded by hand. No e-signature.",
+ change:"Now: allow several signed documents per candidate with country labels (Vietnam: probation letter then offer after 2 months; India and Indonesia: offer + employment agreement; Indonesia bilingual). Later, when Rize supplies templates: DocuSign and bilingual generated letters. Anita chose to do offers offline for now.",
+ status:"deferred",size:"S now · L later",phase:6},
+{id:"G-43",area:"A6",title:"No offer without an agreed hiring request (the one hard rule)",prio:"Call",
+ src:["MT 00:31:43","MT decision"],ruling:"R1",
+ today:"The offer needs a chosen candidate and a finished check; \"request agreed\" is implied only because a role could not exist otherwise, which changes with G-14.",
+ change:"An explicit check when sending an offer: the role's request must be agreed; the message says exactly what is missing and who can fix it.",
+ status:"gap",size:"S",phase:3},
+{id:"G-44",area:"A6",title:"On a signed offer: notify hiring manager + TA Lead, archive the other finalists, trigger pre-onboarding",prio:"Medium",
+ src:["XL REC-027","XL §6 step 6","MT 00:55:52"],ruling:"R8",
+ today:"\"Close\" on a signed offer creates the employee, contract, login and joining checklist at once and emails the hiring manager and TA Lead; the other candidates stay where they were.",
+ change:"Split into \"Offer signed\" (notify; move other finalists to Archive / Future-fit; start the recruiter's pre-joining tasks, G-56) and \"Joined\" (G-55), which is when the employee record appears.",
+ status:"partial",size:"S",phase:6},
+{id:"G-45",area:"A6",title:"Explicit consent at application; retention period and deletion rules per market",prio:"High",
+ src:["XL REC-033","XL OQ-09","XL §4 Application form fields"],
+ today:"Consent is asked only on the referral form; nothing on the application form; no retention period or purge.",
+ change:"A required consent tick with the market's wording (in the form's language); retention months per country; an automatic anonymise / purge after the period, with a preview of what will go.",
+ status:"gap",size:"M",phase:4},
+{id:"G-46",area:"A6",title:"Withdrawal, offer declined and adverse-check handling",prio:"—",
+ src:["XL §6 Exceptions"],
+ today:"Drop-out with a reason; offer turned down with the candidate's comment and an \"Offer drop out\" stage; an adverse check raises a flag to HR.",
+ change:"None beyond the stage renames.",
+ status:"have",size:"—",phase:0},
+
+// ---------- A7
+{id:"G-47",area:"A7",title:"Every automated email editable by HR, with language versions for ID / VN / IN / SG",prio:"Medium",
+ src:["XL REC-032","XL OQ-08","MT 00:53:30","MT 00:54:59"],ruling:"R11",
+ today:"Five candidate emails are editable per company in one language. About 25 system emails (interview invites, reminders, offer, documents, sign-offs) are fixed English texts only an administrator can edit.",
+ change:"Every candidate-facing email editable by HR / TA Lead with a Vietnamese and an Indonesian version; the version follows the candidate's market. Internal emails stay English (the call: recruiters and panels work in English).",
+ status:"partial",size:"M",phase:8},
+{id:"G-48",area:"A7",title:"The notification matrix: 23 triggers, who, channel, timing, escalation",prio:"—",
+ src:["XL §7 Notifications"],
+ today:"16 of 23 exist: request assigned, application received, interview scheduled, both reminders, opinion pending, candidate advanced / rejected, document request + reminders, offer sign-off request, offer sent, offer signed / role filled, delegation, agency assigned, no-show, reschedule. Different or missing: request pending completion (G-13); budget flag to CEO / Head of HR / Finance (G-15); JD \"ready for input\" instead of \"for approval\" (G-17); opinion overdue goes to the recruiter, not the TA Lead; document escalation after 2 days; \"check started\" in-app; the referral announcement email; the join-date reminder (G-57).",
+ change:"Close the seven deltas; each is small once G-13, G-15 and G-57 exist.",
+ status:"partial",size:"S",phase:8},
+{id:"G-49",area:"A7",title:"Only Rize's own confirmation email goes out when someone applies; no stock \"thank you\"",prio:"Call",
+ src:["MT 00:43:03","MT 00:44:07"],
+ today:"Payobook's form sends only the editable \"Application received\" message (when the switch is on). The stock \"thank you\" text is tied to the stock \"New\" stage, which Payobook's form skips, but it could fire for candidates added by other routes.",
+ change:"Retire the stock stage emails together with the stock stages (G-04); load Rize's confirmation text as the template. The Zoho double-email problem does not exist here, but this closes the door.",
+ status:"have",size:"S",phase:1},
+{id:"G-50",area:"A7",title:"Email automations the TA Lead can set up herself",prio:"Call",
+ src:["MT 01:06:56","MT decision"],
+ today:"Automatic emails are fixed rules in the product (interview reminders, document chasing, late opinions, nudges).",
+ change:"An \"Automations\" list in the set-up home: when <event> (a stage is reached, N days waiting, an interview is done…) send <template> to <who> after <delay>, in the candidate's language. The Calendly rule (G-37) is the first one shipped.",
+ status:"gap",size:"M",phase:8},
+{id:"G-51",area:"A7",title:"Email domain authentication so mail goes out as @rize.farm",prio:"Call",
+ src:["MT 01:06:00","MT next step"],
+ today:"Payobook sends from its own address. Sending as rize.farm needs Rize's IT to add the records we give them.",
+ change:"Rize IT action; we supply the records. (The stuck item on the call was Zoho's; the same step is needed for Payobook.)",
+ status:"client",size:"—",phase:0},
+
+// ---------- A8
+{id:"G-52",area:"A8",title:"Time to fill, time to offer, time in stage, offer acceptance, source effectiveness, internal / external delay split; filterable, exportable",prio:"High",
+ src:["XL REC-029","XL §1 Current UI"],
+ today:"\"Hiring numbers\" shows roles agreed / filled, days to fill (typical and average), days to offer, offers sent, accepted %, interviews moved; sections for time in stage, sources, delays by side, no-shows and agency vs in-house; a 90-day window; Excel export.",
+ change:"Add filters by country / market, department and recruiter; a date-range picker; offer drops and offered → accepted → joined (G-58).",
+ status:"partial",size:"S",phase:6},
+{id:"G-53",area:"A8",title:"Four dashboards: Recruiter Workbench, TA Lead Overview, Hiring Manager View, Leadership Pipeline",prio:"—",
+ src:["XL §8 Dashboards"],
+ today:"Recruiter Workbench = the Hiring board (own roles sorted by what needs action) — have. TA Lead Overview = Hiring numbers — mostly. Hiring Manager View = the board limited to own requests — have. Leadership Pipeline (fill rate, open headcount, source mix, delays) — missing.",
+ change:"A leadership view on Hiring numbers (fill rate, open headcount by country, source mix, delays); trim the hiring manager's board to their roles plus interviews due.",
+ status:"partial",size:"S",phase:6},
+{id:"G-54",area:"A8",title:"Eight reports with Excel / CSV export",prio:"—",
+ src:["XL §8 Reports"],
+ today:"Have: time to fill / offer, source effectiveness, offer acceptance, no-show, delay analysis. Partial: agency performance (on the agency page, no export), requisition status (board only, no export). Missing: pipeline ageing (stalled candidates).",
+ change:"Add the ageing report (days since last move, by stage and recruiter); export on every report; requisition status snapshot to Excel.",
+ status:"partial",size:"S",phase:6},
+
+// ---------- A9
+{id:"G-55",area:"A9",title:"The person stays a candidate, with the recruiter, until the date of joining is verified",prio:"Call",
+ src:["MT 00:55:52","MT 00:58:10","MT 01:01:00","MT decision","MT next step"],ruling:"R8",
+ today:"Signing the offer immediately makes the person an employee with a contract, login and joining checklist; HR-side onboarding starts.",
+ change:"After \"Offer signed\" the person stays a candidate with an expected date of joining; \"Confirm they joined\" on or after the date creates the employee, contract and login and hands over to HR onboarding (which already exists); \"Did not join\" records an offer drop with a reason. Any change to the date or the offer before joining is the recruiter's. Needs from Rize: the name of the stage(s) between offer accepted and joined (Anita + Debalina).",
+ status:"gap",size:"M",phase:6},
+{id:"G-56",area:"A9",title:"Pre-onboarding run by the recruiter: buddy nomination, laptop preferences, meet-the-team chats",prio:"Call",
+ src:["MT 00:59:47","MT 01:01:00","MT 01:02:15"],
+ today:"Buddy and \"Laptop and equipment\" are steps of the joining checklist that starts at Close (i.e. after the employee exists); there is no laptop-preference form for the candidate and no coffee-chat step.",
+ change:"A pre-joining checklist owned by the recruiter: ask the manager to nominate one or more buddies (email), ask the candidate for laptop preferences (secure link), schedule 30-minute catch-ups / coffee chats / lunch with the team. HR's own onboarding (company and policy, 30-60-90) starts at joining, as today.",
+ status:"partial",size:"M",phase:6},
+{id:"G-57",area:"A9",title:"Reminder one week before the expected joining date to recruiter, hiring manager and HR",prio:"Call",
+ src:["MT 01:02:15","MT 01:03:57"],
+ today:"None.",
+ change:"Email + in-app one week before: still joining? date changed? dropped? with the three answers as buttons.",
+ status:"gap",size:"S",phase:6},
+{id:"G-58",area:"A9",title:"Offer-drop measurement: offered → accepted → joined",prio:"Call",
+ src:["MT 00:56:56","MT 00:58:10"],
+ today:"Offers turned down are counted; \"signed but never joined\" cannot be told apart from joined.",
+ change:"Hiring numbers show offered → accepted → joined per role and market, with drop reasons. Depends on G-55.",
+ status:"partial",size:"S",phase:6}
+];
+
+const RULINGS = [
+ ["R1","Nothing locks at any stage; approvals never halt movement (REC-035). Yet tab 2's exceptions say an over-budget request is held.","The only blocker is the offer: \"no MR, no offer\" (00:31:43). Everything else moves freely.","Call. One hard rule at the offer; all other sign-offs record and notify.","G-05, G-43"],
+ ["R2","The system checks the budget against a pre-approved figure; over-budget routes to Finance + the manager's manager.","The hiring manager types the expected budget; over-budget emails the CEO, Head of HR and Finance; changes are an email conversation; a tracking tag is fine if it blocks nothing (00:28:26–00:31:43).","Call. Manager-entered budget, non-blocking flag to CEO / Head of HR / Finance, tracking tag.","G-15"],
+ ["R3","Offer letter built in the system and e-signed via DocuSign / Zoho Sign; signed copy auto-filed (REC-025/026).","\"For now it can be separate… we can attach it once it's done\" (00:25:48, 00:34:01). Templates not ready; VN / IN / ID document sets differ; ID is bilingual.","Call. Offers offline for now; upload of several signed documents per country now; generated letters + DocuSign later.","G-42"],
+ ["R4","Structured feedback: scores 1–5 per criterion per round; 24-working-hour SLA; escalation to the TA Lead (REC-020).","Free text + star rating + Yes / No / Maybe / Hold; a different scorecard per role AND per discussion; Anita designs them; recruiter can fill in from Slack; candidate moves regardless (00:36:26–00:40:50).","Call, keeping the workbook's 1–5 lines as an optional part of a template.","G-32"],
+ ["R5","Five screening assessments with pass thresholds (tab 4).","\"Not at the moment\" (00:24:51); screening questions go inside the form; automatic filtering on hold (00:41:51).","Call. Deferred; questions live in the form.","G-28, G-01"],
+ ["R6","Hiring Manager may move candidates (Who can do what grid).","\"It's only for recruiters and me. Nobody else\" (00:16:34).","Call, pending Rize's confirmation: Recruiter + TA Lead move; hiring managers view and comment.","G-06"],
+ ["R7","A candidate cannot advance until the interview outcome is logged (REC-019).","Non-blocking at every stage (00:15:23).","Prompt for the outcome, never block.","G-34"],
+ ["R8","On a signed offer the position closes and the onboarding pre-trigger fires (REC-027).","The candidate stays with the recruiter until the date of joining is physically verified; only then an employee (00:58:10–01:01:00).","Call. \"Offer signed\" and \"Joined\" are two separate moments.","G-44, G-55"],
+ ["R9","Requisition first: the flow starts with the hiring manager raising the MR (tab 2).","A job can be created without a requisition; the requisition can come later (00:25:48).","Call. Roles and requests are separate; the request is only needed for the offer.","G-14"],
+ ["R10","Over-budget notifies Finance and the HM's manager (REC-010, tab 7).","CEO, Head of HR and Finance (00:28:26).","Call. Recipients = CEO, Head of HR, Finance; Rize names the CEO recipient.","G-15, G-48"],
+ ["R11","Forms and templates multi-language; no statement about the recruiter's own screens.","Recruiters and panels work in English only; local-language text is the recruiter's to translate (00:53:30–00:55:52).","Both. Candidate-facing text in three languages; internal screens and emails English.","G-02, G-47"],
+ ["R12","Interview steps defined on the MR drive the pipeline (tab 2 field list).","The panel is added when the job is created or pulled from the MR; without a panel, sharing goes to the hiring manager only (00:20:17).","Both. Rounds and panel on the role; the MR pre-fills them when it exists.","G-18, G-08"]
+];
+
+const OQ = [
+ ["OQ-01","Is the Applications module enabled? Multiple role-specific pipelines depend on it.","Not applicable. Payobook has no such module or limit; per-role stage visibility is ours to build (G-04)."],
+ ["OQ-02","Which edition are we on; pipeline and stage limits?","No edition limits. Stage and role counts are unlimited."],
+ ["OQ-03","Maximum number of fields on the application form; can it be raised?","No cap. Today the form is fixed; the builder in G-01 removes the fixed part."],
+ ["OQ-04","Can a true drag-and-drop board per job be provided?","Yes, to build (G-03). A candidate list per role exists today."],
+ ["OQ-05","Field-level, role-based permissions (mask salary / offer)?","Partly today (candidate salary is recruiter-only). Full masking of offer money and recruiter-controlled sharing to build (G-08, G-41)."],
+ ["OQ-06","Can panel feedback be hidden between interviewers until all have submitted?","Yes, effectively today: each panellist sees only their own opinion. Will be kept as an explicit rule (G-32)."],
+ ["OQ-07","External agency submit-only portal with no visibility of internal data?","To build (G-21). Agencies can be tagged on a role today but have no login."],
+ ["OQ-08","Email / SMS templates per language for ID / VN / IN / SG?","Email: to build (G-47). SMS: not planned unless asked."],
+ ["OQ-09","Candidate consent, retention and deletion per market?","To build (G-45). Consent exists on referrals only today."],
+ ["OQ-10","LinkedIn, job boards, Google Calendar, e-signature, SMS: native or custom?","Google Calendar: standard connector, needs Rize's Google admin (G-30). Job boards: tracked links now, direct posting later per subscription (G-20). E-signature: deferred by Rize (G-42). SMS: not planned."],
+ ["OQ-11","Can the TA Lead self-serve stage, template and form changes?","Partly today (emails, scoring lines, letters, routing). Stages per role, forms and automations to build (G-10)."]
+];
+
+const HOLD = [
+ ["Careers page overhaul and font clearance","Anita to check with the branding team whether Google fonts may be used on third-party applications (Vietnam IP concern raised by Vijay); careers page and candidate portal publishing wait for her go-ahead.","MT 00:01:30 · MT 00:52:32 · MT 01:05:06 · MT next step","On hold (Rize)","No — Rize-branded careers pages already exist in Payobook"],
+ ["List of job boards beyond LinkedIn","JobStreet (Indonesia) is subscribed; VietnamWorks suggested for Vietnam; Anita to confirm the list.","MT 00:49:10 · MT next step","Rize input","Yes — phase 7 (G-20)"],
+ ["Scorecard designs (tech, non-tech, ops, go-to-market)","Anita designs and shares them.","MT 00:37:31 · MT next step","Rize input","Yes — phase 5 (G-32)"],
+ ["Name of the stage between offer accepted and joined","Anita and Debalina to decide.","MT 00:56:56 · MT next step","Rize input","Yes — phase 6 (G-55)"],
+ ["Who is the \"CEO\" recipient of budget flags","Not named on the call.","MT 00:28:26","Rize input","Yes — phase 3 (G-15)"],
+ ["Offer letter templates per country","Anita: \"I have to give you the templates; I don't have that yet.\"","MT 00:25:48","On hold (Rize)","Later (G-42)"],
+ ["Google Workspace authorisation for the calendar connector","Rize's Google admin must approve the connection.","MT 00:35:02","Rize input","Yes — phase 5 (G-30)"],
+ ["Email domain authentication","Rize IT adds the sending records.","MT 01:06:00 · MT next step","Rize IT","Before go-live (G-51)"],
+ ["Screening assessments and automatic filtering","Parked by Anita.","MT 00:24:51 · MT 00:41:51","Deferred (Rize)","No"],
+ ["Generated offer letters + DocuSign","Parked by Anita until templates exist.","MT 00:34:01","Deferred (Rize)","No"],
+ ["SMS reminders","Optional in the workbook; not raised on the call.","XL REC-017","Not planned","No"],
+ ["Rollout: access for feedback, go-live, reference document, training","Vijay's commitment; a Payobook plan will mirror it.","MT 01:07:52","Delivery step","At the end"]
+];
+
+const PHASES = [
+ [1,"Board, stages and the non-blocking rule","Rize's stage words, per-role column visibility with department + country pre-fills, the drag-and-drop board, gates removed (offer rule kept), role tiers renamed, stock menus and stages retired, timeline panel, set-up home shell.",["G-03","G-04","G-05","G-06","G-07","G-09","G-10","G-11","G-24","G-25","G-34","G-49"]],
+ [2,"Application forms in three languages","The form builder with templates and own questions; expected salary; portfolio as a required file; country pick-list; duplicate flag; Vietnamese and Indonesian versions; Indonesian installed.",["G-01","G-02","G-22","G-23","G-27","G-29"]],
+ [3,"Requests, budget and the offer rule","Roles without requests; recruiter asks a manager to complete a request with reminders; manager-entered budget with CEO / Head of HR / Finance flag; JD shared not approved; check and documents non-blocking; Confidential toggle; the explicit offer rule.",["G-12","G-13","G-14","G-15","G-16","G-17","G-19","G-39","G-40","G-43"]],
+ [4,"Privacy and the resume bank","Recruiter-owned sharing per candidate, money masking on offers, private recruiter notes, Resume bank tab, consent and retention per market.",["G-08","G-26","G-36","G-41","G-45"]],
+ [5,"Interviews and scorecards","Scorecard templates per role and round with proxy entry and repeat reminders; Calendly rule on the Recruiter review stage; Google Calendar + Meet; transcript slot; side-by-side debrief; panel per round on the role.",["G-18","G-30","G-32","G-37","G-38"]],
+ [6,"Joining, pre-onboarding and numbers","Offer signed vs joined; expected date of joining; one-week reminder; recruiter-run pre-joining checklist (buddy, laptop, chats); several signed documents per country; market filters, leadership view, ageing report, offer-drop funnel.",["G-42","G-44","G-52","G-53","G-54","G-55","G-56","G-57","G-58"]],
+ [7,"Channels and agencies","Publish-to panel with tracked links per channel; agency portal with the 6-month cooling rule; direct board posting where subscriptions allow.",["G-20","G-21"]],
+ [8,"Communications the TA Lead owns","Language versions of every candidate email; the automations list; the remaining notification-matrix deltas; rejection variants per stage.",["G-35","G-47","G-48","G-50"]]
+];
+
+// ---------- render
+const STATUS_LABEL={have:"Have",partial:"Partial",gap:"Gap",deferred:"Deferred",client:"Rize's side"};
+function refChip(s){
+  const cls = s.startsWith("XL")?"xl":"mt";
+  return `<span class="ref ${cls}">${s}</span>`;
+}
+function rowHtml(r){
+  const refs = r.src.map(refChip).join("") + (r.ruling?`<span class="ref rl">ruling ${r.ruling}</span>`:"");
+  const prio = r.prio==="Call" ? "Raised in the call" : (r.prio==="—" ? "Table item" : r.prio);
+  const phase = r.phase===0 ? "—" : `Phase ${r.phase}`;
+  return `<div class="row" data-id="${r.id}" data-area="${r.area}" data-status="${r.status}" data-prio="${r.prio}" data-xl="${r.src.some(s=>s.startsWith('XL'))}" data-mt="${r.src.some(s=>s.startsWith('MT'))}">
+    <div class="id">${r.id}<small>${prio}</small></div>
+    <div class="want"><div class="lab">Rize wants</div><b>${r.title}</b><div class="refs">${refs}</div></div>
+    <div class="today"><div class="lab">Today</div>${r.today}</div>
+    <div class="change"><div class="lab">What changes</div>${r.change}</div>
+    <div class="st"><span class="chip ${r.status}">${STATUS_LABEL[r.status]}</span><span class="sz">Size <b>${r.size}</b></span><span class="sz">${phase}</span></div>
+  </div>`;
+}
+const reg = document.getElementById("register");
+reg.innerHTML = AREAS.map(([k,name,sub])=>{
+  const rows = ROWS.filter(r=>r.area===k);
+  return `<section class="area" data-area="${k}"><h3><span class="n">${k}</span>${name}<span class="sub">${sub} · ${rows.length} lines</span></h3><div class="rows">${rows.map(rowHtml).join("")}</div></section>`;
+}).join("");
+
+document.getElementById("rulings").innerHTML = RULINGS.map(([id,xl,mt,v,g])=>`
+  <div class="ruling"><div class="id">${id}</div>
+    <div><div class="lab">Workbook</div>${xl}</div>
+    <div><div class="lab">Call</div>${mt}</div>
+    <div class="verdict"><div class="lab">Ruling · lines</div>${v} <span class="mono" style="color:var(--muted);font-size:12px">${g}</span></div>
+  </div>`).join("");
+
+document.getElementById("oq").innerHTML = `<tr><th>Ref</th><th>Rize asked</th><th>Payobook answer</th></tr>` +
+  OQ.map(([id,q,a])=>`<tr><td><span class="ref xl">XL ${id}</span></td><td>${q}</td><td>${a}</td></tr>`).join("");
+
+document.getElementById("hold").innerHTML = `<tr><th>Item</th><th>What was said</th><th>Source</th><th>Status</th><th>Needed for a build phase?</th></tr>` +
+  HOLD.map(([a,b,c,d,e])=>`<tr><td><b>${a}</b></td><td>${b}</td><td>${c.split(" · ").map(refChip).join("")}</td><td>${d}</td><td>${e}</td></tr>`).join("");
+
+document.getElementById("phases").innerHTML = PHASES.map(([n,t,d,ids])=>`
+  <div class="phase"><span class="num">Phase ${n}</span><h4>${t}</h4><p>${d}</p><div class="ids">${ids.map(i=>`<span class="ref rl">${i}</span>`).join("")}</div></div>`).join("") +
+  `<div class="phase later"><span class="num">Later</span><h4>When Rize is ready</h4><p>Generated offer letters with DocuSign and bilingual templates (G-42); direct job-board posting per subscription (G-20); assessments and automatic filtering (G-28); careers page refresh after the font decision.</p></div>`;
+
+// glance
+(function(){
+  const c = {have:0,partial:0,gap:0,deferred:0,client:0};
+  ROWS.forEach(r=>c[r.status]++);
+  const crit = ROWS.filter(r=>r.prio==="Critical").length;
+  const critOpen = ROWS.filter(r=>r.prio==="Critical" && r.status!=="have").length;
+  const callOnly = ROWS.filter(r=>!r.src.some(s=>s.startsWith("XL"))).length;
+  document.getElementById("glance").innerHTML =
+    `<span><b>${ROWS.length}</b> <span class="k">lines in the register</span></span>`+
+    `<span class="chip have">${c.have} have</span><span class="chip partial">${c.partial} partial</span><span class="chip gap">${c.gap} gap</span><span class="chip deferred">${c.deferred} deferred</span><span class="chip client">${c.client} Rize's side</span>`+
+    `<span><b>${critOpen}</b> <span class="k">of ${crit} Critical asks still need work</span></span>`+
+    `<span><b>${callOnly}</b> <span class="k">lines exist only because of the call</span></span>`+
+    `<span><b>${RULINGS.length}</b> <span class="k">places the call changed the workbook</span></span>`;
+})();
+
+// filters
+const fS=document.getElementById("fStatus"),fSrc=document.getElementById("fSource"),fP=document.getElementById("fPrio"),fT=document.getElementById("fText"),cnt=document.getElementById("count");
+function apply(){
+  const s=fS.value, src=fSrc.value, p=fP.value, t=fT.value.trim().toLowerCase();
+  let shown=0;
+  document.querySelectorAll(".row").forEach(el=>{
+    const xl=el.dataset.xl==="true", mt=el.dataset.mt==="true";
+    let ok=true;
+    if(s && el.dataset.status!==s) ok=false;
+    if(p && el.dataset.prio!==p) ok=false;
+    if(src==="xl"&&!xl) ok=false;
+    if(src==="mt"&&!mt) ok=false;
+    if(src==="xlonly"&&!(xl&&!mt)) ok=false;
+    if(src==="mtonly"&&!(mt&&!xl)) ok=false;
+    if(src==="both"&&!(xl&&mt)) ok=false;
+    if(t && !el.textContent.toLowerCase().includes(t)) ok=false;
+    el.classList.toggle("hidden",!ok);
+    if(ok) shown++;
+  });
+  document.querySelectorAll(".area").forEach(a=>{
+    a.classList.toggle("empty", !a.querySelector(".row:not(.hidden)"));
+  });
+  cnt.textContent = `${shown} of ${ROWS.length} lines shown`;
+  try{ localStorage.setItem("rrg.filters", JSON.stringify({s,src,p,t})); }catch(e){}
+}
+[fS,fSrc,fP].forEach(el=>el.addEventListener("change",apply));
+fT.addEventListener("input",apply);
+document.getElementById("fClear").addEventListener("click",()=>{fS.value="";fSrc.value="";fP.value="";fT.value="";apply();});
+try{ const st=JSON.parse(localStorage.getItem("rrg.filters")||"{}"); if(st.s)fS.value=st.s; if(st.src)fSrc.value=st.src; if(st.p)fP.value=st.p; if(st.t)fT.value=st.t; }catch(e){}
+apply();
+</script>
+
+</body>
+</html>

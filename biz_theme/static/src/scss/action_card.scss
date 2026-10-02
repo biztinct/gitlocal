@@ -1,0 +1,208 @@
+// =============================================================================
+// ACTION CARD — Next Best Action panel & contextual actions
+// =============================================================================
+// The right column of the 3-column layout. Shows the primary next action
+// prominently, with secondary actions listed below.
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// Action panel wrapper
+// ---------------------------------------------------------------------------
+.vu-action-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vu-space-md);
+}
+
+// Panel section header ("Next Step", "Other Actions", etc.)
+.vu-action-panel__header {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--vu-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--vu-space-xs);
+
+    .fa {
+        color: var(--vu-state-color, var(--vu-brand-primary));
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Primary action card — the "Next Best Action" prompt
+// ---------------------------------------------------------------------------
+.vu-action-card {
+    background: var(--vu-surface-card);
+    border: 1px solid var(--vu-border-soft);
+    border-left: 4px solid var(--vu-state-color, var(--vu-brand-primary));
+    border-radius: var(--vu-radius-md);
+    padding: var(--vu-space-md);
+    box-shadow: var(--vu-shadow-sm);
+    transition: box-shadow var(--vu-transition-fast), border-color var(--vu-transition-fast);
+
+    &:hover {
+        box-shadow: var(--vu-shadow-md);
+    }
+}
+
+// Highlighted variant — uses state background tint
+.vu-action-card--primary {
+    background: var(--vu-state-bg, var(--vu-surface-hover));
+}
+
+.vu-action-card__title {
+    font-size: var(--vu-font-size-sm);
+    font-weight: 700;
+    color: var(--vu-state-color, var(--vu-brand-primary));
+    margin-bottom: var(--vu-space-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--vu-space-xs);
+
+    .fa {
+        font-size: 1em;
+    }
+}
+
+.vu-action-card__subtitle {
+    font-size: 0.75rem;
+    color: var(--vu-text-secondary);
+    margin-bottom: var(--vu-space-sm);
+    line-height: var(--vu-line-height-normal);
+}
+
+.vu-action-card__body {
+    font-size: 0.8125rem;
+    color: var(--vu-text-primary);
+    line-height: var(--vu-line-height-normal);
+}
+
+.vu-action-card__actions {
+    display: flex;
+    gap: var(--vu-space-sm);
+    margin-top: var(--vu-space-md);
+    flex-wrap: wrap;
+}
+
+// ---------------------------------------------------------------------------
+// Action buttons (pill-shaped, within action cards)
+// ---------------------------------------------------------------------------
+.vu-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--vu-space-xs);
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1.5px solid transparent;
+    text-decoration: none;
+}
+
+.vu-action-btn--primary {
+    background: var(--vu-state-color, var(--vu-brand-primary));
+    color: white;
+    border-color: var(--vu-state-color, var(--vu-brand-primary));
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+        color: white;
+        text-decoration: none;
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.vu-action-btn--secondary {
+    background: var(--vu-surface-card);
+    color: var(--vu-text-secondary);
+    border-color: var(--vu-border-soft);
+
+    &:hover {
+        border-color: var(--vu-state-color, var(--vu-brand-primary));
+        color: var(--vu-state-color, var(--vu-brand-primary));
+        background: var(--vu-surface-hover);
+        text-decoration: none;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Secondary action list items (icon + label + optional shortcut)
+// ---------------------------------------------------------------------------
+.vu-action-item {
+    display: flex;
+    align-items: center;
+    gap: var(--vu-space-sm);
+    padding: var(--vu-space-sm) var(--vu-space-md);
+    border-radius: var(--vu-radius-sm);
+    cursor: pointer;
+    transition: background var(--vu-transition-fast);
+    font-size: 0.8125rem;
+    color: var(--vu-text-primary);
+    text-decoration: none;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+
+    &:hover {
+        background: var(--vu-surface-hover);
+        text-decoration: none;
+    }
+
+    .fa {
+        width: 18px;
+        text-align: center;
+        color: var(--vu-text-secondary);
+        font-size: 0.875rem;
+    }
+}
+
+.vu-action-item--danger {
+    color: var(--vu-status-danger);
+
+    .fa { color: var(--vu-status-danger); }
+
+    &:hover {
+        background: rgba($vu-danger, 0.06);
+    }
+}
+
+// Keyboard shortcut badge
+.vu-action-item__shortcut {
+    margin-left: auto;
+    font-size: 0.5625rem;
+    font-weight: 700;
+    color: var(--vu-text-secondary);
+    background: var(--vu-surface-muted);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+    letter-spacing: 0.03em;
+}
+
+// ---------------------------------------------------------------------------
+// Separators & labels within the action panel
+// ---------------------------------------------------------------------------
+.vu-action-separator {
+    height: 1px;
+    background: var(--vu-border-soft);
+    margin: var(--vu-space-xs) 0;
+}
+
+.vu-action-section-label {
+    font-size: 0.5625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--vu-text-secondary);
+    padding: var(--vu-space-xs) var(--vu-space-md);
+}

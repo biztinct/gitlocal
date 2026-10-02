@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Review I-H4: the ESS chain dead-ended at hr_review — employees could
+         submit a profile change but HR had no surface to see or decide it.
+         Native views (auto-themed by the VU Form Engine), HR-gated. -->
+
+    <record id="view_profile_change_request_list" model="ir.ui.view">
+        <field name="name">pb.profile.change.request.list</field>
+        <field name="model">pb.profile.change.request</field>
+        <field name="arch" type="xml">
+            <list decoration-info="state == 'hr_review'"
+                  decoration-muted="state in ('approved', 'refused')">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="create_date" string="Filed"/>
+                <field name="note"/>
+                <field name="state" widget="badge"
+                       decoration-warning="state == 'hr_review'"
+                       decoration-success="state == 'approved'"
+                       decoration-danger="state == 'refused'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_profile_change_request_form" model="ir.ui.view">
+        <field name="name">pb.profile.change.request.form</field>
+        <field name="model">pb.profile.change.request</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_hr_approve" type="object" string="Approve &amp; Apply"
+                            class="btn-primary" invisible="state != 'hr_review'"
+                            groups="hr.group_hr_user,om_hr_payroll.group_hr_payroll_user"/>
+                    <button name="action_refuse_chain" type="object" string="Refuse"
+                            invisible="state != 'hr_review'"
+                            groups="hr.group_hr_user,om_hr_payroll.group_hr_payroll_user"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,hr_review,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Request">
+                            <field name="employee_id" readonly="1"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                            <field name="note" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Proposed changes (current → proposed)">
+                        <group>
+                            <field name="cur_phone"/>
+                            <field name="cur_private_email"/>
+                            <field name="cur_address"/>
+                            <field name="cur_emergency_contact"/>
+                            <field name="cur_emergency_phone"/>
+                        </group>
+                        <group>
+                            <field name="x_phone" readonly="1"/>
+                            <field name="x_private_email" readonly="1"/>
+                            <field name="x_address" readonly="1"/>
+                            <field name="x_emergency_contact" readonly="1"/>
+                            <field name="x_emergency_phone" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_profile_change_requests" model="ir.actions.act_window">
+        <field name="name">Profile Change Requests</field>
+        <field name="res_model">pb.profile.change.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_filter_hr_review': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No profile change requests</p>
+            <p>Employee-filed profile changes land here for HR review.</p>
+        </field>
+    </record>
+
+    <record id="view_profile_change_request_search" model="ir.ui.view">
+        <field name="name">pb.profile.change.request.search</field>
+        <field name="model">pb.profile.change.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <filter name="filter_hr_review" string="Awaiting HR"
+                        domain="[('state', '=', 'hr_review')]"/>
+                <filter name="filter_decided" string="Decided"
+                        domain="[('state', 'in', ('approved', 'refused'))]"/>
+                <group name="group_by">
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <menuitem id="menu_profile_change_requests"
+              name="Profile Changes"
+              parent="hr.menu_hr_root"
+              action="action_profile_change_requests"
+              sequence="86"
+              groups="hr.group_hr_user,om_hr_payroll.group_hr_payroll_user"/>
+</odoo>

@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Training lens on the Insights hub.
+
+       Section comments use `=` rules and never a doubled hyphen, because a
+       doubled hyphen inside an XML comment is a parse error that takes every
+       t-name in the file down with it (R35).
+
+       Loop variables are never named lt / gt / lte / gte / and / or / not /
+       in: OWL reserves those as operators and the loop compiles into a bare
+       `<` that kills the whole template (R1). The loops here are `tl`, `rg`,
+       `dp`, `cs`, `rs` and `wk`.
+
+       `t-att-class` with a DICT is correct HERE and only here — this is an
+       OWL template, where the dict form MERGES with the static class. On a
+       server-side template it writes the Python repr into the attribute and
+       drops the static class (R42).
+       ==================================================================== -->
+  <t t-name="pb_training.PbTrainingNumbers">
+    <div class="pbim pbim-page pbtnm"
+         t-att-class="{ 'pbtnm--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Working out the training numbers…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <!-- ============ the reader has no training access ============ -->
+        <div t-if="!state.allowed" class="pbim-panel pbtnm-empty">
+          <div class="pbtnm-empty-ic"><t t-out="ic('lock',30)"/></div>
+          <h2>The training numbers are for the training team</h2>
+          <p>How much of what was set has been finished, who passed the test
+             and who is running late are the figures the people running the
+             courses are judged on. Ask them, or ask your HR administrator to
+             add you to the training team.</p>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="pbtnm-head">
+            <div class="pbtnm-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Training</h1>
+              <p class="pbim-sub">How much of what you set gets finished, who
+                 passes, and who is running late.</p>
+            </div>
+            <div class="pbtnm-head-actions">
+              <button class="pbim-btn ghost" t-on-click="() => this.load()"
+                      title="Work the numbers out again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <button class="pbim-btn primary" t-on-click="download"
+                      t-att-disabled="state.busy or state.empty">
+                <t t-out="ic('download',15)"/> Download the spreadsheet
+              </button>
+            </div>
+          </div>
+
+          <!-- ====================== the range ======================
+               Four presses and a pair of dates. The four are what somebody
+               actually asks for; the dates are for the stretch that does not
+               fit any of them. -->
+          <div class="pbtnm-range">
+            <t t-foreach="ranges" t-as="rg" t-key="rg.key">
+              <button class="pbtnm-chip"
+                      t-att-class="{ on: state.range === rg.key }"
+                      t-on-click="() => this.pickRange(rg.key)">
+                <t t-esc="rg.label"/>
+              </button>
+            </t>
+            <div class="pbtnm-dates">
+              <input type="date" class="pbtnm-in" t-att-value="state.from"
+                     t-on-change="(ev) => this.onDate('from', ev)"
+                     aria-label="From"/>
+              <span class="pbtnm-to">to</span>
+              <input type="date" class="pbtnm-in" t-att-value="state.to"
+                     t-on-change="(ev) => this.onDate('to', ev)"
+                     aria-label="To"/>
+            </div>
+          </div>
+
+          <!-- ====================== the filters ======================
+               R27: a filter bar offers only what the data actually uses. A
+               course nobody has been put on is not on this list, because a
+               filter that matches nothing is a broken promise. -->
+          <div class="pbtnm-filters">
+            <select class="pbtnm-in" t-model="state.filters.department_id"
+                    t-on-change="() => this.load()" aria-label="Department">
+              <option value="0">Every department</option>
+              <t t-foreach="state.lists.departments" t-as="dp" t-key="dp.id">
+                <option t-att-value="dp.id" t-esc="dp.name"/>
+              </t>
+            </select>
+            <select class="pbtnm-in" t-model="state.filters.channel_id"
+                    t-on-change="() => this.load()" aria-label="Course">
+              <option value="0">Every course</option>
+              <t t-foreach="state.lists.courses" t-as="cs" t-key="cs.id">
+                <option t-att-value="cs.id" t-esc="cs.name"/>
+              </t>
+            </select>
+            <t t-foreach="state.reasons" t-as="rs" t-key="rs.key">
+              <button class="pbtnm-chip"
+                      t-att-class="{ on: state.filters.reason === rs.key }"
+                      t-on-click="() => this.setFilter('reason', rs.key)">
+                <t t-esc="rs.label"/>
+              </button>
+            </t>
+            <button t-if="anyFilter" class="pbim-btn ghost"
+                    t-on-click="clearFilters">
+              <t t-out="ic('x',14)"/> Everything again
+            </button>
+          </div>
+
+          <!-- ============ nothing set in this range ============
+               A screen of zeros is how a working feature gets reported as
+               broken, so the sentence carries the dates and there is a button
+               that does the obvious next thing. -->
+          <div t-if="state.empty" class="pbim-panel pbtnm-empty">
+            <div class="pbtnm-empty-ic"><t t-out="ic('graduationCap',30)"/></div>
+            <h2>Nothing to measure in this stretch</h2>
+            <p t-esc="state.headline"/>
+            <button class="pbim-btn ghost"
+                    t-on-click="() => this.pickRange('365')">
+              <t t-out="ic('history',15)"/> Try the last year
+            </button>
+          </div>
+
+          <t t-else="">
+
+            <!-- ==================== the sentence ==================== -->
+            <div class="pbim-panel pbtnm-headline">
+              <div class="pbtnm-headline-ic"><t t-out="ic('sparkles',20)"/></div>
+              <p t-esc="state.headline"/>
+            </div>
+
+            <!-- ==================== the numbers ==================== -->
+            <div class="pbim-stats pbtnm-kpis">
+              <t t-foreach="state.tiles" t-as="tl" t-key="tl.key">
+                <div class="pbim-stat pbtnm-stat">
+                  <div class="pbim-stat-ic"><t t-out="ic(tl.icon,21)"/></div>
+                  <div class="pbim-stat-tx">
+                    <div class="n" t-esc="tl.value"/>
+                    <div class="l" t-esc="tl.label"/>
+                    <div class="y" t-esc="tl.sub"/>
+                  </div>
+                </div>
+              </t>
+            </div>
+
+            <!-- ==================== week by week ====================
+                 TWO BARS PER WEEK AND NOT ONE LINE. "How much did we set" and
+                 "how much got finished" are different questions, and a single
+                 line that netted them off would hide a week where forty
+                 courses were set and nothing was done. -->
+            <div class="pbim-panel pbtnm-trend">
+              <div class="pbtnm-table-head">
+                <h3><t t-out="ic('barChart',16)"/> Week by week</h3>
+                <p>What was set, and what was finished. The two are about
+                   different courses in the same week, so they do not have to
+                   match.</p>
+              </div>
+              <div class="pbtnm-bars">
+                <t t-foreach="state.trend" t-as="wk" t-key="wk.key">
+                  <div class="pbtnm-week"
+                       t-att-title="wk.label + ': ' + wk.set + ' set, ' + wk.done + ' finished'">
+                    <div class="pbtnm-week-pair">
+                      <span class="pbtnm-week-set"
+                            t-attf-style="height: {{ trendHeight(wk.set) }}%;"/>
+                      <span class="pbtnm-week-done"
+                            t-attf-style="height: {{ trendHeight(wk.done) }}%;"/>
+                    </div>
+                    <div class="pbtnm-week-l" t-esc="wk.label"/>
+                  </div>
+                </t>
+              </div>
+              <div class="pbtnm-legend">
+                <span><i class="pbtnm-key pbtnm-key--set"/> Set</span>
+                <span><i class="pbtnm-key pbtnm-key--done"/> Finished</span>
+              </div>
+            </div>
+
+            <!-- ==================== the three splits ==================== -->
+            <div class="pbtnm-grid">
+
+              <div class="pbim-panel pbtnm-table">
+                <div class="pbtnm-table-head">
+                  <h3><t t-out="ic('building',16)"/> By department</h3>
+                  <p>Anybody with no department is counted under a row that
+                     says so, so these add up to the figure above.</p>
+                </div>
+                <t t-foreach="state.byDepartment" t-as="dp" t-key="dp.name">
+                  <div class="pbtnm-row"
+                       t-att-class="{ bad: dp.overdue > 0 }">
+                    <div class="pbtnm-row-name" t-esc="dp.name"/>
+                    <div class="pbtnm-bar">
+                      <span t-attf-style="width: {{ share(state.byDepartment, dp.total) }}%;"/>
+                    </div>
+                    <div class="pbtnm-row-n" t-esc="dp.total"/>
+                    <div class="pbtnm-row-sub">
+                      <t t-esc="finishedWord(dp)"/><t
+                        t-if="dp.overdue"> · <t t-esc="dp.overdue"/> late</t>
+                    </div>
+                  </div>
+                </t>
+              </div>
+
+              <div class="pbim-panel pbtnm-table">
+                <div class="pbtnm-table-head">
+                  <h3><t t-out="ic('bookOpen',16)"/> By course</h3>
+                  <p>The course with the most people running late is at the
+                     top, because that is the one to do something about.</p>
+                </div>
+                <t t-foreach="state.byCourse" t-as="cs" t-key="cs.name">
+                  <div class="pbtnm-row"
+                       t-att-class="{ bad: cs.overdue > 0 }">
+                    <div class="pbtnm-row-name" t-esc="cs.name"/>
+                    <div class="pbtnm-bar">
+                      <span t-attf-style="width: {{ share(state.byCourse, cs.total) }}%;"/>
+                    </div>
+                    <div class="pbtnm-row-n" t-esc="cs.total"/>
+                    <div class="pbtnm-row-sub">
+                      <t t-esc="finishedWord(cs)"/><t
+                        t-if="cs.performance !== null"> · <t
+                        t-esc="pct(cs.performance)"/> passed</t>
+                    </div>
+                  </div>
+                </t>
+              </div>
+
+              <div class="pbim-panel pbtnm-table">
+                <div class="pbtnm-table-head">
+                  <h3><t t-out="ic('flag',16)"/> Why they were set</h3>
+                  <p>Day one, a trial period, compliance, a one-off or a
+                     leadership programme.</p>
+                </div>
+                <t t-foreach="state.byReason" t-as="rs" t-key="rs.name">
+                  <div class="pbtnm-row"
+                       t-att-class="{ bad: rs.overdue > 0 }">
+                    <div class="pbtnm-row-name" t-esc="rs.name"/>
+                    <div class="pbtnm-bar">
+                      <span t-attf-style="width: {{ share(state.byReason, rs.total) }}%;"/>
+                    </div>
+                    <div class="pbtnm-row-n" t-esc="rs.total"/>
+                    <div class="pbtnm-row-sub">
+                      <t t-esc="finishedWord(rs)"/>
+                    </div>
+                  </div>
+                </t>
+              </div>
+
+            </div>
+
+            <!-- ==================== what it cost ====================
+                 ONLY WHEN THERE IS SOMETHING TO SAY. A money panel reading
+                 zero over a company that has never run a claim is a panel
+                 that teaches people to stop reading the page. -->
+            <div t-if="state.claims.claims" class="pbim-panel pbtnm-money">
+              <div class="pbtnm-table-head">
+                <h3><t t-out="ic('receipt',16)"/> What people claimed back</h3>
+                <p>Courses people paid for themselves and asked to be paid back
+                   for, by the day they paid.</p>
+              </div>
+              <div class="pbtnm-money-row">
+                <div class="pbtnm-money-v" t-esc="state.claims.total_words"/>
+                <div class="pbtnm-money-l">
+                  agreed across <t t-esc="state.claims.agreed"/> of
+                  <t t-esc="state.claims.claims"/> claims<t
+                    t-if="state.claims.waiting">, <t
+                    t-esc="state.claims.waiting"/> still waiting</t><t
+                    t-if="state.claims.paid"> · <t t-esc="state.claims.paid"/>
+                    already paid</t>
+                </div>
+              </div>
+            </div>
+
+          </t>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

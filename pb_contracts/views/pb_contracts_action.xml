@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_pb_contracts" model="ir.actions.client">
+        <field name="name">Contracts</field>
+        <field name="tag">pb_contracts</field>
+    </record>
+
+    <record id="action_pb_contract_detail" model="ir.actions.client">
+        <field name="name">Contract</field>
+        <field name="tag">pb_contract_detail</field>
+    </record>
+</odoo>

@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_payslip">
+         <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">  <t t-set="dsal" t-value="{}"/> <t t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">  <t t-esc="dsal.update({line.code:line.amount})"/>  </t>
+                    <t t-set="dwork" t-value="{}"/> <t t-foreach="o.worked_days_line_ids" t-as="line"><t t-esc="dwork.update({line.code:line.number_of_hours})"/> </t>
+<!--<img src="https://abm.biztinct.com/web/image/1148-05f6bd99/abm.png" style="max-height: 45px;" alt="Logo"/>-->
+<img src="https://payobook.com/web/image/2558-793910e5/PayobookLogo.png" style="max-height: 45px;" alt="Logo"/>
+<table style="border-collapse: collapse; width: 100%; border-width: 1px; background-color: #ffffff; border-color: #ffffff;" border="0">
+<col style="width: 50%;"/>
+<col style="width: 50%;"/>
+<tbody>
+<tr>
+<td style="border-color: #ffffff;">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif; text-align: left;"><strong><em><span style="font-size: 14pt; font-family: Arial, sans-serif; color: #908278;">PAY SLIP/ PHIẾU LƯƠNG</span></em></strong></p>
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif; text-align: left;">
+    <span style="font-family: Calibri, sans-serif; font-size: 13.3333px;"><em><strong/></em></span>
+    <em><strong><span style="font-family: Calibri, sans-serif; font-size: 13.3333px;">
+      From <span t-field="o.date_from" t-options="{&quot;format&quot;: &quot;dd/MM/yyyy&quot;}"/> to <span t-field="o.date_to" t-options="{&quot;format&quot;: &quot;dd/MM/yyyy&quot;}"/>
+    </span></strong></em>
+  </p>
+</td>
+<td style="border-color: #ffffff;">
+  <table style="border-collapse: collapse; width: 100.475%; height: 63px; border-width: 2px; background-color: #ffffff; border-color: #ffffff;" border="1">
+    <tbody>
+      <tr style="height: 21px;">
+        <td style="border-color: #ffffff;"><em><span style="font-family: Calibri, sans-serif; font-size: 13.3333px;">Full name:</span></em></td>
+        <td style="border-color: #ffffff;"><span style="font-family: Calibri, sans-serif; font-size: 13.3333px;"><span t-field="o.employee_id"/></span></td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="border-color: #ffffff;"><em><span style="font-family: Calibri, sans-serif; font-size: 13.3333px;">Employee ID:</span></em></td>
+        <td style="border-color: #ffffff;"><em><span style="font-family: Calibri, sans-serif; font-size: 13.3333px;"><span t-field="o.employee_id.employee_id"/></span></em></td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="border-color: #ffffff;"><em><span style="font-family: Calibri, sans-serif; font-size: 13.3333px;">Department:</span></em></td>
+        <td style="border-color: #ffffff;"><em><span style="font-family: Calibri, sans-serif; font-size: 13.3333px;"><span t-field="o.employee_id.department_id"/></span></em></td>
+      </tr>
+    </tbody>
+  </table>
+</td>
+</tr>
+</tbody>
+</table>            
+
+<table class="MsoNormalTable" style="width: 99.5%; border-collapse: collapse; margin-left: 6.75pt; margin-right: 6.75pt;" border="0" cellspacing="0" cellpadding="0" align="left">
+<tbody>
+
+<tr style="height: 20.25pt;">
+<td style="border-width: 2px; width: 315.0pt; border: solid windowtext 1.0pt; border-top: solid windowtext 1.0pt; background: #D9D9D9; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 12.0pt; font-family: Calibri, sans-serif; color: black;">I. TAXABLE INCOME /<em>CÁC KHOẢN THU NHẬP CHỊU THUẾ</em></span></strong></p>
+</td>
+<td style="border-width: 2px; width: 67.5pt; border-top: solid windowtext 1.0pt; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; background: #D9D9D9; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><em><span style="font-family: Calibri, sans-serif; color: black;">Hours</span></em></p>
+</td>
+<td style="border-width: 2px; width: 126.0pt; border-top: solid windowtext 1.0pt; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; background: #D9D9D9; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><em><span style="font-family: Calibri, sans-serif; color: black;">Amount</span></em></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">1</span></p>
+</td>
+<td style="width: 333.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid black 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Contract Salary VND <em>(Lương cơ bản)</em></span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(o.contract_id.wage)"/></span></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">2</span></p>
+</td>
+<td style="width: 265.5pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Standard working hours <em>(Giờ công chuẩn)</em></span></p>
+</td>
+<td style="width: 67.5pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; text-align: right; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dwork['WORK100'])"/></span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"> </p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">3</span></p>
+</td>
+<td style="width: 265.5pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Actual Working Hours incl. Paid leave <em>(Giờ công làm việc thực tế bao gồm ngày nghỉ)</em></span></p>
+</td>
+<td style="width: 67.5pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dwork['ACPL'])"/></span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"/></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">4</span></p>
+</td>
+<td style="width: 265.5pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Unused Vacation leaves <em>(Ngày phép chưa sử dụng)</em></span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['PAIDUNUSED'])"/></span></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">5</span></p>
+</td>
+<td style="width: 265.5pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Taxable Overtime <em>(Tăng ca-đã nhân hệ số)</em></span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['OTTAX'])"/></span></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+  <td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+    <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">6</span></p>
+  </td>
+  <td style="width: 265.5pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+    <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Responsibility allowance <em>(Phụ cấp trách nhiệm)</em></span></p>
+  </td>
+  <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['ACTRESP'])"/></span></p>
+  </td>
+  </tr>
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">7</span></p>
+</td>
+<td style="width: 265.5pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Taxi allowance <em>(Phụ cấp taxi)</em></span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['ACTTAXI'])"/></span></p>
+</td>
+</tr>
+
+<tr style="height: 18.75pt;">
+  <td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+    <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">8</span></p>
+  </td>
+  <td style="width: 333.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid black 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+    <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Petrol allowance<em> (Xăng)</em></span></p>
+  </td>
+  <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['ACTGAZ'])"/></span></p>
+  </td>
+</tr>
+
+<tr style="height: 18.75pt;">
+  <td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+    <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">9</span></p>
+  </td>
+  <td style="width: 333.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid black 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+    <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Bike park allowance <em>(Gửi xe)</em></span></p>
+  </td>
+  <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['ACTPARK'])"/></span></p>
+  </td>
+</tr>
+
+
+<tr style="height: 18.75pt;">
+  <td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+    <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">10</span></p>
+  </td>
+  <td style="width: 333.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid black 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+    <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Sales Incentive/Bean Paste Incentive <em>(Tiền thưởng khuyến khích)</em></span></p>
+  </td>
+  <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['SALESINC'])"/></span></p>
+  </td>
+  </tr>
+
+
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">11</span></p>
+</td>
+<td style="width: 333.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid black 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">13th month Salary <em>(Lương tháng 13)</em></span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['THMON'])"/></span></p>
+</td>
+</tr>
+
+<tr style="height: 18.75pt;">
+  <td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+    <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">12</span></p>
+  </td>
+  <td style="width: 333.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid black 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+    <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Bonus <em>(Thưởng)</em></span></p>
+  </td>
+  <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['BONSTIP'])"/></span></p>
+  </td>
+  </tr>
+
+<tr style="height: 18.75pt;">
+  <td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+    <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">13</span></p>
+  </td>
+  <td style="width: 333.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid black 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+    <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Other Addition / Deduction income before tax <em>(Khoản cộng/trừ trước thuế)</em></span></p>
+  </td>
+  <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['OTHERINC'])"/></span></p>
+  </td>
+</tr>
+
+
+<tr style="height: 18.75pt;">
+<td style="width: 382.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="3">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Total I (Tổng cộng I)</span></strong></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['TAXIN'])"/></span></strong></p>
+</td>
+</tr>
+
+
+
+<tr style="height: 20.25pt;">
+<td style="width: 508.5pt; border: solid windowtext 1.0pt; border-top: none; background: #D9D9D9; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="4">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 12.0pt; font-family: Calibri, sans-serif; color: black;">II. NON-TAXABLE INCOME / <em>CÁC KHOẢN THU NHẬP KHÔNG CHỊU THUẾ</em></span></strong></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">1</span></p>
+</td>
+<td style="width: 333.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid black 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Non-Taxable Overtime and Night shift allowance <em>(Tăng ca không chịu thuế TNCN và ca đêm)</em></span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['OTNT'])"/></span></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">2</span></p>
+</td>
+<td style="width: 333.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid black 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Phone allowance <em>(Phụ cấp điện thoại)</em></span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['ACTPHONE'])"/></span></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">3</span></p>
+</td>
+<td style="width: 333.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid black 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Meal allowance<em> (Cơm)</em></span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['ACTMEAL'])"/></span></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">4</span></p>
+</td>
+<td style="width: 333.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid black 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Other Addition/ Deduction after tax (Khoản công/ trừ sau thuế)</span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['OTDEDU'])"/></span></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">5</span></p>
+</td>
+<td style="width: 333.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid black 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Severance Allowance <em>(Trợ cấp thôi việc)</em></span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['SEVER'])"/></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 382.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="3">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Total II (Tổng cộng II)</span></strong></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['ATI'] - dsal['TAXIN'])"/></span></strong><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">   </span></strong></p>
+</td>
+</tr>
+<tr style="height: 20.25pt;">
+<td style="width: 508.5pt; border: solid windowtext 1.0pt; border-top: none; background: #D9D9D9; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="4">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 12.0pt; font-family: Calibri, sans-serif; color: black;">III. EMPLOYEE OBLIGATIONAL CONTRIBUTIONS / </span></strong><strong><em><span style="font-family: Calibri, sans-serif; color: black;">CÁC KHOẢN ĐÓNG THEO NGHĨA VỤ CỦA NHÂN VIÊN</span></em></strong></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">1</span></p>
+</td>
+<td style="width: 333.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid black 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">SMUI 10.5% <em>(BHXH, BHYT, BHTN)</em></span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['SIHIUITEN'])"/></span></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">2</span></p>
+</td>
+<td style="width: 333.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid black 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Union fees <em>(Phí Công đoàn)</em></span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['EMPTU'])"/></span></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">3</span></p>
+</td>
+<td style="width: 333.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid black 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="2">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Personal Income Tax <em>(Thuế thu nhập cá nhân)</em></span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['MONPIT'])"/></span></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 49.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">4</span></p>
+</td>
+<td style="width: 265.5pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Number of dependents <em>(Số người phụ thuộc)</em></span></p>
+</td>
+<td style="width: 67.5pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-field="o.contract_id.dependents"/></span></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['DEPAMT'])"/></span></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 382.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="3">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Total III (Tổng cộng III)</span></strong></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['TOTDEDU'])"/></span></strong></p>
+</td>
+</tr>
+<tr style="height: 15.4pt;">
+<td style="width: 508.5pt; border: solid windowtext 1.0pt; border-top: none; background: #D9D9D9; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="4">
+  <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 12.0pt; font-family: Calibri, sans-serif; color: black;"> IV/ NET PAYMENT <em>(LƯƠNG THỰC LÃNH)</em></span></strong></p>
+</td>
+</tr>
+<tr style="height: 18.75pt;">
+<td style="width: 382.5pt; border: solid windowtext 1.0pt; border-top: none; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="3">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">TOTAL IV = I+II-III  <em>(TỔNG MỤC IV = I+II-III)</em></span></strong></p>
+</td>
+<td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['NETPAY'])"/></span></strong></p>
+</td>
+</tr>
+<tr style="height: 32.25pt;">
+<td style="width: 508.5pt; border: none; padding: 0cm 5.4pt 0cm 5.4pt;" colspan="4">
+  <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">PAYOBOOK VIETNAM THANK YOU FOR YOUR CONTRIBUTION TO THE COMPANY'S DEVELOPMENT<br/><em>PAYOBOOK VIỆT NAM CHN THNH CẢM ƠN SỰ ĐNG GP CỦA ANH CHỊ!</em></span></strong></p>
+</td>
+</tr>
+</tbody>
+</table>
+<h1> </h1>
+
+
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

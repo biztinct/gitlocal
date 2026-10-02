@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="pb_payroll_ai_insights.AiInsightChatFull">
+        <div class="payai-full-page">
+            <!-- Sidebar -->
+            <div class="payai-full-sidebar">
+                <div class="payai-full-logo">
+                    <span class="payai-full-logo-icon">✨</span>
+                    <span class="payai-full-logo-text">PayAI</span>
+                </div>
+                <button class="payai-sidebar-btn" t-on-click="clearHistory">
+                    ➕ New Chat
+                </button>
+                <button class="payai-sidebar-btn payai-sidebar-btn-outline" t-on-click="openDashboard">
+                    📊 Dashboard
+                </button>
+                <div class="payai-sidebar-info">
+                    <div class="payai-sidebar-label">Powered by</div>
+                    <div class="payai-sidebar-value">OpenAI GPT</div>
+                </div>
+            </div>
+
+            <!-- Main Chat Area -->
+            <div class="payai-full-main">
+                <!-- Header -->
+                <div class="payai-full-header">
+                    <h2>💬 Chat with PayAI</h2>
+                    <div class="payai-full-header-sub">
+                        Ask anything about payroll, HR data, or get general assistance
+                    </div>
+                </div>
+
+                <!-- Chat Body -->
+                <div class="payai-full-body" t-ref="chatBody">
+                    <!-- Welcome -->
+                    <t t-if="state.showSuggestions and state.messages.length === 0">
+                        <div class="payai-full-welcome">
+                            <div class="payai-full-welcome-icon">✨</div>
+                            <h2>Hello! I'm PayAI</h2>
+                            <p>Your intelligent payroll analytics assistant. I can generate charts, analyze data, and answer any question.</p>
+                            <div class="payai-full-suggestions">
+                                <t t-foreach="suggestions" t-as="s" t-key="s_index">
+                                    <button class="payai-full-suggestion"
+                                            t-on-click="() => this.sendSuggestion(s)">
+                                        <t t-esc="s"/>
+                                    </button>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+
+                    <!-- Messages -->
+                    <t t-foreach="state.messages" t-as="msg" t-key="msg_index">
+                        <div t-att-class="'payai-full-msg payai-full-msg-' + msg.role">
+                            <div class="payai-full-msg-avatar">
+                                <t t-if="msg.role === 'user'">👤</t>
+                                <t t-else="">🤖</t>
+                            </div>
+                            <div class="payai-full-msg-body">
+                                <div class="payai-full-msg-role">
+                                    <t t-if="msg.role === 'user'">You</t>
+                                    <t t-else="">PayAI</t>
+                                    <span class="payai-full-msg-time" t-esc="formatTimestamp(msg.timestamp)"/>
+                                </div>
+                                <div class="payai-full-msg-text" t-esc="msg.content"/>
+
+                                <t t-if="msg.chart">
+                                    <div class="payai-full-msg-chart">
+                                        <ChartRenderer chartConfig="msg.chart" height="'350px'"/>
+                                        <button class="payai-pin-btn"
+                                                t-on-click="() => this.pinToDashboard(msg.chart)">
+                                            📌 Pin to Dashboard
+                                        </button>
+                                    </div>
+                                </t>
+
+                                <t t-if="msg.insights and msg.insights.length">
+                                    <div class="payai-insights">
+                                        <div class="payai-insights-title">💡 Key Insights</div>
+                                        <t t-foreach="msg.insights" t-as="insight" t-key="insight_index">
+                                            <div class="payai-insight-item">
+                                                <span class="payai-insight-bullet">•</span>
+                                                <t t-esc="insight"/>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </t>
+
+                                <t t-if="msg.followUpQuestions and msg.followUpQuestions.length">
+                                    <div class="payai-followups">
+                                        <t t-foreach="msg.followUpQuestions" t-as="fq" t-key="fq_index">
+                                            <button class="payai-followup-chip"
+                                                    t-on-click="() => this.sendSuggestion(fq)">
+                                                <t t-esc="fq"/>
+                                            </button>
+                                        </t>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+
+                    <!-- Loading -->
+                    <t t-if="state.isLoading">
+                        <div class="payai-full-msg payai-full-msg-assistant">
+                            <div class="payai-full-msg-avatar">🤖</div>
+                            <div class="payai-full-msg-body">
+                                <div class="payai-full-msg-role">PayAI</div>
+                                <div class="payai-typing">
+                                    <span class="payai-dot"/>
+                                    <span class="payai-dot"/>
+                                    <span class="payai-dot"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Input -->
+                <div class="payai-full-input-area">
+                    <div class="payai-full-input-wrapper">
+                        <textarea
+                            t-ref="chatInput"
+                            class="payai-full-input"
+                            placeholder="Ask PayAI anything about payroll, HR, or anything else..."
+                            t-att-value="state.inputText"
+                            t-on-input="onInputChange"
+                            t-on-keydown="onInputKeydown"
+                            rows="1"
+                        />
+                        <button class="payai-full-send-btn"
+                                t-on-click="sendMessage"
+                                t-att-disabled="state.isLoading || !state.inputText.trim()">
+                            ➤
+                        </button>
+                    </div>
+                    <div class="payai-full-disclaimer">
+                        PayAI can make mistakes. Verify important data.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

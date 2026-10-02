@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      The contract half of the same idea. Two of the fields on this page are
+      GREYED OUT because nobody types them: months on the contract and days of
+      service are worked out from the contract's own dates every time they are
+      read. They are shown anyway, because the question "why did the payroll
+      think he had been here eleven months" has to be answerable.
+    -->
+    <record id="view_contract_form_vn_payroll_facts" model="ir.ui.view">
+        <field name="name">hr.contract.form.vn.payroll.facts</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="priority">110</field>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Payroll facts" name="pb_vn_payroll_facts">
+                    <group>
+                        <group string="How the pay is worked out">
+                            <field name="pb_vn_hours_per_day"/>
+                            <field name="pb_vn_pay_grade"/>
+                            <field name="pb_vn_annual_days"/>
+                            <field name="pb_vn_variable_bonus"/>
+                        </group>
+                        <group string="Worked out from the dates">
+                            <field name="pb_vn_contract_months" readonly="1"/>
+                            <field name="pb_vn_service_days" readonly="1"/>
+                        </group>
+                        <group string="Tax exemptions — evidence on file" colspan="2">
+                            <field name="pb_vn_qual_ot_weekday"/>
+                            <field name="pb_vn_qual_ot_weekend"/>
+                            <field name="pb_vn_qual_ot_holiday"/>
+                            <field name="pb_vn_qual_night"/>
+                            <field name="pb_vn_qual_transport"/>
+                            <field name="pb_vn_qual_leave_encash"/>
+                            <field name="pb_vn_qual_other_exempt"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

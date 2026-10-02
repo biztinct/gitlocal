@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Part of biz_debrand — portable Odoo 19 white-label layer. License LGPL-3.
+     Re-applies the white-label identity on every install AND upgrade. -->
+<odoo>
+    <function model="res.config.settings" name="_biz_debrand_apply_brand"/>
+</odoo>

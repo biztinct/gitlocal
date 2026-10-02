@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Three letters to start from. noupdate="1" so a company that has
+         reworded one keeps its wording through every upgrade.
+
+         The bodies are plain professional English with the placeholders the
+         engine fills. Nothing here is evaluated — a `${...}` that is misspelt
+         stays on the page exactly as typed, which is what makes editing these
+         safe for a non-technical administrator. -->
+
+    <record id="letter_template_experience" model="pb.letter.template">
+        <field name="name">Experience letter</field>
+        <field name="letter_type">experience</field>
+        <field name="subject">Experience Letter</field>
+        <field name="sequence">10</field>
+        <field name="company_id" eval="False"/>
+        <field name="vault_category_id" ref="pb_employee_vault.cat_certificate"/>
+        <field name="body_html" type="html">
+            <div>
+                <p>To whom it may concern,</p>
+                <p>
+                    This is to confirm that <strong>${employee_name}</strong> has been
+                    employed by ${company} as <strong>${job_title}</strong> in the
+                    ${department} team since ${joining_date}.
+                </p>
+                <p>
+                    Throughout this time ${employee_name} has carried out the duties of
+                    the role professionally and has been a valued member of the team.
+                </p>
+                <p>
+                    This letter is issued on ${date} at the employee's request, and
+                    carries no obligation on the part of ${company}.
+                </p>
+                <p>${extra}</p>
+            </div>
+        </field>
+    </record>
+
+    <record id="letter_template_probation_pass" model="pb.letter.template">
+        <field name="name">Probation passed</field>
+        <field name="letter_type">probation_pass</field>
+        <field name="subject">Confirmation of Employment</field>
+        <field name="sequence">20</field>
+        <field name="company_id" eval="False"/>
+        <field name="vault_category_id" ref="pb_employee_vault.cat_labor_contract"/>
+        <field name="body_html" type="html">
+            <div>
+                <p>Dear ${employee_name},</p>
+                <p>
+                    We are pleased to tell you that you have successfully completed your
+                    probation period as <strong>${job_title}</strong> in ${department}.
+                    Your employment with ${company} is confirmed with effect from ${date}.
+                </p>
+                <p>
+                    Thank you for the work you have put in since you joined us on
+                    ${joining_date}. Your manager will talk you through what happens next.
+                </p>
+                <p>${extra}</p>
+                <p>Congratulations, and welcome properly aboard.</p>
+            </div>
+        </field>
+    </record>
+
+    <record id="letter_template_incentive" model="pb.letter.template">
+        <field name="name">Incentive letter</field>
+        <field name="letter_type">incentive</field>
+        <field name="subject">Incentive Award</field>
+        <field name="sequence">30</field>
+        <field name="company_id" eval="False"/>
+        <field name="vault_category_id" ref="pb_employee_vault.cat_other"/>
+        <field name="body_html" type="html">
+            <div>
+                <p>Dear ${employee_name},</p>
+                <p>
+                    In recognition of your contribution as <strong>${job_title}</strong>
+                    in ${department}, ${company} is pleased to award you the incentive
+                    set out below.
+                </p>
+                <p>${extra}</p>
+                <p>
+                    The award is paid with your next salary and is subject to the usual
+                    deductions. It is a one-off payment and does not change your
+                    contractual pay.
+                </p>
+                <p>Thank you for the work behind it.</p>
+            </div>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Employee Form View Extension - Add Skills Matrix Widget -->
+    <record id="view_hr_employee_form_skills_matrix" model="ir.ui.view">
+        <field name="name">hr.employee.form.skills.matrix</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Skills Matrix" name="skills_matrix">
+                    <field name="skills_matrix_data" widget="skills_matrix" nolabel="1"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,348 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       RECRUIT P7 — the Publish panel (sheet + Details), set-up Channels and
+       Agencies. Loop variables avoid OWL's reserved words: `r7`, `ag7`,
+       `ch7`, `cn7`, `lg7`, `rl7`. Section rules use `=` (R35).
+       ==================================================================== -->
+
+  <!-- ============ one channel row: the hero unit ============ -->
+  <t t-name="pb_hiring.P7Row">
+    <div class="pbhr-p7-row" t-att-class="'is-' + p7RowTone(r7) + (p7Sheet and r7_index === state.p7Focus ? ' is-focus' : '') + (state.p7Bumped.includes(r7.id) ? ' is-bump' : '')" t-att-data-key="r7.key" t-on-click="() =&gt; this.p7FocusRow(r7_index, p7Sheet)">
+      <span class="pbhr-p7-ic"><t t-out="ic(r7.icon,17)"/></span>
+      <div class="pbhr-p7-main">
+        <div class="pbhr-p7-top">
+          <b class="pbhr-p7-name" t-esc="r7.name"/>
+          <span class="pbhr-p7-state" t-esc="r7.state_label"/>
+          <span class="pbhr-p7-gap"/>
+          <span class="pbhr-p7-apps" t-att-class="{ 'has': r7.apps }" t-key="r7.id + '-' + r7.apps" t-att-title="'Applications whose source is ' + r7.source">
+            <t t-out="ic('inbox',13)"/> <t t-esc="p7AppsWord(r7.apps)"/>
+          </span>
+        </div>
+        <div t-if="state.p7 and state.p7.apps" class="pbhr-p7-bar"><span t-attf-style="width: {{ p7Share(r7) }}%"/></div>
+
+        <!-- the tracked link -->
+        <button t-if="r7.link" type="button" class="pbhr-p7-link" t-att-class="{ 'is-copied': state.p7Copied === r7.id }" t-on-click.stop="() =&gt; this.p7Copy(r7)" t-att-title="'Copy: ' + r7.link">
+          <span class="pbhr-p7-link-tx" t-esc="p7Short(r7.link)"/>
+          <span class="pbhr-p7-link-do">
+            <t t-if="state.p7Copied === r7.id"><t t-out="ic('check',13)"/> Copied</t>
+            <t t-else=""><t t-out="ic('copy',13)"/> Copy</t>
+          </span>
+        </button>
+        <div t-elif="['careers', 'board', 'social'].includes(r7.kind) and !state.p7.has_job" class="pbhr-p7-note">
+          <t t-out="ic('info',13)"/> The link appears once the role is on the careers page — every link opens the role there.
+        </div>
+
+        <!-- ===== careers page ===== -->
+        <t t-if="r7.kind === 'careers'">
+          <div t-if="!r7.live" class="pbhr-p7-note"><t t-out="ic('info',13)"/> Every link here opens the role on the careers page, so they work once it is published.</div>
+          <div class="pbhr-p7-acts">
+            <t t-if="state.p7.confidential"><span class="pbhr-p7-note"><t t-out="ic('eyeOff',13)"/> Confidential roles are never advertised.</span></t>
+            <t t-elif="!r7.live"><button type="button" class="pbim-btn primary" t-att-disabled="state.p7Busy" t-on-click.stop="p7Publish"><t t-out="ic('globe',14)"/> Publish on the careers page</button></t>
+            <t t-else="">
+              <a class="pbim-btn ghost" t-att-href="r7.link" target="_blank" rel="noopener" t-on-click.stop="() =&gt; {}"><t t-out="ic('external',13)"/> Open the page</a>
+              <button type="button" class="pbim-btn ghost pbhr-no" t-att-disabled="state.p7Busy" t-on-click.stop="p7Unpublish"><t t-out="ic('eyeOff',13)"/> Take it off</button>
+            </t>
+          </div>
+        </t>
+
+        <!-- ===== a board or a network ===== -->
+        <t t-elif="r7.kind === 'board' or r7.kind === 'social'">
+          <div t-if="state.p7.has_job and !state.p7.on_page and r7.state !== 'closed'" class="pbhr-p7-hint is-rose">
+            <t t-out="ic('alert',13)"/>
+            <span><b>The careers page is not published,</b> so this link opens nothing yet. Publish the role on the careers page first (the first row).</span>
+          </div>
+          <div t-if="r7.state === 'posted'" class="pbhr-p7-meta">
+            <t t-out="ic('checkCircle',13)"/> Posted <t t-esc="r7.posted_on"/><t t-if="r7.posted_by"> by <t t-esc="r7.posted_by"/></t>
+            <a t-if="r7.external_url" t-att-href="r7.external_url" target="_blank" rel="noopener" class="pbhr-p7-ext" t-on-click.stop="() =&gt; {}"><t t-out="ic('external',12)"/> the live posting</a>
+          </div>
+          <div t-elif="r7.state === 'closed'" class="pbhr-p7-meta"><t t-out="ic('minusCircle',13)"/> Taken down. Its link still counts anybody who applies through an old copy.</div>
+          <div t-else="" class="pbhr-p7-hint">
+            <t t-out="ic('info',13)"/>
+            <span><b>Not connected to <t t-esc="r7.name"/>.</b> <t t-if="r7.hint"><t t-esc="r7.hint"/> </t><t t-else="">Paste the advert there with this link. </t>Then press Mark as posted.</span>
+          </div>
+          <div t-if="r7.sent_on" class="pbhr-p7-meta"><t t-out="ic('mail',13)"/> Advert emailed on <t t-esc="r7.sent_on"/> to <t t-esc="r7.contact_email"/>.</div>
+          <div t-elif="!r7.contact_email and r7.state !== 'posted'" class="pbhr-p7-meta is-quiet">
+            <t t-out="ic('mail',13)"/> No email contact yet<t t-if="state.p7.can_setup"> · <button type="button" class="pbhr-p7-linkbtn" t-on-click.stop="openSetup">add one in Channels</button></t>
+          </div>
+          <div class="pbhr-p7-acts">
+            <t t-if="r7.state !== 'posted'">
+              <button type="button" class="pbim-btn primary" t-att-disabled="state.p7Busy or !state.p7.has_job" t-on-click.stop="() =&gt; this.p7StartMark(r7)"><t t-out="ic('checkCheck',14)"/> Mark as posted</button>
+              <button t-if="r7.advert" type="button" class="pbim-btn ghost" t-on-click.stop="() =&gt; this.p7CopyAdvert(r7)"><t t-out="ic('fileText',13)"/> Copy the advert</button>
+              <button t-if="r7.can_send" type="button" class="pbim-btn ghost" t-att-disabled="state.p7Busy or !r7.mail_on" t-att-title="r7.mail_on ? 'Email the advert to ' + r7.contact_email : 'Emailing adverts is switched off in Hiring set-up, Channels'" t-on-click.stop="() =&gt; this.p7Send(r7)"><t t-out="ic('send',13)"/> Send the advert</button>
+            </t>
+            <t t-else="">
+              <button type="button" class="pbim-btn ghost" t-att-disabled="state.p7Busy" t-on-click.stop="() =&gt; this.p7TakeDown(r7)"><t t-out="ic('minusCircle',13)"/> Taken down</button>
+              <button type="button" class="pbim-btn ghost" t-att-disabled="state.p7Busy" t-on-click.stop="() =&gt; this.p7Unmark(r7)"><t t-out="ic('undo',13)"/> Not posted after all</button>
+            </t>
+          </div>
+        </t>
+
+        <!-- ===== employee referrals ===== -->
+        <t t-elif="r7.kind === 'referral'">
+          <div class="pbhr-p7-meta is-quiet"><t t-out="ic('users',13)"/> Colleagues put people forward on their referral page; this link opens it on this role.</div>
+          <div class="pbhr-p7-acts">
+            <span t-if="state.p7.confidential" class="pbhr-p7-note"><t t-out="ic('eyeOff',13)"/> Confidential roles are never on the referral page.</span>
+            <t t-elif="r7.referral_open"><button type="button" class="pbim-btn ghost" t-att-disabled="state.p7Busy" t-on-click.stop="() =&gt; this.p7Referrals(false)"><t t-out="ic('lock',13)"/> Close referrals</button></t>
+            <t t-else=""><button type="button" class="pbim-btn primary" t-att-disabled="state.p7Busy or state.p7.state !== 'open'" t-on-click.stop="() =&gt; this.p7Referrals(true)"><t t-out="ic('users',14)"/> Open to referrals</button></t>
+          </div>
+        </t>
+
+        <!-- ===== agencies ===== -->
+        <t t-elif="r7.kind === 'agency'">
+          <div t-if="!r7.agencies.length" class="pbhr-p7-meta is-quiet"><t t-out="ic('building',13)"/> No agency on this role. Add one and it sees the role on its own portal — nothing else.</div>
+          <div t-foreach="r7.agencies" t-as="ag7" t-key="ag7.id" class="pbhr-p7-ag">
+            <div class="pbhr-p7-ag-id">
+              <b t-esc="ag7.name"/>
+              <small>
+                <t t-if="ag7.submitted === 1">1 put forward</t><t t-else=""><t t-esc="ag7.submitted"/> put forward</t>
+                <t t-if="ag7.refused"> · <t t-esc="ag7.refused"/> not accepted (6-month rule)</t>
+                · <t t-if="ag7.logins === 0">no sign-in yet</t><t t-elif="ag7.logins === 1">1 sign-in</t><t t-else=""><t t-esc="ag7.logins"/> sign-ins</t>
+              </small>
+            </div>
+            <div class="pbhr-p7-ag-acts">
+              <button t-if="state.p7.can_invite" type="button" class="pbim-btn ghost" t-on-click.stop="() =&gt; this.p7StartInvite(ag7)"><t t-out="ic('mail',13)"/> Invite</button>
+              <button type="button" class="pbim-btn ghost" t-on-click.stop="() =&gt; this.p7Portal(ag7)" title="Opens the role as the agency sees it (sign in as the agency to see it exactly)"><t t-out="ic('external',13)"/> Their portal page</button>
+              <button type="button" class="pbim-btn ghost pbhr-no" t-att-disabled="state.p7Busy" t-on-click.stop="() =&gt; this.p7AgencyRemove(ag7)" title="Take the role off this agency's portal"><t t-out="ic('x',13)"/></button>
+            </div>
+          </div>
+          <div class="pbhr-p7-acts">
+            <t t-if="p7AgencyChoices.length">
+              <select class="pbhr-in pbhr-p7-pick" t-model="state.p7AgencyPick" t-on-click.stop="() =&gt; {}">
+                <option value="">Add an agency…</option>
+                <option t-foreach="p7AgencyChoices" t-as="ch7" t-key="ch7.id" t-att-value="ch7.id" t-esc="ch7.name"/>
+              </select>
+              <button type="button" class="pbim-btn primary" t-att-disabled="state.p7Busy or !state.p7AgencyPick" t-on-click.stop="p7AgencyAdd"><t t-out="ic('plus',14)"/> Add</button>
+            </t>
+            <span t-elif="!(state.p7.agencies_all or []).length" class="pbhr-p7-note"><t t-out="ic('info',13)"/> No recruitment agency in the vendor register yet. Add one under Vendors, then come back.</span>
+          </div>
+        </t>
+      </div>
+    </div>
+  </t>
+
+  <!-- ============ the panel: summary + rows ============ -->
+  <t t-name="pb_hiring.P7Panel">
+    <div class="pbhr-p7">
+      <div t-if="!state.p7" class="pbhr-p7-skel">
+        <div t-foreach="[1,2,3,4]" t-as="sk7" t-key="sk7" class="pbhr-p7-row is-skel"><span class="pbhr-skel-line"/><span class="pbhr-skel-line short"/></div>
+      </div>
+      <t t-else="">
+        <div class="pbhr-p7-sum">
+          <div class="pbhr-p7-sum-n"><b t-esc="state.p7.live"/><span><t t-if="state.p7.live === 1">channel live</t><t t-else="">channels live</t></span></div>
+          <div class="pbhr-p7-sum-n"><b t-esc="state.p7.apps"/><span><t t-if="state.p7.apps === 1">application through a link</t><t t-else="">applications through a link</t></span></div>
+          <div t-if="p7Totals.best" class="pbhr-p7-sum-best"><t t-out="ic('trendingUp',14)"/> Working best: <b t-esc="p7Totals.best.name"/> · <t t-esc="p7Share(p7Totals.best)"/>%</div>
+          <span class="pbhr-p7-gap"/>
+          <button type="button" class="pbim-btn ghost" t-att-disabled="!state.p7.has_job" t-on-click="p7CopyAll" title="Every channel's link, one per line"><t t-out="ic('copy',13)"/> Copy all links</button>
+        </div>
+        <div class="pbhr-p7-rows">
+          <t t-foreach="state.p7.rows" t-as="r7" t-key="r7.id"><t t-call="pb_hiring.P7Row"/></t>
+        </div>
+        <p class="pbhr-p7-foot">Every channel has its own link, and the link is how we know where somebody came from. Marking a posting as posted is your promise; the count beside it keeps it honest.</p>
+      </t>
+    </div>
+  </t>
+
+  <!-- ============ Details → Advert and publishing ============ -->
+  <t t-name="pb_hiring.P7Inline">
+    <t t-if="state.canRecruit">
+      <div class="pbhr-sec pbhr-p7-sec">Where it has gone
+        <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.p7OpenSheet()"><t t-out="ic('maximize',13)"/> Open Publish to…</button>
+      </div>
+      <t t-set="p7Sheet" t-value="false"/>
+      <t t-call="pb_hiring.P7Panel"/>
+    </t>
+  </t>
+
+  <!-- ============ the sheet, the mark-as-posted and invite dialogs ============ -->
+  <t t-name="pb_hiring.P7Overlays">
+    <div t-if="state.p7Open" class="pbhr-cscrim pbhr-p7-scrim" t-on-click="p7CloseSheet">
+      <aside class="pbhr-cdrawer pbhr-p7-sheet" role="dialog" aria-modal="true" aria-label="Publish to" t-on-click.stop="() =&gt; {}">
+        <div class="pbhr-p7-sheet-h">
+          <div>
+            <div class="pbhr-drawer-title"><t t-out="ic('share2',17)"/> Publish to…</div>
+            <div class="pbhr-drawer-sub"><t t-esc="state.drawer and state.drawer.title"/><t t-if="state.p7 and state.p7.country"> · <t t-esc="state.p7.country"/></t> — one link per channel; every application is counted where it came from.</div>
+          </div>
+          <button type="button" class="pbim-btn ghost pbhr-cd-x" t-on-click="p7CloseSheet" title="Close (Esc)"><t t-out="ic('x',16)"/></button>
+        </div>
+        <t t-set="p7Sheet" t-value="true"/>
+        <t t-call="pb_hiring.P7Panel"/>
+        <div class="pbhr-p7-keys">↑ ↓ move · C copy the link · M mark as posted · Enter the main step · Esc close<span class="pbhr-p7-live"><span class="pbhr-p7-live-dot"/> counting live</span></div>
+      </aside>
+    </div>
+
+    <div t-if="state.p7Mark" class="pbim-modal-scrim pbhr-scrim pbhr-p7-top-scrim" t-on-click="() =&gt; { state.p7Mark = null; }">
+      <div class="pbim-modal pbhr-dialog pbhr-dialog--small" role="dialog" aria-modal="true" aria-label="Mark as posted" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title"><t t-out="ic('checkCheck',16)"/> <t t-esc="state.p7Mark.name"/>: it is posted</div>
+            <div class="pbhr-drawer-sub">Your promise that the advert is live there, with this role's link as the way to apply.</div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.p7Mark = null; }"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-form">
+          <label class="pbhr-f">
+            <span>Posted on</span>
+            <input class="pbhr-in" type="date" t-model="state.p7Mark.posted_on"/>
+          </label>
+          <label class="pbhr-f pbhr-f--wide">
+            <span>Link to the live posting (optional)</span>
+            <input class="pbhr-in" type="url" t-model="state.p7Mark.external_url" placeholder="https://"/>
+          </label>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.p7Mark = null; }">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="state.p7Busy or !state.p7Mark.posted_on" t-on-click="p7SaveMark"><t t-out="ic('check',14)"/> Mark as posted</button>
+        </div>
+      </div>
+    </div>
+
+    <div t-if="state.p7Invite" class="pbim-modal-scrim pbhr-scrim pbhr-p7-top-scrim" t-on-click="() =&gt; { state.p7Invite = null; }">
+      <div class="pbim-modal pbhr-dialog pbhr-dialog--small" role="dialog" aria-modal="true" aria-label="Invite the agency" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title"><t t-out="ic('mail',16)"/> Invite somebody at <t t-esc="state.p7Invite.agency"/></div>
+            <div class="pbhr-drawer-sub">They get a sign-in to the agency portal: the roles you put the agency on and the people they put forward. Nothing else.</div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.p7Invite = null; }"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-form">
+          <label class="pbhr-f">
+            <span>Their email</span>
+            <input class="pbhr-in" type="email" t-model="state.p7Invite.email" placeholder="name@agency.com"/>
+          </label>
+          <label class="pbhr-f">
+            <span>Their name (optional)</span>
+            <input class="pbhr-in" type="text" t-model="state.p7Invite.name"/>
+          </label>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.p7Invite = null; }">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="state.p7Busy" t-on-click="p7SaveInvite"><t t-out="ic('send',14)"/> Send the invitation</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ============ Hiring set-up → Channels ============ -->
+  <t t-name="pb_hiring.P7SetupChannels">
+    <section class="pbim-panel pbhr-su-p7ch" t-if="state.data.channels">
+      <div class="pbhr-su-h">
+        <h2>Channels</h2>
+        <span class="pbhr-pill"><t t-esc="p7Ch.rows.filter((x) =&gt; x.active).length"/> in use</span>
+        <span class="pbhr-foot-gap"/>
+        <button t-if="state.data.can_edit" class="pbim-btn primary" t-on-click="p7StartAdd"><t t-out="ic('plus',14)"/> Add a channel</button>
+      </div>
+      <p class="pbhr-su-lede">Where a role can go. Each channel gives every role its own link, so an application through it is counted there. Tick the countries each one is used in: a role's Publish panel shows only the channels for its country. No job board is connected to this system — a recruiter pastes the advert and marks it as posted, or emails it to the board's contact below.</p>
+
+      <div t-if="state.p7Add" class="pbhr-su-add">
+        <input class="pbhr-in" t-model="state.p7Add.name" placeholder="Glints, TopCV, a university board…" maxlength="80"/>
+        <select class="pbhr-in" t-model="state.p7Add.kind">
+          <option t-foreach="p7Ch.kinds" t-as="kd7" t-key="kd7.key" t-att-value="kd7.key" t-esc="kd7.label"/>
+        </select>
+        <button class="pbim-btn primary" t-att-disabled="!state.p7Add.name.trim()" t-on-click="p7SaveAdd"><t t-out="ic('check',14)"/> Add it</button>
+        <button class="pbim-btn ghost" t-on-click="() =&gt; { state.p7Add = null; }">Cancel</button>
+      </div>
+
+      <div class="pbhr-p7-grid" t-attf-style="--cols: {{ p7Ch.countries.length }}">
+        <span class="pbhr-p7-gh is-corner">Channel</span>
+        <span t-foreach="p7Ch.countries" t-as="cn7" t-key="cn7.id" class="pbhr-p7-gh" t-esc="cn7.name"/>
+        <t t-foreach="p7Ch.rows" t-as="ch7" t-key="ch7.id">
+          <div class="pbhr-p7-gr" t-att-class="{ 'is-off': !ch7.active }">
+            <span class="pbhr-p7-ic"><t t-out="ic(ch7.icon,15)"/></span>
+            <div class="pbhr-p7-gr-id">
+              <input class="pbhr-in pbhr-p7-gr-name" t-att-value="ch7.name" t-att-disabled="!state.data.can_edit" maxlength="80" t-on-change="(ev) =&gt; this.p7Save(ch7, 'name', ev.target.value)"/>
+              <small><t t-esc="ch7.kind_label"/> · tags Source = <t t-esc="ch7.source"/><t t-if="ch7.every_country"> · every country</t></small>
+            </div>
+            <label class="pbhr-p7-switch" t-att-title="ch7.active ? 'In use. Press to stop offering it.' : 'Not in use. Press to offer it again.'">
+              <input type="checkbox" t-att-checked="ch7.active" t-att-disabled="!state.data.can_edit" t-on-change="() =&gt; this.p7Active(ch7)"/>
+              <span><t t-if="ch7.active">In use</t><t t-else="">Off</t></span>
+            </label>
+          </div>
+          <button t-foreach="p7Ch.countries" t-as="cn7" t-key="cn7.id" type="button" class="pbhr-su-cell" t-att-class="{ on: p7On(ch7, cn7) }" t-att-disabled="!state.data.can_edit or !ch7.active" t-att-title="p7CellTitle(ch7, cn7)" t-att-aria-pressed="p7On(ch7, cn7) ? 'true' : 'false'" t-on-click="() =&gt; this.p7Toggle(ch7, cn7)">
+            <t t-if="p7On(ch7, cn7)" t-out="ic('check',12)"/>
+          </button>
+          <div class="pbhr-p7-gx">
+            <button t-if="!ch7.every_country and state.data.can_edit" type="button" class="pbhr-p7-linkbtn" t-on-click="() =&gt; this.p7Every(ch7)">Every country</button>
+            <label t-if="ch7.can_contact" class="pbhr-p7-gx-f">
+              <span><t t-out="ic('mail',12)"/> Email contact</span>
+              <input class="pbhr-in" type="email" t-att-value="ch7.contact_email" t-att-disabled="!state.data.can_edit" placeholder="no email contact" t-on-change="(ev) =&gt; this.p7Save(ch7, 'contact_email', ev.target.value)"/>
+            </label>
+            <label class="pbhr-p7-gx-f pbhr-p7-gx-hint">
+              <span><t t-out="ic('info',12)"/> Where to paste it</span>
+              <input class="pbhr-in" t-att-value="ch7.hint" t-att-disabled="!state.data.can_edit" maxlength="300" t-on-change="(ev) =&gt; this.p7Save(ch7, 'hint', ev.target.value)"/>
+            </label>
+          </div>
+        </t>
+      </div>
+
+      <label class="pbhr-su-switch pbhr-p7-mailsw">
+        <input type="checkbox" t-att-checked="p7Ch.mail_on" t-att-disabled="!state.data.can_edit" t-on-change="p7MailSwitch"/>
+        <span><b>Email adverts to a board's contact.</b> Off: the panel offers "Copy the advert" and nothing leaves the building. On: "Send the advert" emails it, with that board's own link, to the contact above.</span>
+      </label>
+    </section>
+  </t>
+
+  <!-- ============ Hiring set-up → Agencies ============ -->
+  <t t-name="pb_hiring.P7SetupAgencies">
+    <section class="pbim-panel pbhr-su-p7ag" t-if="state.data.agencies">
+      <div class="pbhr-su-h">
+        <h2>Agencies</h2>
+        <span class="pbhr-pill"><t t-esc="p7Ag.rows.length"/> in the vendor register</span>
+        <span class="pbhr-foot-gap"/>
+      </div>
+      <p class="pbhr-su-lede">Recruitment agencies from the vendor register. Invite somebody at an agency and they get their own portal: the roles you put the agency on, a form to put people forward, and where each person is now. Nothing from inside the company — no notes, no money, no other candidates.</p>
+
+      <div class="pbhr-p7-rule">
+        <span class="pbhr-p7-ic"><t t-out="ic('clock',15)"/></span>
+        <div>
+          <b>The 6-month rule.</b> An agency cannot put forward somebody who is already a candidate with us, or who applied in the last
+          <input class="pbhr-in pbhr-p7-months" type="number" min="1" max="36" t-att-value="p7Ch.cooling_months" t-att-disabled="!state.data.can_edit" t-on-change="(ev) =&gt; this.p7SaveCooling(ev.target.value)"/>
+          months. The agency is told the date and nothing else; every attempt is kept.
+        </div>
+      </div>
+
+      <div t-if="!p7Ag.rows.length" class="pbhr-p4-empty">No recruitment agency in the vendor register yet. Add one under Vendors (kind: Recruitment agency), then invite somebody there from this card.</div>
+      <div class="pbhr-p7-agencies">
+        <div t-foreach="p7Ag.rows" t-as="ag7" t-key="ag7.id" class="pbhr-p7-agcard">
+          <div class="pbhr-p7-agcard-h">
+            <span class="pbhr-p7-ic"><t t-out="ic('building',16)"/></span>
+            <div class="pbhr-p7-agcard-id">
+              <b t-esc="ag7.name"/>
+              <small><t t-if="ag7.contact_email"><t t-esc="ag7.contact_email"/> · </t><t t-esc="ag7.roles_open"/> open <t t-if="ag7.roles_open === 1">role</t><t t-else="">roles</t></small>
+            </div>
+            <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.p7OpenVendor(ag7)" title="Their card in the vendor register"><t t-out="ic('external',13)"/></button>
+          </div>
+          <div class="pbhr-p7-figs" role="list">
+            <button type="button" class="pbhr-p7-fig" t-on-click="() =&gt; this.p7OpenSubmissions(ag7)"><b t-esc="p7Fig(ag7, 'submitted')"/><span>put forward</span></button>
+            <span class="pbhr-p7-fig"><b t-esc="p7Fig(ag7, 'interviewed')"/><span>interviewed</span></span>
+            <span class="pbhr-p7-fig"><b t-esc="p7Fig(ag7, 'offers')"/><span>offers</span></span>
+            <span class="pbhr-p7-fig is-green"><b t-esc="p7Fig(ag7, 'joined')"/><span>joined</span></span>
+            <span class="pbhr-p7-fig is-rose"><b t-esc="p7Fig(ag7, 'refused')"/><span>6-month rule</span></span>
+            <span class="pbhr-p7-fig"><b><t t-if="ag7.avg_days" t-esc="ag7.avg_days"/><t t-else="">—</t></b><span>days to fill</span></span>
+          </div>
+          <div class="pbhr-p7-logins">
+            <span class="pbhr-p7-logins-k">Sign-ins</span>
+            <span t-if="!ag7.logins.length" class="pbhr-p7-note">Nobody yet.</span>
+            <span t-foreach="ag7.logins" t-as="lg7" t-key="lg7.id" class="pbhr-p7-login" t-att-class="{ 'is-off': !lg7.active }">
+              <t t-out="ic(lg7.signed_in ? 'userCheck' : 'user',12)"/> <t t-esc="lg7.email"/>
+              <small t-if="!lg7.signed_in">not signed in yet</small>
+              <button t-if="state.data.agencies.can_invite" type="button" class="pbhr-p7-login-x" title="Take this sign-in away" t-on-click="() =&gt; this.p7Unlink(ag7, lg7)"><t t-out="ic('x',11)"/></button>
+            </span>
+          </div>
+          <div t-if="state.p7Invite and state.p7Invite.vendor_id === ag7.id" class="pbhr-su-add">
+            <input class="pbhr-in" type="email" t-model="state.p7Invite.email" placeholder="name@agency.com"/>
+            <input class="pbhr-in" t-model="state.p7Invite.name" placeholder="Their name (optional)"/>
+            <button class="pbim-btn primary" t-on-click="p7SaveInvite"><t t-out="ic('send',14)"/> Send the invitation</button>
+            <button class="pbim-btn ghost" t-on-click="() =&gt; { state.p7Invite = null; }">Cancel</button>
+          </div>
+          <div t-elif="state.data.agencies.can_invite" class="pbhr-p7-acts">
+            <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.p7StartInvite(ag7)"><t t-out="ic('userPlus',13)"/> Invite somebody there</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </t>
+
+</templates>

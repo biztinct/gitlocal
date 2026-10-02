@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Where they work.
+
+       Comments are ruled with `=`, never a doubled hyphen: two hyphens
+       inside an XML comment is a PARSE ERROR that takes the whole file down
+       and every template in it with it (WF17).
+
+       `t-if` / `t-elif` / `t-else` are ADJACENT siblings with no comment
+       between them, or the chain breaks at runtime with nothing in the log
+       (WF23).
+
+       No template expression says `not`: OWL rewrites `and` and `or` and
+       leaves `not` alone, which compiles to a SyntaxError that kills the
+       whole file at mount (WF3). Every negation here is `!`.
+
+       No loop variable is named lt / gt / lte / gte / and / or / not / in:
+       the day loop is `dy`, the stretch loop is `sg`, the employment loop
+       is `em`, the entity loop is `co`, the scheme loop is `sc`, the
+       division loop is `dv`, the payslip loop is `sl`, the suggestion loop
+       is `su`, the pattern loop is `pt`, the kind loop is `kd`.
+       ==================================================================== -->
+
+  <t t-name="pb_workseg.PbAssignments">
+    <div class="pbim pbim-page wsg">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the month…</span>
+      </div>
+
+      <div t-elif="state.failed" class="pbim-wrap">
+        <div class="pbim-empty wsg-empty">
+          <div class="wsg-empty-ic"><t t-out="ic('alert',30)"/></div>
+          <h3>This could not be read</h3>
+          <p t-esc="state.failed"/>
+          <button class="pbim-btn primary" t-on-click="() => this.load()">Try again</button>
+        </div>
+      </div>
+
+      <div t-elif="!allowed" class="pbim-wrap">
+        <div class="pbim-empty wsg-empty">
+          <div class="wsg-empty-ic"><t t-out="ic('users',30)"/></div>
+          <h3>This is where a split month is set up</h3>
+          <p>When somebody spends part of a month working for another company in the group, this is where those days are drawn and where you choose who pays for them.</p>
+          <p class="pbim-sub">Ask a payroll manager for access if you need to see it.</p>
+        </div>
+      </div>
+
+      <div t-else="" class="pbim-wrap wsg-wrap">
+
+        <!-- ========================== the header ========================== -->
+        <div class="wsg-head">
+          <div class="wsg-head-id">
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <h2 class="wsg-h">Where they work</h2>
+            <p class="wsg-s">A month is thirty days. Draw the ones somebody spent somewhere else and see both payslips before anything is saved.</p>
+          </div>
+          <!-- ==================================================
+               ONE control, three segments, in the words a person
+               would use for them. The third is a list rather than a
+               view of this screen, so it opens in the breadcrumb and
+               is never drawn as the segment you are standing on.
+               ================================================== -->
+          <div class="wsg-head-actions pbim-seg" role="tablist"
+               aria-label="What to look at">
+            <button t-attf-class="pbim-segbtn wsg-lenstab {{ state.focus === 'days' ? 'on' : '' }}"
+                    role="tab" t-att-aria-selected="state.focus === 'days'"
+                    t-on-click="() => this.setFocus('days')">
+              <t t-out="ic('calendar',15)"/> The month strip
+            </button>
+            <button t-attf-class="pbim-segbtn wsg-lenstab {{ state.focus === 'merge' ? 'on' : '' }}"
+                    role="tab" t-att-aria-selected="state.focus === 'merge'"
+                    t-on-click="() => this.setFocus('merge')">
+              <t t-out="ic('userCheck',15)"/> Same person?
+            </button>
+            <button class="pbim-segbtn wsg-lenstab" role="tab" aria-selected="false"
+                    t-on-click="openTransfers">
+              <t t-out="ic('arrowLeftRight',15)"/> Charged between entities
+            </button>
+          </div>
+        </div>
+
+        <!-- ====================== 1 · the person ========================= -->
+        <t t-if="state.focus === 'days'">
+          <section class="pbim-card wsg-card" t-if="person">
+            <div class="wsg-person">
+              <div class="wsg-person-id">
+                <span class="wsg-person-ic"><t t-out="ic('user',18)"/></span>
+                <div>
+                  <h3 class="wsg-person-n" t-esc="person.name"/>
+                  <p class="wsg-person-s" t-if="person.national_id">
+                    National identity number <t t-esc="person.national_id"/>
+                  </p>
+                  <p class="wsg-person-s" t-else="">One person, counted once wherever they work.</p>
+                </div>
+              </div>
+              <div class="pbim-chips wsg-emps">
+                <span t-foreach="employments" t-as="em" t-key="em.id"
+                      t-attf-class="pbim-chip wsg-emp {{ em.home ? 'is-on' : '' }}"
+                      t-attf-title="{{ em.company }} · {{ em.currency }}">
+                  <t t-if="em.home" t-out="ic('home',13)"/>
+                  <t t-esc="em.company"/>
+                </span>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== 2 · the month strip ==================== -->
+          <section class="pbim-card wsg-card" id="wsg-strip">
+            <div class="wsg-card-h">
+              <div class="wsg-card-id">
+                <span class="wsg-card-ic"><t t-out="ic('calendar',18)"/></span>
+                <div>
+                  <h3 class="wsg-card-t" t-esc="room.month_label"/>
+                  <p class="wsg-card-s">
+                    <t t-esc="workingDays"/> working days. Drag across the days worked somewhere else — or use the arrow keys and hold Shift to extend.
+                  </p>
+                </div>
+              </div>
+              <div class="wsg-card-actions">
+                <button class="pbim-btn ghost sm" t-on-click="() => this.stepMonth(-1)">
+                  <t t-out="ic('chevronLeft',14)"/> Earlier
+                </button>
+                <button class="pbim-btn ghost sm" t-on-click="() => this.stepMonth(1)">
+                  Later <t t-out="ic('chevron',14)"/>
+                </button>
+              </div>
+            </div>
+
+            <div class="wsg-strip" role="group" aria-label="The days of this month">
+              <button t-foreach="days" t-as="dy" t-key="dy.date"
+                      t-att-data-wsg-day="dy.date"
+                      t-att-aria-label="dayLabel(dy)"
+                      t-att-disabled="!canEdit"
+                      t-attf-class="{{ dayClass(dy) }}"
+                      t-on-mousedown="() => this.startDrag(dy)"
+                      t-on-mouseenter="() => this.overDay(dy)"
+                      t-on-keydown="(ev) => this.onDayKey(ev, dy)">
+                <b t-esc="dy.day"/>
+              </button>
+            </div>
+
+            <!-- ============ the rough estimate, while the drag happens ====
+                 Directly under the days, because it answers the gesture the
+                 hand is making. It is in the FLOW rather than pinned to the
+                 foot of the window: the strip is the first thing in this
+                 card and the sentence sits a few pixels beneath the mouse,
+                 so the reason a running answer has to be `position: fixed`
+                 elsewhere (ledger GR40) does not arise here. -->
+            <div class="wsg-est" t-if="estimate">
+              <div class="wsg-est-h">
+                <t t-out="ic('coins',14)"/>
+                <span>A rough estimate, while you draw</span>
+              </div>
+              <div class="wsg-est-tiles">
+                <div class="wsg-est-tile" t-foreach="estimate.tiles" t-as="et"
+                     t-key="et.key">
+                  <span class="wsg-est-co" t-esc="et.company"/>
+                  <b class="wsg-est-n" t-if="et.amount" t-esc="et.amount"/>
+                  <span class="wsg-est-d" t-esc="et.sub"/>
+                  <span class="wsg-est-w" t-if="et.note" t-esc="et.note"/>
+                </div>
+              </div>
+              <p class="wsg-est-s" t-if="estimate.mixed"
+                 t-esc="estimate.mixed_note"/>
+              <p class="wsg-est-s" t-esc="estimate.foot"/>
+            </div>
+
+            <div class="wsg-legend">
+              <span class="wsg-leg"><i class="wsg-dot wsg-dot--work"/> A working day here</span>
+              <span class="wsg-leg"><i class="wsg-dot wsg-dot--off"/> Not a working day</span>
+              <span class="wsg-leg"><i class="wsg-dot wsg-dot--seg"/> Worked in another entity</span>
+            </div>
+
+            <div t-if="!segments.length" class="wsg-hint">
+              <t t-out="ic('info',14)"/>
+              This whole month belongs to <t t-esc="homeEmployment ? homeEmployment.company : ''"/>. Nothing changes on anybody's payslip until you draw a stretch of days.
+            </div>
+          </section>
+
+          <!-- ================== 3 · the stretches drawn ================== -->
+          <section class="pbim-card wsg-card" t-if="segments.length">
+            <div class="wsg-card-h">
+              <div class="wsg-card-id">
+                <span class="wsg-card-ic"><t t-out="ic('route',18)"/></span>
+                <div>
+                  <h3 class="wsg-card-t">This month</h3>
+                  <p class="wsg-card-s">Where the days went, and who pays for them.</p>
+                </div>
+              </div>
+            </div>
+            <div class="wsg-segs">
+              <div class="wsg-seg" t-foreach="segments" t-as="sg" t-key="sg.id">
+                <div class="wsg-seg-top">
+                  <b t-esc="sg.host_company"/>
+                  <span class="pbim-chip" t-esc="sg.kind_label"/>
+                  <span class="pbim-chip wsg-seg-pol" t-esc="sg.policy_label"/>
+                </div>
+                <div class="wsg-seg-days">
+                  <t t-esc="sg.days"/> of <t t-esc="sg.month_days"/> working days ·
+                  <t t-esc="sg.date_from"/> to <t t-esc="sg.date_to"/>
+                </div>
+                <div class="wsg-seg-meta" t-if="sg.config">
+                  <t t-out="ic('sliders',13)"/> Paid under <t t-esc="sg.config"/>
+                </div>
+                <div class="wsg-seg-acts" t-if="canEdit">
+                  <button class="pbim-btn ghost sm" t-if="!sg.derived"
+                          t-on-click="() => this.setSegmentPolicy(sg, sg.effective_policy === 'each_pays' ? 'home_pays' : 'each_pays')">
+                    <t t-out="ic('arrowLeftRight',13)"/> Switch the pattern
+                  </button>
+                  <button class="pbim-btn ghost sm" t-if="!sg.derived"
+                          t-on-click="() => this.removeSegment(sg)">
+                    <t t-out="ic('trash',13)"/> Remove
+                  </button>
+                  <span class="wsg-seg-auto" t-if="sg.derived">
+                    <t t-out="ic('info',13)"/> Worked out from the contract dates
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="wsg-xfers" t-if="transfers.length">
+              <h4>Charged between entities</h4>
+              <div class="wsg-xfer" t-foreach="transfers" t-as="tx" t-key="tx.id">
+                <t t-out="ic('arrowLeftRight',14)"/>
+                <span>
+                  <t t-esc="tx.amount_label"/> charged to <t t-esc="tx.to"/>
+                </span>
+              </div>
+            </div>
+          </section>
+
+          <!-- ====================== 4 · the history ====================== -->
+          <section class="pbim-card wsg-card" t-if="history.length">
+            <div class="wsg-card-h">
+              <div class="wsg-card-id">
+                <span class="wsg-card-ic"><t t-out="ic('history',18)"/></span>
+                <div>
+                  <h3 class="wsg-card-t">Everything ever drawn for this person</h3>
+                  <p class="wsg-card-s">Kept as history, so a report about last quarter reads what was true then.</p>
+                </div>
+              </div>
+            </div>
+            <div class="wsg-hist">
+              <div class="wsg-hist-r" t-foreach="history" t-as="hs" t-key="hs.id">
+                <span class="wsg-hist-d"><t t-esc="hs.date_from"/> → <t t-esc="hs.date_to"/></span>
+                <span class="wsg-hist-c" t-esc="hs.host_company"/>
+                <span class="wsg-hist-p" t-esc="hs.policy_label"/>
+                <span class="pbim-chip" t-esc="hs.state"/>
+              </div>
+            </div>
+          </section>
+        </t>
+
+        <!-- ==================== "Same person?" ========================== -->
+        <t t-else="">
+          <section class="pbim-card wsg-card">
+            <div class="wsg-card-h">
+              <div class="wsg-card-id">
+                <span class="wsg-card-ic"><t t-out="ic('userCheck',18)"/></span>
+                <div>
+                  <h3 class="wsg-card-t">Same person?</h3>
+                  <p class="wsg-card-s">Employee records that look like one human being. Joining them means they are counted once, wherever they work.</p>
+                </div>
+              </div>
+              <div class="wsg-card-actions">
+                <button class="pbim-btn ghost sm" t-on-click="loadReview">
+                  <t t-out="ic('rotate',14)"/> Look again
+                </button>
+                <button class="pbim-btn primary sm"
+                        t-if="canEdit and state.review and state.review.strong"
+                        t-on-click="mergeAllStrong">
+                  <t t-out="ic('userCheck',14)"/>
+                  Join all <t t-esc="state.review.strong"/> with a matching identity number
+                </button>
+              </div>
+            </div>
+
+            <div t-if="state.reviewing" class="pbim-busy">
+              <div class="pbim-spin"/><span>Looking for people twice over…</span>
+            </div>
+
+            <div t-elif="!suggestions.length" class="pbim-empty wsg-empty">
+              <div class="wsg-empty-ic"><t t-out="ic('check',28)"/></div>
+              <h3>Nobody looks like a duplicate</h3>
+              <p>
+                Every one of your <t t-esc="peopleCount"/> people holds their own employee records. We look at national identity numbers, work emails, and names with a date of birth.
+              </p>
+            </div>
+
+            <div t-else="" class="wsg-pairs">
+              <div class="wsg-pair" t-foreach="suggestions" t-as="su" t-key="su.person_ids.join('-')">
+                <div class="wsg-pair-ev">
+                  <span t-attf-class="pbim-chip {{ su.strong ? 'is-on' : '' }}"
+                        t-foreach="su.evidence" t-as="ev" t-key="ev" t-esc="ev"/>
+                </div>
+                <div class="wsg-pair-people">
+                  <div class="wsg-pair-p" t-foreach="su.people" t-as="pp" t-key="pp.id">
+                    <b t-esc="pp.name"/>
+                    <span class="wsg-pair-c" t-foreach="pp.employments" t-as="em"
+                          t-key="em.id" t-esc="em.company"/>
+                  </div>
+                </div>
+                <div class="wsg-pair-acts" t-if="canEdit">
+                  <button class="pbim-btn primary sm" t-on-click="() => this.mergePair(su)">
+                    <t t-out="ic('userCheck',14)"/> They are the same person
+                  </button>
+                  <button class="pbim-btn ghost sm" t-on-click="() => this.dismissPair(su)">
+                    <t t-out="ic('x',14)"/> Not the same
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </t>
+
+        <!-- ========================= the popover ========================= -->
+        <t t-call="pb_workseg.SegmentPopover"/>
+
+      </div>
+    </div>
+  </t>
+
+  <!-- ======================= where these days went ======================= -->
+  <t t-name="pb_workseg.SegmentPopover">
+    <div class="wsg-scrim" t-if="state.popover" role="dialog" aria-modal="true"
+         t-on-click.self="closePopover">
+      <div class="wsg-pop">
+        <div class="wsg-pop-h">
+          <h3>
+            <t t-esc="selection.days"/> of <t t-esc="selection.total"/> working days
+          </h3>
+          <button class="pbim-btn ghost sm" t-on-click="closePopover">
+            <t t-out="ic('x',14)"/> Close
+          </button>
+        </div>
+
+        <p class="wsg-pop-s">
+          <t t-esc="state.draft.date_from"/> to <t t-esc="state.draft.date_to"/>
+        </p>
+
+        <!-- A picker with nothing in it is a dead end with a label on it.
+             One company means there is nowhere for the days to go, and the
+             thing to do about that is on another screen. -->
+        <div t-if="!hostChoices.length" class="wsg-nowhere">
+          <t t-out="ic('info',15)"/>
+          <div>
+            <p>
+              <t t-esc="homeEmployment ? homeEmployment.company : ''"/> is the only entity here, so there is nowhere else for these days to go.
+            </p>
+            <p>Put two or more companies in a group and this month can be split between them.</p>
+            <button class="pbim-btn ghost sm" t-on-click="openGroupScreen">
+              <t t-out="ic('building',14)"/> Set up the group
+            </button>
+          </div>
+        </div>
+
+        <div t-else="" class="wsg-field">
+          <label>Worked in</label>
+          <select t-att-value="state.draft.host_company_id"
+                  t-on-change="(ev) => this.setDraft('host_company_id', ev.target.value)">
+            <option value="0">Pick an entity</option>
+            <option t-foreach="hostChoices" t-as="co" t-key="co.id"
+                    t-att-value="co.id" t-att-selected="co.id === state.draft.host_company_id">
+              <t t-esc="co.name"/> · <t t-esc="co.currency"/>
+            </option>
+          </select>
+        </div>
+
+        <div class="wsg-field" t-if="divisions.length">
+          <label>Division</label>
+          <select t-att-value="state.draft.division_id"
+                  t-on-change="(ev) => this.setDraft('division_id', ev.target.value)">
+            <option value="0">Not set</option>
+            <option t-foreach="divisions" t-as="dv" t-key="dv.id"
+                    t-att-value="dv.id" t-att-selected="dv.id === state.draft.division_id">
+              <t t-esc="dv.name"/>
+            </option>
+          </select>
+        </div>
+
+        <div class="wsg-field">
+          <label>Paid under</label>
+          <select t-att-value="state.draft.config_id"
+                  t-on-change="(ev) => this.setDraft('config_id', ev.target.value)">
+            <option value="0">Whatever that entity's map says</option>
+            <option t-foreach="schemeChoices" t-as="sc" t-key="sc.id"
+                    t-att-value="sc.id" t-att-selected="sc.id === state.draft.config_id">
+              <t t-esc="sc.name"/>
+            </option>
+          </select>
+        </div>
+
+        <div class="wsg-field">
+          <label>What this is</label>
+          <select t-att-value="state.draft.kind"
+                  t-on-change="(ev) => this.setDraft('kind', ev.target.value)">
+            <option t-foreach="kinds" t-as="kd" t-key="kd.key"
+                    t-att-value="kd.key" t-att-selected="kd.key === state.draft.kind">
+              <t t-esc="kd.label"/>
+            </option>
+          </select>
+        </div>
+
+        <div class="wsg-pats">
+          <button t-foreach="policies" t-as="pt" t-key="pt.key"
+                  t-attf-class="wsg-pat {{ draftPolicy === pt.key ? 'is-on' : '' }}"
+                  t-att-aria-pressed="draftPolicy === pt.key"
+                  t-on-click="() => this.setDraftPolicy(pt.key)">
+            <span class="wsg-pat-tick">
+              <t t-if="draftPolicy === pt.key" t-out="ic('checkCircle',15)"/>
+              <t t-else="" t-out="ic('circle',15)"/>
+            </span>
+            <span class="wsg-pat-body">
+              <b t-esc="pt.label"/>
+              <span t-esc="pt.help"/>
+            </span>
+          </button>
+        </div>
+        <p class="wsg-pop-pol" t-esc="draftPolicyLabel"/>
+
+        <div class="wsg-make" t-if="draftPolicy === 'each_pays' and !hostEmployment and state.draft.host_company_id">
+          <t t-if="!state.makePlan">
+            <p>
+              <t t-out="ic('alert',14)"/>
+              Under this pattern the other entity runs its own payslip, so
+              <t t-esc="person ? person.name : ''"/> needs an employment there.
+            </p>
+            <button class="pbim-btn primary sm" t-on-click="openMakePlan">
+              <t t-out="ic('plus',14)"/>
+              Create the employment in <t t-esc="hostCompany ? hostCompany.name : ''"/>
+            </button>
+          </t>
+          <t t-else="">
+            <p t-esc="state.makePlan.sentence"/>
+            <div class="wsg-field">
+              <label>Monthly pay in <t t-esc="state.makePlan.currency"/></label>
+              <input type="text" t-att-value="state.makePlan.wage"
+                     t-on-change="(ev) => this.setMakeWage(ev.target.value)"/>
+            </div>
+            <div class="wsg-make-acts">
+              <button class="pbim-btn primary sm" t-att-disabled="state.busy"
+                      t-on-click="createHostEmployment">
+                <t t-out="ic('check',14)"/> Create it
+              </button>
+              <button class="pbim-btn ghost sm"
+                      t-on-click="() => this.state.makePlan = null">
+                Not now
+              </button>
+            </div>
+          </t>
+        </div>
+
+        <div class="wsg-prev">
+          <button class="pbim-btn ghost sm" t-att-disabled="state.previewing"
+                  t-on-click="runPreview">
+            <t t-out="ic('receipt',14)"/>
+            <t t-if="state.previewing">Working the payslips out…</t>
+            <t t-else="">Show me both payslips</t>
+          </button>
+
+          <div t-if="state.preview and state.preview.ok" class="wsg-prevbody">
+            <div class="wsg-slips">
+              <div class="wsg-slip" t-foreach="state.preview.slips" t-as="sl"
+                   t-key="sl_index">
+                <b t-esc="sl.company"/>
+                <span class="wsg-slip-d">
+                  <t t-esc="sl.days"/> of <t t-esc="sl.month_days"/> working days
+                </span>
+                <span class="wsg-slip-n" t-esc="sl.net_label"/>
+                <span class="wsg-slip-s">Take-home pay</span>
+              </div>
+            </div>
+            <div class="wsg-slipx" t-if="state.preview.transfer">
+              <t t-out="ic('arrowLeftRight',15)"/>
+              <span t-esc="state.preview.transfer.sentence"/>
+            </div>
+            <p class="wsg-pop-s">Nothing is saved yet. Press Confirm to make this true.</p>
+          </div>
+          <p t-elif="state.preview and state.preview.note" class="wsg-pop-s"
+             t-esc="state.preview.note"/>
+        </div>
+
+        <p class="wsg-pop-err" t-if="state.dialogError" t-esc="state.dialogError"/>
+
+        <div class="wsg-pop-f">
+          <button class="pbim-btn ghost" t-on-click="closePopover">Cancel</button>
+          <button class="pbim-btn primary"
+                  t-att-disabled="state.busy or !hostChoices.length"
+                  t-on-click="confirmSegment">
+            <t t-out="ic('check',15)"/> Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ============ the chip on a person's card (Employee 360) ============= -->
+  <t t-name="pb_workseg.WhereTheyWorkChip">
+    <span t-if="state.data.found" class="pbim-chip wsg-chip"
+          t-att-title="tooltip">
+      <t t-out="ic('arrowLeftRight',13)"/>
+      <t t-esc="state.data.label"/>
+    </span>
+  </t>
+
+</templates>

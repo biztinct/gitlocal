@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Enhanced Salary Rule Categories -->
+        <record id="category_allowance_indonesia" model="hr.salary.rule.category">
+            <field name="name">Indonesia Allowances</field>
+            <field name="code">ALLOWID</field>
+            <field name="parent_id" ref="om_hr_payroll.ALW"/>
+        </record>
+        
+        <record id="category_deduction_indonesia" model="hr.salary.rule.category">
+            <field name="name">Indonesia Deductions</field>
+            <field name="code">DEDUCID</field>
+            <field name="parent_id" ref="om_hr_payroll.DED"/>
+        </record>
+        
+        <!-- Enhanced Allowance Rules -->
+        <record id="rule_fixed_allowance_1" model="hr.salary.rule">
+            <field name="name">Fixed Allowance 1</field>
+            <field name="code">FIXALL1</field>
+            <field name="sequence">160</field>
+            <field name="category_id" ref="category_allowance_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = component.FIXALL1 if hasattr(component, 'FIXALL1') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+        <record id="rule_fixed_allowance_2" model="hr.salary.rule">
+            <field name="name">Fixed Allowance 2</field>
+            <field name="code">FIXALL2</field>
+            <field name="sequence">161</field>
+            <field name="category_id" ref="category_allowance_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = component.FIXALL2 if hasattr(component, 'FIXALL2') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+        <record id="rule_commission" model="hr.salary.rule">
+            <field name="name">Commission</field>
+            <field name="code">COMMIS</field>
+            <field name="sequence">162</field>
+            <field name="category_id" ref="category_allowance_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = component.COMMIS if hasattr(component, 'COMMIS') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+        <record id="rule_sign_on_bonus" model="hr.salary.rule">
+            <field name="name">Sign on Bonus</field>
+            <field name="code">SIGBON</field>
+            <field name="sequence">163</field>
+            <field name="category_id" ref="category_allowance_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = component.SIGBON if hasattr(component, 'SIGBON') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+        <record id="rule_tunjangan_sewa_rumah" model="hr.salary.rule">
+            <field name="name">Tunjangan Sewa Rumah</field>
+            <field name="code">TUNJSR</field>
+            <field name="sequence">164</field>
+            <field name="category_id" ref="category_allowance_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = component.TUNJSR if hasattr(component, 'TUNJSR') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+        <record id="rule_tunjangan_duka" model="hr.salary.rule">
+            <field name="name">Tunjangan Duka</field>
+            <field name="code">TUNJDK</field>
+            <field name="sequence">165</field>
+            <field name="category_id" ref="category_allowance_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = component.TUNJDK if hasattr(component, 'TUNJDK') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+        <record id="rule_tunjangan_suka" model="hr.salary.rule">
+            <field name="name">Tunjangan Suka</field>
+            <field name="code">TUNJSK</field>
+            <field name="sequence">166</field>
+            <field name="category_id" ref="category_allowance_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = component.TUNJSK if hasattr(component, 'TUNJSK') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+        <record id="rule_severance_appreciation" model="hr.salary.rule">
+            <field name="name">Severance/ Appreciation</field>
+            <field name="code">SEVAPP</field>
+            <field name="sequence">167</field>
+            <field name="category_id" ref="category_allowance_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = component.SEVAPP if hasattr(component, 'SEVAPP') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+        <record id="rule_lain_lain_allowance" model="hr.salary.rule">
+            <field name="name">Lain-lain (Allowance)</field>
+            <field name="code">LAINALL</field>
+            <field name="sequence">168</field>
+            <field name="category_id" ref="category_allowance_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = component.LAINALL if hasattr(component, 'LAINALL') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+        <!-- Enhanced Deduction Rules -->
+        <record id="rule_deduction_1" model="hr.salary.rule">
+            <field name="name">Deduction 1</field>
+            <field name="code">DEDUC1</field>
+            <field name="sequence">260</field>
+            <field name="category_id" ref="category_deduction_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = -component.DEDUC1 if hasattr(component, 'DEDUC1') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+        <record id="rule_deduction_2" model="hr.salary.rule">
+            <field name="name">Deduction 2</field>
+            <field name="code">DEDUC2</field>
+            <field name="sequence">261</field>
+            <field name="category_id" ref="category_deduction_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = -component.DEDUC2 if hasattr(component, 'DEDUC2') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+        <record id="rule_deduction_3" model="hr.salary.rule">
+            <field name="name">Deduction 3</field>
+            <field name="code">DEDUC3</field>
+            <field name="sequence">262</field>
+            <field name="category_id" ref="category_deduction_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = -component.DEDUC3 if hasattr(component, 'DEDUC3') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+        <record id="rule_koperasi" model="hr.salary.rule">
+            <field name="name">Koperasi</field>
+            <field name="code">KOPER</field>
+            <field name="sequence">263</field>
+            <field name="category_id" ref="category_deduction_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = -component.KOPER if hasattr(component, 'KOPER') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+        <record id="rule_pinjaman" model="hr.salary.rule">
+            <field name="name">Pinjaman</field>
+            <field name="code">PINJAM</field>
+            <field name="sequence">264</field>
+            <field name="category_id" ref="category_deduction_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = -component.PINJAM if hasattr(component, 'PINJAM') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+        <record id="rule_cicilan" model="hr.salary.rule">
+            <field name="name">Cicilan</field>
+            <field name="code">CICIL</field>
+            <field name="sequence">265</field>
+            <field name="category_id" ref="category_deduction_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = -component.CICIL if hasattr(component, 'CICIL') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+        <record id="rule_lain_lain_deduction" model="hr.salary.rule">
+            <field name="name">Lain-lain (Deduction)</field>
+            <field name="code">LAINDED</field>
+            <field name="sequence">266</field>
+            <field name="category_id" ref="category_deduction_indonesia"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = -component.LAINDED if hasattr(component, 'LAINDED') else 0</field>
+            <field name="appears_on_payslip">True</field>
+        </record>
+        
+    </data>
+</odoo>

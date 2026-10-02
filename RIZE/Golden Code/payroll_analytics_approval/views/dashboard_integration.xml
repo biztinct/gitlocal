@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Extend Vietnam Dashboard with Exact Matching Analytics Tiles -->
+    <record id="view_payroll_dashboard_vietnam_analytics" model="ir.ui.view">
+        <field name="name">Vietnam Payroll Dashboard with Analytics</field>
+        <field name="model">payroll.dashboard</field>
+        <field name="inherit_id" ref="pb_hr_payroll_indonesia.view_payroll_dashboard_vietnam"/>
+        <field name="arch" type="xml">
+            <!-- Add js_class to the form element -->
+            <form position="attributes">
+                <attribute name="js_class">payroll_dashboard_integration</attribute>
+            </form>
+            
+            <!-- Update header background to light variation of 21435F -->
+            <xpath expr="//div[@class='dashboard-header']" position="attributes">
+                <attribute name="style">background: #f8f9fb; padding: 24px; border-radius: 8px; margin-bottom: 24px; border-left: 4px solid #21435F;</attribute>
+            </xpath>
+            
+            <!-- Update header title color to black -->
+            <xpath expr="//h1[@class='dashboard-title']" position="attributes">
+                <attribute name="style">color: #2c3e50;</attribute>
+            </xpath>
+            
+            <!-- Add new tiles after existing dashboard cards - Vietnam uses col-lg-4 -->
+            <xpath expr="//div[@class='row']/div[@class='col-lg-4'][last()]" position="after">
+                
+                <!-- Analytics Approval Tile - Exact Same Format as Vietnam -->
+                <div class="col-lg-4">
+                    <div class="dashboard-card">
+                        <div>
+                            <i class="fa fa-bar-chart-o fa-3x card-icon"/>
+                            <h4 class="card-title">Approval Dashboard</h4>
+                            <p class="card-description">Review and approve payroll with detailed analytics</p>
+                        </div>
+                        <button name="action_open_analytics_dashboard" 
+                                type="object" 
+                                class="dashboard-btn"
+                                data-country="VN">
+                            Open Dashboard
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Bank Export Tile - Exact Same Format as Vietnam -->
+                <div class="col-lg-4">
+                    <div class="dashboard-card">
+                        <div>
+                            <i class="fa fa-university fa-3x card-icon"/>
+                            <h4 class="card-title">Bank Export</h4>
+                            <p class="card-description">Export approved payroll data for disbursement</p>
+                        </div>
+                        <button name="action_export_bank_file" 
+                                type="object" 
+                                class="dashboard-btn"
+                                data-country="VN">
+                            Export Data
+                        </button>
+                    </div>
+                </div>
+                
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Extend Indonesia Dashboard with Exact Matching Analytics Tiles -->
+    <record id="view_payroll_dashboard_indonesia_analytics" model="ir.ui.view">
+        <field name="name">Indonesia Payroll Dashboard with Analytics</field>
+        <field name="model">payroll.dashboard</field>
+        <field name="inherit_id" ref="pb_hr_payroll_indonesia.view_payroll_dashboard_indonesia"/>
+        <field name="arch" type="xml">
+            <!-- Add js_class to the form element -->
+            <form position="attributes">
+                <attribute name="js_class">payroll_dashboard_integration</attribute>
+            </form>
+            
+            <!-- Update header background to light variation of 21435F -->
+            <xpath expr="//div[@class='dashboard-header']" position="attributes">
+                <attribute name="style">background: #f8f9fb; padding: 24px; border-radius: 8px; margin-bottom: 24px; border-left: 4px solid #21435F;</attribute>
+            </xpath>
+            
+            <!-- Update header title color to black -->
+            <xpath expr="//h1[@class='dashboard-title']" position="attributes">
+                <attribute name="style">color: #2c3e50;</attribute>
+            </xpath>
+            
+            <!-- Add new tiles after existing dashboard cards - Indonesia uses col-lg-3 -->
+            <xpath expr="//div[@class='row']/div[@class='col-lg-3'][last()]" position="after">
+                
+                <!-- Analytics Approval Tile - Exact Same Format as Indonesia -->
+                <div class="col-lg-3">
+                    <div class="dashboard-card">
+                        <div>
+                            <i class="fa fa-bar-chart-o fa-3x card-icon"/>
+                            <h4 class="card-title">Approval Dashboard</h4>
+                            <p class="card-description">Review and approve payroll with detailed analytics</p>
+                        </div>
+                        <button name="action_open_analytics_dashboard" 
+                                type="object" 
+                                class="dashboard-btn"
+                                data-country="ID">
+                            Open Dashboard
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Bank Export Tile - Exact Same Format as Indonesia -->
+                <div class="col-lg-3">
+                    <div class="dashboard-card">
+                        <div>
+                            <i class="fa fa-university fa-3x card-icon"/>
+                            <h4 class="card-title">Bank Export</h4>
+                            <p class="card-description">Export approved payroll data for disbursement</p>
+                        </div>
+                        <button name="action_export_bank_file" 
+                                type="object" 
+                                class="dashboard-btn"
+                                data-country="ID">
+                            Export Data
+                        </button>
+                    </div>
+                </div>
+                
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

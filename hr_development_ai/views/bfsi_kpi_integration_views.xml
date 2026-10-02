@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- KPI Integration List View -->
+    <record id="view_bfsi_kpi_integration_list" model="ir.ui.view">
+        <field name="name">bfsi.kpi.integration.list</field>
+        <field name="model">bfsi.kpi.integration</field>
+        <field name="arch" type="xml">
+            <list string="KPI Integrations">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="source_system"/>
+                <field name="api_base_url"/>
+                <field name="sync_frequency"/>
+                <field name="last_sync_date"/>
+                <field name="last_sync_status" widget="badge"
+                    decoration-success="last_sync_status == 'success'"
+                    decoration-warning="last_sync_status == 'partial'"
+                    decoration-danger="last_sync_status == 'failed'"
+                    decoration-info="last_sync_status == 'never'"/>
+                <field name="state" widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-warning="state == 'testing'"
+                    decoration-success="state == 'active'"
+                    decoration-danger="state == 'error'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- KPI Integration Form View -->
+    <record id="view_bfsi_kpi_integration_form" model="ir.ui.view">
+        <field name="name">bfsi.kpi.integration.form</field>
+        <field name="model">bfsi.kpi.integration</field>
+        <field name="arch" type="xml">
+            <form string="KPI Integration">
+                <header>
+                    <button name="action_test_connection" type="object" string="Test Connection" icon="fa-plug" class="btn-primary" invisible="state in ['active']"/>
+                    <button name="action_sync_now" type="object" string="Sync Now" icon="fa-refresh" class="btn-success" invisible="state not in ['active', 'configured', 'testing']"/>
+                    <button name="action_mark_active" type="object" string="Activate" class="btn-success" invisible="state in ['active']"/>
+                    <button name="action_mark_draft" type="object" string="Reset to Draft" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,configured,active"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Integration Name..."/>
+                        </h1>
+                    </div>
+
+                    <div class="vu-section">
+                        <div class="vu-section__title">
+                            <span class="vu-section__icon" data-icon="plug"/>
+                            <div>
+                                <span>Connection Settings</span>
+                                <small class="text-muted d-block">Configure the external system connection</small>
+                            </div>
+                        </div>
+                        <div class="vu-section-grid">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="globe"/>
+                                    <span>Source System</span>
+                                </div>
+                                <group col="2">
+                                    <field name="source_system"/>
+                                    <field name="branch_id"/>
+                                    <field name="api_base_url" placeholder="https://api.example.com/v1"/>
+                                    <field name="data_endpoint" placeholder="/kpis"/>
+                                    <field name="employee_endpoint" placeholder="/employees"/>
+                                    <field name="active"/>
+                                </group>
+                            </div>
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="shield-check"/>
+                                    <span>Authentication</span>
+                                </div>
+                                <group col="2">
+                                    <field name="auth_type"/>
+                                    <field name="api_key" password="True" invisible="auth_type not in ['api_key', 'bearer']"/>
+                                    <field name="api_secret" password="True" invisible="auth_type not in ['api_key']"/>
+                                    <field name="username" invisible="auth_type != 'basic'"/>
+                                    <field name="oauth_client_id" invisible="auth_type != 'oauth2'"/>
+                                    <field name="oauth_client_secret" password="True" invisible="auth_type != 'oauth2'"/>
+                                    <field name="oauth_token_url" invisible="auth_type != 'oauth2'"/>
+                                </group>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vu-section">
+                        <div class="vu-section__title">
+                            <span class="vu-section__icon" data-icon="arrows-exchange"/>
+                            <div>
+                                <span>Data Mapping &amp; Sync</span>
+                                <small class="text-muted d-block">Configure how external data maps to KPI fields</small>
+                            </div>
+                        </div>
+                        <div class="vu-section-grid">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="arrows-exchange"/>
+                                    <span>Field Mapping</span>
+                                </div>
+                                <group col="2">
+                                    <field name="employee_id_field"/>
+                                    <field name="date_field"/>
+                                </group>
+                                <group>
+                                    <field name="kpi_mapping" widget="ace" options="{'mode': 'json'}" placeholder='{"external_sales": "conversions", "external_calls": "dials_per_hour"}'/>
+                                </group>
+                            </div>
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="clock"/>
+                                    <span>Sync Configuration</span>
+                                </div>
+                                <group col="2">
+                                    <field name="sync_frequency"/>
+                                    <field name="last_sync_date"/>
+                                    <field name="last_sync_status" widget="badge"/>
+                                    <field name="records_synced"/>
+                                </group>
+                                <group>
+                                    <field name="last_sync_message" readonly="1"/>
+                                </group>
+                            </div>
+                        </div>
+                    </div>
+
+                    <group>
+                        <field name="notes" placeholder="Configuration notes, documentation, or special instructions..."/>
+                    </group>
+                </sheet>
+                <chatter reload_on_follower="True"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- KPI Integration Search View -->
+    <record id="view_bfsi_kpi_integration_search" model="ir.ui.view">
+        <field name="name">bfsi.kpi.integration.search</field>
+        <field name="model">bfsi.kpi.integration</field>
+        <field name="arch" type="xml">
+            <search string="Search Integrations">
+                <field name="name"/>
+                <field name="source_system"/>
+                <separator/>
+                <filter name="active_integrations" string="Active" domain="[('state', '=', 'active')]"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <group>
+                    <filter name="group_by_system" string="Source System" context="{'group_by': 'source_system'}"/>
+                    <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- KPI Integration Action -->
+    <record id="action_bfsi_kpi_integration" model="ir.actions.act_window">
+        <field name="name">KPI Integration</field>
+        <field name="res_model">bfsi.kpi.integration</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure your first KPI data integration
+            </p>
+            <p>
+                Connect external systems like CRM, HRMS, or Core Banking to automatically import KPI data for performance tracking.
+            </p>
+        </field>
+    </record>
+
+</odoo>

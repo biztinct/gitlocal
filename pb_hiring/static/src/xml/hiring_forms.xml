@@ -1,0 +1,316 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       RECRUIT P2 — Application forms. Three panes: the forms, the real page,
+       the questions. Loop variables: `row`, `lg`, `f`, `k`, `m`, `kd`, `bi`,
+       `r`, `t`, `pm`, `fk`.
+       ==================================================================== -->
+  <t t-name="pb_hiring.PbHiringForms">
+    <div class="pbim pbim-page pbhr pbhr-forms">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Reading the application forms…</span></div>
+      <div t-elif="state.error" class="pbim-wrap">
+        <div class="pbim-panel pbhr-empty">
+          <div class="pbhr-empty-ic"><t t-out="ic('lock',28)"/></div>
+          <h2>Application forms are for the hiring team</h2>
+          <p t-esc="state.error"/>
+          <button class="pbim-btn ghost" t-on-click="openSetup"><t t-out="ic('back',14)"/> Back to Hiring set-up</button>
+        </div>
+      </div>
+      <div t-else="" class="pbhr-ff">
+        <!-- ============ head ============ -->
+        <div class="pbhr-head pbhr-ff-head">
+          <div class="pbhr-head-id">
+            <button class="pbhr-linkish pbhr-ff-crumb" t-on-click="openSetup"><t t-out="ic('back',13)"/> Hiring set-up</button>
+            <h1 class="pbim-h1">Application forms</h1>
+            <p class="pbim-sub">The form a candidate fills in, written once and shown in English, Tiếng Việt and Bahasa Indonesia. Templates fill in new roles; every role keeps its own copy, so changing a template never changes a role's page.</p>
+          </div>
+          <div class="pbhr-head-actions">
+            <button t-if="canEdit" class="pbim-btn ghost" t-on-click="openBrand" title="The brand name and story at the top of every form"><t t-out="ic('building',15)"/> Company story</button>
+          </div>
+        </div>
+
+        <div t-if="state.form and !canEdit" class="pbim-panel pbhr-notice">
+          <div class="pbhr-notice-ic"><t t-out="ic('info',20)"/></div>
+          <div><b>You can read these forms</b><p>Changing them is for the talent lead and the head of hiring.</p></div>
+        </div>
+
+        <div class="pbhr-ff-grid">
+          <!-- ============ LEFT: the forms ============ -->
+          <aside class="pbim-panel pbhr-ff-rail" aria-label="Forms">
+            <div class="pbhr-ff-sec">Templates</div>
+            <button t-foreach="templates" t-as="row" t-key="row.id" type="button" class="pbhr-ff-item" t-att-class="{ on: row.id === state.formId }" t-on-click="() =&gt; this.pickForm(row.id)">
+              <span class="pbhr-ff-item-ic"><t t-out="ic('layers',15)"/></span>
+              <span class="pbhr-ff-item-tx">
+                <b><t t-esc="row.name"/><span t-if="row.is_default" class="pbhr-ff-badge">Default</span></b>
+                <small t-esc="formSub(row)"/>
+              </span>
+              <span t-if="rowMissing(row)" class="pbhr-ff-dot" t-att-title="rowMissing(row) + ' words still need a translation'"/>
+            </button>
+            <div class="pbhr-ff-sec">Used by roles <span class="pbhr-ff-count" t-esc="(data.role_forms || []).length"/></div>
+            <input t-if="(data.role_forms || []).length &gt; 7" class="pbhr-in pbhr-ff-filter" placeholder="Find a role" t-model="state.filter"/>
+            <div t-if="!(data.role_forms || []).length" class="pbhr-ff-empty-s">No role has a form yet. A new role gets a copy of the default template the moment it is created.</div>
+            <div t-elif="!roleForms.length" class="pbhr-ff-empty-s">No role matches “<t t-esc="state.filter"/>”.</div>
+            <button t-foreach="roleForms" t-as="row" t-key="row.id" type="button" class="pbhr-ff-item" t-att-class="{ on: row.id === state.formId }" t-on-click="() =&gt; this.pickForm(row.id)">
+              <span class="pbhr-ff-item-ic is-role"><t t-out="ic('briefcase',15)"/></span>
+              <span class="pbhr-ff-item-tx"><b t-esc="row.role"/><small t-esc="formSub(row)"/></span>
+              <span t-if="rowMissing(row)" class="pbhr-ff-dot" t-att-title="rowMissing(row) + ' words still need a translation'"/>
+            </button>
+          </aside>
+
+          <!-- ============ CENTRE: the real page ============ -->
+          <section class="pbim-panel pbhr-ff-stage" aria-label="Live preview">
+            <div class="pbhr-ff-stage-bar">
+              <span class="pbhr-ff-live"><span class="pbhr-ff-pulse"/> Live preview · <t t-esc="langWord"/></span>
+              <span class="pbhr-foot-gap"/>
+              <div class="pbhr-ff-seg" role="group" aria-label="Screen size">
+                <button type="button" t-att-class="{ on: state.device === 'desktop' }" t-on-click="() =&gt; { state.device = 'desktop'; }" title="Computer"><t t-out="ic('monitor',14)"/></button>
+                <button type="button" t-att-class="{ on: state.device === 'phone' }" t-on-click="() =&gt; { state.device = 'phone'; }" title="Phone, 360 wide"><t t-out="ic('smartphone',14)"/></button>
+              </div>
+              <button type="button" class="pbim-btn ghost pbhr-ff-mini" t-on-click="openInTab" title="Open this preview in a new tab"><t t-out="ic('external',13)"/></button>
+              <button t-if="form and form.public_url" type="button" class="pbim-btn ghost pbhr-ff-mini" t-on-click="openPublic" title="Open the page candidates see"><t t-out="ic('globe',13)"/> Live page</button>
+            </div>
+            <div class="pbhr-ff-frame-wrap" t-att-class="'is-' + state.device">
+              <div t-if="!form" class="pbhr-ff-frame-empty">
+                <t t-out="ic('fileText',28)"/>
+                <p>Pick a form on the left to see the page a candidate fills in.</p>
+              </div>
+              <t t-else="">
+                <div t-if="state.frameLoading" class="pbhr-ff-frame-skel" aria-hidden="true">
+                  <span class="pbhr-skel-line short"/><span class="pbhr-skel-line"/><span class="pbhr-skel-block"/><span class="pbhr-skel-block"/><span class="pbhr-skel-block"/>
+                </div>
+                <div t-if="state.frameBroken" class="pbhr-ff-frame-empty">
+                  <t t-out="ic('alert',28)"/>
+                  <p>The preview could not be drawn here. Open it in a new tab to see what went wrong.</p>
+                  <button class="pbim-btn ghost" t-on-click="openInTab"><t t-out="ic('external',14)"/> Open the preview</button>
+                </div>
+                <iframe t-ref="frame" class="pbhr-ff-frame" t-att-src="frameSrc" t-on-load="onFrameLoad" title="The application page, as a candidate sees it"/>
+              </t>
+            </div>
+          </section>
+
+          <!-- ============ RIGHT: the questions ============ -->
+          <section class="pbim-panel pbhr-ff-side" aria-label="Questions">
+            <div t-if="state.formError" class="pbhr-ff-empty-s pbhr-ff-err"><t t-out="ic('alert',14)"/> <t t-esc="state.formError"/></div>
+            <t t-elif="state.form">
+              <!-- the form's own name and where it is used -->
+              <div class="pbhr-ff-title">
+                <input t-if="state.editingName" class="pbhr-in pbhr-ff-name-in" t-model="state.nameDraft" t-on-keydown="onNameKey" t-on-blur="saveName" maxlength="80"/>
+                <button t-else="" type="button" class="pbhr-ff-name" t-att-disabled="!canEdit or !form.is_template" t-on-click="startName" t-att-title="canEdit and form.is_template ? 'Click to rename' : ''">
+                  <t t-if="form.is_template" t-esc="form.name_en"/><t t-else="" t-esc="form.role"/>
+                  <t t-if="canEdit and form.is_template" t-out="ic('pencil',12)"/>
+                </button>
+                <span t-if="state.saving" class="pbhr-ff-saving"><span class="pbim-spin"/> Saving</span>
+                <span t-else="" class="pbhr-ff-saved"><t t-out="ic('check',12)"/> Saved</span>
+              </div>
+              <div class="pbhr-ff-meta">
+                <t t-if="form.is_template">
+                  <span class="pbhr-pill"><t t-out="ic('layers',12)"/> Template</span>
+                  <span t-if="form.is_default" class="pbhr-pill is-info">New roles start with this</span>
+                </t>
+                <t t-else="">
+                  <span class="pbhr-pill"><t t-out="ic('briefcase',12)"/> This role's own copy</span>
+                  <span t-if="form.origin" class="pbhr-pill">From <t t-esc="form.origin"/></span>
+                </t>
+              </div>
+
+              <!-- ======== languages are tabs, not copies ======== -->
+              <div class="pbhr-ff-tabs" role="tablist" aria-label="Language being edited">
+                <button t-foreach="langs" t-as="lg" t-key="lg.code" type="button" role="tab" class="pbhr-ff-tab"
+                        t-att-class="{ on: state.lang === lg.code, off: !lg.installed }" t-att-aria-selected="state.lang === lg.code ? 'true' : 'false'"
+                        t-att-title="langTitle(lg)" t-on-click="() =&gt; this.setLang(lg.code)">
+                  <span t-esc="lg.label"/>
+                  <span t-if="lg.installed and missingFor(lg.code)" class="pbhr-ff-miss" t-esc="missingFor(lg.code) + ' missing'"/>
+                  <span t-elif="lg.installed and lg.code !== 'en_US'" class="pbhr-ff-ok"><t t-out="ic('check',11)"/></span>
+                  <span t-elif="!lg.installed" class="pbhr-ff-miss is-off">not installed</span>
+                </button>
+              </div>
+              <div t-foreach="notInstalled" t-as="lg" t-key="lg.code" class="pbhr-ff-note is-warn">
+                <t t-out="ic('info',14)"/>
+                <span><b t-esc="lg.label"/> is not installed on this system — ask your administrator to add it under Settings → Languages. Until then candidates see the other languages.</span>
+              </div>
+              <div t-if="state.lang !== 'en_US' and missingHere" class="pbhr-ff-note">
+                <t t-out="ic('globe',14)"/>
+                <span>
+                  <b><t t-esc="missingHere"/> words still show in English</b> on the <t t-esc="langWord"/> page — they carry a small “(English)” mark in the preview.
+                  <button type="button" class="pbhr-linkish" t-on-click="() =&gt; { state.showMissing = !state.showMissing; }"><t t-if="state.showMissing">Hide the list</t><t t-else="">Show which</t></button>
+                </span>
+              </div>
+              <div t-if="state.showMissing and state.lang !== 'en_US'" class="pbhr-ff-misslist">
+                <button t-foreach="missingList" t-as="m" t-key="m_index" type="button" t-on-click="() =&gt; this.openMissing(m)">
+                  <span t-esc="m.label_en"/> <small t-esc="whatWord(m.what)"/> <t t-out="ic('arrowRight',12)"/>
+                </button>
+              </div>
+              <div t-if="state.lang !== 'en_US' and !missingHere" class="pbhr-ff-note is-ok"><t t-out="ic('checkCircle',14)"/><span>Every word on this form has its <t t-esc="langWord"/> version.</span></div>
+
+              <!-- ======== which languages candidates may pick ======== -->
+              <div class="pbhr-ff-offer">
+                <span>Candidates can switch to</span>
+                <label t-foreach="langs" t-as="lg" t-key="lg.code" class="pbhr-ff-chk" t-att-class="{ off: !lg.installed }">
+                  <input type="checkbox" t-att-checked="isOffered(lg.code)" t-att-disabled="!canEdit or lg.code === 'en_US' or !lg.installed" t-on-change="() =&gt; this.toggleOffered(lg.code)"/>
+                  <t t-esc="lg.short"/>
+                </label>
+              </div>
+              <div t-foreach="offLangs" t-as="lg" t-key="lg.code" class="pbhr-ff-note is-warn">
+                <t t-out="ic('info',14)"/><span><b t-esc="lg.label"/> is not switched on for your website yet, so candidates cannot pick it. Ask your administrator to add it to the website's languages.</span>
+              </div>
+
+              <!-- ======== the questions ======== -->
+              <div class="pbhr-ff-sec pbhr-ff-sec--q">
+                Questions on this form <span class="pbhr-ff-count" t-esc="fields.length"/>
+                <span class="pbhr-foot-gap"/>
+                <small t-if="canEdit">Drag to reorder</small>
+              </div>
+              <div class="pbhr-ff-list" t-ref="fields">
+                <div t-foreach="fields" t-as="f" t-key="f.id" class="pbhr-ff-row" t-att-data-id="f.id"
+                     t-att-class="{ 'is-sortable': canEdit and f.kind !== 'consent', 'is-open': state.open === f.id or (f.kind === 'consent' and state.open === 'consent'), 'is-missing': fieldMissing(f) }">
+                  <div class="pbhr-ff-head-row">
+                    <span t-if="canEdit and f.kind !== 'consent'" class="pbhr-ff-grip" title="Drag to reorder (or Alt + arrow keys)"><t t-out="ic('grip',14)"/></span>
+                    <span t-else="" class="pbhr-ff-grip is-still"/>
+                    <button type="button" class="pbhr-ff-main" t-on-click="() =&gt; f.kind === 'consent' ? this.openConsent() : this.toggleOpen(f)" t-on-keydown="(ev) =&gt; this.onRowKey(ev, f)">
+                      <span class="pbhr-ff-kic"><t t-out="ic(f.icon,14)"/></span>
+                      <span class="pbhr-ff-tx">
+                        <b>
+                          <t t-if="f.kind === 'consent'">Consent</t>
+                          <t t-elif="state.lang !== 'en_US' and (f.missing[state.lang] || []).includes('label')"><span class="pbhr-ff-en" t-esc="f.label_en"/></t>
+                          <t t-else="" t-esc="state.drafts[f.id] ? (state.drafts[f.id].label || f.label_en) : f.label"/>
+                        </b>
+                        <small>
+                          <t t-esc="kindWord(f)"/>
+                          <t t-if="fieldMissing(f)"> · <span class="pbhr-ff-needs">needs <t t-esc="langWord"/></span></t>
+                        </small>
+                      </span>
+                    </button>
+                    <span t-if="f.locked" class="pbhr-ff-lock" title="Always asked — every application needs it. You can rename it."><t t-out="ic('lock',13)"/></span>
+                    <button t-else="" type="button" role="switch" class="pbhr-ff-switch" t-att-class="{ on: f.required }" t-att-aria-checked="f.required ? 'true' : 'false'" t-att-disabled="!canEdit" t-att-title="f.required ? 'Required — click to make it optional' : 'Optional — click to make it required'" t-on-click="() =&gt; this.toggleRequired(f)">
+                      <span class="pbhr-ff-knob"/>
+                    </button>
+                    <span class="pbhr-ff-req-w" t-esc="f.required ? 'Required' : 'Optional'"/>
+                  </div>
+
+                  <!-- ======== the editor for one question ======== -->
+                  <div t-if="state.open === f.id and f.kind !== 'consent'" class="pbhr-ff-editor" t-on-keydown="onEditorKey">
+                    <label class="pbhr-ff-lab">The question <small t-if="state.lang !== 'en_US'">in <t t-esc="langWord"/></small>
+                      <input class="pbhr-in pbhr-ff-label-in" data-what="label" t-att-value="state.drafts[f.id].label" t-att-placeholder="state.lang !== 'en_US' ? f.label_en : 'Write the question'" t-att-disabled="!canEdit" maxlength="200" t-on-input="(ev) =&gt; this.onText(f, 'label', ev)"/>
+                      <small t-if="state.lang !== 'en_US'" class="pbhr-ff-ref">English: <t t-esc="f.label_en"/></small>
+                    </label>
+                    <label class="pbhr-ff-lab">Help line <small>optional, shown under the question</small>
+                      <input class="pbhr-in" data-what="help" t-att-value="state.drafts[f.id].help" t-att-placeholder="state.lang !== 'en_US' and f.help_en ? f.help_en : 'One sentence that helps them answer'" t-att-disabled="!canEdit" maxlength="200" t-on-input="(ev) =&gt; this.onText(f, 'help', ev)"/>
+                    </label>
+                    <label t-if="['text','email','tel','url','textarea','number','money'].includes(f.widget) or (f.widget === 'portfolio' and f.portfolio_mode !== 'file')" class="pbhr-ff-lab">Example answer <small>shown faintly inside the box</small>
+                      <input class="pbhr-in" data-what="placeholder" t-att-value="state.drafts[f.id].placeholder" t-att-placeholder="state.lang !== 'en_US' and f.placeholder_en ? f.placeholder_en : ''" t-att-disabled="!canEdit" maxlength="200" t-on-input="(ev) =&gt; this.onText(f, 'placeholder', ev)"/>
+                    </label>
+                    <label t-if="isChoice(f)" class="pbhr-ff-lab">Options <small>one per line</small>
+                      <textarea class="pbhr-in" data-what="options" rows="4" t-att-disabled="!canEdit" t-att-placeholder="state.lang !== 'en_US' ? f.options_en : ''" t-on-input="(ev) =&gt; this.onText(f, 'options', ev)" t-esc="state.drafts[f.id].options"/>
+                      <small t-if="['authorization','relocation'].includes(f.kind)" class="pbhr-ff-ref">The first options map to the candidate's record in order — keep them in the same order in every language.</small>
+                    </label>
+                    <div t-if="f.widget === 'textarea'" class="pbhr-ff-pair">
+                      <label class="pbhr-ff-lab">At least <small>words</small><input type="number" min="0" class="pbhr-in" t-att-value="f.min_words" t-att-disabled="!canEdit" t-on-change="(ev) =&gt; this.setNumber(f, 'min_words', ev)"/></label>
+                      <label class="pbhr-ff-lab">At most <small>words</small><input type="number" min="0" class="pbhr-in" t-att-value="f.max_words" t-att-disabled="!canEdit" t-on-change="(ev) =&gt; this.setNumber(f, 'max_words', ev)"/></label>
+                    </div>
+                    <t t-if="f.widget === 'portfolio'">
+                      <div class="pbhr-ff-lab">They send</div>
+                      <div class="pbhr-ff-chips">
+                        <button t-foreach="portfolioModes" t-as="pm" t-key="pm.key" type="button" class="pbhr-ff-chip" t-att-class="{ on: f.portfolio_mode === pm.key }" t-att-disabled="!canEdit" t-on-click="() =&gt; this.setPlain(f, { portfolio_mode: pm.key })" t-esc="pm.label"/>
+                      </div>
+                    </t>
+                    <t t-if="isFile(f) and !(f.widget === 'portfolio' and f.portfolio_mode === 'link')">
+                      <div class="pbhr-ff-lab">Files we take</div>
+                      <div class="pbhr-ff-chips">
+                        <button t-foreach="fileKinds" t-as="fk" t-key="fk.key" type="button" class="pbhr-ff-chip" t-att-class="{ on: hasKind(f, fk.key) }" t-att-disabled="!canEdit" t-on-click="() =&gt; this.toggleFileKind(f, fk.key)"><t t-if="hasKind(f, fk.key)" t-out="ic('check',11)"/> <t t-esc="fk.label"/></button>
+                        <label class="pbhr-ff-mb">up to <input type="number" min="1" max="15" class="pbhr-in" t-att-value="f.max_mb" t-att-disabled="!canEdit" t-on-change="(ev) =&gt; this.setNumber(f, 'max_mb', ev)"/> MB</label>
+                      </div>
+                      <small class="pbhr-ff-ref">The server checks the kind and the size again, and refuses a file that only pretends to be one of these.</small>
+                    </t>
+                    <div class="pbhr-ff-foot">
+                      <small class="pbhr-ff-ref" t-if="f.builtin">Also saved to the candidate's record<t t-if="f.kind === 'expected_pay'">, and only the hiring team sees it</t>.</small>
+                      <span class="pbhr-foot-gap"/>
+                      <button t-if="canEdit and !f.locked" type="button" class="pbim-btn ghost pbhr-no" t-on-click="() =&gt; this.removeField(f)"><t t-out="ic('trash',13)"/> Remove</button>
+                      <span t-if="f.locked" class="pbhr-ff-ref"><t t-out="ic('lock',11)"/> Always asked — it can be renamed, never removed.</span>
+                    </div>
+                  </div>
+
+                  <!-- ======== consent: the form's own sentence ======== -->
+                  <div t-if="f.kind === 'consent' and state.open === 'consent'" class="pbhr-ff-editor" t-on-keydown="onEditorKey">
+                    <label class="pbhr-ff-lab">What they agree to <small t-if="state.lang !== 'en_US'">in <t t-esc="langWord"/></small>
+                      <textarea class="pbhr-in" data-what="consent_text" rows="3" t-att-disabled="!canEdit" t-att-placeholder="state.lang !== 'en_US' ? form.consent_text_en : ''" t-on-input="onConsent" t-esc="state.consentDraft"/>
+                    </label>
+                    <small class="pbhr-ff-ref">{brand} and {months} are filled in on the page: “<t t-esc="consentPreview"/>”. The exact sentence each person ticked is kept with their application, so rewording it later never changes what they agreed to.</small>
+                  </div>
+                </div>
+              </div>
+              <p class="pbhr-ff-keys">Enter opens a question · Alt + ↑ ↓ moves it · Esc closes</p>
+
+              <!-- ======== add ======== -->
+              <div t-if="canEdit" class="pbhr-ff-add">
+                <button type="button" class="pbim-btn primary" t-on-click="() =&gt; { state.addOpen = !state.addOpen; }"><t t-out="ic('plus',14)"/> Add a question</button>
+                <div t-if="state.addOpen" class="pbhr-ff-add-pop">
+                  <div class="pbhr-ff-lab">Your own question</div>
+                  <div class="pbhr-ff-kinds">
+                    <button t-foreach="state.form.kinds" t-as="kd" t-key="kd.key" type="button" class="pbhr-ff-kind" t-on-click="() =&gt; this.addField(kd.key)"><t t-out="ic(kd.icon,15)"/> <t t-esc="kd.label"/></button>
+                  </div>
+                  <t t-if="state.form.addable_builtins.length">
+                    <div class="pbhr-ff-lab">A built-in field <small>saved straight to the candidate's record</small></div>
+                    <div class="pbhr-ff-kinds">
+                      <button t-foreach="state.form.addable_builtins" t-as="bi" t-key="bi.key" type="button" class="pbhr-ff-kind" t-on-click="() =&gt; this.addField(bi.key)"><t t-out="ic(bi.icon,15)"/> <t t-esc="bi.label"/></button>
+                    </div>
+                  </t>
+                </div>
+              </div>
+
+              <!-- ======== use it ======== -->
+              <div class="pbhr-ff-use">
+                <t t-if="form.is_template">
+                  <div class="pbhr-ff-lab">Use this form for a role</div>
+                  <div t-if="!rolesToOffer.length" class="pbhr-ff-empty-s">No open role yet. A new role starts with the default template automatically.</div>
+                  <div t-else="" class="pbhr-ff-inline">
+                    <select class="pbhr-in" t-model="state.roleTarget" t-att-disabled="!canEdit">
+                      <option value="">Pick a role…</option>
+                      <option t-foreach="rolesToOffer" t-as="r" t-key="r.id" t-att-value="r.id"><t t-esc="r.title"/><t t-if="r.form_name"> — now: <t t-esc="r.form_name"/></t></option>
+                    </select>
+                    <button class="pbim-btn primary" t-att-disabled="!canEdit or !state.roleTarget" t-on-click="useForRole"><t t-out="ic('check',14)"/> Use it</button>
+                  </div>
+                  <small class="pbhr-ff-ref">The role gets its own copy. Answers people already gave are kept.</small>
+                  <div t-if="!usedByCount" class="pbhr-ff-empty-s">Not used by any role yet · pick one above to use it.</div>
+                  <div class="pbhr-ff-inline pbhr-ff-acts">
+                    <button t-if="!form.is_default and canEdit" class="pbim-btn ghost" t-on-click="makeDefault"><t t-out="ic('flag',13)"/> Make this the default for new roles</button>
+                    <button t-if="canEdit" class="pbim-btn ghost" t-on-click="startNewTemplate"><t t-out="ic('copy',13)"/> Copy as a new template</button>
+                    <button t-if="canEdit and !form.is_default" class="pbim-btn ghost pbhr-no" t-on-click="archive"><t t-out="ic('archive',13)"/> Put away</button>
+                  </div>
+                </t>
+                <t t-else="">
+                  <div class="pbhr-ff-lab">Start this role again from a template</div>
+                  <div class="pbhr-ff-inline">
+                    <select class="pbhr-in" t-model="state.changeTo" t-att-disabled="!canEdit">
+                      <option value="">Pick a template…</option>
+                      <option t-foreach="templates" t-as="t" t-key="t.id" t-att-value="t.id" t-esc="t.name"/>
+                    </select>
+                    <button class="pbim-btn ghost" t-att-disabled="!canEdit or !state.changeTo" t-on-click="changeRoleForm"><t t-out="ic('refresh',13)"/> Change</button>
+                  </div>
+                  <small class="pbhr-ff-ref">Answers people already gave stay with them. You can undo it for five seconds.</small>
+                  <div class="pbhr-ff-inline pbhr-ff-acts">
+                    <button t-if="canEdit" class="pbim-btn ghost" t-on-click="startNewTemplate"><t t-out="ic('copy',13)"/> Save as a new template</button>
+                  </div>
+                </t>
+                <div t-if="state.naming" class="pbhr-ff-inline">
+                  <input class="pbhr-in pbhr-ff-newname" t-model="state.newName" maxlength="80" t-on-keydown="onNewNameKey"/>
+                  <button class="pbim-btn primary" t-on-click="saveNewTemplate"><t t-out="ic('check',14)"/> Save</button>
+                  <button class="pbim-btn ghost" t-on-click="() =&gt; { state.naming = false; }">Cancel</button>
+                </div>
+              </div>
+            </t>
+            <div t-elif="state.formBusy" class="pbhr-cd-skel"><span class="pbhr-skel-line"/><span class="pbhr-skel-line"/><span class="pbhr-skel-line short"/></div>
+            <div t-else="" class="pbhr-ff-empty-s">Pick a form on the left.</div>
+          </section>
+        </div>
+      </div>
+
+      <div t-if="state.toast" class="pbhr-toast" role="status" aria-live="polite">
+        <span t-esc="state.toast.text"/>
+        <button t-if="state.toast.undo" type="button" class="pbhr-toast-undo" t-on-click="runUndo"><t t-out="ic('undo',13)"/> Undo</button>
+        <button type="button" class="pbhr-toast-x" t-on-click="() =&gt; { state.toast = null; }"><t t-out="ic('x',13)"/></button>
+      </div>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Pay run — batch form · Payobook POC</title>
+<link rel="stylesheet" href="payrun-poc.css"/>
+<style>
+  .ab { display:flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:10px 14px; box-shadow:var(--shadow); margin-bottom:16px; }
+  .ab .sp { flex:1; } .ab .div { width:1px; height:22px; background:var(--line); margin:0 4px; }
+  .hero { background:#fff; border:1px solid var(--line); border-left:5px solid var(--green); border-radius:16px; padding:18px 22px; display:flex; align-items:center; gap:18px; box-shadow:var(--shadow); margin-bottom:16px; }
+  .hero .av { width:56px; height:56px; border-radius:15px; background:var(--i-soft); color:var(--i); font-size:18px; }
+  .hero .nm { font-size:19px; font-weight:800; }
+  .hero .mt { font-size:12.5px; color:var(--muted); margin-top:2px; }
+  .hero .sp { flex:1; }
+  .meta { display:grid; grid-template-columns:1fr 1fr 1fr; background:#fff; border:1px solid var(--line); border-radius:14px; padding:4px 0; margin-bottom:16px; box-shadow:var(--shadow); }
+  .meta .m { padding:13px 20px; border-right:1px solid var(--line-soft); }
+  .meta .m:last-child { border-right:none; }
+  .meta .k { font-size:11px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.03em; }
+  .meta .v { font-size:14px; font-weight:700; margin-top:3px; }
+  .meta .v a { color:var(--i); text-decoration:none; }
+  .kpis { grid-template-columns:repeat(4,1fr); }
+  .rowact { display:inline-flex; gap:6px; }
+</style>
+</head>
+<body>
+<div class="poc-bar">
+  <b>Payobook · Pay Run redesign POC</b>
+  <a href="payrun-landing.html">① Pay Runs landing</a>
+  <a href="payslip-statement.html">② Payslip statement</a>
+  <a href="payrun-batch.html" class="on">③ Batch form</a>
+  <a href="payrun-wizard.html">④ Run wizard</a>
+  <a href="payrun-report.html">⑤ Report</a>
+  <span class="sp"></span><span class="tag">enhanced native form · Lucide</span>
+</div>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo">P</div><div><div class="bt">Payobook</div><div class="bs">Payroll Suite</div></div></div>
+    <div class="nav"><svg class="ic nav"><use href="#i-grid"/></svg> Dashboard</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-checksquare"/></svg> Approvals</div>
+    <div class="sec">Pay Run</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-zap"/></svg> Run Payroll</div>
+    <div class="nav on"><svg class="ic nav"><use href="#i-calendar"/></svg> Pay Runs</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-receipt"/></svg> Payslips</div>
+    <div class="sec">People</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-users"/></svg> Employees</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-filetext"/></svg> Contracts</div>
+  </aside>
+
+  <main class="main">
+    <div class="cp">
+      <div class="cp-row">
+        <div class="cp-bc"><svg class="ic sm" style="color:var(--muted)"><use href="#i-home"/></svg><svg class="ic sm" style="color:var(--i-border)"><use href="#i-chevronr"/></svg><span class="home">Pay Runs</span><svg class="ic sm" style="color:var(--i-border)"><use href="#i-chevronr"/></svg><span class="cur">VPTQ Mid Oct 25 — Payslips</span></div>
+        <div class="cp-right"><span class="cp-pager"><span>1 / 12</span><span class="pg"><svg class="ic sm"><use href="#i-chevronl"/></svg></span><span class="pg"><svg class="ic sm"><use href="#i-chevronr"/></svg></span></span></div>
+      </div>
+    </div>
+
+    <div class="page" style="max-width:1200px;">
+      <div class="ab">
+        <button class="btn primary"><svg class="ic"><use href="#i-check"/></svg> Approve (GM)</button>
+        <button class="btn ghost danger"><svg class="ic"><use href="#i-x"/></svg> Reject</button>
+        <div class="div"></div>
+        <button class="btn outline"><svg class="ic"><use href="#i-barchart"/></svg> Payroll Report</button>
+        <button class="btn ghost"><svg class="ic"><use href="#i-download"/></svg> Excel</button>
+        <button class="btn ghost"><svg class="ic"><use href="#i-mail"/></svg> Mail payslips</button>
+        <button class="btn ghost"><svg class="ic"><use href="#i-refresh"/></svg> Recompute</button>
+        <div class="sp"></div>
+        <span class="pipe">
+          <span class="step done"><span class="dot">✓</span><span class="lbl">Draft</span></span><span class="bar done"></span>
+          <span class="step done"><span class="dot">✓</span><span class="lbl">HR review</span></span><span class="bar done"></span>
+          <span class="step done"><span class="dot">✓</span><span class="lbl">GM review</span></span><span class="bar done"></span>
+          <span class="step cur"><span class="dot">●</span><span class="lbl">Done</span></span>
+        </span>
+      </div>
+
+      <div class="hero">
+        <div class="av">VP</div>
+        <div><div class="nm">VPTQ Mid Oct 25 — Payslips</div><div class="mt">Pay run batch · 7 payslips</div></div>
+        <div class="sp"></div>
+        <span class="badge done"><span class="d"></span>Done</span>
+      </div>
+
+      <div class="meta">
+        <div class="m"><div class="k">Period</div><div class="v">01 Oct – 15 Oct 2025</div></div>
+        <div class="m"><div class="k">Salary Journal</div><div class="v"><a href="#">Miscellaneous Operations</a></div></div>
+        <div class="m"><div class="k">Credit note</div><div class="v">No</div></div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><span class="v num">₫86.1M</span><span class="l">Total gross</span></div>
+        <div class="kpi"><span class="v num" style="color:var(--amber)">₫9.4M</span><span class="l">Deductions</span></div>
+        <div class="kpi hot"><span class="v num">₫76.7M</span><span class="l">Total net</span></div>
+        <div class="kpi"><span class="v num">7</span><span class="l">Employees</span></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h"><h2>Payslips</h2><span class="tag">7 employees</span></div>
+        <table class="tbl">
+          <thead><tr><th>Employee</th><th>Reference</th><th>Period</th><th class="r">Net</th><th>Status</th><th class="r">Actions</th></tr></thead>
+          <tbody>
+            <tr class="row"><td><div style="display:flex;align-items:center;gap:10px;"><span class="av" style="background:#4F46E5">NH</span> Nguyễn Hồng Nhung</div></td><td>SLIP/25/10/001</td><td>01–15 Oct</td><td class="r money">₫10.96M</td><td><span class="badge done"><span class="d"></span>Done</span></td><td class="r"><span class="rowact"><button class="btn sm"><svg class="ic sm"><use href="#i-eye"/></svg> Open</button><button class="btn sm ghost"><svg class="ic sm"><use href="#i-printer"/></svg></button><button class="btn sm ghost"><svg class="ic sm"><use href="#i-mail"/></svg></button></span></td></tr>
+            <tr class="row"><td><div style="display:flex;align-items:center;gap:10px;"><span class="av" style="background:#0E7490">NT</span> Nguyễn Ngọc Thùy Tiên</div></td><td>SLIP/25/10/002</td><td>01–15 Oct</td><td class="r money">₫11.20M</td><td><span class="badge done"><span class="d"></span>Done</span></td><td class="r"><span class="rowact"><button class="btn sm"><svg class="ic sm"><use href="#i-eye"/></svg> Open</button><button class="btn sm ghost"><svg class="ic sm"><use href="#i-printer"/></svg></button><button class="btn sm ghost"><svg class="ic sm"><use href="#i-mail"/></svg></button></span></td></tr>
+            <tr class="row"><td><div style="display:flex;align-items:center;gap:10px;"><span class="av" style="background:#059669">VT</span> Võ Thị Tú Trinh</div></td><td>SLIP/25/10/003</td><td>01–15 Oct</td><td class="r money">₫10.40M</td><td><span class="badge done"><span class="d"></span>Done</span></td><td class="r"><span class="rowact"><button class="btn sm"><svg class="ic sm"><use href="#i-eye"/></svg> Open</button><button class="btn sm ghost"><svg class="ic sm"><use href="#i-printer"/></svg></button><button class="btn sm ghost"><svg class="ic sm"><use href="#i-mail"/></svg></button></span></td></tr>
+            <tr class="row"><td><div style="display:flex;align-items:center;gap:10px;"><span class="av" style="background:#B45309">TH</span> Trương Thị Thu Hiền</div></td><td>SLIP/25/10/004</td><td>01–15 Oct</td><td class="r money">₫9.85M</td><td><span class="badge done"><span class="d"></span>Done</span></td><td class="r"><span class="rowact"><button class="btn sm"><svg class="ic sm"><use href="#i-eye"/></svg> Open</button><button class="btn sm ghost"><svg class="ic sm"><use href="#i-printer"/></svg></button><button class="btn sm ghost"><svg class="ic sm"><use href="#i-mail"/></svg></button></span></td></tr>
+            <tr class="row"><td><div style="display:flex;align-items:center;gap:10px;"><span class="av" style="background:#7C3AED">NT</span> Nguyễn Hữu Thọ</div></td><td>SLIP/25/10/005</td><td>01–15 Oct</td><td class="r money">₫12.30M</td><td><span class="badge done"><span class="d"></span>Done</span></td><td class="r"><span class="rowact"><button class="btn sm"><svg class="ic sm"><use href="#i-eye"/></svg> Open</button><button class="btn sm ghost"><svg class="ic sm"><use href="#i-printer"/></svg></button><button class="btn sm ghost"><svg class="ic sm"><use href="#i-mail"/></svg></button></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="payrun-icons.js"></script>
+</body>
+</html>

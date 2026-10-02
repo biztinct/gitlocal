@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="pb_tenancy.Banner">
+    <!-- FLEET P6. ABOVE everything else, and it draws nothing at all unless
+         this session came in through the support door. "You are in somebody
+         else's payroll" outranks any message we might also be showing. -->
+    <PbTenancySupportBar/>
+    <PbTenancyBar t-if="notice" notice="notice" onDismiss.bind="dismiss"/>
+    <!-- FLEET P5. The company's own standing, under anything the platform has
+         to say. Two bars at once is the honest arrangement on the one morning
+         it happens: "we are updating tonight" and "your trial ends tomorrow"
+         are different pieces of news and neither should hide the other. -->
+    <PbTenancyStandingBar/>
+</t>
+
+<t t-name="pb_tenancy.Standing">
+    <PbTenancyBar t-if="notice" notice="notice" label="notice.label"
+                  onDismiss.bind="dismiss"/>
+</t>
+
+<t t-name="pb_tenancy.Bar">
+    <div t-attf-class="pbtn-bar pbtn-{{ kind }} {{ props.preview ? 'pbtn-preview' : '' }}"
+         role="status" aria-live="polite">
+        <span class="pbtn-bar-ic"><t t-out="ic(icon, 17)"/></span>
+        <span class="pbtn-bar-kind" t-esc="label"/>
+        <span class="pbtn-bar-tt" t-esc="props.notice.title"/>
+        <span t-if="props.notice.text" class="pbtn-bar-tx" t-esc="props.notice.text"/>
+        <span t-if="range" class="pbtn-bar-when"><t t-out="ic('clock', 13)"/> <t t-esc="range"/></span>
+        <!-- An update in progress swaps the close button for a live dot: it
+             cannot be hidden, and the dot says why it is still there. -->
+        <span t-if="props.notice.live" class="pbtn-bar-live" title="This is happening right now"/>
+        <button t-elif="dismissable" class="pbtn-bar-x" t-on-click="props.onDismiss"
+                title="Hide this message">
+            <t t-out="ic('x', 14)"/>
+        </button>
+    </div>
+</t>
+
+</templates>

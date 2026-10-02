@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         ONE PERMISSION, FOR ONE SURFACE (ACCESS P9).
+
+           company details   "I may correct my own company's name, address,
+                              contact details, tax and registration numbers
+                              and logo" — and nothing else on the record.
+
+         WHY IT IS ITS OWN PERMISSION rather than a corner of an existing
+         one. The platform's "Companies" screen edits every company on the
+         database, its currency, its place in the hierarchy and everything
+         provisioning wrote; it is `base.group_system`'s and stays that way
+         (ACCESS P5, Rail C). What a customer's own administrator needs is
+         much narrower: the letterhead. Reusing the access-team permission
+         for it would mean "decides who can do what" silently also meant
+         "rewrites what the payslips say", and reusing the system
+         administrator permission is the thing this whole programme exists
+         to stop.
+
+         NO `implied_ids` in either direction beyond `base.group_user`.
+         Nothing implies this and this implies nothing: it is a single,
+         additive permission that a role picks up as one plain-English
+         ability ("Correct your company's own details"), which is how the
+         Tenant administrator bundle comes to hold it.
+
+         IT GRANTS NOTHING BY ITSELF. `res.company` write still belongs to
+         the system administrator in Odoo's own ACLs — this permission is
+         read by the `pb.company.profile` facade, which is the only thing
+         that writes, and which accepts a fixed list of fields and refuses
+         the rest. A permission with no facade behind it opens nothing.
+         ================================================================== -->
+
+    <record id="module_category_company" model="ir.module.category">
+        <field name="name">Company</field>
+        <field name="sequence">59</field>
+    </record>
+
+    <!-- Odoo 19: `res.groups` has no `category_id`; a privilege carries it. -->
+    <record id="res_groups_privilege_company" model="res.groups.privilege">
+        <field name="name">Company</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="module_category_company"/>
+    </record>
+
+    <record id="group_company_editor" model="res.groups">
+        <field name="name">Company details</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_company"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <!-- The two built-in administrator accounts and NOBODY ELSE. Adding
+             whoever happened to run the upgrade is the failure a narrow
+             permission like this exists to prevent. -->
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        <field name="comment">Correct this company's own name, address, contact details, tax and registration numbers and logo — the details that print on payslips, filings and letters. It cannot add or remove a company, change the currency, or reach anything belonging to the platform this runs on.</field>
+    </record>
+
+</odoo>

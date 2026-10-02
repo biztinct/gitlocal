@@ -1,0 +1,1449 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-15 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_comp_ben/models/comp_common.py:0
+#: code:addons/pb_comp_ben/models/incentive_approval.py:0
+#: code:addons/pb_comp_ben/models/incentive.py:0
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/comp_common.py:0
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_comp_ben/security/pb_comp_ben_security.xml:0
+#: code:addons/pb_comp_ben/models/incentive_approval.py:0
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/payroll_calendar.py:0
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
+msgid "Reopen %s"
+msgstr "Mở lại %s"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
+msgid "Reopened after approval %(ref)s. Reason: %(why)s"
+msgstr "Đã mở lại sau phê duyệt %(ref)s. Lý do: %(why)s"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
+msgid "That month is already open."
+msgstr "Tháng đó đã mở rồi."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
+msgid "That month is no longer in the calendar."
+msgstr "Tháng đó không còn trong lịch."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
+msgid "none given"
+msgstr "không nêu"
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
+msgid "Month"
+msgstr "Tháng"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
+msgid "Open again"
+msgstr "Mở lại"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
+msgid "Pay runs already finished in it"
+msgstr "Số kỳ lương đã hoàn tất trong tháng"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_comp_ben/models/payroll_calendar.py:0
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "This month is closed to changes."
+msgstr "Tháng này đã chốt, không nhận thay đổi."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "This month is open again."
+msgstr "Tháng này đã mở lại."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/__manifest__.py:0
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Why is it being reopened?"
+msgstr "Vì sao mở lại?"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/employee_comp.py:0
+msgid ""
+"From the contract, but the payroll scheme that pays this person does not use"
+" it (%s). Check before you count it."
+msgstr ""
+"Lấy từ hợp đồng, nhưng chương trình lương đang trả cho người này không dùng "
+"khoản đó (%s). Hãy kiểm tra trước khi tính vào."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Being prepared"
+msgstr "Đang chuẩn bị"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Waiting for approval"
+msgstr "Đang chờ phê duyệt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Agreed, not in a run"
+msgstr "Đã đồng ý, chưa vào kỳ lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "In a pay run"
+msgstr "Trong một kỳ lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Paid"
+msgstr "Đã trả"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "1 award"
+msgstr "1 khoản thưởng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "%s awards"
+msgstr "%s khoản thưởng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "1 waiting for a sign-off"
+msgstr "1 đang chờ phê duyệt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "%s waiting for a sign-off"
+msgstr "%s đang chờ phê duyệt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "waiting for a decision"
+msgstr "đang chờ quyết định"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "agreed, not in a run"
+msgstr "đã đồng ý, chưa vào kỳ lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "in a pay run"
+msgstr "trong một kỳ lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "paid this month"
+msgstr "đã trả tháng này"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "not approved"
+msgstr "không được duyệt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Not approved"
+msgstr "Không được duyệt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "no awards yet"
+msgstr "chưa có khoản thưởng nào"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "all 1 award"
+msgstr "cả 1 khoản thưởng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "all %s awards"
+msgstr "cả %s khoản thưởng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "%s of %s awards"
+msgstr "%s trên %s khoản thưởng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "months planned"
+msgstr "tháng đã lên kế hoạch"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "still ahead"
+msgstr "còn phía trước"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "closed"
+msgstr "đã đóng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "reminders sent"
+msgstr "lời nhắc đã gửi"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Showing"
+msgstr "Đang hiển thị"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "· press a step or a number to narrow it"
+msgstr "· nhấn một bước hoặc một con số để thu hẹp"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "at"
+msgstr "tại"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/comp_ben_palette.js:0
+msgid "Calendar"
+msgstr "Lịch lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/comp_ben_palette.js:0
+msgid "Awards"
+msgstr "Thưởng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model:ir.actions.act_url,name:pb_comp_ben.action_my_compensation
+#: code:addons/pb_comp_ben/static/src/js/comp_ben_palette.js:0
+msgid "My pay package"
+msgstr "Gói lương của tôi"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model:ir.actions.act_window,name:pb_comp_ben.action_pb_benefit_plan
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_benefit_plan_list
+#: code:addons/pb_comp_ben/static/src/js/comp_ben_palette.js:0
+msgid "Benefit plans"
+msgstr "Chương trình phúc lợi"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model:ir.actions.act_window,name:pb_comp_ben.action_pb_employee_comp
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_employee_comp_list
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_employee_comp_search
+#: code:addons/pb_comp_ben/static/src/js/comp_ben_palette.js:0
+msgid "Pay packages"
+msgstr "Gói lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model_terms:ir.actions.act_window,help:pb_comp_ben.action_pb_incentive
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Nothing has been awarded yet"
+msgstr "Chưa có khoản thưởng nào"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model_terms:ir.actions.act_window,help:pb_comp_ben.action_pb_payroll_calendar
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "The year is not planned yet"
+msgstr "Chưa lập lịch cho năm này"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model:ir.actions.client,name:pb_comp_ben.action_pb_paycal
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+#: code:addons/pb_comp_ben/static/src/js/comp_ben_palette.js:0
+msgid "Payroll calendar"
+msgstr "Lịch lương"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: model:ir.model,name:pb_comp_ben.model_pb_incentive
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_incentive_form
+#: code:addons/pb_comp_ben/models/incentive_approval.py:0
+#: code:addons/pb_comp_ben/models/incentive.py:0
+msgid "Award"
+msgstr "Khoản thưởng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_benefit_plan__kind
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_employee_comp_line__kind
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_incentive__kind
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Kind"
+msgstr "Loại"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_incentive__approval_request_id
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_incentive__state
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_month_proposal__approval_request_id
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_incentive_search
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Approval"
+msgstr "Phê duyệt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_incentive__employee_id
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Who it is for"
+msgstr "Dành cho ai"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_incentive__fulfilment
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Where it has got to"
+msgstr "Đã đến bước nào"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#. odoo-python
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_incentive__period_month
+#: code:addons/pb_comp_ben/models/incentive_approval.py:0
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Pay it in"
+msgstr "Trả vào"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#. odoo-python
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_incentive__reason
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_month_proposal__note
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_incentive_form
+#: code:addons/pb_comp_ben/models/incentive.py:0
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#. odoo-python
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_incentive__run_id
+#: code:addons/pb_comp_ben/models/oneoff_feed.py:0
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Pay run"
+msgstr "Đợt lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_payroll_calendar__cutoff_date
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Changes close"
+msgstr "Chốt nhận thay đổi"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_payroll_calendar__pay_date
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "People are paid"
+msgstr "Ngày trả lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_payroll_calendar__reminder_offset_days
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Remind this many days before"
+msgstr "Nhắc trước bao nhiêu ngày"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_benefit_enrollment__state__active
+msgid "Covered"
+msgstr "Đang được hưởng"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_benefit_enrollment__state__ended
+msgid "Ended"
+msgstr "Đã kết thúc"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_benefit_plan__kind__health
+msgid "Health insurance"
+msgstr "Bảo hiểm sức khỏe"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_benefit_plan__kind__life
+msgid "Life insurance"
+msgstr "Bảo hiểm nhân thọ"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_benefit_plan__kind__other
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_benefit_plan__kind__wellness
+msgid "Wellness"
+msgstr "Chăm sóc sức khỏe"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_employee_comp__state__active
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_employee_comp_search
+#: code:addons/pb_comp_ben/models/comp_common.py:0
+msgid "Current"
+msgstr "Hiện hành"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_employee_comp__state__superseded
+#: code:addons/pb_comp_ben/models/comp_common.py:0
+msgid "Replaced"
+msgstr "Đã thay thế"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_employee_comp_line__kind__benefit
+msgid "Benefit"
+msgstr "Phúc lợi"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_employee_comp_line__kind__bonus
+msgid "Variable"
+msgstr "Biến đổi"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_employee_comp_line__kind__earning
+msgid "Pay"
+msgstr "Lương"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_employee_comp_line__kind__perquisite
+msgid "Perk"
+msgstr "Đãi ngộ"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_employee_comp_line__kind__statutory
+msgid "Statutory contribution"
+msgstr "Khoản đóng bắt buộc"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_employee_comp_line__period__monthly
+msgid "Every month"
+msgstr "Hằng tháng"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_employee_comp_line__period__one_time
+msgid "One-off"
+msgstr "Một lần"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_employee_comp_line__period__yearly
+msgid "Once a year"
+msgstr "Hằng năm"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_incentive__fulfilment__letter
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Letter sent"
+msgstr "Đã gửi thư"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_incentive__fulfilment__pending
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_incentive__state__approved
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_incentive_search
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Approved"
+msgstr "Đã phê duyệt"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_incentive__fulfilment__queued
+msgid "In the next pay run"
+msgstr "Trong đợt lương tới"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_incentive__kind__bonus
+msgid "Bonus"
+msgstr "Thưởng"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_incentive__kind__incentive
+msgid "Incentive"
+msgstr "Khuyến khích"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_incentive__kind__spot
+msgid "Spot award"
+msgstr "Thưởng nóng"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_incentive__source__manual
+msgid "Entered by hand"
+msgstr "Nhập tay"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_incentive__source__rnr
+msgid "Recognition"
+msgstr "Ghi nhận"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_payroll_calendar__state__closed
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "Closed"
+msgstr "Đã đóng"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_payroll_calendar__state__upcoming
+msgid "Ahead"
+msgstr "Sắp tới"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_incentive_form
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Send for approval"
+msgstr "Gửi duyệt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_incentive_form
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Approve"
+msgstr "Phê duyệt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_incentive_form
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Do not approve"
+msgstr "Không phê duyệt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_incentive_form
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Prepare the letter again"
+msgstr "Chuẩn bị lại thư"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_incentive_form
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "What this is for, in the words the person will read."
+msgstr "Khoản này để làm gì, bằng lời mà người nhận sẽ đọc."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_payroll_calendar_form
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Close this month"
+msgstr "Đóng tháng này"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_payroll_calendar_form
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Open it again"
+msgstr "Mở lại"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_payroll_calendar_form
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Reminders already sent"
+msgstr "Lời nhắc đã gửi"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/payroll_calendar.py:0
+msgid "The closing day and the pay day have to be day numbers between 1 and 28."
+msgstr "Ngày chốt thay đổi và ngày trả lương phải là số ngày từ 1 đến 28."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/payroll_calendar.py:0
+msgid "Nobody in the pay team has an email address, so the reminder was not sent."
+msgstr "Không ai trong nhóm lương có địa chỉ email, nên lời nhắc chưa được gửi."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/payroll_calendar.py:0
+msgid "changes close today"
+msgstr "hôm nay chốt nhận thay đổi"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/payroll_calendar.py:0
+msgid "%s days before changes close"
+msgstr "%s ngày trước khi chốt nhận thay đổi"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/payroll_calendar.py:0
+msgid "Reminder sent — %(when)s."
+msgstr "Đã gửi lời nhắc — %(when)s."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/incentive_approval.py:0
+msgid "%(kind)s for %(who)s"
+msgstr "%(kind)s cho %(who)s"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/incentive_approval.py:0
+msgid "What kind of award"
+msgstr "Loại khoản thưởng"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/incentive_approval.py:0
+msgid "Came from recognition"
+msgstr "Từ ghi nhận"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/incentive_approval.py:0
+msgid "The award"
+msgstr "Khoản thưởng"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_incentives.py:0
+msgid "Awards are looked after by the pay team. This screen is not part of the general HR permissions — somebody has to add you to it by name."
+msgstr "Khoản thưởng do nhóm lương phụ trách. Màn hình này không thuộc quyền nhân sự chung — cần có người thêm bạn vào theo tên."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_incentives.py:0
+msgid "Choose who the award is for."
+msgstr "Hãy chọn người được thưởng."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/month_approval.py:0
+msgid "Reopening a closed month needs a reason — it is the only account anybody reviewing this payroll will have of why the month was taken back. Reopen it from the Pay calendar screen, which asks for one."
+msgstr "Mở lại tháng đã đóng cần có lý do — đó là lời giải thích duy nhất cho người xem lại bảng lương này về việc vì sao tháng bị mở lại. Hãy mở lại từ màn hình Lịch lương, nơi sẽ hỏi lý do."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "The payroll calendar is looked after by the pay team. Ask your payroll lead to add you to it."
+msgstr "Lịch lương do nhóm lương phụ trách. Hãy nhờ trưởng nhóm lương thêm bạn vào."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "Building the payroll calendar is for the head of the pay team."
+msgstr "Lập lịch lương là việc của trưởng nhóm lương."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "%(day)s %(month)s"
+msgstr "%(day)s/%(num)s"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "%(day)s %(month)s %(year)s"
+msgstr "%(day)s/%(num)s/%(year)s"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "January"
+msgstr "Tháng 1"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "February"
+msgstr "Tháng 2"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "March"
+msgstr "Tháng 3"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "April"
+msgstr "Tháng 4"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "May"
+msgstr "Tháng 5"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "June"
+msgstr "Tháng 6"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "July"
+msgstr "Tháng 7"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "August"
+msgstr "Tháng 8"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "September"
+msgstr "Tháng 9"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "October"
+msgstr "Tháng 10"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "November"
+msgstr "Tháng 11"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "December"
+msgstr "Tháng 12"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "Jan"
+msgstr "Tháng 1"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "Feb"
+msgstr "Tháng 2"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "Mar"
+msgstr "Tháng 3"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "Apr"
+msgstr "Tháng 4"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "Jun"
+msgstr "Tháng 6"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "Jul"
+msgstr "Tháng 7"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "Aug"
+msgstr "Tháng 8"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "Sep"
+msgstr "Tháng 9"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "Oct"
+msgstr "Tháng 10"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "Nov"
+msgstr "Tháng 11"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "Dec"
+msgstr "Tháng 12"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/pb_paycal.py:0
+msgid "%(month)s %(year)s"
+msgstr "Tháng %(num)s/%(year)s"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_comp_ben/models/incentive.py:0
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "An award needs an amount above zero."
+msgstr "Khoản thưởng phải lớn hơn 0."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/incentive.py:0
+msgid "Approved. The award letter could not be prepared just now — it can be prepared again from this record."
+msgstr "Đã phê duyệt. Chưa chuẩn bị được thư thưởng lúc này — có thể chuẩn bị lại từ bản ghi này."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/incentive.py:0
+msgid "There is no award letter set up yet, so nothing was printed."
+msgstr "Chưa có mẫu thư thưởng nào, nên chưa in gì."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/incentive.py:0
+msgid "Award letter emailed."
+msgstr "Đã gửi email thư thưởng."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/incentive.py:0
+msgid "Award letter prepared and filed. Emailing letters is switched off, so it was not sent."
+msgstr "Đã chuẩn bị và lưu thư thưởng. Chức năng gửi thư qua email đang tắt, nên thư chưa được gửi."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/incentive.py:0
+msgid "Paid with your salary for"
+msgstr "Trả cùng lương tháng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Reading the calendar…"
+msgstr "Đang đọc lịch…"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "This one is deliberately locked"
+msgstr "Mục này được khóa có chủ ý"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "When changes stop being accepted, and when\n                 people are paid."
+msgstr "Khi nào ngừng nhận thay đổi, và khi nào\n                 mọi người được trả lương."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Read the calendar again"
+msgstr "Đọc lại lịch"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "All months"
+msgstr "Tất cả các tháng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Plan the year"
+msgstr "Lập lịch cả năm"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "·\n                people are paid"
+msgstr "·\n                trả lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Reminders are on — the pay team is emailed before each closing date."
+msgstr "Lời nhắc đang bật — nhóm lương được gửi email trước mỗi ngày chốt."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Reminders are off. The nightly job still counts what it would have\n                sent, so nothing is a surprise when you switch it on."
+msgstr "Lời nhắc đang tắt. Tác vụ chạy hằng đêm vẫn đếm số lời nhắc lẽ ra đã gửi,\n                nên khi bật lên sẽ không có gì bất ngờ."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Run it now"
+msgstr "Chạy ngay"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Say which day of the month changes stop being accepted and which day\n               people are paid, and Payobook builds the next twelve months for you."
+msgstr "Cho biết ngày nào trong tháng ngừng nhận thay đổi và ngày nào\n               trả lương, Payobook sẽ lập sẵn mười hai tháng tới cho bạn."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Closes"
+msgstr "Ngày chốt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Reminded before"
+msgstr "Nhắc trước"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Give the two days that repeat every month. Anything already\n                  planned is left exactly as it is."
+msgstr "Nhập hai ngày lặp lại hằng tháng. Những gì đã\n                  lên lịch được giữ nguyên."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Changes close on day"
+msgstr "Chốt nhận thay đổi vào ngày"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "People are paid on day"
+msgstr "Trả lương vào ngày"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "How many months"
+msgstr "Số tháng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "A pay day earlier in the month than the closing day means the\n                  month after — paying on the 1st against a close on the 25th is\n                  the 1st of the next month, which is what everybody means."
+msgstr "Ngày trả lương sớm hơn ngày chốt trong tháng nghĩa là trả vào\n                  tháng sau — trả ngày 1 với ngày chốt 25 là ngày 1 của\n                  tháng kế tiếp, đúng như mọi người vẫn hiểu."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/paycal_board.xml:0
+msgid "Build it"
+msgstr "Lập lịch"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Reading the awards…"
+msgstr "Đang đọc các khoản thưởng…"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "A bonus, an incentive or a spot award —\n                 agreed, put in writing, and paid with the next salary."
+msgstr "Thưởng, khuyến khích hay thưởng nóng —\n                 được duyệt, lập thành văn bản và trả cùng kỳ lương tới."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Read the board again"
+msgstr "Đọc lại bảng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "All awards"
+msgstr "Tất cả khoản thưởng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Put into a pay run"
+msgstr "Đưa vào đợt lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "New award"
+msgstr "Khoản thưởng mới"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Find a person or a reason"
+msgstr "Tìm người hoặc lý do"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Any kind"
+msgstr "Mọi loại"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Nothing matches what you are looking for"
+msgstr "Không có gì khớp với điều bạn tìm"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Raise an award for somebody, get it agreed, and it is paid with the\n              next salary — with a letter they can keep."
+msgstr "Tạo khoản thưởng cho một người, xin duyệt, rồi khoản đó được trả cùng\n              kỳ lương tới — kèm thư để người nhận giữ lại."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Clear the search or pick a different status."
+msgstr "Xóa nội dung tìm kiếm hoặc chọn trạng thái khác."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Who"
+msgstr "Ai"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Paid in"
+msgstr "Trả trong"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "A letter is on file"
+msgstr "Đã có thư lưu trong hồ sơ"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Only the most recent awards are shown. Open “All awards” for the\n              whole list."
+msgstr "Chỉ hiển thị các khoản thưởng gần nhất. Mở “Tất cả khoản thưởng” để xem\n              toàn bộ danh sách."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Start typing a name"
+msgstr "Bắt đầu gõ tên"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Raise it"
+msgstr "Tạo khoản thưởng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Put awards into a pay run"
+msgstr "Đưa khoản thưởng vào đợt lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Which pay run"
+msgstr "Đợt lương nào"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "There is no pay run still being prepared. Awards can only be put\n                  into a run that has not been sent for approval yet."
+msgstr "Không có đợt lương nào đang được chuẩn bị. Chỉ có thể đưa khoản thưởng\n                  vào đợt lương chưa được gửi duyệt."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "The pay scheme “"
+msgstr "Chương trình lương “"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "” has a pay\n                      item called"
+msgstr "” có khoản mục\n                      lương tên"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid ", so the money will\n                      show on the payslip."
+msgstr ", nên số tiền sẽ\n                      hiện trên phiếu lương."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Goes in"
+msgstr "Được đưa vào"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "of these will be added to\n                    “"
+msgstr "khoản trong số này sẽ được thêm vào\n                    “"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "”, worth"
+msgstr "”, tổng cộng"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "in total. Nothing is written\n                    to anybody's record — the amount is added to this run and this\n                    run only."
+msgstr "Không ghi gì vào hồ sơ của ai — số tiền chỉ được thêm vào đợt lương này\n                    và chỉ đợt này."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
+msgid "Add them to the run"
+msgstr "Thêm vào đợt lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "Switch off"
+msgstr "Tắt"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "Switch on"
+msgstr "Bật"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "The payroll calendar could not be read just now."
+msgstr "Chưa đọc được lịch lương lúc này."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "Nothing is planned ahead — build the year to see a countdown here."
+msgstr "Chưa lên lịch gì phía trước — hãy lập lịch cả năm để thấy đếm ngược ở đây."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "Changes close today."
+msgstr "Hôm nay chốt nhận thay đổi."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "Changes close tomorrow."
+msgstr "Ngày mai chốt nhận thay đổi."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "%s days until changes close for %s."
+msgstr "Còn %s ngày nữa là chốt nhận thay đổi cho %s."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "That could not be saved."
+msgstr "Chưa lưu được."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "1 month added. %s were already there."
+msgstr "Đã thêm 1 tháng. %s tháng đã có sẵn."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "%s months added. %s were already there."
+msgstr "Đã thêm %s tháng. %s tháng đã có sẵn."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "The year could not be built."
+msgstr "Chưa lập được lịch cả năm."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "Reminders are on. People will be emailed before each closing date."
+msgstr "Lời nhắc đang bật. Mọi người sẽ được gửi email trước mỗi ngày chốt."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "Reminders are off. Nothing will be emailed."
+msgstr "Lời nhắc đang tắt. Sẽ không có email nào được gửi."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "Reminders are switched off. %s would have gone out today."
+msgstr "Lời nhắc đang tắt. Lẽ ra hôm nay đã có %s lời nhắc được gửi."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "1 reminder went out."
+msgstr "Đã gửi 1 lời nhắc."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "%s reminders went out."
+msgstr "Đã gửi %s lời nhắc."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/paycal_board.js:0
+msgid "That could not be run just now."
+msgstr "Chưa chạy được lúc này."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/comp_ben_palette.js:0
+msgid "Pay Run Hub"
+msgstr "Trung tâm đợt lương"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/comp_ben_palette.js:0
+msgid "Pay & benefits"
+msgstr "Lương & phúc lợi"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/comp_ben_palette.js:0
+msgid "Your own page"
+msgstr "Trang của riêng bạn"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Where every award is"
+msgstr "Các khoản thưởng đang ở đâu"
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "The awards could not be read just now."
+msgstr "Chưa đọc được các khoản thưởng lúc này."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Pick who the award is for."
+msgstr "Hãy chọn người được thưởng."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Award raised. Send it for approval when you are ready."
+msgstr "Đã tạo khoản thưởng. Hãy gửi duyệt khi bạn sẵn sàng."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "The award could not be raised."
+msgstr "Chưa tạo được khoản thưởng."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "That could not be done."
+msgstr "Chưa thực hiện được."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Approved. The award letter has been prepared and emailed."
+msgstr "Đã phê duyệt. Thư thưởng đã được chuẩn bị và gửi email."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Approved. The award letter is prepared and filed — emailing letters is switched off."
+msgstr "Đã phê duyệt. Thư thưởng đã được chuẩn bị và lưu — chức năng gửi thư qua email đang tắt."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Marked as not approved."
+msgstr "Đã đánh dấu là không phê duyệt."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "The letter has been prepared again."
+msgstr "Thư đã được chuẩn bị lại."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Nothing could be read."
+msgstr "Không đọc được gì."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Done."
+msgstr "Xong."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
+msgid "Nothing was put into the pay run."
+msgstr "Chưa đưa được gì vào đợt lương."

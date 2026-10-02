@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       The three employee pages reuse `pb_me_portal`'s .pbme kit — the same
+       hero, the same cards, the same empty state — so they look like they
+       were always part of the employee's own area rather than bolted on.
+       Everything specific to them is under .pbob.
+
+       ICONS: the backend's ic() registry is a JS module and cannot be called
+       from QWeb, so the handful of glyphs these pages use are inlined here,
+       exactly as pb_lifecycle's token pages and pb_me_portal's ess_icon do.
+       W87: the name is passed with t-value="'name'", NEVER as a t-set BODY —
+       a body is rendered QWeb and on a website=True page the editor's
+       branding wraps it in markup, so every comparison silently goes false
+       and every icon falls through to the else branch.
+       ================================================================== -->
+  <template id="ob_icon" name="Onboarding page icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbob-ic">
+      <t t-if="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'sunrise'"><path d="M12 2v8M4.9 10.9l1.4 1.4M2 18h2M20 18h2M17.7 12.3l1.4-1.4M22 22H2M16 18a4 4 0 0 0-8 0M8 6l4-4 4 4"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'users'"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></t>
+      <t t-elif="icon == 'heart'"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></t>
+      <t t-elif="icon == 'network'"><rect x="9" y="2" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/><path d="M12 8v4M5 16v-2h14v2"/></t>
+      <t t-elif="icon == 'search'"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></t>
+      <t t-elif="icon == 'alert'"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></t>
+      <t t-elif="icon == 'mail'"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-10 5L2 7"/></t>
+      <t t-elif="icon == 'up'"><path d="m18 15-6-6-6 6"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="10"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================ breadcrumbs ============================ -->
+  <template id="portal_breadcrumbs_onboarding" name="Onboarding portal menu"
+            inherit_id="portal.portal_breadcrumbs" priority="37">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'journey'" class="breadcrumb-item active">My Journey</li>
+      <li t-if="page_name == 'buddy'" class="breadcrumb-item active">My Buddy</li>
+      <li t-if="page_name == 'orgchart'" class="breadcrumb-item active">Who's Who</li>
+    </xpath>
+  </template>
+
+  <!-- ============================ home cards ============================ -->
+  <template id="portal_my_home_onboarding" name="Onboarding home cards"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="26">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">My Journey</t>
+        <t t-set="text">Your first weeks, step by step</t>
+        <t t-set="url" t-value="'/my/journey'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'journey_task_count'"/>
+      </t>
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">My Buddy</t>
+        <t t-set="text">The colleague showing you the ropes — and anyone you look after</t>
+        <t t-set="url" t-value="'/my/buddy'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'buddy_count'"/>
+      </t>
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">Who's Who</t>
+        <t t-set="text">Find anyone and see how the teams fit together</t>
+        <t t-set="url" t-value="'/my/orgchart'"/>
+        <t t-set="config_card" t-value="True"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/journey                                                       -->
+  <!-- ================================================================= -->
+  <template id="portal_my_journey" name="My Journey (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbob">
+
+        <div t-if="notice" class="pbob-notice">
+          <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'check'"/></t>
+          <span t-esc="notice"/>
+        </div>
+
+        <!-- ==================== nothing running ==================== -->
+        <t t-if="not has_case">
+          <t t-call="pb_me_portal.ess_hero">
+            <t t-set="hero_title">My Journey</t>
+            <t t-set="hero_sub">Where your first weeks are tracked, step by step.</t>
+          </t>
+          <div class="pbme-empty">
+            <div class="pbme-empty-ic">
+              <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'sunrise'"/><t t-set="isz" t-value="26"/></t>
+            </div>
+            <h3>No journey is running for you</h3>
+            <p>This page fills in when something is happening around you — joining,
+               a probation review, a change of role. Nothing here means nothing is
+               outstanding, which is good news.</p>
+          </div>
+          <t t-call="pb_onboarding.ob_people_block"/>
+        </t>
+
+        <t t-else="">
+          <!-- ======================= the hero ======================= -->
+          <div class="pbob-hero">
+            <div class="pbob-hero-ring">
+              <svg viewBox="0 0 120 120" width="118" height="118" aria-hidden="true">
+                <circle cx="60" cy="60" r="52" class="pbob-ring-track"/>
+                <circle cx="60" cy="60" r="52" class="pbob-ring-fill"
+                        t-att-style="'stroke-dasharray: %s 327; ' % (327 * ring / 100)"/>
+              </svg>
+              <div class="pbob-ring-num">
+                <b t-esc="ring"/><span>%</span>
+              </div>
+            </div>
+            <div class="pbob-hero-tx">
+              <div class="pbme-eyebrow">My Journey</div>
+              <h1 class="pbob-hero-h1">
+                <t t-if="days is not None and days &gt; 1">You start in <t t-esc="days"/> days</t>
+                <t t-elif="days == 1">You start tomorrow</t>
+                <t t-elif="days == 0">Today is your first day</t>
+                <t t-elif="days is not None and days == -1">You have been here a day</t>
+                <t t-elif="days is not None">You have been here <t t-esc="-days"/> days</t>
+                <t t-else="">Your journey</t>
+              </h1>
+              <p class="pbob-hero-sub">
+                <t t-esc="done_count"/> of <t t-esc="step_count"/> steps done<t t-if="doj">,
+                counting from <t t-esc="doj"/></t>.
+              </p>
+              <div class="pbob-hero-chips">
+                <span t-if="open_mine" class="pbob-chip pbob-chip--do">
+                  <t t-esc="open_mine"/> for you to do
+                </span>
+                <span t-if="batch" class="pbob-chip">
+                  Welcome session <t t-esc="batch.batch_date"/>
+                </span>
+                <span t-if="complete &lt; 100" class="pbob-chip pbob-chip--warn">
+                  Your details are <t t-esc="complete"/>% complete
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pbob-cols">
+            <!-- ===================== the timeline ===================== -->
+            <div class="pbme-card pbob-timeline">
+              <div class="pbme-card-title">Your steps</div>
+              <p class="pbme-muted">In the order they come up. The one in colour
+                 is what is happening now.</p>
+              <ol class="pbob-tl">
+                <li t-foreach="steps" t-as="st"
+                    t-attf-class="pbob-tl-item {{ st['settled'] and 'is-done' or '' }} {{ st['current'] and 'is-current' or '' }} {{ st['overdue'] and 'is-late' or '' }}">
+                  <span class="pbob-tl-dot">
+                    <t t-if="st['done']">
+                      <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="13"/></t>
+                    </t>
+                  </span>
+                  <div class="pbob-tl-body">
+                    <div class="pbob-tl-head">
+                      <b t-esc="st['name']"/>
+                      <span t-if="st['due']" class="pbob-tl-due" t-esc="st['due']"/>
+                    </div>
+                    <p t-if="st['description']" class="pbob-tl-desc" t-esc="st['description']"/>
+                    <div class="pbob-tl-meta">
+                      <span t-if="st['skipped']" class="pbme-badge pbme-badge--draft">Skipped</span>
+                      <span t-elif="st['done']" class="pbme-badge pbme-badge--done">Done</span>
+                      <span t-elif="st['overdue']" class="pbme-badge pbme-badge--refused">Running late</span>
+                      <span t-elif="st['current']" class="pbme-badge pbme-badge--hr_review">Now</span>
+                      <span t-if="st['owner'] and not st['mine']" class="pbob-tl-owner">
+                        with <t t-esc="st['owner']"/>
+                      </span>
+                    </div>
+                    <form t-if="st['mine']" method="post"
+                          t-attf-action="/my/journey/step/#{st['id']}/done"
+                          class="pbob-tl-act">
+                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                      <button type="submit" class="pbme-btn pbme-btn--primary">
+                        <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="15"/></t>
+                        I have done this
+                      </button>
+                    </form>
+                  </div>
+                </li>
+              </ol>
+            </div>
+
+            <!-- ====================== the people ====================== -->
+            <div class="pbob-side">
+              <t t-call="pb_onboarding.ob_people_block"/>
+              <div t-if="missing" class="pbme-card">
+                <div class="pbme-card-title">Still to fill in</div>
+                <p class="pbme-muted" t-esc="missing"/>
+                <a class="pbme-btn pbme-btn--ghost pbme-btn--block" href="/my/profile">
+                  Open my profile
+                </a>
+              </div>
+            </div>
+          </div>
+        </t>
+
+      </div>
+    </t>
+  </template>
+
+  <!-- The two cards and the team strip, shared by both states of the page. -->
+  <template id="ob_people_block" name="Onboarding people block">
+    <div t-if="hrbp" class="pbme-card pbob-person">
+      <div class="pbob-person-top">
+        <img class="pbme-avatar" t-att-src="hrbp['avatar']" t-att-alt="hrbp['name']"/>
+        <div>
+          <div class="pbme-profile-name" t-esc="hrbp['name']"/>
+          <div class="pbme-profile-job">Your HR contact</div>
+        </div>
+      </div>
+      <p class="pbme-muted">The person in HR who looks after you. Anything about
+         pay, leave or your record starts here.</p>
+      <a t-if="hrbp['email']" class="pbme-btn pbme-btn--ghost pbme-btn--block"
+         t-attf-href="mailto:#{hrbp['email']}">
+        <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'mail'"/><t t-set="isz" t-value="15"/></t>
+        Email <t t-esc="hrbp['name']"/>
+      </a>
+    </div>
+
+    <div t-if="buddy" class="pbme-card pbob-person">
+      <div class="pbob-person-top">
+        <img class="pbme-avatar" t-att-src="buddy['avatar']" t-att-alt="buddy['name']"/>
+        <div>
+          <div class="pbme-profile-name" t-esc="buddy['name']"/>
+          <div class="pbme-profile-job">Your buddy<t t-if="buddy['job']"> · <t t-esc="buddy['job']"/></t></div>
+        </div>
+      </div>
+      <p class="pbme-muted">Ask them anything at all. Nothing is too small —
+         that is the entire point of having one.</p>
+      <a class="pbme-btn pbme-btn--ghost pbme-btn--block" href="/my/buddy">
+        <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'heart'"/><t t-set="isz" t-value="15"/></t>
+        Our catch-ups
+      </a>
+    </div>
+
+    <div t-if="team" class="pbme-card">
+      <div class="pbme-card-title">Your team</div>
+      <div class="pbob-team">
+        <a t-foreach="team" t-as="mate" t-key="mate['id']" class="pbob-face"
+           t-attf-href="/my/orgchart?focus=#{mate['id']}" t-att-title="mate['name']">
+          <img t-att-src="mate['avatar']" t-att-alt="mate['name']"/>
+          <span class="pbob-face-n" t-esc="mate['name']"/>
+          <span t-if="mate.get('role')" class="pbob-face-r" t-esc="mate['role']"/>
+        </a>
+      </div>
+      <a class="pbme-btn pbme-btn--ghost pbme-btn--block" href="/my/orgchart">
+        <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'network'"/><t t-set="isz" t-value="15"/></t>
+        See who's who
+      </a>
+    </div>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/buddy                                                         -->
+  <!-- ================================================================= -->
+  <template id="portal_my_buddy" name="My Buddy (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbob">
+
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">My Buddy</t>
+          <t t-set="hero_sub">The colleague showing you the ropes — and anyone
+            you are showing the ropes to.</t>
+        </t>
+
+        <div t-if="notice" class="pbob-notice">
+          <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'check'"/></t>
+          <span t-esc="notice"/>
+        </div>
+        <div t-if="problem" class="pbob-notice pbob-notice--warn">
+          <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'alert'"/></t>
+          <span t-esc="problem"/>
+        </div>
+
+        <!-- ============ people I look after ============ -->
+        <t t-if="looking_after">
+          <h2 class="pbob-h2">People you are looking after</h2>
+          <t t-foreach="looking_after" t-as="j">
+            <div class="pbme-card pbob-joiner">
+              <div class="pbob-person-top">
+                <img class="pbme-avatar" t-att-src="j['card']['avatar']" t-att-alt="j['card']['name']"/>
+                <div>
+                  <div class="pbme-profile-name" t-esc="j['card']['name']"/>
+                  <div class="pbme-profile-job">
+                    <t t-esc="j['card']['job']"/>
+                    <t t-if="j['joined']"> · joined <t t-esc="j['joined']"/></t>
+                  </div>
+                </div>
+                <span t-if="j['is_cover']" class="pbme-badge pbme-badge--hr_review">You are standing in</span>
+              </div>
+
+              <div class="pbob-connects">
+                <t t-foreach="j['connects']" t-as="c">
+                  <div t-attf-class="pbob-connect {{ c['done'] and 'is-done' or '' }} {{ c['red'] and 'is-red' or '' }}">
+                    <div class="pbob-connect-l">
+                      <b t-esc="c['date']"/>
+                      <span t-if="c['done']" class="pbme-badge pbme-badge--done">Done</span>
+                      <span t-elif="c['due']" class="pbme-badge pbme-badge--hr_review">Due</span>
+                      <span t-else="" class="pbme-badge pbme-badge--draft">Planned</span>
+                      <span t-if="c['red']" class="pbme-badge pbme-badge--refused">Flagged</span>
+                    </div>
+                    <p t-if="c['notes']" class="pbob-connect-note" t-esc="c['notes']"/>
+                    <p t-if="c['red_note']" class="pbob-connect-red" t-esc="c['red_note']"/>
+                    <t t-if="not c['done']">
+                      <!-- The form is OPEN on the catch-up that is actually
+                           due and folded away on the ones that are not. Six
+                           identical open forms is a page where the one thing
+                           to do today is indistinguishable from the five that
+                           are weeks off. -->
+                      <t t-if="c['due']">
+                        <t t-call="pb_onboarding.ob_connect_form">
+                          <t t-set="connect" t-value="c"/>
+                        </t>
+                      </t>
+                      <details t-else="" class="pbob-later">
+                        <summary>Write it down early</summary>
+                        <t t-call="pb_onboarding.ob_connect_form">
+                          <t t-set="connect" t-value="c"/>
+                        </t>
+                      </details>
+                    </t>
+                  </div>
+                </t>
+                <p t-if="not j['connects']" class="pbme-muted">No catch-ups are
+                  planned yet. HR puts them in the diary when a buddy is named.</p>
+              </div>
+
+              <!-- ============ hand over while I am away ============ -->
+              <details class="pbob-handover" t-if="colleagues and not j['is_cover']">
+                <summary>Hand this over while I am away</summary>
+                <form method="post" action="/my/buddy/handover">
+                  <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                  <input type="hidden" name="joiner_id" t-att-value="j['card']['id']"/>
+                  <div class="pbob-handover-grid">
+                    <label class="pbme-flabel">Who is covering
+                      <select name="temp_id">
+                        <option value="">Nobody — cancel the cover</option>
+                        <option t-foreach="colleagues" t-as="col"
+                                t-att-value="col['id']" t-esc="col['name']"/>
+                      </select>
+                    </label>
+                    <label class="pbme-flabel">From
+                      <input type="date" name="date_from"/>
+                    </label>
+                    <label class="pbme-flabel">Until
+                      <input type="date" name="date_to"/>
+                    </label>
+                  </div>
+                  <p class="pbme-muted">The catch-ups inside those dates move
+                     across, and HR is told. Everything outside them stays
+                     with you.</p>
+                  <button type="submit" class="pbme-btn pbme-btn--ghost">Save the cover</button>
+                </form>
+              </details>
+            </div>
+          </t>
+        </t>
+
+        <!-- ============ my own buddy ============ -->
+        <t t-if="my_buddy">
+          <h2 class="pbob-h2">Your buddy</h2>
+          <div class="pbme-card pbob-person">
+            <div class="pbob-person-top">
+              <img class="pbme-avatar" t-att-src="my_buddy['avatar']" t-att-alt="my_buddy['name']"/>
+              <div>
+                <div class="pbme-profile-name" t-esc="my_buddy['name']"/>
+                <div class="pbme-profile-job" t-esc="my_buddy['job']"/>
+              </div>
+            </div>
+            <a t-if="my_buddy['email']" class="pbme-btn pbme-btn--ghost pbme-btn--block"
+               t-attf-href="mailto:#{my_buddy['email']}">
+              <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'mail'"/><t t-set="isz" t-value="15"/></t>
+              Email <t t-esc="my_buddy['name']"/>
+            </a>
+            <div t-if="my_connects" class="pbob-connects">
+              <div t-foreach="my_connects" t-as="c"
+                   t-attf-class="pbob-connect {{ c['done'] and 'is-done' or '' }}">
+                <div class="pbob-connect-l">
+                  <b t-esc="c['date']"/>
+                  <span t-if="c['done']" class="pbme-badge pbme-badge--done">Done</span>
+                  <span t-else="" class="pbme-badge pbme-badge--draft">Planned</span>
+                </div>
+                <p t-if="c['notes']" class="pbob-connect-note" t-esc="c['notes']"/>
+              </div>
+            </div>
+          </div>
+        </t>
+
+        <t t-if="not looking_after and not my_buddy">
+          <div class="pbme-empty">
+            <div class="pbme-empty-ic">
+              <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'heart'"/><t t-set="isz" t-value="26"/></t>
+            </div>
+            <h3>No buddy, either way</h3>
+            <p>A buddy is the colleague a new joiner can ask the small questions.
+               When you are given one — or asked to be one — they appear here with
+               your catch-ups.</p>
+          </div>
+        </t>
+
+      </div>
+    </t>
+  </template>
+
+  <!-- One catch-up's form, called from both branches above so the wording
+       and the field names exist exactly once. -->
+  <template id="ob_connect_form" name="Buddy connect form">
+    <form method="post" t-attf-action="/my/buddy/connect/#{connect['id']}"
+          class="pbob-connect-form">
+      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+      <label class="pbme-flabel">
+        What did you talk about?
+        <textarea name="notes" rows="2" placeholder="A line is plenty."/>
+      </label>
+      <label class="pbob-check">
+        <input type="checkbox" name="red" value="1"/>
+        <span>Something here needs HR to look at it</span>
+      </label>
+      <input class="pbob-inline-in" type="text" name="red_note"
+             placeholder="If so, what? (optional)"/>
+      <button type="submit" class="pbme-btn pbme-btn--primary">
+        <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="15"/></t>
+        Mark this catch-up done
+      </button>
+    </form>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/orgchart                                                      -->
+  <!-- ================================================================= -->
+  <template id="portal_my_orgchart" name="Who's Who (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbob">
+
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Who's Who</t>
+          <t t-set="hero_sub">Click anyone to see the team around them.</t>
+        </t>
+
+        <form class="pbob-search" method="get" action="/my/orgchart">
+          <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'search'"/><t t-set="isz" t-value="16"/></t>
+          <input type="text" name="q" t-att-value="term"
+                 placeholder="Search for anyone by name…"/>
+          <button type="submit" class="pbme-btn pbme-btn--primary">Search</button>
+        </form>
+
+        <div t-if="term" class="pbme-card pbob-results">
+          <div class="pbme-card-title">
+            <t t-if="results"><t t-esc="result_count"/> match<t t-if="result_count != 1">es</t> for “<t t-esc="term"/>”</t>
+            <t t-else="">Nobody called “<t t-esc="term"/>” in <t t-esc="company_name"/></t>
+          </div>
+          <div class="pbob-team">
+            <a t-foreach="results" t-as="r" t-key="r['id']" class="pbob-face"
+               t-attf-href="/my/orgchart?focus=#{r['id']}">
+              <img t-att-src="r['avatar']" t-att-alt="r['name']"/>
+              <span class="pbob-face-n" t-esc="r['name']"/>
+              <span class="pbob-face-r" t-esc="r['job']"/>
+            </a>
+          </div>
+        </div>
+
+        <!-- ================ the path to the top ================ -->
+        <div t-if="chain" class="pbob-chain">
+          <t t-foreach="chain" t-as="up">
+            <a class="pbob-chain-node" t-attf-href="/my/orgchart?focus=#{up['id']}">
+              <img t-att-src="up['avatar']" t-att-alt="up['name']"/>
+              <span t-esc="up['name']"/>
+            </a>
+            <span class="pbob-chain-sep">
+              <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'up'"/><t t-set="isz" t-value="14"/></t>
+            </span>
+          </t>
+        </div>
+
+        <!-- ================== the person in the middle ================== -->
+        <div class="pbme-card pbob-focus" t-att-data-focus="focus['id']">
+          <img class="pbob-focus-av" t-att-src="focus['avatar']" t-att-alt="focus['name']"/>
+          <div class="pbob-focus-tx">
+            <h2>
+              <t t-esc="focus['name']"/>
+              <span t-if="focus['id'] == me_id" class="pbme-badge pbme-badge--approved">That's you</span>
+            </h2>
+            <p t-if="focus['job']" t-esc="focus['job']"/>
+            <p t-if="focus['dept']" class="pbme-muted" t-esc="focus['dept']"/>
+            <a t-if="focus['email']" t-attf-href="mailto:#{focus['email']}" t-esc="focus['email']"/>
+          </div>
+          <a t-if="focus['id'] != me_id" class="pbme-btn pbme-btn--ghost"
+             t-attf-href="/my/orgchart?focus=#{me_id}">Back to me</a>
+        </div>
+
+        <!-- ======================== the sides ======================== -->
+        <div class="pbob-cols">
+          <div class="pbme-card">
+            <div class="pbme-card-title">
+              Reports to <t t-esc="focus['name']"/>
+              <t t-if="more_children"> (first <t t-esc="max_children"/>)</t>
+            </div>
+            <div t-if="children" class="pbob-team">
+              <a t-foreach="children" t-as="c" t-key="c['id']" class="pbob-face"
+                 t-attf-href="/my/orgchart?focus=#{c['id']}">
+                <img t-att-src="c['avatar']" t-att-alt="c['name']"/>
+                <span class="pbob-face-n" t-esc="c['name']"/>
+                <span class="pbob-face-r" t-esc="c['job']"/>
+              </a>
+            </div>
+            <p t-else="" class="pbme-muted">Nobody reports to them.</p>
+            <p t-if="more_children" class="pbme-muted">There are more than
+               <t t-esc="max_children"/> — search by name to reach the rest.</p>
+          </div>
+
+          <div class="pbme-card">
+            <div class="pbme-card-title">
+              <t t-if="manager">Alongside <t t-esc="focus['name']"/>, under <t t-esc="manager['name']"/></t>
+              <t t-else="">Alongside <t t-esc="focus['name']"/></t>
+            </div>
+            <div t-if="siblings" class="pbob-team">
+              <a t-foreach="siblings" t-as="s" t-key="s['id']" class="pbob-face"
+                 t-attf-href="/my/orgchart?focus=#{s['id']}">
+                <img t-att-src="s['avatar']" t-att-alt="s['name']"/>
+                <span class="pbob-face-n" t-esc="s['name']"/>
+                <span class="pbob-face-r" t-esc="s['job']"/>
+              </a>
+            </div>
+            <p t-else="" class="pbme-muted">
+              <t t-if="manager">Nobody else reports to <t t-esc="manager['name']"/>.</t>
+              <t t-else="">They are at the top of the chart.</t>
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </t>
+  </template>
+
+</odoo>

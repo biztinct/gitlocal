@@ -1,0 +1,952 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_scheme_map
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-07 19:14+0000\n"
+"PO-Revision-Date: 2026-09-07 19:14+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid ""
+"%(agree)s of %(team)s's %(total)s people on the last %(runs)s %(kind)s runs "
+"were paid under %(scheme)s — the rest were paid under something else."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid ""
+"%(count)s lines written to the map. Every person under them now knows what "
+"pays them."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "%(count)s people now show a different scheme."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "%(count)s teams"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "%(covered)s of %(people)s people are covered by a scheme."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "%(part)s of %(whole)s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "%(scheme)s belongs to another company, so it cannot pay people here."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "%(segment)s is no longer attached to %(scheme)s."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid ""
+"%(what)s already has a scheme for %(kind)s: %(scheme)s. Take that one off "
+"first, or attach this one for a different kind of run."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid ""
+"A line on the map covers exactly one thing: a department, a division, or a "
+"rule. Pick one of them."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"A pay run will leave them out until their team is attached to a\n"
+"          scheme. Fixing the team fixes everybody in it at once."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid "A rule"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"A scheme is the set of rules that works out one group of people's pay.\n"
+"          Build the first one, then come back here and say who it pays."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Accept all"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Accept the"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_employee__pb_paid_by_advance_id
+msgid "Advance paid by"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Advance:"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__confidence
+msgid "Agreement"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "All covered"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__cycle_type__any
+msgid "Any kind of run"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Attach"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Attach a scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Attach a scheme to this team"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,help:pb_scheme_map.field_hr_formula_scheme_assignment__division_id
+msgid ""
+"Attach a whole division — every department in it, in every company — to this"
+" scheme."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Attach to a scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Attached %(count)s teams to this scheme."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Attached. The people in that team are paid by this scheme from now on."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Build a scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Clear"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Close"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__company_id
+msgid "Company"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Company this map is for"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid "Department"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_pb_division_link
+msgid "Department in a division"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_config__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_payslip_run__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_version__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_division_link__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_scheme_board__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_scheme_map__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__division_id
+msgid "Division"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Divisions and teams in this company"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Draft the map from what you paid"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"Drag a team onto a scheme to attach it. Hover a line to follow it. Pull a "
+"line off to take it away — or use the keyboard: Enter on a team attaches it,"
+" Delete on a line takes it off."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Drag this team onto a scheme on the right"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__source__manual
+msgid "Drawn by hand"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Drop here to take %(scheme)s off %(segment)s"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_hr_employee
+msgid "Employee"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_hr_contract
+#: model:ir.model,name:pb_scheme_map.model_hr_version
+msgid "Employee Contract"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__cycle_type__end_cycle
+msgid "End of month"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid ""
+"Every one of %(team)s's %(total)s people on the last %(runs)s %(kind)s runs "
+"was paid under %(scheme)s."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Every one of this company's %(people)s people is covered by a scheme."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Everybody was already up to date."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid "Everyone"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"Everyone in this part of the business will be paid by the scheme you\n"
+"          pick, for the kind of run you pick."
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_hr_formula_config
+msgid "Excel Formula Configuration"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__cycle_type__full_final
+msgid "Final settlement"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Find a scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Find a scheme…"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,help:pb_scheme_map.field_hr_formula_scheme_assignment__confidence
+msgid ""
+"For a proposed line: the share of this team's people who were actually paid "
+"under this scheme."
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_employee__pb_paid_by_rung
+msgid "How that was worked out"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_config__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_payslip_run__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_version__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_division_link__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_scheme_board__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_scheme_map__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__cycle_type
+msgid "Kind of run"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__cycle_type__mid_cycle
+msgid "Mid-month advance"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_employee__pb_paid_by_stale
+msgid "Needs working out again"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "No scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "No scheme covers this person yet."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "No scheme here matches that."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "No team"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_chip.js:0
+msgid ""
+"No team, division or rule on the scheme map reaches this person, so no pay "
+"run would include them."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"Nobody in this company has been paid under a scheme yet, so there is\n"
+"            no history to propose a map from. Attach the first team by hand and\n"
+"            the rest becomes easy."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Nobody is on the payroll of this company yet."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Nobody pays these people yet"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Nobody yet"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "Not covered by any scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Not now"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Nothing is attached to a scheme yet"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_employee__pb_paid_by_id
+msgid "Paid by"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_palette.js:0
+msgid "Payroll"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_hr_formula_scheme_assignment
+msgid "Payroll Scheme Assignment"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_payslip_run__pb_formula_config_id
+msgid "Payroll scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.actions.server,name:pb_scheme_map.cron_recompute_paid_by_ir_actions_server
+msgid "Payroll: work out who is paid by what"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_hr_payslip_run
+msgid "Payslip Batches"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_palette.js:0
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "People not covered"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__source__drafted
+msgid "Proposed"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__source__accepted
+msgid "Proposed and accepted"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Put back"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Reading the last runs…"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Reading the map…"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__cycle_type__regular
+msgid "Regular payroll"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Replaces"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Skip"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Take this scheme off this team"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "Team"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid ""
+"That attachment did not name a team and a scheme this screen can see. Reload"
+" the screen and try again."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "That line could not be removed."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "That scheme could not be attached."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "That team is not in this company, so a scheme here cannot pay it."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "The Formula Studio is not installed on this database."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "The last runs could not be read."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "The map changed and these people have not been read again yet."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "The map could not be read."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "The map could not be written."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "The map read from what you paid"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "The map, read from what you paid"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,help:pb_scheme_map.field_hr_employee__pb_paid_by_id
+msgid ""
+"The payroll scheme that pays this person for the company's main monthly run,"
+" worked out from the scheme map."
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,help:pb_scheme_map.field_hr_employee__pb_paid_by_advance_id
+msgid ""
+"The payroll scheme that pays this person's mid-month advance, when the "
+"company runs one."
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,help:pb_scheme_map.field_hr_payslip_run__pb_formula_config_id
+msgid ""
+"The payroll scheme this run was run for. Set by the Run Payroll screen when "
+"a scheme was chosen there."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "The payroll schemes this company runs"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "Their team is not attached to a scheme yet."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "There is nothing to read yet"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "They are not in a team, so no team map can reach them."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "This company has no payroll scheme yet"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "This is a payroll screen"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid ""
+"This person is not in a team yet, so there is nothing on the map to attach. "
+"Give them a team first."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Try again"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__source
+msgid "Where this line came from"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,help:pb_scheme_map.field_hr_formula_scheme_assignment__cycle_type
+msgid ""
+"Which kind of pay run this line answers. A line that names a kind of run is "
+"used for that kind; a line that says any kind is used when nothing more "
+"specific applies."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Who"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_palette.js:0
+#: model:ir.model,name:pb_scheme_map.model_pb_scheme_map
+msgid "Who is paid by what"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Who is paid by what could not be worked out."
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_pb_scheme_board
+msgid "Who is paid by what — screen data"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"Who is paid by which scheme is set up by a payroll manager. Ask one of\n"
+"        them for access and this map opens."
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__note
+msgid "Why"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Work it out again"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_chip.js:0
+msgid "Worked out %(via)s."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_chip.js:0
+msgid "Worked out from the scheme map."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Worth a look"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid ""
+"You can look at the map, but changing which scheme pays whom is for a "
+"payroll manager. Ask one of them to make the change."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "You cannot read this company's pay runs."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "You cannot read this company's roster."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"You have been paying people for months, so the map already exists —\n"
+"            it is just not written down. Press \"Draft the map from what you\n"
+"            paid\" and this system reads the last runs and proposes it back to\n"
+"            you, line by line, with the numbers behind each one."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "and"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "chosen"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "covered"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "everyone"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "everyone agreed on"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "from %(team)s's team map"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "from a rule on the map"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "from the %(division)s division"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "from the days worked in %(company)s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "lines, read from the last runs."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "more."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "nobody yet"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "not covered"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"of them are worth a look — their people\n"
+"              did not all agree."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "people"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "person"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "proposed"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "the only scheme in this company"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "this team"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "to a scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "to work out again"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "· last run"
+msgstr ""

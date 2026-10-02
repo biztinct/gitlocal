@@ -1,0 +1,303 @@
+/* =============================================================================
+   LEARN v3 — Learn > Settings. One card; each switch is a row with its own
+   plain-words line about whether anything leaves Payobook.
+   ========================================================================== */
+.lrn-set {
+    max-width: 860px;
+    padding: 20px 4px 40px;
+    color: var(--vuf-ink, #1E1B2E);
+}
+
+.lrn-set-card {
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--vuf-line, #E2E8F0);
+    border-radius: 16px;
+    padding: 20px 22px 8px;
+}
+
+.lrn-set-loading { min-height: 240px; }
+
+.lrn-set-head {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--vuf-line-soft, #EDEAF8);
+
+    h2 { margin: 0 0 4px; font-size: 18px; font-weight: 800; letter-spacing: -.01em; }
+}
+
+.lrn-set-mark {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 auto;
+    border-radius: 12px;
+    background: var(--vuf-primary-soft, #EDEAF8);
+    color: var(--vuf-primary, #5A4BB0);
+
+    .lrn-ic { width: 20px; height: 20px; }
+}
+
+.lrn-set-lead { margin: 0; max-width: 64ch; color: var(--vuf-muted, #6B7280); font-size: 13px; }
+
+.lrn-set-list { list-style: none; margin: 0; padding: 0; }
+
+.lrn-set-row {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 16px 0;
+    border-top: 1px solid var(--vuf-line-soft, #F1F0F7);
+
+    &:first-child { border-top: 0; }
+}
+
+.lrn-set-ic {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    border-radius: 10px;
+    background: #F1F2F7;
+    color: var(--vuf-muted, #6B7280);
+    transition: background .15s, color .15s;
+
+    .lrn-ic { width: 17px; height: 17px; }
+}
+
+.lrn-set-row.on .lrn-set-ic {
+    background: var(--vuf-primary-soft, #EDEAF8);
+    color: var(--vuf-primary, #5A4BB0);
+}
+
+.lrn-set-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+
+    b { font-size: 14px; }
+    p { margin: 0; max-width: 64ch; font-size: 12.5px; color: var(--vuf-ink-soft, #4B4866); }
+}
+
+.lrn-set-where,
+.lrn-set-warn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 2px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+
+    .lrn-ic { width: 12px; height: 12px; }
+}
+
+.lrn-set-where.in  { background: #E4F3EA; color: #2E7D4F; }
+.lrn-set-where.out { background: #FCEFD9; color: #8A4B00; }
+.lrn-set-warn      { background: #E6EEFD; color: #2563EB; font-weight: 600; }
+.lrn-set-warn.bad  { background: #FBE3EA; color: #DC2668; }
+
+.lrn-set-ctl {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    flex: 0 0 64px;
+    padding-top: 2px;
+}
+
+.lrn-set-tog {
+    position: relative;
+    width: 42px;
+    height: 24px;
+    border: 0;
+    border-radius: 999px;
+    background: #D5D8E3;
+    cursor: pointer;
+    transition: background .15s;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, .25);
+        transition: left .15s;
+    }
+    &[aria-checked="true"] { background: #2E7D4F; }
+    &[aria-checked="true"]::after { left: 21px; }
+    &:focus-visible { outline: 2px solid var(--vuf-primary, #5A4BB0); outline-offset: 2px; }
+    &:disabled { cursor: progress; opacity: .7; }
+}
+
+.lrn-set-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--vuf-muted, #6B7280);
+
+    .lrn-ic { width: 12px; height: 12px; color: #2E7D4F; }
+}
+
+@media (max-width: 640px) {
+    .lrn-set-card { padding: 16px 14px 4px; }
+    .lrn-set-ic { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-set-tog, .lrn-set-tog::after, .lrn-set-ic { transition: none; }
+}
+
+/* =============================================================================
+   LEARN v3 — Learn > Team. Same card as Settings; one row per person.
+   ========================================================================== */
+.lrn-team .lrn-set-head { align-items: center; }
+.lrn-team-headmain { flex: 1 1 auto; min-width: 0; }
+
+.lrn-team-sum {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex: 0 0 auto;
+    text-align: right;
+
+    b { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    span { font-size: 11.5px; color: var(--vuf-muted, #6B7280); }
+}
+
+.lrn-team-empty { padding: 18px 0; }
+
+.lrn-team-row {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1.2fr) minmax(0, 1.6fr) auto;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 0;
+    border-top: 1px solid var(--vuf-line-soft, #F1F0F7);
+
+    &:first-child { border-top: 0; }
+}
+
+.lrn-team-av {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--vuf-primary-soft, #EDEAF8);
+    color: var(--vuf-primary, #5A4BB0);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.lrn-team-who {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    font-size: 12px;
+    color: var(--vuf-ink-soft, #4B4866);
+
+    b { font-size: 13.5px; color: var(--vuf-ink, #1E1B2E); }
+    em { font-style: normal; color: var(--vuf-muted, #6B7280); }
+}
+
+.lrn-team-seen { color: var(--vuf-muted, #6B7280); font-size: 11px; }
+
+.lrn-team-prog {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 10px;
+    align-items: center;
+    min-width: 0;
+}
+
+.lrn-team-bar {
+    height: 7px;
+    border-radius: 4px;
+    background: var(--vuf-primary-soft, #EDEAF8);
+    overflow: hidden;
+
+    i { display: block; height: 100%; border-radius: 4px; background: var(--vuf-primary, #5A4BB0); }
+}
+
+.lrn-team-count { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.lrn-team-next {
+    grid-column: 1 / -1;
+    overflow: hidden;
+    font-size: 11.5px;
+    color: var(--vuf-muted, #6B7280);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.lrn-team-act {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.lrn-team-status {
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+
+    &.ok    { background: #E4F3EA; color: #2E7D4F; }
+    &.warn  { background: #FCEFD9; color: #8A4B00; }
+    &.muted { background: #EEF0F6; color: var(--vuf-ink-soft, #4B4866); }
+}
+
+.lrn-team-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border: 1px solid var(--vuf-primary-light, #CBC2EE);
+    border-radius: 9px;
+    background: var(--vuf-surface, #fff);
+    color: var(--vuf-primary, #5A4BB0);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+
+    .lrn-ic { width: 13px; height: 13px; }
+    &:hover:not(:disabled) { background: var(--vuf-primary-soft, #F6F4FC); }
+    &:disabled { cursor: default; opacity: .75; }
+}
+
+@media (max-width: 760px) {
+    .lrn-team-row { grid-template-columns: 38px minmax(0, 1fr); }
+    .lrn-team-prog, .lrn-team-act { grid-column: 2; align-items: flex-start; }
+}
+
+/* =============================================================================
+   The hub's lens box is definite-height and clips; every other hub's guest
+   scrolls itself. Learn's three guests (Lessons = .lrn-root, Team and
+   Settings = .lrn-set) never did, so everything below the fold was
+   unreachable. The LENS scrolls rather than the guest: .lrn-set is capped at
+   860px, so a guest scrollbar would sit mid-screen. The guest stops shrinking
+   so its own background runs the full length of the content.
+   ========================================================================== */
+.pbhub-lens:has(> .lrn-root, > .lrn-set) {
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    > .lrn-root,
+    > .lrn-set { flex-shrink: 0; }
+}

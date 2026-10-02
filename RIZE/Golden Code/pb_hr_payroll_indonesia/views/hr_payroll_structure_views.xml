@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Inherit payroll structure form to add country field -->
+    <record id="view_hr_payroll_structure_form_inherit" model="ir.ui.view">
+        <field name="name">hr.payroll.structure.form.inherit</field>
+        <field name="model">hr.payroll.structure</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_employee_grade_form"/>
+        <field name="arch" type="xml">
+            <field name="code" position="after">
+                <field name="country_id"/>
+                <field name="spreadsheet_id"/>
+            </field>
+        </field>
+    </record>
+    
+    <!-- Inherit contract form to add Indonesia fields -->
+    <record id="view_hr_contract_form_inherit" model="ir.ui.view">
+        <field name="name">hr.contract.form.inherit.indonesia</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_contract_form_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='information']" position="after">
+                <page string="Indonesia Payroll" attrs="{'invisible': [('struct_id', '!=', %(structure_indonesia_employee)d)]}">
+                    <group>
+                        <group string="Tax Information">
+                            <field name="pph21_rate"/>
+                        </group>
+                        <group string="BPJS Employee Contributions">
+                            <field name="bpjs_kesehatan_employee"/>
+                            <field name="bpjs_tk_jht_employee"/>
+                            <field name="bpjs_tk_jp_employee"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="BPJS Employer Contributions">
+                            <field name="bpjs_kesehatan_employer"/>
+                            <field name="bpjs_tk_jht_employer"/>
+                            <field name="bpjs_tk_jp_employer"/>
+                            <field name="bpjs_tk_jkm"/>
+                            <field name="bpjs_tk_jkk"/>
+                        </group>
+                        <group string="Other Deductions">
+                            <field name="union_dues"/>
+                            <field name="loan_deduction"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Create Salary Structure Form Menu -->
+    <record id="action_create_salary_structure" model="ir.actions.act_window">
+        <field name="name">Create Salary Structure</field>
+        <field name="res_model">hr.payroll.structure</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'default_company_id': 1}</field>
+    </record>
+    
+    <menuitem id="menu_create_salary_structure"
+              name="Create Salary Structure"
+              parent="om_hr_payroll.menu_hr_payroll_configuration"
+              action="action_create_salary_structure"
+              sequence="10"/>
+    
+</odoo>

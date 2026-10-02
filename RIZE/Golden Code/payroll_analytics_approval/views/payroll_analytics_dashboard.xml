@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Enhanced Analytics Dashboard View with Modern Header -->
+    <record id="view_payroll_analytics_dashboard" model="ir.ui.view">
+        <field name="name">payroll.analytics.dashboard</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Analytics Dashboard" 
+                  create="false" 
+                  edit="false" 
+                  js_class="payroll_analytics_dashboard">
+                <header>
+                    <button name="action_approve_payroll" 
+                            type="object" 
+                            string="Final Approve" 
+                            class="oe_highlight btn-success"
+                            states="ready"
+                            confirm="Are you sure you want to approve this payroll? This action cannot be undone."/>
+                    <button name="action_export_bank_file" 
+                            type="object" 
+                            string="Export Bank File" 
+                            class="oe_highlight btn-primary"
+                            states="approved"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                
+                <sheet>
+                    <!-- Modern Dashboard Header matching country dashboard style -->
+                    <div class="dashboard-header-modern">
+                        <h1 class="dashboard-title-modern">
+                            <field name="period_name" readonly="1"/>
+                        </h1>
+                        <p class="dashboard-subtitle-modern">
+                            Analytics Dashboard • Final Approval Review
+                        </p>
+                    </div>
+                    
+                    <div class="analytics-dashboard">
+                        <!-- Key Metrics Cards -->
+                        <div class="metrics-section">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="metric-card metric-employees">
+                                        <div class="metric-icon">
+                                            <i class="fa fa-users"/>
+                                        </div>
+                                        <div class="metric-content">
+                                            <h3 class="metric-value"><field name="total_employees" readonly="1"/></h3>
+                                            <p class="metric-label">Total Employees</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <div class="metric-card metric-payroll">
+                                        <div class="metric-icon">
+                                            <i class="fa fa-money"/>
+                                        </div>
+                                        <div class="metric-content">
+                                            <h3 class="metric-value"><field name="total_payroll" readonly="1" widget="monetary"/></h3>
+                                            <p class="metric-label">Total Payroll</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <div class="metric-card metric-average">
+                                        <div class="metric-icon">
+                                            <i class="fa fa-calculator"/>
+                                        </div>
+                                        <div class="metric-content">
+                                            <h3 class="metric-value"><field name="average_salary" readonly="1" widget="monetary"/></h3>
+                                            <p class="metric-label">Average Salary</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <div class="metric-card metric-variance">
+                                        <div class="metric-icon">
+                                            <i class="fa fa-line-chart"/>
+                                        </div>
+                                        <div class="metric-content">
+                                            <h3 class="metric-value">
+                                                <field name="variance_percentage" readonly="1" widget="percentage"/>
+                                            </h3>
+                                            <p class="metric-label">Variance vs Last Month</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Charts Section -->
+                        <div class="charts-section">
+                            <div class="row">
+                                <!-- Component Comparison Chart -->
+                                <div class="col-md-6">
+                                    <div class="chart-card">
+                                        <div class="chart-header">
+                                            <h4><i class="fa fa-bar-chart"/> Salary Components</h4>
+                                            <p>Total amounts by component</p>
+                                        </div>
+                                        <div class="chart-container">
+                                            <canvas id="componentsChart" width="400" height="300"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Month over Month Comparison -->
+                                <div class="col-md-6">
+                                    <div class="chart-card">
+                                        <div class="chart-header">
+                                            <h4><i class="fa fa-line-chart"/> Month over Month</h4>
+                                            <p>Comparison with previous month</p>
+                                        </div>
+                                        <div class="chart-container">
+                                            <canvas id="comparisonChart" width="400" height="300"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Variance Analysis Chart -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="chart-card">
+                                        <div class="chart-header">
+                                            <h4><i class="fa fa-area-chart"/> Variance Analysis</h4>
+                                            <p>Percentage change from previous month by component</p>
+                                        </div>
+                                        <div class="chart-container">
+                                            <canvas id="varianceChart" width="800" height="300"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Anomaly Alerts Section -->
+                        <div class="alerts-section">
+                            <div class="section-header">
+                                <h4><i class="fa fa-exclamation-triangle"/> Anomaly Alerts</h4>
+                            </div>
+                            <div id="anomaly-alerts-container">
+                                <!-- Alerts will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <!-- Detailed Analysis Section -->
+                        <div class="analysis-section">
+                            <div class="section-header">
+                                <h4><i class="fa fa-table"/> Detailed Component Analysis</h4>
+                            </div>
+                            <div class="analysis-table-container">
+                                <table class="table table-striped analysis-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Component</th>
+                                            <th>Current Total</th>
+                                            <th>Previous Total</th>
+                                            <th>Average/Employee</th>
+                                            <th>Variance</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="analysis-table-body">
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Decision Support Section -->
+                        <div class="decision-section">
+                            <div class="section-header">
+                                <h4><i class="fa fa-lightbulb-o"/> Decision Support</h4>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="recommendation-card">
+                                        <h5><i class="fa fa-check-circle text-success"/> Recommendations</h5>
+                                        <ul id="recommendations-list">
+                                            <!-- Recommendations will be populated by JavaScript -->
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="warning-card">
+                                        <h5><i class="fa fa-warning text-warning"/> Things to Review</h5>
+                                        <ul id="warnings-list">
+                                            <!-- Warnings will be populated by JavaScript -->
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hidden fields for JavaScript -->
+                        <field name="employee_metrics" invisible="1"/>
+                        <field name="salary_components" invisible="1"/>
+                        <field name="comparison_data" invisible="1"/>
+                        <field name="anomaly_alerts" invisible="1"/>
+                        <field name="country" invisible="1"/>
+                        <field name="date_from" invisible="1"/>
+                        <field name="date_to" invisible="1"/>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Modern Dashboard Header Styles -->
+    <template id="modern_analytics_dashboard_styles" name="Modern Analytics Dashboard Styles">
+        <style>
+            /* Modern Dashboard Header - Matching Country Dashboard Style */
+            .dashboard-header-modern {
+                background: #f8f9fb;
+                padding: 24px;
+                border-radius: 8px;
+                margin-bottom: 24px;
+                border-left: 4px solid #21435F;
+            }
+
+            .dashboard-title-modern {
+                color: #2c3e50;
+                font-size: 28px;
+                font-weight: 600;
+                margin-bottom: 8px;
+                line-height: 1.3;
+            }
+
+            .dashboard-subtitle-modern {
+                color: #6c757d;
+                font-size: 16px;
+                margin: 0;
+                font-weight: 400;
+            }
+
+            /* Enhanced Analytics Dashboard Container */
+            .analytics-dashboard {
+                padding: 20px 0;
+            }
+
+            /* Metrics Cards */
+            .metrics-section {
+                margin-bottom: 30px;
+            }
+
+            .metric-card {
+                background: white;
+                border-radius: 12px;
+                padding: 25px;
+                text-align: center;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                margin-bottom: 20px;
+                border-left: 4px solid #21435F;
+                height: 160px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .metric-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            }
+
+            .metric-employees { border-left-color: #3498db; }
+            .metric-payroll { border-left-color: #2ecc71; }
+            .metric-average { border-left-color: #f39c12; }
+            .metric-variance { border-left-color: #e74c3c; }
+
+            .metric-icon {
+                font-size: 2em;
+                color: #21435F;
+                margin-bottom: 15px;
+            }
+
+            .metric-value {
+                font-size: 1.8em;
+                font-weight: 700;
+                color: #2c3e50;
+                margin: 10px 0;
+            }
+
+            .metric-label {
+                color: #6c757d;
+                font-size: 14px;
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin: 0;
+            }
+
+            /* Charts Section */
+            .charts-section {
+                margin-bottom: 30px;
+            }
+
+            .chart-card {
+                background: white;
+                border-radius: 12px;
+                padding: 25px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                margin-bottom: 20px;
+                transition: transform 0.3s ease;
+                border-left: 4px solid #21435F;
+            }
+
+            .chart-card:hover {
+                transform: translateY(-2px);
+            }
+
+            .chart-header {
+                margin-bottom: 20px;
+                text-align: center;
+                border-bottom: 1px solid #e9ecef;
+                padding-bottom: 15px;
+            }
+
+            .chart-header h4 {
+                color: #2c3e50;
+                font-weight: 600;
+                margin-bottom: 5px;
+            }
+
+            .chart-header p {
+                color: #6c757d;
+                margin: 0;
+                font-size: 14px;
+            }
+
+            .chart-container {
+                position: relative;
+                height: 300px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* Section Headers */
+            .section-header {
+                background: white;
+                padding: 20px;
+                border-radius: 12px 12px 0 0;
+                border-bottom: 1px solid #e9ecef;
+                border-left: 4px solid #21435F;
+            }
+
+            .section-header h4 {
+                margin: 0;
+                color: #2c3e50;
+                font-weight: 600;
+            }
+
+            /* Alerts Section */
+            .alerts-section {
+                margin-bottom: 30px;
+            }
+
+            #anomaly-alerts-container {
+                background: white;
+                padding: 20px;
+                border-radius: 0 0 12px 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            }
+
+            /* Analysis Section */
+            .analysis-section {
+                margin-bottom: 30px;
+            }
+
+            .analysis-table-container {
+                background: white;
+                padding: 20px;
+                border-radius: 0 0 12px 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                overflow-x: auto;
+            }
+
+            .analysis-table {
+                margin: 0;
+            }
+
+            .analysis-table th {
+                background-color: #f8f9fa;
+                color: #2c3e50;
+                font-weight: 600;
+                border: none;
+                padding: 15px 10px;
+            }
+
+            .analysis-table td {
+                padding: 12px 10px;
+                border: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+
+            /* Decision Support */
+            .decision-section {
+                margin-bottom: 30px;
+            }
+
+            .recommendation-card, .warning-card {
+                background: white;
+                padding: 25px;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                margin-bottom: 20px;
+            }
+
+            .recommendation-card {
+                border-left: 4px solid #2ecc71;
+            }
+
+            .warning-card {
+                border-left: 4px solid #f39c12;
+            }
+
+            .recommendation-card h5,
+            .warning-card h5 {
+                margin-bottom: 15px;
+                font-weight: 600;
+                color: #2c3e50;
+            }
+
+            /* No Data Messages */
+            .no-data-message {
+                text-align: center;
+                padding: 40px;
+                color: #6c757d;
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .dashboard-header-modern {
+                    padding: 20px;
+                }
+
+                .dashboard-title-modern {
+                    font-size: 24px;
+                }
+
+                .metric-card {
+                    margin-bottom: 15px;
+                    height: 140px;
+                }
+
+                .chart-container {
+                    height: 250px;
+                }
+            }
+        </style>
+    </template>
+
+</odoo>

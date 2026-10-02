@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+
+    <!-- RETIRED by Workforce P1a: this cockpit is now the Time hub's Week Grid
+         lens (pb_time_hub mounts the very same component with embedded="true").
+         The client action survives for P1b to retire; only the rail entry goes.
+         Sequence 35 does not collide with anything, so unlike Timecards it can
+         keep it — see the 900 retired band in pb_sidebar_data.xml for why that
+         one had to move. -->
+    <record id="item_wf_weekentry" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_workforce"/>
+        <field name="name">Weekly Entry</field>
+        <field name="icon">table</field>
+        <field name="sequence">35</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_hr_workforce.action_pb_attendance_weekgrid</field>
+        <field name="action_tag">pb_attendance_weekgrid</field>
+        <field name="match_action_tags">pb_attendance_weekgrid</field>
+        <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_officer')])]"/>
+    </record>
+
+    <!-- Overtime Desk cockpit — Workforce section (manager persona). Native OT
+         menus retired (Phase K); this is the approval queue + config gallery +
+         server-gated Bonus Hours review. Bonus viewers who are also managers
+         reach the tab here; super admin (system) sees everything.
+
+         RENAMED by Workforce P1b: "Overtime Desk" -> "Overtime" (50). It is now
+         the ONLY overtime door on the rail — the old Overtime Rules dashboard
+         retired into the 900 band, because this cockpit's config gallery opens
+         the native hr.overtime.config form and is the editor of record. Label
+         and sequence only; the cockpit is untouched. -->
+    <!-- RETIRED by Workforce P3a: the desk is now the Overtime LENS of Mission
+         Control (pb_mission mounts this component with embedded="true", W17 —
+         the Bonus Hours door and the bonus view's filter rail travel with it).
+         The action survives; only the rail entry goes, into the 900 band (W18)
+         because the shell's single "Workforce" item takes sequence 10. -->
+    <record id="item_wf_ot_desk" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_workforce"/>
+        <field name="name">Overtime</field>
+        <field name="icon">zap</field>
+        <field name="sequence">910</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_hr_workforce.action_pb_ot_desk</field>
+        <field name="action_tag">pb_ot_desk</field>
+        <field name="match_action_tags">pb_ot_desk</field>
+        <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_manager'), ref('om_hr_payroll.group_hr_payroll_manager')])]"/>
+    </record>
+
+</odoo>

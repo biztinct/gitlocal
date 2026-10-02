@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       `/my/resignation` reuses `pb_me_portal`'s .pbme kit — the same hero,
+       the same cards, the same empty state — so it looks like it was always
+       part of the employee's own area rather than bolted on. Everything
+       specific to it is under .pbof.
+
+       ICONS: the backend's ic() registry is a JS module and cannot be called
+       from QWeb, so the handful of glyphs this page uses are inlined here,
+       exactly as pb_lifecycle's token pages, pb_me_portal's ess_icon and
+       pb_onboarding's ob_icon do.
+       W87: the name is passed with t-value="'name'", NEVER as a t-set BODY —
+       a body is rendered QWeb and on a website=True page the editor's
+       branding wraps it in markup, so every comparison silently goes false
+       and every icon falls through to the else branch.
+       ================================================================== -->
+  <template id="of_icon" name="Offboarding page icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbof-ic">
+      <t t-if="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'door'"><path d="M18.36 6.64A9 9 0 1 1 5.64 6.64"/><path d="M12 2v10"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'box'"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 8.7 5 8.7-5"/></t>
+      <t t-elif="icon == 'file'"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8M16 13H8M16 17H8"/></t>
+      <t t-elif="icon == 'alert'"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></t>
+      <t t-elif="icon == 'chat'"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></t>
+      <t t-elif="icon == 'undo'"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></t>
+      <t t-elif="icon == 'heart'"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="10"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================ breadcrumbs ============================ -->
+  <template id="portal_breadcrumbs_offboarding" name="Offboarding portal menu"
+            inherit_id="portal.portal_breadcrumbs" priority="38">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'resignation'" class="breadcrumb-item active">My Resignation</li>
+    </xpath>
+  </template>
+
+  <!-- ============================ home card ============================ -->
+  <template id="portal_my_home_offboarding" name="Offboarding home card"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="27">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">My Resignation</t>
+        <t t-set="text">Hand in your notice, and see what is left before your last day</t>
+        <t t-set="url" t-value="'/my/resignation'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'resignation_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/resignation                                                   -->
+  <!-- ================================================================= -->
+  <template id="portal_my_resignation" name="My Resignation (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbof">
+
+        <div t-if="notice" class="pbof-notice">
+          <t t-call="pb_offboarding.of_icon"><t t-set="icon" t-value="'check'"/></t>
+          <span t-esc="notice"/>
+        </div>
+        <div t-if="problem" class="pbof-notice pbof-notice--bad">
+          <t t-call="pb_offboarding.of_icon"><t t-set="icon" t-value="'alert'"/></t>
+          <span t-esc="problem"/>
+        </div>
+
+        <!-- ==================== nothing on file ==================== -->
+        <t t-if="not live">
+          <t t-call="pb_me_portal.ess_hero">
+            <t t-set="hero_title">My Resignation</t>
+            <t t-set="hero_sub">If you decide to move on, this is where you tell us.</t>
+          </t>
+
+          <div t-if="resignation" class="pbme-card pbof-past">
+            <div class="pbme-card-title">What happened last time</div>
+            <p class="pbme-muted">
+              You handed in a resignation
+              <t t-if="resignation.submit_date">on <t t-esc="resignation.submit_date"/></t>
+              and it is now
+              <strong>
+                <t t-if="resignation.state == 'withdrawn'">taken back</t>
+                <t t-elif="resignation.state == 'refused'">not accepted</t>
+                <t t-else=""><t t-esc="resignation.state"/></t>
+              </strong>.
+              Nothing was changed on your record.
+            </p>
+          </div>
+
+          <div class="pbme-card pbof-form">
+            <div class="pbme-card-title">Handing in your notice</div>
+            <p class="pbme-muted">
+              Nothing changes on your record when you send this. Your manager
+              reads it first, then HR — and the last working day is agreed
+              between you before anything else happens.
+            </p>
+
+            <div class="pbof-policy">
+              <div class="pbof-policy-n"><t t-esc="notice_days"/></div>
+              <div class="pbof-policy-t">
+                <b>days' notice</b>
+                <span>
+                  <t t-if="policy_name">The <t t-esc="policy_name"/> policy applies to you,
+                    so </t>
+                  <t t-else="">So </t>
+                  the earliest last working day is
+                  <strong><t t-esc="suggested_lwd"/></strong>.
+                </span>
+              </div>
+            </div>
+
+            <form action="/my/resignation/submit" method="post"
+                  class="pbof-formgrid">
+              <input type="hidden" name="csrf_token"
+                     t-att-value="request.csrf_token()"/>
+
+              <label class="pbme-flabel" for="pbof_lwd">
+                The last working day you would like
+              </label>
+              <input type="date" id="pbof_lwd" name="lwd" class="pbof-in"
+                     t-att-value="suggested_lwd" t-att-min="today" required="1"/>
+
+              <label class="pbme-flabel" for="pbof_reason">
+                Why you are leaving
+              </label>
+              <textarea id="pbof_reason" name="reason" class="pbof-ta" rows="5"
+                        required="1"
+                        placeholder="A few lines is plenty. Only your manager and HR see this."/>
+
+              <p class="pbme-muted pbof-warn">
+                <t t-call="pb_offboarding.of_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="15"/></t>
+                Your manager and HR are emailed as soon as you send this. You
+                can take it back at any point until HR agrees it.
+              </p>
+
+              <button type="submit" class="pbme-btn pbme-btn--primary pbof-send">
+                Hand in my notice
+              </button>
+            </form>
+          </div>
+        </t>
+
+        <!-- ==================== one is on file ==================== -->
+        <t t-else="">
+          <div class="pbof-hero">
+            <div class="pbof-hero-tx">
+              <div class="pbme-eyebrow">My Resignation</div>
+              <h1 class="pbof-hero-h1">
+                <t t-if="resignation.state == 'approved' and days_left is not None and days_left &gt; 1">
+                  Your last day is in <t t-esc="days_left"/> days
+                </t>
+                <t t-elif="resignation.state == 'approved' and days_left == 1">
+                  Tomorrow is your last day
+                </t>
+                <t t-elif="resignation.state == 'approved' and days_left == 0">
+                  Today is your last day
+                </t>
+                <t t-elif="resignation.state == 'approved'">
+                  Thank you for everything
+                </t>
+                <t t-else="">Your notice is with us</t>
+              </h1>
+              <p class="pbof-hero-sub">
+                <t t-if="resignation.state == 'approved'">
+                  Agreed for <strong><t t-esc="lwd"/></strong>.
+                  Here is what is left between now and then.
+                </t>
+                <t t-elif="resignation.state == 'submitted'">
+                  Your manager has it. Nothing has changed on your record yet.
+                </t>
+                <t t-elif="resignation.state == 'manager_ok'">
+                  Your manager has seen it and HR is looking at it now.
+                  Nothing has changed on your record yet.
+                </t>
+                <t t-else="">
+                  It has not been sent yet.
+                </t>
+              </p>
+            </div>
+          </div>
+
+          <!-- ===================== where it is up to ===================== -->
+          <div class="pbme-card">
+            <div class="pbme-card-title">Where it is up to</div>
+            <div class="pbme-stepper pbof-stepper">
+              <!-- t-attf-class, NEVER a t-att-class dict. Server-side QWeb is
+                   not OWL: a dict handed to t-att-class is rendered as its
+                   Python repr, AND t-att-class REPLACES the static class
+                   attribute rather than adding to it, so the row loses
+                   .pbme_step and wears the repr of the dict as its class name.
+                   (And this comment is ruled with `=` and spells no modifier
+                   class, because a doubled hyphen inside an XML comment is a
+                   parse error that takes the whole file with it, R35.) -->
+              <div t-foreach="trail" t-as="stg" t-key="stg['key']"
+                   t-attf-class="pbme-step #{stg['done'] and 'pbme-step--done' or ''} #{stg['current'] and 'pbme-step--current' or ''}">
+                <span class="pbme-step-dot"/>
+                <span class="pbme-step-lab" t-esc="stg['label']"/>
+              </div>
+            </div>
+            <div class="pbof-facts">
+              <div>
+                <span class="pbof-fact-l">Handed in</span>
+                <b t-esc="resignation.submit_date or '—'"/>
+              </div>
+              <div>
+                <span class="pbof-fact-l">You asked for</span>
+                <b t-esc="resignation.requested_lwd or '—'"/>
+              </div>
+              <div>
+                <span class="pbof-fact-l">Agreed</span>
+                <b t-esc="resignation.approved_lwd or 'not yet'"/>
+              </div>
+            </div>
+
+            <form t-if="resignation.state != 'approved'"
+                  action="/my/resignation/withdraw" method="post"
+                  class="pbof-withdraw">
+              <input type="hidden" name="csrf_token"
+                     t-att-value="request.csrf_token()"/>
+              <input type="hidden" name="resignation_id"
+                     t-att-value="resignation.id"/>
+              <button type="submit" class="pbme-btn pbof-btn-quiet">
+                <t t-call="pb_offboarding.of_icon"><t t-set="icon" t-value="'undo'"/><t t-set="isz" t-value="15"/></t>
+                Take it back
+              </button>
+              <span class="pbme-muted">
+                You can do this right up until HR agrees it. Nothing has been
+                changed on your record, so there is nothing to undo.
+              </span>
+            </form>
+            <p t-else="" class="pbme-muted pbof-locked">
+              <t t-call="pb_offboarding.of_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="15"/></t>
+              This has been agreed, so it can no longer be taken back here.
+              If something has changed, speak to HR.
+            </p>
+          </div>
+
+          <!-- ===================== what is left ===================== -->
+          <div class="pbme-card" t-if="steps">
+            <div class="pbme-card-title">Before your last day</div>
+            <p class="pbme-muted">
+              The ones marked <strong>yours</strong> are for you. The rest are
+              here so you know what is happening.
+            </p>
+            <div t-foreach="steps" t-as="stp" t-key="stp['id']"
+                 t-attf-class="pbof-step #{stp['settled'] and 'pbof-step--done' or ''} #{stp['mine'] and 'pbof-step--mine' or ''} #{stp['overdue'] and 'pbof-step--late' or ''}">
+              <span class="pbof-step-dot">
+                <t t-if="stp['settled']">
+                  <t t-call="pb_offboarding.of_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="13"/></t>
+                </t>
+              </span>
+              <div class="pbof-step-tx">
+                <b t-esc="stp['name']"/>
+                <span t-if="stp['mine']" class="pbof-tag">yours</span>
+                <span t-if="stp['due']" class="pbof-step-due">
+                  by <t t-esc="stp['due']"/>
+                </span>
+                <p t-if="stp['description']" t-esc="stp['description']"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================== what you still have ===================== -->
+          <div class="pbme-card" t-if="assets">
+            <div class="pbme-card-title">Things of ours you still have</div>
+            <p class="pbme-muted">
+              These have to come back before your final settlement can be paid.
+              Hand them to your manager or to IT and they will sign them off.
+            </p>
+            <div t-foreach="assets" t-as="ast" t-key="ast['id']" class="pbof-asset">
+              <t t-call="pb_offboarding.of_icon"><t t-set="icon" t-value="'box'"/><t t-set="isz" t-value="16"/></t>
+              <b><t t-esc="ast['code']"/> <t t-esc="ast['name']"/></b>
+              <span t-if="ast['serial']" class="pbme-muted" t-esc="ast['serial']"/>
+            </div>
+          </div>
+
+          <!-- ===================== the conversation ===================== -->
+          <div class="pbme-card" t-if="feedback_link or feedback_done">
+            <div class="pbme-card-title">Telling us how it was</div>
+            <t t-if="feedback_done">
+              <p class="pbme-muted">
+                <t t-call="pb_offboarding.of_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="15"/></t>
+                You have answered it — thank you. It is read, and it does change
+                things.
+              </p>
+            </t>
+            <t t-else="">
+              <p class="pbme-muted">
+                A few questions about how it has been. It takes two minutes, it
+                needs no sign-in, and the link keeps working after you have
+                left.
+              </p>
+              <a t-att-href="feedback_link" class="pbme-btn pbme-btn--primary pbof-send"
+                 target="_blank" rel="noopener noreferrer">
+                <t t-call="pb_offboarding.of_icon"><t t-set="icon" t-value="'chat'"/><t t-set="isz" t-value="15"/></t>
+                Answer the questions
+              </a>
+            </t>
+          </div>
+
+          <!-- ===================== take your papers ===================== -->
+          <div class="pbme-card pbof-bye">
+            <div class="pbof-bye-ic">
+              <t t-call="pb_offboarding.of_icon"><t t-set="icon" t-value="'heart'"/><t t-set="isz" t-value="22"/></t>
+            </div>
+            <div>
+              <div class="pbme-card-title">Take your papers with you</div>
+              <p class="pbme-muted">
+                Download anything you want to keep before your account closes —
+                your payslips and the documents filed against your record are
+                both still open to you. Your experience letter and your final
+                settlement are emailed to you once everything is signed off.
+              </p>
+              <div class="pbof-links">
+                <a href="/my/payslips" class="pbme-btn pbof-btn-quiet">
+                  <t t-call="pb_offboarding.of_icon"><t t-set="icon" t-value="'file'"/><t t-set="isz" t-value="15"/></t>
+                  My payslips
+                </a>
+                <a href="/my/documents" class="pbme-btn pbof-btn-quiet">
+                  <t t-call="pb_offboarding.of_icon"><t t-set="icon" t-value="'file'"/><t t-set="isz" t-value="15"/></t>
+                  My documents
+                </a>
+              </div>
+            </div>
+          </div>
+        </t>
+
+      </div>
+    </t>
+  </template>
+
+</odoo>

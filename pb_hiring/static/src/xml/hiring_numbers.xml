@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Hiring lens on the Insights hub.
+
+       Section comments use `=` rules and never a doubled hyphen, because a
+       doubled hyphen inside an XML comment is a parse error that takes every
+       t-name in the file down with it (R35).
+
+       Loop variables are never named lt / gt / lte / gte / and / or / not /
+       in: OWL reserves those as operators (R1). The loops here are `tl`,
+       `rg`, `sg`, `sc`, `dl`, `ns` and `ag`.
+
+       `t-att-class` with a DICT is correct HERE and only here — this is an
+       OWL template, where the dict form MERGES with the static class.
+       ==================================================================== -->
+  <t t-name="pb_hiring.PbHiringNumbers">
+    <div class="pbim pbim-page pbhn"
+         t-att-class="{ 'pbhn--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Working out the hiring numbers…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <!-- ============ the reader has no hiring access ============ -->
+        <div t-if="!state.allowed" class="pbim-panel pbhn-empty">
+          <div class="pbhn-empty-ic"><t t-out="ic('lock',30)"/></div>
+          <h2>The hiring numbers are for the hiring team</h2>
+          <p>How long roles take to fill, where candidates get stuck and how
+             many offers are accepted are the figures the people doing the
+             hiring are judged on. Ask them, or ask your HR administrator to
+             add you to the hiring team.</p>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="pbhn-head">
+            <div class="pbhn-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Hiring</h1>
+              <p class="pbim-sub">How long it takes, where it gets stuck, and
+                 how often the answer is yes.</p>
+            </div>
+            <div class="pbhn-head-actions">
+              <button class="pbim-btn ghost" t-on-click="() => this.load()"
+                      title="Work the numbers out again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <button class="pbim-btn primary" t-on-click="() => this.download('all')"
+                      t-att-disabled="state.busy">
+                <t t-out="ic('download',15)"/> Download everything
+              </button>
+            </div>
+          </div>
+
+          <!-- ====================== the range ======================
+               Four presses and a pair of dates. The four are what somebody
+               actually asks for; the dates are for the quarter that does not
+               fit any of them. -->
+          <div class="pbhn-range">
+            <t t-foreach="ranges" t-as="rg" t-key="rg.key">
+              <button class="pbhn-chip"
+                      t-att-class="{ on: state.range === rg.key }"
+                      t-on-click="() => this.pickRange(rg.key)">
+                <t t-esc="rg.label"/>
+              </button>
+            </t>
+            <div class="pbhn-dates">
+              <input type="date" class="pbhn-in" t-model="state.from"
+                     t-on-change="onCustom" aria-label="From"/>
+              <span class="pbhn-to">to</span>
+              <input type="date" class="pbhn-in" t-model="state.to"
+                     t-on-change="onCustom" aria-label="To"/>
+            </div>
+          </div>
+
+          <!-- ============ RECRUIT P6: department, country, recruiter ============
+               One row above everything, and every figure narrows with it. -->
+          <div class="pbhn-filters" role="group" aria-label="Narrow the numbers">
+            <span class="pbhn-filters-l"><t t-out="ic('filter',14)"/> Narrow to</span>
+            <select class="pbhn-in" aria-label="Department" t-att-class="{ on: state.dept }"
+                    t-on-change="(ev) => this.setFilter('dept', ev.target.value)">
+              <option value="">Every department</option>
+              <t t-foreach="state.options.departments" t-as="fo" t-key="fo.id">
+                <option t-att-value="fo.id" t-att-selected="state.dept == fo.id" t-esc="fo.name"/>
+              </t>
+            </select>
+            <select class="pbhn-in" aria-label="Country" t-att-class="{ on: state.country }"
+                    t-on-change="(ev) => this.setFilter('country', ev.target.value)">
+              <option value="">Every country</option>
+              <t t-foreach="state.options.countries" t-as="fo" t-key="fo.id">
+                <option t-att-value="fo.id" t-att-selected="state.country == fo.id" t-esc="fo.name"/>
+              </t>
+            </select>
+            <select class="pbhn-in" aria-label="Recruiter" t-att-class="{ on: state.recruiter }"
+                    t-on-change="(ev) => this.setFilter('recruiter', ev.target.value)">
+              <option value="">Every recruiter</option>
+              <t t-foreach="state.options.recruiters" t-as="fo" t-key="fo.id">
+                <option t-att-value="fo.id" t-att-selected="state.recruiter == fo.id" t-esc="fo.name"/>
+              </t>
+            </select>
+            <button t-if="anyFilter" class="pbhn-clear" t-on-click="clearFilters">
+              <t t-out="ic('x',13)"/> Show everything
+            </button>
+            <span t-if="state.busy" class="pbhn-busy-dot" aria-hidden="true"/>
+          </div>
+
+          <!-- ============ nothing agreed in this range ============
+               R27: a filter that matches nothing is a broken promise, and a
+               screen of zeros is how a working feature gets reported as
+               broken. The sentence carries the dates so the reader can see
+               what to change. -->
+          <div t-if="state.empty" class="pbim-panel pbhn-empty">
+            <div class="pbhn-empty-ic"><t t-out="ic('briefcase',30)"/></div>
+            <h2>Nothing to measure in this stretch</h2>
+            <p t-esc="state.headline"/>
+            <button class="pbim-btn ghost"
+                    t-on-click="() => this.pickRange('365')">
+              <t t-out="ic('history',15)"/> Try the last year
+            </button>
+          </div>
+
+          <t t-else="">
+
+            <!-- ==================== the sentence ==================== -->
+            <div class="pbim-panel pbhn-headline">
+              <div class="pbhn-headline-ic"><t t-out="ic('sparkles',20)"/></div>
+              <p t-esc="state.headline"/>
+            </div>
+
+            <!-- ==================== the numbers ==================== -->
+            <div class="pbim-stats pbhn-kpis">
+              <t t-foreach="state.tiles" t-as="tl" t-key="tl.key">
+                <div class="pbim-stat pbhn-stat" t-att-title="tl.hint">
+                  <div class="pbim-stat-ic"><t t-out="ic(tl.icon,21)"/></div>
+                  <div class="pbim-stat-tx">
+                    <div class="n">
+                      <t t-esc="shown(tl)"/><small t-if="tl.unit"
+                        t-esc="' ' + tl.unit"/>
+                    </div>
+                    <div class="l" t-esc="tl.label"/>
+                  </div>
+                </div>
+              </t>
+            </div>
+
+            <!-- ==================== RECRUIT P6: the offer funnel ====================
+                 offered → accepted → signed → joined; each way out shows its
+                 reasons on hover or focus. -->
+            <div class="pbim-panel pbhn-sec pbhn-funnel" t-if="state.funnel and state.funnel.steps">
+              <div class="pbhn-table-head">
+                <h3><t t-out="ic('trendingDown',16)"/> From offer to joined
+                  <button class="pbhn-dl" t-on-click="() => this.download('funnel')" title="Download this report"><t t-out="ic('download',14)"/></button></h3>
+                <p t-esc="state.funnel.sentence"/>
+              </div>
+              <div t-if="!state.funnel.offered" class="pbhn-none">No offer has reached a candidate on these roles yet. The funnel fills in from the first one sent.</div>
+              <div t-else="" class="pbhn-steps">
+                <t t-foreach="steps" t-as="st6" t-key="st6.key">
+                  <div t-if="st6.lost" class="pbhn-lost" tabindex="0" t-att-aria-label="st6.lost + ' ' + st6.lost_label">
+                    <span class="pbhn-lost-n"><t t-out="ic('arrowDown',12)"/> <t t-esc="st6.lost"/> <t t-esc="st6.lost_label"/></span>
+                    <div class="pbhn-pop" role="tooltip">
+                      <b>Why</b>
+                      <div t-foreach="st6.reasons" t-as="rs" t-key="rs.key" class="pbhn-pop-r">
+                        <span t-esc="rs.reason"/><b t-esc="rs.n"/>
+                        <em t-foreach="rs.examples" t-as="ex" t-key="ex_index">“<t t-esc="ex"/>”</em>
+                      </div>
+                      <div t-if="!st6.reasons.length" class="pbhn-pop-r"><span>No reason recorded</span></div>
+                    </div>
+                  </div>
+                  <div class="pbhn-step" t-att-class="'is-' + st6.key">
+                    <span class="pbhn-step-l" t-esc="st6.label"/>
+                    <div class="pbhn-step-bar"><span t-attf-style="width: {{ stepWidth(st6) }}%;"/></div>
+                    <span class="pbhn-step-n"><b t-esc="st6.n"/> <small t-esc="stepPct(st6)"/></span>
+                  </div>
+                </t>
+                <p class="pbhn-step-wait" t-if="state.funnel.waiting_answer or state.funnel.waiting_join">
+                  <t t-if="state.funnel.waiting_answer"><t t-esc="state.funnel.waiting_answer"/> still deciding · </t>
+                  <t t-esc="state.funnel.waiting_join"/> signed and on their way
+                </p>
+              </div>
+              <div t-if="(state.funnel.by_market or []).length &gt; 1" class="pbhn-markets">
+                <div class="pbhn-mk pbhn-mk-h"><span>Market</span><span>Offered</span><span>Accepted</span><span>Signed</span><span>Joined</span><span>Out</span></div>
+                <div t-foreach="state.funnel.by_market" t-as="mk" t-key="mk.country_id" class="pbhn-mk">
+                  <span t-esc="mk.country"/><span t-esc="mk.offered"/><span t-esc="mk.accepted"/><span t-esc="mk.signed"/><b t-esc="mk.joined"/>
+                  <span t-att-class="{ 'is-out': mk.declined + mk.dropped }"><t t-esc="mk.declined + mk.dropped"/></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==================== RECRUIT P6: leadership ==================== -->
+            <div class="pbim-panel pbhn-sec pbhn-lead" t-if="state.leadership and state.leadership.tiles">
+              <div class="pbhn-table-head">
+                <h3><t t-out="ic('target',16)"/> For leadership
+                  <button class="pbhn-dl" t-on-click="() => this.download('leadership')" title="Download this report"><t t-out="ic('download',14)"/></button></h3>
+                <p>Fill rate, who is still to hire and where, and how long a role takes month by month.</p>
+              </div>
+              <div class="pbim-stats pbhn-kpis pbhn-lead-kpis">
+                <t t-foreach="state.leadership.tiles" t-as="ld6" t-key="ld6.key">
+                  <div class="pbim-stat pbhn-stat" t-att-title="ld6.hint">
+                    <div class="pbim-stat-ic"><t t-out="ic(ld6.icon,20)"/></div>
+                    <div class="pbim-stat-tx">
+                      <div class="n"><t t-esc="shown(ld6)"/><small t-if="ld6.unit" t-esc="' ' + ld6.unit"/></div>
+                      <div class="l" t-esc="ld6.label"/>
+                    </div>
+                  </div>
+                </t>
+              </div>
+              <div class="pbhn-lead-grid">
+                <figure class="pbhn-chart">
+                  <figcaption>Days to fill, the middle role each month</figcaption>
+                  <div t-if="!monthsFilled" class="pbhn-none">No role was filled in these twelve months, so there is nothing to time yet.</div>
+                  <svg t-else="" viewBox="0 0 600 168" class="pbhn-svg" role="img" aria-label="Days to fill by month">
+                    <t t-foreach="gridLines" t-as="gl" t-key="gl_index">
+                      <line x1="40" t-att-y1="gl.y" x2="596" t-att-y2="gl.y" class="pbhn-gline"/>
+                      <text x="34" t-att-y="gl.y + 4" class="pbhn-tick" text-anchor="end" t-esc="gl.label"/>
+                    </t>
+                    <t t-foreach="months" t-as="mo" t-key="mo.month">
+                      <rect t-if="mo.filled" class="pbhn-barr" t-att-x="barX(mo_index)" t-att-y="barY(mo)" width="30" t-att-height="barH(mo)" rx="4">
+                        <title t-esc="barTitle(mo)"/>
+                      </rect>
+                      <rect t-else="" class="pbhn-barr is-none" t-att-x="barX(mo_index)" y="137" width="30" height="3" rx="1.5">
+                        <title t-esc="barTitle(mo)"/>
+                      </rect>
+                      <text t-if="mo.filled" t-att-x="barX(mo_index) + 15" t-att-y="barY(mo) - 5" class="pbhn-val" text-anchor="middle" t-esc="Math.round(mo.median)"/>
+                      <text t-att-x="barX(mo_index) + 15" y="160" class="pbhn-tick" text-anchor="middle" t-esc="mo.label"/>
+                    </t>
+                  </svg>
+                </figure>
+                <div class="pbhn-lead-side">
+                  <div class="pbhn-mini-h">Still to hire, by country</div>
+                  <div t-if="!(state.leadership.headcount or []).length" class="pbhn-none">No role is open right now.</div>
+                  <div t-foreach="state.leadership.headcount" t-as="hc" t-key="hc.country_id" class="pbhn-row pbhn-row--tight">
+                    <div class="pbhn-row-name" t-esc="hc.country"/>
+                    <div class="pbhn-bar"><span t-attf-style="width: {{ headShare(hc) }}%;"/></div>
+                    <div class="pbhn-row-n" t-esc="hc.open"/>
+                    <div class="pbhn-row-sub"><t t-esc="hc.roles"/> <t t-if="hc.roles === 1">role</t><t t-else="">roles</t></div>
+                  </div>
+                  <div class="pbhn-mini-h">Where candidates came from</div>
+                  <div t-foreach="(state.leadership.sources or []).slice(0, 5)" t-as="ls" t-key="ls.id" class="pbhn-row pbhn-row--tight">
+                    <div class="pbhn-row-name" t-esc="ls.name"/>
+                    <div class="pbhn-bar"><span t-attf-style="width: {{ ls.share }}%;"/></div>
+                    <div class="pbhn-row-n"><t t-esc="ls.share"/>%</div>
+                    <div class="pbhn-row-sub"><t t-esc="ls.hires"/> joined</div>
+                  </div>
+                  <div class="pbhn-mini-h">Whose side moved interviews</div>
+                  <div class="pbhn-split">
+                    <t t-foreach="state.leadership.delays or []" t-as="dl6" t-key="dl6.key">
+                      <span t-esc="dl6.name + ' ' + dl6.share + '%'" t-att-class="'is-' + dl6.key"/>
+                    </t>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==================== where they get stuck ==================== -->
+            <div class="pbhn-grid">
+              <div class="pbim-panel pbhn-table">
+                <div class="pbhn-table-head">
+                  <h3><t t-out="ic('layoutList',16)"/> Where candidates
+                      wait
+                  <button class="pbhn-dl" t-on-click="() => this.download('stages')" title="Download this report"><t t-out="ic('download',14)"/></button></h3>
+                  <p>Days between one move and the next. The stage somebody is
+                     sitting in now is not counted — it is still running.</p>
+                </div>
+                <div t-if="!state.stages.length" class="pbhn-none">
+                  Nobody has been moved between stages on these roles yet, so
+                  there is nothing to time.
+                </div>
+                <t t-else="">
+                  <t t-foreach="state.stages" t-as="sg" t-key="sg.id">
+                    <div class="pbhn-row">
+                      <div class="pbhn-row-name" t-esc="sg.name"/>
+                      <div class="pbhn-bar">
+                        <span t-attf-style="width: {{ share(state.stages, sg.mean, 'mean') }}%;"/>
+                      </div>
+                      <div class="pbhn-row-n">
+                        <t t-esc="sg.mean"/> <small>days</small>
+                      </div>
+                      <div class="pbhn-row-sub">
+                        <t t-esc="sg.moves"/>
+                        <t t-if="sg.moves === 1"> move</t>
+                        <t t-else=""> moves</t>
+                      </div>
+                    </div>
+                  </t>
+                </t>
+              </div>
+
+              <!-- ==================== where they came from ==================== -->
+              <div class="pbim-panel pbhn-table">
+                <div class="pbhn-table-head">
+                  <h3><t t-out="ic('globe',16)"/> Where they came from
+                  <button class="pbhn-dl" t-on-click="() => this.download('sources')" title="Download this report"><t t-out="ic('download',14)"/></button></h3>
+                  <p>Candidates per channel, and how many of each actually
+                     joined.</p>
+                </div>
+                <div t-if="!state.sources.length" class="pbhn-none">
+                  No candidates have applied to these roles yet.
+                </div>
+                <t t-else="">
+                  <t t-foreach="state.sources" t-as="sc" t-key="sc.id">
+                    <div class="pbhn-row">
+                      <div class="pbhn-row-name" t-esc="sc.name"/>
+                      <div class="pbhn-bar">
+                        <span t-attf-style="width: {{ share(state.sources, sc.applicants, 'applicants') }}%;"/>
+                      </div>
+                      <div class="pbhn-row-n">
+                        <t t-esc="sc.applicants"/>
+                      </div>
+                      <div class="pbhn-row-sub">
+                        <t t-esc="sc.hires"/> joined
+                        <t t-if="sc.hires"> · <t t-esc="sc.rate"/>%</t>
+                      </div>
+                    </div>
+                  </t>
+                </t>
+              </div>
+
+              <!-- ==================== the delays ==================== -->
+              <div class="pbim-panel pbhn-table">
+                <div class="pbhn-table-head">
+                  <h3><t t-out="ic('repeat',16)"/> Interviews that moved
+                  <button class="pbhn-dl" t-on-click="() => this.download('delays')" title="Download this report"><t t-out="ic('download',14)"/></button></h3>
+                  <p>It is not about blame. It is the only way anybody can
+                     answer why hiring here takes as long as it does.</p>
+                </div>
+                <t t-foreach="state.delays" t-as="dl" t-key="dl.key">
+                  <div class="pbhn-row">
+                    <div class="pbhn-row-name" t-esc="dl.name"/>
+                    <div class="pbhn-bar">
+                      <span t-attf-style="width: {{ share(state.delays, dl.count, 'count') }}%;"/>
+                    </div>
+                    <div class="pbhn-row-n" t-esc="dl.count"/>
+                    <div class="pbhn-row-sub">
+                      <t t-if="dl.late"><t t-esc="dl.late"/> at short
+                        notice</t>
+                    </div>
+                  </div>
+                </t>
+                <t t-foreach="state.noShows" t-as="ns" t-key="ns.key">
+                  <div class="pbhn-row pbhn-row--quiet" t-if="ns.count">
+                    <div class="pbhn-row-name" t-esc="ns.name"/>
+                    <div class="pbhn-bar">
+                      <span t-attf-style="width: {{ share(state.noShows, ns.count, 'count') }}%;"/>
+                    </div>
+                    <div class="pbhn-row-n" t-esc="ns.count"/>
+                    <div class="pbhn-row-sub">did not come</div>
+                  </div>
+                </t>
+              </div>
+
+              <!-- ==================== agency or our own ==================== -->
+              <div class="pbim-panel pbhn-table">
+                <div class="pbhn-table-head">
+                  <h3><t t-out="ic('building',16)"/> An agency, or our own
+                      team
+                  <button class="pbhn-dl" t-on-click="() => this.download('agency')" title="Download this report"><t t-out="ic('download',14)"/></button></h3>
+                  <p>Only roles that actually filled are timed. A role still
+                     open has not taken anything yet.</p>
+                </div>
+                <t t-foreach="state.agency" t-as="ag" t-key="ag.key">
+                  <div class="pbhn-row">
+                    <div class="pbhn-row-name" t-esc="ag.name"/>
+                    <div class="pbhn-row-n">
+                      <t t-if="ag.median === null">—</t>
+                      <t t-else=""><t t-esc="ag.median"/> <small>days</small></t>
+                    </div>
+                    <div class="pbhn-row-sub">
+                      <t t-esc="ag.filled"/> of <t t-esc="ag.roles"/> filled
+                    </div>
+                  </div>
+                </t>
+                <!-- RECRUIT P7: each agency's OWN figures, from what it put forward -->
+                <div t-if="state.agencies.length" class="pbhn-ag">
+                  <div class="pbhn-ag-h">
+                    <span>Agency</span><span>Put forward</span><span>6-month rule</span>
+                    <span>Interviewed</span><span>Offers</span><span>Joined</span><span>Days to fill</span>
+                  </div>
+                  <div t-foreach="state.agencies" t-as="agp" t-key="agp.id" class="pbhn-ag-r">
+                    <span class="pbhn-ag-name" t-esc="agp.name"/>
+                    <span t-esc="agp.submitted"/>
+                    <span t-att-class="{ 'is-rose': agp.refused }" t-esc="agp.refused"/>
+                    <span t-esc="agp.interviewed"/>
+                    <span t-esc="agp.offers"/>
+                    <span t-att-class="{ 'is-green': agp.joined }" t-esc="agp.joined"/>
+                    <span><t t-if="agp.days === null">—</t><t t-else="" t-esc="agp.days"/></span>
+                  </div>
+                  <p class="pbhn-ag-foot">Counted from the people each agency put forward through its portal in these dates. "6-month rule" is how many were not accepted because they were already a candidate or had applied recently.</p>
+                </div>
+              </div>
+            </div>
+
+          </t>
+
+          <!-- ==================== RECRUIT P6: ageing ====================
+               A picture of TODAY, so it shows whatever the date range. -->
+          <div class="pbim-panel pbhn-sec pbhn-age" t-if="state.ageing and state.ageing.threshold">
+            <div class="pbhn-table-head">
+              <h3><t t-out="ic('hourglass',16)"/> Who has been waiting longest
+                <button class="pbhn-dl" t-on-click="() => this.download('ageing')" title="Download this report"><t t-out="ic('download',14)"/></button></h3>
+              <p>Everyone in a working column on an open role right now, by days since their last move.
+                 <b t-esc="state.ageing.stalled"/> of <t t-esc="state.ageing.total"/> have not moved for
+                 <t t-esc="state.ageing.threshold"/> days or more.</p>
+            </div>
+            <div t-if="!state.ageing.total" class="pbhn-none">Nobody is in a working column on an open role. Nothing is waiting.</div>
+            <t t-else="">
+              <div class="pbhn-age-facets">
+                <button class="pbhn-chip" t-att-class="{ on: state.ageStalled }" t-on-click="toggleStalled">
+                  <t t-out="ic('alert',13)"/> Only the stalled (<t t-esc="state.ageing.stalled"/>)
+                </button>
+                <t t-foreach="state.ageing.by_stage" t-as="ag6" t-key="ag6.key">
+                  <button class="pbhn-chip" t-att-class="{ on: state.ageStage === ag6.key, 'is-warn': ag6.stalled }" t-on-click="() => this.pickAgeStage(ag6.key)">
+                    <t t-esc="ag6.stage"/> <b t-esc="ag6.n"/><small t-if="ag6.stalled"> · <t t-esc="ag6.stalled"/> stalled</small>
+                  </button>
+                </t>
+              </div>
+              <div class="pbhn-age-facets is-people">
+                <t t-foreach="state.ageing.by_recruiter" t-as="ar6" t-key="ar6.recruiter_id">
+                  <button class="pbhn-chip" t-att-class="{ on: state.ageRecruiter === ar6.recruiter }" t-on-click="() => this.pickAgeRecruiter(ar6.recruiter)">
+                    <t t-out="ic('user',12)"/> <t t-esc="ar6.recruiter"/> <b t-esc="ar6.n"/><small t-if="ar6.stalled"> · <t t-esc="ar6.stalled"/> stalled</small>
+                  </button>
+                </t>
+              </div>
+              <div class="pbhn-age-table" role="table" aria-label="Who has been waiting longest">
+                <div class="pbhn-age-row is-head" role="row"><span>Candidate</span><span>Role</span><span>Stage</span><span>Waiting</span><span>Recruiter</span></div>
+                <button t-foreach="ageRows" t-as="ar" t-key="ar.applicant_id" class="pbhn-age-row" t-att-class="{ 'is-stalled': ar.stalled }" role="row" t-on-click="() => this.openCandidate(ar)" title="Open them on the board">
+                  <b t-esc="ar.candidate"/><span t-esc="ar.role"/><span t-esc="ar.stage"/>
+                  <span class="pbhn-age-days"><span class="pbhn-age-bar"><span t-attf-style="width: {{ ageBar(ar) }}%;"/></span><b t-esc="ar.days"/> <small>days</small></span>
+                  <span t-esc="ar.recruiter or '—'"/>
+                </button>
+                <div t-if="!ageRows.length" class="pbhn-none">Nobody matches. <button class="pbhn-clear" t-on-click="() => { state.ageStage = ''; state.ageRecruiter = ''; state.ageStalled = false; }">Show everyone</button></div>
+                <button t-if="!state.ageMore and ageTotal &gt; ageRows.length" class="pbhn-more" t-on-click="showAllAge">Show all <t t-esc="ageTotal"/></button>
+              </div>
+            </t>
+          </div>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

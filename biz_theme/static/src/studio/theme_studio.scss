@@ -1,0 +1,423 @@
+// =============================================================================
+// VU THEME STUDIO — layout + playground styles
+// Everything reads --vu-* tokens so the Studio restyles itself while editing.
+// =============================================================================
+
+.vu-studio {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--vu-surface-panel);
+    overflow: hidden;
+
+    &__topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--vu-space-md);
+        padding: var(--vu-space-sm) var(--vu-space-lg);
+        background: var(--vu-surface-card);
+        border-bottom: 1px solid var(--vu-border-soft);
+    }
+
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: var(--vu-space-sm);
+        font-weight: 600;
+        color: var(--vu-text-primary);
+        white-space: nowrap;
+    }
+
+    &__name {
+        border: 1px solid var(--vu-border-soft);
+        border-radius: var(--vu-radius-sm);
+        padding: 3px 10px;
+        font-size: 0.8125rem;
+        min-width: 220px;
+
+        &:focus {
+            outline: none;
+            border-color: var(--vu-brand-primary);
+        }
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: var(--vu-space-xs);
+    }
+
+    &__sep {
+        width: 1px;
+        height: 22px;
+        background: var(--vu-border-soft);
+        margin: 0 var(--vu-space-sm);
+    }
+
+    &__presets {
+        display: flex;
+        gap: var(--vu-space-sm);
+        padding: var(--vu-space-sm) var(--vu-space-lg);
+        background: var(--vu-surface-card);
+        border-bottom: 1px solid var(--vu-border-soft);
+        overflow-x: auto;
+    }
+
+    &__preset {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--vu-space-sm);
+        padding: 5px 12px;
+        border: 1px solid var(--vu-border-soft);
+        border-radius: 999px;
+        background: var(--vu-surface-card);
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--vu-text-secondary);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: border-color var(--vu-transition-fast), background var(--vu-transition-fast);
+
+        &:hover {
+            background: var(--vu-surface-hover);
+        }
+
+        &.active {
+            border-color: var(--vu-brand-primary);
+            color: var(--vu-brand-primary);
+            background: var(--vu-surface-hover);
+        }
+    }
+
+    &__swatches {
+        display: inline-flex;
+    }
+
+    &__swatch {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        margin-left: -4px;
+
+        &:first-child {
+            margin-left: 0;
+        }
+    }
+
+    &__contrast {
+        padding: var(--vu-space-xs) var(--vu-space-lg);
+        background: #FDF3E2;
+        color: #7C2D12;
+        font-size: 0.75rem;
+        border-bottom: 1px solid var(--vu-border-soft);
+    }
+
+    &__body {
+        display: flex;
+        flex: 1;
+        min-height: 0;
+    }
+
+    &__editor {
+        width: 320px;
+        flex: 0 0 320px;
+        overflow-y: auto;
+        background: var(--vu-surface-card);
+        border-right: 1px solid var(--vu-border-soft);
+        padding-bottom: var(--vu-space-xl);
+    }
+
+    &__group-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: var(--vu-space-sm) var(--vu-space-lg);
+        border: 0;
+        border-bottom: 1px solid var(--vu-border-soft);
+        background: transparent;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--vu-text-secondary);
+        cursor: pointer;
+
+        i {
+            font-size: 0.65rem;
+            opacity: 0.6;
+        }
+    }
+
+    &__group-body {
+        padding: var(--vu-space-sm) var(--vu-space-lg);
+    }
+
+    &__row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--vu-space-sm);
+        padding: 3px 0;
+
+        label {
+            font-size: 0.78rem;
+            color: var(--vu-text-secondary);
+            margin: 0;
+        }
+
+        &.overridden label {
+            color: var(--vu-text-primary);
+            font-weight: 600;
+        }
+    }
+
+    &__color {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        input[type="color"] {
+            width: 26px;
+            height: 26px;
+            padding: 0;
+            border: 1px solid var(--vu-border-soft);
+            border-radius: var(--vu-radius-sm);
+            background: none;
+            cursor: pointer;
+        }
+    }
+
+    &__hex {
+        width: 76px;
+        border: 1px solid var(--vu-border-soft);
+        border-radius: var(--vu-radius-sm);
+        font-size: 0.72rem;
+        font-family: monospace;
+        padding: 3px 6px;
+        text-transform: uppercase;
+
+        &:focus {
+            outline: none;
+            border-color: var(--vu-brand-primary);
+        }
+    }
+
+    &__select {
+        border: 1px solid var(--vu-border-soft);
+        border-radius: var(--vu-radius-sm);
+        font-size: 0.75rem;
+        padding: 3px 6px;
+    }
+
+    &__reset {
+        border: 0;
+        background: transparent;
+        color: var(--vu-text-secondary);
+        cursor: pointer;
+        padding: 2px 4px;
+
+        &:hover {
+            color: var(--vu-status-danger);
+        }
+    }
+
+    &__hint {
+        padding: var(--vu-space-md) var(--vu-space-lg);
+        font-size: 0.72rem;
+        color: var(--vu-text-secondary);
+        opacity: 0.8;
+    }
+
+    &__playground {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--vu-space-lg);
+    }
+}
+
+// ── Playground specimens ────────────────────────────────────────────────
+.vu-pg__section {
+    background: var(--vu-surface-card);
+    border: 1px solid var(--vu-border-soft);
+    border-radius: var(--vu-radius-md);
+    padding: var(--vu-space-lg);
+    margin-bottom: var(--vu-space-lg);
+
+    > h6 {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--vu-text-secondary);
+        margin-bottom: var(--vu-space-md);
+    }
+}
+
+.vu-pg__state {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--pg-state);
+    background: color-mix(in srgb, var(--pg-state) 12%, white);
+    border: 1px solid color-mix(in srgb, var(--pg-state) 35%, white);
+}
+
+.vu-pg__native-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--vu-space-md) var(--vu-space-xl);
+
+    .o_input {
+        border: 1px solid var(--vu-border-soft);
+        border-radius: var(--vu-radius-sm);
+        padding: 4px 8px;
+        width: 100%;
+
+        &:focus {
+            outline: none;
+            border-color: var(--vu-brand-primary);
+        }
+    }
+}
+
+.vu-pg__field label.o_form_label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--vu-text-secondary);
+    margin-bottom: 2px;
+}
+
+.vu-pg__hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--vu-space-md) var(--vu-space-lg);
+    border-left: 4px solid var(--vu-brand-primary);
+    background: var(--vu-surface-card);
+    border-radius: var(--vu-radius-md);
+    box-shadow: var(--vu-shadow-sm);
+    border-top: 1px solid var(--vu-border-soft);
+    border-right: 1px solid var(--vu-border-soft);
+    border-bottom: 1px solid var(--vu-border-soft);
+}
+
+.vu-pg__hero-code {
+    font-family: var(--vu-font-family-headings);
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--vu-text-primary);
+}
+
+.vu-pg__hero-meta {
+    font-size: 0.75rem;
+    color: var(--vu-text-secondary);
+}
+
+.vu-pg__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--vu-space-md);
+    margin-top: var(--vu-space-md);
+}
+
+.vu-pg__stat {
+    border-left: 3px solid var(--pg-accent);
+    border-top: 1px solid var(--vu-border-soft);
+    border-right: 1px solid var(--vu-border-soft);
+    border-bottom: 1px solid var(--vu-border-soft);
+    border-radius: var(--vu-radius-md);
+    padding: var(--vu-space-sm) var(--vu-space-md);
+    background: var(--vu-surface-card);
+
+    b {
+        display: block;
+        color: var(--vu-text-primary);
+    }
+}
+
+.vu-pg__stat-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--vu-text-secondary);
+}
+
+.vu-pg__table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--vu-text-secondary);
+        border-bottom: 1px solid var(--vu-border-strong);
+        padding: 6px 10px;
+        text-align: left;
+    }
+
+    td {
+        padding: var(--vu-table-row-py, 4px) 10px;
+        font-size: var(--vu-font-size-base, 0.8125rem);
+        border-bottom: 1px solid var(--vu-border-soft);
+        color: var(--vu-text-primary);
+    }
+
+    tr:hover td {
+        background: var(--vu-surface-hover);
+    }
+}
+
+.vu-pg__tabs {
+    display: inline-flex;
+    gap: 4px;
+    background: var(--vu-surface-muted);
+    border-radius: 999px;
+    padding: 4px;
+
+    span {
+        padding: 4px 16px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--vu-text-secondary);
+        cursor: default;
+
+        &.active {
+            background: var(--vu-surface-card);
+            color: var(--vu-tab-active, var(--vu-brand-primary));
+            box-shadow: var(--vu-shadow-sm);
+        }
+    }
+}
+
+.vu-pg__kanban {
+    width: 220px;
+    border: 1px solid var(--vu-border-soft);
+    border-radius: var(--vu-radius-md);
+    background: var(--vu-surface-card);
+    box-shadow: var(--vu-shadow-sm);
+    padding: var(--vu-space-md);
+    font-size: 0.8125rem;
+}
+
+.vu-pg__chatter {
+    border: 1px solid var(--vu-border-soft);
+    border-radius: var(--vu-radius-md);
+    background: var(--vu-surface-card);
+    padding: var(--vu-space-md);
+}
+
+.vu-pg__msg {
+    font-size: 0.78rem;
+    color: var(--vu-text-primary);
+    border-top: 1px solid var(--vu-border-soft);
+    padding-top: var(--vu-space-sm);
+}

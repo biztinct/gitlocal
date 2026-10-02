@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'India Payroll Extension',
-    'version': '16.0.1.0.0',
+    'version': '16.0.1.0.1',
     'category': 'Human Resources/Payroll',
-    'summary': 'India Payroll Structure Extension for Odoo HR Payroll',
+    'summary': 'India payroll structure, on top of the standard payroll module',
     'description': """
         This module extends the base payroll module to support India payroll structure.
         It adds:

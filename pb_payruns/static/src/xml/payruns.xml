@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <!-- Section comments use `=` rules, never a doubled hyphen (W22). -->
+  <t t-name="pb_payruns.PbPayruns">
+    <div class="pbr" t-att-class="{ 'pbr--embedded': props.embedded }">
+      <div t-if="!state.loaded" class="pbr-loading"><div class="pbr-spinner"/><span>Loading pay runs…</span></div>
+
+      <div t-else="" class="pbr-wrap">
+        <!-- ===================== header =====================
+             W17: in a hub the title row is the hub's. The "Run payroll" CTA is
+             NOT chrome — it is the board's one create door — so it survives,
+             and only its destination changes (newRun()). -->
+        <div class="pbr-head">
+          <div t-if="!props.embedded">
+            <h1>Pay Runs</h1>
+            <p class="pbr-sub">Every batch from draft to paid — approve, report and export without leaving the board.</p>
+          </div>
+          <button class="pbr-new" data-coach="pk-run" t-on-click="newRun">
+            <span class="ic" t-out="ic('zap', 15)"/> Run payroll
+          </button>
+        </div>
+
+        <!-- ===================== the numbers =====================
+             QUIET BY DEFAULT: one line, grey at zero, a colour only when a
+             person has to act. The figures that narrowed the board still do;
+             pressing the lit one again clears it. -->
+        <!-- LEARN REFRESH step 1: the walkthrough anchors this board shares
+             with the retired kanban (pk-kpis / pk-tabs / pk-card), so a
+             walkthrough opened on Pay Run › Runs still points at the numbers,
+             the columns and a card instead of falling back to a centred card. -->
+        <div data-coach="pk-kpis">
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="state.focus"/>
+          </t>
+        </div>
+
+        <!-- GROUP P3 — two currencies never add up. The total above counts
+             this company's own runs; the board still shows the others, each
+             priced in its own money. -->
+        <div t-if="state.manyCurrencies" class="pbr-note">
+          <t t-out="ic('alert', 14)"/>
+          <span>
+            This board covers more than one currency
+            (<t t-esc="state.currencies.join(', ')"/>). Each run is shown in
+            the money it was paid in, and the total above adds up
+            <t t-esc="state.currencyName"/> only.
+          </span>
+        </div>
+
+        <!-- ===== division chips =====
+             Parity with the kanban, which has filtered on this since it was
+             built. The COLUMN COUNTS are not touched: a filter is a way of
+             looking at the board, never a change to what the board is (W82). -->
+        <div class="pbr-divs" data-coach="pk-divchips" t-if="state.divisions.length">
+          <button t-foreach="divisionChips" t-as="dv" t-key="dv.key"
+                  class="pbr-divchip"
+                  t-att-class="{ 'is-on': state.division === dv.key }"
+                  t-on-click="() => this.setDivision(dv.key)"
+                  t-esc="dv.label"/>
+        </div>
+
+        <!-- ===================== the steps =====================
+             A run is at EXACTLY one step (its state), so the counts add up
+             to every live run. Rejected runs are at no step (drawer below).
+             Pressing a step shows only that column; again shows them all. -->
+        <div data-coach="pk-steps">
+        <t t-call="pb_import_kit.QuietSteps">
+          <t t-set="qSteps" t-value="steps"/>
+          <t t-set="qStepsLabel" t-value="'Where every pay run is'"/>
+          <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
+        </t>
+        </div>
+        <div class="pbim-showing">
+          <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
+          <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
+            <button type="button" class="pbim-showall" t-on-click="showAll">Show all</button></t>
+        </div>
+
+        <!-- ===================== pipeline board ===================== -->
+        <div class="pbr-board" data-coach="pk-tabs">
+          <div t-foreach="shownColumns" t-as="col" t-key="col.key" t-attf-class="pbr-col col-{{ col.key }}">
+            <div class="pbr-col-h">
+              <span class="dot"/><span class="nm" t-esc="col.label"/><span class="ct" t-esc="col.count"/>
+            </div>
+            <div class="pbr-col-body">
+              <div t-foreach="columnBatches(col.key)" t-as="b" t-key="b.id" data-coach="pk-card"
+                   t-attf-class="pbr-card {{ state.busy === b.id ? 'busy' : '' }} {{ state.focusId === b.id ? 'focus' : '' }}">
+                <div class="pbr-card-main" t-on-click="() => this.openBatch(b.id)">
+                  <div class="pbr-card-top">
+                    <span class="nm" t-esc="b.name"/>
+                    <span t-if="b.credit_note" class="pbr-cn">refund</span>
+                  </div>
+                  <div class="pbr-card-period" t-esc="b.period"/>
+                  <div class="pbr-card-stats">
+                    <span class="st"><span class="k">Employees</span><span class="vv" t-esc="b.employees"/></span>
+                    <span class="st"><span class="k">Gross</span><span class="vv" t-esc="runGross(b)"/></span>
+                    <span class="st"><span class="k">Net</span><span class="vv" t-esc="runMoney(b)"/></span>
+                  </div>
+                  <!-- t-if on the ROW, not only on its children: an empty flex
+                       box still costs its margin, so a card with no division
+                       would carry 9px of nothing. -->
+                  <div class="pbr-card-tags" t-if="b.division_label">
+                    <span class="pbr-tag" t-esc="b.division_label"/>
+                  </div>
+                  <!-- Which route this run is on, and who it is with. Named
+                       people rather than a stage, because a stage is no longer
+                       who decides it. -->
+                  <div class="pbr-route" data-coach="pk-route" t-if="b.approval and b.approval.step">
+                    <span class="hd" t-esc="b.approval.step"/>
+                    <span class="who" t-if="b.approval.with">With <t t-esc="b.approval.with"/></span>
+                    <span class="why" t-if="b.approval.blocked" t-esc="b.approval.blocked"/>
+                  </div>
+                  <!-- Why this run came back. Only ever set while the run is
+                       waiting to be fixed: it is cleared the moment it is sent
+                       in again. -->
+                  <div class="pbr-sentback" t-if="b.return_note">
+                    <span class="hd">Sent back<t t-if="b.return_by"> by <t t-esc="b.return_by"/></t></span>
+                    <span class="why" t-esc="b.return_note"/>
+                  </div>
+                </div>
+
+                <!-- The reject confirm lives IN the card. A window.confirm is a
+                     native dialog on a surface that owns a design system, and it
+                     blocks the whole tab while it is up. -->
+                <div t-if="state.confirming === b.id" class="pbr-confirm" data-coach="pk-reject-why">
+                  <div class="q">Reject “<t t-esc="b.name"/>”? Every payslip in this batch is cancelled.</div>
+                  <label class="pbr-why-l" t-att-for="'pbr-why-' + b.id">Why? <span class="req">(required)</span></label>
+                  <textarea class="pbr-why" t-att-id="'pbr-why-' + b.id" rows="2"
+                            t-model="state.rejectNote" t-ref="rejectWhy"
+                            placeholder="For example: made twice by mistake"
+                            t-on-keydown="(ev) => this.onRejectKey(ev, b)"/>
+                  <div class="a">
+                    <button class="pbr-btn ghost" t-on-click="cancelReject">Keep it</button>
+                    <button class="pbr-btn danger" t-att-disabled="!rejectNoteOk"
+                            t-on-click="() => this.confirmReject(b)">Reject run</button>
+                  </div>
+                </div>
+
+                <div t-else="" class="pbr-card-foot" data-coach="pk-card-actions">
+                  <!-- context-aware primary action -->
+                  <t t-if="b.next_action and b.can_act">
+                    <button class="pbr-btn primary" t-on-click="() => this.advance(b)" t-esc="nextLabel(b.next_action)"/>
+                  </t>
+                  <t t-elif="b.state === 'approval_pending'">
+                    <span class="pbr-await" t-if="b.approval and b.approval.with">With <t t-esc="b.approval.with"/></span>
+                    <span class="pbr-await" t-else="">Waiting for approval</span>
+                  </t>
+                  <button t-if="b.can_reject" class="pbr-btn ghost danger" t-on-click="() => this.askReject(b)">Reject</button>
+                  <!-- done: report / excel + Pay &amp; Deliver (bank file + payslips) + journals / payments -->
+                  <t t-if="b.state === 'done'">
+                    <button class="pbr-btn primary" t-on-click="() => this.payDeliver(b)">Pay &amp; Deliver</button>
+                    <button class="pbr-btn ghost" t-on-click="() => this.report(b)">Report</button>
+                    <button class="pbr-btn ghost" t-on-click="() => this.excel(b)">Excel</button>
+                    <button class="pbr-btn ghost" t-on-click="() => this.journals(b)">Journals</button>
+                    <button class="pbr-btn ghost" t-on-click="() => this.payments(b)">Payments</button>
+                  </t>
+                </div>
+              </div>
+              <div t-if="!columnBatches(col.key).length" class="pbr-col-empty">No pay runs</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== rejected drawer ===================== -->
+        <div t-if="state.rejectedCount" class="pbr-rejected" data-coach="pk-rejected">
+          <button class="pbr-rejected-h" t-on-click="toggleRejected">
+            <span t-attf-class="chev {{ state.showRejected ? 'open' : '' }}" t-out="ic('chevron', 13)"/>
+            Rejected pay runs <span class="ct" t-esc="state.rejectedCount"/>
+          </button>
+          <div t-if="state.showRejected" class="pbr-rejected-list">
+            <div t-foreach="rejectedBatches" t-as="b" t-key="b.id" class="pbr-rej-row" t-on-click="() => this.openBatch(b.id)">
+              <span class="nm" t-esc="b.name"/>
+              <span class="pd" t-esc="b.period"/>
+              <span class="em"><t t-esc="b.employees"/> emp</span>
+              <span class="why" t-if="b.reject_note">
+                <span class="hd">Why<t t-if="b.reject_by"> (<t t-esc="b.reject_by"/>)</t>:</span>
+                <t t-esc="b.reject_note"/>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

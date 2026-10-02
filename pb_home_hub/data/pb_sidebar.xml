@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13): a frozen file means the next cycle that
+     touches this record cannot move it without shipping a migration, and the
+     three phases before the IA programme each paid for that lesson once
+     (W13.1/W27). The record lives HERE rather than in `pb_sidebar` so a database
+     without this module simply has no such entry, instead of a rail button
+     pointing at an action that will not resolve (W79). -->
+<odoo noupdate="0">
+
+    <!-- OVERVIEW › Home — the rail's front door after the Cycle 5 cutover.
+
+         It absorbs Dashboard and Approvals, which become its two lenses. Both of
+         those rail records survive, retired into the 900 band, and both of their
+         client actions still work — so the match list below has to claim their
+         tags, or a bookmark into either cockpit would leave the rail with
+         nothing selected.
+
+         UNGATED, on purpose, and for the same reason `pb_mission.item_workforce`
+         is: the two items it replaces had different answers (Dashboard open to
+         everyone, Approvals at the payroll approver tiers), so any gate here
+         would take a door away from somebody who has one today. The shell asks
+         each lens's own question client-side and shows only the lenses this
+         persona could actually read, so nobody is offered a surface whose facade
+         would answer AccessError. That is a visibility hint and not a security
+         boundary — `pb.approval._require_access()` still enforces its own (W12).
+
+         It carries an `action_xmlid` as well as a tag, and that is load-bearing:
+         `pb_sidebar.js::_buildIndex` sets `_homeAction` from the FIRST indexed
+         item with an `action_xmlid`, and `navigateHome()` falls back to a raw
+         `/odoo` redirect without one. Home is the first item of the first
+         section, so this record is what the rail's home button finds. -->
+    <record id="item_home" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_overview"/>
+        <field name="name">Home</field>
+        <field name="icon">home</field>
+        <field name="sequence">10</field>
+        <field name="action_xmlid">pb_home_hub.action_pb_home_hub</field>
+        <field name="action_tag">pb_home_hub</field>
+        <field name="match_action_tags">pb_home_hub,pb_dashboard,pb_approval</field>
+    </record>
+
+</odoo>

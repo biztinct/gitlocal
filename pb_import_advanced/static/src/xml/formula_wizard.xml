@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_import_advanced.FormulaWizard">
+    <div class="pbim pbw-root">
+      <div class="pbw-card" t-if="state.defaults">
+
+        <div class="pbw-head">
+          <div>
+            <div class="pbw-eyebrow">Payobook · Import</div>
+            <h2>Import formula configuration</h2>
+          </div>
+          <button class="pbw-x" t-on-click="close"><t t-out="ic('x',16)"/></button>
+        </div>
+
+        <div class="pbw-body">
+          <div t-if="state.loading" class="pbw-busy"><div class="pbim-spin"/><span t-esc="state.busyMsg"/></div>
+
+          <!-- RESULT -->
+          <t t-elif="state.result and state.result.ok">
+            <div class="pbw-result">
+              <div class="pbw-result-ic"><t t-out="ic('check',30)"/></div>
+              <h3>Rules imported</h3>
+              <p><t t-esc="state.result.message"/> · <t t-esc="state.result.config_name"/> now has <t t-esc="state.result.rule_count"/> rules</p>
+            </div>
+          </t>
+
+          <!-- FORM -->
+          <t t-else="">
+            <div class="pbw-grid2">
+              <div class="pbw-sec">
+                <h4>Target &amp; source</h4>
+                <label class="pbw-label">Target configuration</label>
+                <select class="pbw-in" t-on-change="(ev) => this.onField('config_id', ev)">
+                  <option t-foreach="state.defaults.configs" t-as="c" t-key="c.id" t-att-value="c.id"
+                          t-att-selected="('' + c.id) === state.form.config_id" t-esc="c.name"/>
+                </select>
+                <label class="pbw-label">Import from</label>
+                <div class="pbw-seg">
+                  <button t-foreach="state.defaults.sources" t-as="s" t-key="s.id"
+                          t-attf-class="pbw-segbtn {{ state.form.import_source === s.id ? 'on' : '' }}"
+                          t-on-click="() => this.setSource(s.id)" t-esc="s.label"/>
+                </div>
+
+                <t t-if="state.form.import_source === 'structure'">
+                  <label class="pbw-label">Payroll structure</label>
+                  <select class="pbw-in" t-on-change="onStructure">
+                    <option value="">— Select —</option>
+                    <option t-foreach="state.defaults.structures" t-as="st" t-key="st.id" t-att-value="st.id" t-esc="st.name"/>
+                  </select>
+                  <div t-if="state.form.structure_id" class="pbw-note">
+                    <t t-esc="state.form.salary_rule_ids.length"/> rules will be imported from this structure.
+                  </div>
+                </t>
+
+                <t t-if="state.form.import_source === 'json' or state.form.import_source === 'excel'">
+                  <label class="pbw-label">File (<t t-esc="state.form.import_source === 'json' ? '.json' : '.xlsx'"/>)</label>
+                  <label class="pbw-drop">
+                    <t t-out="ic('upload',22)"/>
+                    <span t-if="!state.form.file_name">Click to choose a file</span>
+                    <span t-else="" class="fn"><t t-out="ic('file',15)"/> <t t-esc="state.form.file_name"/></span>
+                    <input type="file" t-attf-accept="{{ state.form.import_source === 'json' ? '.json' : '.xlsx,.xls' }}" t-on-change="onFile" style="display:none"/>
+                  </label>
+                  <button t-if="state.form.import_source === 'excel'" class="pbim-btn ghost pbim-btn-sm" style="margin-top:8px" t-on-click="downloadTemplate">
+                    <t t-out="ic('download',14)"/> Download template
+                  </button>
+                </t>
+              </div>
+
+              <div class="pbw-sec">
+                <h4>Rules &amp; options</h4>
+                <t t-if="state.form.import_source === 'salary_rules'">
+                  <div class="pbw-pick">
+                    <input class="pbw-pick-search" placeholder="Search salary rules…" t-on-input="onRuleSearch"/>
+                    <div class="pbw-pick-list">
+                      <label t-foreach="state.rules" t-as="r" t-key="r.id" class="pbw-pick-row">
+                        <input type="checkbox" t-att-checked="isRuleOn(r.id)" t-on-change="() => this.toggleRule(r.id)"/>
+                        <span t-esc="r.name"/>
+                        <span class="cd" t-esc="r.code"/>
+                      </label>
+                      <div t-if="!state.rules.length" class="pbim-empty">No rules found.</div>
+                    </div>
+                  </div>
+                  <div class="pbw-pickcount"><t t-esc="state.form.salary_rule_ids.length"/> selected</div>
+                </t>
+                <t t-else="">
+                  <div class="pbw-note">Rules are taken from the selected <t t-esc="state.form.import_source === 'structure' ? 'structure' : 'file'"/>.</div>
+                </t>
+
+                <label class="pbw-toggle"><input type="checkbox" t-att-checked="state.form.preserve_existing" t-on-change="() => this.toggle('preserve_existing')"/> Keep existing rules in the config</label>
+                <label class="pbw-toggle"><input type="checkbox" t-att-checked="state.form.create_input_columns" t-on-change="() => this.toggle('create_input_columns')"/> Create input columns</label>
+                <label class="pbw-toggle"><input type="checkbox" t-att-checked="state.form.map_categories" t-on-change="() => this.toggle('map_categories')"/> Preserve categories</label>
+              </div>
+            </div>
+          </t>
+        </div>
+
+        <div class="pbw-foot">
+          <button class="pbim-btn ghost" t-on-click="close"><t t-if="state.result">Done</t><t t-else="">Cancel</t></button>
+          <div class="pbw-sp"/>
+          <button t-if="state.result and state.result.ok" class="pbim-btn primary" t-on-click="openConfig"><t t-out="ic('external',15)"/> Open configuration</button>
+          <button t-if="!state.result" class="pbim-btn primary" t-att-disabled="!canImport || state.loading" t-on-click="doImport"><t t-out="ic('arrow',15)"/> Import rules</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

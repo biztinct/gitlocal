@@ -1,0 +1,36 @@
+// DocDrop — generic drag-drop upload zone. Themed via --bdo-* props (defaults
+// below); a consuming app overrides them on any ancestor.
+.bdo-drop {
+    --bdo-primary: #7c3aed;
+    --bdo-primary-soft: #f5f3ff;
+    --bdo-border: #cbd5e1;
+    --bdo-muted: #94a3b8;
+    --bdo-ink: #334155;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 28px 20px;
+    border: 2px dashed var(--bdo-border);
+    border-radius: 14px;
+    background: #fff;
+    color: var(--bdo-ink);
+    cursor: pointer;
+    text-align: center;
+    transition: background .14s, border-color .14s;
+
+    &:hover,
+    &.bdo-drop--over {
+        border-color: var(--bdo-primary);
+        background: var(--bdo-primary-soft);
+    }
+    &.bdo-drop--compact { padding: 14px 12px; border-radius: 10px; }
+
+    .bdo-drop__ic svg { width: 34px; height: 34px; color: var(--bdo-primary); }
+    &.bdo-drop--compact .bdo-drop__ic svg { width: 22px; height: 22px; }
+    .bdo-drop__cta { font-weight: 600; }
+    .bdo-drop__hint { font-size: .72rem; letter-spacing: .06em; color: var(--bdo-muted); }
+    .bdo-drop__err { font-size: .8rem; color: #dc2626; margin-top: 4px; }
+}

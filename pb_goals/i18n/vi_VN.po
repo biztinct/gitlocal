@@ -1,0 +1,137 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-23 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "%s goal sheets"
+msgstr "%s bảng mục tiêu"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "%s past their date"
+msgstr "%s đã quá hạn"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "%s sent back for another go"
+msgstr "%s bị trả lại để làm lại"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "%s turned down"
+msgstr "%s bị từ chối"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "1 goal sheet"
+msgstr "1 bảng mục tiêu"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "1 past its date"
+msgstr "1 đã quá hạn"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "1 sent back for another go"
+msgstr "1 bị trả lại để làm lại"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "1 turned down"
+msgstr "1 bị từ chối"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "Agreed and locked"
+msgstr "Đã thống nhất và khóa"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "Being written"
+msgstr "Đang viết"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "Closed"
+msgstr "Đã đóng"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "No goal sheets yet"
+msgstr "Chưa có bảng mục tiêu nào"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "Showing %s of %s goal sheets at %s"
+msgstr "Đang hiển thị %s trên %s bảng mục tiêu ở bước %s"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "Showing %s of %s goal sheets"
+msgstr "Đang hiển thị %s trên %s bảng mục tiêu"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "Showing all %s goal sheets · press a step or a number to narrow it"
+msgstr "Đang hiển thị tất cả %s bảng mục tiêu · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "Showing the 1 goal sheet · press a step or a number to narrow it"
+msgstr "Đang hiển thị 1 bảng mục tiêu · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "With the HR lead"
+msgstr "Ở trưởng nhân sự"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_board.js:0
+msgid "With their manager"
+msgstr "Ở quản lý của họ"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/xml/goals_board.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_palette.js:0
+msgid "Goals"
+msgstr "Mục tiêu"

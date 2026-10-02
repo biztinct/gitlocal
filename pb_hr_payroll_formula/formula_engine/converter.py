@@ -10,6 +10,8 @@ import re
 from typing import Dict, List, Tuple, Optional, Any
 import logging
 
+from .validator import blank_string_literals
+
 _logger = logging.getLogger(__name__)
 
 # Try to import the formulas library
@@ -321,19 +323,25 @@ class FormulaConverter:
 
         formula = formula.lstrip('=').strip()
 
+        # The checks below read the formula as syntax; quoted text is not syntax.
+        # Emptied here for the same reason as in `validator.py` — a job title
+        # with an en dash or a bracket in it is not a broken formula. The real
+        # conversion attempt further down still sees the untouched formula.
+        checkable = blank_string_literals(formula)
+
         # Basic syntax checks
         errors = []
 
         # Check parentheses balance
-        if formula.count('(') != formula.count(')'):
+        if checkable.count('(') != checkable.count(')'):
             errors.append("Unbalanced parentheses")
 
         # Check for empty function calls
-        if re.search(r'\(\s*\)', formula):
+        if re.search(r'\(\s*\)', checkable):
             pass  # Empty args are sometimes valid (e.g., NOW())
 
         # Check for invalid characters
-        invalid = re.findall(r'[^\w\s\+\-\*\/\^\(\)\,\.\:\<\>\=\&\"\']', formula)
+        invalid = re.findall(r'[^\w\s\+\-\*\/\^\(\)\,\.\:\<\>\=\&\"\']', checkable)
         if invalid:
             errors.append(f"Invalid characters: {set(invalid)}")
 

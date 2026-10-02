@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_approval_proposed_person_config,proposed approver setup,model_pb_approval_proposed_person,biz_approval_workflow.group_approval_config,1,1,1,1
+access_pb_approval_proposed_person_system,proposed approver system,model_pb_approval_proposed_person,base.group_system,1,1,1,1

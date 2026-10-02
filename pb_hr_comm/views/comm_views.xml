@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         THE NATIVE FORMS BEHIND THE CALENDAR.
+
+         The calendar is where the planning happens; these are where somebody
+         opens ONE announcement to write it, and where the HR team keeps the
+         library. Three rules bit this codebase and are kept here:
+
+           * `nolabel="1"` INSIDE A `<group>` NEEDS `colspan="2"` (R128). An
+             inner group is a two-column grid — narrow label, wide value — and
+             a label-less field takes the NARROW cell, so a body box comes out
+             150px wide with a thousand pixels of empty row beside it.
+           * A SEARCH `<group>` TAKES NO `string` OR `expand` (R129). It fails
+             RNG validation and aborts the whole module load, with the real
+             error only in the server log.
+           * DO NOT DEFAULT A LIST TO `group_by` (R130). Odoo opens groups
+             COLLAPSED, so the screen lands on five headings and zero rows.
+         ================================================================== -->
+
+    <!-- ==================================================================
+         THE CALENDAR — a client action RECORD and never a bare tag. A bare
+         tag is synthesised with no action NAME, so anything returning through
+         a breadcrumb lands on a crumb labelled "Unnamed".
+         ================================================================== -->
+    <record id="action_pb_hr_comm_board" model="ir.actions.client">
+        <field name="name">Announcements</field>
+        <field name="tag">pb_hr_comm_calendar</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- ==================================================================
+         THE ANNOUNCEMENT
+         ================================================================== -->
+    <record id="view_pb_hr_comm_post_list" model="ir.ui.view">
+        <field name="name">pb.hr.comm.post.list</field>
+        <field name="model">pb.hr.comm.post</field>
+        <field name="arch" type="xml">
+            <list string="Announcements">
+                <field name="send_at"/>
+                <field name="subject" width="280px"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="audience_note" string="Who gets it"/>
+                <field name="recipient_count" string="How many"/>
+                <field name="responsible_user_id" widget="many2one_avatar_user"/>
+                <field name="recurrence" optional="hide"/>
+                <field name="sent_count" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'sent'"
+                       decoration-info="state == 'scheduled'"
+                       decoration-warning="state == 'submitted'"
+                       decoration-muted="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_hr_comm_post_form" model="ir.ui.view">
+        <field name="name">pb.hr.comm.post.form</field>
+        <field name="model">pb.hr.comm.post</field>
+        <field name="arch" type="xml">
+            <form string="Announcement">
+                <header>
+                    <button name="action_schedule" type="object"
+                            string="Put it on the calendar" class="btn-primary"
+                            invisible="state not in ('draft',)"
+                            help="Books it to go out at the time above. If sign-off is switched on it goes to the HR lead first."/>
+                    <button name="action_back_to_draft" type="object"
+                            string="Take it off the calendar"
+                            invisible="state not in ('submitted', 'scheduled')"/>
+                    <button name="action_check_audience" type="object"
+                            string="Check who gets it"
+                            invisible="state in ('sent', 'sending', 'cancelled')"
+                            help="Counts the people in the audience who have a work email. Nothing is sent."/>
+                    <button name="action_cancel" type="object"
+                            string="Cancel it"
+                            invisible="state in ('sent', 'cancelled')"
+                            confirm="Cancel this announcement? Nothing will be sent."/>
+                    <button name="action_copy_it" type="object"
+                            string="Say something new"
+                            invisible="state != 'sent'"
+                            help="An announcement that has gone out never changes. This starts a new one from it."/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,scheduled,sent"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_deliveries" type="object"
+                                class="oe_stat_button" icon="fa-paper-plane"
+                                invisible="sent_count == 0">
+                            <field name="sent_count" widget="statinfo"
+                                   string="Sent to"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="subject" string="Subject"/>
+                        <h1><field name="subject"
+                                   placeholder="What people see in their inbox"/></h1>
+                    </div>
+                    <group>
+                        <group string="When it goes out">
+                            <field name="send_at"/>
+                            <field name="locked_from"/>
+                            <field name="recurrence"/>
+                            <field name="recur_until"
+                                   invisible="recurrence == 'none'"/>
+                            <field name="parent_id" readonly="1"
+                                   invisible="not parent_id"/>
+                        </group>
+                        <group string="Who gets it">
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                            <field name="audience_kind"/>
+                            <field name="department_ids" widget="many2many_tags"
+                                   invisible="audience_kind != 'department'"
+                                   required="audience_kind == 'department'"/>
+                            <field name="job_ids" widget="many2many_tags"
+                                   invisible="audience_kind != 'job'"
+                                   required="audience_kind == 'job'"/>
+                            <field name="country_id"
+                                   invisible="audience_kind != 'country'"/>
+                            <field name="audience_note"/>
+                            <field name="recipient_count"/>
+                            <field name="recipient_checked_on"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Who looks after it">
+                            <field name="responsible_user_id"
+                                   widget="many2one_avatar_user"/>
+                            <field name="nudge_sent_at"/>
+                        </group>
+                        <group string="How it goes out">
+                            <field name="to_email"/>
+                            <field name="to_chat"
+                                   help="Not connected yet. Announcements go out by email."/>
+                            <field name="template_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="What it says" name="body">
+                            <field name="body_html"
+                                   placeholder="Write the announcement here. It goes out inside a Payobook card with the company name on it."/>
+                        </page>
+                        <page string="Poster" name="poster">
+                            <field name="poster_ids" widget="many2many_binary"
+                                   string="A picture or a PDF that goes out with it"/>
+                        </page>
+                        <page string="Who got it" name="deliveries"
+                              invisible="sent_count == 0">
+                            <group>
+                                <group>
+                                    <field name="sent_at"/>
+                                    <field name="sent_count"/>
+                                </group>
+                                <group>
+                                    <field name="no_email_count"/>
+                                    <field name="skipped_count"/>
+                                </group>
+                            </group>
+                            <field name="delivery_ids" readonly="1">
+                                <list string="Who got it">
+                                    <field name="employee_id"/>
+                                    <field name="email"/>
+                                    <field name="sent_on"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_hr_comm_post_search" model="ir.ui.view">
+        <field name="name">pb.hr.comm.post.search</field>
+        <field name="model">pb.hr.comm.post</field>
+        <field name="arch" type="xml">
+            <search string="Announcements">
+                <field name="subject"/>
+                <field name="responsible_user_id"/>
+                <field name="company_id"/>
+                <filter name="f_mine" string="I look after it"
+                        domain="[('responsible_user_id', '=', uid)]"/>
+                <filter name="f_open" string="Not gone out yet"
+                        domain="[('state', 'in', ('draft', 'submitted', 'scheduled'))]"/>
+                <filter name="f_waiting" string="Waiting on the HR lead"
+                        domain="[('state', '=', 'submitted')]"/>
+                <filter name="f_sent" string="Sent"
+                        domain="[('state', '=', 'sent')]"/>
+                <separator/>
+                <filter name="f_recurring" string="Comes round again"
+                        domain="[('recurrence', '!=', 'none')]"/>
+                <group name="group_by">
+                    <filter name="gb_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="gb_company" string="Company"
+                            context="{'group_by': 'company_id'}"/>
+                    <filter name="gb_responsible" string="Who looks after it"
+                            context="{'group_by': 'responsible_user_id'}"/>
+                    <filter name="gb_month" string="Month"
+                            context="{'group_by': 'send_at:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_hr_comm_post" model="ir.actions.act_window">
+        <field name="name">Announcements</field>
+        <field name="res_model">pb.hr.comm.post</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Write an announcement</p>
+            <p>An announcement is something the company tells its people — a
+               town hall, a public holiday, a change to the canteen. Say what
+               it is, who it is for and when it should go out, and it goes out
+               on its own.</p>
+        </field>
+    </record>
+
+    <!-- THE RESPONSIBLE PERSON'S OWN DOOR. Somebody who looks after one
+         announcement holds no group by definition, so the calendar lens is
+         not for them — this is, and the ⌘K row beside it is how they find it
+         without knowing this module exists. -->
+    <record id="action_pb_hr_comm_post_mine" model="ir.actions.act_window">
+        <field name="name">Announcements I look after</field>
+        <field name="res_model">pb.hr.comm.post</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('responsible_user_id', '=', uid)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing is waiting on you</p>
+            <p>Announcements you are looking after appear here. You can change
+               one until two days before it goes out; after that the HR lead
+               can.</p>
+        </field>
+    </record>
+
+    <!-- ==================================================================
+         THE LIBRARY
+         ================================================================== -->
+    <record id="view_pb_hr_comm_template_list" model="ir.ui.view">
+        <field name="name">pb.hr.comm.template.list</field>
+        <field name="model">pb.hr.comm.template</field>
+        <field name="arch" type="xml">
+            <list string="Templates">
+                <field name="sequence" widget="handle"/>
+                <field name="name" width="260px"/>
+                <field name="subject"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="note" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_hr_comm_template_form" model="ir.ui.view">
+        <field name="name">pb.hr.comm.template.form</field>
+        <field name="model">pb.hr.comm.template</field>
+        <field name="arch" type="xml">
+            <form string="Template">
+                <header>
+                    <button name="action_use_it" type="object"
+                            string="Write one from this" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="What it is called"/>
+                        <h1><field name="name"
+                                   placeholder="Monthly town hall"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="subject"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group string="What it says">
+                        <field name="body_html" nolabel="1" colspan="2"/>
+                    </group>
+                    <group string="Poster">
+                        <field name="poster_ids" nolabel="1" colspan="2"
+                               widget="many2many_binary"/>
+                    </group>
+                    <group string="When to use it">
+                        <field name="note" nolabel="1" colspan="2"
+                               placeholder="A line for whoever picks this up next year."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_hr_comm_template" model="ir.actions.act_window">
+        <field name="name">Announcement templates</field>
+        <field name="res_model">pb.hr.comm.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Write a template</p>
+            <p>An announcement somebody has already written once — the monthly
+               town hall, the public holiday notice. Picking one copies its
+               words onto a new announcement, which is then its own.</p>
+        </field>
+    </record>
+
+    <!-- ==================================================================
+         WHO ANNOUNCEMENTS LAND ON
+         ================================================================== -->
+    <record id="view_pb_hr_comm_default_list" model="ir.ui.view">
+        <field name="name">pb.hr.comm.default.list</field>
+        <field name="model">pb.hr.comm.default</field>
+        <field name="arch" type="xml">
+            <list string="Who looks after announcements" editable="bottom">
+                <field name="company_id"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="note"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_hr_comm_default" model="ir.actions.act_window">
+        <field name="name">Who looks after announcements</field>
+        <field name="res_model">pb.hr.comm.default</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">The HR lead, unless you say otherwise</p>
+            <p>New announcements arrive with the company's HR lead on them —
+               the person named in the Approval Matrix. Add a line here only
+               where somebody else should look after them instead.</p>
+        </field>
+    </record>
+
+    <!-- ==================================================================
+         WHO GOT IT
+         ================================================================== -->
+    <record id="view_pb_hr_comm_delivery_list" model="ir.ui.view">
+        <field name="name">pb.hr.comm.delivery.list</field>
+        <field name="model">pb.hr.comm.delivery</field>
+        <field name="arch" type="xml">
+            <list string="Who got it">
+                <field name="post_id"/>
+                <field name="employee_id"/>
+                <field name="email"/>
+                <field name="sent_on"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_hr_comm_delivery" model="ir.actions.act_window">
+        <field name="name">Who got which announcement</field>
+        <field name="res_model">pb.hr.comm.delivery</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing has gone out yet</p>
+            <p>One line per person per announcement, with the day it was sent.
+               This is what answers "did they get it" six months later.</p>
+        </field>
+    </record>
+
+</odoo>

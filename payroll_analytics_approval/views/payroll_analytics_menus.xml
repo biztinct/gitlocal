@@ -8,10 +8,10 @@
     <record id="action_payroll_approval_queue" model="ir.actions.act_window">
         <field name="name">Approval Queue</field>
         <field name="res_model">payroll.analytics</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="view_ids" eval="[(5, 0, 0),
                                       (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_payroll_approval_kanban')}),
-                                      (0, 0, {'view_mode': 'tree', 'view_id': ref('view_payroll_approval_tree')}),
+                                      (0, 0, {'view_mode': 'list', 'view_id': ref('view_payroll_approval_tree')}),
                                       (0, 0, {'view_mode': 'form', 'view_id': ref('view_payroll_analytics_dashboard')})]"/>
         <field name="domain">[('state', 'in', ['ready', 'approved'])]</field>
         <field name="context">{'search_default_ready': 1}</field>
@@ -30,7 +30,7 @@
     <record id="action_payroll_analytics_comparison" model="ir.actions.act_window">
         <field name="name">Payroll Comparison</field>
         <field name="res_model">payroll.analytics</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="context">{'search_default_group_month': 1}</field>
         <field name="domain">[]</field>
         <field name="help" type="html">
@@ -47,7 +47,7 @@
     <record id="action_payroll_bank_exports" model="ir.actions.act_window">
         <field name="name">Bank Export History</field>
         <field name="res_model">payroll.analytics</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">[('state', 'in', ['approved', 'exported'])]</field>
         <field name="context">{'search_default_approved': 1}</field>
         <field name="help" type="html">
@@ -64,7 +64,7 @@
     <record id="action_payroll_analytics_reports" model="ir.actions.act_window">
         <field name="name">Analytics Reports</field>
         <field name="res_model">payroll.analytics</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="context">{'search_default_group_country': 1, 'search_default_group_month': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -147,7 +147,7 @@
     <record id="action_payroll_analytics_config" model="ir.actions.act_window">
         <field name="name">Analytics Configuration</field>
         <field name="res_model">payroll.analytics</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="context">{'search_default_draft': 1}</field>
         <field name="domain">[('state', '=', 'draft')]</field>
         <field name="help" type="html">

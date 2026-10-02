@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         The rules, as native views. There is no cockpit here on purpose:
+         this is a settings screen an administrator visits twice a year, and
+         a bespoke surface for it would be a surface nobody maintains.
+
+         The list reads as sentences — "Their status becomes 'Resigned' →
+         Start their leaving checklist" — because that is what it is.
+         ================================================================== -->
+
+    <record id="view_zoho_event_rule_list" model="ir.ui.view">
+        <field name="name">pb.zoho.event.rule.list</field>
+        <field name="model">pb.zoho.event.rule</field>
+        <field name="arch" type="xml">
+            <list string="Arrival rules" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="trigger"/>
+                <field name="match_value" placeholder="Any status"/>
+                <field name="action"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="show" placeholder="Every company"/>
+                <field name="note" optional="hide"/>
+                <field name="active" widget="boolean_toggle" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_zoho_event_rule_form" model="ir.ui.view">
+        <field name="name">pb.zoho.event.rule.form</field>
+        <field name="model">pb.zoho.event.rule</field>
+        <field name="arch" type="xml">
+            <form string="Arrival rule">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="trigger"/>
+                            <field name="match_value"
+                                   placeholder="Any status"/>
+                            <field name="action"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"
+                                   placeholder="Every company"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group string="Why this rule exists">
+                        <field name="note" colspan="2" nolabel="1"
+                               placeholder="A sentence for the next person who reads this list."/>
+                    </group>
+                    <div class="text-muted mt-3">
+                        The rules are read from the top down and the first one
+                        that fits wins. A status word no rule mentions is never
+                        guessed at — it goes into the review list instead.
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_zoho_event_rule_search" model="ir.ui.view">
+        <field name="name">pb.zoho.event.rule.search</field>
+        <field name="model">pb.zoho.event.rule</field>
+        <field name="arch" type="xml">
+            <search string="Arrival rules">
+                <field name="match_value"/>
+                <field name="note"/>
+                <filter name="filter_active" string="In use"
+                        domain="[('active', '=', True)]"/>
+                <filter name="filter_inactive" string="Switched off"
+                        domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter name="filter_onboard" string="Starts a joining checklist"
+                        domain="[('action', '=', 'onboard')]"/>
+                <filter name="filter_offboard" string="Starts a leaving checklist"
+                        domain="[('action', '=', 'offboard')]"/>
+                <group>
+                    <filter name="group_trigger" string="When"
+                            context="{'group_by': 'trigger'}"/>
+                    <filter name="group_action" string="What happens"
+                            context="{'group_by': 'action'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_zoho_event_rule" model="ir.actions.act_window">
+        <field name="name">Arrival rules</field>
+        <field name="res_model">pb.zoho.event.rule</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Teach Payobook what the connected system means</p>
+            <p>A rule turns a word from the connected system into something
+               Payobook does: a new person starts their joining checklist,
+               "Resigned" starts their leaving checklist, anything unfamiliar
+               waits in the review list for a person to decide.</p>
+        </field>
+    </record>
+
+</odoo>

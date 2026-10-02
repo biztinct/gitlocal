@@ -1,0 +1,8 @@
+// =====================================================================
+//  (Retired) Per-zone theme variants.
+//  The app now uses ONE uniform indigo design system defined in
+//  import_tokens.scss + import_kit.scss. The old `.pbim.emp/.con/.sal/
+//  .sta/.itg` periwinkle variants were removed — those root classes are
+//  now inert and simply inherit the uniform kit theme. Kept as a file so
+//  the manifest asset reference stays valid.
+// =====================================================================

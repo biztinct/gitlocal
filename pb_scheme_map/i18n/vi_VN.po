@@ -1,0 +1,1118 @@
+# A hand-written stub, not a full catalogue: the Vietnamese pass for this
+# programme is Phase 7. Every entry carries `#. module: pb_scheme_map` on
+# purpose — a `.po` entry with no module comment takes the WHOLE DATABASE DOWN
+# on install (ledger gotcha GR5): the platform's own loader matches that
+# comment with no guard, so a missing one is an AttributeError during the
+# translation load and the registry never finishes.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-07 00:00+0000\n"
+"Last-Translator: Payobook\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_palette.js:0
+#: model:ir.model,name:pb_scheme_map.model_pb_scheme_map
+msgid "Who is paid by what"
+msgstr "Ai được trả lương theo phương án nào"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_palette.js:0
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "People not covered"
+msgstr "Những người chưa có phương án trả lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_palette.js:0
+msgid "Payroll"
+msgstr "Tiền lương"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__cycle_type__any
+msgid "Any kind of run"
+msgstr "Mọi kỳ trả lương"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__cycle_type__regular
+msgid "Regular payroll"
+msgstr "Kỳ lương thường"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__cycle_type__mid_cycle
+msgid "Mid-month advance"
+msgstr "Tạm ứng giữa tháng"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__cycle_type__end_cycle
+msgid "End of month"
+msgstr "Cuối tháng"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__cycle_type__full_final
+msgid "Final settlement"
+msgstr "Thanh toán nghỉ việc"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "No scheme covers this person yet."
+msgstr "Chưa có phương án trả lương nào áp dụng cho người này."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "the only scheme in this company"
+msgstr "phương án duy nhất của công ty này"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_employee__pb_paid_by_id
+msgid "Paid by"
+msgstr "Trả lương theo"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "Not covered by any scheme"
+msgstr "Chưa có phương án trả lương"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid ""
+"%(agree)s of %(team)s's %(total)s people on the last %(runs)s %(kind)s runs "
+"were paid under %(scheme)s — the rest were paid under something else."
+msgstr ""
+"%(agree)s trong %(total)s người của %(team)s ở %(runs)s kỳ %(kind)s gần nhất"
+" được trả theo %(scheme)s — số còn lại được trả theo phương án khác."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid ""
+"%(count)s lines written to the map. Every person under them now knows what "
+"pays them."
+msgstr ""
+"Đã ghi %(count)s dòng vào bản đồ. Mọi người thuộc các dòng đó giờ đã biết "
+"phương án nào trả lương cho mình."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "%(count)s people now show a different scheme."
+msgstr "%(count)s người hiện hiển thị một phương án lương khác."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "%(count)s teams"
+msgstr "%(count)s bộ phận"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "%(covered)s of %(people)s people are covered by a scheme."
+msgstr "%(covered)s trong %(people)s người đã có phương án lương."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "%(part)s of %(whole)s"
+msgstr "%(part)s trong %(whole)s"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "%(scheme)s belongs to another company, so it cannot pay people here."
+msgstr ""
+"%(scheme)s thuộc về một công ty khác, nên không thể trả lương cho người ở "
+"đây."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "%(segment)s is no longer attached to %(scheme)s."
+msgstr "%(segment)s không còn được gắn với %(scheme)s nữa."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid ""
+"%(what)s already has a scheme for %(kind)s: %(scheme)s. Take that one off "
+"first, or attach this one for a different kind of run."
+msgstr ""
+"%(what)s đã có phương án lương cho %(kind)s: %(scheme)s. Hãy gỡ phương án đó"
+" ra trước, hoặc gắn phương án này cho một loại kỳ trả lương khác."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid ""
+"A line on the map covers exactly one thing: a department, a division, or a "
+"rule. Pick one of them."
+msgstr ""
+"Mỗi dòng trên bản đồ chỉ áp cho đúng một thứ: một phòng ban, một khối, hoặc "
+"một quy tắc. Hãy chọn một trong ba."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"A pay run will leave them out until their team is attached to a\n"
+"          scheme. Fixing the team fixes everybody in it at once."
+msgstr ""
+"Kỳ trả lương sẽ bỏ sót họ cho tới khi bộ phận của họ được gắn với một\n"
+"          phương án lương. Sửa cho bộ phận là sửa cho tất cả mọi người trong đó cùng một lúc."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid "A rule"
+msgstr "Một quy tắc"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"A scheme is the set of rules that works out one group of people's pay.\n"
+"          Build the first one, then come back here and say who it pays."
+msgstr ""
+"Phương án lương là bộ quy tắc tính lương cho một nhóm người.\n"
+"          Hãy dựng phương án đầu tiên, rồi quay lại đây và cho biết nó trả lương cho ai."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Accept all"
+msgstr "Chấp nhận tất cả"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Accept the"
+msgstr "Chấp nhận"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_employee__pb_paid_by_advance_id
+msgid "Advance paid by"
+msgstr "Tạm ứng trả theo"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Advance:"
+msgstr "Tạm ứng:"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__confidence
+msgid "Agreement"
+msgstr "Độ khớp"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "All covered"
+msgstr "Tất cả đã có phương án"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Attach"
+msgstr "Gắn"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Attach a scheme"
+msgstr "Gắn một phương án lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Attach a scheme to this team"
+msgstr "Gắn một phương án lương cho bộ phận này"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,help:pb_scheme_map.field_hr_formula_scheme_assignment__division_id
+msgid ""
+"Attach a whole division — every department in it, in every company — to this"
+" scheme."
+msgstr ""
+"Gắn cả một khối — mọi phòng ban trong khối, ở mọi công ty — vào phương án "
+"lương này."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Attach to a scheme"
+msgstr "Gắn vào một phương án lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Attached %(count)s teams to this scheme."
+msgstr "Đã gắn %(count)s bộ phận vào phương án lương này."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Attached. The people in that team are paid by this scheme from now on."
+msgstr ""
+"Đã gắn. Từ giờ những người trong bộ phận đó được trả theo phương án lương "
+"này."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Build a scheme"
+msgstr "Dựng một phương án lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Clear"
+msgstr "Xoá"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Company this map is for"
+msgstr "Công ty mà bản đồ này áp dụng"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_pb_division_link
+msgid "Department in a division"
+msgstr "Phòng ban trong một khối"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_config__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_payslip_run__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_version__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_division_link__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_scheme_board__display_name
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_scheme_map__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__division_id
+msgid "Division"
+msgstr "Khối"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Divisions and teams in this company"
+msgstr "Các khối và bộ phận trong công ty này"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Draft the map from what you paid"
+msgstr "Dựng bản nháp bản đồ từ những gì bạn đã trả"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__source__manual
+msgid "Drawn by hand"
+msgstr "Vẽ bằng tay"
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_hr_employee
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_hr_contract
+#: model:ir.model,name:pb_scheme_map.model_hr_version
+msgid "Employee Contract"
+msgstr "Hợp đồng lao động"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid ""
+"Every one of %(team)s's %(total)s people on the last %(runs)s %(kind)s runs "
+"was paid under %(scheme)s."
+msgstr ""
+"Cả %(total)s người của %(team)s ở %(runs)s kỳ %(kind)s gần nhất đều được trả"
+" theo %(scheme)s."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Every one of this company's %(people)s people is covered by a scheme."
+msgstr "Cả %(people)s người của công ty này đều đã có phương án lương."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Everybody was already up to date."
+msgstr "Mọi người đều đã được cập nhật rồi."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid "Everyone"
+msgstr "Tất cả mọi người"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"Everyone in this part of the business will be paid by the scheme you\n"
+"          pick, for the kind of run you pick."
+msgstr ""
+"Mọi người trong phần này của doanh nghiệp sẽ được trả theo phương án lương bạn\n"
+"          chọn, cho loại kỳ trả lương bạn chọn."
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_hr_formula_config
+msgid "Excel Formula Configuration"
+msgstr "Cấu hình công thức Excel"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Find a scheme"
+msgstr "Tìm một phương án lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Find a scheme…"
+msgstr "Tìm một phương án lương…"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,help:pb_scheme_map.field_hr_formula_scheme_assignment__confidence
+msgid ""
+"For a proposed line: the share of this team's people who were actually paid "
+"under this scheme."
+msgstr ""
+"Với một dòng được đề xuất: tỷ lệ người trong bộ phận này thực sự đã được trả"
+" theo phương án lương đó."
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_employee__pb_paid_by_rung
+msgid "How that was worked out"
+msgstr "Cách tính ra điều đó"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_config__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_payslip_run__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_version__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_division_link__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_scheme_board__id
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_scheme_map__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__cycle_type
+msgid "Kind of run"
+msgstr "Loại kỳ trả lương"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_employee__pb_paid_by_stale
+msgid "Needs working out again"
+msgstr "Cần tính lại"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "No scheme"
+msgstr "Chưa có phương án lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "No scheme here matches that."
+msgstr "Không có phương án lương nào ở đây khớp với từ đó."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "No team"
+msgstr "Chưa có bộ phận"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_chip.js:0
+msgid ""
+"No team, division or rule on the scheme map reaches this person, so no pay "
+"run would include them."
+msgstr ""
+"Không có bộ phận, khối hay quy tắc nào trên bản đồ phương án lương chạm tới "
+"người này, nên không kỳ trả lương nào tính đến họ."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"Nobody in this company has been paid under a scheme yet, so there is\n"
+"            no history to propose a map from. Attach the first team by hand and\n"
+"            the rest becomes easy."
+msgstr ""
+"Chưa ai trong công ty này được trả theo một phương án lương, nên chưa có\n"
+"            lịch sử để đề xuất bản đồ. Hãy gắn bộ phận đầu tiên bằng tay và\n"
+"            phần còn lại sẽ dễ."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Nobody is on the payroll of this company yet."
+msgstr "Chưa có ai trong bảng lương của công ty này."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Nobody pays these people yet"
+msgstr "Chưa có phương án nào trả lương cho những người này"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Nobody yet"
+msgstr "Chưa có ai"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Not now"
+msgstr "Để sau"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Nothing is attached to a scheme yet"
+msgstr "Chưa có gì được gắn vào một phương án lương"
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_hr_formula_scheme_assignment
+msgid "Payroll Scheme Assignment"
+msgstr "Gán phương án lương"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_payslip_run__pb_formula_config_id
+msgid "Payroll scheme"
+msgstr "Phương án lương"
+
+#. module: pb_scheme_map
+#: model:ir.actions.server,name:pb_scheme_map.cron_recompute_paid_by_ir_actions_server
+msgid "Payroll: work out who is paid by what"
+msgstr "Tiền lương: xác định ai được trả theo phương án nào"
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_hr_payslip_run
+msgid "Payslip Batches"
+msgstr "Đợt phiếu lương"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__source__drafted
+msgid "Proposed"
+msgstr "Được đề xuất"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__hr_formula_scheme_assignment__source__accepted
+msgid "Proposed and accepted"
+msgstr "Đề xuất và đã chấp nhận"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Put back"
+msgstr "Đưa lại"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Reading the last runs…"
+msgstr "Đang đọc các kỳ lương gần nhất…"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Reading the map…"
+msgstr "Đang đọc bản đồ…"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Replaces"
+msgstr "Thay thế"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Skip"
+msgstr "Bỏ qua"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Take this scheme off this team"
+msgstr "Gỡ phương án lương này khỏi bộ phận này"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "Team"
+msgstr "Bộ phận"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid ""
+"That attachment did not name a team and a scheme this screen can see. Reload"
+" the screen and try again."
+msgstr ""
+"Liên kết đó không nêu được một bộ phận và một phương án lương mà màn hình "
+"này nhìn thấy. Hãy tải lại màn hình và thử lại."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "That line could not be removed."
+msgstr "Không xoá được dòng này."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "That scheme could not be attached."
+msgstr "Không gắn được phương án lương này."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "That team is not in this company, so a scheme here cannot pay it."
+msgstr ""
+"Bộ phận đó không thuộc công ty này, nên phương án lương ở đây không thể trả "
+"lương cho nó."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "The Formula Studio is not installed on this database."
+msgstr "Xưởng công thức chưa được cài trên cơ sở dữ liệu này."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "The last runs could not be read."
+msgstr "Không đọc được các kỳ lương gần nhất."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "The map changed and these people have not been read again yet."
+msgstr "Bản đồ đã thay đổi và những người này chưa được đọc lại."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "The map could not be read."
+msgstr "Không đọc được bản đồ."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "The map could not be written."
+msgstr "Không ghi được bản đồ."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "The map read from what you paid"
+msgstr "Bản đồ đọc ra từ những gì bạn đã trả"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "The map, read from what you paid"
+msgstr "Bản đồ, đọc ra từ những gì bạn đã trả"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,help:pb_scheme_map.field_hr_employee__pb_paid_by_id
+msgid ""
+"The payroll scheme that pays this person for the company's main monthly run,"
+" worked out from the scheme map."
+msgstr ""
+"Phương án lương trả cho người này ở kỳ lương tháng chính của công ty, được "
+"xác định từ bản đồ phương án lương."
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,help:pb_scheme_map.field_hr_employee__pb_paid_by_advance_id
+msgid ""
+"The payroll scheme that pays this person's mid-month advance, when the "
+"company runs one."
+msgstr ""
+"Phương án lương trả khoản tạm ứng giữa tháng cho người này, khi công ty có "
+"chạy kỳ đó."
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,help:pb_scheme_map.field_hr_payslip_run__pb_formula_config_id
+msgid ""
+"The payroll scheme this run was run for. Set by the Run Payroll screen when "
+"a scheme was chosen there."
+msgstr ""
+"Phương án lương mà kỳ này được chạy cho. Do màn hình Chạy bảng lương đặt khi"
+" có chọn phương án ở đó."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "The payroll schemes this company runs"
+msgstr "Các phương án lương công ty này đang dùng"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "Their team is not attached to a scheme yet."
+msgstr "Bộ phận của họ chưa được gắn với phương án lương nào."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "There is nothing to read yet"
+msgstr "Chưa có gì để đọc"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "They are not in a team, so no team map can reach them."
+msgstr ""
+"Họ không thuộc bộ phận nào, nên không dòng bản đồ theo bộ phận nào chạm tới "
+"họ được."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "This company has no payroll scheme yet"
+msgstr "Công ty này chưa có phương án lương nào"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "This is a payroll screen"
+msgstr "Đây là một màn hình tiền lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid ""
+"This person is not in a team yet, so there is nothing on the map to attach. "
+"Give them a team first."
+msgstr ""
+"Người này chưa thuộc bộ phận nào, nên chưa có gì trên bản đồ để gắn. Hãy xếp"
+" họ vào một bộ phận trước đã."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__source
+msgid "Where this line came from"
+msgstr "Dòng này đến từ đâu"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,help:pb_scheme_map.field_hr_formula_scheme_assignment__cycle_type
+msgid ""
+"Which kind of pay run this line answers. A line that names a kind of run is "
+"used for that kind; a line that says any kind is used when nothing more "
+"specific applies."
+msgstr ""
+"Dòng này áp cho loại kỳ trả lương nào. Dòng có nêu một loại kỳ thì dùng cho "
+"loại đó; dòng ghi mọi loại thì dùng khi không có dòng nào cụ thể hơn."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Who"
+msgstr "Ai"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Who is paid by what could not be worked out."
+msgstr "Không xác định được ai được trả lương theo phương án nào."
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_pb_scheme_board
+msgid "Who is paid by what — screen data"
+msgstr "Ai được trả lương theo phương án nào — dữ liệu màn hình"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"Who is paid by which scheme is set up by a payroll manager. Ask one of\n"
+"        them for access and this map opens."
+msgstr ""
+"Việc ai được trả theo phương án nào do quản lý tiền lương thiết lập. Hãy xin\n"
+"        một người trong số họ cấp quyền và bản đồ này sẽ mở ra."
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__note
+msgid "Why"
+msgstr "Vì sao"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Work it out again"
+msgstr "Tính lại"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_chip.js:0
+msgid "Worked out %(via)s."
+msgstr "Xác định %(via)s."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_chip.js:0
+msgid "Worked out from the scheme map."
+msgstr "Xác định từ bản đồ phương án lương."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Worth a look"
+msgstr "Đáng xem lại"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid ""
+"You can look at the map, but changing which scheme pays whom is for a "
+"payroll manager. Ask one of them to make the change."
+msgstr ""
+"Bạn có thể xem bản đồ, nhưng việc đổi phương án nào trả lương cho ai là của "
+"quản lý tiền lương. Hãy nhờ một người trong số họ thực hiện thay đổi."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "You cannot read this company's pay runs."
+msgstr "Bạn không có quyền xem các kỳ trả lương của công ty này."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "You cannot read this company's roster."
+msgstr "Bạn không có quyền xem danh sách nhân sự của công ty này."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"You have been paying people for months, so the map already exists —\n"
+"            it is just not written down. Press \"Draft the map from what you\n"
+"            paid\" and this system reads the last runs and proposes it back to\n"
+"            you, line by line, with the numbers behind each one."
+msgstr ""
+"Bạn đã trả lương cho mọi người nhiều tháng nay, nên bản đồ đã tồn tại —\n"
+"            chỉ là chưa được ghi lại. Hãy bấm \"Dựng bản nháp bản đồ từ những gì\n"
+"            bạn đã trả\" và hệ thống sẽ đọc các kỳ lương gần nhất rồi đề xuất lại\n"
+"            cho bạn, từng dòng một, kèm các con số phía sau mỗi dòng."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "and"
+msgstr "và"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "chosen"
+msgstr "đã chọn"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "covered"
+msgstr "đã có phương án"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "everyone"
+msgstr "tất cả mọi người"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "everyone agreed on"
+msgstr "mọi người đều khớp"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "from %(team)s's team map"
+msgstr "từ dòng bản đồ của bộ phận %(team)s"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "from a rule on the map"
+msgstr "từ một quy tắc trên bản đồ"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "from the %(division)s division"
+msgstr "từ khối %(division)s"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "from the days worked in %(company)s"
+msgstr "từ số ngày làm việc tại %(company)s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "lines, read from the last runs."
+msgstr "dòng, đọc ra từ các kỳ lương gần nhất."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "more."
+msgstr "nữa."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "nobody yet"
+msgstr "chưa có ai"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "not covered"
+msgstr "chưa có phương án"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"of them are worth a look — their people\n"
+"              did not all agree."
+msgstr ""
+"trong số đó đáng xem lại — những người của họ\n"
+"              không khớp hết."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "people"
+msgstr "người"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "person"
+msgstr "người"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "proposed"
+msgstr "được đề xuất"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "this team"
+msgstr "bộ phận này"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "to a scheme"
+msgstr "vào một phương án lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "to work out again"
+msgstr "cần tính lại"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "· last run"
+msgstr "· kỳ gần nhất"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"Drag a team onto a scheme to attach it. Hover a line to follow it. Pull a "
+"line off to take it away — or use the keyboard: Enter on a team attaches it,"
+" Delete on a line takes it off."
+msgstr ""
+"Kéo một bộ phận thả vào một phương án lương để gắn. Di chuột lên một đường "
+"nối để dõi theo nó. Kéo đường nối ra để gỡ — hoặc dùng bàn phím: nhấn Enter "
+"trên một bộ phận để gắn, nhấn Delete trên một đường nối để gỡ."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Drag this team onto a scheme on the right"
+msgstr "Kéo bộ phận này thả vào một phương án lương ở bên phải"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Drop here to take %(scheme)s off %(segment)s"
+msgstr "Thả vào đây để gỡ %(scheme)s khỏi %(segment)s"
+
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+
+#. module: pb_scheme_map
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "Accept the drafted map · %s row(s)"
+msgstr "Chấp nhận bản đồ dự thảo · %s dòng"
+
+#. module: pb_scheme_map
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_scheme_map
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_scheme_map
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_scheme_map
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_scheme_map
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_scheme_map
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_scheme_map
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "Pay %(who)s with %(scheme)s"
+msgstr "Trả lương %(who)s theo %(scheme)s"
+
+#. module: pb_scheme_map
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_chip.js:0
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_scheme_map
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_scheme_map
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "Stop paying %s with this scheme"
+msgstr "Ngừng trả lương %s theo phương án này"
+
+#. module: pb_scheme_map
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_scheme_map
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_scheme_map
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_scheme_map
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_scheme_map
+msgid "your approver"
+msgstr "người phê duyệt của bạn"

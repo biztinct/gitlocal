@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_pb_payrun_wizard" model="ir.actions.client">
+        <field name="name">Run Payroll</field>
+        <field name="tag">pb_payrun_wizard</field>
+    </record>
+</odoo>

@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Payroll Report. The template lived in an inline xml`` literal inside
+     payroll_report.js, and inline templates are never extracted for
+     translation, so the whole screen stayed English in Vietnamese
+     (LEARN REFRESH step 6). Same markup, now a real template file. -->
+<templates xml:space="preserve">
+  <t t-name="pb_hr_workforce.PayrollReport">
+    <div class="pbim prd" t-att-class="{ 'prd--embedded': props.embedded }">
+      <div class="prd-wrap">
+
+        <!-- ============================== toolbar ============================== -->
+        <div class="prd-toolbar">
+            <div class="prd-toolbar-left">
+                <div class="prd-title" t-if="!props.embedded">
+                    <span class="prd-title-ic" t-out="ic('barChart', 19)"/>
+                    <span>Payroll Report</span>
+                </div>
+                <select class="prd-select" data-coach="rp-pick" t-on-change="onBatchChange" aria-label="Pay run">
+                    <option value="">Select Pay Run…</option>
+                    <t t-foreach="state.batches" t-as="b" t-key="b.id">
+                        <option t-att-value="b.id" t-att-selected="state.batchId === b.id">
+                            <t t-esc="batchLabel(b)"/>
+                        </option>
+                    </t>
+                </select>
+                <div class="prd-search">
+                    <span class="prd-search-ic" t-out="ic('search', 15)"/>
+                    <input type="text" placeholder="Search employee..." t-model="state.searchQuery"/>
+                </div>
+            </div>
+            <div class="prd-toolbar-right">
+                <div class="prd-tab-bar" data-coach="rp-tabs">
+                    <button class="prd-tab" t-att-class="{ 'is-on': state.activeTab === 'earnings' }"
+                            t-att-aria-current="state.activeTab === 'earnings' ? 'true' : false"
+                            t-on-click="() => this.setTab('earnings')">
+                        <span class="prd-tab-ic" t-out="ic('banknote', 15)"/> Earnings
+                    </button>
+                    <button class="prd-tab" t-att-class="{ 'is-on': state.activeTab === 'deductions' }"
+                            t-att-aria-current="state.activeTab === 'deductions' ? 'true' : false"
+                            t-on-click="() => this.setTab('deductions')">
+                        <span class="prd-tab-ic" t-out="ic('minusCircle', 15)"/> Deductions
+                    </button>
+                    <button class="prd-tab" t-att-class="{ 'is-on': state.activeTab === 'summary' }"
+                            t-att-aria-current="state.activeTab === 'summary' ? 'true' : false"
+                            t-on-click="() => this.setTab('summary')">
+                        <span class="prd-tab-ic" t-out="ic('pieChart', 15)"/> Dept Summary
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================ summary KPIs ============================ -->
+        <div class="prd-kpis" data-coach="rp-kpis" t-if="state.summary.total_employees > 0">
+            <div class="prd-kpi">
+                <div class="prd-kpi-num" t-esc="state.summary.total_employees"/>
+                <div class="prd-kpi-label">Employees</div>
+            </div>
+            <div class="prd-kpi prd-kpi-gross">
+                <div class="prd-kpi-num" t-esc="fmt(state.summary.total_gross)"/>
+                <div class="prd-kpi-label">Total Gross</div>
+            </div>
+            <div class="prd-kpi prd-kpi-ded">
+                <div class="prd-kpi-num" t-esc="fmt(state.summary.total_deductions)"/>
+                <div class="prd-kpi-label">Total Deductions</div>
+            </div>
+            <div class="prd-kpi prd-kpi-net">
+                <div class="prd-kpi-num" t-esc="fmt(state.summary.total_net)"/>
+                <div class="prd-kpi-label">Total Net Pay</div>
+            </div>
+            <div class="prd-kpi prd-kpi-changes" t-if="state.summary.changes > 0">
+                <div class="prd-kpi-num" t-esc="state.summary.changes"/>
+                <div class="prd-kpi-label">Changes</div>
+            </div>
+        </div>
+
+        <!-- =========================== batch context =========================== -->
+        <div class="prd-batch-info" t-if="state.batch.name">
+            <div class="prd-batch-current">
+                <strong t-esc="state.batch.name"/>
+                <span class="prd-batch-dates">
+                    <t t-esc="state.batch.date_start"/> → <t t-esc="state.batch.date_end"/>
+                </span>
+            </div>
+            <div class="prd-batch-prev" t-if="state.prevBatch.name">
+                vs. <span t-esc="state.prevBatch.name"/>
+            </div>
+        </div>
+
+        <!-- ============================== earnings ============================== -->
+        <div class="prd-content" t-if="state.activeTab === 'earnings' and !state.loading">
+            <div class="prd-tablewrap" t-if="filteredEmployees.length">
+            <table class="prd-table">
+                <thead>
+                    <tr>
+                        <th class="prd-col-emp">Employee</th>
+                        <th class="prd-col-num">Basic</th>
+                        <th class="prd-col-num">Gross Pay</th>
+                        <th class="prd-col-num">Previous</th>
+                        <th class="prd-col-num">Variance</th>
+                        <th class="prd-col-events">Related Events</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="filteredEmployees" t-as="emp" t-key="emp.id">
+                        <tr class="prd-row" t-att-class="{ 'is-open': state.expandedEmp === emp.id }"
+                            t-on-click="() => this.toggleDetail(emp.id)">
+                            <td class="prd-col-emp">
+                                <div class="prd-emp-info">
+                                    <img class="prd-avatar" t-att-src="emp.avatar_url" loading="lazy" alt=""/>
+                                    <div>
+                                        <div class="prd-emp-name" t-esc="emp.name"/>
+                                        <div class="prd-emp-meta" t-esc="emp.job_title"/>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="prd-col-num" t-esc="fmt(emp.basic)"/>
+                            <td class="prd-col-num prd-val-current" t-esc="fmt(emp.gross)"/>
+                            <td class="prd-col-num prd-val-prev" t-esc="fmt(emp.prev_gross)"/>
+                            <td t-attf-class="prd-col-num {{ emp.diff_gross > 0 ? 'prd-var-up' : (emp.diff_gross &lt; 0 ? 'prd-var-down' : '') }}">
+                                <span t-if="emp.diff_gross > 0" class="prd-var">
+                                    <span class="prd-var-ic" t-out="ic('trendingUp', 13)"/><t t-esc="fmt(emp.diff_gross)"/>
+                                </span>
+                                <span t-if="emp.diff_gross &lt; 0" class="prd-var">
+                                    <span class="prd-var-ic" t-out="ic('trendingDown', 13)"/><t t-esc="fmt(emp.diff_gross)"/>
+                                </span>
+                                <span t-if="emp.diff_gross === 0">–</span>
+                            </td>
+                            <td class="prd-col-events">
+                                <t t-foreach="emp.events" t-as="ev" t-key="ev_index">
+                                    <div class="prd-event"><span class="prd-event-dot"/>
+                                        <t t-esc="ev"/></div>
+                                </t>
+                            </td>
+                        </tr>
+                        <tr t-if="state.expandedEmp === emp.id" class="prd-detail-row">
+                            <td colspan="6">
+                                <div class="prd-detail-grid">
+                                    <div class="prd-detail-section">
+                                        <h4>Earnings Breakdown</h4>
+                                        <table class="prd-detail-table">
+                                            <tr><th>Component</th><th>Current</th><th>Previous</th><th>Change</th></tr>
+                                            <t t-foreach="emp.earnings" t-as="e" t-key="e.code">
+                                                <tr>
+                                                    <td t-esc="e.name"/>
+                                                    <td class="prd-val-current" t-esc="fmt(e.current)"/>
+                                                    <td class="prd-val-prev" t-esc="fmt(e.previous)"/>
+                                                    <td t-attf-class="{{ e.diff > 0 ? 'prd-var-up' : (e.diff &lt; 0 ? 'prd-var-down' : '') }}">
+                                                        <t t-esc="fmt(e.diff)"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </table>
+                                    </div>
+                                    <div class="prd-detail-section">
+                                        <h4>Deductions</h4>
+                                        <table class="prd-detail-table">
+                                            <tr><th>Component</th><th>Current</th><th>Previous</th><th>Change</th></tr>
+                                            <t t-foreach="emp.deduction_lines" t-as="d" t-key="d.code">
+                                                <tr>
+                                                    <td t-esc="d.name"/>
+                                                    <td t-esc="fmt(d.current)"/>
+                                                    <td t-esc="fmt(d.previous)"/>
+                                                    <td t-attf-class="{{ d.diff > 0 ? 'prd-var-up' : (d.diff &lt; 0 ? 'prd-var-down' : '') }}">
+                                                        <t t-esc="fmt(d.diff)"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </table>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+            </div>
+            <div class="prd-empty" t-else="">
+                <span class="prd-empty-ic" t-out="ic('inbox', 30)"/>
+                <h3>No payroll data</h3>
+                <p>Select a pay run batch to view the report.</p>
+            </div>
+        </div>
+
+        <!-- ============================= deductions ============================= -->
+        <div class="prd-content" t-if="state.activeTab === 'deductions' and !state.loading">
+            <div class="prd-tablewrap">
+            <table class="prd-table">
+                <thead>
+                    <tr>
+                        <th class="prd-col-emp">Employee</th>
+                        <th class="prd-col-num">Deductions</th>
+                        <th class="prd-col-num">Net Pay</th>
+                        <th class="prd-col-num">Previous Net</th>
+                        <th class="prd-col-num">Variance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="filteredEmployees" t-as="emp" t-key="emp.id">
+                        <tr class="prd-row" t-on-click="() => this.toggleDetail(emp.id)">
+                            <td class="prd-col-emp">
+                                <div class="prd-emp-info">
+                                    <img class="prd-avatar" t-att-src="emp.avatar_url" loading="lazy" alt=""/>
+                                    <div>
+                                        <div class="prd-emp-name" t-esc="emp.name"/>
+                                        <div class="prd-emp-meta" t-esc="emp.department"/>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="prd-col-num" t-esc="fmt(emp.deductions)"/>
+                            <td class="prd-col-num prd-val-current" t-esc="fmt(emp.net)"/>
+                            <td class="prd-col-num prd-val-prev" t-esc="fmt(emp.prev_net)"/>
+                            <td t-attf-class="prd-col-num {{ emp.diff_net > 0 ? 'prd-var-up' : (emp.diff_net &lt; 0 ? 'prd-var-down' : '') }}">
+                                <span t-if="emp.diff_net > 0" class="prd-var">
+                                    <span class="prd-var-ic" t-out="ic('trendingUp', 13)"/><t t-esc="fmt(emp.diff_net)"/>
+                                </span>
+                                <span t-if="emp.diff_net &lt; 0" class="prd-var">
+                                    <span class="prd-var-ic" t-out="ic('trendingDown', 13)"/><t t-esc="fmt(emp.diff_net)"/>
+                                </span>
+                                <span t-if="emp.diff_net === 0">–</span>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        <!-- ========================== department summary ========================== -->
+        <div class="prd-content" t-if="state.activeTab === 'summary' and !state.loading">
+            <div class="prd-summary-layout">
+                <div class="prd-chart-area">
+                    <canvas id="prdDonutChart" width="300" height="300"/>
+                </div>
+                <div class="prd-chart-legend">
+                    <t t-foreach="state.deptChart" t-as="dept" t-key="dept.name">
+                        <div class="prd-legend-item">
+                            <span class="prd-legend-dot" t-attf-style="background: {{ dept.color }}"/>
+                            <span class="prd-legend-name" t-esc="dept.name"/>
+                            <span class="prd-legend-val" t-esc="fmt(dept.net)"/>
+                        </div>
+                    </t>
+                </div>
+            </div>
+            <div class="prd-tablewrap">
+            <table class="prd-table prd-dept-table">
+                <thead>
+                    <tr>
+                        <th>Department</th>
+                        <th class="prd-col-num">Employees</th>
+                        <th class="prd-col-num">Total Gross</th>
+                        <th class="prd-col-num">Deductions</th>
+                        <th class="prd-col-num">Net Pay</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="state.deptChart" t-as="dept" t-key="dept.name">
+                        <tr>
+                            <td>
+                                <div class="prd-dept-cell">
+                                    <span class="prd-dept-badge" t-attf-style="background: {{ dept.color }}">
+                                        <t t-esc="dept.name.substring(0,2).toUpperCase()"/>
+                                    </span>
+                                    <t t-esc="dept.name"/>
+                                </div>
+                            </td>
+                            <td class="prd-col-num" t-esc="dept.count"/>
+                            <td class="prd-col-num" t-esc="fmt(dept.gross)"/>
+                            <td class="prd-col-num" t-esc="fmt(dept.deductions)"/>
+                            <td class="prd-col-num prd-val-current" t-esc="fmt(dept.net)"/>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        <!-- =============================== loading =============================== -->
+        <div t-if="state.loading" class="prd-loading">
+            <div class="prd-spin"/>
+            <span>Loading payroll data…</span>
+        </div>
+
+      </div>
+    </div>
+  </t>
+</templates>

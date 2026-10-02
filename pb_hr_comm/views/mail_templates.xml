@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         THE FOUR THINGS THIS MODULE PUTS IN SOMEBODY'S INBOX.
+
+         EVERY COLOUR IS A LITERAL. An email client has no stylesheet of ours
+         and no CSS variables at all, so a token is a colour that does not
+         arrive — the same reason every portal rule in this product carries a
+         literal fallback beside its token (R39). These are the locked palette
+         written out: indigo #4F46E5 with #3730A3 for the strong end, ink
+         #1B1733, muted #5B6478, lines #E7E5F2, a page ground of #F6F7FB.
+
+         TABLES AND INLINE STYLES, BECAUSE THAT IS WHAT EMAIL IS. No flexbox,
+         no grid, no background images, nothing that needs hosting, and no
+         gradients — which the design system forbids anyway and which half the
+         clients would flatten to grey.
+
+         NO EMOJI ANYWHERE. This product draws Lucide icons, and an email
+         cannot draw one without hosting it, so these cards use typography and
+         a coloured band instead of a picture. That is a deliberate choice and
+         not a gap.
+
+         `t-out` ESCAPES A PLAIN STRING AND ONLY RENDERS `markup()` RAW
+         (R51/R144). The announcement's own words are passed in already
+         wrapped, from one place, in `sender.py`; everything else here is
+         `t-esc` and is escaped, so an announcement written by a person who
+         types a "<" cannot break the card and a name cannot inject anything.
+
+         SERVER-SIDE QWEB HAS NO `t-key` (R5) and no dict `t-att-class` (R42):
+         these are `<template>` records, not OWL, and the two look identical
+         and behave completely differently.
+         ================================================================== -->
+
+    <!-- ================================================================= -->
+    <!--  The announcement itself                                          -->
+    <!-- ================================================================= -->
+    <template id="mail_announcement" name="Announcements: the announcement">
+        <div style="margin:0;padding:0;background:#F6F7FB;font-family:Inter,Helvetica,Arial,sans-serif;color:#1B1733;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;background:#F6F7FB;">
+                <tr>
+                    <td align="center" style="padding:24px 12px;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="640" style="width:640px;max-width:100%;background:#FFFFFF;border:1px solid #E7E5F2;border-radius:16px;overflow:hidden;">
+
+                            <tr>
+                                <td style="background:#4F46E5;padding:18px 32px;">
+                                    <div style="font-size:12px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:#E0E7FF;">
+                                        <t t-esc="company"/>
+                                    </div>
+                                    <div style="font-size:21px;font-weight:700;color:#FFFFFF;line-height:1.35;padding-top:4px;">
+                                        <t t-esc="subject"/>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding:28px 32px 8px;font-size:15px;line-height:1.65;color:#1B1733;">
+                                    <p style="margin:0 0 14px;">Hello <t t-esc="greeting"/>,</p>
+                                    <div style="font-size:15px;line-height:1.7;color:#1B1733;">
+                                        <t t-out="body"/>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr t-if="has_poster">
+                                <td style="padding:6px 32px 0;">
+                                    <div style="border:1px solid #E7E5F2;border-radius:10px;padding:12px 14px;font-size:13px;color:#5B6478;background:#F8F9FE;">
+                                        There is something attached to this message.
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding:22px 32px 28px;">
+                                    <div style="border-top:1px solid #E7E5F2;padding-top:16px;font-size:12px;color:#5B6478;line-height:1.6;">
+                                        Sent to everyone this is for at <t t-esc="company"/>.
+                                        There is nothing to reply to here — if you need
+                                        to ask something, ask the person who sent it.
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </template>
+
+    <!-- ================================================================= -->
+    <!--  Two days before: the reminder to whoever looks after it          -->
+    <!-- ================================================================= -->
+    <template id="mail_nudge" name="Announcements: it goes out in two days">
+        <div style="margin:0;padding:0;font-family:Inter,Helvetica,Arial,sans-serif;color:#1B1733;">
+            <p style="font-size:15px;line-height:1.6;">Hello <t t-esc="greeting"/>,</p>
+            <p style="font-size:15px;line-height:1.6;">
+                Your announcement <b><t t-esc="subject"/></b> goes out
+                <b><t t-esc="when"/></b>.
+            </p>
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;margin:16px 0;border:1px solid #E7E5F2;border-radius:12px;">
+                <tr>
+                    <td style="padding:14px 18px;font-size:13px;color:#5B6478;line-height:1.7;">
+                        <div><b style="color:#1B1733;">Who gets it</b> · <t t-esc="audience"/></div>
+                        <div><b style="color:#1B1733;">How many</b> · <t t-esc="people"/></div>
+                        <div><b style="color:#1B1733;">Company</b> · <t t-esc="company"/></div>
+                    </td>
+                </tr>
+            </table>
+            <p style="font-size:14px;line-height:1.65;color:#1B1733;">
+                You can still change anything about it until <b><t t-esc="locked"/></b>.
+                After that, the HR lead is the only
+                person who can, and the change is written into its history.
+            </p>
+            <p style="font-size:13px;color:#5B6478;line-height:1.6;">
+                It is on your to-do list as well, so nothing needs remembering.
+            </p>
+            <br/>
+            The announcements team<br/>
+        </div>
+    </template>
+
+    <!-- ================================================================= -->
+    <!--  The birthday card                                                -->
+    <!--                                                                   -->
+    <!--  Rendered INSTEAD of `pb_rnr.mail_birthday` by this module's own   -->
+    <!--  extension of the celebration engine. `pb_rnr`'s seeded templates  -->
+    <!--  are untouched, so a database without this module keeps the plain  -->
+    <!--  version and no `noupdate` dance is needed (R57/R103).             -->
+    <!-- ================================================================= -->
+    <template id="card_birthday" name="Announcements: happy birthday card">
+        <div style="margin:0;padding:0;background:#F6F7FB;font-family:Inter,Helvetica,Arial,sans-serif;color:#1B1733;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;background:#F6F7FB;">
+                <tr>
+                    <td align="center" style="padding:28px 12px;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="560" style="width:560px;max-width:100%;background:#FFFFFF;border:1px solid #E7E5F2;border-radius:18px;overflow:hidden;">
+
+                            <tr>
+                                <td align="center" style="background:#4F46E5;padding:34px 30px 30px;">
+                                    <div style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#C7D2FE;">
+                                        Today
+                                    </div>
+                                    <div style="font-size:30px;font-weight:700;color:#FFFFFF;line-height:1.3;padding-top:6px;">
+                                        Happy birthday,<br/><t t-esc="first_name"/>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding:28px 34px 10px;font-size:16px;line-height:1.7;color:#1B1733;">
+                                    <p style="margin:0 0 14px;">
+                                        From everybody at <t t-esc="company"/> — have a good one.
+                                    </p>
+                                    <p style="margin:0;color:#5B6478;font-size:15px;line-height:1.7;">
+                                        We hope somebody makes you put your laptop down for
+                                        an hour of it, and that the day is yours.
+                                    </p>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding:22px 34px 30px;">
+                                    <div style="border-top:1px solid #E7E5F2;padding-top:16px;font-size:12px;color:#5B6478;line-height:1.6;">
+                                        Only you were sent this. Nobody's date of birth is
+                                        shown anywhere in this system.
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </template>
+
+    <!-- ================================================================= -->
+    <!--  The work anniversary card                                        -->
+    <!-- ================================================================= -->
+    <template id="card_anniversary" name="Announcements: work anniversary card">
+        <div style="margin:0;padding:0;background:#F6F7FB;font-family:Inter,Helvetica,Arial,sans-serif;color:#1B1733;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;background:#F6F7FB;">
+                <tr>
+                    <td align="center" style="padding:28px 12px;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="560" style="width:560px;max-width:100%;background:#FFFFFF;border:1px solid #E7E5F2;border-radius:18px;overflow:hidden;">
+
+                            <tr>
+                                <td align="center" style="background:#3730A3;padding:32px 30px 28px;">
+                                    <div style="font-size:52px;font-weight:700;color:#FFFFFF;line-height:1;">
+                                        <t t-esc="years"/>
+                                    </div>
+                                    <div style="font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#C7D2FE;padding-top:8px;">
+                                        <t t-esc="years_label"/> with us
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding:28px 34px 10px;font-size:16px;line-height:1.7;color:#1B1733;">
+                                    <p style="margin:0 0 14px;">
+                                        <t t-esc="first_name"/>, thank you.
+                                    </p>
+                                    <p style="margin:0;color:#5B6478;font-size:15px;line-height:1.7;">
+                                        A lot of what a company turns out to be is the people
+                                        who stayed and kept it going. Today is a good day for
+                                        <t t-esc="company"/> to say so.
+                                    </p>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding:22px 34px 30px;">
+                                    <div style="border-top:1px solid #E7E5F2;padding-top:16px;font-size:12px;color:#5B6478;line-height:1.6;">
+                                        Your manager was told about this week as well, so do
+                                        not be surprised if somebody says it out loud.
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </template>
+
+</odoo>

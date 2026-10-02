@@ -1,0 +1,334 @@
+/* Skills Matrix Widget Styles */
+
+.skills-matrix-widget {
+    background: white;
+    border-radius: var(--hr-dev-radius-lg);
+    box-shadow: var(--hr-dev-shadow-md);
+    padding: var(--hr-dev-space-lg);
+}
+
+/* Loading State */
+.skills-matrix-widget .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--hr-dev-space-2xl);
+    color: var(--hr-dev-gray-500);
+}
+
+.skills-matrix-widget .loading-state .hr-dev-spinner {
+    margin-bottom: var(--hr-dev-space-md);
+}
+
+/* Header */
+.skills-matrix-widget .matrix-header {
+    margin-bottom: var(--hr-dev-space-lg);
+    padding-bottom: var(--hr-dev-space-md);
+    border-bottom: 2px solid var(--hr-dev-gray-200);
+}
+
+.skills-matrix-widget .matrix-header h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--hr-dev-gray-900);
+    margin-bottom: var(--hr-dev-space-md);
+}
+
+/* Summary Section */
+.skills-matrix-widget .matrix-summary {
+    display: flex;
+    align-items: center;
+    gap: var(--hr-dev-space-lg);
+    flex-wrap: wrap;
+}
+
+.skills-matrix-widget .summary-card {
+    background: linear-gradient(135deg, var(--hr-dev-primary) 0%, var(--hr-dev-primary-dark) 100%);
+    color: white;
+    padding: var(--hr-dev-space-md) var(--hr-dev-space-lg);
+    border-radius: var(--hr-dev-radius-md);
+    text-align: center;
+    min-width: 120px;
+}
+
+.skills-matrix-widget .summary-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.skills-matrix-widget .summary-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    margin-top: var(--hr-dev-space-xs);
+}
+
+.skills-matrix-widget .summary-stats {
+    display: flex;
+    gap: var(--hr-dev-space-md);
+    flex-wrap: wrap;
+}
+
+.skills-matrix-widget .stat-item {
+    display: flex;
+    align-items: center;
+    gap: var(--hr-dev-space-xs);
+    font-size: 0.875rem;
+}
+
+.skills-matrix-widget .stat-dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: var(--hr-dev-radius-full);
+}
+
+.skills-matrix-widget .stat-item.at-target .stat-dot {
+    background-color: var(--hr-dev-success);
+}
+
+.skills-matrix-widget .stat-item.minor-gap .stat-dot {
+    background-color: var(--hr-dev-warning);
+}
+
+.skills-matrix-widget .stat-item.major-gap .stat-dot {
+    background-color: var(--hr-dev-danger);
+}
+
+.skills-matrix-widget .stat-label {
+    font-weight: 600;
+    color: var(--hr-dev-gray-900);
+}
+
+/* Category Section */
+.skills-matrix-widget .category-section {
+    margin-bottom: var(--hr-dev-space-xl);
+}
+
+.skills-matrix-widget .category-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--hr-dev-gray-800);
+    margin-bottom: var(--hr-dev-space-md);
+    padding: var(--hr-dev-space-sm) var(--hr-dev-space-md);
+    background-color: var(--hr-dev-gray-100);
+    border-left: 4px solid var(--hr-dev-primary);
+    border-radius: var(--hr-dev-radius-sm);
+}
+
+/* Skills List */
+.skills-matrix-widget .skills-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--hr-dev-space-md);
+}
+
+/* Skill Item */
+.skills-matrix-widget .skill-item {
+    display: flex;
+    flex-direction: column;
+    padding: var(--hr-dev-space-md);
+    border-radius: var(--hr-dev-radius-md);
+    border: 2px solid transparent;
+    background-color: var(--hr-dev-gray-50);
+    cursor: pointer;
+    transition: var(--hr-dev-transition);
+}
+
+.skills-matrix-widget .skill-item:hover {
+    box-shadow: var(--hr-dev-shadow-md);
+    transform: translateY(-2px);
+}
+
+.skills-matrix-widget .skill-item.at-target {
+    border-color: var(--hr-dev-success);
+    background-color: rgba(16, 185, 129, 0.05);
+}
+
+.skills-matrix-widget .skill-item.minor-gap {
+    border-color: var(--hr-dev-warning);
+    background-color: rgba(245, 158, 11, 0.05);
+}
+
+.skills-matrix-widget .skill-item.major-gap {
+    border-color: var(--hr-dev-danger);
+    background-color: rgba(239, 68, 68, 0.05);
+}
+
+.skills-matrix-widget .skill-name {
+    font-weight: 600;
+    color: var(--hr-dev-gray-900);
+    margin-bottom: var(--hr-dev-space-sm);
+    font-size: 0.9375rem;
+}
+
+/* Skill Level Container */
+.skills-matrix-widget .skill-level-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--hr-dev-space-sm);
+}
+
+.skills-matrix-widget .skill-level-dots {
+    display: flex;
+    gap: var(--hr-dev-space-xs);
+}
+
+.skills-matrix-widget .skill-dot {
+    width: 1rem;
+    height: 1rem;
+    border-radius: var(--hr-dev-radius-full);
+    background-color: var(--hr-dev-gray-300);
+    transition: var(--hr-dev-transition);
+    border: 2px solid transparent;
+}
+
+.skills-matrix-widget .skill-dot.filled {
+    background-color: var(--hr-dev-primary);
+}
+
+.skills-matrix-widget .skill-dot.target {
+    border-color: var(--hr-dev-gray-600);
+    box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.2);
+}
+
+.skills-matrix-widget .skill-dot.is-target {
+    opacity: 1;
+}
+
+.skills-matrix-widget .skill-dot.is-target:not(.filled) {
+    background-color: var(--hr-dev-gray-200);
+}
+
+.skills-matrix-widget .skill-level-text {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--hr-dev-gray-700);
+}
+
+.skills-matrix-widget .current-level {
+    color: var(--hr-dev-primary);
+}
+
+.skills-matrix-widget .level-separator {
+    color: var(--hr-dev-gray-400);
+    margin: 0 0.25rem;
+}
+
+.skills-matrix-widget .target-level {
+    color: var(--hr-dev-gray-600);
+}
+
+/* Skill Gap Badge */
+.skills-matrix-widget .skill-gap {
+    align-self: flex-start;
+}
+
+.skills-matrix-widget .gap-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--hr-dev-space-xs) var(--hr-dev-space-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: var(--hr-dev-radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.skills-matrix-widget .skill-item.at-target .gap-badge.achieved {
+    background-color: var(--hr-dev-success);
+    color: white;
+}
+
+.skills-matrix-widget .skill-item.minor-gap .gap-badge {
+    background-color: var(--hr-dev-warning);
+    color: #92400E;
+}
+
+.skills-matrix-widget .skill-item.major-gap .gap-badge {
+    background-color: var(--hr-dev-danger);
+    color: white;
+}
+
+/* No Skills Message */
+.skills-matrix-widget .no-skills-message {
+    text-align: center;
+    padding: var(--hr-dev-space-lg);
+    color: var(--hr-dev-gray-500);
+    font-style: italic;
+}
+
+/* Legend */
+.skills-matrix-widget .matrix-legend {
+    margin-top: var(--hr-dev-space-xl);
+    padding-top: var(--hr-dev-space-md);
+    border-top: 1px solid var(--hr-dev-gray-200);
+}
+
+.skills-matrix-widget .matrix-legend h6 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--hr-dev-gray-700);
+    margin-bottom: var(--hr-dev-space-sm);
+}
+
+.skills-matrix-widget .legend-items {
+    display: flex;
+    gap: var(--hr-dev-space-lg);
+    flex-wrap: wrap;
+}
+
+.skills-matrix-widget .legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--hr-dev-space-sm);
+    font-size: 0.875rem;
+    color: var(--hr-dev-gray-600);
+}
+
+.skills-matrix-widget .legend-color {
+    width: 1.5rem;
+    height: 1rem;
+    border-radius: var(--hr-dev-radius-sm);
+    border: 2px solid;
+}
+
+.skills-matrix-widget .legend-color.at-target {
+    border-color: var(--hr-dev-success);
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+.skills-matrix-widget .legend-color.minor-gap {
+    border-color: var(--hr-dev-warning);
+    background-color: rgba(245, 158, 11, 0.1);
+}
+
+.skills-matrix-widget .legend-color.major-gap {
+    border-color: var(--hr-dev-danger);
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .skills-matrix-widget .skills-list {
+        grid-template-columns: 1fr;
+    }
+
+    .skills-matrix-widget .matrix-summary {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .skills-matrix-widget .summary-card {
+        width: 100%;
+    }
+
+    .skills-matrix-widget .summary-stats {
+        flex-direction: column;
+    }
+
+    .skills-matrix-widget .legend-items {
+        flex-direction: column;
+    }
+}

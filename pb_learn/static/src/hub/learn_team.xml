@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ================================================ Learn, Team lens
+       LEARN v3. Readiness for month-end, progress only. Section comments
+       use `=` rules, never a doubled hyphen (R35). -->
+  <t t-name="pb_learn.LearnTeam">
+    <div class="lrn-set lrn-team">
+      <t t-call="pb_learn.IconSprite"/>
+      <t t-if="state.loading">
+        <div class="lrn-set-card lrn-set-loading"/>
+      </t>
+      <t t-elif="!state.allowed">
+        <div class="lrn-set-card"><p class="lrn-set-lead" t-esc="t('teamOnly')"/></div>
+      </t>
+      <t t-else="">
+        <section class="lrn-set-card">
+          <header class="lrn-set-head">
+            <span class="lrn-set-mark">
+              <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-users"/></svg>
+            </span>
+            <div class="lrn-team-headmain">
+              <h2 t-esc="t('teamTitle')"/>
+              <p class="lrn-set-lead" t-esc="t('teamLead')"/>
+            </div>
+            <div class="lrn-team-sum" t-if="state.rows.length">
+              <b><t t-esc="readyCount"/> <t t-esc="t('teamOf')"/> <t t-esc="state.rows.length"/></b>
+              <span t-esc="t('teamReadyWord')"/>
+            </div>
+          </header>
+
+          <p class="lrn-set-lead lrn-team-empty" t-if="!state.rows.length" t-esc="t('teamEmpty')"/>
+
+          <ul class="lrn-set-list">
+            <t t-foreach="state.rows" t-as="raw" t-key="raw.id">
+              <t t-set="row" t-value="view(raw)"/>
+              <li class="lrn-team-row">
+                <span class="lrn-team-av" t-esc="row.initials"/>
+                <div class="lrn-team-who">
+                  <b t-esc="row.name"/>
+                  <span>
+                    <t t-esc="row.roleLabel"/>
+                    <em t-if="!row.role_chosen"> · <t t-esc="t('teamGuessed')"/></em>
+                  </span>
+                  <span class="lrn-team-seen"><t t-esc="t('teamLastSeen')"/> <t t-esc="row.seen"/></span>
+                </div>
+                <div class="lrn-team-prog">
+                  <div class="lrn-team-bar"><i t-attf-style="width:{{row.pct}}%"/></div>
+                  <span class="lrn-team-count"><t t-esc="row.done"/> / <t t-esc="row.required"/></span>
+                  <span class="lrn-team-next" t-if="row.next">
+                    <t t-esc="t('teamNext')"/> <t t-esc="row.next"/>
+                    <t t-if="row.minutes_left"> · <t t-esc="row.minutes_left"/> <t t-esc="t('teamLeft')"/></t>
+                  </span>
+                </div>
+                <div class="lrn-team-act">
+                  <span t-attf-class="lrn-team-status {{row.statusCls}}" t-esc="row.statusLabel"/>
+                  <t t-if="row.status !== 'ready'">
+                    <button type="button" class="lrn-team-btn"
+                            t-att-id="'lrn-team-remind-' + row.id"
+                            t-att-disabled="state.sent[row.id] or state.sending ? true : false"
+                            t-on-click="() => this.remind(raw)">
+                      <svg class="lrn-ic" aria-hidden="true">
+                        <use t-attf-href="#lrn-i-#{state.sent[row.id] ? 'check' : 'mail'}"/>
+                      </svg>
+                      <t t-esc="state.sent[row.id] ? t('teamReminded') : t('teamRemind')"/>
+                    </button>
+                    <span class="lrn-set-warn bad" t-if="state.failed === row.id" t-esc="t('teamFailed')"/>
+                  </t>
+                </div>
+              </li>
+            </t>
+          </ul>
+        </section>
+      </t>
+    </div>
+  </t>
+
+</templates>

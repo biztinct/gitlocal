@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="biz_theme_view_list" model="ir.ui.view">
+        <field name="name">biz.theme.list</field>
+        <field name="model">biz.theme</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="preset_key"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'published'"
+                       decoration-info="state == 'draft'"/>
+                <field name="version"/>
+                <field name="write_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="biz_theme_view_form" model="ir.ui.view">
+        <field name="name">biz.theme.form</field>
+        <field name="model">biz.theme</field>
+        <field name="arch" type="xml">
+            <form class="vu-form-native">
+                <header>
+                    <button name="action_publish" type="object" string="Publish"
+                            class="btn-primary" invisible="state == 'published'"
+                            confirm="Publish this theme for ALL users?"/>
+                    <button name="action_duplicate" type="object" string="Duplicate"/>
+                    <button name="action_discard" type="object" string="Discard Draft"
+                            invisible="state != 'draft'"
+                            confirm="Delete this draft theme?"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Theme name"/></h1>
+                    </div>
+                    <group>
+                        <field name="preset_key" readonly="1"/>
+                        <field name="company_id" options="{'no_create': True}"/>
+                        <field name="version"/>
+                    </group>
+                    <notebook>
+                        <page string="Tokens">
+                            <field name="token_values_text" widget="code" options="{'mode': 'js'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_theme_studio" model="ir.actions.client">
+        <field name="name">Theme Studio</field>
+        <field name="tag">biz_theme.theme_studio</field>
+    </record>
+
+    <record id="action_biz_theme" model="ir.actions.act_window">
+        <field name="name">Themes</field>
+        <field name="res_model">biz.theme</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_biz_theme_preset" model="ir.actions.act_window">
+        <field name="name">Theme Presets</field>
+        <field name="res_model">biz.theme.preset</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_biz_theme_root" name="Theme Engine"
+              parent="base.menu_administration" sequence="60"
+              groups="base.group_system"/>
+    <menuitem id="menu_theme_studio" name="Theme Studio" parent="menu_biz_theme_root"
+              action="action_theme_studio" sequence="5"/>
+    <menuitem id="menu_biz_theme" name="Themes" parent="menu_biz_theme_root"
+              action="action_biz_theme" sequence="10"/>
+    <menuitem id="menu_biz_theme_preset" name="Presets" parent="menu_biz_theme_root"
+              action="action_biz_theme_preset" sequence="20"/>
+
+</odoo>

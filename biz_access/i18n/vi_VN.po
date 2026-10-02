@@ -1,0 +1,2737 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* biz_access
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-28 10:00+1000\n"
+"Last-Translator: \n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "%(from)s to %(to)s, %(date)s"
+msgstr "%(from)s cho %(to)s, %(date)s"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "Delegation"
+msgstr "Bàn giao quyền"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "A hand-over for a while needs a day it ends on. If it is not going to end, choose \"For good\" instead."
+msgstr "Bàn giao có thời hạn cần có ngày kết thúc. Nếu không kết thúc, hãy chọn \"Vĩnh viễn\"."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "It would end before it starts. Check the two dates."
+msgstr "Ngày kết thúc đang trước ngày bắt đầu. Hãy kiểm tra lại hai ngày."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "You cannot hand your access to yourself."
+msgstr "Bạn không thể bàn giao quyền cho chính mình."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "A hand-over is a record of something that happened, so it cannot be deleted. Take it back instead — that is written down too, and it is what an auditor needs to see."
+msgstr "Một lần bàn giao là bản ghi về việc đã xảy ra nên không thể xóa. Hãy thu hồi nó — việc thu hồi cũng được ghi lại, và đó là điều kiểm toán viên cần xem."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "This hand-over is already %s."
+msgstr "Lần bàn giao này đã ở trạng thái %s."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "%(who)s can now do this on %(whose)s behalf: %(what)s."
+msgstr "%(who)s giờ có thể thay %(whose)s làm việc này: %(what)s."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "Some of that was already theirs, so this hand-over will only take back what it actually gave."
+msgstr "Một phần trong đó vốn đã là của họ, nên khi thu hồi chỉ lấy lại đúng những gì lần bàn giao này đã trao."
+
+#. module: biz_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+#: code:addons/biz_access/models/pb_access_facade.py:0
+#: code:addons/biz_access/models/pb_access_approval.py:0
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Choose at least one thing to hand over."
+msgstr "Hãy chọn ít nhất một thứ để bàn giao."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "\"%s\" would carry the administrator permission for the whole system. It is never handed over from this screen."
+msgstr "\"%s\" sẽ mang theo quyền quản trị toàn hệ thống. Quyền này không bao giờ được bàn giao từ màn hình này."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "You do not have %s, so you cannot hand it to anybody else. You can only lend what you hold yourself."
+msgstr "Bạn không có %s, nên không thể trao nó cho người khác. Bạn chỉ có thể bàn giao những gì chính mình đang có."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "%(who)s does not have %(what)s, so it cannot be handed to anybody else. You can only lend what somebody holds themselves."
+msgstr "%(who)s không có %(what)s, nên không thể trao nó cho người khác. Chỉ có thể bàn giao những gì người đó đang có."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "Only a hand-over that is running can be taken back. This one is %s."
+msgstr "Chỉ có thể thu hồi lần bàn giao đang hiệu lực. Lần này đang ở trạng thái %s."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Taken back by %s."
+msgstr "Đã được %s thu hồi."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "1 permission was"
+msgstr "1 quyền"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "%s permissions were"
+msgstr "%s quyền"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "%(n)s taken back."
+msgstr "Đã thu hồi %(n)s."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "1 had"
+msgstr "1 quyền"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "%s had"
+msgstr "%s quyền"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "%(body)s %(n)s already been removed by somebody else."
+msgstr "%(body)s %(n)s đã bị người khác gỡ trước đó."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "nothing"
+msgstr "không có gì"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "Ended on its own on %s, the day after it was due to finish."
+msgstr "Tự kết thúc vào %s, một ngày sau ngày hết hạn."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "Nothing was due to end. Every hand-over that is running still has time on it."
+msgstr "Không có gì cần kết thúc. Mọi lần bàn giao đang hiệu lực đều còn thời hạn."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "1 hand-over"
+msgstr "1 lần bàn giao"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "%s hand-overs"
+msgstr "%s lần bàn giao"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "%(ended)s ended and %(removed)s taken back."
+msgstr "Đã kết thúc %(ended)s và thu hồi %(removed)s."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "%s ended, and nothing needed taking back."
+msgstr "Đã kết thúc %s, không có gì cần thu hồi."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "%(line)s %(n)s already been removed by somebody else."
+msgstr "%(line)s %(n)s đã bị người khác gỡ trước đó."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "is still running"
+msgstr "vẫn đang hiệu lực"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "are still running"
+msgstr "vẫn đang hiệu lực"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "it"
+msgstr "lần bàn giao đó"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "them"
+msgstr "các lần bàn giao đó"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "%(line)s %(n)s could not be ended and %(still)s — an administrator should look at %(them)s."
+msgstr "%(line)s %(n)s không thể kết thúc và %(still)s — quản trị viên nên kiểm tra %(them)s."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_delegation.py:0
+msgid "You can hand over your own access. Handing over somebody else's is something the access team does."
+msgstr "Bạn có thể bàn giao quyền của chính mình. Bàn giao quyền của người khác là việc của nhóm quản lý quyền truy cập."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_role_ability.py:0
+msgid "\"%(what)s\" would carry %(bad)s — the administrator permission for the whole system. That is never something a role can hand out. An administrator changes it on the person's own record, deliberately."
+msgstr "\"%(what)s\" sẽ mang theo %(bad)s — quyền quản trị toàn hệ thống. Một vai trò không bao giờ được trao quyền này. Quản trị viên chỉ thay đổi nó trên hồ sơ của chính người đó, một cách có chủ đích."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_request.py:0
+msgid "%(what)s · %(roles)s · %(who)s"
+msgstr "%(what)s · %(roles)s · %(who)s"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_request.py:0
+msgid "Access request"
+msgstr "Yêu cầu quyền truy cập"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_request.py:0
+msgid "What is being asked"
+msgstr "Nội dung yêu cầu"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_request.py:0
+msgid "How many roles"
+msgstr "Số vai trò"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_request.py:0
+msgid "Ends on a date"
+msgstr "Kết thúc vào một ngày"
+
+#. module: biz_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_request.py:0
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Which roles"
+msgstr "Những vai trò nào"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_request.py:0
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: biz_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_request.py:0
+#: code:addons/biz_access/models/pb_access_facade.py:0
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "1 role"
+msgstr "1 vai trò"
+
+#. module: biz_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_request.py:0
+#: code:addons/biz_access/models/pb_access_facade.py:0
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%s roles"
+msgstr "%s vai trò"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_request.py:0
+msgid "Handed to"
+msgstr "Bàn giao cho"
+
+#. module: biz_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_request.py:0
+#: code:addons/biz_access/models/access_export.py:0
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Until"
+msgstr "Đến ngày"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_request.py:0
+msgid "What would change"
+msgstr "Điều gì sẽ thay đổi"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_request.py:0
+msgid "Who"
+msgstr "Ai"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_request.py:0
+msgid "This is approved, but %s is not allowed to change who holds a role. Ask somebody who looks after approvals to move this step to a person who is, or give them that permission first."
+msgstr "Yêu cầu này đã được phê duyệt, nhưng %s không được phép thay đổi người giữ vai trò. Hãy nhờ người phụ trách phê duyệt chuyển bước này cho người có quyền đó, hoặc cấp quyền đó cho họ trước."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_request.py:0
+msgid "Approver"
+msgstr "Người phê duyệt"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_role_profile.py:0
+msgid "\"%(what)s\" would carry %(bad)s — the administrator permission for the whole system. It is not something this board can hand out, and it cannot be put on a role. An administrator changes it on the person's own record, deliberately."
+msgstr "\"%(what)s\" sẽ mang theo %(bad)s — quyền quản trị toàn hệ thống. Bảng này không thể trao quyền đó, và cũng không thể gắn nó vào một vai trò. Quản trị viên chỉ thay đổi nó trên hồ sơ của chính người đó, một cách có chủ đích."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_role_profile.py:0
+msgid "\"%s\" is the administrator permission for the whole system. It is not something this board can hand out, and it cannot be put on a profile. An administrator changes it on the user record itself, deliberately."
+msgstr "\"%s\" là quyền quản trị toàn hệ thống. Bảng này không thể trao quyền đó, và cũng không thể gắn nó vào một hồ sơ quyền. Quản trị viên chỉ thay đổi nó trực tiếp trên tài khoản người dùng, một cách có chủ đích."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "This board is for people with a full login. Portal accounts do not have one."
+msgstr "Bảng này dành cho người có tài khoản đăng nhập đầy đủ. Tài khoản cổng thông tin không có loại đó."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Giving somebody a role, or taking one away, is something the access team does. You can still hand over your own access for a while — that is the other tab."
+msgstr "Giao hoặc thu hồi vai trò là việc của nhóm quản lý quyền truy cập. Bạn vẫn có thể bàn giao quyền của mình trong một thời gian — đó là ở thẻ bên cạnh."
+
+#. module: biz_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "For a while"
+msgstr "Có thời hạn"
+
+#. module: biz_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "For good"
+msgstr "Vĩnh viễn"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Not started"
+msgstr "Chưa bắt đầu"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Running"
+msgstr "Đang hiệu lực"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Ended"
+msgstr "Đã kết thúc"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Taken back"
+msgstr "Đã thu hồi"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "No roles have been written down yet."
+msgstr "Chưa có vai trò nào được ghi lại."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "You hold 1"
+msgstr "Bạn giữ 1"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "You hold %s"
+msgstr "Bạn giữ %s"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%(p)s in plain English — who holds them, and what each one opens. %(m)s."
+msgstr "%(p)s bằng lời dễ hiểu — ai đang giữ, và mỗi vai trò mở ra những gì. %(m)s."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+#: code:addons/biz_access/models/pb_access_approval.py:0
+msgid "%(who)s already has \"%(what)s\"."
+msgstr "%(who)s đã có \"%(what)s\"."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Given on the roles board."
+msgstr "Được giao trên bảng vai trò."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%(who)s now has \"%(what)s\"."
+msgstr "%(who)s giờ đã có \"%(what)s\"."
+
+#. module: biz_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+#: code:addons/biz_access/models/pb_access_approval.py:0
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Choose at least one role."
+msgstr "Hãy chọn ít nhất một vai trò."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Choose no more than 100 roles at a time."
+msgstr "Mỗi lần chỉ chọn tối đa 100 vai trò."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+#: code:addons/biz_access/models/pb_access_approval.py:0
+msgid "%s already has all of those roles."
+msgstr "%s đã có tất cả các vai trò đó."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Given together on the roles board."
+msgstr "Được giao cùng lúc trên bảng vai trò."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%(who)s now has %(count)s new roles."
+msgstr "%(who)s giờ có thêm %(count)s vai trò mới."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Choose a different person to copy from."
+msgstr "Hãy chọn một người khác để sao chép."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%s has no permanent roles to copy."
+msgstr "%s không có vai trò cố định nào để sao chép."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Copied from %s on the roles board."
+msgstr "Sao chép từ %s trên bảng vai trò."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "another role"
+msgstr "một vai trò khác"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%(who)s has \"%(what)s\" through %(others)s, not as a separate role. Remove %(others)s instead — removing \"%(what)s\" would change nothing."
+msgstr "%(who)s có \"%(what)s\" thông qua %(others)s, không phải một vai trò riêng. Hãy gỡ %(others)s — gỡ \"%(what)s\" sẽ không thay đổi gì."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%(who)s does not have \"%(what)s\"."
+msgstr "%(who)s không có \"%(what)s\"."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Every permission in \"%(what)s\" is also part of %(others)s, which %(who)s holds too — so taking this one away would change nothing. Take the other one away instead, or, if the two roles have come to mean the same thing, archive one of them from its own card."
+msgstr "Mọi quyền trong \"%(what)s\" cũng nằm trong %(others)s, mà %(who)s cũng đang giữ — nên gỡ vai trò này sẽ không thay đổi gì. Hãy gỡ vai trò kia, hoặc nếu hai vai trò giờ đã giống nhau, hãy cất một trong hai đi từ thẻ của nó."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Taken away on the roles board."
+msgstr "Được gỡ trên bảng vai trò."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Taken away by %s."
+msgstr "Đã được %s gỡ."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%(who)s no longer has \"%(what)s\"."
+msgstr "%(who)s không còn \"%(what)s\" nữa."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "That role is not on this system any more."
+msgstr "Vai trò đó không còn trên hệ thống."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "\"%s\" does not point at a permission, so there is nothing to hand out."
+msgstr "\"%s\" không gắn với quyền nào, nên không có gì để trao."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "\"%s\" would carry the administrator permission for the whole system. It is never given out from this screen — an administrator changes it on the person's own record, deliberately."
+msgstr "\"%s\" sẽ mang theo quyền quản trị toàn hệ thống. Quyền này không bao giờ được trao từ màn hình này — quản trị viên chỉ thay đổi nó trên hồ sơ của chính người đó, một cách có chủ đích."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "That person does not have a login here."
+msgstr "Người đó không có tài khoản đăng nhập ở đây."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%s has an employee login only. Roles are for people who work inside this application."
+msgstr "%s chỉ có tài khoản nhân viên. Vai trò dành cho những người làm việc bên trong ứng dụng này."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Say which day it ends. That is what takes the access back without anybody having to remember."
+msgstr "Hãy cho biết ngày kết thúc. Ngày đó sẽ tự thu hồi quyền mà không ai phải nhớ."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid " until %s"
+msgstr " đến %s"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%(who)s can now do it on your behalf%(until)s."
+msgstr "%(who)s giờ có thể làm việc đó thay bạn%(until)s."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "That hand-over is not on this system."
+msgstr "Lần bàn giao đó không có trên hệ thống."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "You can take back what you lent. Taking back somebody else's hand-over is something the access team does."
+msgstr "Bạn có thể thu hồi những gì mình đã bàn giao. Thu hồi lần bàn giao của người khác là việc của nhóm quản lý quyền truy cập."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "The access has been taken back."
+msgstr "Quyền đã được thu hồi."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Re-reading the role catalogue is something a system administrator does."
+msgstr "Đọc lại danh mục vai trò là việc của quản trị viên hệ thống."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "does not open anything new on the left menu"
+msgstr "không mở thêm mục nào trên menu bên trái"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "opens %s"
+msgstr "mở %s"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "opens %(most)s and %(last)s"
+msgstr "mở %(most)s và %(last)s"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Give the role a name somebody could say out loud — it is what people will ask for by."
+msgstr "Hãy đặt cho vai trò một cái tên dễ gọi — đó là tên mọi người sẽ dùng khi xin quyền."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Tick at least one thing this role lets somebody do. A role with nothing in it is a name that hands out nothing."
+msgstr "Hãy đánh dấu ít nhất một việc vai trò này cho phép làm. Vai trò không có gì bên trong chỉ là một cái tên không trao được gì."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "There is already a role called \"%s\". Two roles with one name is how somebody ends up granting the wrong one — give this one a different name, or change the one that exists."
+msgstr "Đã có một vai trò tên \"%s\". Hai vai trò trùng tên dễ khiến ai đó giao nhầm — hãy đặt tên khác cho vai trò này, hoặc sửa vai trò đang có."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "That would carry %s — the administrator permission for the whole system. It is never something a role can hand out."
+msgstr "Điều đó sẽ mang theo %s — quyền quản trị toàn hệ thống. Một vai trò không bao giờ được trao quyền này."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "\"%(what)s\" would hand out exactly what \"%(twin)s\" already hands out, down to the last permission. Two roles that mean the same thing cannot be told apart afterwards, and neither can be taken away from somebody who holds both. Give this one something \"%(twin)s\" does not have — or start from \"%(twin)s\" and change it."
+msgstr "\"%(what)s\" sẽ trao đúng y những gì \"%(twin)s\" đang trao, không sót một quyền nào. Hai vai trò giống hệt nhau thì về sau không phân biệt được, và không thể gỡ khỏi người đang giữ cả hai. Hãy cho vai trò này thêm điều gì đó mà \"%(twin)s\" không có — hoặc bắt đầu từ \"%(twin)s\" rồi chỉnh sửa."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "\"%s\" is written down. Nobody holds it yet — give it to somebody when you are ready."
+msgstr "\"%s\" đã được ghi lại. Chưa ai giữ vai trò này — hãy giao cho ai đó khi bạn sẵn sàng."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "1 person is"
+msgstr "1 người"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%s people are"
+msgstr "%s người"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "\"%(what)s\" is written down. %(who)s already able to do all of it, so they hold it from the start."
+msgstr "\"%(what)s\" đã được ghi lại. %(who)s đã làm được tất cả những việc này, nên họ giữ vai trò ngay từ đầu."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "holds"
+msgstr "đang giữ"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "hold"
+msgstr "đang giữ"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid " and %s more"
+msgstr " và %s người khác"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%(who)s still %(has)s \"%(what)s\"%(more)s. Take it away from them first — archiving it would leave them holding access this board can no longer name."
+msgstr "%(who)s vẫn %(has)s \"%(what)s\"%(more)s. Hãy gỡ vai trò khỏi họ trước — nếu cất đi lúc này, họ sẽ giữ một quyền mà bảng này không còn gọi tên được."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "\"%s\" is part of a hand-over that is still running. End the hand-over first — the Hand-overs tab has it."
+msgstr "\"%s\" là một phần của lần bàn giao vẫn đang hiệu lực. Hãy kết thúc lần bàn giao đó trước — xem ở thẻ Bàn giao."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "\"%s\" has been put away. It is off the board, and everything it was ever part of is still in the history."
+msgstr "\"%s\" đã được cất đi. Vai trò không còn trên bảng, và mọi lần nó từng xuất hiện vẫn còn trong lịch sử."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%(said)s One entry on the left menu was opened only by it — %(where)s — so nobody can reach that entry now. The Screens lens shows it with a warning."
+msgstr "%(said)s Một mục trên menu bên trái chỉ được mở bởi vai trò này — %(where)s — nên giờ không ai vào được mục đó. Thẻ Màn hình sẽ hiện nó kèm cảnh báo."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "You can look at your own access here. Looking at somebody else's is something the access team does."
+msgstr "Bạn có thể xem quyền của chính mình ở đây. Xem quyền của người khác là việc của nhóm quản lý quyền truy cập."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Enter the person's name."
+msgstr "Hãy nhập tên của người đó."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Enter a valid work email address."
+msgstr "Hãy nhập email công việc hợp lệ."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%s already has a login. Find them in the People list."
+msgstr "%s đã có tài khoản đăng nhập. Hãy tìm họ trong danh sách Nhân sự."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%s already has an archived login. Ask an administrator to restore it instead of creating a second account."
+msgstr "%s đã có một tài khoản đăng nhập bị lưu trữ. Hãy nhờ quản trị viên khôi phục thay vì tạo tài khoản thứ hai."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%(name)s was added and an invitation was sent to %(email)s. You can now give them a role."
+msgstr "Đã thêm %(name)s và gửi lời mời đến %(email)s. Giờ bạn có thể giao vai trò cho họ."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%(name)s was added, but the invitation email could not be sent. They cannot set their password from that email yet. Try sending it again after the mail server is working."
+msgstr "Đã thêm %(name)s, nhưng không gửi được email mời. Họ chưa thể đặt mật khẩu từ email đó. Hãy gửi lại sau khi máy chủ thư hoạt động."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "There is no left menu on this system yet."
+msgstr "Hệ thống này chưa có menu bên trái."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Every entry on the left menu is open to everybody with a login. Put a role on one and only the people who hold it will see it."
+msgstr "Mọi mục trên menu bên trái đều mở cho tất cả người có tài khoản đăng nhập. Gắn một vai trò vào một mục, thì chỉ người giữ vai trò đó mới thấy mục đó."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Every entry on the left menu asks for something."
+msgstr "Mọi mục trên menu bên trái đều yêu cầu một quyền nào đó."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "1 entry"
+msgstr "1 mục"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%s entries"
+msgstr "%s mục"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "is"
+msgstr "được"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "are"
+msgstr "được"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "1 is"
+msgstr "1 mục"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%s are"
+msgstr "%s mục"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%(g)s on the left menu %(v)s limited to a role; %(e)s open to everybody with a login."
+msgstr "%(g)s trên menu bên trái %(v)s giới hạn theo vai trò; %(e)s mở cho mọi người có tài khoản đăng nhập."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "That entry is not on the left menu any more."
+msgstr "Mục đó không còn trên menu bên trái."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Holds %s"
+msgstr "Giữ %s"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "An older permission this entry has always asked for"
+msgstr "Một quyền cũ mà mục này vẫn luôn yêu cầu"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "An administrator — every entry is open to them"
+msgstr "Quản trị viên — mọi mục đều mở cho họ"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "\"%s\" does not hand out anything yet, so putting it on this entry would gate it on nothing."
+msgstr "\"%s\" chưa trao quyền gì, nên gắn nó vào mục này sẽ không giới hạn được gì."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "\"%s\" would carry the administrator permission for the whole system. It is never something a role can hand out, and never something a screen can ask for."
+msgstr "\"%s\" sẽ mang theo quyền quản trị toàn hệ thống. Một vai trò không bao giờ được trao quyền này, và một màn hình cũng không bao giờ được yêu cầu quyền này."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "One more role"
+msgstr "Một vai trò nữa"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%s more roles"
+msgstr "%s vai trò nữa"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%(n)s can now open %(what)s."
+msgstr "%(n)s giờ có thể mở %(what)s."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%s is open to everybody with a login again."
+msgstr "%s lại mở cho mọi người có tài khoản đăng nhập."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "One role"
+msgstr "Một vai trò"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "%(n)s no longer opens %(what)s."
+msgstr "%(n)s không còn mở %(what)s nữa."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "The roles that open %s have been changed."
+msgstr "Các vai trò mở %s đã được thay đổi."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Nothing changed — those are the roles it already asked for."
+msgstr "Không có gì thay đổi — đó chính là những vai trò mục này đã yêu cầu."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "Nothing was asked for."
+msgstr "Không có yêu cầu nào."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "\"%s\" is back on the left menu."
+msgstr "\"%s\" đã trở lại menu bên trái."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "\"%s\" is off the left menu. Nobody sees it, and nothing behind it has changed — switch it back on whenever you want."
+msgstr "\"%s\" đã được ẩn khỏi menu bên trái. Không ai thấy nó, và mọi thứ phía sau vẫn giữ nguyên — bật lại bất cứ lúc nào bạn muốn."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "People who cannot open \"%s\" now see it locked, with a note saying what it is."
+msgstr "Những người không mở được \"%s\" giờ sẽ thấy nó bị khóa, kèm ghi chú cho biết đó là gì."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "People who cannot open \"%s\" no longer see it at all."
+msgstr "Những người không mở được \"%s\" giờ sẽ không thấy nó nữa."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "That block of the left menu is not here."
+msgstr "Khối đó của menu bên trái không có ở đây."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "\"%s\" is not in that part of the menu. Entries are reordered inside their own block."
+msgstr "\"%s\" không nằm trong phần menu đó. Các mục chỉ được sắp xếp lại bên trong khối của chính chúng."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_facade.py:0
+msgid "The left menu is in the new order."
+msgstr "Menu bên trái đã theo thứ tự mới."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_approval.py:0
+msgid "Done, and recorded."
+msgstr "Đã xong và đã được ghi lại."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_approval.py:0
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/pb_access_approval.py:0
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "This system cannot build spreadsheets at the moment. Ask an administrator to look at it."
+msgstr "Hệ thống hiện không tạo được bảng tính. Hãy nhờ quản trị viên kiểm tra."
+
+#. module: biz_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Who holds what"
+msgstr "Ai giữ quyền gì"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Role"
+msgstr "Vai trò"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Area"
+msgstr "Khu vực"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "What this lets someone do"
+msgstr "Vai trò này cho phép làm gì"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Person"
+msgstr "Người"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Their login"
+msgstr "Tài khoản đăng nhập"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Permission group"
+msgstr "Nhóm quyền"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Nobody holds this yet"
+msgstr "Chưa ai giữ vai trò này"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "and %s more"
+msgstr "và %s người khác"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Who holds what %s.xlsx"
+msgstr "Ai giữ quyền gì %s.xlsx"
+
+#. module: biz_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+#: code:addons/biz_access/static/src/js/access_palette.js:0
+msgid "Access history"
+msgstr "Lịch sử quyền truy cập"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "When"
+msgstr "Thời điểm"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "How it happened"
+msgstr "Cách thực hiện"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Lent by"
+msgstr "Người bàn giao"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Lent to"
+msgstr "Người nhận bàn giao"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "What"
+msgstr "Nội dung"
+
+#. module: biz_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "For how long"
+msgstr "Thời hạn"
+
+#. module: biz_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "From"
+msgstr "Từ ngày"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Where it is"
+msgstr "Trạng thái"
+
+#. module: biz_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Why"
+msgstr "Lý do"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Permissions moved"
+msgstr "Các quyền đã chuyển"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Handed over at"
+msgstr "Bàn giao lúc"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Taken back at"
+msgstr "Thu hồi lúc"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "What happened at the end"
+msgstr "Kết quả khi kết thúc"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Access history %s.xlsx"
+msgstr "Lịch sử quyền truy cập %s.xlsx"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+#: code:addons/biz_access/static/src/js/access_palette.js:0
+msgid "Roles"
+msgstr "Vai trò"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "People"
+msgstr "Nhân sự"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Screens"
+msgstr "Màn hình"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Hand-overs"
+msgstr "Bàn giao"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "The access board could not be read."
+msgstr "Không đọc được bảng quyền truy cập."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "roles written down"
+msgstr "vai trò đã ghi lại"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "people hold one"
+msgstr "người đang giữ vai trò"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "hand-overs running now"
+msgstr "lần bàn giao đang hiệu lực"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "you hold yourself"
+msgstr "vai trò bạn đang giữ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "entries on the left menu"
+msgstr "mục trên menu bên trái"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "That role could not be opened out."
+msgstr "Không mở được chi tiết vai trò đó."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Held by nobody yet"
+msgstr "Chưa ai giữ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Held by 1 person"
+msgstr "1 người đang giữ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Held by %s people"
+msgstr "%s người đang giữ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Lent by %s"
+msgstr "Được %s bàn giao"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Lent by %s, until %s"
+msgstr "Được %s bàn giao, đến %s"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Plus %s, which everybody sees."
+msgstr "Cộng thêm %s, mục ai cũng thấy."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Plus %s and %s, which everybody sees."
+msgstr "Cộng thêm %s và %s, những mục ai cũng thấy."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Plus %s and %s more, which everybody sees."
+msgstr "Cộng thêm %s và %s mục khác, những mục ai cũng thấy."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Running, with no end date."
+msgstr "Đang hiệu lực, không có ngày kết thúc."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Overdue — it should have ended."
+msgstr "Quá hạn — lẽ ra đã phải kết thúc."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Ends today."
+msgstr "Kết thúc hôm nay."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Ends tomorrow."
+msgstr "Kết thúc ngày mai."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%s days left."
+msgstr "Còn %s ngày."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "The list of people could not be read."
+msgstr "Không đọc được danh sách người dùng."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "That person's access could not be read."
+msgstr "Không đọc được quyền truy cập của người đó."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "That person could not be added."
+msgstr "Không thêm được người đó."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "There is no left menu on this system."
+msgstr "Hệ thống này không có menu bên trái."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Sees all %s entries on the left menu — they are an administrator."
+msgstr "Thấy cả %s mục trên menu bên trái — người này là quản trị viên."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Sees %s of %s entries on the left menu, plus %s shown locked."
+msgstr "Thấy %s trên %s mục của menu bên trái, cộng thêm %s mục hiện dạng khóa."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Sees %s of %s entries on the left menu."
+msgstr "Thấy %s trên %s mục của menu bên trái."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "No roles"
+msgstr "Chưa có vai trò"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%s · %s lent"
+msgstr "%s · %s được bàn giao"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Theirs"
+msgstr "Của họ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "What %s was given, and when"
+msgstr "%s đã được giao những gì, và khi nào"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Those roles could not be read."
+msgstr "Không đọc được các vai trò đó."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "The left menu could not be read."
+msgstr "Không đọc được menu bên trái."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "That entry could not be opened out."
+msgstr "Không mở được chi tiết mục đó."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Showing what YOU can open. Pick somebody in \"See it as\" to look through their eyes."
+msgstr "Đang hiện những gì BẠN mở được. Chọn một người trong \"Xem như\" để nhìn bằng góc nhìn của họ."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Showing what %s can open."
+msgstr "Đang hiện những gì %s mở được."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "off the menu"
+msgstr "đã ẩn khỏi menu"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "sees it"
+msgstr "thấy được"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "sees it locked"
+msgstr "thấy dạng khóa"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+#: code:addons/biz_access/static/src/xml/mini_rail.xml:0
+msgid "not on their menu"
+msgstr "không có trên menu của họ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Everybody with a login"
+msgstr "Mọi người có tài khoản đăng nhập"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Nobody can open it"
+msgstr "Không ai mở được"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "1 person can open it"
+msgstr "1 người mở được"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%s people can open it"
+msgstr "%s người mở được"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Also opens for anybody who holds %s."
+msgstr "Cũng mở cho bất kỳ ai giữ %s."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Also opens for anybody who holds %s or %s."
+msgstr "Cũng mở cho bất kỳ ai giữ %s hoặc %s."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "It also asks for one older permission, kept from before roles were written down."
+msgstr "Mục này còn yêu cầu một quyền cũ, có từ trước khi các vai trò được ghi lại."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "It also asks for %s older permissions, kept from before roles were written down."
+msgstr "Mục này còn yêu cầu %s quyền cũ, có từ trước khi các vai trò được ghi lại."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "That gate could not be changed."
+msgstr "Không thay đổi được giới hạn đó."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "That could not be changed."
+msgstr "Không thay đổi được."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "The order could not be saved."
+msgstr "Không lưu được thứ tự."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "you"
+msgstr "bạn"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%s holds this"
+msgstr "%s giữ vai trò này"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Choose whose roles to copy."
+msgstr "Hãy chọn sao chép vai trò của ai."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Choose which role to give them."
+msgstr "Hãy chọn vai trò sẽ giao cho họ."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Choose who it is for."
+msgstr "Hãy chọn người được giao."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "See the request"
+msgstr "Xem yêu cầu"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "That could not be done."
+msgstr "Không thực hiện được."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "That role could not be put away."
+msgstr "Không cất được vai trò đó."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Choose who is covering for you."
+msgstr "Hãy chọn người làm thay cho bạn."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Say which day it ends. That is what takes it back without anybody having to remember."
+msgstr "Hãy cho biết ngày kết thúc. Ngày đó sẽ tự thu hồi mà không ai phải nhớ."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "That could not be handed over."
+msgstr "Không bàn giao được."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "That could not be taken back."
+msgstr "Không thu hồi được."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "That check could not be run."
+msgstr "Không chạy được lần kiểm tra đó."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "The role builder could not be opened."
+msgstr "Không mở được trình tạo vai trò."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Copy of %s"
+msgstr "Bản sao của %s"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid " and "
+msgstr " và "
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Nothing ticked yet."
+msgstr "Chưa đánh dấu gì."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "1 ability"
+msgstr "1 quyền thao tác"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%s abilities"
+msgstr "%s quyền thao tác"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Nobody holds it yet."
+msgstr "Chưa ai giữ vai trò này."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "1 person can already do all of it."
+msgstr "1 người đã làm được tất cả những việc này."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%s people can already do all of it."
+msgstr "%s người đã làm được tất cả những việc này."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%s ticked. %s"
+msgstr "Đã đánh dấu %s. %s"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "1 menu entry"
+msgstr "1 mục menu"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%s menu entries"
+msgstr "%s mục menu"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%s ticked, unlocking %s. %s"
+msgstr "Đã đánh dấu %s, mở ra %s. %s"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "That role could not be written down."
+msgstr "Không ghi lại được vai trò đó."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "The spreadsheet has been downloaded."
+msgstr "Đã tải bảng tính xuống."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "That could not be built."
+msgstr "Không tạo được."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_palette.js:0
+msgid "Access & delegation"
+msgstr "Quyền truy cập & bàn giao"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_palette.js:0
+msgid "Who can do what, said in words — and covering for somebody without giving away the building."
+msgstr "Ai được làm gì, nói bằng lời dễ hiểu — và làm thay ai đó mà không phải trao hết mọi quyền."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_palette.js:0
+msgid "Every role in plain English, who holds it, and hand-overs that take themselves back."
+msgstr "Mọi vai trò bằng lời dễ hiểu, ai đang giữ, và những lần bàn giao tự thu hồi khi hết hạn."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_palette.js:0
+msgid "Navigation"
+msgstr "Điều hướng"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_palette.js:0
+msgid "What the left menu offers, who can see each entry, and in what order."
+msgstr "Menu bên trái có những gì, ai thấy được từng mục, và theo thứ tự nào."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_palette.js:0
+msgid "The left menu"
+msgstr "Menu bên trái"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_palette.js:0
+msgid "Every entry drawn as the menu itself — who can open it, why, and in what order."
+msgstr "Mọi mục được vẽ đúng như trên menu — ai mở được, vì sao, và theo thứ tự nào."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_palette.js:0
+msgid "Admin"
+msgstr "Quản trị"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_palette.js:0
+msgid "Hand my access to somebody"
+msgstr "Bàn giao quyền của tôi cho người khác"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_palette.js:0
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Access"
+msgstr "Quyền truy cập"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/mini_rail.js:0
+msgid "They can open this."
+msgstr "Họ mở được mục này."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/mini_rail.js:0
+msgid "They see this, locked, with a note about what it is."
+msgstr "Họ thấy mục này ở dạng khóa, kèm ghi chú cho biết đó là gì."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/mini_rail.js:0
+msgid "This is not on their menu at all."
+msgstr "Mục này hoàn toàn không có trên menu của họ."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/mini_rail.js:0
+msgid "%s of %s"
+msgstr "%s / %s"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Reading who can do what…"
+msgstr "Đang đọc ai được làm gì…"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "The access board could not be read"
+msgstr "Không đọc được bảng quyền truy cập"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Look at these screens as somebody else. It changes nothing."
+msgstr "Xem các màn hình này dưới góc nhìn của người khác. Không thay đổi gì cả."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "See it as"
+msgstr "Xem như"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "See it as somebody else"
+msgstr "Xem như người khác"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Everything on this screen is drawn as they would see it.\n                  Nothing you do changes because of it."
+msgstr "Mọi thứ trên màn hình này được hiện đúng như họ sẽ thấy. Những gì bạn làm không bị ảnh hưởng."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "You"
+msgstr "Bạn"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Back to your own view"
+msgstr "Quay lại góc nhìn của bạn"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Start typing a name"
+msgstr "Bắt đầu gõ tên"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Nobody with a login matches that."
+msgstr "Không có tài khoản nào khớp."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Read it again"
+msgstr "Đọc lại"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "One line per person per role"
+msgstr "Mỗi dòng là một người với một vai trò"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Every hand-over, grant and removal, ever"
+msgstr "Mọi lần bàn giao, giao quyền và gỡ quyền, từ trước đến nay"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "History"
+msgstr "Lịch sử"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Do now exactly what the nightly check does"
+msgstr "Làm ngay việc mà lần kiểm tra ban đêm vẫn làm"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Take back what has ended"
+msgstr "Thu hồi những gì đã hết hạn"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Add a role, rename one, or change what it says"
+msgstr "Thêm vai trò, đổi tên, hoặc sửa mô tả"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Edit the list of roles"
+msgstr "Sửa danh sách vai trò"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Hand my access over"
+msgstr "Bàn giao quyền của tôi"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "New role"
+msgstr "Vai trò mới"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Roles they hold are tagged, and the People lens is on their\n              passport. You still have exactly your own access."
+msgstr "Các vai trò họ giữ được gắn nhãn, và thẻ Nhân sự đang mở hồ sơ của họ. Quyền của bạn vẫn giữ nguyên."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Search a role, or what it lets someone do"
+msgstr "Tìm vai trò, hoặc việc nó cho phép làm"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "No roles written down yet"
+msgstr "Chưa có vai trò nào được ghi lại"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "A role here is a permission this product already has, given a name\n              somebody can say out loud and one sentence explaining what it lets\n              them do. It is what makes \"give Mai the payroll thing\" a decision\n              instead of a guess."
+msgstr "Mỗi vai trò ở đây là một quyền sẵn có trong sản phẩm, được đặt một cái tên dễ gọi và một câu giải thích nó cho phép làm gì. Nhờ vậy, \"giao cho Mai quyền lương\" là một quyết định rõ ràng thay vì phỏng đoán."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "You hold this"
+msgstr "Bạn giữ vai trò này"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Restricted"
+msgstr "Hạn chế"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Only shown to the people this concerns"
+msgstr "Chỉ hiện với những người liên quan"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Working out what this opens…"
+msgstr "Đang xác định vai trò này mở ra những gì…"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Opens on the left menu"
+msgstr "Mở trên menu bên trái"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "People without this role still see this entry, locked, with a note about what it is."
+msgstr "Người không có vai trò này vẫn thấy mục này ở dạng khóa, kèm ghi chú cho biết đó là gì."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "No entry on the left menu is limited to a permission\n                        yet, so nothing here changes what somebody SEES down\n                        the side of the screen. What this role changes is what\n                        they can do once they are inside."
+msgstr "Chưa có mục nào trên menu bên trái bị giới hạn theo quyền, nên vai trò này không thay đổi những gì ai đó THẤY ở menu bên cạnh. Điều vai trò này thay đổi là những việc họ làm được khi đã vào bên trong."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "This role does not unlock any entry on the left menu.\n                        It changes what somebody can do inside the screens they\n                        already have."
+msgstr "Vai trò này không mở thêm mục nào trên menu bên trái. Nó thay đổi những việc ai đó làm được bên trong các màn hình họ đã có."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Lets them"
+msgstr "Cho phép họ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Nothing is written against this role yet, so it hands\n                        out nothing. Open the list of roles to say what it\n                        should let somebody do."
+msgstr "Vai trò này chưa có nội dung nào, nên chưa trao được gì. Hãy mở danh sách vai trò để ghi rõ nó cho phép làm gì."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Nobody holds this yet. It is written down and ready —\n                        give it to somebody when you need to."
+msgstr "Chưa ai giữ vai trò này. Vai trò đã được ghi lại và sẵn sàng — hãy giao cho ai đó khi cần."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Lent"
+msgstr "Được bàn giao"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "End the hand-over"
+msgstr "Kết thúc bàn giao"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Take back"
+msgstr "Thu hồi"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Give this to somebody"
+msgstr "Giao vai trò này cho ai đó"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Take it off the board. It hands out nothing, nobody loses a permission, and the history keeps every mention of it."
+msgstr "Đưa vai trò ra khỏi bảng. Vai trò không trao gì nữa, không ai mất quyền nào, và lịch sử vẫn giữ mọi lần nó được nhắc đến."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Put this role away"
+msgstr "Cất vai trò này đi"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "People with access"
+msgstr "Người có quyền truy cập"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Choose someone to see what they can use."
+msgstr "Chọn một người để xem họ dùng được những gì."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Add a person"
+msgstr "Thêm người"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Search a name"
+msgstr "Tìm theo tên"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Reading the list…"
+msgstr "Đang đọc danh sách…"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Nobody with a login matches that. Try part of a name, or clear\n                the box to see everybody."
+msgstr "Không có tài khoản nào khớp. Hãy thử một phần của tên, hoặc xóa ô tìm kiếm để xem tất cả."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Working out what they can see…"
+msgstr "Đang xác định họ thấy được những gì…"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Their history"
+msgstr "Lịch sử của họ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Give a role"
+msgstr "Giao vai trò"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "There is no left menu written down on this system, so there\n                    is nothing to draw here yet."
+msgstr "Hệ thống này chưa ghi lại menu bên trái nào, nên chưa có gì để vẽ ở đây."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "They are an administrator, so every entry is open to them\n                      whatever roles they hold. Roles change what they can do\n                      inside a screen, not whether they can reach it."
+msgstr "Người này là quản trị viên, nên mọi mục đều mở cho họ dù họ giữ vai trò nào. Vai trò thay đổi việc họ làm được bên trong một màn hình, chứ không quyết định họ có vào được hay không."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "No entry on the left menu is limited to a permission yet,\n                      so everybody with a login sees the same menu. What a role\n                      changes today is what somebody can do once they are\n                      inside a screen."
+msgstr "Chưa có mục nào trên menu bên trái bị giới hạn theo quyền, nên mọi người có tài khoản đăng nhập đều thấy cùng một menu. Hiện tại, vai trò chỉ thay đổi những việc ai đó làm được khi đã vào một màn hình."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Roles they carry"
+msgstr "Vai trò họ đang giữ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "No roles yet. They see only the entries every account\n                      gets, and can do only what comes with having a login."
+msgstr "Chưa có vai trò. Họ chỉ thấy các mục mà mọi tài khoản đều có, và chỉ làm được những việc đi kèm tài khoản đăng nhập."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Pick somebody"
+msgstr "Chọn một người"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Choose a name on the left and this side shows their left menu\n                exactly as they see it, and every role they carry."
+msgstr "Chọn một tên ở bên trái, bên này sẽ hiện menu bên trái đúng như họ thấy, cùng mọi vai trò họ đang giữ."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Reading the left menu…"
+msgstr "Đang đọc menu bên trái…"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "The left menu could not be read"
+msgstr "Không đọc được menu bên trái"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "There is no left menu on this system"
+msgstr "Hệ thống này không có menu bên trái"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Nothing is written down for the menu down the side of the\n                screen, so there is nothing here to gate or reorder yet."
+msgstr "Chưa có gì được ghi lại cho menu bên cạnh màn hình, nên chưa có gì để giới hạn hay sắp xếp lại."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Drag an entry to move it, or hold\n                  Alt and press the up and down arrows"
+msgstr "Kéo một mục để di chuyển, hoặc giữ Alt và nhấn phím mũi tên lên, xuống"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Locked block"
+msgstr "Khối bị khóa"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "This whole block is shown locked to people who are not administrators."
+msgstr "Cả khối này hiện dạng khóa với những người không phải quản trị viên."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Drag to move this entry"
+msgstr "Kéo để di chuyển mục này"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "everyone with a login"
+msgstr "mọi người có tài khoản đăng nhập"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "People who cannot open it still see it, locked, with a note."
+msgstr "Người không mở được vẫn thấy mục này ở dạng khóa, kèm ghi chú."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "teaser"
+msgstr "xem trước"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "nobody can open it"
+msgstr "không ai mở được"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "nobody holds this role yet"
+msgstr "chưa ai giữ vai trò này"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "The plain table of entries"
+msgstr "Bảng danh sách các mục"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Working out who can open it…"
+msgstr "Đang xác định ai mở được…"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "The only role that opened this entry has been put away, so\n                    nobody but an administrator can reach it. Put another role\n                    on it below, or take the gate off to open it to everybody\n                    again."
+msgstr "Vai trò duy nhất mở mục này đã bị cất đi, nên ngoài quản trị viên không ai vào được. Hãy gắn vai trò khác vào mục này ở bên dưới, hoặc bỏ giới hạn để mở lại cho mọi người."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Nobody holds the role this entry asks for, so nobody but an\n                    administrator sees it. Give the role to somebody, or put a\n                    role people already hold on it."
+msgstr "Chưa ai giữ vai trò mà mục này yêu cầu, nên ngoài quản trị viên không ai thấy nó. Hãy giao vai trò đó cho ai đó, hoặc gắn một vai trò mà mọi người đang giữ."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Unlocked by"
+msgstr "Được mở bởi"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Nothing is asked for, so every person with a login sees this\n                  entry. Put a role on it and only the people who hold that role\n                  will."
+msgstr "Mục này không yêu cầu gì, nên mọi người có tài khoản đăng nhập đều thấy. Gắn một vai trò vào đây thì chỉ người giữ vai trò đó mới thấy."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Put away"
+msgstr "Đã cất"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Nobody holds this yet."
+msgstr "Chưa ai giữ vai trò này."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Give this role to somebody"
+msgstr "Giao vai trò này cho ai đó"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Take it off"
+msgstr "Gỡ ra"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Never mind"
+msgstr "Thôi"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Let another role in"
+msgstr "Cho thêm một vai trò"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Search a role"
+msgstr "Tìm vai trò"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Every role on the board already opens this entry."
+msgstr "Mọi vai trò trên bảng đều đã mở mục này."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "1 person holds it"
+msgstr "1 người đang giữ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "nobody holds it yet"
+msgstr "chưa ai giữ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Who sees it today"
+msgstr "Ai thấy mục này hôm nay"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Everybody with a login. Nothing is asked for, so there is no\n                  list to show."
+msgstr "Mọi người có tài khoản đăng nhập. Mục này không yêu cầu gì, nên không có danh sách để hiện."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Nobody. Not one person on this system holds what this entry\n                  asks for, so only an administrator can reach it."
+msgstr "Không ai cả. Không một người nào trên hệ thống giữ quyền mà mục này yêu cầu, nên chỉ quản trị viên vào được."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Everybody else"
+msgstr "Những người còn lại"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Do not show it at all"
+msgstr "Hoàn toàn không hiện"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Show it locked, with a note"
+msgstr "Hiện dạng khóa, kèm ghi chú"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "They see the entry with a padlock on it. Clicking it shows\n                    the note below instead of opening anything."
+msgstr "Họ thấy mục này có biểu tượng ổ khóa. Bấm vào sẽ hiện ghi chú bên dưới thay vì mở ra."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "The entry is simply not on their menu. They will not know it\n                    exists — which is right for something that is none of their\n                    business, and wrong for something they may need to ask for."
+msgstr "Mục này đơn giản là không có trên menu của họ. Họ sẽ không biết nó tồn tại — phù hợp với thứ không liên quan đến họ, nhưng không phù hợp với thứ họ có thể cần xin quyền."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Pick an entry"
+msgstr "Chọn một mục"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Choose one on the left and this side shows who can open it,\n                  through which role, and what is inside it."
+msgstr "Chọn một mục ở bên trái, bên này sẽ hiện ai mở được, qua vai trò nào, và bên trong có gì."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Nobody is covering for anybody"
+msgstr "Không ai đang làm thay ai"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Going away? Hand what you can do to whoever is covering, until a\n              date. Only what you actually hold is added, exactly what was\n              added is written down, and it is taken back on the morning\n              after — nobody has to remember."
+msgstr "Sắp đi vắng? Hãy bàn giao những việc bạn làm được cho người làm thay, đến một ngày nhất định. Chỉ những gì bạn thực sự có mới được thêm, những gì đã thêm được ghi lại chính xác, và sẽ được thu hồi vào sáng hôm sau ngày kết thúc — không ai phải nhớ."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Take it back now"
+msgstr "Thu hồi ngay"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "The full history, including every\n              role given and taken away"
+msgstr "Toàn bộ lịch sử, gồm mọi lần giao và gỡ vai trò"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Create their login now. We will also try to email an invitation."
+msgstr "Tạo tài khoản đăng nhập cho họ ngay. Hệ thống cũng sẽ thử gửi email mời."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "They start with basic access only. After they appear in the list, open their name and choose"
+msgstr "Ban đầu họ chỉ có quyền cơ bản. Khi họ hiện trong danh sách, hãy mở tên họ và chọn"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Their name"
+msgstr "Tên của họ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "For example, Mai Nguyen"
+msgstr "Ví dụ: Nguyễn Thị Mai"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Work email"
+msgstr "Email công việc"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "mai@company.com"
+msgstr "mai@congty.com"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "This will be the email they use to sign in."
+msgstr "Đây là email họ dùng để đăng nhập."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Add person"
+msgstr "Thêm người"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Take this role away"
+msgstr "Gỡ vai trò này"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Choose roles"
+msgstr "Chọn vai trò"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Copy from another person"
+msgstr "Sao chép từ người khác"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Select one or more. Nothing changes until you confirm."
+msgstr "Chọn một hoặc nhiều. Không có gì thay đổi cho đến khi bạn xác nhận."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "They already hold every role on this board. There is nothing\n                left to give them here."
+msgstr "Họ đã giữ mọi vai trò trên bảng này. Không còn gì để giao thêm ở đây."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Copy permanent roles from"
+msgstr "Sao chép vai trò cố định từ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Start typing a person's name"
+msgstr "Bắt đầu gõ tên một người"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "has"
+msgstr "có"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "permanent role that can be added."
+msgstr "vai trò cố định có thể thêm."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "permanent roles that can be added."
+msgstr "vai trò cố định có thể thêm."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Temporary hand-overs are not copied."
+msgstr "Các lần bàn giao tạm thời không được sao chép."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "has no new permanent roles to add."
+msgstr "không có vai trò cố định mới nào để thêm."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Who is it for"
+msgstr "Giao cho ai"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "It goes in the history and cannot be deleted."
+msgstr "Việc này được ghi vào lịch sử và không thể xóa."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Name it, say what it lets somebody do, tick the abilities. The\n                 menu beside you updates as you tick."
+msgstr "Đặt tên, nói rõ vai trò cho phép làm gì, rồi đánh dấu các quyền thao tác. Menu bên cạnh sẽ cập nhật khi bạn đánh dấu."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Close without creating anything"
+msgstr "Đóng mà không tạo gì"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "What it is called"
+msgstr "Tên vai trò"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Payroll auditor"
+msgstr "Kiểm toán lương"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "What this lets someone do — one honest sentence"
+msgstr "Vai trò này cho phép làm gì — một câu thật rõ ràng"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Read every pay run and payslip, and explore the numbers. Changes nothing."
+msgstr "Xem mọi đợt lương và phiếu lương, và phân tích số liệu. Không thay đổi gì."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Where it belongs"
+msgstr "Thuộc khu vực"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Worked out for you"
+msgstr "Được xác định sẵn cho bạn"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "A holder of this role would see"
+msgstr "Người giữ vai trò này sẽ thấy"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Every entry on this menu is open to everybody with a login\n                  today, so ticking abilities does not change this picture yet.\n                  What a role changes is what somebody can do once they are\n                  inside a screen."
+msgstr "Hiện mọi mục trên menu này đều mở cho mọi người có tài khoản đăng nhập, nên việc đánh dấu quyền thao tác chưa làm thay đổi hình này. Điều vai trò thay đổi là những việc ai đó làm được khi đã vào một màn hình."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "This is exactly"
+msgstr "Đây chính là"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "again. Two roles\n                  that let people do the same things are two things to keep in\n                  step forever — give that one out instead, or tick something\n                  else."
+msgstr "lặp lại. Hai vai trò cho phép làm cùng những việc là hai thứ phải giữ khớp nhau mãi mãi — hãy giao vai trò kia thay thế, hoặc đánh dấu việc khác."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Next to"
+msgstr "So với"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "this also lets somebody"
+msgstr "vai trò này còn cho phép"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid ", and"
+msgstr ", và"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "this leaves out"
+msgstr "vai trò này bỏ bớt"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "The administrator permission for the whole system can never be\n                  put in a role, and you can only ever hand out what you hold\n                  yourself."
+msgstr "Quyền quản trị toàn hệ thống không bao giờ được đưa vào một vai trò, và bạn chỉ có thể trao những gì chính mình đang có."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Start from an existing role instead"
+msgstr "Bắt đầu từ một vai trò có sẵn"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Tick at least one thing it lets somebody do."
+msgstr "Hãy đánh dấu ít nhất một việc vai trò này cho phép làm."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Create role"
+msgstr "Tạo vai trò"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Hand your access over"
+msgstr "Bàn giao quyền của bạn"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "You can only hand over what you hold yourself, so this list is\n            yours. Both of you get an email, and everything here is written down\n            in a history nobody can delete."
+msgstr "Bạn chỉ có thể bàn giao những gì chính mình đang có, nên danh sách này là của bạn. Cả hai người đều nhận email, và mọi thứ ở đây được ghi vào lịch sử không ai xóa được."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Who is covering for you"
+msgstr "Người làm thay cho bạn"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "What they should be able to do"
+msgstr "Họ cần làm được những gì"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "You do not hold any of the roles on this board, so there is\n              nothing to hand over. That is not a fault — most people's access\n              comes from their job rather than from a role."
+msgstr "Bạn không giữ vai trò nào trên bảng này, nên không có gì để bàn giao. Đây không phải lỗi — quyền của hầu hết mọi người đến từ công việc của họ chứ không phải từ một vai trò."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "On the morning after that date, exactly what was given is taken\n            back — and only what is still there. Nobody has to remember."
+msgstr "Vào sáng hôm sau ngày đó, đúng những gì đã trao sẽ được thu hồi — và chỉ những gì vẫn còn. Không ai phải nhớ."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "There is no end date, so it stays until somebody takes it back. If\n            they are covering for a fortnight, choose \"For a while\" instead."
+msgstr "Không có ngày kết thúc, nên quyền giữ nguyên cho đến khi có người thu hồi. Nếu họ chỉ làm thay hai tuần, hãy chọn \"Có thời hạn\"."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Two weeks in Da Nang"
+msgstr "Hai tuần công tác ở Đà Nẵng"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Hand it over"
+msgstr "Bàn giao"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/mini_rail.xml:0
+msgid "A miniature of the left menu, showing which entries this opens"
+msgstr "Menu bên trái thu nhỏ, cho thấy những mục vai trò này mở ra"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/mini_rail.xml:0
+msgid "This whole group is shown to them locked, with a note about what it is."
+msgstr "Cả nhóm này hiện với họ ở dạng khóa, kèm ghi chú cho biết đó là gì."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/mini_rail.xml:0
+msgid "they see it"
+msgstr "họ thấy được"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/mini_rail.xml:0
+msgid "locked, with a note"
+msgstr "khóa, kèm ghi chú"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/mini_rail.xml:0
+msgid "select a menu to see its sub-menus"
+msgstr "chọn một menu để xem các menu con"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_common.py:0
+msgid "General"
+msgstr "Chung"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_common.py:0
+msgid "Payroll"
+msgstr "Lương"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_common.py:0
+msgid "Lifecycle"
+msgstr "Vòng đời nhân sự"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_common.py:0
+msgid "Money & budgets"
+msgstr "Tiền & ngân sách"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_common.py:0
+msgid "System"
+msgstr "Hệ thống"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Delegated"
+msgstr "Bàn giao"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Granted on the roles board"
+msgstr "Giao trên bảng vai trò"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/access_export.py:0
+msgid "Removed on the roles board"
+msgstr "Gỡ trên bảng vai trò"

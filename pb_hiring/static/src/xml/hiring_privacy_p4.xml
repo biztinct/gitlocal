@@ -1,0 +1,357 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       RECRUIT P4 — private until shared.
+       Loop variables avoid OWL's reserved words: `sp`, `pt`, `nt`, `tg`,
+       `rw`, `fc`, `fi`, `lk`, `rl`, `wh`, `sk`, `dt`.
+       ==================================================================== -->
+
+  <!-- ============ Home: candidates shared with this reader ============ -->
+  <t t-name="pb_hiring.P4SharedWithMe">
+    <section t-if="state.sharedWithMe.length" class="pbim-panel pbhr-p4-mine">
+      <div class="pbhr-p4-mine-h">
+        <span class="pbhr-p4-ic"><t t-out="ic('share2',16)"/></span>
+        <div>
+          <b>Shared with you</b>
+          <small>The recruiter chose what you see for each person. Open one to read it.</small>
+        </div>
+      </div>
+      <div class="pbhr-p4-mine-list">
+        <button t-foreach="state.sharedWithMe" t-as="sp" t-key="sp.share_id" type="button" class="pbhr-p4-mine-row" t-on-click="() =&gt; this.openCand(sp.applicant_id)">
+          <span class="pbhr-cand-av" t-att-class="'pbhr-av--' + (sp.applicant_id % 6)" t-esc="initials(sp.name)"/>
+          <span class="pbhr-p4-mine-tx">
+            <b t-esc="sp.name"/>
+            <small><t t-esc="sp.role"/><t t-if="sp.stage"> · <t t-esc="sp.stage"/></t></small>
+          </span>
+          <span class="pbhr-p4-parts"><t t-out="ic('eye',12)"/> <t t-esc="sp.parts_label"/></span>
+          <t t-out="ic('arrowRight',14)"/>
+        </button>
+      </div>
+    </section>
+  </t>
+
+  <!-- ============ the drawer: who sees this person (hiring team) ============ -->
+  <t t-name="pb_hiring.P4DrawerShare">
+    <div t-if="cand.share" class="pbhr-p4-share" t-att-class="{ 'is-flash': isFlash(cand.id), 'is-private': cand.share.private }">
+      <div class="pbhr-p4-share-h">
+        <span class="pbhr-p4-ic"><t t-out="ic(cand.share.private ? 'lock' : 'share2',15)"/></span>
+        <div class="pbhr-p4-share-tx">
+          <b t-if="cand.share.private">Private to hiring</b>
+          <b t-else="">Shared with</b>
+          <small t-if="cand.share.private">Nobody outside the hiring team sees this person. Share the parts a manager needs.</small>
+        </div>
+        <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.openShare([cand.id])" title="Share with… (S)">
+          <t t-out="ic('share2',13)"/> <t t-if="cand.share.private">Share with…</t><t t-else="">Change</t>
+        </button>
+      </div>
+      <div t-if="!cand.share.private" class="pbhr-p4-share-rows">
+        <div t-foreach="cand.share.rows" t-as="sp" t-key="sp.id" class="pbhr-p4-share-row">
+          <span class="pbhr-p4-who" t-esc="sp.name"/>
+          <span class="pbhr-p4-what">
+            <span t-foreach="sp.parts" t-as="pt" t-key="pt" class="pbhr-p4-part" t-att-class="{ 'is-money': pt === 'expected_pay' }" t-esc="partWord(pt)"/>
+          </span>
+          <small class="pbhr-p4-since" t-esc="sharedSince(sp)"/>
+          <button type="button" class="pbhr-p4-x" t-att-title="'Stop sharing with ' + sp.name" t-on-click="() =&gt; this.unshare(sp)"><t t-out="ic('x',12)"/></button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ============ the drawer: what the reader cannot see (outside the team) ============ -->
+  <t t-name="pb_hiring.P4DrawerLocks">
+    <div t-if="!cand.can_recruit and cand.locked" class="pbhr-p4-locked">
+      <span class="pbhr-p4-locked-ic"><t t-out="ic('lock',22)"/></span>
+      <div>
+        <b t-esc="cand.locked_text"/>
+        <p>You can see where they are on the board and when they are interviewed. Ask the recruiter if you need their CV or their answers.</p>
+      </div>
+    </div>
+    <div t-if="!cand.can_recruit and !cand.locked and cand.shared_by" class="pbhr-p4-sharedby" t-att-class="{ 'is-flash': isFlash(cand.id) }">
+      <t t-out="ic('share2',13)"/> <span t-esc="cand.shared_by"/>
+    </div>
+    <div t-if="!cand.can_recruit and cand.locks and cand.locks.length" class="pbhr-cd-sec">
+      <div class="l">Not shared with you</div>
+      <div class="pbhr-p4-locks">
+        <span t-foreach="cand.locks" t-as="lk" t-key="lk.key" class="pbhr-p4-lock" t-att-title="lk.text">
+          <t t-out="ic('lock',11)"/> <b t-esc="lk.label"/> <small t-esc="lk.text"/>
+        </span>
+      </div>
+    </div>
+  </t>
+
+  <!-- ============ the drawer: private recruiter notes ============ -->
+  <t t-name="pb_hiring.P4DrawerNotes">
+    <t t-set="nts" t-value="candNotes"/>
+    <div t-if="nts.can_add or nts.rows.length" class="pbhr-cd-sec pbhr-p4-notes">
+      <div class="l">Recruiter notes <span class="pbhr-lock"><t t-out="ic('lock',10)"/> <t t-esc="nts.who"/></span></div>
+      <div t-if="!nts.rows.length and nts.can_add" class="pbhr-p4-empty">Nothing written yet. What you write here is never on the timeline: only you and the talent lead read it, unless you share one note.</div>
+      <div t-foreach="nts.rows" t-as="nt" t-key="nt.id" class="pbhr-p4-note" t-att-class="{ 'is-flash': isFlash('note-' + nt.id) }">
+        <div class="pbhr-p4-note-h">
+          <b t-esc="nt.author"/> <small t-esc="dayShort(nt.on)"/>
+          <span class="pbhr-foot-gap"/>
+          <button t-if="nt.can_edit" type="button" class="pbhr-p4-x" title="Change it" t-on-click="() =&gt; this.startNoteEdit(nt)"><t t-out="ic('pencil',12)"/></button>
+          <button t-if="nt.can_delete" type="button" class="pbhr-p4-x" title="Remove it" t-on-click="() =&gt; this.deleteNote(nt)"><t t-out="ic('trash',12)"/></button>
+        </div>
+        <textarea t-if="state.noteEdit and state.noteEdit.note_id === nt.id" class="pbhr-in" rows="3" t-model="state.noteEdit.body"/>
+        <div t-if="state.noteEdit and state.noteEdit.note_id === nt.id" class="pbhr-p4-note-acts">
+          <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; { state.noteEdit = null; }">Cancel</button>
+          <button type="button" class="pbim-btn primary" t-on-click="saveNoteEdit"><t t-out="ic('check',13)"/> Save</button>
+        </div>
+        <p t-else="" class="pbhr-p4-note-body" t-esc="nt.body"/>
+        <div t-if="nt.can_share and nts.targets.length" class="pbhr-p4-note-share">
+          <button t-foreach="nts.targets" t-as="wh" t-key="wh.id" type="button" class="pbhr-p4-chip" t-att-class="{ on: noteSharedWith(nt, wh.id) }" t-att-title="noteSharedWith(nt, wh.id) ? 'Shared — press to make it private again' : 'Share this note with ' + wh.name" t-on-click="() =&gt; this.toggleNoteShare(nt, wh)">
+            <t t-out="ic(noteSharedWith(nt, wh.id) ? 'check' : 'share2',11)"/>
+            <t t-if="noteSharedWith(nt, wh.id)">Shared with <t t-esc="wh.name"/></t>
+            <t t-else="">Share with <t t-esc="wh.name"/></t>
+          </button>
+        </div>
+        <div t-elif="nt.shared.length" class="pbhr-p4-note-share"><small><t t-out="ic('share2',11)"/> Shared with <t t-esc="nt.shared.map((u) =&gt; u.name).join(', ')"/></small></div>
+      </div>
+      <div t-if="nts.can_add" class="pbhr-p4-note-new">
+        <textarea class="pbhr-in" rows="2" t-model="state.noteDraft" placeholder="Comfortable at 28m; would move for 30m."/>
+        <div class="pbhr-p4-note-acts">
+          <span t-if="nts.targets.length" class="pbhr-p4-note-pre">
+            <button t-foreach="nts.targets" t-as="wh" t-key="wh.id" type="button" class="pbhr-p4-chip" t-att-class="{ on: (state.noteShareIds or []).includes(wh.id) }" t-on-click="() =&gt; this.toggleNoteDraftShare(wh.id)">
+              <t t-out="ic('share2',11)"/> <t t-esc="wh.name"/>
+            </button>
+          </span>
+          <span class="pbhr-foot-gap"/>
+          <button type="button" class="pbim-btn primary" t-on-click="addRecruiterNote"><t t-out="ic('lock',13)"/> Add a private note</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ============ the drawer: how long they are kept ============ -->
+  <t t-name="pb_hiring.P4DrawerRetention">
+    <div t-if="cand.retention and cand.retention.until" class="pbhr-p4-keep">
+      <t t-out="ic('hourglass',13)"/>
+      <span t-if="cand.anonymised">Anonymised on <t t-esc="dayLong(cand.retention.anonymised_on)"/> · their numbers stay in Hiring numbers</span>
+      <t t-else="">
+        <span><t t-esc="retentionLine(cand.retention)"/><t t-if="cand.retention.country"> · <t t-esc="cand.retention.country"/></t></span>
+        <button t-if="cand.retention.can_extend" type="button" class="pbhr-linkish" t-on-click="extendRetention" t-esc="keepLongerLabel(cand.retention)"/>
+        <small t-elif="cand.retention.extended">kept longer by <t t-esc="cand.retention.extended_by"/></small>
+      </t>
+    </div>
+  </t>
+
+  <!-- ============ Details → what the hiring manager sees by default ============ -->
+  <t t-name="pb_hiring.P4RoleDefaults">
+    <t t-set="dfl" t-value="shareDefaults"/>
+    <section t-if="dfl and state.canRecruit" class="pbhr-p4-defaults">
+      <div class="pbhr-p4-defaults-h">
+        <span class="pbhr-p4-ic"><t t-out="ic('eye',15)"/></span>
+        <div>
+          <b>What the hiring manager sees by default</b>
+          <small>Each new candidate on this role is shared like this. Changing it never changes what was already shared.<t t-if="!dfl.can_edit"> The talent lead sets it.</t></small>
+        </div>
+      </div>
+      <div class="pbhr-su-seg pbhr-p4-with" role="radiogroup">
+        <button t-foreach="dfl.withs" t-as="wh" t-key="wh.key" type="button" class="pbhr-su-seg-b" role="radio" t-att-class="{ on: dfl.with === wh.key }" t-att-aria-checked="dfl.with === wh.key ? 'true' : 'false'" t-att-disabled="!dfl.can_edit" t-on-click="() =&gt; this.setDefaultWith(wh.key)" t-esc="wh.label"/>
+      </div>
+      <div t-if="dfl.with !== 'nobody'" class="pbhr-p4-defparts">
+        <button t-foreach="dfl.catalogue" t-as="pt" t-key="pt.key" type="button" class="pbhr-p4-chip" t-att-class="{ on: dfl.parts.includes(pt.key), 'is-money': pt.money }" t-att-disabled="!dfl.can_edit" t-att-title="pt.help" t-on-click="() =&gt; this.toggleDefaultPart(pt.key)">
+          <t t-out="ic(dfl.parts.includes(pt.key) ? 'check' : (pt.money ? 'lock' : 'plus'),11)"/> <t t-esc="pt.label"/>
+        </button>
+      </div>
+      <p t-if="dfl.people.length" class="pbhr-p4-defwho"><t t-out="ic('users',12)"/> On this role: <t t-foreach="dfl.people" t-as="pp" t-key="pp_index"><b t-esc="pp.name"/> (<t t-esc="pp.role"/>)<t t-if="!pp_last">, </t></t></p>
+      <p t-else="" class="pbhr-p4-defwho"><t t-out="ic('info',12)"/> Nobody is named as the hiring manager on this role yet, so nothing is shared by default.</p>
+    </section>
+  </t>
+
+  <!-- ============ Home: the Resume bank ============ -->
+  <t t-name="pb_hiring.P4Bank">
+    <t t-set="bk" t-value="state.bank"/>
+    <div t-if="!bk or !bk.loaded" class="pbim-panel pbhr-p4-bank is-loading">
+      <div t-foreach="[1,2,3,4,5]" t-as="sk" t-key="sk" class="pbhr-p4-bank-skel"><span class="pbhr-skel-line"/><span class="pbhr-skel-line short"/></div>
+    </div>
+    <div t-elif="bk.error" class="pbim-panel pbhr-empty">
+      <div class="pbhr-empty-ic"><t t-out="ic('lock',28)"/></div>
+      <h2>The Resume bank could not be opened</h2>
+      <p t-esc="bk.error"/>
+    </div>
+    <t t-else="">
+      <div class="pbim-panel pbhr-filters pbhr-p4-bank-top">
+        <div class="pbhr-filter-row">
+          <div class="pbhr-search">
+            <t t-out="ic('search',15)"/>
+            <input type="text" t-att-value="bk.q" t-on-input="onBankQuery" placeholder="Search a name, a skill, a role, a tag…"/>
+          </div>
+          <label class="pbhr-p4-toggle" title="Off: Future-fit people and talent pools. On: everybody who ever applied.">
+            <input type="checkbox" t-att-checked="bk.include_all" t-on-change="toggleIncludeAll"/>
+            <span>Everybody who ever applied</span>
+          </label>
+          <button t-if="bankAnyPick" class="pbim-btn ghost" t-on-click="clearBank"><t t-out="ic('x',14)"/> Clear</button>
+          <span class="pbhr-p4-bank-n"><t t-if="bk.busy"><span class="pbim-spin pbhr-p4-spin"/></t><t t-esc="bankShowing"/></span>
+        </div>
+        <div t-if="bankFacets.length" class="pbhr-p4-facets">
+          <div t-foreach="bankFacets" t-as="fc" t-key="fc.key" class="pbhr-p4-facet">
+            <span class="pbhr-p4-facet-t" t-esc="fc.title"/>
+            <button t-foreach="fc.items.slice(0, 8)" t-as="fi" t-key="fi.id" type="button" class="pbhr-p4-chip" t-att-class="{ on: facetOn(fc.key, fi.id) }" t-on-click="() =&gt; this.toggleFacet(fc.key, fi.id)">
+              <t t-esc="fi.name"/> <b t-esc="fi.count"/>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div t-if="!bk.rows.length" class="pbim-panel pbhr-empty">
+        <div class="pbhr-empty-ic"><t t-out="ic('bookOpen',30)"/></div>
+        <t t-if="bankAnyPick">
+          <h2>Nobody matches that</h2>
+          <p>Try fewer words, or clear the filters. Switch on "Everybody who ever applied" to search every application, not only the people kept for later.</p>
+          <button class="pbim-btn ghost" t-on-click="clearBank"><t t-out="ic('x',14)"/> Clear the search</button>
+        </t>
+        <t t-else="">
+          <h2>Nobody has been kept for later yet</h2>
+          <p>The first look puts people here: press "Future-fit" on a candidate who is not right for this role but could be for the next one. They wait here, searchable by skill, country and tag, until their consent runs out.</p>
+          <button class="pbim-btn ghost" t-on-click="toggleIncludeAll"><t t-out="ic('users',14)"/> Search everybody who ever applied</button>
+        </t>
+      </div>
+
+      <div t-else="" class="pbim-panel pbhr-p4-bank">
+        <div class="pbhr-p4-bank-head">
+          <button type="button" class="pbhr-kc-check" t-att-class="{ on: bk.sel.length and bk.sel.length === bk.rows.length }" title="Tick everybody on this page" t-on-click="toggleBankAll"><t t-out="ic('check',11)"/></button>
+          <span>Person</span><span>Last role</span><span>Skills and tags</span><span>Came from</span><span>Kept until</span><span/>
+        </div>
+        <div t-foreach="bk.rows" t-as="rw" t-key="rw.id" class="pbhr-p4-bank-row" t-att-class="{ 'is-sel': isBankSel(rw.id) }">
+          <button type="button" class="pbhr-kc-check" t-att-class="{ on: isBankSel(rw.id) }" t-att-aria-pressed="isBankSel(rw.id) ? 'true' : 'false'" t-on-click="() =&gt; this.toggleBankSel(rw.id)"><t t-out="ic('check',11)"/></button>
+          <button type="button" class="pbhr-p4-bank-who" t-on-click="() =&gt; this.openCand(rw.id)">
+            <span class="pbhr-cand-av" t-att-class="'pbhr-av--' + (rw.id % 6)" t-esc="initials(rw.name)"/>
+            <span><b t-esc="rw.name"/><small><t t-esc="rw.country or 'Country not given'"/><t t-if="rw.applications &gt; 1"> · applied <t t-esc="rw.applications"/> times</t></small></span>
+          </button>
+          <span class="pbhr-p4-bank-role"><t t-esc="rw.last_role"/><small t-if="rw.screen_label"><t t-esc="rw.screen_label"/></small></span>
+          <span class="pbhr-p4-bank-tags">
+            <span t-foreach="rw.skills" t-as="sk" t-key="sk.id" class="pbhr-p4-skill" t-esc="sk.name"/>
+            <span t-foreach="rw.tags" t-as="tg" t-key="tg.id" class="pbhr-p4-tag"><t t-out="ic('tag',10)"/> <t t-esc="tg.name"/><button type="button" t-att-title="'Take the tag ' + tg.name + ' off'" t-on-click="() =&gt; this.removeBankTag(rw, tg)"><t t-out="ic('x',9)"/></button></span>
+            <small t-if="!rw.skills.length and !rw.tags.length" class="pbhr-p4-none">No skills or tags yet</small>
+          </span>
+          <span class="pbhr-p4-bank-src"><t t-esc="rw.source or '—'"/><small t-esc="dayShort(rw.applied_on)"/></span>
+          <span class="pbhr-p4-bank-exp" t-att-class="{ 'is-soon': bankSoon(rw) }"><t t-if="rw.expires_on"><t t-out="ic('hourglass',11)"/> <t t-esc="bankExpires(rw)"/></t><t t-else="">—</t></span>
+          <span class="pbhr-p4-bank-acts">
+            <button type="button" class="pbim-btn ghost" title="Copy them into a role's Applications received" t-on-click="() =&gt; this.startBankAdd([rw.id])"><t t-out="ic('userPlus',13)"/> Add to a role</button>
+            <button type="button" class="pbim-btn ghost" title="Tag them" t-on-click="() =&gt; this.startBankTag([rw.id])"><t t-out="ic('tag',13)"/></button>
+          </span>
+        </div>
+        <div t-if="bk.total &gt; bk.rows.length" class="pbhr-p4-bank-pager">
+          <button class="pbim-btn ghost" t-att-disabled="!bk.page" t-on-click="() =&gt; this.bankPage(-1)"><t t-out="ic('chevronLeft',13)"/> Previous</button>
+          <span t-esc="bankShowing"/>
+          <button class="pbim-btn ghost" t-att-disabled="(bk.page + 1) * (bk.page_size or 40) &gt;= bk.total" t-on-click="() =&gt; this.bankPage(1)">Next <t t-out="ic('arrowRight',13)"/></button>
+        </div>
+      </div>
+
+      <div t-if="bk.sel.length" class="pbhr-selbar" role="toolbar" aria-label="Selected people">
+        <b><t t-esc="bk.sel.length"/> selected</b>
+        <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.startBankAdd(bk.sel)"><t t-out="ic('userPlus',14)"/> Add to a role</button>
+        <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.startBankTag(bk.sel)"><t t-out="ic('tag',14)"/> Tag</button>
+        <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; { state.bank.sel = []; }">Clear</button>
+        <span class="pbhr-selbar-keys">Esc clear</span>
+      </div>
+    </t>
+  </t>
+
+  <!-- ============ Everything that floats ============ -->
+  <t t-name="pb_hiring.P4Overlays">
+
+    <!-- THE SHARE SHEET — the hero of this phase -->
+    <div t-if="state.shareSheet" class="pbim-modal-scrim pbhr-scrim pbhr-p4-scrim" t-on-click="closeShare">
+      <div class="pbim-modal pbhr-dialog pbhr-p4-sheet" role="dialog" aria-modal="true" t-att-aria-label="shareTitle" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title"><t t-out="ic('share2',16)"/> <t t-esc="shareTitle"/></div>
+            <div class="pbhr-drawer-sub">Tick who, then what. They see exactly that and nothing else; everything else stays a lock. You can undo it for five seconds.</div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="closeShare"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-p4-sheet-body">
+          <div class="pbhr-p4-col">
+            <div class="pbhr-p4-col-t"><span class="pbhr-p4-step">1</span> Who</div>
+            <div t-if="!state.shareSheet.people.length" class="pbhr-p4-empty">Nobody is named on this role yet. Search for the person below.</div>
+            <button t-foreach="state.shareSheet.people" t-as="sp" t-key="sp.user_id" type="button" class="pbhr-p4-pick" t-att-class="{ on: sharePicked(sp), 'is-off': sp.portal }" t-att-disabled="sp.portal" t-att-aria-pressed="sharePicked(sp) ? 'true' : 'false'" t-on-click="() =&gt; this.toggleSharePerson(sp)">
+              <span class="pbhr-kc-check" t-att-class="{ on: sharePicked(sp) }"><t t-out="ic('check',11)"/></span>
+              <span class="pbhr-p4-pick-tx"><b t-esc="sp.name"/><small t-if="sp.portal">Portal login only — cannot open the board</small><small t-else="" t-esc="sp.role"/></span>
+            </button>
+            <div class="pbhr-p4-find">
+              <t t-out="ic('search',13)"/>
+              <input type="text" t-att-value="state.shareSheet.q" t-on-input="onShareQuery" placeholder="Somebody else — type a name…"/>
+            </div>
+            <button t-foreach="state.shareSheet.results" t-as="rw" t-key="rw.user_id" type="button" class="pbhr-p4-pick is-result" t-on-click="() =&gt; this.addShareResult(rw)">
+              <t t-out="ic('plus',12)"/> <span class="pbhr-p4-pick-tx"><b t-esc="rw.name"/><small t-esc="rw.role"/></span>
+            </button>
+          </div>
+          <div class="pbhr-p4-col">
+            <div class="pbhr-p4-col-t"><span class="pbhr-p4-step">2</span> What they see</div>
+            <div class="pbhr-p4-always"><t t-out="ic('eye',12)"/> Always: the name, the stage and interview dates</div>
+            <button t-foreach="state.shareSheet.parts" t-as="pt" t-key="pt.key" type="button" class="pbhr-p4-pick" t-att-class="{ on: sharePartOn(pt.key), 'is-money': pt.money }" t-att-aria-pressed="sharePartOn(pt.key) ? 'true' : 'false'" t-on-click="() =&gt; this.toggleSharePart(pt.key)">
+              <span class="pbhr-kc-check" t-att-class="{ on: sharePartOn(pt.key) }"><t t-out="ic('check',11)"/></span>
+              <span class="pbhr-p4-pick-tx"><b><t t-if="pt.money" t-out="ic('lock',11)"/> <t t-esc="pt.label"/></b><small t-esc="pt.help"/></span>
+            </button>
+          </div>
+        </div>
+        <div class="pbhr-p4-preview" t-att-class="{ 'is-money': shareMoneyOn }">
+          <t t-out="ic(shareMoneyOn ? 'alert' : 'info',14)"/>
+          <span><t t-esc="sharePreview"/><t t-if="shareMoneyOn"> Expected pay is money: only tick it when they need it.</t></span>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="closeShare">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="state.shareSheet.busy" t-on-click="saveShare"><t t-out="ic('share2',14)"/> Share</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD TO A ROLE (from the bank) -->
+    <div t-if="state.bankAdd" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; { state.bankAdd = null; }">
+      <div class="pbim-modal pbhr-dialog pbhr-dialog--small" role="dialog" aria-modal="true" aria-label="Add to a role" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title"><t t-out="ic('userPlus',16)"/> Add <t t-esc="state.bankAdd.ids.length"/> to a role</div>
+            <div class="pbhr-drawer-sub">A copy lands in the role's Applications received, CV and all. Their old application stays where it is.</div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.bankAdd = null; }"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-form">
+          <div class="pbhr-p4-find"><t t-out="ic('search',13)"/><input type="text" t-model="state.bankAdd.q" placeholder="Find a role…"/></div>
+          <div class="pbhr-movelist pbhr-p4-roles">
+            <div t-if="!bankAddRoles.length" class="pbhr-p4-empty">No open role matches. Open a role first, then add them.</div>
+            <button t-foreach="bankAddRoles" t-as="rl" t-key="rl.id" type="button" class="pbhr-moveto" t-att-class="{ on: state.bankAdd.requisition_id === rl.id }" t-on-click="() =&gt; { state.bankAdd.requisition_id = rl.id; }">
+              <span class="pbhr-moveto-dot"/><b t-esc="rl.title"/><small><t t-esc="rl.department"/><t t-if="rl.country"> · <t t-esc="rl.country"/></t></small>
+            </button>
+          </div>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.bankAdd = null; }">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="!state.bankAdd.requisition_id or state.bankAdd.busy" t-on-click="saveBankAdd"><t t-out="ic('userPlus',14)"/> Add to the role</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAG (from the bank) -->
+    <div t-if="state.bankTag" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; { state.bankTag = null; }">
+      <div class="pbim-modal pbhr-dialog pbhr-dialog--small" role="dialog" aria-modal="true" aria-label="Tag" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title"><t t-out="ic('tag',16)"/> Tag <t t-esc="state.bankTag.ids.length"/></div>
+            <div class="pbhr-drawer-sub">"Keep in touch", a market, a skill word — whatever helps the next search.</div>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.bankTag = null; }"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-form">
+          <label class="pbhr-f pbhr-f--wide"><span>A tag already in use</span>
+            <select class="pbhr-in" t-model="state.bankTag.tag_id">
+              <option value="">Pick one…</option>
+              <option t-foreach="state.bankTag.tags" t-as="tg" t-key="tg.id" t-att-value="tg.id" t-esc="tg.name"/>
+            </select>
+          </label>
+          <label class="pbhr-f pbhr-f--wide"><span>Or a new one</span>
+            <input class="pbhr-in" type="text" t-model="state.bankTag.new_tag" placeholder="Keep in touch" maxlength="60"/>
+          </label>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.bankTag = null; }">Cancel</button>
+          <button class="pbim-btn primary" t-att-disabled="state.bankTag.busy" t-on-click="saveBankTag"><t t-out="ic('tag',14)"/> Tag them</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

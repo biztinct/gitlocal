@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Dashboard Client Action -->
+    <record id="action_hr_development_dashboard" model="ir.actions.client">
+        <field name="name">Development Dashboard</field>
+        <field name="tag">hr_development_dashboard</field>
+        <field name="target">main</field>
+    </record>
+
+    <!-- Dashboard Menu Item - Add as first item in Employee Development menu -->
+    <menuitem id="menu_hr_development_dashboard"
+              name="Dashboard"
+              parent="hr_development_ai.menu_hr_development_root"
+              action="action_hr_development_dashboard"
+              sequence="1"/>
+
+</odoo>

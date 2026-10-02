@@ -11,7 +11,7 @@
         <field name="name">hr.full.final.settlement.tree</field>
         <field name="model">hr.full.final.settlement</field>
         <field name="arch" type="xml">
-            <tree string="Full and Final" create="0" edit="0">
+            <list string="Full and Final" create="0" edit="0">
                 <header>
                     <button name="%(action_full_and_final_generate_wizard)d"
                             type="action"
@@ -31,7 +31,7 @@
                         string="Download Full and Final"
                         class="oe_highlight"
                         icon="fa-download"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -43,41 +43,59 @@
                 <header>
                     <button name="action_download_full_and_final"
                             type="object"
-                            string="Download Full and Final"
-                            class="oe_highlight"
+                            string="Download settlement"
+                            class="btn-primary"
                             icon="fa-download"/>
                 </header>
                 <sheet>
-                    <group>
-                        <field name="employee_id"/>
-                        <field name="employee_code"/>
-                        <field name="department_id"/>
-                        <field name="job_id"/>
-                        <field name="contract_id"/>
+                    <field name="currency_id" invisible="1"/>
+                    <div class="oe_title">
+                        <label for="employee_id" string="Employee"/>
+                        <h1><field name="employee_id" placeholder="Select employee…"/></h1>
+                        <field name="name" class="text-muted" readonly="1"/>
+                    </div>
+                    <group class="pbl-eqrow">
+                        <group string="Employee">
+                            <field name="employee_code"/>
+                            <field name="department_id"/>
+                            <field name="job_id"/>
+                            <field name="contract_id"/>
+                        </group>
+                        <group string="Settlement">
+                            <field name="settlement_date"/>
+                            <field name="settlement_month"/>
+                            <field name="formula_config_id"/>
+                            <field name="source"/>
+                            <field name="import_batch_id"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
                     </group>
                     <group>
-                        <field name="settlement_date"/>
-                        <field name="settlement_month"/>
-                        <field name="formula_config_id"/>
-                        <field name="import_batch_id"/>
-                        <field name="source"/>
+                        <group string="Settlement summary">
+                            <field name="total_earnings"/>
+                            <field name="total_deductions"/>
+                            <field name="net_payable" class="oe_subtotal_footer_separator"/>
+                        </group>
                     </group>
-                    <group>
-                        <field name="total_earnings"/>
-                        <field name="total_deductions"/>
-                        <field name="net_payable"/>
+                    <group class="pbl-eqrow">
+                        <group string="Earnings breakdown">
+                            <field name="c_basic" invisible="not c_basic"/>
+                            <field name="c_allow" invisible="not c_allow"/>
+                            <field name="c_ot" invisible="not c_ot"/>
+                            <field name="c_bonus" invisible="not c_bonus"/>
+                            <field name="c_leave" invisible="not c_leave"/>
+                            <field name="c_other_earn" invisible="not c_other_earn"/>
+                        </group>
+                        <group string="Deductions breakdown">
+                            <field name="c_pit" invisible="not c_pit"/>
+                            <field name="c_si" invisible="not c_si"/>
+                            <field name="c_hi" invisible="not c_hi"/>
+                            <field name="c_ui" invisible="not c_ui"/>
+                            <field name="c_loan" invisible="not c_loan"/>
+                            <field name="c_other_ded" invisible="not c_other_ded"/>
+                        </group>
                     </group>
-                    <notebook>
-                        <page string="Input Values">
-                            <field name="input_values_json" widget="text"/>
-                        </page>
-                        <page string="Computed Values">
-                            <field name="computed_values_json" widget="text"/>
-                        </page>
-                        <page string="Source Data">
-                            <field name="raw_data_json" widget="text"/>
-                        </page>
-                    </notebook>
                 </sheet>
             </form>
         </field>
@@ -88,13 +106,38 @@
         <field name="model">hr.full.final.settlement</field>
         <field name="arch" type="xml">
             <search string="Full and Final">
-                <field name="employee_id"/>
-                <field name="formula_config_id"/>
+                <field name="employee_id" string="Employee"
+                       filter_domain="['|', ('employee_id', 'ilike', self), ('employee_code', 'ilike', self)]"/>
+                <field name="department_id"/>
+                <field name="job_id"/>
+                <field name="formula_config_id" string="Salary Structure"/>
+                <field name="settlement_month"/>
+                <separator/>
+                <!-- Rich date picker (This/Last Month, Quarter, Year …) -->
+                <filter name="filter_settlement_date" string="Settlement Date" date="settlement_date"/>
                 <filter name="this_month"
                         string="This Month"
                         domain="[('settlement_date', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')), ('settlement_date', '&lt;', (context_today() + relativedelta(day=1, months=1)).strftime('%Y-%m-%d'))]"/>
-                <filter name="source_auto" string="Auto" domain="[('source', '=', 'auto')]"/>
+                <filter name="last_month"
+                        string="Last Month"
+                        domain="[('settlement_date', '&gt;=', (context_today() + relativedelta(day=1, months=-1)).strftime('%Y-%m-%d')), ('settlement_date', '&lt;', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d'))]"/>
+                <filter name="this_year"
+                        string="This Year"
+                        domain="[('settlement_date', '&gt;=', (context_today() + relativedelta(day=1, month=1)).strftime('%Y-%m-%d')), ('settlement_date', '&lt;', (context_today() + relativedelta(day=1, month=1, years=1)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
                 <filter name="source_manual" string="Manual" domain="[('source', '=', 'manual')]"/>
+                <filter name="source_auto" string="Auto" domain="[('source', '=', 'auto')]"/>
+                <separator/>
+                <filter name="high_value" string="Net ≥ ₫30M" domain="[('net_payable', '&gt;=', 30000000)]"/>
+                <group name="group_by">
+                    <filter name="group_department" string="Department" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_structure" string="Salary Structure" context="{'group_by': 'formula_config_id'}"/>
+                    <filter name="group_job" string="Job Position" context="{'group_by': 'job_id'}"/>
+                    <filter name="group_month" string="Settlement Month" context="{'group_by': 'settlement_month'}"/>
+                    <filter name="group_date" string="Settlement Date" context="{'group_by': 'settlement_date:month'}"/>
+                    <filter name="group_source" string="Source" context="{'group_by': 'source'}"/>
+                    <filter name="group_company" string="Company" context="{'group_by': 'company_id'}"/>
+                </group>
             </search>
         </field>
     </record>
@@ -102,7 +145,7 @@
     <record id="action_full_and_final_employees" model="ir.actions.act_window">
         <field name="name">Full and Final</field>
         <field name="res_model">hr.full.final.settlement</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="view_id" ref="view_full_and_final_tree"/>
         <field name="search_view_id" ref="view_full_and_final_search"/>
         <field name="domain">[]</field>

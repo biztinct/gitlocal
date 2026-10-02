@@ -1,0 +1,86 @@
+// =====================================================================
+//  Payobook UI Kit — UNIFORM design-system tokens (single indigo palette)
+//  Model: white card surfaces + ONE indigo primary (#5A4BB0, SOLID buttons),
+//  semantic status colours, colored Lucide icon badges on tiles. Applied
+//  app-wide; the primitive RULES live in import_kit.scss.
+// =====================================================================
+
+// --- indigo primary (the one brand colour) ---
+$pbim-primary:        #5A4BB0;   // SOLID primary (buttons, active tabs, icons, links)
+$pbim-primary-hover:  #4A3D96;
+$pbim-primary-strong: #5A4BB0;   // accent text / icons / links (reads on white)
+$pbim-primary-light:  #CBC2EE;   // light indigo (chip fill ref, hover)
+$pbim-primary-dark:   #241F52;   // pressed / deep ink
+$pbim-ink:            #1B1733;   // dark heading text (on white)
+
+// --- softs / borders / ring ---
+$pbim-soft:   #EDEAF8;           // lightest indigo (icon badges, hero av, active chip, note)
+$pbim-soft2:  #DDD6F2;           // slightly deeper indigo tint (hover/secondary)
+$pbim-sky:    #DDD6F2;
+$pbim-border: #E2E8F0;           // neutral hairline border (design-system grey)
+$pbim-ring:   rgba(90, 75, 176, .18); // focus / hover glow
+
+// --- neutrals ---
+$pbim-text:    #1B1733;
+$pbim-muted:   #64748B;
+$pbim-line:    #E2E8F0;
+$pbim-line-2:  #F1F5F9;
+$pbim-bg:      #F5F6FA;
+$pbim-surface: #ffffff;
+
+// --- semantic (money green, info blue, warning amber, error rose, slate) ---
+$pbim-green:      #2E7D4F;   // success / money
+$pbim-green-soft: #E3F2E9;
+$pbim-rose:       #DC2668;   // error
+$pbim-rose-soft:  #FCE7EF;
+$pbim-amber:      #D97706;   // warning
+$pbim-amber-soft: #FEF3C7;
+$pbim-cyan:       #2563EB;   // info / blue
+$pbim-cyan-soft:  #E5EDFD;
+$pbim-slate:      #64748B;
+$pbim-slate-soft: #EEF1F5;
+
+// --- shape ---
+$pbim-r:     14px;
+$pbim-r-sm:  10px;
+$pbim-r-lg:  18px;
+$pbim-pill:  999px;
+$pbim-sh:    0 8px 24px rgba(16, 12, 40, .07);
+$pbim-sh-lg: 0 18px 44px rgba(40, 50, 90, .12);
+
+// Emit the tokens as CSS custom properties so OWL roots can theme and so
+// the .pbim-* primitives can be re-tinted by a surface if ever needed.
+@mixin pbim-root-vars {
+    --pbim-primary:        #{$pbim-primary};
+    --pbim-primary-hover:  #{$pbim-primary-hover};
+    --pbim-primary-strong: #{$pbim-primary-strong};
+    --pbim-primary-light:  #{$pbim-primary-light};
+    --pbim-primary-dark:   #{$pbim-primary-dark};
+    --pbim-ink:            #{$pbim-ink};
+    --pbim-soft:           #{$pbim-soft};
+    --pbim-soft2:          #{$pbim-soft2};
+    --pbim-sky:            #{$pbim-sky};
+    --pbim-border:         #{$pbim-border};
+    --pbim-ring:           #{$pbim-ring};
+    --pbim-text:           #{$pbim-text};
+    --pbim-muted:          #{$pbim-muted};
+    --pbim-line:           #{$pbim-line};
+    --pbim-line-2:         #{$pbim-line-2};
+    --pbim-bg:             #{$pbim-bg};
+    --pbim-surface:        #{$pbim-surface};
+    --pbim-green:          #{$pbim-green};
+    --pbim-green-soft:     #{$pbim-green-soft};
+    --pbim-rose:           #{$pbim-rose};
+    --pbim-rose-soft:      #{$pbim-rose-soft};
+    --pbim-amber:          #{$pbim-amber};
+    --pbim-amber-soft:     #{$pbim-amber-soft};
+    --pbim-cyan:           #{$pbim-cyan};
+    --pbim-cyan-soft:      #{$pbim-cyan-soft};
+    --pbim-slate:          #{$pbim-slate};
+    --pbim-slate-soft:     #{$pbim-slate-soft};
+    --pbim-r:              #{$pbim-r};
+    --pbim-r-sm:           #{$pbim-r-sm};
+    --pbim-r-lg:           #{$pbim-r-lg};
+    --pbim-sh:             #{$pbim-sh};
+    --pbim-sh-lg:          #{$pbim-sh-lg};
+}

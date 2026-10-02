@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         THE NATIVE FORMS FOR THE YEAR AFTER THE GOALS ARE AGREED.
+
+         The board is where the work happens; these are where somebody opens
+         ONE record. Same three rules as B1's file and they are worth
+         repeating because each one aborts something:
+
+           * `nolabel="1"` INSIDE A `<group>` NEEDS `colspan="2"` (R128), or
+             the field renders one narrow label wide with a thousand pixels of
+             empty row beside it.
+           * A SEARCH `<group>` TAKES NO `string` OR `expand` (R129) — it fails
+             RNG validation and aborts the WHOLE module load, with the real
+             error only in the server log.
+           * DO NOT DEFAULT A LIST TO `group_by` (R130): Odoo opens groups
+             collapsed and the screen lands on headings with no rows.
+         ================================================================== -->
+
+    <!-- The Insights lens as a client action RECORD and never a bare tag: a
+         bare tag is synthesised with no action NAME, so anything returning
+         through a breadcrumb lands on a crumb labelled "Unnamed". -->
+    <record id="action_pb_goals_numbers" model="ir.actions.client">
+        <field name="name">Goal numbers</field>
+        <field name="tag">pb_goals_numbers</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- ==================================================================
+         THE MONTHLY CHECK-IN
+         ================================================================== -->
+    <record id="view_pb_goal_checkin_list" model="ir.ui.view">
+        <field name="name">pb.goal.checkin.list</field>
+        <field name="model">pb.goal.checkin</field>
+        <field name="arch" type="xml">
+            <list string="Monthly check-ins" create="false">
+                <field name="employee_id"/>
+                <field name="month"/>
+                <field name="scheduled_date"/>
+                <field name="manager_employee_id" string="Manager"
+                       optional="show"/>
+                <field name="department_id" optional="hide"/>
+                <field name="cycle_id" optional="hide"/>
+                <field name="done_by_id" string="Written up by"
+                       optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-danger="state == 'missed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_goal_checkin_form" model="ir.ui.view">
+        <field name="name">pb.goal.checkin.form</field>
+        <field name="model">pb.goal.checkin</field>
+        <field name="arch" type="xml">
+            <form string="Check-in" create="false">
+                <header>
+                    <button name="action_checkin_done" type="object"
+                            string="Mark it done" class="btn-primary"
+                            invisible="state == 'done'"
+                            help="Write a line about what moved this month first — a check-in with nothing on it cannot be read next March."/>
+                    <button name="action_checkin_missed" type="object"
+                            string="Nobody talked" invisible="state != 'planned'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="planned,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_set" type="object"
+                                class="oe_stat_button" icon="fa-bullseye"
+                                string="Their goals"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Whose, and when">
+                            <field name="employee_id" readonly="1"/>
+                            <field name="manager_employee_id" readonly="1"/>
+                            <field name="month" readonly="1"/>
+                            <field name="scheduled_date"/>
+                        </group>
+                        <group string="Where it has got to">
+                            <field name="cycle_id" readonly="1"/>
+                            <field name="done_at" readonly="1"/>
+                            <field name="done_by_id" readonly="1"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"
+                                   readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="What was said">
+                        <field name="progress_note" nolabel="1" colspan="2"
+                               placeholder="What moved this month, in a sentence or two."/>
+                    </group>
+                    <group string="What is in the way">
+                        <field name="blockers" nolabel="1" colspan="2"
+                               placeholder="Anything somebody else has to unblock. Leave it empty if there is nothing."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_goal_checkin_search" model="ir.ui.view">
+        <field name="name">pb.goal.checkin.search</field>
+        <field name="model">pb.goal.checkin</field>
+        <field name="arch" type="xml">
+            <search string="Check-ins">
+                <field name="employee_id"/>
+                <field name="cycle_id"/>
+                <field name="department_id"/>
+                <filter name="f_open" string="Still to have"
+                        domain="[('state', '=', 'planned')]"/>
+                <filter name="f_missed" string="Missed"
+                        domain="[('state', '=', 'missed')]"/>
+                <filter name="f_done" string="Written up"
+                        domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter name="f_mine" string="My team's"
+                        domain="[('manager_user_id', '=', uid)]"/>
+                <group name="group_by">
+                    <filter name="gb_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="gb_month" string="Month"
+                            context="{'group_by': 'month'}"/>
+                    <filter name="gb_manager" string="Manager"
+                            context="{'group_by': 'manager_employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_goal_checkin" model="ir.actions.act_window">
+        <field name="name">Monthly check-ins</field>
+        <field name="res_model">pb.goal.checkin</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No check-ins yet</p>
+            <p>A check-in opens itself every month for everybody whose goals
+               have been agreed, on the day of the month the goal year asks
+               for. Either side of the conversation can write it up.</p>
+        </field>
+    </record>
+
+    <!-- ==================================================================
+         THE TWO REVIEWS
+         ================================================================== -->
+    <record id="view_pb_goal_review_list" model="ir.ui.view">
+        <field name="name">pb.goal.review.list</field>
+        <field name="model">pb.goal.review</field>
+        <field name="arch" type="xml">
+            <list string="Reviews" create="false">
+                <field name="employee_id"/>
+                <field name="kind"/>
+                <field name="due_date"/>
+                <field name="manager_employee_id" string="Manager"
+                       optional="show"/>
+                <field name="cycle_id" optional="hide"/>
+                <field name="score_at_review" string="Score" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_goal_review_form" model="ir.ui.view">
+        <field name="name">pb.goal.review.form</field>
+        <field name="model">pb.goal.review</field>
+        <field name="arch" type="xml">
+            <form string="Review" create="false">
+                <header>
+                    <button name="action_review_done" type="object"
+                            string="Write it up" class="btn-primary"
+                            invisible="state == 'done'"
+                            help="Score the key results on the goals board first — the score on this review is the one the sheet has when it is written up."/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="planned,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_set" type="object"
+                                class="oe_stat_button" icon="fa-bullseye"
+                                string="Their goals"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Whose, and when">
+                            <field name="employee_id" readonly="1"/>
+                            <field name="manager_employee_id" readonly="1"/>
+                            <field name="kind" readonly="1"/>
+                            <field name="due_date"/>
+                        </group>
+                        <group string="Where it has got to">
+                            <field name="cycle_id" readonly="1"/>
+                            <field name="score_at_review" readonly="1"/>
+                            <field name="done_at" readonly="1"/>
+                            <field name="done_by_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="What the employee wanted said">
+                        <field name="employee_note" nolabel="1" colspan="2"
+                               readonly="1"/>
+                    </group>
+                    <group string="The write-up">
+                        <field name="manager_note" nolabel="1" colspan="2"
+                               placeholder="What was said, and what it means for next year."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_goal_review_search" model="ir.ui.view">
+        <field name="name">pb.goal.review.search</field>
+        <field name="model">pb.goal.review</field>
+        <field name="arch" type="xml">
+            <search string="Reviews">
+                <field name="employee_id"/>
+                <field name="cycle_id"/>
+                <filter name="f_open" string="Still to write up"
+                        domain="[('state', '=', 'planned')]"/>
+                <filter name="f_mid" string="Half-way"
+                        domain="[('kind', '=', 'mid_year')]"/>
+                <filter name="f_end" string="End of year"
+                        domain="[('kind', '=', 'year_end')]"/>
+                <separator/>
+                <filter name="f_mine" string="My team's"
+                        domain="[('manager_user_id', '=', uid)]"/>
+                <group name="group_by">
+                    <filter name="gb_kind" string="Which one"
+                            context="{'group_by': 'kind'}"/>
+                    <filter name="gb_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_goal_review" model="ir.actions.act_window">
+        <field name="name">Goal reviews</field>
+        <field name="res_model">pb.goal.review</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ==================================================================
+         THE CHANGE REQUEST
+         ================================================================== -->
+    <record id="view_pb_goal_change_list" model="ir.ui.view">
+        <field name="name">pb.goal.change.list</field>
+        <field name="model">pb.goal.change</field>
+        <field name="arch" type="xml">
+            <list string="Change requests">
+                <field name="employee_id"/>
+                <field name="kind"/>
+                <field name="summary" width="320px"/>
+                <field name="requested_by_id" string="Asked by"
+                       optional="show"/>
+                <field name="create_date" string="Asked on" optional="show"/>
+                <field name="applied_at" string="Carried out"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-danger="state == 'refused'"
+                       decoration-warning="state in ('submitted', 'manager_ok')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_goal_change_form" model="ir.ui.view">
+        <field name="name">pb.goal.change.form</field>
+        <field name="model">pb.goal.change</field>
+        <field name="arch" type="xml">
+            <form string="Change request">
+                <header>
+                    <button name="action_change_submit" type="object"
+                            string="Ask for it" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_change_manager_ok" type="object"
+                            string="Agree it" invisible="state != 'submitted'"/>
+                    <button name="action_change_approve" type="object"
+                            string="Agree and carry it out" class="btn-primary"
+                            invisible="state != 'manager_ok'"/>
+                    <button name="action_change_refuse" type="object"
+                            string="Turn it down"
+                            invisible="state not in ('draft', 'submitted', 'manager_ok')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,manager_ok,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_set" type="object"
+                                class="oe_stat_button" icon="fa-bullseye"
+                                string="Their goals"/>
+                    </div>
+                    <div class="alert alert-danger" role="alert"
+                         invisible="state != 'refused' or not refuse_note">
+                        <strong>Turned down:</strong>
+                        <field name="refuse_note" readonly="1" nolabel="1"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="summary" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="What, and whose">
+                            <field name="set_id"/>
+                            <field name="goal_id"/>
+                            <field name="kind"/>
+                            <field name="employee_id" readonly="1"/>
+                        </group>
+                        <group string="Where it has got to">
+                            <field name="requested_by_id" readonly="1"/>
+                            <field name="create_date" string="Asked on"
+                                   readonly="1"/>
+                            <field name="applied_at" readonly="1"/>
+                            <field name="cycle_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Why">
+                        <field name="reason" nolabel="1" colspan="2"
+                               placeholder="What changed in the business. This is the whole of what the manager and the HR lead have to go on."/>
+                    </group>
+                    <notebook>
+                        <page string="What it changed" name="audit">
+                            <field name="audit_ids" nolabel="1" readonly="1">
+                                <list create="false">
+                                    <field name="at"/>
+                                    <field name="what"/>
+                                    <field name="goal_id"/>
+                                    <field name="by_user_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_goal_change_search" model="ir.ui.view">
+        <field name="name">pb.goal.change.search</field>
+        <field name="model">pb.goal.change</field>
+        <field name="arch" type="xml">
+            <search string="Change requests">
+                <field name="employee_id"/>
+                <field name="summary"/>
+                <field name="cycle_id"/>
+                <filter name="f_open" string="Waiting on somebody"
+                        domain="[('state', 'in', ('draft', 'submitted', 'manager_ok'))]"/>
+                <filter name="f_agreed" string="Agreed"
+                        domain="[('state', '=', 'approved')]"/>
+                <filter name="f_refused" string="Turned down"
+                        domain="[('state', '=', 'refused')]"/>
+                <separator/>
+                <filter name="f_mine" string="My team's"
+                        domain="[('manager_user_id', '=', uid)]"/>
+                <group name="group_by">
+                    <filter name="gb_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="gb_kind" string="What kind"
+                            context="{'group_by': 'kind'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_goal_change" model="ir.actions.act_window">
+        <field name="name">Goal change requests</field>
+        <field name="res_model">pb.goal.change</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nobody has asked to
+               change agreed goals</p>
+            <p>Once a goal sheet is agreed and locked, the only way to move a
+               goal is to ask. The same two people who agreed it in the first
+               place decide, and the goal then says what changed and when.</p>
+        </field>
+    </record>
+
+    <!-- ==================================================================
+         THE SCORE BANDS
+         ================================================================== -->
+    <record id="view_pb_goal_band_list" model="ir.ui.view">
+        <field name="name">pb.goal.band.list</field>
+        <field name="model">pb.goal.band</field>
+        <field name="arch" type="xml">
+            <list string="Score bands" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="min_score"/>
+                <field name="max_score"/>
+                <field name="description" width="320px"/>
+                <field name="tone"/>
+                <field name="cycle_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_goal_band" model="ir.actions.act_window">
+        <field name="name">Score bands</field>
+        <field name="res_model">pb.goal.band</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">What a score is called</p>
+            <p>A score of 3.6 tells nobody anything on its own; "Strong" tells
+               them something, and the two together tell them everything.
+               Leave a band's goal year empty and every year uses it.</p>
+        </field>
+    </record>
+
+    <!-- ==================================================================
+         THE CHANGE TRAIL — read-only by construction. There is no door that
+         edits one of these: an audit row somebody can tidy up is not an audit
+         row.
+         ================================================================== -->
+    <record id="view_pb_goal_audit_list" model="ir.ui.view">
+        <field name="name">pb.goal.audit.list</field>
+        <field name="model">pb.goal.audit</field>
+        <field name="arch" type="xml">
+            <list string="What has been changed" create="false"
+                  edit="false" delete="false">
+                <field name="at"/>
+                <field name="set_id"/>
+                <field name="what" width="320px"/>
+                <field name="kind"/>
+                <field name="by_user_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ==================================================================
+         THE YEAR, ON THE FORMS THAT ALREADY EXIST
+         ================================================================== -->
+    <record id="view_pb_goal_cycle_form_b2" model="ir.ui.view">
+        <field name="name">pb.goal.cycle.form.year</field>
+        <field name="model">pb.goal.cycle</field>
+        <field name="inherit_id" ref="pb_goals.view_pb_goal_cycle_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_close']" position="after">
+                <button name="action_close_cycle" type="object"
+                        string="Score it and close the year"
+                        class="btn-primary" invisible="state != 'open'"
+                        help="Freezes every score, files the goals and tells everybody what they came out at. It says how many and what is missing before it does anything, and it can be undone."/>
+                <button name="action_reopen_cycle" type="object"
+                        string="Reopen it" invisible="state != 'closed'"/>
+            </xpath>
+            <xpath expr="//field[@name='submission_days']" position="after">
+                <field name="checkin_day"/>
+                <field name="mid_year_min_months"/>
+                <field name="year_end_min_months"/>
+            </xpath>
+            <xpath expr="//field[@name='locked_count']" position="after">
+                <field name="closed_at" invisible="state != 'closed'"/>
+                <field name="closed_by_id" invisible="state != 'closed'"/>
+                <field name="closed_with_gaps"
+                       invisible="state != 'closed' or closed_with_gaps == 0"/>
+            </xpath>
+            <!-- AT THE END OF THE SHEET, and NEVER `//group[@string='…']`.
+                 View inheritance may not select by `string` on this build —
+                 it is not a warning, it is *"View inheritance may not use
+                 attribute 'string' as a selector"* and it aborts the whole
+                 module load. Worse, the error names the CHILD view's own
+                 first line rather than the xpath that did it, so the line
+                 number in the log points somewhere innocent. `//sheet` is
+                 the stable anchor: it is one element, it is always there,
+                 and "inside" puts the notebook where a notebook goes. -->
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page string="Score bands" name="bands">
+                        <div class="alert alert-info" role="alert">
+                            Leave this empty and this year uses the bands every
+                            year uses. Fill it in only if this year is scored
+                            differently.
+                        </div>
+                        <field name="band_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="sequence" widget="handle"/>
+                                <field name="name"/>
+                                <field name="min_score"/>
+                                <field name="max_score"/>
+                                <field name="tone"/>
+                                <field name="description"/>
+                            </list>
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_pb_goal_set_form_b2" model="ir.ui.view">
+        <field name="name">pb.goal.set.form.year</field>
+        <field name="model">pb.goal.set</field>
+        <field name="inherit_id" ref="pb_goals.view_pb_goal_set_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='joined_on']" position="after">
+                <field name="covered_from"/>
+                <field name="prorated"/>
+                <field name="applies_mid_year"/>
+                <field name="applies_year_end"/>
+            </xpath>
+            <xpath expr="//field[@name='progress']" position="after">
+                <field name="scored"/>
+                <field name="score"/>
+                <field name="score_band"/>
+                <field name="goals_done"/>
+                <field name="submitted_at"/>
+                <field name="manager_ok_at"/>
+                <field name="closed_at" invisible="state != 'closed'"/>
+            </xpath>
+            <xpath expr="//page[@name='goals']" position="after">
+                <page string="Monthly check-ins" name="checkins">
+                    <field name="checkin_ids" nolabel="1" readonly="1">
+                        <list create="false">
+                            <field name="month"/>
+                            <field name="scheduled_date"/>
+                            <field name="state" widget="badge"/>
+                            <field name="progress_note"/>
+                            <field name="done_by_id"/>
+                        </list>
+                    </field>
+                </page>
+                <page string="Reviews" name="reviews">
+                    <field name="review_ids" nolabel="1" readonly="1">
+                        <list create="false">
+                            <field name="kind"/>
+                            <field name="due_date"/>
+                            <field name="state" widget="badge"/>
+                            <field name="score_at_review"/>
+                            <field name="manager_note"/>
+                        </list>
+                    </field>
+                </page>
+                <page string="Changes asked for" name="changes">
+                    <field name="change_ids" nolabel="1" readonly="1">
+                        <list create="false">
+                            <field name="create_date" string="Asked on"/>
+                            <field name="kind"/>
+                            <field name="summary"/>
+                            <field name="requested_by_id"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+                </page>
+                <page string="What was changed" name="audit">
+                    <field name="audit_ids" nolabel="1" readonly="1">
+                        <list create="false">
+                            <field name="at"/>
+                            <field name="what"/>
+                            <field name="goal_id"/>
+                            <field name="by_user_id"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+            <!-- THE SENTENCE, NOT THE BOOLEANS. Four ticks tell an HR
+                 administrator which reviews somebody gets; the sentence tells
+                 them what the person was told, which is the thing they will
+                 be asked about. -->
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <div class="alert alert-info" role="alert"
+                     invisible="not applicability_note">
+                    <strong>What they were told about reviews:</strong>
+                    <field name="applicability_note" readonly="1"
+                           nolabel="1"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_pb_goal_form_b2" model="ir.ui.view">
+        <field name="name">pb.goal.form.year</field>
+        <field name="model">pb.goal</field>
+        <field name="inherit_id" ref="pb_goals.view_pb_goal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='template_id']" position="after">
+                <field name="scored"/>
+                <field name="score"/>
+                <field name="done_at"/>
+                <field name="changed_on"/>
+                <field name="active" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='kr_ids']/list/field[@name='progress']"
+                   position="after">
+                <field name="score" string="How it went"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

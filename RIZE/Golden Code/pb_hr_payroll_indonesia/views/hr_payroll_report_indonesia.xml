@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Indonesia Payslip Report Action -->
+    <record id="action_report_payslip_indonesia" model="ir.actions.report">
+        <field name="name">Indonesia PaySlip</field>
+        <field name="model">hr.payslip</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_hr_payroll_indonesia.report_payslip_indonesia</field>
+        <field name="report_file">pb_hr_payroll_indonesia.report_payslip_indonesia</field>
+        <field name="print_report_name">('Payslip - %s' % (object.employee_id.name))</field>
+        <field name="binding_model_id" ref="om_hr_payroll.model_hr_payslip"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

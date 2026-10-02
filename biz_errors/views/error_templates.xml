@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        ONE DESIGN, SEVEN WORDINGS.
+
+        Every user-visible sentence on every breakdown page lives in
+        `biz_errors.breakdown_card` and nowhere else. That is deliberate: it
+        keeps the wording consistent, it keeps the translation catalogue to one
+        reference, and it means a new status code is a new `bze_variant`, not a
+        new page.
+
+        The 500 page may not call `web.frontend_layout` and may not load an
+        asset bundle: it renders while the request is already in trouble (see
+        the shouted comment on `http_routing.500`). So the stylesheet is inline
+        and the icon is drawn inline. The 4xx family has no such restriction and
+        keeps the site's own header and footer around the card.
+    -->
+
+    <!-- ============================================================ -->
+    <!-- The stylesheet. Inline, self-contained, no asset bundle.      -->
+    <!-- ============================================================ -->
+    <template id="breakdown_style" name="Breakdown screen style">
+        <style>
+.bze-body{margin:0;background:#f5f7fa;}
+.bze-wrap{--bze-accent:#1565c0;--bze-ink:#16202c;--bze-muted:#5d6b7a;--bze-edge:#e4e9ef;--bze-paper:#ffffff;box-sizing:border-box;min-height:60vh;display:flex;align-items:center;justify-content:center;padding:56px 20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;}
+.bze-body .bze-wrap{min-height:100vh;}
+.bze-card{box-sizing:border-box;width:100%;max-width:34rem;background:var(--bze-paper);border:1px solid var(--bze-edge);border-radius:16px;padding:44px 40px 36px;text-align:center;box-shadow:0 1px 2px rgba(16,32,48,.05),0 14px 36px rgba(16,32,48,.07);animation:bze-rise .2s cubic-bezier(.22,.61,.36,1) both;}
+.bze-brand{margin:0 0 26px;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--bze-muted);}
+.bze-icon{display:block;width:44px;height:44px;margin:0 auto 22px;color:var(--bze-muted);}
+.bze-icon svg{display:block;width:44px;height:44px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.bze-headline{margin:0 0 12px;font-size:22px;font-weight:650;letter-spacing:-.01em;line-height:1.3;color:var(--bze-ink);}
+.bze-sub{margin:0;font-size:15px;line-height:1.6;color:var(--bze-muted);}
+.bze-msg{margin:20px 0 0;padding:12px 14px;font-size:14px;line-height:1.6;text-align:left;color:var(--bze-ink);background:#f7f9fb;border:1px solid var(--bze-edge);border-radius:10px;}
+.bze-ref{margin:28px 0 0;padding:18px 0 0;border-top:1px solid var(--bze-edge);}
+.bze-ref-label{display:block;margin:0 0 8px;font-size:12px;line-height:1.5;color:var(--bze-muted);}
+.bze-ref-code{display:inline-block;padding:7px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;letter-spacing:.08em;color:var(--bze-ink);background:#f2f5f8;border:1px solid var(--bze-edge);border-radius:8px;-webkit-user-select:all;user-select:all;}
+.bze-actions{margin:26px 0 0;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.bze-btn{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 22px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:transform .12s ease,box-shadow .12s ease,background-color .12s ease;}
+.bze-btn-primary{background:var(--bze-accent);border:1px solid var(--bze-accent);color:#fff;}
+.bze-btn-primary:hover,.bze-btn-primary:focus{background:var(--bze-accent);color:#fff;text-decoration:none;transform:translateY(-1px);box-shadow:0 6px 16px rgba(16,32,48,.18);}
+.bze-btn-ghost{background:var(--bze-paper);border:1px solid var(--bze-edge);color:var(--bze-ink);}
+.bze-btn-ghost:hover,.bze-btn-ghost:focus{background:#f5f8fb;color:var(--bze-ink);text-decoration:none;transform:translateY(-1px);}
+@keyframes bze-rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+@media (max-width:430px){.bze-card{padding:32px 22px 28px;border-radius:14px;}.bze-headline{font-size:20px;}.bze-actions{flex-direction:column;}.bze-btn{width:100%;}}
+@media (prefers-reduced-motion:reduce){.bze-card{animation:none;}.bze-btn{transition:none;}.bze-btn:hover,.bze-btn:focus{transform:none;}}
+        </style>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- The icon. Lucide path data, drawn inline (no bundle, ER3).    -->
+    <!-- ============================================================ -->
+    <template id="breakdown_icon" name="Breakdown screen icon">
+        <span class="bze-icon">
+            <t t-if="bze_variant == 'crash'">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                </svg>
+            </t>
+            <t t-elif="bze_variant == 'access'">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+                </svg>
+            </t>
+            <t t-elif="bze_variant == 'filetype'">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+                    <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+                    <path d="m9.5 12.5 5 5"/>
+                    <path d="m14.5 12.5-5 5"/>
+                </svg>
+            </t>
+            <t t-else="">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 8v4.5"/>
+                    <path d="M12 16.2h.01"/>
+                </svg>
+            </t>
+        </span>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- The card. EVERY user-visible sentence in this module is here. -->
+    <!-- ============================================================ -->
+    <template id="breakdown_card" name="Breakdown screen">
+        <t t-set="bze_accent_style" t-value="('--bze-accent:%s;' % brand_color) if brand_color else None"/>
+        <div class="bze-wrap" t-att-style="bze_accent_style">
+            <div class="bze-card" role="alert">
+                <!-- The wordmark belongs on the standalone page only. The 4xx
+                     family renders inside the site's own header, which already
+                     carries the mark: a second one underneath it is noise, and
+                     on a tenant whose brand parameter is still the default it
+                     is noise that disagrees with the header. -->
+                <p class="bze-brand" t-if="bze_standalone and brand_name" t-esc="brand_name"/>
+                <t t-call="biz_errors.breakdown_icon"/>
+
+                <h1 class="bze-headline" t-if="bze_variant == 'crash'">Something went wrong on our side</h1>
+                <h1 class="bze-headline" t-elif="bze_variant == 'access'">You don't have access to this page</h1>
+                <h1 class="bze-headline" t-elif="bze_variant == 'filetype'">That file type isn't supported here</h1>
+                <h1 class="bze-headline" t-elif="bze_variant == 'request'">That request didn't come through</h1>
+                <h1 class="bze-headline" t-else="">This page couldn't be opened</h1>
+
+                <p class="bze-sub" t-if="bze_variant == 'crash'">This wasn't you. Try again — if it keeps happening, let your administrator know so support can look into it.</p>
+                <p class="bze-sub" t-elif="bze_variant == 'access'">This area is limited to certain roles. If you need it for your work, ask your administrator to extend your access.</p>
+                <p class="bze-sub" t-elif="bze_variant == 'filetype'">Try again with a different file format. If you are not sure which formats are accepted, ask your administrator.</p>
+                <p class="bze-sub" t-elif="bze_variant == 'request'">Something in the address or in the details sent with it was not right. Go back and try again.</p>
+                <p class="bze-sub" t-else="">This wasn't you. Go back and try again — if it keeps happening, let your administrator know so support can look into it.</p>
+
+                <!-- Only the text of a genuine UserError reaches this line, and
+                     only ever through t-esc: it can carry what a person typed. -->
+                <p class="bze-msg" t-if="error_message" t-esc="error_message"/>
+
+                <div class="bze-ref" t-if="error_ref">
+                    <p class="bze-ref-label">If you need help, give your administrator this reference</p>
+                    <div><code class="bze-ref-code" t-esc="error_ref"/></div>
+                </div>
+
+                <!-- Zero dead-ends: a way back AND a way home, always. -->
+                <div class="bze-actions">
+                    <a class="bze-btn bze-btn-primary" href="javascript: window.history.back()">Go back</a>
+                    <a class="bze-btn bze-btn-ghost" t-att-href="brand_home or '/'">Home</a>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="breakdown_page" name="Breakdown screen (style + card)">
+        <t t-call="biz_errors.breakdown_style"/>
+        <t t-call="biz_errors.breakdown_card"/>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- 500 — self-contained document. No layout, no assets (ER3).    -->
+    <!-- ============================================================ -->
+    <template id="b500" inherit_id="http_routing.500" name="Breakdown screen: server failure">
+        <xpath expr="//html" position="replace">
+            <html>
+                <head>
+                    <meta charset="utf-8"/>
+                    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                    <title>Something went wrong</title>
+                    <t t-call="biz_errors.breakdown_style"/>
+                </head>
+                <body class="bze-body">
+                    <t t-set="bze_variant" t-value="'crash'"/>
+                    <t t-set="bze_standalone" t-value="True"/>
+                    <t t-call="biz_errors.breakdown_card"/>
+                </body>
+            </html>
+        </xpath>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- The 4xx family — keeps the site's own header and footer.      -->
+    <!-- ============================================================ -->
+    <template id="b4xx" inherit_id="http_routing.4xx" name="Breakdown screen: other">
+        <xpath expr="//t[@t-call='web.frontend_layout']" position="replace">
+            <t t-call="web.frontend_layout">
+                <div id="wrap">
+                    <t t-set="bze_variant" t-value="'generic'"/>
+                    <t t-call="biz_errors.breakdown_page"/>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="b400" inherit_id="http_routing.400" name="Breakdown screen: bad request">
+        <xpath expr="//t[@t-call='web.frontend_layout']" position="replace">
+            <t t-call="web.frontend_layout">
+                <div id="wrap">
+                    <t t-set="bze_variant" t-value="'request'"/>
+                    <t t-call="biz_errors.breakdown_page"/>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="b403" inherit_id="http_routing.403" name="Breakdown screen: no access">
+        <xpath expr="//t[@t-call='web.frontend_layout']" position="replace">
+            <t t-call="web.frontend_layout">
+                <div id="wrap">
+                    <t t-set="bze_variant" t-value="'access'"/>
+                    <t t-call="biz_errors.breakdown_page"/>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="b415" inherit_id="http_routing.415" name="Breakdown screen: file type">
+        <xpath expr="//t[@t-call='web.frontend_layout']" position="replace">
+            <t t-call="web.frontend_layout">
+                <div id="wrap">
+                    <t t-set="bze_variant" t-value="'filetype'"/>
+                    <t t-call="biz_errors.breakdown_page"/>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="b422" inherit_id="http_routing.422" name="Breakdown screen: request refused">
+        <xpath expr="//t[@t-call='web.frontend_layout']" position="replace">
+            <t t-call="web.frontend_layout">
+                <div id="wrap">
+                    <t t-set="bze_variant" t-value="'request'"/>
+                    <t t-call="biz_errors.breakdown_page"/>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="bhttp_error" inherit_id="http_routing.http_error" name="Breakdown screen: generic">
+        <xpath expr="//t[@t-call='web.frontend_layout']" position="replace">
+            <t t-call="web.frontend_layout">
+                <div id="wrap">
+                    <t t-set="bze_variant" t-value="'generic'"/>
+                    <t t-call="biz_errors.breakdown_page"/>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- The technical blocks. Belt and braces on top of the seam,     -->
+    <!-- which already blanks the values these read.                   -->
+    <!-- ============================================================ -->
+    <template id="bhttp_error_debug" inherit_id="http_routing.http_error_debug" name="Breakdown screen: no crash report">
+        <xpath expr="//div[@id='debug_infos']" position="replace"/>
+    </template>
+
+    <template id="berror_message" inherit_id="http_routing.error_message" name="Breakdown screen: message">
+        <xpath expr="//p" position="replace">
+            <p class="bze-msg" t-if="error_message" t-esc="error_message"/>
+        </xpath>
+    </template>
+
+</odoo>

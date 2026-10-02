@@ -1,0 +1,370 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       RECRUIT P8 — Hiring set-up → Emails and languages, Automations.
+       Loop variables are p8-prefixed (em8, lg8, tk8, ru8, bi8, lo8, st8,
+       ev8, ac8, rc8, dp8, cn8, tg8, c8, ln8, in8).
+       ==================================================================== -->
+
+  <!-- ============ EMAILS AND LANGUAGES ============ -->
+  <t t-name="pb_hiring.P8SetupEmails">
+    <section class="pbim-panel pbhr-su-p8em" t-if="state.data.emails">
+      <div class="pbhr-su-h">
+        <h2><t t-out="ic('mail',17)"/> Emails and languages</h2>
+        <span class="pbhr-pill"><t t-esc="p8Em.rows.length"/> candidate emails</span>
+        <span t-if="p8Em.missing" class="pbhr-pill pbhr-p8-pill-warn"><t t-out="ic('globe',12)"/> <t t-esc="p8Em.missing"/> language versions missing</span>
+        <span class="pbhr-foot-gap"/>
+      </div>
+      <p class="pbhr-su-lede">Every email a candidate gets, in the language they applied in. Click one to change its words in <t t-foreach="p8Em.langs" t-as="lg8" t-key="lg8"><t t-esc="p8LangWord(lg8)"/><t t-if="!lg8_last">, </t></t>. When a language is missing, English goes instead and the candidate's timeline says so.</p>
+
+      <div t-if="!p8Em.mail_on" class="pbhr-p8-banner">
+        <t t-out="ic('pause',15)"/>
+        <span><b>Candidate emails are switched off.</b> Nothing below is sent until "Email candidates from here" is on, under Switches.</span>
+      </div>
+
+      <div class="pbhr-p8-emails" role="list">
+        <div t-foreach="p8Em.rows" t-as="em8" t-key="em8.id" class="pbhr-p8-em" role="listitem">
+          <button type="button" class="pbhr-p8-em-main" t-on-click="() =&gt; this.p8OpenEmail(em8)" t-att-title="'Open “' + em8.name + '”'">
+            <span class="pbhr-p8-em-ic"><t t-out="ic('mail',15)"/></span>
+            <span class="pbhr-p8-em-tx">
+              <b t-esc="em8.name"/>
+              <small t-esc="em8.when"/>
+            </span>
+          </button>
+          <span class="pbhr-p8-chips">
+            <span t-if="em8.changed" class="pbhr-p8-yours" title="Your company's own words — Reset brings back the standard text">Your words</span>
+            <button t-foreach="p8Em.langs" t-as="lg8" t-key="lg8" type="button" class="pbhr-p8-lang" t-att-class="{ 'is-missing': em8.langs[lg8] !== 'ok' }" t-att-title="p8ChipTitle(em8, lg8)" t-on-click="() =&gt; this.p8OpenEmail(em8, lg8)">
+              <t t-if="em8.langs[lg8] === 'ok'" t-out="ic('check',11)"/><t t-else="" t-out="ic('alert',11)"/>
+              <t t-esc="p8LangShort(lg8)"/>
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <div class="pbhr-p8-internal">
+        <button type="button" class="pbhr-p8-internal-h" t-on-click="() =&gt; { state.p8ShowInternal = !state.p8ShowInternal; }" t-att-aria-expanded="state.p8ShowInternal ? 'true' : 'false'">
+          <t t-out="ic(state.p8ShowInternal ? 'chevronDown' : 'arrowRight',13)"/>
+          <b>Emails to colleagues</b>
+          <small><t t-esc="p8Em.internal.length"/> emails · English only · the administrator's</small>
+        </button>
+        <div t-if="state.p8ShowInternal" class="pbhr-p8-internal-list">
+          <div t-foreach="p8Em.internal" t-as="in8" t-key="in8.id" class="pbhr-p8-internal-row">
+            <t t-out="ic('mail',13)"/><span t-esc="in8.name"/>
+            <span class="pbhr-p8-en">English</span>
+            <button t-if="in8.can_open" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.p8OpenInternal(in8)"><t t-out="ic('pencil',12)"/> Open</button>
+            <span t-else="" class="pbhr-p8-lockword"><t t-out="ic('lock',11)"/> administrator</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </t>
+
+  <!-- ============ AUTOMATIONS ============ -->
+  <t t-name="pb_hiring.P8SetupAutomations">
+    <section class="pbim-panel pbhr-su-p8au" t-if="state.data.automations">
+      <div class="pbhr-su-h">
+        <h2><t t-out="ic('zap',17)"/> Automations</h2>
+        <span class="pbhr-pill"><t t-esc="p8MyOn"/> of your <t t-esc="p8Au.rules.length"/> rules on</span>
+        <span t-if="p8Au.queued" class="pbhr-pill"><t t-out="ic('hourglass',12)"/> <t t-esc="p8Au.queued"/> waiting to run</span>
+        <span class="pbhr-foot-gap"/>
+        <button t-if="p8Au.can_edit and p8HasWaiting" class="pbim-btn ghost" t-on-click="p8RunWaiting" title="Exactly what the night does, for this company, now"><t t-out="ic('play',13)"/> Check the waiting candidates now</button>
+        <button t-if="p8Au.can_edit" class="pbim-btn primary" t-on-click="p8StartAdd"><t t-out="ic('plus',14)"/> Add a rule</button>
+      </div>
+      <p class="pbhr-su-lede">Things that happen by themselves, written as sentences. A rule never stops a move: if it cannot do its part, the move still happens and the log says why. Try a rule on a real candidate before you switch it on.</p>
+
+      <div class="pbhr-p8-tabs" role="tablist">
+        <button type="button" role="tab" class="pbhr-p8-tab" t-att-class="{ on: state.p8Tab === 'rules' }" t-att-aria-selected="state.p8Tab === 'rules' ? 'true' : 'false'" t-on-click="() =&gt; { state.p8Tab = 'rules'; }"><t t-out="ic('zap',13)"/> Rules</button>
+        <button type="button" role="tab" class="pbhr-p8-tab" t-att-class="{ on: state.p8Tab === 'log' }" t-att-aria-selected="state.p8Tab === 'log' ? 'true' : 'false'" t-on-click="() =&gt; { state.p8Tab = 'log'; }"><t t-out="ic('history',13)"/> What ran <span class="pbhr-p8-count" t-esc="p8Au.log.length"/></button>
+      </div>
+
+      <t t-if="state.p8Tab === 'rules'">
+        <div class="pbhr-p8-group-h">Your rules</div>
+        <div t-if="!p8Au.rules.length" class="pbhr-p4-empty">No rules yet. "Add a rule" builds one as a sentence.</div>
+        <div class="pbhr-p8-rules" role="list">
+          <div t-foreach="p8Au.rules" t-as="ru8" t-key="ru8.id" class="pbhr-p8-rule" t-att-class="{ 'is-on': ru8.effective }" role="listitem">
+            <label class="pbhr-p8-toggle" t-att-title="ru8.effective ? 'On. Press to switch it off.' : 'Off. Press to switch it on.'">
+              <input type="checkbox" t-att-checked="ru8.effective" t-att-disabled="!p8Au.can_edit" t-on-change="() =&gt; this.p8Toggle(ru8)"/>
+              <span class="pbhr-p8-knob"/>
+            </label>
+            <div class="pbhr-p8-rule-tx">
+              <b class="pbhr-p8-sentence" t-esc="ru8.sentence"/>
+              <small t-if="ru8.phone_off" class="pbhr-p8-warn"><t t-out="ic('alert',12)"/> The scheduling-link email is switched off for the whole system. Switching this rule on switches it back on.</small>
+              <small t-if="ru8.note" t-esc="ru8.note"/>
+              <small class="pbhr-p8-ran"><t t-if="ru8.run_count">Ran <t t-esc="ru8.run_count"/> <t t-if="ru8.run_count === 1">time</t><t t-else="">times</t> · last <t t-esc="p8When(ru8.last_run)"/></t><t t-else="">Has not run yet</t></small>
+            </div>
+            <div class="pbhr-p8-rule-acts">
+              <button type="button" class="pbim-btn ghost" title="Try it on a candidate — nothing is sent" t-on-click="() =&gt; this.p8StartTry(ru8)"><t t-out="ic('flask',13)"/> Try</button>
+              <button t-if="p8Au.can_edit" type="button" class="pbim-btn ghost" title="Change this rule" t-on-click="() =&gt; this.p8StartEdit(ru8)"><t t-out="ic('pencil',13)"/></button>
+              <t t-if="p8Au.can_edit and !ru8.seed_key">
+                <button t-if="state.p8DelAsk !== ru8.id" type="button" class="pbim-btn ghost pbhr-no" title="Remove this rule" t-on-click="() =&gt; { state.p8DelAsk = ru8.id; }"><t t-out="ic('trash',13)"/></button>
+                <button t-else="" type="button" class="pbim-btn primary pbhr-no" t-on-click="() =&gt; this.p8Delete(ru8)">Remove it</button>
+              </t>
+            </div>
+          </div>
+        </div>
+
+        <div class="pbhr-p8-group-h is-quiet">Built in — always on unless you switch it off</div>
+        <div class="pbhr-p8-rules is-builtin" role="list">
+          <div t-foreach="p8Au.builtins" t-as="bi8" t-key="bi8.key" class="pbhr-p8-rule" t-att-class="{ 'is-on': bi8.on }" role="listitem">
+            <label t-if="!bi8.locked" class="pbhr-p8-toggle" t-att-title="bi8.on ? 'On. Press to switch it off.' : 'Off. Press to switch it on.'">
+              <input type="checkbox" t-att-checked="bi8.on" t-att-disabled="!p8Au.can_edit" t-on-change="() =&gt; this.p8ToggleBuiltin(bi8)"/>
+              <span class="pbhr-p8-knob"/>
+            </label>
+            <span t-else="" class="pbhr-p8-lock" t-att-title="bi8.why"><t t-out="ic('lock',13)"/></span>
+            <div class="pbhr-p8-rule-tx">
+              <span class="pbhr-p8-sentence" t-esc="bi8.sentence"/>
+              <small t-if="bi8.locked" t-esc="bi8.why"/>
+            </div>
+            <div class="pbhr-p8-rule-acts">
+              <button t-if="bi8.email_id" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.p8EditBuiltinEmail(bi8)"><t t-out="ic('mail',13)"/> Edit the email</button>
+            </div>
+          </div>
+        </div>
+      </t>
+
+      <t t-else="">
+        <div t-if="!p8Au.log.length" class="pbhr-p8-empty">
+          <span class="pbhr-p8-empty-ic"><t t-out="ic('history',22)"/></span>
+          <b>Nothing has run yet</b>
+          <small>When a rule runs, waits, or is skipped, it is written here with the reason.</small>
+        </div>
+        <div t-else="" class="pbhr-p8-log" role="table">
+          <div class="pbhr-p8-log-h" role="row"><span>When</span><span>Result</span><span>Candidate</span><span>What happened</span></div>
+          <div t-foreach="p8Au.log" t-as="lo8" t-key="lo8.id" class="pbhr-p8-log-r" t-att-class="'is-' + lo8.state" role="row">
+            <span class="pbhr-p8-log-when" t-esc="p8When(lo8.when)"/>
+            <span class="pbhr-p8-log-st"><t t-out="ic(p8LogIcon(lo8.state),12)"/> <t t-esc="p8LogWord(lo8.state)"/></span>
+            <span class="pbhr-p8-log-who" t-esc="lo8.who"/>
+            <span class="pbhr-p8-log-tx"><b t-esc="lo8.result"/><small t-esc="lo8.rule"/><small t-if="lo8.due">Due <t t-esc="p8When(lo8.due)"/></small></span>
+          </div>
+        </div>
+      </t>
+    </section>
+  </t>
+
+  <!-- ============ the dialogs ============ -->
+  <t t-name="pb_hiring.P8Overlays">
+    <!-- the email editor -->
+    <div t-if="state.p8Ed" class="pbim-modal-scrim pbhr-scrim pbhr-p8-scrim" t-on-click="p8CloseEditor">
+      <div class="pbim-modal pbhr-dialog pbhr-p8-dialog" role="dialog" aria-modal="true" aria-label="Change an email" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title"><t t-out="ic('mail',18)"/> <t t-esc="p8EdRow ? p8EdRow.name : ''"/></div>
+            <div class="pbhr-drawer-sub" t-esc="p8EdRow ? p8EdRow.when : ''"/>
+          </div>
+          <button class="pbim-btn ghost" title="Close (Esc)" t-on-click="p8CloseEditor"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-p8-ed">
+          <div class="pbhr-p8-ed-l">
+            <div class="pbhr-p8-langtabs" role="tablist">
+              <button t-foreach="p8Em.langs" t-as="lg8" t-key="lg8" type="button" role="tab" class="pbhr-p8-langtab" t-att-class="{ on: state.p8Ed.lang === lg8, 'is-missing': p8EdRow and p8EdRow.langs[lg8] !== 'ok' and !state.p8Ed.drafts[lg8].subject, 'is-dirty': state.p8Ed.drafts[lg8].dirty }" t-att-aria-selected="state.p8Ed.lang === lg8 ? 'true' : 'false'" t-on-click="() =&gt; this.p8SetLang(lg8)">
+                <t t-esc="p8LangWord(lg8)"/>
+                <span t-if="state.p8Ed.drafts[lg8].dirty" class="pbhr-p8-dot" title="Not saved yet"/>
+                <span t-elif="p8EdRow and p8EdRow.langs[lg8] !== 'ok'" class="pbhr-p8-miss">missing</span>
+              </button>
+            </div>
+            <div t-if="state.p8Ed.lang !== 'en_US' and !p8Draft.subject and !p8Draft.body" class="pbhr-p8-banner is-soft">
+              <t t-out="ic('globe',14)"/>
+              <span>No <t t-esc="p8LangWord(state.p8Ed.lang)"/> version yet, so these candidates get the English one. Write it here and press Save.</span>
+            </div>
+            <label class="pbhr-f pbhr-f--wide">
+              <span>Subject</span>
+              <input class="pbhr-in pbhr-p8-subject" t-att-value="p8Draft.subject" maxlength="200" t-att-disabled="!p8Em.can_edit" t-on-input="(ev) =&gt; this.p8Edit('subject', ev.target.value)" t-on-focus="() =&gt; this.p8Focus('subject')"/>
+            </label>
+            <label class="pbhr-f pbhr-f--wide">
+              <span>The words</span>
+              <textarea class="pbhr-in pbhr-p8-body" rows="13" t-att-value="p8Draft.body" t-att-disabled="!p8Em.can_edit" t-on-input="(ev) =&gt; this.p8Edit('body', ev.target.value)" t-on-focus="() =&gt; this.p8Focus('body')"/>
+            </label>
+            <label t-if="p8EdRow and p8EdRow.has_button" class="pbhr-f pbhr-f--wide">
+              <span>Button words <small>— the button under the email, with their own link</small></span>
+              <input class="pbhr-in" t-att-value="p8Draft.button" maxlength="60" t-att-disabled="!p8Em.can_edit" t-on-input="(ev) =&gt; this.p8Edit('button', ev.target.value)"/>
+            </label>
+            <div t-if="p8Em.can_edit" class="pbhr-p8-tokens">
+              <span class="pbhr-p8-tokens-k">Add a detail:</span>
+              <button t-foreach="p8Tokens()" t-as="tk8" t-key="tk8.key" type="button" class="pbhr-p8-token" t-att-title="'Puts {{' + tk8.key + '}} where the cursor is'" t-on-click="() =&gt; this.p8Insert(tk8.key)" t-esc="tk8.words"/>
+            </div>
+          </div>
+          <div class="pbhr-p8-ed-r">
+            <div class="pbhr-p8-prev-h"><t t-out="ic('eye',13)"/> As the candidate gets it
+              <small t-if="state.p8Ed.preview and state.p8Ed.preview.candidate">· sample details, <t t-esc="state.p8Ed.preview.candidate"/></small>
+            </div>
+            <div t-if="!state.p8Ed.preview" class="pbhr-p8-prev is-loading"><div class="pbim-spin"/></div>
+            <div t-elif="!state.p8Ed.preview.ok" class="pbhr-p8-prev is-error" role="alert">
+              <t t-out="ic('alert',16)"/>
+              <div><b>This would not go out like this.</b><p t-esc="state.p8Ed.preview.error"/></div>
+            </div>
+            <div t-else="" class="pbhr-p8-prev">
+              <div t-if="state.p8Ed.preview.fallback" class="pbhr-p8-prev-fb"><t t-out="ic('globe',12)"/> Showing the English that goes instead</div>
+              <div class="pbhr-p8-prev-subj"><small>Subject</small><b t-esc="state.p8Ed.preview.subject"/></div>
+              <div class="pbhr-p8-prev-mail" t-out="state.p8Ed.preview.html_markup"/>
+            </div>
+          </div>
+        </div>
+        <div class="pbim-modal__foot pbhr-p8-foot">
+          <t t-if="p8Em.can_edit">
+            <t t-if="state.p8ResetAsk">
+              <span class="pbhr-p8-ask">Put back the standard words in every language? Your own words go.</span>
+              <button class="pbim-btn ghost" t-on-click="() =&gt; { state.p8ResetAsk = false; }">Keep mine</button>
+              <button class="pbim-btn primary pbhr-no" t-on-click="p8Reset"><t t-out="ic('undo',13)"/> Yes, reset</button>
+            </t>
+            <button t-elif="p8EdRow and p8EdRow.changed" class="pbim-btn ghost" t-on-click="() =&gt; { state.p8ResetAsk = true; }"><t t-out="ic('rotate',13)"/> Reset to the standard text</button>
+          </t>
+          <span class="pbhr-foot-gap"/>
+          <span t-if="state.p8Ed.confirmClose" class="pbhr-p8-ask">Unsaved words — close anyway?
+            <button class="pbim-btn ghost" t-on-click="() =&gt; { state.p8Ed = null; }">Close without saving</button>
+          </span>
+          <button class="pbim-btn ghost" t-on-click="p8Test" title="Sends this language, with sample details, to your own email"><t t-out="ic('send',13)"/> Send me a test</button>
+          <button t-if="p8Em.can_edit" class="pbim-btn primary" t-att-disabled="!p8Dirty or state.p8Ed.busy" t-on-click="p8SaveEmail" title="Save (Ctrl+S)"><t t-out="ic('check',14)"/> Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- the rule sheet -->
+    <div t-if="state.p8Rule" class="pbim-modal-scrim pbhr-scrim pbhr-p8-scrim" t-on-click="() =&gt; { state.p8Rule = null; }">
+      <div class="pbim-modal pbhr-dialog pbhr-p8-dialog pbhr-p8-sheet" role="dialog" aria-modal="true" aria-label="A rule" t-on-click.stop="() =&gt; {}">
+        <div class="pbim-modal__head">
+          <div>
+            <div class="pbhr-drawer-title"><t t-out="ic('zap',18)"/> <t t-if="state.p8Rule.id">Change the rule</t><t t-else="">Add a rule</t></div>
+            <div class="pbhr-drawer-sub">Pick the four parts; the sentence below is exactly what will happen.</div>
+          </div>
+          <button class="pbim-btn ghost" title="Close (Esc)" t-on-click="() =&gt; { state.p8Rule = null; }"><t t-out="ic('x',16)"/></button>
+        </div>
+        <div class="pbim-modal__body pbhr-p8-rb">
+          <blockquote class="pbhr-p8-live" aria-live="polite"><t t-out="ic('zap',16)"/> <span t-esc="p8Sentence"/></blockquote>
+          <div t-if="state.p8Rule.error" class="pbhr-p8-banner is-error" role="alert"><t t-out="ic('alert',14)"/><span t-esc="state.p8Rule.error"/></div>
+
+          <div class="pbhr-p8-steps">
+            <!-- 1 when -->
+            <div class="pbhr-p8-step">
+              <span class="pbhr-p8-n">1</span>
+              <div class="pbhr-p8-step-b">
+                <b>When</b>
+                <select class="pbhr-in" t-on-change="(ev) =&gt; this.p8SetEvent(ev.target.value)">
+                  <option t-foreach="p8Au.events" t-as="ev8" t-key="ev8.key" t-att-value="ev8.key" t-att-selected="state.p8Rule.event === ev8.key" t-esc="ev8.label"/>
+                </select>
+                <div t-if="p8Ev(state.p8Rule.event).stage" class="pbhr-p8-inline">
+                  <t t-if="p8Ev(state.p8Rule.event).waiting">
+                    <input class="pbhr-in pbhr-p8-num" type="number" min="1" max="90" t-model="state.p8Rule.days"/> days in
+                  </t>
+                  <t t-else="">the stage</t>
+                  <select class="pbhr-in" t-model="state.p8Rule.stage_id">
+                    <option value="">Pick a stage…</option>
+                    <option t-foreach="p8Au.stages" t-as="st8" t-key="st8.id" t-att-value="st8.id" t-att-selected="state.p8Rule.stage_id == st8.id" t-esc="st8.name"/>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <!-- 2 for -->
+            <div class="pbhr-p8-step">
+              <span class="pbhr-p8-n">2</span>
+              <div class="pbhr-p8-step-b">
+                <b>For <small>— optional; empty means every role</small></b>
+                <div class="pbhr-p8-picks">
+                  <select class="pbhr-in" t-on-change="(ev) =&gt; this.p8PickScope('department_ids', ev)">
+                    <option value="">Add a department…</option>
+                    <option t-foreach="p8Au.departments" t-as="dp8" t-key="dp8.id" t-att-value="dp8.id" t-esc="dp8.name"/>
+                  </select>
+                  <select class="pbhr-in" t-on-change="(ev) =&gt; this.p8PickScope('country_ids', ev)">
+                    <option value="">Add a country…</option>
+                    <option t-foreach="p8Au.countries" t-as="cn8" t-key="cn8.id" t-att-value="cn8.id" t-esc="cn8.name"/>
+                  </select>
+                </div>
+                <div t-if="state.p8Rule.department_ids.length or state.p8Rule.country_ids.length" class="pbhr-p8-picked">
+                  <button t-foreach="state.p8Rule.department_ids" t-as="dp8" t-key="'d' + dp8" type="button" class="pbhr-su-person" t-on-click="() =&gt; this.p8ToggleIn('department_ids', dp8)"><t t-esc="p8Name(p8Au.departments, dp8)"/> <t t-out="ic('x',11)"/></button>
+                  <button t-foreach="state.p8Rule.country_ids" t-as="cn8" t-key="'c' + cn8" type="button" class="pbhr-su-person" t-on-click="() =&gt; this.p8ToggleIn('country_ids', cn8)"><t t-esc="p8Name(p8Au.countries, cn8)"/> <t t-out="ic('x',11)"/></button>
+                </div>
+              </div>
+            </div>
+            <!-- 3 then -->
+            <div class="pbhr-p8-step">
+              <span class="pbhr-p8-n">3</span>
+              <div class="pbhr-p8-step-b">
+                <b>Then</b>
+                <div class="pbhr-su-seg" role="radiogroup">
+                  <button t-foreach="p8Au.actions" t-as="ac8" t-key="ac8.key" type="button" role="radio" class="pbhr-su-seg-b" t-att-class="{ on: state.p8Rule.action === ac8.key }" t-att-aria-checked="state.p8Rule.action === ac8.key ? 'true' : 'false'" t-att-disabled="p8Ev(state.p8Rule.event).role_only and (ac8.key === 'move_stage' or ac8.key === 'tag')" t-on-click="() =&gt; this.p8SetAction(ac8.key)" t-esc="ac8.label"/>
+                </div>
+                <div t-if="state.p8Rule.action === 'send_email' or state.p8Rule.action === 'todo'" class="pbhr-p8-inline">
+                  <span>to</span>
+                  <select class="pbhr-in" t-model="state.p8Rule.recipient">
+                    <option t-foreach="p8Recipients()" t-as="rc8" t-key="rc8.key" t-att-value="rc8.key" t-att-selected="state.p8Rule.recipient === rc8.key" t-esc="rc8.label"/>
+                  </select>
+                </div>
+                <div t-if="state.p8Rule.action === 'send_email' and state.p8Rule.recipient === 'candidate'" class="pbhr-p8-inline">
+                  <span>the email</span>
+                  <select class="pbhr-in" t-model="state.p8Rule.template_key">
+                    <option value="">Pick a candidate email…</option>
+                    <option t-foreach="p8Au.emails" t-as="em8" t-key="em8.key" t-att-value="em8.key" t-att-selected="state.p8Rule.template_key === em8.key" t-esc="em8.name"/>
+                  </select>
+                  <button t-if="p8EmailOf(state.p8Rule.template_key)" type="button" class="pbhr-linkish" t-on-click="() =&gt; this.p8OpenEmail(p8EmailOf(state.p8Rule.template_key))">Read it</button>
+                </div>
+                <t t-if="state.p8Rule.action === 'send_email' and state.p8Rule.recipient !== 'candidate'">
+                  <input t-if="state.p8Rule.recipient === 'custom'" class="pbhr-in" type="text" placeholder="name@company.com, other@company.com" t-model="state.p8Rule.custom_emails"/>
+                  <input class="pbhr-in" type="text" maxlength="200" placeholder="Subject (optional) — e.g. {{name}} is waiting for a first look" t-model="state.p8Rule.message_subject"/>
+                  <textarea class="pbhr-in" rows="3" placeholder="What the email says (optional). {{name}} and {{role}} are filled in. English — it goes to colleagues." t-model="state.p8Rule.message_body"/>
+                </t>
+                <input t-if="state.p8Rule.action === 'todo'" class="pbhr-in" type="text" maxlength="120" placeholder="The to-do, in a few words — e.g. Give them a first look" t-model="state.p8Rule.todo_text"/>
+                <div t-if="state.p8Rule.action === 'move_stage'" class="pbhr-p8-inline">
+                  <span>to</span>
+                  <select class="pbhr-in" t-model="state.p8Rule.target_stage_id">
+                    <option value="">Pick a stage…</option>
+                    <option t-foreach="p8OpenStages" t-as="st8" t-key="st8.id" t-att-value="st8.id" t-att-selected="state.p8Rule.target_stage_id == st8.id" t-esc="st8.name"/>
+                  </select>
+                </div>
+                <div t-if="state.p8Rule.action === 'tag'" class="pbhr-p8-inline">
+                  <select class="pbhr-in" t-model="state.p8Rule.tag_id">
+                    <option value="">A new tag…</option>
+                    <option t-foreach="p8Au.tags" t-as="tg8" t-key="tg8.id" t-att-value="tg8.id" t-att-selected="state.p8Rule.tag_id == tg8.id" t-esc="tg8.name"/>
+                  </select>
+                  <input t-if="!state.p8Rule.tag_id" class="pbhr-in" type="text" maxlength="60" placeholder="Type the new tag" t-model="state.p8Rule.tag"/>
+                </div>
+              </div>
+            </div>
+            <!-- 4 after -->
+            <div class="pbhr-p8-step">
+              <span class="pbhr-p8-n">4</span>
+              <div class="pbhr-p8-step-b">
+                <b>After</b>
+                <div class="pbhr-p8-inline">
+                  <div class="pbhr-su-seg" role="radiogroup">
+                    <button type="button" role="radio" class="pbhr-su-seg-b" t-att-class="{ on: state.p8Rule.afterUnit === 'now' }" t-on-click="() =&gt; { state.p8Rule.afterUnit = 'now'; }">Right away</button>
+                    <button type="button" role="radio" class="pbhr-su-seg-b" t-att-class="{ on: state.p8Rule.afterUnit === 'hours' }" t-on-click="() =&gt; { state.p8Rule.afterUnit = 'hours'; }">After hours</button>
+                    <button type="button" role="radio" class="pbhr-su-seg-b" t-att-class="{ on: state.p8Rule.afterUnit === 'days' }" t-on-click="() =&gt; { state.p8Rule.afterUnit = 'days'; }">After days</button>
+                  </div>
+                  <input t-if="state.p8Rule.afterUnit !== 'now'" class="pbhr-in pbhr-p8-num" type="number" min="1" max="60" t-model="state.p8Rule.afterN"/>
+                </div>
+                <label class="pbhr-tick pbhr-p8-once"><input type="checkbox" t-model="state.p8Rule.once"/> <span>Once per candidate (off: every time it happens)</span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- try it -->
+          <div class="pbhr-p8-try">
+            <div class="pbhr-p8-try-h"><t t-out="ic('flask',15)"/> <b>Try it on a candidate</b> <small>Nothing is sent and nothing changes.</small>
+              <button t-if="!state.p8Try" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.p8StartTry()">Pick somebody</button>
+            </div>
+            <t t-if="state.p8Try">
+              <input class="pbhr-in" type="search" placeholder="Type a candidate's name…" t-model="state.p8Try.q" t-on-input="p8Search"/>
+              <div class="pbhr-p8-try-list">
+                <button t-foreach="state.p8Try.list" t-as="c8" t-key="c8.id" type="button" class="pbhr-p8-try-c" t-att-class="{ on: state.p8Try.picked and state.p8Try.picked.id === c8.id }" t-on-click="() =&gt; this.p8Try(c8)">
+                  <b t-esc="c8.name"/><small><t t-esc="c8.role"/> · <t t-esc="c8.stage"/></small>
+                </button>
+                <span t-if="!state.p8Try.list.length" class="pbhr-p8-note">Nobody by that name.</span>
+              </div>
+              <div t-if="state.p8Try.busy" class="pbhr-p8-try-res"><div class="pbim-spin"/></div>
+              <div t-elif="state.p8Try.result" class="pbhr-p8-try-res" aria-live="polite">
+                <div t-foreach="state.p8Try.result.lines" t-as="ln8" t-key="ln8_index" class="pbhr-p8-try-line" t-att-class="{ 'is-ok': ln8.ok === true, 'is-no': ln8.ok === false }">
+                  <t t-out="ic(p8TryIcon(ln8.ok),14)"/><span t-esc="ln8.text"/>
+                </div>
+              </div>
+            </t>
+          </div>
+        </div>
+        <div class="pbim-modal__foot">
+          <button class="pbim-btn ghost" t-on-click="() =&gt; { state.p8Rule = null; }">Cancel</button>
+          <button t-if="p8Au.can_edit" class="pbim-btn primary" t-att-disabled="state.p8Rule.busy" t-on-click="p8SaveRule" title="Save (Ctrl+S)"><t t-out="ic('check',14)"/> <t t-if="state.p8Rule.id">Save</t><t t-else="">Save and switch on</t></button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

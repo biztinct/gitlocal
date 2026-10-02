@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Two jobs, deliberately NOT noupdate: a cron is plumbing, and a fix to
+         one has to reach a database that already carries yesterday's row.
+
+         `model_id` names res.company on purpose — the platform builds a
+         server action's eval context with env[model_name] BEFORE any of this
+         code runs, so pointing a cron at a table this very upgrade creates is
+         a KeyError inside the platform, where no guard of ours can reach it.
+         The code line then checks the registry, because the worker already
+         running does not yet have this module's code the moment the row
+         lands. (Repo ledger: the pb_workseg pattern.)
+
+         Odoo 19: no numbercall, no doall. -->
+
+    <record id="cron_outbox" model="ir.cron">
+        <field name="name">Approvals: tell the people who are waiting</field>
+        <field name="model_id" ref="base.model_res_company"/>
+        <field name="state">code</field>
+        <field name="code">env['biz.approval.outbox']._cron_deliver() if 'biz.approval.outbox' in env else None</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="cron_escalate" model="ir.cron">
+        <field name="name">Approvals: remind and pass up what is late</field>
+        <field name="model_id" ref="base.model_res_company"/>
+        <field name="state">code</field>
+        <field name="code">env['biz.approval.engine'].escalate_cron() if 'biz.approval.engine' in env else None</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

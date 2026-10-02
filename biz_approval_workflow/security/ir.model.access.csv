@@ -1,0 +1,34 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_process_user,process user,model_biz_approval_process,group_approval_user,1,0,0,0
+access_process_config,process config,model_biz_approval_process,group_approval_config,1,1,1,0
+access_process_admin,process admin,model_biz_approval_process,group_approval_admin,1,1,1,1
+access_role_user,role user,model_biz_approval_role,group_approval_user,1,0,0,0
+access_role_config,role config,model_biz_approval_role,group_approval_config,1,1,1,0
+access_role_admin,role admin,model_biz_approval_role,group_approval_admin,1,1,1,1
+access_resp_user,responsibility user,model_biz_approval_responsibility,group_approval_user,1,0,0,0
+access_resp_config,responsibility config,model_biz_approval_responsibility,group_approval_config,1,1,1,1
+access_delegation_user,handover user,model_biz_approval_delegation,group_approval_user,1,1,1,0
+access_delegation_admin,handover admin,model_biz_approval_delegation,group_approval_admin,1,1,1,0
+access_grant_user,exception user,model_biz_approval_exception_grant,group_approval_user,1,0,0,0
+access_grant_admin,exception admin,model_biz_approval_exception_grant,group_approval_admin,1,1,1,0
+access_workflow_user,workflow user,model_biz_approval_workflow,group_approval_user,1,0,0,0
+access_workflow_config,workflow config,model_biz_approval_workflow,group_approval_config,1,1,1,0
+access_workflow_admin,workflow admin,model_biz_approval_workflow,group_approval_admin,1,1,1,1
+access_version_user,workflow version user,model_biz_approval_workflow_version,group_approval_user,1,0,0,0
+access_version_config,workflow version config,model_biz_approval_workflow_version,group_approval_config,1,1,1,0
+access_version_admin,workflow version admin,model_biz_approval_workflow_version,group_approval_admin,1,1,1,1
+access_binding_user,binding user,model_biz_approval_binding,group_approval_user,1,0,0,0
+access_binding_config,binding config,model_biz_approval_binding,group_approval_config,1,1,1,1
+access_request_user,request user,model_biz_approval_request,group_approval_user,1,1,1,0
+access_request_admin,request admin,model_biz_approval_request,group_approval_admin,1,1,1,1
+access_request_step_user,request step user,model_biz_approval_request_step,group_approval_user,1,1,1,0
+access_request_step_admin,request step admin,model_biz_approval_request_step,group_approval_admin,1,1,1,1
+access_request_seat_user,request seat user,model_biz_approval_request_seat,group_approval_user,1,1,1,0
+access_request_seat_admin,request seat admin,model_biz_approval_request_seat,group_approval_admin,1,1,1,1
+access_decision_user,decision user,model_biz_approval_decision,group_approval_user,1,0,1,0
+access_decision_audit,decision audit,model_biz_approval_decision,group_approval_audit,1,0,0,0
+access_event_user,event user,model_biz_approval_event,group_approval_user,1,0,1,0
+access_event_audit,event audit,model_biz_approval_event,group_approval_audit,1,0,0,0
+access_outbox_admin,outbox admin,model_biz_approval_outbox,group_approval_admin,1,1,1,1
+access_generic_request_user,other request user,model_biz_approval_generic_request,group_approval_user,1,1,1,0
+access_generic_request_admin,other request admin,model_biz_approval_generic_request,group_approval_admin,1,1,1,1
