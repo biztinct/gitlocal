@@ -1,6 +1,21 @@
 # Rize custom domains — jobs.rize.farm + people.rize.farm → one `rize` database
 
-Status: DESIGN, 2026-10-02. Nothing built yet. Rize IT must add DNS first (see bottom).
+Status 2026-10-03: BUILT + LIVE, waiting for Rize IT's DNS. Commits ef5135f1e (routing),
+850e2da70 (careers site). `server_wide_modules = base,rpc,web,biz_host_db`; both hosts in
+/etc/odoo-host-db.map, attached over HTTP; /etc/cron.d/pb-domain-pending issues HTTPS within
+~10 min of DNS pointing here (log /var/log/pb-domain-pending.log).
+
+## Switch-over checklist (run when each host's HTTPS is live)
+
+1. people.rize.farm live → rize DB: `web.base.url = https://people.rize.farm` (keep
+   `web.base.url.freeze = True`). Staff email links then use it.
+2. jobs.rize.farm live (Zoho retired) → `website` id 1 `domain = https://jobs.rize.farm`.
+   Candidate-facing links (job pages, apply confirmations) then use it.
+3. rize.payobook.com is left working as an alias (no 301): its nginx block is managed by
+   pb-tenant-cert and the daily cert cron would overwrite a hand-added redirect.
+4. Browser check both hosts; publish at least one role before announcing jobs.rize.farm.
+
+The original design follows.
 
 ## Goal
 
