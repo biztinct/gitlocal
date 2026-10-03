@@ -1,6 +1,11 @@
 #!/bin/bash
-# pb-domain-detach <hostname> — removes a custom-domain nginx block + cert.
+# pb-domain-detach <hostname> — removes a domain's nginx block, certificate and
+# host -> database map line (/etc/odoo-host-db.map, see pb-domain-attach).
+# Hostname-generic: also used for our own tenant subdomains (pb-tenant-cert).
+# Hand-written extras in /etc/nginx/pb-domains/<hostname>.d/ are left in place.
 set -euo pipefail
+
+MAP=/etc/odoo-host-db.map
 
 HOSTNAME_ARG="${1:-}"
 if ! [[ "$HOSTNAME_ARG" =~ ^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$ ]]; then
@@ -9,6 +14,12 @@ fi
 
 rm -f "/etc/nginx/sites-enabled/pb-tenant-${HOSTNAME_ARG}.conf" \
       "/etc/nginx/sites-available/pb-tenant-${HOSTNAME_ARG}.conf"
+if [[ -s "$MAP" ]]; then
+    tmp="$(mktemp "${MAP}.XXXXXX")"
+    awk -v h="$HOSTNAME_ARG" '$1 != h' "$MAP" > "$tmp"
+    chmod 644 "$tmp"
+    mv -f "$tmp" "$MAP"
+fi
 certbot delete --non-interactive --cert-name "pb-tenant-${HOSTNAME_ARG}" || true
 nginx -t
 systemctl reload nginx

@@ -1,70 +1,233 @@
 #!/bin/bash
-# pb-domain-attach <hostname> <slug>
-# Attaches a client-owned custom domain to a Payobook tenant:
-# writes an nginx server block pinned to the tenant DB, obtains a
-# Let's Encrypt certificate (HTTP-01 via the nginx plugin), reloads nginx.
-# Installed at /usr/local/bin/pb-domain-attach, invoked via sudo by the
-# odoo user (sudoers: odoo ALL=(root) NOPASSWD: /usr/local/bin/pb-domain-attach).
+# pb-domain-attach <hostname> <slug> [--no-cert]
+# pb-domain-attach --pending
+#
+# Attaches a client-owned custom domain (jobs.client.com) to a tenant database.
+# Installed at /usr/local/bin/pb-domain-attach, invoked via sudo by the odoo
+# user (sudoers: odoo ALL=(root) NOPASSWD: /usr/local/bin/pb-domain-attach).
+#
+# HOW A CUSTOM DOMAIN REACHES ITS DATABASE. `dbfilter = ^%d$` routes by the
+# hostname's FIRST label, so jobs.client.com asks for a database named "jobs".
+# The server-wide module biz_host_db puts an exact host -> database map in
+# front of that rule, read from /etc/odoo-host-db.map (re-read on change, no
+# restart). This script owns that file's lines.
+#
+# History: the first version of this script pinned the database with an
+# `X-Odoo-dbfilter` proxy header. Nothing on the server read that header, so no
+# custom domain ever routed; and a header is spoofable unless every other block
+# strips it. Don't bring it back — the map is root-owned and not client-supplied.
+#
+# CERTIFICATES. HTTP-01 via `certbot certonly --nginx` (authenticate only) and
+# we write the block ourselves. NEVER the certbot nginx INSTALLER: it can pick
+# the wrong server block and rewrite another host's certificate (it did once
+# to pb-wildcard, see pb-tenant-cert).
+#
+# A certificate is only requested once the hostname resolves to this server.
+# Until then the host gets an HTTP-only block, and `--pending` (run every 10
+# minutes by /etc/cron.d/pb-domain-pending) retries, so HTTPS switches on by
+# itself as soon as the client's DNS change propagates. Checking DNS first keeps
+# us clear of Let's Encrypt's failed-validation limit.
+#
+# Per-host extras (redirect rules etc.) are hand-written files in
+# /etc/nginx/pb-domains/<hostname>.d/*.conf, included inside the server block.
+#
+# Exit: 0 = served with TLS; 3 = attached over HTTP only, certificate pending.
 set -euo pipefail
 
-HOSTNAME_ARG="${1:-}"
-SLUG_ARG="${2:-}"
+MAP=/etc/odoo-host-db.map
+EXTRAS=/etc/nginx/pb-domains
+APEX="${PB_BASE_DOMAIN:-payobook.com}"
 
-# strict validation — these values are interpolated into a root-owned config
-if ! [[ "$HOSTNAME_ARG" =~ ^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$ ]]; then
-    echo "invalid hostname" >&2; exit 2
-fi
-if ! [[ "$SLUG_ARG" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*$ ]]; then
-    echo "invalid slug" >&2; exit 2
-fi
-case "$HOSTNAME_ARG" in
-    *payobook.com) echo "refusing to manage a payobook.com hostname" >&2; exit 2;;
-esac
+valid_host() { [[ "$1" =~ ^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$ ]]; }
+valid_slug() { [[ "$1" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*$ ]]; }
 
-CONF="/etc/nginx/sites-available/pb-tenant-${HOSTNAME_ARG}.conf"
-LINK="/etc/nginx/sites-enabled/pb-tenant-${HOSTNAME_ARG}.conf"
+ipv4s() { getent ahostsv4 "$1" 2>/dev/null | awk '{print $1}' | sort -u; }
 
-cat > "$CONF" <<EOF
-# Managed by pb_tenants — custom domain ${HOSTNAME_ARG} -> tenant ${SLUG_ARG}
-server {
-    listen 80;
-    server_name ${HOSTNAME_ARG};
+points_here() {
+    # The client's record is a CNAME to <slug>.payobook.com or an A record to our
+    # IP; either way it must resolve to the same address as our own apex.
+    local ours theirs
+    ours="$(ipv4s "$APEX")"
+    theirs="$(ipv4s "$1")"
+    [[ -n "$ours" && -n "$theirs" && "$ours" == "$theirs" ]]
+}
 
-    proxy_read_timeout 720s;
-    proxy_connect_timeout 720s;
-    proxy_send_timeout 720s;
-    client_max_body_size 128M;
+map_set() {  # host slug — upsert one line, atomically
+    local host="$1" slug="$2" tmp
+    tmp="$(mktemp "${MAP}.XXXXXX")"
+    {
+        if [[ -s "$MAP" ]]; then
+            awk -v h="$host" '$1 != h' "$MAP"
+        else
+            echo "# Managed by pb-domain-attach / pb-domain-detach. One 'hostname database' per line."
+            echo "# Read by the biz_host_db server-wide module (re-read on change)."
+        fi
+        echo "$host $slug"
+    } > "$tmp"
+    chmod 644 "$tmp"
+    mv -f "$tmp" "$MAP"
+}
 
+map_slug() { [[ -s "$MAP" ]] && awk -v h="$1" '$1 == h {print $2}' "$MAP" | tail -1; }
+
+common_body() {  # the proxy part shared by the HTTP-only and TLS blocks
+    local host="$1"
+    cat <<EOF
     proxy_set_header X-Forwarded-Host \$host;
     proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto \$scheme;
     proxy_set_header X-Real-IP \$remote_addr;
-    proxy_set_header X-Odoo-dbfilter ^${SLUG_ARG}\$;
+    add_header X-Frame-Options "SAMEORIGIN";
+
+    access_log /var/log/nginx/tenants-access.log;
+    error_log  /var/log/nginx/tenants-error.log;
+
+    proxy_buffers 16 64k;
+    proxy_buffer_size 128k;
+    proxy_read_timeout 900s;
+    proxy_connect_timeout 900s;
+    proxy_send_timeout 900s;
+    client_max_body_size 128M;
+
+    gzip on;
+    gzip_min_length 1100;
+    gzip_types text/css text/plain text/xml application/xml application/json application/javascript;
+
+    # KEEP IN STEP WITH pb-wildcard: the database manager is never served.
+    location ^~ /web/database/ { return 404; }
+
+    include ${EXTRAS}/${host}.d/*.conf;
 
     location /websocket {
         proxy_pass http://127.0.0.1:8069;
+        proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection \$connection_upgrade;
         proxy_set_header X-Forwarded-Host \$host;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_set_header X-Odoo-dbfilter ^${SLUG_ARG}\$;
+        proxy_set_header X-Real-IP \$remote_addr;
     }
+
     location / {
         proxy_pass http://127.0.0.1:8069;
         proxy_redirect off;
     }
-}
+
+    location ~ /[a-zA-Z0-9_-]*/static/ {
+        proxy_cache_valid 200 302 60m;
+        proxy_buffering on;
+        expires 864000;
+        proxy_pass http://127.0.0.1:8069;
+    }
 EOF
+}
 
-ln -sf "$CONF" "$LINK"
-nginx -t
-systemctl reload nginx
+write_block() {  # host slug tls(0|1)
+    local host="$1" slug="$2" tls="$3"
+    local conf="/etc/nginx/sites-available/pb-tenant-${host}.conf"
+    local link="/etc/nginx/sites-enabled/pb-tenant-${host}.conf"
+    local live="/etc/letsencrypt/live/pb-tenant-${host}"
+    local prev=""
+    [[ -f "$conf" ]] && prev="$(cat "$conf")"
+    mkdir -p "${EXTRAS}/${host}.d"
+    {
+        echo "# Managed by pb-domain-attach — custom domain ${host} -> database ${slug}"
+        echo "# Routing: /etc/odoo-host-db.map (biz_host_db). Extras: ${EXTRAS}/${host}.d/"
+        if [[ "$tls" == 1 ]]; then
+            echo "server {"
+            echo "    listen 443 ssl;"
+            echo "    server_name ${host};"
+            echo "    ssl_certificate ${live}/fullchain.pem;"
+            echo "    ssl_certificate_key ${live}/privkey.pem;"
+            echo "    include /etc/letsencrypt/options-ssl-nginx.conf;"
+            echo "    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;"
+            echo
+            common_body "$host"
+            echo "}"
+            echo "server {"
+            echo "    listen 80;"
+            echo "    server_name ${host};"
+            echo "    return 301 https://\$host\$request_uri;"
+            echo "}"
+        else
+            echo "# HTTP only until the certificate is issued (pb-domain-attach --pending, cron)."
+            echo "server {"
+            echo "    listen 80;"
+            echo "    server_name ${host};"
+            echo
+            common_body "$host"
+            echo "}"
+        fi
+    } > "$conf"
+    ln -sf "$conf" "$link"
+    if ! nginx -t 2>/dev/null; then
+        if [[ -n "$prev" ]]; then echo "$prev" > "$conf"; else rm -f "$link" "$conf"; fi
+        nginx -t
+        echo "generated block for ${host} failed nginx -t; rolled back" >&2
+        exit 1
+    fi
+    systemctl reload nginx
+}
 
-# certbot rewrites the block for 443 + redirect and installs auto-renewal
-certbot --nginx --non-interactive --agree-tos --register-unsafely-without-email \
-    --cert-name "pb-tenant-${HOSTNAME_ARG}" -d "$HOSTNAME_ARG" --redirect
+have_cert() { [[ -s "/etc/letsencrypt/live/pb-tenant-$1/fullchain.pem" ]]; }
 
-nginx -t
-systemctl reload nginx
-echo "OK ${HOSTNAME_ARG} -> ${SLUG_ARG}"
+get_cert() {
+    certbot certonly --nginx --non-interactive --agree-tos \
+        --register-unsafely-without-email \
+        --cert-name "pb-tenant-$1" -d "$1" \
+        --keep-until-expiring \
+        --deploy-hook "systemctl reload nginx" >/dev/null 2>&1 || true
+    have_cert "$1"
+}
+
+attach() {  # host slug want_cert(0|1)
+    local host="$1" slug="$2" want="$3"
+    map_set "$host" "$slug"
+    if have_cert "$host"; then
+        write_block "$host" "$slug" 1
+        echo "OK ${host} -> ${slug} (HTTPS)"; return 0
+    fi
+    write_block "$host" "$slug" 0
+    if [[ "$want" == 1 ]] && points_here "$host" && get_cert "$host"; then
+        write_block "$host" "$slug" 1
+        echo "OK ${host} -> ${slug} (HTTPS)"; return 0
+    fi
+    echo "ATTACHED ${host} -> ${slug} over HTTP; certificate pending until DNS points here"
+    return 3
+}
+
+if [[ "${1:-}" == "--pending" ]]; then
+    [[ -s "$MAP" ]] || exit 0
+    awk '!/^[[:space:]]*#/ && NF == 2 {print $1, $2}' "$MAP" | while read -r host slug; do
+        valid_host "$host" && valid_slug "$slug" || continue
+        have_cert "$host" && continue
+        points_here "$host" || continue
+        if get_cert "$host"; then
+            write_block "$host" "$slug" 1
+            echo "issued ${host}"
+        fi
+    done
+    exit 0
+fi
+
+HOSTNAME_ARG="${1:-}"
+SLUG_ARG="${2:-}"
+WANT_CERT=1
+[[ "${3:-}" == "--no-cert" ]] && WANT_CERT=0
+
+# strict validation — these values are interpolated into root-owned config
+valid_host "$HOSTNAME_ARG" || { echo "invalid hostname" >&2; exit 2; }
+valid_slug "$SLUG_ARG" || { echo "invalid slug" >&2; exit 2; }
+case "$HOSTNAME_ARG" in
+    *"$APEX") echo "refusing to manage a ${APEX} hostname" >&2; exit 2;;
+esac
+if ! sudo -u postgres psql -Atc "SELECT 1 FROM pg_database WHERE datname = '${SLUG_ARG}'" | grep -q 1; then
+    echo "no database named ${SLUG_ARG}" >&2; exit 2
+fi
+existing="$(map_slug "$HOSTNAME_ARG" || true)"
+if [[ -n "$existing" && "$existing" != "$SLUG_ARG" ]]; then
+    echo "${HOSTNAME_ARG} already serves ${existing}; detach it first" >&2; exit 2
+fi
+
+attach "$HOSTNAME_ARG" "$SLUG_ARG" "$WANT_CERT"
