@@ -9,9 +9,9 @@ SRC = '/Users/adity/Documents/GitHub/gitlocal/RIZE/Zoho Recruit.xlsx'
 OUT = '/Users/adity/Documents/GitHub/gitlocal/RIZE/Rize Recruit - Traceability Matrix.xlsx'
 
 # ---------------------------------------------------------------- phrases
-HIRING = ('Open Hiring: click the search bar at the top of the screen (or press Ctrl+K / ⌘K), '
-          'type “hiring” and choose “Who we are hiring”.')
-HIRING_REC = HIRING[:-1] + ' (Recruiters can also use the left menu: Operate › Lifecycle.)'
+HIRING = ('Open Hiring: in the left menu click “Lifecycle” (under Operate); the “Hiring” tab opens. '
+          '(Or press Ctrl+K / ⌘K on any screen, type “hiring” and choose “Who we are hiring”.)')
+HIRING_REC = HIRING
 ROLE = 'On the “Roles” tab, find the role (for example DEMO Territory Manager) and press “Review candidates”.'
 SETUP = 'Press “Set up hiring” at the top of the Hiring screen.'
 CAND = 'Click a person\'s card on the board to open it.'
@@ -621,9 +621,9 @@ line('Tip', 'Use a private (incognito) window for each sign-in to compare two pe
 st.merge_cells(start_row=r - 1, start_column=2, end_row=r - 1, end_column=4)
 r += 1
 line('3. Opening Hiring', bold=True, size=13)
-line('Everyone', 'Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “hiring” and choose “Who we are hiring”.')
+line('Everyone', 'In the left menu click “Lifecycle” (under Operate): the “Hiring” tab opens. Or press Ctrl+K / ⌘K on any screen, type “hiring” and choose “Who we are hiring”.')
 st.merge_cells(start_row=r - 1, start_column=2, end_row=r - 1, end_column=4)
-line('Recruiter', 'Also in the left menu: Operate › Lifecycle.')
+line('Search bar', 'Every screen after Home has a search bar at the top. On Home, press Ctrl+K / ⌘K instead.')
 line('Talent lead', '“Set up hiring” is a button at the top of the Hiring screen. “Hiring numbers”: search bar › type “hiring numbers”.')
 st.merge_cells(start_row=r - 1, start_column=2, end_row=r - 1, end_column=4)
 r += 1

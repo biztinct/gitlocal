@@ -179,7 +179,7 @@ WHAT THIS MODULE IS
     The emails the product always sends are listed beside them, each with
     its own switch. An automation can never stop a move.
 """,
-    'version': '19.0.2.7.0',
+    'version': '19.0.2.7.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -197,6 +197,7 @@ WHAT THIS MODULE IS
         'pb_hub',                   # the global command-bar registry
         'pb_import_kit',            # pbim tokens/primitives + the shared ic() set
         'pb_lifecycle',             # the hub this lens joins, and its tiers
+        'biz_access',               # its left-menu role lane; the Lifecycle door sits outside it
         'pb_me_portal',             # the .pbme employee-page kit
         'pb_budget',                # the one budget table (ruling D2)
         'pb_settings',              # the cog the hiring rules live behind
