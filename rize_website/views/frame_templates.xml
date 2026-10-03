@@ -24,7 +24,9 @@
       <nav class="rz-nav__right" aria-label="Main">
         <a t-attf-class="rz-nav__link #{'is-active' if rz_active == 'jobs' else ''}" href="/jobs">Open roles</a>
         <a class="rz-nav__link rz-nav__link--wide" href="https://www.rize.farm" target="_blank" rel="noopener">rize.farm</a>
-        <a class="rz-btn rz-btn--gold" href="/web/login">Sign in</a>
+        <a t-if="request.env.user._is_public()" class="rz-btn rz-btn--gold" href="/web/login">Sign in</a>
+        <a t-elif="request.env.user._is_internal()" class="rz-btn rz-btn--gold" href="/bizapp">Open the app</a>
+        <a t-else="" class="rz-btn rz-btn--gold" href="/my">My account</a>
       </nav>
     </header>
   </template>
@@ -32,14 +34,20 @@
   <template id="rz_footer" name="Rize footer">
     <footer class="rz-foot">
       <span class="rz-foot__tag">Modernizing the world's most essential crop.</span>
+      <a class="rz-foot__social" href="https://www.linkedin.com/company/rizefarm/" target="_blank" rel="noopener" aria-label="Rize on LinkedIn">
+        <t t-call="rize_website.rz_icon"><t t-set="i" t-value="'linkedin'"/></t>
+      </a>
       <!-- Deliberate platform credit — see login_templates.xml. -->
       <span class="rz-foot__meta" data-biz-brand="keep">© Rize · Powered by Payobook</span>
     </footer>
   </template>
 
+  <!-- rz_variant = 'photo': the careers pages. The page opens on the terraced
+       rice-field photograph (Rize's own, from their old careers site) instead of
+       the drawn dawn field, and the top bar floats over it. -->
   <template id="rz_shell" name="Rize page frame">
-    <div id="wrap" class="rz-home rz-site">
-      <t t-call="rize_website.rz_field"/>
+    <div id="wrap" t-attf-class="rz-home rz-site #{'rz-site--photo' if rz_variant == 'photo' else ''}">
+      <t t-if="rz_variant != 'photo'" t-call="rize_website.rz_field"/>
       <t t-call="rize_website.rz_nav"/>
       <div class="rz-main">
         <t t-out="0"/>

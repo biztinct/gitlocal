@@ -1,6 +1,6 @@
 {
     'name': 'Rize Website',
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Website',
     'summary': 'Rize-branded public site: landing, sign-in and careers pages (tenant: rize)',
     'description': """
@@ -35,6 +35,7 @@ ONLY; it must not be part of the standard tenant module set.
         'pb_hiring',                # the application form re-framed here
     ],
     'data': [
+        'views/icon_templates.xml',
         'views/field_templates.xml',
         'views/frame_templates.xml',
         'views/homepage_templates.xml',
@@ -45,6 +46,7 @@ ONLY; it must not be part of the standard tenant module set.
     'assets': {
         'web.assets_frontend': [
             'rize_website/static/src/scss/rize.scss',
+            'rize_website/static/src/scss/careers.scss',
         ],
     },
     'installable': True,
