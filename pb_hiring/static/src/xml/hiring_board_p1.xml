@@ -112,10 +112,11 @@
             </div>
           </t>
           <t t-else="">
-            <div t-foreach="columns" t-as="col" t-key="col.key" class="pbhr-col" t-att-class="{ 'is-drop': col.drop and canMove, 'is-hidden-stage': col.hidden, 'is-done': col.family === 'done' }" t-att-data-key="col.key">
+            <div t-foreach="columns" t-as="col" t-key="col.key" class="pbhr-col" t-att-class="{ 'is-drop': col.drop and canMove, 'is-hidden-stage': col.hidden, 'is-done': col.family === 'done', 'is-folded': isFolded(col) }" t-att-data-key="col.key" t-on-click="() =&gt; isFolded(col) and this.toggleFold(col)">
               <div class="pbhr-col-h">
                 <span class="pbhr-col-name" t-att-data-tooltip="col.meaning"><t t-esc="col.name"/></span>
                 <span class="pbhr-col-n" t-key="col.key + '-' + col.count"><t t-esc="col.count"/></span>
+                <button t-if="!col.cards.length and state.colOpen[col.key]" type="button" class="pbhr-col-fold" title="Fold this empty column away" t-on-click.stop="() =&gt; this.toggleFold(col)"><t t-out="ic('chevronLeft',14)"/></button>
               </div>
               <div class="pbhr-col-days"><t t-esc="daysHere(col)"/></div>
               <div t-if="col.hidden" class="pbhr-col-cap"><t t-out="ic('eyeOff',12)"/> Hidden for this role — shown until it is empty</div>

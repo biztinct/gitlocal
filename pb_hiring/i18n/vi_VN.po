@@ -2956,3 +2956,9 @@ msgstr "Không còn gì để trả lời ở đây nữa. Nếu bạn nghĩ có
 #: code:addons/pb_hiring/controllers/joining_pages.py:0
 msgid "That did not save. Try once more; if it happens again, reply to the email that brought you here."
 msgstr "Chưa lưu được. Hãy thử lại; nếu vẫn lỗi, hãy trả lời email đã dẫn bạn đến đây."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board_p1.xml:119
+msgid "Fold this empty column away"
+msgstr "Thu gọn cột trống này"

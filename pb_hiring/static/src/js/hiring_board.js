@@ -232,7 +232,7 @@ export class PbHiringBoard extends Component {
             moveMenu: null,
             showStages: null,
             noteForm: null,
-            colLimit: {},
+            colLimit: {}, colOpen: {},
             boardFilter: "",
             railOpen: "",
             dragging: null,
@@ -259,6 +259,9 @@ export class PbHiringBoard extends Component {
             cursor: "grabbing",
             ignore: "button, input, a, .pbhr-kc-quick",
             placeholderClasses: ["pbhr-kc-ph"],
+            // Gentler than the stock 20/60: at the stock pace a card held
+            // near the board's edge flung the board to its far end.
+            edgeScrolling: { speed: 8, threshold: 40 },
             onDragStart: ({ element }) => {
                 this.state.dragging = Number(element.dataset.id) || null;
             },
@@ -624,7 +627,7 @@ export class PbHiringBoard extends Component {
         const changed = !this.state.drawer || this.state.drawer.id !== id;
         Object.assign(this.state, {
             view: "role", roleTab: tab, cand: null, sel: [], focusId: null,
-            boardFilter: "", colLimit: {}, moveMenu: null, outcome: null,
+            boardFilter: "", colLimit: {}, colOpen: {}, moveMenu: null, outcome: null,
         });
         if (changed) { this.state.drawer = null; this.state.roleLoading = true; }
         try {
@@ -1530,6 +1533,13 @@ export class PbHiringBoard extends Component {
         }
         return col.meaning || _t("Nobody is here yet.");
     }
+
+    /** An empty column folds to a strip so the board scrolls less. Dragging
+     *  over a strip opens it (CSS, on `is-over`); a card landing keeps it
+     *  open because it is no longer empty. A press opens one to read it. */
+    isFolded(col) { return !col.cards.length && !this.state.colOpen[col.key]; }
+
+    toggleFold(col) { this.state.colOpen[col.key] = !this.state.colOpen[col.key]; }
 
     showMore(col) { this.state.colLimit[col.key] = (this.state.colLimit[col.key] || COL_PAGE) + COL_MORE; }
 
