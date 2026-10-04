@@ -764,11 +764,13 @@ class PbHiring(models.AbstractModel):
                 'context': {'active_test': False}}
 
     def _act_open_rules(self, payload):
-        action = self.env.ref('pb_hiring.action_pb_hiring_country_rule',
-                              raise_if_not_found=False)
-        if not action:
+        # `_for_xml_id`, not `ref(...).read()`: reading the action record
+        # itself is admin-only, so a recruiter's click raised "not allowed
+        # to access Action Window". The model's own rights still apply.
+        if not self.env.ref('pb_hiring.action_pb_hiring_country_rule', raise_if_not_found=False):
             raise UserError(_("The hiring rules screen is not in this build."))
-        return action.read()[0]
+        return self.env['ir.actions.actions']._for_xml_id(
+            'pb_hiring.action_pb_hiring_country_rule')
 
     def _act_run_automation(self, payload):
         """"Run it now" does exactly what the night does (R53)."""

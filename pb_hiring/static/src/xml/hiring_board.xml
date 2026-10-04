@@ -58,10 +58,10 @@
             </div>
             <div class="pbhr-head-actions">
               <details class="pbhr-tools" data-coach="hi-tools"><summary class="pbim-btn ghost">Hiring tools <t t-out="ic('chevronDown',14)"/></summary><div class="pbhr-tools-menu">              <button t-if="state.canAdmin" class="pbim-btn ghost" t-on-click="() =&gt; this.act('open_brand', {}, {reload:false})">Company story</button><button t-if="state.canRecruit" class="pbim-btn ghost" t-on-click="() =&gt; this.act('open_templates', {}, {reload:false})">Email templates</button><button class="pbim-btn ghost" t-on-click="refresh" title="Read the board again">
-                <t t-out="ic('refresh',15)"/>
+                <t t-out="ic('refresh',15)"/> Refresh the board
               </button>
-              <button t-if="state.canRecruit" class="pbim-btn ghost" t-on-click="() =&gt; this.act('run_automation', {})" title="Chase the adverts nobody has agreed and the roles nobody is recruiting — exactly what the nightly step does">
-                <t t-out="ic('zap',15)"/> Run today's chasing
+              <button t-if="state.canRecruit" class="pbim-btn ghost" t-on-click="() =&gt; this.act('run_automation', {})" title="Remind people about adverts waiting to be agreed and roles nobody is recruiting. The system also does this by itself every night.">
+                <t t-out="ic('zap',15)"/> Send today's reminders
               </button>
               <button t-if="state.canAdmin" class="pbim-btn ghost" t-on-click="() =&gt; this.act('open_rules', {}, { reload: false })">
                 <t t-out="ic('globe',15)"/> Hiring rules

@@ -161,8 +161,24 @@ msgstr "Mẫu email"
 #. module: pb_hiring
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/xml/hiring_board.xml:63
-msgid "Run today's chasing"
-msgstr "Chạy nhắc việc hôm nay"
+msgid "Send today's reminders"
+msgstr "Gửi nhắc việc hôm nay"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:61
+msgid "Refresh the board"
+msgstr "Làm mới bảng"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:63
+msgid ""
+"Remind people about adverts waiting to be agreed and roles nobody is "
+"recruiting. The system also does this by itself every night."
+msgstr ""
+"Nhắc mọi người về các tin tuyển dụng đang chờ duyệt và các vị trí chưa có "
+"ai tuyển. Hệ thống cũng tự làm việc này mỗi đêm."
 
 #. module: pb_hiring
 #. odoo-javascript

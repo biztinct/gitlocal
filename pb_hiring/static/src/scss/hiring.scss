@@ -803,7 +803,7 @@ textarea.pbhr-in { resize: vertical; line-height: 1.55; }
 .pbhr .pbhr-tools { position:relative; }
 .pbhr .pbhr-tools summary { cursor:pointer; list-style:none; }
 .pbhr .pbhr-tools summary::-webkit-details-marker { display:none; }
-.pbhr .pbhr-tools-menu { position:absolute; top:calc(100% + 8px); right:0; z-index:25; width:260px; padding:10px; display:grid; gap:6px; background:var(--pbim-surface,#fff); border:1px solid var(--pbim-border,#e5e7eb); border-radius:16px; box-shadow:0 12px 32px rgba(20,25,50,.12); }
+.pbhr .pbhr-tools-menu { position:absolute; top:calc(100% + 8px); left:0; z-index:25; width:260px; padding:10px; display:grid; gap:6px; background:var(--pbim-surface,#fff); border:1px solid var(--pbim-border,#e5e7eb); border-radius:16px; box-shadow:0 12px 32px rgba(20,25,50,.12); }
 .pbhr .pbhr-tools-menu .pbim-btn { justify-content:flex-start; }
 
 // =====================================================================

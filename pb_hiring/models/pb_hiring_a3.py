@@ -722,11 +722,13 @@ class PbHiringA3(models.AbstractModel):
         return {'id': cover.id, 'note': _("Cover finished.")}
 
     def _act_open_covers(self, payload):
-        action = self.env.ref('pb_hiring.action_pb_hiring_cover',
-                              raise_if_not_found=False)
-        if not action:
+        # `_for_xml_id`, not `ref(...).read()`: reading the action record
+        # itself is admin-only, so a recruiter's click raised "not allowed
+        # to access Action Window". The model's own rights still apply.
+        if not self.env.ref('pb_hiring.action_pb_hiring_cover', raise_if_not_found=False):
             raise UserError(_("The cover screen is not in this build."))
-        return action.read()[0]
+        return self.env['ir.actions.actions']._for_xml_id(
+            'pb_hiring.action_pb_hiring_cover')
 
     # --------------------------------------------------------- the numbers
     def _act_hiring_numbers(self, payload):

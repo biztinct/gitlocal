@@ -4,6 +4,7 @@
 # `pb_training` (it imports the class to widen `_VERBS` rather than restate it).
 from . import training_common
 from . import slide_channel_ext
+from . import website_menu_ext
 from . import survey_user_ext
 from . import pb_my_training
 from . import pb_training
