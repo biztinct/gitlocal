@@ -42,9 +42,12 @@ class PbDemoGenerator(models.TransientModel):
 
     # -------------------------------------------------------------- users
     def _ess_group_ids(self, manager=False):
-        xmlids = ['pb_demo.group_payobook_demo', 'base.group_user',
-                  'base.group_multi_company']
+        # The demo-visitor group reads every payslip and puts Pay Run, People
+        # and Workforce on the menu. An EMPLOYEE login must see only its own
+        # world (owner ruling 2026-10-04), so only the manager login keeps it.
+        xmlids = ['base.group_user', 'base.group_multi_company']
         if manager:
+            xmlids.append('pb_demo.group_payobook_demo')
             # attendance-manager: approve any OT (no parent-scoped OT rule
             # exists); hr.group_hr_user: read private fields for the roster
             # metrics (C18.34). Trip/correction/leave approvals pass on the

@@ -47,6 +47,17 @@ class PbMePortal(CustomerPortal):
         net_line = slip.line_ids.pb_net_line()
         return net_line.total if net_line else None
 
+    def _prepare_portal_layout_values(self):
+        values = super()._prepare_portal_layout_values()
+        # An employee-only person's /my is their workplace, not a customer
+        # account: the stock invoice / project / task cards are hidden for
+        # them (`pbme-employee`, models/ess_landing.py says who).
+        try:
+            values['pbme_employee_only'] = request.env.user._pb_employee_only()
+        except Exception:               # noqa: BLE001
+            values['pbme_employee_only'] = False
+        return values
+
     # -------------------------------------------------- home portal cards
     def _prepare_home_portal_values(self, counters):
         values = super()._prepare_home_portal_values(counters)

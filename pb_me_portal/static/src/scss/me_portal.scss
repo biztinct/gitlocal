@@ -183,3 +183,10 @@
         .pbme-hero { padding: 18px; }
     }
 }
+
+// An employee-only person's My Payobook: the stock customer cards (invoices,
+// projects, tasks, timesheets) are not theirs. Flag set by the controller.
+.pbme-employee .o_portal_index_card:has(> a[href^="/my/invoices"], > a[href^="/my/projects"],
+                                        > a[href^="/my/tasks"], > a[href^="/my/timesheets"]) {
+    display: none !important;
+}

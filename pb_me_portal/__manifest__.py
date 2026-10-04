@@ -27,7 +27,7 @@ Every route re-resolves the employee from the session user (C18.26); no route
 accepts an employee_id for own-data pages (safety rail 3).
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.2',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -39,6 +39,10 @@ accepts an employee_id for own-data pages (safety rail 3).
         'biz_approval_workflow',   # the route its ladder now runs on
         'portal',
         'pb_import_kit',        # shared pbim design tokens
+        # where an employee-only person lands (models/ess_landing.py): the
+        # left menu's own Pay Run rule, and Home's tabs
+        'pb_sidebar',
+        'pb_home_hub',
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -53,6 +57,9 @@ accepts an employee_id for own-data pages (safety rail 3).
         'web.assets_frontend': [
             'pb_import_kit/static/src/scss/import_tokens.scss',
             'pb_me_portal/static/src/scss/me_portal.scss',
+        ],
+        'web.assets_backend': [
+            'pb_me_portal/static/src/js/ess_home.js',
         ],
     },
     'installable': True,
