@@ -621,7 +621,7 @@ line('Tip', 'Use a private (incognito) window for each sign-in to compare two pe
 st.merge_cells(start_row=r - 1, start_column=2, end_row=r - 1, end_column=4)
 r += 1
 line('3. Opening Hiring', bold=True, size=13)
-line('Everyone', 'In the left menu click “Lifecycle” (under Operate): the “Hiring” tab opens. Or press Ctrl+K / ⌘K on any screen, type “hiring” and choose “Who we are hiring”.')
+line('Everyone', 'Recruiters, talent leads and hiring managers land on Hiring as soon as they sign in. From anywhere else: left menu › “Lifecycle” (under Operate), or press Ctrl+K / ⌘K, type “hiring” and choose “Who we are hiring”.')
 st.merge_cells(start_row=r - 1, start_column=2, end_row=r - 1, end_column=4)
 line('Search bar', 'Every screen after Home has a search bar at the top. On Home, press Ctrl+K / ⌘K instead.')
 line('Talent lead', '“Set up hiring” is a button at the top of the Hiring screen. “Hiring numbers”: search bar › type “hiring numbers”.')

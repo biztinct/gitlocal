@@ -179,7 +179,7 @@ WHAT THIS MODULE IS
     The emails the product always sends are listed beside them, each with
     its own switch. An automation can never stop a move.
 """,
-    'version': '19.0.2.7.1',
+    'version': '19.0.2.7.3',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -198,6 +198,8 @@ WHAT THIS MODULE IS
         'pb_import_kit',            # pbim tokens/primitives + the shared ic() set
         'pb_lifecycle',             # the hub this lens joins, and its tiers
         'biz_access',               # its left-menu role lane; the Lifecycle door sits outside it
+        'pb_dashboard',             # the payroll first screen a hiring-only person is moved off
+        'pb_home_hub',              # Home's Pulse tab, hidden for that same person
         'pb_me_portal',             # the .pbme employee-page kit
         'pb_budget',                # the one budget table (ruling D2)
         'pb_settings',              # the cog the hiring rules live behind
@@ -283,6 +285,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/js/hiring_p8.js',
             'pb_hiring/static/src/js/hiring_numbers.js',
             'pb_hiring/static/src/js/hiring_palette.js',
+            'pb_hiring/static/src/js/home_no_pulse.js',
             'pb_hiring/static/src/xml/hiring_board.xml',
             'pb_hiring/static/src/xml/hiring_board_p1.xml',
             'pb_hiring/static/src/xml/hiring_setup.xml',

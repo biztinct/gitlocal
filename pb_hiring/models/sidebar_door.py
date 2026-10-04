@@ -63,3 +63,50 @@ class PbSidebarItem(models.Model):
     def visibility_for(self, user):
         return super(PbSidebarItem, self.with_context(
             pb_sidebar_uid=user.id)).visibility_for(user)
+
+
+PAY_RUN_ITEM = 'pb_payhub.item_pay_run'
+LIFECYCLE_HUB = 'pb_lifecycle.action_pb_lifecycle_hub'
+
+
+class IrHttp(models.AbstractModel):
+    """THE FIRST SCREEN for somebody whose work is hiring and not payroll.
+
+    `pb_dashboard` sends every internal non-administrator to the payroll
+    command centre ("Get your first payroll out", "Run Payroll"). Owner ruling
+    2026-10-04: a recruiter, talent lead or hiring manager lands on Hiring
+    instead. "Hiring and not payroll" is asked of the same two rules the left
+    menu uses — the Hiring board admits them, and the Pay Run entry is not on
+    their menu — so the first screen is always one their menu can also reach.
+    Anybody who has Pay Run keeps the payroll home exactly as before.
+
+    `pb_hiring_not_payroll` rides along so Home's own Pulse tab (the same
+    payroll start) is hidden for the same person — `home_no_pulse.js`.
+    """
+    _inherit = 'ir.http'
+
+    def session_info(self):
+        info = super().session_info()
+        user = self.env.user
+        if not info.get('uid') or not user._is_internal():
+            return info
+        try:
+            hub = self.env.ref(LIFECYCLE_HUB, raise_if_not_found=False)
+            if hub and self._pb_hiring_not_payroll(user):
+                info['home_action_id'] = hub.id
+                info['pb_hiring_not_payroll'] = True
+        except Exception:               # noqa: BLE001
+            _logger.warning('pb_hiring: could not choose the first screen for '
+                            'user %s', user.id, exc_info=True)
+        return info
+
+    def _pb_hiring_not_payroll(self, user):
+        Item = self.env['pb.sidebar.item'].sudo()
+        if not Item.with_user(user)._pb_hiring_admits():
+            return False
+        pay = self.env.ref(PAY_RUN_ITEM, raise_if_not_found=False)
+        if not pay:
+            return True
+        is_admin, groups = Item._access_of(user)
+        visible, _locked = Item._state_for(pay, is_admin, groups)
+        return not visible
