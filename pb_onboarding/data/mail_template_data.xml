@@ -172,6 +172,13 @@
                         what was said, and flag anything HR should look at, on your
                         <strong>My buddy</strong> page.
                     </p>
+                    <p style="margin: 24px 0;">
+                        <a t-attf-href="{{ object.get_base_url() }}/my/buddy"
+                           style="background:#5A4BB0; color:#ffffff; padding:12px 24px; border-radius:10px;
+                                  text-decoration:none; font-weight:700; display:inline-block;">
+                            Open My buddy
+                        </a>
+                    </p>
                     <br/>
                     Thank you,<br/>
                     The HR team<br/>
