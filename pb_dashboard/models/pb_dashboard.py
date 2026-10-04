@@ -335,11 +335,18 @@ class PbDashboard(models.AbstractModel):
         # `period` is null, and the screen says so in its own words.
 
         # ---- Formula engine ----
+        # EVERY READ HERE GOES THROUGH `safe()`, the search AND the fields after
+        # it. Reading a config does not mean being allowed to read what hangs
+        # off it: the demo-user group reads `hr.formula.config` but not
+        # `hr.formula.test.result`, so an unguarded `test_result_ids` raised
+        # out of this method and an employee's Home opened on a "you don't
+        # have access" dialog (2026-10-04, ess1.demo on payobook). This lens
+        # is ungated on purpose (pb_home_hub), so it must answer 0, not raise.
         cfgs = safe(lambda: env['hr.formula.config'].search([]), None)
         f_count = len(cfgs) if cfgs else 0
-        rules = sum(c.rule_count for c in cfgs) if cfgs else 0
-        active = len(cfgs.filtered(lambda c: c.state == 'active')) if cfgs else 0
-        tests = sum(len(c.test_result_ids) for c in cfgs) if cfgs else 0
+        rules = safe(lambda: sum(c.rule_count for c in cfgs)) if cfgs else 0
+        active = safe(lambda: len(cfgs.filtered(lambda c: c.state == 'active'))) if cfgs else 0
+        tests = safe(lambda: sum(len(c.test_result_ids) for c in cfgs)) if cfgs else 0
         f_health = round(active / f_count * 100) if f_count else 0
 
         # ---- Presentation context ----
