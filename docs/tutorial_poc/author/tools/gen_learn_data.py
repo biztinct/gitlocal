@@ -170,6 +170,12 @@ SCREEN_ACTION_TAGS = {
     # the hub's tag — the hub publishes its tab, and the place wins first.
     'payreview': 'pb_pay',
     'hiring_request': 'pb_hiring_board',
+    # LEARN REFRESH 2 — the rebuilt Hiring: a role's page is an inner view of
+    # the board (place `pb_lifecycle_hub:hiring/role`), Hiring set-up and the
+    # numbers are their own screens.
+    'hiringrole': 'pb_hiring_board',
+    'hiringsetup': 'pb_hiring_setup',
+    'hiringnumbers': 'pb_hiring_numbers',
     'peoplemore': 'pb_rnr_wall,pb_assignments,pb_assets,pb_hr_comm_calendar,pb_goals_home',
     'wftoday': 'pb_today',
     'wftime': 'pb_time_hub,pb_attendance_weekgrid',

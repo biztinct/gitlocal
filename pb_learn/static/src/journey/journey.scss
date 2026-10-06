@@ -2298,6 +2298,61 @@ body.lrn-docked .lrn-screen { padding-bottom: 55vh; }
     .lrn-yband { grid-template-columns: 110px minmax(0, 1fr) 56px; }
 }
 
+/* LEARN REFRESH 2 — a role's board in Hiring (engine/screens.js `hiringrole`):
+   one column per stage, cards with a coloured edge, the quiet Closed rail.
+   Prefix `lrn-yk*` (checked free across pb_learn, LR16). The board scrolls
+   sideways inside itself, never the page. */
+.lrn-ykan {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(138px, 1fr);
+    gap: 8px;
+    margin: 0 0 12px;
+    padding-bottom: 6px;
+    overflow-x: auto;
+    align-items: start;
+}
+.lrn-ykcol {
+    display: grid;
+    gap: 6px;
+    align-content: start;
+    min-width: 0;
+    padding: 8px;
+    border-radius: var(--vuf-r-md, 12px);
+    background: var(--vuf-line-soft, #F1F0F7);
+    font-size: 12px;
+}
+.lrn-ykhead {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    font-weight: 700;
+    color: var(--vuf-ink, #101728);
+    b { color: var(--vuf-muted, #6B7280); font-weight: 600; }
+}
+.lrn-ykcard {
+    display: grid;
+    gap: 2px;
+    padding: 8px 8px 8px 10px;
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-left: 3px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-sm, 10px);
+    background: var(--vuf-surface, #fff);
+    &.ok { border-left-color: var(--vuf-ok, #10B981); }
+    &.warn { border-left-color: var(--vuf-warn, #B45309); }
+    &.bad { border-left-color: var(--vuf-danger, #DC2626); }
+    &.on { box-shadow: 0 0 0 2px var(--vuf-primary, #5A4BB0); }
+    .lrn-sub2 { display: flex; align-items: center; gap: 4px; }
+    .lrn-ymeter { margin: 4px 0 0; }
+}
+.lrn-ykempty { color: var(--vuf-muted, #6B7280); text-align: center; }
+.lrn-ykrail {
+    background: transparent;
+    border: 1px dashed var(--vuf-line, #E5E7EB);
+    .lrn-note { margin: 4px 0 0; font-size: 11px; }
+}
+.lrn-ykopen { cursor: pointer; border-color: var(--vuf-primary, #5A4BB0); }
+
 /* LEARN REFRESH step 4 — the hero: one person's road on the Lifecycle line. */
 .lrn-ytrail {
     margin: 0 0 var(--vuf-sp-3, 12px);

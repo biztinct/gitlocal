@@ -1019,6 +1019,12 @@ const PRACTICE = {
         categories: this.categories,
         employees: r.reduce((t, s) => t + s.employees, 0),
         countries: this.countries,
+        /* LEARN REFRESH 2 — the three status figures on the numbers line. The
+           product's third status is Deprecated; "Archived" is this fixture's
+           older word for it and counts as one. */
+        active: r.filter((s) => s.badge.en === "Active").length,
+        draft: r.filter((s) => s.badge.en === "Draft").length,
+        deprecated: r.filter((s) => s.badge.en !== "Active" && s.badge.en !== "Draft").length,
       };
     },
   },
@@ -1712,34 +1718,177 @@ const PRACTICE = {
   },
 
   /* ----------------------------------------------- Lifecycle › Hiring
-     The role Nam was hired into, a year before the practice July. Four steps
-     on every role; "Step 3 of 4" is where candidates are met. */
+     LEARN REFRESH 2 (2026-10-05) — redrawn over the rebuilt Hiring (RECRUIT
+     P1–P8, pb_hiring 19.0.2.7). A role is OPENED in five fields and can meet
+     candidates at once; its hiring request is a chip on the card and matters
+     only when an offer is sent. Four steps on every role (hiring_board.js
+     JOURNEY_STAGES): Set up · Prepare & publish · Meet your candidates ·
+     Welcome aboard. The role Nam was hired into is the one at step 3. */
   hiring: {
     numbers: [
-      [B("Open roles", "Vị trí đang mở"), 3], [B("Awaiting sign-off", "Chờ phê duyệt"), 1], [B("Waiting on you", "Đang chờ bạn"), 1],
-      [B("Candidates", "Ứng viên"), 14], [B("Over budget", "Vượt ngân sách"), 0], [B("Interviews this week", "Phỏng vấn tuần này"), 4],
+      [B("Open roles", "Vị trí đang mở"), 2], [B("Requests to agree", "Đề xuất chờ đồng ý"), 0],
+      [B("No agreed request", "Chưa có đề xuất được đồng ý"), 2], [B("Waiting on you", "Đang chờ bạn"), 0],
+      [B("Candidates", "Ứng viên"), 12], [B("Over budget", "Vượt ngân sách"), 0],
+      [B("Interviews this week", "Phỏng vấn tuần này"), 4], [B("Opinions late", "Ý kiến đang trễ"), 2],
+      [B("Offers out", "Thư mời đã gửi"), 1],
     ],
     steps: [
-      [B("Request & approve", "Đề xuất & phê duyệt"), 1], [B("Prepare & publish", "Chuẩn bị & đăng tin"), 1],
+      [B("Set up", "Thiết lập"), 1], [B("Prepare & publish", "Chuẩn bị & đăng tin"), 1],
       [B("Meet your candidates", "Gặp ứng viên"), 1], [B("Welcome aboard", "Chào mừng gia nhập"), 0],
     ],
+    /* `req` is the request chip (requests_p3.py `_request_chip`), `btn` the
+       Next line's one button (hiring_board.js `nextStep`). "Review candidates"
+       has no Vietnamese in the product, so it is drawn in English (EN). */
     roles: [
-      { title: B("Store assistant — Hà Nội", "Nhân viên bán hàng — Hà Nội"), step: 3, cands: 6,
-        next: B("Two opinions are late — ask the panel for them.", "Hai ý kiến đánh giá đang trễ — hãy nhắc hội đồng phỏng vấn.") },
+      { title: B("Store assistant — Hà Nội", "Nhân viên bán hàng — Hà Nội"), step: 3, cands: 12,
+        req: [B("Request agreed", "Yêu cầu đã được đồng ý"), "ok"],
+        chips: [EN("Advertised")],
+        next: EN("9 candidates to look at"), btn: EN("Review candidates"), open: true },
       { title: B("Cashier — Hải Phòng", "Thu ngân — Hải Phòng"), step: 1, cands: 0,
-        next: B("Waiting for the HR lead to sign off.", "Đang chờ trưởng nhân sự phê duyệt.") },
+        req: [B("Waiting on Lê Thu Trang", "Đang chờ Lê Thu Trang"), "warn"], chips: [],
+        next: B("Waiting on Lê Thu Trang · asked 2 days ago", "Đang chờ Lê Thu Trang · đã nhờ 2 ngày trước"),
+        btn: B("Remind now", "Nhắc ngay") },
       { title: B("Stock controller — Hà Nội", "Nhân viên kiểm kho — Hà Nội"), step: 2, cands: 0,
-        next: B("Write the advert, then publish it.", "Viết tin tuyển dụng, rồi đăng tin.") },
+        req: [B("No request yet", "Chưa có đề xuất"), "warn"], chips: [],
+        next: B("Put it on the careers page", "Đưa lên trang tuyển dụng"), btn: B("Publish", "Đăng tin") },
     ],
-    wizard: {
-      title: B("Let's shape your next hire.", "Hãy cùng phác thảo vị trí tuyển dụng tiếp theo."),
-      tabs: [B("The role", "Vị trí"), B("Responsibilities", "Trách nhiệm"), B("Interview plan", "Kế hoạch phỏng vấn"),
-             B("Budget & review", "Ngân sách & xem lại")],
-      route: [B("Manager", "Quản lý"), B("HR lead", "Trưởng nhân sự"), B("Finance — only if over budget", "Tài chính — chỉ khi vượt ngân sách")],
-      salary: LATER.base,
+    /* "Open a role" — the five things (hiring_requests_p3.xml P3Overlays). */
+    open: {
+      title: EN("Five things, and the role exists."),
+      fields: [
+        [EN("What is the role called?"), B("Cashier — Hải Phòng", "Thu ngân — Hải Phòng")],
+        [EN("Department"), B("Retail — Hải Phòng", "Bán lẻ — Hải Phòng")],
+        [EN("Country"), B("Vietnam", "Việt Nam")],
+        [EN("How many seats?"), EN("1")],
+        [EN("Who recruits it?"), EN("The hiring rule for the country decides")],
+      ],
     },
-    stages: [B("Screening", "Sàng lọc"), B("Panel Review", "Hội đồng xem xét"), B("Recruiter Phone Call", "Gọi điện sơ vấn"),
-             B("Assignment", "Bài tập"), B("Discussion 1", "Trao đổi 1"), B("Offer Stage", "Giai đoạn đề nghị"), B("Joined", "Đã nhận việc")],
+    /* "Ask a manager for a request" and what the chip says as it moves
+       (requests_p3.py `_request_chip`). The manager's send-in IS their
+       agreement; the Head of HR agrees after it unless the company's route
+       says no approval is needed. Over budget tells people; it blocks nothing. */
+    ask: {
+      title: EN("A hiring request, from the manager"),
+      manager: "Lê Thu Trang",
+      every: EN("2 working days"),
+      chips: [B("Waiting on Lê Thu Trang", "Đang chờ Lê Thu Trang"), B("Sent in", "Đã gửi"),
+              B("Head of HR agreed", "Trưởng phòng nhân sự đã đồng ý"), B("Request agreed", "Yêu cầu đã được đồng ý")],
+      budget: B("Over budget tells the people who watch the budget. Nothing is blocked.",
+                "Vượt ngân sách thì những người theo dõi ngân sách được báo. Không có gì bị chặn."),
+      rule: B("The one thing that waits: an offer cannot be sent until the request is agreed.",
+              "Điều duy nhất phải chờ: không gửi được lời mời nhận việc khi đề xuất chưa được đồng ý."),
+    },
+  },
+
+  /* ------------------------------------- Lifecycle › Hiring › one role's page
+     The Store assistant role, open on its Board tab (hiring_board_p1.xml).
+     Columns are the role's stages, in the product's seeded names and their
+     Vietnamese (pb_hiring journey.py VI_NAMES); a hidden stage is simply not
+     drawn. Nam signed his offer and sits in Post-offer until 1 August — signed
+     is not joined. Hoa is the person the drawer is open on. Labels the product
+     shows in English to everyone (the P4–P7 screens) are EN(). */
+  hiringrole: {
+    title: B("Store assistant — Hà Nội", "Nhân viên bán hàng — Hà Nội"),
+    chips: [[B("Retail — Hà Nội", "Bán lẻ — Hà Nội"), ""], [B("2 openings · 0 filled", "2 chỗ trống · đã tuyển 0"), ""],
+            [B("Request agreed", "Yêu cầu đã được đồng ý"), "ok"], [EN("Published · 3 channels"), "b"]],
+    tabs: [B("Board", "Bảng"), B("Interviews", "Phỏng vấn"), B("Details", "Chi tiết"), B("Activity", "Hoạt động")],
+    numbers: [[B("people in play", "người đang trong quy trình"), 9], [B("waiting on you", "đang chờ bạn"), 1],
+              [B("interviews this week", "buổi phỏng vấn tuần này"), 4], [B("opinions late", "ý kiến bị trễ"), 2],
+              [B("offers out", "lời mời đã gửi"), 1]],
+    hints: [B("Drag a card to move someone.", "Kéo một thẻ để chuyển một người."),
+            B("Press a number to narrow the board.", "Bấm vào một con số để lọc bảng."),
+            B("Everything you move can be undone.", "Mọi thao tác chuyển đều có thể hoàn tác.")],
+    columns: [
+      { name: B("Applications received", "Hồ sơ đã nhận"), cards: [
+        { name: "Đặng Văn Khoa", sub: B("Applied 2 days ago · Careers page", "Nộp hồ sơ 2 ngày trước · Careers page") },
+        { name: "Lý Thị Ngân", sub: B("Applied yesterday · LinkedIn", "Nộp hồ sơ hôm qua · LinkedIn") },
+        { name: "Tạ Minh Quân", sub: B("Applied today · Referral", "Nộp hồ sơ hôm nay · Referral") }] },
+      { name: B("Shortlist", "Danh sách chọn"), cards: [
+        { name: "Đinh Thị Yến", sub: B("Applied 6 days ago", "Nộp hồ sơ 6 ngày trước"), edge: "ok" },
+        { name: "Phan Đức Long", sub: B("Applied 8 days ago", "Nộp hồ sơ 8 ngày trước"), edge: "ok" }] },
+      { name: B("Recruiter review", "Chuyên viên tuyển dụng xem xét"), cards: [
+        { name: "Ngô Thị Thảo", sub: EN("Let's chat sent"), edge: "warn" }] },
+      { name: B("Discussion 1", "Trao đổi 1"), cards: [
+        { name: "Vũ Thị Hoa", sub: EN("2 opinions late"), edge: "bad", open: true, shared: EN("Shared with 1") },
+        { name: "Trịnh Quốc Bảo", sub: B("Interview on 24/07", "Phỏng vấn ngày 24/07"), shared: EN("Private to hiring") }] },
+      { name: B("Offer", "Mời nhận việc"), cards: [] },
+      { name: B("Post-offer", "Chờ nhận việc"), cards: [
+        { name: LATER.name, sub: EN("Joining 01/08/2026"), edge: "ok", joining: [3, 5] }] },
+    ],
+    closed: [[B("CV reject", "Loại hồ sơ"), 2], [B("Interview reject", "Loại sau phỏng vấn"), 1],
+             [B("Drop-out", "Ứng viên rút lui"), 0], [B("On hold", "Tạm hoãn"), 0], [B("Offer drop", "Từ chối lời mời"), 0]],
+    closedHint: EN("Drop a card here to close it. Press a line to see who is in it; drag anyone back to bring them back."),
+    /* The candidate drawer, open on Hoa (hiring_board_p1.xml P1Overlays). */
+    drawer: {
+      name: "Vũ Thị Hoa", stage: B("Discussion 1", "Trao đổi 1"),
+      kv: [[B("Applied", "Đã nộp hồ sơ"), EN("12/07 · Careers page")],
+           [B("Based in", "Nơi ở"), EN("Hà Nội")],
+           [B("First look", "Xem lần đầu"), B("Shortlist", "Danh sách chọn")]],
+      share: EN("Shared with Lê Thu Trang · CV, answers"),
+      next: B("Two opinions from round 1 are late. Remind the panel, or enter one for them.",
+              "Two opinions from round 1 are late. Remind the panel, or enter one for them."),
+      nextBtn: EN("Remind"),
+      scores: [["Lê Thu Trang", EN("Yes")], ["Trần Văn Hùng", EN("not yet")], ["Phạm Minh Đức", EN("not yet")]],
+      notes: EN("Recruiter notes"),
+      acts: [B("Advance", "Chuyển bước sau"), EN("Move to"), EN("Share with…"), EN("Email"),
+             B("Arrange an interview", "Sắp xếp phỏng vấn"), B("Note", "Ghi chú"), EN("Not this time")],
+    },
+    /* Nam, after the signature (hiring_p6.xml P6DrawerJoining). */
+    joining: {
+      name: LATER.name, date: "01/08/2026",
+      list: [[EN("A buddy question"), true], [EN("Laptop preferences"), true], [EN("A chat with the team"), true],
+             [EN("Signed documents"), false], [EN("Welcome checklist"), false]],
+      confirm: EN("Confirm they joined"), change: EN("Change the date"),
+      note: B("Signed is not joined. He stays a candidate here until you confirm the day he started.",
+              "Đã ký chưa phải là đã vào làm. Anh vẫn là ứng viên ở đây cho tới khi bạn xác nhận ngày anh bắt đầu."),
+    },
+  },
+
+  /* ------------------------------------------------ Settings › Hiring set-up
+     pb_hiring hiring_setup.xml + the cards each phase added (board_p1.py
+     `get_setup`, facade_p4/p6/p7). Card names with Vietnamese in the product
+     carry it; the later cards are English for everybody. */
+  hiringsetup: {
+    lede: B("Everything a talent lead changes without a ticket: the stages, which columns a role shows, the forms, the scorecards, the emails and who does what.",
+            "Mọi thứ trưởng nhóm tuyển dụng tự thay đổi được mà không cần yêu cầu hỗ trợ: các giai đoạn, cột mà một vị trí hiển thị, mẫu đơn, phiếu đánh giá, email và ai làm việc gì."),
+    cards: [
+      [B("Stages", "Giai đoạn"), "layers"], [B("Application forms", "Mẫu đơn ứng tuyển"), "file-text"],
+      [B("Scorecards", "Phiếu đánh giá"), "list-checks"], [B("Emails and languages", "Email và ngôn ngữ"), "mail"],
+      [B("Automations", "Tự động hoá"), "zap"], [B("Who does what", "Ai làm việc gì"), "users"],
+      [EN("Consent & retention"), "hourglass"], [EN("Before they join"), "user-plus"],
+      [EN("Channels"), "git-merge"], [EN("Agencies"), "landmark"],
+    ],
+    stages: [
+      [B("Applications received", "Hồ sơ đã nhận"), true], [B("Shortlist", "Danh sách chọn"), false],
+      [B("Recruiter review", "Chuyên viên tuyển dụng xem xét"), false], [B("Hiring manager review", "Quản lý tuyển dụng xem xét"), false],
+      [B("Assignment", "Bài tập"), false], [B("Discussion 1", "Trao đổi 1"), false],
+      [B("Offer", "Mời nhận việc"), true], [B("Post-offer", "Chờ nhận việc"), true], [B("Joined", "Đã nhận việc"), true],
+    ],
+    meaning: B("Worth a conversation. From here they go to a recruiter review or straight to a hiring manager review.",
+               "Đáng để trao đổi. Từ đây họ chuyển sang chuyên viên tuyển dụng xem xét hoặc thẳng tới quản lý tuyển dụng xem xét."),
+    presets: [[B("Standard", "Chuẩn"), B("the fallback", "mẫu dự phòng")], [B("Retail · Vietnam", "Bán lẻ · Việt Nam"), B("6 columns", "6 cột")]],
+    switches: [
+      [B("Let line managers move candidates on their own roles", "Cho phép quản lý trực tiếp chuyển ứng viên trên vị trí của họ"), false],
+      [B("Email candidates from here", "Gửi email cho ứng viên từ đây"), true],
+      [EN("Tell colleagues when a role opens to referrals"), false],
+    ],
+    who: B("Sign-offs record and tell; nothing waits for them. The one thing that waits is sending an offer, until the role's request is agreed.",
+           "Sign-offs record and tell; nothing waits for them. The one thing that waits is sending an offer, until the role's request is agreed."),
+  },
+
+  /* -------------------------------------------------- Insights › Hiring
+     The hiring numbers (hiring_numbers.xml; tiles from analytics.py). The
+     whole screen is English in the product. */
+  hiringnumbers: {
+    lede: EN("How long it takes, where it gets stuck, and how often the answer is yes."),
+    headline: EN("A role takes 34 days to fill here, and 4 in 5 offers are accepted."),
+    tiles: [[EN("Roles agreed"), "6"], [EN("Roles filled"), "4"], [EN("Days to fill, typical"), "34"],
+            [EN("Days to an offer"), "21"], [EN("Offers sent"), "5"], [EN("Offers accepted"), "80%"]],
+    funnel: [[EN("Offered"), 5], [EN("Accepted"), 4], [EN("Signed"), 4], [EN("Joined"), 3]],
+    sections: [EN("From offer to joined"), EN("Where candidates wait"), EN("Where they came from"),
+               EN("Interviews that moved"), EN("Who has been waiting longest")],
+    waiting: [["Ngô Thị Thảo", EN("Recruiter review"), EN("16 days")],
+              ["Đinh Thị Yến", EN("Shortlist"), EN("6 days")]],
   },
 
   /* ----------------------------------------------- Lifecycle › New joiners
@@ -1961,7 +2110,7 @@ const MENU = [
     key: "lifecycle", icon: "git-branch", label: B("Lifecycle", "Vòng đời nhân sự"), section: null,
     lenses: [
       { key: "journeys", label: B("Journeys", "Hành trình") },
-      { key: "hiring", label: B("Hiring", "Tuyển dụng"), screen: "hiring" },
+      { key: "hiring", label: B("Hiring", "Tuyển dụng"), screen: "hiring", also: ["hiringrole"] },
       { key: "newjoiners", label: B("New joiners", "Nhân viên mới"), screen: "joiners" },
       { key: "exits", label: B("Exits", "Nghỉ việc"), screen: "exits" },
       { key: "probation", label: B("Probation", "Thử việc"), screen: "probation" },
@@ -1993,7 +2142,7 @@ const MENU = [
       { key: "workforce", label: B("Workforce", "Lực lượng lao động"), screen: "workforcean" },
       { key: "payroll", label: B("Payroll Report", "Báo cáo lương"), screen: "reports" },
       { key: "budget", label: B("Budget", "Ngân sách"), screen: "reports" },
-      { key: "hiring", label: B("Hiring", "Tuyển dụng") },
+      { key: "hiring", label: B("Hiring", "Tuyển dụng"), screen: "hiringnumbers" },
       { key: "training", label: B("Training", "Đào tạo") },
       { key: "goals", label: B("Goals", "Mục tiêu") },
     ],
@@ -2043,7 +2192,8 @@ const MENU = [
       { key: "access", label: B("Access & delegation", "Quyền truy cập & uỷ quyền"), screen: "access" },
       { key: "approvals", label: B("Approvals", "Phê duyệt"), screen: "matrix",
         card: B("Approval Matrix", "Ma trận phê duyệt") },
-      { key: "hiring", label: B("Hiring", "Tuyển dụng") },
+      { key: "hiring", label: B("Hiring", "Tuyển dụng"), screen: "hiringsetup",
+        card: B("Hiring set-up", "Thiết lập tuyển dụng") },
       { key: "about", label: B("About Payobook", "Về Payobook") },
       { key: "announcements", label: B("Announcements", "Thông báo") },
       { key: "demo_data", label: B("Demo data", "Dữ liệu mẫu") },
@@ -2109,11 +2259,13 @@ const SUB_SCREENS = {
     owner: "matrix",
     label: B("Approval Matrix — route builder", "Ma trận phê duyệt — dựng lộ trình"),
   },
-  /* LEARN REFRESH step 4 — the hiring request wizard over its board, and
-     the Generate a filing flow a Filings tile opens. */
+  /* LEARN REFRESH step 4 — the Generate a filing flow a Filings tile opens,
+     and Hiring's second view. Since LEARN REFRESH 2 that view is "Open a
+     role" and "Ask a manager for a request" (the request no longer comes
+     first; RECRUIT P3). */
   hiring_request: {
     owner: "hiring",
-    label: B("Hiring — Raise a hiring request", "Tuyển dụng — Đề xuất tuyển dụng"),
+    label: B("Hiring — Open a role, and ask for its request", "Tuyển dụng — Mở một vị trí, và nhờ gửi đề xuất"),
   },
   filing_flow: {
     owner: "govreports",
@@ -2179,7 +2331,7 @@ const STATUS_LABELS = {
     applied: { l: B("Applied", "Đã áp dụng"), t: "ok" },
   },
   hiring: {
-    request: { l: B("Request & approve", "Đề xuất & phê duyệt"), t: "" },
+    request: { l: B("Set up", "Thiết lập"), t: "" },
     publish: { l: B("Prepare & publish", "Chuẩn bị & đăng tin"), t: "b" },
     meet: { l: B("Meet your candidates", "Gặp ứng viên"), t: "warn" },
     welcome: { l: B("Welcome aboard", "Chào mừng gia nhập"), t: "ok" },
@@ -2234,7 +2386,7 @@ const CHAINS = {
   hiring: {
     nodes: ["request", "publish", "meet", "welcome"],
     branches: [
-      B("Finance signs only when the role is over budget", "Tài chính chỉ duyệt khi vị trí vượt ngân sách"),
+      B("The request is asked for on the way — only the offer waits for it", "Đề xuất được nhờ gửi dọc đường — chỉ lời mời nhận việc phải chờ nó"),
     ],
   },
   exit: {

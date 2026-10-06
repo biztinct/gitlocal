@@ -263,6 +263,9 @@ BARE_ALIASES = {
     'probation': 'the trial at the start of a job; no other sense here',
     'clearance': 'a leaver\'s sign-off; no other sense in this corpus',
     'clearances': 'plural of the above',
+    # LEARN REFRESH 2
+    'scorecard': 'the interviewer\'s form in Hiring; no other sense in this corpus',
+    'scorecards': 'plural of the above',
     'payslips': 'plural of the above',
     'slip': 'used only of a payslip in this corpus',
     'slips': 'plural of the above',

@@ -34,7 +34,8 @@ _logger = logging.getLogger(__name__)
 # Which stations are REQUIRED for each role. Reading order is the map's own
 # (line_order), so these are sets, not sequences.
 #
-# LEARN REFRESH step 5 — rebuilt over the final station set (39 stations).
+# LEARN REFRESH step 5 — rebuilt over the final station set (39 stations);
+# LEARN REFRESH 2 added the two Hiring stations to the HR path.
 # Each path is what that person does in a normal month, not everything they
 # may open. Notes on the choices:
 #   officer  — the whole month (run → deliver → adjust / settle) plus the
@@ -56,8 +57,9 @@ ROLE_PATHS = {
                 'mapping'),
     'approver': ('dashboard', 'approvals', 'payruns', 'payslips', 'insights',
                  'reports', 'payreview'),
-    'hr': ('dashboard', 'employees', 'records', 'hiring', 'joiners',
-           'probation', 'exits', 'contractends', 'wftime', 'paybands'),
+    'hr': ('dashboard', 'employees', 'records', 'hiring', 'hiringrole',
+           'hiringsetup', 'joiners', 'probation', 'exits', 'contractends',
+           'wftime', 'paybands'),
     'manager': ('approvals', 'wftoday', 'wftime', 'wfclose', 'hiring',
                 'probation', 'growth'),
     'owner': ('dashboard', 'approvals', 'insights', 'explorer', 'reports',

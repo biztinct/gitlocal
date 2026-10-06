@@ -526,3 +526,45 @@ Draft with the reason (NOT "cancels 48 payslips"). Closeout: `docs/handovers/APP
 - LR68 **Settlements were invisible on Pay Run › Settle** to everybody but a seat-holder: the only rule was "the ones
   I was asked to decide" on base.group_user. Step 6 added payroll-team and exits-team rules (`fnf_team_rules.xml`,
   `fnf_exits_rules.xml`). Check record rules whenever a board reads "0" for a reader who should see rows.
+
+## LEARN REFRESH 2 (2026-10-05 → 07) — catching up with RECRUIT, nav, quiet boards, landing
+
+Built directly (owner chose "do it directly"). Live on payobook, payobook_template, rize, abm.
+Versions: pb_learn 19.0.20.0.0, pb_payroll_ai_insights 19.0.3.10.0, pb_hiring 19.0.2.7.6, pb_people 19.0.1.2.5.
+
+- **Content:** L16 rewritten (Open a role → Ask a manager → Request agreed; the one rule is the offer).
+  New stations `hiringrole` (L39, a role's board: columns, Closed, drawer, Next box, sharing, scorecards,
+  Post-offer, Confirm they joined) and `hiringsetup` (L40, Hiring set-up + Insights › Hiring). 42 stations.
+  sc_hiring rewritten; new sc_hiringrole (Try only — a real board may hold no role or candidate). Intents
+  raisehire (rewritten), whynooffer, movecandidate, sharecandidate, confirmjoined, hiringsetup,
+  hiringnumbers. Glossary talentLead, scorecard, postOffer; hiringRequest and candidateStage rewritten.
+  HR path gained hiringrole + hiringsetup.
+- **Non-hiring corrections:** menu/tabs are icon strips that open on hover (glossary Rail/Tab, LW, wherelives,
+  practice hint); payroll people land on Pulse, hiring-only on Lifecycle › Hiring, employee-only on My Payobook
+  (LW tip, Pulse prereq, hub_home next, sc_welcome); Employees "Not payroll-ready" replaces the No contract
+  button (L29, intents re-anchored to pe-kpis); Contracts step strip + figures as filters (expirysoon); Salary
+  Structures Active/Draft/Deprecated on the numbers line (L33 → sr-kpis); Probation card = the five stops
+  (L19, sc_probation); Approval Matrix prereq names the new approval roles. Practice screens redrawn to match.
+- LR69 **A role's page publishes itself as inner view `role`** (`hiring_board.js _publishView` →
+  `setPlaceSub("pb_lifecycle_hub","hiring","role")`). The screen `hiringrole` claims place
+  `pb_lifecycle_hub:hiring/role` and is declared BEFORE `hiring` in SCREEN_CTX. Opening it from a lesson lands
+  on the board (nothing deep-links a role); that is fine — the lesson's first step says "press a role's card".
+- LR70 **Most of the rebuilt Hiring is English-only in the product** (P4–P7: Share with…, Publish to…, Compare
+  finalists, Before they join, Confirm they joined, Channels, Agencies, the whole Insights › Hiring screen).
+  The VI lessons name those labels in English with a Vietnamese gloss (LR44 rule). Owner item: translate them.
+- LR71 **`-u pb_people` (or pb_learn) on abm cascades into pb_hiring** (pb_hiring depends on them), so abm's
+  Hiring went 1.3.5 → 2.7.6 although RECRUIT ruled "not abm". It upgraded cleanly. The upgrade also turned 23 of
+  abm's retired scheduled jobs back ON — switched off again, rollback list `/root/abm_crons_reoff_20261007.txt`.
+  **After any upgrade that touches abm, re-check `select count(*) from ir_cron where active` on abm (must be 0).**
+- LR72 **`web.assets.version` is a WORD on payobook, payobook_template and abm** ("pb-studio-20261002"), so the
+  bigint bump in LR20 fails there. Set a new string instead; the `orm_signaling_assets` insert is what matters.
+- LR73 The ONBOARDING prompt test (`test_prompt_branding`) refuses the literal product name — "My Payobook"
+  must be written `My %(brand)s` in the prompt.
+- LR74 Gate notes: `scorecard(s)` added to BARE_ALIASES; Vietnamese "vòng" is allowed only in fixed compounds —
+  write "Trao đổi 1", not "vòng đầu". A pointer laid but not taught must be `reserved`; drop the flag when content
+  arrives (ct-kpis).
+- Tests on a payobook_template clone: 378 run, 6 failed = the 4 known (test_07b, data_access_06, egress 04d/04e)
+  + 2 branding ones fixed (LR73) and re-run green. Replay: only the known voice-copy and bridge failures.
+- **Not done:** the browser walk (both browser tools were offline). Owner items: translate the English-only
+  Hiring screens; Budget's big money figures and the Formula Studio resizable panels are not taught yet; the
+  first-login welcome card still offers the payroll tour to hiring-only / employee-only people.

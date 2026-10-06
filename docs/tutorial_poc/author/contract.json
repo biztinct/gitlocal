@@ -206,7 +206,7 @@
       "kind": "contains",
       "why": "PayAI may only offer to open something it can actually open, through this whitelist. Phase C2 re-targeted the envelope from pb_coach tours to pb_learn LESSONS, which is the change that lets this be checked at all: a tour was a registry entry in a module nobody validated against, and a lesson is a record whose key `learn.lesson` either has or has not. Both halves are pinned — the whitelist itself, and the old-tour compatibility map, whose ids are documentation of what each tour BECAME. If a lesson key here stops existing, PayAI's \"Show me\" opens a Journey that lands on the map and the offer was a lie.",
       "expect": [
-        "_KNOWN_LESSONS = ('LW', 'L1', 'L5', 'L3', 'L4', 'LA', 'L2', 'L6',\n                      # LEARN REFRESH step 3 — payroll setup.\n                      'L7', 'L8', 'L9', 'L10', 'L11', 'L12',\n                      # LEARN REFRESH step 4 — the wider app.\n                      'L13', 'L14', 'L15', 'L16', 'L17', 'L18', 'L19',\n                      'L20', 'L21', 'L22', 'L23', 'L24',\n                      # LEARN REFRESH step 5 — every remaining lesson.\n                      'L25', 'L26', 'L27', 'L28', 'L29', 'L30', 'L31',\n                      'L32', 'L33', 'L34', 'L35', 'L36', 'L37', 'L38')",
+        "_KNOWN_LESSONS = ('LW', 'L1', 'L5', 'L3', 'L4', 'LA', 'L2', 'L6',\n                      # LEARN REFRESH step 3 — payroll setup.\n                      'L7', 'L8', 'L9', 'L10', 'L11', 'L12',\n                      # LEARN REFRESH step 4 — the wider app.\n                      'L13', 'L14', 'L15', 'L16', 'L17', 'L18', 'L19',\n                      'L20', 'L21', 'L22', 'L23', 'L24',\n                      # LEARN REFRESH step 5 — every remaining lesson.\n                      'L25', 'L26', 'L27', 'L28', 'L29', 'L30', 'L31',\n                      'L32', 'L33', 'L34', 'L35', 'L36', 'L37', 'L38',\n                      # LEARN REFRESH 2 — the rebuilt Hiring.\n                      'L39', 'L40')",
         "'hero_path': 'LW'",
         "'tour_payrun': 'L1'",
         "'tour_formula': 'L5'",
@@ -1590,7 +1590,7 @@
     {
       "id": "wider-app-lesson-anchors",
       "kind": "contains",
-      "why": "LEARN REFRESH step 4 laid data-coach anchors in twenty templates pb_learn does not own: People › Pay and the Decision Room, the six Lifecycle boards, Workforce's shell, dock, Today, Time, Time Off, Overtime and Close, Access & delegation, and Compliance's filing flow, Bank, Young workers and Audit. Nothing over there reads them, so a tidy-up could delete one without any test in that module noticing — and a lesson or walkthrough would then spotlight nothing.",
+      "why": "LEARN REFRESH step 4 laid data-coach anchors in twenty templates pb_learn does not own: People › Pay and the Decision Room, the six Lifecycle boards (and, since LEARN REFRESH 2, Hiring's role page, set-up and numbers), Workforce's shell, dock, Today, Time, Time Off, Overtime and Close, Access & delegation, and Compliance's filing flow, Bank, Young workers and Audit. Nothing over there reads them, so a tidy-up could delete one without any test in that module noticing — and a lesson or walkthrough would then spotlight nothing.",
       "files": [
         "biz_access/static/src/xml/access_board.xml",
         "pb_audit/static/src/xml/pb_audit.xml",
@@ -1599,6 +1599,13 @@
         "pb_decision_room/static/src/xml/decision_room.xml",
         "pb_govt_reports/static/src/xml/filing_flow.xml",
         "pb_hiring/static/src/xml/hiring_board.xml",
+        "pb_hiring/static/src/xml/hiring_board_p1.xml",
+        "pb_hiring/static/src/xml/hiring_numbers.xml",
+        "pb_hiring/static/src/xml/hiring_p5.xml",
+        "pb_hiring/static/src/xml/hiring_p6.xml",
+        "pb_hiring/static/src/xml/hiring_privacy_p4.xml",
+        "pb_hiring/static/src/xml/hiring_requests_p3.xml",
+        "pb_hiring/static/src/xml/hiring_setup.xml",
         "pb_hr_workforce/static/src/xml/pb_ot_desk.xml",
         "pb_mission/static/src/xml/pb_close_lens.xml",
         "pb_mission/static/src/xml/pb_dock.xml",
@@ -1663,15 +1670,39 @@
         "data-coach=\"gw-objectives\"",
         "data-coach=\"gw-run\"",
         "data-coach=\"gw-steps\"",
+        "data-coach=\"hb-board\"",
+        "data-coach=\"hb-cacts\"",
+        "data-coach=\"hb-card\"",
+        "data-coach=\"hb-closed\"",
+        "data-coach=\"hb-cnext\"",
+        "data-coach=\"hb-compare\"",
+        "data-coach=\"hb-drawer\"",
+        "data-coach=\"hb-head\"",
+        "data-coach=\"hb-joining\"",
+        "data-coach=\"hb-publish\"",
+        "data-coach=\"hb-share\"",
+        "data-coach=\"hb-tabs\"",
+        "data-coach=\"hi-ask\"",
+        "data-coach=\"hi-askform\"",
+        "data-coach=\"hi-card\"",
         "data-coach=\"hi-next\"",
         "data-coach=\"hi-numbers\"",
         "data-coach=\"hi-raise\"",
+        "data-coach=\"hi-reqchip\"",
         "data-coach=\"hi-row\"",
-        "data-coach=\"hi-stage\"",
+        "data-coach=\"hi-setup\"",
         "data-coach=\"hi-steps\"",
         "data-coach=\"hi-tabs\"",
         "data-coach=\"hi-tools\"",
         "data-coach=\"hi-wizard\"",
+        "data-coach=\"hn-filters\"",
+        "data-coach=\"hn-head\"",
+        "data-coach=\"hn-headline\"",
+        "data-coach=\"hs-cards\"",
+        "data-coach=\"hs-presets\"",
+        "data-coach=\"hs-stages\"",
+        "data-coach=\"hs-switches\"",
+        "data-coach=\"hs-who\"",
         "data-coach=\"nj-buddy\"",
         "data-coach=\"nj-buddy-pick\"",
         "data-coach=\"nj-drawer\"",
@@ -1723,7 +1754,7 @@
       ],
       "fixture": [],
       "taughtIn": [
-        "lessons L13-L28",
+        "lessons L13-L28, L39, L40",
         "walkthroughs sc_paybands … sc_filings",
         "anchors.json product entries"
       ]
@@ -1734,15 +1765,17 @@
       "why": "Access & delegation and the Generate a filing flow open full-page from their own actions, and the lesson map's Open and the walkthroughs reach them by those xml-ids (SCREEN_CTX `open`). A renamed action would leave both doors opening nothing.",
       "files": [
         "biz_access/views/access_views.xml",
-        "pb_govt_reports/views/pb_filing_flow_action.xml"
+        "pb_govt_reports/views/pb_filing_flow_action.xml",
+        "pb_hiring/data/recruit_p1.xml"
       ],
       "expect": [
         "id=\"action_pb_access_board\"",
-        "id=\"action_pb_filing_flow\""
+        "id=\"action_pb_filing_flow\"",
+        "id=\"action_pb_hiring_setup\""
       ],
       "fixture": [],
       "taughtIn": [
-        "lessons L23, L24",
+        "lessons L23, L24, L40",
         "walkthroughs sc_access, sc_filings"
       ]
     }
@@ -1803,7 +1836,14 @@
       "pb_time_hub/static/src/xml/time_hub.xml",
       "pb_timeoff/static/src/xml/pb_timeoff.xml",
       "pb_today/static/src/xml/pb_today.xml",
-      "pb_young_worker/static/src/xml/pb_young_worker.xml"
+      "pb_young_worker/static/src/xml/pb_young_worker.xml",
+      "pb_hiring/static/src/xml/hiring_board_p1.xml",
+      "pb_hiring/static/src/xml/hiring_requests_p3.xml",
+      "pb_hiring/static/src/xml/hiring_p5.xml",
+      "pb_hiring/static/src/xml/hiring_privacy_p4.xml",
+      "pb_hiring/static/src/xml/hiring_p6.xml",
+      "pb_hiring/static/src/xml/hiring_setup.xml",
+      "pb_hiring/static/src/xml/hiring_numbers.xml"
     ]
   },
   "tokenLint": {

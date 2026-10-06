@@ -385,12 +385,13 @@
     "sr-kpis": {
       "screen": "structures",
       "file": "pb_structures/static/src/xml/structures.xml",
-      "desc": "Structures, salary rules, categories, employees covered and countries."
+      "desc": "Structures, Active, Draft, Deprecated (the three status figures filter the list), salary rules, employees covered and countries."
     },
     "sr-filters": {
       "screen": "structures",
       "file": "pb_structures/static/src/xml/structures.xml",
-      "desc": "Status, search, date and country chips. They scope the roster, not the database."
+      "desc": "Search, date and country chips (the status buttons left with the quiet numbers, 446560e70). They scope the roster, not the database.",
+      "reserved": true
     },
     "sr-roster": {
       "screen": "structures",
@@ -463,12 +464,13 @@
     "pe-kpis": {
       "screen": "employees",
       "file": "pb_people/static/src/xml/people.xml",
-      "desc": "Headcount, running contracts, contracts expiring within 30 days, new hires this month, the monthly wage bill and the payroll-ready share."
+      "desc": "Headcount, running contracts, contracts expiring within 30 days, new hires this month, Not payroll-ready, the monthly wage bill and the payroll-ready share. The first five are the filters."
     },
     "pe-filters": {
       "screen": "employees",
       "file": "pb_people/static/src/xml/people.xml",
-      "desc": "Status chips, search and the date range. Every count above is scoped by whatever is active here."
+      "desc": "Search and the date range. The status chips left with the quiet numbers (446560e70): every figure above is the filter, counted over everyone.",
+      "reserved": true
     },
     "pe-roster": {
       "screen": "employees",
@@ -484,13 +486,13 @@
     "ct-kpis": {
       "screen": "contracts",
       "file": "pb_contracts/static/src/xml/contracts.xml",
-      "desc": "Running, expiring within 30 days, draft, expired, the monthly wage bill and the average wage.",
-      "reserved": true
+      "desc": "Running, expiring within 30 days, draft, expired, the monthly wage bill and the average wage; the first four press a step of Where every contract is."
     },
     "ct-filters": {
       "screen": "contracts",
       "file": "pb_contracts/static/src/xml/contracts.xml",
-      "desc": "Status chips, search and the date range over the contract roster."
+      "desc": "Search and the date range over the contract roster (the status chips are gone, 446560e70).",
+      "reserved": true
     },
     "ct-roster": {
       "screen": "contracts",
@@ -1047,7 +1049,7 @@
     "hi-raise": {
       "screen": "hiring",
       "file": "pb_hiring/static/src/xml/hiring_board.xml",
-      "desc": "Raise a hiring request."
+      "desc": "Open a role (the hiring team) — or Raise a hiring request (a team's manager without the hiring tier). One button, two labels, one anchor."
     },
     "hi-numbers": {
       "screen": "hiring",
@@ -1057,7 +1059,7 @@
     "hi-steps": {
       "screen": "hiring",
       "file": "pb_hiring/static/src/xml/hiring_board.xml",
-      "desc": "The four-step strip: Request & approve … Welcome aboard."
+      "desc": "The four-step strip: Set up · Prepare & publish · Meet your candidates · Welcome aboard."
     },
     "hi-tabs": {
       "screen": "hiring",
@@ -1075,15 +1077,141 @@
       "file": "pb_hiring/static/src/xml/hiring_board.xml",
       "desc": "A role card's Next: line (first card)."
     },
-    "hi-stage": {
-      "screen": "hiring",
-      "file": "pb_hiring/static/src/xml/hiring_board.xml",
-      "desc": "A candidate's Move stage (role drawer)."
-    },
     "hi-wizard": {
       "screen": "hiring_request",
       "file": "pb_hiring/static/src/xml/hiring_board.xml",
-      "desc": "The request wizard: Let's shape your next hire."
+      "desc": "The request wizard a manager raises: Let's shape your next hire. Kept; the lessons teach Open a role now.",
+      "reserved": true
+    },
+    "hi-setup": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_board.xml",
+      "desc": "Set up hiring — the board's door to Hiring set-up.",
+      "reserved": true
+    },
+    "hi-ask": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_board.xml",
+      "desc": "Ask a manager for a request."
+    },
+    "hi-card": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_board.xml",
+      "desc": "A role's card (first card); pressing it opens the role's page."
+    },
+    "hi-reqchip": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_board.xml",
+      "desc": "The request label on a role's card: No request yet / Waiting on … / Request agreed (first card)."
+    },
+    "hi-askform": {
+      "screen": "hiring_request",
+      "file": "pb_hiring/static/src/xml/hiring_requests_p3.xml",
+      "desc": "The Ask a manager dialog."
+    },
+    "hb-head": {
+      "screen": "hiringrole",
+      "file": "pb_hiring/static/src/xml/hiring_board_p1.xml",
+      "desc": "A role's page header: All roles, the title, its chips (department, openings, request, channels) and actions."
+    },
+    "hb-tabs": {
+      "screen": "hiringrole",
+      "file": "pb_hiring/static/src/xml/hiring_board_p1.xml",
+      "desc": "Board / Interviews / Details / Activity.",
+      "reserved": true
+    },
+    "hb-board": {
+      "screen": "hiringrole",
+      "file": "pb_hiring/static/src/xml/hiring_board_p1.xml",
+      "desc": "The columns: one per stage this role shows."
+    },
+    "hb-closed": {
+      "screen": "hiringrole",
+      "file": "pb_hiring/static/src/xml/hiring_board_p1.xml",
+      "desc": "The Closed rail: CV reject, Interview reject, Drop-out, On hold, Offer drop."
+    },
+    "hb-card": {
+      "screen": "hiringrole",
+      "file": "pb_hiring/static/src/xml/hiring_board_p1.xml",
+      "desc": "A candidate card (every card carries it; the first is used).",
+      "reserved": true
+    },
+    "hb-publish": {
+      "screen": "hiringrole",
+      "file": "pb_hiring/static/src/xml/hiring_board_p1.xml",
+      "desc": "Publish to… — one link per channel."
+    },
+    "hb-compare": {
+      "screen": "hiringrole",
+      "file": "pb_hiring/static/src/xml/hiring_p5.xml",
+      "desc": "Compare finalists (shown once a finalist exists).",
+      "reserved": true
+    },
+    "hb-drawer": {
+      "screen": "hiringrole",
+      "file": "pb_hiring/static/src/xml/hiring_board_p1.xml",
+      "desc": "The candidate drawer (one person's story)."
+    },
+    "hb-cnext": {
+      "screen": "hiringrole",
+      "file": "pb_hiring/static/src/xml/hiring_board_p1.xml",
+      "desc": "The drawer's Next box."
+    },
+    "hb-cacts": {
+      "screen": "hiringrole",
+      "file": "pb_hiring/static/src/xml/hiring_board_p1.xml",
+      "desc": "The drawer's actions: Advance, Move to, Share with…, Email, Arrange an interview, Note, Not this time."
+    },
+    "hb-share": {
+      "screen": "hiringrole",
+      "file": "pb_hiring/static/src/xml/hiring_privacy_p4.xml",
+      "desc": "Private to hiring / Shared with — the drawer's sharing panel."
+    },
+    "hb-joining": {
+      "screen": "hiringrole",
+      "file": "pb_hiring/static/src/xml/hiring_p6.xml",
+      "desc": "The Post-offer panel: countdown, Before they join, signed documents, Confirm they joined."
+    },
+    "hs-cards": {
+      "screen": "hiringsetup",
+      "file": "pb_hiring/static/src/xml/hiring_setup.xml",
+      "desc": "The set-up cards."
+    },
+    "hs-stages": {
+      "screen": "hiringsetup",
+      "file": "pb_hiring/static/src/xml/hiring_setup.xml",
+      "desc": "Stages: rename, reorder, meaning."
+    },
+    "hs-presets": {
+      "screen": "hiringsetup",
+      "file": "pb_hiring/static/src/xml/hiring_setup.xml",
+      "desc": "Which columns a new role shows."
+    },
+    "hs-switches": {
+      "screen": "hiringsetup",
+      "file": "pb_hiring/static/src/xml/hiring_setup.xml",
+      "desc": "The three switches."
+    },
+    "hs-who": {
+      "screen": "hiringsetup",
+      "file": "pb_hiring/static/src/xml/hiring_setup.xml",
+      "desc": "Who does what."
+    },
+    "hn-head": {
+      "screen": "hiringnumbers",
+      "file": "pb_hiring/static/src/xml/hiring_numbers.xml",
+      "desc": "The hiring numbers header and Download everything.",
+      "reserved": true
+    },
+    "hn-filters": {
+      "screen": "hiringnumbers",
+      "file": "pb_hiring/static/src/xml/hiring_numbers.xml",
+      "desc": "Narrow to: department, country, recruiter."
+    },
+    "hn-headline": {
+      "screen": "hiringnumbers",
+      "file": "pb_hiring/static/src/xml/hiring_numbers.xml",
+      "desc": "The one-sentence headline."
     },
     "nj-run": {
       "screen": "joiners",
@@ -1689,9 +1817,16 @@
     "rep-pr-cal": "The practice worksheet's Calibration button (a Try target).",
     "rep-pr-send": "The practice review's Send for approval button — guarded in Try, like every control that would write.",
     "rep-dr-exact": "The practice Decision Room's line comparing the exact cost with the estimate.",
-    "rep-hi-cands": "The practice Hiring board's candidate strip for the first role, with Nam at Discussion 1.",
-    "rep-hi-route": "The practice hiring request's sign-off route: manager, HR lead, Finance only if over budget.",
-    "rep-hi-send": "The practice hiring request's Send for approval — guarded in Try.",
+    "rep-hi-open": "The practice Open a role dialog: the five things.",
+    "rep-hi-openbtn": "The practice Open the role button (a Try target; it changes nothing).",
+    "rep-hi-route": "The practice request's label as it moves: Waiting on the manager, Sent in, Head of HR agreed, Request agreed.",
+    "rep-hi-rule": "The practice Ask a manager dialog's line on the one rule: no offer until the request is agreed. Drawn only here — the product says it in the offer's own refusal.",
+    "rep-hi-send": "The practice Ask a manager dialog's Send the request — guarded in Try.",
+    "rep-hb-numbers": "The practice role page's quiet numbers (people in play, waiting on you, …).",
+    "rep-hb-scores": "The practice candidate panel's scorecard decisions for Discussion 1, two of them not yet in.",
+    "rep-hb-confirm": "The practice Post-offer panel's Confirm they joined — guarded in Try.",
+    "rep-hn-funnel": "The practice hiring numbers' From offer to joined funnel.",
+    "rep-hn-waiting": "The practice hiring numbers' Who has been waiting longest list.",
     "rep-ex-card": "The practice Exits board's leaver card (Bùi Thị Hạnh), a Try target that opens her drawer.",
     "rep-ex-open": "The practice leaver drawer's Open the settlement button.",
     "rep-ex-desks": "The practice leaver drawer, drawn open: what each of the four desks checks, and which has not signed.",
@@ -1777,7 +1912,14 @@
       "pb_contracts/static/src/xml/contract_360.xml",
       "pb_import_advanced/static/src/xml/connector_cockpit.xml",
       "pb_hr_workforce/static/src/js/payroll_report.js",
-      "pb_budget/static/src/xml/budget_board.xml"
+      "pb_budget/static/src/xml/budget_board.xml",
+      "pb_hiring/static/src/xml/hiring_board_p1.xml",
+      "pb_hiring/static/src/xml/hiring_requests_p3.xml",
+      "pb_hiring/static/src/xml/hiring_p5.xml",
+      "pb_hiring/static/src/xml/hiring_privacy_p4.xml",
+      "pb_hiring/static/src/xml/hiring_p6.xml",
+      "pb_hiring/static/src/xml/hiring_setup.xml",
+      "pb_hiring/static/src/xml/hiring_numbers.xml"
     ],
     "replica": [
       "pb_learn/static/src/engine/screens.js",

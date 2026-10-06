@@ -546,6 +546,7 @@ export const SCREENS = {
                       [B("Running contracts", "Hợp đồng đang hiệu lực"), N(k.running)],
                       [B("Expiring within 30 days", "Hết hạn trong 30 ngày"), N(k.expiring)],
                       [B("New this month", "Mới trong tháng này"), N(k.newHires)],
+                      [B("Not payroll-ready", "Chưa sẵn sàng tính lương"), N(p.rows.filter((r) => !r.ready).length)],
                       [B("Monthly wage", "Lương hàng tháng"), M(k.wageBill)],
                       [B("Payroll-ready", "Sẵn sàng trả lương"), N(k.readyPct) + "%"]]
             .map(([l, v]) => `<span><b>${esc(v)}</b>${SP}${esc(tx(l))}</span>`).join("");
@@ -583,10 +584,12 @@ export const SCREENS = {
                 <button class="lrn-btn sm pri" data-coach="rep-newemp-open">${ic("plus")}${esc(tx(B("Add employee", "Thêm nhân viên")))}</button>
             </div>
             <div class="lrn-ynums" data-coach="pe-kpis">${nums}</div>
-            <div class="lrn-tabs" data-coach="pe-filters">
-                ${[B("All", "Tất cả"), B("Running", "Đang hiệu lực"), B("Expiring soon", "Sắp hết hạn"),
-                   B("New this month", "Mới trong tháng này"), B("No contract", "Không có hợp đồng")].map(
-                    (f, i) => `<button aria-selected="${i === 0}">${esc(tx(f))}</button>`).join("")}
+            <!-- LEARN REFRESH 2: the status buttons are gone from the product
+                 (446560e70); the numbers above are the filters. The panel
+                 holds the search and the date chips. -->
+            <div class="lrn-strip" data-coach="pe-filters">
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search name, job, department…", "Tìm tên, công việc, phòng ban…")))}</span>
+                <span class="lrn-chip">${esc(tx(B("This month", "Tháng này")))}</span>
             </div>
             <div class="lrn-ywf">
                 <div class="lrn-ywfmain">
@@ -651,10 +654,14 @@ export const SCREENS = {
                     [B("Monthly wage", "Lương hàng tháng"), M(k.wageBill)],
                     [B("Average wage", "Lương trung bình"), M(k.avgWage)]].map(
                     ([l, v]) => `<span><b>${esc(v)}</b>${SP}${esc(tx(l))}</span>`).join("")}</div>
-            <div class="lrn-tabs" data-coach="ct-filters">
-                ${[B("All", "Tất cả"), B("Draft", "Nháp"), B("Running", "Đang hiệu lực"),
-                   B("Expiring soon", "Sắp hết hạn"), B("Expired", "Đã hết hạn"), B("Cancelled", "Đã hủy")].map(
-                    (f, i) => `<button aria-selected="${i === 0}">${esc(tx(f))}</button>`).join("")}
+            <!-- LEARN REFRESH 2: "Where every contract is" — each figure above
+                 presses a step; Running covers Running and Ending soon. The
+                 old status buttons are gone (446560e70). -->
+            <div class="lrn-steps">${stepButtons([
+                { label: B("Draft", "Nháp"), count: k.draft }, { label: B("Running", "Đang hiệu lực"), count: k.running, on: true },
+                { label: B("Ending soon", "Sắp kết thúc"), count: k.expiring }, { label: B("Ended", "Đã kết thúc"), count: k.expired }], B("", ""))}</div>
+            <div class="lrn-strip" data-coach="ct-filters">
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search a person or a contract…", "Tìm một người hoặc một hợp đồng…")))}</span>
             </div>
             <div class="lrn-panel">
                 <h3>${ic("file-text")}${esc(tx(B("Contracts", "Hợp đồng")))}</h3>
@@ -1420,17 +1427,20 @@ export const SCREENS = {
                     <span class="lrn-sub2">${esc(tx(B("updated", "đã cập nhật")))}${SP}${esc(s.updated)}</span></span>
             </div>`;
         }).join("");
-        const nums = [[B("Structures", "Cấu trúc"), k.structures], [B("Salary rules", "Quy tắc lương"), k.rules],
-                      [B("Categories", "Phân loại"), k.categories], [B("Employees covered", "Nhân viên áp dụng"), k.employees],
-                      [B("Countries", "Quốc gia"), k.countries]];
+        /* LEARN REFRESH 2: Active / Draft / Deprecated joined the numbers line
+           and filter the list; the status buttons are gone (446560e70). */
+        const nums = [[B("Structures", "Cấu trúc"), k.structures], [B("Active", "Đang hoạt động"), k.active],
+                      [B("Draft", "Nháp"), k.draft], [B("Deprecated", "Ngừng sử dụng"), k.deprecated],
+                      [B("Salary rules", "Quy tắc lương"), k.rules],
+                      [B("Employees covered", "Nhân viên áp dụng"), k.employees]];
         return `
             <div class="lrn-zhead"><span class="lrn-push"></span>
                 <button class="lrn-btn sm pri" data-coach="sr-new">${ic("plus")}${
                     esc(tx(B("New structure", "Cấu trúc mới")))}</button></div>
             <div data-coach="sr-kpis">${quietNums(nums, "")}</div>
-            <div class="lrn-tabs" data-coach="sr-filters">
-                ${[B("All", "Tất cả"), B("Active", "Đang hoạt động"), B("Draft", "Nháp"), B("Deprecated", "Ngừng sử dụng")].map(
-                    (f, i) => `<button aria-selected="${i === 0}">${esc(tx(f))}</button>`).join("")}
+            <div class="lrn-strip" data-coach="sr-filters">
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search a structure…", "Tìm một cấu trúc…")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Any country", "Mọi quốc gia")))}</span>
             </div>
             <div class="lrn-panel">
                 <div class="lrn-rows" data-coach="sr-roster">${rows}</div>
@@ -2472,59 +2482,209 @@ export const SCREENS = {
     },
 
     /* --------------------------------------------- Lifecycle › Hiring
-       The board a learner can press: Raise a hiring request opens the
-       wizard (hiring_request); every role card says its step and what next. */
+       LEARN REFRESH 2 — the rebuilt board (RECRUIT P1–P8). A role is opened
+       in five fields; its request is a chip on the card; the first card
+       opens the role's own page (`hiringrole`), and Open a role opens the
+       second view (`hiring_request`). */
     hiring() {
         const h = PRACTICE.hiring;
         const roles = h.roles.map((r, i) => `
-            <div class="lrn-yrole">
+            <div class="lrn-yrole ${r.open ? "lrn-ykopen" : ""}" ${i === 0 ? ATTR_HI_CARD + SP + navAttr("hiringrole") : ""}>
                 <b>${ic("briefcase")}${esc(tx(r.title))}</b>
-                <span class="lrn-sub2">${esc(tx(B("Step", "Bước")))}${SP}${esc(N(r.step))}${SP}${esc(tx(B("of 4", "của 4")))}${
+                <span class="lrn-sub2">${esc(tx(B("Step", "Bước")))}${SP}${esc(N(r.step))}${esc(tx(B(" of 4", "/4")))}${
                     r.cands ? DOT + esc(N(r.cands)) + SP + esc(tx(B("candidates", "ứng viên"))) : ""}</span>
-                <span class="lrn-ynext" ${i === 0 ? ATTR_HI_NEXT : ""}><b>${esc(tx(B("Next:", "Tiếp theo:")))}</b>${SP}${esc(tx(r.next))}</span>
+                <span class="lrn-strip"><span class="lrn-chip ${r.req[1]}" ${i === 0 ? ATTR_HI_REQ : ""}>${esc(tx(r.req[0]))}</span>${
+                    r.chips.map((c) => `<span class="lrn-chip">${esc(tx(c))}</span>`).join("")}</span>
+                <span class="lrn-ynext" ${i === 0 ? ATTR_HI_NEXT : ""}><b>${esc(tx(B("Next:", "Tiếp theo:")))}</b>${SP}${esc(tx(r.next))}${SP}<span class="lrn-btn sm ghost">${esc(tx(r.btn))}</span></span>
             </div>`).join("");
-        const stages = h.stages.map((x, i) => `<span class="lrn-chip ${i === 4 ? "b" : ""}">${esc(tx(x))}</span>`).join("");
         return `
             <div class="lrn-zhead">
                 <span class="lrn-push"></span>
                 <button class="lrn-btn sm ghost" data-coach="hi-tools">${ic("settings")}${esc(tx(B("Hiring tools", "Công cụ tuyển dụng")))}</button>
-                <button class="lrn-btn sm pri" data-coach="hi-raise" ${navAttr("hiring_request")}>${ic("plus")}${esc(tx(B("Raise a hiring request", "Đề xuất tuyển dụng")))}</button>
+                <button class="lrn-btn sm ghost" data-coach="hi-setup" ${navAttr("hiringsetup")}>${ic("sliders")}${esc(tx(B("Set up hiring", "Thiết lập tuyển dụng")))}</button>
+                <button class="lrn-btn sm ghost" data-coach="hi-ask" ${navAttr("hiring_request")}>${ic("send")}${esc(tx(B("Ask a manager for a request", "Nhờ quản lý gửi đề xuất")))}</button>
+                <button class="lrn-btn sm pri" data-coach="hi-raise" ${navAttr("hiring_request")}>${ic("plus")}${esc(tx(B("Open a role", "Mở một vị trí")))}</button>
             </div>
             ${quietNums(h.numbers, ATTR_HI_NUMS)}
             <div class="lrn-steps" data-coach="hi-steps">${stepButtons(h.steps.map(([l, c], i) => ({ label: l, count: c, on: i === 2 })), B("", ""))}</div>
             <div class="lrn-zmodes" data-coach="hi-tabs"><button class="lrn-lens on">${esc(tx(B("Roles", "Vai trò")))}</button><button class="lrn-lens">${
-                esc(tx(B("Interviews", "Phỏng vấn")))}</button></div>
-            <div class="lrn-yroles" data-coach="hi-row">${roles}</div>
-            <div class="lrn-panel" data-coach="rep-hi-cands">
-                <h3>${ic("users")}${esc(tx(h.roles[0].title))}${DOT}${esc(tx(B("candidates", "ứng viên")))}</h3>
-                <div class="lrn-strip">${stages}</div>
-                <div class="lrn-row"><span class="lrn-avatar">${esc(initial(LATER.name))}</span>
-                    <span><span class="lrn-nm">${esc(LATER.name)}</span><br><span class="lrn-sub2">${esc(tx(h.stages[4]))}</span></span>
-                    <span class="lrn-rr"><button class="lrn-btn sm" data-coach="hi-stage">${esc(tx(B("Move stage", "Chuyển giai đoạn")))}</button></span></div>
+                esc(tx(B("Interviews", "Phỏng vấn")))}</button><button class="lrn-lens">${esc(tx(EN("Resume bank")))}</button></div>
+            <div class="lrn-yroles" data-coach="hi-row">${roles}</div>`;
+    },
+
+    /* Open a role, and Ask a manager — the two dialogs, drawn side by side
+       over the board so one lesson can read both. */
+    hiring_request() {
+        const h = PRACTICE.hiring;
+        const fields = h.open.fields.map(([k, v]) => `<div class="lrn-kv2"><span>${esc(tx(k))}</span><b>${esc(tx(v))}</b></div>`).join("");
+        const chips = h.ask.chips.map((x, i) => `${i ? `<span class="lrn-rline"></span>` : ""}<span class="lrn-ystage ${
+            i === h.ask.chips.length - 1 ? "on" : ""}">${esc(tx(x))}</span>`).join("");
+        return `
+            <div class="lrn-grid g2 top">
+                <div class="lrn-panel lrn-zdialog" data-coach="rep-hi-open">
+                    <span class="lrn-zeyebrow">${esc(tx(EN("Open a role")))}</span>
+                    <h3>${esc(tx(h.open.title))}</h3>
+                    ${fields}
+                    <div class="lrn-strip">
+                        <button class="lrn-btn sm ghost" ${navAttr("hiring")}>${esc(tx(B("Cancel", "Huỷ")))}</button>
+                        <button class="lrn-btn sm pri" data-coach="rep-hi-openbtn">${ic("plus")}${esc(tx(B("Open the role", "Mở vị trí")))}</button>
+                    </div>
+                </div>
+                <div class="lrn-panel lrn-zdialog" data-coach="hi-askform">
+                    <span class="lrn-zeyebrow">${esc(tx(EN("Ask a manager")))}</span>
+                    <h3>${esc(tx(h.ask.title))}</h3>
+                    <div class="lrn-kv2"><span>${esc(tx(EN("Which manager?")))}</span><b>${esc(h.ask.manager)}</b></div>
+                    <div class="lrn-kv2"><span>${esc(tx(EN("Remind them every")))}</span><b>${esc(tx(h.ask.every))}</b></div>
+                    <span class="lrn-sub2">${esc(tx(B("What the role's chip says, as it moves", "Nhãn trên thẻ vị trí, theo từng bước")))}</span>
+                    <div class="lrn-ystages" data-coach="rep-hi-route">${chips}</div>
+                    <p class="lrn-note">${esc(tx(h.ask.budget))}</p>
+                    <div class="lrn-ylocked" data-coach="rep-hi-rule">${ic("lock")}<span>${esc(tx(h.ask.rule))}</span></div>
+                    <div class="lrn-strip">
+                        <button class="lrn-btn sm ghost" ${navAttr("hiring")}>${esc(tx(B("Cancel", "Huỷ")))}</button>
+                        <button class="lrn-btn sm pri" data-coach="rep-hi-send">${ic("send")}${esc(tx(B("Send the request", "Gửi đề xuất")))}</button>
+                    </div>
+                </div>
             </div>`;
     },
 
-    /* The request wizard, drawn open over the board. */
-    hiring_request() {
-        const w = PRACTICE.hiring.wizard;
-        // The wizard's step names are written in code and never translated
-        // on the real screen, so the drawing shows them in English too.
-        const tabs = w.tabs.map((x, i) => `<button class="lrn-lens ${i === 3 ? "on" : ""}">${esc(x.en)}</button>`).join("");
-        const route = w.route.map((x, i) => `${i ? `<span class="lrn-rline"></span>` : ""}<span class="lrn-ystage">${esc(tx(x))}</span>`).join("");
+    /* ------------------------------- Lifecycle › Hiring › one role's page
+       hiring_board_p1.xml: the header's chips and actions, the four tabs,
+       the quiet numbers, the columns (one per stage this role shows), the
+       Closed rail, and the candidate drawer drawn open on Hoa. Below it,
+       Nam after his signature — the Post-offer countdown. */
+    hiringrole() {
+        const r = PRACTICE.hiringrole;
+        const chips = r.chips.map(([l, t]) => `<span class="lrn-chip ${t}">${esc(tx(l))}</span>`).join("");
+        const tabs = r.tabs.map((t, i) => `<button class="lrn-lens ${i === 0 ? "on" : ""}">${esc(tx(t))}</button>`).join("");
+        const card = (c) => `
+            <div class="lrn-ykcard ${c.edge || ""}${SP}${c.open ? "on" : ""}" ${c.open ? ATTR_HB_CARD : ""}>
+                <b>${esc(c.name)}</b><span class="lrn-sub2">${esc(tx(c.sub))}</span>
+                ${c.shared ? `<span class="lrn-sub2">${ic("lock")}${esc(tx(c.shared))}</span>` : ""}
+                ${c.joining ? `<span class="lrn-ymeter"><i style="width:${Math.round(100 * c.joining[0] / c.joining[1])}%"></i></span>` : ""}
+            </div>`;
+        const cols = r.columns.map((col) => `
+            <div class="lrn-ykcol">
+                <div class="lrn-ykhead"><span>${esc(tx(col.name))}</span><b>${esc(N(col.cards.length))}</b></div>
+                ${col.cards.map(card).join("") || `<span class="lrn-ykempty">—</span>`}
+            </div>`).join("");
+        const closed = r.closed.map(([l, n]) => `<div class="lrn-kv2"><span>${esc(tx(l))}</span><b>${esc(N(n))}</b></div>`).join("");
+        const d = r.drawer;
+        const kv = d.kv.map(([k, v]) => `<div class="lrn-kv2"><span>${esc(tx(k))}</span><b>${esc(tx(v))}</b></div>`).join("");
+        const scores = d.scores.map(([n, v]) => `<div class="lrn-kv2"><span>${esc(n)}</span><b>${esc(tx(v))}</b></div>`).join("");
+        const acts = d.acts.map((a, i) => `<button class="lrn-btn sm ${i === 0 ? "pri" : "ghost"}">${esc(tx(a))}</button>`).join("");
+        const j = r.joining;
+        const list = j.list.map(([l, done]) => `<div class="lrn-kv2"><span>${done ? ic("check") : ic("clock")}${esc(tx(l))}</span></div>`).join("");
         return `
-            <div class="lrn-panel lrn-zdialog" data-coach="hi-wizard">
-                <span class="lrn-zeyebrow">${esc(tx(B("Build your team", "Xây dựng đội ngũ")))}</span>
-                <h3>${esc(tx(w.title))}</h3>
-                <div class="lrn-zmodes">${tabs}</div>
-                <div class="lrn-kv2"><span>${esc(tx(B("Role", "Vị trí")))}</span><b>${esc(tx(PRACTICE.hiring.roles[0].title))}</b></div>
-                <div class="lrn-kv2"><span>${esc(tx(B("Monthly salary", "Lương tháng")))}</span><b>${esc(M(w.salary))}</b></div>
-                <div class="lrn-kv2"><span>${esc(tx(B("Within budget", "Trong ngân sách")))}</span><b>${esc(tx(B("Yes", "Có")))}</b></div>
-                <span class="lrn-sub2">${esc(tx(B("Who signs it off", "Ai phê duyệt")))}</span>
-                <div class="lrn-ystages" data-coach="rep-hi-route">${route}</div>
-                <div class="lrn-strip">
-                    <button class="lrn-btn sm ghost" ${navAttr("hiring")}>${esc(tx(B("Back", "Quay lại")))}</button>
-                    <button class="lrn-btn sm pri" data-coach="rep-hi-send">${ic("send")}${esc(tx(B("Send for approval", "Gửi phê duyệt")))}</button>
+            <div class="lrn-zhead" data-coach="hb-head">
+                <button class="lrn-btn sm ghost" ${navAttr("hiring")}>${ic("chevron-left")}${esc(tx(B("All roles", "Mọi vị trí")))}</button>
+                <div><h3>${esc(tx(r.title))}</h3><span class="lrn-strip">${chips}</span></div>
+                <span class="lrn-push"></span>
+                <button class="lrn-btn sm ghost" data-coach="hb-compare">${esc(tx(EN("Compare finalists")))}</button>
+                <button class="lrn-btn sm ghost">${ic("user-plus")}${esc(tx(B("Add a candidate", "Thêm ứng viên")))}</button>
+                <button class="lrn-btn sm pri" data-coach="hb-publish">${ic("send")}${esc(tx(EN("Publish to…")))}</button>
+            </div>
+            <div class="lrn-zmodes" data-coach="hb-tabs">${tabs}</div>
+            ${quietNums(r.numbers, ATTR_HB_NUMS)}
+            <div class="lrn-ywf">
+                <div class="lrn-ywfmain">
+                    <div class="lrn-ykan" data-coach="hb-board">${cols}
+                        <div class="lrn-ykcol lrn-ykrail" data-coach="hb-closed">
+                            <div class="lrn-ykhead"><span>${esc(tx(EN("Closed")))}</span><b>${esc(N(r.closed.reduce((a, c) => a + c[1], 0)))}</b></div>
+                            ${closed}
+                            <p class="lrn-note">${esc(tx(r.closedHint))}</p>
+                        </div>
+                    </div>
+                    <div class="lrn-panel" data-coach="hb-joining">
+                        <h3>${ic("hourglass")}${esc(j.name)}${DOT}${esc(tx(EN("Joining")))}${SP}${esc(j.date)}</h3>
+                        <span class="lrn-sub2">${esc(tx(EN("Before they join")))}</span>
+                        ${list}
+                        <p class="lrn-note">${esc(tx(j.note))}</p>
+                        <div class="lrn-strip">
+                            <button class="lrn-btn sm pri" data-coach="rep-hb-confirm">${ic("check")}${esc(tx(j.confirm))}</button>
+                            <button class="lrn-btn sm ghost">${esc(tx(j.change))}</button>
+                        </div>
+                    </div>
                 </div>
+                <aside class="lrn-panel lrn-ydock" data-coach="hb-drawer">
+                    <h3>${esc(d.name)}</h3>
+                    <span class="lrn-sub2">${esc(tx(r.title))}${DOT}<b>${esc(tx(d.stage))}</b></span>
+                    ${kv}
+                    <div class="lrn-ylocked" data-coach="hb-share">${ic("users")}<span>${esc(tx(d.share))}</span></div>
+                    <div class="lrn-yclean" data-coach="hb-cnext">
+                        <b>${esc(tx(B("Next", "Tiếp theo")))}</b>
+                        <p class="lrn-note">${esc(tx(d.next))}</p>
+                        <button class="lrn-btn sm pri">${esc(tx(d.nextBtn))}</button>
+                    </div>
+                    <b data-coach="rep-hb-scores">${esc(tx(B("Discussion 1", "Trao đổi 1")))}${DOT}${esc(tx(EN("Decision")))}</b>${scores}
+                    <span class="lrn-sub2">${ic("lock")}${esc(tx(d.notes))}</span>
+                    <div class="lrn-strip" data-coach="hb-cacts">${acts}</div>
+                </aside>
+            </div>`;
+    },
+
+    /* --------------------------------------- Settings › Hiring set-up
+       hiring_setup.xml: the cards, the Stages list, the column presets, the
+       switches and Who does what. */
+    hiringsetup() {
+        const u = PRACTICE.hiringsetup;
+        const cards = u.cards.map(([l, icon]) => `<button class="lrn-setcard"><b>${ic(icon)}${esc(tx(l))}</b></button>`).join("");
+        const stages = u.stages.map(([l, always], i) => `<div class="lrn-kv2"><span>${esc(tx(l))}${
+            always ? DOT + esc(tx(B("always on", "luôn hiện"))) : ""}</span>${i === 1 ? `<b class="lrn-sub2">${esc(tx(u.meaning))}</b>` : ""}</div>`).join("");
+        const presets = u.presets.map(([l, sub]) => `<span class="lrn-chip">${esc(tx(l))}${DOT}${esc(tx(sub))}</span>`).join("");
+        const switches = u.switches.map(([l, on]) => `<div class="lrn-kv2"><span>${esc(tx(l))}</span><b class="lrn-chip ${on ? "ok" : ""}">${
+            esc(tx(on ? B("On", "Bật") : B("Off", "Tắt")))}</b></div>`).join("");
+        return `
+            <div class="lrn-zhead"><div><h3>${esc(tx(B("Hiring set-up", "Thiết lập tuyển dụng")))}</h3>
+                <p class="lrn-note">${esc(tx(u.lede))}</p></div><span class="lrn-push"></span>
+                <button class="lrn-btn sm ghost" ${navAttr("hiring")}>${esc(tx(EN("Back to the hiring board")))}</button></div>
+            <div class="lrn-setgrid" data-coach="hs-cards">${cards}</div>
+            <div class="lrn-grid g2 top">
+                <section class="lrn-panel" data-coach="hs-stages">
+                    <h3>${ic("list-checks")}${esc(tx(B("Stages", "Giai đoạn")))}</h3>
+                    ${stages}
+                </section>
+                <div class="lrn-ydock">
+                    <section class="lrn-panel" data-coach="hs-presets">
+                        <h3>${esc(tx(B("Which columns a new role shows", "Các cột mà một vị trí mới hiển thị")))}</h3>
+                        <div class="lrn-strip">${presets}</div>
+                        <button class="lrn-btn sm">${ic("plus")}${esc(tx(B("Add a preset", "Thêm mẫu cột")))}</button>
+                    </section>
+                    <section class="lrn-panel" data-coach="hs-switches">
+                        <h3>${esc(tx(B("Switches", "Công tắc")))}</h3>
+                        ${switches}
+                    </section>
+                    <section class="lrn-panel" data-coach="hs-who">
+                        <h3>${ic("users")}${esc(tx(B("Who does what", "Ai làm việc gì")))}</h3>
+                        <p class="lrn-note">${esc(tx(u.who))}</p>
+                    </section>
+                </div>
+            </div>`;
+    },
+
+    /* ------------------------------------------ Insights › Hiring
+       hiring_numbers.xml: the one-sentence headline, the tiles, the offer
+       funnel and who has waited longest. English in the product. */
+    hiringnumbers() {
+        const n = PRACTICE.hiringnumbers;
+        const tiles = n.tiles.map(([l, v]) => kpiTile("trending-up", "", v, l)).join("");
+        const funnel = n.funnel.map(([l, v], i) => `${i ? `<span class="lrn-rline"></span>` : ""}<span class="lrn-ystage"><b>${esc(N(v))}</b>${esc(tx(l))}</span>`).join("");
+        const sections = n.sections.map((x) => `<span class="lrn-chip">${esc(tx(x))}</span>`).join("");
+        const waiting = n.waiting.map(([who, stage, days]) => `<div class="lrn-kv2"><span>${esc(who)}${DOT}${esc(tx(stage))}</span><b>${esc(tx(days))}</b></div>`).join("");
+        return `
+            <div class="lrn-zhead" data-coach="hn-head"><p class="lrn-note">${esc(tx(n.lede))}</p><span class="lrn-push"></span>
+                <button class="lrn-btn sm ghost">${ic("download")}${esc(tx(EN("Download everything")))}</button></div>
+            <div class="lrn-strip" data-coach="hn-filters"><span class="lrn-chip">${esc(tx(EN("Every department")))}</span>
+                <span class="lrn-chip">${esc(tx(EN("Every country")))}</span><span class="lrn-chip">${esc(tx(EN("Every recruiter")))}</span></div>
+            <div class="lrn-ylocked" data-coach="hn-headline">${ic("sparkles")}<span>${esc(tx(n.headline))}</span></div>
+            <div class="lrn-grid g3">${tiles}</div>
+            <div class="lrn-panel" data-coach="rep-hn-funnel">
+                <h3>${ic("trending-up")}${esc(tx(n.sections[0]))}</h3>
+                <div class="lrn-ystages">${funnel}</div>
+                <div class="lrn-strip">${sections}</div>
+            </div>
+            <div class="lrn-panel" data-coach="rep-hn-waiting">
+                <h3>${ic("clock")}${esc(tx(n.sections[4]))}</h3>
+                ${waiting}
             </div>`;
     },
 
@@ -2558,7 +2718,11 @@ export const SCREENS = {
     /* --------------------------------------------- Lifecycle › Probation */
     probation() {
         const p = PRACTICE.probation;
-        const cards = p.rows.map((r) => `<div class="lrn-yrole"><b>${esc(r.name)}</b><span class="lrn-sub2">${esc(tx(r.sub))}</span></div>`).join("");
+        /* LEARN REFRESH 2: a card's rail shows the same five stops as the
+           numbered steps (pb_probation 446560e70), so the two never disagree. */
+        const stops = [B("Peers", "Đồng nghiệp"), B("Answers", "Phản hồi"), B("Meeting", "Trao đổi"), B("Sign-off", "Phê duyệt"), B("Outcome", "Kết quả")];
+        const cards = p.rows.map((r) => `<div class="lrn-yrole"><b>${esc(r.name)}</b><span class="lrn-sub2">${esc(tx(r.sub))}</span>
+            <span class="lrn-strip">${stops.map((st, i) => `<span class="lrn-chip ${i < r.step ? "ok" : i === r.step ? "b" : ""}">${esc(tx(st))}</span>`).join("")}</span></div>`).join("");
         const verdicts = p.verdicts.map((v, i) => `<button class="lrn-btn sm ${i === 0 ? "pri" : "ghost"}">${esc(tx(v))}</button>`).join("");
         return `
             ${quietNums(p.numbers, ATTR_PR_NUMS)}
@@ -2758,6 +2922,10 @@ const ATTR_PR_GUIDE = 'data-coach="rep-pr-guide"';
 const ATTR_PR_CAL = 'data-coach="rep-pr-cal"';
 const ATTR_PR_SEND = 'data-coach="rep-pr-send"';
 const ATTR_HI_NEXT = 'data-coach="hi-next"';
+const ATTR_HI_CARD = 'data-coach="hi-card"';
+const ATTR_HI_REQ = 'data-coach="hi-reqchip"';
+const ATTR_HB_CARD = 'data-coach="hb-card"';
+const ATTR_HB_NUMS = 'data-coach="rep-hb-numbers"';
 const ATTR_HI_NUMS = 'data-coach="hi-numbers"';
 const ATTR_NJ_NUMS = 'data-coach="nj-numbers"';
 const ATTR_PR_NUMS = 'data-coach="pr-numbers"';
