@@ -73,13 +73,13 @@
                 <t t-out="ic('users',15)"/> Covers
               </button>
 </div></details>
-              <button t-if="state.canSetup" class="pbim-btn ghost" t-on-click="openSetup">
+              <button t-if="state.canSetup" class="pbim-btn ghost" data-coach="hi-setup" t-on-click="openSetup">
                 <t t-out="ic('sliders',15)"/> Set up hiring
               </button>
               <!-- RECRUIT P3: a role is opened directly; the request is asked
                    of the manager. A department head without the hiring
                    team's tier still raises the full request themselves. -->
-              <button t-if="state.canRecruit" class="pbim-btn ghost" t-on-click="() =&gt; this.startAsk()">
+              <button t-if="state.canRecruit" class="pbim-btn ghost" data-coach="hi-ask" t-on-click="() =&gt; this.startAsk()">
                 <t t-out="ic('send',15)"/> Ask a manager for a request
               </button>
               <button t-if="state.canRecruit" class="pbim-btn primary" data-coach="hi-raise" t-on-click="() =&gt; this.startOpenRole()">
@@ -261,7 +261,7 @@
 
           <!-- ========================= the rows ========================= -->
           <div t-else="" class="pbhr-grid" data-coach="hi-row">
-            <div t-foreach="filtered" t-as="row" t-key="row.id" class="pbim-panel pbhr-card" t-att-class="{ 'is-mine': row.waiting_mine,                                 'is-over': row.budget_status === 'over',                                 'is-open': row.state === 'open' }" t-on-click="() =&gt; this.openDrawer(row.id)">
+            <div t-foreach="filtered" t-as="row" t-key="row.id" class="pbim-panel pbhr-card" data-coach="hi-card" t-att-class="{ 'is-mine': row.waiting_mine,                                 'is-over': row.budget_status === 'over',                                 'is-open': row.state === 'open' }" t-on-click="() =&gt; this.openDrawer(row.id)">
 
               <div class="pbhr-card-top">
                 <div class="pbhr-card-id">
@@ -288,7 +288,7 @@
               <div class="pbhr-chips">
                 <span class="pbim-badge pbhr-state" t-att-class="'pbhr-state--' + row.state" t-esc="row.state_label"/>
                 <!-- RECRUIT P3: the request, as its own chip -->
-                <span class="pbim-badge pbhr-reqchip" t-att-class="'is-' + (row.request_tone or '')" t-att-title="row.offer_block_reason or ''">
+                <span class="pbim-badge pbhr-reqchip" data-coach="hi-reqchip" t-att-class="'is-' + (row.request_tone or '')" t-att-title="row.offer_block_reason or ''">
                   <t t-esc="row.request_label"/><t t-if="row.reminded_ago"> · <t t-esc="row.reminded_ago"/></t>
                 </span>
                 <span t-if="row.is_confidential" class="pbim-badge pbhr-reqchip is-rose"><t t-out="ic('eyeOff',12)"/> Confidential</span>

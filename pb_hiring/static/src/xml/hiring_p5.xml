@@ -10,7 +10,7 @@
 
   <!-- The role header's door to the grid -->
   <t t-name="pb_hiring.P5CompareButton">
-    <button t-if="state.canRecruit and state.drawer.finalists_count" type="button" class="pbim-btn ghost pbhr-p5-cmp-btn" t-on-click="openCompare" title="Every scorecard of every finalist, side by side">
+    <button t-if="state.canRecruit and state.drawer.finalists_count" type="button" class="pbim-btn ghost pbhr-p5-cmp-btn" data-coach="hb-compare" t-on-click="openCompare" title="Every scorecard of every finalist, side by side">
       <t t-out="ic('columns',14)"/> Compare finalists <span class="pbhr-tab-n" t-esc="state.drawer.finalists_count"/>
     </button>
   </t>

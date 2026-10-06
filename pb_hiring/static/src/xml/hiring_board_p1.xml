@@ -12,7 +12,7 @@
     <div class="pbhr-role">
 
       <!-- ============ the header: the four questions a stand-in asks ============ -->
-      <div class="pbhr-role-top">
+      <div class="pbhr-role-top" data-coach="hb-head">
         <button type="button" class="pbhr-back" t-on-click="backHome" title="Back to every role">
           <t t-out="ic('chevronLeft',15)"/> All roles
         </button>
@@ -47,14 +47,14 @@
             <t t-out="ic('userPlus',14)"/> Add a candidate
           </button>
           <!-- RECRUIT P7: one door to every channel (replaces the bare Publish) -->
-          <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state)" type="button" class="pbim-btn" t-att-class="state.drawer.p7_live ? 'ghost' : 'primary'" t-on-click="() =&gt; this.p7OpenSheet()" title="Every channel this role can go to, each with its own link">
+          <button t-if="state.canRecruit and ['setup', 'open'].includes(state.drawer.state)" type="button" class="pbim-btn" t-att-class="state.drawer.p7_live ? 'ghost' : 'primary'" data-coach="hb-publish" t-on-click="() =&gt; this.p7OpenSheet()" title="Every channel this role can go to, each with its own link">
             <t t-out="ic('share2',14)"/> Publish to…
           </button>
         </div>
       </div>
 
       <!-- ============ the four tabs ============ -->
-      <div class="pbhr-tabs pbhr-role-tabs" role="tablist">
+      <div class="pbhr-tabs pbhr-role-tabs" data-coach="hb-tabs" role="tablist">
         <button t-foreach="[['board', 'Board', 'layoutList'], ['interviews', 'Interviews', 'calendar'], ['details', 'Details', 'fileText'], ['activity', 'Activity', 'history']]" t-as="rt" t-key="rt[0]" class="pbhr-tab" role="tab" t-att-class="{ on: state.roleTab === rt[0] }" t-att-aria-selected="state.roleTab === rt[0] ? 'true' : 'false'" t-on-click="() =&gt; this.setRoleTab(rt[0])">
           <t t-out="ic(rt[2],15)"/> <t t-esc="tabLabel(rt[0])"/>
           <span t-if="rt[0] === 'board' and state.drawer" class="pbhr-tab-n" t-esc="cards.length"/>
@@ -104,7 +104,7 @@
         </div>
 
         <!-- the columns -->
-        <div class="pbhr-board" t-ref="board" t-att-class="{ 'is-dragging': state.dragging, 'is-readonly': !canMove, 'is-dim': state.cand }">
+        <div class="pbhr-board" data-coach="hb-board" t-ref="board" t-att-class="{ 'is-dragging': state.dragging, 'is-readonly': !canMove, 'is-dim': state.cand }">
           <t t-if="state.roleLoading or !state.drawer">
             <div t-foreach="[1,2,3,4,5]" t-as="sk" t-key="sk" class="pbhr-col is-skel">
               <div class="pbhr-col-h"><span class="pbhr-skel-line"/></div>
@@ -137,7 +137,7 @@
             </button>
 
             <!-- the Closed rail -->
-            <div class="pbhr-col pbhr-rail" t-att-class="{ 'is-drop': canMove }" data-key="__closed">
+            <div class="pbhr-col pbhr-rail" data-coach="hb-closed" t-att-class="{ 'is-drop': canMove }" data-key="__closed">
               <div class="pbhr-col-h">
                 <span class="pbhr-col-name">Closed</span>
                 <span class="pbhr-col-n" t-key="'rail-' + railTotal"><t t-esc="railTotal"/></span>
@@ -218,7 +218,7 @@
        and three quick actions on hover.
        ==================================================================== -->
   <t t-name="pb_hiring.KCard">
-    <div class="pbhr-kc" t-att-class="{ 'is-movable': canMove and cd.family !== 'done', 'is-sel': isSel(cd.id), 'is-focus': state.focusId === cd.id, 'is-open': state.cand and state.cand.id === cd.id, 'is-landed': state.landed.includes(cd.id), 'is-out': !cd.active }" t-att-data-id="cd.id" tabindex="-1" t-att-title="canMove ? '' : lockedTitle" t-on-click="(ev) =&gt; this.onCardClick(ev, cd)">
+    <div class="pbhr-kc" data-coach="hb-card" t-att-class="{ 'is-movable': canMove and cd.family !== 'done', 'is-sel': isSel(cd.id), 'is-focus': state.focusId === cd.id, 'is-open': state.cand and state.cand.id === cd.id, 'is-landed': state.landed.includes(cd.id), 'is-out': !cd.active }" t-att-data-id="cd.id" tabindex="-1" t-att-title="canMove ? '' : lockedTitle" t-on-click="(ev) =&gt; this.onCardClick(ev, cd)">
       <span class="pbhr-kc-edge" t-att-class="cd.edge ? 'is-' + cd.edge : ''"/>
       <button t-if="canMove" type="button" class="pbhr-kc-check" t-att-class="{ on: isSel(cd.id) }" t-att-aria-pressed="isSel(cd.id) ? 'true' : 'false'" title="Tick to move several at once (shift-click for a range)" t-on-click.stop="(ev) =&gt; this.toggleSel(cd, ev)">
         <t t-out="ic('check',11)"/>
@@ -261,7 +261,7 @@
 
     <!-- ============ THE CANDIDATE DRAWER ============ -->
     <div t-if="state.cand or state.candBusy" class="pbhr-cscrim" t-on-click="closeCand">
-      <aside class="pbhr-cdrawer" role="dialog" aria-modal="true" t-att-aria-label="state.cand ? state.cand.name : 'Candidate'" t-on-click.stop="() =&gt; {}">
+      <aside class="pbhr-cdrawer" data-coach="hb-drawer" role="dialog" aria-modal="true" t-att-aria-label="state.cand ? state.cand.name : 'Candidate'" t-on-click.stop="() =&gt; {}">
         <t t-if="!state.cand">
           <div class="pbhr-cd-skel"><span class="pbhr-skel-line"/><span class="pbhr-skel-line"/><span class="pbhr-skel-line short"/></div>
         </t>
@@ -300,7 +300,7 @@
           <t t-call="pb_hiring.P4DrawerLocks"/>
 
           <!-- the Next box: computed from the record on the server -->
-          <div class="pbhr-cd-next">
+          <div class="pbhr-cd-next" data-coach="hb-cnext">
             <div class="l">Next</div>
             <p t-esc="cand.next.text"/>
             <div t-if="cand.next.verb" class="pbhr-cd-next-acts">
@@ -384,7 +384,7 @@
           <t t-call="pb_hiring.P4DrawerRetention"/>
 
           <!-- the actions -->
-          <div class="pbhr-cd-acts">
+          <div class="pbhr-cd-acts" data-coach="hb-cacts">
             <t t-if="cand.can_move and cand.family === 'open'">
               <button type="button" class="pbim-btn primary" t-on-click="() =&gt; this.advance(candCard())"><t t-out="ic('arrowRight',14)"/> Advance</button>
             </t>

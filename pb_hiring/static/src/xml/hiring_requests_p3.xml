@@ -204,7 +204,7 @@
 
     <!-- ASK A MANAGER -->
     <div t-if="state.asking" class="pbim-modal-scrim pbhr-scrim" t-on-click="() =&gt; { state.asking = null; }">
-      <div class="pbim-modal pbhr-dialog pbhr-p3-sheet" role="dialog" aria-modal="true" aria-label="Ask a manager for a hiring request" t-on-click.stop="() =&gt; {}" t-on-keydown="(ev) =&gt; this.onSheetKey(ev, 'asking')">
+      <div class="pbim-modal pbhr-dialog pbhr-p3-sheet" data-coach="hi-askform" role="dialog" aria-modal="true" aria-label="Ask a manager for a hiring request" t-on-click.stop="() =&gt; {}" t-on-keydown="(ev) =&gt; this.onSheetKey(ev, 'asking')">
         <div class="pbim-modal__head">
           <div>
             <span class="pbhr-eyebrow">ASK A MANAGER</span>

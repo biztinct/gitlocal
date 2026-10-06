@@ -33,7 +33,7 @@
 
   <!-- ============ the drawer: who sees this person (hiring team) ============ -->
   <t t-name="pb_hiring.P4DrawerShare">
-    <div t-if="cand.share" class="pbhr-p4-share" t-att-class="{ 'is-flash': isFlash(cand.id), 'is-private': cand.share.private }">
+    <div t-if="cand.share" class="pbhr-p4-share" data-coach="hb-share" t-att-class="{ 'is-flash': isFlash(cand.id), 'is-private': cand.share.private }">
       <div class="pbhr-p4-share-h">
         <span class="pbhr-p4-ic"><t t-out="ic(cand.share.private ? 'lock' : 'share2',15)"/></span>
         <div class="pbhr-p4-share-tx">

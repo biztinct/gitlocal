@@ -34,6 +34,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { useSortable } from "@web/core/utils/sortable_owl";
+import { setPlaceSub } from "@pb_hub/js/hub_place";
 
 /** The four screening answers, in the order a screener weighs them. */
 /** The four steps a role moves through, in order. A role is at exactly one
@@ -278,7 +279,7 @@ export class PbHiringBoard extends Component {
         // CAPTURE: the web client's own hotkey handling sees Escape first
         // otherwise, and the drawer never heard it.
         useExternalListener(window, "keydown", (ev) => this.onKey(ev), { capture: true });
-        onWillUnmount(() => { clearTimeout(this._toastTimer); clearTimeout(this._landTimer); });
+        onWillUnmount(() => { clearTimeout(this._toastTimer); clearTimeout(this._landTimer); if (this.props.embedded) { setPlaceSub("pb_lifecycle_hub", "hiring", ""); } });
 
         onWillStart(async () => {
             await this.load();
@@ -629,6 +630,7 @@ export class PbHiringBoard extends Component {
             view: "role", roleTab: tab, cand: null, sel: [], focusId: null,
             boardFilter: "", colLimit: {}, colOpen: {}, moveMenu: null, outcome: null,
         });
+        this._publishView();
         if (changed) { this.state.drawer = null; this.state.roleLoading = true; }
         try {
             this.state.drawer = await this.orm.call("pb.hiring", "get_requisition", [id]);
@@ -660,6 +662,19 @@ export class PbHiringBoard extends Component {
             lineForm: null, noting: null, overriding: null, signing: null,
             letter: null, boardFilter: "",
         });
+        this._publishView();
+    }
+
+    /**
+     * Inside the Lifecycle hub, say whether the list of roles or one role's
+     * page is showing, so the learning helper can tell the two apart (the
+     * precedent is People › Pay's `_publishTab`). On its own the screen is
+     * not a hub lens and publishes nothing.
+     */
+    _publishView() {
+        if (this.props.embedded) {
+            setPlaceSub("pb_lifecycle_hub", "hiring", this.state.view === "role" ? "role" : "");
+        }
     }
 
     closeDrawer() { this.backHome(); }

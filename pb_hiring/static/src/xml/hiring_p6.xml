@@ -12,7 +12,7 @@
   <!-- ============ THE DRAWER: countdown, Before they join, documents ============ -->
   <t t-name="pb_hiring.P6DrawerJoining">
     <t t-set="jn" t-value="cand.joining"/>
-    <div t-if="jn" class="pbhr-cd-sec pbhr-p6" t-att-class="'is-' + jn.state">
+    <div t-if="jn" class="pbhr-cd-sec pbhr-p6" data-coach="hb-joining" t-att-class="'is-' + jn.state">
 
       <!-- the hero: the countdown ring that fills as the list ticks -->
       <div class="pbhr-p6-hero" t-att-class="p6HeroTone(jn)">

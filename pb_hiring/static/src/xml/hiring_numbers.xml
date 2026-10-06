@@ -38,7 +38,7 @@
         <t t-else="">
 
           <!-- ===================== header ===================== -->
-          <div class="pbhn-head">
+          <div class="pbhn-head" data-coach="hn-head">
             <div class="pbhn-head-id" t-if="!props.embedded">
               <h1 class="pbim-h1">Hiring</h1>
               <p class="pbim-sub">How long it takes, where it gets stuck, and
@@ -79,7 +79,7 @@
 
           <!-- ============ RECRUIT P6: department, country, recruiter ============
                One row above everything, and every figure narrows with it. -->
-          <div class="pbhn-filters" role="group" aria-label="Narrow the numbers">
+          <div class="pbhn-filters" data-coach="hn-filters" role="group" aria-label="Narrow the numbers">
             <span class="pbhn-filters-l"><t t-out="ic('filter',14)"/> Narrow to</span>
             <select class="pbhn-in" aria-label="Department" t-att-class="{ on: state.dept }"
                     t-on-change="(ev) => this.setFilter('dept', ev.target.value)">
@@ -126,7 +126,7 @@
           <t t-else="">
 
             <!-- ==================== the sentence ==================== -->
-            <div class="pbim-panel pbhn-headline">
+            <div class="pbim-panel pbhn-headline" data-coach="hn-headline">
               <div class="pbhn-headline-ic"><t t-out="ic('sparkles',20)"/></div>
               <p t-esc="state.headline"/>
             </div>

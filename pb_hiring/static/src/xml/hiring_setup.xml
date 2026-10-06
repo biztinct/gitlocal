@@ -32,7 +32,7 @@
         </div>
 
         <!-- ============ the six cards ============ -->
-        <div class="pbhr-su-cards">
+        <div class="pbhr-su-cards" data-coach="hs-cards">
           <button t-foreach="state.data.cards" t-as="cd" t-key="cd.key" type="button" class="pbim-panel pbhr-su-card" t-att-class="{ 'is-live': cd.live, 'is-off': !cd.action and !cd.live and !cd.inline }" t-on-click="() =&gt; this.openCard(cd)">
             <span class="pbhr-su-card-ic"><t t-out="ic(cd.icon,18)"/></span>
             <span class="pbhr-su-card-t" t-esc="cd.title"/>
@@ -46,7 +46,7 @@
         </div>
 
         <!-- ============ STAGES ============ -->
-        <section class="pbim-panel pbhr-su-stages">
+        <section class="pbim-panel pbhr-su-stages" data-coach="hs-stages">
           <div class="pbhr-su-h">
             <h2>Stages</h2>
             <span class="pbhr-pill" t-esc="rolesCountLabel"/>
@@ -70,7 +70,7 @@
         </section>
 
         <!-- ============ PRESETS ============ -->
-        <section class="pbim-panel pbhr-su-presets">
+        <section class="pbim-panel pbhr-su-presets" data-coach="hs-presets">
           <div class="pbhr-su-h">
             <h2>Which columns a new role shows</h2>
             <span class="pbhr-foot-gap"/>
@@ -137,7 +137,7 @@
         <t t-call="pb_hiring.P8SetupAutomations"/>
 
         <!-- ============ SWITCHES ============ -->
-        <section class="pbim-panel pbhr-su-switches">
+        <section class="pbim-panel pbhr-su-switches" data-coach="hs-switches">
           <div class="pbhr-su-h"><h2>Switches</h2></div>
           <label class="pbhr-su-switch">
             <input type="checkbox" t-att-checked="state.data.switches.line_managers_move" t-att-disabled="!state.data.can_edit" t-on-change="() =&gt; this.toggleSwitch('line_managers_move')"/>
@@ -154,7 +154,7 @@
         </section>
 
         <!-- ============ RECRUIT P3: WHO DOES WHAT ============ -->
-        <section class="pbim-panel pbhr-su-who">
+        <section class="pbim-panel pbhr-su-who" data-coach="hs-who">
           <div class="pbhr-su-h">
             <h2>Who does what</h2>
             <p>Sign-offs record and tell; nothing waits for them. The one thing that waits is sending an offer, until the role's request is agreed.</p>
