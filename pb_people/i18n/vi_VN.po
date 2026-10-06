@@ -198,7 +198,7 @@ msgstr "Bản ghi"
 #. odoo-javascript
 #: code:addons/pb_people/static/src/xml/people.xml:0
 msgid "Running contracts"
-msgstr "Chạy hợp đồng"
+msgstr "Hợp đồng đang hiệu lực"
 
 #. module: pb_people
 #. odoo-javascript
