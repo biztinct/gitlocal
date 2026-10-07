@@ -17,6 +17,11 @@ FREE_EMAIL_DOMAINS = {
 }
 EMAIL_RE = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
 
+# Who hears about every registered lead (demo signup + private-demo enquiry).
+# Overridable without a deploy via the ``pb_demo_portal.lead_notify_to`` system
+# parameter (comma-separated). Owner ruling 2026-10-06: ash + hello + lehoa.
+DEFAULT_LEAD_NOTIFY_TO = 'ash@biztinct.com,hello@payobook.com,lehoa@payobook.com'
+
 INDUSTRIES = ['Retail', 'Manufacturing', 'Logistics', 'Technology', 'Construction',
               'Financial Services', 'Healthcare', 'Hospitality', 'Education', 'Other']
 COMPANY_SIZES = ['1–50', '51–200', '201–500', '501–1,000', '1,001–5,000', '5,000+']
@@ -71,23 +76,38 @@ class DemoPortal(http.Controller):
                 "Something went wrong creating your demo account. Please try again."))
         # Drop a CRM lead into the pipeline so Sales can track / follow up every
         # signup. Non-fatal: never blocks the demo account if crm is absent.
-        self._create_demo_lead(values, email, user.partner_id)
+        lead = self._create_demo_lead(values, email, user.partner_id)
+        # Tell the team (ash + hello + lehoa) — the CRM itself sends nothing on
+        # a lead created by the public user, so this is the only notification.
+        try:
+            self._notify_team_about_lead(
+                kind='signup', values=values, email=email, lead=lead,
+                subject=u"New demo signup — %s (%s)" % (values['name'], values['company']),
+                heading=u"New demo signup",
+                extra_rows=[('Industry', values.get('industry')),
+                            ('Company size', values.get('company_size'))])
+        except Exception as e:  # pragma: no cover - notification is best-effort
+            _logger.warning("Demo signup team notification not sent for %s: %s", email, e)
         return request.render('pb_demo_portal.register_done', {'email': email, 'already': False})
 
     def _create_demo_lead(self, values, email, partner=None):
         """Create a ``crm.lead`` for a self-service demo signup so it surfaces in
         the CRM pipeline for follow-up. No-op if the crm module isn't installed,
         and never raises into the signup flow (lead capture must not break the
-        demo account)."""
+        demo account). Returns the lead (or None)."""
         env = request.env
         if 'crm.lead' not in env:
-            return
+            return None
         try:
             country_id = int(values['country_id']) if values.get('country_id') else False
             source = env['utm.source'].sudo().search(
                 [('name', '=', 'Demo Signup')], limit=1)
             if not source:
                 source = env['utm.source'].sudo().create({'name': 'Demo Signup'})
+            # The request runs as the website Public user; without an explicit
+            # salesperson the lead would be assigned to "Public user". Hand it to
+            # the default sales team's leader instead (unassigned if none).
+            team = env['crm.team'].sudo()._get_default_team_id()
             lead_vals = {
                 'name': u"Demo signup — %s" % (values.get('company') or values.get('name')),
                 'type': 'lead',
@@ -97,6 +117,8 @@ class DemoPortal(http.Controller):
                 'phone': values.get('mobile'),
                 'country_id': country_id,
                 'source_id': source.id,
+                'user_id': team.user_id.id if team and team.user_id else False,
+                'team_id': team.id if team else False,
                 'description': (
                     u"Self-service demo signup via payobook.com/demo/register\n"
                     u"Industry: %s\nCompany size: %s"
@@ -104,9 +126,109 @@ class DemoPortal(http.Controller):
             }
             if partner:
                 lead_vals['partner_id'] = partner.id
-            env['crm.lead'].sudo().create(lead_vals)
+            # No "You have been assigned" chatter email: this database has no
+            # alias domain / default sender, so that mail would only fail
+            # (mail_from_missing) — the team notification below covers it.
+            return env['crm.lead'].sudo().with_context(
+                mail_auto_subscribe_no_notify=True).create(lead_vals)
         except Exception as e:  # pragma: no cover - lead capture is best-effort
             _logger.warning("Demo signup lead not created for %s: %s", email, e)
+            return None
+
+    # ------------------------------------------------------------------ #
+    #  Team notification — one email per registered lead, to everyone in  #
+    #  ``pb_demo_portal.lead_notify_to`` (default: ash + hello + lehoa).   #
+    # ------------------------------------------------------------------ #
+    def _lead_notify_recipients(self):
+        """Comma-separated recipient list → ordered, de-duplicated, valid emails.
+        Falls back to the notify company's email when the parameter is blank."""
+        raw = request.env['ir.config_parameter'].sudo().get_param(
+            'pb_demo_portal.lead_notify_to', DEFAULT_LEAD_NOTIFY_TO) or ''
+        seen, out = set(), []
+        for part in re.split(r'[,;\s]+', raw):
+            addr = part.strip().lower()
+            if addr and EMAIL_RE.match(addr) and addr not in seen:
+                seen.add(addr)
+                out.append(addr)
+        if not out:
+            company = self._notify_company()
+            fallback = company.email or company.partner_id.email_normalized
+            if fallback:
+                out.append(fallback)
+        return out
+
+    def _lead_notify_from(self):
+        """Sender for team notifications: the system's configured default
+        (``mail.default.from`` + catchall domain), else the notify company's
+        email, else a no-reply on the product domain."""
+        default_from = request.env['ir.mail_server'].sudo()._get_default_from_address()
+        if default_from:
+            return default_from
+        company = self._notify_company()
+        return company.email or company.partner_id.email_normalized or 'noreply@payobook.com'
+
+    @staticmethod
+    def _html_row(label, val):
+        if not val:
+            return ''
+        return (u"<tr><td style='padding:6px 14px;color:#8A87A0;font-size:13px;'>%s</td>"
+                u"<td style='padding:6px 14px;color:#1B1733;font-size:13px;font-weight:600;'>%s</td></tr>"
+                % (label, val))
+
+    def _notify_team_about_lead(self, kind, values, email, subject, heading,
+                                lead=None, extra_rows=None, message=None):
+        """Send ONE email about a registered lead to every team recipient.
+        ``kind`` is 'signup' or 'private' (shown as the submission source)."""
+        env = request.env
+        recipients = self._lead_notify_recipients()
+        if not recipients:
+            _logger.warning(
+                "Lead received but nobody to notify — set the "
+                "pb_demo_portal.lead_notify_to system parameter. Lead: %s <%s>",
+                values.get('name'), email)
+            return False
+        country = ''
+        if values.get('country_id'):
+            try:
+                country = env['res.country'].sudo().browse(int(values['country_id'])).name or ''
+            except Exception:  # pragma: no cover - cosmetic only
+                country = ''
+        rows = (self._html_row('Name', values.get('name'))
+                + self._html_row('Company', values.get('company'))
+                + self._html_row('Work email', email)
+                + self._html_row('Phone', values.get('mobile'))
+                + self._html_row('Country', country))
+        for label, val in (extra_rows or []):
+            rows += self._html_row(label, val)
+        source_line = (u"Self-service demo signup via payobook.com/demo/register"
+                       if kind == 'signup' else u"Private-demo request via payobook.com")
+        msg_html = ''
+        if message:
+            msg_html = (u"<div style='margin-top:16px;padding:14px 16px;background:#F4F5FB;"
+                        u"border-radius:12px;color:#4B5168;font-size:14px;line-height:1.6;'>%s</div>"
+                        % message.replace('\n', '<br/>'))
+        link_html = ''
+        if lead:
+            base_url = env['ir.config_parameter'].sudo().get_param('web.base.url') or ''
+            link_html = (u"<p style='margin:16px 0 0;font-size:13px;'>"
+                         u"<a href='%s/bizapp/action-crm.crm_lead_all_leads/%s' "
+                         u"style='color:#5A4BB0;font-weight:600;'>Open this lead in the pipeline</a></p>"
+                         % (base_url, lead.id))
+        body = (
+            u"<div style='font-family:Segoe UI,Roboto,Arial,sans-serif;color:#1B1733;'>"
+            u"<h2 style='margin:0 0 4px;font-size:20px;'>%s</h2>"
+            u"<p style='margin:0 0 16px;color:#8A87A0;font-size:13px;'>%s</p>"
+            u"<table style='border-collapse:collapse;'>%s</table>%s%s</div>"
+            % (heading, source_line, rows, msg_html, link_html))
+        env['mail.mail'].sudo().create({
+            'subject': subject,
+            'email_from': self._lead_notify_from(),
+            'email_to': ', '.join(recipients),
+            'reply_to': email,
+            'body_html': body,
+            'auto_delete': True,
+        }).send()
+        return True
 
     # ------------------------------------------------------------------ #
     #  Private-demo enquiry  (WOW landing → lead email, no account made)  #
@@ -160,48 +282,16 @@ class DemoPortal(http.Controller):
 
     def _send_private_demo_emails(self, values, email):
         env = request.env
-        company = self._notify_company()
-        notify_to = company.email or company.partner_id.email_normalized
-        if not notify_to:
-            _logger.warning(
-                "Private-demo enquiry received but no company email is configured "
-                "(Settings → Companies → Email). Lead: %s <%s>", values['name'], email)
-        country = ''
-        if values.get('country_id'):
-            c = env['res.country'].sudo().browse(int(values['country_id']))
-            country = c.name or ''
         Mail = env['mail.mail'].sudo()
 
-        def _row(label, val):
-            if not val:
-                return ''
-            return (u"<tr><td style='padding:6px 14px;color:#8A87A0;font-size:13px;'>%s</td>"
-                    u"<td style='padding:6px 14px;color:#1B1733;font-size:13px;font-weight:600;'>%s</td></tr>"
-                    % (label, val))
-
-        # 1) Notify the Payobook team (the configured company inbox).
-        if notify_to:
-            rows = (_row('Name', values['name']) + _row('Company', values['company'])
-                    + _row('Work email', email) + _row('Phone', values.get('mobile'))
-                    + _row('Country', country) + _row('Company size', values.get('company_size')))
-            msg_html = ''
-            if values.get('message'):
-                msg_html = (u"<div style='margin-top:16px;padding:14px 16px;background:#F4F5FB;"
-                            u"border-radius:12px;color:#4B5168;font-size:14px;line-height:1.6;'>%s</div>"
-                            % values['message'].replace('\n', '<br/>'))
-            team_body = (
-                u"<div style='font-family:Segoe UI,Roboto,Arial,sans-serif;color:#1B1733;'>"
-                u"<h2 style='margin:0 0 4px;font-size:20px;'>New private-demo request</h2>"
-                u"<p style='margin:0 0 16px;color:#8A87A0;font-size:13px;'>Submitted via payobook.com</p>"
-                u"<table style='border-collapse:collapse;'>%s</table>%s</div>" % (rows, msg_html))
-            Mail.create({
-                'subject': u"Private demo request — %s (%s)" % (values['name'], values['company']),
-                'email_from': company.email or notify_to,
-                'email_to': notify_to,
-                'reply_to': email,
-                'body_html': team_body,
-                'auto_delete': True,
-            }).send()
+        # 1) Notify the Payobook team — every registered lead goes to the same
+        #    recipient list (ash + hello + lehoa by default).
+        self._notify_team_about_lead(
+            kind='private', values=values, email=email,
+            subject=u"Private demo request — %s (%s)" % (values['name'], values['company']),
+            heading=u"New private-demo request",
+            extra_rows=[('Company size', values.get('company_size'))],
+            message=values.get('message'))
 
         # 2) Branded confirmation back to the prospect.
         confirm_body = (
@@ -226,7 +316,7 @@ class DemoPortal(http.Controller):
             % (values['name'], values['company']))
         Mail.create({
             'subject': u"We've received your Payobook demo request",
-            'email_from': company.email or (notify_to or 'noreply@payobook.com'),
+            'email_from': self._lead_notify_from(),
             'email_to': email,
             'body_html': confirm_body,
             'auto_delete': True,
