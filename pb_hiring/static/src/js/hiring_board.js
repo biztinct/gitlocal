@@ -292,6 +292,9 @@ export class PbHiringBoard extends Component {
     }
 
     ic(n, s = 16) { return ic(n, s); }
+    /** A literal written inside a template expression: OWL only translates
+     *  text nodes and plain attributes, so the template passes it here. */
+    tr(s, ...a) { return _t(s, ...a); }
 
     screenIcon(tag) { return SCREEN_ICON[tag] || "circle"; }
 
@@ -729,10 +732,10 @@ export class PbHiringBoard extends Component {
     validateRequestStep() {
         const f = this.state.raising;
         let warning = "";
-        if (!f.title.trim() || !f.department_id || !f.country_id) warning = "Add the role title, department and country.";
-        else if (f.step >= 1 && (!f.reporting_manager_id || !f.role_level.trim() || (!f.requirements.trim() && !f.jd_file))) warning = "Add the reporting manager, role level and a role description or JD attachment.";
-        else if (f.step >= 2 && f.interviews.some(r => !r.owner_id || !r.focus.trim())) warning = "Choose an interviewer and focus for each discussion.";
-        else if (f.step >= 3 && (!f.target_close_date || !f.currency_id || Number(f.budget_cost) <= 0)) warning = "Add a target closing date and a positive annual budget with its currency.";
+        if (!f.title.trim() || !f.department_id || !f.country_id) warning = _t("Add the role title, department and country.");
+        else if (f.step >= 1 && (!f.reporting_manager_id || !f.role_level.trim() || (!f.requirements.trim() && !f.jd_file))) warning = _t("Add the reporting manager, role level and a role description or JD attachment.");
+        else if (f.step >= 2 && f.interviews.some(r => !r.owner_id || !r.focus.trim())) warning = _t("Choose an interviewer and focus for each discussion.");
+        else if (f.step >= 3 && (!f.target_close_date || !f.currency_id || Number(f.budget_cost) <= 0)) warning = _t("Add a target closing date and a positive annual budget with its currency.");
         if (warning) { this.notif.add(warning, {type: "warning"}); return false; }
         return true;
     }
@@ -741,7 +744,7 @@ export class PbHiringBoard extends Component {
         const file = event.target.files[0];
         if (!file) return;
         if (file.size > 10 * 1024 * 1024 || !/\.(pdf|docx?)$/i.test(file.name)) {
-            this.notif.add("Use a PDF or Word document smaller than 10 MB.", {type: "warning"}); event.target.value = ""; return;
+            this.notif.add(_t("Use a PDF or Word document smaller than 10 MB."), {type: "warning"}); event.target.value = ""; return;
         }
         const data = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result.split(",")[1]); reader.onerror = reject; reader.readAsDataURL(file); });
         this.state.raising[kind + "_file"] = data;

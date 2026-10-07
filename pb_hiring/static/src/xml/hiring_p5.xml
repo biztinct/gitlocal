@@ -187,7 +187,7 @@
             <small t-if="pt.help" class="pbhr-p5-pq-h" t-esc="pt.help"/>
             <textarea t-if="pt.kind === 'text'" class="pbhr-in" rows="2" t-model="state.proxy.answers[pt.id]"/>
             <div t-elif="pt.kind === 'rating'" class="pbhr-p5-starpick" role="radiogroup" t-att-aria-label="pt.prompt">
-              <button t-foreach="[1,2,3,4,5]" t-as="nn" t-key="nn" type="button" t-att-class="{ on: num(state.proxy.answers[pt.id]) &gt;= nn }" t-att-aria-label="nn + ' out of 5'" t-on-click="() =&gt; this.setProxy(pt.id, nn)"><t t-out="ic('star',22)"/></button>
+              <button t-foreach="[1,2,3,4,5]" t-as="nn" t-key="nn" type="button" t-att-class="{ on: num(state.proxy.answers[pt.id]) &gt;= nn }" t-att-aria-label="tr('%s out of 5', nn)" t-on-click="() =&gt; this.setProxy(pt.id, nn)"><t t-out="ic('star',22)"/></button>
             </div>
             <div t-elif="pt.kind === 'line'" class="pbhr-p5-chips">
               <button t-foreach="[1,2,3,4,5]" t-as="nn" t-key="nn" type="button" class="pbhr-p5-chip is-num" t-att-class="{ on: num(state.proxy.answers[pt.id]) === nn }" t-on-click="() =&gt; this.setProxy(pt.id, nn)" t-esc="nn"/>
@@ -288,7 +288,7 @@
                         <span t-elif="op.state === 'pending'" class="pbhr-p5-wait-tag"><t t-if="op.late">late</t><t t-else="">not yet</t></span>
                       </div>
                       <span t-if="op.score" class="pbhr-p5-stars"><t t-foreach="stars(op.score)" t-as="on" t-key="on_index"><span t-att-class="{ on: on }"><t t-out="ic('star',11)"/></span></t> <b t-esc="op.score"/></span>
-                      <p t-if="op.notes" class="pbhr-p5-note" t-att-class="{ 'is-open': isNoteOpen(op.id) }" t-on-click="() =&gt; this.toggleNote(op.id)" t-att-title="isNoteOpen(op.id) ? 'Click to fold' : 'Click to read it all'" t-esc="op.notes"/>
+                      <p t-if="op.notes" class="pbhr-p5-note" t-att-class="{ 'is-open': isNoteOpen(op.id) }" t-on-click="() =&gt; this.toggleNote(op.id)" t-att-title="isNoteOpen(op.id) ? tr('Click to fold') : tr('Click to read it all')" t-esc="op.notes"/>
                       <small t-if="op.entered" class="pbhr-p5-entered"><t t-out="ic('pencil',10)"/> <t t-esc="op.entered"/></small>
                       <button t-if="op.state === 'pending' and state.canRecruit" type="button" class="pbhr-linkish" t-on-click="() =&gt; this.openProxy(op.id)">Enter it for them</button>
                     </div>
@@ -426,10 +426,10 @@
       <div class="pbhr-su-who-ctl">
         <div t-foreach="links" t-as="lk" t-key="lk.id" class="pbhr-p5-link-row">
           <span class="pbhr-p5-link-who"><b t-esc="lk.name"/><small t-if="lk.me">you</small></span>
-          <input class="pbhr-in" type="url" placeholder="https://calendly.com/…" t-att-value="linkValue(lk)" t-att-disabled="!canEditLink(lk)" t-att-aria-label="'Scheduling link for ' + lk.name" t-on-input="(ev) =&gt; this.onLinkInput(lk, ev)" t-on-change="() =&gt; this.saveLink(lk)"/>
+          <input class="pbhr-in" type="url" placeholder="https://calendly.com/…" t-att-value="linkValue(lk)" t-att-disabled="!canEditLink(lk)" t-att-aria-label="tr('Scheduling link for %s', lk.name)" t-on-input="(ev) =&gt; this.onLinkInput(lk, ev)" t-on-change="() =&gt; this.saveLink(lk)"/>
           <span t-if="lk.google" class="pbhr-p5-g is-on" title="Google Calendar connected"><t t-out="ic('checkCircle',12)"/> Google</span>
           <button t-elif="lk.me and google.ready" type="button" class="pbim-btn ghost pbhr-p5-g" t-on-click="connectGoogle"><t t-out="ic('calendar',12)"/> Connect Google Calendar</button>
-          <span t-else="" class="pbhr-p5-g" t-att-title="lk.me ? 'Google Calendar is not set up for this company yet' : 'Only ' + lk.name + ' can connect their own Google Calendar'">Google not connected</span>
+          <span t-else="" class="pbhr-p5-g" t-att-title="lk.me ? tr('Google Calendar is not set up for this company yet') : tr('Only %s can connect their own Google Calendar', lk.name)">Google not connected</span>
         </div>
       </div>
     </div>

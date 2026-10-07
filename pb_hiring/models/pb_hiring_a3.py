@@ -145,11 +145,11 @@ class PbHiringA3(models.AbstractModel):
         board['covering'] = self._safe(lambda: self._covering(), default=[])
         board['kpis'].update(self._safe(
             lambda: self._offer_kpis(board['offer_rows']), default={}))
-        board['offer_states'] = [{'key': k, 'label': v}
+        board['offer_states'] = [{'key': k, 'label': _(v)}
                                  for k, v in OFFER_STATES]
-        board['bgv_results'] = [{'key': k, 'label': v} for k, v in BGV_RESULTS]
-        board['offer_kinds'] = [{'key': k, 'label': v} for k, v in OFFER_KINDS]
-        board['offer_periods'] = [{'key': k, 'label': v}
+        board['bgv_results'] = [{'key': k, 'label': _(v)} for k, v in BGV_RESULTS]
+        board['offer_kinds'] = [{'key': k, 'label': _(v)} for k, v in OFFER_KINDS]
+        board['offer_periods'] = [{'key': k, 'label': _(v)}
                                   for k, v in OFFER_PERIODS]
         return board
 

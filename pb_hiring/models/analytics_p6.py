@@ -203,7 +203,7 @@ class PbHiringAnalyticsP6(models.AbstractModel):
             if c['dropped']:
                 row = drop_rows.setdefault(o.drop_reason or 'other', {
                     'key': o.drop_reason or 'other', 'kind': 'dropped',
-                    'reason': dict(DROP_REASONS).get(o.drop_reason or 'other', ''),
+                    'reason': _(dict(DROP_REASONS).get(o.drop_reason or 'other', '')),
                     'n': 0, 'examples': []})
                 row['n'] += 1
                 if o.drop_note and len(row['examples']) < 3:
@@ -556,7 +556,8 @@ class PbHiringAnalyticsP6(models.AbstractModel):
         roles = self.env['pb.hiring.requisition'].sudo().search(
             [('company_id', 'in', co_ids)] + self._filter_domain(f),
             order='opened_on desc, id desc', limit=SCAN_LIMIT)
-        states, reqs = dict(REQUISITION_STATES), dict(REQUEST_STATES)
+        states = {k: _(v) for k, v in REQUISITION_STATES}
+        reqs = {k: _(v) for k, v in REQUEST_STATES}
         today = fields.Date.context_today(self)
         rows = [[r.title or '', r.department_id.name or '', self._country_of(r).name or '',
                  states.get(r.state, ''), reqs.get(r.request_state, ''), r.headcount or 0,

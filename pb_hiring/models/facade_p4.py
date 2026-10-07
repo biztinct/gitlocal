@@ -356,7 +356,7 @@ class PbHiringP4(models.AbstractModel):
             'parts': sorted(parts, key=PART_KEYS.index),
             'parts_label': self._parts_label(parts) or _('nothing'),
             'with': req.default_share_with or 'hiring_manager',
-            'withs': [{'key': k, 'label': v} for k, v in SHARE_WITH],
+            'withs': [{'key': k, 'label': _(v)} for k, v in SHARE_WITH],
             'catalogue': self._part_rows(),
             'people': [{'name': u.name or '', 'role': label}
                        for u, _e, label in req._pb_manager_targets()],
@@ -931,7 +931,7 @@ class PbHiringP4(models.AbstractModel):
             sk_ids = {s for r in rows for s in r.get('skill_ids') or []}
             skills = {s['id']: s['name'] for s in self.env['hr.skill'].sudo()
                       .search_read([('id', 'in', list(sk_ids))], ['name'])}
-        screen = dict(SCREEN_TAGS)
+        screen = {k: _(v) for k, v in SCREEN_TAGS}
         q = fold(p.get('q') or '')
         built = []
         for r in rows:
@@ -1159,7 +1159,7 @@ class PbHiringP4(models.AbstractModel):
              ('pb_retention_until', '!=', False), ('pb_retention_until', '<=', soon)],
             order='pb_retention_until, id', limit=5000)
         markets = {}
-        modes = dict(PURGE_MODES)
+        modes = {k: _(v) for k, v in PURGE_MODES}
 
         def market(country):
             key = country.id or 0
@@ -1201,7 +1201,7 @@ class PbHiringP4(models.AbstractModel):
             'next_run': str(cron.sudo().nextcall or '') if cron else '',
             'fallback_months': self.env.company.pb_retention_months or 12,
             'can_edit': bool(self._can_write()), 'can_run': bool(self._can_admin()),
-            'modes': [{'key': k, 'label': v} for k, v in PURGE_MODES],
+            'modes': [{'key': k, 'label': _(v)} for k, v in PURGE_MODES],
             'countries': self.env['res.country'].sudo().search_read([], ['name']),
         }
 

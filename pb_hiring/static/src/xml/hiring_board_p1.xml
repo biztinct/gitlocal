@@ -126,7 +126,7 @@
               <button t-if="col.cards.length &gt; col.limit" type="button" class="pbhr-col-more" t-on-click="() =&gt; this.showMore(col)">
                 <t t-esc="moreLabel(col)"/>
               </button>
-              <div t-if="!col.cards.length" class="pbhr-col-empty" t-esc="state.boardFilter ? 'Nobody here matches.' : colEmptyText(col)"/>
+              <div t-if="!col.cards.length" class="pbhr-col-empty" t-esc="state.boardFilter ? tr('Nobody here matches.') : colEmptyText(col)"/>
             </div>
 
             <!-- a hidden stage, one click away for the talent lead -->
@@ -233,7 +233,7 @@
         <span t-foreach="cd.chips" t-as="ch" t-key="ch_index" class="pbhr-kc-chip" t-att-class="ch.tone ? 'is-' + ch.tone : ''" t-esc="ch.label"/>
       </div>
       <!-- RECRUIT P6: the Before they join list, as a bar that fills -->
-      <div t-if="cd.joining and cd.joining.total" class="pbhr-p6-kbar" t-att-title="cd.joining.done + ' of ' + cd.joining.total + ' things ready'">
+      <div t-if="cd.joining and cd.joining.total" class="pbhr-p6-kbar" t-att-title="tr('%(done)s of %(total)s things ready', {done: cd.joining.done, total: cd.joining.total})">
         <span t-foreach="p6Segs(cd.joining)" t-as="sg" t-key="sg_index" t-att-class="sg"/>
       </div>
       <!-- RECRUIT P4: who outside the hiring team sees this person -->
@@ -245,7 +245,7 @@
           <button type="button" title="Advance to the next column" t-on-click.stop="() =&gt; this.advance(cd)"><t t-out="ic('arrowRight',13)"/></button>
           <button type="button" title="Not this time" class="is-no" t-on-click.stop="() =&gt; this.notThisTime(cd)"><t t-out="ic('xCircle',13)"/></button>
         </t>
-        <button t-if="cd.remind" type="button" t-att-title="'Remind ' + cd.remind.who" t-on-click.stop="() =&gt; this.remindCard(cd)"><t t-out="ic('bell',13)"/></button>
+        <button t-if="cd.remind" type="button" t-att-title="tr('Remind %s', cd.remind.who)" t-on-click.stop="() =&gt; this.remindCard(cd)"><t t-out="ic('bell',13)"/></button>
         <button t-if="!canMove" type="button" title="Leave a note" t-on-click.stop="() =&gt; this.startNoteFor(cd.id, cd.name)"><t t-out="ic('pencil',13)"/></button>
         <button type="button" title="Open" t-on-click.stop="() =&gt; this.openCand(cd.id)"><t t-out="ic('eye',13)"/></button>
       </div>
@@ -261,7 +261,7 @@
 
     <!-- ============ THE CANDIDATE DRAWER ============ -->
     <div t-if="state.cand or state.candBusy" class="pbhr-cscrim" t-on-click="closeCand">
-      <aside class="pbhr-cdrawer" data-coach="hb-drawer" role="dialog" aria-modal="true" t-att-aria-label="state.cand ? state.cand.name : 'Candidate'" t-on-click.stop="() =&gt; {}">
+      <aside class="pbhr-cdrawer" data-coach="hb-drawer" role="dialog" aria-modal="true" t-att-aria-label="state.cand ? state.cand.name : tr('Candidate')" t-on-click.stop="() =&gt; {}">
         <t t-if="!state.cand">
           <div class="pbhr-cd-skel"><span class="pbhr-skel-line"/><span class="pbhr-skel-line"/><span class="pbhr-skel-line short"/></div>
         </t>
@@ -288,7 +288,7 @@
             <t t-if="cand.location"><span>Based in</span><b t-esc="cand.location"/></t>
             <t t-if="cand.email and cand.can_recruit"><span>Email</span><b t-esc="cand.email"/></t>
             <t t-if="cand.phone and cand.can_recruit"><span>Phone</span><b t-esc="cand.phone"/></t>
-            <t t-if="cand.money and cand.money.expected"><span>Expects</span><b><t t-esc="money(cand.money.expected, cand.money.currency)"/> <span class="pbhr-lock"><t t-out="ic('lock',10)"/> <t t-esc="cand.money_who or 'Recruiters and you'"/></span></b></t>
+            <t t-if="cand.money and cand.money.expected"><span>Expects</span><b><t t-esc="money(cand.money.expected, cand.money.currency)"/> <span class="pbhr-lock"><t t-out="ic('lock',10)"/> <t t-esc="cand.money_who or tr('Recruiters and you')"/></span></b></t>
             <t t-if="cand.linkedin and !cand.can_recruit"><span>LinkedIn</span><b><a t-att-href="cand.linkedin" target="_blank" rel="noopener noreferrer" t-esc="cand.linkedin"/></b></t>
             <t t-if="cand.portfolio and !cand.can_recruit"><span>Portfolio</span><b><a t-att-href="cand.portfolio" target="_blank" rel="noopener noreferrer" t-esc="cand.portfolio"/></b></t>
             <t t-if="cand.screen_label"><span>First look</span><b t-esc="cand.screen_label"/></t>

@@ -79,6 +79,18 @@ SEEDS = [
 #: The scorecard every earlier opinion was written on (the migration).
 LEGACY_KEY = 'legacy'
 
+#: Every English text the seeds above write. While a record still carries one
+#: word for word it is read in the user's language (vi_VN.po); a talent
+#: lead's own words are shown exactly as typed.
+SEED_TEXTS = ({s[1] for s in SEEDS} | {s[5] for s in SEEDS if s[5]}
+              | {t for s in SEEDS for p in s[6] for t in (p[1], p[2]) if t}
+              | {'Earlier scorecard',
+                 'The five scored lines every interviewer used before scorecards.'})
+
+
+def seed_text(text):
+    return _(text) if text and text in SEED_TEXTS else (text or '')
+
 
 class PbHiringScorecard(models.Model):
     _name = 'pb.hiring.scorecard'
@@ -192,11 +204,11 @@ class PbHiringScorecard(models.Model):
     def _payload(self, with_parts=True):
         self.ensure_one()
         out = {
-            'id': self.id, 'name': self.name or '', 'family': self.family,
-            'family_label': dict(SCORECARD_FAMILIES).get(self.family, ''),
+            'id': self.id, 'name': seed_text(self.name), 'family': self.family,
+            'family_label': _(dict(SCORECARD_FAMILIES).get(self.family, '')),
             'applies_to': self.applies_to,
-            'applies_label': dict(SCORECARD_ROUNDS).get(self.applies_to, ''),
-            'intro': self.intro or '', 'is_default': bool(self.is_default),
+            'applies_label': _(dict(SCORECARD_ROUNDS).get(self.applies_to, '')),
+            'intro': seed_text(self.intro), 'is_default': bool(self.is_default),
             'active': bool(self.active), 'seeded': bool(self.seed_key),
             'n_parts': len(self.part_ids),
         }
@@ -230,8 +242,8 @@ class PbHiringScorecardPart(models.Model):
     def _payload(self):
         self.ensure_one()
         return {'id': self.id, 'kind': self.kind,
-                'kind_label': dict(SCORECARD_PART_KINDS).get(self.kind, ''),
-                'prompt': self.prompt or '', 'help': self.help or '',
+                'kind_label': _(dict(SCORECARD_PART_KINDS).get(self.kind, '')),
+                'prompt': seed_text(self.prompt), 'help': seed_text(self.help),
                 'required': bool(self.required), 'sequence': self.sequence}
 
 

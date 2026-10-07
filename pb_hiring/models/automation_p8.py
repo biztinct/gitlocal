@@ -250,7 +250,7 @@ class PbHiringAutomationRule(models.Model):
     def _sentence(self):
         self.ensure_one()
         stage = self.stage_id.name or _('a stage')
-        when = EVENT_CLAUSE.get(self.event or '', '') % {
+        when = _(EVENT_CLAUSE.get(self.event or '', '')) % {
             'stage': stage, 'days': _days_words(max(1, self.days or 1))}
         scope = []
         if self.department_ids:
@@ -394,7 +394,7 @@ class PbHiringAutomationRule(models.Model):
                 'no_email': _('there is no email address for them'),
                 'no_template': _('the email is not set up for this company'),
                 'missing': _('it needs details only a person can fill: %s',
-                             ', '.join(TOKEN_WORDS.get(m, m) for m in res.get('missing') or [])),
+                             ', '.join(_(TOKEN_WORDS.get(m, m)) for m in res.get('missing') or [])),
             }.get(res['status'], res['status'])
             return {'status': 'skipped' if res['status'] in ('mail_off', 'no_email') else 'failed',
                     'text': _('“%(e)s” did not go to %(who)s: %(why)s.', e=ename, who=name, why=why),
@@ -824,6 +824,7 @@ class PbHiringAutomations(models.AbstractModel):
         week = number(self.env, P_WEEK_BEFORE_DAYS, 7)
         builtins = []
         for key, sentence, param, default, email_key, why in BUILTINS:
+            sentence, why = _(sentence), (_(why) if why else '')
             sentence = sentence % {'lead': _days_words(lead_days) + ' ' + _('late'),
                                    'days': _days_words(week).capitalize()} \
                 if '%(' in sentence else sentence
@@ -870,7 +871,7 @@ class PbHiringAutomations(models.AbstractModel):
         return {
             'id': r.id, 'sentence': r.name, 'active': bool(r.active),
             'effective': bool(r._effective()), 'seed_key': r.seed_key or '',
-            'note': SEED_NOTES.get(r.seed_key or '', ''),
+            'note': _(SEED_NOTES.get(r.seed_key or '', '')) if SEED_NOTES.get(r.seed_key or '') else '',
             'event': r.event, 'stage_id': r.stage_id.id or False, 'days': r.days or 0,
             'action': r.action, 'template_key': r.template_key or '',
             'recipient': r.recipient or '', 'custom_emails': r.custom_emails or '',

@@ -75,7 +75,9 @@ class PbHiringP6(models.AbstractModel):
 
     @api.model
     def _item_row(self, item, offer, can_recruit):
-        kinds, owners, states = dict(PREJOIN_KINDS), dict(PREJOIN_OWNERS), dict(PREJOIN_STATES)
+        kinds = {k: _(v) for k, v in PREJOIN_KINDS}
+        owners = {k: _(v) for k, v in PREJOIN_OWNERS}
+        states = {k: _(v) for k, v in PREJOIN_STATES}
         manager = offer._manager()
         owner_name = {
             'manager': manager.name if manager else _('the hiring manager'),
@@ -141,7 +143,7 @@ class PbHiringP6(models.AbstractModel):
         done = len([r for r in rows if r['state'] in ('done', 'skipped')])
         late = len([r for r in rows if r['late']])
         nxt = next((r for r in rows if r['state'] == 'open'), None)
-        kinds = dict(OFFER_DOC_KINDS)
+        kinds = {k: _(v) for k, v in OFFER_DOC_KINDS}
         docs = []
         for doc in offer.document_ids.sorted(lambda d: (d.sequence, d.id)):
             att = doc.attachment_id
@@ -164,7 +166,7 @@ class PbHiringP6(models.AbstractModel):
             'offer_name': offer.name or '',
             'state': offer.state,
             'join_status': offer.join_status or '',
-            'join_status_label': dict(JOIN_STATUS).get(offer.join_status, ''),
+            'join_status_label': _(dict(JOIN_STATUS).get(offer.join_status, '')),
             'expected': str(expected or ''),
             'expected_words': _words(self.env, expected, 'EEE d MMM'),
             'expected_long': _words(self.env, expected, 'EEEE d MMMM y'),
@@ -173,7 +175,7 @@ class PbHiringP6(models.AbstractModel):
             'joined_on': str(offer.joined_on or ''),
             'joined_words': _words(self.env, offer.joined_on, 'EEE d MMM y'),
             'dropped_words': ' — '.join(x for x in (
-                dict(DROP_REASONS).get(offer.drop_reason, ''), offer.drop_note or '') if x),
+                _(dict(DROP_REASONS).get(offer.drop_reason, '')), offer.drop_note or '') if x),
             'dropped_on': str(offer.dropped_on or ''),
             'items': rows, 'done': done, 'total': len(rows), 'late': late,
             'next_item': nxt,
@@ -195,8 +197,8 @@ class PbHiringP6(models.AbstractModel):
             'can_act': bool(can_recruit and offer.state == 'signed'),
             'can_docs': bool(can_recruit and offer.state in ('signed', 'joined')),
             'confirm_primary': days is not None and days <= CONFIRM_FROM_DAYS,
-            'drop_reasons': [{'key': k, 'label': v} for k, v in DROP_REASONS],
-            'doc_kinds': [{'key': k, 'label': v} for k, v in OFFER_DOC_KINDS],
+            'drop_reasons': [{'key': k, 'label': _(v)} for k, v in DROP_REASONS],
+            'doc_kinds': [{'key': k, 'label': _(v)} for k, v in OFFER_DOC_KINDS],
             'requisition_id': offer.requisition_id.id,
             'manager': offer._manager().name or '',
             'candidate': offer.candidate_name or '',
@@ -312,8 +314,8 @@ class PbHiringP6(models.AbstractModel):
                                                                  'EEE d MMM y')), 'by': ''})
             if offer.state == 'dropped':
                 extra.append({'at': str(offer.write_date or ''), 'kind': 'offer',
-                              'text': _('Did not join: %s', dict(DROP_REASONS).get(
-                                  offer.drop_reason, '')), 'by': ''})
+                              'text': _('Did not join: %s', _(dict(DROP_REASONS).get(
+                                  offer.drop_reason, ''))), 'by': ''})
         if extra:
             items = sorted(items + extra, key=lambda r: r['at'], reverse=True)[:200]
         return items
@@ -331,8 +333,8 @@ class PbHiringP6(models.AbstractModel):
                                      'EEE d MMM y'),
             'joined_on': str(offer.joined_on or ''),
             'join_status': offer.join_status or '',
-            'join_status_label': dict(JOIN_STATUS).get(offer.join_status, ''),
-            'drop_words': dict(DROP_REASONS).get(offer.drop_reason, ''),
+            'join_status_label': _(dict(JOIN_STATUS).get(offer.join_status, '')),
+            'drop_words': _(dict(DROP_REASONS).get(offer.drop_reason, '')),
             'doc_count': len(offer.document_ids),
         })
         return row
@@ -576,8 +578,8 @@ class PbHiringP6(models.AbstractModel):
         rows = Tpl.search([('company_id', 'in', co_ids)])
         res['prejoin'] = {
             'items': [r._payload() for r in rows],
-            'kinds': [{'key': k, 'label': v} for k, v in PREJOIN_KINDS],
-            'owners': [{'key': k, 'label': v} for k, v in PREJOIN_OWNERS],
+            'kinds': [{'key': k, 'label': _(v)} for k, v in PREJOIN_KINDS],
+            'owners': [{'key': k, 'label': _(v)} for k, v in PREJOIN_OWNERS],
         }
         status = _("%(n)s things on every signed offer · %(names)s", n=len(rows),
                    names=', '.join(rows[:3].mapped('title'))) if rows else \

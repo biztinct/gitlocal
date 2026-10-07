@@ -45,7 +45,7 @@
                 <b><t t-esc="row.name"/><span t-if="row.is_default" class="pbhr-ff-badge">Default</span></b>
                 <small t-esc="formSub(row)"/>
               </span>
-              <span t-if="rowMissing(row)" class="pbhr-ff-dot" t-att-title="rowMissing(row) + ' words still need a translation'"/>
+              <span t-if="rowMissing(row)" class="pbhr-ff-dot" t-att-title="tr('%s words still need a translation', rowMissing(row))"/>
             </button>
             <div class="pbhr-ff-sec">Used by roles <span class="pbhr-ff-count" t-esc="(data.role_forms || []).length"/></div>
             <input t-if="(data.role_forms || []).length &gt; 7" class="pbhr-in pbhr-ff-filter" placeholder="Find a role" t-model="state.filter"/>
@@ -54,7 +54,7 @@
             <button t-foreach="roleForms" t-as="row" t-key="row.id" type="button" class="pbhr-ff-item" t-att-class="{ on: row.id === state.formId }" t-on-click="() =&gt; this.pickForm(row.id)">
               <span class="pbhr-ff-item-ic is-role"><t t-out="ic('briefcase',15)"/></span>
               <span class="pbhr-ff-item-tx"><b t-esc="row.role"/><small t-esc="formSub(row)"/></span>
-              <span t-if="rowMissing(row)" class="pbhr-ff-dot" t-att-title="rowMissing(row) + ' words still need a translation'"/>
+              <span t-if="rowMissing(row)" class="pbhr-ff-dot" t-att-title="tr('%s words still need a translation', rowMissing(row))"/>
             </button>
           </aside>
 
@@ -96,7 +96,7 @@
               <!-- the form's own name and where it is used -->
               <div class="pbhr-ff-title">
                 <input t-if="state.editingName" class="pbhr-in pbhr-ff-name-in" t-model="state.nameDraft" t-on-keydown="onNameKey" t-on-blur="saveName" maxlength="80"/>
-                <button t-else="" type="button" class="pbhr-ff-name" t-att-disabled="!canEdit or !form.is_template" t-on-click="startName" t-att-title="canEdit and form.is_template ? 'Click to rename' : ''">
+                <button t-else="" type="button" class="pbhr-ff-name" t-att-disabled="!canEdit or !form.is_template" t-on-click="startName" t-att-title="canEdit and form.is_template ? tr('Click to rename') : ''">
                   <t t-if="form.is_template" t-esc="form.name_en"/><t t-else="" t-esc="form.role"/>
                   <t t-if="canEdit and form.is_template" t-out="ic('pencil',12)"/>
                 </button>
@@ -182,20 +182,20 @@
                       </span>
                     </button>
                     <span t-if="f.locked" class="pbhr-ff-lock" title="Always asked — every application needs it. You can rename it."><t t-out="ic('lock',13)"/></span>
-                    <button t-else="" type="button" role="switch" class="pbhr-ff-switch" t-att-class="{ on: f.required }" t-att-aria-checked="f.required ? 'true' : 'false'" t-att-disabled="!canEdit" t-att-title="f.required ? 'Required — click to make it optional' : 'Optional — click to make it required'" t-on-click="() =&gt; this.toggleRequired(f)">
+                    <button t-else="" type="button" role="switch" class="pbhr-ff-switch" t-att-class="{ on: f.required }" t-att-aria-checked="f.required ? 'true' : 'false'" t-att-disabled="!canEdit" t-att-title="f.required ? tr('Required — click to make it optional') : tr('Optional — click to make it required')" t-on-click="() =&gt; this.toggleRequired(f)">
                       <span class="pbhr-ff-knob"/>
                     </button>
-                    <span class="pbhr-ff-req-w" t-esc="f.required ? 'Required' : 'Optional'"/>
+                    <span class="pbhr-ff-req-w" t-esc="f.required ? tr('Required') : tr('Optional')"/>
                   </div>
 
                   <!-- ======== the editor for one question ======== -->
                   <div t-if="state.open === f.id and f.kind !== 'consent'" class="pbhr-ff-editor" t-on-keydown="onEditorKey">
                     <label class="pbhr-ff-lab">The question <small t-if="state.lang !== 'en_US'">in <t t-esc="langWord"/></small>
-                      <input class="pbhr-in pbhr-ff-label-in" data-what="label" t-att-value="state.drafts[f.id].label" t-att-placeholder="state.lang !== 'en_US' ? f.label_en : 'Write the question'" t-att-disabled="!canEdit" maxlength="200" t-on-input="(ev) =&gt; this.onText(f, 'label', ev)"/>
+                      <input class="pbhr-in pbhr-ff-label-in" data-what="label" t-att-value="state.drafts[f.id].label" t-att-placeholder="state.lang !== 'en_US' ? f.label_en : tr('Write the question')" t-att-disabled="!canEdit" maxlength="200" t-on-input="(ev) =&gt; this.onText(f, 'label', ev)"/>
                       <small t-if="state.lang !== 'en_US'" class="pbhr-ff-ref">English: <t t-esc="f.label_en"/></small>
                     </label>
                     <label class="pbhr-ff-lab">Help line <small>optional, shown under the question</small>
-                      <input class="pbhr-in" data-what="help" t-att-value="state.drafts[f.id].help" t-att-placeholder="state.lang !== 'en_US' and f.help_en ? f.help_en : 'One sentence that helps them answer'" t-att-disabled="!canEdit" maxlength="200" t-on-input="(ev) =&gt; this.onText(f, 'help', ev)"/>
+                      <input class="pbhr-in" data-what="help" t-att-value="state.drafts[f.id].help" t-att-placeholder="state.lang !== 'en_US' and f.help_en ? f.help_en : tr('One sentence that helps them answer')" t-att-disabled="!canEdit" maxlength="200" t-on-input="(ev) =&gt; this.onText(f, 'help', ev)"/>
                     </label>
                     <label t-if="['text','email','tel','url','textarea','number','money'].includes(f.widget) or (f.widget === 'portfolio' and f.portfolio_mode !== 'file')" class="pbhr-ff-lab">Example answer <small>shown faintly inside the box</small>
                       <input class="pbhr-in" data-what="placeholder" t-att-value="state.drafts[f.id].placeholder" t-att-placeholder="state.lang !== 'en_US' and f.placeholder_en ? f.placeholder_en : ''" t-att-disabled="!canEdit" maxlength="200" t-on-input="(ev) =&gt; this.onText(f, 'placeholder', ev)"/>

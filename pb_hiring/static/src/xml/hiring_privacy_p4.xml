@@ -52,7 +52,7 @@
             <span t-foreach="sp.parts" t-as="pt" t-key="pt" class="pbhr-p4-part" t-att-class="{ 'is-money': pt === 'expected_pay' }" t-esc="partWord(pt)"/>
           </span>
           <small class="pbhr-p4-since" t-esc="sharedSince(sp)"/>
-          <button type="button" class="pbhr-p4-x" t-att-title="'Stop sharing with ' + sp.name" t-on-click="() =&gt; this.unshare(sp)"><t t-out="ic('x',12)"/></button>
+          <button type="button" class="pbhr-p4-x" t-att-title="tr('Stop sharing with %s', sp.name)" t-on-click="() =&gt; this.unshare(sp)"><t t-out="ic('x',12)"/></button>
         </div>
       </div>
     </div>
@@ -100,7 +100,7 @@
         </div>
         <p t-else="" class="pbhr-p4-note-body" t-esc="nt.body"/>
         <div t-if="nt.can_share and nts.targets.length" class="pbhr-p4-note-share">
-          <button t-foreach="nts.targets" t-as="wh" t-key="wh.id" type="button" class="pbhr-p4-chip" t-att-class="{ on: noteSharedWith(nt, wh.id) }" t-att-title="noteSharedWith(nt, wh.id) ? 'Shared — press to make it private again' : 'Share this note with ' + wh.name" t-on-click="() =&gt; this.toggleNoteShare(nt, wh)">
+          <button t-foreach="nts.targets" t-as="wh" t-key="wh.id" type="button" class="pbhr-p4-chip" t-att-class="{ on: noteSharedWith(nt, wh.id) }" t-att-title="noteSharedWith(nt, wh.id) ? tr('Shared — press to make it private again') : tr('Share this note with %s', wh.name)" t-on-click="() =&gt; this.toggleNoteShare(nt, wh)">
             <t t-out="ic(noteSharedWith(nt, wh.id) ? 'check' : 'share2',11)"/>
             <t t-if="noteSharedWith(nt, wh.id)">Shared with <t t-esc="wh.name"/></t>
             <t t-else="">Share with <t t-esc="wh.name"/></t>
@@ -218,12 +218,12 @@
           <button type="button" class="pbhr-kc-check" t-att-class="{ on: isBankSel(rw.id) }" t-att-aria-pressed="isBankSel(rw.id) ? 'true' : 'false'" t-on-click="() =&gt; this.toggleBankSel(rw.id)"><t t-out="ic('check',11)"/></button>
           <button type="button" class="pbhr-p4-bank-who" t-on-click="() =&gt; this.openCand(rw.id)">
             <span class="pbhr-cand-av" t-att-class="'pbhr-av--' + (rw.id % 6)" t-esc="initials(rw.name)"/>
-            <span><b t-esc="rw.name"/><small><t t-esc="rw.country or 'Country not given'"/><t t-if="rw.applications &gt; 1"> · applied <t t-esc="rw.applications"/> times</t></small></span>
+            <span><b t-esc="rw.name"/><small><t t-esc="rw.country or tr('Country not given')"/><t t-if="rw.applications &gt; 1"> · applied <t t-esc="rw.applications"/> times</t></small></span>
           </button>
           <span class="pbhr-p4-bank-role"><t t-esc="rw.last_role"/><small t-if="rw.screen_label"><t t-esc="rw.screen_label"/></small></span>
           <span class="pbhr-p4-bank-tags">
             <span t-foreach="rw.skills" t-as="sk" t-key="sk.id" class="pbhr-p4-skill" t-esc="sk.name"/>
-            <span t-foreach="rw.tags" t-as="tg" t-key="tg.id" class="pbhr-p4-tag"><t t-out="ic('tag',10)"/> <t t-esc="tg.name"/><button type="button" t-att-title="'Take the tag ' + tg.name + ' off'" t-on-click="() =&gt; this.removeBankTag(rw, tg)"><t t-out="ic('x',9)"/></button></span>
+            <span t-foreach="rw.tags" t-as="tg" t-key="tg.id" class="pbhr-p4-tag"><t t-out="ic('tag',10)"/> <t t-esc="tg.name"/><button type="button" t-att-title="tr('Take the tag %s off', tg.name)" t-on-click="() =&gt; this.removeBankTag(rw, tg)"><t t-out="ic('x',9)"/></button></span>
             <small t-if="!rw.skills.length and !rw.tags.length" class="pbhr-p4-none">No skills or tags yet</small>
           </span>
           <span class="pbhr-p4-bank-src"><t t-esc="rw.source or '—'"/><small t-esc="dayShort(rw.applied_on)"/></span>

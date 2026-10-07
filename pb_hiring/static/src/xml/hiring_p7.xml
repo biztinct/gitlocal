@@ -16,14 +16,14 @@
           <b class="pbhr-p7-name" t-esc="r7.name"/>
           <span class="pbhr-p7-state" t-esc="r7.state_label"/>
           <span class="pbhr-p7-gap"/>
-          <span class="pbhr-p7-apps" t-att-class="{ 'has': r7.apps }" t-key="r7.id + '-' + r7.apps" t-att-title="'Applications whose source is ' + r7.source">
+          <span class="pbhr-p7-apps" t-att-class="{ 'has': r7.apps }" t-key="r7.id + '-' + r7.apps" t-att-title="tr('Applications whose source is %s', r7.source)">
             <t t-out="ic('inbox',13)"/> <t t-esc="p7AppsWord(r7.apps)"/>
           </span>
         </div>
         <div t-if="state.p7 and state.p7.apps" class="pbhr-p7-bar"><span t-attf-style="width: {{ p7Share(r7) }}%"/></div>
 
         <!-- the tracked link -->
-        <button t-if="r7.link" type="button" class="pbhr-p7-link" t-att-class="{ 'is-copied': state.p7Copied === r7.id }" t-on-click.stop="() =&gt; this.p7Copy(r7)" t-att-title="'Copy: ' + r7.link">
+        <button t-if="r7.link" type="button" class="pbhr-p7-link" t-att-class="{ 'is-copied': state.p7Copied === r7.id }" t-on-click.stop="() =&gt; this.p7Copy(r7)" t-att-title="tr('Copy: %s', r7.link)">
           <span class="pbhr-p7-link-tx" t-esc="p7Short(r7.link)"/>
           <span class="pbhr-p7-link-do">
             <t t-if="state.p7Copied === r7.id"><t t-out="ic('check',13)"/> Copied</t>
@@ -70,7 +70,7 @@
             <t t-if="r7.state !== 'posted'">
               <button type="button" class="pbim-btn primary" t-att-disabled="state.p7Busy or !state.p7.has_job" t-on-click.stop="() =&gt; this.p7StartMark(r7)"><t t-out="ic('checkCheck',14)"/> Mark as posted</button>
               <button t-if="r7.advert" type="button" class="pbim-btn ghost" t-on-click.stop="() =&gt; this.p7CopyAdvert(r7)"><t t-out="ic('fileText',13)"/> Copy the advert</button>
-              <button t-if="r7.can_send" type="button" class="pbim-btn ghost" t-att-disabled="state.p7Busy or !r7.mail_on" t-att-title="r7.mail_on ? 'Email the advert to ' + r7.contact_email : 'Emailing adverts is switched off in Hiring set-up, Channels'" t-on-click.stop="() =&gt; this.p7Send(r7)"><t t-out="ic('send',13)"/> Send the advert</button>
+              <button t-if="r7.can_send" type="button" class="pbim-btn ghost" t-att-disabled="state.p7Busy or !r7.mail_on" t-att-title="r7.mail_on ? tr('Email the advert to %s', r7.contact_email) : tr('Emailing adverts is switched off in Hiring set-up, Channels')" t-on-click.stop="() =&gt; this.p7Send(r7)"><t t-out="ic('send',13)"/> Send the advert</button>
             </t>
             <t t-else="">
               <button type="button" class="pbim-btn ghost" t-att-disabled="state.p7Busy" t-on-click.stop="() =&gt; this.p7TakeDown(r7)"><t t-out="ic('minusCircle',13)"/> Taken down</button>
@@ -255,7 +255,7 @@
               <input class="pbhr-in pbhr-p7-gr-name" t-att-value="ch7.name" t-att-disabled="!state.data.can_edit" maxlength="80" t-on-change="(ev) =&gt; this.p7Save(ch7, 'name', ev.target.value)"/>
               <small><t t-esc="ch7.kind_label"/> · tags Source = <t t-esc="ch7.source"/><t t-if="ch7.every_country"> · every country</t></small>
             </div>
-            <label class="pbhr-p7-switch" t-att-title="ch7.active ? 'In use. Press to stop offering it.' : 'Not in use. Press to offer it again.'">
+            <label class="pbhr-p7-switch" t-att-title="ch7.active ? tr('In use. Press to stop offering it.') : tr('Not in use. Press to offer it again.')">
               <input type="checkbox" t-att-checked="ch7.active" t-att-disabled="!state.data.can_edit" t-on-change="() =&gt; this.p7Active(ch7)"/>
               <span><t t-if="ch7.active">In use</t><t t-else="">Off</t></span>
             </label>

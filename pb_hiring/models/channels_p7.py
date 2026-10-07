@@ -78,6 +78,16 @@ SEED = [
     ('agency', 'Agencies', 'agency', 'Agency', (),
      'Agencies see the role on their own portal and put people forward there.', 60),
 ]
+#: The seed's English names and hints. While a channel still carries one word
+#: for word it is read in the user's language (vi_VN.po); a client's own
+#: words are shown exactly as typed.
+SEED_TEXTS = {t for row in SEED for t in (row[1], row[5]) if t}
+
+
+def seed_text(text):
+    return _(text) if text and text in SEED_TEXTS else (text or '')
+
+
 #: Channels whose link is a stock job tracker (the job page + utm).
 TRACKED_KINDS = ('careers', 'board', 'social')
 ICONS = {'careers': 'globe', 'board': 'briefcase', 'social': 'share2',
@@ -228,14 +238,14 @@ class PbHiringChannel(models.Model):
     def _payload(self, countries=None):
         self.ensure_one()
         return {
-            'id': self.id, 'key': self.key, 'name': self.name or '',
-            'kind': self.kind, 'kind_label': dict(CHANNEL_KINDS).get(self.kind, ''),
+            'id': self.id, 'key': self.key, 'name': seed_text(self.name),
+            'kind': self.kind, 'kind_label': _(dict(CHANNEL_KINDS).get(self.kind, '')),
             'icon': ICONS.get(self.kind, 'link'), 'active': bool(self.active),
             'contact_email': self.contact_email or '',
-            'hint': self.posting_url_hint or '',
+            'hint': seed_text(self.posting_url_hint),
             'source': self.utm_source_id.name or '',
             'connector': self.connector,
-            'connector_label': dict(CONNECTORS).get(self.connector, ''),
+            'connector_label': _(dict(CONNECTORS).get(self.connector, '')),
             'every_country': bool(self.every_country),
             'country_ids': self.country_ids.ids,
             'countries': ', '.join(self.country_ids.mapped('name')),
@@ -352,7 +362,7 @@ class PbHiringChannelConnector(models.AbstractModel):
     def status(self, role_channel):
         rc = role_channel.sudo()
         return {'state': rc.state,
-                'note': dict(ROLE_CHANNEL_STATES).get(rc.state, '')}
+                'note': _(dict(ROLE_CHANNEL_STATES).get(rc.state, ''))}
 
     def close(self, role_channel):
         rc = role_channel.sudo()

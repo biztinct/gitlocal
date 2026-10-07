@@ -266,7 +266,7 @@ class PbHiringP5(models.AbstractModel):
             'scorecard': card.name if card else '', 'intro': card.intro or '' if card else '',
             'parts': row.parts_for_page(), 'state': row.state,
             'decision': row.decision or '', 'notes': row.notes or '',
-            'decisions': [{'key': k, 'label': v} for k, v in DECISIONS],
+            'decisions': [{'key': k, 'label': _(v)} for k, v in DECISIONS],
             'link': row._token_url(),
         }
 
@@ -350,7 +350,7 @@ class PbHiringP5(models.AbstractModel):
         return {
             'scorecard_id': card.id if card else False,
             'scorecards': [{'id': c.id, 'name': c.name or '',
-                            'family': dict(SCORECARD_FAMILIES).get(c.family, '')} for c in cards],
+                            'family': _(dict(SCORECARD_FAMILIES).get(c.family, ''))} for c in cards],
             'google': {'connected': bool(connected), 'organiser': organiser.name or '',
                        'mine': organiser.id == self.env.uid},
         }
@@ -371,11 +371,11 @@ class PbHiringP5(models.AbstractModel):
         if self._is_hiring_reader(req):
             row['rounds'] = self._safe(lambda: req._pb_rounds(), default=[])
             row['scorecard_family'] = req.scorecard_family or ''
-            row['role_families'] = [{'key': k, 'label': v} for k, v in ROLE_FAMILIES]
+            row['role_families'] = [{'key': k, 'label': _(v)} for k, v in ROLE_FAMILIES]
             row['scorecard_choices'] = self._safe(lambda: [
                 {'id': c.id, 'name': c.name or '',
-                 'family': dict(SCORECARD_FAMILIES).get(c.family, ''),
-                 'applies': dict(SCORECARD_ROUNDS).get(c.applies_to, '')}
+                 'family': _(dict(SCORECARD_FAMILIES).get(c.family, '')),
+                 'applies': _(dict(SCORECARD_ROUNDS).get(c.applies_to, ''))}
                 for c in self.env['pb.hiring.scorecard'].sudo().search(
                     [('company_id', '=', req.company_id.id)])], default=[])
             row['finalists_count'] = self._safe(lambda: len(self._finalist_apps(req)), default=0)
@@ -392,7 +392,7 @@ class PbHiringP5(models.AbstractModel):
         req.sudo().write({'scorecard_family': key})
         return {'id': req.id, 'before': before,
                 'note': _("Rounds without their own pick now use the %s scorecards.",
-                          dict(ROLE_FAMILIES).get(key, '')) if key
+                          _(dict(ROLE_FAMILIES).get(key, ''))) if key
                 else _("Rounds without their own pick use the company default.")}
 
     def _act_round_scorecard(self, payload):
@@ -430,10 +430,10 @@ class PbHiringP5(models.AbstractModel):
         res['scorecards'] = {
             'cards': [dict(c._payload(), rounds_using=used.get(c.id, 0),
                            interviews=iv_used.get(c.id, 0)) for c in cards],
-            'families': [{'key': k, 'label': v} for k, v in SCORECARD_FAMILIES],
-            'rounds': [{'key': k, 'label': v} for k, v in SCORECARD_ROUNDS],
-            'kinds': [{'key': k, 'label': v} for k, v in SCORECARD_PART_KINDS],
-            'decisions': [{'key': k, 'label': v} for k, v in DECISIONS],
+            'families': [{'key': k, 'label': _(v)} for k, v in SCORECARD_FAMILIES],
+            'rounds': [{'key': k, 'label': _(v)} for k, v in SCORECARD_ROUNDS],
+            'kinds': [{'key': k, 'label': _(v)} for k, v in SCORECARD_PART_KINDS],
+            'decisions': [{'key': k, 'label': _(v)} for k, v in DECISIONS],
         }
         status = _("%(n)s scorecards · %(names)s", n=len(cards),
                    names=', '.join(cards[:5].mapped('name')))
@@ -664,7 +664,7 @@ class PbHiringP5(models.AbstractModel):
             raise UserError(_("That role is no longer there."))
         if not self._is_hiring_reader(req):
             raise AccessError(_("Comparing finalists is for the hiring team."))
-        labels = dict(DECISIONS)
+        labels = {k: _(v) for k, v in DECISIONS}
         apps = self._finalist_apps(req)
         ivs = self.env['pb.hiring.interview'].sudo().search([
             ('applicant_id', 'in', apps.ids),
@@ -679,7 +679,7 @@ class PbHiringP5(models.AbstractModel):
             scores, counts, inn, total = [], {k: 0 for k in labels}, 0, 0
             for iv in by_app.get(app.id, []):
                 n = iv.round_no or 1
-                label = iv.scorecard_id.name or dict(STEP_KINDS).get(iv.kind, '') or _('Round %s', n)
+                label = iv.scorecard_id.name or _(dict(STEP_KINDS).get(iv.kind, '')) or _('Round %s', n)
                 rounds.setdefault(n, set()).add(label)
                 ops = []
                 for f in iv.feedback_ids.sorted('id'):
@@ -722,7 +722,7 @@ class PbHiringP5(models.AbstractModel):
                         else _('different scorecards')} for n in sorted(rounds)],
             'can_decide': bool(self._can_move(req)),
             'selected_id': req.selected_applicant_id.id or False,
-            'decisions': [{'key': k, 'label': v} for k, v in DECISIONS],
+            'decisions': [{'key': k, 'label': _(v)} for k, v in DECISIONS],
         }
 
     def _act_finalist_decide(self, payload):

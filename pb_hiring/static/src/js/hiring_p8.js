@@ -22,6 +22,7 @@ import { PbHiringBoard } from "./hiring_board";
 
 const LANG_SHORT = { en_US: "EN", vi_VN: "VI", id_ID: "ID" };
 
+// Translated where used (`_t(CLAUSE[key])`); every sentence has a vi_VN entry.
 const CLAUSE = {
     applied: "somebody applies", stage_entered: "a candidate enters %(stage)s",
     stage_waiting: "a candidate has waited %(days)s in %(stage)s",
@@ -412,7 +413,7 @@ patch(PbHiringSetup.prototype, {
         const r = this.state.p8Rule;
         if (!r) { return ""; }
         const stage = this.p8StageName(r.stage_id) || _t("a stage");
-        let when = fill(CLAUSE[r.event] || "", { stage, days: days(Math.max(1, parseInt(r.days, 10) || 1)) });
+        let when = fill(CLAUSE[r.event] ? String(_t(CLAUSE[r.event])) : "", { stage, days: days(Math.max(1, parseInt(r.days, 10) || 1)) });
         const scope = [];
         if (r.department_ids.length) { scope.push(r.department_ids.map((i) => this.p8Name(this.p8Au.departments, i)).join(", ")); }
         if (r.country_ids.length) { scope.push(r.country_ids.map((i) => this.p8Name(this.p8Au.countries, i)).join(", ")); }

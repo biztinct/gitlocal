@@ -91,7 +91,7 @@ class PbHiringP3(models.AbstractModel):
     def get_board(self, limit=None):
         board = super().get_board(limit=limit)
         if board.get('allowed'):
-            board['request_states'] = [{'key': k, 'label': v}
+            board['request_states'] = [{'key': k, 'label': _(v)}
                                        for k, v in REQUEST_STATES]
             board['can_ask'] = self._can_recruit()
             kpis = board.get('kpis') or {}
@@ -137,7 +137,7 @@ class PbHiringP3(models.AbstractModel):
         asked = rec.asked_employee_id
         return {
             'state': rec.request_state,
-            'label': dict(REQUEST_STATES).get(rec.request_state, ''),
+            'label': _(dict(REQUEST_STATES).get(rec.request_state, '')),
             'chip': rec._request_chip()[0],
             'tone': rec._request_chip()[1],
             'asked': {
@@ -175,7 +175,7 @@ class PbHiringP3(models.AbstractModel):
                 'page_note': note, 'page_tone': tone,
             },
             'budget_agreement': rec.budget_agreement or 'not_yet',
-            'budget_agreements': [{'key': k, 'label': v}
+            'budget_agreements': [{'key': k, 'label': _(v)}
                                   for k, v in BUDGET_AGREEMENT],
             'budget_people': people.mapped('name'),
             'budget_people_sentence': _(
@@ -526,7 +526,7 @@ class PbHiringP3(models.AbstractModel):
             if company.pb_mr_approver_id else None,
             'docreq_trigger': text(self.env, P_DOCREQ_TRIGGER,
                                    'on_check_clear'),
-            'docreq_triggers': [{'key': k, 'label': v}
+            'docreq_triggers': [{'key': k, 'label': _(v)}
                                 for k, v in DOCREQ_TRIGGERS],
             'users': sorted([{'id': u.id, 'name': u.name or ''}
                              for u in users], key=lambda r: fold(r['name'])),
@@ -584,7 +584,7 @@ class PbHiringP3(models.AbstractModel):
         self.env['ir.config_parameter'].sudo().set_param(P_DOCREQ_TRIGGER,
                                                          key)
         return {'note': _("Papers are now asked for %s.",
-                          dict(DOCREQ_TRIGGERS)[key].lower())}
+                          _(dict(DOCREQ_TRIGGERS)[key]).lower())}
 
     def _act_set_switch(self, payload):
         if payload.get('key') == 'referral_announce':

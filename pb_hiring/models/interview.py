@@ -828,7 +828,7 @@ class PbHiringInterview(models.Model):
             raise UserError(_(
                 "Only an interview that is still going to happen can be "
                 "moved. This one is already marked “%s”.",
-                dict(INTERVIEW_STATES).get(self.state, self.state)))
+                _(dict(INTERVIEW_STATES).get(self.state, self.state or ''))))
         reason = (values.get('reason') or '').strip()
         kind = values.get('delay_kind') or ''
         if not reason:

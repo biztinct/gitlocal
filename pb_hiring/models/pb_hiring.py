@@ -180,10 +180,10 @@ class PbHiring(models.AbstractModel):
             'recruiters': sorted({(r['recruiter_id'], r['recruiter'])
                                   for r in rows if r['recruiter_id']},
                                  key=lambda t: t[1]),
-            'states': [{'key': k, 'label': v} for k, v in REQUISITION_STATES],
-            'role_types': [{'key': k, 'label': v} for k, v in ROLE_TYPES],
-            'budget_states': [{'key': k, 'label': v} for k, v in BUDGET_STATUS],
-            'screen_tags': [{'key': k, 'label': v} for k, v in SCREEN_TAGS],
+            'states': [{'key': k, 'label': _(v)} for k, v in REQUISITION_STATES],
+            'role_types': [{'key': k, 'label': _(v)} for k, v in ROLE_TYPES],
+            'budget_states': [{'key': k, 'label': _(v)} for k, v in BUDGET_STATUS],
+            'screen_tags': [{'key': k, 'label': _(v)} for k, v in SCREEN_TAGS],
             'rule_count': self._safe(
                 lambda: self.env['pb.hiring.country.rule'].sudo().search_count(
                     [('company_id', 'in', co_ids)]), default=0),
@@ -193,14 +193,14 @@ class PbHiring(models.AbstractModel):
             # server's own lists so the screen can never hold a second copy
             # that drifts out of step with them.
             'interviews': interviews,
-            'interview_states': [{'key': k, 'label': v}
+            'interview_states': [{'key': k, 'label': _(v)}
                                  for k, v in INTERVIEW_STATES],
-            'modes': [{'key': k, 'label': v} for k, v in INTERVIEW_MODES],
-            'step_kinds': [{'key': k, 'label': v} for k, v in STEP_KINDS],
-            'no_show_reasons': [{'key': k, 'label': v} for k, v in NO_SHOW_BY],
-            'delay_kinds': [{'key': k, 'label': v} for k, v in DELAY_KINDS],
-            'decisions': [{'key': k, 'label': v} for k, v in DEBRIEF_DECISIONS],
-            'recommendations': [{'key': k, 'label': v}
+            'modes': [{'key': k, 'label': _(v)} for k, v in INTERVIEW_MODES],
+            'step_kinds': [{'key': k, 'label': _(v)} for k, v in STEP_KINDS],
+            'no_show_reasons': [{'key': k, 'label': _(v)} for k, v in NO_SHOW_BY],
+            'delay_kinds': [{'key': k, 'label': _(v)} for k, v in DELAY_KINDS],
+            'decisions': [{'key': k, 'label': _(v)} for k, v in DEBRIEF_DECISIONS],
+            'recommendations': [{'key': k, 'label': _(v)}
                                 for k, v in RECOMMENDATIONS],
         }
 

@@ -146,7 +146,7 @@ class PbHiringOfferDocument(models.Model):
                                  index=True, readonly=True)
 
     def _compute_display_name(self):
-        kinds = dict(OFFER_DOC_KINDS)
+        kinds = {k: _(v) for k, v in OFFER_DOC_KINDS}
         for rec in self:
             rec.display_name = rec.label or kinds.get(rec.kind, '')
 
@@ -982,7 +982,7 @@ class HiringOfferJoining(models.Model):
         code = (country.code or '').upper()
         rows = COUNTRY_DOC_SETS.get(code, DEFAULT_DOC_SET)
         have = set(self.document_ids.mapped('kind'))
-        kinds = dict(OFFER_DOC_KINDS)
+        kinds = {k: _(v) for k, v in OFFER_DOC_KINDS}
         return {'country': country.name or '', 'code': code,
                 'rows': [{'kind': k, 'label': kinds.get(k, k), 'when': when,
                           'have': k in have} for k, when in rows]}

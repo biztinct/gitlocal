@@ -21,7 +21,8 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
 from .agency_p7 import COOLING_DEFAULT, P_COOLING_MONTHS
-from .channels_p7 import (CHANNEL_KINDS, ICONS, ROLE_CHANNEL_STATES, TRACKED_KINDS)
+from .channels_p7 import (CHANNEL_KINDS, ICONS, ROLE_CHANNEL_STATES, TRACKED_KINDS,
+                          seed_text)
 from .hiring_common import P_PLATFORM_MAIL, as_id, counted, flag, number
 
 _logger = logging.getLogger(__name__)
@@ -163,13 +164,13 @@ class PbHiringP7(models.AbstractModel):
         n = apps.get(ch.utm_source_id.id, 0)
         row = {
             'id': rc.id, 'channel_id': ch.id, 'key': ch.key, 'kind': kind,
-            'kind_label': dict(CHANNEL_KINDS).get(kind, ''),
-            'name': ch.name or '', 'icon': ICONS.get(kind, 'link'),
-            'hint': ch.posting_url_hint or '', 'source': ch.utm_source_id.name or '',
+            'kind_label': _(dict(CHANNEL_KINDS).get(kind, '')),
+            'name': seed_text(ch.name), 'icon': ICONS.get(kind, 'link'),
+            'hint': seed_text(ch.posting_url_hint), 'source': ch.utm_source_id.name or '',
             'link': link, 'apps': n, 'contact_email': ch.contact_email or '',
             'can_send': bool(ch.contact_email and ch.platform_id),
             'mail_on': mail_on,
-            'state': rc.state, 'state_label': dict(ROLE_CHANNEL_STATES).get(rc.state, ''),
+            'state': rc.state, 'state_label': _(dict(ROLE_CHANNEL_STATES).get(rc.state, '')),
             'posted_on': rc.posted_on.strftime('%d %b %Y').lstrip('0') if rc.posted_on else '',
             'posted_on_iso': str(rc.posted_on or ''),
             'posted_by': rc.posted_by.name or '',
@@ -345,7 +346,7 @@ class PbHiringP7(models.AbstractModel):
             'countries': [{'id': c.id, 'name': c.name or '', 'code': c.code or ''}
                           for c in countries],
             'mail_on': mail_on, 'cooling_months': months,
-            'kinds': [{'key': k, 'label': v} for k, v in CHANNEL_KINDS
+            'kinds': [{'key': k, 'label': _(v)} for k, v in CHANNEL_KINDS
                       if k in ('board', 'social')],
         }
         res['agencies'] = self._safe(lambda: self._p7_setup_agencies(co_ids), default={'rows': []})

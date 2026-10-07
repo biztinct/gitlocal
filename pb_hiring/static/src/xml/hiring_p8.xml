@@ -25,7 +25,7 @@
 
       <div class="pbhr-p8-emails" role="list">
         <div t-foreach="p8Em.rows" t-as="em8" t-key="em8.id" class="pbhr-p8-em" role="listitem">
-          <button type="button" class="pbhr-p8-em-main" t-on-click="() =&gt; this.p8OpenEmail(em8)" t-att-title="'Open “' + em8.name + '”'">
+          <button type="button" class="pbhr-p8-em-main" t-on-click="() =&gt; this.p8OpenEmail(em8)" t-att-title="tr('Open “%s”', em8.name)">
             <span class="pbhr-p8-em-ic"><t t-out="ic('mail',15)"/></span>
             <span class="pbhr-p8-em-tx">
               <b t-esc="em8.name"/>
@@ -83,7 +83,7 @@
         <div t-if="!p8Au.rules.length" class="pbhr-p4-empty">No rules yet. "Add a rule" builds one as a sentence.</div>
         <div class="pbhr-p8-rules" role="list">
           <div t-foreach="p8Au.rules" t-as="ru8" t-key="ru8.id" class="pbhr-p8-rule" t-att-class="{ 'is-on': ru8.effective }" role="listitem">
-            <label class="pbhr-p8-toggle" t-att-title="ru8.effective ? 'On. Press to switch it off.' : 'Off. Press to switch it on.'">
+            <label class="pbhr-p8-toggle" t-att-title="ru8.effective ? tr('On. Press to switch it off.') : tr('Off. Press to switch it on.')">
               <input type="checkbox" t-att-checked="ru8.effective" t-att-disabled="!p8Au.can_edit" t-on-change="() =&gt; this.p8Toggle(ru8)"/>
               <span class="pbhr-p8-knob"/>
             </label>
@@ -107,7 +107,7 @@
         <div class="pbhr-p8-group-h is-quiet">Built in — always on unless you switch it off</div>
         <div class="pbhr-p8-rules is-builtin" role="list">
           <div t-foreach="p8Au.builtins" t-as="bi8" t-key="bi8.key" class="pbhr-p8-rule" t-att-class="{ 'is-on': bi8.on }" role="listitem">
-            <label t-if="!bi8.locked" class="pbhr-p8-toggle" t-att-title="bi8.on ? 'On. Press to switch it off.' : 'Off. Press to switch it on.'">
+            <label t-if="!bi8.locked" class="pbhr-p8-toggle" t-att-title="bi8.on ? tr('On. Press to switch it off.') : tr('Off. Press to switch it on.')">
               <input type="checkbox" t-att-checked="bi8.on" t-att-disabled="!p8Au.can_edit" t-on-change="() =&gt; this.p8ToggleBuiltin(bi8)"/>
               <span class="pbhr-p8-knob"/>
             </label>
@@ -181,7 +181,7 @@
             </label>
             <div t-if="p8Em.can_edit" class="pbhr-p8-tokens">
               <span class="pbhr-p8-tokens-k">Add a detail:</span>
-              <button t-foreach="p8Tokens()" t-as="tk8" t-key="tk8.key" type="button" class="pbhr-p8-token" t-att-title="'Puts {{' + tk8.key + '}} where the cursor is'" t-on-click="() =&gt; this.p8Insert(tk8.key)" t-esc="tk8.words"/>
+              <button t-foreach="p8Tokens()" t-as="tk8" t-key="tk8.key" type="button" class="pbhr-p8-token" t-att-title="tr('Puts %s where the cursor is', '{{' + tk8.key + '}}')" t-on-click="() =&gt; this.p8Insert(tk8.key)" t-esc="tk8.words"/>
             </div>
           </div>
           <div class="pbhr-p8-ed-r">

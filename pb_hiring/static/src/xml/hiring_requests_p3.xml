@@ -22,7 +22,7 @@
         <button t-if="roleNext.open" type="button" class="pbim-btn primary" t-on-click="() =&gt; this.openForCandidates()"><t t-out="ic('logIn',14)"/> Open for candidates</button>
         <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.addCandidate()"><t t-out="ic('userPlus',14)"/> Add a candidate</button>
         <button t-if="roleNext.ask" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.startAsk(state.drawer)"><t t-out="ic('send',14)"/> Ask a manager</button>
-        <button t-if="roleNext.remind" type="button" class="pbim-btn ghost" t-att-disabled="req.remind_wait" t-att-title="req.remind_wait ? 'Remind now works again in a few minutes' : ''" t-on-click="() =&gt; this.remindNow()"><t t-out="ic('bell',14)"/> Remind now</button>
+        <button t-if="roleNext.remind" type="button" class="pbim-btn ghost" t-att-disabled="req.remind_wait" t-att-title="req.remind_wait ? tr('Remind now works again in a few minutes') : ''" t-on-click="() =&gt; this.remindNow()"><t t-out="ic('bell',14)"/> Remind now</button>
       </div>
     </div>
   </t>
@@ -72,9 +72,9 @@
           <t t-if="req.asked and (req.state === 'asked' or req.state === 'writing')">Ask somebody else</t>
           <t t-else="">Ask a manager</t>
         </button>
-        <button t-if="req.can_remind" type="button" class="pbim-btn ghost" t-att-disabled="req.remind_wait" t-att-title="req.remind_wait ? ('Remind now works again in ' + req.remind_wait + ' minutes') : ''" t-on-click="() =&gt; this.remindNow()"><t t-out="ic('bell',14)"/> Remind now</button>
+        <button t-if="req.can_remind" type="button" class="pbim-btn ghost" t-att-disabled="req.remind_wait" t-att-title="req.remind_wait ? tr('Remind now works again in %s minutes', req.remind_wait) : ''" t-on-click="() =&gt; this.remindNow()"><t t-out="ic('bell',14)"/> Remind now</button>
         <button t-if="req.can_remind" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.copyRequestLink()"><t t-out="ic('link',14)"/> Their link</button>
-        <button t-if="req.can_send_in" type="button" class="pbim-btn ghost" t-att-disabled="req.missing and req.missing.length" t-att-title="req.missing and req.missing.length ? ('Still to fill in: ' + req.missing.join(', ')) : ''" t-on-click="() =&gt; this.sendInMyself()"><t t-out="ic('upload',14)"/> Send it in myself</button>
+        <button t-if="req.can_send_in" type="button" class="pbim-btn ghost" t-att-disabled="req.missing and req.missing.length" t-att-title="req.missing and req.missing.length ? tr('Still to fill in: %s', req.missing.join(', ')) : ''" t-on-click="() =&gt; this.sendInMyself()"><t t-out="ic('upload',14)"/> Send it in myself</button>
         <button t-if="req.can_open_role" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.openForCandidates()"><t t-out="ic('logIn',14)"/> Open for candidates</button>
       </div>
       <p t-if="req.can_send_in and req.missing and req.missing.length and req.state !== 'none'" class="pbhr-p3-hint">Still to fill in before it can be sent: <t t-esc="req.missing.join(', ')"/>.</p>
@@ -84,7 +84,7 @@
       <div class="pbhr-p3-money" t-if="req.figures">
         <div class="pbhr-p3-fig">
           <span class="k">Expected (the manager's)</span>
-          <span class="v" t-esc="req.figures.expected ? money(req.figures.expected, req.figures.currency) : 'Not given yet'"/>
+          <span class="v" t-esc="req.figures.expected ? money(req.figures.expected, req.figures.currency) : tr('Not given yet')"/>
         </div>
         <div class="pbhr-p3-fig">
           <span class="k">Confirmed with Finance</span>
@@ -96,7 +96,7 @@
         </div>
         <div class="pbhr-p3-fig">
           <span class="k">What it is compared with</span>
-          <span class="v" t-esc="req.figures.status === 'unknown' ? 'No budget to compare with' : money(req.figures.dept_remaining, req.figures.dept_currency or req.figures.currency)"/>
+          <span class="v" t-esc="req.figures.status === 'unknown' ? tr('No budget to compare with') : money(req.figures.dept_remaining, req.figures.dept_currency or req.figures.currency)"/>
         </div>
         <div class="pbhr-p3-fig">
           <span class="k">Budget conversation</span>
@@ -165,7 +165,7 @@
           </div>
         </div>
         <div class="pbhr-list-acts">
-          <button t-if="advert.can_edit" class="pbim-btn ghost" t-att-title="advert.share_to ? ('Email it to ' + advert.share_to + ' with a page to comment on') : 'Nobody is named on this role yet'" t-on-click="() =&gt; this.shareJd(jv)"><t t-out="ic('send',13)"/> <t t-if="advert.share_to">Share with <t t-esc="advert.share_to"/></t><t t-else="">Share</t></button>
+          <button t-if="advert.can_edit" class="pbim-btn ghost" t-att-title="advert.share_to ? tr('Email it to %s with a page to comment on', advert.share_to) : tr('Nobody is named on this role yet')" t-on-click="() =&gt; this.shareJd(jv)"><t t-out="ic('send',13)"/> <t t-if="advert.share_to">Share with <t t-esc="advert.share_to"/></t><t t-else="">Share</t></button>
           <button t-if="advert.can_edit and jv.state === 'draft'" class="pbim-btn primary" t-on-click="() =&gt; this.makeFinal(jv)"><t t-out="ic('check',13)"/> Make final</button>
           <button class="pbim-btn ghost" t-on-click="() =&gt; this.act('open_jd', { jd_id: jv.id }, { reload: false })"><t t-out="ic('pencil',13)"/> Edit</button>
         </div>

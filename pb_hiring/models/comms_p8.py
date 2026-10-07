@@ -376,11 +376,11 @@ class PbHiringComms(models.AbstractModel):
         return {
             'id': tpl.id, 'key': tpl.key,
             'name': tpl.with_context(lang='en_US').name or '',
-            'when': WHEN.get(tpl.key, ''),
+            'when': _(WHEN[tpl.key]) if WHEN.get(tpl.key) else '',
             'langs': {lg: ('ok' if lg == 'en_US' or tpl._pb_has_lang(lg) else 'missing')
                       for lg in langs},
             'texts': texts,
-            'tokens': [{'key': t, 'words': TOKEN_WORDS.get(t, t)}
+            'tokens': [{'key': t, 'words': _(TOKEN_WORDS.get(t, t))}
                        for t in COMMON_TOKENS + EXTRA.get(tpl.key, [])],
             'changed': changed,
             'has_button': bool(texts['en_US'].get('button')),
@@ -409,7 +409,7 @@ class PbHiringComms(models.AbstractModel):
         for xmlid, words in INTERNAL:
             rec = self.env.ref('pb_hiring.' + xmlid, raise_if_not_found=False)
             if rec:
-                internal.append({'id': rec.id, 'name': words, 'can_open': admin})
+                internal.append({'id': rec.id, 'name': _(words), 'can_open': admin})
         missing = sum(1 for r in out for v in r['langs'].values() if v == 'missing')
         return {'rows': out, 'internal': internal, 'langs': langs,
                 'lang_words': {'en_US': 'English', 'vi_VN': 'Tiếng Việt', 'id_ID': 'Bahasa Indonesia'},

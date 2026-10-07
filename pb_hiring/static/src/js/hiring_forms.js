@@ -69,6 +69,9 @@ export class PbHiringForms extends Component {
     }
 
     ic(n, s = 16) { return ic(n, s); }
+    /** A literal written inside a template expression: OWL only translates
+     *  text nodes and plain attributes, so the template passes it here. */
+    tr(s, ...a) { return _t(s, ...a); }
 
     // ================================================================ loading
     async loadAll() {

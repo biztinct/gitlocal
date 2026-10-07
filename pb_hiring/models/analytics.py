@@ -140,7 +140,7 @@ class PbHiringAnalytics(models.AbstractModel):
             'delays': [],
             'no_shows': [],
             'agency': [],
-            'states': [{'key': k, 'label': v} for k, v in REQUISITION_STATES],
+            'states': [{'key': k, 'label': _(v)} for k, v in REQUISITION_STATES],
         }
         if not requests:
             payload['headline'] = _(
@@ -357,9 +357,9 @@ class PbHiringAnalytics(models.AbstractModel):
         """Every time an hour moved, split by whose side moved it."""
         rows = self.env['pb.hiring.reschedule'].sudo().search([
             ('requisition_id', 'in', requests.ids)])
-        labels = dict(DELAY_KINDS)
+        labels = {k: _(v) for k, v in DELAY_KINDS}
         buckets = {k: {'key': k, 'name': v, 'count': 0, 'late': 0}
-                   for k, v in DELAY_KINDS}
+                   for k, v in labels.items()}
         for row in rows:
             bucket = buckets.setdefault(
                 row.delay_kind or 'internal',
@@ -376,8 +376,8 @@ class PbHiringAnalytics(models.AbstractModel):
         rows = self.env['pb.hiring.interview'].sudo().search([
             ('requisition_id', 'in', requests.ids),
             ('state', '=', 'no_show')])
-        labels = dict(NO_SHOW_BY)
-        buckets = {k: {'key': k, 'name': v, 'count': 0} for k, v in NO_SHOW_BY}
+        labels = {k: _(v) for k, v in NO_SHOW_BY}
+        buckets = {k: {'key': k, 'name': v, 'count': 0} for k, v in labels.items()}
         for row in rows:
             bucket = buckets.setdefault(
                 row.no_show_by or 'candidate',

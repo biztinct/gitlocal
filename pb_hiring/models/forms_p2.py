@@ -1045,9 +1045,9 @@ class PbHiringForms(models.AbstractModel):
             'fields': flds,
             'missing': {lg: len(rows) for lg, rows in missing.items()},
             'missing_list': {lg: rows for lg, rows in missing.items()},
-            'addable_builtins': [{'key': k, 'label': BUILTINS[k]['label'], 'icon': _builtin_icon(k)}
+            'addable_builtins': [{'key': k, 'label': _(BUILTINS[k]['label']), 'icon': _builtin_icon(k)}
                                  for k in BUILTIN_ORDER if k not in present],
-            'kinds': [{'key': k, 'label': v[0], 'icon': v[2]} for k, v in CUSTOM_KINDS.items()],
+            'kinds': [{'key': k, 'label': _(v[0]), 'icon': v[2]} for k, v in CUSTOM_KINDS.items()],
             'can_edit': self._can_write(),
         }
 

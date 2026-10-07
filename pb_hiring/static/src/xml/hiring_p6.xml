@@ -37,7 +37,7 @@
           </t>
           <t t-elif="jn.state === 'dropped'">
             <small>Did not join</small>
-            <b t-esc="jn.dropped_words or 'No reason recorded'"/>
+            <b t-esc="jn.dropped_words or tr('No reason recorded')"/>
             <span>Counted as an offer drop. Drag them back if that was a mistake.</span>
           </t>
           <t t-else="">
@@ -48,7 +48,7 @@
               <span t-if="jn.week.answer" class="pbhr-p6-flag" t-att-class="'is-' + jn.week.answer"><t t-out="ic(jn.week.answer === 'still_on' ? 'checkCircle' : 'calendar',11)"/> <t t-esc="jn.week.answer_label"/> — <t t-esc="jn.week.by"/></span>
               <span t-elif="jn.week.sent_at" class="pbhr-p6-flag"><t t-out="ic('mail',11)"/> “Still on?” asked</span>
               <span t-if="jn.changes.length" class="pbhr-p6-flag is-changed"><t t-out="ic('calendarClock',11)"/> Moved from <t t-esc="jn.changes[jn.changes.length - 1].old_words"/></span>
-              <span t-if="jn.late" class="pbhr-p6-flag is-late"><t t-out="ic('alert',11)"/> <t t-esc="jn.late === 1 ? '1 thing late' : jn.late + ' things late'"/></span>
+              <span t-if="jn.late" class="pbhr-p6-flag is-late"><t t-out="ic('alert',11)"/> <t t-esc="jn.late === 1 ? tr('1 thing late') : tr('%s things late', jn.late)"/></span>
             </div>
           </t>
         </div>
@@ -203,7 +203,7 @@
         <div class="pbim-modal__head">
           <div>
             <div class="pbhr-drawer-title"><t t-out="ic('userX',16)"/> <t t-esc="state.p6Drop.name"/> will not join</div>
-            <div class="pbhr-drawer-sub">Recorded as an offer drop. <t t-esc="state.p6Drop.manager or 'The hiring manager'"/>, the talent lead and HR are told; the role stays open.</div>
+            <div class="pbhr-drawer-sub">Recorded as an offer drop. <t t-esc="state.p6Drop.manager or tr('The hiring manager')"/>, the talent lead and HR are told; the role stays open.</div>
           </div>
           <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()"><t t-out="ic('x',16)"/></button>
         </div>
@@ -295,7 +295,7 @@
           </div>
           <label class="pbhr-f pbhr-f--wide">
             <span><t t-if="state.p6Chat.mode === 'video'">The video link</t><t t-else="">Where</t></span>
-            <input class="pbhr-in" t-model="state.p6Chat.where" t-att-placeholder="state.p6Chat.mode === 'video' ? (state.p6Chat.google ? 'Leave empty: Google Meet makes the link' : 'Paste the link') : 'Level 3 kitchen, Ho Chi Minh City office'"/>
+            <input class="pbhr-in" t-model="state.p6Chat.where" t-att-placeholder="state.p6Chat.mode === 'video' ? (state.p6Chat.google ? tr('Leave empty: Google Meet makes the link') : tr('Paste the link')) : tr('Level 3 kitchen, Ho Chi Minh City office')"/>
           </label>
           <div t-if="state.p6Chat.mode === 'video' and state.p6Chat.google" class="pbhr-f pbhr-f--wide pbhr-p5-meet is-on"><t t-out="ic('video',16)"/> <span>Google Meet makes the video link when you press Put it in the diary — leave the box empty.</span></div>
         </div>

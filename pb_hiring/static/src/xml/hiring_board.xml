@@ -97,7 +97,7 @@
                Every figure that filters still filters. -->
           <div class="pbhr-glance" data-coach="hi-numbers" role="group" aria-label="Numbers at a glance">
             <t t-foreach="glance" t-as="gl" t-key="gl.key">
-              <button type="button" class="pbhr-gl" t-att-class="(gl.n ? '' : 'zero ') + (gl.tone ? 'is-' + gl.tone + ' ' : '') + (gl.run and state.focus === gl.key ? 'on ' : '') + (gl.run ? '' : 'flat')" t-att-disabled="!gl.run" t-att-title="gl.run ? 'Show only these' : ''" t-on-click="() =&gt; this.pressGlance(gl)">
+              <button type="button" class="pbhr-gl" t-att-class="(gl.n ? '' : 'zero ') + (gl.tone ? 'is-' + gl.tone + ' ' : '') + (gl.run and state.focus === gl.key ? 'on ' : '') + (gl.run ? '' : 'flat')" t-att-disabled="!gl.run" t-att-title="gl.run ? tr('Show only these') : ''" t-on-click="() =&gt; this.pressGlance(gl)">
                 <span t-if="gl.tone" class="pbhr-gl-dot"/>
                 <span class="pbhr-gl-n" t-esc="gl.n"/>
                 <span class="pbhr-gl-l" t-esc="gl.label"/>
@@ -252,7 +252,7 @@
             <div class="pbhr-empty-ic"><t t-out="ic('search',30)"/></div>
             <h2>Nothing matches that</h2>
             <p>There are <t t-esc="state.rows.length"/>
-               <t t-esc="counted(state.rows.length, ' hiring request', ' hiring requests')"/>
+               <t t-esc="counted(state.rows.length, tr(' hiring request'), tr(' hiring requests'))"/>
                on this board. Clear the filters to see them all.</p>
             <button class="pbim-btn ghost" t-on-click="clearFilters">
               <t t-out="ic('x',14)"/> Clear the filters
@@ -337,7 +337,7 @@
                 <span t-if="row.referrals" class="pbhr-foot-bit">
                   <t t-out="ic('userPlus',13)"/>
                   <t t-esc="row.referrals"/>
-                  <t t-esc="counted(row.referrals, ' referral', ' referrals')"/>
+                  <t t-esc="counted(row.referrals, tr(' referral'), tr(' referrals'))"/>
                 </span>
                 <span t-if="row.state === 'open'" class="pbhr-foot-bit pbhr-foot-age" t-esc="daysWords(row.days_open)"/>
               </div>
@@ -396,7 +396,7 @@
               <div class="pbhr-empty-ic"><t t-out="ic('search',30)"/></div>
               <h2>Nothing matches that</h2>
               <p>There are <t t-esc="state.interviews.length"/>
-                 <t t-esc="counted(state.interviews.length, ' interview', ' interviews')"/>
+                 <t t-esc="counted(state.interviews.length, tr(' interview'), tr(' interviews'))"/>
                  on this board. Clear the filters to see them all.</p>
               <button class="pbim-btn ghost" t-on-click="() =&gt; { state.ivFocus = ''; state.ivQ = ''; }">
                 <t t-out="ic('x',14)"/> Clear the filters
@@ -436,7 +436,7 @@
 <label class="pbhr-f"><span>Annual budget for this request</span><input type="number" min="1" class="pbhr-in" t-model.number="state.raising.budget_cost"/></label>
 <label class="pbhr-f"><span>Budget currency</span><select class="pbhr-in" t-model="state.raising.currency_id"><option t-foreach="state.journey.currencies" t-as="option" t-key="option.id" t-att-value="option.id" t-esc="option.name"/></select></label>
 <label class="pbhr-f pbhr-f--wide"><span>When should the position be closed?</span><input type="date" class="pbhr-in" t-model="state.raising.target_close_date"/></label></t>
-</div><div class="pbim-modal__foot"><button t-if="state.raising.step &gt; 0" class="pbim-btn ghost" t-on-click="() =&gt; state.raising.step--">← Back</button><button t-else="" class="pbim-btn ghost" t-on-click="cancelRaise">Cancel</button><span class="pbhr-step-count" t-esc="stepOf(state.raising.step + 1, 4)"/><button t-if="state.raising.step &lt; 3" class="pbim-btn primary" t-on-click="nextRequestStep">Continue →</button><button t-else="" class="pbim-btn primary" t-att-disabled="state.savingRequest" t-on-click="saveRaise"><t t-esc="state.savingRequest ? 'Saving…' : 'Create hiring request'"/></button></div></div></div><!-- ==================================================================
+</div><div class="pbim-modal__foot"><button t-if="state.raising.step &gt; 0" class="pbim-btn ghost" t-on-click="() =&gt; state.raising.step--">← Back</button><button t-else="" class="pbim-btn ghost" t-on-click="cancelRaise">Cancel</button><span class="pbhr-step-count" t-esc="stepOf(state.raising.step + 1, 4)"/><button t-if="state.raising.step &lt; 3" class="pbim-btn primary" t-on-click="nextRequestStep">Continue →</button><button t-else="" class="pbim-btn primary" t-att-disabled="state.savingRequest" t-on-click="saveRaise"><t t-esc="state.savingRequest ? tr('Saving…') : tr('Create hiring request')"/></button></div></div></div><!-- ==================================================================
            WRITE AN ADVERT
            ================================================================== -->
       <div t-if="state.writingJd" class="pbim-modal-scrim pbhr-scrim" t-on-click="cancelJd">
@@ -462,7 +462,7 @@
               <span>The one-line version</span>
               <input class="pbhr-in" type="text" t-model="state.writingJd.summary" placeholder="One sentence a candidate would read on a list of jobs"/>
             </label>
-            <div class="pbhr-f--wide"><details class="pbhr-company-story"><summary>Company story · included automatically</summary><section t-foreach="state.journey.company_sections" t-as="story" t-key="story.key"><b t-esc="story.title"/><p t-esc="story.body or 'Add this section in Company story settings.'"/></section></details><label t-foreach="[{key:'role',label:'What the role is about'},{key:'duties',label:'What you will be doing'},{key:'must',label:'Must-have skills and characteristics'},{key:'nice',label:'Nice-to-have skills and characteristics'},{key:'process',label:'Interview process (optional)'}]" t-as="section" t-key="section.key" class="pbhr-f pbhr-jd-section"><span t-esc="section.label"/><textarea class="pbhr-in" rows="4" t-model="state.writingJd.sections[section.key]"/></label></div></div>
+            <div class="pbhr-f--wide"><details class="pbhr-company-story"><summary>Company story · included automatically</summary><section t-foreach="state.journey.company_sections" t-as="story" t-key="story.key"><b t-esc="story.title"/><p t-esc="story.body or tr('Add this section in Company story settings.')"/></section></details><label t-foreach="[{key:'role',label:'What the role is about'},{key:'duties',label:'What you will be doing'},{key:'must',label:'Must-have skills and characteristics'},{key:'nice',label:'Nice-to-have skills and characteristics'},{key:'process',label:'Interview process (optional)'}]" t-as="section" t-key="section.key" class="pbhr-f pbhr-jd-section"><span t-esc="section.label"/><textarea class="pbhr-in" rows="4" t-model="state.writingJd.sections[section.key]"/></label></div></div>
           <div class="pbim-modal__foot">
             <button class="pbim-btn ghost" t-on-click="cancelJd">Cancel</button>
             <button class="pbim-btn primary" t-on-click="saveJd">
@@ -1337,7 +1337,7 @@
               </div>
               <div class="pbhr-fact">
                 <span class="k">Recruiter</span>
-                <span class="v" t-esc="state.drawer.recruiter or 'Nobody yet'"/>
+                <span class="v" t-esc="state.drawer.recruiter or tr('Nobody yet')"/>
               </div>
               <div class="pbhr-fact">
                 <span class="k">Target closing date</span>
@@ -1346,7 +1346,7 @@
               <div class="pbhr-fact">
                 <span class="k">Agencies</span>
                 <span class="v">
-                  <t t-esc="state.drawer.agency_names or 'Nobody — we are doing it'"/>
+                  <t t-esc="state.drawer.agency_names or tr('Nobody — we are doing it')"/>
                   <button t-if="state.canRecruit" type="button" class="pbhr-p7-linkbtn" t-on-click="() =&gt; this.p7OpenSheet('agency')"> · <t t-if="state.drawer.agency_names">Change</t><t t-else="">Add an agency</t></button>
                 </span>
               </div>
@@ -1493,7 +1493,7 @@
                       <t t-else="">
                         Waiting for <t t-esc="iv.feedback_total - iv.feedback_in"/>
                         of <t t-esc="iv.feedback_total"/>
-                        <t t-esc="counted(iv.feedback_total, ' opinion', ' opinions')"/>
+                        <t t-esc="counted(iv.feedback_total, tr(' opinion'), tr(' opinions'))"/>
                       </t>
                     </span>
                     <span t-if="iv.recommendation_avg" class="pbim-badge pbhr-fb ok">
@@ -1506,7 +1506,7 @@
                     <span t-if="iv.moved_times" class="pbim-badge pbhr-fb">
                       <t t-out="ic('rotate',13)"/>
                       Moved <t t-esc="iv.moved_times"/>
-                      <t t-esc="counted(iv.moved_times, ' time', ' times')"/>
+                      <t t-esc="counted(iv.moved_times, tr(' time'), tr(' times'))"/>
                     </span>
                     <span t-if="iv.decision" class="pbim-badge pbhr-fb ok">
                       <t t-out="ic('flag',13)"/> <t t-esc="iv.decision_label"/>

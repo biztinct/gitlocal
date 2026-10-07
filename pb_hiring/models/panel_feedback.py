@@ -386,8 +386,8 @@ class PbHiringFeedback(models.Model):
             'decision': self.decision or '',
             'notes': self.notes or '',
             'submitted_on': self._local(self.submitted_at),
-            'decisions': [{'key': k, 'label': v} for k, v in DECISIONS],
-            'recommendations': [{'key': k, 'label': v}
+            'decisions': [{'key': k, 'label': _(v)} for k, v in DECISIONS],
+            'recommendations': [{'key': k, 'label': _(v)}
                                 for k, v in RECOMMENDATIONS],
         }
 

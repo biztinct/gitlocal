@@ -52,6 +52,10 @@ BOARD_CANDIDATES = 600
 
 #: The switches the set-up page may flip. A whitelist: the page is not a
 #: general editor of system parameters.
+#: The Vietnamese name of the seeded Standard preset (the 19.0.2.8.0 migration
+#: fills it on existing rows that still carry the product's English).
+STANDARD_VI = 'Tiêu chuẩn'
+
 SWITCHES = {
     'candidate_mail': P_CANDIDATE_MAIL,
     'line_managers_move': P_LINE_MANAGERS_MOVE,
@@ -99,9 +103,12 @@ class PbHiringStagePreset(models.Model):
             if Preset.search_count([('company_id', '=', company.id),
                                     ('is_standard', '=', True)]):
                 continue
-            Preset.create({'name': 'Standard', 'company_id': company.id,
-                           'is_standard': True, 'sequence': 0,
-                           'stage_ids': [(6, 0, stages.ids)]})
+            preset = Preset.create({'name': 'Standard', 'company_id': company.id,
+                                    'is_standard': True, 'sequence': 0,
+                                    'stage_ids': [(6, 0, stages.ids)]})
+            if self.env['res.lang'].sudo().search_count(
+                    [('code', '=', 'vi_VN'), ('active', '=', True)]):
+                preset.update_field_translations('name', {'vi_VN': STANDARD_VI})
             made += 1
         return made
 
@@ -565,7 +572,7 @@ class PbHiringBoardP1(models.AbstractModel):
             'source_label': source,
             'sub': sub,
             'screen': app.pb_screen or '',
-            'screen_label': dict(SCREEN_TAGS).get(app.pb_screen, ''),
+            'screen_label': _(dict(SCREEN_TAGS).get(app.pb_screen, '')),
             'status': app.application_status or '',
             'waiting': waiting,
             'next_interview_at': str(live[0].start) if live else '',
@@ -723,7 +730,7 @@ class PbHiringBoardP1(models.AbstractModel):
             'linkedin': linkedin,
             'portfolio': app.pb_portfolio or '',
             'screen': app.pb_screen or '',
-            'screen_label': dict(SCREEN_TAGS).get(app.pb_screen, ''),
+            'screen_label': _(dict(SCREEN_TAGS).get(app.pb_screen, '')),
             'reason': app.pb_stage_reason or '',
             'hold_until': str(app.pb_hold_until or ''),
             'money': money,
@@ -746,7 +753,7 @@ class PbHiringBoardP1(models.AbstractModel):
         scorecard's questions as columns, one row per panellist with their
         answer to each, the decision chip and who typed it in."""
         from .hiring_common import DECISIONS
-        labels = dict(DECISIONS)
+        labels = {k: _(v) for k, v in DECISIONS}
         card = iv.scorecard_id
         parts = [p._payload() for p in card._parts_sorted()] if card else []
         rows = []
