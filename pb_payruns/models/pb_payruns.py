@@ -185,8 +185,20 @@ class PbPayruns(models.AbstractModel):
     # ---------------- helpers ----------------
     @api.model
     def _approval_chip(self, run):
-        """Which route this run is on and who it is waiting for, in words."""
-        request = self._safe(lambda: run.approval_request_id, default=None)
+        """Which route this run is on and who it is waiting for, in words.
+
+        Read as superuser. The reader can already see the run; the request's
+        own record rules ("mine" for approval users) would refuse anyone who
+        is not a seat on it, and that refusal used to escape this card and
+        blank the whole board ("You don't have access to this yet"). The chip
+        is a summary — route, step, names — so showing it to whoever sees the
+        run leaks nothing the run itself does not.
+        """
+        return self._safe(lambda: self._approval_chip_data(run), default={})
+
+    @api.model
+    def _approval_chip_data(self, run):
+        request = run.sudo().approval_request_id
         if not request:
             return {}
         step = None
