@@ -836,6 +836,24 @@ export const SCREENS = {
             <span class="lrn-chip ${f.tone}">${esc(tx(f.reading))}</span></div>`).join("");
         const months = [B("Whole year", "Cả năm")].concat(bg.months).map((m, i) =>
             `<button class="lrn-chip ${i === 0 ? "b" : ""}">${esc(tx(m))}</button>`).join("");
+        /* The five big figures (pb_budget budget_board.xml `bdg-kpis`, kept
+           big on 2026-09-30), in the year's words. Added up from the same three
+           functions the tiles below show; the year is gone to the end of July. */
+        const bgBudget = bg.functions.reduce((t, f) => t + f.budget, 0);
+        const bgSpent = bg.functions.reduce((t, f) => t + f.spent, 0);
+        const bgHot = bg.functions.filter((f) => f.tone === "warn" || f.tone === "bad").length;
+        const pace = Math.round(7 / 12 * 100);
+        const burn = Math.round(bgSpent / bgBudget * 100);
+        // The product's own short form (budget_board.js `short`): a tile has
+        // room for four characters, not eleven digits.
+        const short = (v) => (v >= 1e9 ? (v / 1e9).toFixed(1) + "bn" : (v / 1e6).toFixed(1) + "m");
+        const bigs = [
+            ["landmark", short(bgBudget), B("budget for the year", "ngân sách cho cả năm")],
+            ["banknote", short(bgSpent), B("spent so far", "đã chi đến nay")],
+            ["check-circle", short(bgBudget - bgSpent), B("left", "còn lại")],
+            ["pie", `${N(burn)}%${SP}vs${SP}${N(pace)}%`, B("money gone, year gone", "tiền đã đi, năm đã trôi")],
+            ["alert-triangle", N(bgHot), B("functions running warm or worse", "bộ phận đang nóng lên hoặc tệ hơn")],
+        ].map(([i, v, l]) => `<div class="lrn-kpi"><div class="lrn-kv">${ic(i)}${esc(v)}</div><div class="lrn-kt"><span>${esc(tx(l))}</span></div></div>`).join("");
         return `
             <div class="lrn-panel">
                 <h3>${ic("bar-chart")}${esc(tx(B("Payroll Report", "Báo cáo lương")))}</h3>
@@ -848,6 +866,7 @@ export const SCREENS = {
             </div>
             <div class="lrn-panel">
                 <h3>${ic("landmark")}${esc(tx(B("Budget", "Ngân sách")))}${SP}${bg.year}</h3>
+                <div class="lrn-grid g5" data-coach="bg-kpis">${bigs}</div>
                 <div class="lrn-strip" data-coach="bg-months">${months}</div>
                 <div class="lrn-grid g3" data-coach="bg-heat">${tiles}</div>
                 <p class="lrn-note">${esc(tx(B("Press a month, shift-press another, or drag across them.",
@@ -1359,11 +1378,14 @@ export const SCREENS = {
                         "Công cụ mở mọi công cụ ở cùng một chỗ (Ctrl hoặc Cmd + K). Mô phỏng chạy cấu hình này trên phiếu lương thật của kỳ trước, trước khi nó được đưa vào dùng.")))}</p>
                 </div>
             </div>
-            <div class="lrn-grid g3 top">
+            <div class="lrn-fsrow">
                 <div class="lrn-panel" data-coach="fs-components">
-                    <h3>${ic("layers")}${esc(tx(B("Components", "Thành phần")))}</h3>
+                    <h3>${ic("layers")}${esc(tx(B("Components", "Thành phần")))}<button class="lrn-fsfold" aria-label="${
+                        esc(tx(B("Collapse Components", "Thu gọn Thành phần")))}">${ic("chevron-left")}</button></h3>
                     <div class="lrn-rows">${comps}</div>
                 </div>
+                <div class="lrn-fsgrip" data-coach="fs-resize" role="separator" aria-orientation="vertical"
+                    aria-label="${esc(tx(B("Resize Components panel", "Đổi độ rộng khung Thành phần")))}"><span></span></div>
                 <div class="lrn-panel" data-coach="fs-formula">
                     <h3>${ic("calculator")}${esc(c.selected)}</h3>
                     <div class="lrn-seg" data-coach="fs-namesletters">
@@ -1380,8 +1402,11 @@ export const SCREENS = {
                         <b>${esc(usedBy)}</b>
                     </div>
                 </div>
+                <div class="lrn-fsgrip" role="separator" aria-orientation="vertical"
+                    aria-label="${esc(tx(B("Resize Live preview panel", "Đổi độ rộng khung Xem trước trực tiếp")))}"><span></span></div>
                 <div class="lrn-panel" data-coach="fs-preview">
-                    <h3>${ic("eye")}${esc(tx(B("Live preview", "Xem trước trực tiếp")))}</h3>
+                    <h3>${ic("eye")}${esc(tx(B("Live preview", "Xem trước trực tiếp")))}<button class="lrn-fsfold" aria-label="${
+                        esc(tx(B("Collapse Live preview", "Thu gọn Xem trước trực tiếp")))}">${ic("chevron-right")}</button></h3>
                     <p class="lrn-note">${esc(previewFor)}</p>
                     <div class="lrn-calc">${preview}</div>
                 </div>
@@ -2508,7 +2533,7 @@ export const SCREENS = {
             ${quietNums(h.numbers, ATTR_HI_NUMS)}
             <div class="lrn-steps" data-coach="hi-steps">${stepButtons(h.steps.map(([l, c], i) => ({ label: l, count: c, on: i === 2 })), B("", ""))}</div>
             <div class="lrn-zmodes" data-coach="hi-tabs"><button class="lrn-lens on">${esc(tx(B("Roles", "Vai trò")))}</button><button class="lrn-lens">${
-                esc(tx(B("Interviews", "Phỏng vấn")))}</button><button class="lrn-lens">${esc(tx(EN("Resume bank")))}</button></div>
+                esc(tx(B("Interviews", "Phỏng vấn")))}</button><button class="lrn-lens">${esc(tx(B("Resume bank", "Kho hồ sơ")))}</button></div>
             <div class="lrn-yroles" data-coach="hi-row">${roles}</div>`;
     },
 
@@ -2522,7 +2547,7 @@ export const SCREENS = {
         return `
             <div class="lrn-grid g2 top">
                 <div class="lrn-panel lrn-zdialog" data-coach="rep-hi-open">
-                    <span class="lrn-zeyebrow">${esc(tx(EN("Open a role")))}</span>
+                    <span class="lrn-zeyebrow">${esc(tx(B("Open a role", "Mở một vị trí")))}</span>
                     <h3>${esc(tx(h.open.title))}</h3>
                     ${fields}
                     <div class="lrn-strip">
@@ -2531,10 +2556,10 @@ export const SCREENS = {
                     </div>
                 </div>
                 <div class="lrn-panel lrn-zdialog" data-coach="hi-askform">
-                    <span class="lrn-zeyebrow">${esc(tx(EN("Ask a manager")))}</span>
+                    <span class="lrn-zeyebrow">${esc(tx(B("Ask a manager", "Nhờ quản lý")))}</span>
                     <h3>${esc(tx(h.ask.title))}</h3>
-                    <div class="lrn-kv2"><span>${esc(tx(EN("Which manager?")))}</span><b>${esc(h.ask.manager)}</b></div>
-                    <div class="lrn-kv2"><span>${esc(tx(EN("Remind them every")))}</span><b>${esc(tx(h.ask.every))}</b></div>
+                    <div class="lrn-kv2"><span>${esc(tx(B("Which manager?", "Quản lý nào?")))}</span><b>${esc(h.ask.manager)}</b></div>
+                    <div class="lrn-kv2"><span>${esc(tx(B("Remind them every", "Nhắc họ mỗi")))}</span><b>${esc(tx(h.ask.every))}</b></div>
                     <span class="lrn-sub2">${esc(tx(B("What the role's chip says, as it moves", "Nhãn trên thẻ vị trí, theo từng bước")))}</span>
                     <div class="lrn-ystages" data-coach="rep-hi-route">${chips}</div>
                     <p class="lrn-note">${esc(tx(h.ask.budget))}</p>
@@ -2579,9 +2604,9 @@ export const SCREENS = {
                 <button class="lrn-btn sm ghost" ${navAttr("hiring")}>${ic("chevron-left")}${esc(tx(B("All roles", "Mọi vị trí")))}</button>
                 <div><h3>${esc(tx(r.title))}</h3><span class="lrn-strip">${chips}</span></div>
                 <span class="lrn-push"></span>
-                <button class="lrn-btn sm ghost" data-coach="hb-compare">${esc(tx(EN("Compare finalists")))}</button>
+                <button class="lrn-btn sm ghost" data-coach="hb-compare">${esc(tx(B("Compare finalists", "So sánh ứng viên cuối")))}</button>
                 <button class="lrn-btn sm ghost">${ic("user-plus")}${esc(tx(B("Add a candidate", "Thêm ứng viên")))}</button>
-                <button class="lrn-btn sm pri" data-coach="hb-publish">${ic("send")}${esc(tx(EN("Publish to…")))}</button>
+                <button class="lrn-btn sm pri" data-coach="hb-publish">${ic("send")}${esc(tx(B("Publish to…", "Đăng lên…")))}</button>
             </div>
             <div class="lrn-zmodes" data-coach="hb-tabs">${tabs}</div>
             ${quietNums(r.numbers, ATTR_HB_NUMS)}
@@ -2589,14 +2614,14 @@ export const SCREENS = {
                 <div class="lrn-ywfmain">
                     <div class="lrn-ykan" data-coach="hb-board">${cols}
                         <div class="lrn-ykcol lrn-ykrail" data-coach="hb-closed">
-                            <div class="lrn-ykhead"><span>${esc(tx(EN("Closed")))}</span><b>${esc(N(r.closed.reduce((a, c) => a + c[1], 0)))}</b></div>
+                            <div class="lrn-ykhead"><span>${esc(tx(B("Closed", "Đã đóng")))}</span><b>${esc(N(r.closed.reduce((a, c) => a + c[1], 0)))}</b></div>
                             ${closed}
                             <p class="lrn-note">${esc(tx(r.closedHint))}</p>
                         </div>
                     </div>
                     <div class="lrn-panel" data-coach="hb-joining">
-                        <h3>${ic("hourglass")}${esc(j.name)}${DOT}${esc(tx(EN("Joining")))}${SP}${esc(j.date)}</h3>
-                        <span class="lrn-sub2">${esc(tx(EN("Before they join")))}</span>
+                        <h3>${ic("hourglass")}${esc(j.name)}${DOT}${esc(tx(B("Joining", "Vào làm")))}${SP}${esc(j.date)}</h3>
+                        <span class="lrn-sub2">${esc(tx(B("Before they join", "Trước khi vào làm")))}</span>
                         ${list}
                         <p class="lrn-note">${esc(tx(j.note))}</p>
                         <div class="lrn-strip">
@@ -2615,7 +2640,7 @@ export const SCREENS = {
                         <p class="lrn-note">${esc(tx(d.next))}</p>
                         <button class="lrn-btn sm pri">${esc(tx(d.nextBtn))}</button>
                     </div>
-                    <b data-coach="rep-hb-scores">${esc(tx(B("Discussion 1", "Trao đổi 1")))}${DOT}${esc(tx(EN("Decision")))}</b>${scores}
+                    <b data-coach="rep-hb-scores">${esc(tx(B("Discussion 1", "Trao đổi 1")))}${DOT}${esc(tx(B("Decision", "Quyết định")))}</b>${scores}
                     <span class="lrn-sub2">${ic("lock")}${esc(tx(d.notes))}</span>
                     <div class="lrn-strip" data-coach="hb-cacts">${acts}</div>
                 </aside>
@@ -2636,7 +2661,7 @@ export const SCREENS = {
         return `
             <div class="lrn-zhead"><div><h3>${esc(tx(B("Hiring set-up", "Thiết lập tuyển dụng")))}</h3>
                 <p class="lrn-note">${esc(tx(u.lede))}</p></div><span class="lrn-push"></span>
-                <button class="lrn-btn sm ghost" ${navAttr("hiring")}>${esc(tx(EN("Back to the hiring board")))}</button></div>
+                <button class="lrn-btn sm ghost" ${navAttr("hiring")}>${esc(tx(B("Back to the hiring board", "Quay lại bảng tuyển dụng")))}</button></div>
             <div class="lrn-setgrid" data-coach="hs-cards">${cards}</div>
             <div class="lrn-grid g2 top">
                 <section class="lrn-panel" data-coach="hs-stages">
@@ -2672,9 +2697,9 @@ export const SCREENS = {
         const waiting = n.waiting.map(([who, stage, days]) => `<div class="lrn-kv2"><span>${esc(who)}${DOT}${esc(tx(stage))}</span><b>${esc(tx(days))}</b></div>`).join("");
         return `
             <div class="lrn-zhead" data-coach="hn-head"><p class="lrn-note">${esc(tx(n.lede))}</p><span class="lrn-push"></span>
-                <button class="lrn-btn sm ghost">${ic("download")}${esc(tx(EN("Download everything")))}</button></div>
-            <div class="lrn-strip" data-coach="hn-filters"><span class="lrn-chip">${esc(tx(EN("Every department")))}</span>
-                <span class="lrn-chip">${esc(tx(EN("Every country")))}</span><span class="lrn-chip">${esc(tx(EN("Every recruiter")))}</span></div>
+                <button class="lrn-btn sm ghost">${ic("download")}${esc(tx(B("Download everything", "Tải xuống tất cả")))}</button></div>
+            <div class="lrn-strip" data-coach="hn-filters"><span class="lrn-chip">${esc(tx(B("Every department", "Tất cả phòng ban")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Every country", "Tất cả quốc gia")))}</span><span class="lrn-chip">${esc(tx(B("Every recruiter", "Tất cả chuyên viên tuyển dụng")))}</span></div>
             <div class="lrn-ylocked" data-coach="hn-headline">${ic("sparkles")}<span>${esc(tx(n.headline))}</span></div>
             <div class="lrn-grid g3">${tiles}</div>
             <div class="lrn-panel" data-coach="rep-hn-funnel">

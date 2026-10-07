@@ -319,6 +319,11 @@ const I18N = {
     welcomeBody: "Want a 2-minute look around first? I will show you the screens you use most.",
     welcomeGo: "Watch the tour",
     welcomeLater: "Later",
+    /* The same card for somebody whose work is hiring and not payroll
+       (session.pb_hiring_not_payroll): the payroll tour is not theirs, the
+       Hiring walkthrough is. Owner item, LEARN REFRESH 2. */
+    welcomeHiringBody: "Want a 2-minute look at Hiring first? I will show you the board you will use most.",
+    welcomeHiringGo: "Watch the Hiring tour",
     /* -- the Coach ------------------------------------------------------- */
     coachName: "Payobook helper",
     stuck: "Stuck?",
@@ -680,6 +685,8 @@ const I18N = {
     welcomeBody: "Bạn muốn xem qua 2 phút trước không? Tôi sẽ chỉ cho bạn những màn hình bạn dùng nhiều nhất.",
     welcomeGo: "Xem hướng dẫn",
     welcomeLater: "Để sau",
+    welcomeHiringBody: "Bạn muốn xem qua Tuyển dụng trong 2 phút không? Tôi sẽ chỉ cho bạn bảng mà bạn dùng nhiều nhất.",
+    welcomeHiringGo: "Xem hướng dẫn Tuyển dụng",
     /* -- the Coach ------------------------------------------------------- */
     coachName: "Trợ lý Payobook",
     stuck: "Cần trợ giúp?",
@@ -1499,7 +1506,7 @@ const GLOSSARY = {
     term: B("Scorecard", "Phiếu đánh giá"),
     aliases: { en: ["scorecards"], vi: ["các phiếu đánh giá"] },
     def: B("What an interviewer fills in after a conversation, ending in a decision: Yes, Maybe, No or Hold. It stays hidden from the other interviewers until everyone has answered.",
-           "Điều một người phỏng vấn điền sau cuộc trao đổi, kết thúc bằng một quyết định: Yes, Maybe, No hoặc Hold. Nó được ẩn với những người phỏng vấn khác cho tới khi mọi người trả lời xong."),
+           "Điều một người phỏng vấn điền sau cuộc trao đổi, kết thúc bằng một quyết định: Có, Có thể, Không hoặc Tạm hoãn. Nó được ẩn với những người phỏng vấn khác cho tới khi mọi người trả lời xong."),
   },
   postOffer: {
     term: B("Post-offer", "Chờ nhận việc"),
@@ -2566,7 +2573,7 @@ const STATIONS = {
                 "Một vị trí, các ứng viên xếp theo cột: chuyển họ, chia sẻ họ, đọc phiếu đánh giá, và xác nhận ngày người mới bắt đầu."),
         outline: {
           what: B("Lifecycle › Hiring, then a role's card. A column per stage, a card per person, a Closed list, and a panel for one candidate.",
-                  "Vòng đời nhân sự › Tuyển dụng, rồi thẻ của một vị trí. Mỗi giai đoạn một cột, mỗi người một thẻ, một danh sách Closed, và một ngăn cho từng ứng viên."),
+                  "Vòng đời nhân sự › Tuyển dụng, rồi thẻ của một vị trí. Mỗi giai đoạn một cột, mỗi người một thẻ, một danh sách Đã đóng, và một ngăn cho từng ứng viên."),
           why: B("Good people take other jobs while a board stands still. One look shows who is waiting, on whom, and for how long.",
                  "Người giỏi nhận việc khác khi bảng đứng yên. Một cái nhìn cho biết ai đang chờ, chờ ai, và đã chờ bao lâu."),
           when: B("Every day a role is open, and again on the day the new person starts.",
@@ -3359,6 +3366,17 @@ const LESSONS = {
         body: B("The preview runs the whole configuration on one employee: Mai's gross of <b>14,280,000 ₫</b>, taxable 2,020,000, tax 101,000 and net <b>12,919,000 ₫</b>. The same arithmetic as her payslip — here you can see which component produced each line.",
                 "Bản xem trước chạy toàn bộ cấu hình trên một nhân viên: tổng thu nhập của Mai <b>14.280.000 ₫</b>, thu nhập chịu thuế 2.020.000, thuế 101.000 và thực nhận <b>12.919.000 ₫</b>. Đúng phép tính trên phiếu lương của cô ấy — ở đây bạn thấy thành phần nào đã tạo ra từng dòng."),
         moment: { kind: "calc" },
+      },
+      {
+        /* The adjustable panels (pb_formula_studio b085f252e): Cards view only;
+           widths live in the screen's state, so they reset when you leave. */
+        screen: "formula", anchor: "fs-resize",
+        kicker: B("Make room", "Dành chỗ"),
+        title: B("Fold a panel away, or drag it wider", "Thu gọn một khung, hoặc kéo cho rộng hơn"),
+        body: B("In <b>Cards</b>, the line between two panels is a handle: drag it to make <b>Components</b> or <b>Live preview</b> wider, or select it and use the arrow keys. The <b>‹</b> beside Components and the <b>›</b> beside Live preview fold that panel to a thin strip; press the strip to open it again.",
+                "Ở chế độ <b>Thẻ</b>, đường kẻ giữa hai khung là một tay nắm: kéo nó để khung <b>Thành phần</b> hoặc <b>Xem trước trực tiếp</b> rộng hơn, hoặc chọn nó rồi dùng phím mũi tên. Dấu <b>‹</b> cạnh Thành phần và dấu <b>›</b> cạnh Xem trước trực tiếp thu khung đó lại thành một dải mỏng; bấm vào dải để mở lại."),
+        tip: B("The formula in the middle always keeps its room. The widths you choose last until you leave Formula Studio.",
+               "Công thức ở giữa luôn giữ đủ chỗ. Độ rộng bạn chọn giữ nguyên cho tới khi bạn rời Xưởng công thức."),
       },
       {
         screen: "formula", anchor: "rep-fs-stage",
@@ -4677,11 +4695,11 @@ const LESSONS = {
       {
         screen: "hiringrole", anchor: "hb-publish",
         kicker: B("Find people", "Tìm người"),
-        title: B("Publish to… — one link for each place", "Publish to… — mỗi nơi đăng một đường dẫn"),
+        title: B("Publish to… — one link for each place", "Đăng lên… — mỗi nơi đăng một đường dẫn"),
         body: B("<b>Publish to…</b> lists every place the role can go: the careers page, job sites, colleagues' referrals, an agency. Each has its own link, so every application is counted where it came from.",
-                "<b>Publish to…</b> (Đăng lên…) liệt kê mọi nơi vị trí có thể xuất hiện: trang tuyển dụng, các trang việc làm, lời giới thiệu của đồng nghiệp, một đơn vị tuyển dụng. Mỗi nơi có đường dẫn riêng, nên mỗi hồ sơ được đếm đúng nơi nó đến."),
+                "<b>Đăng lên…</b> liệt kê mọi nơi vị trí có thể xuất hiện: trang tuyển dụng, các trang việc làm, lời giới thiệu của đồng nghiệp, một đơn vị tuyển dụng. Mỗi nơi có đường dẫn riêng, nên mỗi hồ sơ được đếm đúng nơi nó đến."),
         tip: B("No job site is connected to Payobook. Paste the advert there with its link, then press Mark as posted.",
-               "Không trang việc làm nào được kết nối với Payobook. Hãy dán tin tuyển dụng kèm đường dẫn ở đó, rồi bấm Mark as posted (Đánh dấu đã đăng)."),
+               "Không trang việc làm nào được kết nối với Payobook. Hãy dán tin tuyển dụng kèm đường dẫn ở đó, rồi bấm <b>Đánh dấu đã đăng</b>."),
       },
       {
         screen: "hiringrole", anchor: "hb-board",
@@ -4695,9 +4713,9 @@ const LESSONS = {
       {
         screen: "hiringrole", anchor: "hb-closed",
         kicker: B("Saying no", "Nói không"),
-        title: B("Closed is a list, not a dead end", "Closed là một danh sách, không phải ngõ cụt"),
+        title: B("Closed is a list, not a dead end", "Đã đóng là một danh sách, không phải ngõ cụt"),
         body: B("Drop a card on <b>Closed</b> and choose why: <b>CV reject</b>, <b>Interview reject</b>, <b>Drop-out</b>, <b>On hold</b> or <b>Offer drop</b>. A reason is welcome, never required.",
-                "Thả một thẻ vào <b>Closed</b> (Đã đóng) và chọn lý do: <b>Loại hồ sơ</b>, <b>Loại sau phỏng vấn</b>, <b>Ứng viên rút lui</b>, <b>Tạm hoãn</b> hoặc <b>Từ chối lời mời</b>. Lý do được hoan nghênh, không bao giờ bắt buộc."),
+                "Thả một thẻ vào <b>Đã đóng</b> và chọn lý do: <b>Loại hồ sơ</b>, <b>Loại sau phỏng vấn</b>, <b>Ứng viên rút lui</b>, <b>Tạm hoãn</b> hoặc <b>Từ chối lời mời</b>. Lý do được hoan nghênh, không bao giờ bắt buộc."),
         consequence: B("Affects this one person on this role. Reversible: yes — press the line and drag them back. Verify first: the box that sends the not-this-time email, before you close.",
                        "Ảnh hưởng: một người này trên vị trí này. Hoàn tác: có — bấm vào dòng đó và kéo họ trở lại. Kiểm tra trước: ô gửi email “lần này chưa phù hợp”, trước khi bạn đóng."),
       },
@@ -4720,16 +4738,16 @@ const LESSONS = {
         kicker: B("Privacy", "Riêng tư"),
         title: B("Private to hiring, until you share", "Chỉ nhóm tuyển dụng thấy, cho tới khi bạn chia sẻ"),
         body: B("A manager sees a candidate's name, stage and interview dates. <b>Share with…</b> adds the parts you tick — the CV, the answers, the expected pay — and nothing else.",
-                "Quản lý thấy tên, giai đoạn và ngày phỏng vấn của ứng viên. <b>Share with…</b> (Chia sẻ với…) thêm những phần bạn đánh dấu — CV, câu trả lời, mức lương mong muốn — và không gì khác."),
+                "Quản lý thấy tên, giai đoạn và ngày phỏng vấn của ứng viên. <b>Chia sẻ với…</b> thêm những phần bạn đánh dấu — CV, câu trả lời, mức lương mong muốn — và không gì khác."),
         tip: B("Expected pay is money: tick it only when the manager needs it.",
                "Mức lương mong muốn là tiền: chỉ đánh dấu khi quản lý thật sự cần."),
       },
       {
         screen: "hiringrole", anchor: "rep-hb-scores",
         kicker: B("Interviews", "Phỏng vấn"),
-        title: B("Scorecards, and Compare finalists", "Phiếu đánh giá, và Compare finalists"),
+        title: B("Scorecards, and Compare finalists", "Phiếu đánh giá, và So sánh ứng viên cuối"),
         body: B("After each conversation, every interviewer fills in a scorecard and decides: Yes, Maybe, No or Hold. <b>Compare finalists</b> puts them side by side: Choose, Keep warm, or Not this time.",
-                "Sau mỗi cuộc trao đổi, mỗi người phỏng vấn điền một phiếu đánh giá và quyết định: Yes, Maybe, No hoặc Hold. <b>Compare finalists</b> (So sánh ứng viên cuối) đặt họ cạnh nhau: Choose, Keep warm, hoặc Not this time."),
+                "Sau mỗi cuộc trao đổi, mỗi người phỏng vấn điền một phiếu đánh giá và quyết định: Có, Có thể, Không hoặc Tạm hoãn. <b>So sánh ứng viên cuối</b> đặt họ cạnh nhau: Chọn, Giữ liên lạc, hoặc Lần này chưa phù hợp."),
         tip: B("An opinion that reached you another way? Enter it for them; the record says you typed it.",
                "Một ý kiến đến với bạn bằng đường khác? Hãy bấm Enter it for them (Nhập thay họ); bản ghi cho biết chính bạn đã gõ."),
       },
@@ -4738,16 +4756,16 @@ const LESSONS = {
         kicker: B("After the yes", "Sau lời đồng ý"),
         title: B("Signed is not joined", "Đã ký chưa phải là đã vào làm"),
         body: B("A signed offer moves the person to <b>Post-offer</b>, still a candidate. <b>Before they join</b> lays out what to prepare, with dates counted back from the joining date.",
-                "Lời mời đã ký đưa người đó sang <b>Chờ nhận việc</b>, vẫn là ứng viên. <b>Before they join</b> (Trước khi họ vào làm) liệt kê việc cần chuẩn bị, với ngày tính lùi từ ngày vào làm."),
+                "Lời mời đã ký đưa người đó sang <b>Chờ nhận việc</b>, vẫn là ứng viên. <b>Trước khi vào làm</b> liệt kê việc cần chuẩn bị, với ngày tính lùi từ ngày vào làm."),
       },
       {
         screen: "hiringrole", anchor: "rep-hb-confirm",
         kicker: B("Day one", "Ngày đầu tiên"),
-        title: B("Confirm they joined", "Confirm they joined — xác nhận họ đã vào làm"),
+        title: B("Confirm they joined", "Xác nhận đã vào làm — ngày đầu tiên"),
         body: B("On the day they start, press <b>Confirm they joined</b>. It makes their employee record, their contract and their sign-in, and starts the welcome checklist under New joiners.",
-                "Vào ngày họ bắt đầu, bấm <b>Confirm they joined</b>. Nút này tạo hồ sơ nhân viên, hợp đồng và tài khoản đăng nhập của họ, và bắt đầu danh mục chào đón ở Nhân viên mới."),
+                "Vào ngày họ bắt đầu, bấm <b>Xác nhận đã vào làm</b>. Nút này tạo hồ sơ nhân viên, hợp đồng và tài khoản đăng nhập của họ, và bắt đầu danh mục chào đón ở Nhân viên mới."),
         consequence: B("Affects this person: a candidate becomes a colleague. Reversible: no, not from here. Verify first: the day they really started — if they did not come, press Did not join instead.",
-                       "Ảnh hưởng: người này — một ứng viên trở thành đồng nghiệp. Hoàn tác: không, không làm được từ đây. Kiểm tra trước: ngày họ thật sự bắt đầu — nếu họ không đến, hãy bấm Did not join (Không vào làm)."),
+                       "Ảnh hưởng: người này — một ứng viên trở thành đồng nghiệp. Hoàn tác: không, không làm được từ đây. Kiểm tra trước: ngày họ thật sự bắt đầu — nếu họ không đến, hãy bấm <b>Không đến nhận việc</b>."),
       },
     ],
     quiz: {
@@ -4770,7 +4788,7 @@ const LESSONS = {
           text: B("Off the board — he is in the employee list already", "Không còn trên bảng — anh đã có trong danh sách nhân viên"),
           correct: false,
           explanation: B("Let's rethink that. His employee record is made by Confirm they joined, on day one.",
-                         "Hãy nghĩ lại một chút. Hồ sơ nhân viên của anh được tạo bởi nút Confirm they joined, vào ngày đầu tiên."),
+                         "Hãy nghĩ lại một chút. Hồ sơ nhân viên của anh được tạo bởi nút Xác nhận đã vào làm, vào ngày đầu tiên."),
         },
       ],
     },
@@ -4847,7 +4865,7 @@ const LESSONS = {
         body: B("Everyone still in play on an open role, by days since their last move. Fourteen days without a move counts as stalled.",
                 "Mọi người còn trong quy trình ở một vị trí đang mở, theo số ngày từ lần chuyển gần nhất. Mười bốn ngày không có lần chuyển nào được tính là bị kẹt."),
         tip: B("Each part has a download button, and Download everything gives one Excel file.",
-               "Mỗi phần có nút tải xuống, và Download everything (Tải tất cả) cho một tệp Excel."),
+               "Mỗi phần có nút tải xuống, và <b>Tải xuống tất cả</b> cho một tệp Excel."),
       },
     ],
     quiz: {
@@ -6198,11 +6216,22 @@ const LESSONS = {
                 "Mỗi dòng mở ra phần chi tiết. <b>Tổng hợp theo phòng ban</b> cộng đợt lương theo phòng ban."),
       },
       {
-        screen: "reports", anchor: "bg-months",
+        /* The five big figures (pb_budget `bdg-kpis`; kept big by the owner on
+           2026-09-30 — people open Budget to read them). */
+        screen: "reports", anchor: "bg-kpis",
         kicker: B("Budget", "Ngân sách"),
+        title: B("Five big figures, read first", "Năm con số lớn, đọc đầu tiên"),
+        body: B("Insights › <b>Budget</b> opens on the year: <b>budget for the year</b>, <b>spent so far</b>, <b>left</b>, and <b>functions running warm or worse</b>. <b>Money gone, year gone</b> sets the share of the budget spent against the share of the year passed.",
+                "Phân tích › <b>Ngân sách</b> mở trên cả năm: <b>ngân sách cho cả năm</b>, <b>đã chi đến nay</b>, <b>còn lại</b>, và <b>bộ phận đang nóng lên hoặc tệ hơn</b>. <b>Tiền đã đi, năm đã trôi</b> đặt phần ngân sách đã chi cạnh phần năm đã qua."),
+        tip: B("Press a month below and the same five figures speak for that month. Left turns red once spending passes the budget.",
+               "Bấm một tháng bên dưới thì năm con số này nói về tháng đó. Ô Còn lại chuyển đỏ khi chi tiêu vượt ngân sách."),
+      },
+      {
+        screen: "reports", anchor: "bg-months",
+        kicker: B("The period", "Khoảng thời gian"),
         title: B("The whole year, or a stretch of it", "Cả năm, hoặc một khoảng trong năm"),
-        body: B("Insights › <b>Budget</b>. <b>Whole year</b>, or press a month, shift-press another, or drag across them.",
-                "Phân tích › <b>Ngân sách</b>. <b>Cả năm</b>, hoặc bấm một tháng, giữ Shift bấm tháng khác, hoặc kéo qua các tháng."),
+        body: B("<b>Whole year</b>, or press a month, shift-press another, or drag across them.",
+                "<b>Cả năm</b>, hoặc bấm một tháng, giữ Shift bấm tháng khác, hoặc kéo qua các tháng."),
       },
       {
         screen: "reports", anchor: "bg-heat",
@@ -7425,7 +7454,7 @@ const SCREEN_CTX = {
   hiringrole: {
     places: ["pb_lifecycle_hub:hiring/role"],
     blurb: B("One role's board: a column per stage, a card per candidate, and the Closed list on the right.",
-             "Bảng của một vị trí: mỗi giai đoạn một cột, mỗi ứng viên một thẻ, và danh sách Closed ở bên phải."),
+             "Bảng của một vị trí: mỗi giai đoạn một cột, mỗi ứng viên một thẻ, và danh sách Đã đóng ở bên phải."),
     next: B("Open the card with a coloured edge first — its Next box says the one thing to do. Share a candidate before you ask a manager about them.",
             "Hãy mở thẻ có viền màu trước — ô Tiếp theo của nó nói một việc cần làm. Hãy chia sẻ một ứng viên trước khi hỏi ý kiến quản lý về họ."),
     chips: ["movecandidate", "sharecandidate", "confirmjoined", "whatnext"],
@@ -7459,7 +7488,7 @@ const SCREEN_CTX = {
     blurb: B("The hiring numbers: how long a role takes to fill, where candidates wait, and how many offers are accepted.",
              "Số liệu tuyển dụng: một vị trí mất bao lâu để tuyển, ứng viên chờ ở đâu, và bao nhiêu lời mời được nhận lời."),
     next: B("Read the sentence on top, then Who has been waiting longest. Anyone stalled there needs a move today.",
-            "Hãy đọc câu ở trên cùng, rồi phần Who has been waiting longest (Ai đã chờ lâu nhất). Ai bị kẹt ở đó cần được chuyển hôm nay."),
+            "Hãy đọc câu ở trên cùng, rồi phần <b>Ai đã chờ lâu nhất</b>. Ai bị kẹt ở đó cần được chuyển hôm nay."),
     chips: ["hiringnumbers", "whatpage"],
   },
   joiners: {
@@ -9272,7 +9301,7 @@ const QA = [
                      "Mở vị trí từ Vòng đời nhân sự › <b>Tuyển dụng</b>, rồi kéo thẻ của người đó sang cột khác. Bạn có thể hoàn tác trong năm giây.") },
       { k: "steps", v: [
         { t: B("Drag the card, or tick several and press Move to", "Kéo thẻ, hoặc đánh dấu vài thẻ rồi bấm Move to"), a: "hb-board" },
-        { t: B("To say no, drop the card on Closed and choose the outcome", "Để từ chối, thả thẻ vào Closed và chọn kết quả"), a: "hb-closed" },
+        { t: B("To say no, drop the card on Closed and choose the outcome", "Để từ chối, thả thẻ vào Đã đóng và chọn kết quả"), a: "hb-closed" },
       ] },
       { k: "warn", v: B("Only recruiters and the talent lead move candidates. A line manager can open anyone and leave a note.",
                         "Chỉ chuyên viên tuyển dụng và trưởng nhóm tuyển dụng mới chuyển ứng viên. Quản lý trực tiếp có thể mở bất kỳ ai và để lại ghi chú.") },
@@ -9288,7 +9317,7 @@ const QA = [
     try: "sc_hiringrole",
     blocks: [
       { k: "p", v: B("A candidate is private to the hiring team until a recruiter shares them. Open the person, press <b>Share with…</b>, tick who and then what.",
-                     "Ứng viên chỉ nhóm tuyển dụng thấy cho tới khi một chuyên viên tuyển dụng chia sẻ. Mở người đó, bấm <b>Share with…</b>, đánh dấu ai rồi đánh dấu phần nào.") },
+                     "Ứng viên chỉ nhóm tuyển dụng thấy cho tới khi một chuyên viên tuyển dụng chia sẻ. Mở người đó, bấm <b>Chia sẻ với…</b>, đánh dấu ai rồi đánh dấu phần nào.") },
       { k: "ok", v: B("They see exactly the parts you ticked. Expected pay is its own tick, off unless you choose it.",
                       "Họ thấy đúng những phần bạn đánh dấu. Mức lương mong muốn là một ô riêng, tắt trừ khi bạn chọn.") },
       { k: "src", v: B("A candidate's panel on a role's page.", "Ngăn của một ứng viên trên trang của vị trí.") },
@@ -9303,11 +9332,11 @@ const QA = [
     try: "sc_hiringrole",
     blocks: [
       { k: "p", v: B("They move to <b>Post-offer</b> and stay a candidate. Work through <b>Before they join</b>, then press <b>Confirm they joined</b> on the day they start.",
-                     "Họ chuyển sang <b>Chờ nhận việc</b> và vẫn là ứng viên. Làm hết phần <b>Before they join</b>, rồi bấm <b>Confirm they joined</b> vào ngày họ bắt đầu.") },
+                     "Họ chuyển sang <b>Chờ nhận việc</b> và vẫn là ứng viên. Làm hết phần <b>Trước khi vào làm</b>, rồi bấm <b>Xác nhận đã vào làm</b> vào ngày họ bắt đầu.") },
       { k: "ok", v: B("Confirming makes their employee record, contract and sign-in, and starts the welcome checklist under New joiners.",
                       "Xác nhận sẽ tạo hồ sơ nhân viên, hợp đồng và tài khoản đăng nhập của họ, và bắt đầu danh mục chào đón ở Nhân viên mới.") },
       { k: "warn", v: B("It cannot be undone from there. If they did not come, press Did not join instead.",
-                        "Không hoàn tác được từ đó. Nếu họ không đến, hãy bấm Did not join.") },
+                        "Không hoàn tác được từ đó. Nếu họ không đến, hãy bấm <b>Không đến nhận việc</b>.") },
       { k: "src", v: B("A candidate's panel on a role's page.", "Ngăn của một ứng viên trên trang của vị trí.") },
     ],
   },
@@ -11581,7 +11610,7 @@ const SCENARIOS = [
       {
         key: "closed", anchor: "hb-closed", screen: "hiringrole", act: "observe",
         say: {
-          title: B("Closed: five ways a person leaves the board", "Closed: năm cách một người rời bảng"),
+          title: B("Closed: five ways a person leaves the board", "Đã đóng: năm cách một người rời bảng"),
           body: B("Drop a card here and choose the outcome. Anyone can be dragged back.", "Thả một thẻ vào đây và chọn kết quả. Ai cũng có thể được kéo trở lại."),
         },
       },
@@ -11617,7 +11646,7 @@ const SCENARIOS = [
       {
         key: "started", anchor: "rep-hb-confirm", screen: "hiringrole", act: "click", guard: true,
         say: {
-          title: B("Confirm they joined", "Confirm they joined — xác nhận đã vào làm"),
+          title: B("Confirm they joined", "Xác nhận đã vào làm — ngày đầu tiên"),
           body: B("On your own Payobook this makes the employee record on day one. Here it changes nothing.",
                   "Trên Payobook của bạn, nút này tạo hồ sơ nhân viên vào ngày đầu tiên. Ở đây nó không thay đổi gì."),
         },

@@ -1742,8 +1742,8 @@ const PRACTICE = {
     roles: [
       { title: B("Store assistant — Hà Nội", "Nhân viên bán hàng — Hà Nội"), step: 3, cands: 12,
         req: [B("Request agreed", "Yêu cầu đã được đồng ý"), "ok"],
-        chips: [EN("Advertised")],
-        next: EN("9 candidates to look at"), btn: EN("Review candidates"), open: true },
+        chips: [B("Advertised", "Đã đăng tin")],
+        next: EN("9 candidates to look at"), btn: B("Review candidates", "Xem ứng viên"), open: true },
       { title: B("Cashier — Hải Phòng", "Thu ngân — Hải Phòng"), step: 1, cands: 0,
         req: [B("Waiting on Lê Thu Trang", "Đang chờ Lê Thu Trang"), "warn"], chips: [],
         next: B("Waiting on Lê Thu Trang · asked 2 days ago", "Đang chờ Lê Thu Trang · đã nhờ 2 ngày trước"),
@@ -1754,13 +1754,13 @@ const PRACTICE = {
     ],
     /* "Open a role" — the five things (hiring_requests_p3.xml P3Overlays). */
     open: {
-      title: EN("Five things, and the role exists."),
+      title: B("Five things, and the role exists.", "Chỉ cần năm thông tin là có vị trí."),
       fields: [
-        [EN("What is the role called?"), B("Cashier — Hải Phòng", "Thu ngân — Hải Phòng")],
-        [EN("Department"), B("Retail — Hải Phòng", "Bán lẻ — Hải Phòng")],
-        [EN("Country"), B("Vietnam", "Việt Nam")],
-        [EN("How many seats?"), EN("1")],
-        [EN("Who recruits it?"), EN("The hiring rule for the country decides")],
+        [B("What is the role called?", "Tên vị trí là gì?"), B("Cashier — Hải Phòng", "Thu ngân — Hải Phòng")],
+        [B("Department", "Phòng ban"), B("Retail — Hải Phòng", "Bán lẻ — Hải Phòng")],
+        [B("Country", "Quốc gia"), B("Vietnam", "Việt Nam")],
+        [B("How many seats?", "Cần tuyển bao nhiêu người?"), EN("1")],
+        [B("Who recruits it?", "Ai phụ trách tuyển?"), B("The hiring rule for the country decides", "Theo quy tắc tuyển dụng của quốc gia")],
       ],
     },
     /* "Ask a manager for a request" and what the chip says as it moves
@@ -1768,9 +1768,9 @@ const PRACTICE = {
        agreement; the Head of HR agrees after it unless the company's route
        says no approval is needed. Over budget tells people; it blocks nothing. */
     ask: {
-      title: EN("A hiring request, from the manager"),
+      title: B("A hiring request, from the manager", "Yêu cầu tuyển dụng, do quản lý lập"),
       manager: "Lê Thu Trang",
-      every: EN("2 working days"),
+      every: B("2 working days", "2 ngày làm việc"),
       chips: [B("Waiting on Lê Thu Trang", "Đang chờ Lê Thu Trang"), B("Sent in", "Đã gửi"),
               B("Head of HR agreed", "Trưởng phòng nhân sự đã đồng ý"), B("Request agreed", "Yêu cầu đã được đồng ý")],
       budget: B("Over budget tells the people who watch the budget. Nothing is blocked.",
@@ -1810,14 +1810,14 @@ const PRACTICE = {
         { name: "Ngô Thị Thảo", sub: EN("Let's chat sent"), edge: "warn" }] },
       { name: B("Discussion 1", "Trao đổi 1"), cards: [
         { name: "Vũ Thị Hoa", sub: EN("2 opinions late"), edge: "bad", open: true, shared: EN("Shared with 1") },
-        { name: "Trịnh Quốc Bảo", sub: B("Interview on 24/07", "Phỏng vấn ngày 24/07"), shared: EN("Private to hiring") }] },
+        { name: "Trịnh Quốc Bảo", sub: B("Interview on 24/07", "Phỏng vấn ngày 24/07"), shared: B("Private to hiring", "Chỉ dành cho bộ phận tuyển dụng") }] },
       { name: B("Offer", "Mời nhận việc"), cards: [] },
       { name: B("Post-offer", "Chờ nhận việc"), cards: [
         { name: LATER.name, sub: EN("Joining 01/08/2026"), edge: "ok", joining: [3, 5] }] },
     ],
     closed: [[B("CV reject", "Loại hồ sơ"), 2], [B("Interview reject", "Loại sau phỏng vấn"), 1],
              [B("Drop-out", "Ứng viên rút lui"), 0], [B("On hold", "Tạm hoãn"), 0], [B("Offer drop", "Từ chối lời mời"), 0]],
-    closedHint: EN("Drop a card here to close it. Press a line to see who is in it; drag anyone back to bring them back."),
+    closedHint: B("Drop a card here to close it. Press a line to see who is in it; drag anyone back to bring them back.", "Thả thẻ vào đây để đóng. Bấm vào một dòng để xem ai trong đó; kéo bất kỳ ai ra để đưa họ trở lại."),
     /* The candidate drawer, open on Hoa (hiring_board_p1.xml P1Overlays). */
     drawer: {
       name: "Vũ Thị Hoa", stage: B("Discussion 1", "Trao đổi 1"),
@@ -1827,18 +1827,18 @@ const PRACTICE = {
       share: EN("Shared with Lê Thu Trang · CV, answers"),
       next: B("Two opinions from round 1 are late. Remind the panel, or enter one for them.",
               "Two opinions from round 1 are late. Remind the panel, or enter one for them."),
-      nextBtn: EN("Remind"),
-      scores: [["Lê Thu Trang", EN("Yes")], ["Trần Văn Hùng", EN("not yet")], ["Phạm Minh Đức", EN("not yet")]],
-      notes: EN("Recruiter notes"),
-      acts: [B("Advance", "Chuyển bước sau"), EN("Move to"), EN("Share with…"), EN("Email"),
-             B("Arrange an interview", "Sắp xếp phỏng vấn"), B("Note", "Ghi chú"), EN("Not this time")],
+      nextBtn: B("Remind", "Nhắc"),
+      scores: [["Lê Thu Trang", B("Yes", "Có")], ["Trần Văn Hùng", B("not yet", "chưa có")], ["Phạm Minh Đức", B("not yet", "chưa có")]],
+      notes: B("Recruiter notes", "Ghi chú của chuyên viên tuyển dụng"),
+      acts: [B("Advance", "Chuyển bước sau"), B("Move to", "Chuyển đến"), B("Share with…", "Chia sẻ với…"), B("Email", "Email"),
+             B("Arrange an interview", "Sắp xếp phỏng vấn"), B("Note", "Ghi chú"), B("Not this time", "Lần này chưa phù hợp")],
     },
     /* Nam, after the signature (hiring_p6.xml P6DrawerJoining). */
     joining: {
       name: LATER.name, date: "01/08/2026",
-      list: [[EN("A buddy question"), true], [EN("Laptop preferences"), true], [EN("A chat with the team"), true],
-             [EN("Signed documents"), false], [EN("Welcome checklist"), false]],
-      confirm: EN("Confirm they joined"), change: EN("Change the date"),
+      list: [[B("A buddy question", "Câu hỏi về người đồng hành"), true], [B("Laptop preferences", "Lựa chọn máy tính xách tay"), true], [B("A chat with the team", "Buổi trò chuyện với nhóm"), true],
+             [B("Signed documents", "Giấy tờ đã ký"), false], [B("Welcome checklist", "Danh sách chào đón"), false]],
+      confirm: B("Confirm they joined", "Xác nhận đã vào làm"), change: B("Change the date", "Đổi ngày"),
       note: B("Signed is not joined. He stays a candidate here until you confirm the day he started.",
               "Đã ký chưa phải là đã vào làm. Anh vẫn là ứng viên ở đây cho tới khi bạn xác nhận ngày anh bắt đầu."),
     },
@@ -1855,8 +1855,8 @@ const PRACTICE = {
       [B("Stages", "Giai đoạn"), "layers"], [B("Application forms", "Mẫu đơn ứng tuyển"), "file-text"],
       [B("Scorecards", "Phiếu đánh giá"), "list-checks"], [B("Emails and languages", "Email và ngôn ngữ"), "mail"],
       [B("Automations", "Tự động hoá"), "zap"], [B("Who does what", "Ai làm việc gì"), "users"],
-      [EN("Consent & retention"), "hourglass"], [EN("Before they join"), "user-plus"],
-      [EN("Channels"), "git-merge"], [EN("Agencies"), "landmark"],
+      [B("Consent & retention", "Sự đồng ý & thời hạn lưu trữ"), "hourglass"], [B("Before they join", "Trước khi vào làm"), "user-plus"],
+      [B("Channels", "Kênh đăng tin"), "git-merge"], [B("Agencies", "Đơn vị tuyển dụng"), "landmark"],
     ],
     stages: [
       [B("Applications received", "Hồ sơ đã nhận"), true], [B("Shortlist", "Danh sách chọn"), false],
@@ -1870,7 +1870,7 @@ const PRACTICE = {
     switches: [
       [B("Let line managers move candidates on their own roles", "Cho phép quản lý trực tiếp chuyển ứng viên trên vị trí của họ"), false],
       [B("Email candidates from here", "Gửi email cho ứng viên từ đây"), true],
-      [EN("Tell colleagues when a role opens to referrals"), false],
+      [B("Tell colleagues when a role opens to referrals", "Báo cho đồng nghiệp khi một vị trí mở nhận giới thiệu"), false],
     ],
     who: B("Sign-offs record and tell; nothing waits for them. The one thing that waits is sending an offer, until the role's request is agreed.",
            "Sign-offs record and tell; nothing waits for them. The one thing that waits is sending an offer, until the role's request is agreed."),
@@ -1882,13 +1882,13 @@ const PRACTICE = {
   hiringnumbers: {
     lede: EN("How long it takes, where it gets stuck, and how often the answer is yes."),
     headline: EN("A role takes 34 days to fill here, and 4 in 5 offers are accepted."),
-    tiles: [[EN("Roles agreed"), "6"], [EN("Roles filled"), "4"], [EN("Days to fill, typical"), "34"],
-            [EN("Days to an offer"), "21"], [EN("Offers sent"), "5"], [EN("Offers accepted"), "80%"]],
-    funnel: [[EN("Offered"), 5], [EN("Accepted"), 4], [EN("Signed"), 4], [EN("Joined"), 3]],
-    sections: [EN("From offer to joined"), EN("Where candidates wait"), EN("Where they came from"),
-               EN("Interviews that moved"), EN("Who has been waiting longest")],
-    waiting: [["Ngô Thị Thảo", EN("Recruiter review"), EN("16 days")],
-              ["Đinh Thị Yến", EN("Shortlist"), EN("6 days")]],
+    tiles: [[B("Roles agreed", "Vị trí được đồng ý"), "6"], [B("Roles filled", "Vị trí đã tuyển đủ"), "4"], [B("Days to fill, typical", "Số ngày để tuyển đủ, thông thường"), "34"],
+            [B("Days to an offer", "Số ngày đến lời mời"), "21"], [B("Offers sent", "Lời mời đã gửi"), "5"], [B("Offers accepted", "Lời mời được chấp nhận"), "80%"]],
+    funnel: [[B("Offered", "Đã mời"), 5], [B("Accepted", "Đã chấp nhận"), 4], [B("Signed", "Đã ký"), 4], [B("Joined", "Đã nhận việc"), 3]],
+    sections: [B("From offer to joined", "Từ lời mời đến nhận việc"), B("Where candidates wait", "Ứng viên chờ ở đâu"), B("Where they came from", "Họ đến từ đâu"),
+               B("Interviews that moved", "Phỏng vấn bị dời lịch"), B("Who has been waiting longest", "Ai đã chờ lâu nhất")],
+    waiting: [["Ngô Thị Thảo", B("Recruiter review", "Chuyên viên tuyển dụng xem xét"), EN("16 days")],
+              ["Đinh Thị Yến", B("Shortlist", "Danh sách chọn"), EN("6 days")]],
   },
 
   /* ----------------------------------------------- Lifecycle › New joiners

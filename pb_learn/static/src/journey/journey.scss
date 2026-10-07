@@ -625,6 +625,54 @@
     &.top { align-items: start; }
 }
 
+/* Formula Studio's Cards view as three panels with a drag handle between each
+   pair and a fold chevron on the two side panels (pb_formula_studio,
+   b085f252e). A flex row, not .lrn-grid.g3: the handles are columns of their
+   own. Below 900px the product turns the side panels into drawers, so the row
+   simply wraps and the handles go. */
+.lrn-fsrow {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: var(--vuf-sp-4, 16px);
+    > .lrn-panel { flex: 1 1 0; min-width: 0; margin-bottom: 0; }
+}
+/* A compact grip near the panels' tops, not a full-height column: the
+   Components list makes this row ~900px tall, and a lesson that rings a
+   full-height sliver points at nothing a reader can see. */
+.lrn-fsgrip {
+    flex: 0 0 14px;
+    align-self: flex-start;
+    height: 96px;
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: col-resize;
+    > span {
+        width: 4px;
+        height: 44px;
+        border-radius: 2px;
+        background: var(--vuf-line, #E5E7EB);
+    }
+    &:hover > span { background: var(--vuf-primary, #5A4BB0); }
+}
+.lrn-fsfold {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 4px;
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: 6px;
+    background: var(--vuf-surface, #fff);
+    color: var(--vuf-muted, #6B7280);
+    cursor: pointer;
+}
+@media (max-width: 900px) {
+    .lrn-fsrow { flex-wrap: wrap; gap: var(--vuf-sp-3, 12px); }
+    .lrn-fsrow > .lrn-panel { flex-basis: 100%; }
+    .lrn-fsgrip { display: none; }
+}
+
 .lrn-kpi {
     background: var(--vuf-surface, #fff);
     border: 1px solid var(--vuf-line, #E5E7EB);

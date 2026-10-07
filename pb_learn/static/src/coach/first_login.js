@@ -46,6 +46,7 @@
       database is NOT the demo world. Nobody can be shown both.
    ========================================================================== */
 import { user } from "@web/core/user";
+import { session } from "@web/session";
 
 import { T, esc, ic } from "../engine/runtime";
 
@@ -85,6 +86,25 @@ const WELCOME_LOGIN = "pbLearnWelcomeLogin";
    drives, the learner reads, and it stops at anything that writes. */
 const WELCOME_SCENARIO = "sc_welcome";
 const WELCOME_MODE = "watch";
+
+/* WHO THE CARD IS FOR (owner item, LEARN REFRESH 2, 2026-10-07). `sc_welcome`
+   is the payroll tour — Pulse, a pay run, Approvals, the Formula Engine — and
+   it was offered to everybody on a real tenant. Two people it is not for, both
+   decided on the server by the same rules their left menu and first screen
+   use, and handed over on the session:
+
+     session.pb_hiring_not_payroll  (pb_hiring)    the Hiring board admits them
+                                                  and Pay Run is not on their
+                                                  menu → offer the Hiring
+                                                  walkthrough instead.
+     session.pb_employee_only       (pb_me_portal) neither payroll nor hiring →
+                                                  no card: they land on
+                                                  My Payobook, and there is no
+                                                  tour of a screen that is theirs.
+
+   Either key is simply absent when its module is not installed, which reads
+   as "everybody else" — the payroll tour, as before. */
+const HIRING_SCENARIO = "sc_hiring";
 
 /* Every storage read is wrapped: a browser with storage disabled must not be
    able to stop the Coach from mounting. */
@@ -149,15 +169,17 @@ export function markLauncherStack(env) {
  *  is no raw-insertion position in here, which is why there is no `gtx` —
  *  the one raw wrapper in this module is for authored BODIES that carry
  *  their own <b>, and a four-line card has none.
+ *
+ *  `hiring` swaps the body and the button for the Hiring walkthrough's.
  */
-export function welcomeCardHTML() {
+export function welcomeCardHTML(hiring = false) {
     return `<div class="lrn-welcome-h">
             <span class="lrn-welcome-ic">${ic("compass")}</span>
             <h2 class="lrn-welcome-t">${esc(T("welcomeTitle"))}</h2>
         </div>
-        <p class="lrn-welcome-b">${esc(T("welcomeBody"))}</p>
+        <p class="lrn-welcome-b">${esc(T(hiring ? "welcomeHiringBody" : "welcomeBody"))}</p>
         <div class="lrn-welcome-a">
-            <button type="button" class="lrn-welcome-go" data-welcome="go">${ic("play")}<span>${esc(T("welcomeGo"))}</span></button>
+            <button type="button" class="lrn-welcome-go" data-welcome="go">${ic("play")}<span>${esc(T(hiring ? "welcomeHiringGo" : "welcomeGo"))}</span></button>
             <button type="button" class="lrn-welcome-later" data-welcome="later">${esc(T("welcomeLater"))}</button>
         </div>`;
 }
@@ -172,13 +194,13 @@ export function welcomeCardHTML() {
  *  Escape counts as "later", because a card that cannot be dismissed with the
  *  key everybody reaches for is a modal pretending not to be one.
  */
-function askWelcome() {
+function askWelcome(hiring) {
     return new Promise((resolve) => {
         const el = document.createElement("div");
         el.className = "lrn-welcome";
         el.setAttribute("role", "dialog");
         el.setAttribute("aria-modal", "false");
-        el.innerHTML = welcomeCardHTML();
+        el.innerHTML = welcomeCardHTML(hiring);
 
         let done = false;
         /* KEYDOWN ON `document`, NEVER `window`. Odoo's hotkey service stops
@@ -257,6 +279,11 @@ export async function maybeWelcome(env, orm, sc, demoWorld) {
         if (ls(WELCOME_ANSWERED)) {
             return false;
         }
+        // Employee-only: no card at all (see HIRING_SCENARIO above).
+        if (session.pb_employee_only) {
+            return false;
+        }
+        const hiring = !!session.pb_hiring_not_payroll;
 
         let loginKey = "";
         try {
@@ -276,14 +303,14 @@ export async function maybeWelcome(env, orm, sc, demoWorld) {
             setSs(WELCOME_LOGIN, "1");
         }
 
-        const choice = await askWelcome();
+        const choice = await askWelcome(hiring);
         // Answered either way — the card is finished with this browser.
         setLs(WELCOME_ANSWERED, choice);
         if (choice === "go" && sc) {
             // The one door: the scenario service is what starts a walkthrough
             // everywhere else in this module too, so a Watch begun here is
             // the same run, logged the same way, as one begun from the Coach.
-            await sc.begin(WELCOME_SCENARIO, WELCOME_MODE);
+            await sc.begin(hiring ? HIRING_SCENARIO : WELCOME_SCENARIO, WELCOME_MODE);
         }
         return true;
     } catch {

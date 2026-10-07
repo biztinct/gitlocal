@@ -1245,6 +1245,14 @@
       "en": "Watch the tour",
       "vi": "Xem hướng dẫn"
     },
+    "welcomeHiringBody": {
+      "en": "Want a 2-minute look at Hiring first? I will show you the board you will use most.",
+      "vi": "Bạn muốn xem qua Tuyển dụng trong 2 phút không? Tôi sẽ chỉ cho bạn bảng mà bạn dùng nhiều nhất."
+    },
+    "welcomeHiringGo": {
+      "en": "Watch the Hiring tour",
+      "vi": "Xem hướng dẫn Tuyển dụng"
+    },
     "welcomeLater": {
       "en": "Later",
       "vi": "Để sau"
@@ -4628,7 +4636,7 @@
     {
       "definition": {
         "en": "What an interviewer fills in after a conversation, ending in a decision: Yes, Maybe, No or Hold. It stays hidden from the other interviewers until everyone has answered.",
-        "vi": "Điều một người phỏng vấn điền sau cuộc trao đổi, kết thúc bằng một quyết định: Yes, Maybe, No hoặc Hold. Nó được ẩn với những người phỏng vấn khác cho tới khi mọi người trả lời xong."
+        "vi": "Điều một người phỏng vấn điền sau cuộc trao đổi, kết thúc bằng một quyết định: Có, Có thể, Không hoặc Tạm hoãn. Nó được ẩn với những người phỏng vấn khác cho tới khi mọi người trả lời xong."
       },
       "key": "scorecard",
       "match": {
@@ -6255,7 +6263,7 @@
         {
           "body": {
             "en": "They move to <b>Post-offer</b> and stay a candidate. Work through <b>Before they join</b>, then press <b>Confirm they joined</b> on the day they start.",
-            "vi": "Họ chuyển sang <b>Chờ nhận việc</b> và vẫn là ứng viên. Làm hết phần <b>Before they join</b>, rồi bấm <b>Confirm they joined</b> vào ngày họ bắt đầu."
+            "vi": "Họ chuyển sang <b>Chờ nhận việc</b> và vẫn là ứng viên. Làm hết phần <b>Trước khi vào làm</b>, rồi bấm <b>Xác nhận đã vào làm</b> vào ngày họ bắt đầu."
           },
           "capability": "any",
           "kind": "p",
@@ -6275,7 +6283,7 @@
         {
           "body": {
             "en": "It cannot be undone from there. If they did not come, press Did not join instead.",
-            "vi": "Không hoàn tác được từ đó. Nếu họ không đến, hãy bấm Did not join."
+            "vi": "Không hoàn tác được từ đó. Nếu họ không đến, hãy bấm <b>Không đến nhận việc</b>."
           },
           "capability": "any",
           "kind": "warn",
@@ -7764,7 +7772,7 @@
               "anchor": "hb-closed",
               "text": {
                 "en": "To say no, drop the card on Closed and choose the outcome",
-                "vi": "Để từ chối, thả thẻ vào Closed và chọn kết quả"
+                "vi": "Để từ chối, thả thẻ vào Đã đóng và chọn kết quả"
               }
             }
           ]
@@ -8916,7 +8924,7 @@
         {
           "body": {
             "en": "A candidate is private to the hiring team until a recruiter shares them. Open the person, press <b>Share with…</b>, tick who and then what.",
-            "vi": "Ứng viên chỉ nhóm tuyển dụng thấy cho tới khi một chuyên viên tuyển dụng chia sẻ. Mở người đó, bấm <b>Share with…</b>, đánh dấu ai rồi đánh dấu phần nào."
+            "vi": "Ứng viên chỉ nhóm tuyển dụng thấy cho tới khi một chuyên viên tuyển dụng chia sẻ. Mở người đó, bấm <b>Chia sẻ với…</b>, đánh dấu ai rồi đánh dấu phần nào."
           },
           "capability": "any",
           "kind": "p",
@@ -15739,7 +15747,7 @@
           "tip": "",
           "title": {
             "en": "Closed: five ways a person leaves the board",
-            "vi": "Closed: năm cách một người rời bảng"
+            "vi": "Đã đóng: năm cách một người rời bảng"
           },
           "value": ""
         },
@@ -15854,7 +15862,7 @@
           "tip": "",
           "title": {
             "en": "Confirm they joined",
-            "vi": "Confirm they joined — xác nhận đã vào làm"
+            "vi": "Xác nhận đã vào làm — ngày đầu tiên"
           },
           "value": ""
         }
@@ -18809,7 +18817,7 @@
       "action_tags": "pb_hiring_board",
       "blurb": {
         "en": "One role's board: a column per stage, a card per candidate, and the Closed list on the right.",
-        "vi": "Bảng của một vị trí: mỗi giai đoạn một cột, mỗi ứng viên một thẻ, và danh sách Closed ở bên phải."
+        "vi": "Bảng của một vị trí: mỗi giai đoạn một cột, mỗi ứng viên một thẻ, và danh sách Đã đóng ở bên phải."
       },
       "hub": null,
       "key": "hiringrole",
@@ -19021,7 +19029,7 @@
       "navs": [],
       "next_step": {
         "en": "Read the sentence on top, then Who has been waiting longest. Anyone stalled there needs a move today.",
-        "vi": "Hãy đọc câu ở trên cùng, rồi phần Who has been waiting longest (Ai đã chờ lâu nhất). Ai bị kẹt ở đó cần được chuyển hôm nay."
+        "vi": "Hãy đọc câu ở trên cùng, rồi phần <b>Ai đã chờ lâu nhất</b>. Ai bị kẹt ở đó cần được chuyển hôm nay."
       },
       "open": "",
       "places": [
@@ -22506,15 +22514,42 @@
               "visual": "none"
             },
             {
-              "anchor": "bg-months",
+              "anchor": "bg-kpis",
               "body": {
-                "en": "Insights › <b>Budget</b>. <b>Whole year</b>, or press a month, shift-press another, or drag across them.",
-                "vi": "Phân tích › <b>Ngân sách</b>. <b>Cả năm</b>, hoặc bấm một tháng, giữ Shift bấm tháng khác, hoặc kéo qua các tháng."
+                "en": "Insights › <b>Budget</b> opens on the year: <b>budget for the year</b>, <b>spent so far</b>, <b>left</b>, and <b>functions running warm or worse</b>. <b>Money gone, year gone</b> sets the share of the budget spent against the share of the year passed.",
+                "vi": "Phân tích › <b>Ngân sách</b> mở trên cả năm: <b>ngân sách cho cả năm</b>, <b>đã chi đến nay</b>, <b>còn lại</b>, và <b>bộ phận đang nóng lên hoặc tệ hơn</b>. <b>Tiền đã đi, năm đã trôi</b> đặt phần ngân sách đã chi cạnh phần năm đã qua."
               },
               "consequence": "",
               "kicker": {
                 "en": "Budget",
                 "vi": "Ngân sách"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "reports",
+              "tip": {
+                "en": "Press a month below and the same five figures speak for that month. Left turns red once spending passes the budget.",
+                "vi": "Bấm một tháng bên dưới thì năm con số này nói về tháng đó. Ô Còn lại chuyển đỏ khi chi tiêu vượt ngân sách."
+              },
+              "title": {
+                "en": "Five big figures, read first",
+                "vi": "Năm con số lớn, đọc đầu tiên"
+              },
+              "visual": "none"
+            },
+            {
+              "anchor": "bg-months",
+              "body": {
+                "en": "<b>Whole year</b>, or press a month, shift-press another, or drag across them.",
+                "vi": "<b>Cả năm</b>, hoặc bấm một tháng, giữ Shift bấm tháng khác, hoặc kéo qua các tháng."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "The period",
+                "vi": "Khoảng thời gian"
               },
               "lines": [],
               "moment_chain": "",
@@ -23006,7 +23041,7 @@
                   "correct": false,
                   "feedback": {
                     "en": "Let's rethink that. His employee record is made by Confirm they joined, on day one.",
-                    "vi": "Hãy nghĩ lại một chút. Hồ sơ nhân viên của anh được tạo bởi nút Confirm they joined, vào ngày đầu tiên."
+                    "vi": "Hãy nghĩ lại một chút. Hồ sơ nhân viên của anh được tạo bởi nút Xác nhận đã vào làm, vào ngày đầu tiên."
                   },
                   "label": {
                     "en": "Off the board — he is in the employee list already",
@@ -23052,7 +23087,7 @@
               "anchor": "hb-publish",
               "body": {
                 "en": "<b>Publish to…</b> lists every place the role can go: the careers page, job sites, colleagues' referrals, an agency. Each has its own link, so every application is counted where it came from.",
-                "vi": "<b>Publish to…</b> (Đăng lên…) liệt kê mọi nơi vị trí có thể xuất hiện: trang tuyển dụng, các trang việc làm, lời giới thiệu của đồng nghiệp, một đơn vị tuyển dụng. Mỗi nơi có đường dẫn riêng, nên mỗi hồ sơ được đếm đúng nơi nó đến."
+                "vi": "<b>Đăng lên…</b> liệt kê mọi nơi vị trí có thể xuất hiện: trang tuyển dụng, các trang việc làm, lời giới thiệu của đồng nghiệp, một đơn vị tuyển dụng. Mỗi nơi có đường dẫn riêng, nên mỗi hồ sơ được đếm đúng nơi nó đến."
               },
               "consequence": "",
               "kicker": {
@@ -23067,11 +23102,11 @@
               "screen": "hiringrole",
               "tip": {
                 "en": "No job site is connected to Payobook. Paste the advert there with its link, then press Mark as posted.",
-                "vi": "Không trang việc làm nào được kết nối với Payobook. Hãy dán tin tuyển dụng kèm đường dẫn ở đó, rồi bấm Mark as posted (Đánh dấu đã đăng)."
+                "vi": "Không trang việc làm nào được kết nối với Payobook. Hãy dán tin tuyển dụng kèm đường dẫn ở đó, rồi bấm <b>Đánh dấu đã đăng</b>."
               },
               "title": {
                 "en": "Publish to… — one link for each place",
-                "vi": "Publish to… — mỗi nơi đăng một đường dẫn"
+                "vi": "Đăng lên… — mỗi nơi đăng một đường dẫn"
               },
               "visual": "none"
             },
@@ -23106,7 +23141,7 @@
               "anchor": "hb-closed",
               "body": {
                 "en": "Drop a card on <b>Closed</b> and choose why: <b>CV reject</b>, <b>Interview reject</b>, <b>Drop-out</b>, <b>On hold</b> or <b>Offer drop</b>. A reason is welcome, never required.",
-                "vi": "Thả một thẻ vào <b>Closed</b> (Đã đóng) và chọn lý do: <b>Loại hồ sơ</b>, <b>Loại sau phỏng vấn</b>, <b>Ứng viên rút lui</b>, <b>Tạm hoãn</b> hoặc <b>Từ chối lời mời</b>. Lý do được hoan nghênh, không bao giờ bắt buộc."
+                "vi": "Thả một thẻ vào <b>Đã đóng</b> và chọn lý do: <b>Loại hồ sơ</b>, <b>Loại sau phỏng vấn</b>, <b>Ứng viên rút lui</b>, <b>Tạm hoãn</b> hoặc <b>Từ chối lời mời</b>. Lý do được hoan nghênh, không bao giờ bắt buộc."
               },
               "consequence": {
                 "en": "Affects this one person on this role. Reversible: yes — press the line and drag them back. Verify first: the box that sends the not-this-time email, before you close.",
@@ -23125,7 +23160,7 @@
               "tip": "",
               "title": {
                 "en": "Closed is a list, not a dead end",
-                "vi": "Closed là một danh sách, không phải ngõ cụt"
+                "vi": "Đã đóng là một danh sách, không phải ngõ cụt"
               },
               "visual": "none"
             },
@@ -23181,7 +23216,7 @@
               "anchor": "hb-share",
               "body": {
                 "en": "A manager sees a candidate's name, stage and interview dates. <b>Share with…</b> adds the parts you tick — the CV, the answers, the expected pay — and nothing else.",
-                "vi": "Quản lý thấy tên, giai đoạn và ngày phỏng vấn của ứng viên. <b>Share with…</b> (Chia sẻ với…) thêm những phần bạn đánh dấu — CV, câu trả lời, mức lương mong muốn — và không gì khác."
+                "vi": "Quản lý thấy tên, giai đoạn và ngày phỏng vấn của ứng viên. <b>Chia sẻ với…</b> thêm những phần bạn đánh dấu — CV, câu trả lời, mức lương mong muốn — và không gì khác."
               },
               "consequence": "",
               "kicker": {
@@ -23208,7 +23243,7 @@
               "anchor": "rep-hb-scores",
               "body": {
                 "en": "After each conversation, every interviewer fills in a scorecard and decides: Yes, Maybe, No or Hold. <b>Compare finalists</b> puts them side by side: Choose, Keep warm, or Not this time.",
-                "vi": "Sau mỗi cuộc trao đổi, mỗi người phỏng vấn điền một phiếu đánh giá và quyết định: Yes, Maybe, No hoặc Hold. <b>Compare finalists</b> (So sánh ứng viên cuối) đặt họ cạnh nhau: Choose, Keep warm, hoặc Not this time."
+                "vi": "Sau mỗi cuộc trao đổi, mỗi người phỏng vấn điền một phiếu đánh giá và quyết định: Có, Có thể, Không hoặc Tạm hoãn. <b>So sánh ứng viên cuối</b> đặt họ cạnh nhau: Chọn, Giữ liên lạc, hoặc Lần này chưa phù hợp."
               },
               "consequence": "",
               "kicker": {
@@ -23227,7 +23262,7 @@
               },
               "title": {
                 "en": "Scorecards, and Compare finalists",
-                "vi": "Phiếu đánh giá, và Compare finalists"
+                "vi": "Phiếu đánh giá, và So sánh ứng viên cuối"
               },
               "visual": "none"
             },
@@ -23235,7 +23270,7 @@
               "anchor": "hb-joining",
               "body": {
                 "en": "A signed offer moves the person to <b>Post-offer</b>, still a candidate. <b>Before they join</b> lays out what to prepare, with dates counted back from the joining date.",
-                "vi": "Lời mời đã ký đưa người đó sang <b>Chờ nhận việc</b>, vẫn là ứng viên. <b>Before they join</b> (Trước khi họ vào làm) liệt kê việc cần chuẩn bị, với ngày tính lùi từ ngày vào làm."
+                "vi": "Lời mời đã ký đưa người đó sang <b>Chờ nhận việc</b>, vẫn là ứng viên. <b>Trước khi vào làm</b> liệt kê việc cần chuẩn bị, với ngày tính lùi từ ngày vào làm."
               },
               "consequence": "",
               "kicker": {
@@ -23259,11 +23294,11 @@
               "anchor": "rep-hb-confirm",
               "body": {
                 "en": "On the day they start, press <b>Confirm they joined</b>. It makes their employee record, their contract and their sign-in, and starts the welcome checklist under New joiners.",
-                "vi": "Vào ngày họ bắt đầu, bấm <b>Confirm they joined</b>. Nút này tạo hồ sơ nhân viên, hợp đồng và tài khoản đăng nhập của họ, và bắt đầu danh mục chào đón ở Nhân viên mới."
+                "vi": "Vào ngày họ bắt đầu, bấm <b>Xác nhận đã vào làm</b>. Nút này tạo hồ sơ nhân viên, hợp đồng và tài khoản đăng nhập của họ, và bắt đầu danh mục chào đón ở Nhân viên mới."
               },
               "consequence": {
                 "en": "Affects this person: a candidate becomes a colleague. Reversible: no, not from here. Verify first: the day they really started — if they did not come, press Did not join instead.",
-                "vi": "Ảnh hưởng: người này — một ứng viên trở thành đồng nghiệp. Hoàn tác: không, không làm được từ đây. Kiểm tra trước: ngày họ thật sự bắt đầu — nếu họ không đến, hãy bấm Did not join (Không vào làm)."
+                "vi": "Ảnh hưởng: người này — một ứng viên trở thành đồng nghiệp. Hoàn tác: không, không làm được từ đây. Kiểm tra trước: ngày họ thật sự bắt đầu — nếu họ không đến, hãy bấm <b>Không đến nhận việc</b>."
               },
               "kicker": {
                 "en": "Day one",
@@ -23278,7 +23313,7 @@
               "tip": "",
               "title": {
                 "en": "Confirm they joined",
-                "vi": "Confirm they joined — xác nhận họ đã vào làm"
+                "vi": "Xác nhận đã vào làm — ngày đầu tiên"
               },
               "visual": "none"
             }
@@ -23307,7 +23342,7 @@
         },
         "what": {
           "en": "Lifecycle › Hiring, then a role's card. A column per stage, a card per person, a Closed list, and a panel for one candidate.",
-          "vi": "Vòng đời nhân sự › Tuyển dụng, rồi thẻ của một vị trí. Mỗi giai đoạn một cột, mỗi người một thẻ, một danh sách Closed, và một ngăn cho từng ứng viên."
+          "vi": "Vòng đời nhân sự › Tuyển dụng, rồi thẻ của một vị trí. Mỗi giai đoạn một cột, mỗi người một thẻ, một danh sách Đã đóng, và một ngăn cho từng ứng viên."
         },
         "when": {
           "en": "Every day a role is open, and again on the day the new person starts.",
@@ -24812,7 +24847,7 @@
               "screen": "hiringnumbers",
               "tip": {
                 "en": "Each part has a download button, and Download everything gives one Excel file.",
-                "vi": "Mỗi phần có nút tải xuống, và Download everything (Tải tất cả) cho một tệp Excel."
+                "vi": "Mỗi phần có nút tải xuống, và <b>Tải xuống tất cả</b> cho một tệp Excel."
               },
               "title": {
                 "en": "Who has been waiting longest",
@@ -29460,6 +29495,33 @@
               "visual": "calc"
             },
             {
+              "anchor": "fs-resize",
+              "body": {
+                "en": "In <b>Cards</b>, the line between two panels is a handle: drag it to make <b>Components</b> or <b>Live preview</b> wider, or select it and use the arrow keys. The <b>‹</b> beside Components and the <b>›</b> beside Live preview fold that panel to a thin strip; press the strip to open it again.",
+                "vi": "Ở chế độ <b>Thẻ</b>, đường kẻ giữa hai khung là một tay nắm: kéo nó để khung <b>Thành phần</b> hoặc <b>Xem trước trực tiếp</b> rộng hơn, hoặc chọn nó rồi dùng phím mũi tên. Dấu <b>‹</b> cạnh Thành phần và dấu <b>›</b> cạnh Xem trước trực tiếp thu khung đó lại thành một dải mỏng; bấm vào dải để mở lại."
+              },
+              "consequence": "",
+              "kicker": {
+                "en": "Make room",
+                "vi": "Dành chỗ"
+              },
+              "lines": [],
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "formula",
+              "tip": {
+                "en": "The formula in the middle always keeps its room. The widths you choose last until you leave Formula Studio.",
+                "vi": "Công thức ở giữa luôn giữ đủ chỗ. Độ rộng bạn chọn giữ nguyên cho tới khi bạn rời Xưởng công thức."
+              },
+              "title": {
+                "en": "Fold a panel away, or drag it wider",
+                "vi": "Thu gọn một khung, hoặc kéo cho rộng hơn"
+              },
+              "visual": "none"
+            },
+            {
               "anchor": "rep-fs-stage",
               "body": {
                 "en": "A configuration moves <b>Draft → Testing → Validated → Active</b>, one press of the button beside its name at a time. Only an Active configuration pays people. The stage badge opens <b>Put it back to draft</b> and <b>Retire this configuration</b> — or <b>Propose retiring it</b>, when your company's route says retiring needs a sign-off.",
@@ -33289,5 +33351,5 @@
       }
     }
   ],
-  "version": "be3b3ef9f3e7"
+  "version": "1e15640da99f"
 }

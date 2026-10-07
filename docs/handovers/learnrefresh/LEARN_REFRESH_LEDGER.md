@@ -565,6 +565,37 @@ Versions: pb_learn 19.0.20.0.0, pb_payroll_ai_insights 19.0.3.10.0, pb_hiring 19
   arrives (ct-kpis).
 - Tests on a payobook_template clone: 378 run, 6 failed = the 4 known (test_07b, data_access_06, egress 04d/04e)
   + 2 branding ones fixed (LR73) and re-run green. Replay: only the known voice-copy and bridge failures.
-- **Not done:** the browser walk (both browser tools were offline). Owner items: translate the English-only
-  Hiring screens; Budget's big money figures and the Formula Studio resizable panels are not taught yet; the
-  first-login welcome card still offers the payroll tour to hiring-only / employee-only people.
+- ~~Not done: the browser walk~~ — done 2026-10-07 on payobook.com (passed); the four owner items below were
+  then fixed (LR75–LR81).
+
+### LEARN REFRESH 2 — owner items (2026-10-07/08)
+
+- LR75 **Spot card measured its height before its width** (`spotlight.js position`): at the previous/auto width
+  the text wrapped less, the card read shorter than it rendered, and an "above" card landed on its own target
+  (L40 step 1, Hiring set-up's card row). Width is now set before `offsetHeight` is read. Affects every lesson.
+- LR76 **Welcome card is for the right person.** `first_login.js maybeWelcome` reads the server's session
+  facts: `pb_employee_only` (pb_me_portal) → no card; `pb_hiring_not_payroll` (pb_hiring) → body/button
+  `welcomeHiringBody`/`welcomeHiringGo` and `sc.begin("sc_hiring", "watch")`. Absent keys (module not
+  installed) = the payroll tour, as before. test_welcome 06b/07/08 updated.
+- LR77 **Budget's five big figures taught** (L38 new step `bg-kpis`, before `bg-months`; its kicker became
+  "The period"). Product anchor `bg-kpis` laid on pb_budget `bdg-kpis`; the replica draws the five tiles with
+  the product's own `short()` (3.7bn, not 3,700,000,000 ₫ — the full form wrapped to three lines).
+- LR78 **Formula Studio panels taught** (L5 new step `fs-resize` after `fs-preview`). Product anchor laid on
+  the Components resizer in studio.xml; promoted out of the `fs-*` wildcard (PROMOTED_FROM_WILDCARD +
+  the foreign-block note). Replica: `.lrn-fsrow` flex row with `.lrn-fsgrip` handles and `.lrn-fsfold`
+  chevrons. **The grip must be compact (96px, flex-start)** — stretched, it is ~940px tall and the lesson
+  rings a sliver below the fold.
+- LR79 **Hiring is Vietnamese** (pb_hiring 19.0.2.8.0): 2,646 new vi_VN entries (3,102/3,103 strings);
+  ~50 tooltip/placeholder expressions go through a `tr()` helper; Python labels sent to screens translated
+  at build time; seeded scorecard/channel texts show VI only while still equal to the product English;
+  migration `post-10_vi_labels` fills only the Standard preset's "Tiêu chuẩn". Still English: public
+  interviewer/joining pages, native form labels, email template names, saved history. Mapping for lessons:
+  `hiring_vi_labels.json`.
+- LR80 **VI lessons name the Vietnamese labels** (LR70 retired): English-label-plus-gloss in data.js swapped
+  for the real label; practice-data/screens `EN("…")` hiring labels → `B("…", vi)` from pb_hiring's .po.
+- LR81 **Browser-check traps:** a Chrome window in the background is `visibilityState=hidden`, rAF never
+  fires and the whole web client stays blank (no error, no pending request) — patch rAF in the test tab or
+  bring Chrome forward. Smooth scrolling there also lags, so the spot hole lands stale; use Reduce motion
+  for placement checks. A plain `fetch` of learn_content.json can return a cached copy; the app itself uses
+  `cache: "no-cache"`. abm: every `-u pb_learn` turned 13 retired jobs back on — off again, lists in
+  `/root/abm_crons_reoff_20261007b.txt` and `…c.txt`. Backups: `/odoo/backups/hiringvi_20261007/`.

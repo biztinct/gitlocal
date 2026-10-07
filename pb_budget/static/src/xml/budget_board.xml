@@ -131,7 +131,7 @@
              month's cannot drift apart, and the fifth number counts a
              different thing in each scope: warm-or-worse over a year, over
              budget in a month. -->
-        <div class="pbim-stats bdg-kpis">
+        <div class="pbim-stats bdg-kpis" data-coach="bg-kpis">
           <div class="pbim-stat">
             <div class="pbim-stat-ic"><t t-out="ic('landmark',18)"/></div>
             <div class="pbim-stat-tx">

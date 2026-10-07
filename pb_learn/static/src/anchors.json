@@ -341,6 +341,11 @@
       "file": "pb_formula_studio/static/src/xml/studio.xml",
       "desc": "The live preview: the whole configuration evaluated against one sample employee, line by line."
     },
+    "fs-resize": {
+      "screen": "formula",
+      "file": "pb_formula_studio/static/src/xml/studio.xml",
+      "desc": "Cards view: the handle between Components and the editor. Drag it (or arrow keys) to widen a panel; each side panel's ‹ › folds it to a strip and the strip opens it again."
+    },
     "st-new": {
       "screen": "statutory",
       "file": "pb_statutory/static/src/xml/statutory.xml",
@@ -1747,6 +1752,11 @@
       "file": "pb_hr_workforce/static/src/xml/payroll_report.xml",
       "desc": "Payroll Report tabs: Earnings, Deductions, Dept Summary."
     },
+    "bg-kpis": {
+      "screen": "reports",
+      "file": "pb_budget/static/src/xml/budget_board.xml",
+      "desc": "Budget's five big figures: budget, spent, left, money gone against year gone, functions running warm or worse (a month's words when a month is pressed)."
+    },
     "bg-months": {
       "screen": "reports",
       "file": "pb_budget/static/src/xml/budget_board.xml",
@@ -1848,7 +1858,7 @@
     "palette": "pb_formula_studio command layer",
     "shortcuts": "pb_formula_studio",
     "snippets": "pb_formula_studio",
-    "fs-*": "pb_formula_studio — the Formula Studio anchor family, laid in studio.xml by that module. EIGHT are PROMOTED into `product` above (fs-config, fs-components, fs-formula, fs-namesletters, fs-deps, fs-preview, fs-views, fs-command) because L5 names them and an anchor a lesson points at has to be one a test can check; they are listed in PROMOTED_FROM_WILDCARD in tests/test_anchor_registry.py, which is what stops the wildcard reading them as somebody else's. Everything else matching fs-* is still pb_formula_studio's alone — sc_formula points at fs-arrows, fs-card, fs-add, fs-views, fs-view-grid, fs-flow, fs-editai and fs-payai without claiming any of them, which is exactly what this wildcard is for.",
+    "fs-*": "pb_formula_studio — the Formula Studio anchor family, laid in studio.xml by that module. NINE are PROMOTED into `product` above (fs-config, fs-components, fs-formula, fs-namesletters, fs-deps, fs-preview, fs-views, fs-command, fs-resize) because L5 names them and an anchor a lesson points at has to be one a test can check; they are listed in PROMOTED_FROM_WILDCARD in tests/test_anchor_registry.py, which is what stops the wildcard reading them as somebody else's. Everything else matching fs-* is still pb_formula_studio's alone — sc_formula points at fs-arrows, fs-card, fs-add, fs-views, fs-view-grid, fs-flow, fs-editai and fs-payai without claiming any of them, which is exactly what this wildcard is for.",
     "grid-*": "pb_formula_studio — the spreadsheet grid. sc_formula points at grid-canvas, grid-fbar and grid-hint; the names belong to that module.",
     "imp-*": "pb_hr_payroll_formula — the multi-sheet import wizard. sc_import points at imp-confidence and imp-actions.",
     "map-*": "pb_hr_payroll_formula — the component-mapping wizard. sc_mapping points at map-intro and map-actions."

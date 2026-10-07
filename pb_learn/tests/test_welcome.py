@@ -31,9 +31,11 @@ FIRST_LOGIN = 'static/src/coach/first_login.js'
 COACH_JS = 'static/src/coach/coach.js'
 COACH_SCSS = 'static/src/coach/coach.scss'
 
-# The four chrome keys the card is built out of, and nothing else may reach the
-# reader from this surface.
-WELCOME_KEYS = ('welcomeTitle', 'welcomeBody', 'welcomeGo', 'welcomeLater')
+# The chrome keys the card is built out of, and nothing else may reach the
+# reader from this surface. The two Hiring keys swap in for Body and Go when the
+# card is drawn for somebody whose work is hiring and not payroll.
+WELCOME_KEYS = ('welcomeTitle', 'welcomeBody', 'welcomeGo', 'welcomeLater',
+                'welcomeHiringBody', 'welcomeHiringGo')
 
 
 def _read(rel):
@@ -111,7 +113,7 @@ class TestWelcomeCard(TransactionCase):
         only from the press, and only in `watch`."""
         welcome = self.code.split('export async function maybeWelcome')[1] \
                            .split('export async function maybeGreet')[0]
-        self.assertIn('const choice = await askWelcome();', welcome,
+        self.assertIn('const choice = await askWelcome(hiring);', welcome,
                       "the card starts something before it is answered")
         self.assertIn("if (choice === \"go\" && sc) {", welcome,
                       "the walkthrough is not conditional on the press")
@@ -164,6 +166,28 @@ class TestWelcomeCard(TransactionCase):
         self.assertIn('return false;', welcome.rsplit('catch', 1)[1],
                       "the outer catch does not return false")
 
+    def test_06b_the_card_is_for_the_right_person(self):
+        """Owner item, LEARN REFRESH 2: the payroll tour was offered to people
+        who only hire and to people who are only employees. Both facts come from
+        the server on the session (the same rules as their menu and first
+        screen); the card reads them and never decides them itself."""
+        welcome = self.code.split('export async function maybeWelcome')[1] \
+                           .split('export async function maybeGreet')[0]
+        self.assertIn('if (session.pb_employee_only) {', welcome,
+                      "an employee-only person is still offered a tour")
+        self.assertLess(welcome.index('if (session.pb_employee_only) {'),
+                        welcome.index('const choice = await askWelcome('),
+                        "the employee-only check comes after the card is drawn")
+        self.assertIn('const hiring = !!session.pb_hiring_not_payroll;', welcome)
+        self.assertIn('askWelcome(hiring)', welcome)
+        self.assertIn('sc.begin(hiring ? HIRING_SCENARIO : WELCOME_SCENARIO, WELCOME_MODE)',
+                      welcome, "a hiring person is still sent on the payroll tour")
+        self.assertIn('HIRING_SCENARIO = "sc_hiring"', self.js)
+        keys = {s['key'] for s in load_content().get('scenarios', [])
+                if isinstance(s, dict)}
+        if keys:
+            self.assertIn('sc_hiring', keys, "the Hiring walkthrough is gone")
+
     # -- the words -----------------------------------------------------------
     def test_07_every_string_is_a_generated_bilingual_record(self):
         chrome = load_content()['chrome']
@@ -180,15 +204,18 @@ class TestWelcomeCard(TransactionCase):
         """A sentence in the JS is a sentence no translator ever sees. Both
         directions: every key is read, and no key is read that was not
         generated."""
-        read = set(re.findall(r'T\("(welcome[A-Za-z]+)"\)', self.js))
+        card = self.js.split('export function welcomeCardHTML')[1].split('\n}')[0]
+        # Quoted key names anywhere inside the T(...) calls, so the Hiring
+        # ternaries count as read too.
+        read = set(re.findall(r'"(welcome[A-Z][A-Za-z]+)"', card))
         self.assertEqual(read, set(WELCOME_KEYS),
                          "the card and the content plane disagree about its "
                          "strings: %s" % sorted(read.symmetric_difference(WELCOME_KEYS)))
-        card = self.js.split('export function welcomeCardHTML')[1].split('\n}')[0]
-        # Every value that reaches innerHTML is escaped. There is no authored
-        # BODY here — no <b>, no tokens — so there is no raw position and
-        # therefore no `gtx`, which is the one raw-insertion wrapper.
-        self.assertEqual(card.count('${esc(T('), len(WELCOME_KEYS),
+        # Every value that reaches innerHTML is escaped — four positions (title,
+        # body, button, later), two of which pick between two keys. There is no
+        # authored BODY here — no <b>, no tokens — so there is no raw position
+        # and therefore no `gtx`, which is the one raw-insertion wrapper.
+        self.assertEqual(card.count('${esc(T('), 4,
                          "a string reaches the card without being escaped")
         self.assertNotIn('gtx(', card)
 

@@ -911,7 +911,7 @@
           </div>
 
           <!-- editor: cards -->
-          <div t-if="state.view === 'cards'" class="pbfs-panel-resizer" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize Components panel" aria-valuemin="220" aria-valuemax="500" t-att-aria-valuenow="panelWidths.outline" title="Drag to resize. Arrow keys adjust width; Home and End set minimum and maximum." t-on-pointerdown="(ev) => this.startPanelResize('outline', ev)" t-on-pointermove="movePanelResize" t-on-pointerup="endPanelResize" t-on-pointercancel="endPanelResize" t-on-lostpointercapture="endPanelResize" t-on-keydown="(ev) => this.keyboardPanelResize('outline', ev)"><span/></div>
+          <div t-if="state.view === 'cards'" class="pbfs-panel-resizer" data-coach="fs-resize" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize Components panel" aria-valuemin="220" aria-valuemax="500" t-att-aria-valuenow="panelWidths.outline" title="Drag to resize. Arrow keys adjust width; Home and End set minimum and maximum." t-on-pointerdown="(ev) => this.startPanelResize('outline', ev)" t-on-pointermove="movePanelResize" t-on-pointerup="endPanelResize" t-on-pointercancel="endPanelResize" t-on-lostpointercapture="endPanelResize" t-on-keydown="(ev) => this.keyboardPanelResize('outline', ev)"><span/></div>
           <div t-if="state.view === 'cards'" class="pbfs-editor">
             <!-- small-screen toolbar: opens the two drawers (visible below md via CSS) -->
             <div class="pbfs-gridbar pbfs-cardbar">

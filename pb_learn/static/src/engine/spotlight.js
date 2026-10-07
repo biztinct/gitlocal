@@ -277,6 +277,11 @@ export const Spot = {
         c.style.top = "0px";
         c.style.left = "0px";
         const cw = Math.min(372, W - 32);
+        // Width BEFORE measuring height: measured at the previous (or auto)
+        // width the text wraps less, the card reads shorter than it renders,
+        // and an "above" card lands on top of the control it points at
+        // (Hiring set-up's card row, LEARN REFRESH 2 browser walk).
+        c.style.width = cw + "px";
         const ch = c.offsetHeight || 260;
         let top;
         let left;
