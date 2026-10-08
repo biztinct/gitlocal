@@ -1846,6 +1846,42 @@ class HrFormulaRule(models.Model):
             [('rule_id', '=', self.id)], order='seq desc', limit=1)
         return (last.seq + 1) if last else 1
 
+    def _pb_ensure_salary_rule(self, company):
+        """The salary rule a payslip line of this component points at.
+
+        `hr_payslip_line.salary_rule_id` is NOT NULL. Components built by the
+        generators and the import carry one, but a component added in the
+        studio does not until something links it — and the payslip path only
+        LOOKED one up, so a blank "New Component" on a scheme failed every
+        payslip of its run (2026-10-08, demo Retail). Same minimal rule the
+        import batch creates (`payroll_import_batch._get_or_create_salary_rule`),
+        linked back so the next run finds it at once.
+        """
+        self.ensure_one()
+        if self.salary_rule_id:
+            return self.salary_rule_id
+        SalaryRule = self.env['hr.salary.rule'].sudo()
+        rule = SalaryRule.search([('code', '=', self.code),
+                                  ('company_id', '=', company.id)], limit=1)
+        if not rule:
+            category = (self.category_id
+                        or self.env['hr.payslip']._pb_other_category())
+            rule = SalaryRule.create({
+                'name': self.name or self.code,
+                'code': self.code,
+                'sequence': self.sequence or 100,
+                'category_id': category.id,
+                'company_id': company.id,
+                'condition_select': 'none',
+                'amount_select': 'fix',
+                'amount_fix': 0.0,
+                'quantity': '1.0',
+                'appears_on_payslip': True,
+                'active': True,
+            })
+        self.sudo().salary_rule_id = rule.id
+        return rule
+
     def _version_snapshot(self):
         """Full picture of the versioned + display fields at snapshot time."""
         self.ensure_one()

@@ -869,6 +869,17 @@ class HrPayslipFormula(models.Model):
         # because S4 derives "Fixed value" from the component's own type anyway.
         return values
 
+    def _pb_other_category(self):
+        """The neutral 'Other' (OTH) salary-rule category, created if absent.
+
+        Same category the import batch falls back to
+        (`payroll_import_batch._get_default_category`), without its code
+        guessing: a guess could file a blank component under GROSS or NET.
+        """
+        Category = self.env['hr.salary.rule.category'].sudo()
+        category = Category.search([('code', '=', 'OTH')], limit=1)
+        return category or Category.create({'name': 'Other', 'code': 'OTH'})
+
     def _create_payslip_lines_from_formulas(self, rules, computed_values):
         """Create payslip lines from formula computation results"""
         self.ensure_one()
@@ -878,6 +889,7 @@ class HrPayslipFormula(models.Model):
 
         lines_to_create = []
         skipped_non_numeric = []
+        fallback_category = None
 
         for rule in rules:
             if not rule.appears_on_payslip:
@@ -926,6 +938,10 @@ class HrPayslipFormula(models.Model):
                         ('code', '=', rule.code),
                         ('company_id', '=', self.company_id.id),
                     ], limit=1)
+                    if not salary_rule:
+                        # a studio-added component has none yet — the line
+                        # cannot be saved without one (see the method)
+                        salary_rule = rule._pb_ensure_salary_rule(self.company_id)
                     if cache is not None:
                         cache[key] = salary_rule
 
@@ -933,7 +949,15 @@ class HrPayslipFormula(models.Model):
                 'slip_id': self.id,
                 'name': rule.name,
                 'code': rule.code,
-                'category_id': rule.category_id.id if rule.category_id else False,
+                # `hr_payslip_line.category_id` is NOT NULL, and a component
+                # added in the studio carries no category until somebody sets
+                # one (2026-10-08: a blank "New Component" on the demo Retail
+                # scheme failed every payslip of the run). Categories are
+                # vestigial — totals read `pay_role` (one pay-band rule) — so
+                # the neutral "Other" category is the honest filler.
+                'category_id': (rule.category_id.id if rule.category_id else
+                                (fallback_category := fallback_category
+                                 or self._pb_other_category()).id),
                 'sequence': rule.sequence,
                 'amount': amount,
                 'quantity': 1.0,

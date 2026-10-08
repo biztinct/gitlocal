@@ -330,6 +330,40 @@ class PbPayrunWizardDemo(models.AbstractModel):
         }
 
     @api.model
+    def _pb_isolated(self, items, work, on_fail, on_rollback=None):
+        """Run `work(item)` for each item so one failure costs only that item.
+
+        Without this the first failing INSERT aborted the transaction and every
+        later person in the chunk failed with "current transaction is aborted"
+        — and the run with them ("Could not compute the run", 2026-10-08).
+
+        Fast path: the whole chunk in ONE savepoint. A savepoint per person
+        doubled the time of a chunk (each one flushes), so the per-person
+        savepoints are paid only when the chunk actually failed: it is rolled
+        back and redone one person at a time. Returns how many succeeded.
+        """
+        try:
+            with self.env.cr.savepoint():
+                for item in items:
+                    work(item)
+            return len(items)
+        except Exception:               # noqa: BLE001 — redone item by item
+            # Anything cached across items may name rows the rollback removed.
+            if on_rollback:
+                on_rollback()
+            done = 0
+            for item in items:
+                try:
+                    with self.env.cr.savepoint():
+                        work(item)
+                    done += 1
+                except Exception as ex:  # noqa: BLE001
+                    if on_rollback:
+                        on_rollback()
+                    on_fail(item, ex)
+            return done
+
+    @api.model
     def compute_batch(self, payload):
         key = self._demo_division_for(payload)
         if not key:
@@ -362,7 +396,7 @@ class PbPayrunWizardDemo(models.AbstractModel):
         has_fiv = 'formula_input_values' in Slip._fields
 
         rule_cache = {}
-        exceptions, computed = [], 0
+        exceptions, work = [], []
         for e in self.env['hr.employee'].sudo().browse(emp_ids).exists():
             c = cmap.get(e.id)
             if not c:
@@ -375,22 +409,35 @@ class PbPayrunWizardDemo(models.AbstractModel):
             iv = gen._month_inputs(e.id, c.wage or 0.0, rating, key, loanmap.get(e.id, 0.0), mi)
             iv['DEPS'] = c.dependents or 0
             iv['ADVPAY'] = float(adv.get(e.id, 0.0))
-            try:
-                slip = Slip.create({
-                    'employee_id': e.id, 'contract_id': c.id, 'struct_id': False,
-                    'date_from': ds, 'date_to': de, 'payslip_run_id': run.id,
-                    'company_id': company_id, 'calculation_method': 'formula',
-                    'formula_config_id': end_cfg.id,
-                    'name': '%s - %s' % (e.name, m_start.strftime('%b %Y') if m_start else payload.get('name')),
-                })
-                vc, _l = slip._evaluate_rules_with_dependencies(end_rules, dict(iv))
-                slip.with_context(pb_salary_rule_cache=rule_cache)._create_payslip_lines_from_formulas(end_rules, vc)
-                if has_fiv:
-                    slip.formula_input_values = json.dumps(iv)
-                computed += 1
-            except Exception as ex:  # pragma: no cover
-                _logger.warning('pb_demo run payroll: compute fail %s: %s', e.name, ex)
-                exceptions.append({'emp': e.name, 'why': 'Compute error'})
+            work.append((e, c, iv))
+
+        def compute_one(item):
+            e, c, iv = item
+            slip = Slip.create({
+                'employee_id': e.id, 'contract_id': c.id, 'struct_id': False,
+                'date_from': ds, 'date_to': de, 'payslip_run_id': run.id,
+                'company_id': company_id, 'calculation_method': 'formula',
+                'formula_config_id': end_cfg.id,
+                'name': '%s - %s' % (e.name, m_start.strftime('%b %Y') if m_start else payload.get('name')),
+            })
+            vc, _l = slip._evaluate_rules_with_dependencies(end_rules, dict(iv))
+            slip.with_context(pb_salary_rule_cache=rule_cache)._create_payslip_lines_from_formulas(end_rules, vc)
+            if has_fiv:
+                slip.formula_input_values = json.dumps(iv)
+
+        def failed(item, ex):
+            _logger.warning('pb_demo run payroll: compute fail %s: %s', item[0].name, ex)
+            exceptions.append({'emp': item[0].name, 'why': 'Compute error'})
+
+        # Link any component that has no salary rule yet BEFORE the savepoints:
+        # created inside one, a rollback would take the rule away while the
+        # shared rule_cache still pointed at it.
+        company = self.env['res.company'].browse(company_id)
+        for rule in end_rules.filtered(
+                lambda r: r.appears_on_payslip and not r.salary_rule_id):
+            rule._pb_ensure_salary_rule(company)
+        computed = self._pb_isolated(work, compute_one, failed,
+                                     on_rollback=rule_cache.clear)
 
         # Keep the kanban roll-up current as chunks land (cheap SQL aggregate).
         if 'pb_total_net' in run._fields:
@@ -483,18 +530,20 @@ class PbPayrunWizardDemo(models.AbstractModel):
             iv = gen._month_inputs(e.id, c.wage or 0.0, rating, key, loanmap.get(e.id, 0.0), mi)
             iv['DEPS'] = c.dependents or 0
             iv['ADVPAY'] = float(adv.get(e.id, 0.0))
-            slip = Slip.create({
-                'employee_id': e.id, 'contract_id': c.id, 'struct_id': False,
-                'date_from': ds, 'date_to': de, 'payslip_run_id': run.id,
-                'company_id': company_id, 'calculation_method': 'formula',
-                'formula_config_id': end_cfg.id,
-                'name': '%s - %s' % (e.name, m_start.strftime('%b %Y') if m_start else name),
-            })
             try:
-                vc, _l = slip._evaluate_rules_with_dependencies(end_rules, dict(iv))
-                slip._create_payslip_lines_from_formulas(end_rules, vc)
-                if has_fiv:
-                    slip.formula_input_values = json.dumps(iv)
+                # One savepoint per person — see compute_batch.
+                with self.env.cr.savepoint():
+                    slip = Slip.create({
+                        'employee_id': e.id, 'contract_id': c.id, 'struct_id': False,
+                        'date_from': ds, 'date_to': de, 'payslip_run_id': run.id,
+                        'company_id': company_id, 'calculation_method': 'formula',
+                        'formula_config_id': end_cfg.id,
+                        'name': '%s - %s' % (e.name, m_start.strftime('%b %Y') if m_start else name),
+                    })
+                    vc, _l = slip._evaluate_rules_with_dependencies(end_rules, dict(iv))
+                    slip._create_payslip_lines_from_formulas(end_rules, vc)
+                    if has_fiv:
+                        slip.formula_input_values = json.dumps(iv)
                 computed += 1
             except Exception as ex:  # pragma: no cover
                 _logger.warning('pb_demo run payroll: compute fail %s: %s', e.name, ex)

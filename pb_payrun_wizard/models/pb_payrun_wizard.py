@@ -815,7 +815,10 @@ class PbPayrunWizard(models.AbstractModel):
         computed = 0
         for slip in created:
             try:
-                slip.compute_sheet()
+                # one savepoint per slip, or the first failing INSERT aborts
+                # the transaction for every slip after it
+                with self.env.cr.savepoint():
+                    slip.compute_sheet()
             except (AccessError, UserError) as e:
                 _logger.warning("Payrun wizard: compute refused for %s: %s",
                                 slip.employee_id.name, e)
@@ -1001,8 +1004,11 @@ class PbPayrunWizard(models.AbstractModel):
         rule_cache = {}
         for slip in created:
             try:
-                slip.with_context(pb_salary_rule_cache=rule_cache).compute_sheet()
+                # one savepoint per slip — see create_and_compute
+                with self.env.cr.savepoint():
+                    slip.with_context(pb_salary_rule_cache=rule_cache).compute_sheet()
             except (AccessError, UserError) as e:
+                rule_cache.clear()      # may name a rule the rollback removed
                 # A refusal states its own reason; passing it on is the whole
                 # difference between a run that reports 146 employees and 0.00
                 # and one that says what went wrong for each of them.
@@ -1011,6 +1017,7 @@ class PbPayrunWizard(models.AbstractModel):
                 exceptions.append({'emp': slip.employee_id.name, 'why': str(e)})
                 continue
             except Exception as e:
+                rule_cache.clear()
                 _logger.exception("Payrun wizard: compute fail %s: %s",
                                   slip.employee_id.name, e)
                 exceptions.append({'emp': slip.employee_id.name, 'why': 'Compute error'})
