@@ -119,6 +119,9 @@ export class PbHomeHub extends Component {
             key: "home",                      // -> pbhub.home.lens.v1
             brand: { label: _t("Home"), icon: "home" },
             defaultLens: "pulse",
+            // Owner 2026-10-08: Home opens on Pulse every time, not on
+            // whichever tab was pressed last (it kept reopening Announce).
+            rememberLens: false,
             tracker: this.tracker,
             cog: () => this.openSettings(),
             lenses: [

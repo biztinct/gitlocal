@@ -85,6 +85,7 @@ export class HubShell extends Component {
          *   tracker?: { label, stage, total, onClick? },
          *   cog?:     () => {},                   // renders the cog button
          *   defaultLens?: "run",                  // else the first allowed lens
+         *   rememberLens?: false,                 // always open on defaultLens
          * }
          */
         config: { type: Object },
@@ -199,9 +200,17 @@ export class HubShell extends Component {
         };
     }
 
+    /** The localStorage slot, or null when this hub keeps no memory. */
+    get _lensStorageKey() {
+        // A hub whose first tab IS the point (Home opens on Pulse) says
+        // `rememberLens: false`; it then neither reads nor writes the slot.
+        return this.config.rememberLens === false
+            ? null : hubLensStorageKey(this.config.key);
+    }
+
     _restoreLens() {
         const keys = (this.config.lenses || []).map((l) => l.key);
-        const storageKey = hubLensStorageKey(this.config.key);
+        const storageKey = this._lensStorageKey;
         try {
             const v = storageKey && window.localStorage.getItem(storageKey);
             if (keys.includes(v)) { return v; }
@@ -382,7 +391,7 @@ export class HubShell extends Component {
         // the shell until the new lens has finished loading, and the helper
         // must follow the tab the reader pressed, not the data behind it.
         this._publishPlace();
-        const storageKey = hubLensStorageKey(this.config.key);
+        const storageKey = this._lensStorageKey;
         if (!storageKey) { return; }
         try {
             window.localStorage.setItem(storageKey, key);
