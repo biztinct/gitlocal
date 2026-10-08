@@ -194,3 +194,20 @@
 
 /* LEARN REFRESH step 6 — why a settlement could not be worked out, under the name */
 .pbl-note { margin-top: 3px; font-size: 11.5px; line-height: 1.35; color: #BE123C; font-weight: 600; }
+
+/* Owner 2026-10-08 — the kit reserves room at the bottom of every page for the
+   helper button (pb_import_kit/import_kit.scss: 236px, or 168px once the old
+   tour launcher is gone). This page hands its scrolling to `.pbim-wrap`, so on
+   the FRAME that reservation was a dead band across the bottom of the lens and
+   the list stopped half-way up the screen. It belongs on the scroller. The
+   extra `.pbim-page` class out-ranks both kit rules, so asset order is moot. */
+body:has(.lrn-coachhost) .pbim.pbim-page.pbl-ledger.pbl-ledger--hub,
+body:has(.payai-floating-pill) .pbim.pbim-page.pbl-ledger.pbl-ledger--hub {
+    padding-bottom: 0;
+    > .pbim-wrap { padding-bottom: 236px; }
+}
+body.pb-coach-absent:has(.lrn-coachhost) .pbim.pbim-page.pbl-ledger.pbl-ledger--hub,
+body.pb-coach-absent:has(.payai-floating-pill) .pbim.pbim-page.pbl-ledger.pbl-ledger--hub {
+    padding-bottom: 0;
+    > .pbim-wrap { padding-bottom: 168px; }
+}
