@@ -12228,8 +12228,8 @@
           "act": "observe",
           "anchor": "pw-scheme",
           "body": {
-            "en": "\"Pay run for\" groups the schemes: End of month, Regular payroll, Mid-month advance, Final settlement. Picking a scheme picks the rulebook every payslip in this run is computed by.",
-            "vi": "\"Đợt lương cho\" nhóm các chương trình: Cuối tháng, Kỳ lương thường, Tạm ứng giữa tháng, Quyết toán thôi việc. Chọn chương trình là chọn bộ quy tắc sẽ tính mọi phiếu lương trong đợt này."
+            "en": "The Payroll scheme box opens the schemes, grouped: End of month, Regular payroll, Mid-month advance, Final settlement. Picking a scheme picks the rulebook every payslip in this run is computed by.",
+            "vi": "Ô Chương trình lương mở các chương trình, theo nhóm: Cuối tháng, Kỳ lương thường, Tạm ứng giữa tháng, Quyết toán thôi việc. Chọn chương trình là chọn bộ quy tắc sẽ tính mọi phiếu lương trong đợt này."
           },
           "guard": false,
           "key": "scheme",
@@ -25701,8 +25701,8 @@
             {
               "anchor": "pw-scheme",
               "body": {
-                "en": "\"Pay run for\" lists this company's pay schemes, grouped by kind: <b>End of month</b>, <b>Regular payroll</b>, <b>Mid-month advance</b>, <b>Final settlement</b>. Each card says how many people it covers and its last run. Picking a scheme picks the <b>rulebook</b> every payslip in this run is computed by. Choose the wrong one and every number is wrong in the same direction — the hardest error to spot.",
-                "vi": "\"Đợt lương cho\" liệt kê các chương trình lương của công ty, nhóm theo loại: <b>Cuối tháng</b>, <b>Kỳ lương thường</b>, <b>Tạm ứng giữa tháng</b>, <b>Quyết toán thôi việc</b>. Mỗi thẻ ghi bao nhiêu người được áp dụng và đợt gần nhất. Chọn chương trình lương là chọn <b>bộ quy tắc</b> sẽ tính mọi phiếu lương trong đợt này — chọn sai thì mọi con số sai theo cùng một hướng, loại lỗi khó phát hiện nhất."
+                "en": "The <b>Payroll scheme</b> box opens this company's pay schemes, grouped by kind: <b>End of month</b>, <b>Regular payroll</b>, <b>Mid-month advance</b>, <b>Final settlement</b>. Each card says how many people it covers and its last run. Picking a scheme picks the <b>rulebook</b> every payslip in this run is computed by. Choose the wrong one and every number is wrong in the same direction — the hardest error to spot.",
+                "vi": "Ô <b>Chương trình lương</b> mở các chương trình lương của công ty, nhóm theo loại: <b>Cuối tháng</b>, <b>Kỳ lương thường</b>, <b>Tạm ứng giữa tháng</b>, <b>Quyết toán thôi việc</b>. Mỗi thẻ ghi bao nhiêu người được áp dụng và đợt gần nhất. Chọn chương trình lương là chọn <b>bộ quy tắc</b> sẽ tính mọi phiếu lương trong đợt này — chọn sai thì mọi con số sai theo cùng một hướng, loại lỗi khó phát hiện nhất."
               },
               "consequence": "",
               "kicker": {

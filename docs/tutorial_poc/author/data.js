@@ -2923,8 +2923,8 @@ const LESSONS = {
         screen: "runpayroll", anchor: "pw-scheme",
         kicker: B("Step 1", "Bước 1"),
         title: B("Pick the pay scheme first", "Chọn chương trình lương trước tiên"),
-        body: B("\"Pay run for\" lists this company's pay schemes, grouped by kind: <b>End of month</b>, <b>Regular payroll</b>, <b>Mid-month advance</b>, <b>Final settlement</b>. Each card says how many people it covers and its last run. Picking a scheme picks the <b>rulebook</b> every payslip in this run is computed by. Choose the wrong one and every number is wrong in the same direction — the hardest error to spot.",
-                "\"Đợt lương cho\" liệt kê các chương trình lương của công ty, nhóm theo loại: <b>Cuối tháng</b>, <b>Kỳ lương thường</b>, <b>Tạm ứng giữa tháng</b>, <b>Quyết toán thôi việc</b>. Mỗi thẻ ghi bao nhiêu người được áp dụng và đợt gần nhất. Chọn chương trình lương là chọn <b>bộ quy tắc</b> sẽ tính mọi phiếu lương trong đợt này — chọn sai thì mọi con số sai theo cùng một hướng, loại lỗi khó phát hiện nhất."),
+        body: B("The <b>Payroll scheme</b> box opens this company's pay schemes, grouped by kind: <b>End of month</b>, <b>Regular payroll</b>, <b>Mid-month advance</b>, <b>Final settlement</b>. Each card says how many people it covers and its last run. Picking a scheme picks the <b>rulebook</b> every payslip in this run is computed by. Choose the wrong one and every number is wrong in the same direction — the hardest error to spot.",
+                "Ô <b>Chương trình lương</b> mở các chương trình lương của công ty, nhóm theo loại: <b>Cuối tháng</b>, <b>Kỳ lương thường</b>, <b>Tạm ứng giữa tháng</b>, <b>Quyết toán thôi việc</b>. Mỗi thẻ ghi bao nhiêu người được áp dụng và đợt gần nhất. Chọn chương trình lương là chọn <b>bộ quy tắc</b> sẽ tính mọi phiếu lương trong đợt này — chọn sai thì mọi con số sai theo cùng một hướng, loại lỗi khó phát hiện nhất."),
         tip: B("F&B already has a July run — it was sent back and is waiting to be fixed. Starting a second one would make Payobook say \"Payroll already exists\".",
                "F&B đã có đợt lương tháng 7 — nó bị trả lại và đang chờ được sửa. Bắt đầu thêm một đợt nữa thì Payobook sẽ báo \"Payroll already exists\" (đã có bảng lương)."),
       },
@@ -10196,8 +10196,8 @@ const SCENARIOS = [
         say: {
           kicker: B("Step 1", "Bước 1"),
           title: B("Pick the pay scheme", "Chọn chương trình lương"),
-          body: B("\"Pay run for\" groups the schemes: End of month, Regular payroll, Mid-month advance, Final settlement. Picking a scheme picks the rulebook every payslip in this run is computed by.",
-                  "\"Đợt lương cho\" nhóm các chương trình: Cuối tháng, Kỳ lương thường, Tạm ứng giữa tháng, Quyết toán thôi việc. Chọn chương trình là chọn bộ quy tắc sẽ tính mọi phiếu lương trong đợt này."),
+          body: B("The Payroll scheme box opens the schemes, grouped: End of month, Regular payroll, Mid-month advance, Final settlement. Picking a scheme picks the rulebook every payslip in this run is computed by.",
+                  "Ô Chương trình lương mở các chương trình, theo nhóm: Cuối tháng, Kỳ lương thường, Tạm ứng giữa tháng, Quyết toán thôi việc. Chọn chương trình là chọn bộ quy tắc sẽ tính mọi phiếu lương trong đợt này."),
         },
       },
       {

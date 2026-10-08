@@ -330,31 +330,70 @@ $pw-lock-bd: #A7E3D5;
    The first question on the first step, and it is asked with cards rather than
    a dropdown because the choice is made on the numbers: how many people the
    scheme covers and when it last ran. A dropdown hides both. */
-.pw-root .pw-schemes { margin-bottom: 18px; }
-.pw-root .pw-schemegroup { margin-top: 10px; }
-.pw-root .pw-schemegroup__label {
+.pw-root .pw-schemegroup, .pw-schemedlg .pw-schemegroup { margin-top: 10px; }
+.pw-root .pw-schemegroup__label, .pw-schemedlg .pw-schemegroup__label {
     font-size: 11px; font-weight: 700; letter-spacing: .06em;
     text-transform: uppercase; color: var(--pw-muted); margin-bottom: 6px;
 }
-.pw-root .pw-schemecards {
+.pw-root .pw-schemecards, .pw-schemedlg .pw-schemecards {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 8px;
 }
-.pw-root .pw-schemecard {
+.pw-root .pw-schemecard, .pw-schemedlg .pw-schemecard {
     display: flex; flex-direction: column; gap: 3px; text-align: left;
     padding: 11px 13px; border: 1px solid var(--pw-border); border-radius: 12px;
     background: #fff; color: var(--pw-ink); cursor: pointer;
 }
-.pw-root .pw-schemecard:hover { border-color: var(--pw-soft2); }
-.pw-root .pw-schemecard:focus-visible {
+.pw-root .pw-schemecard:hover, .pw-schemedlg .pw-schemecard:hover { border-color: var(--pw-soft2); }
+.pw-root .pw-schemecard:focus-visible, .pw-schemedlg .pw-schemecard:focus-visible {
     outline: 2px solid var(--pw-brand); outline-offset: 2px;
 }
-.pw-root .pw-schemecard.on {
+.pw-root .pw-schemecard.on, .pw-schemedlg .pw-schemecard.on {
     border-color: var(--pw-brand); background: var(--pw-soft);
     box-shadow: 0 0 0 3px rgba(90,75,176,.12);
 }
-.pw-root .pw-schemecard__name { font-size: 13.5px; font-weight: 700; }
-.pw-root .pw-schemecard__meta { font-size: 11.5px; color: var(--pw-muted); }
+.pw-root .pw-schemecard__name, .pw-schemedlg .pw-schemecard__name { font-size: 13.5px; font-weight: 700; }
+.pw-root .pw-schemecard__meta, .pw-schemedlg .pw-schemecard__meta { font-size: 11.5px; color: var(--pw-muted); }
+
+/* Owner 2026-10-08 — the scheme is one closed field on the Period box that
+   opens the cards in a pop-up. The pop-up renders OUTSIDE .pw-root (the
+   dialog service mounts it at the body), so it carries its own copy of the
+   wizard's tokens and the card rules above name it alongside .pw-root. */
+.pw-schemedlg {
+    --pw-brand: #5A4BB0; --pw-soft: #EDEAF8; --pw-soft2: #DDD6F2;
+    --pw-ink: #1B1733; --pw-muted: #6E6A85; --pw-border: #D5DEEE;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    .pw-schemedlg__body { padding: 4px 2px 8px; }
+    .pw-schemegroup:first-of-type { margin-top: 0; }
+    .pw-schemedlg__find {
+        width: 100%; border: 1px solid var(--pw-border); border-radius: 9px;
+        padding: 8px 11px; font-size: 13.5px; margin-bottom: 12px; background: #fff;
+    }
+    .pw-schemedlg__find:focus { outline: none; border-color: var(--pw-brand); box-shadow: 0 0 0 3px rgba(90,75,176,.15); }
+    .pw-schemegroup + .pw-schemegroup { margin-top: 16px; }
+    .pw-muted { color: var(--pw-muted); font-size: 13px; }
+}
+.pw-root .pw-schemefield {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    text-align: left; cursor: pointer; color: var(--pw-ink); min-height: 52px;
+}
+.pw-root .pw-schemefield:hover { border-color: var(--pw-soft2); }
+.pw-root .pw-schemefield:focus-visible { outline: none; border-color: var(--pw-brand); box-shadow: 0 0 0 3px rgba(90,75,176,.15); }
+.pw-root .pw-schemefield.is-empty { border-style: dashed; border-color: var(--pw-brand); background: rgba(90,75,176,.04); }
+.pw-root .pw-schemefield__tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pw-root .pw-schemefield__name { font-size: 13.5px; font-weight: 700; line-height: 1.3; }
+.pw-root .pw-schemefield__meta {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+    font-size: 11.5px; color: var(--pw-muted);
+}
+.pw-root .pw-schemefield__sep { opacity: .7; }
+.pw-root .pw-schemefield__ph { font-size: 13.5px; font-weight: 600; color: var(--pw-brand); }
+.pw-root .pw-schemefield__chev { flex-shrink: 0; color: var(--pw-muted); display: inline-flex; }
+.pw-root .pw-mine, .pw-schemedlg .pw-mine {
+    align-self: flex-start; font-size: 10.5px; font-weight: 700; letter-spacing: .02em;
+    color: var(--pw-brand); background: var(--pw-soft); border-radius: 999px; padding: 1px 8px;
+}
+.pw-root .pw-schemefield__meta .pw-mine { margin-left: 4px; }
 
 .pw-root .pw-schemesum {
     margin-top: 12px; font-size: 13px; display: flex; align-items: center;

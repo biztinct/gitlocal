@@ -547,3 +547,51 @@ msgstr "Sao chép tên"
 #: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
 msgid "Payroll scheme"
 msgstr "Chương trình lương"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Choose a payroll scheme…"
+msgstr "Chọn chương trình lương…"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "people covered"
+msgstr "người được áp dụng"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "· last run"
+msgstr "· đợt gần nhất"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Your division"
+msgstr "Khối của bạn"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Find a scheme…"
+msgstr "Tìm chương trình…"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "No scheme matches that name."
+msgstr "Không có chương trình nào khớp tên này."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Open the map"
+msgstr "Mở bản đồ"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "Which scheme is this run for?"
+msgstr "Đợt lương này cho chương trình nào?"

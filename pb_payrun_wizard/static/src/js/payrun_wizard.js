@@ -5,6 +5,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
+import { Dialog } from "@web/core/dialog/dialog";
 import { IC as KIT_IC } from "@pb_import_kit/js/import_icons";
 
 // The shared Lucide registry first, this wizard's own five last, so every glyph
@@ -197,6 +198,47 @@ export function formatMoney(money, n) {
 
 export function exceptionNames(missing) {
     return (missing || []).map((u) => u.emp).filter(Boolean).join("\n");
+}
+
+/**
+ * "Which scheme is this run for?" — the cards, behind the Payroll scheme field.
+ *
+ * Owner 2026-10-08: the cards used to sit open above Period and Scope, which
+ * pushed the two things every run needs below the fold on a company with a
+ * dozen schemes. They are now one closed field that opens this pop-up; the
+ * cards themselves carry the same facts (people covered, last run) so the
+ * choice is still made on the numbers. Picking a card closes it.
+ */
+export class SchemePickerDialog extends Component {
+    static template = "pb_payrun_wizard.SchemePickerDialog";
+    static components = { Dialog };
+    static props = {
+        groups: Array,          // [{key, label, items: [card]}] — schemeGroups
+        chosenId: Number,
+        onPick: Function,
+        close: Function,
+    };
+
+    setup() { this.state = useState({ q: "" }); }
+
+    get title() { return _t("Which scheme is this run for?"); }
+    get total() { return this.props.groups.reduce((n, g) => n + g.items.length, 0); }
+
+    get groups() {
+        const q = this.state.q.trim().toLowerCase();
+        if (!q) { return this.props.groups; }
+        return this.props.groups
+            .map((g) => ({ ...g, items: g.items.filter((c) =>
+                `${c.name} ${c.code || ""}`.toLowerCase().includes(q)) }))
+            .filter((g) => g.items.length);
+    }
+
+    num(n) { return (n || 0).toLocaleString(); }
+
+    pick(card) {
+        this.props.onPick(card);
+        this.props.close();
+    }
 }
 
 export class PayrunWizard extends Component {
@@ -563,6 +605,14 @@ export class PayrunWizard extends Component {
     }
 
     toggleNotCovered() { this.state.scheme.open = !this.state.scheme.open; }
+
+    openSchemePicker() {
+        this.dialog.add(SchemePickerDialog, {
+            groups: this.schemeGroups,
+            chosenId: this.state.form.formula_config_id || 0,
+            onPick: (card) => this.pickScheme(card),
+        });
+    }
 
     /**
      * The way OUT of the dead end: the screen where the map is drawn.

@@ -609,7 +609,7 @@
     "pw-scheme": {
       "screen": "runpayroll",
       "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
-      "desc": "The pay-scheme cards, shown when the company has more than one scheme. Choosing one chooses who is paid and in which currency."
+      "desc": "The Payroll scheme box (first field of Period), shown when the company has more than one scheme; it opens the scheme cards. Choosing one chooses who is paid and in which currency."
     },
     "dash-period": {
       "screen": "dashboard",

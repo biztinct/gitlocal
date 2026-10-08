@@ -53,57 +53,55 @@
                 <!-- Step 1 -->
                 <t t-elif="stepKey === 'period'">
 
-                    <!-- GROUP P2 — the first question, asked first.
-                         Which scheme is this run for? The cards carry the kind
-                         of run, how many people the scheme covers and when it
-                         last ran, so the choice is made looking at the facts
-                         rather than at a list of names. One scheme: the card is
-                         pre-selected and there is nothing to learn. -->
-                    <div t-if="hasSchemePicker" class="pw-sec pw-schemes"
-                         data-coach="pw-scheme">
-                        <h4>Pay run for</h4>
-                        <div t-foreach="schemeGroups" t-as="g" t-key="g.key"
-                             class="pw-schemegroup">
-                            <div class="pw-schemegroup__label" t-esc="g.label"/>
-                            <div class="pw-schemecards">
-                                <button t-foreach="g.items" t-as="sc" t-key="sc.id"
-                                        t-attf-class="pw-schemecard {{ isChosenScheme(sc.id) ? 'on' : '' }}"
-                                        t-att-aria-pressed="isChosenScheme(sc.id) ? 'true' : 'false'"
-                                        t-on-click="() => this.pickScheme(sc)">
-                                    <span class="pw-schemecard__name" t-esc="sc.name"/>
-                                    <span class="pw-schemecard__meta">
-                                        <t t-esc="num(sc.covered)"/> people covered
-                                        <t t-if="sc.last_run.name">
-                                            · last run <t t-esc="sc.last_run.name"/>
-                                        </t>
-                                    </span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div t-if="state.scheme.open" class="pw-notcovered">
-                            <p class="pw-muted">
-                                No scheme covers these people, so this run will
-                                leave them out. Attaching their team to a scheme
-                                fixes everybody in it at once.
-                            </p>
-                            <div class="pw-plist">
-                                <div t-foreach="notCoveredPeople" t-as="p"
-                                     t-key="p.employee_id" class="pw-prow">
-                                    <span class="pw-pname" t-esc="p.emp"/>
-                                    <span class="pw-pmeta" t-esc="p.why"/>
-                                </div>
-                            </div>
-                            <button t-if="hasSchemeMap" class="pw-btn ghost pw-btn--sm"
-                                    t-on-click="openSchemeMap">
-                                Open the map
-                            </button>
-                        </div>
-                    </div>
-
                     <div class="pw-grid2" data-coach="pw-scope">
                         <div class="pw-sec">
                             <h4>Period</h4>
+                            <!-- Owner 2026-10-08: Period and Scope come first,
+                                 and the scheme is ONE closed field here that
+                                 opens the cards in a pop-up (SchemePickerDialog)
+                                 — the open card wall pushed both boxes below
+                                 the fold. Still the first question; the Learn
+                                 anchor `pw-scheme` moved with it. -->
+                            <div t-if="hasSchemePicker" data-coach="pw-scheme">
+                                <label>Payroll scheme</label>
+                                <button type="button"
+                                        t-attf-class="pw-in pw-schemefield {{ chosenScheme ? '' : 'is-empty' }}"
+                                        aria-haspopup="dialog"
+                                        t-on-click="openSchemePicker">
+                                    <span class="pw-schemefield__tx">
+                                        <t t-if="chosenScheme">
+                                            <span class="pw-schemefield__name" t-esc="chosenScheme.name"/>
+                                            <span class="pw-schemefield__meta">
+                                                <span t-esc="chosenScheme.cycle_label"/>
+                                                <span class="pw-schemefield__sep">·</span>
+                                                <span t-esc="num(chosenScheme.covered)"/>
+                                                <span>people covered</span>
+                                                <span t-if="chosenScheme.mine" class="pw-mine">Your division</span>
+                                            </span>
+                                        </t>
+                                        <span t-else="" class="pw-schemefield__ph">Choose a payroll scheme…</span>
+                                    </span>
+                                    <span class="pw-schemefield__chev"><t t-out="ic('chevronDown',16)"/></span>
+                                </button>
+                                <div t-if="state.scheme.open" class="pw-notcovered">
+                                    <p class="pw-muted">
+                                        No scheme covers these people, so this run will
+                                        leave them out. Attaching their team to a scheme
+                                        fixes everybody in it at once.
+                                    </p>
+                                    <div class="pw-plist">
+                                        <div t-foreach="notCoveredPeople" t-as="p"
+                                             t-key="p.employee_id" class="pw-prow">
+                                            <span class="pw-pname" t-esc="p.emp"/>
+                                            <span class="pw-pmeta" t-esc="p.why"/>
+                                        </div>
+                                    </div>
+                                    <button t-if="hasSchemeMap" class="pw-btn ghost pw-btn--sm"
+                                            t-on-click="openSchemeMap">
+                                        Open the map
+                                    </button>
+                                </div>
+                            </div>
                             <t t-if="!hasSchemePicker and (state.defaults.divisions || []).length">
                                 <label>Configuration</label>
                                 <select class="pw-in" data-coach="pw-division" t-on-change="(ev)=>this.onDivision(ev)">
@@ -551,4 +549,32 @@
     </div>
 </t>
 
+    <!-- The scheme cards, behind the Payroll scheme field (owner 2026-10-08). -->
+    <t t-name="pb_payrun_wizard.SchemePickerDialog">
+        <Dialog title="title" size="'lg'" footer="false" contentClass="'pw-schemedlg'">
+            <div class="pw-schemedlg__body">
+                <input t-if="total > 6" class="pw-in pw-schemedlg__find" type="search"
+                       placeholder="Find a scheme…" t-model="state.q"/>
+                <div t-foreach="groups" t-as="g" t-key="g.key" class="pw-schemegroup">
+                    <div class="pw-schemegroup__label" t-esc="g.label"/>
+                    <div class="pw-schemecards">
+                        <button type="button" t-foreach="g.items" t-as="sc" t-key="sc.id"
+                                t-attf-class="pw-schemecard {{ sc.id === props.chosenId ? 'on' : '' }}"
+                                t-att-aria-pressed="sc.id === props.chosenId ? 'true' : 'false'"
+                                t-on-click="() => this.pick(sc)">
+                            <span class="pw-schemecard__name" t-esc="sc.name"/>
+                            <span class="pw-schemecard__meta">
+                                <t t-esc="num(sc.covered)"/> people covered
+                                <t t-if="sc.last_run.name">
+                                    · last run <t t-esc="sc.last_run.name"/>
+                                </t>
+                            </span>
+                            <span t-if="sc.mine" class="pw-mine">Your division</span>
+                        </button>
+                    </div>
+                </div>
+                <p t-if="!groups.length" class="pw-muted">No scheme matches that name.</p>
+            </div>
+        </Dialog>
+    </t>
 </templates>

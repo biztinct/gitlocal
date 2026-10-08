@@ -217,6 +217,21 @@ class PbPayrunWizardDemo(models.AbstractModel):
                 d['divisions'] = divs
                 d['division'] = mine
                 d['eligible'] = next(x['eligible'] for x in divs if x['key'] == mine)
+            # The scheme is a closed field that opens the cards (owner
+            # 2026-10-08), so an unpicked scheme reads as an empty box. Their
+            # own division's End-Month scheme is chosen for them; its cards are
+            # flagged "Your division" and moved first in each group.
+            schemes = d.get('schemes') or []
+            if mine and schemes:
+                for card in schemes:
+                    card['mine'] = card.get('division') == mine
+                schemes.sort(key=lambda c: not c['mine'])
+                end_cfg = self._gen().resolve_config(mine, 'end')
+                own = next((c for c in schemes
+                            if end_cfg and c['id'] == end_cfg.id), None)
+                if own:
+                    d['formula_config_id'] = own['id']
+                    d['currency'] = own.get('currency') or d.get('currency')
         return d
 
     # ---- scoped-per-chunk variants of the helpers (bounded to a batch's ids) ----
