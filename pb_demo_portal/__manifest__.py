@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Demo Registration Portal',
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Website',
     'summary': 'Public demo sign-up: business-email validation, email verification, '
                'password setup, then login to the Demo environment.',
@@ -16,9 +16,10 @@ A beautiful public landing where prospects register for the live demo:
 """,
     'author': 'Payobook',
     'license': 'LGPL-3',
-    'depends': ['website', 'auth_signup', 'mail', 'pb_demo'],
+    'depends': ['website', 'auth_signup', 'mail', 'crm', 'pb_demo'],
     'data': [
         'data/lead_notify_params.xml',
+        'data/signup_report_data.xml',
         'views/demo_portal_templates.xml',
         'views/reset_password_email.xml',
     ],

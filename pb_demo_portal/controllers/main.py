@@ -17,11 +17,6 @@ FREE_EMAIL_DOMAINS = {
 }
 EMAIL_RE = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
 
-# Who hears about every registered lead (demo signup + private-demo enquiry).
-# Overridable without a deploy via the ``pb_demo_portal.lead_notify_to`` system
-# parameter (comma-separated). Owner ruling 2026-10-06: ash + hello + lehoa.
-DEFAULT_LEAD_NOTIFY_TO = 'ash@biztinct.com,hello@payobook.com,lehoa@payobook.com'
-
 INDUSTRIES = ['Retail', 'Manufacturing', 'Logistics', 'Technology', 'Construction',
               'Financial Services', 'Healthcare', 'Hospitality', 'Education', 'Other']
 COMPANY_SIZES = ['1–50', '51–200', '201–500', '501–1,000', '1,001–5,000', '5,000+']
@@ -139,33 +134,13 @@ class DemoPortal(http.Controller):
     #  Team notification — one email per registered lead, to everyone in  #
     #  ``pb_demo_portal.lead_notify_to`` (default: ash + hello + lehoa).   #
     # ------------------------------------------------------------------ #
+    # The recipient list and sender live on ``pb.demo.signup.report`` so the
+    # morning sign-up report mails exactly the same people.
     def _lead_notify_recipients(self):
-        """Comma-separated recipient list → ordered, de-duplicated, valid emails.
-        Falls back to the notify company's email when the parameter is blank."""
-        raw = request.env['ir.config_parameter'].sudo().get_param(
-            'pb_demo_portal.lead_notify_to', DEFAULT_LEAD_NOTIFY_TO) or ''
-        seen, out = set(), []
-        for part in re.split(r'[,;\s]+', raw):
-            addr = part.strip().lower()
-            if addr and EMAIL_RE.match(addr) and addr not in seen:
-                seen.add(addr)
-                out.append(addr)
-        if not out:
-            company = self._notify_company()
-            fallback = company.email or company.partner_id.email_normalized
-            if fallback:
-                out.append(fallback)
-        return out
+        return request.env['pb.demo.signup.report']._notify_recipients(self._notify_company())
 
     def _lead_notify_from(self):
-        """Sender for team notifications: the system's configured default
-        (``mail.default.from`` + catchall domain), else the notify company's
-        email, else a no-reply on the product domain."""
-        default_from = request.env['ir.mail_server'].sudo()._get_default_from_address()
-        if default_from:
-            return default_from
-        company = self._notify_company()
-        return company.email or company.partner_id.email_normalized or 'noreply@payobook.com'
+        return request.env['pb.demo.signup.report']._notify_from(self._notify_company())
 
     @staticmethod
     def _html_row(label, val):
