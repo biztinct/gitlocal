@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Demo Registration Portal',
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Website',
     'summary': 'Public demo sign-up: business-email validation, email verification, '
                'password setup, then login to the Demo environment.',
@@ -22,6 +22,7 @@ A beautiful public landing where prospects register for the live demo:
         'data/signup_report_data.xml',
         'views/demo_portal_templates.xml',
         'views/reset_password_email.xml',
+        'views/signup_recovery_mail.xml',
     ],
     'assets': {
         'web.assets_frontend': [

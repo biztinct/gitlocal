@@ -103,6 +103,7 @@ $pb-success: #2E7D4F;
     background: $pb-indigo; color: #fff; font-weight: 700; font-size: 15px;
     border: none; border-radius: 12px; cursor: pointer; text-decoration: none;
     &:hover { background: $pb-indigo-hover; color: #fff; }
+    &:disabled { opacity: .7; cursor: progress; }
 }
 .pbdemo-fine { text-align: center; font-size: 13px; color: $pb-muted; margin: 16px 0 0;
     a { color: $pb-indigo; font-weight: 600; } }

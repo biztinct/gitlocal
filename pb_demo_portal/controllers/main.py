@@ -56,9 +56,22 @@ class DemoPortal(http.Controller):
             return self._render_form(values, _("Please enter your business email address."))
 
         # --- already registered? offer login ---
+        # 2026-10-08: on slow venue wifi people pressed Register again while the
+        # first press was still sending mail, and every press made an account
+        # (one email had 8). Nothing in the database stops it: the unique index
+        # is (login, website_id) and these users have no website, so NULLs
+        # never collide. Fix: take a per-email lock first, so a second press
+        # waits for the first to commit, then look on a FRESH cursor — this
+        # request's snapshot was taken before the lock and would not see the
+        # account the first press just committed.
+        request.env.cr.execute("SELECT pg_advisory_xact_lock(hashtext(%s))",
+                               ['pb_demo_signup:' + email])
+        with request.env.registry.cursor() as fresh_cr:
+            fresh_cr.execute("SELECT 1 FROM res_users WHERE lower(login) = %s LIMIT 1", [email])
+            already_committed = bool(fresh_cr.fetchone())
         existing = request.env['res.users'].sudo().with_context(active_test=False).search(
             [('login', '=', email)], limit=1)
-        if existing:
+        if existing or already_committed:
             return request.render('pb_demo_portal.register_done', {
                 'email': email, 'already': True})
 
