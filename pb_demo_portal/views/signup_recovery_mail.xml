@@ -80,7 +80,7 @@
                 <t t-set="eyebrow">Account access</t>
                 <t t-set="heading">We fixed your sign-in</t>
                 <t t-set="paras" t-value="[
-                    'Hi %s, when you registered for the Payobook demo, our sign-up page created more than one account for your email. That is why signing in did not work for you. The mistake was ours, and it is now fixed.' % name,
+                    'Hi %s, when you registered for the Payobook demo, our sign-up page created more than one account for your email. That is why signing in did not work for you.' % name,
                     'Your demo account is ready. Press the button to choose a fresh password and go straight in.',
                 ]"/>
                 <t t-set="button">Set a fresh password</t>
@@ -93,7 +93,7 @@
                 <t t-set="eyebrow">Truy cập tài khoản</t>
                 <t t-set="heading">Chúng tôi đã khắc phục sự cố đăng nhập của bạn</t>
                 <t t-set="paras" t-value="[
-                    'Xin chào %s, khi bạn đăng ký dùng thử Payobook, trang đăng ký của chúng tôi đã tạo nhiều hơn một tài khoản cho email của bạn. Vì vậy bạn đã không đăng nhập được. Đây là lỗi của chúng tôi và đã được khắc phục.' % name,
+                    'Xin chào %s, khi bạn đăng ký dùng thử Payobook, trang đăng ký của chúng tôi đã tạo nhiều hơn một tài khoản cho email của bạn. Vì vậy bạn đã không đăng nhập được.' % name,
                     'Tài khoản demo của bạn đã sẵn sàng. Bấm nút bên dưới để đặt mật khẩu mới và vào ngay.',
                 ]"/>
                 <t t-set="button">Đặt mật khẩu mới</t>
@@ -128,6 +128,36 @@
                 ]"/>
                 <t t-set="button">Đăng nhập vào bản demo</t>
                 <t t-set="small" t-value="'Email đăng nhập: %s. Quên mật khẩu? Bấm “Đặt lại mật khẩu” trên trang đăng nhập.' % email"/>
+                <t t-set="note">Có câu hỏi? Hãy trả lời email này, đội ngũ của chúng tôi sẽ hỗ trợ bạn.</t>
+            </t>
+        </t>
+    </template>
+
+    <!-- 3. For the people who never set a password: their first link expired. -->
+    <template id="mail_signup_expired_link" name="Payobook demo: new password link">
+        <t t-call="pb_demo_portal.mail_signup_frame">
+            <t t-call="pb_demo_portal.mail_signup_block">
+                <t t-set="eyebrow">Account access</t>
+                <t t-set="heading">Set your password to open your demo</t>
+                <t t-set="paras" t-value="[
+                    'Hi %s, thanks for registering for the Payobook demo. Your demo account is ready.' % name,
+                    'The link in our first email has expired, so here is a new one. Press the button to choose your password and go straight in.',
+                ]"/>
+                <t t-set="button">Set my password</t>
+                <t t-set="small" t-value="'This link works for %s days. Your sign-in email: %s' % (days, email)"/>
+                <t t-set="note">Questions? Reply to this email and our team will help.</t>
+            </t>
+            <t t-call="pb_demo_portal.mail_signup_divider"/>
+            <t t-call="pb_demo_portal.mail_signup_block">
+                <t t-set="top" t-value="'26px'"/>
+                <t t-set="eyebrow">Truy cập tài khoản</t>
+                <t t-set="heading">Đặt mật khẩu để mở bản demo của bạn</t>
+                <t t-set="paras" t-value="[
+                    'Xin chào %s, cảm ơn bạn đã đăng ký dùng thử Payobook. Tài khoản demo của bạn đã sẵn sàng.' % name,
+                    'Liên kết trong email đầu tiên đã hết hạn, vì vậy chúng tôi gửi bạn liên kết mới. Bấm nút bên dưới để đặt mật khẩu và vào ngay.',
+                ]"/>
+                <t t-set="button">Đặt mật khẩu</t>
+                <t t-set="small" t-value="'Liên kết có hiệu lực trong %s ngày. Email đăng nhập của bạn: %s' % (days, email)"/>
                 <t t-set="note">Có câu hỏi? Hãy trả lời email này, đội ngũ của chúng tôi sẽ hỗ trợ bạn.</t>
             </t>
         </t>

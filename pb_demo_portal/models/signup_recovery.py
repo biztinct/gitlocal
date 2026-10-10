@@ -20,7 +20,8 @@ WHAT THIS MODEL DOES (system administrators only, every method re-checks)
   no note, no stage move) — the plan reports any it skipped.
 * ``send_recovery_mail(kind, user_ids)`` sends one of two branded mails:
   ``fresh_link`` (we found the problem, here is a new password link, valid
-  ``FRESH_LINK_DAYS`` days) or ``login_reminder`` (your password is set,
+  ``FRESH_LINK_DAYS`` days), ``expired_link`` (never set a password and the
+  first link expired: here is a new one) or ``login_reminder`` (your password is set,
   come back and sign in). Each person gets each kind at most once
   (``PARAM_SENT``), so a repeated call cannot spam them.
 * ``preview_mail(kind)`` renders a mail with sample values for review.
@@ -43,6 +44,10 @@ KINDS = {
     'fresh_link': {
         'template': 'pb_demo_portal.mail_signup_fresh_link',
         'subject': u"We fixed your Payobook sign-in · Chúng tôi đã khắc phục sự cố đăng nhập",
+    },
+    'expired_link': {
+        'template': 'pb_demo_portal.mail_signup_expired_link',
+        'subject': u"Set your password for the Payobook demo · Đặt mật khẩu cho bản demo Payobook",
     },
     'login_reminder': {
         'template': 'pb_demo_portal.mail_signup_login_reminder',
@@ -194,7 +199,7 @@ class PbDemoSignupRecovery(models.AbstractModel):
             if key in sent or not user.active or not user.email:
                 skipped.append(user.id)
                 continue
-            url = self._fresh_link(user) if kind == 'fresh_link' else self._login_link(user)
+            url = self._login_link(user) if kind == 'login_reminder' else self._fresh_link(user)
             body = self._render(kind, {
                 'name': user.name, 'email': user.login, 'url': url, 'days': FRESH_LINK_DAYS,
             })
