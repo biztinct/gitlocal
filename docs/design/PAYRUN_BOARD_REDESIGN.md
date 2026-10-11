@@ -1,7 +1,8 @@
 # Pay Run board redesign — design spec (2026-10-11)
 
-Status: **DESIGN, awaiting owner approval.** Nothing implemented. Prototype the
-owner reviews: see the Artifact link in memory `payrun-board-redesign.md`.
+Status: **BUILT — live on payobook 2026-10-11** (pb_payruns 19.0.3.0.0, commit
+015016349; Learn catch-up in pb_learn 19.0.20.2.0). Prototype the owner
+reviewed: see the Artifact link in memory `payrun-board-redesign.md`.
 Source of the prototype: `docs/design/payrun-board-prototype.html` (single
 file, no build; open in a browser).
 

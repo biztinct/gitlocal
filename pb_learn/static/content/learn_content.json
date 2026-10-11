@@ -12076,8 +12076,8 @@
           "act": "observe",
           "anchor": "pk-kpis",
           "body": {
-            "en": "Draft, Waiting for approval, Done. A waiting run's card says whose step it is at.",
-            "vi": "Nháp, Chờ phê duyệt, Hoàn tất. Thẻ của đợt đang chờ ghi rõ nó đang ở bước của ai."
+            "en": "The card at the top says where this month stands. Below it: Draft, Waiting for approval, Done. A waiting run's card says whose step it is at.",
+            "vi": "Thẻ trên cùng cho biết tháng này đang ở đâu. Bên dưới: Nháp, Chờ phê duyệt, Hoàn tất. Thẻ của đợt đang chờ ghi rõ nó đang ở bước của ai."
           },
           "guard": false,
           "key": "board",
@@ -12499,8 +12499,8 @@
           "act": "observe",
           "anchor": "pk-kpis",
           "body": {
-            "en": "Pay runs, In pipeline, Awaiting your approval, Completed and Net paid. The third is the only one about you.",
-            "vi": "Đợt lương, Đang xử lý, Chờ bạn phê duyệt, Hoàn tất và Đã chi. Con số thứ ba là con số duy nhất nói về bạn."
+            "en": "The month's five stages, one sentence that says where every run is, and the one next step. If something is waiting on you, it says so here.",
+            "vi": "Năm giai đoạn của tháng, một câu cho biết mọi đợt đang ở đâu, và việc cần làm tiếp theo. Nếu có gì đang chờ bạn, nó nói ngay ở đây."
           },
           "guard": false,
           "key": "kpis",
@@ -12518,8 +12518,8 @@
           "timeout": 0,
           "tip": "",
           "title": {
-            "en": "Five numbers over the whole board",
-            "vi": "Năm con số trên toàn bảng"
+            "en": "This month, in one card",
+            "vi": "Tháng này, trong một thẻ"
           },
           "value": ""
         },
@@ -12527,8 +12527,8 @@
           "act": "observe",
           "anchor": "pk-steps",
           "body": {
-            "en": "Draft, Waiting for approval, Done — each with its count, and a flag when a run was sent back or is waiting on you.",
-            "vi": "Nháp, Chờ phê duyệt, Hoàn tất — mỗi bước kèm số lượng, và một dấu khi có đợt bị trả lại hoặc đang chờ bạn."
+            "en": "Draft, Waiting for approval, Done — each lane header with its count, and a flag when a run was sent back, is waiting on you, or is approved but unpaid.",
+            "vi": "Nháp, Chờ phê duyệt, Hoàn tất — đầu mỗi làn ghi số lượng, và một dấu khi có đợt bị trả lại, đang chờ bạn, hoặc đã duyệt nhưng chưa chi trả."
           },
           "guard": false,
           "key": "steps",
@@ -12543,8 +12543,8 @@
           "timeout": 0,
           "tip": "",
           "title": {
-            "en": "Three states, not three months",
-            "vi": "Ba trạng thái, không phải ba tháng"
+            "en": "Three lanes, not three months",
+            "vi": "Ba làn, không phải ba tháng"
           },
           "value": ""
         },
@@ -12552,8 +12552,8 @@
           "act": "observe",
           "anchor": "pk-card",
           "body": {
-            "en": "Employees, gross and net, and only the buttons its state allows. A waiting run says whose step it is at.",
-            "vi": "Nhân viên, tổng thu nhập và thực nhận, và chỉ những nút trạng thái của nó cho phép. Đợt đang chờ ghi rõ nó đang ở bước của ai."
+            "en": "Net pay as the one figure, people and gross under it, and only the buttons its state allows. A waiting run says whose step it is at; an approved run shows how far its money has got.",
+            "vi": "Thực nhận là con số duy nhất, nhân sự và tổng thu nhập ở dưới, và chỉ những nút trạng thái của nó cho phép. Đợt đang chờ ghi rõ nó đang ở bước của ai; đợt đã duyệt hiện tiền đã đi tới đâu."
           },
           "guard": false,
           "key": "card",
@@ -26044,8 +26044,8 @@
             {
               "anchor": "pk-kpis",
               "body": {
-                "en": "<b>Pay runs</b> (every run, rejected ones too), <b>In pipeline</b> (Draft plus Waiting for approval), <b>Awaiting your approval</b>, <b>Completed</b>, and <b>Net paid (done)</b> — in the company's own currency only. The third is the one about you: runs whose route is waiting on you right now.",
-                "vi": "<b>Đợt lương</b> (mọi đợt, kể cả đợt bị từ chối), <b>Đang xử lý</b> (Nháp cộng Chờ phê duyệt), <b>Chờ bạn phê duyệt</b>, <b>Hoàn tất</b>, và <b>Đã chi (hoàn tất)</b> — chỉ tính bằng tiền tệ của công ty. Con số thứ ba là con số về bạn: những đợt mà lộ trình đang chờ đúng bạn lúc này."
+                "en": "The card at the top is about <b>this month</b>: its five stages — <b>Not started · Drafting · In approval · Approved · Delivered</b> — one sentence that says where every run is (\"2 pay runs this month. 1 is still a draft and 1 is waiting for a sign-off.\"), and one button for the next thing to do. The line under the sentence is the one about you: it turns amber when a run is waiting on you. Press a phrase in the sentence to narrow the board to those runs; press it again to clear.",
+                "vi": "Thẻ trên cùng nói về <b>tháng này</b>: năm giai đoạn — <b>Chưa bắt đầu · Đang soạn · Đang phê duyệt · Đã duyệt · Đã gửi phiếu lương</b> — một câu cho biết mọi đợt đang ở đâu (\"2 đợt lương trong tháng này. 1 vẫn là bản nháp và 1 đang chờ ký duyệt.\"), và một nút cho việc cần làm tiếp theo. Dòng dưới câu đó là dòng về bạn: nó chuyển màu cam khi có đợt đang chờ bạn. Nhấn một cụm từ trong câu để thu hẹp bảng về những đợt đó; nhấn lại để bỏ."
               },
               "consequence": "",
               "kicker": {
@@ -26060,16 +26060,16 @@
               "screen": "payruns",
               "tip": "",
               "title": {
-                "en": "Five numbers, and one of them is yours",
-                "vi": "Năm con số, và một con số là của bạn"
+                "en": "This month, in one card",
+                "vi": "Tháng này, trong một thẻ"
               },
               "visual": "none"
             },
             {
               "anchor": "pk-steps",
               "body": {
-                "en": "<b>01 Draft</b>, <b>02 Waiting for approval</b>, <b>03 Done</b>, each with its count. A flag shows when something needs you: \"1 sent back to be fixed\", \"1 waiting on you\". Press a step to narrow the board to it. A column is a state — July and June can sit in the same one.",
-                "vi": "<b>01 Nháp</b>, <b>02 Chờ phê duyệt</b>, <b>03 Hoàn tất</b>, mỗi bước kèm số lượng và một dấu khi có việc cần bạn: \"1 bị trả lại để sửa\", \"1 đang chờ bạn\". Bấm một bước để thu hẹp bảng về bước đó. Một cột là một trạng thái — tháng 7 và tháng 6 có thể cùng nằm trong một cột."
+                "en": "<b>01 Draft</b>, <b>02 Waiting for approval</b>, <b>03 Done</b>. Each lane's header carries its count and a flag when something needs you: \"1 sent back to be fixed\", \"1 is waiting on you\", \"1 approved, not paid yet\". Press a header to focus on that lane — the other two fold away; press it again to come back. A lane is a state, not a month: July and June can sit in the same one, and Done folds older months into one row each.",
+                "vi": "<b>01 Nháp</b>, <b>02 Chờ phê duyệt</b>, <b>03 Hoàn tất</b>. Đầu mỗi làn ghi số lượng và một dấu khi có việc cần bạn: \"1 bị trả lại để sửa\", \"1 đang chờ bạn\", \"1 đã duyệt, chưa chi trả\". Nhấn đầu làn để tập trung vào làn đó — hai làn kia gấp lại; nhấn lại để trở về. Một làn là một trạng thái, không phải một tháng: tháng 7 và tháng 6 có thể cùng nằm trong một làn, và làn Hoàn tất gấp các tháng cũ thành một dòng mỗi tháng."
               },
               "consequence": "",
               "kicker": {
@@ -26084,16 +26084,16 @@
               "screen": "payruns",
               "tip": "",
               "title": {
-                "en": "Three states, not three months",
-                "vi": "Ba trạng thái, không phải ba tháng"
+                "en": "Three lanes, not three months",
+                "vi": "Ba làn, không phải ba tháng"
               },
               "visual": "none"
             },
             {
               "anchor": "pk-route",
               "body": {
-                "en": "\"<b>HR lead review · With Đặng Thu Hà</b>.\" That line is the answer to \"who do I chase\" — read from the run's approval route, not from anybody's memory. The route is whatever your company drew; the run's own page says the same in one sentence.",
-                "vi": "\"<b>Trưởng nhân sự soát xét · Đang ở Đặng Thu Hà</b>.\" Dòng đó là câu trả lời cho \"tôi phải hỏi ai\" — đọc từ lộ trình phê duyệt của đợt lương, không phải từ trí nhớ của ai. Lộ trình là do công ty bạn vẽ; trang của chính đợt lương cũng nói điều đó trong một câu."
+                "en": "\"<b>Sign-off 2 of 3 · HR lead review</b> — With Đặng Thu Hà.\" That block is the answer to \"who do I chase\" — read from the run's approval route, not from anybody's memory. The three bars under it are the route's steps: green is done, amber is now. Click the card for a quick look and the whole route opens, step by step, with who signed each one and when.",
+                "vi": "\"<b>Ký duyệt 2 / 3 · Trưởng nhân sự soát xét</b> — Đang ở Đặng Thu Hà.\" Khối đó là câu trả lời cho \"tôi phải hỏi ai\" — đọc từ lộ trình phê duyệt của đợt lương, không phải từ trí nhớ của ai. Ba vạch bên dưới là các bước của lộ trình: xanh là đã xong, cam là đang ở đó. Nhấn vào thẻ để xem nhanh và cả lộ trình mở ra từng bước, ai đã ký và khi nào."
               },
               "consequence": "",
               "kicker": {
@@ -26143,8 +26143,8 @@
             {
               "anchor": "pk-card-actions",
               "body": {
-                "en": "Draft: <b>Submit for approval</b> and <b>Reject</b>. Waiting, and it is your turn: <b>Open the approval</b> — the decision happens in Home › Approvals, not here. Waiting on someone else: just who it is with. Done: <b>Pay &amp; Deliver</b>, <b>Report</b>, <b>Excel</b>, <b>Journals</b>, <b>Payments</b>.",
-                "vi": "Nháp: <b>Gửi để phê duyệt</b> và <b>Từ chối</b>. Đang chờ, và đến lượt bạn: <b>Mở phê duyệt</b> — quyết định diễn ra ở Trang chủ › Phê duyệt, không phải ở đây. Đang chờ người khác: chỉ ghi đang ở chỗ ai. Hoàn tất: <b>Chi trả &amp; gửi phiếu</b>, <b>Báo cáo</b>, <b>Excel</b>, <b>Bút toán</b>, <b>Thanh toán</b>."
+                "en": "Draft: <b>Submit for approval</b> and <b>Reject</b>. Waiting, and it is your turn: <b>Open the approval</b> — the decision happens in Home › Approvals, not here. Waiting on someone else: just who it is with. Done and not yet paid: <b>Pay &amp; Deliver</b>. Done and paid: <b>Report</b> and <b>Excel</b>. Everything else — journals, payments, the full run — sits behind the <b>⋯</b> button. Click the card itself for a quick look: where it is, the money, and what happened, without leaving the board.",
+                "vi": "Nháp: <b>Gửi để phê duyệt</b> và <b>Từ chối</b>. Đang chờ, và đến lượt bạn: <b>Mở phê duyệt</b> — quyết định diễn ra ở Trang chủ › Phê duyệt, không phải ở đây. Đang chờ người khác: chỉ ghi đang ở chỗ ai. Hoàn tất mà chưa chi trả: <b>Chi trả &amp; gửi phiếu</b>. Hoàn tất và đã chi trả: <b>Báo cáo</b> và <b>Excel</b>. Mọi thứ khác — bút toán, thanh toán, đợt lương đầy đủ — nằm sau nút <b>⋯</b>. Nhấn vào chính thẻ để xem nhanh: đang ở đâu, tiền, và diễn biến, mà không rời khỏi bảng."
               },
               "consequence": "",
               "kicker": {
@@ -26218,8 +26218,8 @@
             {
               "anchor": "pk-divchips",
               "body": {
-                "en": "\"All divisions\" or one division. The chips filter the cards; the numbers above still count the whole board. When a board holds more than one currency, it says so, shows each run in its own money, and adds up only the company's currency.",
-                "vi": "\"Tất cả bộ phận\" hoặc một bộ phận. Các chip lọc các thẻ; các con số phía trên vẫn đếm toàn bộ bảng. Khi bảng có nhiều loại tiền tệ, nó nói rõ, hiện mỗi đợt bằng đúng loại tiền của đợt đó, và chỉ cộng dồn tiền tệ của công ty."
+                "en": "\"All divisions\" or one division. The chips narrow the cards; the lane counts still count the whole board. \"All months\" or this month only does the same for time. When a board holds more than one currency, it says so, shows each run in its own money, and adds up only the company's currency.",
+                "vi": "\"Tất cả bộ phận\" hoặc một bộ phận. Các chip thu hẹp các thẻ; số đếm ở đầu làn vẫn đếm toàn bộ bảng. \"Mọi tháng\" hoặc chỉ tháng này làm điều tương tự với thời gian. Khi bảng có nhiều loại tiền tệ, nó nói rõ, hiện mỗi đợt bằng đúng loại tiền của đợt đó, và chỉ cộng dồn tiền tệ của công ty."
               },
               "consequence": "",
               "kicker": {
@@ -26242,8 +26242,8 @@
             {
               "anchor": "pk-card-actions",
               "body": {
-                "en": "Only a Done run offers <b>Pay &amp; Deliver</b> — the bank file and the payslips — plus the report, the journals and the payments. Those buttons appear exactly when every step on the route has said yes. After Done, a correction is a retro line, never an edit.",
-                "vi": "Chỉ đợt đã Hoàn tất mới có <b>Chi trả &amp; gửi phiếu</b> — tệp ngân hàng và phiếu lương — cùng báo cáo, bút toán và thanh toán. Các nút đó xuất hiện đúng lúc mọi bước trên lộ trình đã đồng ý. Sau Hoàn tất, mọi hiệu chỉnh là một dòng hồi tố, không bao giờ là sửa trực tiếp."
+                "en": "Only a Done run can be paid. Its card shows the road after approval — <b>Approved · Bank file · Paid · Payslips · Journals</b> — and <b>Pay &amp; Deliver</b> is the big button only while the run is unpaid. Once paid, the card goes quiet: the date it was paid and how many payslips went out. After Done, a correction is a retro line, never an edit.",
+                "vi": "Chỉ đợt đã Hoàn tất mới được chi trả. Thẻ của nó hiện con đường sau phê duyệt — <b>Đã duyệt · Tệp ngân hàng · Đã chi trả · Phiếu lương · Bút toán</b> — và <b>Chi trả &amp; gửi phiếu</b> chỉ là nút lớn khi đợt chưa được chi trả. Khi đã chi trả, thẻ trở nên yên tĩnh: ngày chi trả và số phiếu lương đã gửi. Sau Hoàn tất, mọi hiệu chỉnh là một dòng hồi tố, không bao giờ là sửa trực tiếp."
               },
               "consequence": "",
               "kicker": {
@@ -26278,8 +26278,8 @@
             "vi": "Bấm Từ chối khi ý bạn là \"hãy sửa giúp\". Từ chối là huỷ đợt lương và mọi phiếu lương trong đó. Muốn được sửa, người đến lượt duyệt sẽ trả lại nó từ hộp phê duyệt."
           },
           {
-            "en": "Reading a column as a month. The columns are states. July and June can sit in the same one.",
-            "vi": "Đọc một cột như thể đó là tháng. Các cột là trạng thái. Tháng 7 và tháng 6 có thể cùng nằm trong một cột."
+            "en": "Reading a lane as a month. The lanes are states. July and June can sit in the same one — and the card at the top is the only thing on the board that is about one month.",
+            "vi": "Đọc một làn như thể đó là tháng. Các làn là trạng thái. Tháng 7 và tháng 6 có thể cùng nằm trong một làn — và thẻ trên cùng là thứ duy nhất trên bảng nói về một tháng."
           },
           {
             "en": "Missing the note on a run that came back. A sent-back run sits in Draft with the reason on its card. Fix what it says, then submit it again.",

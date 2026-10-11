@@ -148,42 +148,71 @@ function stepButtons(steps, noun) {
     }).join("");
 }
 
-/* One pay run on the Runs board, drawn as payruns.xml draws it
-   (pb_payruns/static/src/xml/payruns.xml:86-151): name, stats, division, the
-   route line while it waits, the sent-back note when it came back, and ONLY the
-   actions its state offers. */
+/* A division's two-letter tile, as the board draws it (payruns.js
+   `monogram`): first letters of two words, else first letter + first
+   consonant after it ("F&B" → FB, "Retail — Hà Nội" → RH). */
+function monoOf(label) {
+    const src = String(label || "").replace(/[^\p{L}\s]/gu, " ").trim();
+    const w = src.split(/\s+/).filter(Boolean);
+    if (w.length >= 2) return (w[0][0] + w[1][0]).toUpperCase();
+    if (!src) return "PR";
+    const rest = src.slice(1).replace(/[aeiouAEIOU]/g, "");
+    return (src[0] + (rest[0] || src[1] || "")).toUpperCase();
+}
+
+/* One pay run on the Runs board, drawn as payruns.xml draws it after the
+   PAYRUN BOARD redesign (pb_payruns.Card): the division tile, the name and
+   period, NET as the one figure with people and gross under it, the route
+   while it waits, the sent-back note when it came back, the delivery rail
+   once it is Done, and ONLY the actions its state offers (the rest behind ⋯). */
 function runCard(row) {
-    const stats = [
-        [B("Employees", "Nhân viên"), N(row.employees)],
-        [B("Gross", "Tổng thu nhập"), M(row.gross)],
-        [B("Net", "Thực nhận"), M(row.net)],
-    ].map(([k, v]) => `<span><i>${esc(tx(k))}</i><b>${esc(v)}</b></span>`).join("");
     const step = row.col === "approval_pending" ? ROUTE.steps[row.step] : null;
+    const head = `<div class="lrn-khead"><span class="lrn-kmono">${esc(monoOf(tx(row.division)))}</span>
+        <span><b>${esc(tx(row.name))}</b><br><span class="lrn-kper">${esc(tx(row.period || RUN.period))}</span></span></div>`;
+    const money = `<div class="lrn-knet"><span>${esc(tx(B("Net pay", "Thực nhận")))}</span><b class="lrn-money">${esc(M(row.net))}</b></div>
+        <div class="lrn-rksub">${esc(N(row.employees))}${SP}${esc(tx(B("people", "người")))}${SP}·${SP}${
+            esc(tx(B("gross", "tổng thu nhập")))}${SP}${esc(M(row.gross))}</div>`;
     const route = step
         ? `<div class="lrn-kroute" data-coach="pk-route">${ic("git-branch")}<span><b>${
-            esc(tx(step.title))}</b>${SP}·${SP}${esc(tx(B("With", "Đang ở")))}${SP}${esc(step.who)}</span></div>`
+            esc(tx(B("Sign-off", "Ký duyệt")))}${SP}${row.step + 1}${SP}${esc(tx(B("of", "/")))}${SP}${ROUTE.steps.length}${SP}·${SP}${
+            esc(tx(step.title))}</b><br>${step.you
+                ? `<b class="lrn-kyou">${esc(tx(B("Waiting on you", "Đang chờ bạn")))}</b>`
+                : `${esc(tx(B("With", "Đang ở")))}${SP}<b>${esc(step.who)}</b>`}</span></div>`
         : "";
     const back = row.sentBack
         ? `<div class="lrn-kback">${ic("undo")}<span><b>${esc(tx(B("Sent back by", "Trả lại bởi")))}${
             SP}${esc(row.sentBack.by)}</b>${SP}— ${esc(tx(row.sentBack.note))}</span></div>`
         : "";
+    let deliv = "";
+    if (row.col === "done") {
+        const steps = [[B("Approved", "Đã duyệt"), true], [B("Bank file", "Tệp ngân hàng"), !!row.paid],
+                       [B("Paid", "Đã chi trả"), !!row.paid], [B("Payslips", "Phiếu lương"), !!row.paid],
+                       [B("Journals", "Bút toán"), false]];
+        const next = steps.findIndex((x, i) => !x[1] && i < 4);
+        const status = row.paid
+            ? `${esc(tx(B("Paid", "Đã chi trả")))}${SP}${esc(tx(row.paidOn))}${SP}·${SP}${esc(N(row.employees))}${SP}${esc(tx(B("payslips sent", "phiếu lương đã gửi")))}`
+            : esc(tx(B("Approved · not paid yet", "Đã duyệt · chưa chi trả")));
+        deliv = `<div class="lrn-kdeliv"><div class="segs">${steps.map((x, i) => `<i class="${x[1] ? "d" : i === next ? "n" : ""}"></i>`).join("")}</div>
+            <div class="ls">${steps.map((x, i) => `<span class="${x[1] ? "d" : i === next ? "n" : ""}">${esc(tx(x[0]))}</span>`).join("")}</div>
+            <div class="st ${row.paid ? "ok" : ""}">${row.paid ? ic("check-circle") : ""}${status}</div></div>`;
+    }
+    const more = `<button class="lrn-btn sm ghost more" aria-label="${esc(tx(B("More actions", "Thao tác khác")))}">⋯</button>`;
     let acts = "";
     if (row.col === "done") {
-        acts = [B("Pay & Deliver", "Chi trả & gửi phiếu"), B("Report", "Báo cáo"), B("Excel", "Excel"),
-                B("Journals", "Bút toán"), B("Payments", "Thanh toán")]
-            .map((a) => `<button class="lrn-btn sm ghost">${esc(tx(a))}</button>`).join("");
+        acts = row.paid
+            ? `<button class="lrn-btn sm ghost">${esc(tx(B("Report", "Báo cáo")))}</button>
+               <button class="lrn-btn sm ghost">${esc(tx(B("Excel", "Excel")))}</button>${more}`
+            : `<button class="lrn-btn sm pri">${esc(tx(B("Pay & Deliver", "Chi trả & gửi phiếu")))}</button>${more}`;
     } else if (row.col === "draft") {
         acts = `<button class="lrn-btn sm pri">${ic("send")}${esc(T("submitReview"))}</button>
-                <button class="lrn-btn sm ghost danger">${esc(T("reject"))}</button>`;
+                <button class="lrn-btn sm ghost danger">${esc(T("reject"))}</button>${more}`;
     } else if (step && step.you) {
-        acts = `<button class="lrn-btn sm pri">${ic("inbox")}${esc(tx(B("Open the approval", "Mở phê duyệt")))}</button>
-                <button class="lrn-btn sm ghost danger">${esc(T("reject"))}</button>`;
+        acts = `<button class="lrn-btn sm pri">${ic("inbox")}${esc(tx(B("Open the approval", "Mở phê duyệt")))}</button>${more}`;
+    } else if (step) {
+        acts = `<span class="lrn-kwith">${ic("clock")}${esc(tx(B("With", "Đang ở")))}${SP}${esc(step.who)}</span>${more}`;
     }
     return `<div class="lrn-kcard" data-coach="pk-card">
-        <b>${esc(tx(row.name))}</b>
-        <div class="lrn-kstats">${stats}</div>
-        <span class="lrn-chip">${esc(tx(row.division))}</span>
-        ${route}${back}
+        ${head}${money}${back}${route}${deliv}
         <div class="lrn-kacts" data-coach="pk-card-actions">${acts}</div>
     </div>`;
 }
@@ -1056,56 +1085,107 @@ export const SCREENS = {
     },
 
     /* ------------------------------------------------------ Pay Run › Runs
-       The board as the Pay Run hub draws it (PbPayruns, payruns.xml): the
-       numbers row, the division chips, the numbered steps, three columns, and
-       the collapsed Rejected list. */
+       The board as the Pay Run hub draws it after the PAYRUN BOARD redesign
+       (PbPayruns, payruns.xml): the "This month" hero, the toolbar, three
+       lanes whose header IS the numbered step, the cards, and the collapsed
+       Rejected list. */
     payruns() {
-        const k = PRACTICE.boardKpis;
         const b = PRACTICE.board;
+        const live = b.filter((r) => r.col !== "cancel");
         const cols = ["draft", "approval_pending", "done"];
-        const count = (c) => b.filter((r) => r.col === c).length;
-        const backs = b.filter((r) => r.col === "draft" && r.sentBack).length;
-        const steps = stepButtons([
-            { label: STATUS_LABELS.payrun.draft.l, count: count("draft"),
-              flag: backs ? B(N(backs) + " sent back to be fixed", N(backs) + " bị trả lại để sửa") : null },
-            { label: STATUS_LABELS.payrun.approval_pending.l, count: count("approval_pending"),
-              flag: k.myPending ? B(N(k.myPending) + " waiting on you", N(k.myPending) + " đang chờ bạn") : null },
-            { label: STATUS_LABELS.payrun.done.l, count: count("done") },
-        ], B("pay runs", "đợt lương"));
-        const board = cols.map((col) => `
-            <div class="lrn-kcol">
-                <div class="lrn-kcolh">${statusChip("payrun", col)}</div>
-                ${b.filter((r) => r.col === col).map(runCard).join("")}
-            </div>`).join("");
-        const shown = b.filter((r) => r.col !== "cancel").length;
-        const showing = tx(B("Showing all", "Đang hiện tất cả")) + SP + N(shown) + SP
-            + tx(B("pay runs · press a step or a number to narrow it", "đợt lương · bấm một bước hoặc một con số để thu hẹp"));
+        const inCol = (c) => live.filter((r) => r.col === c);
+        const month = live.filter((r) => r.month === "2026-07");
+        const drafts = month.filter((r) => r.col === "draft");
+        const waiting = month.filter((r) => r.col === "approval_pending");
+        const mine = waiting.filter((r) => ROUTE.steps[r.step] && ROUTE.steps[r.step].you);
+        const stage = month.length ? Math.min(...month.map((r) => r.col === "draft" ? 2 : r.col === "approval_pending" ? 3 : 4)) : 1;
+        const stages = [B("Not started", "Chưa bắt đầu"), B("Drafting", "Đang soạn"), B("In approval", "Đang phê duyệt"),
+                        B("Approved", "Đã duyệt"), B("Delivered", "Đã gửi phiếu lương")];
+        const journey = stages.map((l, i) => `<div class="lrn-jn ${i + 1 < stage ? "done" : i + 1 === stage ? "now" : ""}">
+            <span class="lrn-jdot">${i + 1 < stage ? ic("check") : ""}</span><span>${esc(tx(l))}</span></div>`).join("");
+        const phr = (n, one, many) => `<u>${esc(n === 1 ? tx(one) : N(n) + SP + tx(many))}</u>`;
+        const parts = [];
+        if (drafts.length) parts.push(phr(drafts.length, B("1 is still a draft", "1 vẫn là bản nháp"), B("are still drafts", "vẫn là bản nháp")));
+        if (waiting.length) parts.push(phr(waiting.length, B("1 is waiting for a sign-off", "1 đang chờ ký duyệt"), B("are waiting for a sign-off", "đang chờ ký duyệt")));
+        const say = `<b>${esc(N(month.length))}${SP}${esc(tx(B("pay runs this month across 2 divisions.", "đợt lương trong tháng này ở 2 bộ phận.")))}</b>${SP}${
+            parts.join(SP + esc(tx(B("and", "và"))) + SP)}.`;
+        const ask = mine.length
+            ? `<div class="lrn-hask amber">● ${esc(tx(B("1 pay run is waiting on you.", "1 đợt lương đang chờ bạn.")))}</div>`
+            : `<div class="lrn-hask">● ${esc(tx(B("Nothing is waiting on you.", "Không có gì đang chờ bạn.")))}</div>`;
+        const net = month.reduce((t, r) => t + r.net, 0);
+        const people = month.reduce((t, r) => t + r.employees, 0);
+        const hero = `
+            <div class="lrn-rhero" data-coach="pk-kpis">
+                <div>
+                    <div class="lrn-heye">${ic("calendar")}${SP}${esc(tx(B("This month", "Tháng này")))}</div>
+                    <div class="lrn-hmonth">${esc(tx(RUN.period))}</div>
+                    <div class="lrn-kper">${esc(RUN.from)}${SP}–${SP}${esc(RUN.to)}</div>
+                    <div class="lrn-journey">${journey}</div>
+                    <div class="lrn-kper"><b>${esc(tx(B("Stage", "Giai đoạn")))}${SP}${stage}${SP}${esc(tx(B("of 5", "/ 5")))}${SP}·${SP}${esc(tx(stages[stage - 1]))}</b>${SP}${
+                        esc(tx(B("The month moves when its slowest run does.", "Tháng chỉ tiến lên khi đợt lương chậm nhất tiến lên.")))}</div>
+                </div>
+                <div><div class="lrn-hsay">${say}</div>${ask}</div>
+                <div>
+                    <div class="lrn-heye">${esc(tx(B("Net pay this month", "Thực nhận tháng này")))}</div>
+                    <div class="lrn-hbig lrn-money">${esc(M(net))}</div>
+                    <div class="lrn-hmeta">${esc(N(people))}${SP}${esc(tx(B("people", "người")))}${SP}·${SP}${esc(N(month.length))}${SP}${esc(tx(B("pay runs", "đợt lương")))}</div>
+                    <button class="lrn-btn pri" data-coach="pk-hero-next">${ic("inbox")}${esc(tx(B("Open the approval", "Mở phê duyệt")))}</button>
+                </div>
+            </div>`;
+        const lanes = cols.map((col) => {
+            const rows = inCol(col);
+            const num = String(cols.indexOf(col) + 1).padStart(2, "0");
+            const tone = col === "approval_pending" ? "waiting" : col === "done" ? "done" : "draft";
+            let flag = "";
+            if (col === "draft" && rows.some((r) => r.sentBack)) flag = `<span class="lrn-lflag">${ic("undo")}${esc(tx(B("1 sent back to be fixed", "1 bị trả lại để sửa")))}</span>`;
+            else if (col === "approval_pending" && mine.length) flag = `<span class="lrn-lflag">${ic("alert-triangle")}${esc(tx(B("1 is waiting on you", "1 đang chờ bạn")))}</span>`;
+            else if (col === "done" && rows.some((r) => !r.paid)) flag = `<span class="lrn-lflag indigo">${esc(tx(B("1 approved, not paid yet", "1 đã duyệt, chưa chi trả")))}</span>`;
+            else flag = `<span class="lrn-lhint">${esc(tx(col === "draft"
+                ? B("Still being prepared. Submit when the figures are right.", "Đang được chuẩn bị. Gửi đi khi số liệu đã đúng.")
+                : col === "approval_pending" ? B("With the people on its sign-off route.", "Đang ở chỗ những người trong tuyến ký duyệt.")
+                : B("Approved. Pay, deliver payslips and post journals from here.", "Đã duyệt. Chi trả, gửi phiếu lương và ghi sổ từ đây.")))}</span>`;
+            const count = N(rows.length) + SP + tx(rows.length === 1 ? B("pay run", "đợt lương") : B("pay runs", "đợt lương"));
+            let body = "";
+            if (col === "done") {
+                const months = [...new Set(rows.map((r) => r.month))];
+                body = months.map((m) => {
+                    const mr = rows.filter((r) => r.month === m);
+                    return `<div class="lrn-mdiv">${esc(tx(mr[0].monthLabel))}${SP}·${SP}${esc(N(mr.length))}${SP}${esc(tx(B("run", "đợt")))}<span class="lrn-mnet">${esc(M(mr.reduce((t, r) => t + r.net, 0)))}</span></div>${
+                        mr.map(runCard).join("")}`;
+                }).join("");
+            } else {
+                body = rows.map(runCard).join("");
+            }
+            return `<div class="lrn-kcol">
+                <div class="lrn-lh ${tone}" data-coach="pk-steps"><div class="lrn-lh-row"><span class="lrn-lnum">${num}</span>${
+                    esc(tx(STATUS_LABELS.payrun[col].l))}<span class="lrn-lcount">${esc(count)}</span></div>${flag}</div>
+                ${body}
+            </div>`;
+        }).join("");
+        const showing = tx(B("Showing all", "Đang hiện tất cả")) + SP + N(live.length) + SP
+            + tx(B("pay runs · press a step, a division or a phrase in the sentence above to narrow it",
+                   "đợt lương · nhấn một bước, một bộ phận hoặc một cụm từ trong câu phía trên để thu hẹp"));
         const rejected = b.filter((r) => r.col === "cancel").map((r) => `
             <div class="lrn-row">
-                <span class="lrn-avatar">${ic("x")}</span>
+                <span class="lrn-kmono">${esc(monoOf(tx(r.division)))}</span>
                 <span><span class="lrn-nm">${esc(tx(r.name))}</span><br>
                     <span class="lrn-sub2">${esc(tx(r.reason))}</span></span>
                 <span class="lrn-rr">${statusChip("payrun", "cancel")}</span>
             </div>`).join("");
-        const netLabel = tx(B("Net paid (done), in", "Đã chi (hoàn tất), bằng")) + SP + "VND";
         return `
             <div class="lrn-strip">
-                <button class="lrn-btn pri" data-coach="pk-run">${ic("zap")}${esc(T("runPayroll"))}</button>
+                <button class="lrn-btn" data-coach="pk-run">${ic("zap")}${esc(T("runPayroll"))}</button>
             </div>
-            <div class="lrn-grid g5" data-coach="pk-kpis">
-                ${kpiTile("layers", "", N(k.total), B("Pay runs", "Đợt lương"))}
-                ${kpiTile("clock", "", N(k.inPipeline), B("In pipeline", "Đang xử lý"))}
-                ${kpiTile("alert-triangle", "warn", N(k.myPending), B("Awaiting your approval", "Chờ bạn phê duyệt"))}
-                ${kpiTile("check-circle", "pos", N(k.done), B("Completed", "Hoàn tất"))}
-                ${kpiTile("receipt", "pos", M(k.net), B(netLabel, netLabel))}
+            ${hero}
+            <div class="lrn-rtoolbar">
+                <span class="lrn-rseg"><span class="on">${esc(tx(B("All months", "Mọi tháng")))}</span><span>${esc(tx(B("Jul 2026 only", "Chỉ Th7 2026")))}</span></span>
+                <div class="lrn-tabs" data-coach="pk-divchips">
+                    ${[B("All divisions", "Tất cả bộ phận"), RUN.division, B("F&B", "F&B")].map((d, i) =>
+                        `<button aria-selected="${i === 0}">${i ? `<span class="lrn-kmono sm">${esc(monoOf(tx(d)))}</span>` : ""}${esc(tx(d))}</button>`).join("")}
+                </div>
             </div>
-            <div class="lrn-tabs" data-coach="pk-divchips">
-                ${[B("All divisions", "Tất cả bộ phận"), RUN.division, B("F&B", "F&B")].map((d, i) =>
-                    `<button aria-selected="${i === 0}">${esc(tx(d))}</button>`).join("")}
-            </div>
-            <div class="lrn-steps" data-coach="pk-steps">${steps}</div>
             <p class="lrn-note">${esc(showing)}</p>
-            <div class="lrn-kanban" data-coach="pk-tabs">${board}</div>
+            <div class="lrn-kanban" data-coach="pk-tabs">${lanes}</div>
             <div class="lrn-panel" data-coach="pk-rejected">
                 <h3>${ic("x")}${esc(tx(B("Rejected pay runs", "Đợt lương bị từ chối")))}<span class="lrn-tabn">${
                     N(b.filter((r) => r.col === "cancel").length)}</span></h3>

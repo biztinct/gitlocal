@@ -534,23 +534,32 @@ const PRACTICE = {
        the screens are decorative. */
     { name: RUN.name, employees: 48, gross: 691200000, net: 612480000,
       col: "approval_pending", cur: true, division: RUN.division,
-      step: 1 },
+      step: 1, month: "2026-07", period: B("01 Jul – 31 Jul 2026", "01/07 – 31/07/2026") },
     /* F&B's July run was SENT BACK by the HR lead and is a draft again, with
        the note on it. m2 works on exactly this card. */
     { name: FNB.name, employees: FNB.employees, gross: FNB.totalGross, net: FNB.totalNet,
       col: "draft", cur: true, division: B("F&B", "F&B"),
+      month: "2026-07", period: B("01 Jul – 31 Jul 2026", "01/07 – 31/07/2026"),
       sentBack: { by: "Đặng Thu Hà",
                   note: B("NV0203 — overtime reads 46 hours for the week; the timesheet says 4.6. Please correct and send it in again.",
                           "NV0203 — tăng ca ghi 46 giờ trong tuần; bảng chấm công ghi 4,6. Vui lòng sửa rồi gửi lại.") } },
+    /* PAYRUN BOARD redesign: a Done run carries where its money got to. June
+       is paid and delivered; May too. The board draws the delivery rail from
+       this, and "Pay & Deliver" is the big button only while a run is unpaid. */
     { name: B("Retail — June 2026", "Bán lẻ — Tháng 6/2026"), employees: 47, gross: 672500000,
-      net: 596110000, col: "done", division: RUN.division },
+      net: 596110000, col: "done", division: RUN.division, month: "2026-06",
+      monthLabel: B("June 2026", "Tháng 6/2026"), period: B("01 Jun – 30 Jun 2026", "01/06 – 30/06/2026"),
+      paid: true, paidOn: B("30 Jun 2026", "30/06/2026") },
     { name: B("Retail — May 2026", "Bán lẻ — Tháng 5/2026"), employees: 47, gross: 666300000,
-      net: 590870000, col: "done", division: RUN.division },
+      net: 590870000, col: "done", division: RUN.division, month: "2026-05",
+      monthLabel: B("May 2026", "Tháng 5/2026"), period: B("01 May – 31 May 2026", "01/05 – 31/05/2026"),
+      paid: true, paidOn: B("29 May 2026", "29/05/2026") },
     /* A run that should never have existed, rejected from the board. It sits
        in the collapsed "Rejected pay runs" list, not in a column: a rejected
        run is an outcome, not a stage. */
     { name: B("Retail — July 2026 (made twice)", "Bán lẻ — Tháng 7/2026 (tạo trùng)"),
       employees: 48, gross: 691200000, net: 612480000, col: "cancel", division: RUN.division,
+      month: "2026-07", period: B("01 Jul – 31 Jul 2026", "01/07 – 31/07/2026"),
       reason: B("Made by mistake — a second copy of the July run.",
                 "Tạo nhầm — bản thứ hai của đợt tháng 7.") },
   ],
