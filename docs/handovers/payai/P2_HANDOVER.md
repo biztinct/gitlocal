@@ -1,4 +1,26 @@
-# PAYAI P2 — Amber tier (handover for Opus) — DRAFT pending P1_REPORT.md
+# PAYAI P2 — Amber tier (handover for Opus)
+
+## P1 is LIVE on payobook (2026-10-12) — walk findings to fix FIRST, in P2's first commit
+Fable walked P1 on payobook.com with the QA login (Chrome, visible window, console clean). Works: "Open the Runs
+board" → done card + the board opens; "Run June payroll for Retail" → honest stub refusal with the door; "Delete the
+May run" → blocked card (lock note, door, audit line); "Show the June run" → tiles 12 runs / 8,879 people / ₫113.3 bn
++ run chips; "What can you do?" → grouped list; "PayAI can act" settings card under Settings with the four switches.
+Fix these (each is small; number them P2-F1…F4 in the report):
+- **P2-F1 Door ranking.** "Open runs" resolved to the Learn row "Lesson · 7 min · how to › Runs" instead of the Pay
+  hub's Runs lens, and did not ask. Rule: rank hub lenses and mission rows (palette `group` surfaces/missions) above
+  deep links and above Learn rows; an exact label match on a lens wins outright; when the top two scores are within
+  0.1 of each other AND belong to different groups → Clarify chips (≤6). Add tests: "open runs" → Runs lens; "open the
+  runs lesson" → Learn row; "open approvals" (Home lens vs Workforce lens) → chips.
+- **P2-F2 Breadcrumb "Unnamed".** The settings action opened from the "PayAI can act" card shows the parent
+  breadcrumb as "Unnamed" (`/bizapp/pb_settings_hub/action-1573`). Give the hub breadcrumb its name ("Settings") —
+  check how other settings-hub cards that open a form avoid it, and copy that.
+- **P2-F3 Coach banner copy.** The helper drawer still says "I explain — you act. I never compute a pay run, approve
+  a payslip or change a record for you." (pb_learn coach.xml). From P2 that sentence is false. Replace with: "Ask me
+  to do something and I show you the plan first. I only ever do what you could do yourself on the screen." (EN now,
+  VI in P4) — pb_learn bump.
+- **P2-F4 Report hygiene.** P1_REPORT's walk section said "not done"; append the walk record above to it under
+  "Walked by Fable on payobook 2026-10-12" so the record is complete.
+
 
 Read first: `PAYAI_PROGRAM.md`, `PAYAI_LEDGER.md` (PA-R1…R5 + every PA row), `P1_HANDOVER.md` + `P1_REPORT.md`
 (the card contract, the registry, the gate, the resolvers and the chat patch you are extending), and the design
@@ -69,7 +91,25 @@ No server-side long jobs: the browser stays open during a run, exactly like the 
 Key P0 facts: every wizard method is `@runner_only`; `prepare_run` may answer `{blocked, kind:'protected'}` or
 `{needs_confirmation}`; `_check_period` refuses bad dates; `pb_prepared_uid` is written.
 
-## Numbered tests (P2) — to finalise after P1_REPORT
+## From P1_REPORT (Opus's open questions, answered)
+- **run_driver extraction**: lift `_compute` (`payrun_wizard.js:897–1066`) into `@pb_payrun_wizard/js/run_driver`
+  exporting `runPayroll(orm, vals, {onProgress, onStep})` that returns `{run_id, summary, exceptions, sync, batch,
+  prep}`; the wizard keeps its own state handling around the call (`gotoKey`, `busyMsg`, dialogs) and the PayAI card
+  passes `onProgress({done,total,label})`. The driver never decides on `needs_confirmation`/`blocked`: it returns
+  `prep` and the CALLER decides (the wizard shows its dialog; PayAI shows the blocked card). Keep the chunk size 40
+  and the `already` guard behaviour unchanged. Wizard tests must still pass.
+- **Server-validated confirm/progress**: the client calls `rpc_confirm_task(task_id, how)` (how = tap|voice) which
+  re-runs gate + `plan_preview`, checks expiry and the company tier switch, moves the task to `confirmed` and returns
+  the exact `vals` to drive (the client never composes `vals` itself); `rpc_task_progress(task_id, done, total)` is
+  bookkeeping only; `rpc_task_result(task_id, run_id)` closes it after the driver's `get_summary`. A task not in
+  `confirmed` state refuses progress/result writes.
+- **Latency of the extra tools call**: keep the phrase table first (P1 deviation) and add a per-user LRU of the last
+  resolved sentences; show the typing dots immediately. No other work in P2.
+- **Resolvers untested (scheme/division)**: P2 tests 1 and 12 cover them; add unit tests for `resolve.scheme` with
+  "Retail" (two Retail schemes → ambiguous), "Retail End-Month" (unique), "Marketing" (none).
+- **Who may change the switches**: admin only stays (owner can revisit); do not widen.
+
+## Numbered tests (P2)
 1. run_payroll plan: "Run June payroll for Retail" → chips when two Retail schemes; one → plan card with origins
    said/chose/default and the covered/not-covered counts equal to `scheme_preview`.
 2. Existing draft June run → blocked card with the door; `force_clean` never present in any RPC payload (assert).
