@@ -60,10 +60,12 @@ _SOURCE_META = {
     'export':   {'label': 'Bank export',  'icon': 'download',    'color': 'slate'},
     'delivery': {'label': 'Payslip sent', 'icon': 'mail',        'color': 'green'},
     'login':    {'label': 'Login',        'icon': 'logIn',       'color': 'cyan'},
+    # PAYAI P1 — every request a person made of PayAI, refused ones included.
+    'payai':    {'label': 'PayAI request', 'icon': 'sparkles',   'color': 'indigo'},
 }
 # Display / filter order.
 _SOURCE_ORDER = ['field', 'approval', 'workflow', 'bank', 'export',
-                 'delivery', 'login']
+                 'delivery', 'login', 'payai']
 
 
 class PbAuditConsole(models.AbstractModel):
@@ -153,6 +155,7 @@ class PbAuditConsole(models.AbstractModel):
             'export': 'bank.export.log',
             'delivery': 'pb.payslip.delivery',
             'login': 'res.users.log',
+            'payai': 'payai.task',
         }[key]
         return model in self.env
 
@@ -380,6 +383,40 @@ class PbAuditConsole(models.AbstractModel):
                 '', '', 'res.users', u.id if u else False, employee=None))
         return rows
 
+    def _fetch_payai(self, filters, limit):
+        """PAYAI P1 — "Asked PayAI: <request> — <status>", soft on the
+        module being installed (this module does not depend on it)."""
+        if 'payai.task' not in self.env:
+            return []
+        df, dt = self._dt_bounds(filters)
+        dom = []
+        if df:
+            dom.append(('create_date', '>=', df))
+        if dt:
+            dom.append(('create_date', '<=', dt))
+        if self._actor_filter(filters):
+            dom.append(('user_id', '=', self._actor_filter(filters)))
+        if self._emp_filter(filters):  # a request has no employee subject
+            return []
+        mf = self._model_filter(filters)
+        if mf and mf != 'payai.task':
+            return []
+        tasks = self.env['payai.task'].sudo().search(
+            dom, order='create_date desc, id desc', limit=limit)
+        states = dict(self.env['payai.task']._fields['state'].selection)
+        rows = []
+        for t in tasks:
+            state = states.get(t.state, t.state)
+            title = _('Asked PayAI: %(what)s — %(state)s') % {
+                'what': t.action_title or t.action_key, 'state': state}
+            rows.append(self._row(
+                'payai', t.id, t.create_date, t.user_id, title,
+                # No deep link: the request row IS the record (a bare form of
+                # it would show the stored JSON, which is not for people).
+                t.utterance or '', t.error or '', None, None,
+                employee=None))
+        return rows
+
     _FETCHERS = {
         'field': '_fetch_field',
         'approval': '_fetch_approval',
@@ -388,6 +425,7 @@ class PbAuditConsole(models.AbstractModel):
         'export': '_fetch_export',
         'delivery': '_fetch_delivery',
         'login': '_fetch_login',
+        'payai': '_fetch_payai',
     }
 
     # --------------------------------------------------- employee resolution
@@ -707,6 +745,7 @@ class PbAuditConsole(models.AbstractModel):
             'export': ('bank.export.log', 'export_date'),
             'delivery': ('pb.payslip.delivery', 'create_date'),
             'login': ('res.users.log', 'create_date'),
+            'payai': ('payai.task', 'create_date'),
         }[key]
 
     # ================================================================ retention

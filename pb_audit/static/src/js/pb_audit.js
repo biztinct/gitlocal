@@ -22,6 +22,7 @@ const SOURCE_CHIPS = [
     { key: "export", label: _t("Exports") },
     { key: "delivery", label: _t("Payslips") },
     { key: "login", label: _t("Logins") },
+    { key: "payai", label: _t("PayAI") },
 ];
 
 export class PbAudit extends Component {
