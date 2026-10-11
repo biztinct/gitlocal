@@ -79,6 +79,9 @@ const PS_META_FIELDS = [
 const PS_META_KEYS = PS_META_FIELDS.map((f) => f.key);
 const PS_META_TOKEN_RE = () => new RegExp(`\\{\\{pb_meta:(${PS_META_KEYS.join("|")})\\}\\}`, "g");
 const CAT_COLOR = { info: "#0E7490", earn: "#4F46E5", ded: "#B45309", employer: "#7C3AED", total: "#059669", people: "#64748B" };
+// SPOTLIGHT — the three arrow meanings on the Cards view (same values as
+// --cyan / --i / --pink in studio.scss; SVG attributes cannot read CSS vars)
+const ARROW_IN = "#0E7490", ARROW_SELF = "#5A4BB0", ARROW_OUT = "#DB2777";
 
 // COLROLES P2 — the role vocabulary moved DOWN to `mapping/mapping_roles.js` in
 // JOURNEY J1, because the mapping board's lane chips need it too and they now
@@ -263,6 +266,15 @@ export class PbFormulaStudio extends Component {
             // so a first visit lands on the decluttered view. Persisted per user
             // (a preference, not per-config state).
             lens: (typeof localStorage !== "undefined" && localStorage.getItem("pbfs_lens") === "all") ? "all" : "payroll",
+            // SPOTLIGHT (owner decision 2026-10-11) — how the two side lists
+            // treat components unrelated to the selected one.
+            //   'all'     : every row stays, unrelated rows fade (Spotlight)
+            //   'related' : only the rows that feed or use the selection show;
+            //               the rest fold behind one "Show the other N" line
+            // Per-user preference, like the lens. Default Spotlight.
+            focus: (typeof localStorage !== "undefined" && localStorage.getItem("pbfs_focus") === "related") ? "related" : "all",
+            // the two fold-outs under 'related' — never persisted, re-fold on every visit
+            focusMore: { ol: false, tp: false },
             // Expansion of the tucked-away People & data row under the Payroll lens.
             // Deliberately NOT persisted: it re-collapses every visit so the sidebar
             // opens quiet, and expanding it is a cheap, obvious gesture.
@@ -1480,6 +1492,9 @@ export class PbFormulaStudio extends Component {
     // The four pay groups — People & Data is rendered separately under the
     // Payroll lens and inline (via visibleGroups) under Everything.
     get payrollGroups() { return this.visibleGroups.filter(g => g !== PEOPLE_GROUP); }
+    // every row the outline is currently listing (lens-aware) — the base the
+    // "Show the other N" line counts against
+    get outlineItems() { return (this.lensAll ? this.visibleGroups : this.payrollGroups).flatMap(g => this.groupItems(g)); }
     get peopleItems() { return this.groupItems(PEOPLE_GROUP); }
     get peopleCount() { return this.peopleItems.length; }
     get lensAll() { return this.state.lens === "all"; }
@@ -1491,6 +1506,54 @@ export class PbFormulaStudio extends Component {
     }
     toggleLens() { this.setLens(this.lensAll ? "payroll" : "all"); }
     togglePeople() { this.state.peopleOpen = !this.state.peopleOpen; }
+
+    // ---- SPOTLIGHT — related rows vs. the rest -----------------------------
+    get focusRelated() { return this.state.focus === "related"; }
+    setFocus(v) {
+        const f = v === "related" ? "related" : "all";
+        if (this.state.focus === f) return;
+        this.state.focus = f;
+        this.state.focusMore = { ol: false, tp: false };
+        try { localStorage.setItem("pbfs_focus", f); } catch (e) { /* private mode */ }
+        this.redrawArrows();
+    }
+    toggleFocusMore(k) { this.state.focusMore[k] = !this.state.focusMore[k]; this.redrawArrows(); }
+    // One object per render: the columns that FEED the selection (teal) and
+    // the columns that USE it (pink). Templates bind it once with t-set so the
+    // formula regex runs once per list, not once per row.
+    get relSets() {
+        const s = this.selected;
+        const deps = new Set(s ? this.depColsOf(s) : []);
+        const uses = new Set();
+        if (s) for (const c of this.state.components) {
+            if (c.id !== s.id && c.type === "formula" && this.depColsOf(c).includes(s.col)) uses.add(c.col);
+        }
+        return { deps, uses, any: deps.size + uses.size > 0, sel: s ? s.col : null };
+    }
+    isRelated(col, rel) { return !!rel && (col === rel.sel || rel.deps.has(col) || rel.uses.has(col)); }
+    // the row's relationship class: active / dep / use / quiet / ''
+    rowRel(c, rel) {
+        if (!rel || !rel.sel) return "";
+        if (c.col === rel.sel) return "active";
+        if (rel.deps.has(c.col)) return "dep";
+        if (rel.uses.has(c.col)) return "use";
+        return rel.any && !this.focusRelated ? "quiet" : "";
+    }
+    // 'related' mode: does this row stay in the list?
+    rowShown(c, rel, k) {
+        if (!this.focusRelated || !rel || !rel.any) return true;
+        return this.isRelated(c.col, rel) || this.state.focusMore[k];
+    }
+    // how many rows of `items` the fold-out line is hiding
+    hiddenCount(items, rel) {
+        if (!this.focusRelated || !rel || !rel.any) return 0;
+        return items.filter(c => !this.isRelated(c.col, rel)).length;
+    }
+    // "Depends on" / "Used by" pills carry names; clicking one jumps to it
+    jumpToName(name) {
+        const c = this.state.components.find(x => x.name === name || x.code === name);
+        if (c) this.selectComponent(c.id);
+    }
     get sampleName() {
         // RD46 — a real person's label wins over the sample list, because when
         // one is loaded that IS what the panel is showing.
@@ -1657,7 +1720,10 @@ export class PbFormulaStudio extends Component {
     }
     isDep(col) { return this.depColsOf(this.selected).includes(col); }
     isOutcome(col) { return this.selected && this.selected.col === col; }
-    depStyle(c) { return this.isDep(c.col) ? ("--depc:" + this.colOf(c)) : ""; }
+    // SPOTLIGHT — the rail colours are fixed now (teal feeds in, pink goes
+    // out), so rows no longer carry a per-category --depc. Kept as a no-op
+    // because the templates and Learn's replica still call it.
+    depStyle() { return ""; }
 
     // ---- formula chips (IF / function aware) ----
     setFormulaForm(short) { this.state.formulaShort = short; }
@@ -3258,25 +3324,35 @@ export class PbFormulaStudio extends Component {
             const tipx = cardR.left - wr.left + 6;
             let ty = centerY - (n - 1) * gap / 2 + i * gap;
             ty = Math.max(edTop, Math.min(edBot, ty));
-            const color = this.colOf(this.byCol(col));
-            this._arrow(layer, sx, sy, tipx, ty, color, () => this.scrollToCol(col), (7.5 + i * 0.7), clamped ? [sx, sy] : null);
+            // SPOTLIGHT — lines carry one meaning each: teal feeds in
+            this._arrow(layer, sx, sy, tipx, ty, ARROW_IN, () => this.scrollToCol(col), (7.5 + i * 0.7), clamped ? [sx, sy] : null);
         });
-        // ---- output arrow: right edge of the card -> outcome row in the live preview ----
+        // ---- output arrows: right edge of the card -> the live preview ----
+        //   indigo: this component's own result row
+        //   pink:   every component that USES it (its direct dependents)
         if (preview && anchorable(preview)) {
-            const outRow = preview.querySelector(`.tp-row[data-col="${c.col}"]`);
             const pvR = preview.getBoundingClientRect();
-            const sx = cardR.right - wr.left + 4;
-            const sy = Math.max(edTop, Math.min(edBot, centerY));
-            const tipx = pvR.left - wr.left + 4;
-            let ty = sy, clampedOut = false;
-            if (outRow) {
-                const orr = outRow.getBoundingClientRect();
-                ty = orr.top + orr.height / 2 - wr.top;
-                const pT = pvR.top - wr.top + 8, pB = pvR.bottom - wr.top - 8;
-                clampedOut = ty < pT || ty > pB;
-                ty = Math.max(pT, Math.min(pB, ty));
-            }
-            this._arrow(layer, sx, sy, tipx, ty, this.colOf(c), () => this.scrollToPreviewCol(c.col), 8.5, clampedOut ? [tipx, ty] : null);
+            const pT = pvR.top - wr.top + 8, pB = pvR.bottom - wr.top - 8;
+            const uses = Array.from(this.relSets.uses);
+            const targets = [{ col: c.col, color: ARROW_SELF }].concat(uses.map(col => ({ col, color: ARROW_OUT })));
+            const m = targets.length, ogap = 30;
+            targets.forEach((t, i) => {
+                const row = preview.querySelector(`.tp-row[data-col="${t.col}"]`);
+                const sx = cardR.right - wr.left + 4;
+                let sy = centerY - (m - 1) * ogap / 2 + i * ogap;
+                sy = Math.max(edTop, Math.min(edBot, sy));
+                const tipx = pvR.left - wr.left + 4;
+                let ty = sy, clampedOut = false;
+                if (row) {
+                    const orr = row.getBoundingClientRect();
+                    ty = orr.top + orr.height / 2 - wr.top;
+                    clampedOut = ty < pT || ty > pB;
+                    ty = Math.max(pT, Math.min(pB, ty));
+                } else if (i > 0) {
+                    return;   // a used-by row folded away under "Related only" — no line to nowhere
+                }
+                this._arrow(layer, sx, sy, tipx, ty, t.color, () => this.scrollToPreviewCol(t.col), 8.5 + i * 0.6, clampedOut ? [tipx, ty] : null);
+            });
         }
     }
     scrollToPreviewCol(col) {

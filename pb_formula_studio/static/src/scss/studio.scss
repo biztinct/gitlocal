@@ -1504,3 +1504,85 @@
     .pbcfg-actions { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
     .pbfs-hint { margin-top: 14px; }
 }
+
+/* ============================================================
+   SPOTLIGHT (owner decision 2026-10-11) — the Cards view steps back
+   from everything that is not connected to the selected component.
+   One colour language everywhere (lists, arrows, card):
+     teal  = feeds into the selection      pink = uses the selection
+     indigo = the selection itself         faded = unrelated (Spotlight)
+   Appended last so it wins over the older row rules above.
+   ============================================================ */
+.pbfs {
+    --pink: #DB2777; --pink-soft: #FCE7F3; --pink-border: #F9A8D4;
+
+    /* the All / Related control + colour key, under the lens */
+    .ol-focus { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 6px 2px; }
+    .ol-focus-key { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 600; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ol-focus-key i, .dep-row .lbl i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .ol-focus-key i + i, .ol-focus-key i:not(:first-child) { margin-left: 6px; }
+    .k-in { background: var(--cyan); } .k-out { background: var(--pink); }
+    .ol-focus-seg { flex-shrink: 0; }
+    .ol-focus-seg button { padding: 3px 10px; font-size: 11px; }
+    @media (max-width: 1180px) { .ol-focus-key { display: none; } }
+
+    /* rows — teal rail feeds in, pink rail goes out */
+    .ol-item.dep { --depc: var(--cyan); background: var(--cyan-soft); border-color: transparent; box-shadow: -3px 0 0 0 var(--cyan) inset; }
+    .ol-item.dep .ol-col { background: var(--cyan); color: #fff; }
+    .ol-item.use { --depc: var(--pink); background: var(--pink-soft); border-color: transparent; box-shadow: -3px 0 0 0 var(--pink) inset; }
+    .ol-item.use .ol-col { background: var(--pink); color: #fff; }
+    .ol-item.dep .ol-val, .ol-item.use .ol-val { color: var(--ink); }
+    .ol-item.quiet { opacity: .38; }
+    .ol-item.quiet:hover, .ol-item.quiet:focus-within { opacity: 1; }
+
+    .tp-row.dep { --depc: var(--cyan); background: var(--cyan-soft); box-shadow: -3px 0 0 0 var(--cyan) inset; }
+    .tp-row.dep .nm .c { color: var(--cyan); }
+    .tp-row.use { --depc: var(--pink); background: var(--pink-soft); box-shadow: -3px 0 0 0 var(--pink) inset; }
+    .tp-row.use .nm .c { color: var(--pink); }
+    .tp-row.use .nm, .tp-row.dep .nm { color: var(--ink); }
+    .tp-row.quiet { opacity: .38; }
+    .tp-row.quiet:hover { opacity: 1; }
+
+    /* the type label is a dot until the row is hovered */
+    .ol-typ { width: 8px; height: 8px; padding: 0; border-radius: 50%; overflow: hidden; transition: width .14s, border-radius .14s; }
+    .ol-typ .tx { display: none; }
+    .ol-typ.input { background: var(--cyan); } .ol-typ.formula { background: var(--i); } .ol-typ.constant { background: #CBD5E1; }
+    .ol-item:hover .ol-typ, .ol-item.active .ol-typ { width: 54px; height: auto; padding: 2px 0; border-radius: 5px; }
+    .ol-item:hover .ol-typ .tx, .ol-item.active .ol-typ .tx { display: inline; }
+    .ol-item:hover .ol-typ.input, .ol-item.active .ol-typ.input { background: var(--cyan-soft); color: var(--cyan); }
+    .ol-item:hover .ol-typ.formula, .ol-item.active .ol-typ.formula { background: var(--i-soft); color: var(--i600); }
+    .ol-item:hover .ol-typ.constant, .ol-item.active .ol-typ.constant { background: #EEF1F5; color: #64748B; }
+
+    /* "Show the other N components" — the Related view's fold-out line */
+    .ol-more { display: flex; align-items: center; gap: 8px; width: 100%; margin-top: 10px; padding: 8px 10px; border: 1px dashed var(--line); border-radius: 10px; background: none; cursor: pointer; font-family: inherit; color: var(--muted); text-align: left; }
+    .ol-more:hover { background: #F6F7FB; border-color: var(--i-border); color: var(--ink); }
+    .ol-more .chev { width: 13px; height: 13px; flex-shrink: 0; transition: transform .15s; }
+    .ol-more.open .chev { transform: rotate(90deg); }
+    .ol-more .t { font-size: 12px; font-weight: 700; }
+    .pbfs-test .ol-more { margin: 10px 0 4px; }
+
+    /* card: quiet icon actions (label on hover via title); Edit/Delete keep words */
+    .ed-actions .pbfs-btn.iconic { padding: 7px 9px; }
+    .ed-actions .pbfs-btn.iconic .tx { display: none; }
+    .ed-actions .pbfs-btn.iconic.ai { color: var(--i); border-color: var(--i-border); background: var(--i-soft); }
+    .ed-actions .pbfs-btn.iconic.ai:hover { background: var(--i); color: #fff; }
+    .ed-actions .pbfs-btn.iconic.ai svg { stroke: currentColor; }
+    .pbfs-notesbtn.iconic .pbfs-notes-badge { margin-left: 3px; }
+
+    /* card: Connections rows share the colour language; pills jump */
+    .dep-row .lbl { display: inline-flex; align-items: center; gap: 6px; width: 96px; }
+    .dep-pill { border: 0; font-family: inherit; cursor: pointer; transition: background .12s, color .12s; }
+    .dep-row.in .dep-pill { background: var(--cyan-soft); color: var(--cyan); }
+    .dep-row.in .dep-pill:hover { background: var(--cyan); color: #fff; }
+    .dep-row.out .dep-pill { background: var(--pink-soft); color: var(--pink); }
+    .dep-row.out .dep-pill:hover { background: var(--pink); color: #fff; }
+    .dep-pill.none { background: transparent; color: var(--muted); font-weight: 600; cursor: default; padding-left: 0; }
+
+    /* card: Impact is a flat footer line, not a second coloured box */
+    .pbfs-insights { margin: 22px -26px -24px; padding: 12px 26px; background: #FAFAFE; border: 0; border-top: 1px solid var(--line-soft); border-radius: 0; }
+    .pbfs-insights .ins-head { display: none; }
+    .pbfs-insights .ins-sentence { font-size: 12.5px; color: var(--muted); }
+    .pbfs-insights .ins-sentence b { color: var(--ink); }
+    .pbfs-insights .ins-chips { margin-top: 6px; }
+    .pbfs-insights .ins-toggle { margin-top: 8px; }
+}

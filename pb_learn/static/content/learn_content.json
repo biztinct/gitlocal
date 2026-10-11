@@ -1584,8 +1584,8 @@
       },
       "key": "depends_on",
       "label": {
-        "en": "Depends on",
-        "vi": "Phụ thuộc vào"
+        "en": "Feeds from",
+        "vi": "Lấy từ"
       },
       "screen": "formula",
       "sequence": 20
@@ -1597,8 +1597,8 @@
       },
       "key": "used_by",
       "label": {
-        "en": "Used by",
-        "vi": "Được dùng bởi"
+        "en": "Goes into",
+        "vi": "Đi vào"
       },
       "screen": "formula",
       "sequence": 30
@@ -12880,8 +12880,8 @@
           "act": "observe",
           "anchor": "fs-deps",
           "body": {
-            "en": "Depends on and Used by map exactly how this number connects to the rest of payroll. Nothing here is hidden, which is what makes a rename safe to plan.",
-            "vi": "\"Phụ thuộc vào\" và \"Được dùng bởi\" mô tả chính xác con số này nối với phần còn lại của hệ thống lương ra sao. Không có gì bị giấu, nên bạn có thể lên kế hoạch đổi tên một cách an toàn."
+            "en": "Feeds from (teal) and Goes into (pink) map exactly how this number connects to the rest of payroll, and the side lists use the same two colours. Nothing here is hidden, which is what makes a rename safe to plan.",
+            "vi": "\"Lấy từ\" (xanh ngọc) và \"Đi vào\" (hồng) mô tả chính xác con số này nối với phần còn lại của hệ thống lương ra sao, và hai danh sách bên cạnh dùng đúng hai màu đó. Không có gì bị giấu, nên bạn có thể lên kế hoạch đổi tên một cách an toàn."
           },
           "guard": false,
           "key": "deps",
@@ -29465,8 +29465,8 @@
               "screen": "formula",
               "tip": "",
               "title": {
-                "en": "Depends on, and used by",
-                "vi": "Phụ thuộc vào, và được dùng bởi"
+                "en": "Feeds from, and goes into",
+                "vi": "Lấy từ, và đi vào"
               },
               "visual": "none"
             },

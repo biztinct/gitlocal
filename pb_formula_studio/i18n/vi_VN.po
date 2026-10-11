@@ -15197,3 +15197,69 @@ msgstr "Câu hỏi và nhận xét"
 #: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
 msgid "Shared securely by <b>Payobook</b> · this link is private to you and can be revoked at any time."
 msgstr "Được chia sẻ an toàn bởi <b>Payobook</b> · liên kết này chỉ dành riêng cho bạn và có thể bị thu hồi bất cứ lúc nào."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
+msgid "Connections"
+msgstr "Liên kết"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
+msgid "Feeds from"
+msgstr "Lấy từ"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
+msgid "Goes into"
+msgstr "Đi vào"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
+msgid "nothing — this is a starting value"
+msgstr "không có — đây là giá trị khởi đầu"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
+msgid "nothing uses this yet"
+msgstr "chưa có gì dùng đến"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
+msgid "Show the other"
+msgstr "Hiện thêm"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
+msgid "Hide the other"
+msgstr "Ẩn bớt"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
+msgid "Related"
+msgstr "Liên quan"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
+msgid "feeds in"
+msgstr "đầu vào"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
+msgid "uses it"
+msgstr "dùng nó"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
+msgid "Show every component, or only the ones connected to the selected one"
+msgstr "Hiện mọi thành phần, hoặc chỉ những thành phần nối với thành phần đang chọn"

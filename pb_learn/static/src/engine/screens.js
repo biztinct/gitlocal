@@ -1402,8 +1402,15 @@ export const SCREENS = {
     formula() {
         const c = PRACTICE.config;
         const cfgName = c.code + DOT + c.version;
+        /* SPOTLIGHT (pb_formula_studio, 2026-10-11): the list steps back from
+           everything not connected to the open component — teal rail feeds
+           in, pink rail goes out, the rest faded. Same classes as the product
+           (dep / use / quiet) so the look is maintained in one place here. */
+        const rel = (k) => k.code === c.selected ? "on"
+            : c.dependsOn.includes(k.code) ? "dep"
+            : c.usedBy.includes(k.code) ? "use" : "quiet";
         const comps = c.components.map((k) => `
-            <div class="lrn-row ${k.code === c.selected ? "on" : ""}">
+            <div class="lrn-row ${rel(k)}">
                 <span class="lrn-avatar">${esc(k.l)}</span>
                 <span><span class="lrn-nm">${esc(k.code)}</span><br>
                     <span class="lrn-sub2">${esc(tx(k.label))}</span></span>
@@ -1462,6 +1469,13 @@ export const SCREENS = {
                 <div class="lrn-panel" data-coach="fs-components">
                     <h3>${ic("layers")}${esc(tx(B("Components", "Thành phần")))}<button class="lrn-fsfold" aria-label="${
                         esc(tx(B("Collapse Components", "Thu gọn Thành phần")))}">${ic("chevron-left")}</button></h3>
+                    <div class="lrn-fsfocus" data-coach="fs-focus">
+                        <span class="lrn-fskey"><i class="in"></i>${esc(tx(B("feeds in", "đầu vào")))}<i class="out"></i>${esc(tx(B("uses it", "dùng nó")))}</span>
+                        <div class="lrn-seg">
+                            <button aria-pressed="true">${esc(tx(B("All", "Tất cả")))}</button>
+                            <button aria-pressed="false">${esc(tx(B("Related", "Liên quan")))}</button>
+                        </div>
+                    </div>
                     <div class="lrn-rows">${comps}</div>
                 </div>
                 <div class="lrn-fsgrip" data-coach="fs-resize" role="separator" aria-orientation="vertical"
@@ -1473,12 +1487,12 @@ export const SCREENS = {
                         <button aria-pressed="false">${esc(tx(B("Letters", "Chữ cái")))}</button>
                     </div>
                     ${formula}
-                    <div class="lrn-kv2" data-coach="fs-deps">
-                        <span>${esc(tx(B("Depends on", "Phụ thuộc vào")))}</span>
+                    <div class="lrn-kv2 lrn-fsdep in" data-coach="fs-deps">
+                        <span><i></i>${esc(tx(B("Feeds from", "Lấy từ")))}</span>
                         <b>${esc(dependsOn)}</b>
                     </div>
-                    <div class="lrn-kv2">
-                        <span>${esc(tx(B("Used by", "Được dùng bởi")))}</span>
+                    <div class="lrn-kv2 lrn-fsdep out">
+                        <span><i></i>${esc(tx(B("Goes into", "Đi vào")))}</span>
                         <b>${esc(usedBy)}</b>
                     </div>
                 </div>

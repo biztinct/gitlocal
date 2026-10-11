@@ -25,3 +25,6 @@ demo database) first and check it there. The other databases (`rize`,
 | 2026-10-11 | pb_learn → 20.2.0 | Lesson card's Next works with a real mouse (20.1.2) + Runs lesson, scenarios and practice replica follow the redesigned Pay Run board (20.2.0) | rize, payobook_template, abm |
 | 2026-10-11 | pb_formula_studio → 1.201.7 | Offer calculator: values shown by their value type (multipliers, days, rates no longer as ₫); Earnings/Deductions boxes use the payslip's totals rule | rize, payobook_template, abm |
 | 2026-10-11 | pb_payruns → 3.0.0 | Pay Run board redesign: This-month hero, lane headers = steps, quick look, bulk submit, delivery rail, list view (+ translations) | rize, payobook_template, abm |
+| 2026-10-11 | biz_theme → 2.0.1, pb_theme → 2.1.1 | Centre-screen Payobook logo loader ("Rise") replaces the bottom-right Loading pill; logo image + CSS variable in pb_theme | rize, payobook_template, abm |
+| 2026-10-11 | pb_formula_studio → 1.201.8 | Spotlight on the Cards view: unrelated rows fade, All / Related toggle, teal/pink/indigo lines, type dots, icon actions, Feeds from / Goes into (+ VI translations) | rize, payobook_template, abm |
+| 2026-10-11 | pb_learn → 20.3.0 | Practice Formula Studio follows Spotlight (row colours, toggle, Feeds from / Goes into); lesson wording updated | rize, payobook_template, abm |

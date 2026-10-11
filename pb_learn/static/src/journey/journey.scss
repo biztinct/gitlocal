@@ -2652,3 +2652,30 @@ body.lrn-docked .lrn-screen { padding-bottom: 55vh; }
     .lrn-rhero { grid-template-columns: 1fr; }
     .lrn-rhero > div + div { border-left: 0; border-top: 1px solid #DDD6F2; }
 }
+
+/* SPOTLIGHT (pb_formula_studio studio.scss, 2026-10-11) — the practice Formula
+   Studio's Components list uses the product's colour language: teal rail =
+   feeds into the open component, pink rail = uses it, the rest faded. The
+   All / Related control and the colour key sit under the panel title, and the
+   two Connections rows carry the same dots. */
+.lrn-fsrow .lrn-row.dep { background: #E0F4F9; box-shadow: -3px 0 0 0 #0E7490 inset; border-radius: 8px; }
+.lrn-fsrow .lrn-row.dep .lrn-avatar { background: #0E7490; color: #fff; }
+.lrn-fsrow .lrn-row.use { background: #FCE7F3; box-shadow: -3px 0 0 0 #DB2777 inset; border-radius: 8px; }
+.lrn-fsrow .lrn-row.use .lrn-avatar { background: #DB2777; color: #fff; }
+.lrn-fsrow .lrn-row.on { background: var(--vuf-primary-soft, #EDEAF8); border-radius: 8px; }
+.lrn-fsrow .lrn-row.on .lrn-avatar { background: var(--vuf-primary, #5A4BB0); color: #fff; }
+.lrn-fsrow .lrn-row.quiet { opacity: .38; }
+.lrn-fsrow .lrn-row.quiet:hover { opacity: 1; }
+.lrn-fsfocus {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    margin: 0 0 8px; font-size: 11px; color: var(--vuf-muted, #6B7280);
+    .lrn-seg { margin: 0; }
+    .lrn-seg button { padding: 3px 10px; font-size: 11px; }
+}
+.lrn-fskey { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.lrn-fskey i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
+.lrn-fskey i.in { background: #0E7490; } .lrn-fskey i.out { background: #DB2777; margin-left: 6px; }
+.lrn-fsdep > span { display: inline-flex; align-items: center; gap: 6px; }
+.lrn-fsdep > span i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.lrn-fsdep.in > span i { background: #0E7490; }
+.lrn-fsdep.out > span i { background: #DB2777; }

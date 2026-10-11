@@ -864,12 +864,24 @@
                 </button>
               </div>
             </div>
+            <!-- SPOTLIGHT — what happens to rows unrelated to the selected
+                 component. "All" keeps them, faded; "Related" folds them away.
+                 One control drives both side lists. -->
+            <t t-set="rel" t-value="relSets"/>
+            <div class="ol-focus" data-coach="fs-focus">
+              <span class="ol-focus-key"><i class="k-in"/>feeds in <i class="k-out"/>uses it</span>
+              <div class="ff-seg ol-focus-seg" title="Show every component, or only the ones connected to the selected one">
+                <button t-att-class="!focusRelated ? 'on' : ''" t-on-click="() => this.setFocus('all')">All</button>
+                <button t-att-class="focusRelated ? 'on' : ''" t-on-click="() => this.setFocus('related')">Related</button>
+              </div>
+            </div>
             <t t-foreach="lensAll ? visibleGroups : payrollGroups" t-as="grp" t-key="grp">
-              <div class="ol-grp" t-esc="grp"/>
-              <div t-foreach="groupItems(grp)" t-as="c" t-key="c.id"
+              <t t-set="grpItems" t-value="groupItems(grp)"/>
+              <div t-if="!focusRelated or hiddenCount(grpItems, rel) !== grpItems.length or state.focusMore.ol" class="ol-grp" t-esc="grp"/>
+              <div t-foreach="grpItems" t-as="c" t-key="c.id"
+                   t-if="rowShown(c, rel, 'ol')"
                    t-att-data-col="c.col"
-                   t-attf-class="ol-item {{ c.id === state.selectedId ? 'active' : '' }} {{ isDep(c.col) ? 'dep' : '' }} {{ isCycleMember(c.col) ? 'cyc-hi' : '' }}"
-                   t-attf-style="{{ depStyle(c) }}"
+                   t-attf-class="ol-item {{ rowRel(c, rel) }} {{ isCycleMember(c.col) ? 'cyc-hi' : '' }}"
                    t-on-click="() => this.selectComponent(c.id)">
                 <span class="ol-col" t-esc="c.col"/>
                 <span t-if="roleOf(c) !== 'payroll'" t-attf-class="ol-role r-{{ roleOf(c) }}" t-att-title="roleLabel(roleOf(c))">
@@ -882,9 +894,15 @@
                 <span class="ol-nm" t-esc="c.name"/>
                 <span t-if="!c.is_valid" class="ol-err" title="Has errors"/>
                 <span class="ol-val" t-esc="previewVal(c.col)"/>
-                <span t-attf-class="ol-typ {{ c.type }}" t-esc="c.type"/>
+                <span t-attf-class="ol-typ {{ c.type }}"><span class="tx" t-esc="c.type"/></span>
               </div>
             </t>
+            <!-- "Related" fold-out: the rows this view is hiding, never dropped -->
+            <t t-set="olHidden" t-value="hiddenCount(outlineItems, rel)"/>
+            <button t-if="olHidden" t-attf-class="ol-more {{ state.focusMore.ol ? 'open' : '' }}" t-on-click="() => this.toggleFocusMore('ol')">
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              <span class="t"><t t-if="state.focusMore.ol">Hide the other</t><t t-else="">Show the other</t> <b t-esc="olHidden"/> <t t-if="olHidden === 1">component</t><t t-else="">components</t></span>
+            </button>
             <!-- Payroll lens: everything that is not pay collapses to ONE quiet row.
                  It is never dropped — the count says exactly how much is tucked away. -->
             <t t-if="!lensAll and peopleCount">
@@ -964,17 +982,19 @@
                   <div t-if="selected.is_valid" class="valid-ok"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Valid</div>
                   <div t-else="" class="valid-err"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Check</div>
                   <div class="ed-actions">
-                    <button class="pbfs-btn soft sm" t-on-click="openExplain" title="Explain in plain language">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>Explain
+                    <!-- SPOTLIGHT — the four "look" actions are quiet icons
+                         (label on hover); Edit and Delete keep their words -->
+                    <button class="pbfs-btn soft sm iconic" t-on-click="openExplain" title="Explain in plain language" aria-label="Explain">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg><span class="tx">Explain</span>
                     </button>
-                    <button class="pbfs-btn soft sm" data-coach="fs-history" t-on-click="openHistory" title="Version history">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>History
+                    <button class="pbfs-btn soft sm iconic" data-coach="fs-history" t-on-click="openHistory" title="Version history" aria-label="History">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg><span class="tx">History</span>
                     </button>
-                    <button t-attf-class="pbfs-btn soft sm pbfs-notesbtn {{ selected.review_open ? 'has-review' : '' }}" data-coach="fs-notes" t-on-click="openNotes" title="Comments &amp; review notes">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Notes<span t-if="selected.note_count" class="pbfs-notes-badge" t-esc="selected.note_count"/>
+                    <button t-attf-class="pbfs-btn soft sm iconic pbfs-notesbtn {{ selected.review_open ? 'has-review' : '' }}" data-coach="fs-notes" t-on-click="openNotes" title="Comments &amp; review notes" aria-label="Notes">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="tx">Notes</span><span t-if="selected.note_count" class="pbfs-notes-badge" t-esc="selected.note_count"/>
                     </button>
-                    <button class="pbfs-btn soft sm" data-coach="fs-editai" t-on-click="openAI" title="Edit with PayAI">
-                      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Edit with PayAI
+                    <button class="pbfs-btn soft sm iconic ai" data-coach="fs-editai" t-on-click="openAI" title="Edit with PayAI" aria-label="Edit with PayAI">
+                      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg><span class="tx">PayAI</span>
                     </button>
                     <button class="pbfs-btn ghost sm" t-on-click="() => this.enterEdit(selected.id)" title="Edit this component">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>Edit
@@ -1033,15 +1053,18 @@
                     <span t-else="" class="fchip src" t-esc="tok.text"/>
                   </t>
                 </div>
+                <!-- SPOTLIGHT — the two rows use the same colour language as
+                     the side lists and the arrows: teal feeds in, pink goes out.
+                     Pills are clickable and jump to that component. -->
                 <div class="dep-map" data-coach="fs-deps">
-                  <div class="ed-label">Dependencies</div>
-                  <div class="dep-row"><span class="lbl">Depends on</span>
-                    <t t-if="selected.depends_on.length"><span t-foreach="selected.depends_on" t-as="d" t-key="d_index" class="dep-pill" t-esc="d"/></t>
-                    <span t-else="" class="dep-pill">— none —</span>
+                  <div class="ed-label">Connections</div>
+                  <div class="dep-row in"><span class="lbl"><i class="k-in"/>Feeds from</span>
+                    <t t-if="selected.depends_on.length"><button t-foreach="selected.depends_on" t-as="d" t-key="d_index" class="dep-pill" t-on-click="() => this.jumpToName(d)" t-att-title="'Go to ' + d" t-esc="d"/></t>
+                    <span t-else="" class="dep-pill none">nothing — this is a starting value</span>
                   </div>
-                  <div class="dep-row"><span class="lbl">Used by</span>
-                    <t t-if="selected.used_by.length"><span t-foreach="selected.used_by" t-as="d" t-key="d_index" class="dep-pill" t-esc="d"/></t>
-                    <span t-else="" class="dep-pill">— none —</span>
+                  <div class="dep-row out"><span class="lbl"><i class="k-out"/>Goes into</span>
+                    <t t-if="selected.used_by.length"><button t-foreach="selected.used_by" t-as="d" t-key="d_index" class="dep-pill" t-on-click="() => this.jumpToName(d)" t-att-title="'Go to ' + d" t-esc="d"/></t>
+                    <span t-else="" class="dep-pill none">nothing uses this yet</span>
                   </div>
                 </div>
                 <!-- RD48 — WHOSE ERROR IS THIS? The stored message belongs to
@@ -1561,15 +1584,21 @@
                 </button>
               </div>
             </t>
+            <t t-set="rel" t-value="relSets"/>
             <t t-foreach="state.components" t-as="c" t-key="c.id">
-              <div t-att-data-col="c.col"
-                   t-attf-class="tp-row {{ showsMinus(c) ? 'ded' : '' }} {{ isDep(c.col) ? 'dep' : '' }} {{ isOutcome(c.col) ? 'outcome' : '' }}"
-                   t-attf-style="{{ depStyle(c) }}"
+              <div t-if="rowShown(c, rel, 'tp')"
+                   t-att-data-col="c.col"
+                   t-attf-class="tp-row {{ showsMinus(c) ? 'ded' : '' }} {{ rowRel(c, rel) === 'active' ? 'outcome' : rowRel(c, rel) }}"
                    t-on-click="() => this.selectComponent(c.id)">
                 <span class="nm"><span class="c" t-esc="c.col"/><span class="label" t-esc="c.name"/></span>
                 <span class="v"><t t-if="showsMinus(c)">−</t><t t-esc="previewVal(c.col)"/></span>
               </div>
             </t>
+            <t t-set="tpHidden" t-value="hiddenCount(state.components, rel)"/>
+            <button t-if="tpHidden" t-attf-class="ol-more {{ state.focusMore.tp ? 'open' : '' }}" t-on-click="() => this.toggleFocusMore('tp')">
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              <span class="t"><t t-if="state.focusMore.tp">Hide the other</t><t t-else="">Show the other</t> <b t-esc="tpHidden"/> <t t-if="tpHidden === 1">component</t><t t-else="">components</t></span>
+            </button>
           </div>
         </div>
         </t>
