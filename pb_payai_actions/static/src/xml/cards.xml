@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ===================================================== the PayAI card
+       ONE template, called from both chat variants (floating pill and the
+       helper drawer's Ask tab). It draws only what the server sent: the
+       client never decides a tier or a right. -->
+  <t t-name="pb_payai_actions.Card">
+    <t t-set="card" t-value="msg.card"/>
+    <div t-attf-class="payai-card payai-card--{{ card.kind }} payai-tier--{{ card.tier }} {{ this.payaiCompact(card) ? 'is-compact' : '' }}"
+         role="group" t-att-aria-label="card.title">
+      <div class="payai-card__head">
+        <span t-attf-class="payai-card__badge payai-tone--{{ this.payaiTone(card) }}"
+              t-out="this.payaiSvg(this.payaiIcon(card))"/>
+        <div class="payai-card__ht">
+          <div class="payai-card__title" t-esc="card.title"/>
+          <div class="payai-card__sub" t-if="card.subtitle" t-esc="card.subtitle"/>
+        </div>
+        <t t-if="this.payaiCompact(card)">
+          <t t-foreach="card.actions" t-as="act" t-key="act_index">
+            <button type="button" class="payai-card__mini"
+                    t-on-click="() => this.payaiAct(msg, act)"
+                    t-att-title="act.label">
+              <t t-out="this.payaiSvg(act.id === 'download' ? 'download' : 'arrow')"/>
+            </button>
+          </t>
+        </t>
+      </div>
+
+      <div class="payai-card__body" t-if="!this.payaiCompact(card)">
+        <div class="payai-card__slots" t-if="card.slots and card.slots.length">
+          <t t-foreach="card.slots" t-as="slot" t-key="slot.key">
+            <span class="payai-card__k" t-esc="slot.label"/>
+            <span class="payai-card__v">
+              <span t-esc="slot.value_label"/>
+              <span t-attf-class="payai-src payai-src--{{ slot.origin }}" t-esc="this.payaiOrigin(slot.origin)"/>
+            </span>
+          </t>
+        </div>
+
+        <div class="payai-card__tiles" t-if="card.result and card.result.length">
+          <t t-foreach="card.result" t-as="tile" t-key="tile_index">
+            <div class="payai-card__tile">
+              <b t-esc="tile.value"/>
+              <small t-esc="tile.label"/>
+            </div>
+          </t>
+        </div>
+
+        <t t-foreach="card.notes or []" t-as="note" t-key="note_index">
+          <div t-attf-class="payai-card__note payai-tone--{{ note.tone }}">
+            <t t-out="this.payaiSvg(this.payaiNoteIcon(note.tone))"/>
+            <span t-esc="note.text"/>
+          </div>
+        </t>
+
+        <t t-foreach="card.groups or []" t-as="grp" t-key="grp_index">
+          <div t-attf-class="payai-card__group payai-tone--{{ grp.tone }}">
+            <div class="payai-card__glabel">
+              <span class="payai-card__dot"/>
+              <span t-esc="grp.label"/>
+            </div>
+            <t t-foreach="grp.items" t-as="item" t-key="item_index">
+              <button type="button" class="payai-card__gitem"
+                      t-att-disabled="grp.tone !== 'ok'"
+                      t-on-click="() => this.payaiAsk(item.example)">
+                <span class="payai-card__gname" t-esc="item.label"/>
+                <span class="payai-card__gex" t-if="item.example">“<t t-esc="item.example"/>”</span>
+              </button>
+            </t>
+          </div>
+        </t>
+
+        <div class="payai-card__chips" t-if="card.chips and card.chips.length">
+          <t t-foreach="card.chips" t-as="chip" t-key="chip_index">
+            <button type="button"
+                    t-attf-class="payai-chip {{ card.picked === chip.value and chip.value ? 'is-on' : '' }}"
+                    t-att-disabled="card.picked ? 'disabled' : false"
+                    t-on-click="() => this.payaiPick(msg, chip)">
+              <span t-esc="chip.label"/>
+              <small t-if="chip.sublabel" t-esc="chip.sublabel"/>
+            </button>
+          </t>
+        </div>
+
+        <div class="payai-card__actions" t-if="card.actions and card.actions.length">
+          <t t-foreach="card.actions" t-as="act" t-key="act_index">
+            <button type="button"
+                    t-attf-class="payai-btn payai-btn--{{ act.style or 'outline' }}"
+                    t-on-click="() => this.payaiAct(msg, act)">
+              <t t-out="this.payaiSvg(this.payaiActIcon(act))"/>
+              <span t-esc="act.label"/>
+            </button>
+          </t>
+        </div>
+
+        <div class="payai-card__audit" t-if="card.audit_line">
+          <t t-out="this.payaiSvg('scroll')"/>
+          <span t-esc="card.audit_line"/>
+        </div>
+      </div>
+      <div class="payai-card__audit is-compact" t-if="this.payaiCompact(card) and card.audit_line">
+        <span t-esc="card.audit_line"/>
+      </div>
+    </div>
+  </t>
+
+  <!-- The floating pill: the card follows the text; the text is the card's
+       own title, so it is not drawn twice. -->
+  <t t-inherit="pb_payroll_ai_insights.AiInsightChat" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('payai-msg-text')]" position="attributes">
+      <attribute name="t-if">!msg.card</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('payai-msg-text')]" position="after">
+      <t t-if="msg.card" t-call="pb_payai_actions.Card"/>
+    </xpath>
+    <xpath expr="//t[@t-foreach='state.messages']/div" position="attributes">
+      <attribute name="t-att-class">'payai-message payai-msg-' + msg.role + (msg.card ? ' payai-has-card' : '')</attribute>
+    </xpath>
+  </t>
+
+  <!-- The helper drawer's Ask tab: same card, same place. -->
+  <t t-inherit="pb_payroll_ai_insights.AiInsightChatEmbedded" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('payai-embed-text')]" position="attributes">
+      <attribute name="t-if">!msg.card</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('payai-embed-text')]" position="after">
+      <t t-if="msg.card" t-call="pb_payai_actions.Card"/>
+    </xpath>
+    <xpath expr="//t[@t-foreach='state.messages']/div" position="attributes">
+      <attribute name="t-att-class">'payai-embed-msg ' + (msg.role === 'user' ? 'me' : 'ai') + (msg.card ? ' payai-has-card' : '')</attribute>
+    </xpath>
+  </t>
+
+</templates>
