@@ -95,6 +95,11 @@ BRAND_KEYS = (
     "web_debranding.new_website",
     "web_debranding.new_documentation_website",
     "web.web_app_name",
+    # The loading animation's mark (biz_theme loading language, 2026-10-11):
+    # the master's picture at the default level, NOTHING on the two levels
+    # that carry the customer's own name — biz_theme then animates their
+    # brand name (or the picture they upload under Settings › Branding).
+    "biz_debrand.loader_logo_url",
 )
 
 
@@ -124,7 +129,7 @@ def normal_website(url):
 
 
 def brand_params(level, tenant_name, tenant_url, master_brand=None,
-                 master_website=None, theme_color=None):
+                 master_website=None, theme_color=None, master_logo=None):
     """``{parameter: value}`` for one customer at one level.
 
     Every key in :data:`BRAND_KEYS` is present in the result, always. A level
@@ -171,6 +176,9 @@ def brand_params(level, tenant_name, tenant_url, master_brand=None,
     # An empty colour means "leave whatever they have"; the caller drops the
     # key rather than writing a blank one over a real value.
     params["biz_debrand.theme_color"] = (theme_color or "").strip()
+    # The master's mark belongs only to a customer shown as the master product.
+    params["biz_debrand.loader_logo_url"] = (
+        (master_logo or "").strip() if level == LEVEL_PRODUCT or not name or not url else "")
     return params
 
 

@@ -1,81 +1,88 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   BIZ THEME — LOADING UX (non-blocking)
+   BIZ THEME — THE LOADING LANGUAGE (three moments, one language)
+   Owner decision 2026-10-11: same strategy as the health19 build
+   (its §5.262), with this product's "Rise" logo animation.
 
-   Replaces the old full-screen blur scrim (which fired on EVERY RPC with
-   pointer-events:all and made the app look frozen) with:
+   Quick      (< ~1 s, every screen change)
+              → a 3px ACCENT line along the top edge + one heartbeat of the
+                sidebar mark (pb_sidebar.scss). Nothing is dimmed, blurred or
+                blocked; the page stays clickable.
+              → a wait that passes LONG_WAIT (2.5 s) brings the brand mark to
+                the centre of the screen (the "Rise" animation), still
+                click-through, over a soft white halo — never a blur.
+   Filling    (1–3 s, a cockpit still fetching)
+              → `.biz-skel` / `.biz-skel-block`: soft grey shapes where the
+                values will land. Flat colour, breathing, no shimmer.
+   First open (web client boot)
+              → `#biz-splash` in views/webclient_templates.xml + js/biz_splash.js:
+                the mark rises and the light sweeps through it, then it fades
+                to the first screen.
 
-   1. A slim indeterminate top progress bar while any RPC is in flight —
-      pointer-events:none, 350ms appearance delay so quick calls never flash.
-   2. Odoo's own bottom "Loading" indicator restyled into a subtle brand pill.
-   3. A branded blocking card ONLY for framework-blocked UI (.o_blockUI —
-      explicit long operations like exports), where blocking is honest.
+   Trigger: the stock indicator element (.o_loading_indicator) is in the DOM
+   while requests are in flight; body:has() turns that into the line. When the
+   last answer lands, js/biz_loading_hold.js adds `body.biz-load-done` for half
+   a second so the line runs to the edge and fades instead of vanishing.
+
+   Brand: which mark, which text and which accent come from js/biz_loader_brand.js
+   (per database, inline on <html>); the compiled defaults below are neutral.
    ═══════════════════════════════════════════════════════════════════════ */
 
-/* 1 ─ Top progress bar (appears while .o_loading_indicator exists) */
-body:has(.o_loading_indicator)::before {
+:root {
+    --biz-loader-logo: none;              /* set by the product overlay / per DB */
+    --biz-loader-accent: #E0218A;         /* the line + the bar; per DB for tenants */
+}
+
+/* ─── 1. Quick: the line ───────────────────────────────────────────────── */
+body:has(.o_loading_indicator)::before,
+body.biz-load-done::before {
     content: '';
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
     height: 3px;
-    z-index: 10500;
+    z-index: 10500;             /* above every layer, modals included */
     pointer-events: none;
-    background:
-        linear-gradient(90deg,
-            transparent 0%,
-            var(--vu-brand-primary, #5A4BB0) 30%,
-            var(--vu-brand-secondary, #0891B2) 50%,
-            var(--vu-brand-primary, #5A4BB0) 70%,
-            transparent 100%) 0 0 / 40% 100% no-repeat,
-        rgba(90, 75, 176, 0.12);
-    opacity: 0;
+    /* The navbar under it is dark/brand-primary, so a primary line would
+       vanish: the line takes the accent — the pink of the mark's arrow. */
+    background: var(--biz-loader-accent);
+    border-radius: 0 3px 3px 0;
+}
+
+/* in flight: race to 72% in under a second, then creep so a long wait still
+   looks alive without ever pretending to be finished */
+body:has(.o_loading_indicator)::before {
+    width: 72%;
     animation:
-        biz-topbar-sweep 1.1s cubic-bezier(0.4, 0.15, 0.6, 0.85) infinite,
-        biz-topbar-in 0.01s linear 350ms forwards;
+        biz-line-run 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both,
+        biz-line-creep 8s 0.9s linear forwards;
 }
 
-@keyframes biz-topbar-sweep {
-    0%   { background-position: -40% 0, 0 0; }
-    100% { background-position: 140% 0, 0 0; }
+/* done (equal specificity, later wins for the frame where both apply): run to
+   the edge, fade */
+body.biz-load-done::before {
+    width: 100%;
+    animation: biz-line-done 0.5s ease-out both;
 }
 
-@keyframes biz-topbar-in {
-    to { opacity: 1; }
+@keyframes biz-line-run   { from { width: 0; }   to { width: 72%; } }
+@keyframes biz-line-creep { from { width: 72%; } to { width: 92%; } }
+@keyframes biz-line-done {
+    0%   { width: 72%;  opacity: 1; }
+    55%  { width: 100%; opacity: 1; }
+    100% { width: 100%; opacity: 0; }
 }
 
-/* 2 ─ Centre-screen logo loader ("Rise", owner decision 2026-10-11).
-
-   The stock bottom-right "Loading" text was being missed. It is now moved
-   to the centre of the viewport and rebuilt from the brand logo:
-     • the span itself      → the pink glow behind the logo's arrow
-     • ::before             → the logo, with a soft light sweeping through
-                              the letters (the logo is both the picture and
-                              the mask, so the sweep only shows inside them)
-     • ::after              → a slim indigo→pink progress line underneath
-     • body::after          → a frosted, click-through scrim behind it all
-   The logo comes from --biz-loader-logo, set by the product overlay
-   (pb_theme → payobook_logo.png). Without it only the line shows.
-   Same 350 ms appearance delay as the top bar: quick calls never flash.
-   Everything is pointer-events:none — the screen behind stays usable. */
-:root { --biz-loader-logo: none; }
-
-body:has(.o_loading_indicator)::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 10498;
-    pointer-events: none;
-    background: var(--biz-loader-scrim, rgba(244, 245, 251, 0.58));
-    -webkit-backdrop-filter: blur(2.5px);
-    backdrop-filter: blur(2.5px);
-    opacity: 0;
-    animation: biz-topbar-in 0.01s linear 350ms forwards;
-}
+/* ─── 1b. Quick, long wait: the mark rises to the centre ───────────────────
+   The stock pill is the trigger and the host: it is moved to the centre,
+   emptied of its look, and rebuilt from the brand mark. It only becomes
+   visible after LONG_WAIT, so an ordinary screen change never shows it.
+     the span   → a soft white halo (no blur, no dimming, click-through)
+     ::before   → the logo, picture AND mask, with a light sweeping through
+                  the letters and a pulse on its top-right corner (the arrow)
+     ::after    → a slim progress line in the accent colour                */
+$biz-long-wait: 2500ms;
 
 .o_loading_indicator {
-    /* neutralise the stock pill — the text node ("Loading", count) is kept
-       for assistive tech but collapsed out of sight */
     position: fixed !important;
     left: 50% !important;
     top: 50% !important;
@@ -94,14 +101,9 @@ body:has(.o_loading_indicator)::after {
     z-index: 10499;
     pointer-events: none;
     opacity: 0;
-    background: none !important;
-    animation: biz-topbar-in 0.01s linear 350ms forwards;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.9) 45%, rgba(255, 255, 255, 0) 72%) !important;
+    animation: biz-fade-in 0.25s ease-out $biz-long-wait forwards;
 }
-
-/* three background layers, all clipped to the logo's own shape by the mask:
-   1. the light sweep through the letters   (position animates)
-   2. a soft white pulse over the arrow      (size animates)
-   3. the logo itself */
 .o_loading_indicator::before {
     content: '';
     position: absolute;
@@ -109,10 +111,6 @@ body:has(.o_loading_indicator)::after {
     right: 0;
     top: 0;
     height: 66px;
-    width: auto;
-    margin: 0;
-    border: 0;
-    border-radius: 0;
     background:
         linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.88) 50%, transparent 70%)
             -200% 0 / 200% 100% no-repeat,
@@ -125,7 +123,6 @@ body:has(.o_loading_indicator)::after {
         biz-loader-sweep 1.6s cubic-bezier(0.4, 0.1, 0.5, 0.9) infinite,
         biz-loader-glow 1.6s ease-in-out infinite;
 }
-
 .o_loading_indicator::after {
     content: '';
     position: absolute;
@@ -136,15 +133,14 @@ body:has(.o_loading_indicator)::after {
     margin-left: -75px;
     border-radius: 999px;
     background:
-        linear-gradient(90deg, var(--vu-brand-primary, #5A4BB0), #E0218A)
+        linear-gradient(90deg, var(--vu-brand-primary, #5A4BB0), var(--biz-loader-accent))
             -100% 0 / 45% 100% no-repeat,
         var(--vu-brand-soft, #DDD6F2);
     animation: biz-loader-bar 1.2s cubic-bezier(0.45, 0.1, 0.55, 0.9) infinite;
 }
 
-/* White-labelled database with no picture of its own (biz_loader_brand.js
-   sets data-biz-loader="text" + --biz-loader-text): the brand NAME is the
-   logo. Same light sweep, clipped to the letters, in the brand colour. */
+/* a white-labelled database with no picture of its own: the brand NAME is the
+   mark (js/biz_loader_brand.js sets data-biz-loader="text" + --biz-loader-text) */
 html[data-biz-loader="text"] .o_loading_indicator::before {
     content: var(--biz-loader-text, "");
     -webkit-mask: none;
@@ -165,21 +161,45 @@ html[data-biz-loader="text"] .o_loading_indicator::before {
     animation: biz-loader-sweep-text 1.6s cubic-bezier(0.4, 0.1, 0.5, 0.9) infinite;
 }
 
-@keyframes biz-loader-sweep {
-    to { background-position: 200% 0, 94% 10%, center; }
+@keyframes biz-fade-in           { to { opacity: 1; } }
+@keyframes biz-loader-sweep      { to { background-position: 200% 0, 94% 10%, center; } }
+@keyframes biz-loader-sweep-text { to { background-position: 200% 0, 0 0; } }
+@keyframes biz-loader-glow       { 50% { background-size: 200% 100%, 96px 96px, contain; } }
+@keyframes biz-loader-bar        { to { background-position: 200% 0, 0 0; } }
+
+/* ─── 2. Filling: the shape of the page ────────────────────────────────────
+   A soft grey block that breathes where a value will land. Flat colour, no
+   shimmer gradient. `.biz-skel` is inline (a value, a label); `.biz-skel-block`
+   is a block (a card, a row, a pane) — give it a height, or let its padding
+   do it. Children are hidden, not removed, so the box keeps its real size. */
+.biz-skel,
+.biz-skel-block {
+    position: relative;
+    border-radius: 6px;
+    background: var(--vuf-bg, #E9EAF3);
+    color: transparent !important;
+    overflow: hidden;
+    animation: biz-breathe 1.1s ease-in-out infinite;
+    pointer-events: none;
 }
-@keyframes biz-loader-sweep-text {
-    to { background-position: 200% 0, 0 0; }
+.biz-skel {
+    display: inline-block;
+    min-width: 6em;
+    max-width: 100%;
+    height: 0.9em;
+    border-radius: 4px;
+    vertical-align: middle;
 }
-@keyframes biz-loader-glow {
-    50% { background-size: 200% 100%, 96px 96px, contain; }
-}
-@keyframes biz-loader-bar {
-    to { background-position: 200% 0, 0 0; }
+.biz-skel-block { display: block; }
+.biz-skel > *, .biz-skel-block > * { visibility: hidden; }
+.biz-skel.w-sm { min-width: 3em; } .biz-skel.w-lg { min-width: 10em; } .biz-skel.w-xl { min-width: 16em; }
+@keyframes biz-breathe {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.45; }
 }
 
-/* 3 ─ Honest blocking: branded card only when the framework blocks the UI
-   (.o_blockUI is already a centered flex column: .o_spinner img + .o_message) */
+/* ─── 3. Honest blocking: a branded card only when the framework itself
+   blocks the UI (.o_blockUI — explicit long operations such as exports) ── */
 .o_blockUI {
     background: rgba(15, 23, 42, 0.35) !important;
     backdrop-filter: blur(2px);
@@ -208,7 +228,7 @@ html[data-biz-loader="text"] .o_loading_indicator::before {
             margin: 0 auto 14px;
             border: 3.5px solid rgba(90, 75, 176, 0.15);
             border-top-color: var(--vu-brand-primary, #5A4BB0);
-            border-right-color: var(--vu-brand-secondary, #0891B2);
+            border-right-color: var(--biz-loader-accent);
             border-radius: 50%;
             animation: biz-spinner-rotate 0.9s cubic-bezier(0.4, 0.15, 0.6, 0.85) infinite;
         }
@@ -219,17 +239,13 @@ html[data-biz-loader="text"] .o_loading_indicator::before {
     to { transform: rotate(360deg); }
 }
 
+/* ─── reduced motion: still line, still mark, still blocks ───────────────── */
 @media (prefers-reduced-motion: reduce) {
-    body:has(.o_loading_indicator)::before {
-        animation: biz-topbar-in 0.01s linear 350ms forwards;
-        background: var(--vu-brand-primary, #5A4BB0);
-    }
-    /* still logo + still line: no sweep, no pulse, no travelling bar */
+    body:has(.o_loading_indicator)::before,
+    body.biz-load-done::before { animation: none; }
+    .o_loading_indicator { animation: biz-fade-in 0.01s linear $biz-long-wait forwards; }
     .o_loading_indicator::before,
-    .o_loading_indicator::after {
-        animation: none;
-    }
-    .o_loading_indicator::after {
-        background: var(--vu-brand-primary, #5A4BB0);
-    }
+    .o_loading_indicator::after { animation: none; }
+    .o_loading_indicator::after { background: var(--biz-loader-accent); }
+    .biz-skel, .biz-skel-block { animation: none; }
 }

@@ -1586,3 +1586,22 @@
     .pbfs-insights .ins-chips { margin-top: 6px; }
     .pbfs-insights .ins-toggle { margin-top: 8px; }
 }
+
+/* Filling moment (loading language, 2026-10-11): the Cards view's own shape
+   while the configuration loads. Blocks come from biz_theme's .biz-skel-block. */
+.pbfs .pbfs-skel {
+    justify-content: flex-start; align-items: stretch; gap: 0; padding: 14px 18px 18px;
+    .sk-top { display: flex; align-items: center; gap: 10px; height: 44px; }
+    .sk-ttl { width: 320px; max-width: 40%; height: 22px; }
+    .sk-tab { width: 72px; height: 28px; border-radius: 9px; }
+    .sk-tab:first-of-type { margin-left: auto; }
+    .sk-work { flex: 1; min-height: 0; margin-top: 12px; display: grid; gap: 18px;
+        grid-template-columns: clamp(280px, 20vw, 380px) minmax(0, 1fr) clamp(340px, 22vw, 420px); }
+    .sk-pane { display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+    .sk-row { height: 34px; border-radius: 9px; }
+    .sk-card { width: 100%; max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+    .sk-hero { height: 110px; border-radius: 18px; }
+    .sk-fx { height: 130px; border-radius: 14px; }
+    .sk-dep { height: 72px; border-radius: 12px; }
+    @media (max-width: 900px) { .sk-work { grid-template-columns: 1fr; } .sk-pane { display: none; } }
+}

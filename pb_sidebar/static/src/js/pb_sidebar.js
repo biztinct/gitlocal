@@ -90,6 +90,13 @@ export class PbSidebar extends Component {
 
         const name = user.name || window.odoo?.session_info?.name || "User";
         this.userName = name;
+        // White label: the brand this database shows (biz_theme resolves it —
+        // explicit app name, else the debrand brand name, else the company).
+        // The badge is its first letter, so a tenant never sees the master
+        // product's mark in the corner.
+        const brand = String(window.odoo?.session_info?.biz_app_name || "Payobook").trim() || "Payobook";
+        this.brandName = brand;
+        this.brandInitial = brand[0].toUpperCase();
         this.userInitials = name.split(" ").filter(Boolean).map(p => p[0]).join("")
             .substring(0, 2).toUpperCase() || "U";
 

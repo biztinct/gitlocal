@@ -26,7 +26,7 @@
         - Developer-mode rail: `?debug=` is honoured for system administrators
           only (kill-switch: biz_theme.debug_rail = off)
     ''',
-    'version': '19.0.2.0.2',
+    'version': '19.0.2.0.3',
     'category': 'Themes/Backend',
     'license': 'LGPL-3',
     'author': 'Biztinct',
@@ -47,8 +47,12 @@
             'biz_theme/static/src/services/theme_loader_service.js',
             # Branded browser-tab title (overrides core title service's "Odoo")
             'biz_theme/static/src/js/biz_title_service.js',
-            # Which logo the centre-screen loader animates (per database)
+            # The loading language (scss/biz_loading.scss): which mark/accent
+            # this database animates, the one-beat hold between request
+            # bursts, and the first-open splash's dismissal
             'biz_theme/static/src/js/biz_loader_brand.js',
+            'biz_theme/static/src/js/biz_loading_hold.js',
+            'biz_theme/static/src/js/biz_splash.js',
             # Core theme
             'biz_theme/static/src/scss/backend.scss',
             'biz_theme/static/src/scss/biz_loading.scss',

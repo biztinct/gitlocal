@@ -174,7 +174,7 @@ class PbTenant(models.Model):
         return (self.billing_email or '').strip() or (self.admin_email or '').strip()
 
     # ------------------------------------------------- ERRORS E4-1, branding
-    def brand_values(self, master_brand=None, master_website=None):
+    def brand_values(self, master_brand=None, master_website=None, master_logo=None):
         """The parameters this customer's database should carry, right now.
 
         A thin read over the pure rules: the RECORDS are resolved here, the
@@ -189,6 +189,7 @@ class PbTenant(models.Model):
             master_brand=master_brand,
             master_website=master_website,
             theme_color=self.brand_color,
+            master_logo=master_logo,
         )
 
     def brand_default_url(self):

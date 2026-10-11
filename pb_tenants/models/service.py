@@ -989,6 +989,12 @@ class PbTenants(models.AbstractModel):
         return (icp.get_param('biz_debrand.brand_name') or '').strip(), \
                (icp.get_param('biz_debrand.brand_website') or '').strip()
 
+    def _master_loader_logo(self):
+        """The master's loading-animation mark, written to a customer only at
+        the default level (brand_rules): read from this database too."""
+        icp = self.env['ir.config_parameter'].sudo()
+        return (icp.get_param('biz_debrand.loader_logo_url') or '').strip()
+
     def _apply_brand_to(self, env, tenant, say):
         """Write one customer's branding into their own registry.
 
@@ -1010,7 +1016,8 @@ class PbTenants(models.AbstractModel):
         """
         master_brand, master_website = self._master_brand()
         values = tenant.brand_values(master_brand=master_brand,
-                                     master_website=master_website)
+                                     master_website=master_website,
+                                     master_logo=self._master_loader_logo())
         icp = env['ir.config_parameter'].sudo()
         for key in BRAND_KEYS:
             value = values.get(key, '')
@@ -2462,7 +2469,8 @@ class PbTenants(models.AbstractModel):
             raise UserError(_('Tenant not found.'))
         master_brand, master_website = self._master_brand()
         wanted = t.brand_values(master_brand=master_brand,
-                                master_website=master_website)
+                                master_website=master_website,
+                                master_logo=self._master_loader_logo())
         title, blurb = t.brand_summary(master_brand=master_brand)
         live, reachable = {}, False
         try:

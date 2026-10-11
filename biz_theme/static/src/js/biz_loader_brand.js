@@ -27,12 +27,19 @@ export function applyLoaderBrand(doc = document) {
     const logo = meta("biz-loader-logo");
     const brand = meta("biz-brand");
     const product = meta("biz-brand-product");
+    const color = meta("biz-brand-color");
+    const white = !!(brand && product && brand.toLowerCase() !== product.toLowerCase());
+    // a white-labelled tenant's accent (the top line, the progress bar) is
+    // its own brand colour; the master product keeps the compiled accent
+    if (white && /^#[0-9a-f]{6}$/i.test(color)) {
+        root.style.setProperty("--biz-loader-accent", color);
+    }
     if (logo) {
         root.style.setProperty("--biz-loader-logo", `url("${logo.replace(/"/g, "%22")}")`);
         root.dataset.bizLoader = "image";
         return "image";
     }
-    if (brand && product && brand.toLowerCase() !== product.toLowerCase()) {
+    if (white) {
         root.style.setProperty("--biz-loader-logo", "none");
         root.style.setProperty("--biz-loader-text", JSON.stringify(brand));
         root.dataset.bizLoader = "text";

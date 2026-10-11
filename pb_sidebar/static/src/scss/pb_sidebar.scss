@@ -144,3 +144,19 @@ body.has-pb-sidebar {
 
 // Tighten the control panel a touch so content lines up under the navbar
 body.has-pb-sidebar .o_action_manager { background: var(--pb-bg, #F4F5FB); }
+
+// The "Quick" moment of the loading language (2026-10-11): while a screen
+// loads (the stock indicator element is in the DOM) the brand mark in the
+// corner beats once. Same trigger as the top line in
+// biz_theme/static/src/scss/biz_loading.scss.
+body:has(.o_loading_indicator) .pb-sidebar .pb-sidebar-logo {
+    animation: pb-brand-beat 0.7s ease-in-out both;
+}
+@keyframes pb-brand-beat {
+    0%, 100% { transform: scale(1); }
+    30%      { transform: scale(1.22); }
+    55%      { transform: scale(0.96); }
+}
+@media (prefers-reduced-motion: reduce) {
+    body:has(.o_loading_indicator) .pb-sidebar .pb-sidebar-logo { animation: none; }
+}

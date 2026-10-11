@@ -267,3 +267,13 @@ class TestTheTenantRecordAndTheCockpit(TransactionCase):
                 "provisioning must set the parameters directly, never call "
                 "biz_debrand's Save handler on a customer",
             )
+
+    def test_20_the_loading_mark_is_ours_only_where_the_brand_is_ours(self):
+        """The loading animation's picture follows the level: the master's
+        mark at the default level, nothing on either level that carries the
+        customer's name — biz_theme then animates THEIR name or THEIR upload."""
+        logo = "/pb_theme/static/src/img/payobook_logo.png"
+        self.assertEqual(_params(LEVEL_PRODUCT, master_logo=logo)["biz_debrand.loader_logo_url"], logo)
+        self.assertEqual(_params(LEVEL_POWERED, master_logo=logo)["biz_debrand.loader_logo_url"], "")
+        self.assertEqual(_params(LEVEL_WHITE, master_logo=logo)["biz_debrand.loader_logo_url"], "")
+        self.assertIn("biz_debrand.loader_logo_url", BRAND_KEYS)

@@ -35,6 +35,8 @@
                  is animated as text; otherwise the compiled product default. -->
             <meta name="biz-loader-logo"
                   t-att-content="request and request.env['ir.config_parameter'].sudo().get_param('biz_debrand.loader_logo_url')"/>
+            <meta name="biz-brand-color"
+                  t-att-content="request and request.env['ir.config_parameter'].sudo().get_param('biz_debrand.theme_color')"/>
         </xpath>
     </template>
 </odoo>

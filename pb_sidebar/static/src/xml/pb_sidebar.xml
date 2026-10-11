@@ -4,9 +4,12 @@
 <t t-name="pb_sidebar.PbSidebar">
     <aside class="pb-sidebar biz-sidebar" t-att-class="{ 'biz-sb-calm': state.calm }" t-if="state.visible" t-on-mouseleave="() => { this.state.calm = false; }">
         <div class="pb-sidebar-brand biz-sidebar-brand" t-on-click="navigateHome">
-            <div class="pb-sidebar-logo">P</div>
+            <!-- White label (2026-10-11): the mark and the name are this
+                 database's brand (session_info.biz_app_name), never a
+                 hard-coded letter — a tenant's sidebar reads "R / Rize". -->
+            <div class="pb-sidebar-logo" t-esc="brandInitial"/>
             <div class="pb-brand-tx biz-sidebar-label">
-                <div class="pb-brand-nm">Payobook</div>
+                <div class="pb-brand-nm" t-esc="brandName"/>
                 <div class="pb-brand-sub">Payroll Suite</div>
             </div>
             <button class="pb-side-toggle biz-sidebar-toggle biz-sidebar-label"
@@ -59,7 +62,7 @@
             <div class="pb-user-av" t-esc="userInitials"/>
             <div class="pb-user-meta biz-sidebar-label">
                 <div class="pb-user-nm" t-esc="userName"/>
-                <div class="pb-user-ro">Payobook</div>
+                <div class="pb-user-ro" t-esc="brandName"/>
             </div>
         </div>
     </aside>

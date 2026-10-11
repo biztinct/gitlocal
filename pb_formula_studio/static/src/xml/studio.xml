@@ -4,7 +4,16 @@
   <t t-name="pb_formula_studio.PbFormulaStudio">
     <div class="pbfs">
       <!-- loading -->
-      <div t-if="!state.loaded" class="pbfs-loading"><div class="pbfs-spinner"/><span>Loading Formula Studio…</span></div>
+      <!-- Filling moment of the loading language: the shape of the Cards view,
+           breathing, while the configuration is fetched — never a spinner. -->
+      <div t-if="!state.loaded" class="pbfs-loading pbfs-skel" aria-busy="true" aria-label="Loading">
+        <div class="sk-top"><span class="biz-skel-block sk-ttl"/><span class="biz-skel-block sk-tab"/><span class="biz-skel-block sk-tab"/><span class="biz-skel-block sk-tab"/><span class="biz-skel-block sk-tab"/></div>
+        <div class="sk-work">
+          <div class="sk-pane"><t t-foreach="[1,2,3,4,5,6,7,8,9,10]" t-as="i" t-key="i"><span class="biz-skel-block sk-row"/></t></div>
+          <div class="sk-card"><span class="biz-skel-block sk-hero"/><span class="biz-skel-block sk-fx"/><span class="biz-skel-block sk-dep"/></div>
+          <div class="sk-pane"><t t-foreach="[1,2,3,4,5,6,7,8,9,10]" t-as="i" t-key="i"><span class="biz-skel-block sk-row"/></t></div>
+        </div>
+      </div>
 
       <!-- empty -->
       <div t-elif="state.empty" class="pbfs-empty-state">
