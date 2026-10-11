@@ -60,16 +60,11 @@ class TestWelcomeCard(TransactionCase):
         cls.scss = _read(COACH_SCSS)
 
     # -- the boundary between the two greetings -----------------------------
-    def test_01_the_two_greetings_cannot_both_fire(self):
-        """One returns unless the session is a demo one; the other returns
-        unless the DATABASE is not the demo world. Nobody can be shown both,
-        and that is a property of the code rather than of an agreement between
-        two functions."""
-        greet = self.code.split('export async function maybeGreet')[1]
-        self.assertIn('if (!isDemo) {', greet,
-                      "the demo greeting no longer stands down for a real tenant")
-        welcome = self.code.split('export async function maybeWelcome')[1] \
-                           .split('export async function maybeGreet')[0]
+    def test_01_the_card_never_reaches_a_demo_session(self):
+        """It returns unless the DATABASE is not the demo world, and again for
+        any demo user. (The demo world has no sign-in greeting at all since
+        2026-10-12 — demo users land on Home.)"""
+        welcome = self.code.split('export async function maybeWelcome')[1]
         self.assertIn('if (demoWorld) {', welcome,
                       "the welcome card does not stand down on the demo world")
         self.assertIn('await user.hasGroup(DEMO_GROUP)', welcome,
@@ -108,11 +103,10 @@ class TestWelcomeCard(TransactionCase):
 
     # -- it offers, it does not start ---------------------------------------
     def test_03_the_card_offers_and_never_autoplays(self):
-        """Same ruling as the demo greeting: a greeting has no business
+        """A greeting has no business
         deciding somebody has two minutes right now. The walkthrough starts
         only from the press, and only in `watch`."""
-        welcome = self.code.split('export async function maybeWelcome')[1] \
-                           .split('export async function maybeGreet')[0]
+        welcome = self.code.split('export async function maybeWelcome')[1]
         self.assertIn('const choice = await askWelcome(hiring);', welcome,
                       "the card starts something before it is answered")
         self.assertIn("if (choice === \"go\" && sc) {", welcome,
@@ -131,10 +125,8 @@ class TestWelcomeCard(TransactionCase):
                       "the answer is not recorded, so the card comes back")
         self.assertIn('if (ls(WELCOME_ANSWERED)) {', self.code,
                       "the recorded answer is not read")
-        # It must not share the demo greeting's keys: the two systems have to
-        # be able to disagree about whether they have greeted.
-        welcome = self.code.split('export async function maybeWelcome')[1] \
-                           .split('export async function maybeGreet')[0]
+        # The retired demo greeting's keys must not come back through here.
+        welcome = self.code.split('export async function maybeWelcome')[1]
         for key in ('LOGIN_KEY', 'SESSION_KEY'):
             self.assertNotIn('setLs(%s' % key, welcome,
                              "the welcome card writes the demo greeting's flag")
@@ -159,8 +151,7 @@ class TestWelcomeCard(TransactionCase):
         screen in the product."""
         # Stripped copy, like every other assertion here: a COMMENT that
         # says "catch" must not satisfy a check about failure paths.
-        welcome = self.code.split('export async function maybeWelcome')[1] \
-                          .split('export async function maybeGreet')[0]
+        welcome = self.code.split('export async function maybeWelcome')[1]
         self.assertGreaterEqual(welcome.count('catch'), 2,
                                 "the welcome card has unguarded failure paths")
         self.assertIn('return false;', welcome.rsplit('catch', 1)[1],
@@ -171,8 +162,7 @@ class TestWelcomeCard(TransactionCase):
         who only hire and to people who are only employees. Both facts come from
         the server on the session (the same rules as their menu and first
         screen); the card reads them and never decides them itself."""
-        welcome = self.code.split('export async function maybeWelcome')[1] \
-                           .split('export async function maybeGreet')[0]
+        welcome = self.code.split('export async function maybeWelcome')[1]
         self.assertIn('if (session.pb_employee_only) {', welcome,
                       "an employee-only person is still offered a tour")
         self.assertLess(welcome.index('if (session.pb_employee_only) {'),

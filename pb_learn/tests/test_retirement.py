@@ -49,10 +49,6 @@ from .common import lessons, load_content
 # that enforces its absence. Same trick as the D1 sudo-token test.
 RETIRED = 'pb' + '_coach'
 
-# The two flags first_login.js is allowed — required — to read, and the only
-# place in the module where the retired name may appear in CODE.
-LEGACY_FLAGS = (RETIRED + '_login_seen', RETIRED + '_welcomed')
-
 # The old tour ids and the scenario each became. This IS the port, written down
 # where a test can check it: a tour whose successor was never written is a
 # retirement that lost a feature rather than moving it.
@@ -265,86 +261,25 @@ class TestRetirementSeams(TransactionCase):
         orphans = [key for key in engine._KNOWN_LESSONS if key not in carried]
         self.assertFalse(orphans, "lessons PayAI offers that no station carries: %s" % orphans)
 
-    # -- the first-login greeting ------------------------------------------
-    def test_09_the_greeting_is_demo_gated(self):
-        self.assertIn('pb_demo.group_payobook_demo', self.first_login,
-                      "the first-login greeting is not gated on the demo group")
+    # -- no sign-in greeting -----------------------------------------------
+    def test_09_signing_in_never_opens_the_journey(self):
+        """Owner, 2026-10-12: demo users land on Home, not on Learn.
 
-    def test_10_the_greeting_still_stands_down_for_a_stale_install(self):
-        """The one seam that has to outlive the deletion.
-
-        Deleting the files does not uninstall the module from a live database,
-        so between the upgrade and the uninstall a browser can still hold a
-        flag from this morning's login. The stand-down reads BOTH flags by
-        their literal names — and reads them with an expiry, which is the part
-        that matters after the uninstall: a truthiness test on a localStorage
-        string that survives the module would suppress the greeting forever, on
-        every profile that ever saw the old tour, with nothing to point at.
+        The demo greeting that opened the Journey map on every sign-in is
+        gone. Its retired module's localStorage flags went with it: nothing in
+        first_login.js reads or writes them, and the Coach (mounted on every
+        screen) calls no greeting that navigates.
         """
-        for flag in LEGACY_FLAGS:
-            self.assertIn(flag, self.first_login,
-                          "the stand-down no longer reads %s" % flag)
-        self.assertIn('coachGreeted', self.first_login)
-        self.assertIn('coachPresent(env)', self.first_login,
-                      "the stand-down does not check that the module is still installed")
-        self.assertIn('ls(COACH_LOGIN_KEY) === loginKey', self.first_login,
-                      "the stand-down compares a stale flag by truthiness, not by login")
-        # Reading is the whole contract. A write would make this module
-        # responsible for another module's bookkeeping — one that is not here.
-        for flag in LEGACY_FLAGS:
-            for write in ('setLs(%s' % flag, 'setSs(%s' % flag,
-                          'setItem("%s"' % flag, "setItem('%s'" % flag):
-                self.assertNotIn(write, self.first_login,
-                                 "pb_learn writes the retired module's flag %s" % flag)
-
-    def test_11_the_greeting_opens_the_map_and_never_a_lesson(self):
-        """"Start here" is a POINT, not a play button.
-
-        The retired tour auto-STARTED a spotlight on first login. Its successor
-        opens the map with a pulse and stops — and note that Phase 1b did NOT
-        change this even though `sc_welcome` now exists and could be autoplayed
-        into somebody's first thirty seconds. A greeting has no business
-        deciding somebody has eight minutes right now; the scenario is on the
-        map and in the Coach, one press away, chosen.
-        """
-        self.assertIn('additionalContext: { suggest: "LW" }', self.first_login,
-                      "the greeting does not point at LW")
-        # Asserted on the PAYLOAD, not on the word: the prose above it explains
-        # the difference between `suggest` and `lesson`, and a bare substring
-        # test would fail on its own documentation.
-        self.assertNotIn('additionalContext: { lesson', self.first_login,
-                         "the greeting deep-links a LESSON — that auto-plays it")
-        self.assertNotIn('additionalContext: { scenario', self.first_login,
-                         "the greeting deep-links a SCENARIO — that auto-plays it")
-        self.assertIn('lrn-pulse', _read('pb_learn', 'static/src/journey/journey.scss') or '',
-                      "there is no pulse for the greeting to draw")
-
-    def test_12_the_greeting_is_once_per_login(self):
-        """Same mechanism as the retired tour's: keyed to login_date, so a
-        logout and a fresh login re-greets and a page refresh does not nag."""
-        self.assertIn('login_date', self.first_login)
-        self.assertIn('pbLearnLoginSeen', self.first_login)
-        # Split on the FULL assignment: splitting on the NAME alone leaves the
-        # VALUE at the head of the tail, so the assertion matched its own
-        # constant and could never have passed.
-        tail = self.first_login.split(
-            'const COACH_SESSION_KEY = "%s";' % LEGACY_FLAGS[1])[1]
-        code = _strip_comments(tail)
-        self.assertNotIn(RETIRED + '_', code,
-                         "the retired module's key names leak past the two "
-                         "read-only constants")
-
-    def test_13_the_greeting_cannot_break_the_product(self):
-        """It runs inside the Coach's onMounted, and the Coach is on every
-        screen. Every failure path returns false."""
-        body = self.first_login.split('export async function maybeGreet')[1]
-        # TWO: an outer try that covers the whole function, and an inner one
-        # around the login_date read, which has its own fallback. The outer one
-        # is what makes this safe to call from the Coach's onMounted.
-        self.assertGreaterEqual(body.count('catch'), 2,
-                                "the greeting has unguarded failure paths")
-        self.assertTrue(body.rstrip().endswith('return false;\n    }\n}'),
-                        "maybeGreet does not end in a catch that returns false")
+        code = _strip_comments(self.first_login)
+        self.assertNotIn('maybeGreet', code, "the demo sign-in greeting is back")
+        self.assertNotIn('doAction', code,
+                         "first_login.js navigates somewhere on sign-in")
+        self.assertNotIn('action_learn_journey', code)
+        for flag in (RETIRED + '_login_seen', RETIRED + '_welcomed'):
+            self.assertNotIn(flag, code,
+                             "first_login.js still touches the retired flag %s" % flag)
+        self.assertNotIn('maybeGreet', _strip_comments(self.coach_js),
+                         "the Coach still calls the demo sign-in greeting")
 
     # -- the launcher stack ------------------------------------------------
     def test_14_the_launcher_renders_in_both_deploy_states(self):

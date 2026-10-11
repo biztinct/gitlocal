@@ -1,31 +1,21 @@
 /** @odoo-module **/
 /* =============================================================================
-   The demo world's first-login greeting, and the launcher stack.
+   The real-tenant welcome card, and the launcher stack.
 
-   TWO JOBS, both of which used to belong to pb_coach's overlay, and both of
-   which are chrome rather than content — which is why they live in their own
+   Both used to belong to pb_coach's overlay, and both are chrome rather than
+   content — which is why they live in their own
    file instead of growing the Coach.
 
-   1. GREET A DEMO USER ONCE PER LOGIN.
-      pb_coach auto-STARTED the hero_path spotlight on first login. Its
-      successor deliberately does less: it opens the Journey MAP with a "Start
-      here" pulse on LW and stops. The difference is the whole argument. An
-      overlay that begins moving before you have read anything is the thing
-      people learn to dismiss; a map that is open with one card pointed at is an
-      invitation you can accept, ignore, or come back to — and every one of
-      those is a legitimate answer on somebody's first thirty seconds in a
-      product they are evaluating.
-
-      Same mechanism as pb_coach's, deliberately: keyed to the user's
-      `login_date`, so a logout→login re-greets and a page refresh does not
-      nag, with a per-tab-session fallback when login_date is unreadable.
+   1. NO DEMO GREETING ANY MORE  (owner, 2026-10-12).
+      This file used to open the Journey map on every demo sign-in, keyed to
+      `login_date`. That pulled people off their own first screen: a demo user
+      lands on Home (their `action_id`, set by pb_demo_portal), and Learn stays
+      one press away on the rail. Nothing here navigates on sign-in now.
 
    2. COEXISTENCE, UNTIL pb_coach IS UNINSTALLED.
-      Both modules are installed during the transition, and two greetings on one
-      login is worse than either. So this checks pb_coach's OWN flags — the
-      exact key names its overlay writes — and stands down if the hero tour has
-      already greeted this login. It never writes pb_coach's flags; it only
-      reads them.
+      The only part of the coexistence work still needed is the launcher
+      offset below; the greeting that had to stand down for pb_coach's own
+      hero tour is gone, so pb_coach's localStorage flags are no longer read.
 
    3. THE LAUNCHER STACK is the same coexistence question in CSS. Three controls
       share the bottom-right corner while pb_coach is installed and two once it
@@ -35,33 +25,18 @@
       where the corner is wrong.
 
    4. GREET A REAL TENANT ONCE, EVER  (LEARNOS Phase 3).
-      The demo greeting above is for somebody evaluating a product. A brand-new
-      tenant admin is somebody who has just bought one, and the two deserve
-      different first thirty seconds: theirs is a small centred card that OFFERS
-      the welcome walkthrough and takes "Later" for an answer. Same ruling as
-      the demo greeting — it does not start anything by itself.
+      A brand-new tenant admin is somebody who has just bought the product.
+      Their first thirty seconds is a small centred card that OFFERS the
+      welcome walkthrough and takes "Later" for an answer. It does not start
+      anything by itself.
 
-      The two are mutually exclusive by construction: `maybeGreet` returns
-      unless the session is a demo one, `maybeWelcome` returns unless the
-      database is NOT the demo world. Nobody can be shown both.
+      `maybeWelcome` returns on the demo world and for any demo user, so a
+      demo session never sees it.
    ========================================================================== */
 import { user } from "@web/core/user";
 import { session } from "@web/session";
 
 import { T, esc, ic } from "../engine/runtime";
-
-/* pb_learn's own flags. Namespaced separately from pb_coach's on purpose: the
-   two systems must be able to disagree about whether they have greeted, and
-   sharing a key would make uninstalling pb_coach silently re-greet everybody. */
-const LOGIN_KEY = "pbLearnLoginSeen";
-const SESSION_KEY = "pbLearnWelcomed";
-
-/* pb_coach's flags, READ ONLY. These are the literal names its overlay writes
-   (coach_overlay.js `_get`/`_put`/`_sess` prefix "pb_coach_"). If they move,
-   the worst case is a demo user who is greeted twice on one login while both
-   modules are installed — not an error, and it disappears at uninstall. */
-const COACH_LOGIN_KEY = "pb_coach_login_seen";
-const COACH_SESSION_KEY = "pb_coach_welcomed";
 
 const DEMO_GROUP = "pb_demo.group_payobook_demo";
 
@@ -71,8 +46,7 @@ const DEMO_GROUP = "pb_demo.group_payobook_demo";
      ANSWERED  permanent. Set the moment somebody presses either button, and
                never read again after that. "Later" is a real answer and this
                is what makes the card take it.
-     LOGIN     the once-per-login machinery the demo greeting already uses. It
-               is what stops a page refresh re-asking somebody who has not
+     LOGIN     once-per-login, keyed to `login_date`. It is what stops a page refresh re-asking somebody who has not
                answered yet, while still offering the card again tomorrow to
                somebody who closed the tab on it.
 
@@ -256,8 +230,8 @@ function askWelcome(hiring) {
  *
  *  Returns false in every case that is not "a real (non-demo) database, a
  *  session that has not answered this card, and a login this card has not
- *  already been offered on". Never throws: like the demo greeting it runs
- *  inside the Coach's onMounted, and the Coach is on every screen.
+ *  already been offered on". Never throws: it runs inside the Coach's
+ *  onMounted, and the Coach is on every screen.
  *
  *  `demoWorld` comes from the SERVER — `learn.runtime.bootstrap`, which asks
  *  the same question `learn.live` asks of a capstone. It is deliberately a
@@ -270,9 +244,8 @@ export async function maybeWelcome(env, orm, sc, demoWorld) {
         if (demoWorld) {
             return false;
         }
-        // Belt and braces, and it costs one cached call: the group is how the
-        // demo greeting decides, so asking it here too makes the two branches
-        // provably disjoint rather than disjoint-by-agreement.
+        // Belt and braces, and it costs one cached call: a demo user on a
+        // database that is not the demo world still never sees the card.
         if (await user.hasGroup(DEMO_GROUP)) {
             return false;
         }
@@ -314,79 +287,6 @@ export async function maybeWelcome(env, orm, sc, demoWorld) {
         }
         return true;
     } catch {
-        return false;
-    }
-}
-
-/** Open the Journey once per login for demo users, with LW pointed at.
- *
- *  Returns quietly in every case that is not "a demo user who has not been
- *  greeted on this login and whom pb_coach has not already greeted". Never
- *  throws: it runs inside the Coach's onMounted, and the Coach is on every
- *  screen in the product.
- */
-export async function maybeGreet(env, orm, action) {
-    try {
-        const isDemo = await user.hasGroup(DEMO_GROUP);
-        if (!isDemo) {
-            return false;
-        }
-
-        let loginKey = "";
-        try {
-            const rows = await orm.read("res.users", [user.userId], ["login_date"]);
-            loginKey = rows && rows[0] ? String(rows[0].login_date || "") : "";
-        } catch {
-            loginKey = "";
-        }
-
-        // pb_coach got there first ON THIS LOGIN — stand down, and record that
-        // we consider this login greeted so we do not fire the moment the hero
-        // tour is dismissed.
-        //
-        // THREE conditions, and the last two are the fix for a bug that would
-        // only have appeared after the uninstall. `pb_coach_login_seen` is a
-        // localStorage string that SURVIVES pb_coach being removed: a truthiness
-        // test on it would have suppressed this greeting forever, on every
-        // browser profile that ever saw the hero tour, with nothing to point at.
-        // So: pb_coach has to still be INSTALLED (the service), and its flag has
-        // to name THIS login rather than some login last March. The
-        // session-storage flag needs no date — sessionStorage dies with the tab.
-        const coachGreeted = coachPresent(env)
-            && ((!!loginKey && ls(COACH_LOGIN_KEY) === loginKey)
-                || ss(COACH_SESSION_KEY) === "1");
-
-        if (coachGreeted) {
-            // Match pb_coach's own bookkeeping so this login counts as done.
-            if (loginKey) {
-                setLs(LOGIN_KEY, loginKey);
-            } else {
-                setSs(SESSION_KEY, "1");
-            }
-            return false;
-        }
-
-        const seen = loginKey ? ls(LOGIN_KEY) : (ss(SESSION_KEY) === "1" ? "s" : "");
-        const fresh = (loginKey && loginKey !== seen) || (!loginKey && seen !== "s");
-        if (!fresh) {
-            return false;
-        }
-        if (loginKey) {
-            setLs(LOGIN_KEY, loginKey);
-        } else {
-            setSs(SESSION_KEY, "1");
-        }
-
-        // The map, with a pulse. NOT a lesson: `suggest` points, `lesson`
-        // opens, and a greeting has no business deciding that somebody has
-        // eight minutes right now.
-        await action.doAction("pb_learn.action_learn_journey", {
-            additionalContext: { suggest: "LW" },
-        });
-        return true;
-    } catch {
-        // A greeting that breaks the product it is greeting you into is worse
-        // than no greeting.
         return false;
     }
 }

@@ -48,7 +48,7 @@ import { gtx, glossaryOpen, setGlossary, installGlossary, closeGlossary }
 import { loadContent, composeScreens } from "../content/content_loader";
 import { flashRing } from "../engine/spotlight";
 import { calcHTML, calcKpiHTML } from "../engine/visuals";
-import { markLauncherStack, maybeGreet, maybeWelcome } from "./first_login";
+import { markLauncherStack, maybeWelcome } from "./first_login";
 import { registerLessonRows } from "../hub/learn_palette";
 /* LEARN REFRESH step 1 — where the learner is, published by the hubs, and the
    one module that turns a screen into a place (engine/places.js). The rail's
@@ -328,12 +328,10 @@ export class CoachHost extends Component {
             // live in first_login.js; neither can throw, and neither is allowed
             // to delay the drawer.
             markLauncherStack(this.env);
-            // TWO first-run greetings, one database each. The demo world gets
-            // the Journey map with a pulse; a real tenant gets the welcome
-            // card. Neither can fire on the other's database, and a bundle
-            // that failed to load gets neither — the card would otherwise
-            // render its own chrome keys as its text.
-            maybeGreet(this.env, this.orm, this.action);
+            // A real tenant gets the welcome card. The demo world gets no
+            // sign-in greeting (owner, 2026-10-12): demo users land on Home,
+            // not on the Journey. A bundle that failed to load gets no card —
+            // it would otherwise render its own chrome keys as its text.
             if (this.bundle) {
                 maybeWelcome(this.env, this.orm, this.sc, this.bundle.demo_world);
             }

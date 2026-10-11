@@ -344,11 +344,13 @@ class DemoPortal(http.Controller):
                 gids.append(g.id)
         if gids:
             user_vals['group_ids'] = [(6, 0, gids)]
-        # Land on the Payroll dashboard right after login (not Discuss) so the
-        # guided tour starts instantly on the command centre.
-        dash = env.ref('pb_dashboard.action_pb_dashboard', raise_if_not_found=False)
-        if dash:
-            user_vals['action_id'] = dash.id
+        # Land on Home (opens on Pulse) right after login, not Discuss or the
+        # learning journey (owner, 2026-10-12). The bare Dashboard action is
+        # the fallback for a database without the Home hub.
+        home = (env.ref('pb_home_hub.action_pb_home_hub', raise_if_not_found=False)
+                or env.ref('pb_dashboard.action_pb_dashboard', raise_if_not_found=False))
+        if home:
+            user_vals['action_id'] = home.id
         user = Users.create(user_vals)
         # One of the six demo divisions, round-robin, so this prospect's live
         # capstone drives a June run nobody else is driving. Assigned here
