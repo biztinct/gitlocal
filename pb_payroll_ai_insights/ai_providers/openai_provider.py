@@ -88,6 +88,36 @@ class OpenAIProvider(BaseAIProvider):
         """Check if OpenAI is available."""
         return bool(self.api_key)
 
+    def generate_tools(self, messages, tools, max_tokens=300, temperature=0.0):
+        """PAYAI P1 — `tools=[…], tool_choice="auto"`; first call only."""
+        client = self._get_client()
+        oa_messages = []
+        for msg in messages:
+            role = msg.get('role', 'user')
+            if role not in ('system', 'user', 'assistant'):
+                role = 'user'
+            oa_messages.append({'role': role, 'content': msg.get('content', '')})
+        response = client.chat.completions.create(
+            model=self.model,
+            messages=oa_messages,
+            tools=[{'type': 'function', 'function': {
+                'name': t['name'], 'description': t.get('description', ''),
+                'parameters': t.get('parameters') or {'type': 'object', 'properties': {}},
+            }} for t in tools],
+            tool_choice='auto',
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+        calls = getattr(response.choices[0].message, 'tool_calls', None) or []
+        if not calls:
+            return None
+        fn = calls[0].function
+        try:
+            args = json.loads(fn.arguments or '{}')
+        except (TypeError, ValueError):
+            args = {}
+        return {'tool_name': fn.name, 'arguments': args if isinstance(args, dict) else {}}
+
     # --- Vision (document OCR) — additive, C18.6 -------------------------
     def supports_vision(self):
         return True

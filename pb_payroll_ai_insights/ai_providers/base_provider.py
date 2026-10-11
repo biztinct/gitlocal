@@ -75,6 +75,23 @@ class BaseAIProvider(ABC):
         """Check if provider is available and configured."""
         return True
 
+    # --- Tool calling (PAYAI P1) -----------------------------------------
+    def generate_tools(self, messages, tools, max_tokens=300, temperature=0.0):
+        """Let the model pick ONE tool, or none.
+
+        Args:
+            messages (list): ``[{'role', 'content'}]`` — already redacted.
+            tools (list): provider-neutral ``[{'name', 'description',
+                'parameters': <JSON schema>}]``.
+
+        Returns:
+            dict ``{'tool_name': str, 'arguments': dict}`` or None when the
+            model chose no tool (or this provider cannot call tools). The
+            caller validates the name against the tools it offered and treats
+            every argument as untrusted text.
+        """
+        return None
+
     # --- Vision (document OCR) — additive, C18.6 -------------------------
     def supports_vision(self):
         """Whether this provider can read images / documents. Default False."""

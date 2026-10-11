@@ -139,8 +139,14 @@ class PayrollAIConversation(models.Model):
 
         return session
 
-    def add_message(self, role, content, chart_config=None, insights=None, intent=None):
-        """Add a message to the conversation."""
+    def add_message(self, role, content, chart_config=None, insights=None, intent=None,
+                    card=None):
+        """Add a message to the conversation.
+
+        `card` (PAYAI P1) is the command card an answer carries — its own
+        column, never `chart_config`, which feeds the chart renderer and
+        pin-to-dashboard.
+        """
         self.ensure_one()
         return self.env['payroll.ai.message'].create({
             'conversation_id': self.id,
@@ -149,6 +155,7 @@ class PayrollAIConversation(models.Model):
             'chart_config': json.dumps(chart_config) if chart_config else False,
             'insights': json.dumps(insights) if insights else False,
             'intent': intent or False,
+            'card': json.dumps(card, default=str) if card else False,
         })
 
     def get_history(self, limit=20):
@@ -163,6 +170,7 @@ class PayrollAIConversation(models.Model):
                 'insights': json.loads(msg.insights) if msg.insights else [],
                 'timestamp': msg.create_date.isoformat() if msg.create_date else '',
                 'intent': msg.intent or '',
+                'card': msg._card_dict(),
             }
             for msg in messages
         ]
@@ -220,13 +228,16 @@ class PayrollAIConversation(models.Model):
     # --- RPC methods called from frontend ---
 
     @api.model
-    def rpc_send_message(self, message, session_id=None, screen=None):
+    def rpc_send_message(self, message, session_id=None, screen=None, resolve=None):
         """
         RPC endpoint for the chat widget.
 
         Args:
             message (str): User's message
             session_id (int): Optional session ID to continue conversation
+            resolve (dict): PAYAI P1 — a chip / follow-up answering a PayAI
+                card: `{task_id, slot, value, action?}`. Passed to the engine
+                untouched; the command path validates every part of it.
 
         Returns:
             dict: AI response with chart config
@@ -257,7 +268,8 @@ class PayrollAIConversation(models.Model):
             message,
             conversation_history=history[:-1],  # Exclude the message we just added
             context={'user_id': self.env.user.id, 'screen': screen,
-                     'conversation_id': session.id},
+                     'conversation_id': session.id,
+                     'payai_resolve': resolve if isinstance(resolve, dict) else None},
         )
 
         # Save assistant response
@@ -267,6 +279,7 @@ class PayrollAIConversation(models.Model):
             chart_config=result.get('chart'),
             insights=result.get('insights'),
             intent=result.get('intent'),
+            card=result.get('card'),
         )
 
         return {
@@ -278,6 +291,7 @@ class PayrollAIConversation(models.Model):
             'intent': result.get('intent', ''),
             'drilldown_model': result.get('drilldown_model', ''),
             'action': result.get('action'),
+            'card': result.get('card'),
         }
 
     @api.model
@@ -487,3 +501,21 @@ class PayrollAIMessage(models.Model):
         string='Intent',
         help='Classified intent: payroll_data, payroll_knowledge, general',
     )
+
+    # PAYAI P1 — the command card this answer carried (JSON), so a reloaded
+    # chat redraws it. Its own column: `chart_config` feeds the chart
+    # renderer and pin-to-dashboard and must never hold anything else.
+    card = fields.Text(
+        string='PayAI card',
+        help='JSON card for a PayAI command answer (open, show, refuse, ask).',
+    )
+
+    def _card_dict(self):
+        self.ensure_one()
+        if not self.card:
+            return None
+        try:
+            data = json.loads(self.card)
+        except (TypeError, ValueError):
+            return None
+        return data if isinstance(data, dict) else None

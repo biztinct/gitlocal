@@ -183,7 +183,9 @@ export class AiInsightChat extends Component {
                 model: "payroll.ai.conversation",
                 method: "rpc_send_message",
                 args: [text, this.state.sessionId, this._currentScreen()],
-                kwargs: {},
+                // PAYAI P1 — a chip answering a PayAI card rides along here
+                // (`pb_payai_actions` fills it; plain questions send nothing).
+                kwargs: this._extraSendKwargs(),
             }, { silent: true });  // suppress Odoo's global spinner — we show typing dots
 
             this.state.sessionId = result.session_id;
@@ -198,6 +200,9 @@ export class AiInsightChat extends Component {
                 drillDownModel: result.drilldown_model || "",
                 intent: result.intent || "",
                 action: result.action || null,
+                // PAYAI P1 — the command card (open / show / refuse / ask).
+                card: result.card || null,
+                fresh: !!result.card,
                 timestamp: new Date().toISOString(),
             });
             if (this.state.ttsOn) {
@@ -217,6 +222,12 @@ export class AiInsightChat extends Component {
 
         this.state.isLoading = false;
         this._scrollToBottom();
+    }
+
+    /** Extra keyword arguments for `rpc_send_message`. None by default;
+     *  `pb_payai_actions` patches this to send a chip's answer. */
+    _extraSendKwargs() {
+        return {};
     }
 
     // Current cockpit, sent with each message so the AI can answer "how do I do

@@ -13,7 +13,10 @@
     # deploy: a code change with no version bump is invisible to it).
     # 19.0.3.4.0 — LEARN v3: the chat is also drawn inside the helper drawer
     # (Ask tab); the floating pill stands down when that helper is installed.
-    'version': '19.0.3.11.0',
+    # 19.0.3.12.0 — PAYAI P1: messages carry a `card` (command answers), the
+    # send RPC takes `resolve` (a chip answering a card), providers gain
+    # `generate_tools`.
+    'version': '19.0.3.12.0',
     'category': 'Human Resources/Payroll',
     'summary': 'AI-powered payroll analytics with conversational charts, dashboards, and insights',
     'description': """

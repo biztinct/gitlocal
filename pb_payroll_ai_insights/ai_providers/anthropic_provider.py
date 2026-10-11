@@ -95,6 +95,35 @@ class AnthropicProvider(BaseAIProvider):
             kw['system'] = system
         return self._text_from(client.messages.create(**kw))
 
+    # --------------------------------------------------------------- tools
+    def generate_tools(self, messages, tools, max_tokens=300, temperature=0.0):
+        """PAYAI P1 — `tools=[{name, description, input_schema}]`."""
+        client = self._get_client()
+        system = None
+        conv = []
+        for m in messages:
+            if m.get('role') == 'system':
+                content = m.get('content', '') or ''
+                system = (system + '\n\n' + content) if system else content
+                continue
+            conv.append({'role': 'assistant' if m.get('role') == 'assistant' else 'user',
+                         'content': m.get('content', '')})
+        kw = {
+            'model': self.model, 'max_tokens': max_tokens, 'messages': conv,
+            'tools': [{'name': t['name'], 'description': t.get('description', ''),
+                       'input_schema': t.get('parameters') or {'type': 'object', 'properties': {}}}
+                      for t in tools],
+        }
+        if system:
+            kw['system'] = system
+        resp = client.messages.create(**kw)
+        for block in (resp.content or []):
+            if getattr(block, 'type', '') == 'tool_use':
+                args = getattr(block, 'input', None) or {}
+                return {'tool_name': getattr(block, 'name', ''),
+                        'arguments': args if isinstance(args, dict) else {}}
+        return None
+
     # -------------------------------------------------------------- vision
     def generate_vision(self, prompt, images, max_tokens=1500, **kwargs):
         client = self._get_client()
