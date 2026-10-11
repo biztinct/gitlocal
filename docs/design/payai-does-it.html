@@ -1,0 +1,581 @@
+<title>PayAI Does It</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a reading column (720px) with a wider demo stage; the demo is the hero, everything after it is evidence. */
+:root{
+  --bg:#F7F7FB; --card:#FFFFFF; --ink:#1E1B2E; --muted:#5B5E73; --line:#E2E8F0;
+  --brand:#5A4BB0; --brand-dark:#4A3D96; --brand-soft:#EDEAF8; --brand-light:#CBC2EE; --brand-ink:#241F52;
+  --ok:#2E7D4F; --ok-soft:#E6F3EB; --info:#2563EB; --info-soft:#E8EFFD; --warn:#D97706; --warn-soft:#FBF0DC;
+  --bad:#DC2668; --bad-soft:#FCE7EF; --neutral:#64748B; --neutral-soft:#EEF1F5;
+  --display:"Manrope",system-ui,sans-serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+  --r:14px; --shadow:0 1px 2px rgba(30,27,46,.06),0 8px 24px rgba(30,27,46,.06);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#15131F; --card:#1E1B2E; --ink:#F1EFFA; --muted:#A7A5BD; --line:#2E2A44;
+  --brand:#9A8DE0; --brand-dark:#B3A8EA; --brand-soft:#2A2547; --brand-light:#4A3D96; --brand-ink:#E6E1FA;
+  --ok:#5BC489; --ok-soft:#1C3328; --info:#7FA6F5; --info-soft:#1C2742; --warn:#F0A64A; --warn-soft:#3A2B14;
+  --bad:#F06A98; --bad-soft:#3D1A27; --neutral:#9AA5B8; --neutral-soft:#262B38; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15131F; --card:#1E1B2E; --ink:#F1EFFA; --muted:#A7A5BD; --line:#2E2A44;
+  --brand:#9A8DE0; --brand-dark:#B3A8EA; --brand-soft:#2A2547; --brand-light:#4A3D96; --brand-ink:#E6E1FA;
+  --ok:#5BC489; --ok-soft:#1C3328; --info:#7FA6F5; --info-soft:#1C2742; --warn:#F0A64A; --warn-soft:#3A2B14;
+  --bad:#F06A98; --bad-soft:#3D1A27; --neutral:#9AA5B8; --neutral-soft:#262B38; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;margin:0;padding-inline:16px;padding-block:0 80px}
+.wrap{max-width:1040px;margin:0 auto}
+.col{max-width:720px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,5vw,46px);font-weight:800;line-height:1.08;letter-spacing:-.02em}
+h2{font-size:clamp(22px,3vw,28px);font-weight:700;letter-spacing:-.01em}
+h3{font-size:17px;font-weight:700}
+p{margin:0}
+.eyebrow{font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand)}
+.lede{font-size:18px;color:var(--muted);max-width:60ch}
+section{padding-block:56px;border-top:1px solid var(--line)}
+section:first-of-type{border-top:0;padding-top:48px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.ic{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ic.lg{width:22px;height:22px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:11px;flex:none}
+.badge.brand{background:var(--brand-soft);color:var(--brand)} .badge.ok{background:var(--ok-soft);color:var(--ok)}
+.badge.info{background:var(--info-soft);color:var(--info)} .badge.warn{background:var(--warn-soft);color:var(--warn)}
+.badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.neutral{background:var(--neutral-soft);color:var(--neutral)}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0}
+.card h3{margin-bottom:6px}
+.card p{color:var(--muted);font-size:15px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid transparent}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.neutral{background:var(--neutral-soft);color:var(--neutral)} .pill.brand{background:var(--brand-soft);color:var(--brand)} .pill.info{background:var(--info-soft);color:var(--info)}
+.btn{font-family:var(--display);font-weight:700;font-size:14px;border-radius:10px;padding:9px 14px;border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:transform .12s ease,background .15s ease;line-height:1.1}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--brand);color:#fff} .btn.primary:hover{background:var(--brand-dark)}
+.btn.outline{background:transparent;color:var(--brand);border-color:var(--brand-light)} .btn.outline:hover{background:var(--brand-soft)}
+.btn.ghost{background:var(--neutral-soft);color:var(--ink)} .btn.ghost:hover{filter:brightness(.97)}
+.btn.danger{background:transparent;color:var(--bad);border-color:var(--bad-soft)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.chip:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+:root[data-theme="dark"] .btn.primary,:root:not([data-theme="light"]) .btn.primary{color:var(--brand-ink)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .btn.primary{color:#fff}}
+:root[data-theme="light"] .btn.primary{color:#fff}
+
+/* ---------- Hero ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:32px;align-items:start}
+@media (max-width:860px){.hero{grid-template-columns:1fr}}
+.hero .stack{gap:18px}
+.examples{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--body);font-size:13.5px;font-weight:500;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:border-color .15s,background .15s}
+.chip:hover{border-color:var(--brand-light);background:var(--brand-soft)}
+.chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+.persona{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--muted);flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--card)}
+.seg button{font-family:var(--body);font-size:13px;font-weight:600;border:0;background:transparent;color:var(--muted);padding:5px 12px;border-radius:999px;cursor:pointer}
+.seg button.on{background:var(--brand);color:#fff}
+:root[data-theme="dark"] .seg button.on,:root:not([data-theme="light"]) .seg button.on{color:var(--brand-ink)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .seg button.on{color:#fff}}
+:root[data-theme="light"] .seg button.on{color:#fff}
+
+/* ---------- Phone / chat stage ---------- */
+.stage{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;min-height:560px;max-height:680px}
+.stage-top{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.stage-top .who{font-family:var(--display);font-weight:700;font-size:14px}
+.stage-top .sub{font-size:12px;color:var(--muted)}
+.orb{width:30px;height:30px;border-radius:9px;background:var(--brand);color:#fff;display:grid;place-items:center}
+.orb .ic{width:16px;height:16px}
+.feed{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+.msg{max-width:88%;animation:in .28s ease both}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.msg,.bar i,.dots span{animation:none!important}}
+.msg.user{align-self:flex-end;background:var(--brand);color:#fff;border-radius:16px 16px 4px 16px;padding:10px 14px;font-size:14.5px}
+:root[data-theme="dark"] .msg.user,:root:not([data-theme="light"]) .msg.user{color:var(--brand-ink)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .msg.user{color:#fff}}
+:root[data-theme="light"] .msg.user{color:#fff}
+.msg.user .vo{display:flex;align-items:center;gap:6px;font-size:11px;opacity:.8;margin-top:4px}
+.msg.ai{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-radius:16px 16px 16px 4px;padding:10px 14px;font-size:14.5px}
+.msg.ai .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.msg.ai .chips .chip{font-size:13px;padding:6px 11px}
+.msg.ai .chips .chip small{color:var(--muted);font-weight:400}
+.dots{display:inline-flex;gap:4px;padding:4px 0}
+.dots span{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:blink 1s infinite}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+
+/* Plan card */
+.plan{align-self:stretch;max-width:100%;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;animation:in .3s ease both}
+.plan .head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.plan .head .t{font-family:var(--display);font-weight:800;font-size:15px}
+.plan .head .s{font-size:12px;color:var(--muted)}
+.plan.tier-prepare .head{background:var(--warn-soft)} .plan.tier-decide .head{background:var(--bad-soft)} .plan.tier-look .head{background:var(--ok-soft)} .plan.tier-never .head{background:var(--neutral-soft)}
+.plan .body{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.slots{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px;align-items:baseline}
+.slots .k{color:var(--muted);font-size:13px}
+.slots .v{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.src{font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px;letter-spacing:.02em}
+.src.said{background:var(--ok-soft);color:var(--ok)} .src.chose{background:var(--info-soft);color:var(--info)} .src.assumed{background:var(--warn-soft);color:var(--warn)} .src.default{background:var(--neutral-soft);color:var(--neutral)}
+.edit{color:var(--brand);background:none;border:0;cursor:pointer;padding:0;display:inline-flex}
+.edit .ic{width:14px;height:14px}
+.note{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;padding:9px 11px;border-radius:10px}
+.note.ok{background:var(--ok-soft);color:var(--ok)} .note.warn{background:var(--warn-soft);color:var(--warn)} .note.bad{background:var(--bad-soft);color:var(--bad)} .note.info{background:var(--info-soft);color:var(--info)} .note.neutral{background:var(--neutral-soft);color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.actions .spacer{flex:1}
+.typed{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.typed input{font-family:var(--mono);font-size:14px;letter-spacing:.08em;padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:150px}
+.bar{height:8px;border-radius:999px;background:var(--neutral-soft);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--brand);border-radius:999px;transition:width .35s ease}
+.prog{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.result{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.result div{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.result b{font-family:var(--display);font-size:16px;display:block;font-variant-numeric:tabular-nums}
+.result small{color:var(--muted);font-size:12px}
+.undo{display:flex;align-items:center;gap:10px;font-size:13px;padding:9px 11px;border-radius:10px;background:var(--brand-soft);color:var(--brand-ink)}
+:root[data-theme="dark"] .undo,:root:not([data-theme="light"]) .undo{color:var(--brand-ink)}
+.undo b{font-variant-numeric:tabular-nums}
+.audit{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center}
+
+/* Composer */
+.composer{border-top:1px solid var(--line);padding:10px 12px;display:flex;gap:8px;align-items:center;background:var(--card)}
+.composer input{flex:1;min-width:0;font-family:var(--body);font-size:14.5px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.rbtn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);display:grid;place-items:center;cursor:pointer;flex:none}
+.rbtn.rec{background:var(--bad);color:#fff;border-color:var(--bad)}
+.rbtn.send{background:var(--brand);color:#fff;border-color:var(--brand)}
+:root[data-theme="dark"] .rbtn.send,:root:not([data-theme="light"]) .rbtn.send{color:var(--brand-ink)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .rbtn.send{color:#fff}}
+:root[data-theme="light"] .rbtn.send{color:#fff}
+.hint{font-size:12px;color:var(--muted);padding:0 14px 10px;display:flex;align-items:center;gap:6px}
+
+/* ---------- Steps ---------- */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;counter-reset:s}
+.step{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;position:relative}
+.step::before{counter-increment:s;content:counter(s);position:absolute;top:14px;right:16px;font-family:var(--display);font-weight:800;font-size:28px;color:var(--brand-light);line-height:1}
+.step h3{margin:10px 0 6px}
+.step p{color:var(--muted);font-size:14.5px}
+.step .ex{margin-top:10px;font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px 10px;color:var(--ink)}
+
+/* ---------- Tiers ---------- */
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.tier{border-radius:var(--r);border:1px solid var(--line);background:var(--card);overflow:hidden}
+.tier .th{display:flex;align-items:center;gap:10px;padding:14px 16px;font-family:var(--display);font-weight:800;font-size:16px}
+.tier.look .th{background:var(--ok-soft);color:var(--ok)} .tier.prepare .th{background:var(--warn-soft);color:var(--warn)} .tier.decide .th{background:var(--bad-soft);color:var(--bad)} .tier.never .th{background:var(--neutral-soft);color:var(--neutral)}
+.tier .tb{padding:14px 16px;display:flex;flex-direction:column;gap:10px;font-size:14px}
+.tier .tb .lbl{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.tier ul{margin:0;padding-left:18px;color:var(--ink)}
+.tier li{margin:2px 0}
+
+/* ---------- Rails ---------- */
+.rail{display:flex;gap:14px}
+.rail .badge{margin-top:2px}
+
+/* ---------- Finding ---------- */
+.finding{border:1px solid var(--bad-soft);background:var(--card);border-radius:var(--r);padding:22px;display:grid;grid-template-columns:auto 1fr;gap:16px}
+.finding ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:15px}
+.finding li{margin:3px 0}
+
+/* ---------- Phases ---------- */
+.phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.phase{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+.phase .n{font-family:var(--mono);font-size:12px;color:var(--brand);font-weight:500}
+.phase h3{margin:4px 0 6px}
+.phase p{font-size:14px;color:var(--muted)}
+.phase .who{margin-top:10px}
+
+/* ---------- Decisions ---------- */
+.dec{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:10px}
+.dec .q{font-family:var(--display);font-weight:700;font-size:16px}
+.dec .opts{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
+.dec .opts div{display:flex;gap:8px;align-items:flex-start}
+.dec .opts .ic{width:16px;height:16px;margin-top:3px;color:var(--brand)}
+.dec .opts .rec{color:var(--ink)}
+.dec .opts .rec::after{content:"recommended";font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ok);margin-left:6px}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--card)}
+footer{padding-top:28px;color:var(--muted);font-size:13px}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/></symbol>
+ <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+ <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></symbol>
+ <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+ <symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+ <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></symbol>
+ <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></symbol>
+ <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+ <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+ <symbol id="i-list" viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></symbol>
+ <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></symbol>
+ <symbol id="i-send" viewBox="0 0 24 24"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></symbol>
+ <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></symbol>
+ <symbol id="i-keyboard" viewBox="0 0 24 24"><path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/><path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/></symbol>
+ <symbol id="i-scroll" viewBox="0 0 24 24"><path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></symbol>
+ <symbol id="i-toggle" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="6" ry="6"/><circle cx="8" cy="12" r="2"/></symbol>
+ <symbol id="i-usercheck" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></symbol>
+ <symbol id="i-play" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></symbol>
+ <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+ <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+ <symbol id="i-panel" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></symbol>
+ <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/></symbol>
+ <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></symbol>
+ <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+ <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></symbol>
+ <symbol id="i-timer" viewBox="0 0 24 24"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></symbol>
+ <symbol id="i-building" viewBox="0 0 24 24"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></symbol>
+ <symbol id="i-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></symbol>
+ <symbol id="i-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/></symbol>
+</svg>
+
+<div class="wrap">
+
+<!-- ================= HERO ================= -->
+<section>
+ <div class="hero">
+  <div class="stack">
+   <span class="eyebrow">Design proposal · 12 Oct 2026</span>
+   <h1>Tell PayAI what to do. It shows you the plan, you press once.</h1>
+   <p class="lede">Today PayAI answers questions. This proposal lets it carry out the things you normally do by clicking through screens: run a pay run, send it for approval, change a pay value, open any screen. By typing or by speaking. With your rights only, with a plan card before anything happens, and with an undo afterwards.</p>
+   <div>
+    <p class="eyebrow" style="margin-bottom:8px">Try it. Pick a sentence or press the mic.</p>
+    <div class="examples" id="examples">
+     <button class="chip" data-s="run">Run June payroll for Retail</button>
+     <button class="chip" data-s="approve">Approve the June Retail run</button>
+     <button class="chip" data-s="delete">Delete the May run</button>
+     <button class="chip" data-s="open">Open the Runs board</button>
+     <button class="chip" data-s="change">Give Linh an allowance of 500,000 from July</button>
+    </div>
+   </div>
+   <div class="persona">
+    <span>View as</span>
+    <div class="seg" id="persona">
+     <button class="on" data-p="officer">Payroll officer</button>
+     <button data-p="approver">Approver</button>
+     <button data-p="employee">Employee</button>
+    </div>
+    <span>· the same sentence gets a different answer</span>
+   </div>
+  </div>
+
+  <div class="stage" id="stage">
+   <div class="stage-top">
+    <div class="orb"><svg class="ic"><use href="#i-sparkles"/></svg></div>
+    <div><div class="who">PayAI</div><div class="sub" id="screenctx">You are on: Pay › Runs</div></div>
+   </div>
+   <div class="feed" id="feed"></div>
+   <div class="hint"><svg class="ic" style="width:14px;height:14px"><use href="#i-help"/></svg><span id="hint">This is a working mock-up. The numbers are example figures from the demo world.</span></div>
+   <div class="composer">
+    <button class="rbtn" id="mic" title="Hold to talk"><svg class="ic"><use href="#i-mic"/></svg></button>
+    <input id="box" placeholder="Type what you want done…" autocomplete="off">
+    <button class="rbtn send" id="sendbtn" title="Send"><svg class="ic"><use href="#i-send"/></svg></button>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= HOW IT UNDERSTANDS ================= -->
+<section>
+ <div class="col stack" style="margin-bottom:22px">
+  <span class="eyebrow">How it understands you</span>
+  <h2>Four steps between your sentence and the plan card</h2>
+  <p class="lede">PayAI never touches a record directly. It can only pick from a fixed list of commands that we write, and every blank is checked on the server against what you are allowed to see.</p>
+ </div>
+ <div class="steps">
+  <div class="step"><span class="badge brand"><svg class="ic"><use href="#i-chat"/></svg></span><h3>Hear it</h3><p>Typed or spoken, English or Vietnamese. Spoken words land in the box first. You still press send.</p><div class="ex">"Run June payroll for Retail"</div></div>
+  <div class="step"><span class="badge brand"><svg class="ic"><use href="#i-list"/></svg></span><h3>Pick a command</h3><p>From a fixed list we own. Not from imagination. If no command fits, PayAI says so and points to the right screen.</p><div class="ex">Command: <b>Run payroll</b></div></div>
+  <div class="step"><span class="badge brand"><svg class="ic"><use href="#i-pencil"/></svg></span><h3>Fill the blanks</h3><p>Each blank is matched against your real schemes, divisions and people. Unsure? It asks one question with choices. Guesses are marked.</p><div class="ex">June <span class="src said">you said</span> · Retail End-Month <span class="src assumed">assumed</span></div></div>
+  <div class="step"><span class="badge brand"><svg class="ic"><use href="#i-shield"/></svg></span><h3>Check, then show the plan</h3><p>Your rights, the risk colour, and the same counts the screen would show. Only then does the plan card appear.</p><div class="ex">902 people covered · no June run yet</div></div>
+ </div>
+</section>
+
+<!-- ================= TIERS ================= -->
+<section>
+ <div class="col stack" style="margin-bottom:22px">
+  <span class="eyebrow">What it may do</span>
+  <h2>Every command has a colour. The colour decides what PayAI needs from you.</h2>
+  <p class="lede">The colour is enforced on the server, not in the chat window. A company switch lets an admin turn each colour on or off.</p>
+ </div>
+ <div class="tiers">
+  <div class="tier look"><div class="th"><svg class="ic lg"><use href="#i-eye"/></svg>Green · Look</div><div class="tb">
+   <div><div class="lbl">Examples</div><ul><li>Open the Runs board</li><li>Show the June run status</li><li>How many people in Retail?</li><li>Download the run as Excel</li></ul></div>
+   <div><div class="lbl">Needs from you</div>Nothing. It just does it.</div>
+   <div><div class="lbl">Undo</div>Not needed.</div></div></div>
+  <div class="tier prepare"><div class="th"><svg class="ic lg"><use href="#i-play"/></svg>Amber · Prepare</div><div class="tb">
+   <div><div class="lbl">Examples</div><ul><li>Run payroll (creates a draft)</li><li>Send a run for approval</li><li>Change a person's pay value</li><li>Send payslips</li></ul></div>
+   <div><div class="lbl">Needs from you</div>The plan card and one tap on <b>Do it</b>. A spoken "go ahead" can count, if you allow it.</div>
+   <div><div class="lbl">Undo</div>Yes, for ten minutes. Delete the draft run, withdraw the request, revert the value.</div></div></div>
+  <div class="tier decide"><div class="th"><svg class="ic lg"><use href="#i-usercheck"/></svg>Red · Decide</div><div class="tb">
+   <div><div class="lbl">Examples</div><ul><li>Approve a run or request</li><li>Send it back</li><li>Reject with a reason</li></ul></div>
+   <div><div class="lbl">Needs from you</div>Only if you are the approver. The plan card plus a typed word. Never by voice.</div>
+   <div><div class="lbl">Undo</div>Only through the normal workflow, by sending it back.</div></div></div>
+  <div class="tier never"><div class="th"><svg class="ic lg"><use href="#i-ban"/></svg>Blocked</div><div class="tb">
+   <div><div class="lbl">Examples</div><ul><li>Pay money or make bank files</li><li>Delete a run or its payslips</li><li>Clean and run again</li><li>Change anyone's access</li></ul></div>
+   <div><div class="lbl">Needs from you</div>PayAI refuses and gives you the door to the right screen, where the normal checks apply.</div>
+   <div><div class="lbl">Undo</div>Not applicable.</div></div></div>
+ </div>
+</section>
+
+<!-- ================= RAILS ================= -->
+<section>
+ <div class="col stack" style="margin-bottom:22px">
+  <span class="eyebrow">Rails</span>
+  <h2>Eight things that stop a mistake</h2>
+ </div>
+ <div class="grid g2">
+  <div class="card rail"><span class="badge brand"><svg class="ic"><use href="#i-lock"/></svg></span><div><h3>Your rights, never more</h3><p>PayAI runs the command as you. If you cannot press the button on screen, PayAI cannot press it for you. It never borrows admin power.</p></div></div>
+  <div class="card rail"><span class="badge warn"><svg class="ic"><use href="#i-pencil"/></svg></span><div><h3>Guesses are visible</h3><p>Every blank on the plan card says where it came from: you said it, you chose it, PayAI assumed it, or it is the default. Assumed ones are highlighted.</p></div></div>
+  <div class="card rail"><span class="badge info"><svg class="ic"><use href="#i-list"/></svg></span><div><h3>Real counts before you press</h3><p>The plan card uses the same checks the screen uses: how many people are covered, whether a run already exists, who is not covered.</p></div></div>
+  <div class="card rail"><span class="badge neutral"><svg class="ic"><use href="#i-timer"/></svg></span><div><h3>Plans expire and are re-checked</h3><p>A plan lasts ten minutes. At the moment you press Do it, PayAI checks again. If a June run appeared meanwhile, it stops and tells you.</p></div></div>
+  <div class="card rail"><span class="badge ok"><svg class="ic"><use href="#i-undo"/></svg></span><div><h3>Undo for ten minutes</h3><p>Amber actions get an undo button right on the card. Where undo is impossible, the card says so before you press.</p></div></div>
+  <div class="card rail"><span class="badge bad"><svg class="ic"><use href="#i-keyboard"/></svg></span><div><h3>Red needs a typed word</h3><p>Approving, sending back and rejecting ask you to type a word. Voice never confirms a red action, so a stray "yes" in the room does nothing.</p></div></div>
+  <div class="card rail"><span class="badge brand"><svg class="ic"><use href="#i-scroll"/></svg></span><div><h3>Everything is written down</h3><p>Each request leaves a record: who asked, the words used, what PayAI understood, what you confirmed, what it created. It shows in the audit log and on the run's history.</p></div></div>
+  <div class="card rail"><span class="badge neutral"><svg class="ic"><use href="#i-toggle"/></svg></span><div><h3>A switch per company</h3><p>Green, Amber and Red can each be turned on or off per company. Tenants start fully off, like the helper's ChatGPT answers today.</p></div></div>
+ </div>
+</section>
+
+<!-- ================= VOICE ================= -->
+<section>
+ <div class="grid g2" style="align-items:start">
+  <div class="col stack">
+   <span class="eyebrow">Voice</span>
+   <h2>Speaking works the same way, with two extra habits</h2>
+   <p class="lede">Hold to talk already exists in PayAI. Your words appear in the box and you press send. We keep that. Two additions make voice feel natural without making it risky.</p>
+  </div>
+  <div class="stack">
+   <div class="card rail"><span class="badge brand"><svg class="ic"><use href="#i-volume"/></svg></span><div><h3>It reads the plan back</h3><p>"I will run June payroll for Retail End-Month, 902 people. Tap Do it or say go ahead." You hear what you are about to approve.</p></div></div>
+   <div class="card rail"><span class="badge warn"><svg class="ic"><use href="#i-mic"/></svg></span><div><h3>"Go ahead" works for Amber only</h3><p>And only if the company switch allows it. Red always needs a tap or a typed word. Blocked stays blocked.</p></div></div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= FINDING ================= -->
+<section>
+ <div class="col stack" style="margin-bottom:22px">
+  <span class="eyebrow">Something I found while mapping this</span>
+  <h2>The Run Payroll screen has no server-side lock today</h2>
+ </div>
+ <div class="finding">
+  <span class="badge bad"><svg class="ic lg"><use href="#i-alert"/></svg></span>
+  <div>
+   <p>The menu hides the Run Payroll screen from people without the right. But the steps behind it do not check who is calling. Anyone who is signed in and knows the address can start a pay run. The "Clean and run again" step can also delete runs that are already approved or paid, with no record of it.</p>
+   <ul>
+    <li>Nobody is likely doing this. It is a hole, not a leak we have seen.</li>
+    <li>An AI door would inherit the hole, so it must be closed first, on every database.</li>
+    <li>I would do this part myself, because it is security work. About a day.</li>
+   </ul>
+  </div>
+ </div>
+</section>
+
+<!-- ================= PHASES ================= -->
+<section>
+ <div class="col stack" style="margin-bottom:22px">
+  <span class="eyebrow">Build order</span>
+  <h2>Four phases, each usable on its own</h2>
+ </div>
+ <div class="phases">
+  <div class="phase"><span class="n">Phase 0</span><h3>Close the hole</h3><p>Server-side checks on Run Payroll. Clean-and-run only on drafts. Company scoping. Every database.</p><div class="who"><span class="pill bad">Security · Fable codes it</span></div></div>
+  <div class="phase"><span class="n">Phase 1</span><h3>Green</h3><p>The command list, the plan card, open any screen, show status, download. The record of every request. The company switch.</p><div class="who"><span class="pill ok">Look</span></div></div>
+  <div class="phase"><span class="n">Phase 2</span><h3>Amber</h3><p>Run payroll with progress, send for approval, change a pay value, send payslips. Undo on every card. "Open in the screen instead".</p><div class="who"><span class="pill warn">Prepare</span></div></div>
+  <div class="phase"><span class="n">Phase 3</span><h3>Red, voice, Vietnamese</h3><p>Approve and reject with a typed word. Spoken go-ahead. Vietnamese phrasings. "Learn to do this yourself" after each run.</p><div class="who"><span class="pill bad">Decide</span></div></div>
+ </div>
+ <p style="margin-top:14px;color:var(--muted);font-size:14.5px">Later: chained requests such as "run June and send it for approval", runs that keep going after you close the browser, and more commands (new hire, contract change, government filings).</p>
+</section>
+
+<!-- ================= DECISIONS ================= -->
+<section>
+ <div class="col stack" style="margin-bottom:22px">
+  <span class="eyebrow">Your decisions</span>
+  <h2>Seven questions I will ask you next</h2>
+  <p class="lede">Each one changes what gets built. My recommendation is marked. You will get them as cards right after this page.</p>
+ </div>
+ <div class="grid g2">
+  <div class="dec"><div class="q">1. Build it the phased way, or directly?</div><div class="opts">
+   <div><svg class="ic"><use href="#i-dot"/></svg><span class="rec">Phased: I design each phase, Opus builds it, back to back in this session. I code the security fix myself.</span></div>
+   <div><svg class="ic"><use href="#i-circle"/></svg><span>Direct: I design and code everything myself.</span></div></div></div>
+  <div class="dec"><div class="q">2. How far may PayAI go on day one?</div><div class="opts">
+   <div><svg class="ic"><use href="#i-dot"/></svg><span class="rec">Green and Amber. Draft runs, send for approval, change values. Never approve, pay or delete.</span></div>
+   <div><svg class="ic"><use href="#i-circle"/></svg><span>Green, Amber and Red. Also approve and reject with a typed word.</span></div>
+   <div><svg class="ic"><use href="#i-circle"/></svg><span>Green only until we have watched it for a while.</span></div></div></div>
+  <div class="dec"><div class="q">3. Who may ask PayAI to do things?</div><div class="opts">
+   <div><svg class="ic"><use href="#i-dot"/></svg><span class="rec">Anyone who can do it on screen. Nothing to set up.</span></div>
+   <div><svg class="ic"><use href="#i-circle"/></svg><span>Only people an admin switches on.</span></div>
+   <div><svg class="ic"><use href="#i-circle"/></svg><span>Only roles an admin switches on, such as Payroll officer.</span></div></div></div>
+  <div class="dec"><div class="q">4. Where does a pay run happen?</div><div class="opts">
+   <div><svg class="ic"><use href="#i-dot"/></svg><span class="rec">In the chat with a progress bar, and every card has "Open in the screen instead", pre-filled.</span></div>
+   <div><svg class="ic"><use href="#i-circle"/></svg><span>Pre-fill the Run Payroll screen only. The person presses Compute.</span></div>
+   <div><svg class="ic"><use href="#i-circle"/></svg><span>In the chat only.</span></div></div></div>
+  <div class="dec"><div class="q">5. Which languages from day one?</div><div class="opts">
+   <div><svg class="ic"><use href="#i-dot"/></svg><span class="rec">English first, Vietnamese in Phase 3.</span></div>
+   <div><svg class="ic"><use href="#i-circle"/></svg><span>English and Vietnamese together from Phase 1.</span></div></div></div>
+  <div class="dec"><div class="q">6. How does a person confirm an Amber card?</div><div class="opts">
+   <div><svg class="ic"><use href="#i-dot"/></svg><span class="rec">One tap. Spoken "go ahead" allowed when the company switch is on.</span></div>
+   <div><svg class="ic"><use href="#i-circle"/></svg><span>One tap only. Voice never confirms anything.</span></div>
+   <div><svg class="ic"><use href="#i-circle"/></svg><span>Always a typed word, even for Amber.</span></div></div></div>
+  <div class="dec"><div class="q">7. Which commands first?</div><div class="opts">
+   <div><svg class="ic"><use href="#i-dot"/></svg><span class="rec">Run payroll, send for approval, open any screen, show status, download Excel, change a pay value.</span></div>
+   <div><svg class="ic"><use href="#i-circle"/></svg><span>Add: send payslips, approve and reject, government filing, new hire.</span></div></div></div>
+  <div class="dec"><div class="q">Already decided for you, unless you object</div><div class="opts">
+   <div><svg class="ic"><use href="#i-check"/></svg><span>Keeps using the OpenAI key you already loaded. Claude support exists in the product and can be switched on later.</span></div>
+   <div><svg class="ic"><use href="#i-check"/></svg><span>Lives in the existing PayAI window and the helper's Ask tab. No new place to learn.</span></div>
+   <div><svg class="ic"><use href="#i-check"/></svg><span>payobook.com first. Tenants off until you say.</span></div>
+   <div><svg class="ic"><use href="#i-check"/></svg><span>The security fix goes to every database regardless.</span></div></div></div>
+ </div>
+</section>
+
+<footer>Proposal for Payobook. Example figures come from the demo world (Retail End-Month, 902 people). Nothing on this page is connected to the live system.</footer>
+</div>
+
+<script>
+(function(){
+ const feed=document.getElementById('feed'), box=document.getElementById('box'), send=document.getElementById('sendbtn'), mic=document.getElementById('mic');
+ const hint=document.getElementById('hint'), screenctx=document.getElementById('screenctx');
+ let persona='officer', busy=false, timers=[];
+ const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const wait=ms=>new Promise(r=>{const t=setTimeout(r,reduce?Math.min(ms,80):ms);timers.push(t)});
+ const svg=n=>`<svg class="ic"><use href="#i-${n}"/></svg>`;
+ function el(html){const d=document.createElement('div');d.innerHTML=html.trim();return d.firstElementChild}
+ function add(node){feed.appendChild(node);feed.scrollTop=feed.scrollHeight;return node}
+ function user(text,voice){return add(el(`<div class="msg user">${text}${voice?`<div class="vo">${svg('mic')}heard by PayAI, you pressed send</div>`:''}</div>`))}
+ async function ai(html,delay=650){const d=add(el(`<div class="msg ai"><span class="dots"><span></span><span></span><span></span></span></div>`));await wait(delay);d.innerHTML=html;feed.scrollTop=feed.scrollHeight;return d}
+ function reset(){timers.forEach(clearTimeout);timers=[];feed.innerHTML='';busy=false}
+ function src(k,l){return `<span class="src ${k}">${l||({said:'you said',chose:'you chose',assumed:'assumed',default:'default'})[k]}</span>`}
+ const editBtn=`<button class="edit" title="Change"><svg class="ic"><use href="#i-pencil"/></svg></button>`;
+
+ // ---------- scenarios ----------
+ const S={
+  run:{text:'Run June payroll for Retail',async play(voice){
+   user(this.text,voice);
+   if(persona==='employee'){await ai(`You do not have the Run payroll right, so I cannot do this for you. Your payroll officer can. ${svg('arrow')}<div class="chips"><button class="chip">Who runs payroll for my company?</button><button class="chip">Open My Payobook</button></div>`);return}
+   if(persona==='approver'){await ai(`You are set up as an approver, not as someone who runs payroll, so I cannot start a run for you. I can show you what is waiting for your approval.<div class="chips"><button class="chip">Show my approvals</button></div>`);return}
+   const q=await ai(`Which Retail scheme do you mean?<div class="chips"><button class="chip" data-pick="end">Retail End-Month <small>· your division</small></button><button class="chip" data-pick="mid">Retail Mid-Month</button></div>`);
+   await new Promise(res=>{q.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{q.querySelectorAll('.chip').forEach(c=>c.disabled=true);b.classList.add('on');res()})});
+   if(voice) await ai(`${svg('volume')} <i>Reading back:</i> "I will run June payroll for Retail End-Month, 902 people. Tap Do it or say go ahead."`,500);
+   const plan=add(el(`<div class="plan tier-prepare"><div class="head"><span class="badge warn">${svg('play')}</span><div><div class="t">Run payroll</div><div class="s">Amber · creates a draft run · can be undone for 10 minutes</div></div></div>
+    <div class="body">
+     <div class="slots">
+      <span class="k">Period</span><span class="v">1 to 30 June 2026 ${src('said')} ${editBtn}</span>
+      <span class="k">Scheme</span><span class="v">Retail End-Month ${src('chose')} ${editBtn}</span>
+      <span class="k">Company</span><span class="v">Payobook Vietnam JSC ${src('default','current company')}</span>
+      <span class="k">People</span><span class="v">All 902 covered by this scheme ${src('default')} ${editBtn}</span>
+      <span class="k">Pay data</span><span class="v">From the connected time system, as usual ${src('assumed')} ${editBtn}</span>
+     </div>
+     <div class="note ok">${svg('check')}<span>No June run exists for Retail End-Month yet. 3 people on this scheme have no active contract and will be skipped.</span></div>
+     <div class="actions"><button class="btn primary" data-do>Do it</button><button class="btn outline">${svg('panel')}Open in the screen instead</button><span class="spacer"></span><button class="btn ghost" data-cancel>Cancel</button></div>
+    </div></div>`));
+   await new Promise(res=>{plan.querySelector('[data-do]').onclick=res;plan.querySelector('[data-cancel]').onclick=()=>{plan.remove();ai('Cancelled. Nothing was created.');res('x')}}).then(async v=>{
+    if(v==='x')return;
+    const body=plan.querySelector('.body');body.querySelector('.actions').remove();body.querySelector('.note').remove();
+    const prog=el(`<div><div class="prog"><span>Preparing the run…</span><span data-n>0 / 902</span></div><div class="bar"><i></i></div></div>`);body.appendChild(prog);
+    const fill=prog.querySelector('i'),n=prog.querySelector('[data-n]'),lab=prog.querySelector('.prog span');
+    await wait(500);lab.textContent='Computing payslips…';
+    for(let i=1;i<=23;i++){await wait(90);const c=Math.min(902,i*40);fill.style.width=(c/902*100)+'%';n.textContent=`${c} / 902`}
+    await wait(300);lab.textContent='Done';
+    body.appendChild(el(`<div class="result"><div><b>902</b><small>payslips in draft</small></div><div><b>₫18.6 bn</b><small>net to pay</small></div><div><b>2</b><small>need a look</small></div></div>`));
+    body.appendChild(el(`<div class="actions"><button class="btn primary">Open the run</button><button class="btn outline">Send for approval</button><button class="btn outline">${svg('book')}Learn to do this yourself</button></div>`));
+    const u=el(`<div class="undo">${svg('undo')}<span>Not what you meant? <b data-t>9:59</b> left to undo. This deletes the draft run and its 902 payslips.</span><span class="spacer" style="flex:1"></span><button class="btn ghost" data-undo>Undo</button></div>`);body.appendChild(u);
+    body.appendChild(el(`<div class="audit">${svg('scroll')}Recorded: run 1552 prepared by PayAI for Lan Pham, 12 Oct 2026 09:14, from the words "Run June payroll for Retail".</div>`));
+    let s=599;const tk=setInterval(()=>{s--;u.querySelector('[data-t]').textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;if(s<=0)clearInterval(tk)},1000);timers.push(tk);
+    u.querySelector('[data-undo]').onclick=async()=>{clearInterval(tk);u.innerHTML=`${svg('check')}<span>Undone. The draft run and its payslips were deleted. Nothing was sent anywhere.</span>`;await ai('Undone. If you want, tell me what to change and I will prepare it again.')};
+    feed.scrollTop=feed.scrollHeight;
+   });
+  }},
+  approve:{text:'Approve the June Retail run',async play(voice){
+   user(this.text,voice);
+   if(persona!=='approver'){await ai(`The June Retail End-Month run is waiting for approval, but you are not one of its approvers. <b>Minh Tran</b> (HR Manager) is. I can nudge them.<div class="chips"><button class="chip">Remind Minh</button><button class="chip">Show the run</button></div>`);return}
+   if(voice) await ai(`${svg('volume')} <i>Reading back:</i> "This is an approval. I need you to type the word, voice cannot confirm it."`,500);
+   const plan=add(el(`<div class="plan tier-decide"><div class="head"><span class="badge bad">${svg('usercheck')}</span><div><div class="t">Approve a pay run</div><div class="s">Red · your decision as HR Manager · PayAI cannot undo it</div></div></div>
+    <div class="body">
+     <div class="slots">
+      <span class="k">Run</span><span class="v">Payroll June 2026 · Retail End-Month ${src('said')}</span>
+      <span class="k">Figures</span><span class="v">902 people · ₫18.6 bn net · 0 exceptions open</span>
+      <span class="k">Step</span><span class="v">HR Manager check, 1 of 2. Finance release comes after you.</span>
+      <span class="k">Note</span><span class="v"><input id="appnote" placeholder="optional, goes on the record" style="font-family:var(--body);font-size:13.5px;padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;max-width:320px"></span>
+     </div>
+     <div class="note bad">${svg('keyboard')}<span>Type <b>APPROVE</b> to confirm. A spoken yes does not count here.</span></div>
+     <div class="actions"><div class="typed"><input id="typed" placeholder="APPROVE" autocomplete="off"><button class="btn primary" data-do disabled>Approve</button></div><span class="spacer"></span><button class="btn ghost" data-cancel>Cancel</button></div>
+    </div></div>`));
+   const t=plan.querySelector('#typed'),d=plan.querySelector('[data-do]');t.oninput=()=>{d.disabled=t.value.trim().toUpperCase()!=='APPROVE'};t.focus();
+   await new Promise(res=>{d.onclick=res;plan.querySelector('[data-cancel]').onclick=()=>{plan.remove();ai('Cancelled. The run is still waiting for you.');res('x')}}).then(async v=>{
+    if(v==='x')return;const body=plan.querySelector('.body');body.querySelector('.actions').remove();body.querySelector('.note').remove();
+    body.appendChild(el(`<div class="note ok">${svg('check')}<span>Approved as HR Manager. The run moves to Finance for release. Nobody has been paid yet.</span></div>`));
+    body.appendChild(el(`<div class="audit">${svg('scroll')}Recorded: approved by Minh Tran via PayAI, typed confirmation, 12 Oct 2026 09:16.</div>`));
+    await ai(`Done. Finance will see it in their inbox. Anything else?<div class="chips"><button class="chip">Show what else is waiting for me</button></div>`);
+   });
+  }},
+  delete:{text:'Delete the May run',async play(voice){
+   user(this.text,voice);
+   add(el(`<div class="plan tier-never"><div class="head"><span class="badge neutral">${svg('ban')}</span><div><div class="t">Not through PayAI</div><div class="s">Deleting pay runs is on the blocked list</div></div></div>
+    <div class="body"><p style="font-size:14px">I do not delete pay runs, even when asked clearly. If you have the right, you can do it on the Runs board. The board will check the run is still a draft and ask you there.</p>
+    <div class="actions"><button class="btn outline">${svg('panel')}Open the Runs board at May</button></div></div></div>`));
+   await ai(`If the problem is that May has wrong figures, tell me what is wrong and I may be able to fix the inputs instead.`,900);
+  }},
+  open:{text:'Open the Runs board',async play(voice){
+   user(this.text,voice);
+   await ai(`${svg('check')} Opening <b>Pay › Runs</b>. Green action, nothing to confirm.`,450);
+   screenctx.textContent='You are on: Pay › Runs';
+  }},
+  change:{text:'Give Linh an allowance of 500,000 from July',async play(voice){
+   user(this.text,voice);
+   if(persona==='employee'){await ai(`I cannot change pay values for you. If this is about your own pay, your HR team can help.<div class="chips"><button class="chip">Open My Payobook</button></div>`);return}
+   const q=await ai(`I found three people called Linh on your schemes. Which one?<div class="chips"><button class="chip" data-pick>Nguyen Thi Linh <small>· Retail, Store 12</small></button><button class="chip" data-pick>Tran Khanh Linh <small>· Logistics</small></button><button class="chip" data-pick>Pham Linh <small>· Corporate</small></button></div>`);
+   await new Promise(res=>{q.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{q.querySelectorAll('.chip').forEach(c=>c.disabled=true);b.classList.add('on');res()})});
+   const q2=await ai(`Which allowance? Retail End-Month has two.<div class="chips"><button class="chip" data-pick>Meal allowance</button><button class="chip" data-pick>Travel allowance</button></div>`);
+   await new Promise(res=>{q2.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{q2.querySelectorAll('.chip').forEach(c=>c.disabled=true);b.classList.add('on');res()})});
+   const plan=add(el(`<div class="plan tier-prepare"><div class="head"><span class="badge warn">${svg('pencil')}</span><div><div class="t">Change a pay value</div><div class="s">Amber · goes through the normal approval route · can be reverted</div></div></div>
+    <div class="body"><div class="slots">
+      <span class="k">Person</span><span class="v">Nguyen Thi Linh ${src('chose')}</span>
+      <span class="k">Value</span><span class="v">Meal allowance ${src('chose')}</span>
+      <span class="k">New amount</span><span class="v">₫500,000 per month ${src('said')} ${editBtn}</span>
+      <span class="k">From</span><span class="v">1 July 2026 ${src('said')} ${editBtn}</span>
+      <span class="k">Today</span><span class="v">₫0 (not set)</span>
+     </div>
+     <div class="note info">${svg('usercheck')}<span>Pay changes on this scheme need Minh Tran's approval. I will prepare it and send it to them.</span></div>
+     <div class="actions"><button class="btn primary" data-do>Do it</button><button class="btn outline">${svg('panel')}Open in Records instead</button><span class="spacer"></span><button class="btn ghost" data-cancel>Cancel</button></div></div></div>`));
+   await new Promise(res=>{plan.querySelector('[data-do]').onclick=res;plan.querySelector('[data-cancel]').onclick=()=>{plan.remove();ai('Cancelled. Nothing changed.');res('x')}}).then(async v=>{
+    if(v==='x')return;const body=plan.querySelector('.body');body.querySelector('.actions').remove();
+    body.appendChild(el(`<div class="note ok">${svg('check')}<span>Sent to Minh Tran for approval. Linh's pay does not change until they approve.</span></div>`));
+    body.appendChild(el(`<div class="undo">${svg('undo')}<span>Withdraw the request? <b>9:59</b> left.</span><span style="flex:1"></span><button class="btn ghost">Withdraw</button></div>`));
+    body.appendChild(el(`<div class="audit">${svg('scroll')}Recorded: change requested by Lan Pham via PayAI, 12 Oct 2026 09:20.</div>`));
+   });
+  }},
+  unknown:{async play(text,voice){
+   user(text,voice);
+   await ai(`I do not have a command for that yet. Here is what I can do: run payroll, send a run for approval, change a pay value, open any screen, show status, download a run.<div class="chips"><button class="chip">What can you do?</button><button class="chip">Open Learn</button></div>`);
+  }}
+ };
+
+ function match(text){const t=text.toLowerCase();
+  if(/delete|remove/.test(t))return 'delete';if(/approve/.test(t))return 'approve';if(/open|show.*board|go to/.test(t))return 'open';
+  if(/allowance|give .* from|change .*pay/.test(t))return 'change';if(/run|payroll|pay run/.test(t))return 'run';return null}
+ async function go(text,voice){if(busy)reset();busy=true;box.value='';const k=match(text);
+  if(k){await S[k].play(voice)}else{await S.unknown.play(text,voice)}busy=false}
+
+ document.querySelectorAll('#examples .chip').forEach(b=>b.onclick=()=>{reset();go(S[b.dataset.s].text,false)});
+ send.onclick=()=>{if(box.value.trim())go(box.value.trim(),false)};
+ box.onkeydown=e=>{if(e.key==='Enter'&&box.value.trim())go(box.value.trim(),false)};
+ document.querySelectorAll('#persona button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#persona button').forEach(x=>x.classList.remove('on'));b.classList.add('on');persona=b.dataset.p;
+  hint.textContent={officer:'Viewing as Lan Pham, Payroll officer. Can run payroll, cannot approve.',approver:'Viewing as Minh Tran, HR Manager. Can approve, does not run payroll.',employee:'Viewing as an employee. Can ask about their own pay only.'}[persona];
+  reset();welcome()});
+
+ // Mic: hold to "talk"; the transcript lands in the box; the person still presses send.
+ let holding=false,micTimer=null;
+ function micDown(e){e.preventDefault();if(holding)return;holding=true;mic.classList.add('rec');box.value='';box.placeholder='Listening…';
+  micTimer=setTimeout(()=>{micUp()},1400)}
+ function micUp(){if(!holding)return;holding=false;mic.classList.remove('rec');clearTimeout(micTimer);box.placeholder='Type what you want done…';
+  const t=persona==='approver'?S.approve.text:S.run.text;box.value='';let i=0;const tk=setInterval(()=>{box.value=t.slice(0,++i);if(i>=t.length){clearInterval(tk);send.focus();
+   const once=()=>{send.removeEventListener('click',once);box.removeEventListener('keydown',kd)};const kd=e=>{if(e.key==='Enter'){once();}};
+   send.onclick=()=>{const v=box.value.trim();if(!v)return;send.onclick=()=>{if(box.value.trim())go(box.value.trim(),false)};go(v,true)}}},18);timers.push(tk)}
+ mic.addEventListener('pointerdown',micDown);mic.addEventListener('pointerup',micUp);mic.addEventListener('pointerleave',micUp);
+ mic.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter')micDown(e)});mic.addEventListener('keyup',e=>{if(e.key===' '||e.key==='Enter')micUp()});
+
+ async function welcome(){
+  const name={officer:'Lan',approver:'Minh',employee:'An'}[persona];
+  await ai(`Hi ${name}. Tell me what you want done, or ask me anything. I will always show you the plan before I do it.`,250);
+ }
+ welcome();
+})();
+</script>

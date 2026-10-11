@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import base64
+import functools
 import logging
 from datetime import date, datetime, time as dtime
 from dateutil.relativedelta import relativedelta
@@ -7,6 +8,39 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
+
+# ======================================================================
+# PAYAI P0 — the door has a lock (2026-10-12).
+#
+# This model is an AbstractModel, so no `ir.model.access` row ever stands in
+# front of it, and `prepare_run` / `compute_batch` / `attach_spreadsheet`
+# elevate to sudo for their data work (the officer role may write runs but
+# not create them; the demo group may create but not delete). Until now the
+# ONLY thing between an authenticated session and "create and compute a pay
+# run" was the sidebar hiding the screen. Every public method below now asks
+# the same question the screen asks before it shows the door, and *Clean and
+# Run* refuses to touch anything but a draft (see `_clean_blockers`).
+# ======================================================================
+RUN_GROUPS = (
+    'pb_hr_payroll_base.group_payroll_base_officer',
+    'pb_hr_payroll_base.group_payroll_base_manager',
+    'pb_hr_payroll_base.group_payroll_super_admin',
+    'om_hr_payroll.group_hr_payroll_user',
+    'om_hr_payroll.group_hr_payroll_manager',
+)
+
+#: A pay run covers at most this many days. Before P0 any pair of dates was
+#: accepted, `date_start > date_end` included.
+MAX_RUN_DAYS = 366
+
+
+def runner_only(fn):
+    """Refuse, before anything else, anybody who may not run payroll."""
+    @functools.wraps(fn)
+    def wrapper(self, *args, **kwargs):
+        self._require_runner()
+        return fn(self, *args, **kwargs)
+    return wrapper
 
 
 class PbPayrunWizard(models.AbstractModel):
@@ -20,6 +54,138 @@ class PbPayrunWizard(models.AbstractModel):
     """
     _name = 'pb.payrun.wizard'
     _description = 'Payobook Run Payroll wizard orchestration'
+
+    # ==================================================================
+    # PAYAI P0 — the lock, the period check and the clean-and-run rails
+    # ==================================================================
+    @api.model
+    def _runner_groups_held(self, user=None):
+        user = user or self.env.user
+        for group in RUN_GROUPS:
+            try:
+                if user.has_group(group):
+                    return True
+            except (ValueError, KeyError):
+                continue
+        return False
+
+    @api.model
+    def _may_run_payroll(self, user=None):
+        """The screen's own answer: a payroll role, or the right to create a run.
+
+        Portal and public sign-ins are refused outright. An internal user
+        passes with any payroll role the sidebar item names, or — because an
+        admin can build a role in Access that grants `create` on pay runs
+        without naming a group (the demo group is one) — with that right
+        itself. Sudo callers (the demo generator, a cron) pass as they do
+        everywhere else.
+        """
+        user = user or self.env.user
+        if user._is_admin():
+            return True
+        if not user._is_internal():
+            return False
+        if self._runner_groups_held(user):
+            return True
+        try:
+            # `with_user` drops any sudo the caller held: the USER is judged.
+            return self.env['hr.payslip.run'].with_user(user).has_access('create')
+        except Exception:               # noqa: BLE001
+            return False
+
+    @api.model
+    def _require_runner(self):
+        # A sudo caller (the demo generator, a cron, a server action) is the
+        # server itself; the question is asked of people.
+        if self.env.su or self._may_run_payroll():
+            return True
+        _logger.info("Payrun wizard: refused uid %s — no Run payroll right.",
+                     self.env.uid)
+        raise AccessError(_(
+            "Running payroll is for payroll staff. Your sign-in does not have "
+            "the Run payroll right; ask your administrator under Settings › "
+            "Access and delegations."))
+
+    @api.model
+    def _check_period(self, ds, de):
+        """A run is one period: both dates, in order, at most a year."""
+        try:
+            start = fields.Date.to_date(ds)
+            end = fields.Date.to_date(de)
+        except Exception:               # noqa: BLE001
+            start = end = None
+        if not start or not end:
+            raise UserError(_(
+                "Choose the period's first and last day before running payroll."))
+        if start > end:
+            raise UserError(_(
+                "The period's first day (%(s)s) is after its last day (%(e)s).",
+                s=start, e=end))
+        days = (end - start).days + 1
+        if days > MAX_RUN_DAYS:
+            raise UserError(_(
+                "A pay run covers at most one year. This one spans %(d)s days.",
+                d=days))
+        return start, end
+
+    @api.model
+    def _clean_blockers(self, runs):
+        """Why *Clean and Run* may NOT touch these runs — a sentence each, or [].
+
+        Only a DRAFT run with no open approval request, no approved payslip,
+        no posted journal entry and no payment is ever cleared. Everything
+        else is history, and history goes back through its own workflow
+        (send back, reject, delete a draft on the Runs board) — never through
+        a wizard that was asked for a re-run. Before P0 `_clean_period`
+        cancelled done payslips, reset posted journals and deleted paid runs,
+        as sudo, with nothing written down. Demo runs are the one exception:
+        the demo world is shared and regenerable, and says so on screen.
+        """
+        why = []
+        for run in runs:
+            if getattr(run, 'is_demo', False):
+                continue
+            name = run.name or _('this pay run')
+            if run.state == 'approval_pending':
+                why.append(_("“%s” is waiting for approval.") % name)
+            elif run.state == 'done':
+                why.append(_("“%s” has already been approved.") % name)
+            elif run.state != 'draft':
+                why.append(_("“%s” is not a draft.") % name)
+            req = getattr(run, 'approval_request_id', False)
+            if req and getattr(req, 'state', '') in ('pending', 'blocked'):
+                why.append(_("“%s” has an approval request open.") % name)
+            if getattr(run, 'pb_paid', False):
+                why.append(_("“%s” has been paid.") % name)
+            slips = run.slip_ids
+            protected = slips.filtered(
+                lambda s: s.state not in ('draft', 'cancel'))
+            if protected:
+                why.append(_("“%(run)s” has %(n)s approved payslip(s).",
+                             run=name, n=len(protected)))
+            if 'move_id' in slips._fields:
+                posted = slips.mapped('move_id').filtered(
+                    lambda m: m.state == 'posted')
+                if posted:
+                    why.append(
+                        _("“%s” has journal entries already posted.") % name)
+        seen, out = set(), []
+        for w in why:
+            if w not in seen:
+                seen.add(w)
+                out.append(w)
+        return out
+
+    @api.model
+    def _protected_answer(self, blockers):
+        """The wizard's reply when the period's payroll is not a draft."""
+        return {
+            'needs_confirmation': False, 'blocked': True, 'kind': 'protected',
+            'message': ' '.join(blockers) + ' ' + _(
+                "Finished payroll is never cleared from here. Open it on the "
+                "Runs board: an approved run can be sent back or rejected "
+                "there, and a draft can be deleted."),
+        }
 
     # ==================================================================
     # GROUP P2 — "Pay run for which scheme?"
@@ -248,6 +414,7 @@ class PbPayrunWizard(models.AbstractModel):
         return out
 
     @api.model
+    @runner_only
     def split_chips(self, vals=None):
         """The "Split" chips for a period, for the review step.
 
@@ -311,6 +478,7 @@ class PbPayrunWizard(models.AbstractModel):
                  count=count)
 
     @api.model
+    @runner_only
     def preview_split(self, employee_id, date_start=None):
         """Both payslips for somebody paid in two places, before the run.
 
@@ -371,6 +539,7 @@ class PbPayrunWizard(models.AbstractModel):
         return configs[:1] if len(configs) == 1 else None
 
     @api.model
+    @runner_only
     def scheme_preview(self, vals=None):
         """Who a run for this scheme would cover, and who it would leave out.
 
@@ -401,6 +570,7 @@ class PbPayrunWizard(models.AbstractModel):
 
     # ---------------- Step 1: defaults ----------------
     @api.model
+    @runner_only
     def get_defaults(self):
         today = date.today()
         start = today.replace(day=1)
@@ -537,6 +707,8 @@ class PbPayrunWizard(models.AbstractModel):
                     config.id, config.name)
         return out
 
+    @api.model
+    @runner_only
     def employment_status_options(self):
         """The tick boxes the wizard offers, merged across schemes."""
         Config = self.env.get('hr.formula.config')
@@ -561,6 +733,7 @@ class PbPayrunWizard(models.AbstractModel):
         return sorted(merged.values(), key=lambda r: -r['count'])
 
     @api.model
+    @runner_only
     def eligible_preview(self, vals=None):
         """How many people this run would cover, and who — before it is created.
 
@@ -631,6 +804,15 @@ class PbPayrunWizard(models.AbstractModel):
         ]) if 'company_id' in self.env['hr.payslip.run']._fields else \
             self.env['hr.payslip.run'].search([('date_start', '<=', de), ('date_end', '>=', ds)])
         runs = runs.filtered(lambda r: r.slip_ids)
+        # PAYAI P0 — a run carries no company of its own on this build, so it
+        # is scoped by the companies its payslips belong to. Without this, a
+        # scheme-less run in ANOTHER company read as "this month already
+        # exists" — and was what *Clean and Run* would then have deleted.
+        if 'company_id' not in self.env['hr.payslip.run']._fields:
+            mine = set(self.env.companies.ids)
+            runs = runs.filtered(lambda r: (
+                lambda cids: not cids or bool(cids & mine)
+            )(set(r.slip_ids.mapped('company_id').ids)))
         if not config:
             return runs
         wanted = config.id
@@ -719,6 +901,16 @@ class PbPayrunWizard(models.AbstractModel):
         computation logs and the runs themselves (fully reversible demo cleanup)."""
         if not runs:
             return 0
+        # PAYAI P0 — re-asked HERE, not only where the dialog was offered: this
+        # runs as sudo, and the recordset it is handed is whatever the caller
+        # found. Finished payroll is refused with its reasons.
+        blockers = self._clean_blockers(runs)
+        if blockers:
+            raise UserError(' '.join(blockers))
+        _logger.info(
+            "Payrun wizard: uid %s clears run(s) %s (%s payslip(s)) to run "
+            "the period again.", self.env.uid, runs.ids,
+            len(runs.mapped('slip_ids')))
         slips = runs.mapped('slip_ids')
         moves = slips.mapped('move_id') if 'move_id' in slips._fields else self.env['account.move']
         for s in slips:
@@ -744,6 +936,7 @@ class PbPayrunWizard(models.AbstractModel):
 
     # ---------------- Step 2: create + compute ----------------
     @api.model
+    @runner_only
     def create_and_compute(self, vals):
         Run = self.env['hr.payslip.run']
         Slip = self.env['hr.payslip']
@@ -758,7 +951,12 @@ class PbPayrunWizard(models.AbstractModel):
         # it scopes by the scheme when one was passed and behaves as it always
         # did when one was not.
         config = self._scheme_from_vals(vals)
+        self._check_period(ds, de)
         existing = self._period_runs(ds, de, config=config)
+        if existing:
+            blockers = self._clean_blockers(existing)      # PAYAI P0
+            if blockers:
+                return self._protected_answer(blockers)
         if existing and not force_clean:
             locked = any(getattr(r, 'locked', False) for r in existing)
             if locked:
@@ -778,6 +976,8 @@ class PbPayrunWizard(models.AbstractModel):
         run_vals = {'name': name, 'date_start': ds, 'date_end': de}
         if config and 'pb_formula_config_id' in Run._fields:
             run_vals['pb_formula_config_id'] = config.id
+        if 'pb_prepared_uid' in Run._fields:
+            run_vals['pb_prepared_uid'] = self.env.uid
         run = Run.create(run_vals)
 
         adopted = self._adopt_loose_slips(run, ds, de)      # see prepare_run
@@ -860,6 +1060,8 @@ class PbPayrunWizard(models.AbstractModel):
     # `hr.payslip.compute_sheet` names the scheme and the state that blocks it,
     # and every refusal lands in this wizard's own exceptions list.
 
+    @api.model
+    @runner_only
     def prepare_run(self, vals):
         """Guard existing payroll, (optionally) clean it, create the draft run and
         return the list of eligible employees for the client to compute in chunks."""
@@ -867,6 +1069,7 @@ class PbPayrunWizard(models.AbstractModel):
         ds = vals.get('date_start')
         de = vals.get('date_end')
         force_clean = vals.get('force_clean')
+        self._check_period(ds, de)
 
         # GROUP P2 — which scheme is this run for?
         #
@@ -880,6 +1083,13 @@ class PbPayrunWizard(models.AbstractModel):
         # payrolls, not a duplicate, and *Clean and Run* must never reach into
         # the other one. See `_period_runs`.
         existing = self._period_runs(ds, de, config=config)
+        if existing:
+            # PAYAI P0 — approved, paid or pending payroll is never offered
+            # for clearing. The answer names each run and what stands in the
+            # way, and the client shows it instead of a *Clean and Run* button.
+            blockers = self._clean_blockers(existing)
+            if blockers:
+                return self._protected_answer(blockers)
         if existing and not force_clean:
             locked = any(getattr(r, 'locked', False) for r in existing)
             if locked:
@@ -910,6 +1120,9 @@ class PbPayrunWizard(models.AbstractModel):
         # where it exists — this module does not depend on the formula engine.
         if config and 'pb_formula_config_id' in Run._fields:
             run_vals['pb_formula_config_id'] = config.id
+        # PAYAI P0 — who prepared it. The field existed and nothing wrote it.
+        if 'pb_prepared_uid' in Run._fields:
+            run_vals['pb_prepared_uid'] = self.env.uid
         run = Run.create(run_vals)
 
         # Claim the period's existing payslips before computing anything, and
@@ -942,6 +1155,7 @@ class PbPayrunWizard(models.AbstractModel):
         return payload
 
     @api.model
+    @runner_only
     def compute_batch(self, payload):
         """Create + compute payslips for one chunk of employees. `payload` carries
         {run_id, name, date_start, date_end, division, emp_ids}. Returns the count
@@ -1192,6 +1406,7 @@ class PbPayrunWizard(models.AbstractModel):
         return rows
 
     @api.model
+    @runner_only
     def sync_plan(self, vals=None):
         """What the wizard is about to sync, so it can say so while it does.
 
@@ -1214,6 +1429,7 @@ class PbPayrunWizard(models.AbstractModel):
                 'unroutable': self._unroutable_wires(vals)}
 
     @api.model
+    @runner_only
     def sync_step(self, step, vals=None):
         """Pull ONE feed from ONE connected system, for the period.
 
@@ -1278,6 +1494,7 @@ class PbPayrunWizard(models.AbstractModel):
         return out
 
     @api.model
+    @runner_only
     def update_records_from_feed(self, vals=None):
         """RD56 — bring employee and contract records into step, from the feed.
 
@@ -1480,6 +1697,7 @@ class PbPayrunWizard(models.AbstractModel):
             return ''
 
     @api.model
+    @runner_only
     def spreadsheet_gate(self, vals=None):
         """Does this payroll want a spreadsheet before it is computed?
 
@@ -1569,6 +1787,7 @@ class PbPayrunWizard(models.AbstractModel):
         return fed, fed_rows, missing
 
     @api.model
+    @runner_only
     def preflight_spreadsheet(self, config_id, file_b64, filename):
         """Read a file's headings and say what it feeds. Creates nothing.
 
@@ -1642,6 +1861,7 @@ class PbPayrunWizard(models.AbstractModel):
         }
 
     @api.model
+    @runner_only
     def attach_spreadsheet(self, run_id, config_id, file_b64, filename,
                            date_start, date_end, one_time=False):
         """Load this month's pay file INTO the run that already exists.
@@ -1813,6 +2033,7 @@ class PbPayrunWizard(models.AbstractModel):
         }
 
     @api.model
+    @runner_only
     def discard_empty_run(self, run_id):
         """Drop a draft run that was created for a file that never loaded.
 
@@ -1854,6 +2075,7 @@ class PbPayrunWizard(models.AbstractModel):
             return 0.0
 
     @api.model
+    @runner_only
     def get_summary(self, run_id):
         # sudo: the run/slips may have been created as sudo (see compute_batch).
         run = self.env['hr.payslip.run'].sudo().browse(run_id)
@@ -1907,6 +2129,7 @@ class PbPayrunWizard(models.AbstractModel):
         }
 
     @api.model
+    @runner_only
     def submit_for_approval(self, run_id):
         """Send the run in for approval, and say what happened.
 

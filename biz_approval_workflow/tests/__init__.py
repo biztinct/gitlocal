@@ -11,3 +11,5 @@ from . import test_audit_source
 # The walk's W3: the person a route names is sometimes the person who sent
 # it in, and until now nobody at all could move it.
 from . import test_p7_conflict_backup
+# PAYAI P0 — approval switches never arrive from a client.
+from . import test_context_scrub

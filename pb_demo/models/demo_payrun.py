@@ -285,8 +285,14 @@ class PbPayrunWizardDemo(models.AbstractModel):
         if not end_cfg:
             return super().prepare_run(vals)
 
+        # PAYAI P0 — this path does not call super(), so the base lock and
+        # period check are asked here too. Demo runs stay clearable in any
+        # state (the demo world is shared and regenerable); real runs are
+        # never in `division_runs`, which is filtered to `is_demo`.
+        self._require_runner()
         ds = vals.get('date_start')
         de = vals.get('date_end')
+        self._check_period(ds, de)
         name = vals.get('name') or ('Payroll %s' % cat.DIVISIONS[key]['name_en'])
         force_clean = vals.get('force_clean')
         m_end = fields.Date.to_date(de)
@@ -319,6 +325,8 @@ class PbPayrunWizardDemo(models.AbstractModel):
         # GROUP P2 — the run says which scheme it is for, on this path too.
         if 'pb_formula_config_id' in Run._fields:
             run_vals['pb_formula_config_id'] = end_cfg.id
+        if 'pb_prepared_uid' in Run._fields:
+            run_vals['pb_prepared_uid'] = self.env.uid      # PAYAI P0
         run = Run.create(run_vals)
 
         cmap = self._division_contracts(key, m_end)
@@ -368,6 +376,7 @@ class PbPayrunWizardDemo(models.AbstractModel):
         key = self._demo_division_for(payload)
         if not key:
             return super().compute_batch(payload)
+        self._require_runner()                               # PAYAI P0
         gen = self._gen()
         end_cfg = self._demo_run_config(payload, key)
         # A mid-month run pays the advance; it does not deduct one from itself.
@@ -463,8 +472,10 @@ class PbPayrunWizardDemo(models.AbstractModel):
         if not end_cfg:
             return super().create_and_compute(vals)
 
+        self._require_runner()                               # PAYAI P0
         ds = vals.get('date_start')
         de = vals.get('date_end')
+        self._check_period(ds, de)
         name = vals.get('name') or ('Payroll %s' % cat.DIVISIONS[key]['name_en'])
         force_clean = vals.get('force_clean')
         m_start = fields.Date.to_date(ds)
@@ -508,6 +519,8 @@ class PbPayrunWizardDemo(models.AbstractModel):
         # GROUP P2 — the run says which scheme it is for, on this path too.
         if 'pb_formula_config_id' in Run._fields:
             run_vals['pb_formula_config_id'] = end_cfg.id
+        if 'pb_prepared_uid' in Run._fields:
+            run_vals['pb_prepared_uid'] = self.env.uid      # PAYAI P0
         run = Run.create(run_vals)
 
         cmap = self._division_contracts(key, m_end)

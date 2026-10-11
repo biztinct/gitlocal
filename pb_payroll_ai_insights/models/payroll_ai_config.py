@@ -98,19 +98,29 @@ class PayrollAIConfig(models.Model):
 
     @api.model
     def get_active_config(self):
-        """Get the active AI configuration for current company."""
-        config = self.sudo().search([
-            ('is_active', '=', True),
-            ('company_id', '=', self.env.company.id),
-        ], limit=1)
+        """The active configuration the CHAT should use, this company first.
 
-        if not config:
-            # Try global config (no company filter)
-            config = self.sudo().search([
-                ('is_active', '=', True),
-            ], limit=1)
-
-        return config
+        PAYAI P0 — an insights row before any other, and never a document-OCR
+        engine (Tesseract cannot chat). The old lookup took the first active
+        row of any purpose, so a company whose only active row was its OCR
+        engine handed that to the assistant and the Coach composer.
+        """
+        Cfg = self.sudo()
+        company = self.env.company.id
+        for domain in (
+            [('is_active', '=', True), ('purpose', '=', 'insights'),
+             ('company_id', '=', company)],
+            [('is_active', '=', True), ('purpose', '=', 'insights')],
+            [('is_active', '=', True), ('provider_type', '!=', 'tesseract'),
+             ('company_id', '=', company)],
+            [('is_active', '=', True), ('provider_type', '!=', 'tesseract')],
+        ):
+            config = Cfg.search(domain, limit=1)
+            if config:
+                return config
+        # Nothing that can chat: say so (empty), rather than hand the chat
+        # the OCR engine and let it fail somewhere less obvious.
+        return Cfg.browse()
 
     @api.model
     def get_config_for_purpose(self, purpose):

@@ -79,7 +79,12 @@ class AnthropicProvider(BaseAIProvider):
         for m in messages:
             role = m.get('role', 'user')
             if role == 'system':
-                system = m.get('content', '')
+                # PAYAI P0 — several system turns ARE one system prompt. The
+                # engine sends the product prompt and then a one-line screen
+                # note; overwriting kept only the note, so the model lost the
+                # product facts and the action whitelist on this provider.
+                content = m.get('content', '') or ''
+                system = (system + '\n\n' + content) if system else content
                 continue
             conv.append({
                 'role': 'assistant' if role == 'assistant' else 'user',

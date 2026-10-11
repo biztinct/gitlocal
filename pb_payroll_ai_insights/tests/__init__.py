@@ -5,3 +5,5 @@ from . import test_egress
 from . import test_redaction
 from . import test_prompt_branding
 from . import test_schemectx_p2_grouping
+# PAYAI P0 — pulse rights, provider system turns, chat config purpose.
+from . import test_p0_gates

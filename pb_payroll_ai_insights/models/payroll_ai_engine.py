@@ -680,12 +680,15 @@ class PayrollAIEngine(models.Model):
                 # line used to call.
                 "content": redact_text(msg.get('content', ''), mapping),
             })
-        messages.append({"role": "user", "content": message})
+        # PAYAI P0 — the same rule as the data path: the message leaves
+        # redacted with the conversation's mapping (or the generic scrub).
+        messages.append({"role": "user", "content": redact_text(message, mapping or {})})
 
         try:
             raw_response = provider.generate_chat(messages, max_tokens=1500, temperature=0.7)
             try:
-                result = provider._parse_json_response(raw_response)
+                result = restore_deep(provider._parse_json_response(raw_response), mapping)
+                raw_response = restore_names(raw_response, mapping)
                 return {
                     'response': result.get('response', raw_response),
                     'chart': result.get('chart', None),
@@ -698,7 +701,7 @@ class PayrollAIEngine(models.Model):
                 }
             except Exception:
                 return {
-                    'response': raw_response,
+                    'response': restore_names(raw_response, mapping),
                     'chart': None,
                     'insights': [],
                     'follow_up_questions': [],
@@ -899,13 +902,16 @@ class PayrollAIEngine(models.Model):
             # Same rule as the other three paths — see _process_knowledge_query.
             messages.append({"role": msg.get('role', 'user'),
                              "content": redact_text(msg.get('content', ''), mapping)})
-        messages.append({"role": "user", "content": message})
+        # PAYAI P0 — the same rule as the data path: the message leaves
+        # redacted with the conversation's mapping (or the generic scrub).
+        messages.append({"role": "user", "content": redact_text(message, mapping or {})})
 
         raw_response = provider.generate_chat(messages, max_tokens=1200, temperature=0.4)
         try:
-            result = provider._parse_json_response(raw_response)
+            result = restore_deep(provider._parse_json_response(raw_response), mapping)
         except Exception:
-            result = {'response': raw_response}
+            result = {'response': restore_names(raw_response, mapping)}
+        raw_response = restore_names(raw_response, mapping)
         return {
             'response': result.get('response', raw_response),
             'chart': None,
@@ -1008,12 +1014,15 @@ class PayrollAIEngine(models.Model):
                 # empty one, which is the generic scrub.
                 "content": redact_text(msg.get('content', ''), mapping),
             })
-        messages.append({"role": "user", "content": message})
+        # PAYAI P0 — the same rule as the data path: the message leaves
+        # redacted with the conversation's mapping (or the generic scrub).
+        messages.append({"role": "user", "content": redact_text(message, mapping or {})})
 
         try:
             raw_response = provider.generate_chat(messages, max_tokens=1500, temperature=0.7)
             try:
-                result = provider._parse_json_response(raw_response)
+                result = restore_deep(provider._parse_json_response(raw_response), mapping)
+                raw_response = restore_names(raw_response, mapping)
                 return {
                     'response': result.get('response', raw_response),
                     'chart': None,
@@ -1023,7 +1032,7 @@ class PayrollAIEngine(models.Model):
                 }
             except Exception:
                 return {
-                    'response': raw_response,
+                    'response': restore_names(raw_response, mapping),
                     'chart': None,
                     'insights': [],
                     'follow_up_questions': [],

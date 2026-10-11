@@ -453,6 +453,12 @@ class PayrollAIPulse(models.Model):
     @api.model
     def rpc_get_active_alerts(self, limit=10):
         """Get recent unresolved alerts for the dashboard."""
+        # PAYAI P0 — the detector reads payslips, people and leave as sudo
+        # (it runs from a cron). The READER must not inherit that: an alert
+        # is a department's payroll figure in a sentence, and every internal
+        # user is a PayAI user. Whoever may not open a payslip gets no alerts.
+        if not self.env['hr.payslip'].has_access('read'):
+            return []
         alerts = self.search([
             ('state', 'in', ['new', 'acknowledged']),
         ], limit=limit, order='create_date desc')

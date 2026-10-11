@@ -1847,7 +1847,14 @@ class HrPayslipRun(models.Model):
         return self.env.ref('om_hr_payroll.action_report_payslip_lines_xlsx').report_action(self)
 
     def action_send_email_all(self):
+        # PAYAI P0 — the button is hidden until the run is done; the method
+        # now says so too. Mailing every employee a payslip from a run that
+        # nobody has approved is not something a stale tab or a script may do.
         for record in self:
+            if record.state != 'done':
+                raise UserError(_(
+                    "Payslips are emailed once the pay run is approved. "
+                    "This one is not approved yet."))
             for payslip in record.slip_ids:
                 payslip.action_send_email_backend()
 

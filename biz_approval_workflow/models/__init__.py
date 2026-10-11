@@ -18,3 +18,4 @@ from . import engine
 from . import seed_helper
 from . import generic_request
 from . import chain_shim
+from . import ir_http

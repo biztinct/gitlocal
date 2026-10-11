@@ -964,6 +964,14 @@ export class PayrunWizard extends Component {
         this.state.busyMsg = "Creating run and computing payslips…";
 
         const prep = await this.orm.silent.call("pb.payrun.wizard", "prepare_run", [payload]);
+        if (prep && prep.blocked) {
+            // PAYAI P0 — the period's payroll is approved, paid or waiting for
+            // approval. The server names the runs and the reasons; there is no
+            // "Clean and Run" to offer, only the way back to step 1.
+            this.gotoKey("period");
+            this.notif.add(prep.message, { type: "warning", sticky: true });
+            return;
+        }
         if (prep && prep.needs_confirmation) {
             this.gotoKey("period");       // sit behind the dialog on step 1
             this._confirmOverwrite(prep);

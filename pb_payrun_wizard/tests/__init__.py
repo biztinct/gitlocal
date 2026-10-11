@@ -10,3 +10,5 @@ from . import test_officer_access
 
 # The two-scheme month: another payroll is not this one's duplicate.
 from . import test_two_schemes_one_month
+# PAYAI P0 — the door has a lock; Clean and Run has rails.
+from . import test_p0_runner_gate

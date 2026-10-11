@@ -30,10 +30,10 @@ class TestTwoSchemesOneMonth(TransactionCase):
         if Config is None:
             self.skipTest('This build has no payroll schemes.')
         self.vn = Config.create({'name': 'Probe Vietnam Payroll',
-                                 'state': 'active',
+                                 'state': 'active', 'country_code': 'VN',
                                  'company_id': self.company.id})
         self.india = Config.create({'name': 'Probe India Payroll',
-                                    'state': 'active',
+                                    'state': 'active', 'country_code': 'VN',
                                     'company_id': self.company.id})
         self.employee = self.env['hr.employee'].create({
             'name': 'Two Scheme Person', 'company_id': self.company.id})
