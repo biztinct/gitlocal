@@ -3900,7 +3900,7 @@ export class PbFormulaStudio extends Component {
         lines.push("");
         lines.push("Breakdown (payslip components):");
         for (const row of r.rows) {
-            if (row.appears_on_payslip) lines.push("  " + row.code + " (" + row.name + "): " + money(row.value));
+            if (row.appears_on_payslip) lines.push("  " + row.code + " (" + row.name + "): " + this.offerVal(row));
         }
         if (r.net_code) { lines.push(""); lines.push("Net (" + r.net_code + "): " + money(r.net_value)); }
         const text = lines.join("\n");
@@ -3908,9 +3908,10 @@ export class PbFormulaStudio extends Component {
     }
     offerMoney(v) { return (this.state.offerCurrency || "") + Math.round(v || 0).toLocaleString("en-US"); }
     offerVal(row) {
-        const n = row.value || 0;
-        if (row.number_format === "percent") return Number(n).toLocaleString("en-US") + "%";
-        return this.offerMoney(n);
+        // The server formats every non-money value by its value type (days,
+        // multipliers, rates); only an amount gets the currency prefix.
+        if (row.display) return row.display;
+        return this.offerMoney(row.value || 0);
     }
 
     // ---- Test & Validate workbench ----

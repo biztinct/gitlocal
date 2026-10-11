@@ -13552,33 +13552,58 @@ class PbFormulaStudio(models.AbstractModel):
                 return 0.0
 
         rows = []
-        subtotals = {}
+        slip_lines = []
+        fmt = self.env['hr.formula.config']._payslip_token_value
         for r in rules:
             if not r.code:
                 continue
             grp = _group_for(r)
             val = _num(values.get(r.code, 0.0))
+            kind = r.value_kind or 'money'
             rows.append({
                 'col': r.column_letter or '?', 'code': r.code,
                 'name': (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or r.code,
                 'group': grp, 'type': r.column_type, 'value': round(val, 2),
                 'appears_on_payslip': bool(r.appears_on_payslip),
                 'number_format': r.number_format or 'number',
+                'value_kind': kind,
+                # What the value IS decides how it reads — the Component
+                # treatment screen's "Value type", formatted by the payslip's
+                # own formatter so the two never disagree. Money stays with the
+                # client (currency prefix); a multiplier or a rate is not money.
+                # Formatted from the unrounded value: a 1.5% rate is 0.015.
+                'display': fmt(r, val, '') if kind != 'money' else False,
             })
-            if grp != 'Inputs':                    # Inputs excluded from subtotals (D-H4)
-                subtotals[grp] = subtotals.get(grp, 0.0) + val
+            # The lines a real payslip would get — same filter as
+            # `_create_payslip_lines_from_formulas`, same stamps.
+            if r.appears_on_payslip and grp != 'Inputs':
+                slip_lines.append({
+                    'name': r.name or r.code, 'code': r.code,
+                    'category_id': r.category_id.id,
+                    'amount': val, 'quantity': 1.0, 'rate': 100.0,
+                    'component_detail': bool(r.net_role_detail),
+                    'pay_role': r.net_role or False,
+                })
 
         # headline net — same heuristic as the comparison (_pick_headline_code)
         net_code = self.env['hr.formula.period.comparison'].new(
             {'config_id': config.id})._pick_headline_code() or ''
         net_value = round(_num(values.get(net_code, 0.0)), 2) if net_code else 0.0
 
-        order = ['Earnings', 'Deductions', 'Totals']
-        sub_list = [{'group': g, 'value': round(subtotals[g], 2)}
-                    for g in order if g in subtotals]
-        for g, v in subtotals.items():
-            if g not in order:
-                sub_list.append({'group': g, 'value': round(v, 2)})
+        # The boxes use the payslip's own totals rule (one pay-band rule), on
+        # in-memory lines. Adding up the groups instead counted "Information
+        # only" figures — insurance caps, tax reliefs, the tax base — and the
+        # gross line on top of its own parts: ₫159M of "deductions" against a
+        # ₫17.8M net on the demo Retail scheme (2026-10-11).
+        Line = self.env['hr.payslip.line'].sudo()
+        lines = Line.browse()
+        for vals in slip_lines:
+            lines |= Line.new(vals)
+        totals = lines.pb_pay_totals()
+        sub_list = [{'group': g, 'value': round(totals[k], 2)}
+                    for g, k in (('Earnings', 'gross'), ('Deductions', 'deductions'),
+                                 (EMPLOYER_GROUP, 'employer_cost'))
+                    if totals[k]]
 
         return {
             'ok': True,
