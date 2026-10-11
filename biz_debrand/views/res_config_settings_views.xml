@@ -30,6 +30,16 @@
                                        never touched.">
                             <field name="biz_debrand_product_name" placeholder="Leave empty to change nothing"/>
                         </setting>
+                        <setting id="biz_debrand_loader_logo_setting" string="Loading screen logo"
+                                 help="The logo the loading animation shows in the centre of the
+                                       screen. Upload a wide PNG or SVG on a transparent background,
+                                       or type the address of an image this server already serves.
+                                       Empty on a white-labelled system = the Brand Name as text.">
+                            <div class="o_row mb-1">
+                                <field name="biz_debrand_loader_logo" widget="image" class="oe_avatar" options="{'size': [0, 48]}"/>
+                            </div>
+                            <field name="biz_debrand_loader_logo_url" placeholder="/your_module/static/src/img/logo.png"/>
+                        </setting>
                     </block>
                 </div>
             </xpath>

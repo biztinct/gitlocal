@@ -29,6 +29,12 @@
                  has paid for the credit to be absent. -->
             <meta name="biz-brand-powered-by"
                   t-att-content="request and request.env['ir.config_parameter'].sudo().get_param('biz_debrand.powered_by')"/>
+            <!-- Loading-screen logo (2026-10-11). biz_theme's loader JS reads
+                 this with biz-brand and biz-brand-product: an address here
+                 wins; otherwise a brand that differs from the product name
+                 is animated as text; otherwise the compiled product default. -->
+            <meta name="biz-loader-logo"
+                  t-att-content="request and request.env['ir.config_parameter'].sudo().get_param('biz_debrand.loader_logo_url')"/>
         </xpath>
     </template>
 </odoo>

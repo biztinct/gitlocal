@@ -60,6 +60,28 @@ class ResConfigSettings(models.TransientModel):
              "addresses, e-mail addresses and technical names are never "
              "touched.",
     )
+    # Loading-screen logo (owner decision 2026-10-11). The centre-screen
+    # loader in biz_theme animates a logo. Which logo is this database's own
+    # business: upload one here, or point the address at an image the server
+    # already serves. Empty on a white-labelled database (Brand Name differs
+    # from Name to Replace) = the loader animates the Brand Name as text,
+    # never the master product's mark. Empty on the master product = the
+    # product's compiled default.
+    biz_debrand_loader_logo = fields.Binary(
+        string="Loading screen logo (upload)",
+        attachment=False,
+        help="A PNG or SVG on a transparent background, wide rather than "
+             "tall. Saved as a public image and used by the loading "
+             "animation. Uploading fills in the address below.",
+    )
+    biz_debrand_loader_logo_url = fields.Char(
+        string="Loading screen logo (address)",
+        config_parameter="biz_debrand.loader_logo_url",
+        help="Where the loading animation finds the logo. Filled in by an "
+             "upload above, or type the address of an image this server "
+             "serves. Clear it to go back to the brand-name text (white "
+             "label) or the product default.",
+    )
 
     # ------------------------------------------------------------------
     # Seeding — runs on install AND every upgrade (via data <function>),
@@ -165,4 +187,28 @@ class ResConfigSettings(models.TransientModel):
 
     def set_values(self):
         super().set_values()
+        self._biz_debrand_store_loader_logo()
         self._biz_debrand_apply_brand()
+
+    LOADER_LOGO_NAME = "biz_debrand_loader_logo"
+
+    def _biz_debrand_store_loader_logo(self):
+        """An uploaded loading-screen logo becomes ONE public attachment whose
+        address goes into ``biz_debrand.loader_logo_url``. Re-uploading
+        replaces the attachment's bytes in place so the address stays stable
+        and browsers that cached it simply fetch the new picture. Public
+        because the loader runs before any session-bound image route would
+        be allowed to answer."""
+        for rec in self:
+            if not rec.biz_debrand_loader_logo:
+                continue
+            att_model = self.env["ir.attachment"].sudo()
+            att = att_model.search([("name", "=", self.LOADER_LOGO_NAME), ("res_model", "=", "res.config.settings"), ("res_id", "=", 0)], limit=1)
+            vals = {"datas": rec.biz_debrand_loader_logo, "public": True}
+            if att:
+                att.write(vals)
+            else:
+                att = att_model.create(dict(vals, name=self.LOADER_LOGO_NAME, res_model="res.config.settings", res_id=0, type="binary"))
+            url = "/web/image/%d" % att.id
+            self.env["ir.config_parameter"].sudo().set_param("biz_debrand.loader_logo_url", url)
+            rec.biz_debrand_loader_logo_url = url

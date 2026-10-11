@@ -142,8 +142,34 @@ body:has(.o_loading_indicator)::after {
     animation: biz-loader-bar 1.2s cubic-bezier(0.45, 0.1, 0.55, 0.9) infinite;
 }
 
+/* White-labelled database with no picture of its own (biz_loader_brand.js
+   sets data-biz-loader="text" + --biz-loader-text): the brand NAME is the
+   logo. Same light sweep, clipped to the letters, in the brand colour. */
+html[data-biz-loader="text"] .o_loading_indicator::before {
+    content: var(--biz-loader-text, "");
+    -webkit-mask: none;
+    mask: none;
+    background:
+        linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.9) 50%, transparent 70%)
+            -200% 0 / 200% 100% no-repeat,
+        var(--vu-brand-primary, #5A4BB0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font: 800 40px/66px var(--vu-font-family, "Inter", -apple-system, "Segoe UI", sans-serif);
+    letter-spacing: -0.02em;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    animation: biz-loader-sweep-text 1.6s cubic-bezier(0.4, 0.1, 0.5, 0.9) infinite;
+}
+
 @keyframes biz-loader-sweep {
     to { background-position: 200% 0, 94% 10%, center; }
+}
+@keyframes biz-loader-sweep-text {
+    to { background-position: 200% 0, 0 0; }
 }
 @keyframes biz-loader-glow {
     50% { background-size: 200% 100%, 96px 96px, contain; }
