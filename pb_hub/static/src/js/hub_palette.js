@@ -99,13 +99,20 @@ export class HubPalette extends Component {
             }
         }
 
+        // PAYAI P1 — rows that answer any typed text go AFTER the matches, so
+        // Enter on "pay runs" still opens Pay Runs; they show the text typed.
+        const anyRows = [];
         for (const e of this.props.entries) {
             if (seen.has(e.id)) { continue; }
+            if (e.anyQuery) {
+                if (q) { anyRows.push({ ...e, sublabel: `“${this.state.q.trim()}”` }); }
+                continue;
+            }
             if (q && !this._matches(e, q)) { continue; }
             out.push(e);
             if (out.length >= MAX_ROWS) { break; }
         }
-        return out.slice(0, MAX_ROWS);
+        return [...out.slice(0, MAX_ROWS - anyRows.length), ...anyRows];
     }
 
     /**
@@ -173,8 +180,8 @@ export class HubPalette extends Component {
      * hook — the palette's only lifecycle work is focusing its input (W21).
      */
     run(row) {
-        this._remember(row.id);
-        this.props.onRun(row.id);
+        if (!row.anyQuery) { this._remember(row.id); }
+        this.props.onRun(row.id, this.state.q.trim());
         this.props.onClose();
     }
 

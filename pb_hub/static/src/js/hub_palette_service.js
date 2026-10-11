@@ -256,13 +256,30 @@ export const hubPaletteService = {
                 // its own heading, next to the shared one. The component owns
                 // the default so there is exactly one of it.
                 group: e.group,
+                // PAYAI P1 — the row's permissions travel with it so the
+                // assistant's server can re-check them (defence in depth).
+                groups: e.groups || [],
+                // PAYAI P1 — a row that answers ANY typed text ("Ask PayAI
+                // to…"): shown after the matches whenever something is typed.
+                anyQuery: !!e.anyQuery,
             }));
         }
 
-        function run(id) {
+        function run(id, query = "") {
             const entry = registry.category("pb_hub_palette").getAll()
                 .find((e) => e.id === id);
             if (!entry) { return; }
+            // PAYAI P1 — a row with its own handler (no door): hand it the
+            // typed text and stop. Nothing to gate here: the handler opens a
+            // surface that asks its own questions.
+            if (typeof entry.onRun === "function") {
+                try {
+                    entry.onRun(query || "");
+                } catch (e) {
+                    console.warn("pb_hub: palette entry failed to run", id, e);
+                }
+                return;
+            }
             const a = entry.action || {};
             // Restriction parity with the rail. The rail answers a click on a
             // locked door with an upsell dialog and no navigation
@@ -332,7 +349,14 @@ export const hubPaletteService = {
             isAvailable: () => !localPaletteOwnerOnScreen(),
         });
 
-        return { open, close, get isOpen() { return !!removeOverlay; } };
+        // PAYAI P1 — `entries()` is the person's ⌘K list (the same filter the
+        // palette draws); `run(id)` opens one row exactly as ⌘K would. The
+        // assistant resolves "open the runs board" against the first and
+        // opens through the second, so it can never reach a door ⌘K would not.
+        return {
+            open, close, entries: resolveEntries, run,
+            get isOpen() { return !!removeOverlay; },
+        };
     },
 };
 

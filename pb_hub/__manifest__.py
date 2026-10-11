@@ -41,7 +41,9 @@ registry, flat fills (W1/W2/W3).
     # 19.0.1.2.0 — IA Cycle 6: restriction parity between the ⌘K palette and
     # the rail. A door the sidebar padlocks is padlocked here too, and answers
     # the same upsell instead of navigating.
-    'version': '19.0.1.10.1',
+    # 19.0.1.11.0 — PAYAI P1: the palette service exposes `entries()` and
+    # `run(id)`; a row may answer any typed text (`anyQuery` + `onRun`).
+    'version': '19.0.1.11.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
