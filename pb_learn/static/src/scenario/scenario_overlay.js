@@ -463,11 +463,11 @@ export class ScenarioOverlay extends Component {
             w: Math.min(vw - 8, r.width + pad * 2),
             h: Math.min(vh - 8, r.height + pad * 2),
         };
-        this.ui.hole = hole;
+        this._setUi("hole", hole);
 
         const ch = (this.cardRef.el && this.cardRef.el.offsetHeight) || 260;
         if (vw <= DOCK_BELOW) {
-            this.ui.card = { top: Math.max(12, vh - ch - 12), left: 12, docked: true };
+            this._setUi("card", { top: Math.max(12, vh - ch - 12), left: 12, docked: true });
             return;
         }
         // right -> left -> below -> above, clamped: the same order the Journey's
@@ -489,10 +489,27 @@ export class ScenarioOverlay extends Component {
             top = Math.max(12, hole.top - gap - ch);
             left = hole.left + hole.w / 2 - CARD_W / 2;
         }
-        this.ui.card = {
+        this._setUi("card", {
             top: Math.max(12, Math.min(top, vh - ch - 12)),
             left: Math.max(12, Math.min(left, vw - CARD_W - 12)),
-        };
+        });
+    }
+
+    /** Write a geometry box into `ui` ONLY when it moved.
+     *
+     *  `_measure` runs every animation frame, and a fresh object is always a
+     *  change to OWL — so the whole card re-rendered ~60 times a second, and
+     *  every render re-built the `t-out` markup, i.e. a NEW Next button. A real
+     *  mouse press and its release then landed on two different buttons and
+     *  no click ever fired: "Next is not working" (2026-10-11). A scripted
+     *  `.click()` is instant and passed. */
+    _setUi(name, box) {
+        const cur = this.ui[name];
+        if (cur && Object.keys(box).length === Object.keys(cur).length
+                && Object.keys(box).every((k) => cur[k] === box[k])) {
+            return;
+        }
+        this.ui[name] = box;
     }
 
     // -------------------------------------------------- the learner presses

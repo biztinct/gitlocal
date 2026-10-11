@@ -22,4 +22,5 @@ demo database) first and check it there. The other databases (`rize`,
 | Date | Module → version | What changed | Waiting on |
 |---|---|---|---|
 | 2026-10-04 | pb_dashboard → 1.6.1 | Home no longer fails for people who cannot read formula test results | abm |
+| 2026-10-11 | pb_learn → 20.1.2 | Lesson card's Next button works with a real mouse (card no longer redraws every frame) | rize, payobook_template, abm |
 | 2026-10-11 | pb_formula_studio → 1.201.7 | Offer calculator: values shown by their value type (multipliers, days, rates no longer as ₫); Earnings/Deductions boxes use the payslip's totals rule | rize, payobook_template, abm |
