@@ -1105,3 +1105,1023 @@ msgstr "Ví dụ: tạo trùng do nhầm"
 #: code:addons/pb_payruns/static/src/xml/payruns.xml:0
 msgid "Why"
 msgstr "Lý do"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid " and "
+msgstr " và "
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid " · journals posted"
+msgstr " · đã ghi sổ"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%(count)s · %(n)s to pay"
+msgstr "%(count)s · %(n)s chờ chi trả"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%(people)s · %(runs)s"
+msgstr "%(people)s · %(runs)s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%(people)s · gross %(gross)s"
+msgstr "%(people)s · tổng thu nhập %(gross)s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%(runs)s this month across %(n)s divisions."
+msgstr "%(runs)s trong tháng này ở %(n)s bộ phận."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s approved, not paid yet"
+msgstr "%s đã duyệt, chưa chi trả"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s are approved and ready to pay"
+msgstr "%s đã duyệt và sẵn sàng chi trả"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s are paid and delivered"
+msgstr "%s đã chi trả và gửi phiếu lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s are still drafts"
+msgstr "%s vẫn là bản nháp"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s are waiting for a sign-off"
+msgstr "%s đang chờ ký duyệt"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s are waiting on you"
+msgstr "%s đang chờ bạn"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s is complete."
+msgstr "%s đã hoàn tất."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s is unaccounted for between gross, deductions and net."
+msgstr "%s chưa được giải thích giữa tổng thu nhập, khấu trừ và thực nhận."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s net"
+msgstr "%s thực nhận"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s only"
+msgstr "Chỉ %s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s pay runs are waiting on you."
+msgstr "%s đợt lương đang chờ bạn."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s pay runs selected"
+msgstr "Đã chọn %s đợt lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s pay runs sent in for approval."
+msgstr "Đã gửi %s đợt lương đi phê duyệt."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s pay runs were sent back to be fixed."
+msgstr "%s đợt lương bị trả lại để sửa."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s payslips have no source data"
+msgstr "%s phiếu lương không có dữ liệu nguồn"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s payslips were computed with no source data."
+msgstr "%s phiếu lương được tính mà không có dữ liệu nguồn."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s people"
+msgstr "%s người"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s runs"
+msgstr "%s đợt"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s runs are approved and unpaid."
+msgstr "%s đợt đã duyệt và chưa chi trả."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s runs need a check before they are sent in"
+msgstr "%s đợt cần kiểm tra trước khi gửi đi"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s runs were also sent back to be fixed."
+msgstr "%s đợt cũng bị trả lại để sửa."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s sent"
+msgstr "đã gửi %s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s this month."
+msgstr "%s trong tháng này."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s unaccounted for. Open the run to see which component."
+msgstr "%s chưa được giải thích. Mở đợt lương để xem thành phần nào."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid ", "
+msgstr ", "
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 approved, not paid yet"
+msgstr "1 đã duyệt, chưa chi trả"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 is approved and ready to pay"
+msgstr "1 đã duyệt và sẵn sàng chi trả"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 is paid and delivered"
+msgstr "1 đã chi trả và gửi phiếu lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 is still a draft"
+msgstr "1 vẫn là bản nháp"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 is waiting for a sign-off"
+msgstr "1 đang chờ ký duyệt"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 is waiting on you"
+msgstr "1 đang chờ bạn"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 pay run is waiting on you."
+msgstr "1 đợt lương đang chờ bạn."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 pay run selected"
+msgstr "Đã chọn 1 đợt lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 pay run was sent back to be fixed."
+msgstr "1 đợt lương bị trả lại để sửa."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 payslip has no source data"
+msgstr "1 phiếu lương không có dữ liệu nguồn"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 payslip was computed with no source data."
+msgstr "1 phiếu lương được tính mà không có dữ liệu nguồn."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 run"
+msgstr "1 đợt"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 run needs a check before it is sent in"
+msgstr "1 đợt cần kiểm tra trước khi gửi đi"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "1 run was also sent back to be fixed."
+msgstr "1 đợt cũng bị trả lại để sửa."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "A run you submit sits here until everyone on its route has signed it off."
+msgstr "Đợt lương bạn gửi đi sẽ nằm ở đây cho đến khi mọi người trong tuyến duyệt đã ký."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Approved %s · not paid yet"
+msgstr "Đã duyệt %s · chưa chi trả"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Approved runs land here, ready to pay and deliver."
+msgstr "Các đợt đã duyệt sẽ về đây, sẵn sàng chi trả và gửi phiếu lương."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Approved · not paid yet"
+msgstr "Đã duyệt · chưa chi trả"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Approved · to pay"
+msgstr "Đã duyệt · chờ chi trả"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Approved. Pay, deliver payslips and post journals from here."
+msgstr "Đã duyệt. Chi trả, gửi phiếu lương và ghi sổ từ đây."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Bank file made"
+msgstr "Đã tạo tệp ngân hàng"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Check the import before you submit"
+msgstr "Kiểm tra dữ liệu nhập trước khi gửi"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Close / clear"
+msgstr "Đóng / bỏ chọn"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Decided"
+msgstr "Đã quyết định"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Deductions"
+msgstr "Khấu trừ"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Delivered"
+msgstr "Đã gửi phiếu lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Drafting"
+msgstr "Đang soạn"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Each goes to its own sign-off route."
+msgstr "Mỗi đợt đi theo tuyến ký duyệt riêng của nó."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Employer cost"
+msgstr "Chi phí của doanh nghiệp"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Figures don’t add up"
+msgstr "Số liệu không khớp"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Find a run"
+msgstr "Tìm đợt lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Gross − deductions = net. The figures add up."
+msgstr "Tổng thu nhập − khấu trừ = thực nhận. Số liệu khớp."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "In approval"
+msgstr "Đang phê duyệt"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Journals posted"
+msgstr "Đã ghi sổ"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Later"
+msgstr "Sau đó"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Move between runs"
+msgstr "Di chuyển giữa các đợt"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Move between steps"
+msgstr "Di chuyển giữa các bước"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Net per person"
+msgstr "Thực nhận mỗi người"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "No drafts."
+msgstr "Không có bản nháp."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "No pay run covers %s yet."
+msgstr "Chưa có đợt lương nào cho %s."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Not needed"
+msgstr "Không cần"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Not started"
+msgstr "Chưa bắt đầu"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Nothing approved here yet."
+msgstr "Chưa có gì được duyệt ở đây."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Nothing approved yet."
+msgstr "Chưa có gì được duyệt."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Nothing computed yet"
+msgstr "Chưa tính gì"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Nothing in draft here."
+msgstr "Không có bản nháp nào ở đây."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Nothing is waiting on you."
+msgstr "Không có gì đang chờ bạn."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Nothing is waiting."
+msgstr "Không có gì đang chờ."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Nothing waiting here."
+msgstr "Không có gì đang chờ ở đây."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "On its sign-off route"
+msgstr "Đang trong tuyến ký duyệt"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Open the run to see which component"
+msgstr "Mở đợt lương để xem thành phần nào"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Open your approvals"
+msgstr "Mở các phê duyệt của bạn"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Paid"
+msgstr "Đã chi trả"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Paid %(date)s · %(n)s payslips sent"
+msgstr "Đã chi trả %(date)s · đã gửi %(n)s phiếu lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Paid %s"
+msgstr "Đã chi trả %s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Paid %s · payslips not sent yet"
+msgstr "Đã chi trả %s · chưa gửi phiếu lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Paid · %s payslips sent"
+msgstr "Đã chi trả · đã gửi %s phiếu lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Paid · payslips not sent yet"
+msgstr "Đã chi trả · chưa gửi phiếu lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Payslips emailed"
+msgstr "Đã gửi phiếu lương qua email"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Press Run payroll to start a new pay run."
+msgstr "Nhấn Chạy lương để bắt đầu đợt lương mới."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Quick look"
+msgstr "Xem nhanh"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Run payroll for %s"
+msgstr "Chạy lương cho %s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "See the drafts"
+msgstr "Xem các bản nháp"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "See what to fix"
+msgstr "Xem cần sửa gì"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "See who it is with"
+msgstr "Xem đang ở chỗ ai"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Select / unselect"
+msgstr "Chọn / bỏ chọn"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Sent back"
+msgstr "Bị trả lại"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Sent back by %s"
+msgstr "Bị %s trả lại"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Show every step"
+msgstr "Hiện mọi bước"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Show only this step"
+msgstr "Chỉ hiện bước này"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Sign-off %(i)s of %(n)s · %(step)s"
+msgstr "Ký duyệt %(i)s / %(n)s · %(step)s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Signed off by %s"
+msgstr "%s đã ký duyệt"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Stage %(i)s of %(n)s · %(label)s"
+msgstr "Giai đoạn %(i)s / %(n)s · %(label)s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Start when the month's figures are in."
+msgstr "Bắt đầu khi đã có số liệu của tháng."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Still being prepared. Submit when the figures are right."
+msgstr "Đang được chuẩn bị. Gửi đi khi số liệu đã đúng."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Submit"
+msgstr "Gửi đi"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Submit %s drafts for approval"
+msgstr "Gửi %s bản nháp đi phê duyệt"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Submit %s for approval?"
+msgstr "Gửi %s đi phê duyệt?"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Submit a draft"
+msgstr "Gửi một bản nháp"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Submit all %s"
+msgstr "Gửi tất cả %s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Submit the draft"
+msgstr "Gửi bản nháp"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "The month moves when its slowest run does."
+msgstr "Tháng chỉ tiến lên khi đợt lương chậm nhất tiến lên."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Their figures are scheme defaults, not real pay."
+msgstr "Số liệu của họ là giá trị mặc định của gói lương, không phải lương thật."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "This help"
+msgstr "Trợ giúp này"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "With %s"
+msgstr "Đang ở chỗ %s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "With nobody yet"
+msgstr "Chưa ở chỗ ai"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "With the people on its sign-off route."
+msgstr "Đang ở chỗ những người trong tuyến ký duyệt."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "at %s"
+msgstr "ở %s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "done"
+msgstr "xong"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "in %s"
+msgstr "trong %s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "in progress"
+msgstr "đang xử lý"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "later"
+msgstr "sau đó"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "matching “%s”"
+msgstr "khớp “%s”"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "next"
+msgstr "tiếp theo"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "stuck"
+msgstr "bị kẹt"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "your turn"
+msgstr "đến lượt bạn"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "All months"
+msgstr "Mọi tháng"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Board"
+msgstr "Bảng"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Clear"
+msgstr "Bỏ chọn"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Download Excel"
+msgstr "Tải Excel"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Each one goes to its own sign-off route. You can still reject a run while it waits."
+msgstr "Mỗi đợt đi theo tuyến ký duyệt riêng. Bạn vẫn có thể từ chối một đợt khi nó đang chờ."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Every pay run from draft to paid. Approve, pay, report and export without leaving this board."
+msgstr "Mọi đợt lương từ bản nháp đến đã chi trả. Phê duyệt, chi trả, báo cáo và xuất dữ liệu ngay trên bảng này."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Find a pay run"
+msgstr "Tìm đợt lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Got it"
+msgstr "Đã hiểu"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Keyboard"
+msgstr "Bàn phím"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Keyboard shortcuts"
+msgstr "Phím tắt"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "List"
+msgstr "Danh sách"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Months"
+msgstr "Tháng"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "More actions"
+msgstr "Thao tác khác"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Move around the board without the mouse."
+msgstr "Di chuyển trên bảng mà không cần chuột."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Net pay"
+msgstr "Thực nhận"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Net pay this month"
+msgstr "Thực nhận tháng này"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Not now"
+msgstr "Để sau"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Nothing matches."
+msgstr "Không có kết quả."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "On its sign-off route."
+msgstr "Đang trong tuyến ký duyệt."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Open the full run"
+msgstr "Mở đợt lương đầy đủ"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Payroll report"
+msgstr "Báo cáo lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "People"
+msgstr "Nhân sự"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Reject this run"
+msgstr "Từ chối đợt này"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Select"
+msgstr "Chọn"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Still being prepared"
+msgstr "Đang được chuẩn bị"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Still being prepared. When the figures are right, submit it and it goes to its sign-off route."
+msgstr "Đang được chuẩn bị. Khi số liệu đã đúng, gửi đi và nó sẽ vào tuyến ký duyệt."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "The money"
+msgstr "Tiền"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "View"
+msgstr "Hiển thị"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "What happened"
+msgstr "Diễn biến"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Where it is"
+msgstr "Đang ở đâu"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "· press a step, a division or a phrase in the sentence above to narrow it"
+msgstr "· nhấn một bước, một bộ phận hoặc một cụm từ trong câu phía trên để thu hẹp"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%(step)s · signed off by %(who)s"
+msgstr "%(step)s · %(who)s đã ký duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%(step)s · waiting for %(who)s"
+msgstr "%(step)s · đang chờ %(who)s"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Payslips sent to %s people"
+msgstr "Đã gửi phiếu lương cho %s người"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Prepared"
+msgstr "Đã chuẩn bị"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Prepared by %s"
+msgstr "%s đã chuẩn bị"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Rejected by %s"
+msgstr "%s đã từ chối"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Sent back by %s to be fixed"
+msgstr "%s đã trả lại để sửa"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Submitted for approval"
+msgstr "Đã gửi đi phê duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "nobody yet"
+msgstr "chưa có ai"

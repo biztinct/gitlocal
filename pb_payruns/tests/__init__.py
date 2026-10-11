@@ -22,3 +22,7 @@ from . import test_generate_payslips_dialog
 # company that happens to own the payslips (Rize: India payroll in a VND
 # company was shown in dong).
 from . import test_board_currency
+
+# PAYRUN BOARD redesign: the month block the hero speaks about, and the
+# delivery / health / story every card now carries.
+from . import test_board_redesign

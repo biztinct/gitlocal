@@ -134,7 +134,7 @@
     "pk-kpis": {
       "screen": "payruns",
       "file": "pb_payruns/static/src/xml/payruns.xml",
-      "desc": "The numbers row: Pay runs, In pipeline, Awaiting your approval, Completed, Net paid (done) in the company's currency."
+      "desc": "The \"This month\" card at the top: the month's five-stage journey, one sentence that says where every run is (its phrases narrow the board), and the one next-step button."
     },
     "pk-run": {
       "screen": "payruns",
@@ -157,7 +157,7 @@
     "pk-divchips": {
       "screen": "payruns",
       "file": "pb_payruns/static/src/xml/payruns.xml",
-      "desc": "The division chips above the board. They narrow the cards; the numbers row still counts the whole board."
+      "desc": "The division chips in the toolbar. They narrow the cards; the lane counts still count the whole board."
     },
     "pk-card": {
       "screen": "payruns",
@@ -169,7 +169,25 @@
       "screen": "payruns",
       "file": "pb_payruns/static/src/xml/payruns.xml",
       "repeats": true,
-      "desc": "A run card's action footer: Submit for approval / Reject on a draft, Open the approval when it is your turn, Pay & Deliver / Report / Excel / Journals / Payments when Done."
+      "desc": "A run card's action footer: Submit for approval + Reject on a draft, Open the approval when it is your turn, Pay & Deliver while an approved run is unpaid, Report / Excel once paid; everything else behind the ⋯ menu."
+    },
+    "pk-hero-next": {
+      "screen": "payruns",
+      "file": "pb_payruns/static/src/xml/payruns.xml",
+      "desc": "The one next-step button in the This month card: Open the approval, See what to fix, Submit N drafts, Pay & Deliver or Run payroll, whichever is outstanding.",
+      "reserved": true
+    },
+    "pk-peek": {
+      "screen": "payruns",
+      "file": "pb_payruns/static/src/xml/payruns.xml",
+      "desc": "The quick-look panel a card opens: where the run is, the money, what happened, without leaving the board.",
+      "reserved": true
+    },
+    "pk-bulk": {
+      "screen": "payruns",
+      "file": "pb_payruns/static/src/xml/payruns.xml",
+      "desc": "The bar that appears when cards are ticked: submit or export several pay runs at once.",
+      "reserved": true
     },
     "ps-runsel": {
       "screen": "payslips",
@@ -630,7 +648,8 @@
     "pk-steps": {
       "screen": "payruns",
       "file": "pb_payruns/static/src/xml/payruns.xml",
-      "desc": "The numbered steps 01 Draft · 02 Waiting for approval · 03 Done, with their counts and flags (sent back, waiting on you)."
+      "desc": "The lane headers: 01 Draft · 02 Waiting for approval · 03 Done, each with its count and its flag (sent back, waiting on you, approved not paid). Press one to focus that lane.",
+      "repeats": true
     },
     "pk-route": {
       "screen": "payruns",
