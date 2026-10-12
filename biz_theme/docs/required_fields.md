@@ -1,8 +1,8 @@
 # Required-field feedback
 
-`biz_required_fields` is a shared service in the backend and frontend theme bundles. Standard form Save and workflow actions use the relational model's existing required-field checks. They retain server validation, field modifiers, access checks and numeric-zero semantics.
+`biz_required_fields` is a shared service in the backend and frontend theme bundles. Standard form and editable-table Save and workflow actions use the relational model's existing required-field checks. They retain server validation, field modifiers, access checks and numeric-zero semantics.
 
-A rejected save opens one accessible dialog listing the missing field labels. Closing the dialog (button, X or Escape) focuses the first missing field after overlay teardown. Native notebook pages are opened as necessary. The first field receives a three-pixel highlight without shifting the layout. Correcting a field clears its highlight; drafts stay in place.
+A rejected save opens one accessible dialog listing the missing field labels. Closing the dialog (button, X or Escape) focuses the first missing field after overlay teardown. Native notebook pages are opened as necessary; editable tables focus the matching row and cell. The first field receives a three-pixel highlight without shifting the layout. Correcting a field clears its highlight; drafts stay in place.
 
 ## Custom panels
 

@@ -138,7 +138,7 @@ export function createRequiredValidation(dialog, eventRoot = document, keyboardR
         const element = ev.target;
         if (element.matches?.(controls) && !isMissing(element)) {
             clearField(element);
-            const widget = element.closest(".biz-required-invalid.o_field_widget");
+            const widget = element.closest(".biz-required-invalid.o_field_widget, .biz-required-invalid.o_field_cell");
             if (widget) clearField(widget);
         }
         // Reactive choice groups update their missing flag after their handler.

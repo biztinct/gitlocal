@@ -3,7 +3,7 @@ import { after, describe, expect, test } from "@odoo/hoot";
 import { animationFrame } from "@odoo/hoot-mock";
 import { click, queryAllTexts, queryFirst, waitFor } from "@odoo/hoot-dom";
 import { Component, xml } from "@odoo/owl";
-import { makeDialogMockEnv, mountWithCleanup, defineModels, models, fields, mountView, clickSave, getService, onRpc } from "@web/../tests/web_test_helpers";
+import { makeDialogMockEnv, mountWithCleanup, defineModels, defineWebModels, models, fields, mountView, clickSave, getService, onRpc, contains } from "@web/../tests/web_test_helpers";
 import { collectRequired, createRequiredValidation } from "@biz_theme/js/required_fields";
 import "@biz_theme/js/native_required_fields";
 
@@ -117,6 +117,7 @@ class MandatoryQa extends models.Model {
     amount = fields.Integer({ required: true });
 }
 defineModels([MandatoryQa]);
+defineWebModels();
 
 test("native Save lists every required field and never calls create", async () => {
     onRpc("mandatory.qa", "web_save", () => expect.step("save"));
@@ -141,4 +142,22 @@ test("native Save reveals a missing field on another notebook page", async () =>
     expect(document.activeElement).toBe(queryFirst('[name="code"] input'));
     expect('[name="code"]').toHaveClass("biz-required-invalid");
     getService("biz_required_fields").destroy();
+});
+
+
+test("editable table Save lists missing fields and focuses the first cell without saving", async () => {
+    onRpc("mandatory.qa", "web_save", () => expect.step("save"));
+    await mountView({ type: "list", resModel: "mandatory.qa", arch: '<list editable="bottom"><field name="name"/><field name="code"/><field name="amount"/></list>' });
+    after(() => getService("biz_required_fields").destroy());
+    await contains(".o_list_button_add").click();
+    await contains('[name="amount"] input').edit("7");
+    await contains(".o_list_button_save").click();
+    expect(queryAllTexts(".biz-required-list li")).toEqual(["Name", "Reference"]);
+    await click(".biz-required-dialog footer button");
+    await waitFor('[name="name"] input:focus');
+    expect(document.activeElement).toBe(queryFirst('[name="name"] input'));
+    expect(queryFirst('[name="amount"] input').value).toBe("7");
+    await contains('[name="name"] input').edit("Completed name");
+    expect('[name="name"]').not.toHaveClass("biz-required-invalid");
+    expect.verifySteps([]);
 });

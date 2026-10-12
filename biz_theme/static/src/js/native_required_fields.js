@@ -3,7 +3,14 @@ import { toRaw, useEffect, useRef } from "@odoo/owl";
 import { patch } from "@web/core/utils/patch";
 import { Record } from "@web/model/relational_model/record";
 import { FormRenderer } from "@web/views/form/form_renderer";
+import { ListRenderer } from "@web/views/list/list_renderer";
 import { nativeFormRoots } from "@biz_theme/js/required_fields";
+
+// A dialog form takes priority over the same record in an underlying table.
+const nativeListRoots = new WeakMap();
+function recordRoot(record) {
+    return nativeFormRoots.get(toRaw(record))?.el || nativeListRoots.get(toRaw(record))?.el;
+}
 
 patch(FormRenderer.prototype, {
     setup() {
@@ -11,13 +18,30 @@ patch(FormRenderer.prototype, {
         const root = useRef("compiled_view_root");
         useEffect((record) => {
             nativeFormRoots.set(toRaw(record), root);
-            return () => nativeFormRoots.delete(toRaw(record));
+            return () => {
+                if (nativeFormRoots.get(toRaw(record)) === root) nativeFormRoots.delete(toRaw(record));
+            };
         }, () => [this.props.record, root.el]);
     },
 });
+patch(ListRenderer.prototype, {
+    setup() {
+        super.setup(...arguments);
+        const root = this.rootRef;
+        useEffect(() => {
+            const records = this.props.list.records.map(toRaw);
+            for (const record of records) nativeListRoots.set(record, root);
+            return () => {
+                for (const record of records) {
+                    if (nativeListRoots.get(record) === root) nativeListRoots.delete(record);
+                }
+            };
+        }, () => [root.el, this.props.list.records.length, ...this.props.list.records]);
+    },
+});
 function fieldWidget(record, name, fallbackRoot) {
-    let root = nativeFormRoots.get(toRaw(record))?.el || fallbackRoot?.();
-    const ownRoot = nativeFormRoots.get(toRaw(record))?.el;
+    let root = recordRoot(record) || fallbackRoot?.();
+    const ownRoot = recordRoot(record);
     const row = root && [...root.querySelectorAll(".o_data_row[data-id]")]
         .find(el => el.getAttribute("data-id") === record.id);
     if (row) root = row;
@@ -26,7 +50,7 @@ function fieldWidget(record, name, fallbackRoot) {
     return [...root.querySelectorAll(".o_field_widget[name], .o_field_cell[name]")].find(el => el.getAttribute("name") === name);
 }
 async function revealField(record, name, fallbackRoot) {
-    const root = nativeFormRoots.get(toRaw(record))?.el || fallbackRoot?.();
+    const root = recordRoot(record) || fallbackRoot?.();
     if (!root?.isConnected) return null;
     const visited = new Set();
     for (let i = 0; i < 20; i++) {
@@ -68,7 +92,7 @@ export function missingRecordFields(record, prefix = "", fallbackRoot) {
         if (["one2many", "many2many"].includes(metadata.type) && record.data[name]?.count) {
             for (const [i, child] of record.data[name].records.entries()) {
                 fields.push(...missingRecordFields(child, `${label} (${i + 1}) / `,
-                    () => nativeFormRoots.get(toRaw(record))?.el || fallbackRoot?.()));
+                    () => recordRoot(record) || fallbackRoot?.()));
             }
         } else {
             fields.push({ label, element: fieldWidget(record, name, fallbackRoot), target: () => revealField(record, name, fallbackRoot) });
