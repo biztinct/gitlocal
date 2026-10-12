@@ -2342,6 +2342,8 @@ $pbva-areas: (
 .pbva-edit-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 10px; }
 .pbva-screen-choice > summary { cursor: pointer; padding: 10px 0; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--pbim-ink, #1B1733); }
 .pbva-edit-review { padding: 20px 24px; overflow: auto; min-height: 0; }
+.pbva-field-required { margin-left: 8px; color: var(--pbim-primary, #6355C7); font-size: 11px; letter-spacing: normal; text-transform: none; }
+.pbva-field-hint { min-height: 18px; margin: 6px 0 0; color: var(--pbim-muted, #64748B); font-size: 12px; }
 .pbva-edit-diff { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin: 18px 0; }
 .pbva-edit-table { max-height: 300px; overflow: auto; margin: 16px 0; }
 .pbva-edit-table table { color: var(--pbim-ink, #1B1733); }

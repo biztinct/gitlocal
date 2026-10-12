@@ -1289,7 +1289,9 @@
             </div>
             <div class="pbva-edit-table"><table class="table table-sm"><thead><tr><th>Person</th><th>Permissions added</th><th>Removed</th><th>Kept through other access</th></tr></thead><tbody><tr t-foreach="state.editorImpact.rows" t-as="affected" t-key="affected.id"><td><t t-esc="affected.name"/><small t-if="!affected.active"> · Inactive login</small></td><td t-esc="affected.added"/><td t-esc="affected.removed"/><td t-esc="affected.retained"/></tr></tbody></table></div>
             <p t-if="state.editorImpact.more" class="pbva-col-note" t-esc="state.editorImpact.more + ' more users are included in the same update.'"/>
-            <label class="pbva-lbl" for="pbva-role-reason">Why this role is changing</label><textarea id="pbva-role-reason" class="pbva-in pbva-area" rows="2" t-model="state.editorReason" placeholder="Explain the reason for this change"/>
+            <label class="pbva-lbl" for="pbva-role-reason">Why this role is changing <span class="pbva-field-required">Required</span></label>
+            <textarea id="pbva-role-reason" class="pbva-in pbva-area" rows="2" t-model="state.editorReason" placeholder="Explain the reason for this change" required="required" aria-required="true" aria-describedby="pbva-role-reason-help"/>
+            <p id="pbva-role-reason-help" class="pbva-field-hint" aria-live="polite"><t t-if="!state.editorReason.trim()">Enter a reason to enable Save and update users.</t></p>
           </div>
           <div t-elif="state.editorHistory" class="pbva-edit-review">
             <h4>Role history</h4><p t-if="!state.editorHistory.length" class="pbva-col-empty">No published changes yet.</p>

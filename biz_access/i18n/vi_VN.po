@@ -2877,3 +2877,13 @@ msgstr "Cấu hình trước thay đổi được ghi nhận đầu tiên"
 #: code:addons/biz_access/models/role_assignments.py:0
 msgid "Assigned from explicit role membership"
 msgstr "Được gán từ tư cách thành viên vai trò rõ ràng"
+
+#. module: biz_access
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Required"
+msgstr "Bắt buộc"
+
+#. module: biz_access
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Enter a reason to enable Save and update users."
+msgstr "Nhập lý do để bật nút Lưu và cập nhật người dùng."
