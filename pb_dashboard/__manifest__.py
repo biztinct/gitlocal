@@ -29,7 +29,8 @@
     # language (payobook walk: "[object Object]", H43).
     # 2.2.2: Vietnamese style for money ("66,0 triệu") and months
     # ("Tháng 10/2026") — owner 2026-10-12.
-    'version': '19.0.2.2.2',
+    # 2.2.3: Vietnamese chart labels "T10", "T1/26", axis "100 tỷ".
+    'version': '19.0.2.2.3',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

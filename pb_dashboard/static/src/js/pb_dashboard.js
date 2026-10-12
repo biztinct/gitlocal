@@ -689,7 +689,12 @@ export class PbDashboard extends Component {
         return this.isVi ? `Tháng ${d.month}/${d.year}` : d.toFormat("LLLL yyyy");
     }
 
-    monthShort(key) { return DateTime.fromISO(`${key}-01`).toFormat("LLL"); }
+    // Column labels: "Oct" in English; "T10" in Vietnamese ("Tháng 10" is too
+    // wide for twelve columns).
+    monthShort(key) {
+        const d = DateTime.fromISO(`${key}-01`);
+        return this.isVi ? `T${d.month}` : d.toFormat("LLL");
+    }
 
     peopleWord(n) {
         return n === 1 ? _t("1 person") : _t("%(n)s people", { n: int(n) });
@@ -1014,7 +1019,7 @@ export class PbDashboard extends Component {
     tickLabel(t) {
         if (this.state.measure === "people") { return int(t); }
         const c = compact(t);
-        return [c.num.replace(/\.0$/, ""), c.unit].filter(Boolean).join(" ");
+        return [c.num.replace(/[.,]0$/, ""), c.unit].filter(Boolean).join(" ");
     }
 
     /**
@@ -1084,7 +1089,7 @@ export class PbDashboard extends Component {
                 fill: isSel ? "sel" : "soft", sel: isSel,
                 inprogress: !!m.inprogress, latest: !!m.latest,
                 ghost,
-                label: this.monthShort(m.key) + (m.year_mark ? ` ${yy}` : ""),
+                label: this.monthShort(m.key) + (m.year_mark ? (this.isVi ? `/${yy}` : ` ${yy}`) : ""),
                 labelX: x + cw / 2,
                 topLabel, topY: top - 7,
                 hitX: padL + i * slot, hitW: slot, hitY: padT - 14, hitH: plotH + 14,
@@ -1401,7 +1406,7 @@ export class PbDashboard extends Component {
             return {
                 key: `${u.kind}-${u.date}`,
                 day: d ? d.toFormat("d") : "",
-                mon: d ? d.toFormat("LLL") : "",
+                mon: d ? (this.isVi ? `T${d.month}` : d.toFormat("LLL")) : "",
                 hot: inn.amber,
                 title: w.title(u, this),
                 sub: w.sub(u, this),
