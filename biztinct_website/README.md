@@ -77,14 +77,26 @@ temporary restored QA databases cannot change public routing.
 ## Design and assets
 
 The lightweight public pages use self-hosted Manrope and Instrument Serif
-fonts (OFL licenses in `static/src/fonts`). V2 uses three original glass/chrome
-3D illustrations generated with the built-in Imagegen tool, delivered as
-transparent WebP assets. Their complete prompts and paths are recorded in
-`design/artwork-v2.json`. The hero uses a procedural WebGL aurora, spring-like
-pointer parallax, floating artwork and animated typography. Service cards have
+fonts (OFL licenses in `static/src/fonts`). The homepage uses a typography-led layout with interactive canvas particles spelling
+Biztinct and a soft mist/glow behind the text, inspired by the supplied 21st.dev
+particle-text-canvas example. Its former abstract artwork and floating messages
+have been removed from the homepage and shared call to action. The existing
+illustrations on other pages remain available. The effect renders at 30 fps,
+sleeps when hidden or offscreen, uses local pointer coordinates, and resamples
+after fonts load or its container changes size. Reduced-motion and data-saving
+preferences show the readable gradient text fallback.
+
+This is an Odoo QWeb site, not a React/shadcn/TypeScript application. Components
+are QWeb templates in `views/templates.xml`; styles are in `static/src/css`.
+The native component lives in `static/src/js/particle-text-canvas.js`, so no
+React, Tailwind, shadcn CLI or build pipeline is required. In a separate React
+project the reusable TSX component would belong in `components/ui` (or
+`src/components/ui` with the corresponding `@/` alias); that convention does
+not apply to this server-rendered Odoo module.
+
+Service cards have
 pointer tilt and lighting; sections reveal on scroll, with a moving capability
-strip and animated workflow states. The shader sleeps when hidden or offscreen
-and renders at 30 fps with a capped resolution. Reduced-motion and data-saving
+strip and animated workflow states. Reduced-motion and data-saving
 preferences disable unnecessary effects. No animation is required to use the
 site. The original Biztinct logo and favicon are preserved; explanatory workflow diagrams use SVG/CSS.
 Workflow illustrations are labelled as examples, not live

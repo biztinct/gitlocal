@@ -24,3 +24,24 @@ body{background:var(--paper);color:var(--ink);overflow-x:hidden}body::before{con
 /* Preserve the exact original logo, including its colours and proportions. */
 .wordmark{background:#fff;border-radius:13px;padding:4px 12px;gap:0;box-shadow:0 3px 15px #0002}.wordmark img{width:107px;height:39px;display:block;object-fit:contain;filter:none}.flow-core img.flow-logo{width:94px;height:auto;background:white;border-radius:9px;padding:3px 6px}.cta-mark{object-fit:contain;opacity:.17}.manifesto-inner>img{object-fit:contain;opacity:.17}
 @media(max-width:720px){.wordmark{padding:3px 10px}.wordmark img{width:107px;height:39px}.flow-core img.flow-logo{width:83px;height:auto}}
+
+/* Typography-led homepage: meaningful content, with no abstract product artwork. */
+.hero-text{background:radial-gradient(ellipse at 78% 45%,#38307433,transparent 58%)}
+.hero-text .hero-stage{grid-template-columns:1.1fr 1fr;gap:40px;min-height:630px}
+.hero-text .hero-copy h1{font-size:clamp(48px,5.7vw,88px);white-space:normal}
+.hero-text .hero-copy h1 em{text-shadow:0 0 70px #9486ff25}
+.hero-text .hero-copy .eyebrow{font-size:9px}
+.hero-text .hero-actions{flex-wrap:wrap}
+.particle-wordmark{position:relative;width:100%;height:320px;display:grid;place-items:center;isolation:isolate}
+.particle-wordmark::before{content:'';position:absolute;inset:12% -5%;z-index:-1;background:radial-gradient(ellipse,#7564db26,transparent 65%);filter:blur(25px);animation:text-mist 10s ease-in-out infinite;pointer-events:none}
+.particle-fallback{font-size:clamp(46px,7.2vw,115px);font-weight:600;letter-spacing:-.06em;background:linear-gradient(100deg,#c4a1ff,#99aeff,#77d7ed);background-clip:text;-webkit-background-clip:text;color:transparent}
+.particle-text-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .35s}
+.particles-ready .particle-text-canvas{opacity:1}.particles-ready .particle-fallback{visibility:hidden}
+.page-home .solution-card h3{margin-top:50px}.page-home .solution-card{min-height:310px}
+.page-home .philosophy-section{display:block;max-width:880px}.page-home .philosophy-copy{max-width:none}
+.page-home .philosophy-copy p:not(.eyebrow){max-width:720px}
+@keyframes text-mist{0%,100%{transform:translate(-3%,-4%) scale(.95);opacity:.6}50%{transform:translate(3%,4%) scale(1.08);opacity:1}}
+@media(min-width:1700px){.hero-text .hero-stage{min-height:710px}}
+@media(max-width:960px){.hero-text .hero-stage{gap:24px;min-height:540px}.hero-text .hero-copy .eyebrow{font-size:7px}.particle-wordmark{height:260px}}
+@media(max-width:720px){.hero-text .hero-stage{grid-template-columns:1fr;gap:0;padding-bottom:28px;min-height:0}.hero-text .hero-copy h1{font-size:clamp(45px,9.8vw,70px)}.hero-text .hero-copy .eyebrow{font-size:7px}.particle-wordmark{height:180px;margin-top:15px}.particle-fallback{font-size:clamp(55px,16vw,105px)}.page-home .solution-card{min-height:0}.page-home .solution-card h3{margin-top:32px}}
+@media(prefers-reduced-motion:reduce){.particle-wordmark::before{animation:none}.particle-text-canvas{display:none}.particle-fallback{visibility:visible!important}}

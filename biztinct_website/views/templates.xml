@@ -16,10 +16,11 @@
                 <link rel="canonical" t-att-href="'https://biztinct.com' + request.httprequest.path"/>
                 <link rel="icon" type="image/x-icon" href="/biztinct_website/static/src/img/biztinct-original-favicon.ico"/>
                 <link rel="preload" href="/biztinct_website/static/src/fonts/manrope-400.ttf" as="font" type="font/ttf" crossorigin="anonymous"/>
-                <link rel="stylesheet" href="/biztinct_website/static/src/css/site.css?v=2.0.3"/>
-                <link rel="stylesheet" href="/biztinct_website/static/src/css/experience.css?v=2.0.3"/>
-                <script defer="defer" src="/biztinct_website/static/src/js/site.js?v=2.0.3"/>
-                <script defer="defer" src="/biztinct_website/static/src/js/experience.js?v=2.0.3"/>
+                <link rel="stylesheet" href="/biztinct_website/static/src/css/site.css?v=2.1.0"/>
+                <link rel="stylesheet" href="/biztinct_website/static/src/css/experience.css?v=2.1.0"/>
+                <script defer="defer" src="/biztinct_website/static/src/js/site.js?v=2.1.0"/>
+                <script defer="defer" src="/biztinct_website/static/src/js/experience.js?v=2.1.0"/>
+                <script defer="defer" src="/biztinct_website/static/src/js/particle-text-canvas.js?v=2.1.0"/>
                 <t t-if="page in ('thanks', 'login')"><meta name="robots" content="noindex, follow"/></t>
             </head>
             <body t-att-class="'page-' + page">
@@ -77,23 +78,19 @@
 
     <template id="cta" name="Start a conversation">
         <section class="cta-section">
-            <div class="shell cta-inner"><div><p class="eyebrow">YOUR NEXT CHAPTER</p><h2>There’s a better<br/>way to <em>work.</em></h2></div><div class="cta-copy"><p>Tell us what’s slowing you down.<br/>We’ll explore what’s possible.</p><a class="button button-light" href="/contactus">Let’s make it happen <span aria-hidden="true">↗</span></a></div><img class="cta-mark" src="/biztinct_website/static/src/img/connected-systems-v2.webp" width="768" height="768" alt="" loading="lazy"/></div>
+            <div class="shell cta-inner"><div><p class="eyebrow">YOUR NEXT CHAPTER</p><h2>There’s a better<br/>way to <em>work.</em></h2></div><div class="cta-copy"><p>Tell us what’s slowing you down.<br/>We’ll explore what’s possible.</p><a class="button button-light" href="/contactus">Let’s make it happen <span aria-hidden="true">↗</span></a></div></div>
         </section>
     </template>
 
     <template id="home" name="Biztinct home">
         <t t-call="biztinct_website.layout">
-            <section class="hero hero-v2">
-                <canvas class="hero-canvas" aria-hidden="true"></canvas>
+            <section class="hero hero-v2 hero-text">
                 <div class="hero-ambient" aria-hidden="true"></div>
                 <div class="shell hero-stage">
-                    <div class="hero-copy"><p class="eyebrow"><span class="live-dot"></span> BUSINESS SOFTWARE. DISTINCT BY DESIGN.</p><h1>Less friction.<br/>More <em>momentum.</em></h1><p class="hero-description">Your ambition deserves better tools.<br/>We build custom software and connect your systems,<br class="desktop-break"/> so your business can move as one.</p><div class="hero-actions"><a class="button" href="/contactus">Let’s build your next chapter <span aria-hidden="true">↗</span></a><a class="text-link" href="/solutions">Explore our solutions <span aria-hidden="true">↓</span></a></div><div class="hero-note"><span class="note-mark">✦</span> Custom where it counts. Connected where it matters.</div></div>
-                    <div class="hero-visual" aria-label="Original violet glass and chrome sculpture representing connected business flow">
-                        <div class="visual-halo" aria-hidden="true"></div>
-                        <div class="hero-art-parallax"><img class="hero-art-image" src="/biztinct_website/static/src/img/hero-flow-v2.webp" srcset="/biztinct_website/static/src/img/hero-flow-v2-mobile.webp 768w, /biztinct_website/static/src/img/hero-flow-v2.webp 1280w" sizes="(max-width: 720px) 95vw, 52vw" width="1280" height="1280" alt="Violet glass and polished chrome ribbons flowing together" fetchpriority="high" decoding="async"/></div>
-                        <div class="visual-pill pill-top"><span class="tiny-dot"></span> BUILT AROUND YOU</div>
-                        <div class="visual-pill pill-bottom"><span class="pill-symbol">↗</span><div>Make the everyday<br/><strong>extraordinary.</strong></div></div>
-                        <span class="visual-coordinate" aria-hidden="true">DISTINCT / CONNECTED / IN MOTION</span>
+                    <div class="hero-copy"><p class="eyebrow"><span class="live-dot"></span> BUSINESS SOFTWARE. DISTINCT BY DESIGN.</p><h1>Less friction.<br/>More <em>momentum.</em></h1><p class="hero-description">Your ambition deserves better tools.<br/>We build custom software and connect your systems,<br class="desktop-break"/> so your business can move as one.</p><div class="hero-actions"><a class="button" href="/contactus">Let’s build your next chapter <span aria-hidden="true">↗</span></a><a class="text-link" href="/solutions">Explore our solutions <span aria-hidden="true">↓</span></a></div></div>
+                    <div class="particle-wordmark" aria-label="Biztinct">
+                        <span class="particle-fallback" aria-hidden="true">Biztinct</span>
+                        <canvas class="particle-text-canvas" aria-hidden="true"></canvas>
                     </div>
                 </div>
                 <a class="hero-scroll" href="#possibilities"><span></span> SCROLL TO EXPLORE</a>
@@ -105,14 +102,14 @@
             <section class="section solutions-section">
                 <div class="shell"><div class="section-heading"><div><p class="eyebrow">WHAT WE MAKE POSSIBLE</p><h2>A better fit.<br/><em>At every touchpoint.</em></h2></div><a class="text-link" href="/solutions">See all solutions <span aria-hidden="true">↗</span></a></div>
                     <div class="solution-grid">
-                        <a href="/solutions#custom" class="solution-card card-custom"><div class="card-top"><span>01 / MADE FOR YOU</span><span class="circle-arrow" aria-hidden="true">↗</span></div><div class="tile-art sculpture-art" aria-hidden="true"><img src="/biztinct_website/static/src/img/custom-modules-v2.webp" width="768" height="768" alt="" loading="lazy"/></div><h3>Software that fits.<br/>Without the compromise.</h3><p>Purpose-built applications for the processes that make your business distinct.</p><span class="card-link">Custom development <span aria-hidden="true">→</span></span></a>
-                        <a href="/solutions#automation" class="solution-card card-automation"><div class="card-top"><span>02 / LESS MANUAL</span><span class="circle-arrow" aria-hidden="true">↗</span></div><div class="tile-art sculpture-art ribbon-card-art" aria-hidden="true"><img src="/biztinct_website/static/src/img/hero-flow-v2-mobile.webp" width="768" height="768" alt="" loading="lazy"/></div><h3>Let the work<br/>take care of itself.</h3><p>Turn repetitive tasks and handoffs into clear, connected workflows.</p><span class="card-link">Workflow automation <span aria-hidden="true">→</span></span></a>
-                        <a href="/solutions#operations" class="solution-card card-connected"><div class="card-top"><span>03 / IN SYNC</span><span class="circle-arrow" aria-hidden="true">↗</span></div><div class="tile-art sculpture-art" aria-hidden="true"><img src="/biztinct_website/static/src/img/connected-systems-v2.webp" width="768" height="768" alt="" loading="lazy"/></div><h3>One business.<br/>Everything connected.</h3><p>Bring sales, people, finance and operations into the same conversation.</p><span class="card-link">Business systems <span aria-hidden="true">→</span></span></a>
+                        <a href="/solutions#custom" class="solution-card card-custom"><div class="card-top"><span>01 / MADE FOR YOU</span><span class="circle-arrow" aria-hidden="true">↗</span></div><h3>Software that fits.<br/>Without the compromise.</h3><p>Purpose-built applications for the processes that make your business distinct.</p><span class="card-link">Custom development <span aria-hidden="true">→</span></span></a>
+                        <a href="/solutions#automation" class="solution-card card-automation"><div class="card-top"><span>02 / LESS MANUAL</span><span class="circle-arrow" aria-hidden="true">↗</span></div><h3>Let the work<br/>take care of itself.</h3><p>Turn repetitive tasks and handoffs into clear, connected workflows.</p><span class="card-link">Workflow automation <span aria-hidden="true">→</span></span></a>
+                        <a href="/solutions#operations" class="solution-card card-connected"><div class="card-top"><span>03 / IN SYNC</span><span class="circle-arrow" aria-hidden="true">↗</span></div><h3>One business.<br/>Everything connected.</h3><p>Bring sales, people, finance and operations into the same conversation.</p><span class="card-link">Business systems <span aria-hidden="true">→</span></span></a>
                     </div>
                     <a class="digital-banner" href="/solutions#digital"><div class="digital-icon" aria-hidden="true">↗</div><div><h3>And a digital front door that feels like you.</h3><p>Websites, e-commerce and online experiences, connected to your business.</p></div><span class="circle-arrow" aria-hidden="true">↗</span></a>
                 </div>
             </section>
-            <section class="section shell philosophy-section"><div class="philosophy-art art-showcase" aria-hidden="true"><img src="/biztinct_website/static/src/img/custom-modules-v2.webp" width="768" height="768" alt="" loading="lazy"/><span class="orbit-label label-custom">Your distinct needs</span><span class="orbit-label label-proven">Established functionality</span><span class="orbit-caption">BETTER TOGETHER</span></div><div class="philosophy-copy"><p class="eyebrow">CUSTOM WHERE IT COUNTS</p><h2>Distinct needs.<br/><em>Smart foundations.</em></h2><p>You shouldn’t have to change the way you work just to fit your software. And you shouldn’t have to build every feature from scratch.</p><p>We combine the right existing functionality with the custom features you actually need. A considered way to build, with your business at the centre.</p><a class="text-link" href="/approach">How we bring it together <span aria-hidden="true">↗</span></a></div></section>
+            <section class="section shell philosophy-section"><div class="philosophy-copy"><p class="eyebrow">CUSTOM WHERE IT COUNTS</p><h2>Distinct needs.<br/><em>Smart foundations.</em></h2><p>You shouldn’t have to change the way you work just to fit your software. And you shouldn’t have to build every feature from scratch.</p><p>We combine the right existing functionality with the custom features you actually need. A considered way to build, with your business at the centre.</p><a class="text-link" href="/approach">How we bring it together <span aria-hidden="true">↗</span></a></div></section>
             <section class="section process-section"><div class="shell"><div class="section-heading"><div><p class="eyebrow">A CLEAR PATH FORWARD</p><h2>From “there must be<br/>a better way” to <em>there is.</em></h2></div><p class="section-side-copy">We start with your work.<br/>Then make the technology fit.</p></div><div class="process-grid"><article><span class="step-number">01</span><h3>Understand</h3><p>Map your processes, listen to your team and find the friction worth fixing.</p></article><article><span class="step-number">02</span><h3>Shape</h3><p>Choose the right foundations and design the custom pieces around your needs.</p></article><article><span class="step-number">03</span><h3>Build</h3><p>Bring the solution to life, with your real workflows guiding the details.</p></article><article><span class="step-number">04</span><h3>Move forward</h3><p>Put it to work and refine the experience as your business evolves.</p></article></div></div></section>
             <section class="section shell industries-section"><p class="eyebrow">DIFFERENT BUSINESSES. SHARED POSSIBILITIES.</p><h2>Whatever your world,<br/>let’s make it <em>work better.</em></h2><div class="industry-tags"><span>Small &amp; medium businesses</span><span>Not-for-profits</span><span>Hospitality</span><span>Healthcare</span><span>Education</span><span>Transport &amp; fleet</span><span>Construction</span></div><p>Your industry gives us context. Your actual processes give us the brief.</p></section>
             <t t-call="biztinct_website.cta"/>
