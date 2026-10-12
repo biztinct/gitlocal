@@ -41,6 +41,70 @@ NEEDS_ORDER = ('runs_to_approve', 'leave_to_approve', 'other_to_approve',
                'settlements_to_check', 'renewals_to_start', 'writeups_overdue')
 
 
+def one_person_route(case):
+    """A published one-step pay-run route whose only seat is a new user;
+    returns that approver (skips with a reason where the engine is absent).
+    Shared by test_06b and HOME P3's waiting-on test."""
+    Run = case.env['hr.payslip.run']
+    if not hasattr(Run, '_pb_runs_awaiting') \
+            or 'biz.approval.engine' not in case.env:
+        case.skipTest('pay runs are not on the approval engine here')
+    process = case.env['biz.approval.process']._by_key('payrun')
+    if not process:
+        case.skipTest('the payrun approval process is not seeded here')
+    groups = [case.env.ref('base.group_user').id]
+    officer = case.env.ref('pb_hr_payroll_base.group_payroll_base_officer',
+                           raise_if_not_found=False)
+    if officer:
+        groups.append(officer.id)
+    approver = case.env['res.users'].with_context(
+        no_reset_password=True).create({
+            'name': 'Home Approver Person', 'login': 'home-approver',
+            'email': 'home-approver@example.com',
+            'company_id': case.company.id,
+            'company_ids': [(6, 0, [case.company.id])],
+            'group_ids': [(6, 0, groups)]})
+    engine = case.env['biz.approval.engine']
+    definition = {
+        'schema_version': 1,
+        'steps': [{'key': 's1', 'kind': 'approve', 'title': 'Home check',
+                   'who': {'mode': 'people', 'user_ids': [approver.id]},
+                   'min_amount': 0, 'condition': None}],
+        'tiers': {'enabled': False, 'fact': None},
+        'safeguards': {
+            'independent': False,
+            'self_exception': {'enabled': False},
+            'repeated': 'different', 'evidence': [],
+            'due': {'kind': 'none', 'days': 1, 'day': 15,
+                    'calendar_id': None},
+            'late': {'remind_days': 1, 'escalate_days': 2,
+                     'reassign': False},
+        },
+    }
+    Binding = case.env['biz.approval.binding'].sudo()
+    Binding.search([('company_id', '=', case.company.id),
+                    ('process_id', '=', process.id),
+                    ('scope_key', '=', ''), ('kind_key', '=', 'any'),
+                    ('active', '=', True)]).write({'active': False})
+    workflow = case.env['biz.approval.workflow'].sudo().create({
+        'name': 'Home route', 'company_id': case.company.id,
+        'process_id': process.id, 'owner_user_id': case.env.user.id})
+    version = case.env['biz.approval.workflow.version'].sudo().create({
+        'workflow_id': workflow.id, 'revision': 1, 'status': 'draft',
+        'definition': definition})
+    checks = engine.validate_for_publish(version.id)
+    if checks['errors']:
+        case.skipTest('the one-person route does not validate here: %s'
+                      % checks['errors'])
+    engine.publish(version.id, version.draft_revision, None, 'test',
+                   [w['code'] for w in checks['warnings']])
+    Binding.create({
+        'company_id': case.company.id, 'process_id': process.id,
+        'scope_key': '', 'scope_label': case.company.name,
+        'kind_key': 'any', 'workflow_id': workflow.id, 'mode': 'follow'})
+    return approver
+
+
 @tagged('post_install', '-at_install')
 class TestHomeData(TransactionCase):
 
@@ -362,68 +426,11 @@ class TestHomeData(TransactionCase):
             self.assertEqual(data['approvals_total'], 0)
 
     def test_06b_a_run_waiting_on_my_seat_comes_first(self):
-        Run = self.env['hr.payslip.run']
-        if not hasattr(Run, '_pb_runs_awaiting') \
-                or 'biz.approval.engine' not in self.env:
-            self.skipTest('pay runs are not on the approval engine here')
-        process = self.env['biz.approval.process']._by_key('payrun')
-        if not process:
-            self.skipTest('the payrun approval process is not seeded here')
-        groups = [self.env.ref('base.group_user').id]
-        officer = self.env.ref('pb_hr_payroll_base.group_payroll_base_officer',
-                               raise_if_not_found=False)
-        if officer:
-            groups.append(officer.id)
-        approver = self.env['res.users'].with_context(
-            no_reset_password=True).create({
-                'name': 'Home Approver Person', 'login': 'home-approver',
-                'email': 'home-approver@example.com',
-                'company_id': self.company.id,
-                'company_ids': [(6, 0, [self.company.id])],
-                'group_ids': [(6, 0, groups)]})
-        engine = self.env['biz.approval.engine']
-        definition = {
-            'schema_version': 1,
-            'steps': [{'key': 's1', 'kind': 'approve', 'title': 'Home check',
-                       'who': {'mode': 'people', 'user_ids': [approver.id]},
-                       'min_amount': 0, 'condition': None}],
-            'tiers': {'enabled': False, 'fact': None},
-            'safeguards': {
-                'independent': False,
-                'self_exception': {'enabled': False},
-                'repeated': 'different', 'evidence': [],
-                'due': {'kind': 'none', 'days': 1, 'day': 15,
-                        'calendar_id': None},
-                'late': {'remind_days': 1, 'escalate_days': 2,
-                         'reassign': False},
-            },
-        }
-        Binding = self.env['biz.approval.binding'].sudo()
-        Binding.search([('company_id', '=', self.company.id),
-                        ('process_id', '=', process.id),
-                        ('scope_key', '=', ''), ('kind_key', '=', 'any'),
-                        ('active', '=', True)]).write({'active': False})
-        workflow = self.env['biz.approval.workflow'].sudo().create({
-            'name': 'Home route', 'company_id': self.company.id,
-            'process_id': process.id, 'owner_user_id': self.env.user.id})
-        version = self.env['biz.approval.workflow.version'].sudo().create({
-            'workflow_id': workflow.id, 'revision': 1, 'status': 'draft',
-            'definition': definition})
-        checks = engine.validate_for_publish(version.id)
-        if checks['errors']:
-            self.skipTest('the one-person route does not validate here: %s'
-                          % checks['errors'])
-        engine.publish(version.id, version.draft_revision, None, 'test',
-                       [w['code'] for w in checks['warnings']])
-        Binding.create({
-            'company_id': self.company.id, 'process_id': process.id,
-            'scope_key': '', 'scope_label': self.company.name,
-            'kind_key': 'any', 'workflow_id': workflow.id, 'mode': 'follow'})
-
+        approver = one_person_route(self)
         emp = self._employee('Home Waiting Person')
         run = self._run('Home waiting run', self.p_first, self.p_last)
         self._slip(run, emp, {'NET': 4200.0})
-        engine.submit(run)
+        self.env['biz.approval.engine'].submit(run)
         run.invalidate_recordset()
         self.assertEqual(run.state, 'approval_pending')
 
@@ -558,5 +565,17 @@ class TestHomeData(TransactionCase):
 
     # ============================================================== test 12
     def test_12_activation_is_the_same_checklist(self):
+        """HOME P3: the old payload is deleted; the checklist is still the
+        one `_activation` builds from the same three counts."""
+        env = self.env
+        cdom = [('company_id', 'in', env.companies.ids)]
+        employees = env['hr.employee'].search_count(cdom)
+        contracts = (env['hr.contract'].search_count(cdom + [('state', '=', 'open')])
+                     or env['hr.contract'].search_count(cdom))
+        runs = env['hr.payslip.run'].search_count([])
+
+        def optional(model, fn, default=None):
+            return fn() if model in env else default
+
         self.assertEqual(self.D.get_home_data()['activation'],
-                         self.D.get_dashboard_data()['activation'])
+                         self.D._activation(employees, contracts, runs, optional))

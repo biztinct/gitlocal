@@ -15,7 +15,7 @@
  * The gates (W95: derived from the model BEHIND the door, never copied from the
  * rail item that used to open it)
  *
- *   pulse      `pb.dashboard.get_dashboard_data` has NO gate at all — every
+ *   pulse      `pb.dashboard.get_home_data` has NO gate at all — every
  *              read inside it goes through a `safe()` wrapper that answers 0
  *              for anything the caller may not read, on purpose, because this
  *              is the first screen of every tenant. So the lens is UNGATED, and

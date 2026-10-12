@@ -59,11 +59,6 @@ HOME_MODELS = {
 # Every foreign model the Home payloads read.
 OPTIONAL_MODELS = CHECKLIST_MODELS | HOME_MODELS
 
-# The old formula card in `get_dashboard_data` reads this one inside `safe()`
-# only. It is deleted with the old KPI code in HOME P3; until then it is the
-# one foreign read in pb_dashboard.py the sweep tolerates.
-LEGACY_UNGUARDED = {'hr.formula.config'}
-
 # The checklist, in the order a tenant walks it. The payload may be SHORTER
 # (the two learning steps are absent without pb_learn) but never re-ordered:
 # "run your first real payroll" before "add your first employee" is not a
@@ -234,7 +229,7 @@ class TestActivationSource(TransactionCase):
         value of the guard is which of the two it is.
         """
         guarded, unguarded = _guarded_env_reads(self.py)
-        leaked = sorted(m for m in unguarded - LEGACY_UNGUARDED
+        leaked = sorted(m for m in unguarded
                         if m in OPTIONAL_MODELS or m.startswith('learn.')
                         or m.startswith('<opaque'))
         self.assertFalse(leaked,
@@ -326,14 +321,35 @@ class TestActivationSource(TransactionCase):
                            "animation it turns off, so it loses")
 
 
+    # -- the words (LOOK P4's test_p9, kept when HOME P3 deleted the month
+    # strip tests that sat beside it)
+    def test_10_no_bracketed_plural_and_no_stray_per_cent_sign(self):
+        """GR42/R46 — "1 people" and "0 employee(s)" are how a screen announces
+        it was written by a programme rather than by a person. L9 — a `_t()`
+        handed a dictionary writes ONE per cent sign, so a literal `%%` reaches
+        the screen."""
+        for rel in (MODEL_PY, JS, TPL, 'static/src/scss/pb_dashboard.scss'):
+            body = _read(rel)
+            self.assertNotIn('(s)', body,
+                             '%s carries a bracketed plural' % rel)
+            self.assertNotIn('%%', body,
+                             '%s carries a doubled per cent sign' % rel)
+        # HOME P2: the month strip is gone; the singular branch now lives in
+        # every count sentence ("1 person" / "212 people").
+        js = _read(JS)
+        self.assertIn('n === 1 ? _t(', js,
+                      'the count sentences do not branch on the singular')
+
+
 @tagged('post_install', '-at_install')
 class TestActivationPayload(TransactionCase):
     """Everything that needs a database. First executed at deploy."""
 
     def setUp(self):
         super().setUp()
-        self.data = self.env['pb.dashboard'].get_dashboard_data()
-        self.act = self.data['activation']
+        # HOME P3: the old payload is gone; the checklist travels in
+        # get_home_data() unchanged (pb.dashboard._activation).
+        self.act = self.env['pb.dashboard'].get_home_data()['activation']
         self.done = {i['key']: i['done'] for i in self.act['items']}
 
     def test_01_the_payload_is_a_checklist(self):
@@ -380,7 +396,7 @@ class TestActivationPayload(TransactionCase):
             'key': 'scenario:sc_welcome',
             'state': 'done',
         })
-        after = self.env['pb.dashboard'].get_dashboard_data()['activation']
+        after = self.env['pb.dashboard'].get_home_data()['activation']
         self.assertTrue({i['key']: i['done'] for i in after['items']}['meet'],
                         "a completed walkthrough does not tick its step")
 
@@ -399,259 +415,6 @@ class TestActivationPayload(TransactionCase):
             'state': 'done',
             'user_id': other.id,
         })
-        after = self.env['pb.dashboard'].get_dashboard_data()['activation']
+        after = self.env['pb.dashboard'].get_home_data()['activation']
         self.assertFalse({i['key']: i['done'] for i in after['items']}['practice'],
                          "somebody else's practice run ticked my step")
-
-
-@tagged('post_install', '-at_install')
-class TestPayrollMonth(TransactionCase):
-    """LOOK P4 — the home page names the month its figures are about.
-
-    Every assertion here is about the SERVER, because the month resolves on the
-    server (LOOK rule 18) and the browser only adopts what came back. The
-    fixtures are read-only: these tests ask the real method of the real
-    database and never write a payslip.
-    """
-
-    def setUp(self):
-        super().setUp()
-        self.D = self.env['pb.dashboard']
-        self.data = self.D.get_dashboard_data()
-
-    # -- the shape ---------------------------------------------------------
-    def test_p1_the_payload_names_its_month(self):
-        """R4. A figure with no month on it is a figure nobody can check."""
-        self.assertIn('period', self.data)
-        self.assertIn('periods', self.data)
-        period = self.data['period']
-        if not self.data['periods']:
-            self.assertIsNone(period,
-                              'a database with no payroll named a month anyway')
-            return
-        self.assertTrue(period['label'],
-                        'the month arrived with no words for itself')
-        self.assertIn(period['state'], ('past', 'current', 'future'))
-        self.assertEqual(period['key'], self.data['periods'][-1]['key'],
-                         'the board does not open on the latest payroll month')
-        self.assertTrue(period['latest'])
-
-    def test_p2_the_months_are_the_months_the_database_has(self):
-        """One chip per payroll month, oldest to newest, none invented and none
-        dropped."""
-        keys = [m['key'] for m in self.data['periods']]
-        self.assertEqual(keys, sorted(keys), 'the strip is out of order')
-        self.assertEqual(len(keys), len(set(keys)), 'a month appears twice')
-        self.env.cr.execute("""
-            SELECT DISTINCT to_char(date_from, 'YYYY-MM') FROM hr_payslip
-             WHERE company_id IN %s AND date_from IS NOT NULL
-        """, (tuple(self.env.companies.ids) or (self.env.company.id,),))
-        self.assertEqual(sorted(keys),
-                         sorted(r[0] for r in self.env.cr.fetchall()))
-        for month in self.data['periods']:
-            for key in ('label', 'short', 'people', 'slips', 'share', 'state'):
-                self.assertIn(key, month)
-
-    def test_p3_the_default_is_the_month_this_board_always_reported(self):
-        """The KPIs a reader who does nothing sees are the KPIs they saw before
-        this feature existed: the newest payroll month, aggregated under the
-        same end-of-month restriction, to the digit."""
-        companies = tuple(self.env.companies.ids) or (self.env.company.id,)
-        self.env.cr.execute(
-            "SELECT max(date_from) FROM hr_payslip WHERE company_id IN %s",
-            (companies,))
-        ref = (self.env.cr.fetchone() or [None])[0]
-        if not ref:
-            self.assertEqual(self.data['kpis']['payroll'], 0)
-            return
-        self.env.cr.execute("""
-            SELECT count(DISTINCT p.employee_id),
-                   coalesce(sum(CASE WHEN pl.code='GROSS' THEN pl.total ELSE 0 END), 0),
-                   coalesce(sum(CASE WHEN cat.code IN ('INSCO', 'COMP') THEN pl.total ELSE 0 END), 0)
-              FROM hr_payslip p
-              JOIN hr_payslip_line pl ON pl.slip_id = p.id
-              JOIN hr_salary_rule_category cat ON cat.id = pl.category_id
-              LEFT JOIN hr_formula_config fc ON fc.id = p.formula_config_id
-             WHERE p.company_id IN %s AND p.date_from = %s
-               AND (fc.cycle_type = 'end_cycle' OR fc.id IS NULL)
-        """, (companies, ref))
-        head, payroll, contributions = self.env.cr.fetchone() or (0, 0, 0)
-        self.assertEqual(round(float(self.data['kpis']['payroll']), 2),
-                         round(float(payroll or 0), 2))
-        self.assertEqual(round(float(self.data['kpis']['contributions']), 2),
-                         round(float(contributions or 0), 2))
-        self.assertEqual(self.data['kpis']['avg'],
-                         round(float(payroll or 0) / head) if head else 0)
-        self.assertEqual(self.data['period']['key'], ref.strftime('%Y-%m'))
-
-    # -- R3, the guard that must not move ----------------------------------
-    def test_p4_the_mid_and_end_guard_holds_for_every_month(self):
-        """R3. With a Mid+End cycle BOTH payslips carry the full GROSS, so
-        counting both doubles the payroll AND the headcount. Asked for a month
-        that has both kinds of run, the board must report the end-of-month
-        figures alone — never their sum."""
-        companies = tuple(self.env.companies.ids) or (self.env.company.id,)
-        self.env.cr.execute("""
-            SELECT to_char(p.date_from, 'YYYY-MM') AS mkey,
-                   count(*) FILTER (WHERE fc.cycle_type = 'mid_cycle') AS mid,
-                   count(*) FILTER (WHERE fc.cycle_type = 'end_cycle') AS end_
-              FROM hr_payslip p
-              LEFT JOIN hr_formula_config fc ON fc.id = p.formula_config_id
-             WHERE p.company_id IN %s AND p.date_from IS NOT NULL
-             GROUP BY 1 HAVING count(*) FILTER (WHERE fc.cycle_type = 'mid_cycle') > 0
-                          AND count(*) FILTER (WHERE fc.cycle_type = 'end_cycle') > 0
-             ORDER BY 1 DESC LIMIT 1
-        """, (companies,))
-        row = self.env.cr.fetchone()
-        if not row:
-            self.skipTest('no month on this database carries both an advance '
-                          'run and an end-of-month run')
-        key = row[0]
-        scoped = self.D.get_dashboard_data(key)
-        self.assertEqual(scoped['period']['key'], key)
-        # END-CYCLE ONLY, read independently of the facade.
-        self.env.cr.execute("""
-            SELECT count(DISTINCT p.employee_id),
-                   coalesce(sum(CASE WHEN pl.code='GROSS' THEN pl.total ELSE 0 END), 0)
-              FROM hr_payslip p
-              JOIN hr_payslip_line pl ON pl.slip_id = p.id
-              LEFT JOIN hr_formula_config fc ON fc.id = p.formula_config_id
-             WHERE p.company_id IN %s AND to_char(p.date_from, 'YYYY-MM') = %s
-               AND (fc.cycle_type = 'end_cycle' OR fc.id IS NULL)
-        """, (companies, key))
-        end_head, end_payroll = self.env.cr.fetchone()
-        # BOTH kinds, which is the number the guard exists to refuse.
-        self.env.cr.execute("""
-            SELECT count(DISTINCT p.employee_id),
-                   coalesce(sum(CASE WHEN pl.code='GROSS' THEN pl.total ELSE 0 END), 0)
-              FROM hr_payslip p
-              JOIN hr_payslip_line pl ON pl.slip_id = p.id
-             WHERE p.company_id IN %s AND to_char(p.date_from, 'YYYY-MM') = %s
-        """, (companies, key))
-        both_head, both_payroll = self.env.cr.fetchone()
-        self.assertEqual(round(float(scoped['kpis']['payroll']), 2),
-                         round(float(end_payroll or 0), 2),
-                         'the payroll for a Mid+End month is not the '
-                         'end-of-month figure')
-        self.assertLess(float(end_payroll or 0), float(both_payroll or 0),
-                        'the fixture does not actually double-count, so this '
-                        'test proves nothing — check the month picked')
-        strip = {m['key']: m for m in scoped['periods']}
-        self.assertEqual(strip[key]['people'], end_head)
-        self.assertLess(end_head, both_head)
-
-    # -- the vocabulary ----------------------------------------------------
-    def test_p5_every_shape_of_link_lands_somewhere_real(self):
-        """Ledger rule 21. A saved link is never an error and never an empty
-        screen: anything this board cannot answer falls back to the latest
-        payroll month, silently."""
-        months = [m['key'] for m in self.data['periods']]
-        if not months:
-            self.skipTest('no payroll on this database')
-        latest = months[-1]
-        oldest = months[0]
-        cases = {
-            '': latest,
-            None: latest,
-            oldest: oldest,
-            '1999-01': latest,                       # before any payroll
-            '2099-12': latest,                       # after all of it
-            'Q1': latest,                            # P3's word, no year here
-            'rubbish': latest,
-            '2026-13': latest,                       # not a month at all
-            '%s..%s' % (oldest, latest): latest,     # a stretch: its newest
-            '%s..%s' % (latest, oldest): latest,     # dragged right to left
-            '1999-01..1999-06': latest,              # wholly outside
-        }
-        for asked, want in cases.items():
-            got = self.D.get_dashboard_data(asked)
-            self.assertEqual(got['period']['key'], want,
-                             'a link of %r landed on %s' % (asked, got['period']['key']))
-            self.assertTrue(got['periods'], 'a fallback emptied the strip')
-
-    def test_p5b_current_means_now_for_ever(self):
-        """`'current'` is accepted so a bookmark or a palette row means "now"
-        rather than rotting on a fixed date. When this month has no payroll it
-        falls back like any other link."""
-        from odoo import fields
-        months = [m['key'] for m in self.data['periods']]
-        if not months:
-            self.skipTest('no payroll on this database')
-        now = fields.Date.context_today(self.D).strftime('%Y-%m')
-        got = self.D.get_dashboard_data('current')
-        self.assertEqual(got['period']['key'],
-                         now if now in months else months[-1])
-
-    def test_p6_a_stretch_collapses_to_a_month_and_says_which(self):
-        """This board's numbers are a MONTH's — "Monthly payroll", "Avg
-        salary" — so a stretch resolves to the newest month inside it that has
-        payroll rather than summing four months under a monthly label."""
-        months = [m['key'] for m in self.data['periods']]
-        if len(months) < 2:
-            self.skipTest('fewer than two payroll months on this database')
-        span = '%s..%s' % (months[0], months[1])
-        got = self.D.get_dashboard_data(span)
-        self.assertEqual(got['period']['key'], months[1])
-        one = self.D.get_dashboard_data(months[1])
-        self.assertEqual(got['kpis'], one['kpis'],
-                         'a stretch and the month it collapses to disagree')
-
-    def test_p7_a_month_that_fell_back_says_so(self):
-        """A link that did not land where it said it would tells the reader,
-        once, in a sentence — never silently and never as an error."""
-        if not self.data['periods']:
-            self.skipTest('no payroll on this database')
-        self.assertFalse(self.data['period']['fell_back'],
-                         'the default is not a fallback')
-        got = self.D.get_dashboard_data('1999-01')
-        self.assertTrue(got['period']['fell_back'])
-        exact = self.D.get_dashboard_data(self.data['periods'][-1]['key'])
-        self.assertFalse(exact['period']['fell_back'])
-
-    def test_p8_a_month_the_board_can_read_reads_the_same_twice(self):
-        """The facade is a pure read: asking twice answers twice the same."""
-        if not self.data['periods']:
-            self.skipTest('no payroll on this database')
-        key = self.data['periods'][0]['key']
-        self.assertEqual(self.D.get_dashboard_data(key)['kpis'],
-                         self.D.get_dashboard_data(key)['kpis'])
-
-    # -- the words ---------------------------------------------------------
-    def test_p9_no_bracketed_plural_and_no_stray_per_cent_sign(self):
-        """GR42/R46 — "1 people" and "0 employee(s)" are how a screen announces
-        it was written by a programme rather than by a person. L9 — a `_t()`
-        handed a dictionary writes ONE per cent sign, so a literal `%%` reaches
-        the screen."""
-        for rel in (MODEL_PY, JS, TPL, 'static/src/scss/pb_dashboard.scss'):
-            body = _read(rel)
-            self.assertNotIn('(s)', body,
-                             '%s carries a bracketed plural' % rel)
-            self.assertNotIn('%%', body,
-                             '%s carries a doubled per cent sign' % rel)
-        # HOME P2: the month strip is gone; the singular branch now lives in
-        # every count sentence ("1 person" / "212 people").
-        js = _read(JS)
-        self.assertIn('n === 1 ? _t(', js,
-                      'the count sentences do not branch on the singular')
-
-    def test_p10_the_strip_never_asks_the_line_table_for_ten_months(self):
-        """`hr_payslip_line` is 1.7 GB on the master database against 1.9 GB of
-        memory on the box, so ANY statement the planner answers by scanning it
-        costs 12.5 seconds — on the first screen of every tenant. The strip's
-        statement reads `hr_payslip` alone, and the month's own money is asked
-        for by payslip id so the `slip_id` index is used."""
-        py = _read(MODEL_PY)
-        strip = py[py.index('def _payroll_months'):py.index('def _resolve_period')]
-        # THE DOCSTRING IS NOT THE STATEMENT. It explains why the statement may
-        # not name that table, so it names it — and a grep that reads the prose
-        # fails for saying what it is looking for (WF13, T5). Only the code
-        # below the docstring is searched.
-        strip = strip.split('"""', 2)[-1]
-        self.assertNotIn('hr_payslip_line', strip,
-                         'the strip joins the payslip lines — that is the '
-                         'twelve-second statement')
-        kpis = py[py.index('def _period_kpis'):py.index('def get_dashboard_data')]
-        kpis = kpis.split('"""', 2)[-1]
-        self.assertIn('pl.slip_id = ANY(%s)', kpis,
-                      'the month aggregate no longer hands the planner the '
-                      'payslip ids, so it will scan the whole line table')

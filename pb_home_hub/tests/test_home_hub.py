@@ -104,7 +104,7 @@ class TestHomeHubGates(TransactionCase):
     def test_the_pulse_lens_is_ungated_and_that_is_the_dashboards_own_answer(self):
         """`pb.dashboard` has no gate, by design.
 
-        Every read in `get_dashboard_data` goes through a `safe()` wrapper that
+        Every read in `get_home_data` goes through a `safe()` wrapper that
         answers 0 for anything the caller may not read, because this is the first
         screen of every tenant. Gating the lens would hide a surface that already
         narrows itself, and it would disagree with `item_dashboard`, which ships

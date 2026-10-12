@@ -177,8 +177,8 @@ class PbDashboardHome(models.AbstractModel):
         upcoming = section('period',
                            lambda: self._home_upcoming(st, safe, optional), [])
 
-        # The activation checklist is the SAME method get_dashboard_data uses,
-        # fed the same three counts (test 12 pins the equality).
+        # The activation checklist (pb_dashboard.py `_activation`), fed the
+        # same three counts the old payload fed it (test 12).
         cdom = [('company_id', 'in', env.companies.ids)]
         employees = safe(lambda: env['hr.employee'].search_count(cdom), 0)
         contracts = (safe(lambda: env['hr.contract'].search_count(

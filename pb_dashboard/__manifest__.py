@@ -20,7 +20,12 @@
     # 2.1.1: payobook walk fixes — people paid counted once per month, the
     # employee's own account number counts as a bank account, divisions named
     # as the Pay Runs board names them.
-    'version': '19.0.2.1.1',
+    # 2.2.0: HOME P3 — the row of three cards (People this month, the month's
+    # pay runs, Hiring) and the closing row (Keep learning, Pay schemes);
+    # next month's cut-off in Coming up; runs carry `waiting_on`; the old
+    # payload (`get_dashboard_data`, its month strip and line-table figures)
+    # is deleted; Vietnamese for every Home string; payobook walk fixes W1-W4.
+    'version': '19.0.2.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

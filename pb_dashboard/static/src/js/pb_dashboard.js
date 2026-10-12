@@ -1299,12 +1299,12 @@ export class PbDashboard extends Component {
 
     /** P3 W3: a step names its run as the hero does — the division — and
      *  keeps the run's full name for the row's tooltip. */
-    stepRun(step) {
+    stepRun(key, name) {
         const p = this.period;
-        const src = step.key === "prepare" ? p.now_run
-            : step.key === "approve" ? p.awaiting_run : null;
-        const byName = (this.d.runs || []).find((r) => r.name === step.run);
-        return this.runName(src) || this.runName(byName) || step.run || "";
+        const src = key === "prepare" ? p.now_run
+            : key === "approve" ? p.awaiting_run : null;
+        const byName = (this.d.runs || []).find((r) => r.name === name);
+        return this.runName(src) || this.runName(byName) || name || "";
     }
 
     get stepRows() {
@@ -1319,10 +1319,10 @@ export class PbDashboard extends Component {
             if (s.key === "setup" && s.n) {
                 row.sub = s.n === 1 ? _t("1 person added") : _t("%(n)s people added", { n: int(s.n) });
             } else if (s.key === "prepare" && s.run) {
-                row.sub = _t("%(run)s run in progress", { run: this.stepRun(s) });
+                row.sub = _t("%(run)s run in progress", { run: this.stepRun(s.key, s.run) });
             } else if (s.key === "approve" && s.who && s.who.name && s.run) {
                 row.who = s.who.initials || "";
-                row.sub = _t("%(who)s submitted the %(run)s run", { who: s.who.name, run: this.stepRun(s) });
+                row.sub = _t("%(who)s submitted the %(run)s run", { who: s.who.name, run: this.stepRun(s.key, s.run) });
             } else if (s.key === "pay") {
                 row.sub = _t("Bank file");
                 if (s.n) {
