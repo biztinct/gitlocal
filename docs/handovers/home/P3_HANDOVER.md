@@ -85,5 +85,25 @@ except walk fixes listed at the end. No "Odoo". No per-module icon map (add to t
 `-u pb_dashboard,pb_learn --test-tags /pb_dashboard,/pb_learn`). Version `pb_dashboard` `19.0.2.2.0`.
 Commits `feat(home): P3 …`. Ledger rows H-next.
 
-## P2 walk findings (filled by Fable after the payobook walk)
-<<pending>>
+## P2 walk findings (payobook.com, QA login, 2026-10-12, pb_dashboard 19.0.2.1.1) — fix FIRST, number them W1…W6 in the report
+Walked at 1440 px: hero, needs-you, chart, month panel, steps, coming up all render with real data; console clean
+(two old warnings from other screens); ← → moves the month, tooltip shows ("March 2026 · No pay run"), the
+primary opens Pay Run hub › Runs focused on the run with the Home back chip. Already fixed and live (H31–H33):
+people once per month, account number = bank account, division names. Still to fix:
+- **W1 Headline contradicts the line below it.** h1 says "nothing is waiting on you" while Needs you lists 1
+  settlement + 1 renewal + 21 write-ups. Rule: the second half of the h1 speaks for ALL of `needs_you`:
+  awaiting_me ≥ 1 → "%(n)s pay run needs your approval" (as now); else `needs_you` non-empty → "%(n)s things need
+  you" (n = number of chips, not the sum); else "nothing is waiting on you".
+- **W2 Headline reads "20 days to paydaynothing is waiting on you" to a screen reader** (the "·" is a decoration).
+  Put a visually hidden " · " text node (or an `aria-label` on the h1) between the two pieces.
+- **W3 Steps card names the run by its long name** ("Payobook Information Technology — End-Month Payroll ·
+  October 2026 run in progress") while the hero says "Information Technology". Steps card uses `division` (fall
+  back to the name); the full name goes in the row's `title` attribute.
+- **W4 In-progress ghost column is shorter than its own fill** when the month so far exceeds the latest month
+  (payobook: October so far 65.8 bn vs July 35.0 bn). Ghost height = max(latest month, so far).
+- **W5 "Latest completed" lands on July** because June, August and September each hold a draft run (demo data).
+  Keep the rule (every run done), but the month-panel pill for a month that has runs and is NOT all done should
+  read "Not finished" (P2 has this word) and the chart's "Latest" label stays on the newest all-done month. No
+  change unless the P2 code does otherwise — verify and say so.
+- **W6 Payday "Sun 1 Nov" / cut-off "Sun 25 Oct"** come from the demo calendar rows (weekend dates). Data, not
+  code — no change; mention in the report only if Coming up mislabels the weekday.
