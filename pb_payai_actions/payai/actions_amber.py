@@ -603,18 +603,22 @@ class SubmitRun(_RunAmber):
             actions=actions)
 
     def _route(self, ctx, run):
-        """(route name, first approvers, needs anybody) — best effort, as the person."""
+        """(route name, first approvers, needs anybody, known) — best effort, as the person.
+
+        `known` is False when neither the preview nor the version's own steps
+        could be read: the plan then promises nothing about withdrawing.
+        """
         engine = ctx.env['biz.approval.engine']
         try:
             context = run._approval_context()
             found = engine.resolve_binding(context['company_id'], 'payrun',
                                            context.get('scope_keys'), context.get('kind_key'))
         except Exception:                               # noqa: BLE001
-            return '', [], True
+            return '', [], True, False
         if found.get('error'):
             raise UserError((found['error'] or {}).get('message') or T(_lt(
                 'No approval route is set up for this run.')))
-        people, needs = [], True
+        people, needs, known = [], True, False
         try:
             pv = engine.preview(found['version_id'], context)
             steps = [s for s in pv.get('steps') or [] if s.get('included')
@@ -622,15 +626,39 @@ class SubmitRun(_RunAmber):
             needs = bool(steps) and not all(s.get('kind') == 'fast' for s in steps)
             if steps:
                 people = [p.get('name') for p in steps[0].get('people') or [] if p.get('name')]
+            known = True
         except Exception:                               # noqa: BLE001
-            pass                                        # setting up routes is not their job
-        return found.get('workflow_name') or '', people, needs
+            # preview is gated for configurators; the published steps are
+            # readable by any approval user — the same inclusion test, no names.
+            try:
+                needs = self._needs_from_steps(engine, found['version_id'], context)
+                known = True
+            except Exception:                           # noqa: BLE001
+                pass                                    # setting up routes is not their job
+        return found.get('workflow_name') or '', people, needs, known
+
+    @staticmethod
+    def _needs_from_steps(engine, version_id, context):
+        """Whether anybody decides, from the version's own definition (as the person).
+
+        Mirrors engine.preview: notify steps never count, fast steps always
+        apply, any other step counts when its tier/condition includes it.
+        """
+        from odoo.addons.biz_approval_workflow.models import definition as D
+        version = engine.env['biz.approval.workflow.version'].browse(
+            int(version_id)).exists()
+        if not version:
+            raise UserError(T(_lt('No approval route is set up for this run.')))
+        d = D.normalise(version.definition)
+        steps = [s for s in d['steps'] if s['kind'] == 'fast' or (
+            s['kind'] != 'notify' and engine._step_included(d, s, context)[0])]
+        return bool(steps) and not all(s['kind'] == 'fast' for s in steps)
 
     def plan(self, ctx, params):
         run = self._run(ctx, params)
         try:
             run._approval_validate()
-            route, people, needs = self._route(ctx, run)
+            route, people, needs, known = self._route(ctx, run)
         except UserError as exc:
             actions = [a for a in [run_door(ctx, run.id, _lt('Open the run'), 'outline')] if a]
             return cards.card('blocked', ctx.task, 'prepare', title=_lt('This run cannot be sent yet'),
@@ -646,7 +674,12 @@ class SubmitRun(_RunAmber):
         if route:
             slots.append(slot_row('route', _lt('Route'), route, 'default'))
         notes = []
-        if not needs:
+        if not known:
+            notes.append(cards.note('info', _lt(
+                'It goes to the approvers set up for this kind of run. If this route '
+                'needs nobody\'s approval, the run is approved as soon as it is sent, '
+                'and that cannot be withdrawn.')))
+        elif not needs:
             notes.append(cards.note('warn', _lt(
                 'This route needs nobody\'s approval: the run is approved as soon '
                 'as it is sent, and that cannot be withdrawn.')))
@@ -656,7 +689,7 @@ class SubmitRun(_RunAmber):
             notes.append(cards.note('info', _lt(
                 'It goes to the approvers set up for this kind of run.')))
         sub = _lt('Prepare · sends the run for approval · can be withdrawn for 10 minutes') \
-            if needs else _lt('Prepare · sends the run for approval')
+            if known and needs else _lt('Prepare · sends the run for approval')
         screen = screen_action(_lt('Open the run instead'),
                                hub={'tag': 'pb_pay_hub', 'lens': 'runs', 'focus': T(run.id)},
                                door_id=RUNS_DOOR)
@@ -667,7 +700,7 @@ class SubmitRun(_RunAmber):
                          round(float(row.get('net') or 0.0), 2))
         return {'card': card, 'vals': {'run_id': run.id}, 'fingerprint': fp,
                 'speak': T(_lt('I will send %s for approval.')) % (run.name or ''),
-                'extra': {'needs': needs}}
+                'extra': {'needs': needs if known else None}}
 
     def confirm(self, ctx, task, params, data):
         run = self._run(ctx, params)
