@@ -9,7 +9,11 @@ badge, button) and the Lucide icon map + ic() helper. Theme variants:
 the powder-blue default (Import) and `.ppl` light-teal (People). Consumers
 add class "pbim" (powder) or "pbim ppl" (teal) on their root.
 """,
-    'version': '19.0.1.20.0',
+    # 1.21.0: HOME P2 — six Lucide glyphs for the new Home (fileCheck,
+    # layoutGrid, moveRight, chartColumn, triangleAlert, flame) and Inter
+    # self-hosted (static/fonts, OFL), loaded first in the backend bundle so
+    # every screen that names Inter finally renders in it.
+    'version': '19.0.1.21.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -18,6 +22,8 @@ add class "pbim" (powder) or "pbim ppl" (teal) on their root.
     'data': [],
     'assets': {
         'web.assets_backend': [
+            # the font face FIRST, before any rule that names it (HOME H6)
+            'pb_import_kit/static/src/scss/fonts.scss',
             # tokens MUST load before the primitives (shared SCSS $vars + CSS custom props)
             'pb_import_kit/static/src/scss/import_tokens.scss',
             'pb_import_kit/static/src/scss/import_kit.scss',
