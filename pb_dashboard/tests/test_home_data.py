@@ -34,7 +34,7 @@ PERIOD_KEYS = ('key', 'date_start', 'date_end', 'stage', 'total', 'run_count',
                'net_so_far', 'awaiting_me', 'awaiting_run', 'now_run')
 MONTH_KEYS = ('key', 'year_mark', 'people', 'net', 'gross', 'ded', 'er',
               'total', 'avg', 'runs', 'balance_ok', 'done', 'latest',
-              'inprogress', 'approved', 'delivered', 'note')
+              'inprogress', 'approved', 'delivered', 'note', 'foreign_runs')
 TIMING_KEYS = ('period', 'needs_you', 'months', 'runs', 'people', 'hiring',
                'learn', 'schemes', 'total')
 NEEDS_ORDER = ('runs_to_approve', 'leave_to_approve', 'other_to_approve',

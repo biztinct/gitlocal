@@ -692,6 +692,11 @@ class PbDashboardHome(models.AbstractModel):
                 'delivered': _iso(max((delivered[r.id] for r in group
                                        if r.id in delivered), default=None)),
                 'note': 'tet' if key in tet else None,
+                # HOME P2 (H21): runs in this month whose money is in another
+                # currency than the company's — counted in `runs`, left out
+                # of every sum, and said so on the month's facts line.
+                'foreign_runs': sum(1 for r in group if r.id in money
+                                    and not money[r.id]['money']),
             }
             if has_money:
                 counted = [money[r.id] for r in group
