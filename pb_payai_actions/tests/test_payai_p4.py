@@ -300,6 +300,42 @@ class TestPayaiP4Catalogue(_P3Case):
         self.assertIn('_consumedFocus', src)        # one arrival opens one drawer
         self.assertIn('currentAction', src)          # a lens reads the hub's context
 
+    # ================================================================ 8
+    def test_08_learn_teaches_asking_payai_in_both_languages(self):
+        """"Ask PayAI to do it" in Learn: the plan card → Do it → the
+        ten-minute way back (Runs lesson), and the typed word (Approvals
+        lesson). Both languages, on anchors the screens really lay."""
+        learn = get_module_path('pb_learn')
+        if not learn:
+            self.skipTest('pb_learn is not here.')
+        content = json.load(open(os.path.join(learn, 'static', 'content',
+                                              'learn_content.json'), encoding='utf-8'))
+        anchors = json.load(open(os.path.join(learn, 'static', 'src', 'anchors.json'),
+                                 encoding='utf-8'))['product']
+        steps = {s['key']: s['lessons'][0]['steps'] for s in content['stations']}
+        ask = [st for st in steps['payruns'] if (st.get('kicker') or {}).get('en') == 'Ask PayAI']
+        self.assertEqual(len(ask), 1, 'the Runs lesson has no "Ask PayAI" step')
+        ask = ask[0]
+        for lang, words in (('en', ('plan card', 'Do it', 'Withdraw', '10 minutes')),
+                            ('vi', ('thẻ kế hoạch', 'Thực hiện', 'Rút lại', '10 phút'))):
+            for word in words:
+                self.assertIn(word, ask['body'][lang] + ask['tip'][lang], (lang, word))
+        self.assertIn('Undo', ask['tip']['en'])
+        self.assertIn('Hoàn tác', ask['tip']['vi'])
+        approve = [st for st in steps['approvals'] if st['anchor'] == 'ai-approve'][0]
+        self.assertIn('APPROVE', approve['tip']['en'])
+        self.assertIn('DUYỆT', approve['tip']['vi'])
+        for st, screen in ((ask, 'payruns'), (approve, 'approvals')):
+            self.assertEqual(st['screen'], screen)
+            self.assertEqual(anchors[st['anchor']]['screen'], screen, st['anchor'])
+            path = os.path.join(os.path.dirname(learn), anchors[st['anchor']]['file'])
+            self.assertIn('"%s"' % st['anchor'], open(path, encoding='utf-8').read(),
+                          '%s is not laid in %s' % (st['anchor'], path))
+        # The sentences it teaches are ones PayAI understands, in both languages.
+        self.assertEqual(registry.match('Send the June run for approval')[0], 'submit_run')
+        self.assertEqual(registry.match('Gửi duyệt bảng lương tháng 6')[0], 'submit_run')
+        self.assertEqual(registry.match('Duyệt bảng lương tháng 6 Bán lẻ')[0], 'approve_item')
+
     # =============================================================== 10
     def test_10_no_odoo_on_any_card(self):
         root = get_module_path('pb_payai_actions')
