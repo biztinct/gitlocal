@@ -1507,3 +1507,9 @@ msgstr "Bạn phải thiết lập một hợp đồng để có thể tạo chi
 #: model:ir.model.fields,help:om_hr_payroll.field_hr_salary_rule__amount_percentage_base
 msgid "result will be affected to a variable"
 msgstr "kết quả sẽ bị ảnh hưởng tới một biến số"
+
+#. module: om_hr_payroll
+#. odoo-python
+#: code:addons/om_hr_payroll/models/hr_payslip.py:0
+msgid "Payslips are emailed once the pay run is approved. This one is not approved yet."
+msgstr "Phiếu lương chỉ được gửi email khi đợt lương đã duyệt. Đợt này chưa được duyệt."

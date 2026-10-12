@@ -595,3 +595,87 @@ msgstr "Mở bản đồ"
 #: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
 msgid "Which scheme is this run for?"
 msgstr "Đợt lương này cho chương trình nào?"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "A pay run covers at most one year. This one spans %(d)s days."
+msgstr "Một đợt lương dài tối đa một năm. Đợt này kéo dài %(d)s ngày."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "Choose the period's first and last day before running payroll."
+msgstr "Hãy chọn ngày đầu và ngày cuối của kỳ lương trước khi chạy lương."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "Finished payroll is never cleared from here. Open it on the Runs board: an approved run can be sent back or rejected there, and a draft can be deleted."
+msgstr "Lương đã hoàn tất không bao giờ bị xoá từ đây. Hãy mở trong Các đợt lương: đợt đã duyệt có thể trả lại hoặc từ chối ở đó, còn bản nháp có thể xoá."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "Running payroll is for payroll staff. Your sign-in does not have the Run payroll right; ask your administrator under Settings › Access and delegations."
+msgstr "Chạy lương dành cho nhân viên tính lương. Tài khoản của bạn chưa có quyền Chạy lương; hãy nhờ quản trị viên cấp trong Cài đặt › Truy cập và ủy quyền."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "The period's first day (%(s)s) is after its last day (%(e)s)."
+msgstr "Ngày đầu của kỳ lương (%(s)s) nằm sau ngày cuối (%(e)s)."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "this pay run"
+msgstr "đợt lương này"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "“%(run)s” has %(n)s approved payslip(s)."
+msgstr "“%(run)s” có %(n)s phiếu lương đã duyệt."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "“%s” has already been approved."
+msgstr "“%s” đã được duyệt."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "“%s” has an approval request open."
+msgstr "“%s” đang có một yêu cầu duyệt."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "“%s” has been paid."
+msgstr "“%s” đã được chi trả."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "“%s” has journal entries already posted."
+msgstr "“%s” đã có bút toán được ghi sổ."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "“%s” is not a draft."
+msgstr "“%s” không phải bản nháp."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "“%s” is waiting for approval."
+msgstr "“%s” đang chờ phê duyệt."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "PayAI filled this in from your request. Check it, then run it when you are ready."
+msgstr "PayAI đã điền sẵn theo yêu cầu của bạn. Hãy kiểm tra, rồi chạy khi bạn sẵn sàng."

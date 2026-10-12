@@ -304,6 +304,10 @@ def normalise_vi(message):
     start = lead.end() if lead else 0
     tail = _TAIL_VI.search(folded, start)
     end = tail.start() if tail else len(text)
+    if len(text[start:end].split()) < 2 <= len(text[start:].split()) and \
+            not folded[start:end].strip().startswith(('lam', 'giup')):
+        # "Trợ giúp" is a word, not "trợ" + a polite "giúp".
+        end = len(text)
     return text[start:end].strip().rstrip('.!?,').strip()
 
 

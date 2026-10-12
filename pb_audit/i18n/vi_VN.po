@@ -568,3 +568,15 @@ msgstr "không có sẵn"
 #: code:addons/pb_audit/static/src/xml/pb_audit.xml:0
 msgid "· 30 days"
 msgstr "· 30 ngày"
+
+#. module: pb_audit
+#. odoo-python
+#: code:addons/pb_audit/models/pb_audit_console.py:0
+msgid "Asked PayAI: %(what)s — %(state)s"
+msgstr "Đã nhờ PayAI: %(what)s — %(state)s"
+
+#. module: pb_audit
+#. odoo-javascript
+#: code:addons/pb_audit/static/src/js/pb_audit.js:0
+msgid "PayAI"
+msgstr "PayAI"

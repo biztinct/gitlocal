@@ -532,18 +532,8 @@ msgstr "Xin chào! Tôi là PayAI"
 #. module: pb_payroll_ai_insights
 #. odoo-python
 #: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
-msgid ""
-"Hold the microphone and speak. When you let go, the recording goes to an outside "
-"company's speech service, which turns it into text. The recording is audio: unlike "
-"text, we cannot take names out of it first. The text then waits in the box — nothing "
-"is asked or answered until you read it and press send. Say no and the microphone stays"
-" off. Everything else works the same."
-msgstr ""
-"Bạn giữ nút micrô rồi nói. Khi bạn thả tay, bản ghi âm sẽ được gửi tới dịch vụ chuyển "
-"giọng nói thành chữ của một công ty bên ngoài. Đây là âm thanh: khác với chữ, chúng "
-"tôi không thể bỏ tên riêng ra trước khi gửi. Phần chữ nghe được sẽ nằm chờ trong ô "
-"nhập — không có câu hỏi nào được gửi đi cho tới khi bạn đọc lại rồi bấm gửi. Nếu bạn "
-"từ chối, micrô sẽ tắt. Mọi thứ khác vẫn hoạt động y như vậy."
+msgid "Hold the microphone and speak. When you let go, the recording goes to an outside company's speech service, which turns it into text. The recording is audio: unlike text, we cannot take names out of it first. The text then waits in the box — nothing is asked or answered until you read it and press send. Say no and the microphone stays off. Everything else works the same."
+msgstr "Bạn giữ nút micrô rồi nói. Khi bạn thả tay, bản ghi âm sẽ được gửi tới dịch vụ chuyển giọng nói thành chữ của một công ty bên ngoài. Đây là âm thanh: khác với chữ, chúng tôi không thể bỏ tên riêng ra trước khi gửi. Phần chữ nghe được sẽ nằm chờ trong ô nhập — không có câu hỏi nào được gửi đi cho tới khi bạn đọc lại rồi bấm gửi. Nếu bạn từ chối, micrô sẽ tắt. Mọi thứ khác vẫn hoạt động y như vậy."
 
 #. module: pb_payroll_ai_insights
 #. odoo-python
@@ -564,14 +554,8 @@ msgstr "Chỉ số này cách đường cơ sở bao xa"
 #. module: pb_payroll_ai_insights
 #. odoo-python
 #: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
-msgid ""
-"I can't answer that one for you — your role is not allowed to read %(topic)s, and PayAI answers with your own access rights rather than around them.\n"
-"\n"
-"In Payobook this data sits behind the payroll roles — a Payroll Officer, a Payroll Manager or a Payroll Super Administrator can see it. Ask one of them for the figure, or ask whoever administers roles in your company to add you."
-msgstr ""
-"Tôi không thể trả lời câu này cho bạn — vai trò của bạn không được phép xem %(topic)s, và PayAI trả lời theo đúng quyền của bạn chứ không đi vòng qua nó.\n"
-"\n"
-"Trong Payobook, dữ liệu này nằm sau các vai trò lương — Chuyên viên tính lương, Quản lý lương hoặc Quản trị viên cấp cao mới xem được. Hãy hỏi một trong những người đó để lấy con số, hoặc nhờ người phụ trách phân quyền trong công ty cấp quyền cho bạn."
+msgid "I can't answer that one for you — your role is not allowed to read %(topic)s, and PayAI answers with your own access rights rather than around them.\n\nIn Payobook this data sits behind the payroll roles — a Payroll Officer, a Payroll Manager or a Payroll Super Administrator can see it. Ask one of them for the figure, or ask whoever administers roles in your company to add you."
+msgstr "Tôi không thể trả lời câu này cho bạn — vai trò của bạn không được phép xem %(topic)s, và PayAI trả lời theo đúng quyền của bạn chứ không đi vòng qua nó.\n\nTrong Payobook, dữ liệu này nằm sau các vai trò lương — Chuyên viên tính lương, Quản lý lương hoặc Quản trị viên cấp cao mới xem được. Hãy hỏi một trong những người đó để lấy con số, hoặc nhờ người phụ trách phân quyền trong công ty cấp quyền cho bạn."
 
 #. module: pb_payroll_ai_insights
 #. odoo-python
@@ -796,16 +780,8 @@ msgstr "Ollama (địa phương)"
 #. module: pb_payroll_ai_insights
 #. odoo-python
 #: code:addons/pb_payroll_ai_insights/models/payroll_data_query.py:0
-msgid ""
-"One thing I left out: I can't list individual salaries for your role. Reading a named "
-"person's pay needs the Payroll Manager or the Payroll Final Approver group; below that"
-" I answer in aggregate only. What you have above is the same payroll, without the "
-"names."
-msgstr ""
-"Một điều tôi đã lược bớt: tôi không thể liệt kê lương của từng người với vai trò của "
-"bạn. Để xem lương đích danh của một người cần nhóm Quản lý lương (Payroll Manager) "
-"hoặc Người phê duyệt cuối (Payroll Final Approver); dưới mức đó tôi chỉ trả lời ở dạng"
-" tổng hợp. Phần trên vẫn là bảng lương đó, chỉ là không có tên."
+msgid "One thing I left out: I can't list individual salaries for your role. Reading a named person's pay needs the Payroll Manager or the Payroll Final Approver group; below that I answer in aggregate only. What you have above is the same payroll, without the names."
+msgstr "Một điều tôi đã lược bớt: tôi không thể liệt kê lương của từng người với vai trò của bạn. Để xem lương đích danh của một người cần nhóm Quản lý lương (Payroll Manager) hoặc Người phê duyệt cuối (Payroll Final Approver); dưới mức đó tôi chỉ trả lời ở dạng tổng hợp. Phần trên vẫn là bảng lương đó, chỉ là không có tên."
 
 #. module: pb_payroll_ai_insights
 #. odoo-javascript
@@ -1653,3 +1629,8 @@ msgstr "So sánh chi phí lương giữa các phòng ban"
 #: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.js:0
 msgid "Show deduction breakdown this month"
 msgstr "Cho tôi xem cơ cấu khấu trừ tháng này"
+
+#. module: pb_payroll_ai_insights
+#: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_message__card
+msgid "PayAI card"
+msgstr "Thẻ PayAI"
