@@ -14,7 +14,7 @@
     # on the server; "Remind <name>" when it is not theirs; "Learn to do this
     # yourself" on run / submit / approve done cards; the Audit console's
     # "Typed confirmation" badge.
-    'version': '19.0.2.1.0',
+    'version': '19.0.3.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Ask PayAI to open a screen, show a run, or prepare work you then confirm',
     'author': 'Payobook',
