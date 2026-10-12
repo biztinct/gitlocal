@@ -15,6 +15,12 @@ import json
 import logging
 
 from odoo import api, fields, models
+from odoo.exceptions import AccessError
+
+from ..payai import runner
+from ..payai.i18n import reset_lang, set_lang
+
+from ..payai.resolve import DOOR_KINDS
 
 _logger = logging.getLogger(__name__)
 
@@ -61,6 +67,9 @@ class PayrollAIConversation(models.Model):
                 'sublabel': _clean_str(row.get('sublabel')),
                 'group': _clean_str(row.get('group'), 60),
                 'groups': groups,
+                # P2-F1 — ranking only (a lens before a deep link before a
+                # lesson); never a permission, never a destination.
+                'kind': row.get('kind') if row.get('kind') in DOOR_KINDS else '',
             })
         blob = json.dumps(clean, ensure_ascii=False)
         if session.payai_doors_json != blob:
@@ -75,3 +84,84 @@ class PayrollAIConversation(models.Model):
         except (TypeError, ValueError):
             return []
         return [r for r in rows if isinstance(r, dict) and r.get('id')]
+
+    # ================================================================ P2
+    # The Amber callbacks. Every one names a task by id and nothing else: the
+    # server re-reads the task, checks it is the caller's own, and works from
+    # what IT stored — the browser never sends `vals`, a tier or a right
+    # (PA-R3, PA18). Progress is bookkeeping and is refused unless the task
+    # was confirmed by this person.
+    @api.model
+    def rpc_send_message(self, message, session_id=None, screen=None, resolve=None,
+                         voice=False):
+        """`voice` — the message was spoken (the transcript landed in the box
+        and the person pressed send). It decides only two things: the plan is
+        read back on the device, and a spoken "go ahead" may count when the
+        company allows it."""
+        return super(PayrollAIConversation, self.with_context(
+            payai_voice=bool(voice))).rpc_send_message(
+                message, session_id=session_id, screen=screen, resolve=resolve)
+
+    def _payai_call(self, fn, task_id, *args):
+        token = set_lang(self.env.lang or self.env.user.lang)
+        try:
+            task = self.env['payai.task'].sudo().browse(int(task_id or 0)).exists()
+            if not task or task.user_id != self.env.user:
+                raise AccessError(self.env._('That request belongs to somebody else.'))
+            ctx = runner.Ctx.for_task(self.env, task)
+            return fn(ctx, task.id, *args)
+        finally:
+            reset_lang(token)
+
+    @api.model
+    def rpc_confirm_task(self, task_id, how='tap'):
+        """Do it. `how` is 'tap' or 'voice'; a spoken go-ahead is honoured only
+        when the company allows it AND the task is Amber (the runner checks
+        both). Returns the card that replaces the plan card."""
+        card = self._payai_call(runner.confirm, task_id, how if how in ('tap', 'voice') else 'tap')
+        return {'card': card}
+
+    @api.model
+    def rpc_task_progress(self, task_id, done=0, total=0):
+        return self._payai_call(runner.progress, task_id, done, total)
+
+    @api.model
+    def rpc_task_result(self, task_id, run_id=0, info=None):
+        return {'card': self._payai_call(runner.result, task_id, run_id, info)}
+
+    @api.model
+    def rpc_task_undo(self, task_id):
+        return {'card': self._payai_call(runner.undo, task_id)}
+
+    @api.model
+    def rpc_cancel_task(self, task_id):
+        return {'card': self._payai_call(runner.cancel, task_id)}
+
+
+class PayrollAIMessage(models.Model):
+    _inherit = 'payroll.ai.message'
+
+    def _card_dict(self):
+        """A plan card is one card in three states (plan → running → result):
+        history shows the task's LATEST card, not the plan as first sent."""
+        card = super()._card_dict()
+        if not card or card.get('kind') != 'plan' or not card.get('task_id'):
+            return card
+        task = self.env['payai.task'].sudo().browse(int(card['task_id'])).exists()
+        if not task or task.user_id != self.env.user or not task.plan_json:
+            return card
+        try:
+            latest = json.loads(task.plan_json)
+        except (TypeError, ValueError):
+            return card
+        if not isinstance(latest, dict):
+            return card
+        if task.state in ('confirmed', 'running') and task.write_date \
+                and task.write_date < fields.Datetime.now() - runner.RUN_STALE:
+            # The page that was driving it closed. Say so, never a frozen bar.
+            latest = dict(latest, state='failed', drive=None, actions=[], notes=[{
+                'tone': 'warn',
+                'text': self.env._('This stopped when the page was closed. Open the '
+                                   'Runs board to see what was made.')}])
+        latest.pop('drive', None)
+        return latest

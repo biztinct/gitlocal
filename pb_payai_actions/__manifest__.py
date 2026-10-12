@@ -5,10 +5,13 @@
     # catalogue of named Actions, slot resolvers, the two-part gate (Access
     # home screen + the method's own right), the `payai.task` audit row, the
     # cards the chat draws, the company switches and the "Ask PayAI to…" row.
-    # Amber / Red Actions are DECLARED here as stubs and arrive in P2 / P3.
-    'version': '19.0.1.0.0',
+    # PAYAI P2 (2026-10-12): the Amber tier — run payroll (driven in the
+    # browser through the wizard's own chain, `@pb_payrun_wizard/js/run_driver`),
+    # send for approval, change a pay value, send payslips, prepare a filing;
+    # plan card → Do it → progress → result → undo. Red is P3.
+    'version': '19.0.2.0.0',
     'category': 'Human Resources/Payroll',
-    'summary': 'Ask PayAI to open a screen, show a pay run or download it',
+    'summary': 'Ask PayAI to open a screen, show a run, or prepare work you then confirm',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
     'license': 'LGPL-3',

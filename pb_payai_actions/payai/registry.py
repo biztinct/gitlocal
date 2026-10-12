@@ -41,7 +41,9 @@ TIER_SWITCH = {
     'decide': 'payai_tier_decide',
 }
 #: Tiers whose Actions may be OFFERED to the model in this release.
-OFFERED_TIERS = ('look',)
+#: P2: Amber (prepare) joins — every Amber Action still stops at a plan card
+#: the person confirms; Red (decide) stays declared-only until P3.
+OFFERED_TIERS = ('look', 'prepare')
 
 
 class Slot:
@@ -93,6 +95,42 @@ class Action:
         raise NotImplementedError
 
     def undo(self, ctx, task):
+        return None
+
+    # ------------------------------------------------- P2: the Amber shape
+    #: True when the browser drives the work after Do it (run payroll: the
+    #: same chunked chain the wizard runs, with a progress bar). False when
+    #: the server carries it out inside the confirm call.
+    drive = False
+    #: Minutes a done Amber Action can be undone from its card (0 = never).
+    undo_minutes = 0
+
+    def normalise_texts(self, ctx, texts):
+        """Slot texts tidied before resolving (e.g. a month said in the scheme)."""
+        return texts
+
+    def plan(self, ctx, params):
+        """Amber: the plan card, or a refusal card.
+
+        Returns either a card dict (kind blocked/refused — nothing can be
+        done, the card says why and where to go) or
+        `{'card', 'vals', 'fingerprint', 'extra'?, 'speak'?}` where `vals` is
+        exactly what will be driven or executed (the client never composes
+        it, PA-R3) and `fingerprint` is what Do it compares to decide that
+        nothing changed since the card was shown.
+        """
+        raise NotImplementedError
+
+    def confirm(self, ctx, task, params, data):
+        """Amber, server-executed: carry the plan out as the person. Card."""
+        raise NotImplementedError
+
+    def finish(self, ctx, task, data, run_id, info):
+        """Amber, browser-driven: the browser says it stopped. Card."""
+        raise NotImplementedError
+
+    def too_late(self, ctx, task, data):
+        """The card when Undo is pressed after its window closed."""
         return None
 
     def open_in_screen(self, ctx, params):

@@ -19,6 +19,7 @@ import re
 import unicodedata
 
 from odoo import fields
+from odoo.exceptions import AccessError
 from odoo.tools.translate import LazyTranslate
 
 from .i18n import T
@@ -27,7 +28,6 @@ _lt = LazyTranslate(__name__)
 
 MAX_CHIPS = 6
 DOOR_THRESHOLD = 0.6
-DOOR_MARGIN = 0.15
 
 MONTHS = {
     'january': 1, 'jan': 1, 'february': 2, 'feb': 2, 'march': 3, 'mar': 3,
@@ -56,7 +56,7 @@ RUN_STOP = frozenset((
 #: Words a person uses for a ⌘K row that its label does not contain.
 #: Keyed by the row id; matched after normalising (lower case, no articles).
 DOOR_ALIASES = {
-    'payhub_runs': ('runs board', 'pay runs board', 'run board', 'all runs',
+    'payhub_runs': ('runs', 'runs board', 'pay runs board', 'run board', 'all runs',
                     'pay run board', 'runs list', 'list of runs', 'pay runs'),
     'payhub_run': ('run payroll', 'payroll wizard', 'run wizard',
                    'new pay run', 'start a pay run'),
@@ -192,13 +192,32 @@ def resolve_period(ctx, text):
 
 
 # --------------------------------------------------------------------- run
+def _scheme_of(run):
+    """The run's scheme as the person may read it, or an empty record.
+
+    A payroll manager without a Formula Engine role may see and submit runs
+    but not read the scheme records (hr.formula.config ACL). Their words
+    still match the run's own name and division; the scheme's are skipped
+    rather than raising out of the whole message (P2 clone run, PA31).
+    """
+    if 'pb_formula_config_id' not in run._fields:
+        return None
+    try:
+        cfg = run.pb_formula_config_id
+        if cfg:
+            cfg.check_access('read')
+        return cfg
+    except AccessError:
+        return None
+
+
 def _run_words(run):
     parts = [run.name or '']
-    for fname in ('pb_formula_config_id',):
-        if fname in run._fields and run[fname]:
-            parts.append(run[fname].display_name or '')
-            if 'code' in run[fname]._fields and run[fname].code:
-                parts.append(run[fname].code)
+    cfg = _scheme_of(run)
+    if cfg:
+        parts.append(cfg.display_name or '')
+        if 'code' in cfg._fields and cfg.code:
+            parts.append(cfg.code)
     for fname in ('pb_division', 'pb_division_label'):
         if fname in run._fields and run[fname]:
             parts.append(run[fname])
@@ -206,8 +225,9 @@ def _run_words(run):
 
 
 def run_scheme_label(run):
-    if 'pb_formula_config_id' in run._fields and run.pb_formula_config_id:
-        return run.pb_formula_config_id.display_name or ''
+    cfg = _scheme_of(run)
+    if cfg:
+        return cfg.display_name or ''
     if 'pb_division_label' in run._fields and run.pb_division_label:
         return run.pb_division_label
     return ''
@@ -283,21 +303,34 @@ def resolve_run(ctx, text, allow_many=False):
 
 
 # ------------------------------------------------------------------ scheme
-def resolve_scheme(ctx, text):
+def resolve_scheme(ctx, text, defaults=None):
     """A scheme the person may run, from the wizard's own list (PA-R3).
 
     `get_defaults()` is gated to people who may run payroll (P0), so this is
     only called from Actions whose gate already passed; anyone else gets
-    'missing' rather than an error.
+    'missing' rather than an error. Words match the scheme's name, its code
+    and the part of the business it belongs to ("Retail"). An exact match is
+    "you said"; a near spelling is "assumed" — visible on the plan card.
     """
     try:
-        schemes = ctx.env['pb.payrun.wizard'].get_defaults().get('schemes') or []
+        defaults = defaults or ctx.env['pb.payrun.wizard'].get_defaults()
     except Exception:                                   # noqa: BLE001
         return missing(T(_lt("I cannot see any scheme you may run.")))
-    return _pick(text, [{'value': s['id'], 'label': s.get('name') or '',
-                         'sublabel': s.get('code') or '',
-                         'words': '%s %s' % (s.get('name') or '', s.get('code') or '')}
-                        for s in schemes])
+    rows = []
+    for s in defaults.get('schemes') or []:
+        sub = T(_lt('your division')) if s.get('mine') else (s.get('cycle_label') or '')
+        rows.append({'value': s['id'], 'label': s.get('name') or '',
+                     'sublabel': sub, 'card': s,
+                     'words': ' '.join(x for x in (
+                         s.get('name') or '', s.get('code') or '',
+                         (s.get('division') or '').replace('_', ' ')) if x)})
+    out = _pick(text, rows)
+    if out['status'] == 'missing' and (text or '').strip():
+        names = ', '.join(r['label'] for r in rows[:6])
+        out['note'] = T(_lt(
+            "I could not find a scheme called \"%(words)s\". The schemes you "
+            "can run are: %(names)s.")) % {'words': (text or '')[:60], 'names': names}
+    return out
 
 
 # ---------------------------------------------------------------- division
@@ -319,6 +352,8 @@ def resolve_division(ctx, text):
 
 
 def _pick(text, rows):
+    """Words → one row ('said' when every word is spelled as the row spells
+    it, 'assumed' for a near spelling), several (ambiguous) or none."""
     q = tokens(text)
     if not q:
         return missing()
@@ -326,13 +361,18 @@ def _pick(text, rows):
     for row in rows:
         words = tokens(row['words'])
         hits = sum(1 for t in q if any(tok_match(t, w) for w in words))
+        exact = all(t in words for t in q)
         if hits:
-            scored.append((hits / len(q), row))
+            scored.append((hits / len(q), exact, row))
     scored.sort(key=lambda x: -x[0])
-    full = [r for s, r in scored if s >= 1.0]
+    full = [(e, r) for s, e, r in scored if s >= 1.0]
     if len(full) == 1:
-        return resolved(full[0]['value'], full[0]['label'])
-    pool = full or [r for s, r in scored]
+        exact, row = full[0]
+        out = resolved(row['value'], row['label'], 'said' if exact else 'assumed')
+        if 'card' in row:
+            out['card'] = row['card']
+        return out
+    pool = [r for _e, r in full] or [r for s, e, r in scored]
     if not pool:
         return missing()
     return ambiguous([{'value': r['value'], 'label': r['label'],
@@ -367,25 +407,79 @@ def door_score(query, row):
     return round(min(0.95, max(score, ratio if ratio >= 0.8 else 0.0)), 4)
 
 
+#: P2-F1 — what kind of door a row is, and how far it is pushed down.
+#: A hub lens or a mission is the screen a person means by a bare name; a
+#: deep link (the legacy 2000 block) is the same screen by an older road; a
+#: Learn row is a lesson ABOUT the screen and is only meant when the person
+#: says so ("open the runs lesson").
+DOOR_KINDS = ('lens', 'mission', 'link', 'learn')
+KIND_WEIGHT = {'lens': 0.0, 'mission': 0.0, 'link': -0.1, 'learn': -0.3}
+#: Two candidates closer than this, from DIFFERENT places, are a question.
+DOOR_NEAR = 0.1
+LEARN_WORDS = re.compile(
+    r'\b(?:lessons?|guides?|walkthroughs?|tutorials?|learn|learning|courses?|'
+    r'how\s+to|teach\s+me)\b', re.I)
+
+
+def door_kind(row):
+    """'lens' | 'mission' | 'link' | 'learn' — sent by the client (ranking
+    only, PA19), inferred from the id when an older client sent none."""
+    kind = row.get('kind')
+    if kind in DOOR_KINDS:
+        return kind
+    rid = row.get('id') or ''
+    if rid.startswith('learn.'):
+        return 'learn'
+    if 'hub_' in rid:
+        return 'lens'
+    if rid.endswith('hub'):
+        return 'mission'
+    return 'link'
+
+
+def door_place(row):
+    """Where a row lives — two near-equal rows from two places are a question."""
+    return fold(row.get('sublabel') or row.get('group') or '')
+
+
+def _door_choice(row):
+    return {'value': row['id'], 'label': row.get('label') or '',
+            'sublabel': row.get('sublabel') or ''}
+
+
 def resolve_door(ctx, text):
     rows = ctx.doors or []
     if not rows:
         return missing(T(_lt(
             "I cannot see your list of screens yet. Close and reopen this "
             "panel, then ask again.")))
-    scored = sorted(((door_score(text, r), r) for r in rows),
-                    key=lambda x: -x[0])
-    scored = [(s, r) for s, r in scored if s >= DOOR_THRESHOLD]
+    learnish = bool(LEARN_WORDS.search(text or ''))
+    scored = []
+    for row in rows:
+        base = door_score(text, row)
+        if base <= 0:
+            continue
+        kind = door_kind(row)
+        weight = KIND_WEIGHT[kind]
+        if kind == 'learn' and learnish:
+            weight = 0.05
+        scored.append((round(base + weight, 4), base, kind, row))
+    scored = [x for x in scored if x[0] >= DOOR_THRESHOLD]
     if not scored:
         return missing(T(_lt("I could not find a screen called \"%s\".")) % (text or '')[:60])
-    top, row = scored[0]
-    second = scored[1][0] if len(scored) > 1 else 0.0
-    if top >= 1.0 and second < 1.0 or (top - second) >= DOOR_MARGIN:
-        return resolved(row['id'], door_title(row), 'said')
-    cands = [{'value': r['id'], 'label': r.get('label') or '',
-              'sublabel': r.get('sublabel') or ''}
-             for s, r in scored if s >= top - 0.25]
-    return ambiguous(cands)
+    scored.sort(key=lambda x: -x[0])
+    # An exact name (or known alias) on ONE lens or mission wins outright.
+    exact = [x for x in scored if x[1] >= 1.0 and x[2] in ('lens', 'mission')]
+    if len(exact) == 1 and not learnish:
+        return resolved(exact[0][3]['id'], door_title(exact[0][3]), 'said')
+    top = scored[0]
+    near = [x for x in scored if top[0] - x[0] < DOOR_NEAR]
+    if len(near) > 1:
+        places = {door_place(x[3]) for x in near}
+        tied = all(x[0] == top[0] for x in near)
+        if len(places) > 1 or tied:
+            return ambiguous([_door_choice(x[3]) for x in near])
+    return resolved(top[3]['id'], door_title(top[3]), 'said')
 
 
 def door_title(row):
@@ -398,9 +492,111 @@ def door_title(row):
 
 
 # ------------------------------------------------------------------ person
+#: Words around a name that are not the name.
+PERSON_STOP = frozenset(('the', 'employee', 'staff', 'worker', 'person', 'mr',
+                         'mrs', 'ms', 'miss', 'for', 'of', 'to', 's'))
+
+
 def resolve_person(ctx, text):
-    """P2. Declared now so the slot kind exists; never resolves in P1."""
-    return missing(T(_lt("Finding a person by name arrives in the next release.")))
+    """One employee the person can see, by name — searched AS THE PERSON.
+
+    Several matches → one question with chips carrying the department, the
+    way two people called Linh are told apart on any screen.
+    """
+    words = [w for w in re.findall(r"[^\W_]+", text or '', re.U)
+             if fold(w) not in PERSON_STOP]
+    if not words:
+        return missing(T(_lt("Who is this for? Name the person.")))
+    Employee = ctx.env['hr.employee']
+    company = [('company_id', 'in', ctx.env.companies.ids)]
+    phrase = ' '.join(words)
+    try:
+        found = Employee.search(company + [('name', 'ilike', phrase)], limit=MAX_CHIPS + 1)
+        if not found:
+            domain = list(company)
+            for w in words:
+                domain.append(('name', 'ilike', w))
+            found = Employee.search(domain, limit=MAX_CHIPS + 1)
+    except Exception:                                   # noqa: BLE001
+        return missing(T(_lt("You cannot see employee records, so I cannot find this person.")))
+    if not found:
+        return missing(T(_lt("I could not find anybody called \"%s\" that you can see.")) % phrase[:60])
+    if len(found) == 1:
+        exact = fold(found.name or '') == fold(phrase)
+        return resolved(found.id, found.name or '', 'said' if exact else 'assumed')
+    cands = []
+    for emp in found[:MAX_CHIPS]:
+        sub = ''
+        try:
+            sub = emp.department_id.display_name or emp.job_title or ''
+        except Exception:                               # noqa: BLE001
+            sub = ''
+        cands.append({'value': emp.id, 'label': emp.name or '', 'sublabel': sub})
+    return ambiguous(cands)
+
+
+# ------------------------------------------------------------ amounts, days
+_AMOUNT = re.compile(
+    r'^\s*(?:₫|vnd|đ|\$|usd|inr|₹|rs\.?)?\s*(-?[0-9][0-9.,\s]*)\s*'
+    r'(k|thousand|m|mn|million|tr|trieu|bn|b|billion|ty)?\s*'
+    r'(?:₫|vnd|dong|đ|đồng|usd|dollars?|inr|rupees?)?'
+    r'(?:\s*(?:a|per)\s+month|\s*/\s*month|\s+monthly)?\s*$', re.I)
+_SCALE = {'k': 1e3, 'thousand': 1e3, 'm': 1e6, 'mn': 1e6, 'million': 1e6,
+          'tr': 1e6, 'trieu': 1e6, 'bn': 1e9, 'b': 1e9, 'billion': 1e9, 'ty': 1e9}
+
+
+def parse_amount(text):
+    """'500,000' / '500k' / '1.5m' / '₫500.000' → float, or None.
+
+    A thousands separator is told from a decimal point by what follows it:
+    three digits after the last separator is a thousands group.
+    """
+    m = _AMOUNT.match((text or '').lower())
+    if not m:
+        return None
+    raw = re.sub(r'\s', '', m.group(1))
+    scale = _SCALE.get((m.group(2) or '').lower(), 1.0)
+    if ',' in raw and '.' in raw:
+        dec = ',' if raw.rfind(',') > raw.rfind('.') else '.'
+        raw = raw.replace('.' if dec == ',' else ',', '').replace(dec, '.')
+    elif ',' in raw or '.' in raw:
+        sep = ',' if ',' in raw else '.'
+        parts = raw.split(sep)
+        if len(parts) > 2 or len(parts[-1]) == 3:
+            raw = raw.replace(sep, '')
+        else:
+            raw = raw.replace(sep, '.')
+    try:
+        return float(raw) * scale
+    except ValueError:
+        return None
+
+
+def parse_day(ctx, text):
+    """(date, origin, label) for 'from July' / 'from 1 July 2026' / '' (today)."""
+    today = fields.Date.context_today(ctx.env.user)
+    low = fold(text or '').strip()
+    if not low or low in ('today', 'now', 'immediately', 'right away'):
+        return today, 'default' if not low else 'said', T(_lt('Today'))
+    m = re.search(r'\b(\d{1,2})(?:st|nd|rd|th)?\s+([a-z]+)\s*(20\d\d)?\b', low)
+    if m and m.group(2) in MONTHS:
+        got = parse_period('%s %s' % (m.group(2), m.group(3) or ''), today)
+        if got:
+            start = got[0]
+            day = min(int(m.group(1)), calendar.monthrange(start.year, start.month)[1])
+            when = start.replace(day=day)
+            return when, 'said', '%s %s' % (when.day, month_label(when))
+    m = re.search(r'\b(20\d\d)-(\d{1,2})-(\d{1,2})\b', low)
+    if m:
+        try:
+            when = datetime.date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+            return when, 'said', '%s %s' % (when.day, month_label(when))
+        except ValueError:
+            pass
+    got = parse_period(low, today)
+    if got:
+        return got[0], 'said', '1 %s' % month_label(got[0])
+    return None, 'said', ''
 
 
 RESOLVERS = {

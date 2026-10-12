@@ -17,6 +17,10 @@ Every outcome (done, refused, clarify, failed, expired) writes the task row.
 """
 import json
 import logging
+import re
+from collections import OrderedDict
+
+from datetime import timedelta
 
 from odoo import fields
 from odoo.exceptions import AccessError, UserError
@@ -38,11 +42,24 @@ _logger = logging.getLogger(__name__)
 TOOLS_PROMPT = (
     "You route requests for PayAI, the payroll assistant inside %(brand)s. "
     "If the person asks you to OPEN a screen, SHOW or CHECK a pay run, "
-    "DOWNLOAD a run's Excel, or asks what you can do, call exactly ONE of the "
-    "tools, passing the person's own words for each parameter. Never invent "
-    "an id, a number or a name. If the message is a question about how, why "
-    "or what something means, or anything else, do NOT call a tool."
+    "DOWNLOAD a run's Excel, RUN payroll, SEND a run for approval, CHANGE a "
+    "person's pay value, SEND payslips, PREPARE a government filing, or asks "
+    "what you can do, call exactly ONE of the tools, passing the person's own "
+    "words for each parameter. Never invent an id, a number or a name. If the "
+    "message is a question about how, why or what something means, or "
+    "anything else, do NOT call a tool. Nothing is done until the person "
+    "confirms the plan they are shown."
 )
+
+#: Spoken (or typed) words that mean "do the plan you just showed me".
+GO_AHEAD = re.compile(
+    r'^(?:(?:yes|yeah|yep|ok|okay|sure)[,!. ]*)?(?:please\s+)?'
+    r'(?:go\s+ahead|do\s+it|go\s+for\s+it|proceed|confirm(?:ed)?|carry\s+on|'
+    r'run\s+it|send\s+it|yes(?:\s+please)?)(?:\s+please)?[.!]*$', re.I)
+
+#: P2 latency: the last sentences the model routed, per person (process-local).
+_LRU = OrderedDict()
+_LRU_MAX = 256
 
 
 # --------------------------------------------------------------- context
@@ -62,6 +79,18 @@ class Ctx:
             self.env['payroll.ai.conversation'].browse()
         self.doors = self.conversation.payai_doors() if self.conversation else []
         self.task = None
+        #: P2 — slots resolved so far in this request (a later slot may need
+        #: an earlier one: the pay value depends on the person's scheme).
+        self.params = {}
+        #: P2 — reads worth doing once per request (the wizard's defaults).
+        self.cache = {}
+        self.voice = bool(self.env.context.get('payai_voice'))
+
+    @classmethod
+    def for_task(cls, env, task):
+        """The context for a callback on a task (Do it, progress, undo)."""
+        engine = env['payroll.ai.engine']
+        return cls(engine, {'conversation_id': task.session_id.id if task.session_id else 0})
 
     def door_row(self, door_id):
         for row in self.doors:
@@ -147,6 +176,11 @@ def ask_model(ctx, message):
     if not tools:
         return None
     safe, mapping = _redact(ctx, message)
+    lru_key = (ctx.user.id, ' '.join(safe.lower().split()))
+    hit = _LRU.get(lru_key)
+    if hit is not None and hit[0] in {t['name'] for t in tools}:
+        _LRU.move_to_end(lru_key)
+        return hit[0], dict(hit[1])
     brand = ctx.engine._brand_name()
     messages = [
         {'role': 'system', 'content': TOOLS_PROMPT.replace('%(brand)s', brand)},
@@ -176,6 +210,9 @@ def ask_model(ctx, message):
             # Placeholders back to names: the RESOLVER needs the words, and
             # it runs here, on this server, as the person.
             texts[slot.key] = restore_names(val.strip()[:160], mapping)
+    _LRU[lru_key] = (name, dict(texts))
+    while len(_LRU) > _LRU_MAX:
+        _LRU.popitem(last=False)
     return name, texts
 
 
@@ -245,6 +282,14 @@ def _audit_line(ctx, task, state):
             'who': ctx.user.name, 'when': stamp}
     if state == 'clarify':
         return ''
+    if state == 'planned':
+        return T(_lt('Nothing has been done yet. This plan is good for ten minutes.'))
+    if state == 'undone':
+        return T(_lt('Recorded: undone by %(who)s, %(when)s.')) % {
+            'who': ctx.user.name, 'when': stamp}
+    if state == 'cancelled':
+        return T(_lt('Recorded: cancelled by %(who)s, %(when)s. Nothing was done.')) % {
+            'who': ctx.user.name, 'when': stamp}
     if state == 'failed':
         return T(_lt('Recorded: did not work for %(who)s, %(when)s.')) % {
             'who': ctx.user.name, 'when': stamp}
@@ -318,11 +363,20 @@ def _missing_card(ctx, action, slot, res):
     )
 
 
-def _clarify_card(ctx, action, slot, res):
+def _clarify_card(ctx, action, slot, res, said=''):
     if slot.kind == 'door':
         question = _lt('Which screen do you mean?')
     elif slot.kind == 'run':
         question = _lt('Which pay run do you mean?')
+    elif slot.kind == 'person' and said:
+        question = T(_lt('I found %(n)s people called "%(name)s". Which one?')) % {
+            'n': len(res['candidates']), 'name': said[:40]}
+    elif slot.kind == 'scheme':
+        question = _lt('Which scheme do you mean?')
+    elif slot.kind == 'field':
+        question = _lt('Which pay value do you mean?')
+    elif slot.kind == 'filing':
+        question = _lt('Which filing do you mean?')
     else:
         question = T(_lt('Which %s do you mean?')) % T(slot.label).lower()
     chips = [{'label': c['label'], 'sublabel': c.get('sublabel') or '',
@@ -375,7 +429,9 @@ def run(ctx, key, texts, utterance, task=None, pinned=None):
     if action.stub:
         return _finish(ctx, task, 'refused', _coming_soon_card(ctx, action), 'not built yet')
 
+    texts = action.normalise_texts(ctx, dict(texts or {}))
     params = {}
+    ctx.params = params
     for slot in action.slots:
         if slot.key in pinned:
             params[slot.key] = pinned[slot.key]
@@ -393,7 +449,7 @@ def run(ctx, key, texts, utterance, task=None, pinned=None):
                                for c in res['candidates']]}})
             task.sudo().write({'params_json': json.dumps(data, ensure_ascii=False, default=str),
                                'expires_at': _now() + task._ttl()})
-            return _finish(ctx, task, 'clarify', _clarify_card(ctx, action, slot, res))
+            return _finish(ctx, task, 'clarify', _clarify_card(ctx, action, slot, res, text))
         if res['status'] == 'missing':
             return _finish(ctx, task, 'refused', _missing_card(ctx, action, slot, res),
                            res.get('note') or 'not found')
@@ -401,6 +457,8 @@ def run(ctx, key, texts, utterance, task=None, pinned=None):
 
     data['resolved'] = {k: {'value': v.get('value'), 'label': v.get('label'),
                             'origin': v.get('origin')} for k, v in params.items()}
+    data['params'] = params
+    data['texts'] = texts
     task.sudo().write({'params_json': json.dumps(data, ensure_ascii=False, default=str)})
 
     refusal = action.param_gate(ctx, params)
@@ -409,11 +467,14 @@ def run(ctx, key, texts, utterance, task=None, pinned=None):
     if isinstance(refusal, dict):
         return _finish(ctx, task, 'refused', refusal, 'not allowed for this record')
 
+    if action.tier == 'prepare':
+        return _plan(ctx, action, task, params, data)
+
     try:
         with ctx.env.cr.savepoint():
             card = action.execute(ctx, params)
     except (UserError, AccessError) as exc:
-        msg = T(exc.args[0] if exc.args else exc)
+        msg = _exc_text(exc)
         card = cards.card(
             'blocked', task, action.tier, title=_lt('That did not work'),
             subtitle=action.title, notes=[cards.note('bad', msg)],
@@ -509,8 +570,313 @@ def _pin(ctx, slot, value, label=''):
             return None
         return {'status': 'resolved', 'value': run_rec.id, 'label': run_rec.name or label,
                 'origin': 'chose', 'candidates': []}
-    return {'status': 'resolved', 'value': value, 'label': label or value,
+    if slot.kind in ('scheme', 'person', 'division'):
+        try:
+            value = int(value)
+        except (TypeError, ValueError):
+            return None
+    return {'status': 'resolved', 'value': value, 'label': label or T(value),
             'origin': 'chose', 'candidates': []}
+
+
+# ================================================================ AMBER (P2)
+_TECH_MODEL = re.compile(r'\([a-z0-9_]+(?:\.[a-z0-9_]+)+\)')
+
+
+def _exc_text(exc):
+    """The sentence a failure card shows. The framework's own permission
+    message names technical models and groups, e.g. "(pb.govt.report.wizard)",
+    in any language, so it is replaced by a plain one; every other message (a
+    business rule's own words) is kept."""
+    msg = exc.args[0] if exc.args else exc
+    if isinstance(exc, AccessError) and _TECH_MODEL.search(str(msg)):
+        return T(_lt('You do not have the permission this needs. Ask your administrator.'))
+    return T(msg)
+
+
+def _fail_card(ctx, task, action, msg):
+    return cards.card(
+        'blocked', task, action.tier, title=_lt('That did not work'),
+        subtitle=action.title, notes=[cards.note('bad', msg)],
+        chips=[cards.what_can_you_do_chip()], state='failed')
+
+
+def _plan(ctx, action, task, params, data):
+    """Resolved words → the plan card (or why there is nothing to do)."""
+    try:
+        with ctx.env.cr.savepoint():
+            out = action.plan(ctx, params)
+    except (UserError, AccessError) as exc:
+        msg = _exc_text(exc)
+        return _finish(ctx, task, 'failed', _fail_card(ctx, task, action, msg), msg)
+    if 'kind' in out:
+        state = 'done' if out['kind'] == 'done' else 'refused'
+        return _finish(ctx, task, state, out, '' if state == 'done' else 'nothing to do')
+    data.update({'vals': out['vals'], 'fingerprint': out['fingerprint'],
+                 'extra': out.get('extra') or {}})
+    expires = _now() + task._ttl()
+    task.sudo().write({'params_json': json.dumps(data, ensure_ascii=False, default=str),
+                       'state': 'planned', 'expires_at': expires})
+    card = out['card']
+    card['expires_iso'] = fields.Datetime.to_string(expires) + 'Z'
+    if ctx.voice and out.get('speak'):
+        # Read back on the device (speechSynthesis), never sent anywhere.
+        tail = _lt('Tap Do it or say go ahead.') if ctx.env.company.payai_voice_go_ahead \
+            else _lt('Tap Do it to go ahead.')
+        card['speak'] = '%s %s' % (out['speak'], T(tail))
+    return _finish(ctx, task, 'planned', card)
+
+
+def _own_task(ctx, task_id, lock=False):
+    """The person's own task from their own conversation — or AccessError."""
+    try:
+        task_id = int(task_id or 0)
+    except (TypeError, ValueError):
+        task_id = 0
+    task = ctx.env['payai.task'].sudo().browse(task_id).exists()
+    if not task or task.user_id != ctx.user:
+        raise AccessError(T(_lt('That request belongs to somebody else.')))
+    if lock:
+        # Two taps, two tabs: one Do it wins, the other waits and then sees
+        # the task is no longer a plan (the idempotency the engine keys on).
+        ctx.env.cr.execute('SELECT id FROM payai_task WHERE id = %s FOR UPDATE', (task.id,))
+        task.invalidate_recordset()
+    ctx.task = task
+    return task
+
+
+def _card_of(task):
+    try:
+        card = json.loads(task.plan_json or '{}')
+    except (TypeError, ValueError):
+        card = {}
+    return card if isinstance(card, dict) else {}
+
+
+def _note_card(ctx, task, title, text, tone='warn', kind='blocked'):
+    """A one-off answer that does NOT replace the card it answers (the plan
+    card keeps its Do it): `transient` tells the client to add it below."""
+    return cards.card(kind, task, task.tier if task else 'prepare', title=title,
+                      notes=[cards.note(tone, text)], transient=True)
+
+
+def _in_flight(ctx, task):
+    """Another of this person's Amber tasks still running (and recently alive)."""
+    Task = ctx.env['payai.task'].sudo()
+    alive = _now() - RUN_STALE
+    return Task.search([('user_id', '=', ctx.user.id), ('id', '!=', task.id),
+                        ('state', 'in', ('confirmed', 'running')),
+                        ('write_date', '>=', alive)], limit=1)
+
+
+#: A browser-driven task that has not reported for this long has stopped.
+RUN_STALE = timedelta(minutes=3)
+
+
+def confirm(ctx, task_id, how='tap'):
+    """Do it. Re-checks EVERYTHING the plan card promised, then acts.
+
+    Returns the card that replaces the plan card: the running card (with the
+    exact `vals` to drive, for run payroll), the result card, a refusal, or a
+    fresh plan when things changed meanwhile ("Things changed since I showed
+    you this plan").
+    """
+    how = how if how in ('tap', 'voice') else 'tap'
+    task = _own_task(ctx, task_id, lock=True)
+    action = ACTIONS.get(task.action_key)
+    if action is None or action.tier not in ('prepare', 'decide'):
+        raise AccessError(T(_lt('There is nothing to confirm on that request.')))
+    if how == 'voice':
+        if action.tier != 'prepare':
+            return _note_card(ctx, task, _lt('Not by voice'), _lt(
+                'A spoken go-ahead never counts for approvals or rejections. Use '
+                'the plan card instead.'))
+        if not ctx.env.company.payai_voice_go_ahead:
+            return _note_card(ctx, task, _lt('Tap Do it to go ahead'), _lt(
+                'A spoken go-ahead is switched off here, so I did nothing. Tap Do it '
+                'on the plan card if it is right.'))
+    if task.state != 'planned':
+        if task.state in ('confirmed', 'running', 'done', 'undone', 'cancelled'):
+            return _card_of(task)
+        return expired_card(ctx)
+    if task.is_expired():
+        task.write({'state': 'expired'})
+        card = expired_card(ctx)
+        card['subtitle'] = T(_lt('Plans are good for ten minutes. Ask me again and I '
+                                 'will show you a fresh one.'))
+        return card
+    if _in_flight(ctx, task):
+        return _note_card(ctx, task, _lt('One thing at a time'), _lt(
+            'Another request of yours is still running. Wait for it to finish, then '
+            'press Do it again.'), tone='info')
+    ok, reason = gate.allowed(ctx.env, ctx.user, action)
+    if not ok:
+        return _finish(ctx, task, 'refused', _refusal_card(ctx, action, reason), reason)
+
+    data = _params(task)
+    params = data.get('params') or {}
+    ctx.params = params
+    try:
+        with ctx.env.cr.savepoint():
+            fresh = action.plan(ctx, params)
+    except (UserError, AccessError) as exc:
+        msg = _exc_text(exc)
+        return _finish(ctx, task, 'failed', _fail_card(ctx, task, action, msg), msg)
+    if 'kind' in fresh or fresh.get('fingerprint') != data.get('fingerprint'):
+        task.write({'state': 'expired', 'error': 'changed since the plan was shown'})
+        card = run(ctx, task.action_key, data.get('texts') or {}, task.utterance,
+                   pinned=params)
+        card.setdefault('notes', []).insert(0, cards.note('warn', _lt(
+            'Things changed since I showed you this plan. Here it is as it stands '
+            'now; nothing was done.')))
+        ctx.task.sudo().write({'plan_json': json.dumps(card, ensure_ascii=False, default=str)})
+        return card
+
+    # The TRANSACTION's clock, the same one `create_date` is stamped with, so
+    # "the run this task made" (created after Do it) is never off by the
+    # seconds between the start of a request and this line.
+    task.write({'state': 'confirmed', 'confirm_kind': how,
+                'confirmed_at': ctx.env.cr.now()})
+    if action.drive:
+        card = _card_of(task)
+        card.update({
+            'state': 'running', 'actions': [], 'notes': [],
+            'progress': {'done': 0, 'total': int((data.get('extra') or {}).get('total') or 0),
+                         'label': T(_lt('Preparing the run…'))},
+            'drive': {'vals': data.get('vals') or {}},
+            'audit_line': T(_lt('Confirmed by %(who)s (%(how)s), %(when)s.')) % {
+                'who': ctx.user.name, 'how': T(_lt('spoken') if how == 'voice' else _lt('tap')),
+                'when': _stamp(ctx)},
+        })
+        card.pop('speak', None)
+        stored = dict(card)
+        stored.pop('drive', None)
+        task.write({'plan_json': json.dumps(stored, ensure_ascii=False, default=str)})
+        return card
+    try:
+        with ctx.env.cr.savepoint():
+            card = action.confirm(ctx, task, params, data)
+    except (UserError, AccessError) as exc:
+        msg = _exc_text(exc)
+        return _finish(ctx, task, 'failed', _fail_card(ctx, task, action, msg), msg)
+    return _finish_amber(ctx, task, action, card)
+
+
+def _finish_amber(ctx, task, action, card, state='done'):
+    vals = {}
+    undo = card.get('undo') or {}
+    if state == 'done' and undo.get('can'):
+        vals['undo_until'] = _now() + timedelta(minutes=action.undo_minutes or 10)
+    out = _finish(ctx, task, state, card)
+    if vals:
+        task.sudo().write(vals)
+    return out
+
+
+def _stamp(ctx):
+    when = fields.Datetime.context_timestamp(ctx.env.user, fields.Datetime.now())
+    return when.strftime('%d %b %Y %H:%M')
+
+
+def progress(ctx, task_id, done, total):
+    """Bookkeeping only: how far the browser has got. Refused unless the task
+    was confirmed by this person (PA18)."""
+    task = _own_task(ctx, task_id)
+    if task.state not in ('confirmed', 'running'):
+        raise AccessError(T(_lt('That request is not running.')))
+    try:
+        done, total = max(0, int(done or 0)), max(0, int(total or 0))
+    except (TypeError, ValueError):
+        done, total = 0, 0
+    done = min(done, total)
+    card = _card_of(task)
+    card['progress'] = {'done': done, 'total': total,
+                        'label': T(_lt('Computing payslips…'))}
+    task.write({'state': 'running',
+                'plan_json': json.dumps(card, ensure_ascii=False, default=str)})
+    return {'ok': True}
+
+
+def result(ctx, task_id, run_id=0, info=None):
+    """The browser's driver stopped (done, blocked or failed): the card."""
+    task = _own_task(ctx, task_id, lock=True)
+    if task.state not in ('confirmed', 'running'):
+        if task.state in ('done', 'failed', 'undone', 'refused'):
+            return _card_of(task)
+        raise AccessError(T(_lt('That request is not running.')))
+    action = ACTIONS.get(task.action_key)
+    if action is None or not action.drive:
+        raise AccessError(T(_lt('That request is not run from here.')))
+    info = info if isinstance(info, dict) else {}
+    try:
+        run_id = int(run_id or 0)
+    except (TypeError, ValueError):
+        run_id = 0
+    data = _params(task)
+    ctx.params = data.get('params') or {}
+    try:
+        state, card = action.finish(ctx, task, data, run_id, info)
+    except (UserError, AccessError) as exc:
+        msg = _exc_text(exc)
+        return _finish(ctx, task, 'failed', _fail_card(ctx, task, action, msg), msg)
+    if state == 'done':
+        return _finish_amber(ctx, task, action, card)
+    return _finish(ctx, task, state, card, str(info.get('error') or info.get('stage') or '')[:500])
+
+
+def undo(ctx, task_id):
+    """Undo, within its ten minutes, as the person."""
+    task = _own_task(ctx, task_id, lock=True)
+    action = ACTIONS.get(task.action_key)
+    if task.state == 'undone':
+        return _card_of(task)
+    if action is None or task.state != 'done' or not task.undo_until:
+        return _note_card(ctx, task, _lt('Nothing to undo'), _lt(
+            'This request cannot be undone from here.'), tone='info')
+    data = _params(task)
+    if task.undo_until < _now():
+        card = action.too_late(ctx, task, data) or _note_card(
+            ctx, task, _lt('Too late to undo here'), _lt('Ten minutes have passed.'))
+        return card
+    try:
+        with ctx.env.cr.savepoint():
+            state, card = action.undo(ctx, task)
+    except (UserError, AccessError) as exc:
+        msg = _exc_text(exc)
+        return _note_card(ctx, task, _lt('That could not be undone'), msg, tone='bad')
+    if state == 'undone':
+        task.write({'undo_until': False})
+        return _finish(ctx, task, 'undone', card)
+    return card
+
+
+def cancel(ctx, task_id):
+    """Cancel on a plan card: nothing was done, and the audit says so."""
+    task = _own_task(ctx, task_id, lock=True)
+    if task.state != 'planned':
+        return _card_of(task)
+    card = cards.card('cancelled', task, task.tier, title=_lt('Cancelled'),
+                      subtitle=_lt('Nothing was done.'), state='cancelled')
+    return _finish(ctx, task, 'cancelled', card)
+
+
+def go_ahead(ctx, message):
+    """"Go ahead" said (or typed) after a plan card: the Do-it tap, when it
+    may count. None when there is no plan waiting — then it is just words."""
+    if not GO_AHEAD.match(' '.join((message or '').split())):
+        return None
+    Task = ctx.env['payai.task'].sudo()
+    domain = [('user_id', '=', ctx.user.id), ('state', '=', 'planned')]
+    if ctx.conversation:
+        domain.append(('session_id', '=', ctx.conversation.id))
+    task = Task.search(domain, order='id desc', limit=1)
+    if not task:
+        return None
+    if not ctx.voice:
+        return _note_card(ctx, task, _lt('Tap Do it to go ahead'), _lt(
+            'Typing it does not count. Tap Do it on the plan card if it is right.'),
+            tone='info')
+    return confirm(ctx, task.id, 'voice')
 
 
 # --------------------------------------------------------------- entry
@@ -521,6 +887,9 @@ def handle(engine, message, context):
         resolve = (context or {}).get('payai_resolve')
         if resolve:
             return envelope(on_resolve(ctx, message, resolve))
+        said = go_ahead(ctx, message)
+        if said is not None:
+            return envelope(said)
         hit = registry.match(message)
         if hit is None:
             hit = ask_model(ctx, message)

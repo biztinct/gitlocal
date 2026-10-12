@@ -38,7 +38,7 @@ class ResCompany(models.Model):
         help="PayAI may record an approver's own decision after they type "
              "the word to confirm it. A spoken yes never counts here.")
     payai_voice_go_ahead = fields.Boolean(
-        string="A spoken 'go ahead' counts for Amber",
+        string="A spoken 'go ahead' counts for prepare requests",
         default=False,
         help="When on, a person who asked by voice may confirm a prepare "
              "request by saying go ahead. Decisions always need typing.")

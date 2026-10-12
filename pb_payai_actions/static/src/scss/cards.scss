@@ -273,6 +273,74 @@
     &.is-compact { padding: 0 12px 9px 52px; }
 }
 
+// ── P2: the plan card, one card in three states ───────────────────────
+.payai-card--cancelled .payai-card__head { background: var(--pc-neutral-soft); }
+.payai-card--plan.is-done .payai-card__head    { background: var(--pc-ok-soft); }
+.payai-card--plan.is-failed .payai-card__head  { background: var(--pc-bad-soft); }
+.payai-card--plan.is-undone .payai-card__head  { background: var(--pc-neutral-soft); }
+.payai-card--plan .payai-card__head { transition: background-color 0.4s ease; }
+.payai-card.is-running .payai-card__badge .payai-ic { animation: payai-spin 0.9s linear infinite; }
+.payai-card.is-superseded { opacity: 0.62; }
+.payai-card.is-busy .payai-btn { cursor: progress; }
+.payai-card.is-busy .payai-btn--do .payai-ic { animation: payai-spin 0.9s linear infinite; }
+@keyframes payai-spin { to { transform: rotate(360deg); } }
+
+.payai-card__spacer { flex: 1 1 auto; }
+.payai-btn[disabled] { opacity: 0.6; }
+
+.payai-card__prog { display: flex; flex-direction: column; gap: 6px; }
+.payai-card__progtext {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 12.5px;
+    color: var(--pc-muted);
+    span:first-child { color: var(--pc-ink); font-weight: 600; }
+}
+.payai-card__progn { font-variant-numeric: tabular-nums; }
+.payai-card__bar {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--pc-brand-soft);
+    overflow: hidden;
+    i {
+        display: block;
+        height: 100%;
+        border-radius: 999px;
+        background: var(--pc-brand);
+        transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+}
+.payai-card.is-done .payai-card__bar i { background: var(--pc-ok); }
+.payai-card.is-failed .payai-card__bar i { background: var(--pc-warn); }
+
+.payai-card__undo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 8px 8px 11px;
+    border-radius: 10px;
+    background: var(--pc-warn-soft);
+    color: #8A4B05;
+    font-size: 12.5px;
+    animation: payai-card-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    .payai-ic { width: 15px; height: 15px; }
+    &.is-off { background: var(--pc-neutral-soft); color: var(--pc-muted); }
+    .payai-btn { padding: 6px 11px; margin-left: auto; }
+}
+.payai-card__undotext { flex: 1 1 auto; min-width: 0; }
+.payai-card__clock {
+    margin-left: 4px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .payai-card__bar i, .payai-card__undo { transition: none !important; animation: none !important; }
+    .payai-card.is-running .payai-card__badge .payai-ic,
+    .payai-card.is-busy .payai-btn--do .payai-ic { animation: none !important; }
+}
+
 @media (max-width: 420px) {
     .payai-card__tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .payai-card__audit.is-compact { padding-left: 12px; }

@@ -18,6 +18,7 @@ from odoo.addons.pb_payai_actions.payai import gate, registry
 from odoo.addons.pb_payai_actions.payai.registry import ACTIONS
 
 GREEN = {'open_screen', 'run_status', 'download_run_excel', 'what_can_you_do'}
+AMBER = {'run_payroll', 'submit_run', 'update_pay_data', 'send_payslips', 'filing_prepare'}
 
 DOORS = [
     {'id': 'payhub', 'label': 'Pay Run', 'sublabel': 'Payroll operations', 'group': 'Missions',
@@ -30,6 +31,12 @@ DOORS = [
      'groups': ['om_hr_payroll.group_hr_payroll_user']},
     {'id': 'va_access', 'label': 'Access & delegation', 'sublabel': 'Admin', 'group': 'Admin',
      'groups': ['base.group_system']},
+    # P2-F1: two lenses with the same name in two places — "open approvals"
+    # is a question, never a guess.
+    {'id': 'homehub_approvals', 'label': 'Approvals', 'sublabel': 'Home', 'group': '',
+     'groups': [], 'kind': 'lens'},
+    {'id': 'wf_approvals', 'label': 'Approvals', 'sublabel': 'Mission Control', 'group': '',
+     'groups': [], 'kind': 'lens'},
 ]
 
 
@@ -151,12 +158,13 @@ class TestPayaiP1(TransactionCase):
             if key not in ('open_screen', 'what_can_you_do') and action.tier != 'never':
                 self.assertTrue(action.screen_keys, '%s names no screen' % key)
         stubs = {k for k, a in ACTIONS.items() if a.stub}
-        self.assertTrue({'run_payroll', 'submit_run', 'update_pay_data', 'send_payslips',
-                         'filing_prepare', 'approve_item', 'send_back', 'reject_item'} <= stubs)
+        # P2: Amber is built; Red stays declared-only until P3.
+        self.assertTrue({'approve_item', 'send_back', 'reject_item'} <= stubs)
+        self.assertFalse(AMBER & stubs)
         tools = registry.tools_schema(self.env, self.officer)
         json.dumps(tools)
         names = {t['name'] for t in tools}
-        self.assertTrue(names <= GREEN, names)
+        self.assertTrue(names <= GREEN | AMBER, names)
         self.assertFalse(names & stubs)
         self.assertIn('run_status', names)
         for t in tools:
@@ -237,19 +245,19 @@ class TestPayaiP1(TransactionCase):
             hist = session.with_user(self.officer).get_history()
             self.assertEqual(hist[-1]['card']['kind'], 'done')
 
-            out, session = self._send(self.officer, 'Open runs', session)
+            out, session = self._send(self.officer, 'Open approvals', session)
             card = out['card']
             self.assertEqual(card['kind'], 'clarify')
             self.assertTrue(2 <= len(card['chips']) <= 6, card['chips'])
             values = [c['value'] for c in card['chips']]
-            self.assertIn('payhub_runs', values)
+            self.assertIn('homehub_approvals', values)
             task = self.env['payai.task'].sudo().browse(card['task_id'])
             self.assertEqual(task.state, 'clarify')
 
             out, session = self._send(
-                self.officer, 'Pay Runs', session,
+                self.officer, 'Approvals', session,
                 resolve={'task_id': card['task_id'], 'slot': card['chip_slot'],
-                         'value': 'payhub_runs'})
+                         'value': 'homehub_approvals'})
         self.assertEqual(out['card']['kind'], 'done')
         self.assertEqual(out['card']['task_id'], task.id)
         self.assertEqual(task.state, 'done')
@@ -257,7 +265,7 @@ class TestPayaiP1(TransactionCase):
         self.assertEqual(params['resolved']['door']['origin'], 'chose')
         # A value the server did not offer is refused.
         with self._no_provider():
-            out2, _s = self._send(self.officer, 'Open runs', session)
+            out2, _s = self._send(self.officer, 'Open approvals', session)
             with self.assertRaises(AccessError):
                 self._send(self.officer, 'x', session, resolve={
                     'task_id': out2['card']['task_id'], 'slot': 'door', 'value': 'va_access'})
@@ -307,20 +315,20 @@ class TestPayaiP1(TransactionCase):
     # ================================================================ 8
     def test_08_expiry_and_owner(self):
         with self._no_provider():
-            out, session = self._send(self.officer, 'Open runs')
+            out, session = self._send(self.officer, 'Open approvals')
             card = out['card']
             task = self.env['payai.task'].sudo().browse(card['task_id'])
             task.write({'expires_at': fields.Datetime.now() - timedelta(minutes=11)})
-            out, _s = self._send(self.officer, 'Pay Runs', session, resolve={
-                'task_id': task.id, 'slot': 'door', 'value': 'payhub_runs'})
+            out, _s = self._send(self.officer, 'Approvals', session, resolve={
+                'task_id': task.id, 'slot': 'door', 'value': 'homehub_approvals'})
             self.assertIn('expired', out['card']['title'])
             self.assertEqual(task.state, 'expired')
             # Somebody else answering the officer's question: refused.
-            out, session = self._send(self.officer, 'Open runs', session)
+            out, session = self._send(self.officer, 'Open approvals', session)
             with self.assertRaises(AccessError):
-                self._send(self.manager, 'Pay Runs', resolve={
+                self._send(self.manager, 'Approvals', resolve={
                     'task_id': out['card']['task_id'], 'slot': 'door',
-                    'value': 'payhub_runs'})
+                    'value': 'homehub_approvals'})
 
     # ================================================================ 9
     def test_09_audit_rows(self):
@@ -361,7 +369,7 @@ class TestPayaiP1(TransactionCase):
         sent = ' '.join(m['content'] for m in sink[0]['messages'])
         self.assertNotIn('Zyxwq', sent)
         self.assertIn('[person-', sent)
-        self.assertTrue({t['name'] for t in sink[0]['tools']} <= GREEN)
+        self.assertTrue({t['name'] for t in sink[0]['tools']} <= GREEN | AMBER)
 
     # =============================================================== 12
     def test_12_question_unchanged_plus_chip(self):
@@ -376,10 +384,11 @@ class TestPayaiP1(TransactionCase):
     # ========================================================== extras
     def test_13_stub_and_never_cards(self):
         with self._no_provider():
-            out, _s = self._send(self.officer, 'Run June payroll for Retail')
+            # A Red sentence is still declared-only (P3): the honest refusal
+            # with the door to where it is done today.
+            out, _s = self._send(self.officer, 'Approve the June 2031 run')
             card = out['card']
             self.assertEqual(card['kind'], 'refused')
-            self.assertTrue(any(a.get('door_id') == 'payhub_run' for a in card['actions']))
             out, _s = self._send(self.plain, 'Run June payroll for Retail')
             self.assertIn('Run payroll right', json.dumps(out['card']))
             out, _s = self._send(self.officer, 'Delete the May run')

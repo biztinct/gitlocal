@@ -7,11 +7,11 @@
        client never decides a tier or a right. -->
   <t t-name="pb_payai_actions.Card">
     <t t-set="card" t-value="msg.card"/>
-    <div t-attf-class="payai-card payai-card--{{ card.kind }} payai-tier--{{ card.tier }} {{ this.payaiCompact(card) ? 'is-compact' : '' }}"
-         role="group" t-att-aria-label="card.title">
+    <div t-attf-class="payai-card payai-card--{{ card.kind }} payai-tier--{{ card.tier }} {{ this.payaiCompact(card) ? 'is-compact' : '' }} {{ card.state ? 'is-' + card.state : '' }} {{ card.superseded ? 'is-superseded' : '' }} {{ card.busy ? 'is-busy' : '' }}"
+         role="group" t-att-aria-label="card.title" t-att-aria-busy="card.state === 'running' ? 'true' : 'false'">
       <div class="payai-card__head">
         <span t-attf-class="payai-card__badge payai-tone--{{ this.payaiTone(card) }}"
-              t-out="this.payaiSvg(this.payaiIcon(card))"/>
+              t-out="this.payaiSvg(this.payaiCardIcon(card))"/>
         <div class="payai-card__ht">
           <div class="payai-card__title" t-esc="card.title"/>
           <div class="payai-card__sub" t-if="card.subtitle" t-esc="card.subtitle"/>
@@ -36,6 +36,18 @@
               <span t-attf-class="payai-src payai-src--{{ slot.origin }}" t-esc="this.payaiOrigin(slot.origin)"/>
             </span>
           </t>
+        </div>
+
+        <div class="payai-card__prog" t-if="card.progress and card.kind === 'plan' and card.state !== 'planned'"
+             role="progressbar" aria-valuemin="0" t-att-aria-valuemax="card.progress.total or 100"
+             t-att-aria-valuenow="card.progress.done or 0">
+          <div class="payai-card__progtext">
+            <span t-esc="card.progress.label"/>
+            <span class="payai-card__progn" t-if="card.progress.total">
+              <t t-esc="this.payaiNum(card.progress.done)"/> / <t t-esc="this.payaiNum(card.progress.total)"/>
+            </span>
+          </div>
+          <div class="payai-card__bar"><i t-attf-style="width: {{ this.payaiPct(card) }}%"/></div>
         </div>
 
         <div class="payai-card__tiles" t-if="card.result and card.result.length">
@@ -85,13 +97,31 @@
 
         <div class="payai-card__actions" t-if="card.actions and card.actions.length">
           <t t-foreach="card.actions" t-as="act" t-key="act_index">
+            <span class="payai-card__spacer" t-if="act.id === 'cancel'"/>
             <button type="button"
-                    t-attf-class="payai-btn payai-btn--{{ act.style or 'outline' }}"
+                    t-attf-class="payai-btn payai-btn--{{ act.style or 'outline' }} {{ act.id === 'do' ? 'payai-btn--do' : '' }}"
+                    t-att-disabled="card.busy ? 'disabled' : false"
                     t-on-click="() => this.payaiAct(msg, act)">
-              <t t-out="this.payaiSvg(this.payaiActIcon(act))"/>
+              <t t-if="act.id === 'do' and card.busy" t-out="this.payaiSvg('loader')"/>
+              <t t-elif="act.id !== 'do'" t-out="this.payaiSvg(this.payaiActIcon(act))"/>
               <span t-esc="act.label"/>
             </button>
           </t>
+        </div>
+
+        <div t-attf-class="payai-card__undo {{ card.undo.can ? '' : 'is-off' }}" t-if="card.undo and card.state === 'done'">
+          <t t-out="this.payaiSvg('undo')"/>
+          <span class="payai-card__undotext">
+            <t t-esc="card.undo.note"/>
+            <t t-if="card.undo.can and card.undo.until_iso">
+              <b class="payai-card__clock"><PayaiCountdown until="card.undo.until_iso"/></b>
+            </t>
+          </span>
+          <button type="button" class="payai-btn payai-btn--ghost" t-if="card.undo.can"
+                  t-att-disabled="card.busy ? 'disabled' : false"
+                  t-on-click="() => this.payaiUndo(msg)">
+            <t t-esc="card.undo.label"/>
+          </button>
         </div>
 
         <div class="payai-card__audit" t-if="card.audit_line">
@@ -104,6 +134,8 @@
       </div>
     </div>
   </t>
+
+  <t t-name="pb_payai_actions.Countdown"><t t-esc="left"/> left</t>
 
   <!-- The floating pill: the card follows the text; the text is the card's
        own title, so it is not drawn twice. -->

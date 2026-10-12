@@ -50,6 +50,7 @@ class PayaiTask(models.Model):
         ('refused', 'Refused'),
         ('undone', 'Undone'),
         ('expired', 'Expired'),
+        ('cancelled', 'Cancelled'),
     ], string='Status', required=True, default='planned', index=True)
     confirm_kind = fields.Selection([
         ('none', 'Not needed'), ('tap', 'Tap'), ('typed', 'Typed word'),

@@ -27,7 +27,7 @@
                             <field name="payai_tier_decide"/>
                         </setting>
                         <setting id="payai_voice_go_ahead_setting"
-                                 string="A spoken 'go ahead' counts for Amber"
+                                 string="A spoken 'go ahead' counts for prepare requests"
                                  help="A person who asked by voice may confirm a prepare request by saying go ahead.">
                             <field name="payai_voice_go_ahead"/>
                         </setting>
