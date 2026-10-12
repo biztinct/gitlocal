@@ -1160,16 +1160,42 @@ class UpdatePayData(_Amber):
             context={'records_employee_ids': [emp_id] if emp_id else [],
                      'records_config_id': config_id})
 
+    @staticmethod
+    def _scheme_name(ctx, config_id):
+        """The scheme's name as the person may read it, or '' (PA31)."""
+        if not config_id or 'hr.formula.config' not in ctx.env:
+            return ''
+        try:
+            cfg = ctx.env['hr.formula.config'].browse(int(config_id)).exists()
+            if not cfg:
+                return ''
+            cfg.check_access('read')
+            return cfg.display_name or ''
+        except AccessError:
+            return ''
+
     def _closest_fields(self, ctx, text, rows, emp_id, config_id):
         """P3-W3 — no pay value by that name on this person's scheme: never a
         dead end. The closest ones (by spelling, ≤ 6) as chips, each showing
         what the person has today, and the door to Records."""
         door = self._records_door(emp_id, config_id)
         if not rows:
-            out = missing(T(_lt(
-                "This person's scheme has no pay value that can be changed here. "
-                "Open People › Records to see what can.")))
+            # P4-W2: say WHY in plain words, naming the scheme; the card keeps
+            # the one Records door and the "What can you do?" chip.
+            scheme = self._scheme_name(ctx, config_id)
+            if scheme:
+                text = T(_lt(
+                    'Nothing on %s can be changed from here yet: Records has no pay '
+                    'value on it that you may change. Open People › Records to see '
+                    'what you can change.')) % scheme
+            else:
+                text = T(_lt(
+                    "Nothing on this person's scheme can be changed from here yet: "
+                    "Records has no pay value on it that you may change. Open People "
+                    "› Records to see what you can change."))
+            out = missing(text)
             out['actions'] = [door]
+            out['door_id'] = 'peoplehub_records'
             return out
         said, words = fold(text), tokens(text)
 

@@ -358,6 +358,10 @@ def _missing_card(ctx, action, slot, res):
     # The resolver may name a better door than the Action's own (P3-W4: "no
     # approved run yet" points at the Runs board, not at Pay & Deliver).
     door_id = res.get('door_id') or action.door_id
+    # P4-W1: the resolver's own door may already be this one (the pay-value
+    # refusal carries "Open People › Records"): one door, never two.
+    if any(a.get('door_id') == door_id for a in actions):
+        door_id = ''
     if door_id and ctx.has_door(door_id):
         row = ctx.door_row(door_id)
         actions.append(cards.door_action(
