@@ -20,6 +20,10 @@ Every Action declares (class attributes on a subclass of `Action`):
     door_id       the ⌘K row that is "the screen for this" (escape hatch)
     phrases       regexes for the deterministic fallback; named groups are
                   slot texts
+    phrases_vi    P4: the same in Vietnamese, written WITH marks; each is
+                  tried on the marked text first, then (marks stripped from
+                  the pattern) on the text with its marks folded away, so
+                  "duyet" works as well as "duyệt"
     stub          True = declared for the catalogue, execute not built yet
 
 and implements `method_gate(env, user)`, optionally `param_gate(ctx, params)`,
@@ -27,8 +31,9 @@ and implements `method_gate(env, user)`, optionally `param_gate(ctx, params)`,
 default to "none" / the door.
 """
 import re
+import unicodedata
 
-from .i18n import T
+from .i18n import EN, T
 
 ACTIONS = {}
 _ORDER = []
@@ -74,6 +79,8 @@ class Action:
     screen_keys = ()
     door_id = ''
     phrases = ()
+    #: P4 — Vietnamese phrasings (see the module docstring).
+    phrases_vi = ()
     stub = False
     #: Phrase-table priority: lower is tried first (ties: registration order).
     priority = 50
@@ -139,6 +146,18 @@ class Action:
     #: P3 Red: the word the person types to confirm (APPROVE, SEND BACK,
     #: REJECT). Checked on the server, trimmed and case-insensitive.
     confirm_word = ''
+    #: P4: the same word in Vietnamese (DUYỆT, TRẢ LẠI, TỪ CHỐI). Either word
+    #: is accepted from anybody, marks and capitals folded ("duyet" counts);
+    #: the card SHOWS the one in the person's own language.
+    confirm_word_vi = ''
+
+    def confirm_words(self):
+        return tuple(w for w in (self.confirm_word, self.confirm_word_vi) if w)
+
+    def shown_word(self):
+        from .i18n import is_vi
+        return (self.confirm_word_vi if is_vi() and self.confirm_word_vi
+                else self.confirm_word)
 
     def too_late(self, ctx, task, data):
         """The card when Undo is pressed after its window closed."""
@@ -165,6 +184,10 @@ def payai_action(cls):
     if inst.key in ACTIONS:
         raise ValueError('PayAI action %s registered twice' % inst.key)
     inst._compiled = tuple(re.compile(p, re.I) for p in inst.phrases)
+    from .phrases_vi import PHRASES_VI
+    vi = tuple(inst.phrases_vi) or PHRASES_VI.get(inst.key, ())
+    inst._compiled_vi = tuple(
+        (re.compile(p, re.I), re.compile(strip_marks(p), re.I)) for p in vi)
     ACTIONS[inst.key] = inst
     _ORDER.append(inst.key)
     return cls
@@ -192,9 +215,11 @@ def tool_for(action):
         }
         if slot.required:
             required.append(slot.key)
-    desc = T(action.summary)
+    # Only the model reads this: it stays English whatever the person's
+    # language (P4 — the tools prompt is not user-visible).
+    desc = EN(action.summary)
     if action.examples:
-        desc += ' Examples: ' + '; '.join('"%s"' % T(e) for e in action.examples[:4])
+        desc += ' Examples: ' + '; '.join('"%s"' % EN(e) for e in action.examples[:4])
     return {
         'name': action.key,
         'description': desc,
@@ -241,9 +266,45 @@ _QUESTION = re.compile(
     re.I)
 
 
+#: P4 — Vietnamese politeness around an order ("bạn giúp tôi …", "… nhé").
+#: Matched on the folded text; cut by position, so the words kept keep marks.
+_LEAD_VI = re.compile(
+    r'^\s*(?:payai[,:]?\s+)?(?:(?:ban|em|anh|chi)\s+)?'
+    r'(?:(?:hay|vui\s+long|lam\s+on|xin|giup\s+(?:toi|minh|em)|'
+    r'co\s+the|nho\s+ban|toi\s+muon|minh\s+muon|cho\s+(?:toi|minh)\s+(?=xem\b))\s+)*')
+_TAIL_VI = re.compile(
+    r'(?:\s*,?\s+(?:giup\s+(?:toi|minh|em)(?:\s+voi)?|giup|gium|nhe|nha|nhe\s+ban|'
+    r'duoc\s+khong|khong|di|voi|a|nhe\s+payai|cam\s+on))+\s*$')
+#: A Vietnamese question about HOW or WHY ("làm sao để …", "tại sao …").
+_QUESTION_VI = re.compile(
+    r'^\s*(?:lam\s+(?:sao|the\s+nao)|tai\s+sao|vi\s+sao|the\s+nao|khi\s+nao|'
+    r'giai\s+thich|.*\b(?:la\s+gi|nghia\s+la\s+gi|nhu\s+the\s+nao|lam\s+sao|'
+    r'tai\s+sao|vi\s+sao|bang\s+cach\s+nao)\b)')
+
+
+def strip_marks(text):
+    """Text without Vietnamese marks, case KEPT (a regex stays a regex:
+    "\\S" must not become "\\s")."""
+    raw = unicodedata.normalize('NFKD', text or '')
+    raw = ''.join(c for c in raw if not unicodedata.combining(c))
+    return raw.replace('đ', 'd').replace('Đ', 'D')
+
+
 def normalise(message):
-    text = ' '.join((message or '').split())
+    text = ' '.join(unicodedata.normalize('NFC', message or '').split())
     return _LEAD.sub('', text, count=1).strip().rstrip('.!?').strip()
+
+
+def normalise_vi(message):
+    """The order without its Vietnamese politeness, marks kept."""
+    from .resolve import fold_keep
+    text = ' '.join(unicodedata.normalize('NFC', message or '').split()).rstrip('.!?').strip()
+    folded = fold_keep(text)
+    lead = _LEAD_VI.match(folded)
+    start = lead.end() if lead else 0
+    tail = _TAIL_VI.search(folded, start)
+    end = tail.start() if tail else len(text)
+    return text[start:end].strip().rstrip('.!?,').strip()
 
 
 def looks_like_question(message):
@@ -254,27 +315,53 @@ def looks_like_question(message):
     # "How is the June run doing?" asks for a status, not an explanation.
     if re.match(r'^\s*how\s+is\s+(?:the\s+)?.*\b(?:run|payroll)\b', text, re.I):
         return False
+    if _QUESTION_VI.match(strip_marks(text).lower()):
+        return True
     return bool(_QUESTION.match(text))
+
+
+def _groups(m, source):
+    """Slot texts from a match, sliced out of `source` (same length as the
+    text matched), so a name keeps its own spelling."""
+    out = {}
+    for key, value in m.groupdict().items():
+        if value and value.strip():
+            a, b = m.span(key)
+            out[key] = source[a:b].strip()
+    return out
 
 
 def match(message):
     """(action key, {slot: text}) from the phrase table, or None.
 
     Anchored, imperative phrasings only. A question about how to do
-    something is never read as an order to do it.
+    something is never read as an order to do it. P4: each Action's
+    Vietnamese phrasings are tried after its English ones — on the marked
+    text, then on the folded text — in the same priority order.
     """
+    from .resolve import fold_keep
     if looks_like_question(message):
         return None
     text = normalise(message)
     if not text or len(text) > 300:
         return None
+    vi = normalise_vi(message)
+    vi_low = vi.lower() if len(vi.lower()) == len(vi) else vi
+    vi_fold = fold_keep(vi)
     for action in ordered():
         for rx in action._compiled:
             m = rx.match(text)
             if m:
-                slots = {k: (v or '').strip() for k, v in m.groupdict().items()
-                         if v and v.strip()}
-                return action.key, slots
+                return action.key, _groups(m, text)
+        if not vi:
+            continue
+        for marked, folded in action._compiled_vi:
+            m = marked.match(vi_low)
+            if m:
+                return action.key, _groups(m, vi)
+            m = folded.match(vi_fold)
+            if m:
+                return action.key, _groups(m, vi)
     return None
 
 

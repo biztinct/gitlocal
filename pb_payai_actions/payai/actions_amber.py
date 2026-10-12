@@ -31,7 +31,7 @@ from odoo import fields
 from odoo.exceptions import AccessError, UserError
 from odoo.tools.translate import LazyTranslate
 
-from .i18n import T
+from .i18n import T, num, stamp
 
 from . import cards
 from .actions_green import RUNS_DOOR, _board_rows, _row_for, money, run_door
@@ -211,6 +211,11 @@ class RunPayroll(_Amber):
 
     _PEOPLE_SPLIT = re.compile(r'^(?P<a>.+?)\s+(?:for|with|just)\s+(?P<b>.+)$', re.I)
     _ONLY = re.compile(r'(?:^|\s+)only\s*$', re.I)
+    # P4 — "Bán lẻ chỉ Vũ Khánh Chi", "Bán lẻ, riêng Vũ Khánh Chi", "Vũ Khánh
+    # Chi thôi". On the MARKED text: "chỉ" (only) is not the name "Chi".
+    _PEOPLE_SPLIT_VI = re.compile(
+        r'^(?P<a>.+?)\s*,?\s+(?:cho\s+riêng|riêng|chỉ\s+cho|chỉ|cho|với)\s+(?P<b>.+)$', re.I)
+    _ONLY_VI = re.compile(r'(?:^|\s+)(?:mà\s+)?thôi\s*$|^\s*(?:chỉ|riêng)\s+', re.I)
 
     def _split_people(self, ctx, texts):
         """"<scheme> for <people>", "<people> only" → the scheme slot and the
@@ -221,7 +226,7 @@ class RunPayroll(_Amber):
             return texts
 
         def is_scheme(words):
-            words = self._ONLY.sub('', words or '').strip()
+            words = self._ONLY_VI.sub('', self._ONLY.sub('', words or '')).strip()
             if not words:
                 return False
             try:
@@ -230,7 +235,7 @@ class RunPayroll(_Amber):
                 return False
             return res['status'] in ('resolved', 'ambiguous')
 
-        m = self._PEOPLE_SPLIT.match(scheme)
+        m = self._PEOPLE_SPLIT.match(scheme) or self._PEOPLE_SPLIT_VI.match(scheme)
         if m:
             a, b = m.group('a').strip(), m.group('b').strip()
             if is_scheme(a):
@@ -238,7 +243,7 @@ class RunPayroll(_Amber):
             elif is_scheme(b):
                 texts.update(scheme=b, people=a)
             return texts
-        if self._ONLY.search(scheme) and not is_scheme(scheme):
+        if (self._ONLY.search(scheme) or self._ONLY_VI.search(scheme)) and not is_scheme(scheme):
             # "Run December payroll for Vũ Khánh Chi only": no scheme said.
             texts.update(scheme='', people=scheme)
         return texts
@@ -294,8 +299,9 @@ class RunPayroll(_Amber):
             return resolved(empty, '', 'default')
         if self._status_hit(ctx, text):
             return resolved(dict(empty, text=text), text, 'said')
-        bare = self._ONLY.sub('', text).strip()
-        names = [n.strip() for n in re.split(r'\s*,\s*|\s+and\s+|\s*&\s*', bare) if n.strip()]
+        bare = self._ONLY_VI.sub('', self._ONLY.sub('', text)).strip()
+        names = [n.strip() for n in re.split(r'\s*,\s*|\s+and\s+|\s+và\s+|\s*&\s*', bare)
+                 if n.strip()]
         config_id = int((ctx.params.get('scheme') or {}).get('value') or 0)
         ids, labels = [], []
         for name in names[:MAX_CHIPS]:
@@ -373,7 +379,9 @@ class RunPayroll(_Amber):
         card = sch.get('card') or next(
             (s for s in d.get('schemes') or [] if s['id'] == sch.get('value')), None) or {}
         start = fields.Date.to_date(per['date_start'])
-        label = month_label(start)
+        # The run's NAME is written the way the screen writes it (the wizard
+        # names runs "<scheme> · June 2026" in English, whoever runs it).
+        label = month_label(start, 'en_US')
         if card and d.get('is_demo') and per['date_start'] == d.get('date_start'):
             name = '%s — %s' % (d.get('name') or '', card.get('name') or '')
         elif card:
@@ -423,10 +431,10 @@ class RunPayroll(_Amber):
         # The People slot shows what the wizard's scheme card shows: who the
         # scheme covers (incl. host employments it gains), not the raw list.
         covered = pv.get('covered', pv['total'])
-        who = T(_lt('All %(n)s covered by this scheme')) % {'n': '{:,}'.format(covered)}
+        who = T(_lt('All %(n)s covered by this scheme')) % {'n': num(covered)}
         people_origin = 'said' if said_statuses else 'default'
         if said_statuses:
-            who = T(_lt('%(n)s people · %(which)s')) % {'n': '{:,}'.format(covered),
+            who = T(_lt('%(n)s people · %(which)s')) % {'n': num(covered),
                                                        'which': said_statuses}
         if vals.get('employee_ids'):
             # P3-W1: "Vũ Khánh Chi (1 of 902)" — the named people out of all
@@ -436,8 +444,8 @@ class RunPayroll(_Amber):
             names = (params['people'].get('value') or {}).get('names') or []
             who = T(_lt('%(names)s (%(n)s of %(all)s)')) % {
                 'names': ', '.join(names) or params['people'].get('label') or '',
-                'n': '{:,}'.format(pv['total']),
-                'all': '{:,}'.format(whole.get('covered', covered))}
+                'n': num(pv['total']),
+                'all': num(whole.get('covered', covered))}
             people_origin = params['people'].get('origin') or 'said'
         slots.append(slot_row('people', _lt('People'), who, people_origin, True))
         notes = []
@@ -471,7 +479,7 @@ class RunPayroll(_Amber):
         elif pv.get('not_covered'):
             notes.append(cards.note('info', T(_lt(
                 '%(n)s people in this company are not covered by this scheme and '
-                'stay out of this run.')) % {'n': '{:,}'.format(pv['not_covered'])}))
+                'stay out of this run.')) % {'n': num(pv['not_covered'])}))
         if pv.get('adopt'):
             notes.append(cards.note('info', T(_lt(
                 '%(n)s payslips already made for this month are taken into the '
@@ -496,7 +504,7 @@ class RunPayroll(_Amber):
         fp = fingerprint(vals, {k: pv.get(k) for k in (
             'covered', 'not_covered', 'total', 'adopt', 'existing', 'blockers')})
         speak = T(_lt('I will run %(month)s payroll for %(scheme)s, %(n)s people.')) % {
-            'month': month, 'scheme': scheme_name, 'n': '{:,}'.format(pv['total'])}
+            'month': month, 'scheme': scheme_name, 'n': num(pv['total'])}
         return {'card': card_out, 'vals': vals, 'fingerprint': fp, 'speak': speak,
                 'extra': {'total': pv['total'], 'scheme': scheme_name, 'month': month,
                           'currency': cur.get('symbol') or cur.get('name') or ''}}
@@ -574,11 +582,11 @@ class RunPayroll(_Amber):
             exc = 0
         need = int(summary.get('flagged') or 0) + exc
         tiles = [
-            {'value': '{:,}'.format(int(summary.get('count') or 0)),
+            {'value': num(int(summary.get('count') or 0)),
              'label': T(_lt('payslips in draft'))},
             {'value': money(summary.get('total_net'), extra.get('currency') or ''),
              'label': T(_lt('net to pay'))},
-            {'value': '{:,}'.format(need), 'label': T(_lt('need a look'))},
+            {'value': num(need), 'label': T(_lt('need a look'))},
         ]
         actions = []
         door = run_door(ctx, run.id, _lt('Open the run'))
@@ -592,7 +600,7 @@ class RunPayroll(_Amber):
         if self._may_delete(ctx):
             undo = undo_block(self.undo_minutes, _lt('Undo'), T(_lt(
                 'Not what you meant? Undo deletes the draft run and its %(n)s '
-                'payslips.')) % {'n': '{:,}'.format(n)})
+                'payslips.')) % {'n': num(n)})
         else:
             undo = undo_block(0, '', _lt(
                 'Ask a payroll manager to delete it, or leave it as a draft.'), can=False)
@@ -721,7 +729,9 @@ def _route_steps(engine, version_id, context):
     return people, needs, known
 
 
-_GLUE = ('for', 'of', 'in', 'the', 'payroll', 'run', 'from')
+_GLUE = ('for', 'of', 'in', 'the', 'payroll', 'run', 'from',
+         # P4 — "cho Bán lẻ tháng 6", "của … trong tháng 6"
+         'cho', 'cua', 'trong', 'vao', 'ky', 'luong', 'bang', 'dot')
 
 
 def _without_month(text, rest_folded):
@@ -759,7 +769,7 @@ def _ref(task):
 
 def _stamp(ctx):
     when = fields.Datetime.context_timestamp(ctx.env.user, fields.Datetime.now())
-    return when.strftime('%d %b %Y %H:%M')
+    return stamp(when)
 
 
 # =========================================================================
@@ -840,7 +850,7 @@ class SubmitRun(_RunAmber):
         slots = [
             slot_row('run', _lt('Run'), run.name or '', params['run'].get('origin'), True),
             slot_row('figures', _lt('Figures'), T(_lt('%(n)s people · %(net)s net')) % {
-                'n': '{:,}'.format(int(row.get('employees') or 0)),
+                'n': num(int(row.get('employees') or 0)),
                 'net': money(row.get('net'), row.get('currency'))}, 'default'),
         ]
         if route:
@@ -976,7 +986,7 @@ class SendPayslips(_RunAmber):
                                   'These payslips are already waiting to be approved, with %s.')) % (
                                       batch._waiting_for() or T(_lt('their approver'))))])
         slots = [slot_row('run', _lt('Run'), run.name or '', params['run'].get('origin'), True),
-                 slot_row('people', _lt('People'), T(_lt('%s payslips')) % '{:,}'.format(len(slips)),
+                 slot_row('people', _lt('People'), T(_lt('%s payslips')) % num(len(slips)),
                           'default')]
         notes = [cards.note('warn', _lt(
             'Emails cannot be called back, so this cannot be undone.'))]
@@ -1010,9 +1020,9 @@ class SendPayslips(_RunAmber):
                                   if who else _lt('Sending these payslips needs approval first.'))],
                               actions=actions, result_ref={'run_id': run.id,
                                                            'request_id': out.get('request_id') or 0})
-        tiles = [{'value': '{:,}'.format(int(out.get('sent') or 0)), 'label': T(_lt('sent'))},
-                 {'value': '{:,}'.format(int(out.get('failed') or 0)), 'label': T(_lt('failed'))},
-                 {'value': '{:,}'.format(int(out.get('skipped') or 0)), 'label': T(_lt('skipped'))}]
+        tiles = [{'value': num(int(out.get('sent') or 0)), 'label': T(_lt('sent'))},
+                 {'value': num(int(out.get('failed') or 0)), 'label': T(_lt('failed'))},
+                 {'value': num(int(out.get('skipped') or 0)), 'label': T(_lt('skipped'))}]
         notes = []
         if out.get('failed'):
             notes.append(cards.note('warn', _lt(
@@ -1144,8 +1154,8 @@ class UpdatePayData(_Amber):
                 amount = parse_amount(text)
                 if amount is None:
                     return missing(T(_lt('I could not read "%s" as an amount.')) % (text or '')[:40])
-                return resolved(amount, '{:,.0f}'.format(amount) if amount == int(amount)
-                                else '{:,.2f}'.format(amount), 'said')
+                return resolved(amount, num(amount) if amount == int(amount)
+                                else num(amount, 2), 'said')
             return resolved((text or '').strip(), (text or '').strip(), 'said')
         if slot.kind == 'day':
             day, origin, label = parse_day(ctx, text)
@@ -1270,7 +1280,7 @@ class UpdatePayData(_Amber):
         card_meta = self._cards(ctx, config_id).get(field_id) or {}
         new_label = item.get('new_label') or ''
         if card_meta.get('ttype') in self.NUMERIC and isinstance(value, (int, float)):
-            new_label = money(value, cur) if abs(value) >= 1e6 else '%s%s' % (cur, '{:,.0f}'.format(value))
+            new_label = money(value, cur) if abs(value) >= 1e6 else '%s%s' % (cur, num(value))
         slots = [
             slot_row('person', _lt('Person'), item.get('emp_name') or params['person']['label'],
                      params['person'].get('origin')),
@@ -1550,7 +1560,9 @@ class FilingPrepare(_Amber):
                                                f.get('group') or '')}
                     for f in board.get('filings') or []]
             q = [t for t in tokens(text) if t not in ('filing', 'return', 'declaration',
-                                                      'report', 'the', 'my', 'a')]
+                                                      'report', 'the', 'my', 'a',
+                                                      # P4 — "tờ khai", "báo cáo", "hồ sơ"
+                                                      'to', 'khai', 'bao', 'cao', 'ho', 'so')]
             if not q:
                 return ambiguous([{'value': r['value'], 'label': r['label'],
                                    'sublabel': r['sublabel']} for r in rows[:MAX_CHIPS]]) \

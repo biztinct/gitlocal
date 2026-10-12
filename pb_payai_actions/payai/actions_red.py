@@ -26,15 +26,15 @@ from odoo import fields
 from odoo.exceptions import AccessError, UserError
 from odoo.tools.translate import LazyTranslate
 
-from .i18n import T
+from .i18n import T, num, stamp
 
 from . import cards
 from .actions_amber import learn_action
 from .actions_green import RUNS_DOOR, money
 from .registry import Action, Slot, Stale, payai_action
 from .resolve import (
-    MAX_CHIPS, ambiguous, fold, missing, month_label, parse_period, resolved,
-    tok_match, tokens,
+    MAX_CHIPS, ambiguous, division_names, fold, missing, month_label, parse_period,
+    resolved, tok_match, tokens,
 )
 
 _lt = LazyTranslate(__name__)
@@ -43,6 +43,20 @@ _logger = logging.getLogger(__name__)
 HOME_SCREEN = ('pb_home_hub.item_home',)
 APPROVALS_DOOR = 'homehub_approvals'
 APPROVALS_HUB = {'tag': 'pb_home_hub', 'lens': 'approvals'}
+
+
+def approvals_hub(request_id=0, scope='me'):
+    """P4 — the Approvals inbox opened ON one request: `pb_focus`
+    "request:<id>[:<scope>]" (pb_approval_config inbox.js reads it on arrival,
+    opens that request's drawer, on the tab and scope where it lives).
+    Navigation only (PA19): the drawer re-reads the request with the person's
+    own rights."""
+    if not request_id:
+        return dict(APPROVALS_HUB)
+    focus = 'request:%d' % int(request_id)
+    if scope and scope != 'me':
+        focus += ':%s' % scope
+    return dict(APPROVALS_HUB, focus=focus, context={'pb_focus': focus})
 PAYRUN_MODEL = 'hr.payslip.run'
 #: The facade's own floor for a send-back / reject reason (inbox_facade.MIN_REASON).
 MIN_REASON = 6
@@ -53,6 +67,11 @@ ITEM_STOP = frozenset((
     'the', 'a', 'an', 'my', 'our', 'for', 'of', 'please', 'that', 'this',
     'request', 'requests', 'item', 'one', 'waiting', 's', 'approval',
     'approvals', 'it', 'to', 'me', 'from', 'on', 'in', 'with', 'and',
+    # P4 — Vietnamese words that never narrow it ("duyệt cái đó cho tôi",
+    # "yêu cầu đang chờ tôi"). "bảng/đợt/kỳ lương" are NOT here: a pay run's
+    # own words carry them, so they narrow to pay runs, as "run" does.
+    'no', 'cai', 'nay', 'do', 'kia', 'yeu', 'cau', 'cua', 'toi', 'minh',
+    'dang', 'cho', 'den', 'luot', 'muc', 'viec', 'cac', 'nhung', 'thang',
 ))
 #: The Learn walkthrough a done card offers, per process (P3 §2). There is no
 #: walkthrough of deciding in the Approvals inbox itself; for a pay run the
@@ -66,7 +85,7 @@ def _clip(text, size=MAX_REASON):
 
 def _stamp(ctx):
     when = fields.Datetime.context_timestamp(ctx.env.user, fields.Datetime.now())
-    return when.strftime('%d %b %Y %H:%M')
+    return stamp(when)
 
 
 def _names(seats):
@@ -110,10 +129,14 @@ def _card_words(inbox, card):
     except Exception:                                   # noqa: BLE001
         record = None
     if record is not None and record._name == PAYRUN_MODEL:
-        parts += [record.name or '', 'pay run payroll']
+        # P4: and the Vietnamese screens' words for a pay run, so "duyệt bảng
+        # lương tháng 6" narrows to pay runs exactly as "approve the run" does.
+        parts += [record.name or '', 'pay run payroll', 'bảng lương đợt lương kỳ lương']
         for fname in ('pb_division', 'pb_division_label'):
             if fname in record._fields and record[fname]:
                 parts.append(str(record[fname]))
+        if 'pb_division' in record._fields and record.pb_division:
+            parts.append(division_names(record.pb_division))
         if 'pb_formula_config_id' in record._fields and record.pb_formula_config_id:
             parts.append(record.pb_formula_config_id.name or '')
     return tokens(' '.join(parts)), record
@@ -136,7 +159,7 @@ def match_cards(ctx, inbox, text, cards_):
             if dates:
                 if not any(per[0] <= d <= per[1] for d in dates):
                     continue
-            elif fold(month_label(per[0]).split()[0]) not in words:
+            elif fold(month_label(per[0], 'en_US').split()[0]) not in words:
                 continue
         if all(any(tok_match(q, w) for w in words) for q in query):
             out.append((all(q in words for q in query), card))
@@ -281,7 +304,7 @@ class _Red(Action):
             request, step, seats = self._holders(ctx, request_id, scope)
         except (AccessError, UserError):
             return self._gone_card(ctx)
-        actions = self._inbox_door(ctx)
+        actions = self._inbox_door(ctx, request_id=request.id, scope=scope)
         title = request.title or ''
         if request.state == 'blocked':
             return cards.card(
@@ -317,11 +340,11 @@ class _Red(Action):
                           subtitle=(request.title or '') if request is not None else '',
                           notes=[cards.note('info', text)], actions=self._inbox_door(ctx))
 
-    def _inbox_door(self, ctx, style='outline'):
+    def _inbox_door(self, ctx, style='outline', request_id=0, scope='me'):
         if not ctx.has_door(APPROVALS_DOOR):
             return []
         return [cards.door_action(APPROVALS_DOOR, _lt('Open my approvals'), style,
-                                  hub=APPROVALS_HUB)]
+                                  hub=approvals_hub(request_id, scope))]
 
     def _conflict_card(self, ctx, request, conflict):
         """The independence rule, in the engine's own words. PayAI never uses
@@ -335,7 +358,7 @@ class _Red(Action):
                 'to approve it yourself with a written reason.')))
         return cards.card('refused', ctx.task, 'decide', title=_lt('Somebody else has to decide this'),
                           subtitle=request.get('title') or '', notes=notes,
-                          actions=self._inbox_door(ctx))
+                          actions=self._inbox_door(ctx, request_id=request.get('id') or 0))
 
     # ------------------------------------------------------------- plan
     def _read(self, ctx, request_id):
@@ -415,7 +438,7 @@ class _Red(Action):
                 people = 0
             text = T(_lt('1 person · %(net)s net')) if people == 1 \
                 else T(_lt('%(n)s people · %(net)s net'))
-            return text % {'n': '{:,}'.format(people), 'net': money(fact('net_total'), symbol)}
+            return text % {'n': num(people), 'net': money(fact('net_total'), symbol)}
         parts = []
         detail = pay.get('detail') or {}
         for row in (detail.get('rows') or [])[:2]:
@@ -467,16 +490,19 @@ class _Red(Action):
         if ctx.voice:
             notes.append(cards.note('warn', _lt(
                 'This one needs typing: a spoken yes never confirms a decision.')))
-        word = self.confirm_word
-        typed = {'id': 'typed', 'word': word, 'label': T(self.title_short), 'style': 'primary',
-                 'icon': self.icon,
+        # P4: the word in the person's own language; either word is accepted
+        # (`words`, checked again on the server, marks and capitals folded).
+        word = self.shown_word()
+        typed = {'id': 'typed', 'word': word, 'words': list(self.confirm_words()),
+                 'label': T(self.title_short), 'style': 'primary', 'icon': self.icon,
                  'hint': T(_lt('Type %s to confirm. A spoken yes does not count here.')) % word}
         if not self.reason_required:
             typed['note'] = {'label': T(_lt('Note')), 'value': reason,
                              'placeholder': T(_lt('Optional. It goes on the record.'))}
         actions = [typed]
         if ctx.has_door(APPROVALS_DOOR):
-            actions.append({'id': 'door', 'door_id': APPROVALS_DOOR, 'hub': APPROVALS_HUB,
+            actions.append({'id': 'door', 'door_id': APPROVALS_DOOR,
+                            'hub': approvals_hub(pay['id']),
                             'label': T(_lt('Open my approvals instead')), 'style': 'outline',
                             'icon': 'panel'})
         actions.append({'id': 'cancel', 'label': T(_lt('Cancel')), 'style': 'ghost'})
@@ -546,7 +572,7 @@ class _Red(Action):
             actions.append(cards.door_action(RUNS_DOOR, _lt('Open the run'), 'outline',
                                              hub={'tag': 'pb_pay_hub', 'lens': 'runs',
                                                   'focus': T(record.id)}))
-        actions += self._inbox_door(ctx)
+        actions += self._inbox_door(ctx, request_id=after.get('id') or 0)
         if scenario:
             actions.append(learn_action(scenario))
         card = cards.card(
@@ -591,6 +617,7 @@ class ApproveItem(_Red):
     examples = (_lt('Approve the June Retail run'),)
     right_subject = _lt('Approving')
     confirm_word = 'APPROVE'
+    confirm_word_vi = 'DUYỆT'
     icon = 'usercheck'
     did = _lt('approved')
     slots = (Slot('item', _lt('What'), 'item', True,
@@ -666,6 +693,7 @@ class SendBackItem(_Red):
     examples = (_lt('Send the June Retail run back because the overtime is missing'),)
     right_subject = _lt('Sending back')
     confirm_word = 'SEND BACK'
+    confirm_word_vi = 'TRẢ LẠI'
     icon = 'cornerleft'
     did = _lt('sent back')
     engine_action = 'return'
@@ -709,6 +737,7 @@ class RejectItem(_Red):
     examples = (_lt('Reject the May bonus run because it was paid twice'),)
     right_subject = _lt('Rejecting')
     confirm_word = 'REJECT'
+    confirm_word_vi = 'TỪ CHỐI'
     icon = 'circlex'
     did = _lt('rejected')
     engine_action = 'reject'

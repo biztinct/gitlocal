@@ -10,7 +10,7 @@ import logging
 from odoo.exceptions import UserError
 from odoo.tools.translate import LazyTranslate
 
-from .i18n import T
+from .i18n import T, num, short_amount
 
 from . import cards, registry
 from .registry import Action, Slot, payai_action
@@ -24,17 +24,11 @@ RUN_SCREENS = ('pb_payhub.item_pay_run', 'pb_sidebar.item_pay_runs')
 
 
 def money(amount, symbol=''):
-    """₫18.6 bn / ₫4.2 m / ₫950,000 — short enough for a tile."""
+    """₫18.6 bn / ₫4.2 m / ₫950,000 — short enough for a tile (P4: written
+    "₫18,6 tỷ" / "₫950.000" for a Vietnamese reader)."""
     amount = float(amount or 0.0)
     sign = '-' if amount < 0 else ''
-    a = abs(amount)
-    if a >= 1e9:
-        body = ('%.1f' % (a / 1e9)).rstrip('0').rstrip('.') + ' bn'
-    elif a >= 1e6:
-        body = ('%.1f' % (a / 1e6)).rstrip('0').rstrip('.') + ' m'
-    else:
-        body = '{:,.0f}'.format(a)
-    return '%s%s%s' % (sign, symbol or '', body)
+    return '%s%s%s' % (sign, symbol or '', short_amount(abs(amount)))
 
 
 def run_door(ctx, run_id, label, style='primary'):
@@ -201,7 +195,7 @@ class RunStatus(_RunLook):
         rows = _board_rows(ctx, run.ids)
         row = _row_for(ctx, run, rows)
         tiles = [
-            {'value': '{:,}'.format(int(row.get('employees') or 0)),
+            {'value': num(int(row.get('employees') or 0)),
              'label': T(_lt('people'))},
             {'value': money(row.get('net'), row.get('currency')),
              'label': T(_lt('net pay'))},
@@ -265,7 +259,7 @@ class RunStatus(_RunLook):
                               run_scheme_label(run), state_label(run.state)) if x),
                           'value': T(run.id)})
         tiles = [{'value': T(len(runs)), 'label': T(_lt('runs'))},
-                 {'value': '{:,}'.format(people), 'label': T(_lt('people'))}]
+                 {'value': num(people), 'label': T(_lt('people'))}]
         if len(nets) == 1:
             sym, total = list(nets.values())[0]
             tiles.append({'value': money(total, sym), 'label': T(_lt('net pay'))})

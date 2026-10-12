@@ -22,7 +22,7 @@ from odoo import fields
 from odoo.exceptions import AccessError
 from odoo.tools.translate import LazyTranslate
 
-from .i18n import T
+from .i18n import T, month_label as _month_label
 
 _lt = LazyTranslate(__name__)
 
@@ -42,6 +42,9 @@ DOOR_STOP = frozenset((
     'the', 'a', 'an', 'my', 'our', 'me', 'to', 'please', 'open', 'show', 'go',
     'screen', 'page', 'tab', 'view', 'section', 'up', 'for', 'of', 'and', 'on',
     'in', 'take', 'navigate', 'jump', 'bring', 'lens', 'list', 'board',
+    # P4 — Vietnamese glue around a screen's name ("mở trang …", "màn hình …")
+    'mo', 'trang', 'man', 'hinh', 'muc', 'cua', 'toi', 'minh', 'xem', 'vao',
+    'den', 'cho', 'cac',
 ))
 #: Words that carry no meaning when matching a pay run.
 RUN_STOP = frozenset((
@@ -51,6 +54,13 @@ RUN_STOP = frozenset((
     'this', 'last', 'next', 'month', 'months', 'current', 'previous', 'in',
     'on', 'please', 'get', 'give', 'export', 'payslips', 'batch', 'what',
     'about', 'with', 'and', 'to', 's',
+    # P4 — Vietnamese words that name a pay run, never which one
+    # ("xem bảng lương tháng 6 của Bán lẻ"). "năm" stays out: it is also a
+    # month, and a name.
+    'bang', 'dot', 'ky', 'luong', 'cua', 'cho', 'cac', 'xem', 'tai', 'xuat',
+    'trang', 'thai', 'tinh', 'hinh', 'excel', 'file', 'tep', 'phieu', 'nay',
+    'toi', 'minh', 'gui', 'o', 'dau', 'the', 'nao', 'ra', 'sao', 'kiem', 'tra',
+    'di', 'nhe', 'giup', 'dang', 'den',
 ))
 
 #: Words a person uses for a ⌘K row that its label does not contain.
@@ -67,6 +77,21 @@ DOOR_ALIASES = {
     'va_access': ('access', 'access home', 'access and delegations',
                   'access and delegation', 'permissions', 'roles'),
 }
+#: P4 — the same doors in the words a Vietnamese payroll officer uses (the
+#: screens' own Vietnamese: "Các đợt lương", "Chạy lương", "Phiếu lương",
+#: "Phê duyệt"). Folded (no marks), like every other alias.
+DOOR_ALIASES_VI = {
+    'payhub_runs': ('bang luong', 'cac dot luong', 'dot luong', 'ky luong',
+                    'danh sach dot luong', 'cac bang luong'),
+    'payhub_run': ('chay luong', 'tinh luong', 'chay bang luong'),
+    'payhub_payslips': ('phieu luong', 'cac phieu luong'),
+    'payhub_deliver': ('chi tra', 'gui phieu luong'),
+    'homehub_approvals': ('phe duyet', 'duyet', 'hop phe duyet', 'viec cho duyet',
+                          'cho duyet', 'phe duyet cua toi'),
+    'va_access': ('phan quyen', 'quyen truy cap', 'quyen'),
+}
+for _door, _words in DOOR_ALIASES_VI.items():
+    DOOR_ALIASES[_door] = tuple(DOOR_ALIASES.get(_door, ())) + _words
 
 
 # ------------------------------------------------------------ text helpers
@@ -74,6 +99,17 @@ def fold(text):
     raw = unicodedata.normalize('NFKD', (text or '').strip())
     raw = ''.join(c for c in raw if not unicodedata.combining(c))
     return raw.lower().replace('đ', 'd')
+
+
+def fold_keep(text):
+    """`fold`, one character for one character: the folded text lines up
+    with the original, so a phrase matched on the folded words can hand the
+    ORIGINAL words (a name keeps its marks) to the slots."""
+    out = []
+    for ch in text or '':
+        f = fold(ch)
+        out.append(f if len(f) == 1 else ch.lower() if len(ch.lower()) == 1 else ch)
+    return ''.join(out)
 
 
 def tokens(text, stop=frozenset()):
@@ -129,8 +165,67 @@ def _month_bounds(year, month):
     return datetime.date(year, month, 1), datetime.date(year, month, last)
 
 
-def month_label(start):
-    return '%s %s' % (calendar.month_name[start.month], start.year)
+def month_label(start, code=None):
+    """'June 2026' — or 'tháng 6 năm 2026' for a Vietnamese reader. `code`
+    forces a language ('en_US' where the words must match English data)."""
+    return _month_label(start, code)
+
+
+#: P4 — Vietnamese month words after "tháng" (folded). "tháng sáu" is June;
+#: "tháng sau" (no mark) is NEXT month — told apart on the marked text.
+VI_MONTHS = {
+    'mot': 1, 'gieng': 1, 'hai': 2, 'ba': 3, 'tu': 4, 'bon': 4, 'nam': 5,
+    'sau': 6, 'bay': 7, 'tam': 8, 'chin': 9, 'muoi': 10, 'muoi mot': 11,
+    'muoi hai': 12, 'chap': 12,
+}
+_VI_MONTH = re.compile(
+    r'\b(?:thang\s*|t)(muoi\s+mot|muoi\s+hai|muoi|mot|gieng|hai|ba|tu|bon|nam|sau|'
+    r'bay|tam|chin|chap|\d{1,2})\b(?:\s*(?:nam\s+|/\s*|-\s*|,\s*)?(20\d\d)\b)?')
+
+
+def _vi_period(raw, low, today):
+    """(start, end, origin, rest) for Vietnamese month words, or None.
+
+    "tháng này" (this month), "tháng trước"/"tháng rồi" (last), "tháng sau"/
+    "tháng tới" (next), "tháng 6", "tháng sáu", "tháng 12 năm 2031",
+    "tháng 6/2026", "T6". `raw` keeps the marks (sáu ≠ sau), `low` is folded.
+    """
+    marked = ' '.join((raw or '').lower().split())
+    rel = re.search(r'\bthang\s+(nay|truoc|roi|toi|sau)\b(?!\s*(?:/|-|nam\s+)?\s*20\d\d)', low)
+    if rel and not (rel.group(1) == 'sau' and re.search(r'tháng\s+sáu', marked)):
+        word = rel.group(1)
+        if word == 'nay':
+            y, m = today.year, today.month
+        elif word in ('truoc', 'roi'):
+            y, m = (today.year, today.month - 1) if today.month > 1 else (today.year - 1, 12)
+        else:
+            y, m = (today.year, today.month + 1) if today.month < 12 else (today.year + 1, 1)
+        s, e = _month_bounds(y, m)
+        return s, e, 'said', low.replace(rel.group(0), ' ', 1)
+    for m in _VI_MONTH.finditer(low):
+        word = ' '.join(m.group(1).split())
+        if word.isdigit():
+            month = int(word)
+        elif not m.group(0).startswith('thang'):
+            continue                                    # "t" + a word is not "T6"
+        else:
+            month = VI_MONTHS.get(word, 0)
+        if not 1 <= month <= 12:
+            continue
+        rest = low.replace(m.group(0), ' ', 1)
+        if m.group(2):
+            year = int(m.group(2))
+        else:
+            ym = re.search(r'\bnam\s+(20\d\d)\b', rest)
+            if ym:
+                year = int(ym.group(1))
+                rest = rest.replace(ym.group(0), ' ', 1)
+            else:
+                year = today.year if month <= today.month + 1 else today.year - 1
+        rest = re.sub(r'\bnam\s+nay\b', ' ', rest)
+        s, e = _month_bounds(year, month)
+        return s, e, 'said', rest
+    return None
 
 
 def parse_period(text, today):
@@ -141,6 +236,10 @@ def parse_period(text, today):
     still June 2026.
     """
     low = fold(text)
+    if 'thang' in low or re.search(r'\bt\d{1,2}\b', low):
+        got = _vi_period(text, low, today)
+        if got:
+            return got
     if re.search(r'\b(this|current)\s+month\b|\bthis\s+period\b', low):
         s, e = _month_bounds(today.year, today.month)
         return s, e, 'said', re.sub(r'\b(this|current)\s+(month|period)\b', ' ', low)
@@ -310,6 +409,21 @@ def resolve_run(ctx, text, allow_many=False, states=None):
 
 
 # ------------------------------------------------------------------ scheme
+def division_names(key):
+    """The division's names as the demo world writes them, in both languages
+    ("retail" → "Retail Bán lẻ"), so "cho Bán lẻ" finds the Retail schemes.
+    Read from the demo catalogue when it is there (the demo world is the one
+    place a division key has a Vietnamese name); '' anywhere else."""
+    if not key:
+        return ''
+    try:
+        from odoo.addons.pb_demo.models import demo_catalog
+    except Exception:                                   # noqa: BLE001
+        return ''
+    row = (getattr(demo_catalog, 'DIVISIONS', None) or {}).get(key) or {}
+    return ' '.join(x for x in (row.get('name_en'), row.get('name_vi')) if x)
+
+
 def resolve_scheme(ctx, text, defaults=None):
     """A scheme the person may run, from the wizard's own list (PA-R3).
 
@@ -330,7 +444,8 @@ def resolve_scheme(ctx, text, defaults=None):
                      'sublabel': sub, 'card': s,
                      'words': ' '.join(x for x in (
                          s.get('name') or '', s.get('code') or '',
-                         (s.get('division') or '').replace('_', ' ')) if x)})
+                         (s.get('division') or '').replace('_', ' '),
+                         division_names(s.get('division'))) if x)})
     out = _pick(text, rows)
     if out['status'] == 'missing' and (text or '').strip():
         names = ', '.join(r['label'] for r in rows[:6])
@@ -501,7 +616,10 @@ def door_title(row):
 # ------------------------------------------------------------------ person
 #: Words around a name that are not the name.
 PERSON_STOP = frozenset(('the', 'employee', 'staff', 'worker', 'person', 'mr',
-                         'mrs', 'ms', 'miss', 'for', 'of', 'to', 's'))
+                         'mrs', 'ms', 'miss', 'for', 'of', 'to', 's',
+                         # P4 — "của chị Linh", "cho anh An", "nhân viên Chi"
+                         'cua', 'cho', 'anh', 'chi', 'em', 'ong', 'ba', 'co',
+                         'nhan', 'vien', 'ban'))
 
 
 def resolve_person(ctx, text):
@@ -545,20 +663,26 @@ def resolve_person(ctx, text):
 # ------------------------------------------------------------ amounts, days
 _AMOUNT = re.compile(
     r'^\s*(?:₫|vnd|đ|\$|usd|inr|₹|rs\.?)?\s*(-?[0-9][0-9.,\s]*)\s*'
-    r'(k|thousand|m|mn|million|tr|trieu|bn|b|billion|ty)?\s*'
-    r'(?:₫|vnd|dong|đ|đồng|usd|dollars?|inr|rupees?)?'
-    r'(?:\s*(?:a|per)\s+month|\s*/\s*month|\s+monthly)?\s*$', re.I)
-_SCALE = {'k': 1e3, 'thousand': 1e3, 'm': 1e6, 'mn': 1e6, 'million': 1e6,
-          'tr': 1e6, 'trieu': 1e6, 'bn': 1e9, 'b': 1e9, 'billion': 1e9, 'ty': 1e9}
+    r'(k|thousand|m|mn|million|tr|trieu|nghin|ngan|bn|b|billion|ty)?\s*'
+    r'(?:₫|vnd|dong|đ|d|usd|dollars?|inr|rupees?)?'
+    r'(?:\s*(?:a|per)\s+month|\s*/\s*month|\s+monthly|\s*(?:mot|moi)\s+thang|'
+    r'\s*/\s*thang|\s+hang\s+thang)?\s*$', re.I)
+_SCALE = {'k': 1e3, 'thousand': 1e3, 'nghin': 1e3, 'ngan': 1e3, 'm': 1e6, 'mn': 1e6,
+          'million': 1e6, 'tr': 1e6, 'trieu': 1e6, 'bn': 1e9, 'b': 1e9, 'billion': 1e9,
+          'ty': 1e9}
 
 
 def parse_amount(text):
-    """'500,000' / '500k' / '1.5m' / '₫500.000' → float, or None.
+    """'500,000' / '500k' / '1.5m' / '₫500.000' / '500 nghìn' / '5 triệu' →
+    float, or None.
 
     A thousands separator is told from a decimal point by what follows it:
-    three digits after the last separator is a thousands group.
+    three digits after the last separator is a thousands group — so the
+    Vietnamese "500.000" is five hundred thousand and "1.500.000,5" is one and
+    a half million and a half (P4), and the English "500,000" still reads the
+    same.
     """
-    m = _AMOUNT.match((text or '').lower())
+    m = _AMOUNT.match(fold(text or ''))
     if not m:
         return None
     raw = re.sub(r'\s', '', m.group(1))
@@ -583,8 +707,19 @@ def parse_day(ctx, text):
     """(date, origin, label) for 'from July' / 'from 1 July 2026' / '' (today)."""
     today = fields.Date.context_today(ctx.env.user)
     low = fold(text or '').strip()
-    if not low or low in ('today', 'now', 'immediately', 'right away'):
+    if not low or low in ('today', 'now', 'immediately', 'right away', 'hom nay',
+                          'ngay', 'ngay bay gio', 'bay gio', 'ngay lap tuc'):
         return today, 'default' if not low else 'said', T(_lt('Today'))
+    # P4 — "ngày 1 tháng 11 (năm 2026)", "1/11/2026", "01/11": day first.
+    m = re.search(r'\b(?:ngay\s+)?(\d{1,2})\s+thang\s+(\d{1,2})\b(?:\s*(?:nam\s+|/\s*|,\s*)?(20\d\d)\b)?',
+                  low) or re.search(r'\b(\d{1,2})/(\d{1,2})(?:/(20\d\d))?\b', low)
+    if m and 1 <= int(m.group(2)) <= 12:
+        got = _vi_period('', 'thang %s %s' % (m.group(2), m.group(3) or ''), today)
+        if got:
+            start = got[0]
+            day = min(max(int(m.group(1)), 1), calendar.monthrange(start.year, start.month)[1])
+            when = start.replace(day=day)
+            return when, 'said', '%s %s' % (when.day, month_label(when))
     m = re.search(r'\b(\d{1,2})(?:st|nd|rd|th)?\s+([a-z]+)\s*(20\d\d)?\b', low)
     if m and m.group(2) in MONTHS:
         got = parse_period('%s %s' % (m.group(2), m.group(3) or ''), today)

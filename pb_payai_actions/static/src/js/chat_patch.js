@@ -111,7 +111,18 @@ export class PayaiCountdown extends Component {
  * back as an inline hint under the box, never a toast.
  */
 export function normWord(word) {
-    return String(word || "").trim().split(/\s+/).join(" ").toUpperCase();
+    // P4: marks fold away too ("duyet" = "DUYỆT"), as on the server.
+    return String(word || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[đĐ]/g, "d").trim().split(/\s+/).join(" ").toUpperCase();
+}
+
+/** P4 — the typed word matches any word the card accepts (the person's own
+ *  language is the one shown; English and Vietnamese both count). */
+export function wordMatches(typed, act) {
+    const said = normWord(typed);
+    if (!said) { return false; }
+    const words = (act && act.words && act.words.length) ? act.words : [act && act.word];
+    return words.some((w) => normWord(w) === said);
 }
 
 export class PayaiTypedConfirm extends Component {
@@ -134,7 +145,7 @@ export class PayaiTypedConfirm extends Component {
         });
     }
 
-    get ok() { return normWord(this.state.word) === normWord(this.props.act.word); }
+    get ok() { return wordMatches(this.state.word, this.props.act); }
     get typedSome() { return this.state.word.trim().length > 0; }
     icon(name) { return svg(name); }
 

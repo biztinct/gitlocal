@@ -26,7 +26,7 @@ from odoo import fields
 from odoo.exceptions import AccessError, UserError
 from odoo.tools.translate import LazyTranslate
 
-from .i18n import T, reset_lang, set_lang
+from .i18n import T, reset_lang, set_lang, stamp as _fmt_stamp
 
 from odoo.addons.pb_payroll_ai_insights.models.ai_redaction import (
     extend_mapping, redact_text, restore_names,
@@ -62,6 +62,18 @@ GO_AHEAD = re.compile(
     r'^(?:(?:yes|yeah|yep|ok|okay|sure)[,!. ]*)?(?:please\s+)?'
     r'(?:go\s+ahead|do\s+it|go\s+for\s+it|proceed|confirm(?:ed)?|carry\s+on|'
     r'run\s+it|send\s+it)(?:\s+please)?[.!]*$', re.I)
+#: P4 — the same in Vietnamese, matched with the marks folded away:
+#: "làm đi", "tiến hành", "xác nhận", "cứ làm đi", "ok chạy đi", "gửi đi".
+GO_AHEAD_VI = re.compile(
+    r'^(?:(?:ok|oke|okay|vang|da|u|duoc|dong\s+y)[,!. ]*)?(?:(?:ban\s+)?(?:cu|hay)\s+)?'
+    r'(?:lam\s+di|tien\s+hanh|xac\s+nhan|thuc\s+hien|lam\s+luon|chay\s+di|gui\s+di|'
+    r'dong\s+y\s+lam)(?:\s+(?:nhe|nha|di|luon))?[.!]*$', re.I)
+
+
+def go_ahead_words(text):
+    """True when the words mean "do the plan you just showed me"."""
+    text = ' '.join((text or '').split())
+    return bool(GO_AHEAD.match(text) or GO_AHEAD_VI.match(fold(text)))
 
 #: P2 latency: the last sentences the model routed, per person (process-local).
 _LRU = OrderedDict()
@@ -283,7 +295,7 @@ def _finish(ctx, task, state, card, error=''):
 
 def _audit_line(ctx, task, state):
     when = fields.Datetime.context_timestamp(ctx.env.user, fields.Datetime.now())
-    stamp = when.strftime('%d %b %Y %H:%M')
+    stamp = _fmt_stamp(when)
     if state == 'refused':
         return T(_lt('Recorded: refused for %(who)s, %(when)s.')) % {
             'who': ctx.user.name, 'when': stamp}
@@ -697,7 +709,7 @@ def typed_answer(ctx, message, only_kinds=None):
     (P3) is asked for BEFORE the phrase table runs, so "approve the overtime
     first" typed as a send-back reason is the reason, not a new request."""
     text = ' '.join((message or '').split())[:2000]
-    if not text or GO_AHEAD.match(text):
+    if not text or go_ahead_words(text):
         return None
     Task = ctx.env['payai.task'].sudo()
     domain = [('user_id', '=', ctx.user.id), ('state', '=', 'clarify')]
@@ -874,12 +886,20 @@ RUN_STALE = timedelta(minutes=3)
 
 
 def _norm_word(word):
-    return ' '.join(str(word or '').split()).upper()
+    """P4: capitals AND marks fold away — "duyet", "Duyệt" and "DUYỆT" are
+    one word; inner spaces collapse ("send  back")."""
+    return ' '.join(fold(str(word or '')).split())
+
+
+def word_ok(action, word):
+    """The typed word is one of the Action's words, in either language."""
+    said = _norm_word(word)
+    return bool(said) and any(said == _norm_word(w) for w in action.confirm_words())
 
 
 def _needs_typing(ctx, task, action):
     """Red never counts a tap or a spoken yes (owner decision 6)."""
-    word = (action.confirm_word if action else '') or 'the word'
+    word = (action.shown_word() if action else '') or 'the word'
     return _note_card(ctx, task, _lt('This one needs typing'), T(_lt(
         'Approvals, send-backs and rejections are confirmed by typing %s on the '
         'card. A tap or a spoken yes never counts.')) % word, tone='info')
@@ -941,11 +961,11 @@ def confirm(ctx, task_id, how='tap', word=None, note=None):
         card['subtitle'] = T(_lt('Plans are good for ten minutes. Ask me again and I '
                                  'will show you a fresh one.'))
         return card
-    if red and _norm_word(word) != _norm_word(action.confirm_word):
+    if red and not word_ok(action, word):
         # Wrong word: an inline hint on the card, never a toast; still a plan.
         miss = _note_card(ctx, task, _lt('That is not the word'), T(_lt(
             'Type %s exactly as shown (capitals do not matter). Nothing was done.')) %
-            action.confirm_word, tone='warn')
+            action.shown_word(), tone='warn')
         miss['inline'] = True
         return miss
     if _in_flight(ctx, task):
@@ -1017,7 +1037,7 @@ def _finish_amber(ctx, task, action, card, state='done'):
 
 def _stamp(ctx):
     when = fields.Datetime.context_timestamp(ctx.env.user, fields.Datetime.now())
-    return when.strftime('%d %b %Y %H:%M')
+    return _fmt_stamp(when)
 
 
 def progress(ctx, task_id, done, total):
@@ -1138,7 +1158,7 @@ def _not_latest_card(ctx):
 def go_ahead(ctx, message):
     """"Go ahead" said (or typed) after a plan card: the Do-it tap, when it
     may count. None when there is no plan waiting — then it is just words."""
-    if not GO_AHEAD.match(' '.join((message or '').split())):
+    if not go_ahead_words(message):
         return None
     Task = ctx.env['payai.task'].sudo()
     domain = [('user_id', '=', ctx.user.id), ('state', '=', 'planned')]
