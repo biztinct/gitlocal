@@ -12,6 +12,7 @@ reached: the phrase table needs none.
 """
 import json
 import os
+import re
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -21,6 +22,7 @@ from odoo.modules.module import get_module_path
 from odoo.tests.common import TransactionCase, tagged
 
 from odoo.addons.pb_payai_actions.payai import resolve
+from odoo.addons.pb_payai_actions.payai.actions_green import money
 from odoo.addons.pb_payai_actions.payai.registry import ACTIONS
 from odoo.addons.pb_payai_actions.payai.runner import Ctx
 
@@ -173,6 +175,7 @@ class TestPayaiP2(TransactionCase):
         self.assertEqual(out['state'], 'running', out)
         self._last_task = card['task_id']
         prep, summary, exc = self._drive(user, out['drive']['vals'])
+        self._last_exceptions = exc
         res = self._conv(user).rpc_task_result(
             card['task_id'], prep['run_id'],
             {'stage': 'done', 'done': len(prep['emp_ids']), 'total': len(prep['emp_ids']),
@@ -229,6 +232,7 @@ class TestPayaiP2(TransactionCase):
     def test_01_run_payroll_plan(self):
         card, session = self._send(self.officer, 'Run June 2031 payroll for Retail')
         self.assertEqual(card['kind'], 'clarify', card)
+        self.assertEqual(card['title'], 'Which Retail scheme do you mean?')
         labels = {c['label'] for c in card['chips']}
         self.assertTrue({'Payai Retail End-Month', 'Payai Retail Mid-Month'} <= labels, labels)
         self.assertLessEqual(len(card['chips']), 6)
@@ -255,6 +259,23 @@ class TestPayaiP2(TransactionCase):
         card, _s = self._send(self.officer, 'Run June 2031 payroll for Payai Retail End-Month')
         self.assertEqual(card['kind'], 'plan', card)
         self.assertEqual({s['key']: s['origin'] for s in card['slots']}['scheme'], 'said')
+        # One covered, one not: both counts on the card, exactly as the
+        # wizard's scheme card counts them.
+        Wizard = self.registry['pb.payrun.wizard']
+        with patch.object(Wizard, '_scheme_population',
+                          lambda self_, config_id, base: (list(base)[:1], list(base)[1:])):
+            preview = self.env['pb.payrun.wizard'].with_user(self.officer).scheme_preview(
+                {'formula_config_id': self.retail_end.id, 'date_start': JUNE[0],
+                 'date_end': JUNE[1]})
+            card, _s = self._send(self.officer,
+                                  'Run June 2031 payroll for Payai Retail End-Month')
+        self.assertEqual((preview['covered'], preview['not_covered']), (1, 1), preview)
+        self.assertEqual(card['kind'], 'plan', card)
+        people = next(s for s in card['slots'] if s['key'] == 'people')['value_label']
+        self.assertEqual(people, 'All 1 covered by this scheme')
+        notes = [n['text'] for n in card['notes']]
+        self.assertIn('1 person in this company is not covered by this scheme and stays '
+                      'out of this run.', notes)
 
     # ================================================================ 2
     def test_02_existing_run_blocked_and_never_force_clean(self):
@@ -272,9 +293,21 @@ class TestPayaiP2(TransactionCase):
         self.assertNotIn('force_clean', task.params_json)
         out = self._conv(self.officer).rpc_confirm_task(card['task_id'], 'tap')['card']
         self.assertNotIn('force_clean', json.dumps(out))
-        src = open(os.path.join(get_module_path('pb_payai_actions'), 'static', 'src',
-                                'js', 'chat_patch.js'), encoding='utf-8').read()
-        self.assertNotIn('force_clean', src)
+        self.assertNotIn('force_clean', out['drive']['vals'])
+        # Nowhere in this module's code but these tests: the server half, the
+        # models and every script the browser loads.
+        root = get_module_path('pb_payai_actions')
+        hits = []
+        for sub in ('payai', 'models', os.path.join('static', 'src', 'js')):
+            for dirpath, _dirs, files in os.walk(os.path.join(root, sub)):
+                for name in files:
+                    if not name.endswith(('.py', '.js', '.xml')):
+                        continue
+                    path = os.path.join(dirpath, name)
+                    with open(path, encoding='utf-8') as fh:
+                        if 'force_clean' in fh.read():
+                            hits.append(os.path.relpath(path, root))
+        self.assertEqual(hits, [])
 
     # ================================================================ 3
     def test_03_do_it_drives_and_closes(self):
@@ -286,13 +319,38 @@ class TestPayaiP2(TransactionCase):
         self.assertEqual(json.loads(task.result_json)['ref']['run_id'], prep['run_id'])
         tiles = {t['label']: t['value'] for t in res['result']}
         self.assertEqual(tiles['payslips in draft'], '{:,}'.format(summary['count']))
-        self.assertIn('net to pay', tiles)
-        self.assertIn('need a look', tiles)
+        extra = json.loads(task.params_json).get('extra') or {}
+        self.assertEqual(tiles['net to pay'],
+                         money(summary.get('total_net'), extra.get('currency') or ''))
+        self.assertEqual(tiles['need a look'], '{:,}'.format(
+            int(summary.get('flagged') or 0) + len(self._last_exceptions)))
         ids = [a['id'] for a in res['actions']]
         self.assertTrue({'door', 'followup', 'learn'} <= set(ids), ids)
         run = self.env['hr.payslip.run'].browse(prep['run_id'])
         self.assertEqual(run.pb_formula_config_id, self.retail_end)
         self.assertEqual(run.pb_prepared_via, 'payai')
+
+    def test_03b_one_driver_for_screen_and_card(self):
+        # The server half above plays the driver; this pins that the browser's
+        # driver really sends those calls, in that order, by 40 — and that the
+        # wizard runs payroll only through it.
+        root = get_module_path('pb_payrun_wizard')
+        js = os.path.join(root, 'static', 'src', 'js')
+        with open(os.path.join(js, 'run_driver.js'), encoding='utf-8') as fh:
+            driver = fh.read()
+        self.assertIn('export const CHUNK = 40;', driver)
+        self.assertIn('i += CHUNK', driver)
+        calls = re.findall(r'"pb\.payrun\.wizard",\s*"(\w+)"', driver)
+        self.assertEqual(calls, ['sync_plan', 'sync_step', 'prepare_run', 'attach_spreadsheet',
+                                 'discard_empty_run', 'compute_batch', 'get_summary'])
+        self.assertNotIn('force_clean:', driver)
+        with open(os.path.join(js, 'payrun_wizard.js'), encoding='utf-8') as fh:
+            wizard = fh.read()
+        self.assertRegex(wizard, r'import \{[^}]*\brunPayroll\b[^}]*\} from '
+                                 r'"@pb_payrun_wizard/js/run_driver"')
+        self.assertIn('runPayroll(this.orm', wizard)
+        for name in ('compute_batch', 'prepare_run'):
+            self.assertNotRegex(wizard, r'["\']%s["\']' % name)
 
     # ================================================================ 4
     def test_04_undo(self):
@@ -341,6 +399,78 @@ class TestPayaiP2(TransactionCase):
         with self.assertRaises(AccessError):
             self._conv(self.manager).rpc_confirm_task(card['task_id'], 'tap')
 
+    def test_05b_progress_and_result_need_your_own_go_ahead(self):
+        Run = self.env['hr.payslip.run']
+        card, _s = self._plan_june(self.officer)
+        before = Run.search_count([])
+        # A plan nobody said yes to: no progress, no result, nothing made.
+        with self.assertRaises(AccessError):
+            self._conv(self.officer).rpc_task_progress(card['task_id'], 1, 2)
+        with self.assertRaises(AccessError):
+            self._conv(self.officer).rpc_task_result(
+                card['task_id'], 0, {'stage': 'done', 'done': 2, 'total': 2})
+        task = self._task(card)
+        task.invalidate_recordset()
+        self.assertEqual(task.state, 'planned')
+        self.assertFalse(task.confirmed_at)
+        self.assertEqual(Run.search_count([]), before)
+        # Confirmed by its owner: still nobody else's to report on.
+        out = self._conv(self.officer).rpc_confirm_task(card['task_id'], 'tap')['card']
+        self.assertEqual(out['state'], 'running', out)
+        with self.assertRaises(AccessError):
+            self._conv(self.manager).rpc_task_result(
+                card['task_id'], 0, {'stage': 'done', 'done': 2, 'total': 2})
+        with self.assertRaises(AccessError):
+            self._conv(self.manager).rpc_task_progress(card['task_id'], 1, 2)
+        task.invalidate_recordset()
+        self.assertEqual(task.state, 'confirmed')
+        self.assertFalse(task.result_json)
+
+    def _confirmed_june(self, scheme_label='Payai Retail End-Month'):
+        card, _s = self._plan_june(self.officer, scheme_label)
+        self.assertEqual(card['kind'], 'plan', card)
+        out = self._conv(self.officer).rpc_confirm_task(card['task_id'], 'tap')['card']
+        self.assertEqual(out['state'], 'running', out)
+        return card, out['drive']['vals']
+
+    def _assert_not_taken(self, card, run):
+        res = self._conv(self.officer).rpc_task_result(
+            card['task_id'], run.id, {'stage': 'done', 'done': 2, 'total': 2})['card']
+        self.assertEqual(res['state'], 'failed', res)
+        self.assertNotEqual(res['title'], 'Run prepared: %s' % run.name)
+        run.invalidate_recordset()
+        self.assertFalse(run.pb_prepared_via)
+        task = self._task(card)
+        task.invalidate_recordset()
+        self.assertEqual(task.state, 'failed')
+        ref = json.loads(task.result_json or '{}').get('ref') or {}
+        self.assertFalse(ref.get('run_id'), ref)
+        self.assertNotIn('"run_id": %s' % run.id, task.result_json or '')
+
+    def test_05c_result_takes_only_the_run_this_task_made(self):
+        Run = self.env['hr.payslip.run']
+        # A run for the same month and scheme that somebody ELSE made after
+        # Do it: the browser cannot hand it over as this task's run (PA-R3).
+        card, vals = self._confirmed_june()
+        foreign = Run.with_user(self.manager).sudo().create({
+            'name': 'Payai Made By Hand', 'date_start': vals['date_start'],
+            'date_end': vals['date_end'],
+            'pb_formula_config_id': vals['formula_config_id']})
+        self.assertEqual(foreign.create_uid, self.manager)
+        self._assert_not_taken(card, foreign)
+        # The person's OWN run, but made before they pressed Do it: refused too.
+        card, vals = self._confirmed_june()
+        task = self._task(card)
+        older = Run.with_user(self.officer).sudo().create({
+            'name': 'Payai Made Earlier', 'date_start': vals['date_start'],
+            'date_end': vals['date_end'],
+            'pb_formula_config_id': vals['formula_config_id']})
+        self.assertEqual(older.create_uid, self.officer)
+        self.env.cr.execute('UPDATE hr_payslip_run SET create_date = %s WHERE id = %s',
+                            (task.confirmed_at - timedelta(hours=1), older.id))
+        older.invalidate_recordset()
+        self._assert_not_taken(card, older)
+
     # ================================================================ 6
     def test_06_submit_run(self):
         # Two schemes in one run: the run's own refusal, in its own words.
@@ -368,6 +498,14 @@ class TestPayaiP2(TransactionCase):
         self.assertTrue(ref.get('request_id'))
         request = self.env['biz.approval.request'].browse(ref['request_id'])
         self.assertEqual(request.idempotency_key, 'payai-task-%s' % card['task_id'])
+        run.invalidate_recordset()
+        if run.state != 'approval_pending':
+            # The route approved it on the spot: nothing to withdraw, so the
+            # card offers no Undo — and the withdraw path is not exercised.
+            self.assertFalse((out.get('undo') or {}).get('can'), out)
+            self.assertFalse(self._task(card).undo_until)
+            self.skipTest('The pay run route here approves straight away (run is %s); '
+                          'Withdraw not exercised.' % run.state)
         if run.state == 'approval_pending':
             self.assertTrue(out['undo']['can'])
             undone = self._conv(self.manager).rpc_task_undo(card['task_id'])['card']
@@ -411,6 +549,10 @@ class TestPayaiP2(TransactionCase):
         self.assertEqual(len(card['chips']), 2)
         card, session = self._plan_meal(session)
         self.assertEqual(card['kind'], 'plan', card)
+        # The plan says up front what the route will do; here no approval is
+        # needed, so it must never promise an approver.
+        plan_text = json.dumps(card)
+        self.assertNotIn('This change needs approval', plan_text)
         task = self._task(card)
         vals = json.loads(task.params_json)['vals']
         preview = Desk.preview_changes(vals['config_id'], vals['changes'])
@@ -433,6 +575,14 @@ class TestPayaiP2(TransactionCase):
         Desk.sudo().apply_changes(vals['config_id'], [dict(vals['changes'][0], value=777000)])
         refused = self._conv(self.hr_user).rpc_task_undo(card['task_id'])['card']
         self.assertIn('changed by somebody else', json.dumps(refused))
+        # Refused means refused: the other person's 777,000 stays, nothing was
+        # put back, and the task is still done with its undo window intact.
+        task = self._task(card)
+        task.invalidate_recordset()
+        self.assertEqual(task.state, 'done')
+        self.assertTrue(task.undo_until)
+        live = Desk.preview_changes(vals['config_id'], [dict(vals['changes'][0], value=777000)])
+        self.assertEqual(live['items'][0]['status'], 'same', live)
 
     def test_07b_update_pay_data_routed(self):
         self._records_fixture()
@@ -454,10 +604,14 @@ class TestPayaiP2(TransactionCase):
                          'date_from': '2020-01-01'})
         self.env['pb.records.apply']._approval_seed_default(self.company)
         card, _s = self._plan_meal()
+        plan_text = json.dumps(card)
         out = self._conv(self.hr_user).rpc_confirm_task(card['task_id'], 'tap')['card']
         ref = json.loads(self._task(card).result_json)['ref']
         if not ref['pending']:
+            self.assertNotIn('This change needs approval', plan_text)
             self.skipTest('The records route here needs no approval.')
+        # Routed: the plan never said it would be saved straight away.
+        self.assertNotIn('need no approval', plan_text)
         self.assertIn('approval', json.dumps(out).lower())
         undone = self._conv(self.hr_user).rpc_task_undo(card['task_id'])['card']
         self.assertEqual(undone['state'], 'undone', undone)
@@ -523,7 +677,12 @@ class TestPayaiP2(TransactionCase):
             self.assertNotEqual(card.get('state'), 'planned', card)
             self.assertIn('Government Reports permission', json.dumps(card))
             self.assertNotIn(spec['model'], json.dumps(card))
-        with patch.object(Flow, '_press', lambda self_, w, c, k: done):
+        pressed = []
+
+        def press(self_, w, c, k):
+            pressed.append(((c or '').upper(), k))
+            return done
+        with patch.object(Flow, '_press', press):
             card = ask(self.filer)
             self.assertEqual(card['kind'], 'plan', card)
             self.assertIn('Nothing is sent to the authority', json.dumps(card))
@@ -535,6 +694,14 @@ class TestPayaiP2(TransactionCase):
         self.assertTrue(ref.get('proposal_id'))
         self.assertTrue(self.env['pb.filing.proposal'].browse(ref['proposal_id']).exists())
         self.assertIn('cmphub_filings', [a.get('door_id') for a in out['actions']])
+        task = self._task(card)
+        vals = json.loads(task.params_json)['vals']
+        if out['title'] == 'Waiting for approval':
+            self.assertEqual(pressed, [])       # the approver produces it later
+        else:
+            # Produced once, for exactly the filing and country on the plan.
+            self.assertEqual(pressed, [((vals['country'] or '').upper(), vals['filing_key'])])
+            self.assertEqual(vals['filing_key'], first['key'])
 
     # =============================================================== 10
     def test_10_voice_go_ahead(self):
@@ -578,8 +745,18 @@ class TestPayaiP2(TransactionCase):
         story = self.env['pb.payruns']._history(run, {}, {})
         self.assertIn('through PayAI', story[0][0])
         self.assertIn(self.officer.name, story[0][0])
+        task = self._task(card)
+        self.assertEqual(json.loads(task.result_json)['ref']['run_id'], run.id)
         rows = self.env['pb.audit.console']._fetch_payai({}, 50)
-        self.assertTrue(any('Run payroll' in r['title'] for r in rows), [r['title'] for r in rows])
+        row = next((r for r in rows if r['key'] == 'payai-%s' % task.id), None)
+        self.assertTrue(row, [r['key'] for r in rows])
+        self.assertIn('Run payroll', row['title'])
+        self.assertEqual(row['actor']['name'], self.officer.name)
+        # A run nobody asked PayAI for never claims to have come through it.
+        by_hand = self._run_with_slip(self.retail_mid, name='Payai By Hand')
+        self.assertFalse(by_hand.pb_prepared_via)
+        story = self.env['pb.payruns']._history(by_hand, {}, {})
+        self.assertNotIn('through PayAI', json.dumps(story, default=str))
 
     # =============================================================== 12
     def test_12_no_back_door(self):
@@ -600,3 +777,30 @@ class TestPayaiP2(TransactionCase):
         self.assertIn('not switched on for you', json.dumps(card))
         self.assertFalse(self.env['payai.task'].sudo().search(
             [('user_id', '=', self.officer.id), ('state', '=', 'planned')]))
+
+        # The METHOD half: the screen reads 'on' for somebody who holds no
+        # payroll right at all. Still refused, in the no-right words, with no
+        # plan made. (Take method_ok out of gate.allowed() and this fails.)
+        plain = self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': 'P2 Plain', 'login': 'p2.plain@p2.test.invalid',
+            'company_id': self.company.id, 'company_ids': [(6, 0, [self.company.id])],
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])]})
+
+        def on(self_, user):
+            out = real(self_, user)
+            out['items'][item.id] = 'on'
+            return out
+        with patch.object(Item, 'visibility_for', on):
+            for key, text in (('run_payroll', 'Run June 2031 payroll for Retail'),
+                              ('submit_run', 'Send the June 2031 run for approval')):
+                self.assertEqual(gate.screen_state(self.env, plain, ACTIONS[key]), 'on')
+                self.assertEqual(gate.allowed(self.env, plain, ACTIONS[key]),
+                                 (False, 'no_right'))
+                card, _s = self._send(plain, text)
+                self.assertEqual(card['kind'], 'refused', card)
+                self.assertIn('is for payroll staff', json.dumps(card))
+                task = self._task(card)
+                self.assertEqual((task.action_key, task.state, task.error),
+                                 (key, 'refused', 'no_right'))
+        self.assertFalse(self.env['payai.task'].sudo().search(
+            [('user_id', '=', plain.id), ('state', 'in', ('planned', 'confirmed', 'running'))]))
