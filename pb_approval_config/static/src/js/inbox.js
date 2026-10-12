@@ -33,6 +33,26 @@ import { ic } from "@pb_import_kit/js/import_icons";
 import { RequestDrawer } from "@pb_approval_config/js/request_drawer";
 import { initials, money, when } from "@pb_approval_config/js/sentence";
 
+/**
+ * PAYAI P4 — a door may open the inbox ON one request: the arrival context
+ * carries `pb_focus: "request:<id>"` (or `"request:<id>:<scope>"` when the
+ * request was found under "My team" / "Everyone"). Anything else in
+ * `pb_focus` ("queue", "month:2026-06") is another screen's word and is left
+ * alone. Navigation only: the drawer re-reads the request with the person's
+ * own rights, exactly as a click on its card would.
+ */
+const FOCUS_SCOPES = ["me", "team", "org"];
+export function focusRequest(context) {
+    const raw = context && context.pb_focus;
+    const m = /^request:(\d+)(?::(me|team|org))?$/.exec(String(raw || ""));
+    if (!m) { return null; }
+    const scope = FOCUS_SCOPES.includes(m[2]) ? m[2] : "me";
+    return { id: Number(m[1]), scope };
+}
+// One arrival opens one drawer: a lens re-mounted later (tab away and back)
+// does not pop the same request open again.
+const _consumedFocus = new WeakSet();
+
 export class PbInbox extends Component {
     static template = "pb_approval_config.PbInbox";
     static components = { RequestDrawer };
@@ -78,7 +98,18 @@ export class PbInbox extends Component {
         });
 
         this.onEscape = this.onEscape.bind(this);
-        onWillStart(async () => { await this.load(); });
+        const arrival = this._arrivalContext();
+        const focus = focusRequest(arrival);
+        if (focus && FOCUS_SCOPES.includes(focus.scope)) {
+            this.state.scope = focus.scope;
+        }
+        onWillStart(async () => {
+            await this.load();
+            if (focus && arrival && !_consumedFocus.has(arrival)) {
+                _consumedFocus.add(arrival);
+                await this.openFocused(focus.id);
+            }
+        });
         onMounted(() => {
             window.addEventListener("keydown", this.onEscape,
                                     { capture: true });
@@ -87,6 +118,26 @@ export class PbInbox extends Component {
             window.removeEventListener("keydown", this.onEscape,
                                        { capture: true });
         });
+    }
+
+    /** The context this inbox was opened with: its own action (standalone),
+     *  else the hub's action it is a lens of. */
+    _arrivalContext() {
+        const own = this.props.action && this.props.action.context;
+        if (own && own.pb_focus) { return own; }
+        const current = this.actionService && this.actionService.currentAction;
+        return (current && current.context) || null;
+    }
+
+    /** Open one request's drawer — on "My turn" when it is waiting for me,
+     *  else on "All I can see" (where a not-yours request is listed). */
+    async openFocused(requestId) {
+        if (!requestId) { return; }
+        if (!this.cards.some((card) => card.id === requestId)) {
+            this.state.tab = "all";
+            await this.load();
+        }
+        this.state.openId = requestId;
     }
 
     onEscape(ev) {
