@@ -2338,3 +2338,15 @@ $pbva-areas: (
         margin-top: 2px;
     }
 }
+// Role editing extends the Access builder's surfaces and tokens.
+.pbva-edit-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 10px; }
+.pbva-screen-choice > summary { cursor: pointer; padding: 10px 0; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--pbim-ink, #1B1733); }
+.pbva-edit-review { padding: 20px 24px; overflow: auto; min-height: 0; }
+.pbva-edit-diff { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin: 18px 0; }
+.pbva-edit-table { max-height: 300px; overflow: auto; margin: 16px 0; }
+.pbva-edit-table table { color: var(--pbim-ink, #1B1733); }
+.pbva-edit-door { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--pbim-line, #E6E8F0); }
+.pbva-edit-door b { font-weight: 500; color: var(--pbim-muted); text-align: right; }
+.pbva-edit-history { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--pbim-line, #E6E8F0); padding: 16px 0; }
+.pbva-edit-history small { color: var(--pbim-muted); }
+@media (max-width: 700px) { .pbva-edit-diff { grid-template-columns: 1fr; } .pbva-edit-history { align-items: flex-start; flex-direction: column; } }

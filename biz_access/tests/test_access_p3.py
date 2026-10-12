@@ -137,6 +137,8 @@ class PassportCase(TransactionCase):
         })
         if groups:
             user.sudo().write({'group_ids': [(4, g.id) for g in groups]})
+            if hasattr(self, 'role') and set(self.role.group_ids.ids) <= set(groups.ids):
+                self.env['pb.access']._assign_role(self.role, user, 'Fixture role assignment', adopt=True)
         return user
 
     def _states(self, rail):
@@ -322,17 +324,15 @@ class TestThePassport(PassportCase):
         self.assertEqual(
             self._states(pack['rail'])['ZZ P3 Gated screen'], 'off')
 
-    def test_a_shared_permission_refusal_is_a_sentence_not_a_shrug(self):
-        """Ledger A4/B7: two roles made of the same permissions both refuse,
-        in words. The passport surfaces the message; it does not fix it."""
+    def test_shared_assignments_can_be_removed_independently(self):
         twin = self._role('ZZ P3 Twin %s' % self.stamp, self.ability)
         holder = self._user('Twins', self.above)
+        self.env['pb.access']._assign_role(twin, holder, 'Fixture shared assignment')
         self.assertTrue(twin.holder_count)
-        with self.assertRaises(UserError) as caught:
-            self.mgr_access.remove(self.role.id, holder.id)
-        # ACCESS P4 (ledger B7) made the refusal NAME the other role and offer
-        # the way out, rather than saying "another role" and stopping.
-        self.assertIn(twin.name, str(caught.exception))
+        result = self.mgr_access.remove(self.role.id, holder.id)
+        self.assertTrue(result['ok'])
+        self.assertIn(self.above, holder.all_group_ids)
+        self.assertEqual(twin.holder_count, 1)
 
     def test_an_implied_permission_refusal_names_the_role_providing_it(self):
         child_ability = self._ability(

@@ -98,7 +98,7 @@ class PbAccessApproval(models.AbstractModel):
         # The one check worth making BEFORE a request exists: asking two people
         # to agree to a change that would do nothing is worse than the plain
         # refusal this has always given.
-        if set(profile.group_ids.ids) <= set(user.sudo().all_group_ids.ids):
+        if self._assignments(profile, user):
             raise UserError(_(
                 "%(who)s already has \"%(what)s\".",
                 who=user.sudo().name or '', what=profile.name))
@@ -122,7 +122,7 @@ class PbAccessApproval(models.AbstractModel):
         held = set(user.sudo().all_group_ids.ids)
         for profile_id in ids:
             profile = self._safe_profile(profile_id)
-            if not set(profile.group_ids.ids) <= held:
+            if not self._assignments(profile, user):
                 profiles |= profile
         if not profiles:
             raise UserError(_("%s already has all of those roles.",

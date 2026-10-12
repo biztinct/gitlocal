@@ -25,6 +25,7 @@ import { PbRecordsDesk } from "@pb_records/js/records_desk";
 
 /** Who the desk lets in — `pb.records.desk._may_read`, restated. */
 const RECORDS_GATE = [
+    "pb_records.group_records_viewer",
     "hr.group_hr_user",
     "pb_hr_payroll_base.group_payroll_base_officer",
     "base.group_system",

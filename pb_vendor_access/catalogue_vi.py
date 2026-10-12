@@ -348,3 +348,13 @@ def apply_catalogue_vi(env):
         _logger.info('pb_vendor_access: role catalogue — %s Vietnamese values '
                      'written', written)
     return written
+
+
+# Records capabilities added to the live role editor.
+CATALOGUE_VI_RECORDS = {
+    'Employee records — can look': 'Hồ sơ nhân viên — có thể xem',
+    'Employee records team': 'Nhóm quản lý hồ sơ nhân viên',
+    'Employee records — export': 'Hồ sơ nhân viên — xuất dữ liệu',
+}
+
+VI.update(CATALOGUE_VI_RECORDS)

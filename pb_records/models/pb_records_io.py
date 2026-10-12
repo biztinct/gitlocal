@@ -39,6 +39,7 @@ import re
 from datetime import date, datetime
 
 from odoo import _, api, models
+from odoo.exceptions import UserError
 
 from odoo.addons.pb_hr_payroll_formula.models.column_role_classifier import (
     EMPLOYEE_CODE_HEADER_CANDIDATES, EMPLOYEE_NAME_HEADER_CANDIDATES)
@@ -254,6 +255,8 @@ class PbRecordsDeskIo(models.AbstractModel):
         would not have shown.
         """
         self._check_read()
+        if not self._may_export():
+            raise UserError(_("Exporting employee records needs the Records export ability."))
         try:
             import openpyxl
             from openpyxl.comments import Comment

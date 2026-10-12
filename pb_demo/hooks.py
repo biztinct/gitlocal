@@ -196,6 +196,8 @@ def post_init_demo(env):
     items = env['pb.sidebar.item'].search([])
     locked = shown = 0
     for it in items:
+        if 'access_customized' in it._fields and it.access_customized:
+            continue
         sec_key = (it.section_id.technical_key or it.section_id.name or '').lower()
         is_lock = (sec_key in _LOCK_SECTION_KEYS
                    or (it.action_tag or '') in _LOCK_ACTION_TAGS
@@ -310,4 +312,3 @@ def _retire_analytics_menu(env):
         items.unlink()
         _logger.info('pb_demo: retired %s demo analytics sidebar item(s) — '
                      'superseded by pb_workforce_insights.', len(items))
-

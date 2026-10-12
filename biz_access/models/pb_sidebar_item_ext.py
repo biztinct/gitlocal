@@ -58,6 +58,24 @@ class PbSidebarItem(models.Model):
         help='Anybody who holds one of these roles in full can open this '
              'entry. It is read together with the permissions above: either '
              'one is enough.')
+    access_customized = fields.Boolean(default=False, copy=False, readonly=True,
+                                      string='Access kept across upgrades')
+
+    def write(self, vals):
+        from .role_assignments import INTERNAL
+        controlled = {'groups_id', 'role_ids', 'restricted', 'restriction_reason', 'active'}
+        internal = self.env.context.get('_pb_access_internal') is INTERNAL
+        if self.env.context.get('install_mode') and not internal and controlled & set(vals):
+            customized = self.filtered('access_customized')
+            normal = self - customized
+            if customized:
+                safe = {k: v for k, v in vals.items() if k not in controlled}
+                if safe:
+                    super(PbSidebarItem, customized).write(safe)
+            return super(PbSidebarItem, normal).write(vals) if normal else True
+        if controlled & set(vals) and not internal and not self.env.context.get('install_mode'):
+            vals = dict(vals, access_customized=True)
+        return super().write(vals)
 
     # ------------------------------------------------------------------ the rule
     def _gate_roles_raw(self, item):
@@ -118,6 +136,8 @@ class PbSidebarItem(models.Model):
         """
         held = set(user_groups.ids)
         for role in roles:
+            if role.sudo().membership_group_id.id in held:
+                return True
             groups = role.sudo().group_ids
             if groups and set(groups.ids) <= held:
                 return True

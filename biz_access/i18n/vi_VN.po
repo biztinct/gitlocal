@@ -2735,3 +2735,140 @@ msgstr "Giao trên bảng vai trò"
 #: code:addons/biz_access/models/access_export.py:0
 msgid "Removed on the roles board"
 msgstr "Gỡ trên bảng vai trò"
+
+#. module: biz_access
+msgid "Manage roles"
+msgstr "Quản lý vai trò"
+
+#. module: biz_access
+msgid "Edit role"
+msgstr "Chỉnh sửa vai trò"
+
+#. module: biz_access
+msgid "Review this change"
+msgstr "Xem lại thay đổi"
+
+#. module: biz_access
+msgid "Adding"
+msgstr "Thêm"
+
+#. module: biz_access
+msgid "Removing from this role"
+msgstr "Loại bỏ khỏi vai trò này"
+
+#. module: biz_access
+msgid "No additional abilities"
+msgstr "Không có quyền bổ sung"
+
+#. module: biz_access
+msgid "No abilities removed"
+msgstr "Không loại bỏ quyền nào"
+
+#. module: biz_access
+msgid "Permissions added"
+msgstr "Quyền được thêm"
+
+#. module: biz_access
+msgid "Removed"
+msgstr "Đã loại bỏ"
+
+#. module: biz_access
+msgid "Kept through other access"
+msgstr "Được giữ từ quyền truy cập khác"
+
+#. module: biz_access
+msgid "Why this role is changing"
+msgstr "Lý do thay đổi vai trò"
+
+#. module: biz_access
+msgid "Role history"
+msgstr "Lịch sử vai trò"
+
+#. module: biz_access
+msgid "No published changes yet."
+msgstr "Chưa có thay đổi nào được công bố."
+
+#. module: biz_access
+msgid "Restore into draft"
+msgstr "Khôi phục vào bản nháp"
+
+#. module: biz_access
+msgid "Screens and submenus"
+msgstr "Màn hình và mục con"
+
+#. module: biz_access
+msgid "All abilities"
+msgstr "Tất cả quyền"
+
+#. module: biz_access
+msgid "Search a screen or ability"
+msgstr "Tìm màn hình hoặc quyền"
+
+#. module: biz_access
+msgid "Inside the screens"
+msgstr "Bên trong màn hình"
+
+#. module: biz_access
+msgid "Back to editing"
+msgstr "Quay lại chỉnh sửa"
+
+#. module: biz_access
+msgid "Save and update users"
+msgstr "Lưu và cập nhật người dùng"
+
+#. module: biz_access
+msgid "Review changes"
+msgstr "Xem lại thay đổi"
+
+#. module: biz_access
+msgid "Updating access…"
+msgstr "Đang cập nhật quyền truy cập…"
+
+#. module: biz_access
+msgid "Edit role on Access"
+msgstr "Chỉnh sửa vai trò trong Quyền truy cập"
+
+#. module: biz_access
+msgid "Can open"
+msgstr "Có thể mở"
+
+#. module: biz_access
+msgid "No access from this role"
+msgstr "Vai trò này không cấp quyền truy cập"
+
+#. module: biz_access
+msgid "Not installed"
+msgstr "Chưa cài đặt"
+
+#. module: biz_access
+msgid "Company feature off"
+msgstr "Tính năng của công ty đang tắt"
+
+#. module: biz_access
+msgid "Could not verify"
+msgstr "Không thể xác minh"
+
+#. module: biz_access
+msgid "Refresh screens"
+msgstr "Làm mới màn hình"
+
+#. module: biz_access
+msgid "Your access has changed. Refresh to load your updated screens."
+msgstr "Quyền truy cập của bạn đã thay đổi. Làm mới để tải các màn hình được cập nhật."
+
+#. module: biz_access
+msgid "Employee records — can look"
+msgstr "Hồ sơ nhân viên — có thể xem"
+
+#. module: biz_access
+msgid "Employee records team"
+msgstr "Nhóm quản lý hồ sơ nhân viên"
+
+#. module: biz_access
+msgid "Employee records — export"
+msgstr "Hồ sơ nhân viên — xuất dữ liệu"
+
+#. module: biz_access
+#: code:addons/biz_access/models/role_assignments.py:0
+msgid "Configuration before the first recorded change"
+msgstr "Cấu hình trước thay đổi được ghi nhận đầu tiên"

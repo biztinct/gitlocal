@@ -69,6 +69,7 @@ import { Component, useState, onWillStart, useExternalListener } from "@odoo/owl
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
+import { deserializeDateTime, formatDateTime } from "@web/core/l10n/dates";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 import { PbMiniRail, railIcon } from "@biz_access/js/mini_rail";
@@ -154,6 +155,8 @@ export class PbAccessBoard extends Component {
             detailBusy: 0,
 
             // the role builder
+            editorImpact: null, editorReview: false, editorReason: "",
+            editorHistory: null, abilitySearch: "", composerTab: "abilities",
             composer: null,            // { name, description, area, abilities }
             options: null,             // the ability catalogue, read once
             preview: null,             // the left menu as a holder would see it
@@ -210,6 +213,8 @@ export class PbAccessBoard extends Component {
             // menu opens on an empty pane and fills itself in afterwards.
             if (this.state.lens === "people") { await this.loadPeople(); }
             if (this.state.lens === "screens") { await this.loadScreens(); }
+            const editId = this.props.action?.context?.pb_edit_role;
+            if (editId && this.canManage) { await this.openRoleEditor(editId); }
         });
     }
 
@@ -1465,13 +1470,104 @@ export class PbAccessBoard extends Component {
             fromId: source ? source.id : null,
         };
         this.state.preview = null;
+        this.state.editorImpact = null; this.state.editorReview = false;
+        this.state.editorReason = ""; this.state.editorHistory = null;
+        this.state.abilitySearch = ""; this.state.composerTab = "abilities";
         await this.refreshPreview();
     }
 
-    closeComposer() { this.state.composer = null; }
+    closeComposer() { if (!this.state.creating) { this.state.composer = null; ++this.previewSeq; } }
+
+    async openRoleEditor(id) {
+        this.state.busy = true;
+        try {
+            const res = await this.orm.call("pb.access", "role_editor", [id]);
+            this.state.options = res.options;
+            await this.openComposer({ name: res.name, description: res.description,
+                area: res.area, ability_ids: res.ability_ids });
+            Object.assign(this.state.composer, { id: res.id, revision: res.revision,
+                name: res.name, fromId: res.id, assigned: res.assigned });
+            this.state.composerTab = "screens";
+            await this.refreshPreview();
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("This role could not be opened for editing.")), { type: "danger" });
+        } finally { this.state.busy = false; }
+    }
+
+    get composerSurfaces() {
+        const rows = this.state.editorImpact?.surfaces || this.state.options?.surfaces || [];
+        const needle = this.state.abilitySearch.trim().toLocaleLowerCase();
+        return rows.filter(r => !needle || (r.parent + " " + r.label + " " + r.abilities.map(a => a.name).join(" ")).toLocaleLowerCase().includes(needle));
+    }
+
+    surfaceState(row) {
+        return {allowed: _t("Can open"), denied: _t("No access from this role"),
+            unavailable: _t("Not installed"), feature_off: _t("Company feature off"), unknown: _t("Could not verify")}[row.status] || _t("Could not verify");
+    }
+
+    toggleScreenAbility(surface, id) {
+        if (!this.hasAbility(id) && surface.exclusive_ids?.includes(id)) {
+            this.state.composer.abilities = this.state.composer.abilities.filter(
+                chosen => !surface.exclusive_ids.includes(chosen));
+        }
+        this.toggleAbility(id);
+    }
+
+    onScreenAbilityKey(ev, surface, id) {
+        if (ev.key !== "Enter" && ev.key !== " ") return;
+        ev.preventDefault(); this.toggleScreenAbility(surface, id);
+    }
+
+    async reviewRoleChange() {
+        if (!this.state.composer?.id) return;
+        this.state.creating = true;
+        try {
+            this.state.editorImpact = await this.orm.call("pb.access", "preview_role_change", [
+                this.state.composer.id, this.state.composer.abilities]);
+            this.state.editorReview = true;
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("The impact of this change could not be checked.")), { type: "danger" });
+        } finally { this.state.creating = false; }
+    }
+
+    async saveRoleChange() {
+        const c = this.state.composer;
+        if (!c?.id || !this.state.editorReason.trim()) return;
+        this.state.creating = true;
+        try {
+            const res = await this.orm.call("pb.access", "update_role", [c.id, c.revision,
+                c.name, c.description, c.area, c.abilities, this.state.editorReason]);
+            this.state.composer = null; this.state.options = null;
+            this.notif.add(res.message, { type: "success", sticky: true });
+            this.state.open = res.id;
+            await this.reload(); await this.afterScreenWrite();
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("The role could not be saved. No users were updated.")), { type: "danger", sticky: true });
+        } finally { this.state.creating = false; }
+    }
+
+    historyDate(value) { return value ? formatDateTime(deserializeDateTime(value)) : ""; }
+
+    async showRoleHistory() {
+        this.state.editorReview = false;
+        try { this.state.editorHistory = await this.orm.call("pb.access", "role_change_history", [this.state.composer.id]); }
+        catch (e) { this.notif.add(this._msg(e, _t("Role history could not be read.")), {type:"danger"}); }
+    }
+
+    async restoreRoleDraft(change) {
+        // Restore into the draft first. Publishing still requires the same
+        // user-impact review, reason and current-revision check.
+        const res = await this.orm.call("pb.access", "role_version_draft", [change.id]);
+        Object.assign(this.state.composer, {name:res.name, description:res.description,
+            area:res.area, abilities:res.ability_ids});
+        this.state.editorHistory = null; this.state.editorReview = false;
+        this.state.editorReason = _t("Restore version %s", change.revision);
+        await this.refreshPreview();
+    }
 
     onComposerField(field, ev) {
         this.state.composer[field] = ev.target.value;
+        this.state.editorReview = false;
     }
 
     setComposerArea(key) { this.state.composer.area = key; }
@@ -1486,6 +1582,7 @@ export class PbAccessBoard extends Component {
     }
 
     toggleAbility(id) {
+        this.state.editorReview = false;
         const list = this.state.composer.abilities;
         const at = list.indexOf(id);
         if (at >= 0) { list.splice(at, 1); } else { list.push(id); }
@@ -1524,7 +1621,7 @@ export class PbAccessBoard extends Component {
     get comparison() {
         const comp = this.state.composer;
         const options = this.state.options;
-        if (!comp || !options || !comp.abilities.length) { return null; }
+        if (!comp || comp.id || !options || !comp.abilities.length) { return null; }
         const mine = new Set(comp.abilities);
         const names = new Map(
             (options.abilities || []).map((a) => [a.id, a.name]));
@@ -1571,7 +1668,8 @@ export class PbAccessBoard extends Component {
         return (options.areas || [])
             .map((ar) => Object.assign({}, ar, {
                 abilities: (options.abilities || []).filter(
-                    (ab) => ab.area === ar.key),
+                    (ab) => ab.area === ar.key && (!this.state.abilitySearch ||
+                        (ab.name + " " + ab.description).toLocaleLowerCase().includes(this.state.abilitySearch.toLocaleLowerCase()))),
             }))
             .filter((ar) => ar.abilities.length);
     }
@@ -1595,7 +1693,13 @@ export class PbAccessBoard extends Component {
                 [this.state.composer ? this.state.composer.abilities : []]);
             if (seq !== this.previewSeq) { return; }
             this.state.preview = res;
+            if (this.state.composer?.id) {
+                const impact = await this.orm.call("pb.access", "preview_role_change", [this.state.composer.id, this.state.composer.abilities]);
+                if (seq === this.previewSeq) this.state.editorImpact = impact;
+            }
         } catch (e) {
+            this.state.preview = null;
+            this.state.editorImpact = null;
             // The last good picture stays on screen. A preview that blanks
             // itself on one slow answer reads as "this role opens nothing".
         }
@@ -1658,7 +1762,7 @@ export class PbAccessBoard extends Component {
     onKeyDown(ev) {
         if (ev.key !== "Escape") { return; }
         if (this.state.addingPerson) { this.closeAddPerson(); return; }
-        if (this.state.composer) { this.state.composer = null; return; }
+        if (this.state.composer) { this.closeComposer(); return; }
         if (this.state.granting) { this.state.granting = null; return; }
         if (this.state.delegating) { this.state.delegating = false; return; }
         if (this.state.simOpen) { this.state.simOpen = false; return; }
@@ -1706,7 +1810,9 @@ export class PbAccessBoard extends Component {
     }
 
     openRoleList() {
-        this.action.doAction("biz_access.action_pb_role_profile");
+        this.state.lens = "roles"; this.state.area = ""; this.state.search = "";
+        this.reload();
+        this.notif.add(_t("Open a role, then choose Edit role to change its access."), {type:"info"});
     }
 
     // ----------------------------------------------------------------- errors

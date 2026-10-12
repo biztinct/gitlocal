@@ -1551,7 +1551,7 @@ class PbAccess(models.AbstractModel):
             # Saying "they see it" here over that was the lie the owner
             # found on 2026-09-24 (Payobook user, Lifecycle → Hiring).
             answer[key] = {'allowed': bool(
-                not names or not groups
+                not names
                 or set(groups.ids) & held),
                 'parent': parent}
         return answer

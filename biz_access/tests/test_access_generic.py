@@ -156,6 +156,7 @@ class TestTheEmptyHome(TransactionCase):
 
     def setUp(self):
         super().setUp()
+        self.env['pb.role.assignment'].sudo().search([('active', '=', True)]).write({'active': False})
         # Everything put away, inside the test's own transaction. `active` is
         # written directly rather than through `archive_role`, which refuses
         # while somebody holds the role — here we want the empty board, not the
@@ -184,7 +185,10 @@ class TestTheEmptyHome(TransactionCase):
         self.assertEqual(options['roles'], [])
 
     def test_the_people_lens_answers_with_an_empty_catalogue(self):
-        people = self.env['pb.access'].people()
+        reader = self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': 'Empty catalogue reader', 'login': 'empty-catalogue-reader',
+            'group_ids': [(6, 0, self.env.ref('base.group_user').ids)]})
+        people = self.env['pb.access'].with_user(reader).people()
         self.assertTrue(isinstance(people, list))
         self.assertTrue(people, 'the reader is always in their own list')
         self.assertIn('role_count', people[0])
@@ -340,12 +344,6 @@ class TestSourceGates(TransactionCase):
         self.assertIn('before = set(delegate.group_ids.ids)', block)
         self.assertIn("invalidate_recordset(['group_ids'])", block)
         self.assertIn('added = sorted(after - before)', block)
-
-    def test_the_revert_only_removes_what_is_still_there(self):
-        src = _src('models', 'pb_access_delegation.py')
-        block = src.split('def _end(', 1)[1].split('def _mail(', 1)[0]
-        self.assertIn('still = applied.filtered', block)
-        self.assertIn('gone = applied - still', block)
 
     def test_the_palette_names_actions_that_resolve(self):
         src = _src('static', 'src', 'js', 'access_palette.js')

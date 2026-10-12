@@ -132,7 +132,7 @@
                  role to reach the one control that changes the list itself. -->
             <button t-if="canManage" class="pbim-btn ghost" t-on-click="openRoleList"
                     title="Add a role, rename one, or change what it says">
-              <t t-out="ic('list',15)"/> Edit the list of roles
+              <t t-out="ic('list',15)"/> Manage roles
             </button>
             <button class="pbim-btn ghost" t-on-click="openDelegate" data-coach="ac-handover">
               <t t-out="ic('arrowLeftRight',15)"/> Hand my access over
@@ -346,6 +346,10 @@
                     <!-- ========================= who holds it ========================== -->
                     <div class="pbva-col">
                       <h4><t t-out="ic('users',13)"/> <t t-esc="heldByLine(dt)"/></h4>
+                      <button t-if="canManage" class="pbim-btn primary" t-on-click="() => this.openRoleEditor(pf.id)">
+                        <t t-out="ic('pencil',14)"/> Edit role
+                      </button>
+                      <p t-if="dt.equivalent_count" class="pbva-col-note" t-esc="dt.equivalent_count + ' people have equivalent permissions through other sources. They are not assigned this role.'"/>
 
                       <div t-if="!dt.holders.length" class="pbva-col-empty">
                         Nobody holds this yet. It is written down and ready —
@@ -561,6 +565,7 @@
                   </p>
                 </div>
 
+                <details t-if="passport.equivalent_roles and passport.equivalent_roles.length" class="pbva-pass-roles"><summary>Equivalent permissions from other sources</summary><p class="pbva-col-note">These permissions already let them do the work. They are not assigned these roles and will not follow role edits automatically.</p><div t-foreach="passport.equivalent_roles" t-as="match" t-key="match.profile_id" class="pbva-verb"><span class="pbva-verb-tx"><b t-esc="match.name"/><small t-esc="match.description"/></span></div></details>
                 <!-- =================== the roles they carry =================== -->
                 <div class="pbva-pass-roles">
                   <p class="pbva-colhead">
@@ -574,8 +579,8 @@
                   <div t-if="!passport.roles.length" class="pbva-mini-empty">
                     <t t-out="ic('idCard',22)"/>
                     <p>
-                      No roles yet. They see only the entries every account
-                      gets, and can do only what comes with having a login.
+                      No role assignments yet. Their existing direct permissions
+                      and equivalent access are shown separately below.
                     </p>
                     <button t-if="passport.can_manage" class="pbim-btn primary"
                             t-on-click="() => this.openGiveRole(ph)">
@@ -780,6 +785,7 @@
               <t t-elif="state.screen">
                 <t t-set="dt" t-value="state.screen"/>
 
+                <button t-if="dt.parent_id" class="pbva-linkbtn" t-on-click="() => this.loadScreen(dt.parent_id)"><t t-out="ic('chevronLeft',14)"/><t t-esc="'Back to ' + dt.parent_label"/></button>
                 <div class="pbva-scrdet-h">
                   <span class="pbva-scrico pbva-scrico--big">
                     <t t-out="railIcon(dt.icon,19)"/>
@@ -860,6 +866,7 @@
                   <span t-esc="legacyLine(dt)"/>
                 </p>
 
+                <p t-if="dt.customized" class="pbva-scrnote"><t t-out="ic('shieldCheck',14)"/> This entry’s access is kept across module upgrades.</p>
                 <!-- ========================= add a role ========================= -->
                 <div t-if="dt.can_manage" class="pbva-scradd">
                   <button class="pbim-btn ghost" t-on-click="togglePicker">
@@ -910,6 +917,7 @@
                   <div t-foreach="dt.children" t-as="kd" t-key="kd.id"
                        class="pbva-subgate">
                     <b t-esc="kd.label"/>
+                    <button t-if="dt.can_manage" class="pbva-linkbtn" t-on-click="() => this.loadScreen(kd.id)">Edit access</button>
                     <span class="pbva-scrgates">
                       <span t-if="kd.everyone" class="pbva-gate pbva-gate--all"
                             t-esc="'everyone who sees ' + dt.label"/>
@@ -1255,12 +1263,14 @@
       <div t-if="state.composer" class="pbim-modal-scrim"
            t-on-click="closeComposer">
         <div class="pbim-modal pbva-modal pbva-modal--wide" t-on-click.stop=""
-             role="dialog" aria-modal="true" aria-label="New role" data-coach="ac-builder">
+             role="dialog" aria-modal="true" t-att-aria-label="state.composer.id ? 'Edit role' : 'New role'" data-coach="ac-builder">
           <div class="pbva-modal-h">
             <div class="pbva-modal-ic"><t t-out="ic('plus',17)"/></div>
             <div class="pbva-modal-t">
-              <h3>New role</h3>
-              <p>Name it, say what it lets somebody do, tick the abilities. The
+              <h3 t-if="state.composer.id">Edit role</h3>
+              <h3 t-else="">New role</h3>
+              <p t-if="state.composer.id">Change what this role lets people do. Review the impact, then update everyone assigned to it together.</p>
+              <p t-else="">Name it, say what it lets somebody do, tick the abilities. The
                  menu beside you updates as you tick.</p>
             </div>
             <button class="pbim-btn ghost" t-on-click="closeComposer"
@@ -1269,7 +1279,23 @@
             </button>
           </div>
 
-          <div class="pbva-comp">
+          <div t-if="state.editorReview" class="pbva-edit-review">
+            <h4>Review this change</h4>
+            <p class="pbva-note"><t t-out="ic('users',15)"/><span t-esc="state.editorImpact.assigned + ' assigned users will follow the updated role. Other roles and direct permissions are kept.'"/></p>
+            <p t-if="state.editorImpact.temporary" class="pbva-note" t-esc="state.editorImpact.temporary + ' hand-overs are also checked. Temporary access never expands beyond its approved permissions.'"/>
+            <div class="pbva-edit-diff">
+              <div><h5>Adding</h5><p t-if="!state.editorImpact.adds.length">No additional abilities</p><p t-foreach="state.editorImpact.adds" t-as="added" t-key="added" t-esc="added"/></div>
+              <div><h5>Removing from this role</h5><p t-if="!state.editorImpact.drops.length">No abilities removed</p><p t-foreach="state.editorImpact.drops" t-as="dropped" t-key="dropped" t-esc="dropped"/></div>
+            </div>
+            <div class="pbva-edit-table"><table class="table table-sm"><thead><tr><th>Person</th><th>Permissions added</th><th>Removed</th><th>Kept through other access</th></tr></thead><tbody><tr t-foreach="state.editorImpact.rows" t-as="affected" t-key="affected.id"><td><t t-esc="affected.name"/><small t-if="!affected.active"> · Inactive login</small></td><td t-esc="affected.added"/><td t-esc="affected.removed"/><td t-esc="affected.retained"/></tr></tbody></table></div>
+            <p t-if="state.editorImpact.more" class="pbva-col-note" t-esc="state.editorImpact.more + ' more users are included in the same update.'"/>
+            <label class="pbva-lbl" for="pbva-role-reason">Why this role is changing</label><textarea id="pbva-role-reason" class="pbva-in pbva-area" rows="2" t-model="state.editorReason" placeholder="Explain the reason for this change"/>
+          </div>
+          <div t-elif="state.editorHistory" class="pbva-edit-review">
+            <h4>Role history</h4><p t-if="!state.editorHistory.length" class="pbva-col-empty">No published changes yet.</p>
+            <div t-foreach="state.editorHistory" t-as="change" t-key="change.id" class="pbva-edit-history"><div><b t-esc="'Version ' + change.revision"/><p t-esc="change.reason"/><small t-esc="change.actor + ' · ' + historyDate(change.date) + ' · ' + change.users + ' users'"/></div><button class="pbim-btn ghost" t-on-click="() => this.restoreRoleDraft(change)">Restore into draft</button></div>
+          </div>
+          <div t-else="" class="pbva-comp">
 
             <!-- ============================== the left ============================== -->
             <div class="pbva-comp-l">
@@ -1304,7 +1330,23 @@
                         t-esc="ar.label"/>
               </div>
 
-              <div class="pbva-caps">
+              <div class="pbva-edit-tabs">
+                <button t-attf-class="pbva-chip {{ state.composerTab === 'screens' ? 'is-on' : '' }}" t-on-click="() => state.composerTab = 'screens'">Screens and submenus</button>
+                <button t-attf-class="pbva-chip {{ state.composerTab === 'abilities' ? 'is-on' : '' }}" t-on-click="() => state.composerTab = 'abilities'">All abilities</button>
+              </div>
+              <input class="pbva-in" type="search" placeholder="Search a screen or ability" t-model="state.abilitySearch" aria-label="Search a screen or ability"/>
+              <div t-if="state.composerTab === 'screens'" class="pbva-caps">
+                <details t-foreach="composerSurfaces" t-as="surface" t-key="surface.key" class="pbva-cap-area pbva-screen-choice" t-att-open="!surface.key.startsWith('sidebar.') or !!state.abilitySearch">
+                  <summary><span t-esc="surface.parent + ' / ' + surface.label"/></summary>
+                  <p class="pbva-col-note" t-esc="surface.reason"/>
+                  <div t-foreach="surface.abilities" t-as="choice" t-key="choice.id" t-attf-class="pbva-cap {{ hasAbility(choice.id) ? 'is-on' : '' }}" role="checkbox" tabindex="0" t-att-aria-checked="hasAbility(choice.id)" t-att-aria-disabled="!surface.available" t-on-click="() => surface.available and this.toggleScreenAbility(surface, choice.id)" t-on-keydown="(ev) => surface.available and this.onScreenAbilityKey(ev, surface, choice.id)">
+                    <span class="pbva-cap-box"><t t-if="hasAbility(choice.id)" t-out="ic('check',12)"/></span><span class="pbva-cap-tx"><b t-esc="choice.name"/><small t-esc="choice.description"/></span>
+                  </div>
+                  <p t-if="surface.always_open" class="pbva-col-empty">Open to everybody with a login.</p>
+                  <p t-elif="!surface.abilities.length" class="pbva-col-empty">Use All abilities to review the permissions inside this screen.</p>
+                </details>
+              </div>
+              <div t-else="" class="pbva-caps">
                 <div t-foreach="abilityAreas" t-as="aa" t-key="aa.key"
                      class="pbva-cap-area">
                   <h5 t-esc="aa.label"/>
@@ -1335,7 +1377,8 @@
 
               <PbMiniRail sections="composerRail" legend="true"/>
 
-              <p class="pbva-comp-count" t-esc="countLine()"/>
+              <p class="pbva-comp-count" t-esc="state.composer.id ? state.composer.assigned + ' assigned users update automatically when you save.' : countLine()"/>
+              <div t-if="state.editorImpact" class="pbva-edit-surfaces"><p class="pbva-colhead"><t t-out="ic('layers',13)"/> Inside the screens</p><div t-foreach="state.editorImpact.surfaces" t-as="door" t-key="door.key" class="pbva-edit-door"><span t-esc="door.parent + ' / ' + door.label"/><b t-esc="surfaceState(door)"/></div></div>
 
               <p t-if="state.preview and !state.preview.any_gated"
                  class="pbva-note">
@@ -1388,7 +1431,8 @@
 
           <div class="pbva-modal-f pbva-modal-f--split">
             <div class="pbva-comp-from">
-              <button class="pbva-linkbtn" t-on-click="togglePicking">
+              <button t-if="state.composer.id" class="pbva-linkbtn" t-on-click="showRoleHistory"><t t-out="ic('history',13)"/> Role history</button>
+              <button t-else="" class="pbva-linkbtn" t-on-click="togglePicking">
                 <t t-out="ic('copy',13)"/>
                 <t t-if="state.composer.picking">Never mind</t>
                 <t t-else="">Start from an existing role instead</t>
@@ -1409,7 +1453,11 @@
               <button class="pbim-btn ghost" t-on-click="closeComposer">
                 Cancel
               </button>
-              <button class="pbim-btn primary" t-on-click="createRole"
+              <button t-if="state.editorHistory" class="pbim-btn ghost" t-on-click="() => state.editorHistory = null">Back to editing</button>
+              <button t-if="state.editorReview" class="pbim-btn ghost" t-on-click="() => state.editorReview = false">Back to editing</button>
+              <button t-if="state.composer.id and state.editorReview" class="pbim-btn primary" t-on-click="saveRoleChange" t-att-disabled="state.creating or !state.editorReason.trim()"><t t-out="ic('check',15)"/><t t-if="state.creating">Updating access…</t><t t-else="">Save and update users</t></button>
+              <button t-elif="state.composer.id" class="pbim-btn primary" t-on-click="reviewRoleChange" t-att-disabled="state.creating or !state.composer.abilities.length"><t t-out="ic('check',15)"/> Review changes</button>
+              <button t-else="" class="pbim-btn primary" t-on-click="createRole"
                       t-att-disabled="state.creating or !state.composer.abilities.length">
                 <t t-out="ic('check',15)"/> Create role
               </button>

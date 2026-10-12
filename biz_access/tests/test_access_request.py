@@ -149,6 +149,7 @@ class TestAccessRequest(TransactionCase):
     def test_q09f_a_grant_that_would_do_nothing_is_still_refused_at_once(self):
         self.target.sudo().write(
             {'group_ids': [(4, self.ability_group.id)]})
+        self.Access._assign_role(self.profile, self.target, 'Existing assignment fixture', adopt=True)
         from odoo.exceptions import UserError
         with self.assertRaises(UserError):
             self.Access.with_user(self.asker).grant(

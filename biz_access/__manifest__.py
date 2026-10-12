@@ -87,7 +87,7 @@ opinion whatsoever about what an application's roles should be.
 pbim tokens only, `.pbva-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills, one accent. No emoji.
 """,
-    'version': '19.0.1.4.4',
+    'version': '19.0.1.5.0',
     'category': 'Administration',
     'license': 'LGPL-3',
     'author': 'Biztinct',
@@ -118,6 +118,7 @@ registry, flat fills, one accent. No emoji.
             # the leaf component first, then the file that names its doors
             'biz_access/static/src/js/mini_rail.js',
             'biz_access/static/src/js/access_board.js',
+            'biz_access/static/src/js/access_refresh.js',
             'biz_access/static/src/js/access_palette.js',
             'biz_access/static/src/xml/mini_rail.xml',
             'biz_access/static/src/xml/access_board.xml',

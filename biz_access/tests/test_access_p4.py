@@ -127,6 +127,8 @@ class ScreensCase(TransactionCase):
         })
         if groups:
             user.sudo().write({'group_ids': [(4, g.id) for g in groups]})
+            if hasattr(self, 'role') and set(self.role.group_ids.ids) <= set(groups.ids):
+                self.env['pb.access']._assign_role(self.role, user, 'Fixture role assignment', adopt=True)
         return user
 
     def _menu_states(self, user):
@@ -224,6 +226,7 @@ class TestTheRoleLane(ScreensCase):
         holder = self._user('Archived', self.left | self.right)
         self.assertEqual(
             self._menu_states(holder).get('ZZ P4 Role gated'), 'on')
+        self.env['pb.access'].remove(self.role.id, holder.id, 'Revoke before archive')
         self.role.active = False
         holder.invalidate_recordset()
         self.assertNotIn('ZZ P4 Role gated', self._menu_states(holder))
@@ -509,16 +512,15 @@ class TestPuttingARoleAway(ScreensCase):
             wider.ids)
         self.assertTrue(res['ok'])
 
-    def test_the_mutual_cover_refusal_names_the_other_and_offers_the_way_out(self):
-        """Ledger B7 — the deadlock now says how to end it."""
-        twin = self._role('ZZ P4 Deadlock %s' % self.stamp, self.pair)
-        holder = self._user('Deadlocked', self.left | self.right)
+    def test_mutual_cover_keeps_the_other_assignment(self):
+        twin = self._role('ZZ P4 Shared %s' % self.stamp, self.pair)
+        holder = self._user('Shared', self.left | self.right)
+        self.env['pb.access']._assign_role(twin, holder, 'Fixture shared assignment')
         self.assertTrue(twin.holder_count)
-        with self.assertRaises(UserError) as caught:
-            self.mgr_access.remove(self.role.id, holder.id)
-        said = str(caught.exception)
-        self.assertIn(twin.name, said)
-        self.assertIn('archive', said)
+        result = self.mgr_access.remove(self.role.id, holder.id)
+        self.assertTrue(result['ok'])
+        self.assertTrue(set((self.left | self.right).ids) <= set(holder.all_group_ids.ids))
+        self.assertEqual(twin.holder_count, 1)
 
     def test_a_role_nobody_holds_can_be_put_away(self):
         res = self.mgr_access.archive_role(self.role.id)

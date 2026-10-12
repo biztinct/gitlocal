@@ -178,6 +178,7 @@ class TestBundleArithmetic(TransactionCase):
 
     def setUp(self):
         super().setUp()
+        self.env['biz.approval.seed'].sudo().set_no_approval_needed(self.env.company, 'roles')
         stamp = str(fields.Datetime.now()).replace(' ', '').replace(':', '')
         self.stamp = stamp
         self.Users = self.env['res.users'].with_context(no_reset_password=True)
@@ -222,13 +223,14 @@ class TestBundleArithmetic(TransactionCase):
         whole = self._user('Whole', self.g1 + self.g2)
         half = self._user('Half', self.g1)
         self.role.invalidate_recordset(['holder_count'])
-        holders = self.role.holders()
+        holders = self.role._permission_users()
         self.assertIn(whole, holders,
                       'somebody with both permissions is a holder')
         self.assertNotIn(half, holders,
                          'somebody with one of the two cannot do the job the '
                          'role describes and is not a holder')
-        self.assertEqual(self.role.holder_count, len(holders))
+        self.assertEqual(self.role.holder_count, 0)
+        self.assertGreaterEqual(self.role.equivalent_count, 1)
 
     def test_granting_a_bundle_hands_over_all_of_it(self):
         target = self._user('Target')
@@ -303,6 +305,8 @@ class TestBundleArithmetic(TransactionCase):
                                self.g1)
         role_b = self._role('ZZ Narrow role %s' % self.stamp, narrow)
         target = self._user('Sharer', self.g1 + self.g3)
+        self.env['pb.access']._assign_role(role_a, target, 'Fixture wide role', adopt=True)
+        self.env['pb.access']._assign_role(role_b, target, 'Fixture narrow role')
         self.assertTrue(role_b.holder_count >= 1)
 
         self.env['pb.access'].remove(role_a.id, target.id, 'test')

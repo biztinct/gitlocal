@@ -53,7 +53,7 @@ clear of the floating helpers other modules pin to the same corner, the header's
 export/import controls fold into one File menu under 1440px, and a dropped file
 says how many rows it is matching while it matches them.
 """,
-    'version': '19.0.1.3.3',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -69,6 +69,7 @@ says how many rows it is matching while it matches them.
         'biz_approval_workflow',
     ],
     'data': [
+        'security/records_groups.xml',
         'security/ir.model.access.csv',
         'security/records_approval_rules.xml',
         'views/pb_records_action.xml',

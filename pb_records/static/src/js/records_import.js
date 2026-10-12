@@ -189,6 +189,8 @@ export class RdFileMenu extends Component {
     static components = { RdDropZone };
     static props = {
         narrow: { type: Boolean, optional: true },
+        canExport: { type: Boolean, optional: true },
+        canImport: { type: Boolean, optional: true },
         exporting: { type: String, optional: true },
         busy: { type: Boolean, optional: true },
         busyLabel: { type: String, optional: true },

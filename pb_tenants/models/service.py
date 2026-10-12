@@ -1274,6 +1274,12 @@ class PbTenants(models.AbstractModel):
             target.write({'group_ids': [(4, internal.id)]})
             target.invalidate_recordset()
 
+        # A provisioned role is an assignment, not just a copy of its groups.
+        # Future edits must update the customer's administrator automatically.
+        if 'pb.role.assignment' in env.registry:
+            env['pb.access']._assign_role(role, target,
+                'Assigned while provisioning the tenant administrator', origin='migration', adopt=True)
+
         report.update({'applied': True, 'after': self._group_names(target),
                        'laddered': sorted(set(laddered)),
                        'role': role.name})

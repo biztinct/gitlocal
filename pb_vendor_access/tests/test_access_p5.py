@@ -146,7 +146,7 @@ class TestDemotedAdministratorReach(TransactionCase):
         })
 
     def test_they_hold_the_role_in_full(self):
-        self.assertIn(self.boss, self.role.holders(),
+        self.assertIn(self.boss, self.role._permission_users(),
                       'the account built out of the role is not a holder of it '
                       '— the arithmetic of a bundle has drifted')
 
@@ -174,7 +174,7 @@ class TestDemotedAdministratorReach(TransactionCase):
         ])
         self.assertFalse(res['is_system'])
         self.assertFalse(res['categories']['org'])
-        self.assertFalse(res['categories']['roles'])
+        self.assertTrue(res['categories']['roles'])
         self.assertFalse(res['categories']['payroll'])
         self.assertTrue(res['categories']['access'],
                         'a tenant administrator must still reach the Access '

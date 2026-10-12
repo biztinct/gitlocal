@@ -75,7 +75,8 @@ class PbRecordsDesk(models.AbstractModel):
     # =================================================================
     @api.model
     def _may_read(self):
-        return (self.env.user.has_group('hr.group_hr_user')
+        return (self.env.user.has_group('pb_records.group_records_viewer')
+                or self.env.user.has_group('hr.group_hr_user')
                 or self.env.user.has_group(
                     'pb_hr_payroll_base.group_payroll_base_officer')
                 or self.env.user.has_group('base.group_system'))
@@ -88,6 +89,13 @@ class PbRecordsDesk(models.AbstractModel):
                 "administrator for the HR or Payroll Officer role."))
 
     @api.model
+    def _may_export(self):
+        return (self.env.user.has_group('pb_records.group_records_exporter')
+                or self.env.user.has_group('hr.group_hr_user')
+                or self.env.user.has_group('pb_hr_payroll_base.group_payroll_base_officer')
+                or self.env.user.has_group('base.group_system'))
+
+    @api.model
     def _may_write(self, model_name):
         """Can this person write on `model_name` at all?
 
@@ -95,6 +103,8 @@ class PbRecordsDesk(models.AbstractModel):
         this person could never save is read-only on screen instead of raising
         an access dialog after they have typed into forty of them.
         """
+        if model_name in (EMP, CON) and self.env.user.has_group('pb_records.group_records_editor'):
+            return True
         Model = self.env.get(model_name)
         if Model is None:
             return False
@@ -391,6 +401,7 @@ class PbRecordsDesk(models.AbstractModel):
             'groups': groups,
             'statuses': self._statuses(),
             'can_write': {'employee': writable[EMP], 'contract': writable[CON]},
+            'can_export': self._may_export(),
         }
 
     # =================================================================
@@ -1142,7 +1153,16 @@ class PbRecordsDesk(models.AbstractModel):
             # here becomes a sentence rather than a dialog over a half-done
             # apply.
             try:
-                record.sudo(False).write(vals)
+                real_record = record.sudo(False)
+                if self.env.user.has_group('pb_records.group_records_editor') and not real_record.has_access('write'):
+                    # The narrow capability is confined to this already-
+                    # whitelisted plan. It grants no native model write ACL.
+                    domain = self.env['ir.rule']._compute_domain(record._name, 'write')
+                    if not real_record.filtered_domain(domain):
+                        return None, _("You are not allowed to change this person's record.")
+                    record.sudo().write(vals)
+                else:
+                    real_record.write(vals)
             except AccessError:
                 return None, _(
                     "You are not allowed to change this person's record.")

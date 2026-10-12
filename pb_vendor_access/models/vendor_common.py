@@ -139,3 +139,26 @@ def state_label(key, env=None):
         if k == key:
             return env._(lbl) if env is not None else lbl
     return key or ''
+
+
+# Surface definitions live beside this application's role vocabulary.
+# The generic Access editor never hardcodes a product or trusts client gates.
+from odoo.addons.biz_access.models.access_common import register_access_surfaces, register_role_memberships
+register_role_memberships(['pb_demo.group_payobook_demo'])
+register_access_surfaces([
+    {'key':'people.employees', 'parent':'People', 'label':'Employees', 'icon':'users', 'model':'hr.employee',
+     'groups':['hr.group_hr_user','pb_demo.group_payobook_demo','pb_records.group_records_viewer'],
+     'abilities':['demo-login','records-view','records-edit']},
+    {'key':'people.contracts', 'parent':'People / Employees', 'label':'Contracts', 'icon':'fileText', 'model':'hr.contract',
+     'groups':['hr_contract.group_hr_contract_employee_manager','hr_contract.group_hr_contract_manager','pb_demo.group_payobook_demo','pb_records.group_records_viewer'],
+     'abilities':['demo-login','records-view','records-edit']},
+    {'key':'people.records', 'parent':'People', 'label':'Records', 'icon':'database', 'model':'hr.employee',
+     'groups':['hr.group_hr_user','pb_hr_payroll_base.group_payroll_base_officer','pb_records.group_records_viewer'],
+     'abilities':['records-view','records-edit','records-export'], 'exclusive':['records-view','records-edit']},
+    {'key':'people.pay', 'parent':'People', 'label':'Pay', 'icon':'banknote', 'model':'pb.pay.band',
+     'groups':['pb_pay.group_pay_viewer','pb_pay.group_pay_manager','pb_group.group_group_admin','hr.group_hr_manager'],
+     'abilities':['pay-bands-read','pay-bands-manage','pay-review-finance','pay-review-signoff'], 'exclusive':['pay-bands-read','pay-bands-manage']},
+    {'key':'people.plan', 'parent':'People', 'label':'Plan / Decision Room', 'icon':'trendingUp',
+     'groups':['pb_decision_room.group_decision_user','pb_decision_room.group_decision_manager'],
+     'abilities':['decision-room','decision-room-lead'], 'exclusive':['decision-room','decision-room-lead'], 'feature':'people_plan'},
+])

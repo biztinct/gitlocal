@@ -200,41 +200,33 @@ class PbAccessDelegation(models.Model):
             raise UserError(_(
                 "This hand-over is already %s.",
                 dict(DELEGATION_STATES).get(self.state, self.state)))
+        for profile in self.profile_ids.sorted('id'):
+            self.env.cr.execute('SELECT id FROM pb_role_profile WHERE id=%s FOR UPDATE', [profile.id])
+        self.profile_ids.invalidate_recordset()
+        for user in (self.delegator_user_id | self.delegate_user_id).sudo().sorted('id'):
+            self.env.cr.execute('SELECT id FROM res_users WHERE id=%s FOR UPDATE', [user.id])
+            user.invalidate_recordset()
         wanted = self._groups_to_hand()
 
+        from .role_assignments import INTERNAL
+        from .access_common import implied_closure
         delegate = self.delegate_user_id.sudo()
-        # WHAT THEY ALREADY HAVE IS NOT LENT TO THEM. A borrower who reaches a
-        # permission through a ladder of their own does not need it written on
-        # to their record as well — and if it were, ending the loan would strip
-        # a direct membership they never had before it started.
-        already = set(delegate.all_group_ids.ids)
-        groups = wanted.filtered(lambda g: g.id not in already)
+        delegate._pb_initialize_access()
         before = set(delegate.group_ids.ids)
-        delegate.write({'group_ids': [(4, g.id) for g in groups]})
-        # THE SNAPSHOT IS MEASURED, NOT PREDICTED. Odoo may materialise implied
-        # groups as direct memberships on write, or may not — it has done both
-        # across versions — so what actually changed is read back rather than
-        # assumed. `invalidate_recordset` is what makes the second read a real
-        # one instead of the cached first.
+        self.sudo().write({'state': 'active', 'applied_on': fields.Datetime.now()})
+        Assignment = self.env['pb.role.assignment'].sudo().with_context(_pb_access_internal=INTERNAL)
+        for profile in self.profile_ids:
+            Assignment.create({'user_id': delegate.id, 'profile_id': profile.id,
+                'source': 'loan:%s' % self.id, 'delegation_id': self.id,
+                'snapshot_ids': [(6, 0, implied_closure(profile.group_ids).ids)],
+                'origin': 'loan', 'reason': self.reason})
+        delegate._pb_reconcile_access()
         delegate.invalidate_recordset(['group_ids'])
-        after = set(delegate.group_ids.ids)
+        after = set(delegate.group_ids.ids) - set(self.profile_ids.sudo().membership_group_id.ids)
         added = sorted(after - before)
-
-        self.sudo().write({
-            'state': 'active',
-            'applied_group_ids': [(6, 0, added)],
-            'applied_on': fields.Datetime.now(),
-        })
-        self._post(_(
-            "%(who)s can now do this on %(whose)s behalf: %(what)s.",
-            who=self.delegate_user_id.name or '',
-            whose=self.delegator_user_id.name or '',
-            what=self._profile_words()))
-        if added != sorted(g.id for g in wanted):
-            # Honest, and worth saying: somebody already held part of it.
-            self._post(_(
-                "Some of that was already theirs, so this hand-over will only "
-                "take back what it actually gave."))
+        self.sudo().write({'applied_group_ids': [(6, 0, added)]})
+        self._post(_('%(who)s can now cover %(whose)s: %(what)s.',
+            who=delegate.name, whose=self.delegator_user_id.name, what=self._profile_words()))
         self._mail('handed')
         return True
 
@@ -307,27 +299,25 @@ class PbAccessDelegation(models.Model):
         not this record's to remove).
         """
         self.ensure_one()
+        from .role_assignments import INTERNAL
         delegate = self.delegate_user_id.sudo()
-        held = set(delegate.group_ids.ids)
-        applied = self.applied_group_ids
-        still = applied.filtered(lambda g: g.id in held)
-        gone = applied - still
-        if still:
-            delegate.write({'group_ids': [(3, g.id) for g in still]})
-        self.sudo().write({
-            'state': state,
-            'ended_on': fields.Datetime.now(),
-            'ended_note': note,
-        })
-        body = _("%(n)s taken back.", n=counted(
-            len(still), _("1 permission was"), _("%s permissions were")))
-        if gone:
-            body = _("%(body)s %(n)s already been removed by somebody else.",
-                     body=body,
-                     n=counted(len(gone), _("1 had"), _("%s had")))
-        self._post('%s %s' % (body, note or ''))
+        before = set(delegate.group_ids.ids)
+        sources = self.env['pb.role.assignment'].sudo().search([
+            ('delegation_id', '=', self.id), ('active', '=', True)])
+        if self.origin == 'board':
+            sources = self.env['pb.role.assignment'].sudo().search([
+                ('user_id', '=', delegate.id), ('profile_id', 'in', self.profile_ids.ids),
+                ('source', '=', 'role'), ('active', '=', True)])
+        sources.with_context(_pb_access_internal=INTERNAL).write({'active': False})
+        self.sudo().write({'state': state, 'ended_on': fields.Datetime.now(), 'ended_note': note})
+        delegate._pb_reconcile_access()
+        after = set(delegate.group_ids.ids)
+        removed = len(before - after)
+        retained = len(set(self.applied_group_ids.ids) & after)
+        self._post(_('%(removed)s permissions removed; %(kept)s kept through other access sources. %(note)s',
+            removed=removed, kept=retained, note=note or ''))
         self._mail('ended')
-        return {'removed': len(still), 'already_gone': len(gone)}
+        return {'removed': removed, 'already_gone': len(set(self.applied_group_ids.ids) - before), 'retained': retained}
 
     # ============================================================ the mail
     def _mail(self, kind):

@@ -62,6 +62,7 @@ export class PbRecordsDesk extends Component {
             groups: [],
             statuses: [],
             canWrite: { employee: true, contract: true },
+            canExport: false,
             picked: [],                 // card ids, in pick order
             filters: {
                 q: "", department_ids: [], job_ids: [],
@@ -201,6 +202,7 @@ export class PbRecordsDesk extends Component {
         this.state.groups = data.groups || [];
         this.state.statuses = data.statuses || [];
         this.state.canWrite = data.can_write || { employee: true, contract: true };
+        this.state.canExport = data.can_export !== false;
         const known = new Set(this.allCards.map((c) => c.id));
         let picked = (preferred || []).filter((id) => known.has(id));
         if (!picked.length) {

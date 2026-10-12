@@ -74,6 +74,13 @@ _logger = logging.getLogger(__name__)
 # written to be read by the person about to press "give this to somebody".
 # =============================================================================
 CATALOGUE = [
+    (('records-view',), 'people', 5, 'Employee records — can look',
+     'Read the Records desk and the employee and contract details it uses. Changes nothing and cannot export the desk.', None),
+    (('records-edit',), 'people', 6, 'Employee records team',
+     'Read the Records desk, change its mapped employee and contract fields, and submit bulk updates. Existing approval rules still apply. Cannot delete employees or export the desk.', None),
+    (('records-export',), 'people', 7, 'Employee records — export',
+     'Read and download the employee and contract data offered by the Records desk in your allowed companies. Does not change records.', None),
+
     # ------------------------------------------------------------- payroll
     (('payroll-read',), 'payroll', 10,
      'Payroll — can look',
@@ -400,6 +407,9 @@ CATALOGUE = [
 # come to disagree.
 # =============================================================================
 ROLE_ABILITY_GROUPS = {
+    'records-view': ('pb_records.group_records_viewer',),
+    'records-edit': ('pb_records.group_records_editor',),
+    'records-export': ('pb_records.group_records_exporter',),
     'payroll-read': ('pb_hr_payroll_base.group_payroll_base_user',),
     'payroll-officer': ('pb_hr_payroll_base.group_payroll_base_officer',),
     'payroll-manager': ('pb_hr_payroll_base.group_payroll_base_manager',),
@@ -807,6 +817,8 @@ def ensure_screen_gates(env):
             _logger.info(
                 'pb_vendor_access: %s is not a left-menu entry on this '
                 'database — no role gate put on it', xmlid)
+            continue
+        if 'access_customized' in item._fields and item.access_customized:
             continue
         profiles = _profiles_for_keys(env, keys)
         if not profiles:

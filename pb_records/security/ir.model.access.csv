@@ -6,3 +6,7 @@ access_pb_records_change_hr,pb.records.change hr,model_pb_records_change,hr.grou
 access_pb_records_change_officer,pb.records.change payroll officer,model_pb_records_change,pb_hr_payroll_base.group_payroll_base_officer,1,1,1,0
 access_pb_records_change_system,pb.records.change system,model_pb_records_change,base.group_system,1,1,1,1
 access_pb_records_apply_seat,pb.records.apply anyone asked to decide,model_pb_records_apply,base.group_user,1,0,0,0
+access_records_employee_view,records employee read,hr.model_hr_employee,group_records_viewer,1,0,0,0
+access_records_contract_view,records contract read,hr_contract.model_hr_contract,group_records_viewer,1,0,0,0
+access_records_apply_view,records history read,model_pb_records_apply,group_records_viewer,1,0,0,0
+access_records_change_view,records changes read,model_pb_records_change,group_records_viewer,1,0,0,0

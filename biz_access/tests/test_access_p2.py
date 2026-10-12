@@ -110,6 +110,8 @@ class AccessHomeCase(TransactionCase):
         })
         if groups:
             user.sudo().write({'group_ids': [(4, g.id) for g in groups]})
+            if hasattr(self, 'role') and set(self.role.group_ids.ids) <= set(groups.ids):
+                self.env['pb.access']._assign_role(self.role, user, 'Fixture role assignment', adopt=True)
         return user
 
     def _states(self, payload):
@@ -296,9 +298,9 @@ class TestTheComposer(AccessHomeCase):
             'ZZ Already held %s' % self.stamp, 'A sentence.', False,
             (self.ability | self.empty_ability).ids)
         role = self.env['pb.role.profile'].browse(res['id'])
-        self.assertEqual(role.holder_count, 1)
-        self.assertNotIn('Nobody holds it yet', res['message'])
-        self.assertIn('1 person is', res['message'])
+        self.assertEqual(role.holder_count, 0)
+        self.assertGreaterEqual(role.equivalent_count, 1)
+        self.assertIn('Nobody holds it yet', res['message'])
 
     def test_it_lands_on_the_board_and_opens_out(self):
         res = self.access.create_role(

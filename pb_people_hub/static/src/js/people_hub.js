@@ -58,6 +58,7 @@ import { PlanLauncher, PLAN_GATE, heroGroups } from "@pb_people_hub/js/plan_laun
 
 /** `hr.employee`'s READ access. */
 export const EMPLOYEE_GATE = [
+    "pb_records.group_records_viewer",
     "base.group_system",
     "hr.group_hr_user",
     "pb_demo.group_payobook_demo",
@@ -65,6 +66,7 @@ export const EMPLOYEE_GATE = [
 
 /** `hr.contract`'s READ access. */
 export const CONTRACT_GATE = [
+    "pb_records.group_records_viewer",
     "hr_contract.group_hr_contract_employee_manager",
     "hr_contract.group_hr_contract_manager",
     "pb_demo.group_payobook_demo",

@@ -171,16 +171,16 @@
           <t t-out="ic('chevronDown',13)"/>
         </button>
         <div t-if="state.open" class="rd-scheme-menu" t-on-click.stop="">
-          <button type="button" t-on-click="() => this.pickExport('data')">
+          <button t-if="props.canExport !== false" type="button" t-on-click="() => this.pickExport('data')">
             <span class="nm">Export with data</span>
             <span class="ct" t-esc="props.countLabel"/>
           </button>
-          <button type="button" t-on-click="() => this.pickExport('template')">
+          <button t-if="props.canExport !== false" type="button" t-on-click="() => this.pickExport('template')">
             <span class="nm">Export blank template</span>
             <span class="ct">headings only</span>
           </button>
           <div class="rd-menu-sep"/>
-          <label class="rd-filemenu-up">
+          <label t-if="props.canImport !== false" class="rd-filemenu-up">
             <span class="nm">Import a file</span>
             <span class="ct">.xlsx or .csv</span>
             <input type="file" accept=".xlsx,.xlsm,.csv" t-on-change="onPick"
@@ -191,7 +191,7 @@
     </t>
     <t t-else="">
       <div class="rd-filepair" data-coach="rd-file">
-      <div class="rd-export">
+      <div t-if="props.canExport !== false" class="rd-export">
         <button type="button" class="pbim-btn ghost"
                 t-att-disabled="props.exporting"
                 t-on-click.stop="() => this.pickExport('data')"
@@ -216,7 +216,7 @@
           </button>
         </div>
       </div>
-      <RdDropZone onFile="props.onFile" busy="props.busy"
+      <RdDropZone t-if="props.canImport !== false" onFile="props.onFile" busy="props.busy"
                   busyLabel="props.busyLabel"/>
       </div>
     </t>
@@ -502,7 +502,8 @@
                  they are one gesture with two directions.
                  R4 D3 — and under 1440px they are one FILE menu instead, so
                  Review never has to compete with them for the last inch. -->
-            <RdFileMenu narrow="state.narrow" exporting="state.exporting"
+            <RdFileMenu t-if="state.canExport or state.canWrite.employee or state.canWrite.contract" narrow="state.narrow" exporting="state.exporting"
+                        canExport="state.canExport" canImport="state.canWrite.employee or state.canWrite.contract"
                         busy="state.file.busy" busyLabel="state.file.name"
                         countLabel="exportCountLabel"
                         onExport.bind="exportFile" onFile.bind="takeFile"/>

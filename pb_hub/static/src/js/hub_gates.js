@@ -40,7 +40,7 @@ export async function resolveLensAccess(lenses, orm) {
         try { flags[g] = await user.hasGroup(g); }
         catch (e) {
             console.warn("pb_hub: could not resolve group", g, e);
-            flags[g] = true;
+            flags[g] = false;
         }
     }));
     const allowed = {};
@@ -54,6 +54,7 @@ export async function resolveLensAccess(lenses, orm) {
                 allowed[l.key] = !!(await orm.call(l.probe.model, l.probe.method, []));
             } catch (e) {
                 console.warn("pb_hub: could not ask", l.probe.model, e);
+                allowed[l.key] = false;
             }
         }));
     return allowed;

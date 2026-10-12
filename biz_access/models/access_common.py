@@ -41,6 +41,23 @@ NEUTRAL_AREA = ('general', 'General')
 _AREAS = []
 _DEFAULT_AREA = None
 
+# Applications register their server-side screen vocabulary. Client rows are
+# preview requests, never a source of authorization requirements.
+ACCESS_SURFACES = {}
+ROLE_MEMBERSHIP_XMLIDS = []
+
+
+def register_role_memberships(xmlids):
+    for xmlid in xmlids:
+        if xmlid not in ROLE_MEMBERSHIP_XMLIDS:
+            ROLE_MEMBERSHIP_XMLIDS.append(xmlid)
+
+
+
+def register_access_surfaces(rows):
+    for row in rows:
+        ACCESS_SURFACES[row['key']] = dict(row)
+
 
 def register_areas(pairs, default=None):
     """An application says which areas its roles are grouped under.
