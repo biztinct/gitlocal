@@ -77,22 +77,25 @@ temporary restored QA databases cannot change public routing.
 ## Design and assets
 
 The lightweight public pages use self-hosted Manrope and Instrument Serif
-fonts (OFL licenses in `static/src/fonts`). The homepage uses a typography-led layout with interactive canvas particles spelling
-Biztinct and a soft mist/glow behind the text, inspired by the supplied 21st.dev
-particle-text-canvas example. Its former abstract artwork and floating messages
-have been removed from the homepage and shared call to action. The existing
-illustrations on other pages remain available. The effect renders at 30 fps,
-sleeps when hidden or offscreen, uses local pointer coordinates, and resamples
-after fonts load or its container changes size. Reduced-motion and data-saving
-preferences show the readable gradient text fallback.
+fonts (OFL licenses in `static/src/fonts`). The homepage starts with a solid Manrope Biztinct wordmark, followed by the
+headline on the left and the description/actions on the right. Mobile layouts
+stack these in reading order. A diffuse violet/cyan spotlight and light beams
+sit behind the brand. Headings reveal word by word, emphasis has a slow gradient
+shimmer, and cards use pointer spotlights and animated border light on hover.
+Decorative animations pause offscreen or while the document is hidden, and
+reduced-motion/data-saving preferences disable extra motion. Text remains
+selectable, semantic and visible without JavaScript.
 
-This is an Odoo QWeb site, not a React/shadcn/TypeScript application. Components
-are QWeb templates in `views/templates.xml`; styles are in `static/src/css`.
-The native component lives in `static/src/js/particle-text-canvas.js`, so no
-React, Tailwind, shadcn CLI or build pipeline is required. In a separate React
-project the reusable TSX component would belong in `components/ui` (or
-`src/components/ui` with the corresponding `@/` alias); that convention does
-not apply to this server-rendered Odoo module.
+Inspiration inspected in signed-in Chrome on 21st.dev:
+- Spotlight Background: https://21st.dev/@ruixen.ui/components/spotlight-background
+- Text Shimmer: https://21st.dev/@ibelick/components/text-shimmer/with-color
+- Card Spotlight: https://21st.dev/@manuarora700/components/card-spotlight
+
+The effects are native CSS/JavaScript adaptations for Odoo QWeb, with no React
+runtime, third-party scripts, remote asset requests or new build dependencies.
+Components remain in `views/templates.xml`, styles in `static/src/css`, and
+motion behaviour in `static/src/js/experience.js`. The earlier particle canvas
+has been retired in favour of the same solid font used throughout the website.
 
 Service cards have
 pointer tilt and lighting; sections reveal on scroll, with a moving capability

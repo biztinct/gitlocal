@@ -25,23 +25,50 @@ body{background:var(--paper);color:var(--ink);overflow-x:hidden}body::before{con
 .wordmark{background:#fff;border-radius:13px;padding:4px 12px;gap:0;box-shadow:0 3px 15px #0002}.wordmark img{width:107px;height:39px;display:block;object-fit:contain;filter:none}.flow-core img.flow-logo{width:94px;height:auto;background:white;border-radius:9px;padding:3px 6px}.cta-mark{object-fit:contain;opacity:.17}.manifesto-inner>img{object-fit:contain;opacity:.17}
 @media(max-width:720px){.wordmark{padding:3px 10px}.wordmark img{width:107px;height:39px}.flow-core img.flow-logo{width:83px;height:auto}}
 
-/* Typography-led homepage: meaningful content, with no abstract product artwork. */
-.hero-text{background:radial-gradient(ellipse at 78% 45%,#38307433,transparent 58%)}
-.hero-text .hero-stage{grid-template-columns:1.1fr 1fr;gap:40px;min-height:630px}
-.hero-text .hero-copy h1{font-size:clamp(48px,5.7vw,88px);white-space:normal}
-.hero-text .hero-copy h1 em{text-shadow:0 0 70px #9486ff25}
-.hero-text .hero-copy .eyebrow{font-size:9px}
-.hero-text .hero-actions{flex-wrap:wrap}
-.particle-wordmark{position:relative;width:100%;height:320px;display:grid;place-items:center;isolation:isolate}
-.particle-wordmark::before{content:'';position:absolute;inset:12% -5%;z-index:-1;background:radial-gradient(ellipse,#7564db26,transparent 65%);filter:blur(25px);animation:text-mist 10s ease-in-out infinite;pointer-events:none}
-.particle-fallback{font-size:clamp(46px,7.2vw,115px);font-weight:600;letter-spacing:-.06em;background:linear-gradient(100deg,#c4a1ff,#99aeff,#77d7ed);background-clip:text;-webkit-background-clip:text;color:transparent}
-.particle-text-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .35s}
-.particles-ready .particle-text-canvas{opacity:1}.particles-ready .particle-fallback{visibility:hidden}
+/* Typography-led homepage, inspired by 21st.dev spotlight and shimmer previews. */
+.hero-stacked{background:#0a0d18;min-height:0}
+.hero-stacked .hero-stage{display:block;min-height:0;padding-top:42px;padding-bottom:105px;z-index:1}
+.hero-brand{position:relative;isolation:isolate;line-height:1.1;margin-bottom:52px;width:fit-content}
+.brand-name{font-family:Manrope,Arial,sans-serif;font-weight:600;font-size:clamp(100px,14vw,220px);letter-spacing:-.07em;display:block;color:#eeedff;background:linear-gradient(110deg,#f4f2ff 15%,#c7bdff 48%,#effcff 72%,#f4f2ff 90%);background-size:220% 100%;background-clip:text;-webkit-background-clip:text;color:transparent;animation:brand-shimmer 14s ease-in-out infinite}
+.hero-brand::before{content:'';position:absolute;inset:-25% -10%;background:radial-gradient(ellipse at 45% 55%,#9381ff3d,transparent 64%);filter:blur(27px);z-index:-1;pointer-events:none;animation:brand-light 10s ease-in-out infinite}
+.hero-light{position:absolute;inset:0;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse 420px 280px at var(--light-x,45%) var(--light-y,25%),#8270f51a,transparent 75%)}
+.hero-light::before,.hero-light::after{content:'';position:absolute;top:-55%;left:10%;width:32%;height:135%;background:linear-gradient(180deg,#bba8ff1c,transparent 85%);filter:blur(34px);transform:rotate(-28deg);animation:light-drift 16s ease-in-out infinite;transform-origin:50% 0}
+.hero-light::after{left:55%;width:18%;background:linear-gradient(180deg,#81d7f51c,transparent 80%);animation-delay:-8s}
+.hero-lower{display:grid;grid-template-columns:1.1fr 1fr;gap:70px;align-items:center}
+.hero-stacked .hero-copy{padding:0}.hero-stacked .hero-copy .eyebrow{font-size:9px;margin-bottom:25px}
+.hero-stacked .hero-copy h1{font-size:clamp(48px,5.6vw,80px);line-height:1.1;white-space:normal}
+.hero-summary{padding-top:20px}.hero-stacked .hero-description{font-size:16px;margin:0;line-height:1.95;max-width:none}
+.hero-stacked .hero-actions{display:flex;flex-wrap:wrap;gap:22px;margin-top:34px}
+.hero-stacked .hero-actions .button{font-size:12px;gap:25px;padding-inline:24px}.hero-stacked .hero-actions .text-link{font-size:12px}
 .page-home .solution-card h3{margin-top:50px}.page-home .solution-card{min-height:310px}
-.page-home .philosophy-section{display:block;max-width:880px}.page-home .philosophy-copy{max-width:none}
-.page-home .philosophy-copy p:not(.eyebrow){max-width:720px}
-@keyframes text-mist{0%,100%{transform:translate(-3%,-4%) scale(.95);opacity:.6}50%{transform:translate(3%,4%) scale(1.08);opacity:1}}
-@media(min-width:1700px){.hero-text .hero-stage{min-height:710px}}
-@media(max-width:960px){.hero-text .hero-stage{gap:24px;min-height:540px}.hero-text .hero-copy .eyebrow{font-size:7px}.particle-wordmark{height:260px}}
-@media(max-width:720px){.hero-text .hero-stage{grid-template-columns:1fr;gap:0;padding-bottom:28px;min-height:0}.hero-text .hero-copy h1{font-size:clamp(45px,9.8vw,70px)}.hero-text .hero-copy .eyebrow{font-size:7px}.particle-wordmark{height:180px;margin-top:15px}.particle-fallback{font-size:clamp(55px,16vw,105px)}.page-home .solution-card{min-height:0}.page-home .solution-card h3{margin-top:32px}}
-@media(prefers-reduced-motion:reduce){.particle-wordmark::before{animation:none}.particle-text-canvas{display:none}.particle-fallback{visibility:visible!important}}
+.page-home .philosophy-section{display:block;max-width:880px}.page-home .philosophy-copy{max-width:none}.page-home .philosophy-copy p:not(.eyebrow){max-width:720px}
+/* Each heading keeps native, selectable text and its original semantic structure. */
+.effect-word{display:inline-block}
+.motion-ready .words-revealed .effect-word{animation:word-arrive .75s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--word-delay,0ms)}
+main h2 em{background:linear-gradient(100deg,#b8adff 15%,#e0d8ff 42%,#83d6ea 55%,#b8adff 80%);background-size:250% 100%;background-clip:text;-webkit-background-clip:text;color:transparent;animation:heading-shimmer 12s ease-in-out infinite;animation-play-state:paused}
+main h2.fx-in-view em{animation-play-state:running}
+.text-link{position:relative}.text-link::after{content:'';position:absolute;left:0;right:24px;bottom:-6px;height:1px;background:linear-gradient(90deg,#b3a1ff,#82d5ee);transform:scaleX(0);transform-origin:left;transition:transform .35s}
+.text-link:hover::after,.text-link:focus-visible::after{transform:scaleX(1)}.text-link>span{transition:transform .3s}.text-link:hover>span{transform:translate(3px,-2px)}
+@property --beam-angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+.solution-card::after,.process-grid article::after,.principles-grid article::after,.digital-banner::after{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;background:conic-gradient(from var(--beam-angle),transparent 55%,#a897ff 70%,#78d9e7 76%,transparent 85%);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;pointer-events:none;opacity:0;transition:opacity .35s;animation:border-light 6s linear infinite;animation-play-state:paused}
+.process-grid article,.principles-grid article{position:relative;isolation:isolate}
+.process-grid article::before,.principles-grid article::before{content:'';position:absolute;inset:0;border-radius:inherit;z-index:-1;opacity:0;background:radial-gradient(300px circle at var(--pointer-x,50%) var(--pointer-y,30%),#a48bff23,transparent 70%);transition:opacity .3s;pointer-events:none}
+.principles-grid article{padding:28px;border:1px solid #ffffff16;border-radius:18px;background:#14192a}
+.fx-in-view:is(.solution-card,.digital-banner,.process-grid article,.principles-grid article):is(:hover,:focus-within)::after{opacity:.85;animation-play-state:running}
+:is(.process-grid article,.principles-grid article):hover::before{opacity:1}
+.contact-form-wrap:focus-within{border-color:#a899ff77;box-shadow:0 0 40px -18px #a994ff66;transition:border-color .3s,box-shadow .3s}
+@keyframes word-arrive{from{opacity:0;transform:translateY(12px);filter:blur(5px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes brand-shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes heading-shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes brand-light{0%,100%{opacity:.65;transform:translateX(-3%) scale(.95)}50%{opacity:1;transform:translateX(5%) scale(1.06)}}
+@keyframes light-drift{0%,100%{transform:rotate(-28deg) translateX(-5%);opacity:.5}50%{transform:rotate(-15deg) translateX(12%);opacity:1}}
+@keyframes border-light{to{--beam-angle:360deg}}
+@media(max-width:1200px){.hero-lower{gap:40px}.hero-stacked .hero-description{font-size:14px}.hero-stacked .hero-copy .eyebrow{font-size:8px}.hero-stacked .hero-actions{gap:18px}.hero-stacked .hero-actions .button{padding-inline:20px;font-size:11px}.hero-stacked .hero-actions .text-link{font-size:11px}}
+@media(max-width:960px){.hero-stacked .hero-stage{padding-top:32px;padding-bottom:80px}.hero-brand{margin-bottom:38px}.hero-lower{gap:28px}.hero-stacked .hero-copy h1{font-size:clamp(42px,5.6vw,56px)}.hero-stacked .hero-copy .eyebrow{font-size:6px}.hero-stacked .hero-description{font-size:13px}.hero-summary{padding-top:10px}}
+@media(max-width:720px){.hero-stacked{padding-bottom:0}.hero-stacked .hero-stage{padding-top:30px;padding-bottom:72px}.hero-brand{margin-bottom:35px}.brand-name{font-size:clamp(74px,18.5vw,132px)}.hero-lower{grid-template-columns:1fr;gap:25px}.hero-stacked .hero-copy h1{font-size:clamp(43px,9.8vw,68px)}.hero-stacked .hero-copy .eyebrow{font-size:7px;margin-bottom:20px}.hero-summary{padding:0}.hero-stacked .hero-description{font-size:14px;line-height:1.85}.hero-stacked .hero-actions{margin-top:25px;gap:20px}.hero-stacked .hero-actions .button{font-size:12px}.hero-stacked .hero-actions .text-link{font-size:11px}.page-home .solution-card{min-height:0}.page-home .solution-card h3{margin-top:32px}}
+@media(max-width:390px){.brand-name{font-size:clamp(68px,19vw,74px)}.hero-stacked .hero-copy .eyebrow{font-size:6px}.hero-stacked .hero-description{font-size:13px}.hero-stacked .hero-actions{flex-direction:column;align-items:flex-start}.hero-stacked .hero-actions .button{font-size:11px}.hero-brand{margin-bottom:30px}}
+/* Pause decorative motion outside the viewport and when visitors request less motion. */
+.hero-stacked:not(.fx-in-view) .brand-name,.hero-stacked:not(.fx-in-view) .hero-brand::before,.hero-stacked:not(.fx-in-view) .hero-light::before,.hero-stacked:not(.fx-in-view) .hero-light::after{animation-play-state:paused}
+body.effects-muted *,body.effects-muted *::before,body.effects-muted *::after{animation-play-state:paused!important}
+body.effects-muted .effect-word{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}
+@media(prefers-reduced-motion:reduce){.brand-name,.hero-brand::before,.hero-light::before,.hero-light::after,main h2 em,.effect-word{animation:none!important}.effect-word{opacity:1!important;filter:none!important;transform:none!important}.text-link>span,.text-link::after{transition:none}.solution-card::after,.process-grid article::after,.principles-grid article::after,.digital-banner::after{animation:none!important}.hero-light{background:none}}
