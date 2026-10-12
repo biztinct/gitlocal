@@ -21,7 +21,11 @@
     # 19.0.15.0.0 — LEARN v3 part 2: role paths (new res.users.learn_role),
     # three chapters + month-end card on the map, Team lens, moment cards on
     # real screens, ⌘K lesson rows, and the walkthrough player controls.
-    'version': '19.0.20.4.1',
+    # 19.0.20.5.0 — HOME P3: the Home lesson (LW), the Pulse station, the tour's
+    # Home steps, the Pulse column glossary and the Home replica describe the
+    # new Home (headline, the one button, the chart that picks the month, the
+    # four figures, the Pay schemes card). Content + asset change: needs a -u.
+    'version': '19.0.20.5.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',

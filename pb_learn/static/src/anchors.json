@@ -456,22 +456,22 @@
     "dash-hero": {
       "screen": "dashboard",
       "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
-      "desc": "The dashboard hero: who you are, which run is live, and how much of it is done. The first sentence Payobook says to anybody who logs in."
+      "desc": "The Home hero: the headline (days to payday and what needs you), the sentence naming the runs, the five steps of the month and the month-so-far card. The first sentence Payobook says to anybody who logs in."
     },
     "dash-kpis": {
       "screen": "dashboard",
       "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
-      "desc": "Headcount, monthly payroll, pending approvals and active configurations. Four numbers that describe the company, not the day."
+      "desc": "The four figures under the chart: People paid, Net pay, Average net per person and Total cost to the company, for the month chosen on the chart, each with its 12-month line and a grey change against the month before."
     },
     "dash-runpayroll": {
       "screen": "dashboard",
       "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
-      "desc": "Run Payroll, from the hero. The same wizard the sidebar leaf opens — the dashboard is a way in, never a second way of doing it."
+      "desc": "The hero's one solid button. It names the next act — Review a run waiting for you, Continue preparing one, or Start the month's payroll — and opens Pay Run on that run. A way in, never a second way of doing it."
     },
     "dash-formula": {
       "screen": "dashboard",
       "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
-      "desc": "The formula engine card. Payobook computes pay from readable configurations rather than fixed structures, and this is where the dashboard says so."
+      "desc": "The Pay schemes card at the foot of Home: schemes in use, their components, and one quiet line saying whether every test passed. Opens Formula Studio."
     },
     "pe-head": {
       "screen": "employees",
@@ -632,7 +632,7 @@
     "dash-period": {
       "screen": "dashboard",
       "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
-      "desc": "The one line that says which payroll month every number on the page describes."
+      "desc": "The 12-month chart that is also the month picker: click a column or use the arrow keys, Escape for the latest month; the figures below read the month chosen."
     },
     "ex-trail": {
       "screen": "explorer",

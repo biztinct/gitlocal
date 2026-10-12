@@ -764,12 +764,13 @@
       "expect": [
         "data-coach=\"dash-hero\"",
         "data-coach=\"dash-runpayroll\"",
+        "data-coach=\"dash-period\"",
         "data-coach=\"dash-kpis\"",
         "data-coach=\"dash-formula\""
       ],
       "fixture": [],
       "taughtIn": [
-        "LW steps 1-4",
+        "LW steps 1-5",
         "the dashboard replica in engine/screens.js",
         "anchors.json product block",
         "scenario sc_welcome steps hero, kpis, engine"
@@ -975,19 +976,19 @@
       ]
     },
     {
-      "id": "dashboard-pending-counts-payslips",
+      "id": "dashboard-figures-are-run-totals",
       "kind": "contains",
-      "why": "LW and the Pulse column teach that Pending approval counts PAYSLIPS waiting for approval, company-wide — not runs, not only yours. It counts payroll.analytics rows in 'ready', falling back to payslips in 'verify' (the state a run freezes its payslips in while its route decides). Pinned together because the fallback is what renders on most databases.",
-      "file": "pb_dashboard/models/pb_dashboard.py",
+      "why": "LW teaches that Home's four figures are the pay runs' own stored totals (so they match the payslips exactly), that People paid counts each person once per month, and that runs in another currency are left out of the money. HOME P3 deleted the old line-table month figures; these are the lines that make the three claims true.",
+      "file": "pb_dashboard/models/home_data.py",
       "expect": [
-        "pending = safe(lambda: env['payroll.analytics'].search_count([('state', '=', 'ready')]))",
-        "pending = safe(lambda: env['hr.payslip'].search_count([('state', '=', 'verify')]))"
+        "MONEY_FIELDS = (('net', 'pb_total_net'), ('gross', 'pb_total_gross'),",
+        "SELECT to_char(r.date_end, 'YYYY-MM'), count(DISTINCT p.employee_id)",
+        "'foreign_runs': sum(1 for r in group if r.id in money"
       ],
       "fixture": [],
       "taughtIn": [
-        "LW step 2 tip",
-        "LW's understanding check (all three options)",
-        "column dashboard/pending_approval"
+        "LW step 4 and its tip",
+        "column dashboard/people_paid, net_pay, total_cost"
       ]
     },
     {

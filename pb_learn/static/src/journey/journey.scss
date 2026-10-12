@@ -2679,3 +2679,51 @@ body.lrn-docked .lrn-screen { padding-bottom: 55vh; }
 .lrn-fsdep > span i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 .lrn-fsdep.in > span i { background: #0E7490; }
 .lrn-fsdep.out > span i { background: #DB2777; }
+
+/* HOME P3 — the Home replica: the hero (headline, sentence, five steps, one
+   solid button) and the month columns of the chart that is the month picker.
+   Same tokens as the replica's other surfaces; solid fills only. */
+.lrn-hhero {
+    padding: var(--vuf-sp-4, 16px);
+    margin-bottom: var(--vuf-sp-4, 16px);
+    border: 1px solid #DDD6F2;
+    border-radius: var(--vuf-r-md, 12px);
+    background: #F3F0FB;
+    .lrn-btn { margin-right: 8px; }
+}
+.lrn-heyebrow {
+    font-size: 10.5px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--vuf-primary, #5A4BB0); margin-bottom: 6px;
+}
+.lrn-hh1 { font-size: 20px; font-weight: 800; color: #241F52; letter-spacing: -.01em; margin-bottom: 4px; }
+.lrn-hjourney {
+    display: flex; flex-wrap: wrap; gap: 6px 14px; list-style: none; padding: 0; margin: 8px 0 12px;
+    font-size: 11.5px; font-weight: 700;
+}
+.lrn-hjn {
+    display: inline-flex; align-items: center; gap: 6px; color: var(--vuf-muted, #6B7280);
+    span {
+        display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%;
+        border: 2px solid #DDD6F2; background: #fff; font-size: 10px;
+        .lrn-ic { width: 11px; height: 11px; }
+    }
+    &.done { color: var(--vuf-ink, #1E1B2E); span { background: #0F7B4F; border-color: #0F7B4F; color: #fff; } }
+    &.now { color: var(--vuf-ink, #1E1B2E); span { background: var(--vuf-primary, #5A4BB0); border-color: var(--vuf-primary, #5A4BB0); color: #fff; } }
+}
+.lrn-hcols { display: flex; gap: 12px; margin-top: 10px; align-items: flex-end; }
+.lrn-hcol {
+    display: grid; justify-items: center; gap: 2px; min-width: 76px; padding: 6px 8px;
+    border: 1px solid var(--vuf-line, #E5E7EB); border-radius: var(--vuf-r-sm, 10px);
+    background: var(--vuf-surface, #fff); font: inherit; font-size: 11.5px; cursor: default;
+    &.on { border-color: var(--vuf-primary, #5A4BB0); box-shadow: 0 0 0 1px var(--vuf-primary, #5A4BB0) inset; }
+}
+.lrn-htop { font-size: 9.5px; font-weight: 700; color: var(--vuf-muted, #6B7280); min-height: 12px; }
+.lrn-hbar {
+    position: relative; display: flex; align-items: flex-end; justify-content: center; width: 18px; height: 54px;
+    i { display: block; width: 100%; border-radius: 4px 4px 0 0; background: #DDD6F2; position: relative; z-index: 1; }
+    .lrn-hghost {
+        position: absolute; bottom: 0; left: 0; right: 0; z-index: 0;
+        background: #fff; border: 1.5px solid var(--vuf-primary, #5A4BB0); border-radius: 4px 4px 0 0;
+    }
+}
+.lrn-hcol.on .lrn-hbar i { background: var(--vuf-primary, #5A4BB0); }

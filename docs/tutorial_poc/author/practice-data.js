@@ -443,42 +443,41 @@ const RATE_CHANGE = {
    ========================================================================== */
 const PRACTICE = {
   /* ------------------------------------------------------ Home › Pulse
-     LEARN REFRESH step 2. Every figure is the SAME query the product runs
-     (pb_dashboard/models/pb_dashboard.py), applied to this fixture:
-       Headcount        every employee in the company, not month-scoped (:247)
-                        — Retail's 48 and F&B's 21 — subtitle "N active
-                        contracts" (running contracts, :248)
-       Monthly payroll  gross on the chosen month's END-OF-MONTH payslips, in
-                        any state (:184-215) — both July runs
-       Pending approval payslips in "Waiting" (the fallback at :278-280) —
-                        the Retail run's 48, frozen while it is with its route
-       Active configs   formula configurations in Active, subtitle the sum of
-                        their rules (:338-343) */
+     HOME P3. The new Home, drawn from the same rows the board and the
+     schemes already hold, by the product's own rules (pb_dashboard
+     home_data.py + pb_dashboard.js):
+       stage            the least advanced July run — F&B was sent back to
+                        draft — so July is at step 2 of 5 (Prepare)
+       the sentence     Retail is waiting for approval; F&B is being prepared
+       the button       "Continue preparing F&B": the run being prepared, as
+                        no run here waits on the learner's own seat
+       the chart        net pay per month, Retail's done months and July so
+                        far (both July runs); June is the latest completed
+       the figures      June: people paid, net, net per person. Total cost
+                        needs the employer's share, which this fixture does
+                        not hold for June, so it reads "—" as the product
+                        does for a missing figure
+       pay schemes      the three configurations and their components */
   get pulse() {
     const b = this.board;
-    const waiting = b.filter((r) => r.col === "approval_pending");
     const configs = this.configs;
+    const june = b.find((r) => r.col === "done" && r.name.en.includes("June"));
+    const may = b.find((r) => r.col === "done" && r.name.en.includes("May"));
+    const july = b.filter((r) => r.cur);
     return {
       user: "Minh Tú",
       month: RUN.period,
-      /* The month strip: one chip per payroll month, bar = people paid. */
-      months: [
-        { m: B("May", "Th5"), y: "2026", people: 47 },
-        { m: B("Jun", "Th6"), y: "2026", people: 47 },
-        { m: B("Jul", "Th7"), y: "2026", people: RUN.employees + FNB.employees, latest: true },
+      stage: 2,
+      waiting: { division: RUN.division, people: RUN.employees },
+      preparing: B("F&B", "F&B"),
+      chart: [
+        { m: B("May", "Th5"), net: may.net },
+        { m: B("Jun", "Th6"), net: june.net, latest: true },
+        { m: B("Jul", "Th7"), net: july.reduce((t, r) => t + r.net, 0), inprogress: true },
       ],
-      kpis: {
-        headcount: RUN.employees + FNB.employees + 1,
-        contracts: RUN.employees + FNB.employees + 1,
-        payroll: RUN.totalGross + FNB.totalGross,
-        pending: waiting.reduce((t, r) => t + r.employees, 0),
-        configs: configs.length,
-        rules: configs.reduce((t, c) => t + c.rules, 0),
-      },
-      /* "Latest pay run" is the NEWEST RUN BY ID (pb_dashboard.py:257-275):
-         Retail July, whose 48 payslips are all waiting. */
-      latest: { name: RUN.name, slips: RUN.employees, done: 0,
-                pending: waiting.reduce((t, r) => t + r.employees, 0) },
+      figures: { month: B("June 2026", "Tháng 6/2026"), people: june.employees, net: june.net,
+                 avg: Math.round(june.net / june.employees) },
+      schemes: { active: configs.length, components: configs.reduce((t, c) => t + c.rules, 0) },
     };
   },
   /* The practice company's three pay schemes — the "Pay run for" cards, and

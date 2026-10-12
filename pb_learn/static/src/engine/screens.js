@@ -122,16 +122,6 @@ function kpiTile(icon, tone, value, label) {
     </div>`;
 }
 
-/* A KPI tile with the product's second line under the figure (Home › Pulse
-   prints "48 active contracts", "personnel cost in July 2026" …). */
-function kpiTile2(icon, tone, value, label, sub) {
-    return `<div class="lrn-kpi ${tone}">
-        <div class="lrn-kt">${ic(icon)}<span>${esc(tx(label))}</span></div>
-        <div class="lrn-kv">${esc(value)}</div>
-        <div class="lrn-ksub">${esc(sub)}</div>
-    </div>`;
-}
-
 /* The numbered step buttons the Runs, Payslips and Import lenses share
    (pb_import_kit's "numbered steps"): 01 Draft · 02 Waiting for approval …,
    each with its count and an optional amber flag. */
@@ -380,82 +370,71 @@ function newEmployeeHTML() {
 /* -------------------------------------------------------------------- screens */
 export const SCREENS = {
     /* ------------------------------------------------------ Home › Pulse
-       LEARN REFRESH step 2. Drawn as pb_dashboard.xml draws it INSIDE the Home
-       hub (embedded: no company line): the greeting and the live run, "Figures
-       for {month}" over the month strip, the four tiles with their own second
-       lines, and the three cards. The anchors are the product's own
-       (dash-hero, dash-runpayroll, dash-period, dash-kpis, dash-formula). The
-       first-payroll checklist is not drawn: the product shows it only while a
-       company has NO pay run, and this one has five. */
+       HOME P3. Drawn as pb_dashboard.xml draws the new Home INSIDE the Home
+       hub (embedded: no company line): the hero with its headline, sentence,
+       five steps and ONE solid button; the 12-month chart that is the month
+       picker (three months here) with the four figures under it; and the Pay
+       schemes card. The anchors are the product's own (dash-hero,
+       dash-runpayroll, dash-period, dash-kpis, dash-formula). A replica may
+       show less than the product: no Needs you line, no steps card, no
+       People / pay runs / Hiring cards, and the figure this fixture cannot
+       derive reads "—" as the product does. */
     dashboard() {
         const p = PRACTICE.pulse;
-        const k = p.kpis;
-        const l = p.latest;
-        const heroSub = tx(l.name) + DOT + N(l.done) + SLASH + N(l.slips) + SP
-            + tx(B("payslips done", "phiếu lương đã xong")) + DOT + N(k.pending) + SP
-            + tx(B("awaiting approval", "đang chờ phê duyệt"));
-        const busiest = Math.max(...p.months.map((m) => m.people));
-        const months = p.months.map((m) => {
-            const h = Math.round(m.people / busiest * 100);
-            const people = N(m.people) + SP + tx(B("people", "người"));
-            return `<button class="lrn-mchip ${m.latest ? "on" : ""}" aria-pressed="${!!m.latest}">
-                <span class="lrn-mbar"><i style="height:${h}%"></i></span>
-                <b>${esc(tx(m.m))}</b><span>${esc(m.y)}</span>
-                <span class="lrn-mcount">${esc(people)}</span>
+        const dec = tx(B(".", ","));
+        const cm = (n) => (n / 1e6).toFixed(1).replace(".", dec) + SP + tx(B("M", "triệu")) + " ₫";
+        const steps = [
+            [B("Set up", "Thiết lập"), "done"], [B("Prepare", "Chuẩn bị"), "now"],
+            [B("Approve", "Phê duyệt"), "todo"], [B("Pay", "Chi trả"), "todo"],
+            [B("Deliver payslips", "Gửi phiếu lương"), "todo"],
+        ].map(([label, st], i) => `<li class="lrn-hjn ${st}"><span>${st === "done" ? ic("check") : i + 1}</span>${esc(tx(label))}</li>`).join("");
+        const max = Math.max(...p.chart.map((m) => m.net));
+        const ref = Math.max(...p.chart.filter((m) => !m.inprogress).map((m) => m.net));
+        const cols = p.chart.map((m) => {
+            const h = Math.round(m.net / max * 100);
+            const ghost = m.inprogress ? `<i class="lrn-hghost" style="height:${Math.round(Math.max(ref, m.net) / max * 100)}%"></i>` : "";
+            const top = m.inprogress ? tx(B("In progress", "Đang thực hiện")) : m.latest ? tx(B("Latest", "Gần nhất")) : "";
+            return `<button class="lrn-hcol ${m.latest ? "on" : ""}" aria-pressed="${!!m.latest}">
+                <span class="lrn-htop">${esc(top)}</span>
+                <span class="lrn-hbar">${ghost}<i style="height:${h}%"></i></span>
+                <b>${esc(tx(m.m))}</b><span class="lrn-mcount">${esc(cm(m.net))}</span>
             </button>`;
         }).join("");
-        const f = PRACTICE.configs;
-        const figure = (label, value) => `<div class="lrn-kv2"><span>${esc(tx(label))}</span><b>${esc(value)}</b></div>`;
+        const f = p.figures;
+        const fig = (label, value) => `<div class="lrn-kpi"><div class="lrn-kt"><span>${esc(tx(label))}</span></div><div class="lrn-kv">${esc(value)}</div></div>`;
+        const sentence = tx(B("The ", "Đợt ")) + tx(p.waiting.division) + tx(B(" run (", " (")) + N(p.waiting.people) + SP
+            + tx(B("people) is waiting for approval, and the ", "người) đang chờ phê duyệt, và đợt ")) + tx(p.preparing)
+            + tx(B(" run is being prepared.", " đang được chuẩn bị."));
         return `
-            <div class="lrn-herocta" data-coach="dash-hero">
-                ${ic("zap")}
-                <span><b>${esc(tx(B("Good afternoon", "Chào buổi chiều")))},${SP}${esc(p.user)}</b><br>
-                    <span class="lrn-sub2">${esc(heroSub)}</span></span>
-                <button class="lrn-btn pri" data-coach="dash-runpayroll">${ic("zap")}${
-                    esc(tx(B("Run Payroll", "Chạy bảng lương")))}</button>
-                <button class="lrn-btn ghost">${ic("bar-chart")}${esc(tx(B("Analytics", "Phân tích")))}</button>
+            <div class="lrn-hhero" data-coach="dash-hero">
+                <div class="lrn-heyebrow">${esc(tx(B("July 2026 payroll", "Kỳ lương tháng 7/2026")))}</div>
+                <div class="lrn-hh1">${esc(tx(B("July payroll is at step 2 of 5", "Kỳ lương tháng 7 đang ở bước 2 trên 5")))}</div>
+                <p class="lrn-note">${esc(sentence)}</p>
+                <ol class="lrn-hjourney">${steps}</ol>
+                <button class="lrn-btn pri" data-coach="dash-runpayroll">${ic("play")}${
+                    esc(tx(B("Continue preparing F&B", "Tiếp tục chuẩn bị F&B")))}</button>
+                <button class="lrn-btn ghost">${ic("layers")}${esc(tx(B("Open pay runs", "Mở các đợt lương")))}</button>
             </div>
             <div class="lrn-period" data-coach="dash-period">
-                <div class="lrn-periodline">${ic("calendar")}<b>${esc(tx(B("Figures for", "Số liệu của")))}${
-                    SP}${esc(tx(p.month))}</b>
-                    <span class="lrn-chip">${esc(tx(B("the latest payroll month", "tháng lương gần nhất")))}</span></div>
-                <div class="lrn-months">${months}</div>
+                <div class="lrn-periodline">${ic("bar-chart")}<b>${esc(tx(B("Payroll, month by month", "Lương, theo từng tháng")))}</b>
+                    <span class="lrn-chip">${esc(tx(B("Net pay", "Lương thực nhận")))}</span></div>
+                <div class="lrn-hcols">${cols}</div>
                 <p class="lrn-note">${esc(tx(B(
-                    "Press a month to read the figures above for it.",
-                    "Bấm vào một tháng để đọc các số liệu phía trên cho tháng đó.")))}</p>
+                    "Click a month to read its figures below. ← → walk the months · Esc back to the latest.",
+                    "Bấm vào một tháng để đọc số liệu bên dưới. ← → đi qua các tháng · Esc về tháng gần nhất.")))}</p>
             </div>
             <div class="lrn-grid g4" data-coach="dash-kpis">
-                ${kpiTile2("users", "", N(k.headcount), B("Headcount", "Số lượng nhân sự"),
-                    N(k.contracts) + SP + tx(B("active contracts", "hợp đồng đang hiệu lực")))}
-                ${kpiTile2("trending-up", "pos", M(k.payroll), B("Monthly payroll", "Chi phí lương tháng"),
-                    tx(B("personnel cost in", "chi phí nhân sự")) + SP + tx(p.month))}
-                ${kpiTile2("clipboard-check", "warn", N(k.pending), B("Pending approval", "Đang chờ phê duyệt"),
-                    tx(B("awaiting sign-off", "đang chờ phê duyệt")))}
-                ${kpiTile2("calculator", "", N(k.configs), B("Active configs", "Cấu hình đang chạy"),
-                    N(k.rules) + SP + tx(B("rules", "quy tắc")))}
+                ${fig(B("People paid", "Số người được trả lương"), N(f.people))}
+                ${fig(B("Net pay", "Lương thực nhận"), cm(f.net))}
+                ${fig(B("Average net per person", "Thực nhận bình quân mỗi người"), cm(f.avg))}
+                ${fig(B("Total cost to the company", "Tổng chi phí của công ty"), "—")}
             </div>
             <div class="lrn-grid g3 top">
-                <div class="lrn-panel">
-                    <h3>${ic("calendar")}${esc(tx(B("Latest pay run", "Đợt lương mới nhất")))}</h3>
-                    <p class="lrn-note">${esc(tx(l.name))}</p>
-                    ${figure(B("Payslips", "Phiếu lương"), N(l.slips))}
-                    ${figure(B("Approved", "Đã duyệt"), N(l.done))}
-                    ${figure(B("Pending", "Đang chờ"), N(l.pending))}
-                    <button class="lrn-link">${esc(tx(B("Open pay runs →", "Mở các đợt lương →")))}</button>
-                </div>
-                <div class="lrn-panel">
-                    <h3>${ic("layers")}${esc(tx(B("Company overview", "Tổng quan công ty")))}</h3>
-                    <p class="lrn-note">${esc(tx(B("All departments · monthly", "Mọi bộ phận · theo tháng")))}</p>
-                    ${figure(B("Payroll", "Chi phí lương"), M(k.payroll))}
-                    ${figure(B("Avg salary", "Lương bình quân"), M(Math.round(k.payroll / k.headcount)))}
-                    <button class="lrn-link">${esc(tx(B("Open analytics →", "Mở phân tích →")))}</button>
-                </div>
                 <div class="lrn-panel" data-coach="dash-formula">
-                    <h3>${ic("calculator")}${esc(tx(B("Formula engine", "Bộ máy công thức")))}</h3>
-                    <p class="lrn-note">${esc(tx(B("Excel-driven configs", "Cấu hình theo kiểu Excel")))}</p>
-                    ${figure(B("Rules", "Quy tắc"), N(k.rules))}
-                    ${figure(B("Configs", "Cấu hình"), N(f.length))}
-                    <button class="lrn-link">${esc(tx(B("Open formula engine →", "Mở bộ máy công thức →")))}</button>
+                    <h3>${ic("calculator")}${esc(tx(B("Pay schemes", "Chương trình lương")))}</h3>
+                    <p class="lrn-note">${esc(N(p.schemes.active) + SP + tx(B("schemes in use", "chương trình lương đang dùng"))
+                        + " · " + N(p.schemes.components) + SP + tx(B("components", "thành phần")))}</p>
+                    <button class="lrn-link">${esc(tx(B("Open Formula Studio →", "Mở Xưởng công thức →")))}</button>
                 </div>
             </div>`;
     },
