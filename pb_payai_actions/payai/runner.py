@@ -375,7 +375,12 @@ def _clarify_card(ctx, action, slot, res, said=''):
         question = T(_lt('I found %(n)s people called "%(name)s". Which one?')) % {
             'n': len(res['candidates']), 'name': said[:40]}
     elif slot.kind == 'scheme':
-        question = _lt('Which scheme do you mean?')
+        # The person's own word back to them: "Which Retail scheme do you mean?"
+        word = ' '.join((said or '').split())[:40]
+        if word and word.lower().endswith(' scheme'):
+            word = word[:-len(' scheme')].strip()
+        question = T(_lt('Which %s scheme do you mean?')) % word if word \
+            else _lt('Which scheme do you mean?')
     elif slot.kind == 'field':
         question = _lt('Which pay value do you mean?')
     elif slot.kind == 'filing':

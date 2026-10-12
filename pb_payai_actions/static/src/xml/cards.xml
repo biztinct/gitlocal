@@ -44,10 +44,14 @@
           </t>
         </div>
 
+        <!-- No total yet = an indeterminate bar: no valuemax/valuenow at all
+             (false drops the attribute). The words are a polite live region. -->
         <div class="payai-card__prog" t-if="card.progress and card.kind === 'plan' and card.state !== 'planned'"
-             role="progressbar" aria-valuemin="0" t-att-aria-valuemax="card.progress.total or 100"
-             t-att-aria-valuenow="card.progress.done or 0">
-          <div class="payai-card__progtext">
+             role="progressbar" t-att-aria-label="card.progress.label or card.title"
+             aria-valuemin="0"
+             t-att-aria-valuemax="card.progress.total ? card.progress.total : false"
+             t-att-aria-valuenow="card.progress.total ? (card.progress.done or 0) : false">
+          <div class="payai-card__progtext" aria-live="polite">
             <span t-esc="card.progress.label"/>
             <span class="payai-card__progn" t-if="card.progress.total">
               <t t-esc="this.payaiNum(card.progress.done)"/> / <t t-esc="this.payaiNum(card.progress.total)"/>

@@ -30,6 +30,10 @@
     max-width: 100%;
     min-width: 0;
     box-sizing: border-box;
+    // P2 design-8: the card answers to its OWN width, not the window's — the
+    // helper drawer is 300–456 px wide on any screen (see @container below).
+    container-type: inline-size;
+    container-name: payai-card;
     background: var(--pc-card);
     color: var(--pc-ink);
     border: 1px solid var(--pc-line);
@@ -358,14 +362,29 @@
     .payai-btn:active { transform: none !important; }
 }
 
-@media (max-width: 420px) {
+// A narrow card — the drawer at its narrowest, or a phone: tiles two across,
+// the plan card's buttons one full row each (no spacer). Written flat, with no
+// nesting inside the at-rule, so the asset compiler passes it through as is.
+@container payai-card (max-width: 340px) {
     .payai-card__tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .payai-card__actions .payai-btn { flex: 1 1 100%; justify-content: center; }
+    .payai-card__actions .payai-card__spacer { display: none; }
     .payai-card__audit.is-compact { padding-left: 12px; }
+}
+// Browsers without container queries keep the old window rule.
+@supports not (container-type: inline-size) {
+    @media (max-width: 420px) {
+        .payai-card__tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .payai-card__audit.is-compact { padding-left: 12px; }
+    }
 }
 
 // ── the bubble steps aside when it holds a card ─────────────────────────
 .payai-message.payai-has-card {
     max-width: 100%;
+    // The card is a size container, so it no longer gives the bubble a width
+    // of its own: the row takes the full width of the chat instead.
+    width: 100%;
     .payai-msg-content {
         max-width: 100%;
         padding: 0;

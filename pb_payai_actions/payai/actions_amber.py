@@ -335,7 +335,11 @@ class RunPayroll(_Amber):
         notes.insert(0, cards.note('ok', T(_lt(
             'No %(month)s run exists for %(scheme)s yet.')) % {
                 'month': month, 'scheme': scheme_name}))
-        if pv.get('not_covered'):
+        if pv.get('not_covered') == 1:
+            notes.append(cards.note('info', _lt(
+                '1 person in this company is not covered by this scheme and stays '
+                'out of this run.')))
+        elif pv.get('not_covered'):
             notes.append(cards.note('info', T(_lt(
                 '%(n)s people in this company are not covered by this scheme and '
                 'stay out of this run.')) % {'n': '{:,}'.format(pv['not_covered'])}))
@@ -545,6 +549,49 @@ class RunPayroll(_Amber):
             actions=actions)
 
 
+def _needs_from_steps(engine, version_id, context):
+    """Whether anybody decides, from the version's own definition (as the person).
+
+    Mirrors engine.preview: notify steps never count, fast steps always
+    apply, any other step counts when its tier/condition includes it.
+    """
+    from odoo.addons.biz_approval_workflow.models import definition as D
+    version = engine.env['biz.approval.workflow.version'].browse(
+        int(version_id)).exists()
+    if not version:
+        raise UserError(T(_lt('No approval route is set up for this.')))
+    d = D.normalise(version.definition)
+    steps = [s for s in d['steps'] if s['kind'] == 'fast' or (
+        s['kind'] != 'notify' and engine._step_included(d, s, context)[0])]
+    return bool(steps) and not all(s['kind'] == 'fast' for s in steps)
+
+
+def _route_steps(engine, version_id, context):
+    """(first approvers, needs anybody, known) for one published route, as the
+    person — the same reading for every Amber plan that promises an approval.
+
+    The engine's own preview first (it names people, but is gated for people
+    who set routes up); else the version's own steps with the engine's own
+    inclusion test (no names). `known` False: neither could be read.
+    """
+    people, needs, known = [], True, False
+    try:
+        pv = engine.preview(version_id, context)
+        steps = [s for s in pv.get('steps') or [] if s.get('included')
+                 and s.get('kind') not in ('notify',)]
+        needs = bool(steps) and not all(s.get('kind') == 'fast' for s in steps)
+        if steps:
+            people = [p.get('name') for p in steps[0].get('people') or [] if p.get('name')]
+        known = True
+    except Exception:                                   # noqa: BLE001
+        try:
+            needs = _needs_from_steps(engine, version_id, context)
+            known = True
+        except Exception:                               # noqa: BLE001
+            pass                                        # setting up routes is not their job
+    return people, needs, known
+
+
 def _ref(task):
     try:
         return (json.loads(task.result_json or '{}').get('ref') or {})
@@ -618,41 +665,8 @@ class SubmitRun(_RunAmber):
         if found.get('error'):
             raise UserError((found['error'] or {}).get('message') or T(_lt(
                 'No approval route is set up for this run.')))
-        people, needs, known = [], True, False
-        try:
-            pv = engine.preview(found['version_id'], context)
-            steps = [s for s in pv.get('steps') or [] if s.get('included')
-                     and s.get('kind') not in ('notify',)]
-            needs = bool(steps) and not all(s.get('kind') == 'fast' for s in steps)
-            if steps:
-                people = [p.get('name') for p in steps[0].get('people') or [] if p.get('name')]
-            known = True
-        except Exception:                               # noqa: BLE001
-            # preview is gated for configurators; the published steps are
-            # readable by any approval user — the same inclusion test, no names.
-            try:
-                needs = self._needs_from_steps(engine, found['version_id'], context)
-                known = True
-            except Exception:                           # noqa: BLE001
-                pass                                    # setting up routes is not their job
+        people, needs, known = _route_steps(engine, found['version_id'], context)
         return found.get('workflow_name') or '', people, needs, known
-
-    @staticmethod
-    def _needs_from_steps(engine, version_id, context):
-        """Whether anybody decides, from the version's own definition (as the person).
-
-        Mirrors engine.preview: notify steps never count, fast steps always
-        apply, any other step counts when its tier/condition includes it.
-        """
-        from odoo.addons.biz_approval_workflow.models import definition as D
-        version = engine.env['biz.approval.workflow.version'].browse(
-            int(version_id)).exists()
-        if not version:
-            raise UserError(T(_lt('No approval route is set up for this run.')))
-        d = D.normalise(version.definition)
-        steps = [s for s in d['steps'] if s['kind'] == 'fast' or (
-            s['kind'] != 'notify' and engine._step_included(d, s, context)[0])]
-        return bool(steps) and not all(s['kind'] == 'fast' for s in steps)
 
     def plan(self, ctx, params):
         run = self._run(ctx, params)
@@ -1020,9 +1034,7 @@ class UpdatePayData(_Amber):
                      True),
             slot_row('today', _lt('Today'), item.get('old_label') or T(_lt('(not set)')), 'default'),
         ]
-        notes = [cards.note('info', _lt(
-            'If pay changes here need approval, I send it to the approver and '
-            'nothing changes until they say yes.'))]
+        notes = [self._route_note(ctx, config_id, changes)]
         if (start.year, start.month) < (today.year, today.month):
             notes.append(cards.note('warn', _lt(
                 'The new value counts from now on. Pay for earlier months is not '
@@ -1038,6 +1050,64 @@ class UpdatePayData(_Amber):
                 'speak': T(_lt('I will change %(field)s for %(who)s to %(value)s.')) % {
                     'field': item.get('field_label') or '', 'who': item.get('emp_name') or '',
                     'value': new_label}}
+
+    def _route_note(self, ctx, config_id, changes):
+        """Whether this change needs approval, and from whom — read the way the
+        Records Desk's own apply will ask the engine (same process, same scope,
+        same facts), as the person and without writing anything. When the
+        route cannot be read, the plan says only what is certain."""
+        people, needs, known = self._records_route(ctx, config_id, changes)
+        if known and not needs:
+            return cards.note('ok', _lt(
+                'Pay changes here need no approval: it is saved as soon as you '
+                'press Do it, and you can undo it for 10 minutes.'))
+        if known and people:
+            return cards.note('info', T(_lt(
+                'This change needs approval. It goes to %s first, and nothing '
+                'changes until they say yes.')) % ', '.join(people[:3]))
+        if known:
+            return cards.note('info', _lt(
+                'This change needs approval. It goes to the approver set up for '
+                'pay changes, and nothing changes until they say yes.'))
+        return cards.note('info', _lt(
+            'If pay changes here need approval, I send it to the approver and '
+            'nothing changes until they say yes.'))
+
+    def _records_route(self, ctx, config_id, changes):
+        """(first approvers, needs anybody, known). The Desk's apply builds a
+        `pb.records.apply` from the evaluated plan and submits it; here the
+        same record is only built in memory (`new`), so its own
+        `_approval_context()` (divisions, facts, kind) is the one the engine
+        will read. Any failure → unknown, never a guess."""
+        Apply = ctx.env.get('pb.records.apply')
+        if Apply is None or not hasattr(Apply, '_approval_context'):
+            return [], True, False
+        engine = ctx.env['biz.approval.engine']
+        try:
+            desk = self._desk(ctx)
+            _items, plan, _counts = desk._evaluate(config_id, changes)
+            if not plan:
+                return [], True, False
+            rows = desk._plan_rows(plan)
+            bank, salary = desk._plan_touches(rows)
+            rec = Apply.new({
+                'name': '/', 'user_id': ctx.user.id, 'note': T(_lt('via PayAI')),
+                'source': 'desk',
+                'config_id': config_id or False, 'plan_json': json.dumps(rows),
+                'changes_json': json.dumps(changes),
+                'people_count': len({r['emp_id'] for r in rows}),
+                'values_count': len(rows), 'touches_bank': bank,
+                'touches_salary': salary, 'company_id': ctx.env.company.id})
+            context = rec._approval_context()
+            found = engine.resolve_binding(
+                context['company_id'], getattr(Apply, '_approval_process_key', 'records'),
+                context.get('scope_keys'), context.get('kind_key'))
+        except Exception:                               # noqa: BLE001
+            _logger.info("PayAI: could not read the records route", exc_info=True)
+            return [], True, False
+        if found.get('error') or not found.get('version_id'):
+            return [], True, False
+        return _route_steps(engine, found['version_id'], context)
 
     def _currency(self, ctx, config_id):
         try:
