@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Run Payroll Wizard',
     'summary': 'Guided multi-step Run Payroll cockpit (Select period → Compute → Review → Approve)',
-    'version': '19.0.1.31.0',
+    'version': '19.0.1.32.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -21,6 +21,8 @@
     'assets': {
         'web.assets_backend': [
             'pb_payrun_wizard/static/src/scss/payrun_wizard.scss',
+            # PAYAI P2 — the Run Payroll chain, shared with the PayAI card.
+            'pb_payrun_wizard/static/src/js/run_driver.js',
             'pb_payrun_wizard/static/src/js/payrun_wizard.js',
             'pb_payrun_wizard/static/src/xml/payrun_wizard.xml',
         ],

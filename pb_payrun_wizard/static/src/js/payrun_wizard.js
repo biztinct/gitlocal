@@ -7,6 +7,7 @@ import { _t } from "@web/core/l10n/translation";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { Dialog } from "@web/core/dialog/dialog";
 import { IC as KIT_IC } from "@pb_import_kit/js/import_icons";
+import { runPayroll, takePrefill } from "@pb_payrun_wizard/js/run_driver";
 
 // The shared Lucide registry first, this wizard's own five last, so every glyph
 // the standalone screen already rendered is byte-identical and the pay-data step
@@ -335,7 +336,39 @@ export class PayrunWizard extends Component {
                 this.state.who.statuses = ticks;
                 this.refreshWho();
             }
+            // PAYAI P2 — "Open in the screen instead": the run PayAI planned,
+            // filled in. Nothing is pressed for the person.
+            const pre = takePrefill(this.props.action && this.props.action.context);
+            if (pre) { this._applyPrefill(pre); }
         });
+    }
+
+    /**
+     * Fill step one with the run PayAI planned. Only what the screen itself
+     * offers is taken: a scheme that is not one of this company's cards is
+     * ignored rather than forced in, and every server gate still applies when
+     * the person presses the buttons.
+     */
+    _applyPrefill(pre) {
+        const form = this.state.form;
+        if (pre.date_start && pre.date_end) {
+            form.date_start = pre.date_start;
+            form.date_end = pre.date_end;
+        }
+        const card = pre.formula_config_id
+            ? this.schemeCards.find((c) => c.id === pre.formula_config_id) : null;
+        if (card) { this.pickScheme(card); }
+        if (pre.name) { form.name = pre.name; }
+        const ticks = this.state.who.statuses;
+        if (ticks && Array.isArray(pre.statuses)) {
+            for (const key of Object.keys(ticks)) {
+                ticks[key] = pre.statuses.includes(key);
+            }
+            this.refreshWho();
+        }
+        this.notif.add(
+            _t("PayAI filled this in from your request. Check it, then run it when you are ready."),
+            { type: "info" });
     }
 
     ic(n, s = 16) { return markup(`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[n] || IC.check}</svg>`); }
@@ -907,64 +940,28 @@ export class PayrunWizard extends Component {
                 payload.employee_ids = [...this.state.who.picked];
             }
         }
-        // Freshen the connected systems BEFORE anything is computed. A pay run
-        // that computes first and syncs never is a pay run on stale data, and
-        // the failure is silent because the numbers still look like numbers.
-        // It never blocks: a feed that is down is reported and the run goes on,
-        // because the file and the contract fallbacks may well be enough.
-        //
-        // One step per (system, kind of data), so the screen can NAME what it
-        // is waiting on and count it. A single blocking call behind a spinner
-        // reading "Creating run and computing payslips…" was describing the
-        // wrong activity and gave no sense of how long it would take.
-        this.state.progress = null;
-        const sync = { ran: false, connectors: [], errors: [] };
-        let plan = { steps: [] };
-        try {
-            plan = await this.orm.silent.call(
-                "pb.payrun.wizard", "sync_plan", [payload]);
-        } catch (e) {
-            console.warn("pb_payrun_wizard: could not plan the feed sync", e);
-        }
-        const steps = (plan && plan.steps) || [];
-        // Components wired to a feed field that names no endpoint. Nothing can
-        // fetch them, so they fall to their default every run while the run
-        // reports success — the exact shape of the failure this whole step
-        // exists to make visible.
-        sync.unroutable = (plan && plan.unroutable) || [];
-        for (let i = 0; i < steps.length; i++) {
-            // Reuse the wizard's own progress bar rather than inventing a
-            // second kind of waiting. It already renders done/total and a
-            // percentage; all this needed was to be counted.
-            this.state.busyMsg = "Syncing " + steps[i].label + "…";
-            this.state.progress = { done: i, total: steps.length };
-            try {
-                const r = await this.orm.silent.call(
-                    "pb.payrun.wizard", "sync_step", [steps[i], payload]);
-                // RD55 — a feed already fetched for this period is not synced
-                // again. Say so rather than showing a spinner for work that did
-                // not happen: "it was quick" and "it was skipped" look
-                // identical otherwise, and only one of them is a reason to
-                // trust the numbers.
-                if (r && r.skipped) {
-                    this.state.busyMsg = (r.note || steps[i].label);
-                }
-                sync.ran = true;
-                sync.connectors.push(r);
-                if (r && r.error) { sync.errors.push(r.error); }
-            } catch (e) {
-                console.warn("pb_payrun_wizard: feed sync failed", e);
-                sync.errors.push(steps[i].label);
-            }
-        }
-        if (steps.length) {
-            this.state.progress = { done: steps.length, total: steps.length };
-        }
-        this.state.progress = null;
-        this.state.busyMsg = "Creating run and computing payslips…";
-
-        const prep = await this.orm.silent.call("pb.payrun.wizard", "prepare_run", [payload]);
-        if (prep && prep.blocked) {
+        // PAYAI P2 — the chain itself lives in the shared run driver
+        // (`run_driver.js`), so this screen and the PayAI card run payroll
+        // through the very same calls. What stays HERE is everything about
+        // this screen: its busy message, its progress bar, its dialogs, which
+        // step it shows, and the summary arithmetic the review step reads.
+        // The pay-data file goes in only when the scheme wants one.
+        const res = await runPayroll(this.orm, payload, {
+            onStep: (label) => { this.state.busyMsg = label; },
+            onProgress: (p) => {
+                this.state.progress = p ? { done: p.done, total: p.total } : null;
+            },
+            sheet: (sheet.file_b64 && this.wantsSheet) ? {
+                file_b64: sheet.file_b64,
+                file_name: sheet.file_name,
+                oneTime: isOneTime(sheet.mode),
+                attachArgs: (runId, dateStart, dateEnd) => attachArgs(
+                    runId, this.sheetConfigId,
+                    sheet.file_b64, sheet.file_name, dateStart, dateEnd, sheet.mode),
+            } : null,
+        });
+        const prep = res.prep;
+        if (res.stage === "blocked") {
             // PAYAI P0 — the period's payroll is approved, paid or waiting for
             // approval. The server names the runs and the reasons; there is no
             // "Clean and Run" to offer, only the way back to step 1.
@@ -972,78 +969,34 @@ export class PayrunWizard extends Component {
             this.notif.add(prep.message, { type: "warning", sticky: true });
             return;
         }
-        if (prep && prep.needs_confirmation) {
+        if (res.stage === "confirm") {
             this.gotoKey("period");       // sit behind the dialog on step 1
             this._confirmOverwrite(prep);
             return;
         }
-        const { run_id, name, date_start, date_end, division } = prep;
-
-        // The file goes in FIRST, into the run that now exists. Its payslips are
-        // then the ones the chunked compute below skips (compute_batch's
-        // `already` guard), so nobody is paid twice for one month.
-        let batch = null;
-        if (sheet.file_b64 && this.wantsSheet) {
-            this.state.progress = null;
-            this.state.busyMsg = "Loading " + (sheet.file_name || "the pay data file")
-                + (isOneTime(sheet.mode) ? " for this run only…" : "…");
-            batch = await this.orm.silent.call(
-                "pb.payrun.wizard", "attach_spreadsheet",
-                attachArgs(
-                    run_id,
-                    this.sheetConfigId,
-                    sheet.file_b64, sheet.file_name, date_start, date_end, sheet.mode));
-            if (!batch || !batch.ok) {
-                sheet.error = (batch && batch.msg) || "The pay data file could not be loaded.";
-                // Nothing was computed, so the empty run it would have gone into
-                // is litter, not history.
-                await this.orm.silent
-                    .call("pb.payrun.wizard", "discard_empty_run", [run_id])
-                    .catch(() => null);
-                this.state.progress = null;
-                this.gotoKey("data");
-                this.notif.add(sheet.error, { type: "danger" });
-                return;
-            }
+        const batch = res.batch;
+        if (res.stage === "sheet_failed") {
+            sheet.error = (batch && batch.msg) || "The pay data file could not be loaded.";
+            this.gotoKey("data");
+            this.notif.add(sheet.error, { type: "danger" });
+            return;
+        }
+        if (res.stage === "pending") {
             // APPROVAL MATRIX P5. The file loaded and passed its checks, and
-            // somebody has to say yes before it becomes payslips. Telling the
-            // person that here — rather than letting them reach a summary that
-            // says nothing was created — is the difference between a wait and
-            // a fault.
-            if (batch.pending) {
-                sheet.pending = true;
-                sheet.pendingWith = batch.with_whom || "";
-                sheet.requestId = batch.request_id || 0;
-                this.state.progress = null;
-                this.gotoKey("data");
-                this.notif.add(
-                    batch.with_whom
-                        ? _t("The pay data is with %s for approval. The payslips are made once it is approved.",
-                             batch.with_whom)
-                        : _t("The pay data is waiting for its approval. The payslips are made once it is approved."),
-                    { type: "success", sticky: true });
-                return;
-            }
+            // somebody has to say yes before it becomes payslips.
+            sheet.pending = true;
+            sheet.pendingWith = batch.with_whom || "";
+            sheet.requestId = batch.request_id || 0;
+            this.gotoKey("data");
+            this.notif.add(
+                batch.with_whom
+                    ? _t("The pay data is with %s for approval. The payslips are made once it is approved.",
+                         batch.with_whom)
+                    : _t("The pay data is waiting for its approval. The payslips are made once it is approved."),
+                { type: "success", sticky: true });
+            return;
         }
-
-        const empIds = prep.emp_ids || [];
-        const total = empIds.length;
-        const CHUNK = 40;
-        let computed = 0;
-        const exceptions = [];
-        this.state.progress = { done: 0, total };
-        this.state.busyMsg = "Computing payslips…";
-        for (let i = 0; i < total; i += CHUNK) {
-            const chunk = empIds.slice(i, i + CHUNK);
-            const r = await this.orm.silent.call(
-                "pb.payrun.wizard", "compute_batch",
-                [{ run_id, name, date_start, date_end, division, emp_ids: chunk }]);
-            computed += (r && r.computed) || 0;
-            if (r && r.exceptions) { exceptions.push(...r.exceptions); }
-            const done = Math.min(total, i + chunk.length);
-            this.state.progress = { done, total };
-        }
-        const summary = await this.orm.silent.call("pb.payrun.wizard", "get_summary", [run_id]);
+        const { summary, exceptions, computed, sync } = res;
         // A row the file could not process is an exception in exactly the sense
         // this wizard already means it: something a person has to look at.
         // RECORDS R4 D4 — except the rows that name somebody who is not in
@@ -1063,7 +1016,6 @@ export class PayrunWizard extends Component {
         summary.adopted = prep.adopted || 0;
         // …but "Computed 152 of 152" over a run where 152 were adopted and NONE
         // were computed is the headline saying the opposite of what happened.
-        // On the reference tenant that heading sat above payslips two days old.
         summary.fresh = computed + ((batch && batch.created) || 0);
         summary.sync = sync;
         summary.sheet = batch || null;

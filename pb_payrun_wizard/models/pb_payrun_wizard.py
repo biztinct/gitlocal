@@ -766,6 +766,51 @@ class PbPayrunWizard(models.AbstractModel):
         return {'total': total, 'shown': len(rows), 'employees': rows,
                 'statuses': self.employment_status_options()}
 
+    # ---------------- PAYAI P2: the plan, before anything exists ----------------
+    @api.model
+    @runner_only
+    def plan_preview(self, vals=None):
+        """What `prepare_run(vals)` WOULD do, without doing any of it.
+
+        PayAI's plan card and its re-check at "Do it" read this. It is the
+        same helpers `prepare_run` calls — the period check, the scheme the run
+        is for, the scheme-aware duplicate check and the clean-and-run
+        blockers — so the card can never promise something the run then
+        refuses. Read-only: no run, no payslip, no adoption.
+
+        `{covered, not_covered, total, adopt, existing: [{id, name, state}],
+          blockers: [sentence], formula_config_id}`
+        """
+        vals = vals or {}
+        ds, de = vals.get('date_start'), vals.get('date_end')
+        self._check_period(ds, de)
+        config = self._require_scheme(vals)
+        config_id = config.id if config else 0
+        emp_ids = self._eligible_employees(
+            statuses=vals.get('statuses'),
+            employee_ids=vals.get('employee_ids'),
+            formula_config_id=config_id or None,
+            date_start=ds, date_end=de)
+        covered, not_covered = len(emp_ids), 0
+        if config_id:
+            preview = self.scheme_preview(dict(vals, formula_config_id=config_id))
+            covered = preview.get('covered', covered)
+            not_covered = preview.get('not_covered', 0)
+        existing = self._period_runs(ds, de, config=config)
+        blockers = self._clean_blockers(existing) if existing else []
+        adopt = self._loose_slips(ds, de, config=config) if not existing else \
+            self.env['hr.payslip']
+        return {
+            'formula_config_id': config_id,
+            'covered': covered,
+            'not_covered': not_covered,
+            'total': len(emp_ids),
+            'adopt': len(adopt),
+            'existing': [{'id': r.id, 'name': r.name or '', 'state': r.state}
+                         for r in existing.sorted('id')],
+            'blockers': blockers,
+        }
+
     # ---------------- Existing-payroll detection + cleanup ----------------
     @api.model
     def _run_scheme_ids(self, run):
