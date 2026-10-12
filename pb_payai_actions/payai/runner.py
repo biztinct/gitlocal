@@ -887,8 +887,10 @@ def _stamp(ctx):
 
 def progress(ctx, task_id, done, total):
     """Bookkeeping only: how far the browser has got. Refused unless the task
-    was confirmed by this person (PA18)."""
-    task = _own_task(ctx, task_id)
+    was confirmed by this person (PA18). Takes the row lock and re-checks the
+    state under it: a late, unawaited progress call that queued behind
+    result()'s lock must not flip a finished task back to running."""
+    task = _own_task(ctx, task_id, lock=True)
     if task.state not in ('confirmed', 'running'):
         raise AccessError(T(_lt('That request is not running.')))
     try:

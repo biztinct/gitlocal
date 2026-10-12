@@ -465,6 +465,10 @@ patch(AiInsightChat.prototype, {
         const seen = { done: 0, total: (card.progress && card.progress.total) || 0 };
         let info;
         let runId = 0;
+        // Progress calls are not awaited mid-run, but all must settle before
+        // the result call so none lands after it (a late one would reopen
+        // the finished task on the server).
+        const pending = [];
         try {
             const res = await runPayroll(this._payaiOrm, vals, {
                 onStep: (label) => {
@@ -476,7 +480,7 @@ patch(AiInsightChat.prototype, {
                     if (p.phase === "compute") {
                         seen.done = p.done;
                         seen.total = p.total;
-                        this._payaiRpc("rpc_task_progress", [taskId, p.done, p.total]).catch(() => {});
+                        pending.push(this._payaiRpc("rpc_task_progress", [taskId, p.done, p.total]).catch(() => {}));
                     }
                 },
             });
@@ -487,6 +491,7 @@ patch(AiInsightChat.prototype, {
             info = { stage: "error", done: seen.done, total: seen.total,
                      error: String((e && (e.data && e.data.message)) || (e && e.message) || e) };
         }
+        await Promise.allSettled(pending);
         try {
             const out = await this._payaiRpc("rpc_task_result", [taskId, runId, info]);
             if (out && out.card) { msg.card = out.card; }
