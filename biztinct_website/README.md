@@ -57,6 +57,8 @@ https://support.google.com/mail/answer/185833.
 Use nginx's loopback upstream and correct forwarded headers, with Odoo proxy
 mode, so HTTPS URLs and the real client address are retained. Credential entry
 must use the HTTPS hostname.
+The service is pinned to `biztinctprod` through `db_name` and `dbfilter`, so
+temporary restored QA databases cannot change public routing.
 
 ## Design and assets
 
