@@ -35,12 +35,34 @@ from odoo.modules.module import get_module_path
 from odoo.tests.common import TransactionCase, tagged
 
 MODEL_PY = 'models/pb_dashboard.py'
+HOME_PY = 'models/home_data.py'
 JS = 'static/src/js/pb_dashboard.js'
 TPL = 'static/src/xml/pb_dashboard.xml'
 
-# The models this dashboard reads from OTHER modules, and the only two names
-# allowed to appear inside an `optional()` guard.
-OPTIONAL_MODELS = {'learn.progress', 'hr.payroll.import.batch'}
+# The models the activation checklist (models/pb_dashboard.py) reads from
+# OTHER modules, and the only two names allowed inside an `optional()` guard
+# in that file.
+CHECKLIST_MODELS = {'learn.progress', 'hr.payroll.import.batch'}
+
+# HOME P1 — every model another module owns that `get_home_data`
+# (models/home_data.py) reads. Each read sits inside `optional()`; the sweep
+# is tests/test_home_data.py::test_09.
+HOME_MODELS = {
+    'pb.pay.hub', 'pb.payroll.calendar', 'pb.payslip.delivery.batch',
+    'biz.approval.request', 'pb.approval.inbox', 'hr.leave',
+    'hr.full.final.settlement', 'pb.hiring', 'pb.hiring.requisition',
+    'pb.hiring.interview', 'pb.hiring.offer', 'pb.hiring.referral',
+    'hr.applicant', 'learn.runtime', 'learn.content', 'pb.holidays',
+    'hr.formula.config', 'hr.formula.test.result',
+}
+
+# Every foreign model the Home payloads read.
+OPTIONAL_MODELS = CHECKLIST_MODELS | HOME_MODELS
+
+# The old formula card in `get_dashboard_data` reads this one inside `safe()`
+# only. It is deleted with the old KPI code in HOME P3; until then it is the
+# one foreign read in pb_dashboard.py the sweep tolerates.
+LEGACY_UNGUARDED = {'hr.formula.config'}
 
 # The checklist, in the order a tenant walks it. The payload may be SHORTER
 # (the two learning steps are absent without pb_learn) but never re-ordered:
@@ -50,6 +72,17 @@ ORDER = ('meet', 'employee', 'import', 'practice', 'real')
 
 # The steps that only exist when the learning module does.
 LEARN_STEPS = {'meet', 'practice'}
+
+
+# The two modules pb_dashboard may never depend on or import (test_05).
+FORBIDDEN_MODULES = ('pb_learn', 'pb_import')
+_FORBIDDEN_RE = re.compile(r'\b(?:%s)\b' % '|'.join(FORBIDDEN_MODULES))
+
+
+def names_forbidden_module(text):
+    """True when `text` names `pb_learn` or `pb_import` as a whole word —
+    `pb_import_kit` does not match (H5)."""
+    return bool(_FORBIDDEN_RE.search(text or ''))
 
 
 def _read(rel):
@@ -201,14 +234,14 @@ class TestActivationSource(TransactionCase):
         value of the guard is which of the two it is.
         """
         guarded, unguarded = _guarded_env_reads(self.py)
-        leaked = sorted(m for m in unguarded
+        leaked = sorted(m for m in unguarded - LEGACY_UNGUARDED
                         if m in OPTIONAL_MODELS or m.startswith('learn.')
                         or m.startswith('<opaque'))
         self.assertFalse(leaked,
                          "pb_dashboard reads %s without a registry guard — on a "
                          "tenant without that module the home dashboard raises"
                          % leaked)
-        self.assertEqual(guarded, OPTIONAL_MODELS,
+        self.assertEqual(guarded, CHECKLIST_MODELS,
                          "the set of guarded models drifted: %s" % sorted(guarded))
 
     def test_05_the_manifest_and_the_imports_name_neither_module(self):
@@ -218,14 +251,27 @@ class TestActivationSource(TransactionCase):
         manifest = _read('__manifest__.py')
         depends = ast.literal_eval(
             manifest[manifest.index('{'):manifest.rindex('}') + 1]).get('depends') or []
-        for name in ('pb_learn', 'pb_import'):
+        # EXACT MODULE NAMES (HOME H5). A substring check on `pb_import`
+        # would also refuse `pb_import_kit`, the icon and token kit Home is
+        # allowed to depend on from P2; `\b` stops at the underscore.
+        for name in FORBIDDEN_MODULES:
             self.assertNotIn(name, depends,
                              "pb_dashboard now depends on %s" % name)
-        for line in self.py.splitlines():
-            stripped = line.strip()
-            if stripped.startswith(('import ', 'from ')):
-                self.assertNotIn('pb_learn', stripped)
-                self.assertNotIn('pb_import', stripped)
+        for rel in (MODEL_PY, HOME_PY):
+            for line in _read(rel).splitlines():
+                stripped = line.strip()
+                if stripped.startswith(('import ', 'from ')):
+                    self.assertFalse(names_forbidden_module(stripped),
+                                     "%s imports a forbidden module: %s"
+                                     % (rel, stripped))
+        # The negative proof: the narrowed check lets the kit through and
+        # still catches the two modules themselves.
+        self.assertFalse(names_forbidden_module(
+            'from odoo.addons.pb_import_kit.models import x'))
+        self.assertTrue(names_forbidden_module(
+            'from odoo.addons.pb_import.models import x'))
+        self.assertTrue(names_forbidden_module(
+            'from odoo.addons.pb_learn import y'))
 
     def test_06_no_empty_tenant_ever_draws_a_zero_dial(self):
         """The Phase-0 leftover, closed.
