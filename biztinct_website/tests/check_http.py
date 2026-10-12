@@ -44,6 +44,10 @@ def main():
         status, body, headers = fetch(path)
         check('page ' + path, status == 200 and '<!DOCTYPE html>' in body and '| Biztinct</title>' in body)
         check('page security ' + path, headers.get('X-Content-Type-Options') == 'nosniff')
+    status, body, _ = fetch('/web/login?redirect=/biztinct/mail-setup')
+    check('branded login', status == 200 and 'Sign in to Biztinct | Biztinct</title>' in body
+          and 'Features for any Business' not in body and 'yourcompany.example.com' not in body)
+    check('login redirect preserved', 'name="redirect" value="/biztinct/mail-setup"' in body)
     status, body, _ = fetch('/sitemap.xml')
     check('clean sitemap', status == 200 and body.count('<url>') == 5 and '/operations' not in body)
     for path, target in [('/operations', '/solutions#operations'), ('/sales', '/solutions#sales'),

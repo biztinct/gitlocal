@@ -12,7 +12,7 @@ python3 "$target/deploy/configure_proxy.py"
 systemctl stop odoo-server
 trap 'systemctl start odoo-server' EXIT
 sudo -u odoo python3 /odoo/odoo-server/odoo-bin \
-    -c /etc/odoo-server.conf -d biztinctprod -i biztinct_website \
+    -c /etc/odoo-server.conf -d biztinctprod -i biztinct_website -u biztinct_website \
     --no-http --stop-after-init --without-demo=all \
     --logfile="$backup/production-install.log"
 systemctl start odoo-server

@@ -16,9 +16,9 @@
                 <link rel="canonical" t-att-href="'https://biztinct.com' + request.httprequest.path"/>
                 <link rel="icon" type="image/svg+xml" href="/biztinct_website/static/src/img/mark.svg"/>
                 <link rel="preload" href="/biztinct_website/static/src/fonts/manrope-400.ttf" as="font" type="font/ttf" crossorigin="anonymous"/>
-                <link rel="stylesheet" href="/biztinct_website/static/src/css/site.css?v=1.0.0-2"/>
-                <script defer="defer" src="/biztinct_website/static/src/js/site.js?v=1.0.0-2"/>
-                <t t-if="page == 'thanks'"><meta name="robots" content="noindex, follow"/></t>
+                <link rel="stylesheet" href="/biztinct_website/static/src/css/site.css?v=1.0.1"/>
+                <script defer="defer" src="/biztinct_website/static/src/js/site.js?v=1.0.1"/>
+                <t t-if="page in ('thanks', 'login')"><meta name="robots" content="noindex, follow"/></t>
             </head>
             <body t-att-class="'page-' + page">
                 <a href="#main" class="skip-link">Skip to content</a>
@@ -46,7 +46,7 @@
                             <div class="footer-statement">Good software should<br/>feel like <em>second nature.</em></div>
                             <div class="footer-links"><a href="/solutions">Solutions</a><a href="/approach">Our approach</a><a href="/contactus">Contact</a><a href="mailto:ash@biztinct.com">ash@biztinct.com <span aria-hidden="true">↗</span></a></div>
                         </div>
-                        <div class="footer-bottom"><span>© <t t-esc="year"/> Biztinct</span><span>Custom software. Human possibilities.</span><div><a href="/privacy">Privacy</a><a href="/web/login">Client login <span aria-hidden="true">↗</span></a></div></div>
+                        <div class="footer-bottom"><span>© <t t-esc="year"/> Biztinct</span><span>Custom software. Human possibilities.</span><div><a href="/privacy">Privacy</a><a href="https://biztinct.com/web/login">Client login <span aria-hidden="true">↗</span></a></div></div>
                     </div>
                 </footer>
             </body>
@@ -152,6 +152,26 @@
 
     <template id="thanks" name="Biztinct enquiry confirmation">
         <t t-call="biztinct_website.layout"><section class="shell thanks-section"><div class="thanks-mark" aria-hidden="true">✓</div><p class="eyebrow">A GOOD PLACE TO START</p><h1>You’re on our radar.<br/><em>Thank you.</em></h1><p>Your enquiry has been saved.<br/>We’ll be in touch to learn more about what you have in mind.</p><a class="button" href="/">Back to the bigger picture <span aria-hidden="true">↗</span></a><a class="text-link" href="mailto:ash@biztinct.com">Or email Ash directly <span aria-hidden="true">↗</span></a></section></t>
+    </template>
+
+    <template id="login" name="Biztinct account sign-in">
+        <t t-call="biztinct_website.layout">
+            <section class="shell login-section">
+                <div class="login-intro"><p class="eyebrow">ACCOUNT ACCESS</p><h1>Welcome<br/><em>back.</em></h1><p>Your work. Your possibilities.<br/>All in one place.</p><a class="text-link" href="/">Back to Biztinct <span aria-hidden="true">↗</span></a></div>
+                <div class="contact-form-wrap login-card">
+                    <div class="form-heading"><h2>Let’s pick up<br/>where you <em>left off.</em></h2><p>Sign in with your Biztinct account.</p></div>
+                    <form action="/web/login" method="post" class="login-form">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="redirect" t-att-value="redirect or ''"/>
+                        <div t-if="error" class="form-error-summary" role="alert"><t t-esc="error"/></div>
+                        <div class="form-field"><label for="login">Username / email</label><input id="login" name="login" type="text" autocomplete="username" required="required" autofocus="autofocus" t-att-value="login or ''" placeholder="Your account username"/></div>
+                        <div class="form-field"><label for="password">Account password</label><input id="password" name="password" type="password" autocomplete="current-password" required="required" placeholder="Your account password"/></div>
+                        <button class="button submit-button" type="submit">Sign in <span aria-hidden="true">↗</span></button>
+                    </form>
+                    <p class="login-help">Need help with access? <a href="mailto:ash@biztinct.com">Contact Ash</a>.</p>
+                </div>
+            </section>
+        </t>
     </template>
 
     <template id="privacy" name="Biztinct enquiry privacy notice">

@@ -1,7 +1,9 @@
 # Biztinct public website (Odoo 14)
 
 This module serves Biztinct's public home, solutions, approach, contact and
-privacy pages. Its activation is restricted to the website whose domain
+privacy and account sign-in pages. Authentication is delegated to the original
+Odoo controller; its login form uses the new brand layout and preserves return
+destinations. Its activation is restricted to the website whose domain
 contains `biztinct.com`; the selected website ID is saved in
 `biztinct_website.website_id`. The other website and the business application
 remain on their existing routes. Legacy service URLs redirect to relevant

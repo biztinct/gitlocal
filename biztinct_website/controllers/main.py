@@ -44,6 +44,17 @@ def render_page(page, title, description, **values):
 
 class BiztinctWebsite(Website):
     @http.route()
+    def web_login(self, *args, **kw):
+        response = super().web_login(*args, **kw)
+        if is_biztinct() and getattr(response, 'template', None) == 'web.login':
+            response.template = 'biztinct_website.login'
+            response.qcontext.update(
+                page='login', title='Sign in to Biztinct',
+                description='Sign in to your Biztinct account.', year=fields.Datetime.now().year,
+            )
+        return response
+
+    @http.route()
     def index(self, **kw):
         if not is_biztinct():
             return super().index(**kw)
