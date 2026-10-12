@@ -24,6 +24,8 @@ mail-disabled restored database, then install/upgrade this module on
 working-tree status immediately before packaging the latest combined module
 state. Verify source hashes, installed version and both the HTTPS hostname
 and direct IP endpoint. Run Chrome checks against production after deployment.
+The publish script uses install only for a new module and update for an installed
+module, preserving noupdate SMTP settings entered by the administrator.
 
 ## Contact delivery
 
