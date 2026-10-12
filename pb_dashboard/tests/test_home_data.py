@@ -229,10 +229,43 @@ class TestHomeData(TransactionCase):
         self.assertAlmostEqual(month['er'],
                                sum(runs.mapped('pb_total_employer_cost')), 2)
         self.assertAlmostEqual(month['total'], month['gross'] + month['er'], 2)
-        self.assertEqual(month['people'], sum(runs.mapped('pb_employee_count')))
+        self.assertEqual(month['people'], len(runs.slip_ids.filtered(
+            lambda s: s.state != 'cancel').employee_id))
         self.assertAlmostEqual(month['avg'], month['net'] / month['people'], 4)
         self.assertEqual(month['balance_ok'], all(runs.mapped('pb_balance_ok')))
         self.assertFalse(month['done'], 'draft runs made a month done')
+
+    def test_02b_a_person_in_two_runs_of_a_month_counts_once(self):
+        """H32: an advance run and the end-month run pay the same people;
+        People paid counts each of them once."""
+        first, last = self._month(1)
+        before = self.home()['months'][-2]['people']
+        a = self._employee('Home Twice A')
+        advance = self._run('Home twice advance', first, last)
+        end = self._run('Home twice end', first, last)
+        self._slip(advance, a, {'GROSS': 5000.0, 'DED': 0.0, 'NET': 5000.0})
+        self._slip(end, a, {'GROSS': 7000.0, 'DED': 1000.0, 'NET': 6000.0})
+        self.env.flush_all()
+        self.assertEqual(self.home()['months'][-2]['people'], before + 1)
+
+    def test_02c_an_account_number_on_the_employee_is_a_bank_account(self):
+        """H31: the pay data keeps the account on the employee; a person with
+        one is not counted as having no bank account."""
+        Employee = self.env['hr.employee']
+        if 'account_number' not in Employee._fields:
+            self.skipTest('this build keeps no account number on the employee')
+        first, last = self._month(0)
+        with_acct = self._employee('Home Acct Yes')
+        with_acct.account_number = '0123456789'
+        without = self._employee('Home Acct No')
+        run = self._run('Home bank run', first, last)
+        self._slip(run, with_acct, {'GROSS': 1.0, 'DED': 0.0, 'NET': 1.0})
+        self._slip(run, without, {'GROSS': 1.0, 'DED': 0.0, 'NET': 1.0})
+        self.env.flush_all()
+        Dash = self.env['pb.dashboard']
+        cos = [self.company.id]
+        self.assertEqual(Dash._home_no_bank(run.ids, cos).get(run.id, 0),
+                         0 if without.bank_account_ids else 1)
 
     # =============================================================== test 3
     def test_03_another_company_s_run_is_not_mine(self):

@@ -17,7 +17,10 @@
     # that is the month picker, the month panel, steps and coming up; Lucide
     # and tokens from pb_import_kit (now a dependency); months carry
     # `foreign_runs` (H21).
-    'version': '19.0.2.1.0',
+    # 2.1.1: payobook walk fixes — people paid counted once per month, the
+    # employee's own account number counts as a bank account, divisions named
+    # as the Pay Runs board names them.
+    'version': '19.0.2.1.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

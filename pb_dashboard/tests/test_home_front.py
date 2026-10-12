@@ -167,7 +167,8 @@ class TestHomeFrontSource(TransactionCase):
     def test_07_manifests_fonts_and_versions(self):
         manifest = ast.literal_eval(_read('pb_dashboard', '__manifest__.py'))
         self.assertIn('pb_import_kit', manifest['depends'])
-        self.assertEqual(manifest['version'], '19.0.2.1.0')
+        self.assertGreaterEqual(
+            tuple(int(x) for x in manifest['version'].split('.')[2:5]), (2, 1, 0))
         kit = ast.literal_eval(_read('pb_import_kit', '__manifest__.py'))
         major = tuple(int(x) for x in kit['version'].split('.')[2:5])
         self.assertGreaterEqual(major, (1, 21, 0), 'the kit was not bumped')

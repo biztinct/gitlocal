@@ -516,6 +516,19 @@ class PbDashboardHome(models.AbstractModel):
 
     @api.model
     def _home_division(self, run):
+        """The run's division as the Pay Runs board names it: the scheme's
+        name without the brand and the cycle ("Information Technology"),
+        never the stored title-cased key ("It" for IT — walk 2026-10-12)."""
+        cfg = run.pb_formula_config_id if 'pb_formula_config_id' in run._fields \
+            else None
+        if cfg:
+            try:
+                name = (cfg.sudo().name or '').replace('Payobook', '')
+                name = name.split('—')[0].strip()
+                if name:
+                    return name
+            except Exception:                       # noqa: BLE001 - label only
+                pass
         if 'pb_division_label' in run._fields:
             return run.pb_division_label or ''
         return ''
@@ -582,15 +595,42 @@ class PbDashboardHome(models.AbstractModel):
         """(SQL fragment testing that employee `p.employee_id` has a bank
         account) for whichever field this build carries, or None."""
         Employee = self.env['hr.employee']
+        tests = []
         many = Employee._fields.get('bank_account_ids')
         if many is not None and getattr(many, 'relation', None):
-            return SQL('EXISTS (SELECT 1 FROM %s b WHERE b.%s = p.employee_id)',
-                       SQL.identifier(many.relation),
-                       SQL.identifier(many.column1))
-        if 'bank_account_id' in Employee._fields:
-            return SQL('EXISTS (SELECT 1 FROM hr_employee e WHERE e.id = '
-                       'p.employee_id AND e.bank_account_id IS NOT NULL)')
-        return None
+            tests.append(SQL('EXISTS (SELECT 1 FROM %s b WHERE b.%s = p.employee_id)',
+                             SQL.identifier(many.relation),
+                             SQL.identifier(many.column1)))
+        elif 'bank_account_id' in Employee._fields:
+            tests.append(SQL('EXISTS (SELECT 1 FROM hr_employee e WHERE e.id = '
+                             'p.employee_id AND e.bank_account_id IS NOT NULL)'))
+        # The pay data keeps the account on the employee itself
+        # (pb_hr_payroll_formula `account_number`) — the People screen's
+        # "with bank" count reads that. On payobook 4,500 of 4,547 people have
+        # one and NOBODY has a linked bank record (walk 2026-10-12, H31).
+        acct = Employee._fields.get('account_number')
+        if acct is not None and acct.store:
+            tests.append(SQL("EXISTS (SELECT 1 FROM hr_employee e WHERE e.id = "
+                             "p.employee_id AND COALESCE(e.account_number, '') <> '')"))
+        if not tests:
+            return None
+        return SQL('(%s)', SQL(' OR ').join(tests))
+
+    @api.model
+    def _home_month_people(self, run_ids, cos):
+        """{'YYYY-MM' (run date_end): distinct people paid} — one statement on
+        the payslip_run_id index; never the line table (H-R1)."""
+        if not run_ids:
+            return {}
+        self.env.cr.execute(SQL("""
+            SELECT to_char(r.date_end, 'YYYY-MM'), count(DISTINCT p.employee_id)
+              FROM hr_payslip p
+              JOIN hr_payslip_run r ON r.id = p.payslip_run_id
+             WHERE p.payslip_run_id IN %s AND p.company_id IN %s
+               AND p.state != 'cancel'
+             GROUP BY 1
+        """, tuple(run_ids), tuple(cos)))
+        return dict(self.env.cr.fetchall())
 
     @api.model
     def _home_no_bank(self, run_ids, cos):
@@ -671,15 +711,21 @@ class PbDashboardHome(models.AbstractModel):
             if key in by_key:
                 by_key[key].append(run)
 
+        # People paid = each person ONCE per month. Summing the runs' head
+        # counts counted a mid-month advance and the end-month run twice
+        # (payobook June read 8,879 for 4,486 people — walk 2026-10-12, H32).
+        heads = safe(lambda: self._home_month_people(runs.ids, st['cos']), None)
+
         has_money = bool(money) or 'pb_total_net' in Run._fields
         out = []
         for index, key in enumerate(keys):
             group = by_key[key]
+            people = heads.get(key, 0) if heads is not None else sum(
+                self._home_people_of(r, facts, money) for r in group)
             row = {
                 'key': key,
                 'year_mark': index == 0 or key.endswith('-01'),
-                'people': sum(self._home_people_of(r, facts, money)
-                              for r in group),
+                'people': people,
                 'net': None, 'gross': None, 'ded': None, 'er': None,
                 'total': None, 'avg': None,
                 'runs': len(group),
