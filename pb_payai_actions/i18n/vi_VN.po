@@ -70,7 +70,7 @@ msgstr "%(n)s phiếu lương đã lập cho tháng này được đưa vào đ�
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/actions_amber.py:0
 msgid "%(n)s people in this company are not covered by this scheme and stay out of this run."
-msgstr "%(n)s người trong công ty không thuộc phương án lương này và không nằm trong đợt lương."
+msgstr "%(n)s người trong công ty không thuộc chương trình lương này và không nằm trong đợt lương."
 
 #. module: pb_payai_actions
 #. odoo-python
@@ -173,7 +173,7 @@ msgstr "(chưa đặt)"
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/actions_amber.py:0
 msgid "1 person in this company is not covered by this scheme and stays out of this run."
-msgstr "1 người trong công ty không thuộc phương án lương này và không nằm trong đợt lương."
+msgstr "1 người trong công ty không thuộc chương trình lương này và không nằm trong đợt lương."
 
 #. module: pb_payai_actions
 #. odoo-python
@@ -232,7 +232,7 @@ msgstr "Sau bạn, yêu cầu chuyển đến %(step)s%(who)s."
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/actions_amber.py:0
 msgid "All %(n)s covered by this scheme"
-msgstr "Toàn bộ %(n)s người thuộc phương án lương này"
+msgstr "Toàn bộ %(n)s người thuộc chương trình lương này"
 
 #. module: pb_payai_actions
 #. odoo-python
@@ -359,7 +359,7 @@ msgstr "Việc duyệt"
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/actions_amber.py:0
 msgid "As the scheme is set up"
-msgstr "Theo thiết lập của phương án lương"
+msgstr "Theo thiết lập của chương trình lương"
 
 #. module: pb_payai_actions
 #. odoo-javascript
@@ -781,7 +781,7 @@ msgstr "Tôi không còn tìm thấy yêu cầu đó."
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/resolve.py:0
 msgid "I cannot see any scheme you may run."
-msgstr "Tôi không thấy phương án lương nào bạn được chạy."
+msgstr "Tôi không thấy chương trình lương nào bạn được chạy."
 
 #. module: pb_payai_actions
 #. odoo-python
@@ -793,7 +793,7 @@ msgstr "Tôi chưa thấy danh sách màn hình của bạn. Hãy đóng rồi m
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/actions_amber.py:0
 msgid "I could not find \"%s\" among the people this scheme pays."
-msgstr "Tôi không tìm thấy \"%s\" trong số người được trả theo phương án lương này."
+msgstr "Tôi không tìm thấy \"%s\" trong số người được trả theo chương trình lương này."
 
 #. module: pb_payai_actions
 #. odoo-python
@@ -805,7 +805,7 @@ msgstr "Tôi không tìm thấy \"%s\" trong các việc đang chờ bạn quy�
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/actions_amber.py:0
 msgid "I could not find \"%s\" on this person's scheme. These are the closest pay values they have — pick one, or open Records."
-msgstr "Tôi không tìm thấy \"%s\" trong phương án lương của người này. Đây là các giá trị lương gần nhất của họ — hãy chọn một, hoặc mở Hồ sơ."
+msgstr "Tôi không tìm thấy \"%s\" trong chương trình lương của người này. Đây là các giá trị lương gần nhất của họ — hãy chọn một, hoặc mở Hồ sơ."
 
 #. module: pb_payai_actions
 #. odoo-python
@@ -823,7 +823,7 @@ msgstr "Tôi không tìm thấy tờ khai nào tên \"%s\"."
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/resolve.py:0
 msgid "I could not find a scheme called \"%(words)s\". The schemes you can run are: %(names)s."
-msgstr "Tôi không tìm thấy phương án lương nào tên \"%(words)s\". Các phương án bạn được chạy là: %(names)s."
+msgstr "Tôi không tìm thấy chương trình lương nào tên \"%(words)s\". Các chương trình bạn được chạy là: %(names)s."
 
 #. module: pb_payai_actions
 #. odoo-python
@@ -1220,13 +1220,13 @@ msgstr "Hiện không có việc nào chờ bạn quyết định."
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/actions_amber.py:0
 msgid "Nothing on %s can be changed from here yet: Records has no pay value on it that you may change. Open People › Records to see what you can change."
-msgstr "Hiện chưa đổi được gì của %s từ đây: Hồ sơ không có giá trị lương nào thuộc phương án này mà bạn được đổi. Mở Con người › Hồ sơ để xem bạn đổi được gì."
+msgstr "Hiện chưa đổi được gì của %s từ đây: Hồ sơ không có giá trị lương nào thuộc chương trình này mà bạn được đổi. Mở Con người › Hồ sơ để xem bạn đổi được gì."
 
 #. module: pb_payai_actions
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/actions_amber.py:0
 msgid "Nothing on this person's scheme can be changed from here yet: Records has no pay value on it that you may change. Open People › Records to see what you can change."
-msgstr "Hiện chưa đổi được gì trong phương án lương của người này từ đây: Hồ sơ không có giá trị lương nào thuộc phương án này mà bạn được đổi. Mở Con người › Hồ sơ để xem bạn đổi được gì."
+msgstr "Hiện chưa đổi được gì trong chương trình lương của người này từ đây: Hồ sơ không có giá trị lương nào thuộc chương trình này mà bạn được đổi. Mở Con người › Hồ sơ để xem bạn đổi được gì."
 
 #. module: pb_payai_actions
 #. odoo-python
@@ -1906,7 +1906,7 @@ msgstr "Đã lưu là %s. Thay đổi có trong lịch sử Hồ sơ."
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/actions_amber.py:0
 msgid "Scheme"
-msgstr "Phương án lương"
+msgstr "Chương trình lương"
 
 #. module: pb_payai_actions
 #. odoo-python
@@ -2532,13 +2532,13 @@ msgstr "Đợt lương này đã bị từ chối."
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/actions_amber.py:0
 msgid "This scheme covers nobody yet, so the run would be empty. Open it in the screen to see who the scheme is mapped to."
-msgstr "Phương án lương này chưa áp dụng cho ai, nên đợt lương sẽ trống. Hãy mở trên màn hình để xem phương án được gán cho ai."
+msgstr "Chương trình lương này chưa áp dụng cho ai, nên đợt lương sẽ trống. Hãy mở trên màn hình để xem chương trình được gán cho ai."
 
 #. module: pb_payai_actions
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/actions_amber.py:0
 msgid "This scheme expects a pay data file for %(n)s value(s). Files are not sent through chat, so if I run it now those values use their usual amounts. To load the file, open it in the screen instead."
-msgstr "Phương án lương này cần tệp dữ liệu lương cho %(n)s giá trị. Tệp không gửi qua khung trò chuyện, nên nếu chạy bây giờ các giá trị đó dùng số tiền thường lệ. Để tải tệp, hãy mở trên màn hình."
+msgstr "Chương trình lương này cần tệp dữ liệu lương cho %(n)s giá trị. Tệp không gửi qua khung trò chuyện, nên nếu chạy bây giờ các giá trị đó dùng số tiền thường lệ. Để tải tệp, hãy mở trên màn hình."
 
 #. module: pb_payai_actions
 #. odoo-python
@@ -2731,7 +2731,7 @@ msgstr "Bạn muốn nói %s nào?"
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/runner.py:0
 msgid "Which %s scheme do you mean?"
-msgstr "Bạn muốn nói phương án lương %s nào?"
+msgstr "Bạn muốn nói chương trình lương %s nào?"
 
 #. module: pb_payai_actions
 #. odoo-python
@@ -2767,7 +2767,7 @@ msgstr "Bạn muốn nói người nào?"
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/runner.py:0
 msgid "Which scheme do you mean?"
-msgstr "Bạn muốn nói phương án lương nào?"
+msgstr "Bạn muốn nói chương trình lương nào?"
 
 #. module: pb_payai_actions
 #. odoo-python
@@ -2898,7 +2898,7 @@ msgstr "lúc gửi"
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/actions_amber.py:0
 msgid "as the scheme is set up"
-msgstr "theo thiết lập phương án"
+msgstr "theo thiết lập chương trình"
 
 #. module: pb_payai_actions
 #. odoo-javascript

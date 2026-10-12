@@ -352,10 +352,10 @@ class TestPayaiP4Vietnamese(p3.TestPayaiP3Red):
         slots = {s['key']: s for s in card['slots']}
         self.assertEqual(slots['period']['label'], 'Kỳ lương')
         self.assertEqual(slots['period']['value_label'], '1 đến 31 tháng 12 năm 2031')
-        self.assertEqual(slots['scheme']['label'], 'Phương án lương')
+        self.assertEqual(slots['scheme']['label'], 'Chương trình lương')
         self.assertEqual(slots['scheme']['value_label'], 'Payai Retail End-Month')
         self.assertEqual(slots['people']['label'], 'Nhân viên')
-        self.assertIn('Toàn bộ 3 người thuộc phương án lương này', slots['people']['value_label'])
+        self.assertIn('Toàn bộ 3 người thuộc chương trình lương này', slots['people']['value_label'])
         notes = ' '.join(n['text'] for n in card['notes'])
         self.assertIn('Chưa có đợt lương tháng 12 năm 2031 cho Payai Retail End-Month.', notes)
         labels = [a['label'] for a in card['actions']]
@@ -452,6 +452,6 @@ class TestPayaiP4Vietnamese(p3.TestPayaiP3Red):
 
 # The P3 Red tests run once, in P3 — not again under this class.
 for _name in dir(p3.TestPayaiP3Red):
-    if _name.startswith('test_') and _name not in TestPayaiP4Vietnamese.__dict__:
+    if (_name.startswith('test_') and callable(getattr(p3.TestPayaiP3Red, _name))
+            and _name not in TestPayaiP4Vietnamese.__dict__):
         setattr(TestPayaiP4Vietnamese, _name, None)
-TestPayaiP4Vietnamese = tagged('post_install', '-at_install', 'payai')(TestPayaiP4Vietnamese)
